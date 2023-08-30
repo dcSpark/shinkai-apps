@@ -1,0 +1,517 @@
+@import './variables.css';
+@font-face {
+  font-family: 'Inter';
+  src: url('./fonts/Inter-Regular.ttf');
+}
+
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    --background: rgb(26, 26, 26);
+    --foreground: rgb(255, 255, 255);
+  }
+} */
+
+/* @media (prefers-color-scheme: light) {
+  :root {
+    --background: rgb(255, 255, 255);
+    --foreground: rgb(0, 0, 0);
+  }
+} */
+
+* {
+  box-sizing: border-box;
+}
+
+div#popup {
+  overflow: hidden;
+  height: 100%;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  width: 357px;
+  height: 600px;
+  overflow-y: hidden;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #1e1e1e;
+}
+
+.App {
+  color: var(--background-color-contrast);
+  height: 100%;
+  background-color: var(--background-color);
+}
+
+h4 {
+  font-size: 1.4rem;
+}
+
+.App-content {
+  background-color: inherit;
+  color: var(--background-color-contrast);
+  width: 100%;
+  height: calc(100% - 62px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media (min-width: 600px) {
+  body {
+    margin: 20px auto;
+    width: 500px;
+    height: 840px;
+    box-shadow: 2px 2px 8px 1px rgb(150 150 150 / 50%);
+    font-family: 'Inter', sans-serif;
+    /* box-shadow: 0 0 7px 0 rgb(0 0 0 / 8%); */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  .App-content {
+    color: var(--foreground);
+    height: 778px;
+    max-height: 778px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.welcome {
+  margin: auto;
+  position: relative;
+}
+
+.App-logo {
+  height: 150px;
+  display: flex;
+  margin: 3em auto;
+  margin-top: 30%;
+}
+
+a {
+  text-decoration: none;
+  color: white;
+}
+
+.successMessage {
+  font-size: 1rem;
+  height: 1rem;
+  color: rgb(3, 125, 214);
+  text-align: center;
+  margin: 0;
+}
+
+.spinner {
+  text-align: center;
+}
+
+.errorMessage {
+  font-size: 12px;
+  color: var(--alert-color);
+  text-align: center;
+}
+
+.succesMessage {
+  color: var(--foreground);
+}
+
+.setup .errorMessage {
+  margin-bottom: 0.5rem;
+}
+
+.tooltip-trigger {
+  vertical-align: super;
+  margin: 0.1rem 0 0.1rem 0.1rem;
+}
+
+.setup .tooltip {
+  position: fixed;
+  top: 180px;
+  left: 200px;
+  height: 98px;
+  width: 150px;
+  font-size: 0.9rem;
+  border: 1px solid var(--foreground);
+  background-color: #1a1c1b;
+  border-radius: 8px;
+  color: white;
+  z-index: 900;
+}
+
+.setup .tooltip p {
+  margin-left: 10px;
+  margin-right: 2px;
+}
+
+.setup {
+  padding: 1rem;
+  margin: auto;
+}
+
+/* titles */
+
+.title-page {
+  font-size: 20px;
+  line-height: 30px;
+  display: flex;
+  align-items: center;
+  color: var(--background-color-contrast);
+  margin: 0 0 1em;
+}
+
+.centered {
+  justify-content: center;
+  text-align: center;
+}
+
+.description {
+  font-weight: normal;
+  font-size: 13px;
+  line-height: 15px;
+  letter-spacing: 0.02em;
+  color: var(--light-gray);
+  margin-top: -1.5em;
+}
+
+.margin-0 {
+  margin-top: 0 !important;
+}
+
+.linear-red-bg {
+  border: 1px solid var(--alert-color);
+  background: transparent !important;
+  color: var(--alert-color);
+}
+
+.red-bg {
+  background-color: var(--alert-color) !important;
+  /* border: 1px solid rgba(100,0,0,1) !important; */
+}
+
+/* forms */
+
+label {
+  line-height: 1.5;
+}
+
+.label-input {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 20px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--medium-gray);
+  margin: 0;
+}
+
+input {
+  width: 100%;
+  height: 48px;
+  background: transparent;
+  border: 1px solid var(--medium-gray);
+  color: var(--background-color-contrast);
+  box-sizing: border-box;
+  border-radius: 12px;
+  margin: 5px 0 10px;
+  padding: 10px;
+  text-align: left;
+  font-size: 14px;
+  box-shadow: none;
+  display: block;
+  outline: none;
+}
+
+.separator {
+  margin: 5px;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+}
+
+.flex-grow-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 1;
+  max-height: 100%;
+  height: 100%;
+  width: 100%;
+  padding: 2.5em 1.5em 1.5em;
+  overflow-y: auto;
+}
+
+.flex-grow {
+  flex: 1 1 0%;
+}
+
+.vertical {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.form {
+  text-align: left;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.modal-background {
+  height: 100%;
+  width: 100%;
+  background-color: rgb(0, 0, 0, 0.7);
+}
+
+.modal-foreground {
+  padding: 0.5rem;
+  background-color: grey;
+  margin: 40% auto;
+  width: 70%;
+}
+
+.modal-foreground img {
+  width: 120px;
+}
+
+.moonname p,
+.moonname span {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 16px;
+  color: var(--background-color-contrast);
+  white-space: nowrap;
+  overflow: hidden;
+  display: block;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+
+/* buttons */
+
+button {
+  font-family: 'Inter', sans-serif;
+  width: 100%;
+  transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: row;
+  -webkit-box-pack: center;
+  justify-content: center;
+  align-items: center;
+  padding: 14px 0px;
+  font-size: 14px;
+  line-height: 19px;
+  font-weight: 500;
+  color: #fff;
+  pointer-events: auto;
+  border: none;
+  outline-color: transparent;
+  outline-style: none;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+button:hover {
+  opacity: 0.5;
+}
+
+.submit-setup-button {
+  margin: auto;
+  width: 100%;
+}
+
+.small-button {
+  display: block;
+  width: 100%;
+  background-color: var(--primary-color);
+  cursor: pointer;
+  padding: 8px;
+}
+
+.buttonContainer {
+  display: flex;
+  background-color: #282c34;
+  color: white;
+  min-width: 150px;
+  padding: 10px;
+}
+
+.loginButton {
+  border: 0;
+  background-color: #1a1d22;
+  color: white;
+  padding: 5px 10px;
+  width: 100%;
+  cursor: pointer;
+}
+
+.small-button:disabled {
+  border-color: currentColor;
+  pointer-events: none;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.single-button {
+  width: 100%;
+  background-color: var(--primary-color);
+  color: var(--background-color-contrast);
+}
+
+.linear-button {
+  background: transparent;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+}
+
+.surface-button {
+  background: var(--background-color-tint-contrast);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 15px;
+  height: 65px;
+  margin-top: 10px;
+}
+
+.surface-button .button-icon {
+  width: 16px;
+  margin-bottom: 5px;
+}
+
+.block-footer {
+  margin: 0.5em -1.5em -1.5em;
+  padding: 1.5em;
+  border-radius: 20px 20px 0 0;
+  background: var(--background-color-tint);
+  position: relative;
+}
+
+.confirm-string {
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 22px;
+  color: #ffffff;
+  margin: 0;
+  position: absolute;
+  top: -10px;
+  transform: translate(0, -100%);
+}
+
+.collapse-header {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.confirm-string::after {
+  position: absolute;
+  content: '';
+  width: 30px;
+  height: 2px;
+  background-color: white;
+  bottom: -10px;
+  left: 0;
+}
+
+.title-footer {
+  position: relative;
+  margin-bottom: 0;
+}
+
+.title-footer::after {
+  position: absolute;
+  content: '';
+  width: 30px;
+  height: 2px;
+  background-color: white;
+  bottom: -9px;
+  left: 0;
+  z-index: 9999;
+}
+
+.row-buttons {
+  display: flex;
+  align-items: center;
+}
+
+.two-buttons {
+  display: flex;
+  width: 100%;
+}
+
+.two-buttons button {
+  width: 100%;
+}
+
+.flex-end {
+  align-self: flex-end;
+}
+
+.blue-button {
+  background-color: rgb(3, 125, 214, 0.5);
+}
+
+.two-buttons .right {
+  margin-left: 5px;
+}
+
+.two-buttons .left {
+  margin-right: 5px;
+}
+
+.cancel-button {
+  background-color: rgb(45, 45, 45);
+}
+
+.multiple-buttons {
+  margin: 0.5rem 0;
+}
+
+.small-padding {
+  width: 100%;
+  padding: 1rem;
+}
+
+.full-size {
+  height: 100%;
+  width: 100%;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3e3e3e;
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-track {
+  background: #969494;
+  border-radius: 20px;
+}

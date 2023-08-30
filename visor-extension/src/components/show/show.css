@@ -1,0 +1,92 @@
+.ship-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.ship-data-name {
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 22px;
+  text-align: center;
+  color: var(--background-color-contrast);
+}
+.ship-data svg {
+  border-radius: 5px;
+}
+.ship-data .shipname {
+  font-weight: 500;
+  font-size: 12.5px;
+  line-height: 16px;
+  color: var(--light-gray);
+  white-space: nowrap;
+  overflow: hidden;
+  display: block;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+.ship-information {
+  display: flex;
+  justify-content: space-between;
+  background: var(--background-color-tint);
+  border-radius: 12px;
+  padding: 0.8em;
+}
+.ship-info-icon {
+  width: 12px;
+  margin-right: 5px;
+}
+.ship-information .vertical {
+  align-items: center !important;
+}
+.ship-information .value,
+.ship-location .value,
+.ship-type .value {
+  font-style: normal;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 19px;
+  text-align: center;
+  color: var(--background-color-contrast);
+  text-transform: capitalize;
+  margin: 0;
+}
+.ship-information .label,
+.ship-location .label,
+.ship-type .label {
+  font-weight: 500;
+  font-size: 8px;
+  line-height: 8px;
+  text-align: center;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--light-gray);
+  margin: 5px 0 0 0;
+}
+
+.ship-location,
+.ship-type {
+  width: 50%;
+  background: var(--background-color-tint);
+  border-radius: 12px;
+  padding: 0.8em;
+  margin-top: 10px;
+  align-items: center !important;
+}
+
+.ship-data p {
+  font-size: 1.5rem;
+  margin-left: 1.2rem;
+}
+.ship-data .shipname {
+  margin: 0.5rem 0 0 1.2rem;
+}
+
+.ship-show .buttons {
+  padding: 0 1rem;
+}
+.ship-show .spinner {
+  margin-bottom: 10px;
+}
+.second-row {
+  margin-top: 10px;
+}

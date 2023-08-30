@@ -1,0 +1,331 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+
+/* General */
+
+:root {
+  --color-left-panel: #252d29;
+  --color-right-panel: #1b231f;
+  --color-lightened-text: #a5b0ab;
+  --color-outstanding-text: #ffffff;
+  --color-gray-green-container: #3a423e;
+  --color-gray-border: #353a38;
+}
+
+.modal-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.modal-container:focus {
+  outline: none;
+}
+
+.command-launcher-body {
+  display: flex;
+  justify-content: flex-start;
+  height: 576px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #3e3e3e;
+  border-radius: 20px;
+}
+::-webkit-scrollbar-track {
+  background: #969494;
+  border-radius: 20px;
+}
+
+/* Top Logo */
+
+.logo-container {
+  width: 184px;
+  background-color: var(--color-left-panel);
+}
+
+.logo {
+  padding-top: 20px;
+  padding-left: 24px;
+}
+
+/* Input Box */
+
+.modal-input-box {
+  display: flex;
+  height: 64px;
+  outline: none;
+  border-bottom: 1px solid var(--color-gray-border);
+  box-sizing: border-box;
+  background-color: var(--color-right-panel);
+  font-size: 16px;
+}
+
+.modal-input-box input {
+  font-family: 'Inter', sans-serif;
+}
+.modal-input-box input::placeholder {
+  color: var(--color-lightened-text);
+}
+
+.cl-base-input {
+  padding: 0;
+  padding-left: 16px;
+  outline: none;
+  border: none;
+  background-color: var(--color-right-panel);
+  font-size: 16px;
+  color: var(--color-outstanding-text);
+}
+
+.cl-input {
+  display: inline-block;
+  vertical-align: top;
+  min-width: 1em;
+  cursor: text;
+}
+.cl-input * {
+  display: inline;
+}
+.cl-input:empty:before {
+  content: attr(data-placeholder);
+  color: var(--color-lightened-text);
+}
+.cl-input br {
+  display: none;
+}
+
+.highlight-required {
+  border: red;
+  border-style: solid;
+  border-width: thin;
+}
+
+.arg-input {
+  cursor: text;
+  display: inline-block;
+  vertical-align: top;
+  min-width: 1em;
+  width: fit-content;
+  padding: 5px 8px;
+  font-family: 'Inter', sans-serif;
+  color: var(--color-outstanding-text);
+}
+.arg-input:empty:before {
+  content: attr(data-placeholder);
+  color: var(--color-lightened-text);
+}
+.arg-input:focus-visible {
+  border: 1px solid #f1f5f3;
+  border-radius: 8px;
+  outline: none;
+}
+
+.inputs-wrapper {
+  display: flex;
+  align-items: center;
+  height: 64px;
+  padding-left: 8px;
+}
+
+.input-placeholder {
+  color: var(--color-lightened-text);
+  display: flex;
+  align-items: center;
+  text-align: center;
+  font-size: 14px;
+  margin: 0 auto;
+  font-style: italic;
+}
+
+/* Side Menu */
+
+.command-launcher-menu {
+  width: 184px;
+  overflow-y: auto;
+  background-color: var(--color-left-panel);
+  color: var(--color-lightened-text);
+}
+
+.menu-option {
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  margin: 4px 8px;
+  padding: 6px 14px;
+  border-radius: 12px;
+  font-size: 16px;
+}
+.menu-option:hover {
+  background-color: var(--color-gray-green-container);
+}
+.menu-option.selected {
+  background-color: #019d64;
+  color: var(--color-outstanding-text);
+}
+.menu-option.selected .command-icon img {
+  filter: brightness(0) invert(1);
+}
+
+.command-icon img {
+  padding-right: 14px;
+}
+
+.command-text {
+  word-break: break-all;
+}
+
+.sub-menu {
+  height: calc(100% - 50px);
+}
+
+.back-button {
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: var(--color-lightened-text);
+  height: 50px;
+  width: inherit;
+  background-color: var(--color-left-panel);
+  position: absolute;
+  bottom: 0;
+  border: none;
+  border-top: 1px solid var(--color-gray-border);
+}
+.back-button:hover {
+  color: var(--color-outstanding-text);
+}
+
+.back-arrow {
+  box-sizing: border-box;
+  position: absolute;
+  top: 13px;
+  left: 41px;
+  display: block;
+  transform: scale(var(--ggs, 1));
+  width: 22px;
+  height: 22px;
+}
+.back-arrow::after,
+.back-arrow::before {
+  content: '';
+  display: block;
+  box-sizing: border-box;
+  position: absolute;
+  left: 3px;
+}
+.back-arrow::after {
+  width: 8px;
+  height: 8px;
+  border-bottom: 2px solid;
+  border-left: 2px solid;
+  transform: rotate(45deg);
+  bottom: 7px;
+}
+.back-arrow::before {
+  width: 16px;
+  height: 2px;
+  bottom: 10px;
+  background: currentColor;
+}
+
+/* Display Area */
+
+.command-launcher-display {
+  width: calc(100% - 184px);
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: var(--color-right-panel);
+  color: var(--color-outstanding-text);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+}
+
+.command-launcher-display-preview-container {
+  height: 100%;
+  text-align: center;
+}
+
+.airlock-subscription-display {
+  padding: 12px;
+}
+.airlock-subscription-display-line {
+  color: var(--color-outstanding-text);
+  text-align: left;
+  overflow-wrap: break-word;
+}
+
+.command-launcher-display .command-title {
+  width: 400px;
+  margin: 0 auto;
+  padding: 24px 0 16px;
+  font-size: 18px;
+}
+.command-launcher-display .tab-symbol {
+  display: inline-block;
+  margin: 0 3px;
+  padding: 4px 17px;
+  border-radius: 2px;
+  background-color: var(--color-gray-green-container);
+  color: #19c586;
+  font-size: 12px;
+  height: 16px;
+  line-height: 16px;
+}
+
+.command-description {
+  width: 340px;
+  margin: 0 auto;
+}
+.command-description p {
+  margin: 0;
+  line-height: 32px;
+}
+
+p.tab-description {
+  margin-top: 30px;
+}
+
+.command-preview-icon {
+  display: flex;
+  width: 64px;
+  height: 64px;
+  margin: 48px auto 0;
+  justify-content: center;
+  background-color: var(--color-gray-green-container);
+  border-radius: 12px;
+}
+.command-preview-icon img {
+  width: 36px;
+  filter: brightness(0) invert(1);
+}
+
+.copy-button {
+  cursor: pointer;
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  padding: 10px;
+  background: rgba(58, 66, 62, 0.6);
+  border-left-color: rgba(58, 66, 62, 0.6);
+  border-top-color: rgba(58, 66, 62, 0.6);
+  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.7);
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: var(--color-lightened-text);
+}
+.copy-button:hover {
+  background: var(--color-gray-green-container);
+  color: var(--color-outstanding-text);
+}
+
+/* React-JSON-View */
+
+.variable-row {
+  padding-top: 1px !important;
+  padding-bottom: 1px !important;
+}
