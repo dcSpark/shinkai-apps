@@ -1,0 +1,29 @@
+.ion-item-home {
+  --ion-item-background: theme("colors.white");
+  --background: theme("colors.white");
+  --box-shadow: none;
+  --inner-border-width: 0;
+  --border-radius: 20px;
+  --background-hover: theme("colors.slate.600");
+  @apply rounded-[20px] border border-slate-300 dark:border-slate-600;
+  &::part(native) {
+    @apply min-h-[60px] md:min-h-[90px];
+  }
+  @media (prefers-color-scheme: dark) {
+    --ion-item-background: theme("colors.slate.900");
+    --background: theme("colors.slate.900");
+    --background-hover: theme("colors.slate.700");
+  }
+}
+
+.ion-actionSheet-custom {
+  --max-width: 100%;
+  @apply md:rounded-[1.5rem];
+  --button-background: theme("colors.white");
+  @media (prefers-color-scheme: dark) {
+    --button-background: theme("colors.slate.800");
+  }
+  .action-sheet-container {
+    @apply bg-white rounded-t-[1.25rem] py-6 pb-2 dark:bg-slate-800;
+  }
+}

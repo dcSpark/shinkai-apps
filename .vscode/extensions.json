@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "nrwl.angular-console",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "firsttris.vscode-jest-runner",
+    "tauri-apps.tauri-vscode",
+    "rust-lang.rust-analyzer",
+    "ms-playwright.playwright"
+  ]
+}

@@ -1,0 +1,141 @@
+@import '../../../../libs/shinkai-ui/src/styles/styles.css';
+@import 'primereact/resources/themes/lara-light-blue/theme.css';
+@import 'primereact/resources/primereact.min.css';
+
+/* start - draggable styles*/
+.Draggable {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  transition: transform 250ms ease;
+
+  > button {
+    transform: translate3d(var(--translate-x, 0), var(--translate-y, 0), 0)
+      scale(var(--scale, 1));
+  }
+
+  &:not(.handle) {
+    > button {
+      touch-action: none;
+      cursor: grab;
+
+      &:focus-visible:not(.active &) {
+        box-shadow: 0 0 0 3px #4c9ffe;
+      }
+    }
+  }
+
+  &.handle {
+    > button {
+      --action-background: rgba(255, 255, 255, 0.1);
+
+      > svg {
+        margin-right: 5px;
+      }
+
+      > button {
+        margin-right: -10px;
+      }
+    }
+  }
+
+  &.dragging {
+    z-index: 1;
+    transition: none;
+    * {
+      cursor: grabbing;
+    }
+
+    > button {
+      --scale: 1.06;
+      --box-shadow: -1px 0 15px 0 rgba(34, 33, 81, 0.01),
+        0px 15px 15px 0 rgba(34, 33, 81, 0.25);
+      border-radius: 100%;
+      overflow: hidden;
+      &:focus-visible {
+        --box-shadow: 0 0px 10px 2px #4c9ffe;
+      }
+    }
+  }
+
+  &.dragOverlay,
+  &.dragging {
+    > button {
+      animation: pop 250ms cubic-bezier(0.18, 0.67, 0.6, 1.22);
+    }
+  }
+}
+
+.Action {
+  display: flex;
+  width: 12px;
+  padding: 15px;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  touch-action: none;
+  cursor: var(--cursor, pointer);
+  border-radius: 5px;
+  border: none;
+  outline: none;
+  appearance: none;
+  background-color: transparent;
+  -webkit-tap-highlight-color: transparent;
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--action-background, rgba(0, 0, 0, 0.05));
+
+      svg {
+        fill: #6f7b88;
+      }
+    }
+  }
+
+  svg {
+    flex: 0 0 auto;
+    margin: auto;
+    height: 100%;
+    overflow: visible;
+    fill: #919eab;
+  }
+
+  &:active {
+    background-color: var(--background, rgba(0, 0, 0, 0.05));
+
+    svg {
+      fill: var(--fill, #788491);
+    }
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px rgba(255, 255, 255, 0),
+      0 0px 0px 2px #4c9ffe;
+  }
+}
+
+@keyframes pulse {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pop {
+  0% {
+    transform: translate3d(var(--translate-x, 0), var(--translate-y, 0), 0)
+      scale(1);
+  }
+  100% {
+    transform: translate3d(var(--translate-x, 0), var(--translate-y, 0), 0)
+      scale(var(--scale));
+    box-shadow: var(--box-shadow);
+  }
+}
+/* end - draggable styles*/

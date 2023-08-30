@@ -1,0 +1,18 @@
+.ion-segment {
+  /* --background: theme('colors.slate.50'); */
+  @apply rounded-xl p-2 border-b border-slate-100 dark:border-slate-700;
+
+  ion-segment-button {
+    --background-checked: theme('colors.slate.100');
+    --color-checked: theme('colors.slate.900');
+    --color: theme('colors.slate.400');
+    --indicator-color: transparent;
+    @media (prefers-color-scheme: dark) {
+      --background-checked: theme('colors.slate.700');
+      --color-checked: theme('colors.white');
+      --color: theme('colors.slate.400');
+    }
+
+    @apply rounded-xl font-semibold  overflow-hidden;
+  }
+}

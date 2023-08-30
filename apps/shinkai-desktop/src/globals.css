@@ -1,0 +1,17 @@
+@import '../../../libs/shinkai-ui/src/styles/styles.css';
+@import 'primereact/resources/themes/lara-light-blue/theme.css';
+@import 'primereact/resources/primereact.min.css';
+
+html,
+body,
+#root {
+  @apply font-inter h-full rounded-lg border-0 bg-gray-500 text-white;
+}
+html {
+  @apply overscroll-none;
+}
+
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-400;
+}

@@ -1,0 +1,82 @@
+{
+  "name": "shinkai-visor",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/shinkai-visor/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/vite:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/apps/shinkai-visor"
+      },
+      "configurations": {
+        "development": {
+          "mode": "development",
+          "watch": true
+        },
+        "production": {
+          "mode": "production",
+          "force": true
+        }
+      }
+    },
+    "serve": {
+      "dependsOn": ["shinkai-message-ts:build"],
+      "executor": "nx:run-commands",
+      "defaultConfiguration": "development",
+      "options": {
+        "cwd": "apps/shinkai-visor",
+        "command": "npx vite"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "shinkai-visor:build:development",
+          "hmr": true
+        },
+        "production": {
+          "buildTarget": "shinkai-visor:build:production",
+          "hmr": false
+        }
+      }
+    },
+    "preview": {
+      "executor": "@nx/vite:preview-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "shinkai-visor:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "shinkai-visor:build:development"
+        },
+        "production": {
+          "buildTarget": "shinkai-visor:build:production"
+        }
+      }
+    },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "passWithNoTests": true,
+        "reportsDirectory": "../../coverage/apps/shinkai-visor"
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/shinkai-visor/**/*.{ts,tsx,js,jsx}"]
+      }
+    },
+    "serve-static": {
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "shinkai-visor:build"
+      }
+    }
+  },
+  "tags": []
+}

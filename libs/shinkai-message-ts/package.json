@@ -1,0 +1,71 @@
+{
+  "name": "@shinkai_network/shinkai-message-ts",
+  "version": "0.4.5",
+  "description": "Shinkai Message TS wrapper for wasm library",
+  "type": "module",
+  "main": "src/index.js",
+  "types": "src/index.d.ts",
+  "typings": "src/index.d.ts",
+  "keywords": [
+    "shinkai",
+    "shinkai-message",
+    "shinkai-message wrapper"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@noble/ed25519": "^2.0.0",
+    "axios": "^1.6.8",
+    "curve25519-js": "^0.0.4",
+    "libsodium-wrappers-sumo": "^0.7.13"
+  },
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "types": "./index.d.ts"
+    },
+    "./api": {
+      "import": "./api.js",
+      "types": "./api.d.ts"
+    },
+    "./models": {
+      "import": "./models.js",
+      "types": "./models.d.ts"
+    },
+    "./utils": {
+      "import": "./utils.js",
+      "types": "./utils.d.ts"
+    },
+    "./wasm": {
+      "import": "./wasm.js",
+      "types": "./wasm.d.ts"
+    },
+    "./cryptography": {
+      "import": "./cryptography.js",
+      "types": "./cryptography.d.ts"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      ".": [
+        "index.d.ts"
+      ],
+      "api": [
+        "api.d.ts"
+      ],
+      "models": [
+        "models.d.ts"
+      ],
+      "utils": [
+        "utils.d.ts"
+      ],
+      "wasm": [
+        "wasm.d.ts"
+      ],
+      "cryptography": [
+        "cryptography.d.ts"
+      ]
+    }
+  }
+}

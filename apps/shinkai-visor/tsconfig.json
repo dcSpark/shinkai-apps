@@ -1,0 +1,44 @@
+{
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "allowJs": true,
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "types": ["vite/client", "vitest"],
+    "resolveJsonModule": true,
+    "paths": {
+      "@shinkai_network/shinkai-ui": ["libs/shinkai-ui/src/index.ts"],
+      "@shinkai_network/shinkai-ui/utils": ["libs/shinkai-ui/src/utils.ts"],
+      "@shinkai_network/shinkai-message-ts/*": [
+        "dist/libs/shinkai-message-ts/*"
+      ],
+      "@shinkai_network/shinkai-node-state/*": [
+        "libs/shinkai-node-state/src/*.ts"
+      ],
+      "@shinkai_network/shinkai-node-state": [
+        "libs/shinkai-node-state/src/index.ts"
+      ],
+      "@shinkai_network/shinkai-ui/hooks": [
+        "libs/shinkai-ui/src/hooks/index.ts"
+      ],
+      "@shinkai_network/shinkai-ui/helpers": [
+        "libs/shinkai-ui/src/helpers/index.ts"
+      ],
+      "@shinkai_network/shinkai-ui/assets": [
+        "libs/shinkai-ui/src/assets/index.ts"
+      ]
+    }
+  },
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ],
+  "extends": "../../tsconfig.base.json"
+}

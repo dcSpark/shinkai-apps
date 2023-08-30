@@ -1,0 +1,37 @@
+[package]
+name = "shinkai-desktop"
+version = "0.0.0"
+description = "A first class Desktop application to interact with Shinkai Node"
+authors = ["nico@dcspark.io"]
+license = ""
+repository = ""
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+tauri-build = { version = "1.4", features = [] }
+
+[dependencies]
+tauri = { version = "1.4", features = [ "process-relaunch", "updater", "window-set-focus", "http-request", "window-create", "shell-sidecar", "os-all", "notification-all", "path-all", "dialog-all", "window-close", "window-start-dragging", "macos-private-api", "fs-all", "global-shortcut-all", "system-tray", "shell-open", "process-command-api"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+whisper-rs = "0.8.0"
+cpal = { git = "https://github.com/RustAudio/cpal.git", features = ["asio"] }
+webrtc-vad = "0.2"
+hound = "3.4.0"
+# fix this dependency later on
+reqwest = { version = "0.11", features = ["json", "stream"] }
+lazy_static = "1.4.0"
+tokio = "1.36.0"
+chrono = "0.4.38"
+futures-util = "0.3"
+regex = "1.10.4"
+once_cell = "1.19.0"
+wgpu = "0.20.0"
+sysinfo = "0.30.12"
+
+[features]
+# this feature is used for production builds or when `devPath` points to the filesystem
+# DO NOT REMOVE!!
+custom-protocol = ["tauri/custom-protocol"]

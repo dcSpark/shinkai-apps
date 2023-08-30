@@ -1,0 +1,57 @@
+{
+  "name": "Shinkai Visor: Supercharged AI for Tasks",
+  "description": "Shinkai supercharges AI to better handle your daily tasks and helps the AI to stay up-to-date with global information.",
+  "manifest_version": 3,
+  "update_url": "https://clients2.google.com/service/update2/crx",
+  "version": "0.0.0.1",
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "action": {
+    "default_title": "Click to toggle panel",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png"
+    }
+  },
+  "minimum_chrome_version": "114",
+  "background": {
+    "service_worker": "src/service-worker/service-worker.ts"
+  },
+  "web_accessible_resources": [
+    {
+      "matches": ["https://*/*", "http://*/*", "<all_urls>"],
+      "resources": ["src/components/popup/popup.html"],
+      "use_dynamic_url": true
+    }
+  ],
+  "permissions": [
+    "storage",
+    "contextMenus",
+    "scripting",
+    "activeTab",
+    "sidePanel"
+  ],
+  "side_panel": {
+    "default_path": "src/components/popup/popup.html"
+  },
+  "host_permissions": ["<all_urls>"],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*/*", "http://*/*", "<all_urls>"],
+      "js": [
+        "src/components/image-capture/image-capture.tsx",
+        "src/components/action-button/action-button.tsx"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "externally_connectable": {
+    "matches": ["https://*/*", "http://*/*", "<all_urls>"]
+  }
+}

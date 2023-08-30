@@ -1,0 +1,404 @@
+name: Release production
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+
+defaults:
+  run:
+    working-directory: ./
+
+jobs:
+  prebuild:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.package-version.outputs.version }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: get npm version
+        id: package-version
+        uses: Saionaro/extract-package-version@v1.2.1
+
+      - name: Check version match
+        if: ${{ github.ref_name != steps.package-version.outputs.version }}
+        uses: actions/github-script@v3
+        with:
+          script: |
+            core.setFailed('Version mismatch')
+
+  release-shinkai-visor:
+    needs: prebuild
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node version
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          check-latest: false
+          registry-url: https://registry.npmjs.org
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: |
+          npm cache verify
+          npm ci --no-audit --prefer-offline
+
+      - name: Run NX build on shinkai-visor
+        run: npx nx build shinkai-visor --skip-nx-cache
+        env:
+          VERSION: ${{ needs.prebuild.outputs.version }}.${{github.run_number}}
+          NAME_PREFIX: ''
+          DESCRIPTION_PREFIX: ''
+          PUBLIC_KEY: ${{ secrets.CHROME_EXTENSION_PUBLIC_KEY }}
+
+      - name: Zip extension
+        run: cd ./dist/apps && zip -r shinkai-visor.zip shinkai-visor
+
+      - name: Upload & Release
+        uses: mnao305/chrome-extension-upload@v4.0.1
+        with:
+          file-path: dist/apps/shinkai-visor.zip
+          extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
+          client-id: ${{ secrets.CHROME_CLIENT_ID }}
+          client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+          publish: false
+
+  release-shinkai-desktop:
+    needs: prebuild
+    name: Release Shinkai Desktop
+    environment: production
+    strategy:
+      matrix:
+        include:
+          - arch: x86_64-unknown-linux-gnu
+            os: ubuntu-22.04
+            build_output_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/appimage/shinkai-desktop_${{ needs.prebuild.outputs.version }}_amd64.AppImage
+            build_output_update_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/appimage/shinkai-desktop_${{ needs.prebuild.outputs.version }}_amd64.AppImage.tar.gz
+            build_output_update_signature_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/appimage/shinkai-desktop_${{ needs.prebuild.outputs.version }}_amd64.AppImage.tar.gz.sig
+            distributable_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage
+            distributable_update_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage.tar.gz
+            distributable_update_signature_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage.tar.gz.sig
+
+          - arch: aarch64-apple-darwin
+            os: macos-14
+            build_output_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/dmg/Shinkai Desktop_${{ needs.prebuild.outputs.version }}_aarch64.dmg
+            build_output_update_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/macos/Shinkai Desktop.app.tar.gz
+            build_output_update_signature_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/macos/Shinkai Desktop.app.tar.gz.sig
+            distributable_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_aarch64-apple-darwin.dmg
+            distributable_update_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_aarch64-apple-darwin.app.tar.gz
+            distributable_update_signature_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_aarch64-apple-darwin.app.tar.gz.sig
+
+          - arch: x86_64-pc-windows-msvc
+            os: windows-2022
+            build_output_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/nsis/Shinkai Desktop_${{ needs.prebuild.outputs.version }}_x64-setup.exe
+            build_output_update_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/nsis/Shinkai Desktop_${{ needs.prebuild.outputs.version }}_x64-setup.nsis.zip
+            build_output_update_signature_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/nsis/Shinkai Desktop_${{ needs.prebuild.outputs.version }}_x64-setup.nsis.zip.sig
+            distributable_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-pc-windows-msvc.exe
+            distributable_update_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-pc-windows-msvc.nsis.zip
+            distributable_update_signature_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-pc-windows-msvc.nsis.zip.sig
+    runs-on: ${{ matrix.os }}
+    outputs:
+      signature-x86_64-unknown-linux-gnu: ${{ steps.prepare-files.outputs.signature-x86_64-unknown-linux-gnu }}
+      update-url-x86_64-unknown-linux-gnu: ${{ steps.prepare-files.outputs.update-url-x86_64-unknown-linux-gnu }}
+      app-url-x86_64-unknown-linux-gnu: ${{ steps.prepare-files.outputs.app-url-x86_64-unknown-linux-gnu }}
+      signature-aarch64-apple-darwin: ${{ steps.prepare-files.outputs.signature-aarch64-apple-darwin }}
+      update-url-aarch64-apple-darwin: ${{ steps.prepare-files.outputs.update-url-aarch64-apple-darwin }}
+      app-url-aarch64-apple-darwin: ${{ steps.prepare-files.outputs.app-url-aarch64-apple-darwin }}
+      signature-x86_64-pc-windows-msvc: ${{ steps.prepare-files.outputs.signature-x86_64-pc-windows-msvc }}
+      update-url-x86_64-pc-windows-msvc: ${{ steps.prepare-files.outputs.update-url-x86_64-pc-windows-msvc }}
+      app-url-x86_64-pc-windows-msvc: ${{ steps.prepare-files.outputs.app-url-x86_64-pc-windows-msvc }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: (Windows) Install asiosdk}
+        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
+        shell: PowerShell
+        run: |
+          curl https://www.steinberg.net/asiosdk -o asiosdk.zip
+          Expand-Archive .\asiosdk.zip -DestinationPath .\
+          choco install asio4all
+          choco install llvm
+
+      - name: (Linux) Install build dependencies
+        if: ${{ matrix.arch == 'x86_64-unknown-linux-gnu' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.0-dev build-essential wget libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev libasound2-dev
+
+      - name: (MACOS) Install the Apple certificate and provisioning profile
+        if: ${{ matrix.arch == 'aarch64-apple-darwin' }}
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE }}
+          P12_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+
+        run: |
+          # create variables
+          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+
+          # import certificate and provisioning profile from secrets
+          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+
+          # create temporary keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          # import certificate to keychain
+          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
+
+      - name: Cache cargo assets
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ matrix.arch }}-build-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Setup Node version
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          check-latest: false
+          registry-url: https://registry.npmjs.org
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: |
+          npm cache verify
+          npm ci --no-audit --prefer-offline
+
+      - name: Download side binaries
+        env:
+          ARCH: ${{ matrix.arch }}
+          SHINKAI_NODE_VERSION: v0.7.6
+          OLLAMA_VERSION: v0.1.41
+        run: |
+          npx ts-node ./ci-scripts/download-side-binaries.ts
+
+      - name: (Linux) Run NX build on shinkai-desktop
+        if: ${{ matrix.arch == 'x86_64-unknown-linux-gnu' }}
+        run: npx nx build shinkai-desktop --skip-nx-cache
+        env:
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+
+      - name: (Macos) Run NX build on shinkai-desktop
+        if: ${{ matrix.arch == 'aarch64-apple-darwin' }}
+        run: npx nx build shinkai-desktop --skip-nx-cache
+        env:
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+
+      - name: (Windows) Run NX build on shinkai-desktop
+        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
+        run: npx nx build shinkai-desktop --skip-nx-cache
+        env:
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+          # Windows Only
+          CPAL_ASIO_DIR: ${{ github.workspace }}/asiosdk_2.3.3_2019-06-14
+          LIBCLANG_PATH: C:\Program Files\LLVM\bin
+
+      - name: Prepare binary files
+        id: prepare-files
+        shell: bash
+        run: |
+          mkdir files-to-r2
+          cp "${{ matrix.build_output_file_path }}" files-to-r2/${{ matrix.distributable_file_name }}
+          cp "${{ matrix.build_output_update_file_path }}" files-to-r2/${{ matrix.distributable_update_file_name }}
+          cp "${{ matrix.build_output_update_signature_file_path }}" files-to-r2/${{ matrix.distributable_update_signature_file_name }}
+          echo "signature-${{ matrix.arch }}=$(cat files-to-r2/${{ matrix.distributable_update_signature_file_name }})" >> "$GITHUB_OUTPUT"
+          echo "update-url-${{ matrix.arch }}=https://download.shinkai.com/shinkai-desktop/binaries/production/${{ matrix.arch }}/${{ needs.prebuild.outputs.version }}.${{ github.run_number }}/${{ matrix.distributable_update_file_name }}" >> "$GITHUB_OUTPUT"
+          echo "app-url-${{ matrix.arch }}=https://download.shinkai.com/shinkai-desktop/binaries/production/${{ matrix.arch }}/${{ needs.prebuild.outputs.version }}.${{ github.run_number }}/${{ matrix.distributable_file_name }}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload binaries to R2 bucket
+        uses: shallwefootball/s3-upload-action@master
+        with:
+          endpoint: https://54bf1bf573b3e6471e574cc4d318db64.r2.cloudflarestorage.com
+          aws_key_id: ${{ secrets.R2_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          aws_bucket: shinkai-download
+          source_dir: files-to-r2
+          destination_dir: ./shinkai-desktop/binaries/production/${{ matrix.arch }}/${{ needs.prebuild.outputs.version }}.${{ github.run_number }}/
+
+  rollout-shinkai-desktop:
+    environment: production
+    needs:
+      - prebuild
+      - release-shinkai-desktop
+    name: Generate & Update updates.json
+    runs-on: ubuntu-22.04
+    outputs:
+      updates-next-json-url: ${{ steps.generate-updates-next-json.outputs.updates-next-json-url }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node version
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          check-latest: false
+          registry-url: https://registry.npmjs.org
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+  
+      - name: Install dependencies
+        run: |
+          npm cache verify
+          npm ci --no-audit --prefer-offline
+
+      - name: Generate updates-next.json
+        id: generate-updates-next-json
+        env:
+          JSON_PATH: files-to-r2/updates-next.json
+          VERSION: ${{ needs.prebuild.outputs.version }}
+          NOTES: Automatic update to ${{ needs.prebuild.outputs.version }}
+          LINUX_x86_64_SIGNATURE: ${{ needs.release-shinkai-desktop.outputs.signature-x86_64-unknown-linux-gnu }}
+          LINUX_x86_64_URL: ${{ needs.release-shinkai-desktop.outputs.update-url-x86_64-unknown-linux-gnu }}
+          DARWIN_AARCH64_SIGNATURE: ${{ needs.release-shinkai-desktop.outputs.signature-aarch64-apple-darwin }}
+          DARWIN_AARCH64_URL: ${{ needs.release-shinkai-desktop.outputs.update-url-aarch64-apple-darwin }}
+          WINDOWS_x86_64_SIGNATURE: ${{ needs.release-shinkai-desktop.outputs.signature-x86_64-pc-windows-msvc }}
+          WINDOWS_x86_64_URL: ${{ needs.release-shinkai-desktop.outputs.update-url-x86_64-pc-windows-msvc }}
+        run: |
+          mkdir files-to-r2
+          npx ts-node ./ci-scripts/generate-updates-json.ts
+          echo "updates-next-json-url=https://download.shinkai.com/shinkai-desktop/binaries/production/updates-next.json" >> "$GITHUB_OUTPUT"
+
+      - name: Upload updates.json to R2
+        uses: shallwefootball/s3-upload-action@master
+        with:
+          endpoint: https://54bf1bf573b3e6471e574cc4d318db64.r2.cloudflarestorage.com
+          aws_key_id: ${{ secrets.R2_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          aws_bucket: shinkai-download
+          source_dir: files-to-r2
+          destination_dir: ./shinkai-desktop/binaries/production/
+
+  notify-slack:
+    environment: production
+    needs:
+      - prebuild
+      - release-shinkai-desktop
+      - rollout-shinkai-desktop
+    name: Notify Slack
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Post Shinkai Desktop to a Slack channel
+        id: slack
+        uses: slackapi/slack-github-action@v1.26.0
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        with:
+          channel-id: 'C072VJ6E7GC'
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "📦 New build: Shinkai Desktop v${{ needs.prebuild.outputs.version }}.${{ github.run_number }}",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Download it from:\n* <${{ needs.release-shinkai-desktop.outputs.app-url-aarch64-apple-darwin }}|Macos>\n* <${{ needs.release-shinkai-desktop.outputs.app-url-x86_64-pc-windows-msvc }}|Windows>\n* <${{ needs.release-shinkai-desktop.outputs.app-url-x86_64-unknown-linux-gnu }}|Linux>"
+                  }
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "type": "context",
+                  "elements": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "_💡 Rename file <${{ needs.rollout-shinkai-desktop.outputs.updates-next-json-url }}|updates-next.json> to updates.json to start the rollout through the auto updater_"
+                    }
+                  ]
+                }
+              ]
+            }
+      - name: Post Shinkai Visor to a Slack channel
+        uses: slackapi/slack-github-action@v1.26.0
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        with:
+          channel-id: 'C072VJ6E7GC'
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "📦 New build: Shinkai Visor v${{ needs.prebuild.outputs.version }}.${{ github.run_number }}",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Found it at <https://chromewebstore.google.com/detail/shinkai-visor-supercharge/${{ secrets.CHROME_EXTENSION_ID }}|Chrome Web Store>"
+                  }
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "type": "context",
+                  "elements": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "_💡 Send it for review and publish on <https://chrome.google.com/u/4/webstore/devconsole/f35b7411-6fce-4a2b-8865-c310ce95c89f/${{ secrets.CHROME_EXTENSION_ID }}/edit|Chrome Web Store Developer> to start the rollout_"
+                    }
+                  ]
+                }
+
+              ]
+            }

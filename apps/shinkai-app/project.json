@@ -1,0 +1,124 @@
+{
+  "name": "shinkai-app",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/shinkai-app/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/vite:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/apps/shinkai-app"
+      },
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "mode": "production"
+        }
+      }
+    },
+    "build:ios": {
+      "executor": "nx:run-commands",
+      "defaultConfiguration": "production",
+      "options": {
+        "commands": [
+          "npx nx build shinkai-app",
+          "cd apps/shinkai-app && npx cap sync ios",
+          "cd apps/shinkai-app && npx cap build ios"
+        ],
+        "parallel": false
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "build:android": {
+      "executor": "nx:run-commands",
+      "defaultConfiguration": "production",
+      "options": {
+        "commands": [
+          "npx nx build shinkai-app",
+          "cd apps/shinkai-app && npx cap sync android",
+          "cd apps/shinkai-app && npx cap build android --keystorepath=$ANDROID_KEYSTORE_FILE_PATH --keystorepass=$ANDROID_KEYSTORE_PASS --keystorealias=$ANDROID_KEYSTORE_ALIAS --keystorealiaspass=$ANDROID_KEYSTORE_ALIAS_PASS",
+          "cp -r ./apps/shinkai-app/android/app/build/outputs/bundle/release/ ./dist/apps/shinkai-app-android"
+        ],
+        "parallel": false
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "@nx/vite:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "shinkai-app:build",
+        "port": 9000
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "shinkai-app:build:development",
+          "hmr": true
+        },
+        "production": {
+          "buildTarget": "shinkai-app:build:production",
+          "hmr": false
+        }
+      }
+    },
+    "serve:android": {
+      "executor": "nx:run-script",
+      "defaultConfiguration": "development",
+      "options": {
+        "cwd": "apps/shinkai-app",
+        "script": "serve:android"
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "preview": {
+      "executor": "@nx/vite:preview-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "shinkai-app:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "shinkai-app:build:development"
+        },
+        "production": {
+          "buildTarget": "shinkai-app:build:production"
+        }
+      }
+    },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "passWithNoTests": true,
+        "reportsDirectory": "../../coverage/apps/shinkai-app"
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/shinkai-app/**/*.{ts,tsx,js,jsx}"]
+      }
+    },
+    "serve-static": {
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "shinkai-app:build"
+      }
+    }
+  },
+  "tags": []
+}
