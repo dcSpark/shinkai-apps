@@ -1,0 +1,8 @@
+.ion-modal-custom {
+  --background: theme('colors.white');
+  --ion-background-color: theme('colors.white');
+  @media (prefers-color-scheme: dark) {
+    --background: theme('colors.gray.800');
+    --ion-background-color: theme('colors.gray.800');
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "package": {
+    "productName": "Shinkai Desktop Dev"
+  },
+  "tauri": {
+    "bundle": {
+      "identifier": "com.shinkai.desktop.dev"
+    },
+    "updater": {
+      "endpoints": [
+        "https://download.shinkai.com/shinkai-desktop/binaries/development/updates.json"
+      ],
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDlCNzc1MjI1NEFEMzlFQjgKUldTNG50TktKVkozbSs0WXAzb1dOMy9oclJQdHZCcWNkcHRXeDcvMXNXeWRKM3g1SXR6eitJV0wK"
+    }
+  }
+}

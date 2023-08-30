@@ -1,0 +1,42 @@
+diff --git a/node_modules/vite-plugin-wasm/dist/index.d.ts b/node_modules/vite-plugin-wasm/dist/index.d.ts
+index ab56918..f137f0d 100644
+--- a/node_modules/vite-plugin-wasm/dist/index.d.ts
++++ b/node_modules/vite-plugin-wasm/dist/index.d.ts
+@@ -1 +1 @@
+-export default function wasm(): any;
++export default function wasm(pluginOptions?: { bundle?: boolean }): any;
+diff --git a/node_modules/vite-plugin-wasm/dist/index.js b/node_modules/vite-plugin-wasm/dist/index.js
+index c099a84..813ca49 100644
+--- a/node_modules/vite-plugin-wasm/dist/index.js
++++ b/node_modules/vite-plugin-wasm/dist/index.js
+@@ -27,7 +27,7 @@ const esbuild_plugin_1 = require("./esbuild-plugin");
+ const wasm_parser_1 = require("./wasm-parser");
+ const wasmHelper = __importStar(require("./wasm-helper"));
+ const util_1 = require("./util");
+-function wasm() {
++function wasm(pluginOptions) {
+     // Vitest reports { ssr: false } to plugins but execute the code in SSR
+     // Detect Vitest with the existance of plugin with the name "vitest"
+     let runningInVitest = false;
+@@ -60,7 +60,7 @@ function wasm() {
+             }
+             // Get WASM's download URL by Vite's ?url import
+             const wasmUrlUrl = id + "?url";
+-            const wasmUrlDeclaration = options?.ssr || runningInVitest
++            const wasmUrlDeclaration = options?.ssr || runningInVitest || pluginOptions?.bundle
+                 ? `const __vite__wasmUrl = ${JSON.stringify(await (0, util_1.createBase64UriForWasm)(id))}`
+                 : `import __vite__wasmUrl from ${JSON.stringify(wasmUrlUrl)}`;
+             return `
+diff --git a/node_modules/vite-plugin-wasm/dist/wasm-helper.js b/node_modules/vite-plugin-wasm/dist/wasm-helper.js
+index 2f1e900..389bdf1 100644
+--- a/node_modules/vite-plugin-wasm/dist/wasm-helper.js
++++ b/node_modules/vite-plugin-wasm/dist/wasm-helper.js
+@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.code = exports.id = void 0;
+ // This file is copied from
+ // https://github.com/vitejs/vite/blob/3c0a6091fe96044e9dd84fbe5db3343339a88986/packages/vite/src/node/plugins/wasm.ts
+-exports.id = "/__vite-plugin-wasm-helper";
++exports.id = "/vite-plugin-wasm-helper";
+ /* istanbul ignore next */
+ const wasmHelper = async (opts = {}, url) => {
+     let result;

@@ -1,0 +1,116 @@
+{
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build",
+    "devPath": "http://localhost:1420",
+    "distDir": "../dist",
+    "withGlobalTauri": false
+  },
+  "package": {
+    "productName": "Shinkai Desktop",
+    "version": "../../../package.json"
+  },
+  "tauri": {
+    "allowlist": {
+      "all": false,
+      "globalShortcut": {
+        "all": true
+      },
+      "fs": {
+        "all": true
+      },
+      "shell": {
+        "all": false,
+        "open": true,
+        "sidecar": true,
+        "scope": [
+          {
+            "name": "bin/shinkai-node",
+            "sidecar": true
+          },
+          {
+            "name": "bin/ollama",
+            "sidecar": true
+          }
+        ]
+      },
+      "window": {
+        "startDragging": true,
+        "close": true,
+        "create": true,
+        "setFocus": true
+      },
+      "notification": {
+        "all": true
+      },
+      "os": {
+        "all": true
+      },
+      "dialog": {
+        "all": true,
+        "ask": true,
+        "confirm": true,
+        "message": true,
+        "open": true,
+        "save": true
+      },
+      "path": {
+        "all": true
+      },
+      "http": {
+        "all": false,
+        "request": true,
+        "scope": [
+          "http://localhost"
+        ]
+      },
+      "process": {
+        "relaunch": true
+      }
+    },
+    "bundle": {
+      "active": true,
+      "targets": "all",
+      "identifier": "com.shinkai.desktop",
+      "icon": [
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/128x128@2x.png",
+        "icons/icon.icns",
+        "icons/icon.ico"
+      ],
+      "macOS": {
+        "minimumSystemVersion": "10.13"
+      },
+      "externalBin": [
+        "bin/shinkai-node",
+        "bin/ollama"
+      ]
+    },
+    "security": {
+      "csp": null
+    },
+    "windows": [
+      {
+        "transparent": true,
+        "title": "Shinkai Desktop",
+        "width": 1080,
+        "height": 820,
+        "resizable": true,
+        "fileDropEnabled": false
+      }
+    ],
+    "macOSPrivateApi": true,
+    "systemTray": {
+      "iconPath": "icons/icon.png"
+    },
+    "updater": {
+      "active": true,
+      "endpoints": [
+        "https://download.shinkai.com/shinkai-desktop/binaries/production/updates.json"
+      ],
+      "dialog": false,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDY5RTREOUVBODQ0QUYwRDQKUldUVThFcUU2dG5rYVV1MjlvS2FGKzZSMVFnRnFVdUh1ZnVWc2pDSHFqWThaYUFneC9rUU1Gc2MK"
+    }
+  }
+}

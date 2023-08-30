@@ -1,0 +1,80 @@
+name: PR CI Health checks
+
+on:
+  pull_request:
+    branches: [ main ]
+
+defaults:
+  run:
+    working-directory: ./
+
+jobs:
+  health-checks:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Use nx set shas
+        uses: nrwl/nx-set-shas@v3
+
+
+      - name: Setup Node version
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          check-latest: false
+          registry-url: https://registry.npmjs.org
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: |
+          npm cache verify
+          npm ci --no-audit --prefer-offline
+
+      - name: Download side binaries
+        env:
+          ARCH: x86_64-unknown-linux-gnu
+          SHINKAI_NODE_VERSION: v0.7.6
+          OLLAMA_VERSION: v0.1.41
+        run: |
+          npx ts-node ./ci-scripts/download-side-binaries.ts
+
+      - name: (Linux) Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.0-dev build-essential wget libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev libasound2-dev
+  
+      - name: Run NX target on all projects
+        env:
+          OPEN_AI_API_KEY: ${{ secrets.OPEN_AI_API_KEY }}
+        run: |
+          npx nx run-many -t lint,build,test --parallel=3 --skip-nx-cache --verbose --exclude=shinkai-desktop
+          npx nx lint shinkai-desktop
+
+#      - name: Run E2E for Visor
+#        id: visor-e2e-tests
+#        continue-on-error: true
+#        env:
+#          OPEN_AI_API_KEY: ${{ secrets.OPEN_AI_API_KEY }}
+#          SHINKAI_NODE_EXEC_PATH: ./apps/shinkai-visor-e2e/src/shinkai-node/shinkai_node_linux
+#        run: |
+#          chmod +x ./apps/shinkai-visor-e2e/src/shinkai-node/shinkai_node_linux
+#          npx nx e2e shinkai-visor-e2e --verbose
+#
+#      - name: Upload playwright trace and videos
+#        uses: actions/upload-artifact@v4
+#        if: steps.visor-e2e-tests.outcome == 'failure'
+#        with:
+#          name: visor-e2e-results
+#          path: ./apps/shinkai-visor-e2e/test-report/
+#          retention-days: 1
+#
+#      - name: Fail when Visor E2E failed and reports were uploaded
+#        if: steps.visor-e2e-tests.outcome == 'failure'
+#        run: |
+#          echo "Visor E2E failed"
+#          exit 1

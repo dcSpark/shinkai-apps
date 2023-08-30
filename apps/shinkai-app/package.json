@@ -1,0 +1,10 @@
+{
+  "name": "shinkai-app",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "description": "Shinkai Multiplatform App",
+  "scripts": {
+    "serve:android": "SERVE=true npx cap run android"
+  }
+}

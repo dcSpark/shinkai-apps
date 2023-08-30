@@ -1,0 +1,16 @@
+{
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    },
+    "editor.tabSize": 2,
+    "json.schemas": [
+    {
+      "fileMatch": ["manifest.json"],
+      "url": "https://json.schemastore.org/chrome-manifest.json"
+    }
+  ],
+  "rust-analyzer.linkedProjects": [
+    "apps/shinkai-desktop/src-tauri/Cargo.toml"
+  ],
+  "rust-analyzer.check.command": "clippy"
+}
