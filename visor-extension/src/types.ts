@@ -1,22 +1,6 @@
 import Agrihan from '@urbit/http-api';
 import { Scry, Thread, Poke, SubscriptionRequestInterface } from '@urbit/http-api/dist/types';
 
-// LLM
-export type DecryptedLLMCredentials = {
-  llmName: string;
-  uniqueId: string;
-  llmURL: string;
-  privateKey: string | undefined;
-}
-
-export type EncryptedLLMCredentials = {
-  llmName: string;
-  uniqueId: string;
-  encryptedLlmURL: string;
-  encryptedPrivateKey: string | undefined;
-}
-
-// Urbit
 export type DecryptedShipCredentials = {
   shipName: string;
   shipURL: string;
@@ -70,15 +54,12 @@ export interface AgrihanVisorState {
   airlock: Agrihan;
   first: boolean;
   ships: EncryptedShipCredentials[];
-  llms: EncryptedLLMCredentials[];
   cached_url: string;
   cached_creds: EncryptedShipCredentials;
   popupPreference: PopupPreference;
   requestedPerms: PermissionRequest;
   selectedShip: EncryptedShipCredentials;
-  selectedLLM: EncryptedLLMCredentials;
   activeShip: EncryptedShipCredentials;
-  activeLLM: EncryptedLLMCredentials;
   permissions: PermissionsGraph;
   consumer_tabs: Array<AgrihanVisorConsumerTab>;
   consumer_extensions: AgrihanVisorConsumerExtension[];
@@ -87,13 +68,10 @@ export interface AgrihanVisorState {
   init: () => Promise<void>;
   setMasterPassword: (password: string) => Promise<void>;
   addShip: (ship: string, url: string, code: string, pw: string) => Promise<void>;
-  addLLM: (llmName: string, uniqueId: string, llmURL: string, pk: string | undefined, pw: string) => Promise<void>;
   cacheURL: (url: string) => void;
   cacheCreds: (creds: EncryptedShipCredentials) => void;
   removeShip: (ship: EncryptedShipCredentials) => Promise<void>;
-  removeLLM: (llm: EncryptedLLMCredentials) => Promise<void>;
   selectShip: (ship: EncryptedShipCredentials) => void;
-  selectLLM: (llm: EncryptedLLMCredentials) => void;
   connectShip: (url: string, ship: EncryptedShipCredentials) => Promise<any>;
   disconnectShip: () => void;
   requestPerms: (request: PermissionRequest) => void;

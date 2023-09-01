@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState } from 'react';
 import Spinner from '../ui/svg/Spinner';
-import { scrapeShipname } from '../../agrihan';
+import { fetchShipname, scrapeShipname } from '../../agrihan';
 import { DecryptedShipCredentials } from '../../types';
 import { Messaging } from '../../messaging';
 import './adding.css';

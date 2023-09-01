@@ -9,8 +9,6 @@ import {
   savePassword,
   resetApp,
   storeCommandHistory,
-  storeLLMCredentials,
-  removeLLM,
 } from './storage';
 import { connectToShip, grantPerms, deleteDomain, revokePerms, fetchAllPerms } from './agrihan';
 import create from 'zustand';
@@ -19,27 +17,23 @@ export const useStore = create<AgrihanVisorState>((set, get) => ({
   airlock: null,
   first: true,
   ships: [],
-  llms: [],
   cached_url: '',
   cached_creds: null,
   popupPreference: 'modal',
   requestedPerms: null,
   selectedShip: null,
-  selectedLLM: null,
   activeShip: null,
-  activeLLM: null,
   permissions: {},
   consumer_tabs: [],
   consumer_extensions: [],
   activeSubscriptions: [],
   commandHistory: [],
   init: async () => {
-    const res = await getStorage(['popup', 'ships', 'llms', 'password', 'permissions', 'commandHistory']);
+    const res = await getStorage(['popup', 'ships', 'password', 'permissions', 'commandHistory']);
     set(state => ({
       first: !('password' in res),
       popupPreference: res.popup || 'modal',
       ships: res.ships || [],
-      llms: res.llms || [],
       permissions: res.permissions || {},
       commandHistory: res.commandHistory || [],
     }));
@@ -59,13 +53,6 @@ export const useStore = create<AgrihanVisorState>((set, get) => ({
       permissions: perms.bucket,
     }));
   },
-  addLLM: async (llmName, uniqueId, llmURL, pk, pw) => {
-    const creds = await storeLLMCredentials(llmName, uniqueId, llmURL, pk, pw);
-    set(state => ({
-      selectedLLM: creds,
-      activeLLM: creds,
-    }));
-  },
   cacheURL: (string: string) => set(state => ({ cached_url: string })),
   cacheCreds: (creds: EncryptedShipCredentials) => set(state => ({ cached_creds: creds })),
   removeShip: async ship => {
@@ -82,22 +69,7 @@ export const useStore = create<AgrihanVisorState>((set, get) => ({
       });
     }
   },
-  removeLLM: async llm => {
-    const active = get().activeLLM;
-    if (active?.llmName === llm.llmName) {
-      const airlock = (get() as any).airlock;
-      airlock.reset();
-      const llms = await removeLLM(llm);
-      set(state => ({ llms: llms, activeLLM: null, airlock: null, activeSubscriptions: [] }));
-    } else {
-      const llms = await removeLLM(llm);
-      set(state => {
-        llms: llms;
-      });
-    }
-  },
   selectShip: ship => set(state => ({ selectedShip: ship })),
-  selectLLM: llm => set(state => ({ selectedLLM: llm })),
   connectShip: async (url, ship) => {
     const airlock = await connectToShip(url, ship);
     const perms = await fetchAllPerms(airlock.url);
@@ -154,9 +126,7 @@ export const useStore = create<AgrihanVisorState>((set, get) => ({
     set(state => ({
       first: true,
       ships: [],
-      llms: [],
       activeShip: null,
-      activeLLM: null,
       airlock: null,
       activeSubscriptions: [],
     }));

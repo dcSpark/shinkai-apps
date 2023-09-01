@@ -30,7 +30,7 @@ export default function Setup({ setInteracting }: SetupProps) {
         data: { password: pw },
       }).then(res => {
         setInteracting(false);
-        history.push('/add_llm');
+        history.push('/add_ship');
       });
     } else {
       setError('Passwords Do Not Match');

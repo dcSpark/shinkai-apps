@@ -1,7 +1,6 @@
 import { Scry, Thread, Poke, SubscriptionRequestInterface } from "@urbit/http-api/src/types"
 
 export { Scry, Thread, Poke, SubscriptionRequestInterface };
-// TODO: Change to AgrihanVisor
 export const VISOR_ID = "oadimaacghcacmfipakhadejgalcaepg";
 
 export type Permission = "shipName" | "shipURL" | "scry" | "thread" | "poke" | "subscribe" | "auth";

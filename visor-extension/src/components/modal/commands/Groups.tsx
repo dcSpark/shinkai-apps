@@ -1,7 +1,6 @@
 import { Command } from '../types';
 import React from 'react';
 import AgrihanInterface from '@urbit/http-api';
-import { addDmMessage } from '@urbit/api';
 import terminalIcon from '../../../icons/terminal.svg';
 
 const Icon = () => <img src={terminalIcon} />;

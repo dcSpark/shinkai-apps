@@ -1,8 +1,7 @@
 import * as CryptoJS from 'crypto-js';
-import { EncryptedShipCredentials, PopupPreference, PermissionsGraph, EncryptedLLMCredentials } from './types';
+import { EncryptedShipCredentials, PopupPreference, PermissionsGraph } from './types';
 
 interface Storage {
-  llms?: EncryptedLLMCredentials[];
   ships?: EncryptedShipCredentials[];
   password?: string;
   popup?: PopupPreference;
@@ -32,17 +31,6 @@ export const setStorage = (item: { [key: string]: any }): Promise<any> =>
   );
 
 // setters
-export async function storeLLMCredentials(
-  llmName: string,
-  uniqueId: string,
-  url: string,
-  pk: string,
-  pw: string
-): Promise<any> {
-  const encryptedCredentials = encryptLLMCreds(llmName, uniqueId, url, pk, pw);
-  return saveLLM(encryptedCredentials);
-}
-
 export async function storeCredentials(
   ship: string,
   url: string,
@@ -81,29 +69,6 @@ export async function removeShip(ship: EncryptedShipCredentials): Promise<any> {
     (el: EncryptedShipCredentials) => el.shipName !== ship.shipName
   );
   return setStorage({ ships: new_ships });
-}
-
-export async function removeLLM(llm: EncryptedLLMCredentials): Promise<any> {
-  const res = await getStorage('llms');
-  const new_ships = res['llms'].filter(
-    (el: EncryptedLLMCredentials) => el.uniqueId !== llm.uniqueId
-  );
-  return setStorage({ ships: new_ships });
-}
-
-async function saveLLM(llm: EncryptedLLMCredentials): Promise<EncryptedLLMCredentials> {
-  const res = await getStorage('llms');
-  if (res['llms']?.length) {
-    const llms = res['llms'];
-    const filteredLLMs = llms.filter(sp => sp.uniqueId !== llm.uniqueId);
-    const new_llms = [...filteredLLMs, llm];
-    await setStorage({ ships: new_llms });
-    return llm;
-  } else {
-    const new_llms = [llm];
-    await setStorage({ llms: new_llms });
-    return llm;
-  }
 }
 
 async function saveShip(ship: EncryptedShipCredentials): Promise<EncryptedShipCredentials> {
@@ -150,19 +115,6 @@ export async function getShips(): Promise<any> {
     });
   });
 }
-
-export async function getLLMs(): Promise<any> {
-  return new Promise((resolve, reject) => {
-    chrome.storage.local.get('llms', res => {
-      if (res['llms'] && res['llms'].length) {
-        resolve(res);
-      } else {
-        reject('data not set');
-      }
-    });
-  });
-}
-
 export async function getPreference(): Promise<any> {
   return new Promise((resolve, reject) => {
     chrome.storage.local.get('popup', res => {
@@ -175,36 +127,12 @@ export async function getPreference(): Promise<any> {
   });
 }
 
-// encryption utils LLM
-export function encryptLLMCreds(
-  llmName: string,
-  uniqueId: string,
-  url: string,
-  pk: string,
-  pw: string
-): EncryptedLLMCredentials {
-  const encryptedURL = encrypt(url, pw).toString();
-  const encryptedPk = encrypt(pk, pw).toString();
-  return {
-    llmName: llmName,
-    uniqueId: uniqueId,
-    encryptedLlmURL: encryptedURL,
-    encryptedPrivateKey: encryptedPk,
-  };
-}
-
 // encryption utils
 export async function reEncryptAll(oldPassword: string, newPassword: string): Promise<void> {
   const ships = await getShips();
   for (const ship of ships.ships) {
     const newShip = reEncrypt(ship, oldPassword, newPassword);
     await saveShip(newShip);
-  }
-
-  const llms = await getLLMs();
-  for (const llm of llms.llms) {
-    const newLLM = reEncryptLLM(llm, oldPassword, newPassword);
-    await saveLLM(newLLM);
   }
 }
 
@@ -232,19 +160,6 @@ function reEncrypt(
     shipName: ship.shipName,
     encryptedShipURL: encrypt(decrypt(ship.encryptedShipURL, oldPassword), newPassword),
     encryptedShipCode: encrypt(decrypt(ship.encryptedShipCode, oldPassword), newPassword),
-  };
-}
-
-function reEncryptLLM(
-  llm: EncryptedLLMCredentials,
-  oldPassword: string,
-  newPassword: string
-): EncryptedLLMCredentials {
-  return {
-    llmName: llm.llmName,
-    uniqueId: llm.uniqueId,
-    encryptedLlmURL: encrypt(decrypt(llm.encryptedLlmURL, oldPassword), newPassword),
-    encryptedPrivateKey: encrypt(decrypt(llm.encryptedPrivateKey, oldPassword), newPassword),
   };
 }
 

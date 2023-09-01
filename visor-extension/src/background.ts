@@ -154,9 +154,7 @@ function handleInternalMessage(request: AgrihanVisorInternalComms, sender: any, 
     case 'get_initial_state':
       sendResponse({
         first: state.first,
-        llms: state.llms,
         ships: state.ships,
-        activeLLM: state.activeLLM,
         activeShip: state.activeShip,
         cachedURL: state.cached_url,
         cachedCreds: state.cached_creds,
@@ -165,9 +163,6 @@ function handleInternalMessage(request: AgrihanVisorInternalComms, sender: any, 
       break;
     case 'get_ships':
       sendResponse({ airlock: state.airlock, ships: state.ships, active: state.activeShip });
-      break;
-    case 'get_llms':
-      sendResponse({ llms: state.llms, activeLLM: state.activeLLM });
       break;
     case 'call_airlock':
       if (state.airlock)
@@ -178,9 +173,6 @@ function handleInternalMessage(request: AgrihanVisorInternalComms, sender: any, 
       break;
     case 'get_selected':
       sendResponse({ selected: state.selectedShip, active: state.activeShip });
-      break;
-    case 'get_selected_llm':
-      sendResponse({ selected: state.selectedLLM, active: state.activeLLM });
       break;
     case 'get_cached_url':
       sendResponse({ cached_url: state.cached_url, cached_creds: state.cached_creds });
@@ -202,23 +194,11 @@ function handleInternalMessage(request: AgrihanVisorInternalComms, sender: any, 
         .addShip(request.data.ship, request.data.url, request.data.code, request.data.pw)
         .then(res => sendResponse('ok'));
       break;
-    case 'add_llm':
-      state
-        .addLLM(request.data.llmName, request.data.uniqueId, request.data.url, request.data.pk, request.data.pw)
-        .then(res => sendResponse('ok'));
-      break;
     case 'remove_ship':
       state.removeShip(request.data.ship).then(res => sendResponse('ok'));
       break;
-    case 'remove_llm':
-      state.removeLLM(request.data.llm).then(res => sendResponse('ok'));
-      break;
     case 'select_ship':
       state.selectShip(request.data.ship);
-      sendResponse('ok');
-      break;
-    case 'select_llm':
-      state.selectLLM(request.data.llm);
       sendResponse('ok');
       break;
     case 'connect_ship':
