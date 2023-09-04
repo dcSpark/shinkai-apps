@@ -8,7 +8,7 @@ export const Scry: Command = {
   command: 'scry',
   title: 'Scry',
   icon: <Icon />,
-  description: 'Read data from your Agrihan ship.',
+  description: 'Read data from your Shinkai ship.',
   arguments: ['app', 'path'],
   schema: [(props: any[]) => ({ app: props[0].innerText, path: props[1].innerText })],
 };

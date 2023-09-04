@@ -1,5 +1,5 @@
 import * as React from 'react';
-import logo from '../../icons/agrihan.svg';
+import logo from '../../icons/shinkai.svg';
 import { useHistory } from 'react-router';
 import { motion } from 'framer-motion';
 import './setup.css';
@@ -14,9 +14,9 @@ export default function Welcome() {
       className="welcome padding flex-grow-wrapper"
     >
       <div className="flex-grow">
-        <h1 className="title">Agrihan Visor</h1>
+        <h1 className="title">Shinkai Visor</h1>
         <h3 className="label">
-          Setup Agrihan Visor to transform your web browser into a first class Agrihan client
+          Setup Shinkai Visor to transform your web browser into a first class Shinkai client
         </h3>
         <img src={logo} className="App-logo" />
       </div>

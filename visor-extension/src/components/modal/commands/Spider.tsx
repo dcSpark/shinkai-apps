@@ -8,7 +8,7 @@ export const Spider: Command = {
   command: 'thread',
   title: 'Thread',
   icon: <Icon />,
-  description: 'Issues spider threads in your Agrihan ship.',
+  description: 'Issues spider threads in your Shikai ship.',
   arguments: ['thread name', 'desk', 'input mark', 'output mark', 'body'],
   schema: [
     (props: any[]) => ({

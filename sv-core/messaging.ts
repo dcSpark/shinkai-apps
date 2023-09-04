@@ -1,20 +1,20 @@
-import { AgrihanVisorRequest, AgrihanVisorEvent, AgrihanVisorResponse } from "./types";
+import { ShinkaiVisorRequest, ShinkaiVisorEvent, ShinkaiVisorResponse } from "./types";
 
 const Messaging = {
-    pushEvent: function (event: AgrihanVisorEvent, recipients: Set<any>) {
+    pushEvent: function (event: ShinkaiVisorEvent, recipients: Set<any>) {
         for (let id of recipients) {
-            if (typeof id == "number") chrome.tabs.sendMessage(id, { app: "agrihanVisorEvent", event: event })
-            if (typeof id == "string") chrome.runtime.sendMessage(id, { app: "agrihanVisorEvent", event: event })
+            if (typeof id == "number") chrome.tabs.sendMessage(id, { app: "shinkaiVisorEvent", event: event })
+            if (typeof id == "string") chrome.runtime.sendMessage(id, { app: "shinkaiVisorEvent", event: event })
         }
     },
-    callVisor: function ({ app, action, data }: AgrihanVisorRequest): Promise<AgrihanVisorResponse> {
+    callVisor: function ({ app, action, data }: ShinkaiVisorRequest): Promise<ShinkaiVisorResponse> {
         return new Promise((res, rej) => {
             const requestId = Math.random().toString(36).substr(2, 9);
             // first add listener for the eventual response
             window.addEventListener('message', function responseHandler(e) {
                 const response = e.data;
                 // ignore messages with the wrong request app name, wrong id, or null
-                if (response.app !== "agrihanVisorResponse" || response.id !== requestId) return;
+                if (response.app !== "shinkaiVisorResponse" || response.id !== requestId) return;
                 // remove listener else they keep stacking up
                 window.removeEventListener('message', responseHandler);
                 // reject promise if there's an error

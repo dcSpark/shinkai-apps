@@ -2,7 +2,7 @@ import React from 'react';
 import * as CSS from 'csstype';
 import { useEffect, useState, useRef } from 'react';
 import { Messaging } from '../../messaging';
-import Agrihan from '@urbit/http-api';
+import Shinkai from '@urbit/http-api';
 import { Command, MenuItem } from './types';
 
 interface InputProps {

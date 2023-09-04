@@ -1,5 +1,5 @@
 {
-  "name": "agrihan-visor",
+  "name": "shinkai-visor",
   "version": "0.1.0",
   "description": "",
   "scripts": {
@@ -7,8 +7,8 @@
     "build": "webpack",
     "start": "webpack --watch",
     "prod:compress": "ts-node scripts/compress",
-    "prod:stable": "npm run build && npm run prod:compress -- --env 'mainnet' --app-id 'agrihan-visor' --zip-only --codebase 'https://dcspark.io/dw/agrihanvisor.crx' --key ./AgrihanVisor.pem",
-    "prod:crx": "npm run build && npm run prod:compress -- --env 'mainnet' --app-id 'agrihan-visor' --codebase 'https://dcspark.io/dw/agrihanvisor.crx' --key ./AgrihanVisor.pem",
+    "prod:stable": "npm run build && npm run prod:compress -- --env 'mainnet' --app-id 'shinkai-visor' --zip-only --codebase 'https://dcspark.io/dw/shinkaivisor.crx' --key ./ShinkaiVisor.pem",
+    "prod:crx": "npm run build && npm run prod:compress -- --env 'mainnet' --app-id 'shinkai-visor' --codebase 'https://dcspark.io/dw/shinkaivisor.crx' --key ./ShinkaiVisor.pem",
     "prettier": "prettier --write '**/*.{ts,tsx}'"
   },
   "keywords": [],
@@ -39,7 +39,7 @@
     "webpack-dev-server": "^4.7.3"
   },
   "dependencies": {
-    "@dcspark/av-core": "file:../av-core",
+    "@dcspark/sv-core": "file:../sv-core",
     "@tlon/sigil-js": "^1.4.5",
     "@urbit/api": "^2.1.0",
     "@urbit/http-api": "^2.1.0",

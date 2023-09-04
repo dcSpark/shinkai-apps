@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
-import { fetchAllPerms } from '../../agrihan';
+import { fetchAllPerms } from '../../shinkai';
 import './perms.css';
 import Sigil from '../ui/svg/Sigil';
 import { Chip } from './PermissionsPrompt';

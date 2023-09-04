@@ -1,16 +1,16 @@
-import { Messaging } from '@dcspark/av-core';
+import { Messaging } from '@dcspark/sv-core';
 import { SubscriptionRequestInterface } from '@urbit/http-api/dist/types';
 import {
   EncryptedShipCredentials,
-  AgrihanVisorAction,
-  AgrihanVisorInternalAction,
-  AgrihanVisorInternalComms,
-  AgrihanVisorState,
+  ShinkaiVisorAction,
+  ShinkaiVisorInternalAction,
+  ShinkaiVisorInternalComms,
+  ShinkaiVisorState,
   TabID,
   ExtensionID,
 } from './types';
 
-import { fetchAllPerms } from './agrihan';
+import { fetchAllPerms } from './shinkai';
 import { useStore } from './store';
 import { EventEmitter } from 'events';
 const ob = require('urbit-ob');
@@ -61,14 +61,14 @@ function deletedWasActive(
 
 function messageListener() {
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.app == 'agrihan-visor-internal')
+    if (request.app == 'shinkai-visor-internal')
       handleInternalMessage(request, sender, sendResponse);
     else if (
       sender.url == 'chrome-extension://oadimaacghcacmfipakhadejgalcaepg/launcher.html' &&
       request.app !== 'command-launcher'
     )
       handleVisorCall(request, sender, sendResponse, 'extension');
-    else if (request.app == 'agrihanVisor')
+    else if (request.app == 'shinkaiVisor')
       handleVisorCall(request, sender, sendResponse, 'website');
     else if (request.app == 'command-launcher')
       handleCommandLauncherCall(request, sender, sendResponse);
@@ -84,12 +84,12 @@ function extensionListener() {
 }
 function hotkeyListener() {
   const showPopup = () => {
-    const background = document.getElementById('agrihan-visor-modal-bg');
+    const background = document.getElementById('shinkai-visor-modal-bg');
     if (background) {
       background.style.display = 'block';
       background.style.opacity = '0.9';
-      const modalText = document.getElementById('agrihan-visor-modal-text');
-      if (modalText) modalText.innerText = 'Connect to a ship with your Agrihan Visor';
+      const modalText = document.getElementById('shinkai-visor-modal-text');
+      if (modalText) modalText.innerText = 'Connect to a ship with your Shinkai Visor';
       setTimeout(() => (background.style.display = 'none'), 3000);
     }
   };
@@ -142,7 +142,7 @@ function handleCommandLauncherCall(request: any, sender: any, sendResponse: any)
   }
 }
 
-function handleInternalMessage(request: AgrihanVisorInternalComms, sender: any, sendResponse: any) {
+function handleInternalMessage(request: ShinkaiVisorInternalComms, sender: any, sendResponse: any) {
   const state = useStore.getState();
   let recipients: Set<number | string>;
   const tabs = new Set(state.consumer_tabs.map(consumer => consumer.tab));
@@ -400,7 +400,7 @@ function handleVisorCall(request: any, sender: any, sendResponse: any, callType:
   else checkPerms(state, callType, request, sender, sendResponse);
 }
 
-async function runAuth(state: AgrihanVisorState, backendShip: string, sendResponse: any) {
+async function runAuth(state: ShinkaiVisorState, backendShip: string, sendResponse: any) {
   const airlock = state.airlock;
   const pok = await airlock.poke({
     app: 'dm-hook',
@@ -441,7 +441,7 @@ function openWindow() {
 }
 type Lock = 'locked' | 'noperms';
 
-function notifyUser(state: AgrihanVisorState, type: Lock, sendResponse: any) {
+function notifyUser(state: ShinkaiVisorState, type: Lock, sendResponse: any) {
   if (state.popupPreference == 'window') {
     openWindow();
     sendResponse('ng');
@@ -453,7 +453,7 @@ function notifyUser(state: AgrihanVisorState, type: Lock, sendResponse: any) {
 }
 
 function checkPerms(
-  state: AgrihanVisorState,
+  state: ShinkaiVisorState,
   callType: visorCallType,
   request: any,
   sender: any,
@@ -484,7 +484,7 @@ function checkPerms(
 }
 
 function bulkRequest(
-  state: AgrihanVisorState,
+  state: ShinkaiVisorState,
   requester: string,
   name: string,
   existingPerms: any,
@@ -492,7 +492,7 @@ function bulkRequest(
   sender: any,
   sendResponse: any
 ) {
-  if (existingPerms && request.data.every((el: AgrihanVisorAction) => existingPerms.includes(el)))
+  if (existingPerms && request.data.every((el: ShinkaiVisorAction) => existingPerms.includes(el)))
     sendResponse('perms_exist');
   else {
     state.requestPerms({
@@ -505,7 +505,7 @@ function bulkRequest(
   }
 }
 
-function unsubscribe(state: AgrihanVisorState, request: any, sender: any, sendResponse: any) {
+function unsubscribe(state: ShinkaiVisorState, request: any, sender: any, sendResponse: any) {
   state.airlock
     .unsubscribe(request.data)
     .then(res => {
@@ -518,7 +518,7 @@ function unsubscribe(state: AgrihanVisorState, request: any, sender: any, sendRe
     .catch(err => sendResponse({ status: 'error', response: err }));
 }
 
-function reqres(state: AgrihanVisorState, request: any, sendResponse: any): void {
+function reqres(state: ShinkaiVisorState, request: any, sendResponse: any): void {
   switch (request.action) {
     case 'perms':
       sendResponse({ status: 'ok', response: 'perms_exist' });
@@ -548,7 +548,7 @@ function reqres(state: AgrihanVisorState, request: any, sendResponse: any): void
 }
 
 function pubsub(
-  state: AgrihanVisorState,
+  state: ShinkaiVisorState,
   callType: visorCallType,
   eventRecipient: TabID | ExtensionID,
   request: any,

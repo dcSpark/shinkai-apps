@@ -7,5 +7,5 @@ const Icon = () => <img src={notificationsIcon} />;
 export const Notifications: Command = {
   title: 'Notifications',
   icon: <Icon />,
-  description: 'Check your latest Agrihan notifications.',
+  description: 'Check your latest Shinkai notifications.',
 };

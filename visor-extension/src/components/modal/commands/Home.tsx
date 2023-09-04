@@ -7,5 +7,5 @@ const Icon = () => <img src={homeIcon} />;
 export const Home: Command = {
   title: 'Home',
   icon: <Icon />,
-  description: 'Visit your Agrihan Home (aka Grid).',
+  description: 'Visit your Shinkai Home (aka Grid).',
 };

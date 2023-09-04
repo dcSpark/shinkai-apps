@@ -1,8 +1,8 @@
 import React from 'react';
 import * as CSS from 'csstype';
 import { useEffect, useLayoutEffect, useState, useRef, useCallback } from 'react';
-import { agrihanVisor } from '@dcspark/av-core';
-import Agrihan from '@urbit/http-api';
+import { shinkaiVisor } from '@dcspark/sv-core';
+import Shinkai from '@urbit/http-api';
 import { Messaging } from '../../messaging';
 import { VisorSubscription } from '../../types';
 import Inputbox from './Inputbox';
@@ -100,27 +100,27 @@ const Modal = () => {
 
     if (isConnected) {
       if (!metadata) {
-        subscription = agrihanVisor.on('sse', ['metadata-update', 'associations'], (data: any) => {
+        subscription = shinkaiVisor.on('sse', ['metadata-update', 'associations'], (data: any) => {
           setMetadata(data);
-          agrihanVisor.off(subscription);
-          agrihanVisor.unsubscribe(number).then(res => console.log(''));
+          shinkaiVisor.off(subscription);
+          shinkaiVisor.unsubscribe(number).then(res => console.log(''));
         });
 
         const setData = () => {
-          agrihanVisor.subscribe({ app: 'metadata-store', path: '/all' }).then(res => {
+          shinkaiVisor.subscribe({ app: 'metadata-store', path: '/all' }).then(res => {
             number = res.response;
           });
         };
-        agrihanVisor.require(['subscribe'], setData);
+        shinkaiVisor.require(['subscribe'], setData);
 
         const landscapeFork = () => {
-          agrihanVisor.scry({ app: 'hood', path: '/kiln/vats' }).then(res => {
+          shinkaiVisor.scry({ app: 'hood', path: '/kiln/vats' }).then(res => {
             if (res.response['escape']) {
               setLandscapeFork('escape');
             } else setLandscapeFork('landscape');
           });
         };
-        agrihanVisor.require(['scry'], landscapeFork);
+        shinkaiVisor.require(['scry'], landscapeFork);
       }
     }
   }, [isConnected]);
@@ -134,7 +134,7 @@ const Modal = () => {
 
     if (isConnected) {
       const setData = () => {
-        agrihanVisor.subscribe({ app: 'herm', path: '/session//view' }).then(res => {
+        shinkaiVisor.subscribe({ app: 'herm', path: '/session//view' }).then(res => {
           if (res.response == 'piggyback') {
             setTermSubscribed(true);
             number = res.subscriber;
@@ -144,7 +144,7 @@ const Modal = () => {
           }
         });
       };
-      agrihanVisor.require(['subscribe'], setData);
+      shinkaiVisor.require(['subscribe'], setData);
     }
 
     return () => {
@@ -156,7 +156,7 @@ const Modal = () => {
             Messaging.sendToBackground({ action: 'remove_subscription', data: number });
           } else {
             window.removeEventListener('message', handleHerm);
-            agrihanVisor.unsubscribe(activeSubs[0].airlockID);
+            shinkaiVisor.unsubscribe(activeSubs[0].airlockID);
           }
         });
       }
@@ -172,7 +172,7 @@ const Modal = () => {
   const handleHerm = useCallback(
     (message: any) => {
       if (
-        message.data.app == 'agrihanVisorEvent' &&
+        message.data.app == 'shinkaiVisorEvent' &&
         message.data.event.data &&
         message.data.event.data.lin
       ) {
@@ -208,18 +208,18 @@ const Modal = () => {
   }, [selected]);
 
   useEffect(() => {
-    const sub = agrihanVisor.on('connected', [], () => {
+    const sub = shinkaiVisor.on('connected', [], () => {
       handleConnection();
     });
     handleConnection();
-    return () => agrihanVisor.off(sub);
+    return () => shinkaiVisor.off(sub);
   });
 
   const handleConnection = () => {
     if (isConnected) {
       return;
     } else {
-      agrihanVisor.isConnected().then(connected => {
+      shinkaiVisor.isConnected().then(connected => {
         if (connected.response) {
           setIsConnected(true);
           setConnectShip(null);

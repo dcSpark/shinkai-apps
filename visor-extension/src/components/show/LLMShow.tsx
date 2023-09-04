@@ -6,7 +6,7 @@ import Spinner from '../ui/svg/Spinner';
 
 import { EncryptedLLMCredentials, EncryptedShipCredentials } from '../../types';
 import { Messaging } from '../../messaging';
-import { loginToShip } from '../../agrihan';
+import { loginToShip } from '../../shinkai';
 import { decrypt } from '../../storage';
 import { whatShip, getIcon, processName } from '../../utils';
 import Permissions from '../perms/Permissions';
@@ -179,7 +179,7 @@ export default function LLMShow(props: LLMProps) {
     if (canGo()) chrome.tabs.create({ url: activeURL });
     else {
       setShowPasswordInput(true);
-      setConfirmString('Go To Your Agrihan Home');
+      setConfirmString('Go To Your Shinkai Home');
       setConfirmAction('home');
     }
   }
@@ -204,7 +204,7 @@ export default function LLMShow(props: LLMProps) {
     }
   }
   function gotoDashboard() {
-    chrome.tabs.create({ url: 'https://agrihandashboard.com' });
+    chrome.tabs.create({ url: 'https://shinkaidashboard.com' });
   }
 
   if (!showPerms)

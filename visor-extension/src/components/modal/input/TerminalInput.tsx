@@ -1,9 +1,6 @@
 import React from 'react';
-import * as CSS from 'csstype';
-import { useEffect, useState, useRef, useCallback } from 'react';
-import { Messaging } from '../../../messaging';
-import Agrihan from '@urbit/http-api';
-import { agrihanVisor } from '@dcspark/av-core';
+import { useEffect, useState } from 'react';
+
 import Input from '../Input';
 import { Command, MenuItem } from '../types';
 

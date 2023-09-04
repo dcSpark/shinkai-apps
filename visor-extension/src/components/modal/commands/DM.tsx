@@ -1,6 +1,6 @@
 import { Command } from '../types';
 import React from 'react';
-import AgrihanInterface from '@urbit/http-api';
+import ShinkaiInterface from '@urbit/http-api';
 import { addDmMessage } from '@urbit/api';
 import dmIcon from '../../../icons/dm.svg';
 
@@ -10,7 +10,7 @@ export const DM: Command = {
   command: 'poke',
   title: 'DM',
   icon: <Icon />,
-  description: 'Send direct messages to other Agrihan ships.',
+  description: 'Send direct messages to other Shinkai ships.',
   arguments: ['ship', 'message'],
   schema: [
     (props: any[]) =>

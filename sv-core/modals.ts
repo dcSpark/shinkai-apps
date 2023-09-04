@@ -1,9 +1,9 @@
 export function visorPromptModal() {
   const background = document.createElement('div');
   background.style.cssText = 'display:none;opacity:0;background-color:rgb(0,0,0,0.7);position:fixed;top:0;left:0;width:100%;height:100%;transition: top 2s, opacity 2s;z-index:2147483646';
-  background.id = "agrihan-visor-modal-bg";
+  background.id = "shinkai-visor-modal-bg";
   const foreground = document.createElement('div');
-  foreground.id = "agrihan-visor-modal-fg";
+  foreground.id = "shinkai-visor-modal-fg";
   foreground.style.cssText = 'color:white;background-color:black;border:3px solid red;position:fixed;top:20px;right:50px;width:200px;height:200px;padding:0.5rem;text-align:center;font-weight:700;z-index:2147483647';
   const logo = document.createElement('div');
   logo.style.cssText = "margin: auto"
@@ -49,7 +49,7 @@ export function visorPromptModal() {
   arrow.style.cssText = "font-size: 3rem; margin: 0";
   const message = document.createElement("p");
   message.style.cssText = "margin-top: 0; margin-bottom: 2px; overflow: hidden;"
-  message.id = "agrihan-visor-modal-text";
+  message.id = "shinkai-visor-modal-text";
   foreground.appendChild(arrow);
   foreground.appendChild(message);
   foreground.appendChild(logo);
@@ -62,20 +62,20 @@ export function inject(node) {
 }
 
 export function showPopup(text: string) {
-  const background = document.getElementById("agrihan-visor-modal-bg");
+  const background = document.getElementById("shinkai-visor-modal-bg");
   if (background) {
     background.style.display = "block";
     background.style.opacity = "0.9";
-    const modalText = document.getElementById("agrihan-visor-modal-text");
+    const modalText = document.getElementById("shinkai-visor-modal-text");
     if (modalText) modalText.innerText = text;
     setTimeout(() => background.style.display = "none", 3000);
   }
 }
 
 export function promptUnlock() {
-  showPopup("Connect to a ship with your Agrihan Visor");
+  showPopup("Connect to a ship with your Shinkai Visor");
 }
 export function promptPerms() {
-  showPopup("Open your Agrihan Visor to grant permissions.");
+  showPopup("Open your Shinkai Visor to grant permissions.");
 }
 

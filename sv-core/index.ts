@@ -1,3 +1,3 @@
 export * from "./types"
 export { Messaging } from "./messaging"
-export { agrihanVisor } from "./visor";
+export { shinkaiVisor as shinkaiVisor } from "./visor";

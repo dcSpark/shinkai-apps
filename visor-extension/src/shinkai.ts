@@ -1,4 +1,4 @@
-import Agrihan from '@urbit/http-api';
+import Shinkai from '@urbit/http-api';
 import { useStore } from './store';
 import { EncryptedShipCredentials, PermissionRequest } from './types';
 
@@ -30,7 +30,7 @@ export async function scrapeShipname(url: string): Promise<string> {
 }
 export async function connectToShip(url: string, ship: EncryptedShipCredentials): Promise<any> {
   const { connectShip, activeSubscriptions } = useStore.getState();
-  const airlock = new Agrihan(url, '');
+  const airlock = new Shinkai(url, '');
   airlock.ship = ship.shipName;
   airlock.onError = async err => {
     airlock.reset();
@@ -60,29 +60,29 @@ export async function loginToShip(url: string, code: string): Promise<any> {
 }
 export async function savePermission(permission: any): Promise<void> { }
 export async function initPerms(shipName: string, url: string) {
-  const airlock = new Agrihan(url, '');
+  const airlock = new Shinkai(url, '');
   airlock.ship = shipName;
   try {
     const res = await fetchAllPerms(url);
     return grantPerms(airlock, {
       key: 'oadimaacghcacmfipakhadejgalcaepg',
       permissions: ['scry', 'poke', 'thread', 'subscribe', 'shipName', 'shipURL'],
-      name: 'Agrihan Visor Command Launcher',
+      name: 'Shinkai Visor Command Launcher',
     });
   } catch {
     await setPerms(airlock);
     return grantPerms(airlock, {
       key: 'oadimaacghcacmfipakhadejgalcaepg',
       permissions: ['scry', 'poke', 'thread', 'subscribe', 'shipName', 'shipURL'],
-      name: 'Agrihan Visor Command Launcher',
+      name: 'Shinkai Visor Command Launcher',
     });
   }
 }
-export async function setPerms(airlock: Agrihan) {
+export async function setPerms(airlock: Shinkai) {
   const json = {
     'put-bucket': {
       desk: 'landscape',
-      'bucket-key': 'agrihan-visor-permissions',
+      'bucket-key': 'shinkai-visor-permissions',
       bucket: {},
     },
   };
@@ -94,8 +94,8 @@ export interface NewPermissionRequest {
   permissions: string[];
   existing?: string[];
 }
-export async function grantPerms(airlock: Agrihan, perms: NewPermissionRequest) {
-  // TODO: fix types at av-core too
+export async function grantPerms(airlock: Shinkai, perms: NewPermissionRequest) {
+  // TODO: fix types at sv-core too
   let value;
   const existing = await checkPerms(airlock.url, perms.key);
   const set = new Set(existing);
@@ -110,7 +110,7 @@ export async function grantPerms(airlock: Agrihan, perms: NewPermissionRequest) 
   const json = {
     'put-entry': {
       desk: 'landscape',
-      'bucket-key': 'agrihan-visor-permissions',
+      'bucket-key': 'shinkai-visor-permissions',
       'entry-key': perms.key,
       value: value,
     },
@@ -119,7 +119,7 @@ export async function grantPerms(airlock: Agrihan, perms: NewPermissionRequest) 
 }
 
 export async function revokePerms(url: string, shipName: string, perms: PermissionRequest) {
-  const airlock = new Agrihan(url, '');
+  const airlock = new Shinkai(url, '');
   airlock.ship = shipName;
   let value;
   const existing = await checkPerms(url, perms.key);
@@ -132,7 +132,7 @@ export async function revokePerms(url: string, shipName: string, perms: Permissi
   const json = {
     'put-entry': {
       desk: 'landscape',
-      'bucket-key': 'agrihan-visor-permissions',
+      'bucket-key': 'shinkai-visor-permissions',
       'entry-key': perms.key,
       value: value,
     },
@@ -143,12 +143,12 @@ export async function revokePerms(url: string, shipName: string, perms: Permissi
 }
 
 export async function deleteDomain(url: string, ship: string, domain: string) {
-  const airlock = new Agrihan(url, '');
+  const airlock = new Shinkai(url, '');
   airlock.ship = ship;
   const json = {
     'del-entry': {
       desk: 'landscape',
-      'bucket-key': 'agrihan-visor-permissions',
+      'bucket-key': 'shinkai-visor-permissions',
       'entry-key': domain,
     },
   };
@@ -161,25 +161,25 @@ export async function checkPerms(url: string, domain: string) {
   return await domainPerms;
 }
 export async function fetchAllPerms(url: string) {
-  const airlock = new Agrihan(url, '');
-  const payload = { app: 'settings-store', path: '/bucket/landscape/agrihan-visor-permissions' };
+  const airlock = new Shinkai(url, '');
+  const payload = { app: 'settings-store', path: '/bucket/landscape/shinkai-visor-permissions' };
   const res = await airlock.scry(payload);
   airlock.reset();
   return res;
 }
 
 export async function wipeAllPerms(ship: string, url: string) {
-  const airlock = new Agrihan(url, '');
+  const airlock = new Shinkai(url, '');
   airlock.ship = ship;
   const json = {
     'del-bucket': {
       desk: 'landscape',
-      'bucket-key': 'agrihan-visor-permissions',
+      'bucket-key': 'shinkai-visor-permissions',
     },
   };
   return await airlock.poke({ app: 'settings-store', mark: 'settings-event', json: json });
 }
 
-export async function openChannel(airlock: Agrihan) {
+export async function openChannel(airlock: Shinkai) {
   await airlock.poke({ app: 'hood', mark: 'helm-hi', json: 'opening airlock' });
 }

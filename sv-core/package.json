@@ -1,7 +1,7 @@
 {
-  "name": "@dcspark/av-core",
+  "name": "@dcspark/sv-core",
   "version": "0.3.6",
-  "description": "Agrihan Visor core library, exposing types and core functions",
+  "description": "Shinkai Visor core library, exposing types and core functions",
   "main": "./dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -13,9 +13,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "agrihan",
-    "agrihan-visor",
-    "agrihan visor types"
+    "shinkai",
+    "shinkai-visor",
+    "shinkai visor types"
   ],
   "author": "dcSpark",
   "license": "MIT",

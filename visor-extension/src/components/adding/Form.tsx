@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState } from 'react';
 import Spinner from '../ui/svg/Spinner';
-import { scrapeShipname } from '../../agrihan';
+import { scrapeShipname } from '../../shinkai';
 import { DecryptedShipCredentials } from '../../types';
 import { Messaging } from '../../messaging';
 import './adding.css';
@@ -91,7 +91,7 @@ export default function AddShipForm({ url, code, setUrl, setCode, setCreds }: Ad
           <span className="progress-step">Step 2/3</span>
         </div>
         <img src={icon} className="icon" />
-        <h2 className="mid-title">Input Your Agrihan Ship Credentials</h2>
+        <h2 className="mid-title">Input Your Shinkai Ship Credentials</h2>
       </div>
       <form className="form" onSubmit={onSubmit}>
         <div className="inputs flex-grow">

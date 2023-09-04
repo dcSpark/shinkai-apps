@@ -21,12 +21,12 @@ export function whatShip(shipName: string): string {
 }
 
 export const permDescriptions = {
-  shipName: 'The name (@p) of your Agrihan ship/identity.',
-  shipURL: 'The URL of your running Agrihan ship.',
-  scry: 'Reads data from your Agrihan ship.',
-  poke: 'Sends data to your Agrihan ship.',
-  thread: 'Issues spider threads in your Agrihan ship.',
-  subscribe: 'Reads a continuous stream of data from your Agrihan ship.',
+  shipName: 'The name (@p) of your Shinkai ship/identity.',
+  shipURL: 'The URL of your running Shinkai ship.',
+  scry: 'Reads data from your Shinkai ship.',
+  poke: 'Sends data to your Shinkai ship.',
+  thread: 'Issues spider threads in your Shinkai ship.',
+  subscribe: 'Reads a continuous stream of data from your Shinkai ship.',
 };
 
 export function getIcon(patp: string) {
