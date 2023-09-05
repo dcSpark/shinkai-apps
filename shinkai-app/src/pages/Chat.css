@@ -1,0 +1,38 @@
+.ion-item-chat,
+.ion-list-chat {
+  --ion-item-background: theme("colors.slate.100");
+  --background: theme("colors.slate.100");
+  @media (prefers-color-scheme: dark) {
+    --ion-item-background: theme("colors.slate.800");
+    --background: theme("colors.slate.800");
+  }
+  &.isLocalMessage {
+    --ion-item-background: theme("colors.white");
+    --background: theme("colors.white");
+    @media (prefers-color-scheme: dark) {
+      --ion-item-background: theme("colors.slate.900");
+      --background: theme("colors.slate.900");
+    }
+  }
+}
+
+.ion-textarea-chat {
+  --border-radius: 4px;
+  --padding-top: 16px;
+  --padding-bottom: 16px;
+  --padding-left: 16px;
+  --border-width: 0;
+  --border-color: theme("colors.slate.300/20");
+  --background: theme("colors.slate.100");
+  --highlight-color: theme("colors.slate.400");
+  --highlight-color-focused: theme("colors.gray.300");
+  --color: theme("colors.slate.800");
+  --placeholder-color: theme("colors.slate.800");
+  @media (prefers-color-scheme: dark) {
+    --background: theme("colors.slate.800");
+    --color: theme("colors.slate.200");
+    --border-color: theme("colors.slate.800/20");
+    --placeholder-color: theme("colors.slate.300");
+    --highlight-color: theme("colors.gray.300");
+  }
+}
