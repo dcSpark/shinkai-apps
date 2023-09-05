@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+      "strict": true,
+      "noImplicitAny": false,
+      "noEmitOnError": true,
+      "removeComments": false,
+      "sourceMap": true,
+      "target": "es6",
+      "module": "es6",
+      "moduleResolution": "node",
+      "lib": ["ES2021", "dom"],
+      "outDir": "dist",
+      "declaration": true,
+      "allowSyntheticDefaultImports": true
+    },
+    "include": [
+      "**/*"
+    ]
+  }
