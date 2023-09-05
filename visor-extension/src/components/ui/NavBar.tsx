@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useOnClickOutside } from '../../hooks/hooks';
 import './navbar.css';
 import Sigil from './svg/Sigil';
-import visorLogo from '../../icons/visor.png';
+import visorLogo from '../../icons/visor.svg';
 import RocketIcon from '../../icons/rocket';
 import SettingsIcon from '../../icons/settings';
 import MenuIcon from '../../icons/menu-icon.svg';

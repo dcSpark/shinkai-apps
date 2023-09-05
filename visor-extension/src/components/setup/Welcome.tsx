@@ -1,5 +1,5 @@
 import * as React from 'react';
-import logo from '../../icons/shinkai.svg';
+import logo from '../../icons/shinkai-min.svg';
 import { useHistory } from 'react-router';
 import { motion } from 'framer-motion';
 import './setup.css';
