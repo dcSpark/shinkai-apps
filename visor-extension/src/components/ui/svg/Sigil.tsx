@@ -1,8 +1,17 @@
 import * as React from 'react';
-import { sigil, reactRenderer } from '@tlon/sigil-js';
+import '@urbit/sigil-js';
 interface SigilProps {
   patp: string;
   size: number;
+}
+
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace JSX {
+    interface IntrinsicElements {
+      'urbit-sigil': any;
+    }
+  }
 }
 
 const Sigil = (props: SigilProps) => {
@@ -53,17 +62,17 @@ const Sigil = (props: SigilProps) => {
         </svg>
       </div>
     );
-  else
-    return (
-      <>
-        {sigil({
-          patp: setPatp(props.patp),
-          renderer: reactRenderer,
-          size: props.size,
-          colors: setColors(props.patp),
-        })}
-      </>
-    );
+    else {
+      const config = {
+        point: '~zod',
+        patp: setPatp(props.patp),
+        size: props.size,
+        colors: setColors(props.patp),
+      };
+      return (
+        <urbit-sigil {...config} />
+      );
+    }
 };
 
 export default Sigil;

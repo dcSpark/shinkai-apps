@@ -62,12 +62,6 @@ const config = {
   },
   resolve: {
     extensions: [".js", ".jsx", ".tsx", ".ts"],
-    alias: {
-      "react-dom": "@hot-loader/react-dom",
-    },
-    fallback: {
-      "http": require.resolve("stream-http"),
-    }
   },
   devServer: {
     contentBase: "./dist",

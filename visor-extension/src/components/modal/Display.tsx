@@ -1,7 +1,7 @@
 import React from 'react';
 import * as CSS from 'csstype';
 import { useEffect, useLayoutEffect, useState, useRef } from 'react';
-import ReactJson from 'react-json-view';
+import JsonView from '@uiw/react-json-view';
 import { MenuItem, Command, ContextMenuItem } from './types';
 import { Welcome } from './commands/Welcome';
 import pokeIcon from '../../icons/poke.svg';
@@ -43,30 +43,12 @@ const Display = (props: DisplayProps) => {
     // If the response is an object
     else if (typeof props.airlockResponse == 'object' && !props.airlockResponse.type) {
       displayContent = (
-        <ReactJson
+        <JsonView
           style={{ padding: '16px', fontSize: '12px', fontFamily: 'Monaco' }}
-          src={props.airlockResponse}
+          value={props.airlockResponse}
           enableClipboard={true}
           displayDataTypes={false}
           displayObjectSize={false}
-          theme={{
-            base00: '#1B231F',
-            base01: 'aqua',
-            base02: '#3D4641',
-            base03: 'white',
-            base04: '#A5B0AB',
-            base05: 'white',
-            base06: 'white',
-            base07: 'white',
-            base08: 'white',
-            base09: '#EEAA8E',
-            base0A: '#EEAA8E',
-            base0B: '#EEAA8E',
-            base0C: '#73A2EA',
-            base0D: 'A5B0AB',
-            base0E: 'yellow',
-            base0F: 'yellow',
-          }}
         />
       );
     } else if (
