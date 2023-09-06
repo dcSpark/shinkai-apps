@@ -128,5 +128,9 @@
     "uuid": "^9.0.0",
     "vite-plugin-wasm": "^3.2.2",
     "zustand": "^3.6.9"
+  },
+  "engines": {
+    "node": "18",
+    "npm": "9"
   }
 }
