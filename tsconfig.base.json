@@ -1,0 +1,23 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2015",
+    "module": "esnext",
+    "lib": ["es2020", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@shinkai/shinkai-message-ts/*": ["libs/shinkai-message-ts/src/*.ts"],
+      "@shinkai/sv-core": ["libs/sv-core/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
+}

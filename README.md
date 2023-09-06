@@ -29,7 +29,7 @@ $ git clone https://github.com/dcSpark-ai/shinkai-visor
 Once you have done that simply use `npm` to compile it yourself:
 
 ```
-$ cd visor-extension
+$ cd shinkai-visor
 $ nvm use
 $ npm install
 $ npm start
