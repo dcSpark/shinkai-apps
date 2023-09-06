@@ -1,13 +1,10 @@
-import { getGreeting } from '../support/app.po';
+import { getDescription } from '../support/app.po';
 
 describe('shinkai-app', () => {
   beforeEach(() => cy.visit('/'));
 
-  it('should display welcome message', () => {
-    // Custom command example, see `../support/commands.ts` file
-    cy.login('my-email@something.com', 'myPassword');
-
+  it('should display app description', () => {
     // Function helper example, see `../support/app.po.ts` file
-    getGreeting().contains('Welcome shinkai-app');
+    getDescription().contains('AI AGENT OS THAT UNLOCKS THE POTENTIAL OF LLMS');
   });
 });

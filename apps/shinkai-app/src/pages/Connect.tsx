@@ -180,7 +180,7 @@ const Connect: React.FC = () => {
         <div className="relative flex min-h-screen min-h-screen-ios lg:p-6 md:px-6 md:pt-16 md:pb-10 bg-slate-900">
           <div className="relative hidden shrink-0 w-[40rem] p-20 overflow-hidden 2xl:w-[37.5rem] xl:w-[30rem] lg:p-10 lg:block">
             <div className="max-w-[25.4rem]">
-              <div className="mb-4 text-7xl font-bold leading-none uppercase font-newake text-white">
+              <div data-cy="shinkai-app-description" className="mb-4 text-7xl font-bold leading-none uppercase font-newake text-white">
                 AI AGENT OS THAT UNLOCKS THE POTENTIAL OF LLMS
               </div>
               <div className="text-lg text-slate-900">
