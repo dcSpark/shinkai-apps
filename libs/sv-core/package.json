@@ -1,0 +1,14 @@
+{
+  "name": "@shinkai/sv-core",
+  "version": "0.0.1",
+  "description": "Shinkai Visor core library, exposing types and core functions",
+  "main": "./dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "commonjs",
+  "typings": "./src/index.d.ts",
+  "keywords": [
+    "shinkai",
+    "shinkai-visor",
+    "shinkai visor types"
+  ]
+}

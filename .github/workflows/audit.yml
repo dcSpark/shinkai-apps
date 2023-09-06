@@ -22,7 +22,6 @@ jobs:
         # must use login shell (-l) to have nvm preinstalled, -e exits shell on nonzero exit codes
         shell: bash -e -l {0}
         run: |
-          cd visor-extension
           NODE=$(jq -r .engines.node ./package.json)
           NPM=$(jq -r .engines.npm ./package.json)
           echo "Node/npm version: ${NODE}/${NPM} - found on package.json"
