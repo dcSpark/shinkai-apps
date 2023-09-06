@@ -23,17 +23,18 @@ export const IonHeaderCustom = ({
     </IonHeader>
   );
 };
-export const IonContentCustom = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
-  return (
-    <IonContent fullscreen class="ion-content-custom">
-      <div className="container mx-auto mt-4 md:mt-4">{children}</div>
-    </IonContent>
-  );
-};
+export const IonContentCustom = React.forwardRef(
+  (
+    { children }: { children: React.ReactNode },
+    ref?: React.Ref<HTMLIonContentElement>,
+  ) => {
+    return (
+      <IonContent fullscreen class="ion-content-custom" ref={ref}>
+        <div className="container mx-auto mt-4 md:mt-4">{children}</div>
+      </IonContent>
+    );
+  },
+);
 
 export const IonFooterCustom = ({
   children,

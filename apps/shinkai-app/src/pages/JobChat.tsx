@@ -88,9 +88,7 @@ const JobChat: React.FC = () => {
           }
           onSubmit={(e) => {
             e.preventDefault();
-            if (inputMessage.trim() !== '') {
               sendMessage();
-            }
           }}
         >
           <div className="m-2 relative flex h-full flex-1 md:flex-col">
