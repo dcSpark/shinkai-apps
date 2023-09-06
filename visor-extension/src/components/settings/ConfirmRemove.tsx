@@ -43,7 +43,7 @@ export default function ConfirmRemove({ ship }: ConfirmRemoveProps) {
         </div>
         <div className="text">
           <p className="ship-to-delete">~{ship.shipName}</p>
-          {/* <p>The above ship will be removed from Agrihan Visor.</p> */}
+          {/* <p>The above ship will be removed from Shinkai Visor.</p> */}
         </div>
       </div>
       <form className="" onSubmit={remove}>

@@ -11,7 +11,7 @@ function shouldInject(): boolean {
 }
 
 function proofOfVisor() {
-  (window as any).agrihanVisor = true;
+  (window as any).shinkaiVisor = true;
 }
 
 function embed(fn: Function) {

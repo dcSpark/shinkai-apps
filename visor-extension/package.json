@@ -1,5 +1,5 @@
 {
-  "name": "agrihan-visor",
+  "name": "shinkai-visor",
   "version": "0.1.0",
   "description": "",
   "scripts": {
@@ -7,8 +7,8 @@
     "build": "webpack",
     "start": "webpack --watch",
     "prod:compress": "ts-node scripts/compress",
-    "prod:stable": "npm run build && npm run prod:compress -- --env 'mainnet' --app-id 'agrihan-visor' --zip-only --codebase 'https://dcspark.io/dw/agrihanvisor.crx' --key ./AgrihanVisor.pem",
-    "prod:crx": "npm run build && npm run prod:compress -- --env 'mainnet' --app-id 'agrihan-visor' --codebase 'https://dcspark.io/dw/agrihanvisor.crx' --key ./AgrihanVisor.pem",
+    "prod:stable": "npm run build && npm run prod:compress -- --env 'mainnet' --app-id 'shinkai-visor' --zip-only --codebase 'https://dcspark.io/dw/shinkaivisor.crx' --key ./ShinkaiVisor.pem",
+    "prod:crx": "npm run build && npm run prod:compress -- --env 'mainnet' --app-id 'shinkai-visor' --codebase 'https://dcspark.io/dw/shinkaivisor.crx' --key ./ShinkaiVisor.pem",
     "prettier": "prettier --write '**/*.{ts,tsx}'"
   },
   "keywords": [],
@@ -17,11 +17,10 @@
     "@babel/core": "^7.16.7",
     "@babel/preset-env": "^7.16.8",
     "@babel/preset-react": "^7.16.7",
-    "@hot-loader/react-dom": "^17.0.1",
     "@types/chrome": "0.0.159",
     "@types/crypto-js": "^4.1.0",
-    "@types/react": "^17.0.38",
-    "@types/react-dom": "^17.0.1",
+    "@types/react": "^18.2.21",
+    "@types/react-dom": "^18.2.7",
     "@types/react-router": "^5.1.17",
     "@types/react-router-dom": "^5.3.1",
     "@types/uuid": "^9.0.1",
@@ -39,22 +38,21 @@
     "webpack-dev-server": "^4.7.3"
   },
   "dependencies": {
-    "@dcspark/av-core": "file:../av-core",
-    "@tlon/sigil-js": "^1.4.5",
+    "@dcspark/sv-core": "file:../sv-core",
+    "@uiw/react-json-view": "^1.8.5",
     "@urbit/api": "^2.1.0",
     "@urbit/http-api": "^2.1.0",
+    "@urbit/sigil-js": "^2.1.0",
     "classnames": "^2.3.1",
     "crx": "^5.0.1",
     "crypto-js": "^4.1.1",
     "follow-redirects": ">=1.14.8",
-    "framer-motion": "^4.1.17",
+    "framer-motion": "^10.16.4",
     "node-forge": ">=1.0.0",
     "prettier": "^2.8.8",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
-    "react-hot-loader": "^4.13.0",
-    "react-json-view": "^1.21.3",
-    "react-router-dom": "^5.3.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^5.3.4",
     "rxjs": "^7.5.2",
     "ts-node": "^10.3.0",
     "urbit-ob": "^5.0.1",
@@ -62,7 +60,7 @@
     "zustand": "^3.6.9"
   },
   "engines": {
-    "node": "14",
-    "npm": "6"
+    "node": "18",
+    "npm": "9"
   }
 }

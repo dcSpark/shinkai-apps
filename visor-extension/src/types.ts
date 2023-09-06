@@ -1,4 +1,4 @@
-import Agrihan from '@urbit/http-api';
+import Shinkai from '@urbit/http-api';
 import { Scry, Thread, Poke, SubscriptionRequestInterface } from '@urbit/http-api/dist/types';
 
 // LLM
@@ -42,12 +42,12 @@ export interface VisorSubscription {
   requestID: string;
 }
 
-export interface AgrihanVisorConsumerTab {
+export interface ShinkaiVisorConsumerTab {
   tab: TabID;
   url: URL;
 }
 
-export interface AgrihanVisorConsumerExtension {
+export interface ShinkaiVisorConsumerExtension {
   id: ExtensionID;
   name: string;
   tabs?: TabID[];
@@ -66,8 +66,8 @@ export interface PermissionRequest {
   existing?: Permission[];
 }
 
-export interface AgrihanVisorState {
-  airlock: Agrihan;
+export interface ShinkaiVisorState {
+  airlock: Shinkai;
   first: boolean;
   ships: EncryptedShipCredentials[];
   llms: EncryptedLLMCredentials[];
@@ -80,8 +80,8 @@ export interface AgrihanVisorState {
   activeShip: EncryptedShipCredentials;
   activeLLM: EncryptedLLMCredentials;
   permissions: PermissionsGraph;
-  consumer_tabs: Array<AgrihanVisorConsumerTab>;
-  consumer_extensions: AgrihanVisorConsumerExtension[];
+  consumer_tabs: Array<ShinkaiVisorConsumerTab>;
+  consumer_extensions: ShinkaiVisorConsumerExtension[];
   activeSubscriptions: VisorSubscription[];
   commandHistory: { command: string; arguments: string[] }[];
   init: () => Promise<void>;
@@ -105,8 +105,8 @@ export interface AgrihanVisorState {
   changePopupPreference: (preference: PopupPreference) => Promise<void>;
   changeMasterPassword: (oldPassword: string, newPassword: string) => Promise<void>;
   resetApp: () => Promise<void>;
-  addConsumerTab: (consumer: AgrihanVisorConsumerTab) => void;
-  addConsumerExtension: (consumer: AgrihanVisorConsumerExtension) => void;
+  addConsumerTab: (consumer: ShinkaiVisorConsumerTab) => void;
+  addConsumerExtension: (consumer: ShinkaiVisorConsumerExtension) => void;
   addSubscription: (sub: VisorSubscription) => void;
   removeSubscription: (sub: VisorSubscription) => void;
   storeCommandHistory: (command: { command: string; arguments: string[] }) => void;
@@ -118,7 +118,7 @@ export interface PermissionRequest {
   existing?: Permission[];
 }
 
-export type AgrihanVisorAction =
+export type ShinkaiVisorAction =
   | 'on'
   | 'check_connection'
   | 'check_perms'
@@ -131,54 +131,54 @@ export type AgrihanVisorAction =
   | 'subscribeOnce'
   | 'unsubscribe'
   | 'thread';
-export type AgrihanVisorInternalAction =
+export type ShinkaiVisorInternalAction =
   | 'state'
   | 'connected'
   | 'cache_form_url'
   | 'end_url_caching'
   | 'dismiss_perms';
-type AgrihanVisorRequestType =
+type ShinkaiVisorRequestType =
   | Scry
   | Thread<any>
   | Poke<any>
   | SubscriptionRequestInterface
-  | AgrihanVisorAction[];
+  | ShinkaiVisorAction[];
 
-export interface AgrihanVisorRequest {
-  app: 'agrihanVisor';
-  action: AgrihanVisorAction;
-  data?: AgrihanVisorRequestType;
+export interface ShinkaiVisorRequest {
+  app: 'shinkaiVisor';
+  action: ShinkaiVisorAction;
+  data?: ShinkaiVisorRequestType;
 }
 export interface CommandLauncherRequest {
   app: 'command-launcher';
   action: string;
   data?: any;
 }
-export interface AgrihanVisorResponse {
+export interface ShinkaiVisorResponse {
   id: string;
   status: 'locked' | 'noperms' | 'ok';
   response?: any;
   error?: any;
 }
 
-export interface AgrihanVisorInternalComms {
-  action: AgrihanVisorInternalAction | string;
+export interface ShinkaiVisorInternalComms {
+  action: ShinkaiVisorInternalAction | string;
   data?: any;
 }
 
-export interface AgrihanVisorEvent {
-  action: AgrihanVisorEventType;
+export interface ShinkaiVisorEvent {
+  action: ShinkaiVisorEventType;
   requestID?: string;
   data?: any;
 }
-export type AgrihanVisorEventType = AgrihanVisorInternalEvent | AgrihanEvent;
+export type ShinkaiVisorEventType = ShinkaiVisorInternalEvent | ShinkaiEvent;
 
-type AgrihanVisorInternalEvent =
+type ShinkaiVisorInternalEvent =
   | 'connected'
   | 'disconnected'
   | 'permissions_granted'
   | 'permissions_revoked';
-type AgrihanEvent = 'sse' | 'poke_success' | 'poke_error' | 'subscription_error';
+type ShinkaiEvent = 'sse' | 'poke_success' | 'poke_error' | 'subscription_error';
 
 export interface PermissionGraph {
   [key: string]: {
@@ -186,4 +186,4 @@ export interface PermissionGraph {
   };
 }
 
-type AgrihanAction = 'scry' | 'thread' | 'poke' | 'subscribe';
+type ShinkaiAction = 'scry' | 'thread' | 'poke' | 'subscribe';

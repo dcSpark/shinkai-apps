@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState } from 'react';
-import { initPerms } from '../../agrihan';
+import { initPerms } from '../../shinkai';
 import { getStorage, decrypt } from '../../storage';
 import Spinner from '../ui/svg/Spinner';
 import { motion } from 'framer-motion';
@@ -40,7 +40,7 @@ export default function ConfirmLLM(props: ConfirmLLMProps) {
     e.preventDefault();
     getStorage('password').then(res => {
       const string = decrypt(res.password, pw);
-      if (string === 'agrihan_visor') {
+      if (string === 'shinkai_visor') {
         saveLLM();
       } else {
         setError('Wrong Password');

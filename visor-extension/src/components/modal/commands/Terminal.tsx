@@ -8,7 +8,7 @@ export const Terminal: Command = {
   command: 'poke',
   title: 'Terminal',
   icon: <Icon />,
-  description: 'Issue commands to the terminal on your Agrihan ship.',
+  description: 'Issue commands to the terminal on your Shinkai ship.',
   arguments: ['command'],
   schema: [
     (props: any[]) => ({

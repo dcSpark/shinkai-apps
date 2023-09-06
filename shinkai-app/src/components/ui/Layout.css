@@ -1,0 +1,19 @@
+.ion-header-custom {
+  --background: theme("colors.slate.900");
+  --color: white;
+  @apply min-h-[60px] md:min-h-[100px];
+  @apply flex items-center;
+  @media (prefers-color-scheme: dark) {
+    --color: theme("colors.slate.200");
+  }
+}
+
+.ion-content-custom {
+  --background: theme("colors.slate.900");
+}
+.ion-toolbar-custom {
+  --background: theme("colors.white");
+  @media (prefers-color-scheme: dark) {
+    --background: theme("colors.slate.900");
+  }
+}

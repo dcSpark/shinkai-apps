@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useOnClickOutside } from '../../hooks/hooks';
 import './navbar.css';
 import Sigil from './svg/Sigil';
-import visorLogo from '../../icons/visor.png';
+import visorLogo from '../../icons/visor.svg';
 import RocketIcon from '../../icons/rocket';
 import SettingsIcon from '../../icons/settings';
 import MenuIcon from '../../icons/menu-icon.svg';
@@ -20,7 +20,7 @@ interface NavbarProps {
 export default function NavBar({ interacting, active }: NavbarProps) {
   const history = useHistory();
   const location = useLocation();
-  const agrihanlogo = useRef(null);
+  const shinkailogo = useRef(null);
   const [modalOpen, toggleModal] = useState(false);
   const rootPage = ['/welcome', '/ship_list', '/settings/menu', '/about', '/ask_perms'].includes(
     location.pathname
@@ -66,13 +66,13 @@ export default function NavBar({ interacting, active }: NavbarProps) {
       </div>
       <img src={visorLogo} className="Nav-logo" />
       <img
-        ref={agrihanlogo}
+        ref={shinkailogo}
         onClick={openMenu}
         src={modalOpen ? CloseIcon : MenuIcon}
         alt="menu-icon"
         className="menu-icon"
       />
-      {modalOpen && <Modal parent={agrihanlogo} hide={() => toggleModal(!modalOpen)} />}
+      {modalOpen && <Modal parent={shinkailogo} hide={() => toggleModal(!modalOpen)} />}
     </nav>
   );
 }

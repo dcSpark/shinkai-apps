@@ -10,13 +10,13 @@ export default function About() {
       exit={{ opacity: 0 }}
       className="about-container"
     >
-      <h1 className="agrihan-name"> Agrihan Visor</h1>
+      <h1 className="shinkai-name"> Shinkai Visor</h1>
       <div className="about-version">
         <p>Version: 0.4.2</p>
       </div>
       <div className="about-description">
         <p>
-          Agrihan Visor is a chrome extension which unlocks the full capabilities/automation of
+          Shinkai Visor is a chrome extension which unlocks the full capabilities/automation of
           first-class LLM (AI) support in the web browser.
         </p>
       </div>

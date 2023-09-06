@@ -1,6 +1,6 @@
 import { EncryptedShipCredentials } from './types';
 
-export class Agrihan {
+export class Shinkai {
   constructor(public ships: EncryptedShipCredentials[]) {
     return this;
   }

@@ -6,7 +6,7 @@ interface LogoProps {
   strokeWidth: string;
 }
 
-export default function AgrihanLogo(props: LogoProps) {
+export default function ShinkaiLogo(props: LogoProps) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
       <circle

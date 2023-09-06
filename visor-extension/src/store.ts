@@ -1,4 +1,4 @@
-import { AgrihanVisorState, EncryptedShipCredentials } from './types';
+import { ShinkaiVisorState, EncryptedShipCredentials } from './types';
 import {
   getStorage,
   initStorage,
@@ -12,10 +12,10 @@ import {
   storeLLMCredentials,
   removeLLM,
 } from './storage';
-import { connectToShip, grantPerms, deleteDomain, revokePerms, fetchAllPerms } from './agrihan';
+import { connectToShip, grantPerms, deleteDomain, revokePerms, fetchAllPerms } from './shinkai';
 import create from 'zustand';
 
-export const useStore = create<AgrihanVisorState>((set, get) => ({
+export const useStore = create<ShinkaiVisorState>((set, get) => ({
   airlock: null,
   first: true,
   ships: [],

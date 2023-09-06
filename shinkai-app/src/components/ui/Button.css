@@ -1,0 +1,42 @@
+.ion-button-custom {
+  @apply h-[50px] capitalize font-bold;
+
+  &.variant-primary {
+    --box-shadow: none;
+    --background: theme("colors.brand.400");
+    --color: white;
+    --ripple-color: theme("colors.brand.600");
+    @media (prefers-color-scheme: dark) {
+      --color: theme("colors.white");
+    }
+  }
+  &.variant-secondary {
+    --box-shadow: none;
+    --background: transparent;
+    --background-hover: theme("colors.slate.400");
+    --background-activated: theme("colors.slate.50");
+    --background-focused: theme("colors.slate.50");
+    --color: theme("colors.slate.800");
+    --border-color: theme("colors.slate.300");
+    --border-style: solid;
+    --border-width: 1px;
+    --ripple-color: theme("colors.slate.200/50");
+    @media (prefers-color-scheme: dark) {
+      --background-hover: theme("colors.slate.50");
+      --color: theme("colors.white");
+      --ripple-color: theme("colors.white/50");
+    }
+  }
+  &.variant-tertiary {
+    --box-shadow: none;
+    --background: transparent;
+    --background-hover: theme("colors.slate.50");
+    --background-activated: theme("colors.slate.50");
+    --background-focused: theme("colors.slate.50");
+    --color: theme("colors.slate.800");
+    --ripple-color: theme("colors.white/50");
+    @media (prefers-color-scheme: dark) {
+      --color: theme("colors.white");
+    }
+  }
+}

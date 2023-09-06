@@ -1,9 +1,9 @@
 import React from 'react';
 import * as CSS from 'csstype';
 import { useEffect, useState, useRef } from 'react';
-import { agrihanVisor } from '@dcspark/av-core';
+import { shinkaiVisor } from '@dcspark/sv-core';
 import { Messaging } from '../../../messaging';
-import Agrihan from '@urbit/http-api';
+import Shinkai from '@urbit/http-api';
 import Input from '../Input';
 import { Command, MenuItem } from '../types';
 
@@ -25,24 +25,24 @@ const SubscribeInput = (props: InputProps) => {
   useEffect(() => {
     let subscription: any;
 
-    subscription = agrihanVisor.on('sse', [], (res: any) => {
+    subscription = shinkaiVisor.on('sse', [], (res: any) => {
       props.airlockResponse(res);
     });
 
     return () => {
-      agrihanVisor.unsubscribe(num);
-      agrihanVisor.off(subscription);
+      shinkaiVisor.unsubscribe(num);
+      shinkaiVisor.off(subscription);
     };
   }, [props.selectedToInput, num]);
 
   useEffect(() => {
     if (app?.length) {
       const setSubData = () => {
-        agrihanVisor.subscribe({ app: app, path: path }).then(res => {
+        shinkaiVisor.subscribe({ app: app, path: path }).then(res => {
           setNum(res.response);
         });
       };
-      agrihanVisor.require(['subscribe'], setSubData);
+      shinkaiVisor.require(['subscribe'], setSubData);
     }
   }, [app, path]);
 

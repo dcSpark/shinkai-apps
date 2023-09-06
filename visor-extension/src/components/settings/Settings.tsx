@@ -58,7 +58,7 @@ function SettingsMenu() {
         <Link to="/settings/popup">
           <div className="settings-option-text">
             <h3>Permission Confirmation Settings</h3>
-            <p>Select whether Agrihan Visor should use new window popups</p>
+            <p>Select whether Shinkai Visor should use new window popups</p>
           </div>
           <img src={arrowRightIcon} className="settings-option-icon" />
         </Link>
@@ -67,7 +67,7 @@ function SettingsMenu() {
         <Link to="/settings/remove_ships">
           <div className="settings-option-text">
             <h3>Remove Ships</h3>
-            <p>Remove saved ships from your Agrihan Visor extension</p>
+            <p>Remove saved ships from your Shinkai Visor extension</p>
           </div>
           <img src={arrowRightIcon} className="settings-option-icon" />
         </Link>
@@ -76,7 +76,7 @@ function SettingsMenu() {
         <Link to="/settings/change_password">
           <div className="settings-option-text">
             <h3>Change Master Password</h3>
-            <p>Update your master password which secures Agrihan Visor</p>
+            <p>Update your master password which secures Shinkai Visor</p>
           </div>
           <img src={arrowRightIcon} className="settings-option-icon" />
         </Link>
@@ -84,7 +84,7 @@ function SettingsMenu() {
       <div className="settings-option">
         <Link to="/settings/reset_app">
           <div className="settings-option-text">
-            <h3>Reset Agrihan Visor</h3>
+            <h3>Reset Shinkai Visor</h3>
             <p>Reset all of your settings and start fresh</p>
           </div>
           <img src={arrowRightIcon} className="settings-option-icon" />
@@ -137,7 +137,7 @@ function SettingsPopup() {
       <div>
         <h3 className="title-page">Permission Confirmation</h3>
         <p className="description">
-          Choose whether Agrihan Visor will create a new page popup when permissions are requested.
+          Choose whether Shinkai Visor will create a new page popup when permissions are requested.
         </p>
       </div>
       <div className="popup-settings flex-grow">
@@ -316,7 +316,7 @@ function SettingsReset() {
       className="reset-app-container"
     >
       <div>
-        <h3 className="title-page">Reset Agrihan Visor</h3>
+        <h3 className="title-page">Reset Shinkai Visor</h3>
         <p className="description">
           Click on the button below to reset the extension to factory settings.
         </p>
@@ -325,7 +325,7 @@ function SettingsReset() {
         <div className="alert-container vertical">
           <img src={alertIcon} alt="alert" />
           <h5>Important information</h5>
-          <p>This will remove all of your data from Agrihan Visor.</p>
+          <p>This will remove all of your data from Shinkai Visor.</p>
         </div>
         <button className="single-button red-bg" onClick={doReset}>
           Reset

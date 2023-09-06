@@ -7,5 +7,5 @@ const Icon = () => <img src={bitcoinIcon} />;
 export const Bitcoin: Command = {
   title: 'Bitcoin',
   icon: <Icon />,
-  description: 'Open the Bitcoin wallet app on your Agrihan ship.',
+  description: 'Open the Bitcoin wallet app on your Shinkai ship.',
 };

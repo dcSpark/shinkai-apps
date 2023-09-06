@@ -1,7 +1,7 @@
 import React from 'react';
 import * as CSS from 'csstype';
 import { useEffect, useState, useRef } from 'react';
-import Agrihan from '@urbit/http-api';
+import Shinkai from '@urbit/http-api';
 import HistoryInput from './input/HistoryInput';
 import PokeInput from './input/PokeInput';
 import ScryInput from './input/ScryInput';

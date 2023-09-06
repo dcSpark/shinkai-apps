@@ -1,0 +1,26 @@
+.ion-input-item-custom {
+  @apply h-[44px];
+  --background: theme("colors.slate.100");
+  --color: theme("colors.slate.900");
+  --border-color: theme("colors.slate.100");
+  --background-focused: transparent;
+  --border-width: 1px;
+  @media (prefers-color-scheme: dark) {
+    --background: theme("colors.slate.900");
+    --color: theme("colors.slate.800");
+    --border-color: theme("colors.slate.900");
+  }
+  &::part(native) {
+    height: 100%;
+  }
+}
+.native-input {
+  --highlight-color-focused: theme("colors.slate.900");
+  --placeholder-color: theme("colors.slate.800");
+  --color: theme("colors.slate.900");
+  @media (prefers-color-scheme: dark) {
+    --highlight-color-focused: theme("colors.white");
+    --placeholder-color: theme("colors.slate.300");
+    --color: theme("colors.white");
+  }
+}

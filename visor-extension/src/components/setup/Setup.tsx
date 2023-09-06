@@ -73,7 +73,7 @@ export default function Setup({ setInteracting }: SetupProps) {
         </h2>
         {tooltip && (
           <div className="tooltip">
-            <p>This password will be used to encrypt the credentials of your Agrihan ships.</p>
+            <p>This password will be used to encrypt the credentials of your Shinkai ships.</p>
           </div>
         )}
       </div>
