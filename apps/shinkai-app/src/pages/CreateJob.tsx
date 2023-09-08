@@ -100,8 +100,7 @@ const CreateJob: React.FC = () => {
         receiver_subidentity,
         setupDetailsState
       );
-      // TODO: Review this, we are using api answer and dispatching it as an action
-      dispatch(result);
+      dispatch({ type: "SEND_MESSAGE_SUCCESS", payload: result });
 
       // Hacky solution because react-router can't handle dots in the URL
       const jobInboxName = InboxNameWrapper.get_job_inbox_name_from_params(

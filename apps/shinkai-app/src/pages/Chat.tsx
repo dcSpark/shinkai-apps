@@ -41,6 +41,7 @@ import {
   IonHeaderCustom,
 } from '../components/ui/Layout';
 import { addMessageToInbox, receiveLastMessagesFromInbox, receiveLoadMoreMessagesFromInbox } from '../store/actions';
+import { RECEIVE_LAST_MESSAGES_FROM_INBOX } from '../store/types';
 
 const parseDate = (dateString: string) => {
   return new Date(dateString);
@@ -77,9 +78,9 @@ const Chat: React.FC = () => {
     console.log('deserializedId:', deserializedId);
     getLastMessagesFromInbox(deserializedId, 10, lastKey, setupDetailsState).then((messages) => {
       console.log("receiveLastMessagesFromInbox Response:", messages);
-      dispatch(receiveLastMessagesFromInbox(deserializedId, messages));
+      dispatch({ type: RECEIVE_LAST_MESSAGES_FROM_INBOX, payload: messages });
     });
-  }, [id, dispatch, setupDetailsState]);
+  }, [id, dispatch, setupDetailsState, deserializedId, lastKey]);
 
   useEffect(() => {
     if (reduxMessages && reduxMessages.length > 0) {
