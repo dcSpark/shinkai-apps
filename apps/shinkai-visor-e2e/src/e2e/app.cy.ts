@@ -1,13 +1,9 @@
-import { getGreeting } from '../support/app.po';
+import { getWelcomeMessage } from '../support/app.po';
 
 describe('shinkai-visor', () => {
   beforeEach(() => cy.visit('/'));
 
   it('should display welcome message', () => {
-    // Custom command example, see `../support/commands.ts` file
-    cy.login('my-email@something.com', 'myPassword');
-
-    // Function helper example, see `../support/app.po.ts` file
-    getGreeting().contains('Welcome shinkai-visor');
+    getWelcomeMessage().should('exist').contains('Setup Shinkai Visor to transform your web browser into a first class Shinkai client');
   });
 });

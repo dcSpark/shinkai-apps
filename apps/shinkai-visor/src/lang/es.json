@@ -1,0 +1,10 @@
+{
+  "app-name": "Shinkai Visor",
+  "app-description": "Configura Shinkai Visor para transformar tu navegador web en un cliente de Shinkai de clase mundial",
+  "setup": "Configurar",
+  "inbox.one": "Bandeja de entrada",
+  "inbox.other": "Bandejas de entrada",
+  "setting.one": "Configuración",
+  "settings.other": "Configuraciones",
+  "about": "Acerca de Shinkai" 
+}

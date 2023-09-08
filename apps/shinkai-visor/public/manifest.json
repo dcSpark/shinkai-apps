@@ -15,19 +15,19 @@
       "16": "icon16.png",
       "48": "icon48.png"
     },
-    "default_popup": "popup.html"
+    "default_popup": "src/popup/popup.html"
   },
   "background": {
-    "scripts": ["background.js"],
+    "scripts": ["assets/background.js"],
     "persistent": true
   },
   "content_scripts": [
     {
       "matches": ["*://*/*"],
-      "js": ["content.js"]
+      "js": ["assets/content.js"]
     }
   ],
-  "web_accessible_resources": ["popup.html", "launcher.html"],
+  "web_accessible_resources": ["src/popup.html"],
   "commands": {
     "_execute_browser_action": {
       "suggested_key": {

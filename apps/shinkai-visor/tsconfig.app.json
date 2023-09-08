@@ -4,24 +4,12 @@
     "outDir": "../../dist/out-tsc",
     "types": [
       "node",
-      "chrome",
-      "@nx/react/typings/cssmodule.d.ts",
-      "@nx/react/typings/image.d.ts"
+      "vite/client",
+      "@types/chrome"
     ],
-    "sourceMap": true,
-    "strict": true,
-    "noEmitOnError": false,
-    "noImplicitReturns": true,
-    "noImplicitAny": true,
-    "module": "es6",
-    "moduleResolution": "node",
-    "target": "es6",
-    "allowJs": true,
-    "strictNullChecks": false,
-    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true
   },
   "exclude": [
-    "jest.config.ts",
     "src/**/*.spec.ts",
     "src/**/*.test.ts",
     "src/**/*.spec.tsx",
@@ -31,5 +19,5 @@
     "src/**/*.spec.jsx",
     "src/**/*.test.jsx"
   ],
-  "include": ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx", "src/custom.d.ts"]
+  "include": ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx", "@nx/react/typings/cssmodule.d.ts", "@nx/react/typings/image.d.ts", "vite.config.ts"]
 }

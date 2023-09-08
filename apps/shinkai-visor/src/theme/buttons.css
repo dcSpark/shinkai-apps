@@ -1,0 +1,3 @@
+.shinkai-button {
+  @apply bg-primary hover:bg-primary-500 text-white font-bold text-lg p-1 rounded-lg;
+}
