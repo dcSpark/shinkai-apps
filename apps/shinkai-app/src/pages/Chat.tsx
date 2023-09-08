@@ -21,7 +21,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   getLastMessagesFromInbox,
-  createChatWithMessage,
   sendTextMessageWithInbox,
 } from '@shinkai/shinkai-message-ts/api';
 import { RootState } from '../store';
@@ -53,7 +52,7 @@ const Chat: React.FC = () => {
 
   const dispatch = useDispatch();
   const setupDetailsState = useSelector(
-    (state: RootState) => state.setupDetailsState
+    (state: RootState) => state.setupDetails
   );
 
   const { id } = useParams<{ id: string }>();
@@ -64,7 +63,7 @@ const Chat: React.FC = () => {
   const [prevMessagesLength, setPrevMessagesLength] = useState(0);
 
   const reduxMessages = useSelector(
-    (state: RootState) => state.inboxes[deserializedId]
+    (state: RootState) => state.messages.inboxes[deserializedId]
   );
 
   const [messages, setMessages] = useState<ShinkaiMessage[]>([]);

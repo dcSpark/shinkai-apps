@@ -17,24 +17,25 @@ import {
 import { addOutline, arrowForward, cloudUpload } from 'ionicons/icons';
 import './Home.css';
 import { useHistory } from 'react-router-dom';
-import { RootState } from '../store';
 import { useDispatch, useSelector } from 'react-redux';
 import React, { useEffect, useState } from 'react';
 import {
   ApiConfig,
   getAllInboxesForProfile,
 } from '@shinkai/shinkai-message-ts/api';
+
 import { clearStore, receiveAllInboxesForProfile } from '../store/actions';
 import Avatar from '../components/ui/Avatar';
 import { IonContentCustom, IonHeaderCustom } from '../components/ui/Layout';
+import { RootState } from '../store';
 
 const Home: React.FC = () => {
-  const { setupDetailsState } = useSelector((state: RootState) => state);
+  const setupDetails = useSelector((state: RootState) => state.setupDetails);
   const history = useHistory();
   const dispatch = useDispatch();
 
   const { shinkai_identity, profile, registration_name, permission_type } =
-    setupDetailsState;
+    setupDetails;
   const displayString = (
     <>
       {`${shinkai_identity}/${profile}/device/${registration_name}`}{' '}
@@ -43,20 +44,20 @@ const Home: React.FC = () => {
   );
   const [showActionSheet, setShowActionSheet] = useState(false);
   const [showLogoutAlert, setShowLogoutAlert] = useState(false);
-  const inboxes = useSelector((state: RootState) => state.inboxes);
+  const inboxes = useSelector((state: RootState) => state.other.just_inboxes);
   console.log('Inboxes:', inboxes);
 
   useEffect(() => {
-    console.log('Redux State:', setupDetailsState);
-    ApiConfig.getInstance().setEndpoint(setupDetailsState.node_address);
+    console.log('Redux State:', setupDetails);
+    ApiConfig.getInstance().setEndpoint(setupDetails.node_address);
   }, []);
 
   useEffect(() => {
-    console.log('Redux State:', setupDetailsState);
-    ApiConfig.getInstance().setEndpoint(setupDetailsState.node_address);
+    console.log('Redux State:', setupDetails);
+    ApiConfig.getInstance().setEndpoint(setupDetails.node_address);
 
     // Local Identity
-    const { shinkai_identity, profile, registration_name } = setupDetailsState;
+    const { shinkai_identity, profile, registration_name } = setupDetails;
     const sender = shinkai_identity;
     const sender_subidentity = `${profile}/device/${registration_name}`;
 
@@ -70,9 +71,8 @@ const Home: React.FC = () => {
       sender_subidentity,
       receiver,
       target_shinkai_name_profile,
-      setupDetailsState
+      setupDetails
     ).then((inboxes) => dispatch(receiveAllInboxesForProfile(inboxes)));
-
   }, []);
 
   return (
@@ -100,39 +100,40 @@ const Home: React.FC = () => {
         <IonContentCustom>
           <div className="h-full flex flex-col">
             <div className="flex-1 md:rounded-[1.25rem] bg-white dark:bg-slate-800 p-4 md:p-10 space-y-2 md:space-y-4">
-              {Object.entries(inboxes).map(([position, inboxId]) => (
-                <IonItem
-                  key={position}
-                  button
-                  className="ion-item-home"
-                  onClick={() => {
-                    const encodedInboxId = position
-                      .toString()
-                      .replace(/\./g, '~');
-                    if (encodedInboxId.startsWith('inbox')) {
-                      history.push(
-                        `/chat/${encodeURIComponent(encodedInboxId)}`
-                      );
-                    } else if (encodedInboxId.startsWith('job_inbox')) {
-                      history.push(
-                        `/job-chat/${encodeURIComponent(encodedInboxId)}`
-                      );
-                    }
-                  }}
-                >
-                  <Avatar
-                    url={`https://ui-avatars.com/api/?name=${position}&background=FE6162&color=fff`}
-                    className="shrink-0"
-                  />
-                  <IonText className="ml-4 font-bold md:text-lg">
-                    {JSON.stringify(position)}
-                  </IonText>
-                  <IonIcon
-                    icon={arrowForward}
-                    className="hidden md:ml-auto md:block"
-                  />
-                </IonItem>
-              ))}
+              {inboxes &&
+                inboxes.map((inbox_name) => (
+                  <IonItem
+                    key={inbox_name}
+                    button
+                    className="ion-item-home"
+                    onClick={() => {
+                      const encodedInboxId = inbox_name
+                        .toString()
+                        .replace(/\./g, '~');
+                      if (encodedInboxId.startsWith('inbox')) {
+                        history.push(
+                          `/chat/${encodeURIComponent(encodedInboxId)}`
+                        );
+                      } else if (encodedInboxId.startsWith('job_inbox')) {
+                        history.push(
+                          `/job-chat/${encodeURIComponent(encodedInboxId)}`
+                        );
+                      }
+                    }}
+                  >
+                    <Avatar
+                      url={`https://ui-avatars.com/api/?name=${inbox_name}&background=FE6162&color=fff`}
+                      className="shrink-0"
+                    />
+                    <IonText className="ml-4 font-bold md:text-lg">
+                      {JSON.stringify(inbox_name)}
+                    </IonText>
+                    <IonIcon
+                      icon={arrowForward}
+                      className="hidden md:ml-auto md:block"
+                    />
+                  </IonItem>
+                ))}
             </div>
           </div>
         </IonContentCustom>

@@ -32,13 +32,13 @@ const CreateJob: React.FC = () => {
   useSetup();
   const dispatch = useDispatch();
   const setupDetailsState = useSelector(
-    (state: RootState) => state.setupDetailsState
+    (state: RootState) => state.setupDetails
   );
   const [jobContent, setJobContent] = useState("");
   const [selectedAgent, setSelectedAgent] = useState<SerializedAgent | null>(
     null
   );
-  const agents = useSelector((state: RootState) => state.agents);
+  const agents = useSelector((state: RootState) => state.other.agents);
   const history: History<unknown> = useHistory();
 
   useEffect(() => {

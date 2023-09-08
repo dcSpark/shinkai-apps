@@ -5,3 +5,8 @@ export type AppThunk<ReturnType = void> = ThunkAction<
   Action<string>
 >;
 
+declare global {
+  interface Window {
+    __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: typeof compose;
+  }
+}
