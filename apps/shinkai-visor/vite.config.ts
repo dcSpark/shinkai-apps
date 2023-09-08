@@ -8,12 +8,16 @@ export default defineConfig({
   cacheDir: '../../node_modules/.vite/shinkai-visor',
 
   server: {
-    port: 4200,
+    port: 4201,
     host: 'localhost',
+    fs: {
+      // Important to server files two levels ahead of the project folder
+      allow: ['../../'],
+    },
   },
 
   preview: {
-    port: 4300,
+    port: 4301,
     host: 'localhost',
   },
 
@@ -31,10 +35,14 @@ export default defineConfig({
     },
     environment: 'jsdom',
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    coverage: {
+      provider: 'v8',
+    },
   },
   root: './',
 
   build: {
+    sourcemap: true,
     rollupOptions: {
       input: {
         background: fileURLToPath(new URL('./src/background.ts', import.meta.url)),

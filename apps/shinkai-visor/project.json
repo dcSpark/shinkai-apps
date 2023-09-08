@@ -5,62 +5,60 @@
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nx/webpack:webpack",
+      "executor": "@nx/vite:build",
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
-        "compiler": "babel",
-        "outputPath": "dist/apps/shinkai-visor",
-        "baseHref": "/",
-        "main": "apps/shinkai-visor/src/popup.tsx",
-        "additionalEntryPoints": [
-          { "entryName": "popup", "entryPath": "apps/shinkai-visor/src/popup.tsx" },
-          { "entryName": "launcher", "entryPath": "apps/shinkai-visor/src/launcher.tsx" },
-          { "entryName": "content", "entryPath": "apps/shinkai-visor/src/content.ts" },
-          { "entryName": "background", "entryPath": "apps/shinkai-visor/src/background.ts" }
-        ],
-        "index": "apps/shinkai-visor/src/index.html",
-        "tsConfig": "apps/shinkai-visor/tsconfig.app.json",
-        "assets": [
-          { "glob": "*", "input": "apps/shinkai-visor/public", "output": "."}
-        ],
-        "styles": [],
-        "scripts": [],
-        "webpackConfig": "apps/shinkai-visor/webpack.config.js"
+        "outputPath": "dist/apps/shinkai-visor"
       },
       "configurations": {
         "development": {
-          "extractLicenses": false,
-          "optimization": false,
-          "sourceMap": true,
-          "vendorChunk": false
+          "mode": "development",
+          "watch": true
         },
         "production": {
-          "fileReplacements": [],
-          "optimization": false,
-          "outputHashing": "none",
-          "sourceMap": false,
-          "namedChunks": false,
-          "extractLicenses": true,
-          "vendorChunk": false
+          "mode": "production"
         }
       }
     },
     "serve": {
-      "executor": "@nx/webpack:dev-server",
+      "executor": "@nx/vite:dev-server",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "shinkai-visor:build",
-        "hmr": true
+        "buildTarget": "shinkai-visor:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "shinkai-visor:build:development",
+          "hmr": true
+        },
+        "production": {
+          "buildTarget": "shinkai-visor:build:production",
+          "hmr": false
+        }
+      }
+    },
+    "preview": {
+      "executor": "@nx/vite:preview-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "shinkai-visor:build"
       },
       "configurations": {
         "development": {
           "buildTarget": "shinkai-visor:build:development"
         },
         "production": {
-          "buildTarget": "shinkai-visor:build:production",
-          "hmr": false
+          "buildTarget": "shinkai-visor:build:production"
         }
+      }
+    },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "passWithNoTests": true,
+        "reportsDirectory": "../../coverage/apps/shinkai-visor"
       }
     },
     "lint": {
@@ -75,22 +73,7 @@
       "options": {
         "buildTarget": "shinkai-visor:build"
       }
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
-      "options": {
-        "jestConfig": "apps/shinkai-visor/jest.config.ts",
-        "passWithNoTests": true
-      },
-      "configurations": {
-        "ci": {
-          "ci": true,
-          "codeCoverage": true
-        }
-      }
     }
   },
   "tags": []
 }
-
