@@ -24,7 +24,7 @@ import { useSetup } from "../hooks/usetSetup";
 const AdminCommands: React.FC = () => {
   useSetup();
   const setupDetailsState = useSelector(
-    (state: RootState) => state.setupDetailsState
+    (state: RootState) => state.setupDetails
   );
   const [showCodeRegistrationActionSheet, setShowCodeRegistrationActionSheet] =
     useState(false);
@@ -36,7 +36,7 @@ const AdminCommands: React.FC = () => {
   const [profileName, setProfileName] = useState("");
   const dispatch = useDispatch();
   const registrationCode = useSelector(
-    (state: RootState) => state.registrationCode
+    (state: RootState) => state.other.registrationCode
   );
   const commands = [
     "Get Peers",

@@ -32,13 +32,13 @@ const CreateJob: React.FC = () => {
   useSetup();
   const dispatch = useDispatch();
   const setupDetailsState = useSelector(
-    (state: RootState) => state.setupDetailsState
+    (state: RootState) => state.setupDetails
   );
   const [jobContent, setJobContent] = useState("");
   const [selectedAgent, setSelectedAgent] = useState<SerializedAgent | null>(
     null
   );
-  const agents = useSelector((state: RootState) => state.agents);
+  const agents = useSelector((state: RootState) => state.other.agents);
   const history: History<unknown> = useHistory();
 
   useEffect(() => {
@@ -100,8 +100,7 @@ const CreateJob: React.FC = () => {
         receiver_subidentity,
         setupDetailsState
       );
-      // TODO: Review this, we are using api answer and dispatching it as an action
-      dispatch(result);
+      dispatch({ type: "SEND_MESSAGE_SUCCESS", payload: result });
 
       // Hacky solution because react-router can't handle dots in the URL
       const jobInboxName = InboxNameWrapper.get_job_inbox_name_from_params(

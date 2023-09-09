@@ -1,5 +1,5 @@
 import { SerializedAgent } from "@shinkai/shinkai-message-ts/models";
-import { SetupDetailsState } from "./reducers";
+import { SetupDetailsState } from "./reducers/setupDetailsReducer";
 import {
   GET_PUBLIC_KEY,
   USE_REGISTRATION_CODE,
@@ -15,6 +15,7 @@ import {
   GET_AVAILABLE_AGENTS,
   CLEAR_MESSAGES,
   ADD_AGENTS,
+  RECEIVE_UNREAD_MESSAGES_FROM_INBOX,
 } from "./types";
 
 export const getPublicKey = (publicKey: string) => ({
@@ -37,6 +38,14 @@ export const receiveLastMessagesFromInbox = (
   messages: any[]
 ) => ({
   type: RECEIVE_LAST_MESSAGES_FROM_INBOX,
+  payload: { inboxId, messages },
+});
+
+export const receiveUnreadMessagesFromInbox = (
+  inboxId: string,
+  messages: any[]
+) => ({
+  type: RECEIVE_UNREAD_MESSAGES_FROM_INBOX,
   payload: { inboxId, messages },
 });
 

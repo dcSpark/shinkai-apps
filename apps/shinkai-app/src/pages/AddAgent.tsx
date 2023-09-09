@@ -23,18 +23,18 @@ import {
 import { useEffect, useState } from "react";
 import { IonContentCustom, IonHeaderCustom } from "../components/ui/Layout";
 import Button from "../components/ui/Button";
-import Input from "../components/ui/Input";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
 import { SerializedAgent, AgentAPIModel } from "@shinkai/shinkai-message-ts/models";
 import { addAgent } from "@shinkai/shinkai-message-ts/api";
 import { useSetup } from "../hooks/usetSetup";
+import { useHistory } from 'react-router-dom';
 
 const AddAgent: React.FC = () => {
   useSetup();
   const dispatch = useDispatch();
   const setupDetailsState = useSelector(
-    (state: RootState) => state.setupDetailsState
+    (state: RootState) => state.setupDetails
   );
   const [agent, setAgent] = useState<Partial<SerializedAgent>>({
     perform_locally: false,
@@ -70,7 +70,7 @@ const AddAgent: React.FC = () => {
     });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const { shinkai_identity, profile } = setupDetailsState;
     const node_name = shinkai_identity;
 
@@ -82,13 +82,18 @@ const AddAgent: React.FC = () => {
     }
 
     console.log("Submitting agent:", agent);
-    
-    addAgent(
+
+    const resp = await addAgent(
       profile,
       node_name,
       agent as SerializedAgent,
       setupDetailsState
     );
+    if (resp) {
+      // TODO: show a success toast
+      // eslint-disable-next-line no-restricted-globals
+      history.back();
+    }
   };
 
   return (

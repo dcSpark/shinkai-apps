@@ -1,155 +1,71 @@
 import {
   IonBackButton,
-  IonButton,
   IonButtons,
-  IonContent,
-  IonFooter,
-  IonHeader,
   IonIcon,
-  IonInput,
-  IonItem,
-  IonLabel,
-  IonList,
   IonPage,
-  IonText,
   IonTextarea,
   IonTitle,
-  IonToolbar,
-} from "@ionic/react";
-import { useParams } from "react-router-dom";
-import React, { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  getLastMessagesFromInbox,
-  sendMessageToJob,
-} from "@shinkai/shinkai-message-ts/api";
-import { RootState } from "../store";
-import { useSetup } from "../hooks/usetSetup";
+} from '@ionic/react';
+import { useParams } from 'react-router-dom';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { sendMessageToJob } from '@shinkai/shinkai-message-ts/api';
+import { useSetup } from '../hooks/usetSetup';
 import {
   extractJobIdFromInbox,
-  extractReceiverShinkaiName,
   getOtherPersonIdentity,
-} from "../utils/inbox_name_handler";
-import { ShinkaiMessage } from "@shinkai/shinkai-message-ts/models";
-import { calculateMessageHash } from "@shinkai/shinkai-message-ts/utils";
-import Avatar from "../components/ui/Avatar";
-import { cn } from "../theme/lib/utils";
-import { send } from "ionicons/icons";
-import "./Chat.css";
-import {
-  IonContentCustom,
-  IonFooterCustom,
-  IonHeaderCustom,
-} from "../components/ui/Layout";
-import { receiveLoadMoreMessagesFromInbox } from "../store/actions";
-
-const parseDate = (dateString: string) => {
-  return new Date(dateString);
-};
+} from '../utils/inbox_name_handler';
+import { cn } from '../theme/lib/utils';
+import { send } from 'ionicons/icons';
+import './Chat.css';
+import { IonFooterCustom, IonHeaderCustom } from '../components/ui/Layout';
+import ChatMessages from '../components/ChatMessages';
+import { RootState } from '../store';
 
 const JobChat: React.FC = () => {
-  console.log("Loading Chat.tsx");
+  console.log('Loading JobChat.tsx');
   useSetup();
 
   const dispatch = useDispatch();
   const setupDetailsState = useSelector(
-    (state: RootState) => state.setupDetailsState
+    (state: RootState) => state.setupDetails,
+    shallowEqual
   );
+  const { shinkai_identity, profile } = setupDetailsState;
 
   const { id } = useParams<{ id: string }>();
-  const bottomChatRef = useRef<HTMLDivElement>(null);
-  const deserializedId = decodeURIComponent(id).replace(/~/g, ".");
-  const [lastKey, setLastKey] = useState<string | undefined>(undefined);
-  const [hasMoreMessages, setHasMoreMessages] = useState(true);
-  const [prevMessagesLength, setPrevMessagesLength] = useState(0);
-
-  const reduxMessages = useSelector(
-    (state: RootState) => state.inboxes[deserializedId]
-  );
-
-  const [messages, setMessages] = useState<ShinkaiMessage[]>([]);
-  const [inputMessage, setInputMessage] = useState("");
+  const deserializedId = decodeURIComponent(id).replace(/~/g, '.');
+  const [inputMessage, setInputMessage] = useState('');
   const otherPersonIdentity = getOtherPersonIdentity(
     deserializedId,
     setupDetailsState.shinkai_identity
   );
 
-  const extractContent = (messageBody: any) => {
-    if (messageBody && "unencrypted" in messageBody) {
-      if ("unencrypted" in messageBody.unencrypted.message_data) {
-        return JSON.parse(
-          messageBody.unencrypted.message_data.unencrypted.message_raw_content
-        ).content;
-      } else {
-        return JSON.parse(
-          messageBody.unencrypted.message_data.encrypted.content
-        ).content;
-      }
-    } else if (messageBody?.encrypted) {
-      return JSON.parse(messageBody.encrypted.content).content;
-    }
-    return "";
-  };
-
-  useEffect(() => {
-    console.log("deserializedId:", deserializedId);
-    dispatch(
-      getLastMessagesFromInbox(deserializedId, 10, lastKey, setupDetailsState)
-    );
-  }, [id, dispatch, setupDetailsState]);
-
-  useEffect(() => {
-    if (reduxMessages && reduxMessages.length > 0) {
-      console.log("Redux Messages:", reduxMessages);
-      const lastMessage = reduxMessages[reduxMessages.length - 1];
-      console.log("Last Message:", lastMessage);
-      const timeKey = lastMessage.external_metadata.scheduled_time;
-      const hashKey = calculateMessageHash(lastMessage);
-      const lastMessageKey = `${timeKey}:${hashKey}`;
-      setLastKey(lastMessageKey);
-      setMessages(reduxMessages);
-
-      if (reduxMessages.length - prevMessagesLength < 10) {
-        setHasMoreMessages(false);
-      }
-      setPrevMessagesLength(reduxMessages.length);
-    }
-  }, [reduxMessages]);
-
-  useEffect(() => {
-    // Check if the user is at the bottom of the chat
-    const isUserAtBottom =
-      bottomChatRef.current &&
-      bottomChatRef.current.getBoundingClientRect().bottom <=
-        window.innerHeight;
-
-    // If the user is at the bottom, scroll to the bottom
-    if (isUserAtBottom) {
-      bottomChatRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages]);
-
-  const sendMessage = async () => {
-    console.log("Sending message: ", inputMessage);
-
-    // Local Identity
-    const { shinkai_identity, profile, registration_name } = setupDetailsState;
-    // let sender = shinkai_identity;
+  const sendMessage = useCallback(async () => {
     const sender = `${shinkai_identity}/${profile}`;
+    console.log('Sending message: ', inputMessage);
+    console.log('Sender:', sender);
 
-    console.log("Sender:", sender);
-
-    const result = await sendMessageToJob(
+    const message_to_send = inputMessage;
+    setInputMessage('');
+    sendMessageToJob(
       extractJobIdFromInbox(deserializedId.toString()),
-      inputMessage,
+      message_to_send,
       sender,
       shinkai_identity,
-      "",
+      '',
       setupDetailsState
-    );
-    dispatch(result);
-    setInputMessage("");
-  };
+    ).then((message) => {
+      dispatch({ type: 'SEND_MESSAGE_SUCCESS', payload: message });
+    });
+  }, [
+    inputMessage,
+    dispatch,
+    setupDetailsState,
+    shinkai_identity,
+    deserializedId,
+    profile
+  ]);
 
   return (
     <IonPage className="bg-slate-900">
@@ -164,87 +80,15 @@ const JobChat: React.FC = () => {
           {/*<Avatar className="shrink-0" />*/}
         </div>
       </IonHeaderCustom>
-
-      <IonContentCustom>
-        <div className="py-10 md:rounded-[1.25rem] bg-white dark:bg-slate-800">
-          {hasMoreMessages && (
-            <IonButton
-              onClick={() => {
-                getLastMessagesFromInbox(
-                  deserializedId,
-                  10,
-                  lastKey,
-                  setupDetailsState
-                ).then((messages) => {
-                  console.log("receiveLoadMoreMessagesFromInbox Response:", messages);
-                  dispatch(receiveLoadMoreMessagesFromInbox(deserializedId, messages));
-                })
-              }}
-            >
-              Load More
-            </IonButton>
-          )}
-          <IonList class="ion-list-chat p-0 divide-y divide-slate-200 dark:divide-slate-500/50 md:rounded=[1.25rem]  ">
-            {messages &&
-              messages
-                .slice()
-                .reverse()
-                .map((message, index) => {
-                  const { shinkai_identity, profile, registration_name } =
-                    setupDetailsState;
-
-                  const localIdentity = `${profile}/device/${registration_name}`;
-                  // console.log("Message:", message);
-                  let isLocalMessage = false;
-                  if (message.body && "unencrypted" in message.body) {
-                    isLocalMessage =
-                      message.body.unencrypted.internal_metadata
-                        .sender_subidentity === localIdentity;
-                  }
-
-                  return (
-                    <IonItem
-                      key={index}
-                      lines="none"
-                      className={cn(
-                        "ion-item-chat relative w-full shadow",
-                        isLocalMessage && "isLocalMessage"
-                      )}
-                    >
-                      <div className="px-2 py-4 flex gap-4 pb-10 w-full">
-                        <Avatar
-                          className="shrink-0 mr-4"
-                          url={
-                            isLocalMessage
-                              ? "https://ui-avatars.com/api/?name=Me&background=FE6162&color=fff"
-                              : "https://ui-avatars.com/api/?name=O&background=363636&color=fff"
-                          }
-                        />
-
-                        <p>{extractContent(message.body)}</p>
-                        {message?.external_metadata?.scheduled_time && (
-                          <span className="absolute bottom-[5px] right-5 text-muted text-sm">
-                            {parseDate(
-                              message.external_metadata.scheduled_time
-                            ).toLocaleTimeString()}
-                          </span>
-                        )}
-                      </div>
-                    </IonItem>
-                  );
-                })}
-          </IonList>
-          <div ref={bottomChatRef} />
-        </div>
-      </IonContentCustom>
+      <ChatMessages deserializedId={deserializedId} />
       <IonFooterCustom>
         <form
           className={
-            "flex flex-col w-full py-2 flex-grow md:py-3 md:pl-4 relative"
+            'flex flex-col w-full py-2 flex-grow md:py-3 md:pl-4 relative'
           }
           onSubmit={(e) => {
             e.preventDefault();
-            if (inputMessage.trim() !== "") {
+            if (inputMessage.trim() !== '') {
               sendMessage();
             }
           }}
@@ -257,7 +101,10 @@ const JobChat: React.FC = () => {
               fill="outline"
               className="m-0 w-full bg-transparent p-0 pl-2 pr-12 md:pl-0"
               value={inputMessage}
-              onIonChange={(e) => setInputMessage(e.detail.value!)}
+              onIonChange={(e) => {
+                const newMessage = e.detail.value!;
+                setInputMessage(newMessage);
+              }}
               placeholder="Type a message"
             ></IonTextarea>
 
@@ -265,10 +112,10 @@ const JobChat: React.FC = () => {
               onClick={sendMessage}
               aria-label="Send Message"
               className={cn(
-                "absolute z-10 p-3 rounded-md text-gray-500 bottom-[1px] right-1",
-                "md:bottom-2.5 md:right-2",
-                "hover:bg-gray-100 disabled:hover:bg-transparent",
-                "dark:text-white dark:hover:text-gray-100 dark:hover:bg-gray-700 dark:disabled:hover:bg-transparent"
+                'absolute z-10 p-3 rounded-md text-gray-500 bottom-[1px] right-1',
+                'md:bottom-2.5 md:right-2',
+                'hover:bg-gray-100 disabled:hover:bg-transparent',
+                'dark:text-white dark:hover:text-gray-100 dark:hover:bg-gray-700 dark:disabled:hover:bg-transparent'
               )}
             >
               <IonIcon size="" icon={send} />

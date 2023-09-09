@@ -21,14 +21,11 @@ import {
   generateSignatureKeys,
 } from "@shinkai/shinkai-message-ts/utils";
 import { QRSetupData } from "../models/QRSetupData";
-import { SetupDetailsState } from "../store/reducers";
-import { InputCustomEvent } from "@ionic/core/dist/types/components/input/input-interface";
-import { cn } from "../theme/lib/utils";
 import Button from "../components/ui/Button";
-import { IonHeaderCustom } from "../components/ui/Layout";
 import Input from "../components/ui/Input";
 import { scan, cloudUpload, checkmarkSharp } from "ionicons/icons";
 import { useRegistrationCode } from "../store/actions";
+import { SetupDetailsState } from "../store/reducers/setupDetailsReducer";
 
 export type MergedSetupType = SetupDetailsState & QRSetupData;
 
@@ -58,7 +55,7 @@ const Connect: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
   const history = useHistory();
-  const errorFromState = useSelector((state: RootState) => state.error);
+  const errorFromState = useSelector((state: RootState) => state.other.error);
 
   // Generate keys when the component mounts
   useEffect(() => {
