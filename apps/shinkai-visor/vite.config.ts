@@ -1,8 +1,10 @@
 /// <reference types="vitest" />
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
+import legacy from '@vitejs/plugin-legacy';
+import react from '@vitejs/plugin-react';
 import { fileURLToPath } from 'url';
+import { defineConfig } from 'vite';
+import wasm from 'vite-plugin-wasm';
 
 export default defineConfig({
   cacheDir: '../../node_modules/.vite/shinkai-visor',
@@ -21,7 +23,7 @@ export default defineConfig({
     host: 'localhost',
   },
 
-  plugins: [react(), nxViteTsPaths()],
+  plugins: [react(), nxViteTsPaths(), wasm()],
 
   // Uncomment this if you are using workers.
   // worker: {
@@ -45,8 +47,7 @@ export default defineConfig({
     sourcemap: true,
     rollupOptions: {
       input: {
-        background: fileURLToPath(new URL('./src/background.ts', import.meta.url)),
-        content: fileURLToPath(new URL('./src/content.ts', import.meta.url)),
+        'service-worker': fileURLToPath(new URL('./src/service-worker.ts', import.meta.url)),
         popup: fileURLToPath(new URL('./src/popup/popup.html', import.meta.url)),
       },
       output: {
@@ -54,4 +55,11 @@ export default defineConfig({
       }
     },
   },
+  esbuild: {
+    // Important for wasm plugin
+    supported: {
+      'top-level-await': true,
+      'bigint': true,
+    }
+  }
 });

@@ -1,4 +1,5 @@
 import { MessageFormatElement } from 'react-intl';
+
 import english  from './en.json';
 import spanish from './es.json';
 

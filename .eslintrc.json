@@ -1,7 +1,14 @@
 {
   "root": true,
+  "extends": ["eslint:recommended", "plugin:react/recommended"],
   "ignorePatterns": ["**/*"],
-  "plugins": ["@nx"],
+  "plugins": ["@nx", "simple-import-sort"],
+  "rules": {
+    "react/react-in-jsx-scope": "off",
+    "react/jsx-uses-react": "off",
+    "simple-import-sort/imports": "error",
+    "react/jsx-sort-props": "warn"
+  },
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],

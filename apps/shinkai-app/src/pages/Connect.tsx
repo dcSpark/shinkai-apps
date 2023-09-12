@@ -20,7 +20,7 @@ import {
   generateEncryptionKeys,
   generateSignatureKeys,
 } from "@shinkai/shinkai-message-ts/utils";
-import { QRSetupData } from "../models/QRSetupData";
+import { QRSetupData } from "@shinkai/shinkai-message-ts/models";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import { scan, cloudUpload, checkmarkSharp } from "ionicons/icons";
