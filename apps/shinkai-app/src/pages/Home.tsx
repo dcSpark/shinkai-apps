@@ -89,55 +89,55 @@ const Home: React.FC = () => {
           </IonButton>
         </IonButtons>
       </IonHeaderCustom>
-      <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">{displayString}</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-        {/* <ExploreContainer /> */}
+      {/*<IonContent fullscreen>*/}
+      {/*<IonHeader collapse="condense">*/}
+      {/*  <IonToolbar>*/}
+      {/*    <IonTitle size="large">{displayString}</IonTitle>*/}
+      {/*  </IonToolbar>*/}
+      {/*</IonHeader>*/}
+      {/* <ExploreContainer /> */}
 
-        <IonContentCustom>
-          <div className="h-full flex flex-col">
-            <div className="flex-1 md:rounded-[1.25rem] bg-white dark:bg-slate-800 p-4 md:p-10 space-y-2 md:space-y-4">
-              {inboxes &&
-                inboxes.map((inbox_name) => (
-                  <IonItem
-                    key={inbox_name}
-                    button
-                    className="ion-item-home"
-                    onClick={() => {
-                      const encodedInboxId = inbox_name
-                        .toString()
-                        .replace(/\./g, '~');
-                      if (encodedInboxId.startsWith('inbox')) {
-                        history.push(
-                          `/chat/${encodeURIComponent(encodedInboxId)}`
-                        );
-                      } else if (encodedInboxId.startsWith('job_inbox')) {
-                        history.push(
-                          `/job-chat/${encodeURIComponent(encodedInboxId)}`
-                        );
-                      }
-                    }}
-                  >
-                    <Avatar
-                      url={`https://ui-avatars.com/api/?name=${inbox_name}&background=FE6162&color=fff`}
-                      className="shrink-0"
-                    />
-                    <IonText className="ml-4 font-bold md:text-lg">
-                      {JSON.stringify(inbox_name)}
-                    </IonText>
-                    <IonIcon
-                      icon={arrowForward}
-                      className="hidden md:ml-auto md:block"
-                    />
-                  </IonItem>
-                ))}
-            </div>
+      <IonContentCustom>
+        <div className="h-full flex flex-col">
+          <div className="flex-1 md:rounded-lg p-4 md:p-10 space-y-2 md:space-y-4">
+            {inboxes &&
+              inboxes.map((inbox_name) => (
+                <IonItem
+                  key={inbox_name}
+                  button
+                  className="ion-item-home"
+                  onClick={() => {
+                    const encodedInboxId = inbox_name
+                      .toString()
+                      .replace(/\./g, '~');
+                    if (encodedInboxId.startsWith('inbox')) {
+                      history.push(
+                        `/chat/${encodeURIComponent(encodedInboxId)}`
+                      );
+                    } else if (encodedInboxId.startsWith('job_inbox')) {
+                      history.push(
+                        `/job-chat/${encodeURIComponent(encodedInboxId)}`
+                      );
+                    }
+                  }}
+                >
+                  <Avatar
+                    url={`https://ui-avatars.com/api/?name=${inbox_name}&background=FE6162&color=fff`}
+                    className="shrink-0"
+                  />
+                  <IonText className="ml-4 font-bold md:text-lg">
+                    {JSON.stringify(inbox_name)}
+                  </IonText>
+                  <IonIcon
+                    icon={arrowForward}
+                    className="hidden md:ml-auto md:block"
+                  />
+                </IonItem>
+              ))}
           </div>
-        </IonContentCustom>
-      </IonContent>
+        </div>
+      </IonContentCustom>
+      {/*</IonContent>*/}
       {/* Action Sheet (popup) */}
       <IonActionSheet
         className="ion-actionSheet-custom"

@@ -128,7 +128,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ deserializedId }) => {
 
   return (
     <IonContentCustom ref={chatContainerRef}>
-      <div className="py-10 md:rounded-[1.25rem] bg-white dark:bg-slate-800">
+      <div className="bg-white dark:bg-slate-800">
         {!isLoading && hasMoreMessages && (
           <IonButton
             onClick={() =>
@@ -146,7 +146,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ deserializedId }) => {
             Load More
           </IonButton>
         )}
-        <IonList class="ion-list-chat p-0 divide-y divide-slate-200 dark:divide-slate-500/50 md:rounded-[1.25rem]">
+        <IonList class="flex flex-col gap-10 p-0 md:rounded-[1.25rem] bg-slate-900">
           {isLoading &&
             Array.from({ length: 6 }).map((item, idx) => (
               <IonItem
@@ -187,12 +187,12 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ deserializedId }) => {
                 setupDetailsState;
 
               const localIdentity = `${profile}/device/${registration_name}`;
-              // console.log("Message:", message);
               let isLocalMessage = false;
               if (message.body && 'unencrypted' in message.body) {
                 isLocalMessage =
                   message.body.unencrypted.internal_metadata
-                    .sender_subidentity === localIdentity;
+                    .sender_subidentity === localIdentity ||
+                  message.external_metadata?.sender === shinkai_identity;
               }
 
               return (
@@ -200,13 +200,18 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ deserializedId }) => {
                   key={index}
                   lines="none"
                   className={cn(
-                    'ion-item-chat relative w-full shadow',
+                    'ion-item-chat relative',
                     isLocalMessage && 'isLocalMessage'
                   )}
                 >
-                  <div className="px-2 py-4 flex gap-4 pb-10 w-full">
+                  <div
+                    className={cn(
+                      'px-2 py-6 flex gap-8 pb-14',
+                      isLocalMessage && 'flex-row-reverse'
+                    )}
+                  >
                     <Avatar
-                      className="shrink-0 mr-4"
+                      className="shrink-0"
                       url={
                         isLocalMessage
                           ? 'https://ui-avatars.com/api/?name=Me&background=FE6162&color=fff'
@@ -216,7 +221,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ deserializedId }) => {
 
                     <p>{extractContent(message.body)}</p>
                     {message?.external_metadata?.scheduled_time && (
-                      <span className="absolute bottom-[5px] right-5 text-muted text-sm">
+                      <span className="absolute bottom-[16px] right-5 text-muted text-sm">
                         {new Date(
                           message.external_metadata.scheduled_time
                         ).toLocaleString(undefined, {

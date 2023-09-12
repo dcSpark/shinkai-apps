@@ -149,7 +149,7 @@ const Chat: React.FC = () => {
       </IonHeaderCustom>
 
       <IonContentCustom>
-        <div className="py-10 md:rounded-[1.25rem] bg-white dark:bg-slate-800">
+        <div className="bg-white dark:bg-slate-800">
           {hasMoreMessages && (
             <IonButton
               onClick={async () => {
@@ -167,7 +167,7 @@ const Chat: React.FC = () => {
               Load More
             </IonButton>
           )}
-          <IonList class="ion-list-chat p-0 divide-y divide-slate-200 dark:divide-slate-500/50 md:rounded-[1.25rem]  ">
+          <IonList class="ion-list-chat flex flex-col gap-10 p-0 md:rounded-[1.25rem] bg-transparent">
             {messages &&
               messages
                 .slice()
@@ -190,7 +190,7 @@ const Chat: React.FC = () => {
                       key={index}
                       lines="none"
                       className={cn(
-                        'ion-item-chat relative w-full shadow',
+                        'ion-item-chat relative',
                         isLocalMessage && 'isLocalMessage'
                       )}
                     >

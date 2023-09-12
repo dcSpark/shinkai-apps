@@ -3,14 +3,15 @@
   --background: theme("colors.slate.100");
   --box-shadow: none;
   --inner-border-width: 0;
+  --border-radius: 20px;
   @apply rounded-lg;
   &::part(native) {
     @apply h-[60px] md:h-[80px];
   }
   @media (prefers-color-scheme: dark) {
     --ion-item-background: theme("colors.slate.900");
-    --background: theme("colors.slate.900");
-    --background-hover: theme("colors.slate.800");
+    --background: theme("colors.slate.800");
+    --background-hover: theme("colors.slate.700");
   }
 }
 
