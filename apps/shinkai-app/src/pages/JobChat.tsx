@@ -7,7 +7,7 @@ import {
   IonTitle,
 } from '@ionic/react';
 import { useParams } from 'react-router-dom';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { sendMessageToJob } from '@shinkai/shinkai-message-ts/api';
 import { useSetup } from '../hooks/usetSetup';
@@ -96,8 +96,8 @@ const JobChat: React.FC = () => {
               fill="outline"
               className="m-0 w-full bg-transparent p-0 pl-2 pr-12 md:pl-0"
               value={inputMessage}
-              onIonChange={(e) => {
-                const newMessage = e.detail.value!;
+              onIonInput={(e) => {
+                const newMessage = e.detail.value as string;
                 setInputMessage(newMessage);
               }}
               placeholder="Type a message"
