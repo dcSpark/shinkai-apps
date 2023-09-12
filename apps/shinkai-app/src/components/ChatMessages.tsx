@@ -5,7 +5,14 @@ import {
   getLastUnreadMessagesFromInbox,
 } from '@shinkai/shinkai-message-ts/api/methods';
 import { ShinkaiMessage } from '@shinkai/shinkai-message-ts/models';
-import { IonList, IonItem, IonButton } from '@ionic/react';
+import {
+  IonList,
+  IonItem,
+  IonButton,
+  IonSkeletonText,
+  IonThumbnail,
+  IonLabel,
+} from '@ionic/react';
 import Avatar from '../components/ui/Avatar';
 import { cn } from '../theme/lib/utils';
 import { IonContentCustom } from './ui/Layout';
@@ -23,6 +30,13 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ deserializedId }) => {
   const setupDetailsState = useSelector(
     (state: RootState) => state.setupDetails
   );
+  const [status, setStatus] = useState<
+    'idle' | 'pending' | 'success' | 'rejected'
+  >('idle');
+  const isLoading = status === 'pending';
+  const isSuccess = status === 'success';
+  const isRejected = status === 'rejected';
+
   const reduxMessages = useSelector(
     (state: RootState) => state.messages.inboxes[deserializedId]
   );
@@ -35,16 +49,20 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ deserializedId }) => {
   const [hasMoreMessages, setHasMoreMessages] = useState(true);
   const [messages, setMessages] = useState<ShinkaiMessage[]>([]);
 
+  const chatContainerRef = React.createRef<HTMLIonContentElement>();
+
   useEffect(() => {
     console.log('deserializedId:', deserializedId);
-    getLastMessagesFromInbox(
-      deserializedId,
-      10,
-      lastKey,
-      setupDetailsState
-    ).then((messages) => {
-      dispatch(receiveLastMessagesFromInbox(deserializedId, messages));
-    });
+    setStatus('pending');
+    getLastMessagesFromInbox(deserializedId, 10, lastKey, setupDetailsState)
+      .then((messages) => {
+        setStatus('success');
+        dispatch(receiveLastMessagesFromInbox(deserializedId, messages));
+      })
+      .catch((error) => {
+        setStatus('rejected');
+        console.log('Error:', error);
+      });
   }, [dispatch, setupDetailsState, deserializedId, lastKey]);
 
   useEffect(() => {
@@ -59,12 +77,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ deserializedId }) => {
       });
     }, 5000); // 2000 milliseconds = 2 seconds
     return () => clearInterval(interval);
-  }, [
-    dispatch,
-    deserializedId,
-    mostRecentKey,
-    setupDetailsState,
-  ]);
+  }, [dispatch, deserializedId, mostRecentKey, setupDetailsState]);
 
   useEffect(() => {
     if (reduxMessages && reduxMessages.length > 0) {
@@ -110,10 +123,16 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ deserializedId }) => {
     return '';
   };
 
+  React.useEffect(() => {
+    if (chatContainerRef.current) {
+      void chatContainerRef.current.scrollToBottom(100);
+    }
+  }, [isSuccess]);
+
   return (
-    <IonContentCustom>
+    <IonContentCustom ref={chatContainerRef}>
       <div className="py-10 md:rounded-[1.25rem] bg-white dark:bg-slate-800">
-        {hasMoreMessages && (
+        {!isLoading && hasMoreMessages && (
           <IonButton
             onClick={() =>
               dispatch(
@@ -130,8 +149,43 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ deserializedId }) => {
             Load More
           </IonButton>
         )}
-        <IonList class="ion-list-chat p-0 divide-y divide-slate-200 dark:divide-slate-500/50 md:rounded-[1.25rem]  ">
-          {messages &&
+        <IonList class="ion-list-chat p-0 divide-y divide-slate-200 dark:divide-slate-500/50 md:rounded-[1.25rem]">
+          {isLoading &&
+            Array.from({ length: 6 }).map((item, idx) => (
+              <IonItem
+                key={idx}
+                lines="none"
+                className="ion-item-chat relative w-full shadow"
+              >
+                <div className="px-2 py-4 flex gap-4 pb-10 w-full">
+                  <IonThumbnail className={'rounded-[1.5rem]'} slot="start">
+                    <IonSkeletonText
+                      className={'rounded-[8px]'}
+                      animated={true}
+                    ></IonSkeletonText>
+                  </IonThumbnail>
+                  <div className="w-full">
+                    <IonSkeletonText
+                      animated={true}
+                      style={{
+                        width: '90%',
+                        borderRadius: '1.5rem',
+                        marginBottom: 13,
+                      }}
+                    />
+                    <IonSkeletonText
+                      animated={true}
+                      style={{
+                        width: '80%',
+                        borderRadius: '1.5rem',
+                      }}
+                    />
+                  </div>
+                </div>
+              </IonItem>
+            ))}
+          {isSuccess &&
+            messages &&
             messages.slice().map((message, index) => {
               const { shinkai_identity, profile, registration_name } =
                 setupDetailsState;
