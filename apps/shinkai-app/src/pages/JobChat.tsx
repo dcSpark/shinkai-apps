@@ -42,6 +42,7 @@ const JobChat: React.FC = () => {
   );
 
   const sendMessage = useCallback(async () => {
+    if (inputMessage.trim() === '') return;
     const sender = `${shinkai_identity}/${profile}`;
     console.log('Sending message: ', inputMessage);
     console.log('Sender:', sender);
@@ -64,7 +65,7 @@ const JobChat: React.FC = () => {
     setupDetailsState,
     shinkai_identity,
     deserializedId,
-    profile
+    profile,
   ]);
 
   return (
@@ -82,14 +83,10 @@ const JobChat: React.FC = () => {
       </IonHeaderCustom>
       <ChatMessages deserializedId={deserializedId} />
       <IonFooterCustom>
-        <form
+        <div
           className={
             'flex flex-col w-full py-2 flex-grow md:py-3 md:pl-4 relative'
           }
-          onSubmit={(e) => {
-            e.preventDefault();
-              sendMessage();
-          }}
         >
           <div className="m-2 relative flex h-full flex-1 md:flex-col">
             <IonTextarea
@@ -104,11 +101,16 @@ const JobChat: React.FC = () => {
                 setInputMessage(newMessage);
               }}
               placeholder="Type a message"
-            ></IonTextarea>
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+                  void sendMessage();
+                }
+              }}
+            />
 
             <button
-              onClick={sendMessage}
               aria-label="Send Message"
+              onClick={sendMessage}
               className={cn(
                 'absolute z-10 p-3 rounded-md text-gray-500 bottom-[1px] right-1',
                 'md:bottom-2.5 md:right-2',
@@ -119,7 +121,7 @@ const JobChat: React.FC = () => {
               <IonIcon size="" icon={send} />
             </button>
           </div>
-        </form>
+        </div>
       </IonFooterCustom>
     </IonPage>
   );
