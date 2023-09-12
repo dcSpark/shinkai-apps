@@ -11,7 +11,6 @@ import {
   IonButton,
   IonSkeletonText,
   IonThumbnail,
-  IonLabel,
 } from '@ionic/react';
 import Avatar from '../components/ui/Avatar';
 import { cn } from '../theme/lib/utils';
@@ -20,6 +19,22 @@ import { calculateMessageHash } from '@shinkai/shinkai-message-ts/utils/shinkai_
 import { RootState } from '../store';
 import { receiveLastMessagesFromInbox } from '../store/actions';
 
+const extractContent = (messageBody: any) => {
+  // TODO: extend it so it can be re-used by JobChat or normal Chat
+  if (messageBody && 'unencrypted' in messageBody) {
+    if ('unencrypted' in messageBody.unencrypted.message_data) {
+      return JSON.parse(
+        messageBody.unencrypted.message_data.unencrypted.message_raw_content
+      ).content;
+    } else {
+      return JSON.parse(messageBody.unencrypted.message_data.encrypted.content)
+        .content;
+    }
+  } else if (messageBody?.encrypted) {
+    return JSON.parse(messageBody.encrypted.content).content;
+  }
+  return '';
+};
 interface ChatMessagesProps {
   deserializedId: string;
 }
@@ -105,24 +120,6 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ deserializedId }) => {
     }
   }, [reduxMessages, prevMessagesLength]);
 
-  const extractContent = (messageBody: any) => {
-    // TODO: extend it so it can be re-used by JobChat or normal Chat
-    if (messageBody && 'unencrypted' in messageBody) {
-      if ('unencrypted' in messageBody.unencrypted.message_data) {
-        return JSON.parse(
-          messageBody.unencrypted.message_data.unencrypted.message_raw_content
-        ).content;
-      } else {
-        return JSON.parse(
-          messageBody.unencrypted.message_data.encrypted.content
-        ).content;
-      }
-    } else if (messageBody?.encrypted) {
-      return JSON.parse(messageBody.encrypted.content).content;
-    }
-    return '';
-  };
-
   React.useEffect(() => {
     if (chatContainerRef.current) {
       void chatContainerRef.current.scrollToBottom(100);
@@ -185,8 +182,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ deserializedId }) => {
               </IonItem>
             ))}
           {isSuccess &&
-            messages &&
-            messages.slice().map((message, index) => {
+            messages?.map((message, index) => {
               const { shinkai_identity, profile, registration_name } =
                 setupDetailsState;
 

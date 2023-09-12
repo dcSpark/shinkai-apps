@@ -40,7 +40,11 @@ import {
   IonFooterCustom,
   IonHeaderCustom,
 } from '../components/ui/Layout';
-import { addMessageToInbox, receiveLastMessagesFromInbox, receiveLoadMoreMessagesFromInbox } from '../store/actions';
+import {
+  addMessageToInbox,
+  receiveLastMessagesFromInbox,
+  receiveLoadMoreMessagesFromInbox,
+} from '../store/actions';
 import { RECEIVE_LAST_MESSAGES_FROM_INBOX } from '../store/types';
 
 const parseDate = (dateString: string) => {
@@ -76,8 +80,13 @@ const Chat: React.FC = () => {
 
   useEffect(() => {
     console.log('deserializedId:', deserializedId);
-    getLastMessagesFromInbox(deserializedId, 10, lastKey, setupDetailsState).then((messages) => {
-      console.log("receiveLastMessagesFromInbox Response:", messages);
+    getLastMessagesFromInbox(
+      deserializedId,
+      10,
+      lastKey,
+      setupDetailsState
+    ).then((messages) => {
+      console.log('receiveLastMessagesFromInbox Response:', messages);
       dispatch({ type: RECEIVE_LAST_MESSAGES_FROM_INBOX, payload: messages });
     });
   }, [id, dispatch, setupDetailsState, deserializedId, lastKey]);
@@ -99,19 +108,6 @@ const Chat: React.FC = () => {
       setPrevMessagesLength(reduxMessages.length);
     }
   }, [reduxMessages]);
-
-  useEffect(() => {
-    // Check if the user is at the bottom of the chat
-    const isUserAtBottom =
-      bottomChatRef.current &&
-      bottomChatRef.current.getBoundingClientRect().bottom <=
-        window.innerHeight;
-
-    // If the user is at the bottom, scroll to the bottom
-    if (isUserAtBottom) {
-      bottomChatRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages]);
 
   const sendMessage = async () => {
     console.log('Sending message: ', inputMessage);
@@ -161,9 +157,11 @@ const Chat: React.FC = () => {
                   deserializedId,
                   10,
                   lastKey,
-                  setupDetailsState,
+                  setupDetailsState
                 );
-                dispatch(receiveLoadMoreMessagesFromInbox(deserializedId, messages));
+                dispatch(
+                  receiveLoadMoreMessagesFromInbox(deserializedId, messages)
+                );
               }}
             >
               Load More
