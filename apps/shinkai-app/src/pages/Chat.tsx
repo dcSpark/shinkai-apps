@@ -169,7 +169,7 @@ const Chat: React.FC = () => {
               Load More
             </IonButton>
           )}
-          <IonList class="ion-list-chat p-0 divide-y divide-slate-200 dark:divide-slate-500/50 md:rounded=[1.25rem]  ">
+          <IonList class="ion-list-chat p-0 divide-y divide-slate-200 dark:divide-slate-500/50 md:rounded-[1.25rem]  ">
             {messages &&
               messages
                 .slice()

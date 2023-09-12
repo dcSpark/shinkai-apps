@@ -160,7 +160,7 @@ const AdminCommands: React.FC = () => {
           <IonTitle>Admin Commands</IonTitle>
         </IonHeaderCustom>
         <IonContentCustom>
-          <IonList className="ion-list-chat p-0 divide-y divide-slate-200 dark:divide-slate-500/50 md:rounded=[1.25rem]  ">
+          <IonList className="ion-list-chat p-0 divide-y divide-slate-200 dark:divide-slate-500/50 md:rounded-[1.25rem]  ">
             {commands.map((command) => (
               <IonItem
                 button
