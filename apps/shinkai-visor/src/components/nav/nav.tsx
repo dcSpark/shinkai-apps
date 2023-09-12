@@ -28,18 +28,20 @@ export default function NavBar() {
       className={`flex flex-col bg-gray-100 shadow-lg p-5 rounded-lg space-y-6`}
       ref={ref}
     >
-      <div className="flex flex-row justify-between place-items-center">
-        {!isRootPage && (
-          <Button
-            className="grow-0"
-            icon={<ArrowLeftOutlined />}
-            onClick={() => goBack()}
-            shape="circle"
-          >
-          </Button>
-        )}
-        <img alt="shinkai-app-logo" className="grow-0" src={visorLogo} />
-        <Button icon={!isMenuOpened ? <MenuOutlined /> : <CloseOutlined />} onClick={() => setMenuOpened(!isMenuOpened)}>
+      <div className="flex flex-row place-items-center justify-between">
+        <div className="flex-none w-8">
+          {!isRootPage && (
+            <Button
+            className="hidden"
+              icon={<ArrowLeftOutlined />}
+              onClick={() => goBack()}
+              shape="circle"
+            >
+            </Button>
+          )}
+        </div>
+        <img alt="shinkai-app-logo" className="h-full" src={visorLogo} />
+        <Button className="flex-none w-8" icon={!isMenuOpened ? <MenuOutlined /> : <CloseOutlined />} onClick={() => setMenuOpened(!isMenuOpened)}>
         </Button>
       </div>
       {isMenuOpened && <NavMenu />}
