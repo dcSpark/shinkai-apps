@@ -1,3 +1,4 @@
-.shinkai-button {
-  @apply bg-primary hover:bg-primary-500 text-white font-bold text-lg p-1 rounded-lg;
+/* Required root nesting to override ant css rules using tailwindcss https://ant.design/docs/react/compatible-style */
+#root {
+
 }

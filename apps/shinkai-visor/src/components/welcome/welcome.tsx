@@ -2,6 +2,7 @@ import logo from '../../../src/assets/icons/shinkai-min.svg';
 import { useHistory } from 'react-router';
 import { motion } from 'framer-motion';
 import { FormattedMessage } from 'react-intl';
+import { Button } from 'antd';
 
 export default function Welcome() {
   const history = useHistory();
@@ -25,12 +26,13 @@ export default function Welcome() {
             />
           </div>
         </div>
-        <button
+
+        <Button
+          type="primary"
           onClick={() => history.push('/nodes/add')}
-          className="shinkai-button"
         >
           <FormattedMessage id="setup" />
-        </button>
+        </Button>
       </div>
     </motion.div>
   );

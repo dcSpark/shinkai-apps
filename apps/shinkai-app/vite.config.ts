@@ -1,9 +1,9 @@
 /// <reference types="vitest" />
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
-import wasm from 'vite-plugin-wasm';
 import legacy from '@vitejs/plugin-legacy';
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
+import wasm from 'vite-plugin-wasm';
 
 export default defineConfig({
   cacheDir: '../../node_modules/.vite/shinkai-app',

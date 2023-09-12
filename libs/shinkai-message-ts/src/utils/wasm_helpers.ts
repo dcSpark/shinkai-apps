@@ -1,6 +1,6 @@
 
-import { generateKeyPair } from 'curve25519-js';
 import * as ed from '@noble/ed25519';
+import { generateKeyPair } from 'curve25519-js';
 
 type HexString = string;
 

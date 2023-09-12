@@ -6,5 +6,22 @@
   "inbox.other": "Bandejas de entrada",
   "setting.one": "Configuración",
   "settings.other": "Configuraciones",
-  "about": "Acerca de Shinkai" 
+  "about": "Acerca de Shinkai",
+  "add-node": "Conectar nodo",
+  "registration-code": "Código de registración",
+  "registration-name": "Nombre de registración",
+  "node-address": "Dirección del nodo",
+  "shinkai-identity": "Shinkai Identity",
+  "node-encryption-public-key": "Clave pública de encriptación del nodo",
+  "node-signature-public-key": "Clave pública de cifrado del nodo",
+  "profile-encryption-public-key": "Clave pública de cifrado de perfil",
+  "profile-signature-public-key": "Clave pública de firma de perfil",
+  "my-encryption-public-key": "Mi clave pública de cifrado",
+  "my-signature-public-key": "Mi clave pública de firma",
+  "upload-qr-code": "Subir código QR",
+  "connect": "Conectar",
+  "use-qr-code": "Usa un código QR para llenar estos campos",
+  "connect-manually": "¿No tienes un código QR? Conectar manualmente",
+  "scan": "Escanear",
+  "review": "Revisar"
 }
