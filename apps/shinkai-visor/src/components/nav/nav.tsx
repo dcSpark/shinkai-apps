@@ -18,7 +18,7 @@ export default function NavBar() {
   const location = useLocation();
   const [isMenuOpened, setMenuOpened] = useState(false);
   const isRootPage = ['/welcome'].includes(location.pathname);
-  console.log(location.pathname);
+
   const ref = useClickAway<HTMLElement>(() => {
     setMenuOpened(false);
   });

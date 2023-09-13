@@ -11,7 +11,7 @@ import { useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import ScanQrAnimation from '../../assets/animations/scan-qr.json';
-import { sendMessageToSw } from '../../helpers/service-worker-communication';
+import { dispatchSw, useSelectorSw } from '../../service-worker/sw-store';
 
 type AddNodeFieldType = {
   registrationCode: string;
@@ -57,6 +57,7 @@ export const AddNode = () => {
   );
   const [submittable, setSubmittable] = useState(false);
   const currentFormValue = Form.useWatch([], form);
+  const status = useSelectorSw((state: any) => state?.node?.status);
   const [initialValues, setInitialValues] = useState<Partial<AddNodeFieldType>>(
     {
       registrationCode: '',
@@ -96,7 +97,6 @@ export const AddNode = () => {
     const parsedQrData: QRSetupData = JSON.parse(json_string);
     const nodeDataFromQr = getValuesFromQr(parsedQrData);
     form.setFieldsValue({ ...initialValues, ...nodeDataFromQr });
-    console.log('initial', initialValues, currentFormValue);
     setCurrentStep(AddNodeSteps.ReviewData);
   };
 
@@ -179,33 +179,30 @@ export const AddNode = () => {
 
   const connect = () => {
     setCurrentStep(AddNodeSteps.Connect);
-    sendMessageToSw({
-      type: 'store',
-      payload: {
-        type: 'dispatch',
-        action: 'connectNode',
-        payload: [
-          {
-            my_device_encryption_sk: currentFormValue.myDeviceEncryptionSharedKey,
-            my_device_identity_sk: currentFormValue.myDeviceIdentitySharedKey,
-            profile_encryption_sk: currentFormValue.profileEncryptionSharedKey,
-            profile_identity_sk: currentFormValue.profileSignatureSharedKey,
-            node_encryption_pk: currentFormValue.nodeEncryptionPublicKey,
-            registration_code: currentFormValue.myDeviceEncryptionSharedKey,
-            identity_type: currentFormValue.identityType,
-            permission_type: currentFormValue.permissionType,
-            registration_name: currentFormValue.registrationName,
-            profile: currentFormValue.profile,
-            shinkai_identity: currentFormValue.shinkaiIdentity,
-            node_address: currentFormValue.nodeAddress,
-          },
-        ],
-      },
+    dispatchSw({
+      type: 'dispatch',
+      action: 'connectNode',
+      payload: [
+        {
+          my_device_encryption_sk: currentFormValue.myDeviceEncryptionSharedKey,
+          my_device_identity_sk: currentFormValue.myDeviceIdentitySharedKey,
+          profile_encryption_sk: currentFormValue.profileEncryptionSharedKey,
+          profile_identity_sk: currentFormValue.profileSignatureSharedKey,
+          node_encryption_pk: currentFormValue.nodeEncryptionPublicKey,
+          registration_code: currentFormValue.registrationCode,
+          identity_type: currentFormValue.identityType,
+          permission_type: currentFormValue.permissionType,
+          registration_name: currentFormValue.registrationName,
+          profile: currentFormValue.profile,
+          shinkai_identity: currentFormValue.shinkaiIdentity,
+          node_address: currentFormValue.nodeAddress,
+        },
+      ],
     });
   };
 
   const isConnecting = (): boolean => {
-    return currentStep === AddNodeSteps.Connect;
+    return status === 'loading'; // currentStep === AddNodeSteps.Connect;
   };
 
   const connectingStatus = (): 'process' | 'wait' => {
@@ -247,7 +244,6 @@ export const AddNode = () => {
     );
   }, [form, currentFormValue]);
 
-  console.log('currentvalue', currentFormValue);
   return (
     <div className="h-full flex flex-col space-y-3">
       <Steps
@@ -305,11 +301,7 @@ export const AddNode = () => {
         )}
 
         {(currentStep === 1 || currentStep === 2) && (
-          <Form
-            autoComplete="off"
-            disabled={isConnecting()}
-            form={form}
-          >
+          <Form autoComplete="off" disabled={status === 'loading'} form={form}>
             <Form.Item<AddNodeFieldType>
               name="registrationCode"
               rules={[{ required: true }]}

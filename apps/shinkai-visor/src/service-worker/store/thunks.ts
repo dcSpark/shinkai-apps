@@ -6,6 +6,11 @@ export const connectNode = createAsyncThunk<void, SetupPayload>(
   'node/connect',
   async (useRegistrationCodePayload) => {
     try {
+      await new Promise<void>((resolve) => {
+        setTimeout(() => {
+          resolve();
+        }, 3000);
+      });
       const success = await submitRegistrationCode(useRegistrationCodePayload);
       if (success) {
         // Dispatch node connected
