@@ -1,10 +1,14 @@
 /// <reference types="vitest" />
+import { crx,ManifestV3Export } from "@crxjs/vite-plugin";
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
-import legacy from '@vitejs/plugin-legacy';
 import react from '@vitejs/plugin-react';
-import { fileURLToPath } from 'url';
 import { defineConfig } from 'vite';
+import topLevelAwait from "vite-plugin-top-level-await";
 import wasm from 'vite-plugin-wasm';
+
+import manifestJson from './public/manifest.json';
+
+const manifest = manifestJson as ManifestV3Export;
 
 export default defineConfig({
   cacheDir: '../../node_modules/.vite/shinkai-visor',
@@ -23,12 +27,7 @@ export default defineConfig({
     host: 'localhost',
   },
 
-  plugins: [react(), nxViteTsPaths(), wasm()],
-
-  // Uncomment this if you are using workers.
-  // worker: {
-  //  plugins: [ nxViteTsPaths() ],
-  // },
+  plugins: [react(), nxViteTsPaths(), wasm(), topLevelAwait(), crx({ manifest })],
 
   test: {
     globals: true,
@@ -42,24 +41,4 @@ export default defineConfig({
     },
   },
   root: './',
-
-  build: {
-    sourcemap: true,
-    rollupOptions: {
-      input: {
-        'service-worker': fileURLToPath(new URL('./src/service-worker.ts', import.meta.url)),
-        popup: fileURLToPath(new URL('./src/popup/popup.html', import.meta.url)),
-      },
-      output: {
-        entryFileNames: 'assets/[name].js',
-      }
-    },
-  },
-  esbuild: {
-    // Important for wasm plugin
-    supported: {
-      'top-level-await': true,
-      'bigint': true,
-    }
-  }
 });

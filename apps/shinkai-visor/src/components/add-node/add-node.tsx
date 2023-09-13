@@ -11,18 +11,26 @@ import { useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import ScanQrAnimation from '../../assets/animations/scan-qr.json';
+import { sendMessageToSw } from '../../helpers/service-worker-communication';
 
 type AddNodeFieldType = {
-  registrationCode?: string;
-  registrationName?: string;
-  nodeAddress?: string;
-  shinkaiIdentity?: string;
-  nodeEncryptionPublicKey?: string;
-  nodeSignaturePublicKey?: string;
-  profileEncryptionPublicKey?: string;
-  profileSignaturePublicKey?: string;
-  myDeviceEncryptionPublicKey?: string;
-  myDeviceIdentityPublicKey?: string;
+  registrationCode: string;
+  registrationName: string;
+  permissionType: 'admin';
+  identityType: 'device';
+  profile: string;
+  nodeAddress: string;
+  shinkaiIdentity: string;
+  nodeEncryptionPublicKey: string;
+  nodeSignaturePublicKey: string;
+  profileEncryptionPublicKey: string;
+  profileSignaturePublicKey: string;
+  myDeviceEncryptionPublicKey: string;
+  myDeviceIdentityPublicKey: string;
+  profileEncryptionSharedKey: string;
+  profileSignatureSharedKey: string;
+  myDeviceEncryptionSharedKey: string;
+  myDeviceIdentitySharedKey: string;
 };
 
 type AddNodeDataFromQr = Pick<
@@ -47,14 +55,29 @@ export const AddNode = () => {
   const [currentStep, setCurrentStep] = useState<AddNodeSteps>(
     AddNodeSteps.ScanQR
   );
-
-  const initialValues: Partial<AddNodeFieldType> = {
-    registrationName: '',
-    profileEncryptionPublicKey: '',
-    profileSignaturePublicKey: '',
-    myDeviceEncryptionPublicKey: '',
-    myDeviceIdentityPublicKey: '',
-  };
+  const [submittable, setSubmittable] = useState(false);
+  const currentFormValue = Form.useWatch([], form);
+  const [initialValues, setInitialValues] = useState<Partial<AddNodeFieldType>>(
+    {
+      registrationCode: '',
+      registrationName: 'main_device',
+      permissionType: 'admin',
+      identityType: 'device',
+      profile: 'main',
+      nodeAddress: '',
+      shinkaiIdentity: '',
+      nodeEncryptionPublicKey: '',
+      nodeSignaturePublicKey: '',
+      profileEncryptionPublicKey: '',
+      profileSignaturePublicKey: '',
+      myDeviceEncryptionPublicKey: '',
+      myDeviceIdentityPublicKey: '',
+      profileEncryptionSharedKey: '',
+      profileSignatureSharedKey: 'ss',
+      myDeviceEncryptionSharedKey: '',
+      myDeviceIdentitySharedKey: undefined,
+    }
+  );
 
   const onFileInputClick = () => {
     fileInput.current?.click();
@@ -72,45 +95,66 @@ export const AddNode = () => {
     const json_string = resultImage.getText();
     const parsedQrData: QRSetupData = JSON.parse(json_string);
     const nodeDataFromQr = getValuesFromQr(parsedQrData);
-    form.setFieldsValue(nodeDataFromQr);
-    setCurrentStep(1);
+    form.setFieldsValue({ ...initialValues, ...nodeDataFromQr });
+    console.log('initial', initialValues, currentFormValue);
+    setCurrentStep(AddNodeSteps.ReviewData);
   };
 
   const generateDeviceEncryptionKeys = async (): Promise<
-    Pick<AddNodeFieldType, 'myDeviceEncryptionPublicKey'>
+    Pick<
+      AddNodeFieldType,
+      'myDeviceEncryptionPublicKey' | 'myDeviceEncryptionSharedKey'
+    >
   > => {
     const seed = crypto.getRandomValues(new Uint8Array(32));
-    const { my_encryption_pk_string } = await generateEncryptionKeys(seed);
+    const { my_encryption_pk_string, my_encryption_sk_string } =
+      await generateEncryptionKeys(seed);
     return {
       myDeviceEncryptionPublicKey: my_encryption_pk_string,
+      myDeviceEncryptionSharedKey: my_encryption_sk_string,
     };
   };
 
   const generateDeviceSignatureKeys = async (): Promise<
-    Pick<AddNodeFieldType, 'myDeviceIdentityPublicKey'>
+    Pick<
+      AddNodeFieldType,
+      'myDeviceIdentityPublicKey' | 'myDeviceIdentitySharedKey'
+    >
   > => {
-    const { my_identity_pk_string } = await generateSignatureKeys();
+    const { my_identity_pk_string, my_identity_sk_string } =
+      await generateSignatureKeys();
     return {
       myDeviceIdentityPublicKey: my_identity_pk_string,
+      myDeviceIdentitySharedKey: my_identity_sk_string,
     };
   };
 
   const generateProfileEncryptionKeys = async (): Promise<
-    Pick<AddNodeFieldType, 'profileEncryptionPublicKey'>
+    Pick<
+      AddNodeFieldType,
+      'profileEncryptionPublicKey' | 'profileEncryptionSharedKey'
+    >
   > => {
     const seed = crypto.getRandomValues(new Uint8Array(32));
-    const { my_encryption_pk_string } = await generateEncryptionKeys(seed);
+    const { my_encryption_pk_string, my_encryption_sk_string } =
+      await generateEncryptionKeys(seed);
     return {
       profileEncryptionPublicKey: my_encryption_pk_string,
+      profileEncryptionSharedKey: my_encryption_sk_string,
     };
   };
 
   const generateProfileSignatureKeys = async (): Promise<
-    Pick<AddNodeFieldType, 'profileSignaturePublicKey'>
+    Pick<
+      AddNodeFieldType,
+      'profileSignaturePublicKey' | 'profileSignatureSharedKey'
+    >
   > => {
-    const { my_identity_pk_string } = await generateSignatureKeys();
+    const { my_identity_pk_string, my_identity_sk_string } =
+      await generateSignatureKeys();
     return {
       profileSignaturePublicKey: my_identity_pk_string,
+      profileSignatureSharedKey: my_identity_sk_string,
     };
   };
 
@@ -129,11 +173,35 @@ export const AddNode = () => {
   };
 
   const scanQr = () => {
+    form.setFieldsValue(initialValues);
     setCurrentStep(AddNodeSteps.ScanQR);
   };
 
   const connect = () => {
     setCurrentStep(AddNodeSteps.Connect);
+    sendMessageToSw({
+      type: 'store',
+      payload: {
+        type: 'dispatch',
+        action: 'connectNode',
+        payload: [
+          {
+            my_device_encryption_sk: currentFormValue.myDeviceEncryptionSharedKey,
+            my_device_identity_sk: currentFormValue.myDeviceIdentitySharedKey,
+            profile_encryption_sk: currentFormValue.profileEncryptionSharedKey,
+            profile_identity_sk: currentFormValue.profileSignatureSharedKey,
+            node_encryption_pk: currentFormValue.nodeEncryptionPublicKey,
+            registration_code: currentFormValue.myDeviceEncryptionSharedKey,
+            identity_type: currentFormValue.identityType,
+            permission_type: currentFormValue.permissionType,
+            registration_name: currentFormValue.registrationName,
+            profile: currentFormValue.profile,
+            shinkai_identity: currentFormValue.shinkaiIdentity,
+            node_address: currentFormValue.nodeAddress,
+          },
+        ],
+      },
+    });
   };
 
   const isConnecting = (): boolean => {
@@ -141,20 +209,45 @@ export const AddNode = () => {
   };
 
   const connectingStatus = (): 'process' | 'wait' => {
-    console.log(
-      'connectingStatus',
-      currentStep === AddNodeSteps.Connect ? 'process' : 'wait'
-    );
     return isConnecting() ? 'process' : 'wait';
   };
 
   useEffect(() => {
-    generateDeviceEncryptionKeys().then((keys) => form.setFieldsValue(keys));
-    generateDeviceSignatureKeys().then((keys) => form.setFieldsValue(keys));
-    generateProfileEncryptionKeys().then((keys) => form.setFieldsValue(keys));
-    generateProfileSignatureKeys().then((keys) => form.setFieldsValue(keys));
-  }, [form]);
+    Promise.all([
+      generateDeviceEncryptionKeys(),
+      generateDeviceSignatureKeys(),
+      generateProfileEncryptionKeys(),
+      generateProfileSignatureKeys(),
+    ]).then(
+      ([
+        deviceEncryption,
+        deviceSignature,
+        profileEncryption,
+        profileSignature,
+      ]) => {
+        setInitialValues((prevInitialValues) => ({
+          ...prevInitialValues,
+          ...deviceEncryption,
+          ...deviceSignature,
+          ...profileEncryption,
+          ...profileSignature,
+        }));
+      }
+    );
+  }, []);
 
+  useEffect(() => {
+    form.validateFields({ validateOnly: true, recursive: true }).then(
+      () => {
+        setSubmittable(true);
+      },
+      () => {
+        setSubmittable(false);
+      }
+    );
+  }, [form, currentFormValue]);
+
+  console.log('currentvalue', currentFormValue);
   return (
     <div className="h-full flex flex-col space-y-3">
       <Steps
@@ -216,11 +309,10 @@ export const AddNode = () => {
             autoComplete="off"
             disabled={isConnecting()}
             form={form}
-            initialValues={initialValues}
           >
             <Form.Item<AddNodeFieldType>
               name="registrationCode"
-              rules={[{ required: true, message: '', whitespace: true }]}
+              rules={[{ required: true }]}
             >
               <Input
                 placeholder={intl.formatMessage({ id: 'registration-code' })}
@@ -229,7 +321,7 @@ export const AddNode = () => {
             <Form.Item<AddNodeFieldType>
               hidden={true}
               name="registrationName"
-              rules={[{ required: true, message: '', whitespace: true }]}
+              rules={[{ required: true }]}
             >
               <Input
                 placeholder={intl.formatMessage({ id: 'registration-name' })}
@@ -237,13 +329,13 @@ export const AddNode = () => {
             </Form.Item>
             <Form.Item<AddNodeFieldType>
               name="nodeAddress"
-              rules={[{ required: true, message: '', whitespace: true }]}
+              rules={[{ required: true }]}
             >
               <Input placeholder={intl.formatMessage({ id: 'node-address' })} />
             </Form.Item>
             <Form.Item<AddNodeFieldType>
               name="shinkaiIdentity"
-              rules={[{ required: true, message: '', whitespace: true }]}
+              rules={[{ required: true }]}
             >
               <Input
                 placeholder={intl.formatMessage({ id: 'shinkai-identity' })}
@@ -251,7 +343,7 @@ export const AddNode = () => {
             </Form.Item>
             <Form.Item<AddNodeFieldType>
               name="nodeEncryptionPublicKey"
-              rules={[{ required: true, message: '', whitespace: true }]}
+              rules={[{ required: true }]}
             >
               <Input
                 placeholder={intl.formatMessage({
@@ -261,7 +353,7 @@ export const AddNode = () => {
             </Form.Item>
             <Form.Item<AddNodeFieldType>
               name="nodeSignaturePublicKey"
-              rules={[{ required: true, message: '', whitespace: true }]}
+              rules={[{ required: true }]}
             >
               <Input
                 placeholder={intl.formatMessage({
@@ -272,7 +364,7 @@ export const AddNode = () => {
             <Form.Item<AddNodeFieldType>
               hidden={true}
               name="profileEncryptionPublicKey"
-              rules={[{ required: true, message: '', whitespace: true }]}
+              rules={[{ required: true }]}
             >
               <Input
                 placeholder={intl.formatMessage({
@@ -283,7 +375,7 @@ export const AddNode = () => {
             <Form.Item<AddNodeFieldType>
               hidden={true}
               name="profileSignaturePublicKey"
-              rules={[{ required: true, message: '', whitespace: true }]}
+              rules={[{ required: true }]}
             >
               <Input
                 placeholder={intl.formatMessage({
@@ -294,7 +386,7 @@ export const AddNode = () => {
             <Form.Item<AddNodeFieldType>
               hidden={true}
               name="myDeviceEncryptionPublicKey"
-              rules={[{ required: true, message: '', whitespace: true }]}
+              rules={[{ required: true }]}
             >
               <Input
                 placeholder={intl.formatMessage({
@@ -305,7 +397,7 @@ export const AddNode = () => {
             <Form.Item<AddNodeFieldType>
               hidden={true}
               name="myDeviceIdentityPublicKey"
-              rules={[{ required: true, message: '', whitespace: true }]}
+              rules={[{ required: true }]}
             >
               <Input
                 placeholder={intl.formatMessage({
@@ -314,10 +406,67 @@ export const AddNode = () => {
               />
             </Form.Item>
 
+            <Form.Item<AddNodeFieldType>
+              hidden={true}
+              name="profileEncryptionSharedKey"
+              rules={[{ required: true }]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item<AddNodeFieldType>
+              hidden={true}
+              name="profileSignatureSharedKey"
+              rules={[{ required: true }]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item<AddNodeFieldType>
+              hidden={true}
+              name="myDeviceEncryptionSharedKey"
+              rules={[{ required: true }]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item<AddNodeFieldType>
+              hidden={true}
+              name="myDeviceIdentitySharedKey"
+              rules={[{ required: true }]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item<AddNodeFieldType>
+              hidden={true}
+              name="permissionType"
+              rules={[{ required: true }]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item<AddNodeFieldType>
+              hidden={true}
+              name="identityType"
+              rules={[{ required: true }]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item<AddNodeFieldType>
+              hidden={true}
+              name="profile"
+              rules={[{ required: true }]}
+            >
+              <Input />
+            </Form.Item>
+
             <Form.Item>
               <div className="flex flex-col space-y-1">
                 <Button
                   className="w-full"
+                  disabled={isConnecting() || !submittable}
                   htmlType="submit"
                   onClick={() => connect()}
                   type="primary"
