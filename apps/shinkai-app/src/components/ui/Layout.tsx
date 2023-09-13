@@ -1,12 +1,10 @@
 import React from 'react';
 import {
-  IonBackButton,
-  IonButtons,
   IonContent,
   IonFooter,
   IonHeader,
-  IonTitle,
   IonToolbar,
+  ScrollDetail,
 } from '@ionic/react';
 import './Layout.css';
 
@@ -25,12 +23,24 @@ export const IonHeaderCustom = ({
 };
 export const IonContentCustom = React.forwardRef(
   (
-    { children }: { children: React.ReactNode },
+    {
+      children,
+      onScroll,
+    }: {
+      children: React.ReactNode;
+      onScroll?: (e: CustomEvent<ScrollDetail>) => void;
+    },
     ref?: React.Ref<HTMLIonContentElement>
   ) => {
     return (
-      <IonContent fullscreen class="ion-content-custom" ref={ref}>
-        <div className="container mx-auto min-h-full">{children}</div>
+      <IonContent
+        fullscreen
+        class="ion-content-custom"
+        ref={ref}
+        scrollEvents={true}
+        onIonScroll={onScroll}
+      >
+        <div className="container mx-auto min-h-full px-6">{children}</div>
       </IonContent>
     );
   }
@@ -42,11 +52,8 @@ export const IonFooterCustom = ({
   children: React.ReactNode;
 }) => {
   return (
-    <IonFooter className="shadow border-t border-slate-50 md:border-0 dark:border-slate-600 ">
-      <IonToolbar
-        className="container md:rounded-[1.25rem]"
-        class="ion-toolbar-custom"
-      >
+    <IonFooter className="shadow-none bg-white dark:bg-slate-900">
+      <IonToolbar className="container" class="ion-toolbar-custom">
         {children}
       </IonToolbar>
     </IonFooter>

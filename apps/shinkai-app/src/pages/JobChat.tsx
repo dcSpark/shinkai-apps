@@ -83,12 +83,8 @@ const JobChat: React.FC = () => {
       </IonHeaderCustom>
       <ChatMessages deserializedId={deserializedId} />
       <IonFooterCustom>
-        <div
-          className={
-            'flex flex-col w-full py-2 flex-grow md:py-3 md:pl-4 relative'
-          }
-        >
-          <div className="m-2 relative flex h-full flex-1 md:flex-col">
+        <div className={'w-full py-2 md:py-3 md:pl-4'}>
+          <div className="m-2 flex items-end h-full border border-slate-300 pr-2 rounded-xl shadow">
             <IonTextarea
               class="ion-textarea-chat"
               rows={1}
@@ -112,13 +108,12 @@ const JobChat: React.FC = () => {
               aria-label="Send Message"
               onClick={sendMessage}
               className={cn(
-                'absolute z-10 p-3 rounded-md text-gray-500 bottom-[1px] right-1',
-                'md:bottom-2.5 md:right-2',
-                'hover:bg-gray-100 disabled:hover:bg-transparent',
+                'h-10 w-10 rounded-md text-gray-500 mb-2',
+                'bg-[#FE6162] hover:bg-[#FE6162]/80 disabled:hover:bg-transparent',
                 'dark:text-white dark:hover:text-gray-100 dark:hover:bg-gray-700 dark:disabled:hover:bg-transparent'
               )}
             >
-              <IonIcon size="" icon={send} />
+              <IonIcon size="" className={'text-white'} icon={send} />
             </button>
           </div>
         </div>

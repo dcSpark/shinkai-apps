@@ -99,7 +99,7 @@ const Home: React.FC = () => {
 
       <IonContentCustom>
         <div className="h-full flex flex-col">
-          <div className="flex-1 md:rounded-lg p-4 md:p-10 space-y-2 md:space-y-4">
+          <div className="flex-1 md:rounded-lg space-y-2 md:space-y-4">
             {inboxes &&
               inboxes.map((inbox_name) => (
                 <IonItem
@@ -125,7 +125,7 @@ const Home: React.FC = () => {
                     url={`https://ui-avatars.com/api/?name=${inbox_name}&background=FE6162&color=fff`}
                     className="shrink-0"
                   />
-                  <IonText className="ml-4 font-bold md:text-lg">
+                  <IonText className="ml-4 font-medium md:text-lg">
                     {JSON.stringify(inbox_name)}
                   </IonText>
                   <IonIcon

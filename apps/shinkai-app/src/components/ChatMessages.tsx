@@ -39,6 +39,23 @@ interface ChatMessagesProps {
   deserializedId: string;
 }
 
+const groupMessagesByDate = (messages: ShinkaiMessage[]) => {
+  const groupedMessages: Record<string, ShinkaiMessage[]> = {};
+  messages.forEach((message) => {
+    const date = new Date(
+      message.external_metadata?.scheduled_time ?? ''
+    ).toDateString();
+
+    if (!groupedMessages[date]) {
+      groupedMessages[date] = [];
+    }
+
+    groupedMessages[date].push(message);
+  });
+
+  return groupedMessages;
+};
+
 const ChatMessages: React.FC<ChatMessagesProps> = ({ deserializedId }) => {
   console.log('Loading ChatMessages.tsx');
   const dispatch = useDispatch();
@@ -51,7 +68,6 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ deserializedId }) => {
   const isLoading = status === 'pending';
   const isSuccess = status === 'success';
   const isRejected = status === 'rejected';
-
   const reduxMessages = useSelector(
     (state: RootState) => state.messages.inboxes[deserializedId]
   );
@@ -62,7 +78,10 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ deserializedId }) => {
   );
   const [prevMessagesLength, setPrevMessagesLength] = useState(0);
   const [hasMoreMessages, setHasMoreMessages] = useState(true);
-  const [messages, setMessages] = useState<ShinkaiMessage[]>([]);
+  const [messages, setMessages] = useState<Record<string, ShinkaiMessage[]>>(
+    {}
+  );
+  const [isScrolling, setScrolling] = useState(true);
 
   const chatContainerRef = React.createRef<HTMLIonContentElement>();
 
@@ -111,7 +130,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ deserializedId }) => {
       const mostRecentMessageKey = `${mostRecentTimeKey}:::${mostRecentHashKey}`;
       setMostRecentKey(mostRecentMessageKey);
 
-      setMessages(reduxMessages);
+      setMessages(groupMessagesByDate(reduxMessages));
 
       if (reduxMessages.length - prevMessagesLength < 10) {
         setHasMoreMessages(false);
@@ -121,14 +140,41 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ deserializedId }) => {
   }, [reduxMessages, prevMessagesLength]);
 
   React.useEffect(() => {
-    if (chatContainerRef.current) {
-      void chatContainerRef.current.scrollToBottom(100);
-    }
+    const scrollToBottom = async () => {
+      if (chatContainerRef.current) {
+        const scrollElement = await chatContainerRef.current.getScrollElement();
+        scrollElement.scrollTop = scrollElement.scrollHeight;
+      }
+    };
+    void scrollToBottom();
   }, [isSuccess]);
+
+  React.useEffect(() => {
+    const loadScroll = async () => {
+      const handleScroll = () => {
+        setScrolling(true);
+      };
+      const handleScrollEnd = () => {
+        setTimeout(() => {
+          setScrolling(false);
+        }, 2000);
+      };
+      if (chatContainerRef.current) {
+        const scrollElement = await chatContainerRef.current.getScrollElement();
+        scrollElement.addEventListener('scroll', handleScroll);
+        scrollElement.addEventListener('scrollend', handleScrollEnd);
+        return () => {
+          scrollElement.removeEventListener('scroll', handleScroll);
+          scrollElement.removeEventListener('scrollend', handleScrollEnd);
+        };
+      }
+    };
+    void loadScroll();
+  }, [chatContainerRef]);
 
   return (
     <IonContentCustom ref={chatContainerRef}>
-      <div className="bg-white dark:bg-slate-800">
+      <div className="bg-white dark:bg-slate-900">
         {!isLoading && hasMoreMessages && (
           <IonButton
             onClick={() =>
@@ -146,20 +192,23 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ deserializedId }) => {
             Load More
           </IonButton>
         )}
-        <IonList class="flex flex-col gap-10 p-0 md:rounded-[1.25rem] bg-slate-900">
+        <IonList class="p-0 md:rounded-[1.25rem] bg-white dark:bg-slate-900 flex flex-col gap-4 md:gap-1 py-6">
           {isLoading &&
-            Array.from({ length: 6 }).map((item, idx) => (
+            Array.from({ length: 4 }).map((item, idx) => (
               <IonItem
                 key={idx}
                 lines="none"
-                className="ion-item-chat relative w-full shadow"
+                className={cn(
+                  'ion-item-chat relative',
+                  idx % 2 === 1 && 'isLocalMessage'
+                )}
               >
                 <div className="px-2 py-4 flex gap-4 pb-10 w-full">
                   <IonThumbnail className={'rounded-[1.5rem]'} slot="start">
                     <IonSkeletonText
                       className={'rounded-[8px]'}
                       animated={true}
-                    ></IonSkeletonText>
+                    />
                   </IonThumbnail>
                   <div className="w-full">
                     <IonSkeletonText
@@ -182,59 +231,66 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ deserializedId }) => {
               </IonItem>
             ))}
           {isSuccess &&
-            messages?.map((message, index) => {
-              const { shinkai_identity, profile, registration_name } =
-                setupDetailsState;
-
-              const localIdentity = `${profile}/device/${registration_name}`;
-              let isLocalMessage = false;
-              if (message.body && 'unencrypted' in message.body) {
-                isLocalMessage =
-                  message.body.unencrypted.internal_metadata
-                    .sender_subidentity === localIdentity ||
-                  message.external_metadata?.sender === shinkai_identity;
-              }
-
+            Object.entries(messages)?.map(([date, messages]) => {
               return (
-                <IonItem
-                  key={index}
-                  lines="none"
-                  className={cn(
-                    'ion-item-chat relative',
-                    isLocalMessage && 'isLocalMessage'
-                  )}
-                >
+                <div key={date}>
                   <div
                     className={cn(
-                      'px-2 py-6 flex gap-8 pb-14',
-                      isLocalMessage && 'flex-row-reverse'
+                      'relative flex shadow-lg z-10 bg-white border border-slate-300 w-[140px] m-auto  items-center justify-center rounded-xl transition-opacity',
+                      'dark:bg-slate-900 dark:border-slate-700 dark:text-gray-400',
+                      isScrolling && 'sticky top-5'
                     )}
                   >
-                    <Avatar
-                      className="shrink-0"
-                      url={
-                        isLocalMessage
-                          ? 'https://ui-avatars.com/api/?name=Me&background=FE6162&color=fff'
-                          : 'https://ui-avatars.com/api/?name=O&background=363636&color=fff'
-                      }
-                    />
-
-                    <p>{extractContent(message.body)}</p>
-                    {message?.external_metadata?.scheduled_time && (
-                      <span className="absolute bottom-[16px] right-5 text-muted text-sm">
-                        {new Date(
-                          message.external_metadata.scheduled_time
-                        ).toLocaleString(undefined, {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
-                      </span>
-                    )}
+                    <div className="px-2.5 py-2 text-sm font-semibold text-slate-700 dark:text-gray-400">
+                      {date}
+                    </div>
                   </div>
-                </IonItem>
+                  <div className="flex flex-col gap-4 md:gap-8 py-10">
+                    {messages.map((message, idx) => {
+                      const { shinkai_identity, profile, registration_name } =
+                        setupDetailsState;
+
+                      const localIdentity = `${profile}/device/${registration_name}`;
+                      let isLocalMessage = false;
+                      if (message.body && 'unencrypted' in message.body) {
+                        isLocalMessage =
+                          message.body.unencrypted.internal_metadata
+                            .sender_subidentity === localIdentity ||
+                          message.external_metadata?.sender ===
+                            shinkai_identity;
+                      }
+
+                      return (
+                        <IonItem
+                          key={idx}
+                          lines="none"
+                          className={cn(
+                            'ion-item-chat relative',
+                            isLocalMessage && 'isLocalMessage'
+                          )}
+                        >
+                          <div
+                            className={cn(
+                              'px-2 py-6 flex gap-2 md:gap-8 pb-14',
+                              isLocalMessage && 'flex-row-reverse'
+                            )}
+                          >
+                            <Avatar
+                              className="shrink-0"
+                              url={
+                                isLocalMessage
+                                  ? 'https://ui-avatars.com/api/?name=Me&background=0f172a&color=fff'
+                                  : 'https://ui-avatars.com/api/?name=O&background=1C3A3A&color=fff'
+                              }
+                            />
+
+                            <p>{extractContent(message.body)}</p>
+                          </div>
+                        </IonItem>
+                      );
+                    })}
+                  </div>
+                </div>
               );
             })}
         </IonList>

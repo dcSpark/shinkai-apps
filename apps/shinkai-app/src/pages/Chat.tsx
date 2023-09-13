@@ -111,6 +111,7 @@ const Chat: React.FC = () => {
 
   const sendMessage = async () => {
     console.log('Sending message: ', inputMessage);
+    if (inputMessage.trim() === '') return;
 
     // Local Identity
     const { shinkai_identity, profile, registration_name } = setupDetailsState;
@@ -149,7 +150,7 @@ const Chat: React.FC = () => {
       </IonHeaderCustom>
 
       <IonContentCustom>
-        <div className="bg-white dark:bg-slate-800">
+        <div className="bg-white dark:bg-slate-900">
           {hasMoreMessages && (
             <IonButton
               onClick={async () => {
@@ -230,18 +231,8 @@ const Chat: React.FC = () => {
         </div>
       </IonContentCustom>
       <IonFooterCustom>
-        <form
-          className={
-            'flex flex-col w-full py-2 flex-grow md:py-3 md:pl-4 relative'
-          }
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (inputMessage.trim() !== '') {
-              sendMessage();
-            }
-          }}
-        >
-          <div className="m-2 relative flex h-full flex-1 md:flex-col">
+        <div className={'w-full py-2 md:py-3 md:pl-4'}>
+          <div className="m-2 flex items-end h-full border border-slate-300 pr-2 rounded-xl shadow">
             <IonTextarea
               class="ion-textarea-chat"
               rows={1}
@@ -249,24 +240,28 @@ const Chat: React.FC = () => {
               fill="outline"
               className="m-0 w-full bg-transparent p-0 pl-2 pr-12 md:pl-0"
               value={inputMessage}
-              onIonChange={(e) => setInputMessage(e.detail.value!)}
+              onIonInput={(e) => setInputMessage(e.detail.value as string)}
               placeholder="Type a message"
-            ></IonTextarea>
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+                  void sendMessage();
+                }
+              }}
+            />
 
             <button
               onClick={sendMessage}
               aria-label="Send Message"
               className={cn(
-                'absolute z-10 p-3 rounded-md text-gray-500 bottom-[1px] right-1',
-                'md:bottom-2.5 md:right-2',
-                'hover:bg-gray-100 disabled:hover:bg-transparent',
+                'h-10 w-10 rounded-md text-gray-500 mb-2',
+                'bg-[#FE6162] hover:bg-[#FE6162]/80 disabled:hover:bg-transparent',
                 'dark:text-white dark:hover:text-gray-100 dark:hover:bg-gray-700 dark:disabled:hover:bg-transparent'
               )}
             >
               <IonIcon size="" icon={send} />
             </button>
           </div>
-        </form>
+        </div>
       </IonFooterCustom>
     </IonPage>
   );
