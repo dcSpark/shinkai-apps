@@ -6,4 +6,5 @@ export type DispatchActionArguments = [arg: any];
 
 export type DispatchMessageType = { type: 'dispatch', action: DispatchActionKey, payload: DispatchActionArguments };
 export type CurrentStoreValueMessageType = { type: 'current-store-value' };
-export type StoreMessageType = { type: 'store'; payload: DispatchMessageType | CurrentStoreValueMessageType };
+export type StoreChanged<StoreType> = { type: 'store-changed', payload: StoreType };
+export type StoreMessageType = { type: 'store'; payload: DispatchMessageType | CurrentStoreValueMessageType | StoreChanged<any> };

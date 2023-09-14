@@ -1,12 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-import { connectNode } from "./node-thunks";
+import { connectNode } from "./node-actions";
 import { NodeStore } from "./node-types";
 
 
 
 export const nodeSlice = createSlice({
-  name: 'none',
+  name: 'node',
   initialState: {
     status: 'idle',
     error: undefined,

@@ -273,23 +273,12 @@ export const AddNode = () => {
   }, [form, currentFormValue]);
 
   useEffect(() => {
-    console.log('STATUS IN USE EFFECT', status);
     if (status === 'failed') {
       messageApi.open({
         type: 'error',
         content: 'Error connecting node',
-        style: {
-          zIndex: 9999
-        }
       });
     } else if (status === 'succeeded') {
-      messageApi.open({
-        type: 'success',
-        content: 'Successfully connected',
-        style: {
-          zIndex: 9999
-        }
-      });
       history.replace('/inboxes/all')
     }
   }, [status, messageApi, history]);

@@ -1,5 +1,5 @@
 import { actions, store } from './store';
-import { dispatch, useSelector } from './sw-store';
+import { dispatch, useSelector } from './sw-store/app-side';
 
 type StoreType = ReturnType<(typeof store.getState)>;
 
