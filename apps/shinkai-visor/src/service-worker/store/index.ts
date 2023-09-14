@@ -1,15 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit';
 
-import { nodeSlice } from './node-reducer';
+import { nodeSlice } from './node/node-reducer';
+import * as nodeThunks from './node/node-thunks';
 
-export * as thunks from './thunks';
+export const store = configureStore({
+  reducer: {
+    node: nodeSlice.reducer,
+  },
+});
 
-export const store = configureStore(
-  // persistedReducer,
-  // composeEnhancers(applyMiddleware(thunk))
-  {
-    reducer: {
-      node: nodeSlice.reducer,
-    },
-  }
-);
+export const actions = {
+  ...nodeThunks,
+};

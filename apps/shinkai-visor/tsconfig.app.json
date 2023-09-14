@@ -6,7 +6,8 @@
       "node",
       "vite/client",
       "@types/chrome"
-    ]
+    ],
+    "resolveJsonModule": true
   },
   "exclude": [
     "src/**/*.spec.ts",

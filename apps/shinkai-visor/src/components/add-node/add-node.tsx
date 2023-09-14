@@ -6,19 +6,23 @@ import {
   generateSignatureKeys,
 } from '@shinkai/shinkai-message-ts/utils';
 import { BrowserQRCodeReader } from '@zxing/browser';
-import { Button, Form, Input, Steps } from 'antd';
+import { Button, Form, Input, message,Steps } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { useHistory } from 'react-router-dom';
 
 import ScanQrAnimation from '../../assets/animations/scan-qr.json';
-import { dispatchSw, useSelectorSw } from '../../service-worker/sw-store';
+import {
+  dispatchSw,
+  useSelectorSw,
+} from '../../service-worker/service-worker-store';
 
 type AddNodeFieldType = {
   registrationCode: string;
   registrationName: string;
   permissionType: 'admin';
   identityType: 'device';
-  profile: string;
+  profile: 'device';
   nodeAddress: string;
   shinkaiIdentity: string;
   nodeEncryptionPublicKey: string;
@@ -57,14 +61,16 @@ export const AddNode = () => {
   );
   const [submittable, setSubmittable] = useState(false);
   const currentFormValue = Form.useWatch([], form);
-  const status = useSelectorSw((state: any) => state?.node?.status);
+  const status = useSelectorSw((state) => state?.node?.status);
+  const [messageApi, contextHolder] = message.useMessage();
+  const history = useHistory();
   const [initialValues, setInitialValues] = useState<Partial<AddNodeFieldType>>(
     {
       registrationCode: '',
       registrationName: 'main_device',
       permissionType: 'admin',
       identityType: 'device',
-      profile: 'main',
+      profile: 'device',
       nodeAddress: '',
       shinkaiIdentity: '',
       nodeEncryptionPublicKey: '',
@@ -179,26 +185,48 @@ export const AddNode = () => {
 
   const connect = () => {
     setCurrentStep(AddNodeSteps.Connect);
-    dispatchSw({
-      type: 'dispatch',
-      action: 'connectNode',
-      payload: [
+    dispatchSw(
+      'connectNode',
+
+      [
         {
-          my_device_encryption_sk: currentFormValue.myDeviceEncryptionSharedKey,
-          my_device_identity_sk: currentFormValue.myDeviceIdentitySharedKey,
-          profile_encryption_sk: currentFormValue.profileEncryptionSharedKey,
-          profile_identity_sk: currentFormValue.profileSignatureSharedKey,
-          node_encryption_pk: currentFormValue.nodeEncryptionPublicKey,
-          registration_code: currentFormValue.registrationCode,
-          identity_type: currentFormValue.identityType,
-          permission_type: currentFormValue.permissionType,
-          registration_name: currentFormValue.registrationName,
-          profile: currentFormValue.profile,
-          shinkai_identity: currentFormValue.shinkaiIdentity,
-          node_address: currentFormValue.nodeAddress,
+          nodeData: {
+            registrationCode: currentFormValue.registrationCode,
+            profile: currentFormValue.profile,
+            identityType: currentFormValue.identityType,
+            permissionType: currentFormValue.permissionType,
+            nodeAddress: currentFormValue.nodeAddress,
+            shinkaiIdentity: currentFormValue.shinkaiIdentity,
+            nodeEncryptionPublicKey: currentFormValue.nodeEncryptionPublicKey,
+            nodeSignaturePublicKey: currentFormValue.nodeSignaturePublicKey,
+          },
+          userData: {
+            registrationName: currentFormValue.registrationName,
+          },
+          credentials: {
+            myDeviceIdentityPublicKey:
+              currentFormValue.myDeviceEncryptionPublicKey,
+            myDeviceIdentitySharedKey:
+              currentFormValue.myDeviceEncryptionSharedKey,
+
+            myDeviceEncryptionPublicKey:
+              currentFormValue.myDeviceIdentityPublicKey,
+            myDeviceEncryptionSharedKey:
+              currentFormValue.myDeviceEncryptionSharedKey,
+
+            profileSignaturePublicKey:
+              currentFormValue.profileSignaturePublicKey,
+            profileSignatureSharedKey:
+              currentFormValue.profileSignatureSharedKey,
+
+            profileEncryptionPublicKey:
+              currentFormValue.profileEncryptionPublicKey,
+            profileEncryptionSharedKey:
+              currentFormValue.profileEncryptionSharedKey,
+          },
         },
-      ],
-    });
+      ]
+    );
   };
 
   const isConnecting = (): boolean => {
@@ -244,8 +272,31 @@ export const AddNode = () => {
     );
   }, [form, currentFormValue]);
 
+  useEffect(() => {
+    console.log('STATUS IN USE EFFECT', status);
+    if (status === 'failed') {
+      messageApi.open({
+        type: 'error',
+        content: 'Error connecting node',
+        style: {
+          zIndex: 9999
+        }
+      });
+    } else if (status === 'succeeded') {
+      messageApi.open({
+        type: 'success',
+        content: 'Successfully connected',
+        style: {
+          zIndex: 9999
+        }
+      });
+      history.replace('/inboxes/all')
+    }
+  }, [status, messageApi, history]);
+
   return (
     <div className="h-full flex flex-col space-y-3">
+      {contextHolder}
       <Steps
         current={currentStep}
         items={[
@@ -460,6 +511,7 @@ export const AddNode = () => {
                   className="w-full"
                   disabled={isConnecting() || !submittable}
                   htmlType="submit"
+                  loading={isConnecting()}
                   onClick={() => connect()}
                   type="primary"
                 >

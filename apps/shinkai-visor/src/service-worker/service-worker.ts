@@ -1,4 +1,4 @@
-import { store, thunks } from "./store";
+import { actions,store } from "./store";
 import { configureStoreSw } from "./sw-store";
 
-configureStoreSw(store, thunks);
+configureStoreSw(store, actions);
