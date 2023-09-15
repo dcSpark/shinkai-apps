@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { ApiConfig, createChatWithMessage, getAllInboxesForProfile } from '@shinkai/shinkai-message-ts/api';
+import { ApiConfig, createChatWithMessage, getAllInboxesForProfile, getLastMessagesFromInbox } from '@shinkai/shinkai-message-ts/api';
 import { ShinkaiMessage } from '@shinkai/shinkai-message-ts/models';
 
 import { RootState } from '..';
@@ -68,5 +68,25 @@ export const createInbox = createAsyncThunk<{ inbox: Inbox, message: ShinkaiMess
       }
     );
     return { inbox: { id: inboxId }, message };
+  }
+);
+
+export const getLastsMessagesForInbox = createAsyncThunk<{ inboxId: string, messages: ShinkaiMessage[] }, { inboxId: string, count: number, lastKey: string | undefined }>(
+  'inbox/messages/get-last-messages-for-inbox',
+  async (args, { getState }) => {
+    const state = getState() as RootState;
+    const node = state.node.data;
+    if (!node) throw new Error('missing node data');
+
+    ApiConfig.getInstance().setEndpoint(node.nodeData.nodeAddress);
+
+    const data: ShinkaiMessage[] = await getLastMessagesFromInbox(args.inboxId, args.count, args.lastKey, {
+      shinkai_identity: node.nodeData.shinkaiIdentity,
+      profile: node.nodeData.profile,
+      profile_encryption_sk: node.credentials.profileEncryptionSharedKey,
+      profile_identity_sk: node.credentials.profileSignatureSharedKey,
+      node_encryption_pk: node.nodeData.nodeEncryptionPublicKey,
+    });
+    return { inboxId: args.inboxId, messages: data };
   }
 );
