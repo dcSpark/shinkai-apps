@@ -3,18 +3,16 @@ import { createSlice } from "@reduxjs/toolkit";
 import { connectNode } from "./node-actions";
 import { NodeStore } from "./node-types";
 
-
+const initialState: NodeStore = {
+  status: 'idle',
+  error: undefined,
+  data: undefined,
+}
 
 export const nodeSlice = createSlice({
   name: 'node',
-  initialState: {
-    status: 'idle',
-    error: undefined,
-    setupData: undefined,
-  } as NodeStore,
-  reducers: {
-    // omit for now
-  },
+  initialState,
+  reducers: {},
   extraReducers(builder) {
     builder
       .addCase(connectNode.pending, (state, action) => {

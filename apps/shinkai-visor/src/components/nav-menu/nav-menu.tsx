@@ -1,29 +1,46 @@
 import './nav-menu.css';
 
-import { InboxOutlined, InfoCircleOutlined,SettingOutlined } from '@ant-design/icons';
-import { FormattedMessage } from 'react-intl';
+import { InboxOutlined, LogoutOutlined } from '@ant-design/icons';
+import { Menu } from 'antd';
+import { useIntl } from 'react-intl';
+import { useDispatch } from 'react-redux';
+
+import { disconnectNode } from '../../service-worker/store/node/node-actions';
+
+enum MenuOption {
+  Inbox = 'inbox',
+  Logout = 'logout',
+}
 
 export const NavMenu = () => {
+  const intl = useIntl();
+  const dispatch = useDispatch();
+  const onClickMenuOption = (key: MenuOption) => {
+    console.log('onClickMenuOption', key);
+
+    switch (key) {
+      case MenuOption.Inbox:
+        break;
+      case MenuOption.Logout:
+        logout();
+        break;
+      default:
+        break;
+    }
+  }
+  const logout = (): void => {
+    console.log('logout bro');
+    dispatch(disconnectNode())
+  }
+
   return (
-    <div className="flex flex-col space-y-3">
-      <div className="flex flex-row space-x-2 align-content-center">
-        <InboxOutlined />
-        <span>
-          <FormattedMessage id="inbox.other"></FormattedMessage>
-        </span>
-      </div>
-      <div className="flex flex-row space-x-2">
-        <SettingOutlined />
-        <span>
-          <FormattedMessage id="settings.other"></FormattedMessage>
-        </span>
-      </div>
-      <div className="flex flex-row space-x-2">
-        <InfoCircleOutlined />
-        <span>
-          <FormattedMessage id="about"></FormattedMessage>
-        </span>
-      </div>
-    </div>
+    <Menu
+      className="remove-antd-style"
+      items={[
+        { key: MenuOption.Inbox, label: intl.formatMessage({ id: 'inbox.other' }), icon: <InboxOutlined></InboxOutlined> },
+        { key: MenuOption.Logout, label: intl.formatMessage({ id: 'logout' }), icon: <LogoutOutlined></LogoutOutlined> },
+      ]}
+      onClick={(e) => onClickMenuOption(e.key as unknown as MenuOption)}
+    />
   );
 };

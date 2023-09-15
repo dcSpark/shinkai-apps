@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { Route, Switch, useHistory } from 'react-router-dom';
 
-import { useSelectorSw } from '../../service-worker/service-worker-store';
+import { RootState } from '../../service-worker/store';
 import { WithNav } from '../../with-nav/with-nav';
 import { AddNode } from '../add-node/add-node';
 import { Inboxes } from '../inboxes/inboxes';
@@ -10,15 +11,16 @@ import Welcome from '../welcome/welcome';
 
 export const PopupRouting = () => {
   const history = useHistory();
-  const status = useSelectorSw((state) => state?.node?.status);
+  const authStatus = useSelector((state: RootState) => state?.auth?.status);
   useEffect(() => {
-    console.log('status', status);
-    if (status === 'succeeded') {
+    if (authStatus === 'authenticated') {
       history.replace('/inboxes/all');
-    } else if (status === 'idle') {
+      return;
+    } else if (authStatus === 'unauthenticated') {
       history.replace('/welcome');
     }
-  }, [status, history]);
+  }, [authStatus, history]);
+
   return (
     <div className="h-full flex flex-col p-5">
       <Switch>

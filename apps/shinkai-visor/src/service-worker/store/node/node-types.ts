@@ -3,7 +3,7 @@ export type NodeConnectionData = {
     registrationCode: string;
     permissionType: 'admin';
     identityType: 'device';
-    profile: 'device';
+    profile: 'main';
     nodeAddress: string;
     shinkaiIdentity: string;
     nodeEncryptionPublicKey: string;
@@ -26,6 +26,6 @@ export type NodeConnectionData = {
 
 export interface NodeStore {
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
-  error?: string;
-  data?: NodeConnectionData;
+  error: string | undefined;
+  data: NodeConnectionData | undefined;
 }

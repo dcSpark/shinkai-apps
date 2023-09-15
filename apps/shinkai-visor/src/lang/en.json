@@ -23,5 +23,6 @@
   "use-qr-code": "Use a QR code to fill these fields",
   "connect-manually": "Do not have a QR Code? Connect manually",
   "scan": "Scan",
-  "review": "Review"
+  "review": "Review",
+  "logout": "Logout"
 }

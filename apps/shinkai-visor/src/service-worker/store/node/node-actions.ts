@@ -1,13 +1,12 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { submitRegistrationCode } from '@shinkai/shinkai-message-ts/api';
 
-import { store } from '..';
 import { authenticated } from '../auth/auth-actions';
 import { NodeConnectionData } from './node-types';
 
 export const connectNode = createAsyncThunk<NodeConnectionData, NodeConnectionData>(
   'node/connect',
-  async (nodeConnectPayload) => {
+  async (nodeConnectPayload, { dispatch }) => {
     const success = await submitRegistrationCode({
       // Node data
       registration_code: nodeConnectPayload.nodeData.registrationCode,
@@ -32,9 +31,16 @@ export const connectNode = createAsyncThunk<NodeConnectionData, NodeConnectionDa
       node_encryption_pk: nodeConnectPayload.nodeData.nodeEncryptionPublicKey,
     });
     if (success) {
-      store.dispatch(authenticated(true));
+      dispatch(authenticated(true));
       return nodeConnectPayload;
     }
     throw new Error('unknown');
+  }
+);
+
+export const disconnectNode = createAsyncThunk(
+  'node/disconnect',
+  async (_, { dispatch }) => {
+    dispatch(authenticated(false));
   }
 );

@@ -6,23 +6,22 @@ import {
   generateSignatureKeys,
 } from '@shinkai/shinkai-message-ts/utils';
 import { BrowserQRCodeReader } from '@zxing/browser';
-import { Button, Form, Input, message,Steps } from 'antd';
+import { Button, Form, Input, message, Steps } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import ScanQrAnimation from '../../assets/animations/scan-qr.json';
-import {
-  dispatchSw,
-  useSelectorSw,
-} from '../../service-worker/service-worker-store';
+import { RootState } from '../../service-worker/store';
+import { connectNode } from '../../service-worker/store/node/node-actions';
 
 type AddNodeFieldType = {
   registrationCode: string;
   registrationName: string;
   permissionType: 'admin';
   identityType: 'device';
-  profile: 'device';
+  profile: 'main';
   nodeAddress: string;
   shinkaiIdentity: string;
   nodeEncryptionPublicKey: string;
@@ -61,16 +60,20 @@ export const AddNode = () => {
   );
   const [submittable, setSubmittable] = useState(false);
   const currentFormValue = Form.useWatch([], form);
-  const status = useSelectorSw((state) => state?.node?.status);
+  const nodeConnectionStatus = useSelector(
+    (state: RootState) => state?.node?.status
+  );
+  const authenticated = useSelector((state: RootState) => state?.auth.status === 'authenticated');
   const [messageApi, contextHolder] = message.useMessage();
   const history = useHistory();
+  const dispatch = useDispatch();
   const [initialValues, setInitialValues] = useState<Partial<AddNodeFieldType>>(
     {
       registrationCode: '',
       registrationName: 'main_device',
       permissionType: 'admin',
       identityType: 'device',
-      profile: 'device',
+      profile: 'main',
       nodeAddress: '',
       shinkaiIdentity: '',
       nodeEncryptionPublicKey: '',
@@ -185,52 +188,46 @@ export const AddNode = () => {
 
   const connect = () => {
     setCurrentStep(AddNodeSteps.Connect);
-    dispatchSw(
-      'connectNode',
-
-      [
-        {
-          nodeData: {
-            registrationCode: currentFormValue.registrationCode,
-            profile: currentFormValue.profile,
-            identityType: currentFormValue.identityType,
-            permissionType: currentFormValue.permissionType,
-            nodeAddress: currentFormValue.nodeAddress,
-            shinkaiIdentity: currentFormValue.shinkaiIdentity,
-            nodeEncryptionPublicKey: currentFormValue.nodeEncryptionPublicKey,
-            nodeSignaturePublicKey: currentFormValue.nodeSignaturePublicKey,
-          },
-          userData: {
-            registrationName: currentFormValue.registrationName,
-          },
-          credentials: {
-            myDeviceIdentityPublicKey:
-              currentFormValue.myDeviceEncryptionPublicKey,
-            myDeviceIdentitySharedKey:
-              currentFormValue.myDeviceEncryptionSharedKey,
-
-            myDeviceEncryptionPublicKey:
-              currentFormValue.myDeviceIdentityPublicKey,
-            myDeviceEncryptionSharedKey:
-              currentFormValue.myDeviceEncryptionSharedKey,
-
-            profileSignaturePublicKey:
-              currentFormValue.profileSignaturePublicKey,
-            profileSignatureSharedKey:
-              currentFormValue.profileSignatureSharedKey,
-
-            profileEncryptionPublicKey:
-              currentFormValue.profileEncryptionPublicKey,
-            profileEncryptionSharedKey:
-              currentFormValue.profileEncryptionSharedKey,
-          },
+    dispatch(
+      connectNode({
+        nodeData: {
+          registrationCode: currentFormValue.registrationCode,
+          profile: currentFormValue.profile,
+          identityType: currentFormValue.identityType,
+          permissionType: currentFormValue.permissionType,
+          nodeAddress: currentFormValue.nodeAddress,
+          shinkaiIdentity: currentFormValue.shinkaiIdentity,
+          nodeEncryptionPublicKey: currentFormValue.nodeEncryptionPublicKey,
+          nodeSignaturePublicKey: currentFormValue.nodeSignaturePublicKey,
         },
-      ]
+        userData: {
+          registrationName: currentFormValue.registrationName,
+        },
+        credentials: {
+          myDeviceIdentityPublicKey:
+            currentFormValue.myDeviceEncryptionPublicKey,
+          myDeviceIdentitySharedKey:
+            currentFormValue.myDeviceEncryptionSharedKey,
+
+          myDeviceEncryptionPublicKey:
+            currentFormValue.myDeviceIdentityPublicKey,
+          myDeviceEncryptionSharedKey:
+            currentFormValue.myDeviceEncryptionSharedKey,
+
+          profileSignaturePublicKey: currentFormValue.profileSignaturePublicKey,
+          profileSignatureSharedKey: currentFormValue.profileSignatureSharedKey,
+
+          profileEncryptionPublicKey:
+            currentFormValue.profileEncryptionPublicKey,
+          profileEncryptionSharedKey:
+            currentFormValue.profileEncryptionSharedKey,
+        },
+      })
     );
   };
 
   const isConnecting = (): boolean => {
-    return status === 'loading'; // currentStep === AddNodeSteps.Connect;
+    return nodeConnectionStatus === 'loading'; // currentStep === AddNodeSteps.Connect;
   };
 
   const connectingStatus = (): 'process' | 'wait' => {
@@ -273,16 +270,19 @@ export const AddNode = () => {
   }, [form, currentFormValue]);
 
   useEffect(() => {
-    if (status === 'failed') {
+    if (nodeConnectionStatus === 'failed') {
       messageApi.open({
         type: 'error',
         content: 'Error connecting node',
       });
-    } else if (status === 'succeeded') {
-      history.replace('/inboxes/all')
     }
-  }, [status, messageApi, history]);
+  }, [nodeConnectionStatus, messageApi]);
 
+  useEffect(() => {
+    if (authenticated) {
+      history.replace('/inboxes/all');
+    }
+  }, [authenticated, history]);
   return (
     <div className="h-full flex flex-col space-y-3">
       {contextHolder}
@@ -341,7 +341,11 @@ export const AddNode = () => {
         )}
 
         {(currentStep === 1 || currentStep === 2) && (
-          <Form autoComplete="off" disabled={status === 'loading'} form={form}>
+          <Form
+            autoComplete="off"
+            disabled={nodeConnectionStatus === 'loading'}
+            form={form}
+          >
             <Form.Item<AddNodeFieldType>
               name="registrationCode"
               rules={[{ required: true }]}
