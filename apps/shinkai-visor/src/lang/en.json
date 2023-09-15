@@ -24,5 +24,9 @@
   "connect-manually": "Do not have a QR Code? Connect manually",
   "scan": "Scan",
   "review": "Review",
-  "logout": "Logout"
+  "logout": "Logout",
+  "message-receiver": "Message receiver",
+  "message.one": "Message",
+  "message.other": "Messages",
+  "create-inbox": "Create chat"
 }

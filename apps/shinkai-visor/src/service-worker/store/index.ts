@@ -28,6 +28,7 @@ const persistedReducer = persistReducer(
   {
     key: 'root',
     storage: chrome?.runtime ? new ChromeStorage('local') : localStorage,
+    whitelist: ['node', 'auth']
   },
   reducer
 );

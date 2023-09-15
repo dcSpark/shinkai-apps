@@ -6,4 +6,5 @@ export type Inbox = {
 
 export interface InboxState {
   all: AsyncData<Inbox[]>,
+  create: AsyncData<{ inbox: Inbox }>,
 }

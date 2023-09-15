@@ -53,6 +53,7 @@ enum AddNodeSteps {
 
 export const AddNode = () => {
   const intl = useIntl();
+  const history = useHistory();
   const [form] = Form.useForm<AddNodeFieldType>();
   const fileInput = useRef<HTMLInputElement>(null);
   const [currentStep, setCurrentStep] = useState<AddNodeSteps>(
@@ -65,7 +66,6 @@ export const AddNode = () => {
   );
   const authenticated = useSelector((state: RootState) => state?.auth.status === 'authenticated');
   const [messageApi, contextHolder] = message.useMessage();
-  const history = useHistory();
   const dispatch = useDispatch();
   const [initialValues, setInitialValues] = useState<Partial<AddNodeFieldType>>(
     {
@@ -227,7 +227,7 @@ export const AddNode = () => {
   };
 
   const isConnecting = (): boolean => {
-    return nodeConnectionStatus === 'loading'; // currentStep === AddNodeSteps.Connect;
+    return nodeConnectionStatus === 'loading';
   };
 
   const connectingStatus = (): 'process' | 'wait' => {

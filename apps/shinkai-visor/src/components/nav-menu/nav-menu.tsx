@@ -4,6 +4,7 @@ import { InboxOutlined, LogoutOutlined } from '@ant-design/icons';
 import { Menu } from 'antd';
 import { useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router';
 
 import { disconnectNode } from '../../service-worker/store/node/node-actions';
 
@@ -14,12 +15,12 @@ enum MenuOption {
 
 export const NavMenu = () => {
   const intl = useIntl();
+  const history = useHistory();
   const dispatch = useDispatch();
   const onClickMenuOption = (key: MenuOption) => {
-    console.log('onClickMenuOption', key);
-
     switch (key) {
       case MenuOption.Inbox:
+        history.replace('/inboxes')
         break;
       case MenuOption.Logout:
         logout();
@@ -29,7 +30,6 @@ export const NavMenu = () => {
     }
   }
   const logout = (): void => {
-    console.log('logout bro');
     dispatch(disconnectNode())
   }
 

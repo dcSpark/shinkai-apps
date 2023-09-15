@@ -2,10 +2,13 @@ import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Route, Switch, useHistory } from 'react-router-dom';
 
+import { Inbox } from '../../inbox/inbox';
 import { RootState } from '../../service-worker/store';
 import { WithNav } from '../../with-nav/with-nav';
 import { AddNode } from '../add-node/add-node';
+import { CreateInbox } from '../create-inbox/create-inbox';
 import { Inboxes } from '../inboxes/inboxes';
+import { NotFound } from '../not-found/not-found';
 import { SplashScreen } from '../splash-screen/splash-screen';
 import Welcome from '../welcome/welcome';
 
@@ -14,7 +17,7 @@ export const PopupRouting = () => {
   const authStatus = useSelector((state: RootState) => state?.auth?.status);
   useEffect(() => {
     if (authStatus === 'authenticated') {
-      history.replace('/inboxes/all');
+      history.replace('/inboxes');
       return;
     } else if (authStatus === 'unauthenticated') {
       history.replace('/welcome');
@@ -40,12 +43,21 @@ export const PopupRouting = () => {
           </Route>
           <Route path="/inboxes">
             <Switch>
-              <Route path="/inboxes/all">
+              <Route path="/inboxes/create">
+                <CreateInbox></CreateInbox>
+              </Route>
+              <Route path="/inboxes/:inboxId">
+                <Inbox></Inbox>
+              </Route>
+              <Route path="/">
                 <Inboxes></Inboxes>
               </Route>
             </Switch>
           </Route>
         </WithNav>
+        <Route path="*">
+          <NotFound></NotFound>
+        </Route>
       </Switch>
     </div>
   );
