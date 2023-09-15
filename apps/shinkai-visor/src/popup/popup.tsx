@@ -12,7 +12,7 @@ import { PersistGate } from 'redux-persist/integration/react'
 
 import { PopupRouting } from '../components/popup-routing/popup-routing';
 import { langMessages, locale } from '../lang/intl';
-import { store, storePersistor } from '../service-worker/store';
+import { store, storePersistor } from '../store';
 import { antdTheme } from '../theme/antd-theme';
 
 const container = document.getElementById('root');

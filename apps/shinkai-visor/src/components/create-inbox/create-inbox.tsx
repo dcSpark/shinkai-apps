@@ -4,8 +4,8 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import { RootState } from '../../service-worker/store';
-import { createInbox } from '../../service-worker/store/inbox/inbox-actions';
+import { RootState } from '../../store';
+import { createInbox } from '../../store/inbox/inbox-actions';
 
 type CreateInboxFieldType = {
   receiverIdentity: string;

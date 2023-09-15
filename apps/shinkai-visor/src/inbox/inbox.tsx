@@ -1,11 +1,10 @@
 import { getMessageContent } from '@shinkai/shinkai-message-ts/utils';
-import { Form } from 'antd';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
-import { RootState } from '../service-worker/store';
-import { getLastsMessagesForInbox } from '../service-worker/store/inbox/inbox-actions';
+import { RootState } from '../store';
+import { getLastsMessagesForInbox } from '../store/inbox/inbox-actions';
 
 export const Inbox = () => {
   const { inboxId } = useParams<{ inboxId: string }>();

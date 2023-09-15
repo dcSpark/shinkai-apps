@@ -6,7 +6,7 @@ import { useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router';
 
-import { disconnectNode } from '../../service-worker/store/node/node-actions';
+import { disconnectNode } from '../../store/node/node-actions';
 
 enum MenuOption {
   Inbox = 'inbox',

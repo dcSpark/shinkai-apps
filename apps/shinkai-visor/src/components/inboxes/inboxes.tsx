@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import { RootState } from '../../service-worker/store';
-import { getAllInboxes } from '../../service-worker/store/inbox/inbox-actions';
+import { RootState } from '../../store';
+import { getAllInboxes } from '../../store/inbox/inbox-actions';
 
 export const Inboxes = () => {
   const dispatch = useDispatch();

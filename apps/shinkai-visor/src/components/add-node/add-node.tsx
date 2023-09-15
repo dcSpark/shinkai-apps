@@ -13,8 +13,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import ScanQrAnimation from '../../assets/animations/scan-qr.json';
-import { RootState } from '../../service-worker/store';
-import { connectNode } from '../../service-worker/store/node/node-actions';
+import { RootState } from '../../store';
+import { connectNode } from '../../store/node/node-actions';
 
 type AddNodeFieldType = {
   registrationCode: string;

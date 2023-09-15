@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { Route, Switch, useHistory } from 'react-router-dom';
 
 import { Inbox } from '../../inbox/inbox';
-import { RootState } from '../../service-worker/store';
+import { RootState } from '../../store';
 import { WithNav } from '../../with-nav/with-nav';
 import { AddNode } from '../add-node/add-node';
 import { CreateInbox } from '../create-inbox/create-inbox';
