@@ -326,6 +326,18 @@ export class ShinkaiMessageBuilderWrapper {
 */
   static use_code_registration_for_device(my_device_encryption_sk: string, my_device_signature_sk: string, profile_encryption_sk: string, profile_signature_sk: string, receiver_public_key: string, code: string, identity_type: string, permission_type: string, registration_name: string, sender: string, sender_subidentity: string, recipient: string, recipient_subidentity: string): string;
 /**
+* @param {string} my_device_encryption_sk
+* @param {string} my_device_signature_sk
+* @param {string} profile_encryption_sk
+* @param {string} profile_signature_sk
+* @param {string} registration_name
+* @param {string} sender_subidentity
+* @param {string} sender
+* @param {string} receiver
+* @returns {string}
+*/
+  static initial_registration_with_no_code_for_device(my_device_encryption_sk: string, my_device_signature_sk: string, profile_encryption_sk: string, profile_signature_sk: string, registration_name: string, sender_subidentity: string, sender: string, receiver: string): string;
+/**
 * @param {string} my_subidentity_encryption_sk
 * @param {string} my_subidentity_signature_sk
 * @param {string} receiver_public_key
@@ -537,4 +549,19 @@ export class ShinkaiTime {
 * @returns {string}
 */
   static generateTimeNow(): string;
+/**
+* @param {bigint} secs
+* @returns {string}
+*/
+  static generateTimeInFutureWithSecs(secs: bigint): string;
+/**
+* @param {number} year
+* @param {number} month
+* @param {number} day
+* @param {number} hr
+* @param {number} min
+* @param {number} sec
+* @returns {string}
+*/
+  static generateSpecificTime(year: number, month: number, day: number, hr: number, min: number, sec: number): string;
 }
