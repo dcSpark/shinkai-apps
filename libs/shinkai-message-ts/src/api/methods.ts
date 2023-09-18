@@ -6,6 +6,7 @@ import {
   SetupPayload,
   ShinkaiMessage,
 } from '../models';
+import { APIUseRegistrationCodeSuccessResponse } from '../models/Payloads';
 import { SerializedAgent } from '../models/SchemaTypes';
 import { InboxNameWrapper } from '../pkg/shinkai_message_wasm';
 import { SerializedAgentWrapper } from '../wasm/SerializedAgentWrapper';
@@ -381,7 +382,7 @@ export const submitRegistrationCode = async (
 
 export const submitInitialRegistrationNoCode = async (
   setupData: SetupPayload
-): Promise<boolean> => {
+): Promise<{ success: boolean; data?: APIUseRegistrationCodeSuccessResponse }> => {
   try {
     const messageStr =
       ShinkaiMessageBuilderWrapper.initial_registration_with_no_code_for_device(
@@ -416,10 +417,11 @@ export const submitInitialRegistrationNoCode = async (
 
     // Update the API_ENDPOINT after successful registration
     ApiConfig.getInstance().setEndpoint(setupData.node_address);
-    return true;
+    const data = await response.json();
+    return { success: true, data };
   } catch (error) {
     console.log('Error in initial registration:', error);
-    return false;
+    return { success: false };
   }
 };
 

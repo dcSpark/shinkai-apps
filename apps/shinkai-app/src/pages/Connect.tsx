@@ -1,32 +1,33 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
 import {
   IonContent,
-  IonPage,
-  IonToast,
   IonIcon,
-  IonSpinner,
+  IonLabel,
+  IonPage,
   IonSegment,
   IonSegmentButton,
-  IonLabel,
+  IonSpinner,
+  IonToast,
 } from '@ionic/react';
-import { submitInitialRegistrationNoCode, submitRegistrationCode } from '@shinkai/shinkai-message-ts/api';
-import { BrowserQRCodeReader } from '@zxing/browser';
-import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { useHistory } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import type { AppDispatch, RootState } from '../store';
-import { QrScanner, QrScannerProps } from '@yudiel/react-qr-scanner';
-import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
 import { isPlatform } from '@ionic/react';
+import { submitInitialRegistrationNoCode, submitRegistrationCode } from '@shinkai/shinkai-message-ts/api';
+import { QRSetupData } from '@shinkai/shinkai-message-ts/models';
 import {
   generateEncryptionKeys,
   generateSignatureKeys,
 } from '@shinkai/shinkai-message-ts/utils';
-import { QRSetupData } from '@shinkai/shinkai-message-ts/models';
+import { QrScanner, QrScannerProps } from '@yudiel/react-qr-scanner';
+import { BrowserQRCodeReader } from '@zxing/browser';
+import { checkmarkSharp,cloudUpload, scan } from 'ionicons/icons';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import { toast } from 'react-toastify';
+
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
-import { scan, cloudUpload, checkmarkSharp } from 'ionicons/icons';
+import type { AppDispatch, RootState } from '../store';
 import { useRegistrationCode } from '../store/actions';
 import { SetupDetailsState } from '../store/reducers/setupDetailsReducer';
 
@@ -163,17 +164,29 @@ const Connect: React.FC = () => {
   const finishSetup = async () => {
     setStatus('loading');
     let success = false;
+    let responseData: APIUseRegistrationCodeSuccessResponse | undefined;
 
     if (mode === 'Automatic') {
-      success = await submitInitialRegistrationNoCode(setupData);
+      const response = await submitInitialRegistrationNoCode(setupData);
+      success = response.success;
+      responseData = response.data;
     } else if (mode === 'Manual') {
       success = await submitRegistrationCode(setupData);
     }
 
     if (success) {
+      let updatedSetupData = { ...setupData };
+      if (responseData) {
+        // we can't update the state directly bc of race conditions
+        updatedSetupData = {
+          ...updatedSetupData,
+          node_encryption_pk: responseData.encryption_public_key,
+          node_signature_pk: responseData.identity_public_key,
+        };
+      }
       // TODO: Fix this react warning
       // eslint-disable-next-line react-hooks/rules-of-hooks
-      dispatch(useRegistrationCode(setupData));
+      dispatch(useRegistrationCode(updatedSetupData));
       setStatus('success');
       localStorage.setItem('setupComplete', 'true');
       history.push('/home');
@@ -210,24 +223,24 @@ const Connect: React.FC = () => {
             </div>
             <div className="h-[16rem] mt-20 flex justify-center">
               <img
-                src="/messaging.png"
-                className="inline-block align-top opacity-0 transition-opacity opacity-100 object-contain h-full"
                 alt=""
+                className="inline-block align-top opacity-0 transition-opacity opacity-100 object-contain h-full"
+                src="/messaging.png"
               />
             </div>
           </div>
           <div className="flex grow p-10 md:rounded-[1.25rem] bg-white dark:bg-slate-800">
             <div className="w-full max-w-[31.5rem] m-auto">
-              <a href="https://shinkai.com/" target="_blank">
+              <a href="https://shinkai.com/" rel="noreferrer" target="_blank">
                 <img
+                  alt=""
                   className="block dark:hidden mx-auto mb-10"
                   src="/shinkai-logo.svg"
-                  alt=""
                 />
                 <img
+                  alt=""
                   className="hidden dark:block mx-auto mb-10"
                   src="/shinkai-logo-white.svg"
-                  alt=""
                 />
               </a>
 
