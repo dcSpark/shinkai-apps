@@ -10,7 +10,7 @@ import {
   IonSegmentButton,
   IonLabel,
 } from '@ionic/react';
-import { submitRegistrationCode } from '@shinkai/shinkai-message-ts/api';
+import { submitInitialRegistrationNoCode, submitRegistrationCode } from '@shinkai/shinkai-message-ts/api';
 import { BrowserQRCodeReader } from '@zxing/browser';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { useHistory } from 'react-router-dom';
@@ -162,7 +162,13 @@ const Connect: React.FC = () => {
 
   const finishSetup = async () => {
     setStatus('loading');
-    const success = await submitRegistrationCode(setupData);
+    let success = false;
+
+    if (mode === 'Automatic') {
+      success = await submitInitialRegistrationNoCode(setupData);
+    } else if (mode === 'Manual') {
+      success = await submitRegistrationCode(setupData);
+    }
 
     if (success) {
       // TODO: Fix this react warning

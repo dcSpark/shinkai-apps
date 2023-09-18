@@ -1,12 +1,12 @@
 import {
+  EncryptionMethod as TSEncryptionMethod,
+  MessageSchemaType,
+} from '../models/SchemaTypes.js';
+import {
   EncryptionMethod,
   ShinkaiMessageBuilderWrapper as ShinkaiMessageBuilderWrapperWASM,
   ShinkaiMessageWrapper,
 } from '../pkg/shinkai_message_wasm.js';
-import {
-  MessageSchemaType,
-  EncryptionMethod as TSEncryptionMethod,
-} from '../models/SchemaTypes.js';
 import { SerializedAgentWrapper } from './SerializedAgentWrapper.js';
 
 export class ShinkaiMessageBuilderWrapper {
@@ -390,7 +390,7 @@ export class ShinkaiMessageBuilderWrapper {
     recipient: string,
     agent: SerializedAgentWrapper
   ): string {
-    let agentJson = agent.to_json_str();
+    const agentJson = agent.to_json_str();
     return ShinkaiMessageBuilderWrapperWASM.request_add_agent(
       my_encryption_secret_key,
       my_signature_secret_key,

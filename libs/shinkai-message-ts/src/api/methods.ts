@@ -379,6 +379,50 @@ export const submitRegistrationCode = async (
   }
 };
 
+export const submitInitialRegistrationNoCode = async (
+  setupData: SetupPayload
+): Promise<boolean> => {
+  try {
+    const messageStr =
+      ShinkaiMessageBuilderWrapper.initial_registration_with_no_code_for_device(
+        setupData.my_device_encryption_sk,
+        setupData.my_device_identity_sk,
+        setupData.profile_encryption_sk,
+        setupData.profile_identity_sk,
+        setupData.registration_name,
+        setupData.registration_name,
+        setupData.profile || '', // sender_profile_name: it doesn't exist yet in the Node
+        setupData.shinkai_identity
+      );
+
+    const message = JSON.parse(messageStr);
+    console.log(
+      'submitInitialRegistration registration_name: ',
+      setupData.registration_name
+    );
+    console.log('submitInitialRegistration Message:', message);
+
+    // Use node_address from setupData for API endpoint
+    const response = await fetch(
+      `${setupData.node_address}/v1/use_registration_code`,
+      {
+        method: 'POST',
+        body: JSON.stringify(message),
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+
+    await handleHttpError(response);
+
+    // Update the API_ENDPOINT after successful registration
+    ApiConfig.getInstance().setEndpoint(setupData.node_address);
+    return true;
+  } catch (error) {
+    console.log('Error in initial registration:', error);
+    return false;
+  }
+};
+
 export const pingAllNodes = async (): Promise<string> => {
   const apiEndpoint = ApiConfig.getInstance().getEndpoint();
   try {

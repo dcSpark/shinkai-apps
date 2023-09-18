@@ -40,7 +40,7 @@ describe('ShinkaiMessageWrapper', () => {
   });
 
   it('should correctly convert from and to JsValue string', () => {
-    let message = JSON.parse(messageJson);
+    const message = JSON.parse(messageJson);
     const wrapper = ShinkaiMessageWrapper.fromJsValue(message);
     const jsonString = wrapper.to_json_str();
 
@@ -48,7 +48,7 @@ describe('ShinkaiMessageWrapper', () => {
   });
 
   it('should correctly instatiate it from a ShinkaiMessage Typescript object', () => {
-    let message: ShinkaiMessage = JSON.parse(messageJson);
+    const message: ShinkaiMessage = JSON.parse(messageJson);
     const wrapper = ShinkaiMessageWrapper.fromJsValue(message);
     const jsonString = wrapper.to_json_str();
 
