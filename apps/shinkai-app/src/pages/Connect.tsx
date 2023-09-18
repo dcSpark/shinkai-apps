@@ -1,61 +1,77 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
 import {
   IonContent,
-  IonPage,
-  IonToast,
   IonIcon,
+  IonLabel,
+  IonPage,
+  IonSegment,
+  IonSegmentButton,
   IonSpinner,
-} from "@ionic/react";
-import { submitRegistrationCode } from "@shinkai/shinkai-message-ts/api";
-import { BrowserQRCodeReader } from "@zxing/browser";
-import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
-import { useHistory } from "react-router-dom";
-import { toast } from "react-toastify";
-import type { AppDispatch, RootState } from "../store";
-import { QrScanner, QrScannerProps } from "@yudiel/react-qr-scanner";
-import { BarcodeScanner } from "@capacitor-community/barcode-scanner";
-import { isPlatform } from "@ionic/react";
+  IonToast,
+} from '@ionic/react';
+import { isPlatform } from '@ionic/react';
+import { submitInitialRegistrationNoCode, submitRegistrationCode } from '@shinkai/shinkai-message-ts/api';
+import { QRSetupData } from '@shinkai/shinkai-message-ts/models';
 import {
   generateEncryptionKeys,
   generateSignatureKeys,
-} from "@shinkai/shinkai-message-ts/utils";
-import { QRSetupData } from "@shinkai/shinkai-message-ts/models";
-import Button from "../components/ui/Button";
-import Input from "../components/ui/Input";
-import { scan, cloudUpload, checkmarkSharp } from "ionicons/icons";
-import { useRegistrationCode } from "../store/actions";
-import { SetupDetailsState } from "../store/reducers/setupDetailsReducer";
+} from '@shinkai/shinkai-message-ts/utils';
+import { QrScanner, QrScannerProps } from '@yudiel/react-qr-scanner';
+import { BrowserQRCodeReader } from '@zxing/browser';
+import { checkmarkSharp,cloudUpload, scan } from 'ionicons/icons';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import { toast } from 'react-toastify';
+
+import Button from '../components/ui/Button';
+import Input from '../components/ui/Input';
+import type { AppDispatch, RootState } from '../store';
+import { useRegistrationCode } from '../store/actions';
+import { SetupDetailsState } from '../store/reducers/setupDetailsReducer';
 
 export type MergedSetupType = SetupDetailsState & QRSetupData;
 
 const Connect: React.FC = () => {
+  const [mode, setMode] = useState<'Automatic' | 'Manual'>('Automatic');
   const [setupData, setSetupData] = useState<MergedSetupType>({
-    registration_code: "",
-    profile: "main",
-    registration_name: "main_device",
-    identity_type: "device",
-    permission_type: "admin",
-    node_address: "",
-    shinkai_identity: "",
-    node_encryption_pk: "",
-    node_signature_pk: "",
-    profile_encryption_sk: "",
-    profile_encryption_pk: "",
-    profile_identity_sk: "",
-    profile_identity_pk: "",
-    my_device_encryption_sk: "",
-    my_device_encryption_pk: "",
-    my_device_identity_sk: "",
-    my_device_identity_pk: "",
+    registration_code: '',
+    profile: 'main',
+    registration_name: 'main_device',
+    identity_type: 'device',
+    permission_type: 'admin',
+    node_address: '',
+    shinkai_identity: '@@node1.shinkai', // this should actually be read from ENV
+    node_encryption_pk: '',
+    node_signature_pk: '',
+    profile_encryption_sk: '',
+    profile_encryption_pk: '',
+    profile_identity_sk: '',
+    profile_identity_pk: '',
+    my_device_encryption_sk: '',
+    my_device_encryption_pk: '',
+    my_device_identity_sk: '',
+    my_device_identity_pk: '',
   });
   const [status, setStatus] = useState<
-    "idle" | "loading" | "error" | "success"
-  >("idle");
+    'idle' | 'loading' | 'error' | 'success'
+  >('idle');
   const [error, setError] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
   const history = useHistory();
   const errorFromState = useSelector((state: RootState) => state.other.error);
+
+  useEffect(() => {
+    fetch('http://127.0.0.1:9550/v1/shinkai_health')
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'ok') {
+          updateSetupData({ node_address: 'http://127.0.0.1:9550' });
+        }
+      })
+      .catch(error => console.error('Error:', error));
+  }, []);
 
   // Generate keys when the component mounts
   useEffect(() => {
@@ -106,19 +122,19 @@ const Connect: React.FC = () => {
   const handleScan = async (data: any) => {
     if (data) {
       const result = JSON.parse(data);
-      console.log("Prev. QR Code Data:", setupData);
+      console.log('Prev. QR Code Data:', setupData);
       updateSetupData(result);
-      console.log("New QR Code Data:", setupData);
+      console.log('New QR Code Data:', setupData);
     }
   };
-  console.log(isPlatform("desktop"));
+  console.log(isPlatform('desktop'));
   const handleImageUpload = async () => {
     try {
       const image = await Camera.getPhoto({
         quality: 90,
         allowEditing: true,
         resultType: CameraResultType.DataUrl,
-        source: isPlatform("desktop")
+        source: isPlatform('desktop')
           ? CameraSource.Photos
           : CameraSource.Prompt,
       });
@@ -128,7 +144,7 @@ const Connect: React.FC = () => {
       const parsedData: QRSetupData = JSON.parse(json_string);
       updateSetupData(parsedData);
     } catch (error) {
-      console.error("Error uploading image:", error);
+      console.error('Error uploading image:', error);
     }
   };
 
@@ -137,7 +153,7 @@ const Connect: React.FC = () => {
   };
 
   const handleQRScan = async () => {
-    if (isPlatform("capacitor")) {
+    if (isPlatform('capacitor')) {
       const result = await BarcodeScanner.startScan();
       if (result.hasContent) {
         handleScan(result.content);
@@ -146,20 +162,38 @@ const Connect: React.FC = () => {
   };
 
   const finishSetup = async () => {
-    setStatus("loading");
-    const success = await submitRegistrationCode(setupData);
+    setStatus('loading');
+    let success = false;
+    let responseData: APIUseRegistrationCodeSuccessResponse | undefined;
+
+    if (mode === 'Automatic') {
+      const response = await submitInitialRegistrationNoCode(setupData);
+      success = response.success;
+      responseData = response.data;
+    } else if (mode === 'Manual') {
+      success = await submitRegistrationCode(setupData);
+    }
 
     if (success) {
+      let updatedSetupData = { ...setupData };
+      if (responseData) {
+        // we can't update the state directly bc of race conditions
+        updatedSetupData = {
+          ...updatedSetupData,
+          node_encryption_pk: responseData.encryption_public_key,
+          node_signature_pk: responseData.identity_public_key,
+        };
+      }
       // TODO: Fix this react warning
       // eslint-disable-next-line react-hooks/rules-of-hooks
-      dispatch(useRegistrationCode(setupData));
-      setStatus("success");
-      localStorage.setItem("setupComplete", "true");
-      history.push("/home");
+      dispatch(useRegistrationCode(updatedSetupData));
+      setStatus('success');
+      localStorage.setItem('setupComplete', 'true');
+      history.push('/home');
     } else {
-      setStatus("error");
+      setStatus('error');
 
-      console.log("Error from state:", errorFromState);
+      console.log('Error from state:', errorFromState);
       toast.error(errorFromState);
     }
   };
@@ -177,8 +211,11 @@ const Connect: React.FC = () => {
         <div className="relative flex min-h-screen min-h-screen-ios lg:p-6 md:px-6 md:pt-16 md:pb-10 bg-slate-900">
           <div className="relative hidden shrink-0 w-[40rem] p-20 overflow-hidden 2xl:w-[37.5rem] xl:w-[30rem] lg:p-10 lg:block">
             <div className="max-w-[25.4rem]">
-              <div data-cy="shinkai-app-description" className="mb-4 text-7xl font-bold leading-none uppercase font-newake text-white">
-                AI AGENT OS THAT UNLOCKS THE POTENTIAL OF LLMS
+              <div
+                data-cy="shinkai-app-description"
+                className="mb-4 text-7xl font-bold leading-none uppercase font-newake text-white"
+              >
+                AI AGENT OS THAT UNLOCKS THE POTENTIAL OF LLMs
               </div>
               <div className="text-lg text-slate-900">
                 For devices, identities, and digital money
@@ -186,55 +223,67 @@ const Connect: React.FC = () => {
             </div>
             <div className="h-[16rem] mt-20 flex justify-center">
               <img
-                src="/messaging.png"
-                className="inline-block align-top opacity-0 transition-opacity opacity-100 object-contain h-full"
                 alt=""
+                className="inline-block align-top opacity-0 transition-opacity opacity-100 object-contain h-full"
+                src="/messaging.png"
               />
             </div>
           </div>
           <div className="flex grow p-10 md:rounded-[1.25rem] bg-white dark:bg-slate-800">
             <div className="w-full max-w-[31.5rem] m-auto">
-              <a href="https://shinkai.com/" target="_blank">
+              <a href="https://shinkai.com/" rel="noreferrer" target="_blank">
                 <img
+                  alt=""
                   className="block dark:hidden mx-auto mb-10"
                   src="/shinkai-logo.svg"
-                  alt=""
                 />
                 <img
+                  alt=""
                   className="hidden dark:block mx-auto mb-10"
                   src="/shinkai-logo-white.svg"
-                  alt=""
                 />
               </a>
-              <div className="space-y-2">
-                <Button variant={"secondary"} onClick={handleImageUpload}>
-                  <IonIcon
-                    slot="icon-only"
-                    icon={cloudUpload}
-                    className="mr-4"
-                  />
-                  Upload QR Code
-                </Button>
-                {isPlatform("capacitor") ? (
-                  <Button onClick={handleQRScan}>Scan QR Code</Button>
-                ) : (
-                  <CustomQrScanner
-                    scanDelay={300}
-                    onError={handleError}
-                    onDecode={handleScan}
-                    containerStyle={{ width: "100%" }}
-                  />
-                )}
-              </div>
-              <hr className="w-full border-b border-gray-300 dark:border-slate-600/60 mt-6 mb-6" />
+
+              <IonSegment
+                value={mode}
+                onIonChange={(e) =>
+                  setMode(e.detail.value as 'Automatic' | 'Manual')
+                }
+                style={{ marginBottom: '20px' }}
+              >
+                <IonSegmentButton value="Automatic">
+                  <IonLabel>Automatic</IonLabel>
+                </IonSegmentButton>
+                <IonSegmentButton value="Manual">
+                  <IonLabel>Manual</IonLabel>
+                </IonSegmentButton>
+              </IonSegment>
+              {mode === 'Manual' && (
+                <>
+                  <div className="space-y-2">
+                    <Button variant={'secondary'} onClick={handleImageUpload}>
+                      <IonIcon
+                        slot="icon-only"
+                        icon={cloudUpload}
+                        className="mr-4"
+                      />
+                      Upload QR Code
+                    </Button>
+                    {isPlatform('capacitor') ? (
+                      <Button onClick={handleQRScan}>Scan QR Code</Button>
+                    ) : (
+                      <CustomQrScanner
+                        scanDelay={300}
+                        onError={handleError}
+                        onDecode={handleScan}
+                        containerStyle={{ width: '100%' }}
+                      />
+                    )}
+                  </div>
+                  <hr className="w-full border-b border-gray-300 dark:border-slate-600/60 mt-6 mb-6" />
+                </>
+              )}
               <div className="space-y-5">
-                <Input
-                  value={setupData.registration_code}
-                  onChange={(e) =>
-                    updateSetupData({ registration_code: e.detail.value! })
-                  }
-                  label="Registration Code"
-                />
                 <Input
                   value={setupData.registration_name}
                   onChange={(e) =>
@@ -256,56 +305,71 @@ const Connect: React.FC = () => {
                   }
                   label="Shinkai Identity (@@IDENTITY.shinkai)"
                 />
-                <Input
-                  value={setupData.node_encryption_pk}
-                  onChange={(e) =>
-                    updateSetupData({ node_encryption_pk: e.detail.value! })
-                  }
-                  label="Node Encryption Public Key"
-                />
-                <Input
-                  value={setupData.node_signature_pk}
-                  onChange={(e) =>
-                    updateSetupData({ node_signature_pk: e.detail.value! })
-                  }
-                  label="Node Signature Public Key"
-                />
-                <Input
-                  value={setupData.profile_encryption_pk}
-                  onChange={(e) =>
-                    updateSetupData({
-                      profile_encryption_pk: e.detail.value!,
-                    })
-                  }
-                  label="Profile Encryption Public Key"
-                />
-                <Input
-                  value={setupData.profile_identity_pk}
-                  onChange={(e) =>
-                    updateSetupData({ profile_identity_pk: e.detail.value! })
-                  }
-                  label="Profile Signature Public Key"
-                />
-                <Input
-                  value={setupData.my_device_encryption_pk}
-                  onChange={(e) =>
-                    updateSetupData({
-                      my_device_encryption_pk: e.detail.value!,
-                    })
-                  }
-                  label="My Encryption Public Key"
-                />
-                <Input
-                  value={setupData.my_device_identity_pk}
-                  onChange={(e) =>
-                    updateSetupData({ my_device_identity_pk: e.detail.value! })
-                  }
-                  label="My Signature Public Key"
-                />
-                {status === "error" && (
+                {mode === 'Manual' && (
+                  <>
+                    <Input
+                      value={setupData.registration_code}
+                      onChange={(e) =>
+                        updateSetupData({ registration_code: e.detail.value! })
+                      }
+                      label="Registration Code"
+                    />
+                    <Input
+                      value={setupData.node_encryption_pk}
+                      onChange={(e) =>
+                        updateSetupData({ node_encryption_pk: e.detail.value! })
+                      }
+                      label="Node Encryption Public Key"
+                    />
+                    <Input
+                      value={setupData.node_signature_pk}
+                      onChange={(e) =>
+                        updateSetupData({ node_signature_pk: e.detail.value! })
+                      }
+                      label="Node Signature Public Key"
+                    />
+                    <Input
+                      value={setupData.profile_encryption_pk}
+                      onChange={(e) =>
+                        updateSetupData({
+                          profile_encryption_pk: e.detail.value!,
+                        })
+                      }
+                      label="Profile Encryption Public Key"
+                    />
+                    <Input
+                      value={setupData.profile_identity_pk}
+                      onChange={(e) =>
+                        updateSetupData({
+                          profile_identity_pk: e.detail.value!,
+                        })
+                      }
+                      label="Profile Signature Public Key"
+                    />
+                    <Input
+                      value={setupData.my_device_encryption_pk}
+                      onChange={(e) =>
+                        updateSetupData({
+                          my_device_encryption_pk: e.detail.value!,
+                        })
+                      }
+                      label="My Encryption Public Key"
+                    />
+                    <Input
+                      value={setupData.my_device_identity_pk}
+                      onChange={(e) =>
+                        updateSetupData({
+                          my_device_identity_pk: e.detail.value!,
+                        })
+                      }
+                      label="My Signature Public Key"
+                    />
+                  </>
+                )}
+                {status === 'error' && (
                   <p
-                    role={"alert"}
-                    className={"text-red-600 text-base text-center"}
+                    role={'alert'}
+                    className={'text-red-600 text-base text-center'}
                   >
                     Something went wrong. Please check your inputs and try again
                   </p>
@@ -313,15 +377,15 @@ const Connect: React.FC = () => {
                 <Button
                   onClick={finishSetup}
                   className="mt-6"
-                  disabled={status === "loading"}
+                  disabled={status === 'loading'}
                 >
-                  {status === "loading" ? (
+                  {status === 'loading' ? (
                     <IonSpinner
                       name="bubbles"
-                      className={"w-10 h-10"}
+                      className={'w-10 h-10'}
                     ></IonSpinner>
                   ) : (
-                    "Sign In"
+                    'Sign In'
                   )}
                 </Button>
               </div>
@@ -341,15 +405,15 @@ function CustomQrScanner({
   scanDelay,
   containerStyle,
 }: {
-  onError: QrScannerProps["onError"];
-  onDecode: QrScannerProps["onDecode"];
+  onError: QrScannerProps['onError'];
+  onDecode: QrScannerProps['onDecode'];
   containerStyle: React.CSSProperties;
   scanDelay: number;
 }) {
   const [showScanner, setShowScanner] = useState(false);
   const [status, setStatus] = useState<
-    "idle" | "loading" | "error" | "success"
-  >("idle");
+    'idle' | 'loading' | 'error' | 'success'
+  >('idle');
 
   return showScanner ? (
     <div className="relative">
@@ -359,27 +423,27 @@ function CustomQrScanner({
         onDecode={onDecode}
         containerStyle={containerStyle}
         onResult={(result) => {
-          setStatus("success");
+          setStatus('success');
           setShowScanner(false);
         }}
       />
       <Button
-        variant={"tertiary"}
+        variant={'tertiary'}
         onClick={() => setShowScanner(false)}
         className="absolute bottom-2 z-10 max-w-[80px] left-1/2 transform -translate-x-1/2"
       >
         Close
       </Button>
       <IonToast
-        message={"QR Code scanned successfully!"}
+        message={'QR Code scanned successfully!'}
         duration={5000}
         icon={checkmarkSharp}
-        isOpen={status === "success"}
+        isOpen={status === 'success'}
       ></IonToast>
     </div>
   ) : (
     <Button
-      variant={"secondary"}
+      variant={'secondary'}
       onClick={() => setShowScanner(true)}
       className="mt-6"
     >

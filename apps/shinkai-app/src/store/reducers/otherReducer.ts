@@ -1,7 +1,8 @@
 import { SerializedAgent } from "@shinkai/shinkai-message-ts/models";
+
 import {
-  ADD_AGENTS,
   Action,
+  ADD_AGENTS,
   CLEAR_REGISTRATION_CODE,
   CLEAR_STORE,
   CREATE_REGISTRATION_CODE,
