@@ -2,8 +2,8 @@
   "name": "@shinkai/shinkai-message-ts",
   "version": "0.0.1",
   "description": "Shinkai Message TS wrapper for wasm library",
-  "main": "./dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./src/index.js",
+  "types": "src/index.d.ts",
   "type": "commonjs",
   "typings": "./src/index.d.ts",
   "keywords": [
