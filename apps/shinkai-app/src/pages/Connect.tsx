@@ -13,6 +13,7 @@ import {
 import { isPlatform } from '@ionic/react';
 import { submitInitialRegistrationNoCode, submitRegistrationCode } from '@shinkai/shinkai-message-ts/api';
 import { QRSetupData } from '@shinkai/shinkai-message-ts/models';
+import { APIUseRegistrationCodeSuccessResponse } from '@shinkai/shinkai-message-ts/models';
 import {
   generateEncryptionKeys,
   generateSignatureKeys,
