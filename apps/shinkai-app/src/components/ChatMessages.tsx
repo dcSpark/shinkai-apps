@@ -3,13 +3,13 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   getLastMessagesFromInbox,
   getLastUnreadMessagesFromInbox,
-} from '@shinkai/shinkai-message-ts/api/methods';
-import { ShinkaiMessage } from '@shinkai/shinkai-message-ts/models';
+} from '@shinkai_network/shinkai-message-ts/api/methods';
+import { ShinkaiMessage } from '@shinkai_network/shinkai-message-ts/models';
 import { IonList, IonItem, IonButton } from '@ionic/react';
 import Avatar from '../components/ui/Avatar';
 import { cn } from '../theme/lib/utils';
 import { IonContentCustom } from './ui/Layout';
-import { calculateMessageHash } from '@shinkai/shinkai-message-ts/utils/shinkai_message_handler';
+import { calculateMessageHash } from '@shinkai_network/shinkai-message-ts/utils/shinkai_message_handler';
 import { RootState } from '../store';
 import { receiveLastMessagesFromInbox } from '../store/actions';
 

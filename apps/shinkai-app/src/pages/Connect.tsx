@@ -11,13 +11,13 @@ import {
   IonToast,
 } from '@ionic/react';
 import { isPlatform } from '@ionic/react';
-import { submitInitialRegistrationNoCode, submitRegistrationCode } from '@shinkai/shinkai-message-ts/api';
-import { QRSetupData } from '@shinkai/shinkai-message-ts/models';
-import { APIUseRegistrationCodeSuccessResponse } from '@shinkai/shinkai-message-ts/models';
+import { submitInitialRegistrationNoCode, submitRegistrationCode } from '@shinkai_network/shinkai-message-ts/api';
+import { QRSetupData } from '@shinkai_network/shinkai-message-ts/models';
+import { APIUseRegistrationCodeSuccessResponse } from '@shinkai_network/shinkai-message-ts/models';
 import {
   generateEncryptionKeys,
   generateSignatureKeys,
-} from '@shinkai/shinkai-message-ts/utils';
+} from '@shinkai_network/shinkai-message-ts/utils';
 import { QrScanner, QrScannerProps } from '@yudiel/react-qr-scanner';
 import { BrowserQRCodeReader } from '@zxing/browser';
 import { checkmarkSharp,cloudUpload, scan } from 'ionicons/icons';

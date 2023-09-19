@@ -9,7 +9,7 @@ import {
 import { useParams } from 'react-router-dom';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import { sendMessageToJob } from '@shinkai/shinkai-message-ts/api';
+import { sendMessageToJob } from '@shinkai_network/shinkai-message-ts/api';
 import { useSetup } from '../hooks/usetSetup';
 import {
   extractJobIdFromInbox,

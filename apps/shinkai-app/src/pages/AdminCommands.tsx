@@ -16,7 +16,7 @@ import {
 } from "@ionic/react";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { submitRequestRegistrationCode } from "@shinkai/shinkai-message-ts/api";
+import { submitRequestRegistrationCode } from "@shinkai_network/shinkai-message-ts/api";
 import { RootState } from "../store";
 import { clearRegistrationCode, createRegistrationCode } from "../store/actions";
 import { useSetup } from "../hooks/usetSetup";

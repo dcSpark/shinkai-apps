@@ -1,4 +1,4 @@
-import { SerializedAgent } from "@shinkai/shinkai-message-ts/models";
+import { SerializedAgent } from "@shinkai_network/shinkai-message-ts/models";
 
 import {
   Action,

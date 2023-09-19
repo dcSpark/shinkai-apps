@@ -1,5 +1,5 @@
 {
-  "name": "@shinkai/shinkai-message-ts",
+  "name": "@shinkai_network/shinkai-message-ts",
   "version": "0.0.1",
   "description": "Shinkai Message TS wrapper for wasm library",
   "main": "./src/index.js",
@@ -10,5 +10,8 @@
     "shinkai",
     "shinkai-message",
     "shinkai-message wrapper"
-  ]
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }
