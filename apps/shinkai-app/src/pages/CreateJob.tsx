@@ -18,9 +18,9 @@ import { IonContentCustom, IonHeaderCustom } from "../components/ui/Layout";
 import Button from "../components/ui/Button";
 import {
   createJob, getProfileAgents, sendMessageToJob
-} from "@shinkai/shinkai-message-ts/api";
-import { SerializedAgent } from "@shinkai/shinkai-message-ts/models";
-import { JobScopeWrapper, InboxNameWrapper, JobCreationWrapper } from "@shinkai/shinkai-message-ts/wasm";
+} from "@shinkai_network/shinkai-message-ts/api";
+import { SerializedAgent } from "@shinkai_network/shinkai-message-ts/models";
+import { JobScopeWrapper, InboxNameWrapper, JobCreationWrapper } from "@shinkai_network/shinkai-message-ts/wasm";
 import { useSetup } from "../hooks/usetSetup";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";

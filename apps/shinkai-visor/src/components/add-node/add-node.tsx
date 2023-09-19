@@ -1,10 +1,10 @@
 import { CloudUploadOutlined, LoadingOutlined } from '@ant-design/icons';
 import { Player } from '@lottiefiles/react-lottie-player';
-import { QRSetupData } from '@shinkai/shinkai-message-ts/models';
+import { QRSetupData } from '@shinkai_network/shinkai-message-ts/models';
 import {
   generateEncryptionKeys,
   generateSignatureKeys,
-} from '@shinkai/shinkai-message-ts/utils';
+} from '@shinkai_network/shinkai-message-ts/utils';
 import { BrowserQRCodeReader } from '@zxing/browser';
 import { Button, Form, Input, Steps } from 'antd';
 import { useEffect, useRef, useState } from 'react';

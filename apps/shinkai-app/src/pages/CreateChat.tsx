@@ -18,7 +18,7 @@ import {
 } from '@ionic/react';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { createChatWithMessage } from '@shinkai/shinkai-message-ts/api';
+import { createChatWithMessage } from '@shinkai_network/shinkai-message-ts/api';
 import { useSetup } from '../hooks/usetSetup';
 import { useHistory } from 'react-router-dom';
 import { History } from 'history';
