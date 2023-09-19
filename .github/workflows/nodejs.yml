@@ -70,7 +70,7 @@ jobs:
         # working-directory: ${{ matrix.dir }}
         run: |
           npm cache verify
-          npm ci --prefer-offline --no-audit
+          npm i --prefer-offline --no-audit
 
       - name: shinkai-app test ${{ matrix.dir }}
         if: ${{ matrix.dir == 'shinkai-app' }}
