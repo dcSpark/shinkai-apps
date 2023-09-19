@@ -1,0 +1,78 @@
+name: NodeJS Continuous Health Check
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - "**/package*.json"
+      - "apps/shinkai-app/src/**"
+      - "apps/shinkai-app-e2e/src/**"
+      - ".github/workflows/nodejs.yml"
+  pull_request:
+    branches: [ main ]
+    paths:
+      - "**/package*.json"
+      - "apps/shinkai-app/src/**"
+      - "apps/shinkai-app-e2e/src/**"
+      - ".github/workflows/nodejs.yml"
+
+defaults:
+  run:
+    working-directory: ./
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      packages: ${{ steps.filter.outputs.changes }}
+    steps:
+      - name: Check out repository
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            "shinkai-app":
+              - "apps/shinkai-app/**"
+              - "apps/shinkai-app-e2e/**"
+              - ".github/workflows/nodejs.yml"
+
+  node_ci:
+    needs: changes
+    runs-on: ${{ matrix.os }}
+    env:
+      NODE_CACHE: "npm"
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        node: [18, 20]
+        dir: ${{ fromJSON(needs.changes.outputs.packages) }}
+
+    steps:
+      - name: Check out repository
+        if: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}
+        uses: actions/checkout@v4
+
+      - name: Setup node env
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+          check-latest: false
+          registry-url: https://registry.npmjs.org
+          cache: ${{ env.NODE_CACHE }}
+          cache-dependency-path: package-lock.json # ${{ matrix.dir }}/package-lock.json
+
+      - name: Install dependencies
+        # working-directory: ${{ matrix.dir }}
+        run: |
+          npm cache verify
+          npm ci --prefer-offline --no-audit
+
+      - name: shinkai-app test ${{ matrix.dir }}
+        if: ${{ matrix.dir == 'shinkai-app' }}
+        # working-directory: ${{ matrix.dir }}
+        run: npx nx run shinkai-app:test
