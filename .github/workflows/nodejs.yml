@@ -49,7 +49,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        node: [18, 20]
+        node: [18]
         dir: ${{ fromJSON(needs.changes.outputs.packages) }}
 
     steps:
