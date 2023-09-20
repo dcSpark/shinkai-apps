@@ -1,6 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { ApiConfig, createChatWithMessage, getAllInboxesForProfile, getLastMessagesFromInbox } from '@shinkai/shinkai-message-ts/api';
+import { ApiConfig, createChatWithMessage, getAllInboxesForProfile, getLastMessagesFromInbox, sendTextMessageWithInbox } from '@shinkai/shinkai-message-ts/api';
 import { ShinkaiMessage } from '@shinkai/shinkai-message-ts/models';
+import { extractReceiverShinkaiName } from '@shinkai/shinkai-message-ts/utils';
 
 import { RootState } from '..';
 import { Inbox } from './inbox-types';
@@ -88,5 +89,33 @@ export const getLastsMessagesForInbox = createAsyncThunk<{ inboxId: string, mess
       node_encryption_pk: node.nodeData.nodeEncryptionPublicKey,
     });
     return { inboxId: args.inboxId, messages: data };
+  }
+);
+
+export const sendMessage = createAsyncThunk<{ inbox: Inbox, message: ShinkaiMessage }, { inboxId: string, message: string }>(
+  'inbox/messages/send',
+  async (args, { getState }) => {
+    const state = getState() as RootState;
+    const node = state.node.data;
+    if (!node) throw new Error('missing node data');
+
+    ApiConfig.getInstance().setEndpoint(node.nodeData.nodeAddress);
+
+    const sender = `${node.nodeData.shinkaiIdentity}/${node.nodeData.profile}/device/${node.userData.registrationName}`;
+    const receiver = extractReceiverShinkaiName(args.inboxId, sender);
+
+    const { inboxId, message } = await sendTextMessageWithInbox(
+      sender,
+      '',
+      receiver,
+      args.message,
+      args.inboxId,
+      {
+        my_device_encryption_sk: node.credentials.myDeviceEncryptionSharedKey,
+        my_device_identity_sk: node.credentials.myDeviceIdentitySharedKey,
+        node_encryption_pk: node.nodeData.nodeEncryptionPublicKey,
+      }
+    );
+    return { inbox: { id: inboxId }, message };
   }
 );

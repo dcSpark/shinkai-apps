@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
+import { InboxInput } from '../components/inbox-input/inbox-input';
 import { RootState } from '../store';
 import { getLastsMessagesForInbox } from '../store/inbox/inbox-actions';
 
@@ -12,7 +13,6 @@ export const Inbox = () => {
   const messageCount = 10;
   const messages = useSelector(
     (state: RootState) => {
-      console.log('messages selector', state.inbox.messages, decodeURIComponent(inboxId));
       return state.inbox.messages[decodeURIComponent(inboxId)]?.data;
     }
   );
@@ -36,7 +36,11 @@ export const Inbox = () => {
   return (
     <div className="flex flex-col space-y-2">
       <span>Inbox:{decodeURIComponent(inboxId)}</span>
+
+      <div className="flex flex-col space-y-1">
       {buildMessagesUI()}
+      </div>
+      <InboxInput inboxId={decodeURIComponent(inboxId)}></InboxInput>
     </div>
   );
 };

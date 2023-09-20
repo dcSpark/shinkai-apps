@@ -6,6 +6,7 @@ import {
   createInbox,
   getAllInboxes,
   getLastsMessagesForInbox,
+  sendMessage,
 } from './inbox-actions';
 import { InboxState } from './inbox-types';
 
@@ -82,6 +83,43 @@ export const inboxSlice = createSlice({
         state.messagesHashes[inboxId] = currentMessagesHashes;
       })
       .addCase(getLastsMessagesForInbox.rejected, (state, action) => {
+        state.messages[action.meta.arg.inboxId] = {
+          ...state.messages[action.meta.arg.inboxId],
+          status: 'failed',
+          error: action.error.message,
+        };
+      });
+    
+    builder
+      .addCase(sendMessage.pending, (state, action) => {
+        state.messages[action.meta.arg.inboxId] = {
+          ...state.messages[action.meta.arg.inboxId],
+          status: 'loading',
+        };
+      })
+      .addCase(sendMessage.fulfilled, (state, action) => {
+        state.messages[action.meta.arg.inboxId] = {
+          ...state.messages[action.meta.arg.inboxId],
+          status: 'succeeded',
+        };
+        const inboxId = action.payload.inbox.id;
+        const currentMessages = state.messages[inboxId]?.data || [];
+        const currentMessagesHashes = state.messagesHashes[inboxId] || {};
+        const newMessages = [action.payload.message].filter(
+          (msg: ShinkaiMessage) => {
+            const hash = calculateMessageHash(msg);
+            if (currentMessagesHashes[hash]) {
+              return false;
+            } else {
+              currentMessagesHashes[hash] = true;
+              return true;
+            }
+          }
+        );
+        state.messages[inboxId].data = [...currentMessages, ...newMessages];
+        state.messagesHashes[inboxId] = currentMessagesHashes;
+      })
+      .addCase(sendMessage.rejected, (state, action) => {
         state.messages[action.meta.arg.inboxId] = {
           ...state.messages[action.meta.arg.inboxId],
           status: 'failed',

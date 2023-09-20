@@ -17,8 +17,6 @@ export const Inboxes = () => {
   const [inboxItems, setInboxItems] = useState<MenuItemType[]>([]);
 
   const navigateToInbox = (inboxId: string) => {
-    console.log('navigate to inbox', inboxId);
-    const encodedInboxId = inboxId.replace('.', '-');
     history.push(`/inboxes/${encodeURIComponent(inboxId)}`);
   }
 
@@ -34,7 +32,6 @@ export const Inboxes = () => {
 
   return (
     <div>
-      <h1>Inboxes</h1>
         <Menu
           items={inboxItems}
           onClick={(e) => navigateToInbox(e.key)}
