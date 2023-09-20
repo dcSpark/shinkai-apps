@@ -21,10 +21,13 @@ export const NavBreadcrumb = () => {
     });
     return items;
   }, [intl, pathToIntlDefinition]);
+  const itemRender = (route: ItemType): React.ReactNode => {
+    return (<span>{route.title}</span>);
+  }
   useEffect(() => {
     const paths = location.pathname.split('/').filter(path => path);
     const items = mapLocationToItems(paths);
     setItems(items);
   }, [location, intl, pathToIntlDefinition, mapLocationToItems])
-  return (<Breadcrumb items={breadcrumbItems}/>);
+  return (<Breadcrumb itemRender={itemRender} items={breadcrumbItems}/>);
 };

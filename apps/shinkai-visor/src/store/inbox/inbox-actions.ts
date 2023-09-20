@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { ApiConfig, createChatWithMessage, getAllInboxesForProfile, getLastMessagesFromInbox, sendTextMessageWithInbox } from '@shinkai/shinkai-message-ts/api';
-import { ShinkaiMessage } from '@shinkai/shinkai-message-ts/models';
-import { extractReceiverShinkaiName } from '@shinkai/shinkai-message-ts/utils';
+import { ApiConfig, createChatWithMessage, getAllInboxesForProfile, getLastMessagesFromInbox, sendTextMessageWithInbox } from '@shinkai_network/shinkai-message-ts/api';
+import { ShinkaiMessage } from '@shinkai_network/shinkai-message-ts/models';
+import { extractReceiverShinkaiName } from '@shinkai_network/shinkai-message-ts/utils';
 
 import { RootState } from '..';
 import { Inbox } from './inbox-types';

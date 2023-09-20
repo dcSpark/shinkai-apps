@@ -1,4 +1,4 @@
-import { ShinkaiMessage } from "@shinkai/shinkai-message-ts/models";
+import { ShinkaiMessage } from "@shinkai_network/shinkai-message-ts/models";
 
 import { AsyncData } from "../helpers/async-data";
 

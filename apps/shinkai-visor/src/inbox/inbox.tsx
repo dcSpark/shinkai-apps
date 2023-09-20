@@ -1,4 +1,4 @@
-import { getMessageContent } from '@shinkai/shinkai-message-ts/utils';
+import { getMessageContent } from '@shinkai_network/shinkai-message-ts/utils';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';

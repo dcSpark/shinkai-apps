@@ -33,14 +33,14 @@ export const PopupRouting = () => {
         <Route path="/welcome">
           <Welcome />
         </Route>
-        <WithNav>
-          <Route path="/nodes">
+        <Route path="/nodes">
             <Switch>
               <Route path="/nodes/add">
                 <AddNode></AddNode>
               </Route>
             </Switch>
           </Route>
+        <WithNav>
           <Route path="/inboxes">
             <Switch>
               <Route path="/inboxes/create">

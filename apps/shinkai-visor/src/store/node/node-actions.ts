@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { submitRegistrationCode } from '@shinkai/shinkai-message-ts/api';
+import { submitRegistrationCode } from '@shinkai_network/shinkai-message-ts/api';
 
 import { authenticated } from '../auth/auth-actions';
 import { NodeConnectionData } from './node-types';

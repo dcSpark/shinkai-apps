@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { ShinkaiMessage } from '@shinkai/shinkai-message-ts/models';
-import { calculateMessageHash } from '@shinkai/shinkai-message-ts/utils';
+import { ShinkaiMessage } from '@shinkai_network/shinkai-message-ts/models';
+import { calculateMessageHash } from '@shinkai_network/shinkai-message-ts/utils';
 
 import {
   createInbox,
