@@ -18,12 +18,12 @@
     "default_popup": "src/popup/popup.html"
   },
   "background": {
-    "service_worker": "assets/service-worker.js"
+    "service_worker": "src/service-worker/service-worker.ts"
   },
   "web_accessible_resources": [
     {
       "matches": ["*://*/*"],
-      "resources": ["src/popup.html"]
+      "resources": ["src/popup/popup.html"]
     }
   ],
   "commands": {
