@@ -1,5 +1,4 @@
-.breadcrumb-item {
-    max-width: 200px;
+.inbox-id-container {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

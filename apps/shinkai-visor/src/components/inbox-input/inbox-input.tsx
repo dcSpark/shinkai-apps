@@ -30,10 +30,8 @@ export const InboxInput = ({ inboxId }: { inboxId: string }) => {
     setSubmittable(!!currentFormValue?.message);
   }, [currentFormValue]);
   useEffect(() => {
-    console.log('asdasd', sendMessageStatus)
     switch (sendMessageStatus) {
       case 'succeeded':
-        // TODO: clean input
         form.setFieldsValue({ message: '' });
         break;
     }

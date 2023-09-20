@@ -11,6 +11,8 @@ import {
 } from 'redux-persist';
 import localStorage from 'redux-persist/es/storage';
 
+import * as agentsActions from './agents/agents-actions';
+import { agentsSlice } from './agents/agents-reducer';
 import * as authActions from './auth/auth-actions';
 import { authSlice } from './auth/auth-reducer';
 import { inboxSlice } from './inbox/inbox-reducer';
@@ -22,6 +24,7 @@ const reducer = combineReducers({
   node: nodeSlice.reducer,
   auth: authSlice.reducer,
   inbox: inboxSlice.reducer,
+  agents: agentsSlice.reducer
 });
 
 const persistedReducer = persistReducer(
@@ -48,6 +51,7 @@ export const storePersistor = persistStore(store);
 export const actions = {
   ...nodeActions,
   ...authActions,
+  ...agentsActions,
 };
 
 export type RootState = ReturnType<typeof store.getState>;

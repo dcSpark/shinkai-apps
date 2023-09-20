@@ -29,5 +29,15 @@
   "message.one": "Message",
   "message.other": "Messages",
   "create-inbox": "Create chat",
-  "send": "Send"
+  "send": "Send",
+  "agent.one": "Agent",
+  "agent.other": "Agents",
+  "agent-name": "Agent name",
+  "external-url": "External URL",
+  "api-key": "API Key",
+  "add-agent": "Add agent",
+  "model.one": "Model",
+  "model.other": "Models",
+  "openai": "OpenAI",
+  "sleep-api": "Sleep API"
 }

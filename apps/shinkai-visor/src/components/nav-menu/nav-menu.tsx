@@ -1,6 +1,6 @@
 import './nav-menu.css';
 
-import { InboxOutlined, LogoutOutlined } from '@ant-design/icons';
+import { InboxOutlined, LogoutOutlined, RobotOutlined } from '@ant-design/icons';
 import { Menu } from 'antd';
 import { useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
@@ -10,6 +10,7 @@ import { disconnectNode } from '../../store/node/node-actions';
 
 enum MenuOption {
   Inbox = 'inbox',
+  Agents = 'agents',
   Logout = 'logout',
 }
 
@@ -21,6 +22,9 @@ export const NavMenu = () => {
     switch (key) {
       case MenuOption.Inbox:
         history.replace('/inboxes')
+        break;
+      case MenuOption.Agents:
+        history.replace('/agents')
         break;
       case MenuOption.Logout:
         logout();
@@ -38,6 +42,7 @@ export const NavMenu = () => {
       className="remove-antd-style"
       items={[
         { key: MenuOption.Inbox, label: intl.formatMessage({ id: 'inbox.other' }), icon: <InboxOutlined></InboxOutlined> },
+        { key: MenuOption.Agents, label: intl.formatMessage({ id: 'agent.other' }), icon: <RobotOutlined /> },
         { key: MenuOption.Logout, label: intl.formatMessage({ id: 'logout' }), icon: <LogoutOutlined></LogoutOutlined> },
       ]}
       onClick={(e) => onClickMenuOption(e.key as unknown as MenuOption)}

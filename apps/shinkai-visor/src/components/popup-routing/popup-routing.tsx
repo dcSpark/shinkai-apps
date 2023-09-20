@@ -5,7 +5,9 @@ import { Route, Switch, useHistory } from 'react-router-dom';
 import { Inbox } from '../../inbox/inbox';
 import { RootState } from '../../store';
 import { WithNav } from '../../with-nav/with-nav';
+import { AddAgent } from '../add-agent/add-agent';
 import { AddNode } from '../add-node/add-node';
+import { Agents } from '../agents/agents';
 import { CreateInbox } from '../create-inbox/create-inbox';
 import { Inboxes } from '../inboxes/inboxes';
 import { NotFound } from '../not-found/not-found';
@@ -51,6 +53,17 @@ export const PopupRouting = () => {
               </Route>
               <Route path="/">
                 <Inboxes></Inboxes>
+              </Route>
+            </Switch>
+          </Route>
+
+          <Route path="/agents">
+            <Switch>
+              <Route path="/agents/add">
+                <AddAgent></AddAgent>
+              </Route>
+              <Route path="/">
+                <Agents></Agents>
               </Route>
             </Switch>
           </Route>
