@@ -39,5 +39,7 @@
   "model.one": "Model",
   "model.other": "Models",
   "openai": "OpenAI",
-  "sleep-api": "Sleep API"
+  "sleep-api": "Sleep API",
+  "tmwtd": "Tell me what to do",
+  "create-job": "Create job"
 }

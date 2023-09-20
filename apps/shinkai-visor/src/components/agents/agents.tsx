@@ -35,8 +35,9 @@ export const Agents = () => {
           </List.Item>
         )}
       />
-      <Button onClick={() => navigateToAddAgent()}
- type="primary">Add agent</Button>
+      <Button onClick={() => navigateToAddAgent()} type="primary">
+        Add agent
+      </Button>
     </div>
   );
 };

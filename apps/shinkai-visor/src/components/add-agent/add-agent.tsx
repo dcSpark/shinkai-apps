@@ -27,7 +27,6 @@ export const AddAgent = () => {
   const addAgentStatus = useSelector((state: RootState) => state.agents?.add?.status);
   const dispatch = useDispatch();
   const [submittable, setSubmittable] = useState(false);
-  const node = useSelector((state: RootState) => state.node.data);
   const currentFormValue = Form.useWatch([], form);
   const isAddingAgent = () => {
     return addAgentStatus === 'loading';
@@ -50,13 +49,6 @@ export const AddAgent = () => {
       }
     );
   }, [form, currentFormValue]);
-  useEffect(() => {
-    if (!node) {
-      return;
-    }
-    const defaultReceiverIdentity = `${node.nodeData.shinkaiIdentity}/${node.nodeData.profile}/device/${node.userData.registrationName}`;
-    form.setFieldValue('receiverIdentity', defaultReceiverIdentity);
-  }, [form, node]);
   useEffect(() => {
     switch (addAgentStatus) {
       case 'failed':

@@ -51,7 +51,7 @@ export const InboxInput = ({ inboxId }: { inboxId: string }) => {
             <Input placeholder={intl.formatMessage({ id: 'message.one' })} />
           </Form.Item>
         </Form>
-        <Form.Item className="mb-0">
+        <Form.Item>
           <Button
             disabled={isSendingMessage() || !submittable}
             htmlType="submit"

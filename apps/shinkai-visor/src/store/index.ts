@@ -16,6 +16,8 @@ import { agentsSlice } from './agents/agents-reducer';
 import * as authActions from './auth/auth-actions';
 import { authSlice } from './auth/auth-reducer';
 import { inboxSlice } from './inbox/inbox-reducer';
+import * as jobsActions from './jobs/jobs-actions';
+import { jobsSlice } from './jobs/jobs-reducer';
 import * as nodeActions from './node/node-actions';
 import { nodeSlice } from './node/node-reducer';
 import { ChromeStorage } from './persistor/chrome-storage';
@@ -24,7 +26,8 @@ const reducer = combineReducers({
   node: nodeSlice.reducer,
   auth: authSlice.reducer,
   inbox: inboxSlice.reducer,
-  agents: agentsSlice.reducer
+  agents: agentsSlice.reducer,
+  jobs: jobsSlice.reducer,
 });
 
 const persistedReducer = persistReducer(
@@ -52,6 +55,7 @@ export const actions = {
   ...nodeActions,
   ...authActions,
   ...agentsActions,
+  ...jobsActions,
 };
 
 export type RootState = ReturnType<typeof store.getState>;

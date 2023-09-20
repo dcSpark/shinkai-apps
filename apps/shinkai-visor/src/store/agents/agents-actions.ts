@@ -22,7 +22,7 @@ export const addAgent = createAsyncThunk<
       model: AgentAPIModel;
     };
   }
->('agens/add', async (args, { getState }) => {
+>('agents/add', async (args, { getState }) => {
   const state = getState() as RootState;
   const node = state.node.data;
   if (!node) throw new Error('missing node data');
@@ -53,7 +53,7 @@ export const addAgent = createAsyncThunk<
 });
 
 export const getAgents = createAsyncThunk<{ agents: SerializedAgent[] }, void>(
-  'agens/all',
+  'agents/all',
   async (args, { getState }) => {
     const state = getState() as RootState;
     const node = state.node.data;

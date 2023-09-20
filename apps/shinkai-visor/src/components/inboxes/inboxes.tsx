@@ -1,8 +1,8 @@
 import './inboxes.css';
 
-import { Button, List, Menu } from 'antd';
-import { MenuItemType } from 'antd/es/menu/hooks/useItems';
-import { useEffect, useState } from 'react';
+import { Button, List } from 'antd';
+import { useEffect } from 'react';
+import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
@@ -14,13 +14,18 @@ export const Inboxes = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const inboxes = useSelector((state: RootState) => state.inbox.all.data);
-  const inboxesStatus = useSelector((state: RootState) => state.inbox.all?.status);
-  const createInbox = () => {
+  const inboxesStatus = useSelector(
+    (state: RootState) => state.inbox.all?.status
+  );
+  const navigateToCreateInbox = () => {
     history.push('/inboxes/create');
+  };
+  const navigateToCreateJob = () => {
+    history.replace('/jobs/create');
   };
   const navigateToInbox = (inboxId: string) => {
     history.push(`/inboxes/${encodeURIComponent(inboxId)}`);
-  }
+  };
   const isLoading = () => inboxesStatus === 'loading';
   useEffect(() => {
     dispatch(getAllInboxes());
@@ -28,7 +33,7 @@ export const Inboxes = () => {
 
   return (
     <div className="h-full flex flex-col space-y-3 justify-between">
-        <List<Inbox>
+      <List<Inbox>
         bordered
         dataSource={inboxes || []}
         loading={isLoading()}
@@ -39,7 +44,23 @@ export const Inboxes = () => {
           </List.Item>
         )}
       />
-      <Button onClick={() => createInbox()} type="primary">Create Inbox</Button>
+      <div className="flex flex-row space-x-3 justify-between">
+        <Button
+          className="grow"
+          onClick={() => navigateToCreateInbox()}
+          type="primary"
+        >
+          <FormattedMessage id="create-inbox" />
+        </Button>
+
+        <Button
+          className="grow"
+          onClick={() => navigateToCreateJob()}
+          type="primary"
+        >
+          <FormattedMessage id="create-job" />
+        </Button>
+      </div>
     </div>
   );
 };
