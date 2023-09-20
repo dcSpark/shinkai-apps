@@ -1,4 +1,5 @@
-import { Base58String } from "@shinkai/shinkai-message-ts/models";
+import { Base58String } from "@shinkai_network/shinkai-message-ts/models";
+
 import { USE_REGISTRATION_CODE } from "../types";
 
 export type SetupDetailsState = {

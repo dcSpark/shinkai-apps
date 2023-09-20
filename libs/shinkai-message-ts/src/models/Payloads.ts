@@ -37,3 +37,9 @@ export type LastMessagesFromInboxCredentialsPayload = {
     profile_identity_sk: string;
     node_encryption_pk: string;
 }
+
+export interface APIUseRegistrationCodeSuccessResponse {
+  message: string;
+  encryption_public_key: string;
+  identity_public_key: string;
+}

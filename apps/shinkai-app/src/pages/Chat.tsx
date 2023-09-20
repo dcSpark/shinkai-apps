@@ -22,15 +22,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   getLastMessagesFromInbox,
   sendTextMessageWithInbox,
-} from '@shinkai/shinkai-message-ts/api';
+} from '@shinkai_network/shinkai-message-ts/api';
 import { RootState } from '../store';
 import { useSetup } from '../hooks/usetSetup';
 import {
   extractReceiverShinkaiName,
   getOtherPersonIdentity,
 } from '../utils/inbox_name_handler';
-import { ShinkaiMessage } from '@shinkai/shinkai-message-ts/models';
-import { calculateMessageHash } from '@shinkai/shinkai-message-ts/utils';
+import { ShinkaiMessage } from '@shinkai_network/shinkai-message-ts/models';
+import { calculateMessageHash } from '@shinkai_network/shinkai-message-ts/utils';
 import Avatar from '../components/ui/Avatar';
 import { cn } from '../theme/lib/utils';
 import { send } from 'ionicons/icons';

@@ -22,7 +22,7 @@ import React, { useEffect, useState } from 'react';
 import {
   ApiConfig,
   getAllInboxesForProfile,
-} from '@shinkai/shinkai-message-ts/api';
+} from '@shinkai_network/shinkai-message-ts/api';
 
 import { clearStore, receiveAllInboxesForProfile } from '../store/actions';
 import Avatar from '../components/ui/Avatar';

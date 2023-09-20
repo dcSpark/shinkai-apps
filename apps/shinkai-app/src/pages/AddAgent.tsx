@@ -25,8 +25,8 @@ import { IonContentCustom, IonHeaderCustom } from "../components/ui/Layout";
 import Button from "../components/ui/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
-import { SerializedAgent, AgentAPIModel } from "@shinkai/shinkai-message-ts/models";
-import { addAgent } from "@shinkai/shinkai-message-ts/api";
+import { SerializedAgent, AgentAPIModel } from "@shinkai_network/shinkai-message-ts/models";
+import { addAgent } from "@shinkai_network/shinkai-message-ts/api";
 import { useSetup } from "../hooks/usetSetup";
 import { useHistory } from 'react-router-dom';
 

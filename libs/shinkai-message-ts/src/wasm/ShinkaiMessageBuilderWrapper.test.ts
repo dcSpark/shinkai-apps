@@ -129,6 +129,31 @@ test("ShinkaiMessageBuilderWrapper should create a use code registration message
   expect(typeof codeRegistrationMessage).toBe("string");
 });
 
+test("ShinkaiMessageBuilderWrapper should create an initial registration with no code for device", async () => {
+  const device_keys = await generateKeys();
+  const profile_keys = await generateKeys();
+
+  const registrationName = "sample_registration_name";
+  const senderSubidentity = "sample_sender_subidentity";
+  const sender = "@@sender_node.shinkai";
+  const receiver = "@@receiver_node.shinkai";
+
+  const initialRegistrationMessage =
+    ShinkaiMessageBuilderWrapper.initial_registration_with_no_code_for_device(
+      device_keys.my_encryption_sk_string,
+      device_keys.my_identity_sk_string,
+      profile_keys.my_encryption_sk_string,
+      profile_keys.my_identity_sk_string,
+      registrationName,
+      senderSubidentity,
+      sender,
+      receiver
+    );
+
+  expect(initialRegistrationMessage).toBeTruthy();
+  expect(typeof initialRegistrationMessage).toBe("string");
+});
+
 test("ShinkaiMessageBuilderWrapper should create a new request code registration message", async () => {
   const keys = await generateKeys();
 
