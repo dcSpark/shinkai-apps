@@ -47,7 +47,6 @@ type AddNodeDataFromQr = Pick<
 
 enum AddNodeSteps {
   ScanQR = 0,
-  ReviewData,
   Connect,
 }
 
@@ -64,7 +63,9 @@ export const AddNode = () => {
   const nodeConnectionStatus = useSelector(
     (state: RootState) => state?.node?.status
   );
-  const authenticated = useSelector((state: RootState) => state?.auth.status === 'authenticated');
+  const authenticated = useSelector(
+    (state: RootState) => state?.auth.status === 'authenticated'
+  );
   const [messageApi, contextHolder] = message.useMessage();
   const dispatch = useDispatch();
   const [initialValues, setInitialValues] = useState<Partial<AddNodeFieldType>>(
@@ -106,7 +107,7 @@ export const AddNode = () => {
     const parsedQrData: QRSetupData = JSON.parse(json_string);
     const nodeDataFromQr = getValuesFromQr(parsedQrData);
     form.setFieldsValue({ ...initialValues, ...nodeDataFromQr });
-    setCurrentStep(AddNodeSteps.ReviewData);
+    setCurrentStep(AddNodeSteps.Connect);
   };
 
   const generateDeviceEncryptionKeys = async (): Promise<
@@ -178,7 +179,7 @@ export const AddNode = () => {
   };
 
   const connectManually = () => {
-    setCurrentStep(AddNodeSteps.ReviewData);
+    setCurrentStep(AddNodeSteps.Connect);
   };
 
   const scanQr = () => {
@@ -290,7 +291,6 @@ export const AddNode = () => {
         current={currentStep}
         items={[
           { title: intl.formatMessage({ id: 'scan' }) },
-          { title: intl.formatMessage({ id: 'review' }) },
           {
             title: intl.formatMessage({ id: 'connect' }),
             status: connectingStatus(),
@@ -302,8 +302,8 @@ export const AddNode = () => {
         size="small"
       />
       <div className="h-full flex flex-col grow place-content-center">
-        {currentStep === 0 && (
-          <div className="h-full flex flex-col space-y-6 justify-between">
+        {currentStep === AddNodeSteps.ScanQR && (
+          <div className="h-full flex flex-col space-y-3 justify-between">
             <div className="grow flex flex-col justify-center">
               <Player
                 autoplay
@@ -343,164 +343,168 @@ export const AddNode = () => {
           </div>
         )}
 
-        {(currentStep === 1 || currentStep === 2) && (
-          <Form
-            autoComplete="off"
-            disabled={nodeConnectionStatus === 'loading'}
-            form={form}
-          >
-            <Form.Item<AddNodeFieldType>
-              name="registrationCode"
-              rules={[{ required: true }]}
+        {currentStep === AddNodeSteps.Connect && (
+          <div className="h-full flex flex-col space-y-6 justify-between">
+            <Form
+              autoComplete="off"
+              className="h-full"
+              disabled={nodeConnectionStatus === 'loading'}
+              form={form}
             >
-              <Input
-                placeholder={intl.formatMessage({ id: 'registration-code' })}
-              />
-            </Form.Item>
-            <Form.Item<AddNodeFieldType>
-              hidden={true}
-              name="registrationName"
-              rules={[{ required: true }]}
-            >
-              <Input
-                placeholder={intl.formatMessage({ id: 'registration-name' })}
-              />
-            </Form.Item>
-            <Form.Item<AddNodeFieldType>
-              name="nodeAddress"
-              rules={[{ required: true }]}
-            >
-              <Input placeholder={intl.formatMessage({ id: 'node-address' })} />
-            </Form.Item>
-            <Form.Item<AddNodeFieldType>
-              name="shinkaiIdentity"
-              rules={[{ required: true }]}
-            >
-              <Input
-                placeholder={intl.formatMessage({ id: 'shinkai-identity' })}
-              />
-            </Form.Item>
-            <Form.Item<AddNodeFieldType>
-              name="nodeEncryptionPublicKey"
-              rules={[{ required: true }]}
-            >
-              <Input
-                placeholder={intl.formatMessage({
-                  id: 'node-encryption-public-key',
-                })}
-              />
-            </Form.Item>
-            <Form.Item<AddNodeFieldType>
-              name="nodeSignaturePublicKey"
-              rules={[{ required: true }]}
-            >
-              <Input
-                placeholder={intl.formatMessage({
-                  id: 'node-signature-public-key',
-                })}
-              />
-            </Form.Item>
-            <Form.Item<AddNodeFieldType>
-              hidden={true}
-              name="profileEncryptionPublicKey"
-              rules={[{ required: true }]}
-            >
-              <Input
-                placeholder={intl.formatMessage({
-                  id: 'profile-encryption-public-key',
-                })}
-              />
-            </Form.Item>
-            <Form.Item<AddNodeFieldType>
-              hidden={true}
-              name="profileSignaturePublicKey"
-              rules={[{ required: true }]}
-            >
-              <Input
-                placeholder={intl.formatMessage({
-                  id: 'profile-signature-public-key',
-                })}
-              />
-            </Form.Item>
-            <Form.Item<AddNodeFieldType>
-              hidden={true}
-              name="myDeviceEncryptionPublicKey"
-              rules={[{ required: true }]}
-            >
-              <Input
-                placeholder={intl.formatMessage({
-                  id: 'my-encryption-public-key',
-                })}
-              />
-            </Form.Item>
-            <Form.Item<AddNodeFieldType>
-              hidden={true}
-              name="myDeviceIdentityPublicKey"
-              rules={[{ required: true }]}
-            >
-              <Input
-                placeholder={intl.formatMessage({
-                  id: 'my-signature-public-key',
-                })}
-              />
-            </Form.Item>
+              <Form.Item<AddNodeFieldType>
+                name="registrationCode"
+                rules={[{ required: true }]}
+              >
+                <Input
+                  placeholder={intl.formatMessage({ id: 'registration-code' })}
+                />
+              </Form.Item>
+              <Form.Item<AddNodeFieldType>
+                hidden={true}
+                name="registrationName"
+                rules={[{ required: true }]}
+              >
+                <Input
+                  placeholder={intl.formatMessage({ id: 'registration-name' })}
+                />
+              </Form.Item>
+              <Form.Item<AddNodeFieldType>
+                name="nodeAddress"
+                rules={[{ required: true }]}
+              >
+                <Input
+                  placeholder={intl.formatMessage({ id: 'node-address' })}
+                />
+              </Form.Item>
+              <Form.Item<AddNodeFieldType>
+                name="shinkaiIdentity"
+                rules={[{ required: true }]}
+              >
+                <Input
+                  placeholder={intl.formatMessage({ id: 'shinkai-identity' })}
+                />
+              </Form.Item>
+              <Form.Item<AddNodeFieldType>
+                name="nodeEncryptionPublicKey"
+                rules={[{ required: true }]}
+              >
+                <Input
+                  placeholder={intl.formatMessage({
+                    id: 'node-encryption-public-key',
+                  })}
+                />
+              </Form.Item>
+              <Form.Item<AddNodeFieldType>
+                name="nodeSignaturePublicKey"
+                rules={[{ required: true }]}
+              >
+                <Input
+                  placeholder={intl.formatMessage({
+                    id: 'node-signature-public-key',
+                  })}
+                />
+              </Form.Item>
+              <Form.Item<AddNodeFieldType>
+                hidden={true}
+                name="profileEncryptionPublicKey"
+                rules={[{ required: true }]}
+              >
+                <Input
+                  placeholder={intl.formatMessage({
+                    id: 'profile-encryption-public-key',
+                  })}
+                />
+              </Form.Item>
+              <Form.Item<AddNodeFieldType>
+                hidden={true}
+                name="profileSignaturePublicKey"
+                rules={[{ required: true }]}
+              >
+                <Input
+                  placeholder={intl.formatMessage({
+                    id: 'profile-signature-public-key',
+                  })}
+                />
+              </Form.Item>
+              <Form.Item<AddNodeFieldType>
+                hidden={true}
+                name="myDeviceEncryptionPublicKey"
+                rules={[{ required: true }]}
+              >
+                <Input
+                  placeholder={intl.formatMessage({
+                    id: 'my-encryption-public-key',
+                  })}
+                />
+              </Form.Item>
+              <Form.Item<AddNodeFieldType>
+                hidden={true}
+                name="myDeviceIdentityPublicKey"
+                rules={[{ required: true }]}
+              >
+                <Input
+                  placeholder={intl.formatMessage({
+                    id: 'my-signature-public-key',
+                  })}
+                />
+              </Form.Item>
 
-            <Form.Item<AddNodeFieldType>
-              hidden={true}
-              name="profileEncryptionSharedKey"
-              rules={[{ required: true }]}
-            >
-              <Input />
-            </Form.Item>
+              <Form.Item<AddNodeFieldType>
+                hidden={true}
+                name="profileEncryptionSharedKey"
+                rules={[{ required: true }]}
+              >
+                <Input />
+              </Form.Item>
 
-            <Form.Item<AddNodeFieldType>
-              hidden={true}
-              name="profileSignatureSharedKey"
-              rules={[{ required: true }]}
-            >
-              <Input />
-            </Form.Item>
+              <Form.Item<AddNodeFieldType>
+                hidden={true}
+                name="profileSignatureSharedKey"
+                rules={[{ required: true }]}
+              >
+                <Input />
+              </Form.Item>
 
-            <Form.Item<AddNodeFieldType>
-              hidden={true}
-              name="myDeviceEncryptionSharedKey"
-              rules={[{ required: true }]}
-            >
-              <Input />
-            </Form.Item>
+              <Form.Item<AddNodeFieldType>
+                hidden={true}
+                name="myDeviceEncryptionSharedKey"
+                rules={[{ required: true }]}
+              >
+                <Input />
+              </Form.Item>
 
-            <Form.Item<AddNodeFieldType>
-              hidden={true}
-              name="myDeviceIdentitySharedKey"
-              rules={[{ required: true }]}
-            >
-              <Input />
-            </Form.Item>
+              <Form.Item<AddNodeFieldType>
+                hidden={true}
+                name="myDeviceIdentitySharedKey"
+                rules={[{ required: true }]}
+              >
+                <Input />
+              </Form.Item>
 
-            <Form.Item<AddNodeFieldType>
-              hidden={true}
-              name="permissionType"
-              rules={[{ required: true }]}
-            >
-              <Input />
-            </Form.Item>
+              <Form.Item<AddNodeFieldType>
+                hidden={true}
+                name="permissionType"
+                rules={[{ required: true }]}
+              >
+                <Input />
+              </Form.Item>
 
-            <Form.Item<AddNodeFieldType>
-              hidden={true}
-              name="identityType"
-              rules={[{ required: true }]}
-            >
-              <Input />
-            </Form.Item>
+              <Form.Item<AddNodeFieldType>
+                hidden={true}
+                name="identityType"
+                rules={[{ required: true }]}
+              >
+                <Input />
+              </Form.Item>
 
-            <Form.Item<AddNodeFieldType>
-              hidden={true}
-              name="profile"
-              rules={[{ required: true }]}
-            >
-              <Input />
-            </Form.Item>
-
+              <Form.Item<AddNodeFieldType>
+                hidden={true}
+                name="profile"
+                rules={[{ required: true }]}
+              >
+                <Input />
+              </Form.Item>
+            </Form>
             <Form.Item>
               <div className="flex flex-col space-y-1">
                 <Button
@@ -523,7 +527,7 @@ export const AddNode = () => {
                 </span>
               </div>
             </Form.Item>
-          </Form>
+          </div>
         )}
       </div>
     </div>
