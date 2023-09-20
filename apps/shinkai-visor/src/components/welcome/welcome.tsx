@@ -15,8 +15,7 @@ export default function Welcome() {
       initial={{ opacity: 0 }}
     >
       <div className="h-full flex flex-col justify-between">
-        <div className="flex flex-grow flex-col space-y-5 place-content-center">
-          <p className="text-lg" data-cy="welcome-message">
+      <p className="text-lg" data-cy="welcome-message">
             <FormattedMessage id="welcome" />
           </p>
           <div className="grid place-content-center">
@@ -26,8 +25,6 @@ export default function Welcome() {
               src={logo}
             />
           </div>
-        </div>
-
         <Button
           onClick={() => history.push('/nodes/add')}
           type="primary"

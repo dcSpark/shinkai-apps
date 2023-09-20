@@ -303,13 +303,16 @@ export const AddNode = () => {
       />
       <div className="h-full flex flex-col grow place-content-center">
         {currentStep === 0 && (
-          <div className="flex flex-col space-y-6">
-            <Player
-              autoplay
-              className="w-40"
-              loop
-              src={ScanQrAnimation}
-            ></Player>
+          <div className="h-full flex flex-col space-y-6 justify-between">
+            <div className="grow flex flex-col justify-center">
+              <Player
+                autoplay
+                className="w-40"
+                loop
+                src={ScanQrAnimation}
+              ></Player>
+            </div>
+
             <div className="flex flex-col space-y-1">
               <Button
                 className="w-full"
