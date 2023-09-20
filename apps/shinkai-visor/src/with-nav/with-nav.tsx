@@ -1,7 +1,7 @@
 import { PropsWithChildren } from 'react';
 
 import NavBar from '../components/nav/nav';
-import { NavBreadcrumb } from '../components/nav-breadcrumb/breadcrumb';
+import { NavBreadcrumb } from '../components/nav-breadcrumb/nav-breadcrumb';
 
 export const WithNav = (props: PropsWithChildren) => {
   return (
