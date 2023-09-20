@@ -19,6 +19,7 @@ const initialState: InboxState = {
   },
   messages: {},
   messagesHashes: {},
+  sendMessage: {},
 };
 
 export const inboxSlice = createSlice({
@@ -92,14 +93,14 @@ export const inboxSlice = createSlice({
     
     builder
       .addCase(sendMessage.pending, (state, action) => {
-        state.messages[action.meta.arg.inboxId] = {
-          ...state.messages[action.meta.arg.inboxId],
+        state.sendMessage[action.meta.arg.inboxId] = {
+          ...state.sendMessage[action.meta.arg.inboxId],
           status: 'loading',
         };
       })
       .addCase(sendMessage.fulfilled, (state, action) => {
-        state.messages[action.meta.arg.inboxId] = {
-          ...state.messages[action.meta.arg.inboxId],
+        state.sendMessage[action.meta.arg.inboxId] = {
+          ...state.sendMessage[action.meta.arg.inboxId],
           status: 'succeeded',
         };
         const inboxId = action.payload.inbox.id;
@@ -120,8 +121,8 @@ export const inboxSlice = createSlice({
         state.messagesHashes[inboxId] = currentMessagesHashes;
       })
       .addCase(sendMessage.rejected, (state, action) => {
-        state.messages[action.meta.arg.inboxId] = {
-          ...state.messages[action.meta.arg.inboxId],
+        state.sendMessage[action.meta.arg.inboxId] = {
+          ...state.sendMessage[action.meta.arg.inboxId],
           status: 'failed',
           error: action.error.message,
         };

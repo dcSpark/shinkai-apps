@@ -1,8 +1,8 @@
+import { SendOutlined } from '@ant-design/icons';
 import { Button, Form, Input } from 'antd';
 import { useEffect, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 
 import { RootState } from '../../store';
 import { sendMessage } from '../../store/inbox/inbox-actions';
@@ -12,40 +12,38 @@ type InboxInputFieldType = {
 };
 
 export const InboxInput = ({ inboxId }: { inboxId: string }) => {
-  const history = useHistory();
   const [form] = Form.useForm<InboxInputFieldType>();
   const intl = useIntl();
-  const createInboxStatus = useSelector((state: RootState) => state.inbox?.create?.status);
-  const createdInbox = useSelector((state: RootState) => state.inbox?.create?.data);
+  const sendMessageStatus = useSelector((state: RootState) => state.inbox?.sendMessage[inboxId]?.status);
   const dispatch = useDispatch();
   const [submittable, setSubmittable] = useState(false);
   const currentFormValue = Form.useWatch([], form);
-  const isCreatingInbox = () => {
-    return createInboxStatus === 'loading';
+  const isSendingMessage = () => {
+    return sendMessageStatus === 'loading';
   }
   const submit = () => {
     if (currentFormValue.message) {
         dispatch(sendMessage({ inboxId, message: currentFormValue.message }));
-        form.setFieldsValue({ message: '' });
     }
   }
   useEffect(() => {
     setSubmittable(!!currentFormValue?.message);
   }, [currentFormValue]);
   useEffect(() => {
-    switch (createInboxStatus) {
+    console.log('asdasd', sendMessageStatus)
+    switch (sendMessageStatus) {
       case 'succeeded':
-        if (createdInbox?.inbox?.id) {
-          history.replace(`/inboxes/${encodeURIComponent(createdInbox?.inbox?.id)}`);
-        }
+        // TODO: clean input
+        form.setFieldsValue({ message: '' });
         break;
     }
-  }, [createInboxStatus, history, createdInbox]);
+  }, [sendMessageStatus, form]);
   return (
-    <div className="w-full flex flex-row place-content-between">
+    <div className="w-full flex flex-row place-content-between space-x-3">
       <Form
         autoComplete="off"
-        disabled={createInboxStatus === 'loading'}
+        className="grow"
+        disabled={isSendingMessage()}
         form={form}
       >
         <Form.Item<InboxInputFieldType>
@@ -61,13 +59,13 @@ export const InboxInput = ({ inboxId }: { inboxId: string }) => {
           <div className="flex flex-col space-y-1">
             <Button
               className="w-full"
-              disabled={isCreatingInbox() || !submittable}
+              disabled={isSendingMessage() || !submittable}
               htmlType="submit"
-              loading={isCreatingInbox()}
+              icon={<SendOutlined />}
+              loading={isSendingMessage()}
               onClick={() => submit()}
               type="primary"
             >
-              <FormattedMessage id="create-inbox" />
             </Button>
           </div>
         </Form.Item>

@@ -28,5 +28,6 @@
   "message-receiver": "Message receiver",
   "message.one": "Message",
   "message.other": "Messages",
-  "create-inbox": "Create chat"
+  "create-inbox": "Create chat",
+  "send": "Send"
 }

@@ -14,5 +14,8 @@ export interface InboxState {
   },
   messagesHashes: {
     [inboxId: string]: { [messageHask: string]: boolean },
-  }
+  },
+  sendMessage: {
+    [inboxId: string]: AsyncData<{ text: string }>,
+  },
 }

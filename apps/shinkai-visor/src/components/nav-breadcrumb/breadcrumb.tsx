@@ -1,3 +1,5 @@
+import './nav-breadcrumb.css';
+
 import { Breadcrumb } from 'antd';
 import { ItemType } from 'antd/es/breadcrumb/Breadcrumb';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -13,7 +15,7 @@ export const NavBreadcrumb = () => {
   const mapLocationToItems = useCallback((paths: string[]): ItemType[] => {
     const items = paths.map<ItemType>((path) => {
       const intlId = pathToIntlDefinition.get(path);
-      const title = pathToIntlDefinition.get(path) ? intl.formatMessage({ id: intlId }) : path;
+      const title = pathToIntlDefinition.get(path) ? intl.formatMessage({ id: intlId }) : decodeURIComponent(path);
       return {
         path: path,
         title,
@@ -22,7 +24,7 @@ export const NavBreadcrumb = () => {
     return items;
   }, [intl, pathToIntlDefinition]);
   const itemRender = (route: ItemType): React.ReactNode => {
-    return (<span>{route.title}</span>);
+    return (<div className="breadcrumb-item">{route.title}</div>);
   }
   useEffect(() => {
     const paths = location.pathname.split('/').filter(path => path);
