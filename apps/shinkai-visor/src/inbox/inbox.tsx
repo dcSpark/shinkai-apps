@@ -34,9 +34,7 @@ export const Inbox = () => {
   }, [inboxId, dispatch]);
 
   return (
-    <div className="flex flex-col space-y-2">
-      <span>Inbox:{decodeURIComponent(inboxId)}</span>
-
+    <div className="h-full flex flex-col space-y-3 justify-between">
       <div className="flex flex-col space-y-1">
       {buildMessagesUI()}
       </div>
