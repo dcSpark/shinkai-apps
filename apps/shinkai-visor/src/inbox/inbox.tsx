@@ -4,30 +4,36 @@ import {
   isLocalMessage,
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { Avatar, List } from 'antd';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
 import { InboxInput } from '../components/inbox-input/inbox-input';
 import { RootState } from '../store';
-import { getLastsMessagesForInbox } from '../store/inbox/inbox-actions';
+import {
+  getLastsMessagesForInbox,
+  sendMessage,
+} from '../store/inbox/inbox-actions';
 
 export const Inbox = () => {
   const { inboxId } = useParams<{ inboxId: string }>();
   const dispatch = useDispatch();
-  const messageCount = 10;
+  const [count, setCount] = useState(0);
   const setup = useSelector((state: RootState) => {
     return state.node;
   });
   const messages = useSelector((state: RootState) => {
     return state.inbox.messages[decodeURIComponent(inboxId)]?.data;
   });
-
-  const buildMessagesUI = () => {
-    return messages?.map((message, index) => {
-      return <span key={index}>{getMessageContent(message)}</span>;
-    });
-  };
+  const sendMessageStatus = useSelector(
+    (state: RootState) =>
+      state.inbox?.sendMessage[decodeURIComponent(inboxId)]?.status
+  );
+  const isSendingMessage = useSelector(
+    (state: RootState) =>
+      state.inbox?.sendMessage[decodeURIComponent(inboxId)]?.status ===
+      'loading'
+  );
 
   const getAvatar = (message: ShinkaiMessage) => {
     return isLocalMessage(
@@ -39,21 +45,35 @@ export const Inbox = () => {
       : 'https://ui-avatars.com/api/?name=O&background=363636&color=fff';
   };
 
-  useEffect(() => {
+  const submitSendMessage = (value: string) => {
     dispatch(
-      getLastsMessagesForInbox({
-        inboxId: decodeURIComponent(inboxId),
-        count: messageCount,
-        lastKey: undefined,
-      })
+      sendMessage({ inboxId: decodeURIComponent(inboxId), message: value })
     );
-  }, [inboxId, dispatch]);
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      setCount((old) => old + 1);
+      dispatch(
+        getLastsMessagesForInbox({
+          inboxId: decodeURIComponent(inboxId),
+        })
+      );
+    }, 1000);
+  }, [count, inboxId, dispatch]);
+
+  useEffect(() => {
+    switch (sendMessageStatus) {
+      case 'succeeded':
+        break;
+    }
+  }, [sendMessageStatus]);
 
   return (
-    <div className="h-full flex flex-col space-y-3 justify-between">
+    <div className="h-full flex flex-col space-y-3 justify-between overflow-hidden">
       <List<ShinkaiMessage>
         bordered
-        className="h-full"
+        className="h-full overflow-x-hidden overflow-y-auto"
         dataSource={messages}
         itemLayout="horizontal"
         renderItem={(message) => (
@@ -65,7 +85,11 @@ export const Inbox = () => {
           </List.Item>
         )}
       />
-      <InboxInput inboxId={decodeURIComponent(inboxId)}></InboxInput>
+      <InboxInput
+        disabled={isSendingMessage}
+        loading={isSendingMessage}
+        onSubmit={(value) => submitSendMessage(value)}
+      ></InboxInput>
     </div>
   );
 };
