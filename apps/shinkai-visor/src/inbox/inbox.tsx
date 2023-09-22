@@ -18,7 +18,8 @@ import {
 export const Inbox = () => {
   const { inboxId } = useParams<{ inboxId: string }>();
   const dispatch = useDispatch();
-  const [count, setCount] = useState(0);
+  const [polling, setPolling] = useState(0);
+  const pollingMs = 2000;
   const setup = useSelector((state: RootState) => {
     return state.node;
   });
@@ -53,14 +54,14 @@ export const Inbox = () => {
 
   useEffect(() => {
     setTimeout(() => {
-      setCount((old) => old + 1);
+      setPolling((old) => old + 1);
       dispatch(
         getLastsMessagesForInbox({
           inboxId: decodeURIComponent(inboxId),
         })
       );
-    }, 1000);
-  }, [count, inboxId, dispatch]);
+    }, pollingMs);
+  }, [polling, inboxId, dispatch]);
 
   useEffect(() => {
     switch (sendMessageStatus) {
