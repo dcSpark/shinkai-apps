@@ -1,4 +1,5 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import { useDispatch } from 'react-redux';
 import {
   FLUSH,
   PAUSE,
@@ -59,3 +60,5 @@ export const actions = {
 };
 
 export type RootState = ReturnType<typeof store.getState>;
+
+export const useTypedDispatch = () => useDispatch<typeof store.dispatch>();

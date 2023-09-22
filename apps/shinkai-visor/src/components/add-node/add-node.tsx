@@ -9,11 +9,11 @@ import { BrowserQRCodeReader } from '@zxing/browser';
 import { Button, Form, Input, message, Steps } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import ScanQrAnimation from '../../assets/animations/scan-qr.json';
-import { RootState } from '../../store';
+import { RootState, useTypedDispatch } from '../../store';
 import { connectNode } from '../../store/node/node-actions';
 
 type AddNodeFieldType = {
@@ -60,14 +60,11 @@ export const AddNode = () => {
   );
   const [submittable, setSubmittable] = useState(false);
   const currentFormValue = Form.useWatch([], form);
-  const nodeConnectionStatus = useSelector(
-    (state: RootState) => state?.node?.status
-  );
-  const authenticated = useSelector(
-    (state: RootState) => state?.auth.status === 'authenticated'
+  const isConnecting = useSelector(
+    (state: RootState) => state?.node?.status === 'loading'
   );
   const [messageApi, contextHolder] = message.useMessage();
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const [initialValues, setInitialValues] = useState<Partial<AddNodeFieldType>>(
     {
       registrationCode: '',
@@ -224,15 +221,21 @@ export const AddNode = () => {
             currentFormValue.profileEncryptionSharedKey,
         },
       })
-    );
-  };
-
-  const isConnecting = (): boolean => {
-    return nodeConnectionStatus === 'loading';
+    )
+      .unwrap()
+      .then(() => {
+        history.replace('/inboxes/all');
+      })
+      .catch(() => {
+        messageApi.open({
+          type: 'error',
+          content: 'Error connecting node',
+        });
+      });
   };
 
   const connectingStatus = (): 'process' | 'wait' => {
-    return isConnecting() ? 'process' : 'wait';
+    return isConnecting ? 'process' : 'wait';
   };
 
   useEffect(() => {
@@ -258,7 +261,6 @@ export const AddNode = () => {
       }
     );
   }, []);
-
   useEffect(() => {
     form.validateFields({ validateOnly: true, recursive: true }).then(
       () => {
@@ -270,20 +272,6 @@ export const AddNode = () => {
     );
   }, [form, currentFormValue]);
 
-  useEffect(() => {
-    if (nodeConnectionStatus === 'failed') {
-      messageApi.open({
-        type: 'error',
-        content: 'Error connecting node',
-      });
-    }
-  }, [nodeConnectionStatus, messageApi]);
-
-  useEffect(() => {
-    if (authenticated) {
-      history.replace('/inboxes/all');
-    }
-  }, [authenticated, history]);
   return (
     <div className="h-full flex flex-col space-y-3">
       {contextHolder}
@@ -294,7 +282,7 @@ export const AddNode = () => {
           {
             title: intl.formatMessage({ id: 'connect' }),
             status: connectingStatus(),
-            icon: isConnecting() ? <LoadingOutlined /> : null,
+            icon: isConnecting ? <LoadingOutlined /> : null,
           },
         ]}
         labelPlacement="vertical"
@@ -348,7 +336,7 @@ export const AddNode = () => {
             <Form
               autoComplete="off"
               className="h-full"
-              disabled={nodeConnectionStatus === 'loading'}
+              disabled={isConnecting}
               form={form}
             >
               <Form.Item<AddNodeFieldType>
@@ -509,9 +497,9 @@ export const AddNode = () => {
               <div className="flex flex-col space-y-1">
                 <Button
                   className="w-full"
-                  disabled={isConnecting() || !submittable}
+                  disabled={isConnecting || !submittable}
                   htmlType="submit"
-                  loading={isConnecting()}
+                  loading={isConnecting}
                   onClick={() => connect()}
                   type="primary"
                 >
@@ -519,7 +507,7 @@ export const AddNode = () => {
                 </Button>
                 <span
                   className={`italic text-xs place-self-end cursor-pointer ${
-                    isConnecting() ? 'hidden' : ''
+                    isConnecting ? 'hidden' : ''
                   }`}
                   onClick={() => scanQr()}
                 >

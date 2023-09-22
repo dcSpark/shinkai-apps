@@ -3,15 +3,15 @@ import './inboxes.css';
 import { Button, List } from 'antd';
 import { useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import { RootState } from '../../store';
+import { RootState, useTypedDispatch } from '../../store';
 import { Inbox } from '../../store/agents/agents-types';
 import { getAllInboxes } from '../../store/inbox/inbox-actions';
 
 export const Inboxes = () => {
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const history = useHistory();
   const inboxes = useSelector((state: RootState) => state.inbox.all.data);
   const inboxesStatus = useSelector(

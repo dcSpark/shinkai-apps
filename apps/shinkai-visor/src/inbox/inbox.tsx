@@ -5,11 +5,11 @@ import {
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { Avatar, List } from 'antd';
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
 import { InboxInput } from '../components/inbox-input/inbox-input';
-import { RootState } from '../store';
+import { RootState, useTypedDispatch } from '../store';
 import {
   getLastsMessagesForInbox,
   sendMessage,
@@ -17,7 +17,7 @@ import {
 
 export const Inbox = () => {
   const { inboxId } = useParams<{ inboxId: string }>();
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const [polling, setPolling] = useState(0);
   const pollingMs = 2000;
   const setup = useSelector((state: RootState) => {
@@ -26,16 +26,11 @@ export const Inbox = () => {
   const messages = useSelector((state: RootState) => {
     return state.inbox.messages[decodeURIComponent(inboxId)]?.data;
   });
-  const sendMessageStatus = useSelector(
-    (state: RootState) =>
-      state.inbox?.sendMessage[decodeURIComponent(inboxId)]?.status
-  );
   const isSendingMessage = useSelector(
     (state: RootState) =>
       state.inbox?.sendMessage[decodeURIComponent(inboxId)]?.status ===
       'loading'
   );
-
   const getAvatar = (message: ShinkaiMessage) => {
     return isLocalMessage(
       message,
@@ -45,13 +40,11 @@ export const Inbox = () => {
       ? 'https://ui-avatars.com/api/?name=Me&background=FE6162&color=fff'
       : 'https://ui-avatars.com/api/?name=O&background=363636&color=fff';
   };
-
   const submitSendMessage = (value: string) => {
     dispatch(
       sendMessage({ inboxId: decodeURIComponent(inboxId), message: value })
     );
   };
-
   useEffect(() => {
     setTimeout(() => {
       setPolling((old) => old + 1);
@@ -62,13 +55,6 @@ export const Inbox = () => {
       );
     }, pollingMs);
   }, [polling, inboxId, dispatch]);
-
-  useEffect(() => {
-    switch (sendMessageStatus) {
-      case 'succeeded':
-        break;
-    }
-  }, [sendMessageStatus]);
 
   return (
     <div className="h-full flex flex-col space-y-3 justify-between overflow-hidden">
