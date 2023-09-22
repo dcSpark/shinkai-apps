@@ -8,7 +8,9 @@ import * as matchers from '@testing-library/jest-dom/matchers'
 window.matchMedia = window.matchMedia || function() {
   return {
       matches: false,
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       addListener: function() {},
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       removeListener: function() {}
   };
 };

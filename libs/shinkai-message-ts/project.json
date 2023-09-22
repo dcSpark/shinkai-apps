@@ -5,13 +5,14 @@
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
+      "executor": "@nx/vite:build",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/libs/shinkai-message-ts",
         "main": "libs/shinkai-message-ts/src/index.ts",
         "tsConfig": "libs/shinkai-message-ts/tsconfig.lib.json",
-        "minimal": true
+        "minimal": true,
+        "generateLockfile": true
       }
     },
     "lint": {

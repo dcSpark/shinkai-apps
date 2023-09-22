@@ -1,11 +1,11 @@
 /* eslint-disable */
 export default {
-  displayName: 'sv-core',
+  displayName: 'shinkai-message-ts',
   preset: '../../jest.preset.js',
   testEnvironment: 'node',
   transform: {
     '^.+\\.[tj]s$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json' }],
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../coverage/libs/sv-core',
+  coverageDirectory: '../../coverage/libs/shinkai-message-ts',
 };

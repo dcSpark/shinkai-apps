@@ -1,11 +1,12 @@
-import { sha512 } from '@noble/hashes/sha512';
-import { generateEncryptionKeys, generateSignatureKeys, test_util_generateKeys } from './wasm_helpers';
 import * as ed from '@noble/ed25519';
+import { sha512 } from '@noble/hashes/sha512';
+import { Crypto } from "@peculiar/webcrypto";
+
+import { generateEncryptionKeys, generateSignatureKeys, test_util_generateKeys } from './wasm_helpers';
 
 // Enable synchronous methods
 ed.etc.sha512Sync = (...m) => sha512(ed.etc.concatBytes(...m));
 
-const { Crypto } = require("@peculiar/webcrypto");
 const crypto = new Crypto();
 globalThis.crypto = crypto;
 

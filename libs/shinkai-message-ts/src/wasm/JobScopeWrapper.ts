@@ -1,4 +1,4 @@
-import { JobScopeWrapper as JobScopeWrapperWASM } from "../pkg/shinkai_message_wasm.js";
+import { JobScopeWrapper as JobScopeWrapperWASM } from "../pkg/shinkai_message_wasm";
 
 export class JobScopeWrapper {
     private wasmWrapper: JobScopeWrapperWASM;
@@ -16,7 +16,7 @@ export class JobScopeWrapper {
     }
 
     static from_json_str(s: string): JobScopeWrapper {
-        let js_value = JSON.parse(s);
+        const js_value = JSON.parse(s);
         return new JobScopeWrapper(js_value.buckets_js, js_value.documents_js);
     }
     

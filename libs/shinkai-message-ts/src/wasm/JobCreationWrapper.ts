@@ -1,4 +1,4 @@
-import { JobCreationWrapper as JobCreationWrapperWASM } from "../pkg/shinkai_message_wasm.js";
+import { JobCreationWrapper as JobCreationWrapperWASM } from "../pkg/shinkai_message_wasm";
 
 export class JobCreationWrapper {
     private wasmWrapper: JobCreationWrapperWASM;
@@ -16,7 +16,7 @@ export class JobCreationWrapper {
     }
 
     static from_json_str(s: string): JobCreationWrapper {
-        let js_value = JSON.parse(s);
+        const js_value = JSON.parse(s);
         return new JobCreationWrapper(js_value.scope);
     }
 
