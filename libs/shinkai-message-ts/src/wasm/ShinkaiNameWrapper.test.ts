@@ -1,5 +1,6 @@
-import { ShinkaiNameWrapper } from "./ShinkaiNameWrapper";
 import { test } from "vitest";
+
+import { ShinkaiNameWrapper } from "./ShinkaiNameWrapper";
 
 test("ShinkaiNameWrapper", () => {
   const validNames = [

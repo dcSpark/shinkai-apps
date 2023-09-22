@@ -7,7 +7,7 @@ import {
   ShinkaiMessageBuilderWrapper as ShinkaiMessageBuilderWrapperWASM,
   ShinkaiMessageWrapper,
 } from '../pkg/shinkai_message_wasm.js';
-import { SerializedAgentWrapper } from './SerializedAgentWrapper.js';
+import { SerializedAgentWrapper } from './SerializedAgentWrapper';
 
 export class ShinkaiMessageBuilderWrapper {
   private wasmBuilder: ShinkaiMessageBuilderWrapperWASM;

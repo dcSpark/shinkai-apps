@@ -1,4 +1,4 @@
-import { ShinkaiNameWrapper as ShinkaiNameWrapperWASM } from "../pkg/shinkai_message_wasm.js";
+import { ShinkaiNameWrapper as ShinkaiNameWrapperWASM } from "../pkg/shinkai_message_wasm";
 
 export class ShinkaiNameWrapper {
     private wasmWrapper: ShinkaiNameWrapperWASM;

@@ -1,5 +1,6 @@
-import { InboxNameWrapper } from "./InboxNameWrapper";
 import { test } from "vitest";
+
+import { InboxNameWrapper } from "./InboxNameWrapper";
 
 test("InboxNameWrapper", () => {
   const validNames = [

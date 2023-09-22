@@ -1,7 +1,8 @@
 import { test } from "vitest";
+
+import { SerializedAgent } from "../models/SchemaTypes";
 import { SerializedAgentWrapper } from "./SerializedAgentWrapper";
 import { ShinkaiNameWrapper } from "./ShinkaiNameWrapper";
-import { SerializedAgent } from "../models/SchemaTypes";
 
 test("SerializedAgentWrapper conversion", async () => {
   // Create a SerializedAgentWrapper using fromStrings

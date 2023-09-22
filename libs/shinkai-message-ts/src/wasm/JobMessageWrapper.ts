@@ -16,7 +16,7 @@ export class JobMessageWrapper {
     }
 
     static from_json_str(s: string): JobMessageWrapper {
-        let js_value = JSON.parse(s);
+        const js_value = JSON.parse(s);
         return new JobMessageWrapper(js_value.job_id_js, js_value.content_js);
     }
 

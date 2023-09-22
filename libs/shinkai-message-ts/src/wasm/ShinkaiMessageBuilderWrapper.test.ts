@@ -1,38 +1,39 @@
-import { test } from "vitest";
-import { ShinkaiMessageBuilderWrapper } from "./ShinkaiMessageBuilderWrapper";
-import { sha512 } from "@noble/hashes/sha512";
-import { generateKeyPair } from "curve25519-js";
 import * as ed from "@noble/ed25519";
+import { sha512 } from "@noble/hashes/sha512";
+import { Crypto } from "@peculiar/webcrypto";
+import { generateKeyPair } from "curve25519-js";
+import { test } from "vitest";
+
 import {
   EncryptionMethod,
   MessageSchemaType,
 } from "../models/SchemaTypes";
 import { toHexString } from "../utils/wasm_helpers";
+import { ShinkaiMessageBuilderWrapper } from "./ShinkaiMessageBuilderWrapper";
 
 // Enable synchronous methods
 ed.etc.sha512Sync = (...m) => sha512(ed.etc.concatBytes(...m));
 
-const { Crypto } = require("@peculiar/webcrypto");
 const crypto = new Crypto();
 globalThis.crypto = crypto;
 
 const generateKeys = async () => {
   const seed = new Uint8Array(32);
-  let encryptionKeys = generateKeyPair(seed);
-  let my_encryption_sk_string = toHexString(
+  const encryptionKeys = generateKeyPair(seed);
+  const my_encryption_sk_string = toHexString(
     new Uint8Array(encryptionKeys.private)
   );
-  let my_encryption_pk_string = toHexString(
+  const my_encryption_pk_string = toHexString(
     new Uint8Array(encryptionKeys.public)
   );
 
   const privKey = ed.utils.randomPrivateKey(); // Secure random private key
   const pubKey = await ed.getPublicKeyAsync(privKey);
 
-  let my_identity_sk_string = toHexString(new Uint8Array(privKey));
-  let my_identity_pk_string = toHexString(new Uint8Array(pubKey));
+  const my_identity_sk_string = toHexString(new Uint8Array(privKey));
+  const my_identity_pk_string = toHexString(new Uint8Array(pubKey));
 
-  let receiver_public_key_string = my_encryption_pk_string;
+  const receiver_public_key_string = my_encryption_pk_string;
 
   return {
     my_encryption_sk_string,
