@@ -1,17 +1,17 @@
-import { Button, Form, Input, message,Select } from 'antd';
+import { Button, Form, Input, message, Select } from 'antd';
 import { useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import { RootState } from '../../store';
+import { RootState, useTypedDispatch } from '../../store';
 import { addAgent } from '../../store/agents/agents-actions';
 
 type AddAgentFieldType = {
   agentName: string;
   externalUrl: string;
   apiKey: string;
-  model: Models,
+  model: Models;
 };
 
 enum Models {
@@ -24,21 +24,37 @@ export const AddAgent = () => {
   const [form] = Form.useForm<AddAgentFieldType>();
   const intl = useIntl();
   const [messageApi, contextHolder] = message.useMessage();
-  const addAgentStatus = useSelector((state: RootState) => state.agents?.add?.status);
-  const dispatch = useDispatch();
+  const isLoading = useSelector(
+    (state: RootState) => state.agents?.add?.status === 'loading'
+  );
+  const dispatch = useTypedDispatch();
   const [submittable, setSubmittable] = useState(false);
   const currentFormValue = Form.useWatch([], form);
-  const isAddingAgent = () => {
-    return addAgentStatus === 'loading';
-  }
   const submit = () => {
-    dispatch(addAgent({ agent: {
-      agentName: currentFormValue.agentName,
-      externalUrl: currentFormValue.externalUrl,
-      apiKey: currentFormValue.apiKey,
-      model: currentFormValue.model === Models.OpenAI ? { OpenAI: { model_type: 'gpt-3.5-turbo' }} : { SleepAPI: {} },
-    }}));
-  }
+    dispatch(
+      addAgent({
+        agent: {
+          agentName: currentFormValue.agentName,
+          externalUrl: currentFormValue.externalUrl,
+          apiKey: currentFormValue.apiKey,
+          model:
+            currentFormValue.model === Models.OpenAI
+              ? { OpenAI: { model_type: 'gpt-3.5-turbo' } }
+              : { SleepAPI: {} },
+        },
+      })
+    )
+      .unwrap()
+      .then(() => {
+        history.replace('/agents');
+      })
+      .catch(() => {
+        messageApi.open({
+          type: 'error',
+          content: 'Error adding agent',
+        });
+      });
+  };
   useEffect(() => {
     form.validateFields({ validateOnly: true, recursive: true }).then(
       () => {
@@ -49,77 +65,67 @@ export const AddAgent = () => {
       }
     );
   }, [form, currentFormValue]);
-  useEffect(() => {
-    switch (addAgentStatus) {
-      case 'failed':
-        messageApi.open({
-          type: 'error',
-          content: 'Error adding agent',
-        });
-        break;
-      case 'succeeded':
-        history.replace('/agents');
-        break;
-    }
-  }, [addAgentStatus, messageApi, history]);
   return (
-    <div className="h-full flex flex-col grow place-content-between">
+    <div className="h-full">
       {contextHolder}
       <Form
         autoComplete="off"
-        disabled={addAgentStatus === 'loading'}
+        className="h-full flex flex-col grow place-content-between"
+        disabled={isLoading}
         form={form}
+        onSubmitCapture={() => submit()}
       >
-        <Form.Item<AddAgentFieldType>
-          name="agentName"
-          rules={[{ required: true }]}
-        >
-          <Input
-            placeholder={intl.formatMessage({ id: 'agent-name' })}
-          />
-        </Form.Item>
-        <Form.Item<AddAgentFieldType>
-          name="externalUrl"
-          rules={[{ required: true }]}
-        >
-          <Input
-            placeholder={intl.formatMessage({ id: 'external-url' })}
-          />
-        </Form.Item>
-        <Form.Item<AddAgentFieldType>
-          name="apiKey"
-          rules={[{ required: true }]}
-        >
-          <Input
-            placeholder={intl.formatMessage({ id: 'api-key' })}
-          />
-        </Form.Item>
-        <Form.Item<AddAgentFieldType>
-          name="model"
-          rules={[{ required: true }]}
-        >
-          <Select
-            options={[
-              { value: Models.OpenAI, label: intl.formatMessage({ id: 'openai' }) },
-              { value: Models.SleepApi, label: intl.formatMessage({ id: 'sleep-api' }) },
-            ]}
-          />
+        <div className="flex flex-col grow">
+          <Form.Item<AddAgentFieldType>
+            name="agentName"
+            rules={[{ required: true }]}
+          >
+            <Input placeholder={intl.formatMessage({ id: 'agent-name' })} />
+          </Form.Item>
+          <Form.Item<AddAgentFieldType>
+            name="externalUrl"
+            rules={[{ required: true }]}
+          >
+            <Input placeholder={intl.formatMessage({ id: 'external-url' })} />
+          </Form.Item>
+          <Form.Item<AddAgentFieldType>
+            name="apiKey"
+            rules={[{ required: true }]}
+          >
+            <Input placeholder={intl.formatMessage({ id: 'api-key' })} />
+          </Form.Item>
+          <Form.Item<AddAgentFieldType>
+            name="model"
+            rules={[{ required: true }]}
+          >
+            <Select
+              options={[
+                {
+                  value: Models.OpenAI,
+                  label: intl.formatMessage({ id: 'openai' }),
+                },
+                {
+                  value: Models.SleepApi,
+                  label: intl.formatMessage({ id: 'sleep-api' }),
+                },
+              ]}
+            />
+          </Form.Item>
+        </div>
+
+        <Form.Item>
+          <Button
+            className="w-full"
+            disabled={isLoading || !submittable}
+            htmlType="submit"
+            loading={isLoading}
+            onClick={() => submit()}
+            type="primary"
+          >
+            <FormattedMessage id="add-agent" />
+          </Button>
         </Form.Item>
       </Form>
-      <Form.Item>
-          <div className="flex flex-col space-y-1">
-            <Button
-              className="w-full"
-              disabled={isAddingAgent() || !submittable}
-              htmlType="submit"
-              loading={isAddingAgent()}
-              onClick={() => submit()}
-              type="primary"
-            >
-              <FormattedMessage id="add-agent" />
-            </Button>
-          </div>
-        </Form.Item>
     </div>
   );
 };

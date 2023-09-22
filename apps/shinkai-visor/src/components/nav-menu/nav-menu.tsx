@@ -3,9 +3,9 @@ import './nav-menu.css';
 import { InboxOutlined, LogoutOutlined, RobotOutlined } from '@ant-design/icons';
 import { Menu } from 'antd';
 import { useIntl } from 'react-intl';
-import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router';
 
+import { useTypedDispatch } from '../../store';
 import { disconnectNode } from '../../store/node/node-actions';
 
 enum MenuOption {
@@ -17,7 +17,7 @@ enum MenuOption {
 export const NavMenu = () => {
   const intl = useIntl();
   const history = useHistory();
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const onClickMenuOption = (key: MenuOption) => {
     switch (key) {
       case MenuOption.Inbox:
