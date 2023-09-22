@@ -22,6 +22,7 @@ export default function Welcome() {
             <img
               alt="shinkai logo"
               className="animate-spin-slow h-20 w-20"
+              data-cy="shinkai-logo"
               src={logo}
             />
           </div>
