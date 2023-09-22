@@ -1,3 +1,5 @@
+import './Chat.css';
+
 import {
   IonBackButton,
   IonButtons,
@@ -6,21 +8,21 @@ import {
   IonTextarea,
   IonTitle,
 } from '@ionic/react';
-import { useParams } from 'react-router-dom';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { sendMessageToJob } from '@shinkai_network/shinkai-message-ts/api';
+import { send } from 'ionicons/icons';
+import React, { useCallback, useState } from 'react';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+
+import ChatMessages from '../components/ChatMessages';
+import { IonFooterCustom, IonHeaderCustom } from '../components/ui/Layout';
 import { useSetup } from '../hooks/usetSetup';
+import { RootState } from '../store';
+import { cn } from '../theme/lib/utils';
 import {
   extractJobIdFromInbox,
   getOtherPersonIdentity,
 } from '../utils/inbox_name_handler';
-import { cn } from '../theme/lib/utils';
-import { send } from 'ionicons/icons';
-import './Chat.css';
-import { IonFooterCustom, IonHeaderCustom } from '../components/ui/Layout';
-import ChatMessages from '../components/ChatMessages';
-import { RootState } from '../store';
 
 const JobChat: React.FC = () => {
   console.log('Loading JobChat.tsx');
@@ -95,21 +97,20 @@ const JobChat: React.FC = () => {
         >
           <div className="m-2 relative flex h-full flex-1 md:flex-col">
             <IonTextarea
-              class="ion-textarea-chat"
-              rows={1}
               autoGrow
-              fill="outline"
+              class="ion-textarea-chat"
               className="m-0 w-full bg-transparent p-0 pl-2 pr-12 md:pl-0"
-              value={inputMessage}
+              fill="outline"
               onIonChange={(e) => {
                 const newMessage = e.detail.value!;
                 setInputMessage(newMessage);
               }}
               placeholder="Type a message"
+              rows={1}
+              value={inputMessage}
             ></IonTextarea>
 
             <button
-              onClick={sendMessage}
               aria-label="Send Message"
               className={cn(
                 'absolute z-10 p-3 rounded-md text-gray-500 bottom-[1px] right-1',
@@ -117,8 +118,9 @@ const JobChat: React.FC = () => {
                 'hover:bg-gray-100 disabled:hover:bg-transparent',
                 'dark:text-white dark:hover:text-gray-100 dark:hover:bg-gray-700 dark:disabled:hover:bg-transparent'
               )}
+              onClick={sendMessage}
             >
-              <IonIcon size="" icon={send} />
+              <IonIcon icon={send} size="" />
             </button>
           </div>
         </form>

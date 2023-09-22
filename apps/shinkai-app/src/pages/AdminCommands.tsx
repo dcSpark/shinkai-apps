@@ -1,25 +1,25 @@
 import {
-  IonModal,
+  IonActionSheet,
+  IonBackButton,
   IonButton,
-  IonPage,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
+  IonButtons,
   IonContent,
-  IonList,
+  IonHeader,
   IonItem,
   IonLabel,
-  IonButtons,
-  IonBackButton,
-  IonActionSheet,
-  IonToast,
+  IonList,
+  IonModal,
+  IonPage,
+  IonTitle,
+  IonToolbar,
 } from "@ionic/react";
+import { submitRequestRegistrationCode } from "@shinkai_network/shinkai-message-ts/api";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { submitRequestRegistrationCode } from "@shinkai_network/shinkai-message-ts/api";
-import { RootState } from "../store";
-import { clearRegistrationCode, createRegistrationCode } from "../store/actions";
+
 import { useSetup } from "../hooks/usetSetup";
+import { RootState } from "../store";
+import { createRegistrationCode } from "../store/actions";
 
 const AdminCommands: React.FC = () => {
   useSetup();
@@ -87,8 +87,6 @@ const AdminCommands: React.FC = () => {
   return (
     <>
       <IonActionSheet
-        isOpen={showIdentityTypeActionSheet}
-        onDidDismiss={() => setShowIdentityTypeActionSheet(false)}
         buttons={[
           {
             text: "Profile",
@@ -104,10 +102,10 @@ const AdminCommands: React.FC = () => {
             handler: () => handleIdentityTypeClick("Cancel"),
           },
         ]}
+        isOpen={showIdentityTypeActionSheet}
+        onDidDismiss={() => setShowIdentityTypeActionSheet(false)}
       />
       <IonActionSheet
-        isOpen={showCodeRegistrationActionSheet}
-        onDidDismiss={() => setShowCodeRegistrationActionSheet(false)}
         buttons={[
           {
             text: "Admin",
@@ -126,6 +124,8 @@ const AdminCommands: React.FC = () => {
             role: "cancel",
           },
         ]}
+        isOpen={showCodeRegistrationActionSheet}
+        onDidDismiss={() => setShowCodeRegistrationActionSheet(false)}
       />
       <IonModal isOpen={showCodeRegistrationModal}>
         <IonHeader>

@@ -1,32 +1,25 @@
 // pages/CreateChat.tsx
 import {
-  IonPage,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonButton,
-  IonInput,
-  IonLabel,
-  IonItem,
-  IonGrid,
-  IonRow,
-  IonCol,
-  IonButtons,
   IonBackButton,
-  IonTextarea,
+  IonButtons,
+  IonCol,
+  IonGrid,
+  IonPage,
+  IonRow,
+  IonTitle,
 } from '@ionic/react';
+import { createChatWithMessage } from '@shinkai_network/shinkai-message-ts/api';
+import { History } from 'history';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { createChatWithMessage } from '@shinkai_network/shinkai-message-ts/api';
-import { useSetup } from '../hooks/usetSetup';
 import { useHistory } from 'react-router-dom';
-import { History } from 'history';
-import { IonContentCustom, IonHeaderCustom } from '../components/ui/Layout';
-import Input from '../components/ui/Input';
+
 import Button from '../components/ui/Button';
-import { addMessageToInbox } from '../store/actions';
+import Input from '../components/ui/Input';
+import { IonContentCustom, IonHeaderCustom } from '../components/ui/Layout';
+import { useSetup } from '../hooks/usetSetup';
 import { RootState } from '../store';
+import { addMessageToInbox } from '../store/actions';
 
 const CreateChat: React.FC = () => {
   useSetup();
@@ -95,17 +88,17 @@ const CreateChat: React.FC = () => {
               </h2>
               <div className={'space-y-5'}>
                 <Input
-                  value={shinkaiIdentity}
-                  label="Enter Shinkai Identity. Eg:@@name.shinkai or @@name.shinkai/profile"
                   aria-label="Enter Shinkai Identity"
+                  label="Enter Shinkai Identity. Eg:@@name.shinkai or @@name.shinkai/profile"
                   onChange={(e) => setShinkaiIdentity(e.detail.value!)}
+                  value={shinkaiIdentity}
                 />
 
                 <Input
-                  label="Enter Message"
                   aria-label="Enter Message"
-                  value={messageText}
+                  label="Enter Message"
                   onChange={(e) => setMessageText(e.detail.value!)}
+                  value={messageText}
                 />
               </div>
 

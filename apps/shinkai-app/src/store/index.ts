@@ -1,9 +1,10 @@
-import { createStore, applyMiddleware, Store, compose } from 'redux';
-import thunk, { ThunkAction } from 'redux-thunk';
-import storage from 'redux-persist/lib/storage';
-import { persistStore, persistReducer } from 'redux-persist';
-import rootReducer from './reducers';
+import { applyMiddleware, compose,createStore, Store } from 'redux';
 import { Action } from 'redux';
+import { persistReducer,persistStore } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+import thunk, { ThunkAction } from 'redux-thunk';
+
+import rootReducer from './reducers';
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = Store['dispatch'];

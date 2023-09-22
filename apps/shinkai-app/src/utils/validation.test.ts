@@ -1,4 +1,5 @@
 import { test } from 'vitest';
+
 import { validateInboxName } from './validation';
 
 test('Validates inbox names correctly', () => {
