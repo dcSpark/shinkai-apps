@@ -1,8 +1,9 @@
 // hooks/useSetup.ts
+import { ApiConfig } from "@shinkai_network/shinkai-message-ts/api";
 import { useEffect } from "react";
 import { shallowEqual, useSelector } from "react-redux";
+
 import { RootState } from "../store";
-import { ApiConfig } from "@shinkai_network/shinkai-message-ts/api";
 
 export const useSetup = () => {
   const setupDetails = useSelector(

@@ -1,31 +1,32 @@
 // pages/CreateJob.tsx
 import {
-  IonPage,
-  IonTitle,
-  IonLabel,
-  IonItem,
-  IonGrid,
-  IonRow,
-  IonCol,
-  IonButtons,
   IonBackButton,
+  IonButtons,
+  IonCol,
+  IonGrid,
+  IonItem,
+  IonLabel,
+  IonPage,
+  IonRow,
   IonSelect,
   IonSelectOption,
   IonTextarea,
+  IonTitle,
 } from "@ionic/react";
-import { useEffect, useState } from "react";
-import { IonContentCustom, IonHeaderCustom } from "../components/ui/Layout";
-import Button from "../components/ui/Button";
 import {
   createJob, getProfileAgents, sendMessageToJob
 } from "@shinkai_network/shinkai-message-ts/api";
 import { SerializedAgent } from "@shinkai_network/shinkai-message-ts/models";
-import { JobScopeWrapper, InboxNameWrapper, JobCreationWrapper } from "@shinkai_network/shinkai-message-ts/wasm";
-import { useSetup } from "../hooks/usetSetup";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../store";
+import { InboxNameWrapper, JobCreationWrapper,JobScopeWrapper } from "@shinkai_network/shinkai-message-ts/wasm";
 import { History } from "history";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
+
+import Button from "../components/ui/Button";
+import { IonContentCustom, IonHeaderCustom } from "../components/ui/Layout";
+import { useSetup } from "../hooks/usetSetup";
+import { RootState } from "../store";
 import { addAgents } from "../store/actions";
 
 const CreateJob: React.FC = () => {
@@ -134,9 +135,9 @@ const CreateJob: React.FC = () => {
               <IonItem>
                 <IonLabel>Select Agent</IonLabel>
                 <IonSelect
-                  value={selectedAgent}
-                  placeholder="Select One"
                   onIonChange={(e) => setSelectedAgent(e.detail.value)}
+                  placeholder="Select One"
+                  value={selectedAgent}
                 >
                   {Object.values(agents).map((agent, index) => (
                     <IonSelectOption key={index} value={agent}>
@@ -149,8 +150,8 @@ const CreateJob: React.FC = () => {
               <IonItem>
                 <IonLabel position="floating">Tell me the job to do</IonLabel>
                 <IonTextarea
-                  value={jobContent}
                   onIonChange={(e) => setJobContent(e.detail.value!)}
+                  value={jobContent}
                 />
               </IonItem>
 

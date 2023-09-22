@@ -1,7 +1,9 @@
-import React from "react";
-import { IonButton } from "@ionic/react";
-import { cn } from "../../theme/lib/utils";
 import "./Button.css";
+
+import { IonButton } from "@ionic/react";
+import React from "react";
+
+import { cn } from "../../theme/lib/utils";
 
 export default function Button({
   onClick,
@@ -23,8 +25,8 @@ export default function Button({
         "variant-" + variant,
         className,
       )}
-      onClick={onClick}
       disabled={disabled}
+      onClick={onClick}
       shape={"round"}
     >
       {children}

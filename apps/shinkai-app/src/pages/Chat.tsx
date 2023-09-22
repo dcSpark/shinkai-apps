@@ -1,47 +1,42 @@
+import './Chat.css';
+
 import {
   IonBackButton,
   IonButton,
   IonButtons,
-  IonContent,
-  IonFooter,
-  IonHeader,
   IonIcon,
-  IonInput,
   IonItem,
-  IonLabel,
   IonList,
   IonPage,
-  IonText,
   IonTextarea,
   IonTitle,
-  IonToolbar,
 } from '@ionic/react';
-import { useParams } from 'react-router-dom';
-import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import {
   getLastMessagesFromInbox,
   sendTextMessageWithInbox,
 } from '@shinkai_network/shinkai-message-ts/api';
-import { RootState } from '../store';
-import { useSetup } from '../hooks/usetSetup';
-import {
-  extractReceiverShinkaiName,
-  getOtherPersonIdentity,
-} from '../utils/inbox_name_handler';
 import { ShinkaiMessage } from '@shinkai_network/shinkai-message-ts/models';
 import { calculateMessageHash } from '@shinkai_network/shinkai-message-ts/utils';
-import Avatar from '../components/ui/Avatar';
-import { cn } from '../theme/lib/utils';
 import { send } from 'ionicons/icons';
-import './Chat.css';
+import React, { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+
+import Avatar from '../components/ui/Avatar';
 import {
   IonContentCustom,
   IonFooterCustom,
   IonHeaderCustom,
 } from '../components/ui/Layout';
+import { useSetup } from '../hooks/usetSetup';
+import { RootState } from '../store';
 import { addMessageToInbox, receiveLastMessagesFromInbox, receiveLoadMoreMessagesFromInbox } from '../store/actions';
 import { RECEIVE_LAST_MESSAGES_FROM_INBOX } from '../store/types';
+import { cn } from '../theme/lib/utils';
+import {
+  extractReceiverShinkaiName,
+  getOtherPersonIdentity,
+} from '../utils/inbox_name_handler';
 
 const parseDate = (dateString: string) => {
   return new Date(dateString);
@@ -189,12 +184,12 @@ const Chat: React.FC = () => {
 
                   return (
                     <IonItem
-                      key={index}
-                      lines="none"
                       className={cn(
                         'ion-item-chat relative w-full shadow',
                         isLocalMessage && 'isLocalMessage'
                       )}
+                      key={index}
+                      lines="none"
                     >
                       <div className="px-2 py-4 flex gap-4 pb-10 w-full">
                         <Avatar
@@ -245,18 +240,17 @@ const Chat: React.FC = () => {
         >
           <div className="m-2 relative flex h-full flex-1 md:flex-col">
             <IonTextarea
-              class="ion-textarea-chat"
-              rows={1}
               autoGrow
-              fill="outline"
+              class="ion-textarea-chat"
               className="m-0 w-full bg-transparent p-0 pl-2 pr-12 md:pl-0"
-              value={inputMessage}
+              fill="outline"
               onIonChange={(e) => setInputMessage(e.detail.value!)}
               placeholder="Type a message"
+              rows={1}
+              value={inputMessage}
             ></IonTextarea>
 
             <button
-              onClick={sendMessage}
               aria-label="Send Message"
               className={cn(
                 'absolute z-10 p-3 rounded-md text-gray-500 bottom-[1px] right-1',
@@ -264,8 +258,9 @@ const Chat: React.FC = () => {
                 'hover:bg-gray-100 disabled:hover:bg-transparent',
                 'dark:text-white dark:hover:text-gray-100 dark:hover:bg-gray-700 dark:disabled:hover:bg-transparent'
               )}
+              onClick={sendMessage}
             >
-              <IonIcon size="" icon={send} />
+              <IonIcon icon={send} size="" />
             </button>
           </div>
         </form>
