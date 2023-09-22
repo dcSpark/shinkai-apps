@@ -51,10 +51,18 @@ export const extractReceiverShinkaiName = (
 
 export const extractJobIdFromInbox = (deserializedId: string): string => {
   const parts: string[] = deserializedId.split("::");
-  if (parts.length < 3 || parts[0] !== 'job_inbox') {
+  if (parts.length < 3 || !isJobInbox(deserializedId)) {
     throw new ShinkaiNameError("InvalidFormat");
   }
 
   const jobId = parts[1];
   return jobId;
 };
+
+export const isJobInbox = (inboxId: string): boolean => {
+  const parts: string[] = inboxId.split("::");
+  if (parts.length < 3) {
+    throw new ShinkaiNameError("InvalidFormat");
+  }
+  return parts[0] === 'job_inbox';
+}

@@ -39,6 +39,8 @@ export const addAgent = createAsyncThunk<
       toolkit_permissions: [],
       storage_bucket_permissions: [],
       allowed_message_senders: [],
+      external_url: args.agent.externalUrl,
+      api_key: args.agent.apiKey,
       model: args.agent.model,
     },
     {

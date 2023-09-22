@@ -103,6 +103,10 @@ export const inboxSlice = createSlice({
           ...state.sendMessage[action.meta.arg.inboxId],
           status: 'succeeded',
         };
+        // At this moment, jobs message response is just a string
+        if (!action.payload.message) {
+          return;
+        }
         const inboxId = action.payload.inbox.id;
         const currentMessages = state.messages[inboxId]?.data || [];
         const currentMessagesHashes = state.messagesHashes[inboxId] || {};

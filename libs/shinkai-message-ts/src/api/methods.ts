@@ -503,8 +503,8 @@ export const sendMessageToJob = async (
       headers: { 'Content-Type': 'application/json' },
     });
     await handleHttpError(response);
-    const data = await response.json();
-    return data;
+    // TODO: response to create message job just contain an string replying "Job message processed successfully"
+    return response.text();
   } catch (error) {
     console.error('Error sending message to job:', error);
     throw error;
