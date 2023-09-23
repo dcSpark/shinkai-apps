@@ -108,7 +108,7 @@ const JobChat: React.FC = () => {
               aria-label="Send Message"
               className={cn(
                 'h-10 w-10 rounded-md text-gray-500 mb-2',
-                'bg-[#FE6162] hover:bg-[#FE6162]/80 disabled:hover:bg-transparent',
+                'bg-brand-500 hover:bg-brand-500/80 disabled:hover:bg-transparent',
                 'dark:text-white dark:hover:text-gray-100 dark:hover:bg-gray-700 dark:disabled:hover:bg-transparent'
               )}
               onClick={sendMessage}
