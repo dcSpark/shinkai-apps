@@ -1,38 +1,32 @@
 // pages/AddAgent.tsx
 import {
-  IonPage,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonButton,
-  IonInput,
-  IonLabel,
-  IonItem,
-  IonGrid,
-  IonRow,
-  IonCol,
-  IonButtons,
+  InputChangeEventDetail,
   IonBackButton,
+  IonButtons,
+  IonCheckbox,
+  IonCol,
+  IonGrid,
+  IonInput,
+  IonItem,
+  IonLabel,
+  IonPage,
+  IonRow,
   IonSelect,
   IonSelectOption,
-  IonTextarea,
-  InputChangeEventDetail,
-  IonCheckbox,
+  IonTitle,
 } from "@ionic/react";
-import { useEffect, useState } from "react";
-import { IonContentCustom, IonHeaderCustom } from "../components/ui/Layout";
+import { addAgent } from "@shinkai_network/shinkai-message-ts/api";
+import { AgentAPIModel,SerializedAgent } from "@shinkai_network/shinkai-message-ts/models";
+import { useState } from "react";
+import { useSelector } from "react-redux";
+
 import Button from "../components/ui/Button";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../store";
-import { SerializedAgent, AgentAPIModel } from "@shinkai/shinkai-message-ts/models";
-import { addAgent } from "@shinkai/shinkai-message-ts/api";
+import { IonContentCustom, IonHeaderCustom } from "../components/ui/Layout";
 import { useSetup } from "../hooks/usetSetup";
-import { useHistory } from 'react-router-dom';
+import { RootState } from "../store";
 
 const AddAgent: React.FC = () => {
   useSetup();
-  const dispatch = useDispatch();
   const setupDetailsState = useSelector(
     (state: RootState) => state.setupDetails
   );
@@ -120,23 +114,23 @@ const AddAgent: React.FC = () => {
                 <IonLabel>Agent Name</IonLabel>
                 <IonInput
                   id="agent_name"
-                  value={agent.full_identity_name?.split("/").pop()}
                   onIonChange={handleAgentNameChange}
+                  value={agent.full_identity_name?.split("/").pop()}
                 />
               </IonItem>
 
               <IonItem>
                 <IonLabel>Perform Locally</IonLabel>
                 <IonCheckbox
-                  slot="start"
-                  name="perform_locally"
                   checked={agent.perform_locally}
+                  name="perform_locally"
                   onIonChange={(e) =>
                     setAgent((prevState) => ({
                       ...prevState,
                       perform_locally: e.detail.checked,
                     }))
                   }
+                  slot="start"
                 />
               </IonItem>
 
@@ -144,8 +138,8 @@ const AddAgent: React.FC = () => {
                 <IonLabel>External URL</IonLabel>
                 <IonInput
                   name="external_url"
-                  value={agent.external_url}
                   onIonChange={handleInputChange}
+                  value={agent.external_url}
                 />
               </IonItem>
 
@@ -153,8 +147,8 @@ const AddAgent: React.FC = () => {
                 <IonLabel>API Key</IonLabel>
                 <IonInput
                   name="api_key"
-                  value={agent.api_key}
                   onIonChange={handleInputChange}
+                  value={agent.api_key}
                 />
               </IonItem>
 
@@ -162,13 +156,13 @@ const AddAgent: React.FC = () => {
                 <IonLabel>Model</IonLabel>
                 <IonSelect
                   name="model"
-                  value={agent.model}
                   onIonChange={(e) =>
                     setAgent((prevState) => ({
                       ...prevState,
                       model: e.detail.value as AgentAPIModel,
                     }))
                   }
+                  value={agent.model}
                 >
                   <IonSelectOption
                     value={{ OpenAI: { model_type: openaiModelType } }}
@@ -185,8 +179,8 @@ const AddAgent: React.FC = () => {
                   <IonLabel>OpenAI Model Type</IonLabel>
                   <IonInput
                     name="openai_model_type"
-                    value={openaiModelType}
                     onIonChange={(e) => setOpenaiModelType(e.detail.value!)}
+                    value={openaiModelType}
                   />
                 </IonItem>
               )}

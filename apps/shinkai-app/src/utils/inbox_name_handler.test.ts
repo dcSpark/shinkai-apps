@@ -1,4 +1,5 @@
 import { assert, suite } from 'vitest';
+
 import { extractReceiverShinkaiName, getOtherPersonIdentity, ShinkaiNameError } from './inbox_name_handler';
 
 suite('extractReceiverShinkaiName', () => {

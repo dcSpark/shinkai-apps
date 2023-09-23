@@ -1,5 +1,5 @@
-import { ShinkaiMessageWrapper as ShinkaiMessageWrapperWASM } from '../pkg/shinkai_message_wasm.js';
-import { ExternalMetadata, ShinkaiMessage } from '../models/ShinkaiMessage.js';
+import { ExternalMetadata, ShinkaiMessage } from '../models/ShinkaiMessage';
+import { ShinkaiMessageWrapper as ShinkaiMessageWrapperWASM } from '../pkg/shinkai_message_wasm';
 
 export class ShinkaiMessageWrapper {
   private wasmWrapper: ShinkaiMessageWrapperWASM;

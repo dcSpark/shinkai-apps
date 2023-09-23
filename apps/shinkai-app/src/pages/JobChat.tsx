@@ -1,3 +1,5 @@
+import './Chat.css';
+
 import {
   IonBackButton,
   IonButtons,
@@ -6,21 +8,21 @@ import {
   IonTextarea,
   IonTitle,
 } from '@ionic/react';
-import { useParams } from 'react-router-dom';
+import { sendMessageToJob } from '@shinkai_network/shinkai-message-ts/api';
+import { send } from 'ionicons/icons';
 import React, { useCallback, useState } from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import { sendMessageToJob } from '@shinkai/shinkai-message-ts/api';
+import { useParams } from 'react-router-dom';
+
+import ChatMessages from '../components/ChatMessages';
+import { IonFooterCustom, IonHeaderCustom } from '../components/ui/Layout';
 import { useSetup } from '../hooks/usetSetup';
+import { RootState } from '../store';
+import { cn } from '../theme/lib/utils';
 import {
   extractJobIdFromInbox,
   getOtherPersonIdentity,
 } from '../utils/inbox_name_handler';
-import { cn } from '../theme/lib/utils';
-import { send } from 'ionicons/icons';
-import './Chat.css';
-import { IonFooterCustom, IonHeaderCustom } from '../components/ui/Layout';
-import ChatMessages from '../components/ChatMessages';
-import { RootState } from '../store';
 
 const JobChat: React.FC = () => {
   console.log('Loading JobChat.tsx');
@@ -86,34 +88,32 @@ const JobChat: React.FC = () => {
         <div className={'w-full py-2 md:py-3 md:pl-4'}>
           <div className="m-2 flex items-end h-full border border-slate-300 pr-2 rounded-xl shadow">
             <IonTextarea
-              class="ion-textarea-chat"
-              rows={1}
               autoGrow
-              fill="outline"
+              class="ion-textarea-chat"
               className="m-0 w-full bg-transparent p-0 pl-2 pr-12 md:pl-0"
-              value={inputMessage}
               onIonInput={(e) => {
                 const newMessage = e.detail.value as string;
                 setInputMessage(newMessage);
               }}
-              placeholder="Type a message"
               onKeyDown={(event) => {
                 if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
                   void sendMessage();
                 }
               }}
+              placeholder="Type a message"
+              value={inputMessage}
             />
 
             <button
               aria-label="Send Message"
-              onClick={sendMessage}
               className={cn(
                 'h-10 w-10 rounded-md text-gray-500 mb-2',
                 'bg-[#FE6162] hover:bg-[#FE6162]/80 disabled:hover:bg-transparent',
                 'dark:text-white dark:hover:text-gray-100 dark:hover:bg-gray-700 dark:disabled:hover:bg-transparent'
               )}
+              onClick={sendMessage}
             >
-              <IonIcon size="" className={'text-white'} icon={send} />
+              <IonIcon className={'text-white'} icon={send} size="" />
             </button>
           </div>
         </div>

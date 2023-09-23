@@ -1,4 +1,5 @@
-import React from 'react';
+import './Layout.css';
+
 import {
   IonContent,
   IonFooter,
@@ -6,7 +7,7 @@ import {
   IonToolbar,
   ScrollDetail,
 } from '@ionic/react';
-import './Layout.css';
+import React from 'react';
 
 export const IonHeaderCustom = ({
   children,
@@ -15,7 +16,7 @@ export const IonHeaderCustom = ({
 }) => {
   return (
     <IonHeader className="shadow border-b border-slate-50 dark:border-slate-700 md:border-0 md:shadow-none">
-      <IonToolbar className="mx-auto container" class="ion-header-custom">
+      <IonToolbar class="ion-header-custom" className="mx-auto container">
         {children}
       </IonToolbar>
     </IonHeader>
@@ -34,17 +35,18 @@ export const IonContentCustom = React.forwardRef(
   ) => {
     return (
       <IonContent
-        fullscreen
         class="ion-content-custom"
+        fullscreen
+        onIonScroll={onScroll}
         ref={ref}
         scrollEvents={true}
-        onIonScroll={onScroll}
       >
         <div className="container mx-auto min-h-full px-6">{children}</div>
       </IonContent>
     );
   }
 );
+IonContentCustom.displayName = 'IonContentCustom';
 
 export const IonFooterCustom = ({
   children,
@@ -53,7 +55,7 @@ export const IonFooterCustom = ({
 }) => {
   return (
     <IonFooter className="shadow-none bg-white dark:bg-slate-900">
-      <IonToolbar className="container" class="ion-toolbar-custom">
+      <IonToolbar class="ion-toolbar-custom" className="container">
         {children}
       </IonToolbar>
     </IonFooter>

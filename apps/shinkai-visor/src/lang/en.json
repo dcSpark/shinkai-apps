@@ -1,6 +1,6 @@
 {
   "app-name": "Shinkai Visor",
-  "welcome": "Setup Shinkai Visor to transform your web browser into a first class Shinkai client",
+  "welcome": "Setup Shinkai Visor to transform your web browser into a first class Shinkai client:",
   "setup": "Setup",
   "inbox.one": "Inbox",
   "inbox.other": "Inboxes",
@@ -23,5 +23,23 @@
   "use-qr-code": "Use a QR code to fill these fields",
   "connect-manually": "Do not have a QR Code? Connect manually",
   "scan": "Scan",
-  "review": "Review"
+  "review": "Review",
+  "logout": "Logout",
+  "message-receiver": "Message receiver",
+  "message.one": "Message",
+  "message.other": "Messages",
+  "create-inbox": "Create chat",
+  "send": "Send",
+  "agent.one": "Agent",
+  "agent.other": "Agents",
+  "agent-name": "Agent name",
+  "external-url": "External URL",
+  "api-key": "API Key",
+  "add-agent": "Add agent",
+  "model.one": "Model",
+  "model.other": "Models",
+  "openai": "OpenAI",
+  "sleep-api": "Sleep API",
+  "tmwtd": "Tell me what to do",
+  "create-job": "Create job"
 }

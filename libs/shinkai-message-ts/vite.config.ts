@@ -1,13 +1,34 @@
-import { defineConfig } from "vite";
-import wasm from "vite-plugin-wasm";
+/// <reference types="vitest" />
+import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
+import { defineConfig } from 'vite';
+import dts from 'vite-plugin-dts';
+import wasm from 'vite-plugin-wasm';
 
-// https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [wasm()],
+  cacheDir: '../../node_modules/.vite/shinkai-message-ts',
+  build: {
+    lib: {
+      entry: {
+        'index': './src/index.ts',
+        'api': './src/api.ts',
+        'models': './src/models.ts',
+        'utils': './src/utils.ts',
+        'wasm': './src/wasm.ts',
+      },
+      formats: ['es'],
+    },
+    target: 'esnext',
+    outDir: 'dist'
+  },
+  plugins: [nxViteTsPaths(), wasm(), dts({ tsConfigFilePath: 'tsconfig.lib.json', rollupTypes: true, copyDtsFiles: true, clearPureImport: false }),],
   test: {
     watch: false,
+    cache: {
+      dir: '../../node_modules/.vitest',
+    },
     globals: true,
-    environment: "jsdom",
-    setupFiles: "./scripts/setupTests.ts",
+    environment: 'jsdom',
+    setupFiles: './scripts/setupTests.ts',
   },
+  root: './',
 });

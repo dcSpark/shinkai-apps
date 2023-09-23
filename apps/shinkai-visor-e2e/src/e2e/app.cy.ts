@@ -1,9 +1,8 @@
-import { getWelcomeMessage } from '../support/app.po';
-
 describe('shinkai-visor', () => {
-  beforeEach(() => cy.visit('/'));
+  // This app is an extension so we navigate to the popup entry point (loaded in chrome when user click the extension icon)
+  beforeEach(() => cy.visit('/src/popup/popup.html'));
 
-  it('should display welcome message', () => {
-    getWelcomeMessage().should('exist').contains('Setup Shinkai Visor to transform your web browser into a first class Shinkai client');
+  it('should display shinkai-logo', () => {
+    cy.getDataCy('shinkai-logo').should('exist');
   });
 });

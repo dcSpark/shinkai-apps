@@ -1,7 +1,10 @@
-import { InputCustomEvent } from "@ionic/core/dist/types/components/input/input-interface";
-import { InputChangeEventDetail, IonInput } from "@ionic/react";
-import { cn } from "../../theme/lib/utils";
-import "./Input.css";
+import './Input.css';
+import './Input.css';
+
+import { InputCustomEvent } from '@ionic/core/dist/types/components/input/input-interface';
+import { InputChangeEventDetail, IonInput } from '@ionic/react';
+
+import { cn } from '../../theme/lib/utils';
 
 export default function Input({
   onChange,
@@ -16,15 +19,15 @@ export default function Input({
 }) {
   return (
     <IonInput
-      className={cn("ion-input-custom", className)}
-      class={"native-input"}
-      value={value}
-      shape={"round"}
-      onIonChange={onChange}
-      labelPlacement={undefined}
-      placeholder={label}
-      fill={"outline"}
       aria-label={label}
+      class={'native-input'}
+      className={cn('ion-input-custom', className)}
+      fill={'outline'}
+      labelPlacement={undefined}
+      onIonChange={onChange}
+      placeholder={label}
+      shape={'round'}
+      value={value}
     />
   );
 }

@@ -1,29 +1,51 @@
 import './nav-menu.css';
 
-import { InboxOutlined, InfoCircleOutlined,SettingOutlined } from '@ant-design/icons';
-import { FormattedMessage } from 'react-intl';
+import { InboxOutlined, LogoutOutlined, RobotOutlined } from '@ant-design/icons';
+import { Menu } from 'antd';
+import { useIntl } from 'react-intl';
+import { useHistory } from 'react-router';
+
+import { useTypedDispatch } from '../../store';
+import { disconnectNode } from '../../store/node/node-actions';
+
+enum MenuOption {
+  Inbox = 'inbox',
+  Agents = 'agents',
+  Logout = 'logout',
+}
 
 export const NavMenu = () => {
+  const intl = useIntl();
+  const history = useHistory();
+  const dispatch = useTypedDispatch();
+  const onClickMenuOption = (key: MenuOption) => {
+    switch (key) {
+      case MenuOption.Inbox:
+        history.replace('/inboxes')
+        break;
+      case MenuOption.Agents:
+        history.replace('/agents')
+        break;
+      case MenuOption.Logout:
+        logout();
+        break;
+      default:
+        break;
+    }
+  }
+  const logout = (): void => {
+    dispatch(disconnectNode())
+  }
+
   return (
-    <div className="flex flex-col space-y-3">
-      <div className="flex flex-row space-x-2 align-content-center">
-        <InboxOutlined />
-        <span>
-          <FormattedMessage id="inbox.other"></FormattedMessage>
-        </span>
-      </div>
-      <div className="flex flex-row space-x-2">
-        <SettingOutlined />
-        <span>
-          <FormattedMessage id="settings.other"></FormattedMessage>
-        </span>
-      </div>
-      <div className="flex flex-row space-x-2">
-        <InfoCircleOutlined />
-        <span>
-          <FormattedMessage id="about"></FormattedMessage>
-        </span>
-      </div>
-    </div>
+    <Menu
+      className="remove-antd-style"
+      items={[
+        { key: MenuOption.Inbox, label: intl.formatMessage({ id: 'inbox.other' }), icon: <InboxOutlined></InboxOutlined> },
+        { key: MenuOption.Agents, label: intl.formatMessage({ id: 'agent.other' }), icon: <RobotOutlined /> },
+        { key: MenuOption.Logout, label: intl.formatMessage({ id: 'logout' }), icon: <LogoutOutlined></LogoutOutlined> },
+      ]}
+      onClick={(e) => onClickMenuOption(e.key as unknown as MenuOption)}
+    />
   );
 };

@@ -1,5 +1,5 @@
-import { SerializedAgent } from "../models/SchemaTypes.js";
-import { SerializedAgentWrapper as SerializedAgentWrapperWASM } from "../pkg/shinkai_message_wasm.js";
+import { SerializedAgent } from "../models/SchemaTypes";
+import { SerializedAgentWrapper as SerializedAgentWrapperWASM } from "../pkg/shinkai_message_wasm";
 
 export class SerializedAgentWrapper {
   private wasmWrapper: SerializedAgentWrapperWASM;

@@ -1,4 +1,5 @@
 import { IonAvatar } from "@ionic/react";
+
 import { cn } from "../../theme/lib/utils";
 
 export default function Avatar({
@@ -16,9 +17,9 @@ export default function Avatar({
       )}
     >
       <img
+        alt=""
         className="w-full h-full"
         src={url ?? "https://ionicframework.com/docs/img/demos/avatar.svg"}
-        alt=""
       />
     </IonAvatar>
   );

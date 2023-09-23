@@ -1,23 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import {
-  getLastMessagesFromInbox,
-  getLastUnreadMessagesFromInbox,
-} from '@shinkai/shinkai-message-ts/api/methods';
-import { ShinkaiMessage } from '@shinkai/shinkai-message-ts/models';
-import {
-  IonList,
-  IonItem,
   IonButton,
+  IonItem,
+  IonList,
   IonSkeletonText,
   IonThumbnail,
 } from '@ionic/react';
+import {
+  getLastMessagesFromInbox,
+  getLastUnreadMessagesFromInbox,
+} from '@shinkai_network/shinkai-message-ts/api/methods';
+import { ShinkaiMessage } from '@shinkai_network/shinkai-message-ts/models';
+import { calculateMessageHash } from '@shinkai_network/shinkai-message-ts/utils/shinkai_message_handler';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+
 import Avatar from '../components/ui/Avatar';
-import { cn } from '../theme/lib/utils';
-import { IonContentCustom } from './ui/Layout';
-import { calculateMessageHash } from '@shinkai/shinkai-message-ts/utils/shinkai_message_handler';
 import { RootState } from '../store';
 import { receiveLastMessagesFromInbox } from '../store/actions';
+import { cn } from '../theme/lib/utils';
+import { IonContentCustom } from './ui/Layout';
 
 const extractContent = (messageBody: any) => {
   // TODO: extend it so it can be re-used by JobChat or normal Chat
@@ -178,14 +179,12 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ deserializedId }) => {
         {!isLoading && hasMoreMessages && (
           <IonButton
             onClick={() =>
-              dispatch(
-                getLastMessagesFromInbox(
-                  deserializedId,
-                  10,
-                  lastKey,
-                  setupDetailsState
-                  // true
-                )
+              getLastMessagesFromInbox(
+                deserializedId,
+                10,
+                lastKey,
+                setupDetailsState
+                // true
               )
             }
           >
@@ -196,18 +195,18 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ deserializedId }) => {
           {isLoading &&
             Array.from({ length: 4 }).map((item, idx) => (
               <IonItem
-                key={idx}
-                lines="none"
                 className={cn(
                   'ion-item-chat relative',
                   idx % 2 === 1 && 'isLocalMessage'
                 )}
+                key={idx}
+                lines="none"
               >
                 <div className="px-2 py-4 flex gap-4 pb-10 w-full">
                   <IonThumbnail className={'rounded-[1.5rem]'} slot="start">
                     <IonSkeletonText
-                      className={'rounded-[8px]'}
                       animated={true}
+                      className={'rounded-[8px]'}
                     />
                   </IonThumbnail>
                   <div className="w-full">
@@ -262,12 +261,12 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ deserializedId }) => {
 
                       return (
                         <IonItem
-                          key={idx}
-                          lines="none"
                           className={cn(
                             'ion-item-chat relative',
                             isLocalMessage && 'isLocalMessage'
                           )}
+                          key={idx}
+                          lines="none"
                         >
                           <div
                             className={cn(

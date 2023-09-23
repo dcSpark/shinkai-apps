@@ -1,4 +1,4 @@
-import { InboxNameWrapper as InboxNameWrapperWASM } from "../pkg/shinkai_message_wasm.js";
+import { InboxNameWrapper as InboxNameWrapperWASM } from "../pkg/shinkai_message_wasm";
 
 export class InboxNameWrapper {
     private wasmWrapper: InboxNameWrapperWASM;

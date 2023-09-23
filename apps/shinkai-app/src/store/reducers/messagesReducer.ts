@@ -1,8 +1,9 @@
-import { ShinkaiMessage } from "@shinkai/shinkai-message-ts/models";
-import { calculateMessageHash } from "@shinkai/shinkai-message-ts/utils/shinkai_message_handler";
+import { ShinkaiMessage } from "@shinkai_network/shinkai-message-ts/models";
+import { calculateMessageHash } from "@shinkai_network/shinkai-message-ts/utils/shinkai_message_handler";
+
 import {
-  ADD_MESSAGE_TO_INBOX,
   Action,
+  ADD_MESSAGE_TO_INBOX,
   RECEIVE_ALL_INBOXES_FOR_PROFILE,
   RECEIVE_LAST_MESSAGES_FROM_INBOX,
   RECEIVE_LOAD_MORE_MESSAGES_FROM_INBOX,

@@ -1,6 +1,3 @@
-import axios from 'axios';
-import { ShinkaiMessageBuilderWrapper } from '../wasm/ShinkaiMessageBuilderWrapper';
-import { ApiConfig } from './api_config';
 import {
   AgentCredentialsPayload,
   CredentialsPayload,
@@ -9,17 +6,26 @@ import {
   SetupPayload,
   ShinkaiMessage,
 } from '../models';
-import { ShinkaiNameWrapper } from '../wasm/ShinkaiNameWrapper';
-import { InboxNameWrapper } from '../pkg/shinkai_message_wasm';
+import { APIUseRegistrationCodeSuccessResponse } from '../models/Payloads';
 import { SerializedAgent } from '../models/SchemaTypes';
+import { InboxNameWrapper } from '../pkg/shinkai_message_wasm';
 import { SerializedAgentWrapper } from '../wasm/SerializedAgentWrapper';
+import { ShinkaiMessageBuilderWrapper } from '../wasm/ShinkaiMessageBuilderWrapper';
+import { ShinkaiNameWrapper } from '../wasm/ShinkaiNameWrapper';
+import { ApiConfig } from './api_config';
 
 // Helper function to handle HTTP errors
-export const handleHttpError = (response: any) => {
+export const handleHttpError = async (response: Response): Promise<void> => {
   if (response.status < 200 || response.status >= 300) {
-    const error = response.data;
+    let error: { code: string; error: string; message: string } | undefined;
+    try {
+      error = await response.json();
+    } catch (e) {
+      console.log(`Error parsing http error response ${response.body}`);
+      error = undefined;
+    }
     throw new Error(
-      `HTTP error: ${error.code}, ${error.error}, ${error.message}`
+      `HTTP error: ${response.status} ${error?.code}, ${error?.error}, ${error?.message}`
     );
   }
 };
@@ -27,8 +33,8 @@ export const handleHttpError = (response: any) => {
 export const fetchPublicKey = () => async (): Promise<any> => {
   const apiEndpoint = ApiConfig.getInstance().getEndpoint();
   try {
-    const response = await axios.get(`${apiEndpoint}/get_public_key`);
-    return response.data;
+    const response = await fetch(`${apiEndpoint}/get_public_key`);
+    return response.json();
   } catch (error) {
     console.error('Error fetching public key:', error);
     throw error;
@@ -81,9 +87,14 @@ export const createChatWithMessage = async (
     const message: ShinkaiMessage = JSON.parse(messageStr);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await axios.post(`${apiEndpoint}/v1/send`, message);
+    const response = await fetch(`${apiEndpoint}/v1/send`, {
+      method: 'POST',
+      body: JSON.stringify(message),
+      headers: { 'Content-Type': 'application/json' },
+    });
 
-    handleHttpError(response);
+    await handleHttpError(response);
+
     if (message.body && 'unencrypted' in message.body) {
       const inboxId = message.body.unencrypted.internal_metadata.inbox;
       return { inboxId, message };
@@ -122,8 +133,12 @@ export const sendTextMessageWithInbox = async (
     console.log('Message:', message);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await axios.post(`${apiEndpoint}/v1/send`, message);
-    handleHttpError(response);
+    const response = await fetch(`${apiEndpoint}/v1/send`, {
+      method: 'POST',
+      body: JSON.stringify(message),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    await handleHttpError(response);
     if (message.body && 'unencrypted' in message.body) {
       const inboxId = message.body.unencrypted.internal_metadata.inbox;
       return { inboxId, message };
@@ -158,13 +173,18 @@ export const getAllInboxesForProfile = async (
     console.log('Message:', message);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await axios.post(
+    const response = await fetch(
       `${apiEndpoint}/v1/get_all_inboxes_for_profile`,
-      message
+      {
+        method: 'POST',
+        body: JSON.stringify(message),
+        headers: { 'Content-Type': 'application/json' },
+      }
     );
-    handleHttpError(response);
-    console.log('GetAllInboxesForProfile Response:', response.data);
-    return response.data;
+    const data = await response.json();
+    await handleHttpError(response);
+    console.log('GetAllInboxesForProfile Response:', data);
+    return data;
   } catch (error) {
     console.error('Error getting all inboxes for profile:', error);
     throw error;
@@ -199,13 +219,14 @@ export const getLastMessagesFromInbox = async (
     console.log('Message:', message);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await axios.post(
-      `${apiEndpoint}/v1/last_messages_from_inbox`,
-      message
-    );
-
-    handleHttpError(response);
-    return response.data;
+    const response = await fetch(`${apiEndpoint}/v1/last_messages_from_inbox`, {
+      method: 'POST',
+      body: JSON.stringify(message),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    await handleHttpError(response);
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.error('Error getting last messages from inbox:', error);
     throw error;
@@ -240,14 +261,18 @@ export const getLastUnreadMessagesFromInbox = async (
     console.log('Message:', message);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await axios.post(
+    const response = await fetch(
       `${apiEndpoint}/v1/last_unread_messages_from_inbox`,
-      message
+      {
+        method: 'POST',
+        body: JSON.stringify(message),
+        headers: { 'Content-Type': 'application/json' },
+      }
     );
-
-    handleHttpError(response);
-    console.log('getLastUnreadMessagesFromInbox Response:', response.data);
-    return response.data;
+    await handleHttpError(response);
+    const data = await response.json();
+    console.log('getLastUnreadMessagesFromInbox Response:', data);
+    return data;
     // dispatch(receiveUnreadMessagesFromInbox(inbox, results));
   } catch (error) {
     console.error('Error getting last messages from inbox:', error);
@@ -285,13 +310,15 @@ export const submitRequestRegistrationCode = async (
     console.log('Message:', message);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await axios.post(
-      `${apiEndpoint}/v1/create_registration_code`,
-      message
-    );
+    const response = await fetch(`${apiEndpoint}/v1/create_registration_code`, {
+      method: 'POST',
+      body: JSON.stringify(message),
+      headers: { 'Content-Type': 'application/json' },
+    });
 
-    handleHttpError(response);
-    return response.data.code;
+    await handleHttpError(response);
+    const data = await response.json();
+    return data.code;
   } catch (error) {
     console.error('Error creating registration code:', error);
     throw error;
@@ -333,12 +360,16 @@ export const submitRegistrationCode = async (
     console.log('submitRegistrationCode Message:', message);
 
     // Use node_address from setupData for API endpoint
-    const response = await axios.post(
+    const response = await fetch(
       `${setupData.node_address}/v1/use_registration_code`,
-      message
+      {
+        method: 'POST',
+        body: JSON.stringify(message),
+        headers: { 'Content-Type': 'application/json' },
+      }
     );
 
-    handleHttpError(response);
+    await handleHttpError(response);
 
     // Update the API_ENDPOINT after successful registration
     ApiConfig.getInstance().setEndpoint(setupData.node_address);
@@ -349,12 +380,58 @@ export const submitRegistrationCode = async (
   }
 };
 
+export const submitInitialRegistrationNoCode = async (
+  setupData: SetupPayload
+): Promise<{ success: boolean; data?: APIUseRegistrationCodeSuccessResponse }> => {
+  try {
+    const messageStr =
+      ShinkaiMessageBuilderWrapper.initial_registration_with_no_code_for_device(
+        setupData.my_device_encryption_sk,
+        setupData.my_device_identity_sk,
+        setupData.profile_encryption_sk,
+        setupData.profile_identity_sk,
+        setupData.registration_name,
+        setupData.registration_name,
+        setupData.profile || '', // sender_profile_name: it doesn't exist yet in the Node
+        setupData.shinkai_identity
+      );
+
+    const message = JSON.parse(messageStr);
+    console.log(
+      'submitInitialRegistration registration_name: ',
+      setupData.registration_name
+    );
+    console.log('submitInitialRegistration Message:', message);
+
+    // Use node_address from setupData for API endpoint
+    const response = await fetch(
+      `${setupData.node_address}/v1/use_registration_code`,
+      {
+        method: 'POST',
+        body: JSON.stringify(message),
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+
+    await handleHttpError(response);
+
+    // Update the API_ENDPOINT after successful registration
+    ApiConfig.getInstance().setEndpoint(setupData.node_address);
+    const data = await response.json();
+    return { success: true, data };
+  } catch (error) {
+    console.log('Error in initial registration:', error);
+    return { success: false };
+  }
+};
+
 export const pingAllNodes = async (): Promise<string> => {
   const apiEndpoint = ApiConfig.getInstance().getEndpoint();
   try {
-    const response = await axios.post(`${apiEndpoint}/ping_all`);
-    handleHttpError(response);
-    return response.data.result;
+    const response = await fetch(`${apiEndpoint}/ping_all`, { method: 'POST' });
+    await handleHttpError(response);
+    const data = await response.json();
+    return data.result;
   } catch (error) {
     console.error('Error pinging all nodes:', error);
     throw error;
@@ -382,11 +459,15 @@ export const createJob = async (
     const message = JSON.parse(messageStr);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await axios.post(`${apiEndpoint}/v1/create_job`, message);
-    handleHttpError(response);
-    console.log('createJob Response:', response.data);
-    const jobId = response.data;
-    return jobId;
+    const response = await fetch(`${apiEndpoint}/v1/create_job`, {
+      method: 'POST',
+      body: JSON.stringify(message),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    await handleHttpError(response);
+    const data = await response.json();
+    console.log('createJob Response:', data);
+    return data;
   } catch (error) {
     console.error('Error creating job:', error);
     throw error;
@@ -414,12 +495,16 @@ export const sendMessageToJob = async (
     );
 
     const message = JSON.parse(messageStr);
-    // console.log("Message:", message);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await axios.post(`${apiEndpoint}/v1/job_message`, message);
-    handleHttpError(response);
-    return response.data;
+    const response = await fetch(`${apiEndpoint}/v1/job_message`, {
+      method: 'POST',
+      body: JSON.stringify(message),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    await handleHttpError(response);
+    // TODO: response to create message job just contain an string replying "Job message processed successfully"
+    return response.text();
   } catch (error) {
     console.error('Error sending message to job:', error);
     throw error;
@@ -446,14 +531,15 @@ export const getProfileAgents = async (
     // console.log("Message:", message);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await axios.post(
-      `${apiEndpoint}/v1/available_agents`,
-      message
-    );
-
-    console.log('getProfileAgents Response:', response.data);
-    handleHttpError(response);
-    return response.data;
+    const response = await fetch(`${apiEndpoint}/v1/available_agents`, {
+      method: 'POST',
+      body: JSON.stringify(message),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    await handleHttpError(response);
+    const data = await response.json();
+    console.log('getProfileAgents Response:', data);
+    return data;
   } catch (error) {
     console.error('Error sending message to job:', error);
     throw error;
@@ -479,14 +565,17 @@ export const addAgent = async (
     );
 
     const message = JSON.parse(messageStr);
-    // console.log("Message:", message);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await axios.post(`${apiEndpoint}/v1/add_agent`, message);
-
-    console.log('addAgent Response:', response.data);
-    handleHttpError(response);
-    return response.data;
+    const response = await fetch(`${apiEndpoint}/v1/add_agent`, {
+      method: 'POST',
+      body: JSON.stringify(message),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    await handleHttpError(response);
+    const data = await response.json();
+    console.log('addAgent Response:', data);
+    return data;
   } catch (error) {
     console.error('Error sending message to add agent:', error);
   }

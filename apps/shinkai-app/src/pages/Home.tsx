@@ -1,33 +1,29 @@
+import './Home.css';
+
 import {
   IonActionSheet,
   IonAlert,
-  IonAvatar,
   IonButton,
   IonButtons,
-  IonContent,
-  IonHeader,
   IonIcon,
   IonItem,
-  IonList,
   IonPage,
   IonText,
   IonTitle,
-  IonToolbar,
 } from '@ionic/react';
-import { addOutline, arrowForward, cloudUpload } from 'ionicons/icons';
-import './Home.css';
-import { useHistory } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import React, { useEffect, useState } from 'react';
 import {
   ApiConfig,
   getAllInboxesForProfile,
-} from '@shinkai/shinkai-message-ts/api';
+} from '@shinkai_network/shinkai-message-ts/api';
+import { addOutline, arrowForward } from 'ionicons/icons';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
-import { clearStore, receiveAllInboxesForProfile } from '../store/actions';
 import Avatar from '../components/ui/Avatar';
 import { IonContentCustom, IonHeaderCustom } from '../components/ui/Layout';
 import { RootState } from '../store';
+import { clearStore, receiveAllInboxesForProfile } from '../store/actions';
 
 const Home: React.FC = () => {
   const setupDetails = useSelector((state: RootState) => state.setupDetails);
@@ -85,7 +81,7 @@ const Home: React.FC = () => {
           {' '}
           {/* Add the "+" button to the right side of the toolbar */}
           <IonButton onClick={() => setShowActionSheet(true)}>
-            <IonIcon slot="icon-only" icon={addOutline} />
+            <IonIcon icon={addOutline} slot="icon-only" />
           </IonButton>
         </IonButtons>
       </IonHeaderCustom>
@@ -103,9 +99,9 @@ const Home: React.FC = () => {
             {inboxes &&
               inboxes.map((inbox_name) => (
                 <IonItem
-                  key={inbox_name}
                   button
                   className="ion-item-home"
+                  key={inbox_name}
                   onClick={() => {
                     const encodedInboxId = inbox_name
                       .toString()
@@ -122,15 +118,15 @@ const Home: React.FC = () => {
                   }}
                 >
                   <Avatar
-                    url={`https://ui-avatars.com/api/?name=${inbox_name}&background=FE6162&color=fff`}
                     className="shrink-0"
+                    url={`https://ui-avatars.com/api/?name=${inbox_name}&background=FE6162&color=fff`}
                   />
                   <IonText className="ml-4 font-medium md:text-lg">
                     {JSON.stringify(inbox_name)}
                   </IonText>
                   <IonIcon
-                    icon={arrowForward}
                     className="hidden md:ml-auto md:block"
+                    icon={arrowForward}
                   />
                 </IonItem>
               ))}
@@ -140,9 +136,6 @@ const Home: React.FC = () => {
       {/*</IonContent>*/}
       {/* Action Sheet (popup) */}
       <IonActionSheet
-        className="ion-actionSheet-custom"
-        isOpen={showActionSheet}
-        onDidDismiss={() => setShowActionSheet(false)}
         buttons={[
           {
             text: 'Admin Commands',
@@ -188,14 +181,11 @@ const Home: React.FC = () => {
             },
           },
         ]}
-      />
+        className="ion-actionSheet-custom"
+        isOpen={showActionSheet}
+        onDidDismiss={() => setShowActionSheet(false)}
+      ></IonActionSheet>
       <IonAlert
-        isOpen={showLogoutAlert}
-        onDidDismiss={() => setShowLogoutAlert(false)}
-        header={'Confirm'}
-        message={
-          'Are you sure you want to logout? This will clear all your data.'
-        }
         buttons={[
           {
             text: 'Cancel',
@@ -212,6 +202,12 @@ const Home: React.FC = () => {
             },
           },
         ]}
+        header={'Confirm'}
+        isOpen={showLogoutAlert}
+        message={
+          'Are you sure you want to logout? This will clear all your data.'
+        }
+        onDidDismiss={() => setShowLogoutAlert(false)}
       />
     </IonPage>
   );
