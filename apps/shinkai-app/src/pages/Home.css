@@ -1,16 +1,18 @@
 .ion-item-home {
-  --ion-item-background: theme("colors.slate.100");
-  --background: theme("colors.slate.100");
+  --ion-item-background: theme("colors.white");
+  --background: theme("colors.white");
   --box-shadow: none;
   --inner-border-width: 0;
-  @apply rounded-lg;
+  --border-radius: 20px;
+  --background-hover: theme("colors.slate.600");
+  @apply rounded-[20px] border border-slate-300 dark:border-slate-600;
   &::part(native) {
-    @apply h-[60px] md:h-[80px];
+    @apply min-h-[60px] md:min-h-[90px];
   }
   @media (prefers-color-scheme: dark) {
     --ion-item-background: theme("colors.slate.900");
     --background: theme("colors.slate.900");
-    --background-hover: theme("colors.slate.800");
+    --background-hover: theme("colors.slate.700");
   }
 }
 

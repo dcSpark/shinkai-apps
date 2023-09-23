@@ -1,9 +1,10 @@
-import "./Input.css";
+import './Input.css';
+import './Input.css';
 
-import { InputCustomEvent } from "@ionic/core/dist/types/components/input/input-interface";
-import { InputChangeEventDetail, IonInput, IonItem } from "@ionic/react";
+import { InputCustomEvent } from '@ionic/core/dist/types/components/input/input-interface';
+import { InputChangeEventDetail, IonInput } from '@ionic/react';
 
-import { cn } from "../../theme/lib/utils";
+import { cn } from '../../theme/lib/utils';
 
 export default function Input({
   onChange,
@@ -17,21 +18,16 @@ export default function Input({
   className?: string;
 }) {
   return (
-    <IonItem
-      className={cn("ion-input-item-custom", className)}
-      fill={"outline"}
-      lines={"none"}
-      shape={"round"}
-    >
-      <IonInput
-        aria-label={label}
-        class={"native-input"}
-        className="ion-input-custom flex gap-10"
-        labelPlacement={undefined}
-        onIonChange={onChange}
-        placeholder={label}
-        value={value}
-      />
-    </IonItem>
+    <IonInput
+      aria-label={label}
+      class={'native-input'}
+      className={cn('ion-input-custom', className)}
+      fill={'outline'}
+      labelPlacement={undefined}
+      onIonChange={onChange}
+      placeholder={label}
+      shape={'round'}
+      value={value}
+    />
   );
 }

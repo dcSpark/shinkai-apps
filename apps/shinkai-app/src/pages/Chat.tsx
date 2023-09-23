@@ -30,7 +30,11 @@ import {
 } from '../components/ui/Layout';
 import { useSetup } from '../hooks/usetSetup';
 import { RootState } from '../store';
-import { addMessageToInbox, receiveLastMessagesFromInbox, receiveLoadMoreMessagesFromInbox } from '../store/actions';
+import {
+  addMessageToInbox,
+  receiveLastMessagesFromInbox,
+  receiveLoadMoreMessagesFromInbox,
+} from '../store/actions';
 import { RECEIVE_LAST_MESSAGES_FROM_INBOX } from '../store/types';
 import { cn } from '../theme/lib/utils';
 import {
@@ -71,8 +75,13 @@ const Chat: React.FC = () => {
 
   useEffect(() => {
     console.log('deserializedId:', deserializedId);
-    getLastMessagesFromInbox(deserializedId, 10, lastKey, setupDetailsState).then((messages) => {
-      console.log("receiveLastMessagesFromInbox Response:", messages);
+    getLastMessagesFromInbox(
+      deserializedId,
+      10,
+      lastKey,
+      setupDetailsState
+    ).then((messages) => {
+      console.log('receiveLastMessagesFromInbox Response:', messages);
       dispatch({ type: RECEIVE_LAST_MESSAGES_FROM_INBOX, payload: messages });
     });
   }, [id, dispatch, setupDetailsState, deserializedId, lastKey]);
@@ -95,21 +104,9 @@ const Chat: React.FC = () => {
     }
   }, [reduxMessages]);
 
-  useEffect(() => {
-    // Check if the user is at the bottom of the chat
-    const isUserAtBottom =
-      bottomChatRef.current &&
-      bottomChatRef.current.getBoundingClientRect().bottom <=
-        window.innerHeight;
-
-    // If the user is at the bottom, scroll to the bottom
-    if (isUserAtBottom) {
-      bottomChatRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages]);
-
   const sendMessage = async () => {
     console.log('Sending message: ', inputMessage);
+    if (inputMessage.trim() === '') return;
 
     // Local Identity
     const { shinkai_identity, profile, registration_name } = setupDetailsState;
@@ -132,6 +129,13 @@ const Chat: React.FC = () => {
     dispatch(addMessageToInbox(inboxId, message));
     setInputMessage('');
   };
+  const handleKeyDown = (
+    event: React.KeyboardEvent<HTMLIonTextareaElement>
+  ) => {
+    if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+      sendMessage();
+    }
+  };
 
   return (
     <IonPage className="bg-slate-900">
@@ -148,7 +152,7 @@ const Chat: React.FC = () => {
       </IonHeaderCustom>
 
       <IonContentCustom>
-        <div className="py-10 md:rounded-[1.25rem] bg-white dark:bg-slate-800">
+        <div className="bg-white dark:bg-slate-900">
           {hasMoreMessages && (
             <IonButton
               onClick={async () => {
@@ -156,15 +160,17 @@ const Chat: React.FC = () => {
                   deserializedId,
                   10,
                   lastKey,
-                  setupDetailsState,
+                  setupDetailsState
                 );
-                dispatch(receiveLoadMoreMessagesFromInbox(deserializedId, messages));
+                dispatch(
+                  receiveLoadMoreMessagesFromInbox(deserializedId, messages)
+                );
               }}
             >
               Load More
             </IonButton>
           )}
-          <IonList class="ion-list-chat p-0 divide-y divide-slate-200 dark:divide-slate-500/50 md:rounded=[1.25rem]  ">
+          <IonList class="ion-list-chat flex flex-col gap-10 p-0 md:rounded-[1.25rem] bg-transparent">
             {messages &&
               messages
                 .slice()
@@ -185,7 +191,7 @@ const Chat: React.FC = () => {
                   return (
                     <IonItem
                       className={cn(
-                        'ion-item-chat relative w-full shadow',
+                        'ion-item-chat relative',
                         isLocalMessage && 'isLocalMessage'
                       )}
                       key={index}
@@ -227,35 +233,23 @@ const Chat: React.FC = () => {
         </div>
       </IonContentCustom>
       <IonFooterCustom>
-        <form
-          className={
-            'flex flex-col w-full py-2 flex-grow md:py-3 md:pl-4 relative'
-          }
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (inputMessage.trim() !== '') {
-              sendMessage();
-            }
-          }}
-        >
-          <div className="m-2 relative flex h-full flex-1 md:flex-col">
+        <div className={'w-full py-2 md:py-3 md:pl-4'}>
+          <div className="m-2 flex items-end h-full border border-slate-300 pr-2 rounded-xl shadow">
             <IonTextarea
               autoGrow
               class="ion-textarea-chat"
-              className="m-0 w-full bg-transparent p-0 pl-2 pr-12 md:pl-0"
-              fill="outline"
-              onIonChange={(e) => setInputMessage(e.detail.value!)}
+              className="m-0 w-full bg-transparent p-0 pl-2 pr-12"
+              onIonInput={(e) => setInputMessage(e.detail.value as string)}
+              onKeyDown={handleKeyDown}
               placeholder="Type a message"
-              rows={1}
               value={inputMessage}
-            ></IonTextarea>
+            />
 
             <button
               aria-label="Send Message"
               className={cn(
-                'absolute z-10 p-3 rounded-md text-gray-500 bottom-[1px] right-1',
-                'md:bottom-2.5 md:right-2',
-                'hover:bg-gray-100 disabled:hover:bg-transparent',
+                'h-10 w-10 rounded-md text-gray-500 mb-2',
+                'bg-brand-500 hover:bg-brand-500/80 disabled:hover:bg-transparent',
                 'dark:text-white dark:hover:text-gray-100 dark:hover:bg-gray-700 dark:disabled:hover:bg-transparent'
               )}
               onClick={sendMessage}
@@ -263,7 +257,7 @@ const Chat: React.FC = () => {
               <IonIcon icon={send} size="" />
             </button>
           </div>
-        </form>
+        </div>
       </IonFooterCustom>
     </IonPage>
   );
