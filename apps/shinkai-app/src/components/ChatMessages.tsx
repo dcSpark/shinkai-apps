@@ -147,7 +147,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ deserializedId }) => {
         scrollElement.scrollTop = scrollElement.scrollHeight;
       }
     };
-    void scrollToBottom();
+    scrollToBottom();
   }, [isSuccess]);
 
   React.useEffect(() => {

@@ -129,6 +129,13 @@ const Chat: React.FC = () => {
     dispatch(addMessageToInbox(inboxId, message));
     setInputMessage('');
   };
+  const handleKeyDown = (
+    event: React.KeyboardEvent<HTMLIonTextareaElement>
+  ) => {
+    if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+      sendMessage();
+    }
+  };
 
   return (
     <IonPage className="bg-slate-900">
@@ -233,11 +240,7 @@ const Chat: React.FC = () => {
               class="ion-textarea-chat"
               className="m-0 w-full bg-transparent p-0 pl-2 pr-12 md:pl-0"
               onIonInput={(e) => setInputMessage(e.detail.value as string)}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
-                  void sendMessage();
-                }
-              }}
+              onKeyDown={handleKeyDown}
               placeholder="Type a message"
               value={inputMessage}
             />

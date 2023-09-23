@@ -70,6 +70,14 @@ const JobChat: React.FC = () => {
     profile,
   ]);
 
+  const handleKeyDown = (
+    event: React.KeyboardEvent<HTMLIonTextareaElement>
+  ) => {
+    if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+      sendMessage();
+    }
+  };
+
   return (
     <IonPage className="bg-slate-900">
       <IonHeaderCustom>
@@ -95,11 +103,7 @@ const JobChat: React.FC = () => {
                 const newMessage = e.detail.value as string;
                 setInputMessage(newMessage);
               }}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
-                  void sendMessage();
-                }
-              }}
+              onKeyDown={handleKeyDown}
               placeholder="Type a message"
               value={inputMessage}
             />
