@@ -252,7 +252,7 @@ const Connect: React.FC = () => {
                 />
               </a>
 
-              <div className="rounded-xl border border-slate-100 pb-5 md:pb-10">
+              <div className="rounded-xl border border-slate-100 pb-5 md:pb-10 dark:border-slate-700">
                 <IonSegment
                   class="ion-segment"
                   onIonChange={(e) =>
