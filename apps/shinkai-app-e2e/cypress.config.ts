@@ -5,4 +5,6 @@ export default defineConfig({
   e2e: nxE2EPreset(__dirname, {
     bundler: 'vite',
   }),
+  viewportWidth: 1920,
+  viewportHeight: 1080,
 });

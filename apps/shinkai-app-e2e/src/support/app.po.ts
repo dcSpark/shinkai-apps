@@ -1,1 +1,1 @@
-export const getDescription = () => cy.get('shinkai-app-description');
+export const getDescription = () => cy.getDataCy('shinkai-app-description');
