@@ -238,7 +238,7 @@ const Chat: React.FC = () => {
             <IonTextarea
               autoGrow
               class="ion-textarea-chat"
-              className="m-0 w-full bg-transparent p-0 pl-2 pr-12 md:pl-0"
+              className="m-0 w-full bg-transparent p-0 pl-2 pr-12"
               onIonInput={(e) => setInputMessage(e.detail.value as string)}
               onKeyDown={handleKeyDown}
               placeholder="Type a message"
