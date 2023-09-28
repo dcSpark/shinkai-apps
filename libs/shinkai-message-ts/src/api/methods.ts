@@ -626,5 +626,6 @@ export const addAgent = async (
     return data;
   } catch (error) {
     console.error('Error sending message to add agent:', error);
+    throw error;
   }
 };
