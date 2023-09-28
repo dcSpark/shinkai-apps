@@ -1,5 +1,7 @@
-.inbox-id-container {
+#shinkai-popup-root {
+  .inbox-id-container {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
 }

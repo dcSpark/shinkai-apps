@@ -8,12 +8,12 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
-import { InboxInput } from '../components/inbox-input/inbox-input';
-import { RootState, useTypedDispatch } from '../store';
+import { RootState, useTypedDispatch } from '../../store';
 import {
   getLastsMessagesForInbox,
   sendMessage,
-} from '../store/inbox/inbox-actions';
+} from '../../store/inbox/inbox-actions';
+import { InboxInput } from '../inbox-input/inbox-input';
 
 export const Inbox = () => {
   const { inboxId } = useParams<{ inboxId: string }>();

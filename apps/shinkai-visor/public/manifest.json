@@ -20,12 +20,7 @@
   "background": {
     "service_worker": "src/service-worker/service-worker.ts"
   },
-  "web_accessible_resources": [
-    {
-      "matches": ["*://*/*"],
-      "resources": ["src/popup/popup.html"]
-    }
-  ],
+  "web_accessible_resources": [],
   "commands": {
     "_execute_action": {
       "suggested_key": {
@@ -47,10 +42,22 @@
   },
   "permissions": [
     "storage",
-    "tabs",
-    "activeTab"
+    "contextMenus"
   ],
   "content_security_policy": {
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
+  },
+  "content_scripts": [
+    {
+			"matches": ["https://*/*", "http://*/*", "<all_urls>"],
+			"js": ["src/components/popup/popup.tsx"]
+		},
+    {
+			"matches": ["https://*/*", "http://*/*", "<all_urls>"],
+			"js": ["src/components/action-button/action-button.tsx"]
+		}
+  ],
+  "externally_connectable": {
+    "matches": ["https://*/*", "http://*/*", "<all_urls>"]
   }
 }

@@ -1,5 +1,5 @@
 /* Required root nesting to override ant css rules using tailwindcss https://ant.design/docs/react/compatible-style */
-#root {
+#shinkai-popup-root {
     .shinkai-borderless-button {
         background: transparent;
         border-color: transparent;

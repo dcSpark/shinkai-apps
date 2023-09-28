@@ -4,6 +4,7 @@ import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router';
 
 import logo from '../../../src/assets/icons/shinkai-min.svg';
+import { srcUrlResolver } from '../../helpers/src-url-resolver';
 
 export default function Welcome() {
   const history = useHistory();
@@ -23,7 +24,7 @@ export default function Welcome() {
               alt="shinkai logo"
               className="animate-spin-slow h-20 w-20"
               data-cy="shinkai-logo"
-              src={logo}
+              src={srcUrlResolver(logo)}
             />
           </div>
         <Button

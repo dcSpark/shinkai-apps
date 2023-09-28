@@ -5,12 +5,12 @@ import {
   CloseOutlined,
   MenuOutlined,
 } from '@ant-design/icons';
-import { useClickAway } from '@uidotdev/usehooks';
 import { Button } from 'antd';
 import { useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 
 import visorLogo from '../../assets/icons/visor.svg';
+import { srcUrlResolver } from '../../helpers/src-url-resolver';
 import { NavMenu } from '../nav-menu/nav-menu';
 
 export default function NavBar() {
@@ -19,10 +19,6 @@ export default function NavBar() {
   const [isMenuOpened, setMenuOpened] = useState(false);
   const isRootPage = ['/welcome', '/inboxes', '/agents', '/jobs'].includes(location.pathname);
 
-  const ref = useClickAway<HTMLElement>(() => {
-    setMenuOpened(false);
-  });
-
   function goBack() {
     history.goBack();
   }
@@ -30,7 +26,7 @@ export default function NavBar() {
   return (
     <nav
       className="flex flex-col bg-gray-100 shadow-lg p-5 rounded-lg space-y-6"
-      ref={ref}
+      
     >
       <div className="flex flex-row place-items-center justify-between">
         <div className="flex-none w-8">
@@ -42,7 +38,7 @@ export default function NavBar() {
             ></Button>
           )}
         </div>
-        <img alt="shinkai-app-logo" className="h-full" src={visorLogo} />
+        <img alt="shinkai-app-logo" className="h-full" src={srcUrlResolver(visorLogo)} />
         <Button
           className="flex-none w-8 shinkai-borderless-button"
           icon={!isMenuOpened ? <MenuOutlined /> : <CloseOutlined />}

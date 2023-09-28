@@ -99,6 +99,7 @@ export const AddAgent = () => {
             rules={[{ required: true }]}
           >
             <Select
+              getPopupContainer={(trigger) => trigger.parentElement}
               options={[
                 {
                   value: Models.OpenAI,
