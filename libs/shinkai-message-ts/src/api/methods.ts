@@ -23,7 +23,7 @@ export const handleHttpError = async (response: Response): Promise<void> => {
     try {
       error = await response.json();
     } catch (e) {
-      console.log(`Error parsing http error response ${response.body}`);
+      console.error(`Error parsing http error response ${response.body}`);
       error = undefined;
     }
     throw new Error(
@@ -132,7 +132,6 @@ export const sendTextMessageWithInbox = async (
       );
 
     const message: ShinkaiMessage = JSON.parse(messageStr);
-    console.log('Message:', message);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
     const response = await fetch(`${apiEndpoint}/v1/send`, {
@@ -211,7 +210,6 @@ export const getAllInboxesForProfile = async (
     );
 
     const message = JSON.parse(messageStr);
-    console.log('Message:', message);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
     const response = await fetch(
@@ -224,7 +222,6 @@ export const getAllInboxesForProfile = async (
     );
     const data = await response.json();
     await handleHttpError(response);
-    console.log('GetAllInboxesForProfile Response:', data);
     return data;
   } catch (error) {
     console.error('Error getting all inboxes for profile:', error);
@@ -239,7 +236,6 @@ export const getLastMessagesFromInbox = async (
   setupDetailsState: LastMessagesFromInboxCredentialsPayload
 ): Promise<any[]> => {
   try {
-    console.log('lastKey: ', lastKey);
     const sender =
       setupDetailsState.shinkai_identity + '/' + setupDetailsState.profile;
 
@@ -257,7 +253,6 @@ export const getLastMessagesFromInbox = async (
       );
 
     const message = JSON.parse(messageStr);
-    console.log('Message:', message);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
     const response = await fetch(`${apiEndpoint}/v1/last_messages_from_inbox`, {
@@ -281,7 +276,6 @@ export const getLastUnreadMessagesFromInbox = async (
   setupDetailsState: LastMessagesFromInboxCredentialsPayload
 ): Promise<any[]> => {
   try {
-    console.log('fromKey: ', fromKey);
     const sender =
       setupDetailsState.shinkai_identity + '/' + setupDetailsState.profile;
 
@@ -299,7 +293,6 @@ export const getLastUnreadMessagesFromInbox = async (
       );
 
     const message = JSON.parse(messageStr);
-    console.log('Message:', message);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
     const response = await fetch(
@@ -312,7 +305,6 @@ export const getLastUnreadMessagesFromInbox = async (
     );
     await handleHttpError(response);
     const data = await response.json();
-    console.log('getLastUnreadMessagesFromInbox Response:', data);
     return data;
     // dispatch(receiveUnreadMessagesFromInbox(inbox, results));
   } catch (error) {
@@ -333,9 +325,6 @@ export const submitRequestRegistrationCode = async (
       setupDetailsState.profile +
       '/device/' +
       setupDetailsState.registration_name;
-    console.log('sender_profile_name:', sender_profile_name);
-    console.log('identity_permissions:', identity_permissions);
-    console.log('code_type:', code_type);
 
     const messageStr = ShinkaiMessageBuilderWrapper.request_code_registration(
       setupDetailsState.my_device_encryption_sk,
@@ -348,7 +337,6 @@ export const submitRequestRegistrationCode = async (
     );
 
     const message = JSON.parse(messageStr);
-    console.log('Message:', message);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
     const response = await fetch(`${apiEndpoint}/v1/create_registration_code`, {
@@ -386,19 +374,6 @@ export const submitRegistrationCode = async (
       );
 
     const message = JSON.parse(messageStr);
-    console.log(
-      'submitRegistrationCode registration_name: ',
-      setupData.registration_name
-    );
-    console.log(
-      'submitRegistrationCode identity_type: ',
-      setupData.identity_type
-    );
-    console.log(
-      'submitRegistrationCode permission_type: ',
-      setupData.permission_type
-    );
-    console.log('submitRegistrationCode Message:', message);
 
     // Use node_address from setupData for API endpoint
     const response = await fetch(
@@ -416,7 +391,7 @@ export const submitRegistrationCode = async (
     ApiConfig.getInstance().setEndpoint(setupData.node_address);
     return true;
   } catch (error) {
-    console.log('Error using registration code:', error);
+    console.error('Error using registration code:', error);
     return false;
   }
 };
@@ -441,11 +416,6 @@ export const submitInitialRegistrationNoCode = async (
       );
 
     const message = JSON.parse(messageStr);
-    console.log(
-      'submitInitialRegistration registration_name: ',
-      setupData.registration_name
-    );
-    console.log('submitInitialRegistration Message:', message);
 
     // Use node_address from setupData for API endpoint
     const response = await fetch(
@@ -464,7 +434,7 @@ export const submitInitialRegistrationNoCode = async (
     const data = await response.json();
     return { success: true, data };
   } catch (error) {
-    console.log('Error in initial registration:', error);
+    console.error('Error in initial registration:', error);
     return { success: false };
   }
 };
@@ -510,7 +480,6 @@ export const createJob = async (
     });
     await handleHttpError(response);
     const data = await response.json();
-    console.log('createJob Response:', data);
     return data;
   } catch (error) {
     console.error('Error creating job:', error);
@@ -574,9 +543,9 @@ export const getProfileAgents = async (
     );
 
     const message = JSON.parse(messageStr);
-    console.log("Get Profile Agents Message:", message);
+    console.log('Get Profile Agents Message:', message);
     const messageHash = calculateMessageHash(message);
-    console.log("Get Profile Agents Message Hash:", messageHash);
+    console.log('Get Profile Agents Message Hash:', messageHash);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
     const response = await fetch(`${apiEndpoint}/v1/available_agents`, {
@@ -586,7 +555,6 @@ export const getProfileAgents = async (
     });
     await handleHttpError(response);
     const data = await response.json();
-    console.log('getProfileAgents Response:', data);
     return data;
   } catch (error) {
     console.error('Error sending message to job:', error);
@@ -622,7 +590,6 @@ export const addAgent = async (
     });
     await handleHttpError(response);
     const data = await response.json();
-    console.log('addAgent Response:', data);
     return data;
   } catch (error) {
     console.error('Error sending message to add agent:', error);
