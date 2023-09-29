@@ -328,6 +328,7 @@ export class ShinkaiMessageBuilderWrapper {
   static job_message(
     job_id: string,
     content: string,
+    files_inbox: string,
     my_encryption_secret_key: string,
     my_signature_secret_key: string,
     receiver_public_key: string,
@@ -338,6 +339,7 @@ export class ShinkaiMessageBuilderWrapper {
     return ShinkaiMessageBuilderWrapperWASM.job_message(
       job_id,
       content,
+      files_inbox,
       my_encryption_secret_key,
       my_signature_secret_key,
       receiver_public_key,

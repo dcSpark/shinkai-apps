@@ -477,6 +477,7 @@ export const createJob = async (
 export const sendMessageToJob = async (
   jobId: string,
   content: string,
+  files_inbox: string,
   sender: string,
   receiver: string,
   receiver_subidentity: string,
@@ -486,6 +487,7 @@ export const sendMessageToJob = async (
     const messageStr = ShinkaiMessageBuilderWrapper.job_message(
       jobId,
       content,
+      files_inbox,
       setupDetailsState.profile_encryption_sk,
       setupDetailsState.profile_identity_sk,
       setupDetailsState.node_encryption_pk,

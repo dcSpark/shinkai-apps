@@ -96,6 +96,7 @@ const CreateJob: React.FC = () => {
       const result = await sendMessageToJob(
         jobId.toString(),
         jobContent,
+        "",
         sender,
         receiver,
         receiver_subidentity,
