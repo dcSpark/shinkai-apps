@@ -170,7 +170,7 @@ export const messagesReducer = (
           ...state,
           inboxes: {
             ...state.inboxes,
-            [inboxId]: [message, ...currentMessages],
+            [inboxId]: [...currentMessages, message],
           },
           messageHashes: {
             ...state.messageHashes,
