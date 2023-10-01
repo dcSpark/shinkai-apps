@@ -17,18 +17,14 @@ export interface SetupPayload {
 export interface CredentialsPayload {
     my_device_encryption_sk: string;
     my_device_identity_sk: string;
+    profile_encryption_sk: string;
+    profile_identity_sk: string;
     node_encryption_pk: string;
 }
 
-export type JobCredentialsPayload = CredentialsPayload & {
-    profile_encryption_sk: string;
-    profile_identity_sk: string;
-}
+export type JobCredentialsPayload = CredentialsPayload
 
-export type AgentCredentialsPayload = CredentialsPayload & {
-    profile_encryption_sk: string;
-    profile_identity_sk: string;
-}
+export type AgentCredentialsPayload = CredentialsPayload
 
 export type LastMessagesFromInboxCredentialsPayload = {
     shinkai_identity: string;

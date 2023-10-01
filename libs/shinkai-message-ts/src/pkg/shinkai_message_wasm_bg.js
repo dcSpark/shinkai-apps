@@ -1841,6 +1841,54 @@ export class ShinkaiMessageBuilderWrapper {
     * @param {string} my_subidentity_encryption_sk
     * @param {string} my_subidentity_signature_sk
     * @param {string} receiver_public_key
+    * @param {string} sender
+    * @param {string} sender_subidentity
+    * @param {string} recipient
+    * @param {string} recipient_subidentity
+    * @returns {string}
+    */
+    static get_all_availability_agent(my_subidentity_encryption_sk, my_subidentity_signature_sk, receiver_public_key, sender, sender_subidentity, recipient, recipient_subidentity) {
+        let deferred9_0;
+        let deferred9_1;
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            const ptr0 = passStringToWasm0(my_subidentity_encryption_sk, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            const len0 = WASM_VECTOR_LEN;
+            const ptr1 = passStringToWasm0(my_subidentity_signature_sk, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            const len1 = WASM_VECTOR_LEN;
+            const ptr2 = passStringToWasm0(receiver_public_key, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            const len2 = WASM_VECTOR_LEN;
+            const ptr3 = passStringToWasm0(sender, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            const len3 = WASM_VECTOR_LEN;
+            const ptr4 = passStringToWasm0(sender_subidentity, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            const len4 = WASM_VECTOR_LEN;
+            const ptr5 = passStringToWasm0(recipient, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            const len5 = WASM_VECTOR_LEN;
+            const ptr6 = passStringToWasm0(recipient_subidentity, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            const len6 = WASM_VECTOR_LEN;
+            wasm.shinkaimessagebuilderwrapper_get_all_availability_agent(retptr, ptr0, len0, ptr1, len1, ptr2, len2, ptr3, len3, ptr4, len4, ptr5, len5, ptr6, len6);
+            var r0 = getInt32Memory0()[retptr / 4 + 0];
+            var r1 = getInt32Memory0()[retptr / 4 + 1];
+            var r2 = getInt32Memory0()[retptr / 4 + 2];
+            var r3 = getInt32Memory0()[retptr / 4 + 3];
+            var ptr8 = r0;
+            var len8 = r1;
+            if (r3) {
+                ptr8 = 0; len8 = 0;
+                throw takeObject(r2);
+            }
+            deferred9_0 = ptr8;
+            deferred9_1 = len8;
+            return getStringFromWasm0(ptr8, len8);
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+            wasm.__wbindgen_free(deferred9_0, deferred9_1, 1);
+        }
+    }
+    /**
+    * @param {string} my_subidentity_encryption_sk
+    * @param {string} my_subidentity_signature_sk
+    * @param {string} receiver_public_key
     * @param {string} inbox
     * @param {string} up_to_time
     * @param {string} sender
@@ -2747,6 +2795,10 @@ export function __wbindgen_object_clone_ref(arg0) {
 export function __wbindgen_error_new(arg0, arg1) {
     const ret = new Error(getStringFromWasm0(arg0, arg1));
     return addHeapObject(ret);
+};
+
+export function __wbg_log_1d3ae0273d8f4f8a(arg0) {
+    console.log(getObject(arg0));
 };
 
 export function __wbindgen_number_new(arg0) {

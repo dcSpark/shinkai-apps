@@ -383,6 +383,17 @@ export class ShinkaiMessageBuilderWrapper {
 * @param {string} my_subidentity_encryption_sk
 * @param {string} my_subidentity_signature_sk
 * @param {string} receiver_public_key
+* @param {string} sender
+* @param {string} sender_subidentity
+* @param {string} recipient
+* @param {string} recipient_subidentity
+* @returns {string}
+*/
+  static get_all_availability_agent(my_subidentity_encryption_sk: string, my_subidentity_signature_sk: string, receiver_public_key: string, sender: string, sender_subidentity: string, recipient: string, recipient_subidentity: string): string;
+/**
+* @param {string} my_subidentity_encryption_sk
+* @param {string} my_subidentity_signature_sk
+* @param {string} receiver_public_key
 * @param {string} inbox
 * @param {string} up_to_time
 * @param {string} sender

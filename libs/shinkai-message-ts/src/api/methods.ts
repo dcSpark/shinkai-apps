@@ -9,6 +9,7 @@ import {
 import { APIUseRegistrationCodeSuccessResponse } from '../models/Payloads';
 import { SerializedAgent } from '../models/SchemaTypes';
 import { InboxNameWrapper } from '../pkg/shinkai_message_wasm';
+import { calculateMessageHash } from '../utils';
 import { SerializedAgentWrapper } from '../wasm/SerializedAgentWrapper';
 import { ShinkaiMessageBuilderWrapper } from '../wasm/ShinkaiMessageBuilderWrapper';
 import { ShinkaiNameWrapper } from '../wasm/ShinkaiNameWrapper';
@@ -521,8 +522,8 @@ export const getProfileAgents = async (
 ): Promise<SerializedAgent[]> => {
   try {
     const messageStr = ShinkaiMessageBuilderWrapper.get_profile_agents(
-      setupDetailsState.my_device_encryption_sk,
-      setupDetailsState.my_device_identity_sk,
+      setupDetailsState.profile_encryption_sk,
+      setupDetailsState.profile_identity_sk,
       setupDetailsState.node_encryption_pk,
       sender,
       sender_subidentity,
@@ -530,7 +531,9 @@ export const getProfileAgents = async (
     );
 
     const message = JSON.parse(messageStr);
-    // console.log("Message:", message);
+    console.log("Get Profile Agents Message:", message);
+    const messageHash = calculateMessageHash(message);
+    console.log("Get Profile Agents Message Hash:", messageHash);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
     const response = await fetch(`${apiEndpoint}/v1/available_agents`, {

@@ -413,25 +413,15 @@ export class ShinkaiMessageBuilderWrapper {
     sender_subidentity: string,
     receiver: string
   ): string {
-    const builder = new ShinkaiMessageBuilderWrapperWASM(
+    return ShinkaiMessageBuilderWrapperWASM.get_all_availability_agent(
       my_encryption_secret_key,
       my_signature_secret_key,
-      receiver_public_key
-    );
-
-    builder.message_raw_content('');
-    builder.message_schema_type(MessageSchemaType.Empty.toString());
-    builder.internal_metadata(
+      receiver_public_key,
+      sender,
       sender_subidentity,
-      '',
-      EncryptionMethod.None.toString()
+      receiver,
+      ""
     );
-    builder.external_metadata(receiver, sender);
-    builder.body_encryption(
-      EncryptionMethod.DiffieHellmanChaChaPoly1305.toString()
-    );
-    const message = builder.build_to_string();
-    return message;
   }
 
   static create_chat_with_message(
