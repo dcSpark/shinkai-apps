@@ -3,7 +3,8 @@ import { sha512 } from '@noble/hashes/sha512';
 import { Crypto } from "@peculiar/webcrypto";
 
 import { generateEncryptionKeys, generateSignatureKeys, test_util_generateKeys } from './wasm_helpers';
-
+console.log('PATATATATATATA2');
+console.log('PATATATATATATA');console.log('PATATATATATATA');console.log('PATATATATATATA');console.log('PATATATATATATA');console.log('PATATATATATATA');console.log('PATATATATATATA');
 // Enable synchronous methods
 ed.etc.sha512Sync = (...m) => sha512(ed.etc.concatBytes(...m));
 

@@ -3,5 +3,8 @@
   "private": true,
   "version": "0.0.1",
   "type": "module",
-  "description": "Shinkai Visor"
+  "description": "Shinkai Visor",
+  "dependencies": {
+    "@radix-ui/react-slot": "^1.0.2"
+  }
 }

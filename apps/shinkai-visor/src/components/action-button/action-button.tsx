@@ -51,7 +51,9 @@ root.render(
         <StyleProvider container={shadow} hashPriority="high">
           <IntlProvider locale={locale} messages={langMessages}>
             <ConfigProvider theme={antdTheme}>
-              <ActionButton></ActionButton>
+              <div className="fixed w-[50px] h-[50px] top-32 right-2 overflow-hidden bg-white z-[99999999] border-solid border-primary border-2 rounded-lg">
+                <ActionButton></ActionButton>
+              </div>
             </ConfigProvider>
           </IntlProvider>
         </StyleProvider>

@@ -15,7 +15,7 @@ import { NotFound } from '../not-found/not-found';
 import { SplashScreen } from '../splash-screen/splash-screen';
 import Welcome from '../welcome/welcome';
 import { WithNav } from '../with-nav/with-nav';
-import stylito from './popup-routing.css?inline';
+
 export const PopupRouting = () => {
   const history = useHistory();
   const authStatus = useSelector((state: RootState) => state?.auth?.status);
@@ -30,9 +30,7 @@ export const PopupRouting = () => {
     }
   }, [authStatus, history]);
   return (
-    <div className={`h-full w-full flex flex-col p-4 ${popupVisibility ? '' : 'hidden'} popup-container`}>
-          <style>{stylito}</style>
-
+    <div className={`h-full w-full flex flex-col ${popupVisibility ? '' : 'hidden'} p-4 border-solid border-primary border-2 rounded-lg bg-white`}>
       <Switch key={location.pathname} location={location}>
         <Route exact path="/">
           <SplashScreen></SplashScreen>

@@ -20,7 +20,12 @@
   "background": {
     "service_worker": "src/service-worker/service-worker.ts"
   },
-  "web_accessible_resources": [],
+  "web_accessible_resources": [
+    {
+      "matches": ["https://*/*", "http://*/*", "<all_urls>"],
+      "resources": ["src/components/popup/popup.tsx"]
+    }
+  ],
   "commands": {
     "_execute_action": {
       "suggested_key": {
@@ -40,22 +45,19 @@
       "description": "UV command launcher"
     }
   },
-  "permissions": [
-    "storage",
-    "contextMenus"
-  ],
+  "permissions": ["storage", "contextMenus"],
   "content_security_policy": {
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
   },
   "content_scripts": [
     {
-			"matches": ["https://*/*", "http://*/*", "<all_urls>"],
-			"js": ["src/components/popup/popup.tsx"]
-		},
+      "matches": ["https://*/*", "http://*/*", "<all_urls>"],
+      "js": ["src/components/popup/popup.tsx"]
+    },
     {
-			"matches": ["https://*/*", "http://*/*", "<all_urls>"],
-			"js": ["src/components/action-button/action-button.tsx"]
-		}
+      "matches": ["https://*/*", "http://*/*", "<all_urls>"],
+      "js": ["src/components/action-button/action-button.tsx"]
+    }
   ],
   "externally_connectable": {
     "matches": ["https://*/*", "http://*/*", "<all_urls>"]

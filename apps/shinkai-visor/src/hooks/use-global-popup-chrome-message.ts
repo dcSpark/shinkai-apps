@@ -7,7 +7,7 @@ import { useChromeMessage } from "./use-chrome-message";
 
 export const useGlobalPopupChromeMessage = () => {
   const history = useHistory();
-  const [popupVisibility, setPopupVisibility] = useState(false);
+  const [popupVisibility, setPopupVisibility] = useState(true);
   useChromeMessage((message, sender) => {
     if (message.type === ServiceWorkerMessageType.SendToAgent) {
       const params = new URLSearchParams({ context: message?.data?.textContent });
