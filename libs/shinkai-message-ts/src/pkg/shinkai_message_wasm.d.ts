@@ -7,12 +7,6 @@
 export function convert_encryption_sk_string_to_encryption_pk_string(encryption_sk: string): string;
 /**
 */
-export enum EncryptionMethod {
-  DiffieHellmanChaChaPoly1305 = 0,
-  None = 1,
-}
-/**
-*/
 export class InboxNameWrapper {
   free(): void;
 /**
@@ -578,4 +572,25 @@ export class ShinkaiTime {
 * @returns {string}
 */
   static generateSpecificTime(year: number, month: number, day: number, hr: number, min: number, sec: number): string;
+}
+/**
+*/
+export class WasmEncryptionMethod {
+  free(): void;
+/**
+* @param {string} method
+*/
+  constructor(method: string);
+/**
+* @returns {string}
+*/
+  as_str(): string;
+/**
+* @returns {string}
+*/
+  static DiffieHellmanChaChaPoly1305(): string;
+/**
+* @returns {string}
+*/
+  static None(): string;
 }
