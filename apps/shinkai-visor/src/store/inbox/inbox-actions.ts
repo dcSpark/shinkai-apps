@@ -43,6 +43,8 @@ export const getAllInboxes = createAsyncThunk<Inbox[], void>(
       {
         my_device_encryption_sk: node.credentials.myDeviceEncryptionSharedKey,
         my_device_identity_sk: node.credentials.myDeviceIdentitySharedKey,
+        profile_encryption_sk: node.credentials.profileEncryptionSharedKey,
+        profile_identity_sk: node.credentials.profileSignatureSharedKey,
         node_encryption_pk: node.nodeData.nodeEncryptionPublicKey,
       }
     );
@@ -125,6 +127,7 @@ export const sendMessage = createAsyncThunk<
     await sendMessageToJob(
       jobId,
       args.message,
+      '',
       sender,
       node.nodeData.shinkaiIdentity,
       '',
@@ -151,6 +154,8 @@ export const sendMessage = createAsyncThunk<
     {
       my_device_encryption_sk: node.credentials.myDeviceEncryptionSharedKey,
       my_device_identity_sk: node.credentials.myDeviceIdentitySharedKey,
+      profile_encryption_sk: node.credentials.profileEncryptionSharedKey,
+      profile_identity_sk: node.credentials.profileSignatureSharedKey,
       node_encryption_pk: node.nodeData.nodeEncryptionPublicKey,
     }
   );

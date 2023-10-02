@@ -63,15 +63,17 @@ export const getAgents = createAsyncThunk<{ agents: SerializedAgent[] }, void>(
 
     ApiConfig.getInstance().setEndpoint(node.nodeData.nodeAddress);
     const sender = node.nodeData.shinkaiIdentity;
-    const senderSubidentity = `${node.nodeData.profile}/device/${node.userData.registrationName}`;
+    const senderSubidentity = `${node.nodeData.profile}`;
 
     const result = await getProfileAgents(
-      sender,
-      senderSubidentity,
+      sender + '/' + senderSubidentity,
+      '',
       node.nodeData.shinkaiIdentity,
       {
         my_device_encryption_sk: node.credentials.myDeviceEncryptionSharedKey,
         my_device_identity_sk: node.credentials.myDeviceIdentitySharedKey,
+        profile_encryption_sk: node.credentials.profileEncryptionSharedKey,
+        profile_identity_sk: node.credentials.profileSignatureSharedKey,
         node_encryption_pk: node.nodeData.nodeEncryptionPublicKey,
       }
     );

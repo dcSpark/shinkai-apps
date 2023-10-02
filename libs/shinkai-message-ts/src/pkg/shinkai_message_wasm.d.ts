@@ -102,8 +102,9 @@ export class JobMessageWrapper {
 /**
 * @param {any} job_id_js
 * @param {any} content_js
+* @param {any} files_inbox
 */
-  constructor(job_id_js: any, content_js: any);
+  constructor(job_id_js: any, content_js: any, files_inbox: any);
 /**
 * @returns {any}
 */
@@ -125,9 +126,10 @@ export class JobMessageWrapper {
 /**
 * @param {string} job_id
 * @param {string} content
+* @param {string} files_inbox
 * @returns {JobMessageWrapper}
 */
-  static fromStrings(job_id: string, content: string): JobMessageWrapper;
+  static fromStrings(job_id: string, content: string, files_inbox: string): JobMessageWrapper;
 }
 /**
 */
@@ -381,6 +383,17 @@ export class ShinkaiMessageBuilderWrapper {
 * @param {string} my_subidentity_encryption_sk
 * @param {string} my_subidentity_signature_sk
 * @param {string} receiver_public_key
+* @param {string} sender
+* @param {string} sender_subidentity
+* @param {string} recipient
+* @param {string} recipient_subidentity
+* @returns {string}
+*/
+  static get_all_availability_agent(my_subidentity_encryption_sk: string, my_subidentity_signature_sk: string, receiver_public_key: string, sender: string, sender_subidentity: string, recipient: string, recipient_subidentity: string): string;
+/**
+* @param {string} my_subidentity_encryption_sk
+* @param {string} my_subidentity_signature_sk
+* @param {string} receiver_public_key
 * @param {string} inbox
 * @param {string} up_to_time
 * @param {string} sender
@@ -428,6 +441,7 @@ export class ShinkaiMessageBuilderWrapper {
 /**
 * @param {string} job_id
 * @param {string} content
+* @param {string} files_inbox
 * @param {string} my_encryption_secret_key
 * @param {string} my_signature_secret_key
 * @param {string} receiver_public_key
@@ -436,7 +450,7 @@ export class ShinkaiMessageBuilderWrapper {
 * @param {string} receiver_subidentity
 * @returns {string}
 */
-  static job_message(job_id: string, content: string, my_encryption_secret_key: string, my_signature_secret_key: string, receiver_public_key: string, sender: string, receiver: string, receiver_subidentity: string): string;
+  static job_message(job_id: string, content: string, files_inbox: string, my_encryption_secret_key: string, my_signature_secret_key: string, receiver_public_key: string, sender: string, receiver: string, receiver_subidentity: string): string;
 /**
 * @param {string} my_encryption_secret_key
 * @param {string} my_signature_secret_key

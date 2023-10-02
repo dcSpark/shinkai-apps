@@ -82,7 +82,7 @@ const Chat: React.FC = () => {
       setupDetailsState
     ).then((messages) => {
       console.log('receiveLastMessagesFromInbox Response:', messages);
-      dispatch({ type: RECEIVE_LAST_MESSAGES_FROM_INBOX, payload: messages });
+      dispatch({ type: RECEIVE_LAST_MESSAGES_FROM_INBOX, payload: {inboxId: deserializedId, messages: messages} });
     });
   }, [id, dispatch, setupDetailsState, deserializedId, lastKey]);
 
@@ -102,7 +102,7 @@ const Chat: React.FC = () => {
       }
       setPrevMessagesLength(reduxMessages.length);
     }
-  }, [reduxMessages]);
+  }, [reduxMessages, prevMessagesLength]);
 
   const sendMessage = async () => {
     console.log('Sending message: ', inputMessage);
@@ -174,7 +174,6 @@ const Chat: React.FC = () => {
             {messages &&
               messages
                 .slice()
-                .reverse()
                 .map((message, index) => {
                   const { shinkai_identity, profile, registration_name } =
                     setupDetailsState;

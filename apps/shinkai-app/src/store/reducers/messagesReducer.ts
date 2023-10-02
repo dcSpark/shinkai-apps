@@ -2,7 +2,6 @@ import { ShinkaiMessage } from "@shinkai_network/shinkai-message-ts/models";
 import { calculateMessageHash } from "@shinkai_network/shinkai-message-ts/utils/shinkai_message_handler";
 
 import {
-  Action,
   ADD_MESSAGE_TO_INBOX,
   RECEIVE_ALL_INBOXES_FOR_PROFILE,
   RECEIVE_LAST_MESSAGES_FROM_INBOX,
@@ -119,7 +118,7 @@ export const messagesReducer = (
       };
     }
     case RECEIVE_LAST_MESSAGES_FROM_INBOX: {
-      if (!action.payload) {
+      if (!action.payload || !action.payload.messages) {
         return state;
       }
       const { inboxId, messages } = action.payload;
@@ -171,7 +170,7 @@ export const messagesReducer = (
           ...state,
           inboxes: {
             ...state.inboxes,
-            [inboxId]: [message, ...currentMessages],
+            [inboxId]: [...currentMessages, message],
           },
           messageHashes: {
             ...state.messageHashes,
