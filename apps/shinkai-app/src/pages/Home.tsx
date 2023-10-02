@@ -94,7 +94,7 @@ const Home: React.FC = () => {
       {/* <ExploreContainer /> */}
 
       <IonContentCustom>
-        <div className="h-full flex flex-col">
+        <div className="h-full flex flex-col mt-4">
           <div className="flex-1 md:rounded-lg space-y-2 md:space-y-4">
             {inboxes &&
               inboxes.map((inbox_name) => (

@@ -7,12 +7,6 @@
 export function convert_encryption_sk_string_to_encryption_pk_string(encryption_sk: string): string;
 /**
 */
-export enum EncryptionMethod {
-  DiffieHellmanChaChaPoly1305 = 0,
-  None = 1,
-}
-/**
-*/
 export class InboxNameWrapper {
   free(): void;
 /**
@@ -102,8 +96,9 @@ export class JobMessageWrapper {
 /**
 * @param {any} job_id_js
 * @param {any} content_js
+* @param {any} files_inbox
 */
-  constructor(job_id_js: any, content_js: any);
+  constructor(job_id_js: any, content_js: any, files_inbox: any);
 /**
 * @returns {any}
 */
@@ -125,9 +120,10 @@ export class JobMessageWrapper {
 /**
 * @param {string} job_id
 * @param {string} content
+* @param {string} files_inbox
 * @returns {JobMessageWrapper}
 */
-  static fromStrings(job_id: string, content: string): JobMessageWrapper;
+  static fromStrings(job_id: string, content: string, files_inbox: string): JobMessageWrapper;
 }
 /**
 */
@@ -381,6 +377,17 @@ export class ShinkaiMessageBuilderWrapper {
 * @param {string} my_subidentity_encryption_sk
 * @param {string} my_subidentity_signature_sk
 * @param {string} receiver_public_key
+* @param {string} sender
+* @param {string} sender_subidentity
+* @param {string} recipient
+* @param {string} recipient_subidentity
+* @returns {string}
+*/
+  static get_all_availability_agent(my_subidentity_encryption_sk: string, my_subidentity_signature_sk: string, receiver_public_key: string, sender: string, sender_subidentity: string, recipient: string, recipient_subidentity: string): string;
+/**
+* @param {string} my_subidentity_encryption_sk
+* @param {string} my_subidentity_signature_sk
+* @param {string} receiver_public_key
 * @param {string} inbox
 * @param {string} up_to_time
 * @param {string} sender
@@ -428,6 +435,7 @@ export class ShinkaiMessageBuilderWrapper {
 /**
 * @param {string} job_id
 * @param {string} content
+* @param {string} files_inbox
 * @param {string} my_encryption_secret_key
 * @param {string} my_signature_secret_key
 * @param {string} receiver_public_key
@@ -436,7 +444,7 @@ export class ShinkaiMessageBuilderWrapper {
 * @param {string} receiver_subidentity
 * @returns {string}
 */
-  static job_message(job_id: string, content: string, my_encryption_secret_key: string, my_signature_secret_key: string, receiver_public_key: string, sender: string, receiver: string, receiver_subidentity: string): string;
+  static job_message(job_id: string, content: string, files_inbox: string, my_encryption_secret_key: string, my_signature_secret_key: string, receiver_public_key: string, sender: string, receiver: string, receiver_subidentity: string): string;
 /**
 * @param {string} my_encryption_secret_key
 * @param {string} my_signature_secret_key
@@ -564,4 +572,25 @@ export class ShinkaiTime {
 * @returns {string}
 */
   static generateSpecificTime(year: number, month: number, day: number, hr: number, min: number, sec: number): string;
+}
+/**
+*/
+export class WasmEncryptionMethod {
+  free(): void;
+/**
+* @param {string} method
+*/
+  constructor(method: string);
+/**
+* @returns {string}
+*/
+  as_str(): string;
+/**
+* @returns {string}
+*/
+  static DiffieHellmanChaChaPoly1305(): string;
+/**
+* @returns {string}
+*/
+  static None(): string;
 }

@@ -49,6 +49,7 @@ export const createJob = createAsyncThunk<
   await sendMessageToJob(
     jobId,
     args.content,
+    '',
     sender,
     receiver,
     receiver_subidentity,

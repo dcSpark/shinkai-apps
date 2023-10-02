@@ -44,14 +44,14 @@ const CreateJob: React.FC = () => {
 
   useEffect(() => {
     const fetchAgents = async () => {
-      const { shinkai_identity, profile, registration_name } =
+      const { shinkai_identity, profile } =
         setupDetailsState;
       const node_name = shinkai_identity;
-      const sender_subidentity = `${profile}/device/${registration_name}`;
+      const sender_subidentity = `${profile}`;
 
       const profiles = await getProfileAgents(
-        node_name,
-        sender_subidentity,
+        node_name + '/' + sender_subidentity,
+        '',
         node_name,
         setupDetailsState
       );
@@ -96,6 +96,7 @@ const CreateJob: React.FC = () => {
       const result = await sendMessageToJob(
         jobId.toString(),
         jobContent,
+        "",
         sender,
         receiver,
         receiver_subidentity,

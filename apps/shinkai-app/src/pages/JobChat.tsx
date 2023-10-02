@@ -54,6 +54,7 @@ const JobChat: React.FC = () => {
     sendMessageToJob(
       extractJobIdFromInbox(deserializedId.toString()),
       message_to_send,
+      "",
       sender,
       shinkai_identity,
       '',
