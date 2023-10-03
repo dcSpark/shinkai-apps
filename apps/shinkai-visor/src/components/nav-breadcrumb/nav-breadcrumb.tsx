@@ -1,35 +1,51 @@
 import './nav-breadcrumb.css';
 
-import { Breadcrumb } from 'antd';
-import { ItemType } from 'antd/es/breadcrumb/Breadcrumb';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useLocation } from 'react-router-dom';
 
+import { Separator } from '../ui/separator';
+
+type BreadcrumbItem = {
+  path: string;
+  title: string;
+};
+
 export const NavBreadcrumb = () => {
   const location = useLocation();
   const intl = useIntl();
-  const [breadcrumbItems, setItems] = useState<ItemType[]>([]);
+  const [breadcrumbItems, setItems] = useState<BreadcrumbItem[]>([]);
   // TODO: Add i18n to this component
-  const pathToIntlDefinition  = useMemo(() => new Map<string, string>([]), []);
-  const mapLocationToItems = useCallback((paths: string[]): ItemType[] => {
-    const items = paths.map<ItemType>((path) => {
-      const intlId = pathToIntlDefinition.get(path);
-      const title = pathToIntlDefinition.get(path) ? intl.formatMessage({ id: intlId }) : decodeURIComponent(path);
-      return {
-        path: path,
-        title,
-      }
-    });
-    return items;
-  }, [intl, pathToIntlDefinition]);
-  const itemRender = (route: ItemType): React.ReactNode => {
-    return (<div className="breadcrumb-item">{route.title}</div>);
-  }
+  const pathToIntlDefinition = useMemo(() => new Map<string, string>([]), []);
+  const mapLocationToItems = useCallback(
+    (paths: string[]): BreadcrumbItem[] => {
+      const items = paths.map<BreadcrumbItem>((path) => {
+        const intlId = pathToIntlDefinition.get(path);
+        const title = pathToIntlDefinition.get(path)
+          ? intl.formatMessage({ id: intlId })
+          : decodeURIComponent(path);
+        return {
+          path: path,
+          title,
+        };
+      });
+      return items;
+    },
+    [intl, pathToIntlDefinition],
+  );
   useEffect(() => {
-    const paths = location.pathname.split('/').filter(path => path);
+    const paths = location.pathname.split('/').filter((path) => path);
     const items = mapLocationToItems(paths);
     setItems(items);
-  }, [location, intl, pathToIntlDefinition, mapLocationToItems])
-  return (<Breadcrumb itemRender={itemRender} items={breadcrumbItems}/>);
+  }, [location, intl, pathToIntlDefinition, mapLocationToItems]);
+  return (
+    <div className="flex h-5 items-center space-x-4 text-sm">
+      {breadcrumbItems.map((breadcrumbItem) => (
+        <>
+          <div>{breadcrumbItem.title}</div>
+          <Separator orientation="vertical" />
+        </>
+      ))}
+    </div>
+  );
 };
