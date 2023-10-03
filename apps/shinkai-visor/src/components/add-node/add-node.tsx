@@ -66,7 +66,7 @@ enum AddNodeSteps {
 
 export const AddNode = () => {
   const history = useHistory();
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       registrationCode: '',
@@ -186,7 +186,7 @@ export const AddNode = () => {
     setCurrentStep(AddNodeSteps.ScanQR);
   };
 
-  const connect = (values: z.infer<typeof formSchema>) => {
+  const connect = (values: FormType) => {
     setCurrentStep(AddNodeSteps.Connect);
     dispatch(
       connectNode({
