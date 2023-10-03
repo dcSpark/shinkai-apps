@@ -1,4 +1,3 @@
-import { StyleProvider } from '@ant-design/cssinjs';
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
 import { IntlProvider } from 'react-intl';
@@ -30,15 +29,13 @@ root.render(
     <style>{popupStyle}</style>
     <Provider store={store}>
       <PersistGate loading={null} persistor={storePersistor}>
-        <StyleProvider hashPriority="high">
-          <IntlProvider locale={locale} messages={langMessages}>
-            <div className="fixed w-[357px] h-[600px] top-32 right-16 overflow-hidden z-[1500000000]">
-              <Router>
-                <PopupRouting></PopupRouting>
-              </Router>
-            </div>
-          </IntlProvider>
-        </StyleProvider>
+        <IntlProvider locale={locale} messages={langMessages}>
+          <div className="fixed w-[357px] h-[600px] top-32 right-16 overflow-hidden z-[1500000000]">
+            <Router>
+              <PopupRouting></PopupRouting>
+            </Router>
+          </div>
+        </IntlProvider>
       </PersistGate>
     </Provider>
   </React.StrictMode>,

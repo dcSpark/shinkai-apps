@@ -41,5 +41,6 @@
   "openai": "OpenAI",
   "sleep-api": "Sleep API",
   "tmwtd": "Tell me what to do",
-  "create-job": "Create job"
+  "create-job": "Create job",
+  "menu": "Menu"
 }
