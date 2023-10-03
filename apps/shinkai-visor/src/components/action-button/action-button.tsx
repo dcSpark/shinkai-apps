@@ -1,5 +1,3 @@
-import { StyleProvider } from '@ant-design/cssinjs';
-import { ConfigProvider } from 'antd';
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
 import { IntlProvider } from 'react-intl';
@@ -13,7 +11,6 @@ import { srcUrlResolver } from '../../helpers/src-url-resolver';
 import { useGlobalActionButtonChromeMessage } from '../../hooks/use-global-action-button-chrome-message';
 import { langMessages, locale } from '../../lang/intl';
 import { store, storePersistor } from '../../store';
-import { antdTheme } from '../../theme/antd-theme';
 import themeStyle from '../../theme/styles.css?inline';
 import popupStyle from './action-button.css?inline';
 
@@ -32,14 +29,21 @@ if (!container) {
 export const ActionButton = () => {
   const [popupVisibility] = useGlobalActionButtonChromeMessage();
   const togglePopupVisibility = () => {
-    sendContentScriptMessage({ type: ContentScriptMessageType.TogglePopupVisibility, data: !popupVisibility })
+    sendContentScriptMessage({
+      type: ContentScriptMessageType.TogglePopupVisibility,
+      data: !popupVisibility,
+    });
   };
   return (
     <div className="p-2" onClick={() => togglePopupVisibility()}>
-        <img alt="shinkai-app-logo" className="w-full h-full" src={srcUrlResolver(shinkaiLogo)} />
+      <img
+        alt="shinkai-app-logo"
+        className="w-full h-full"
+        src={srcUrlResolver(shinkaiLogo)}
+      />
     </div>
   );
-}
+};
 
 const root = createRoot(container);
 root.render(
@@ -48,17 +52,12 @@ root.render(
     <style>{popupStyle}</style>
     <Provider store={store}>
       <PersistGate loading={null} persistor={storePersistor}>
-        <StyleProvider container={shadow} hashPriority="high">
-          <IntlProvider locale={locale} messages={langMessages}>
-            <ConfigProvider theme={antdTheme}>
-              <div className="fixed w-[50px] h-[50px] top-32 right-2 overflow-hidden bg-white z-[99999999] border-solid border-primary border-2 rounded-lg">
-                <ActionButton></ActionButton>
-              </div>
-            </ConfigProvider>
-          </IntlProvider>
-        </StyleProvider>
+        <IntlProvider locale={locale} messages={langMessages}>
+          <div className="fixed w-[50px] h-[50px] top-32 right-2 overflow-hidden bg-background z-[1500000000] border-solid border-primary border-2 rounded-lg">
+            <ActionButton></ActionButton>
+          </div>
+        </IntlProvider>
       </PersistGate>
     </Provider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );
-

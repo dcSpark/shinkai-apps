@@ -30,7 +30,7 @@ export const PopupRouting = () => {
     }
   }, [authStatus, history]);
   return (
-    <div className={`h-full w-full flex flex-col ${popupVisibility ? '' : 'hidden'} p-4 border-solid border-primary border-2 rounded-lg bg-white`}>
+    <div className={`h-full w-full flex flex-col ${popupVisibility ? '' : 'hidden'} p-4 border-solid border-primary border-2 rounded-lg bg-background`}>
       <Switch key={location.pathname} location={location}>
         <Route exact path="/">
           <SplashScreen></SplashScreen>

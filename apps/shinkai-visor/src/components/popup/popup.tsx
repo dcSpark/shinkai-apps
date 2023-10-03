@@ -35,7 +35,7 @@ root.render(
         <StyleProvider hashPriority="high">
           <IntlProvider locale={locale} messages={langMessages}>
             <ConfigProvider theme={antdTheme}>
-              <div className="fixed w-[357px] h-[600px] top-32 right-16 overflow-hidden z-[99999999]">
+              <div className="fixed w-[357px] h-[600px] top-32 right-16 overflow-hidden z-[1500000000]">
                 <Router>
                   <PopupRouting></PopupRouting>
                 </Router>

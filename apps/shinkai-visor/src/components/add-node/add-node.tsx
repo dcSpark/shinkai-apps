@@ -1,4 +1,4 @@
-import { zodResolver } from '@hookform/resolvers/zod'; 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Player } from '@lottiefiles/react-lottie-player';
 import { QRSetupData } from '@shinkai_network/shinkai-message-ts/models';
 import {
@@ -6,19 +6,26 @@ import {
   generateSignatureKeys,
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { BrowserQRCodeReader } from '@zxing/browser';
-import { Loader2 } from "lucide-react"
+import { Loader2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import * as z from "zod"
+import * as z from 'zod';
 
 import ScanQrAnimation from '../../assets/animations/scan-qr.json';
 import { RootState, useTypedDispatch } from '../../store';
 import { connectNode } from '../../store/node/node-actions';
 import { Button } from '../ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../ui/form';
 import { Input } from '../ui/input';
 
 const formSchema = z.object({
@@ -58,7 +65,6 @@ enum AddNodeSteps {
 }
 
 export const AddNode = () => {
-  const intl = useIntl();
   const history = useHistory();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -81,14 +87,14 @@ export const AddNode = () => {
       myDeviceEncryptionSharedKey: '',
       myDeviceIdentitySharedKey: undefined,
     },
-  })
+  });
   const fileInput = useRef<HTMLInputElement>(null);
   const [currentStep, setCurrentStep] = useState<AddNodeSteps>(
-    AddNodeSteps.ScanQR
+    AddNodeSteps.ScanQR,
   );
   // const currentFormValue = Form.useWatch([], form);
   const isConnecting = useSelector(
-    (state: RootState) => state?.node?.status === 'loading'
+    (state: RootState) => state?.node?.status === 'loading',
   );
   const dispatch = useTypedDispatch();
 
@@ -97,7 +103,7 @@ export const AddNode = () => {
   };
 
   const onQrImageSelected: React.ChangeEventHandler<HTMLInputElement> = async (
-    event
+    event,
   ): Promise<void> => {
     if (!event.target.files || !event.target.files[0]) {
       return;
@@ -108,7 +114,7 @@ export const AddNode = () => {
     const json_string = resultImage.getText();
     const parsedQrData: QRSetupData = JSON.parse(json_string);
     const nodeDataFromQr = getValuesFromQr(parsedQrData);
-    form.reset((prev) => ({...prev, ...nodeDataFromQr}));
+    form.reset((prev) => ({ ...prev, ...nodeDataFromQr }));
     setCurrentStep(AddNodeSteps.Connect);
   };
 
@@ -128,10 +134,7 @@ export const AddNode = () => {
   };
 
   const generateDeviceSignatureKeys = async (): Promise<
-    Pick<
-      FormType,
-      'myDeviceIdentityPublicKey' | 'myDeviceIdentitySharedKey'
-    >
+    Pick<FormType, 'myDeviceIdentityPublicKey' | 'myDeviceIdentitySharedKey'>
   > => {
     const { my_identity_pk_string, my_identity_sk_string } =
       await generateSignatureKeys();
@@ -142,10 +145,7 @@ export const AddNode = () => {
   };
 
   const generateProfileEncryptionKeys = async (): Promise<
-    Pick<
-      FormType,
-      'profileEncryptionPublicKey' | 'profileEncryptionSharedKey'
-    >
+    Pick<FormType, 'profileEncryptionPublicKey' | 'profileEncryptionSharedKey'>
   > => {
     const seed = crypto.getRandomValues(new Uint8Array(32));
     const { my_encryption_pk_string, my_encryption_sk_string } =
@@ -157,10 +157,7 @@ export const AddNode = () => {
   };
 
   const generateProfileSignatureKeys = async (): Promise<
-    Pick<
-      FormType,
-      'profileSignaturePublicKey' | 'profileSignatureSharedKey'
-    >
+    Pick<FormType, 'profileSignaturePublicKey' | 'profileSignatureSharedKey'>
   > => {
     const { my_identity_pk_string, my_identity_sk_string } =
       await generateSignatureKeys();
@@ -219,14 +216,14 @@ export const AddNode = () => {
           profileEncryptionPublicKey: values.profileEncryptionPublicKey,
           profileEncryptionSharedKey: values.profileEncryptionSharedKey,
         },
-      })
+      }),
     )
       .unwrap()
       .then(() => {
         history.replace('/inboxes');
       })
       .catch((e) => {
-        console.log(e)
+        console.log(e);
       });
   };
 
@@ -250,7 +247,7 @@ export const AddNode = () => {
           ...profileEncryption,
           ...profileSignature,
         }));
-      }
+      },
     );
   }, [form]);
 
@@ -269,10 +266,7 @@ export const AddNode = () => {
             </div>
 
             <div className="flex flex-col space-y-1">
-              <Button
-                className="w-full"
-                onClick={onFileInputClick}
-              >
+              <Button className="w-full" onClick={onFileInputClick}>
                 <span>
                   <FormattedMessage id="upload-qr-code" />
                 </span>
@@ -290,43 +284,56 @@ export const AddNode = () => {
         )}
 
         {currentStep === AddNodeSteps.Connect && (
-        <Form {...form}>
-          <form className="h-full flex flex-col space-y-2 justify-between" onSubmit={form.handleSubmit(connect)}>
-            <div className="grow flex flex-col space-y-2">
-            <FormField
-              control={form.control}
-              name="registrationName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel><FormattedMessage id="registration-name"/></FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <Form {...form}>
+            <form
+              className="h-full flex flex-col space-y-2 justify-between"
+              onSubmit={form.handleSubmit(connect)}
+            >
+              <div className="grow flex flex-col space-y-2">
+                <FormField
+                  control={form.control}
+                  name="registrationName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        <FormattedMessage id="registration-name" />
+                      </FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name="nodeAddress"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel><FormattedMessage id="node-address"/></FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-</div>
-            <Button className="w-full" disabled={!form.formState.isValid}  type="submit">
-              {isConnecting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              <FormattedMessage id="connect" />
-            </Button>
-          </form>
-        </Form>
+                <FormField
+                  control={form.control}
+                  name="nodeAddress"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        <FormattedMessage id="node-address" />
+                      </FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <Button
+                className="w-full"
+                disabled={!form.formState.isValid || isConnecting}
+                type="submit"
+              >
+                {isConnecting && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                <FormattedMessage id="connect" />
+              </Button>
+            </form>
+          </Form>
         )}
       </div>
     </div>
