@@ -15,6 +15,7 @@ export enum MessageSchemaType {
   APIReadUpToTimeRequest = "APIReadUpToTimeRequest",
   APIAddAgentRequest = "APIAddAgentRequest",
   TextContent = "TextContent",
+  SymmetricKeyExchange = "SymmetricKeyExchange",
   Empty = "",
 }
 

@@ -68,38 +68,34 @@ test('ShinkaiMessageBuilderWrapper should construct correctly and create a new a
   expect(typeof ackMessage).toBe('string');
 });
 
-// test('ShinkaiMessageBuilderWrapper should set body content correctly', async () => {
-//   const keys = await generateKeys();
+test('ShinkaiMessageBuilderWrapper should set body content correctly', async () => {
+  const keys = await generateKeys();
 
-//   const messageBuilder = new ShinkaiMessageBuilderWrapper(
-//     keys.my_encryption_sk_string,
-//     keys.my_identity_sk_string,
-//     keys.receiver_public_key_string
-//   );
+  const messageBuilder = new ShinkaiMessageBuilderWrapper(
+    keys.my_encryption_sk_string,
+    keys.my_identity_sk_string,
+    keys.receiver_public_key_string
+  );
 
-//   // Pass the enum value directly
-//   await messageBuilder.message_raw_content('Hello world!');
-//   await messageBuilder.body_encryption(TSEncryptionMethod.None);
-//   await messageBuilder.message_schema_type(MessageSchemaType.TextContent);
-//   await messageBuilder.internal_metadata(
-//     'sender_user2',
-//     'recipient_user1',
-//     '',
-//     TSEncryptionMethod.None
-//   );
-//   await messageBuilder.external_metadata_with_schedule(
-//     '@@other_node.shinkai',
-//     '@@my_node.shinkai',
-//     '2023-07-02T20:53:34Z'
-//   );
+  // Pass the enum value directly
+  await messageBuilder.message_raw_content('Hello world!');
+  await messageBuilder.body_encryption('None');
+  await messageBuilder.message_schema_type(MessageSchemaType.TextContent);
+  await messageBuilder.internal_metadata(
+    'sender_user2',
+    'recipient_user1',
+    '',
+    'None'
+  );
+  await messageBuilder.external_metadata_with_schedule(
+    '@@other_node.shinkai',
+    '@@my_node.shinkai',
+    '2023-07-02T20:53:34Z'
+  );
 
-//   const message = messageBuilder.build_to_string();
-
-//   console.log("####");
-//   console.log("ShinkaiMessageBuilderWrapper message: ", message);
-
-//   expect(message).toContain('Hello world!');
-// });
+  const message = messageBuilder.build_to_string();
+  expect(message).toContain('Hello world!');
+});
 
 test('ShinkaiMessageBuilderWrapper should create a use code registration message', async () => {
   const device_keys = await generateKeys();

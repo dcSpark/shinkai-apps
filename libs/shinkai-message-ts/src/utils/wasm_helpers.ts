@@ -2,6 +2,8 @@
 import * as ed from '@noble/ed25519';
 import { generateKeyPair } from 'curve25519-js';
 
+import { calculate_blake3_hash } from '../pkg/shinkai_message_wasm';
+
 type HexString = string;
 
 export function toHexString(byteArray: Uint8Array) {
@@ -57,4 +59,7 @@ export function mapEncryptionMethod(encryption: string): number {
         throw new Error("Unknown encryption method");
     }
   }
-  
+
+  export function calculateBlake3Hash(input: string): string {
+    return calculate_blake3_hash(input);
+  }
