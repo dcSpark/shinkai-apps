@@ -28,8 +28,6 @@ export const Inboxes = () => {
     history.push(`/inboxes/${encodeURIComponent(inboxId)}`);
   };
 
-  const isLoading = () => inboxesStatus === 'loading';
-
   useEffect(() => {
     dispatch(getAllInboxes());
   }, [dispatch]);
