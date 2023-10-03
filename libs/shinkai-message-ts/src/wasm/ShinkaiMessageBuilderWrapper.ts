@@ -272,7 +272,7 @@ export class ShinkaiMessageBuilderWrapper {
     );
     builder.external_metadata(receiver, sender);
     builder.body_encryption(
-      'DiffieHellmanChaChaPoly1305'
+      'None' // todo: change back to encrypted
     );
 
     const message = builder.build_to_string();
@@ -491,6 +491,42 @@ export class ShinkaiMessageBuilderWrapper {
 
     const message = builder.build_to_string();
 
+    return message;
+  }
+
+  static send_create_files_inbox_with_sym_key(
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    inbox: string,
+    symmetric_key_sk: string,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+  ): string {
+    console.log('send_create_files_inbox_with_sym_key');
+    console.log('sender: ', sender);
+    console.log('receiver: ', receiver);
+    console.log('inbox: ', inbox);
+    const builder = new ShinkaiMessageBuilderWrapperWASM(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key
+    );
+
+    builder.message_raw_content(symmetric_key_sk);
+    builder.message_schema_type(MessageSchemaType.SymmetricKeyExchange.toString());
+    builder.internal_metadata_with_inbox(
+      sender_subidentity,
+      '',
+      inbox,
+      'None'
+    );
+    builder.external_metadata(receiver, sender);
+    builder.body_encryption(
+      'DiffieHellmanChaChaPoly1305'
+    );
+    const message = builder.build_to_string();
     return message;
   }
 }

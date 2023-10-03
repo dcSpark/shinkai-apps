@@ -1,10 +1,10 @@
-import { EncryptionMethod, MessageSchemaType } from "./SchemaTypes";
+import { MessageSchemaType, TSEncryptionMethod } from "./SchemaTypes";
 
 export interface InternalMetadata {
   sender_subidentity: string;
   recipient_subidentity: string;
   inbox: string;
-  encryption: EncryptionMethod;
+  encryption: keyof typeof TSEncryptionMethod;
 }
 
 export interface ExternalMetadata {
@@ -40,7 +40,7 @@ export type MessageBody = { encrypted: EncryptedShinkaiBody } | { unencrypted: S
 export interface ShinkaiMessage {
   body: MessageBody | null;
   external_metadata: ExternalMetadata | null;
-  encryption: EncryptionMethod;
+  encryption: keyof typeof TSEncryptionMethod;
 }
 
 export interface RegistrationCode {

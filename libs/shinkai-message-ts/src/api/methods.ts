@@ -10,6 +10,7 @@ import { APIUseRegistrationCodeSuccessResponse } from '../models/Payloads';
 import { SerializedAgent } from '../models/SchemaTypes';
 import { InboxNameWrapper } from '../pkg/shinkai_message_wasm';
 import { calculateMessageHash } from '../utils';
+import { FileUploader } from '../wasm/FileUploaderUsingSymmetricKeyManager';
 import { SerializedAgentWrapper } from '../wasm/SerializedAgentWrapper';
 import { ShinkaiMessageBuilderWrapper } from '../wasm/ShinkaiMessageBuilderWrapper';
 import { ShinkaiNameWrapper } from '../wasm/ShinkaiNameWrapper';
@@ -152,6 +153,45 @@ export const sendTextMessageWithInbox = async (
   }
 };
 
+export const sendTextMessageWithFilesForInbox = async (
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  text_message: string,
+  job_inbox: string,
+  selectedFile: File,
+  setupDetailsState: CredentialsPayload
+): Promise<{ inboxId: string; message: ShinkaiMessage }> => {
+  try {
+    const fileUploader = new FileUploader(
+      ApiConfig.getInstance().getEndpoint(),
+      setupDetailsState.profile_encryption_sk,
+      setupDetailsState.profile_identity_sk,
+      setupDetailsState.node_encryption_pk,
+      job_inbox,
+      sender,
+      sender_subidentity,
+      receiver
+    );
+
+    await fileUploader.createFolder();
+    await fileUploader.uploadEncryptedFile(selectedFile);
+
+    const responseText = await fileUploader.finalizeAndSend(text_message);
+    const message: ShinkaiMessage = JSON.parse(responseText);
+
+    if (message.body && 'unencrypted' in message.body) {
+      const inboxId = message.body.unencrypted.internal_metadata.inbox;
+      return { inboxId, message };
+    } else {
+      throw new Error('message body is null or encrypted');
+    }
+  } catch (error) {
+    console.error('Error sending text message with file:', error);
+    throw error;
+  }
+};
+
 export const getAllInboxesForProfile = async (
   sender: string,
   sender_subidentity: string,
@@ -164,8 +204,8 @@ export const getAllInboxesForProfile = async (
       setupDetailsState.my_device_encryption_sk,
       setupDetailsState.my_device_identity_sk,
       setupDetailsState.node_encryption_pk,
-      sender,
-      sender_subidentity,
+      sender + '/' + sender_subidentity,
+      '',
       receiver,
       target_shinkai_name_profile
     );
@@ -383,7 +423,10 @@ export const submitRegistrationCode = async (
 
 export const submitInitialRegistrationNoCode = async (
   setupData: SetupPayload
-): Promise<{ success: boolean; data?: APIUseRegistrationCodeSuccessResponse }> => {
+): Promise<{
+  success: boolean;
+  data?: APIUseRegistrationCodeSuccessResponse;
+}> => {
   try {
     const messageStr =
       ShinkaiMessageBuilderWrapper.initial_registration_with_no_code_for_device(
