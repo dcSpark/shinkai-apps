@@ -3,7 +3,6 @@ import {
   getMessageContent,
   isLocalMessage,
 } from '@shinkai_network/shinkai-message-ts/utils';
-import { Avatar, List } from 'antd';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -14,6 +13,7 @@ import {
   sendMessage,
 } from '../../store/inbox/inbox-actions';
 import { InboxInput } from '../inbox-input/inbox-input';
+import { ScrollArea } from '../ui/scroll-area';
 
 export const Inbox = () => {
   const { inboxId } = useParams<{ inboxId: string }>();
@@ -29,20 +29,20 @@ export const Inbox = () => {
   const isSendingMessage = useSelector(
     (state: RootState) =>
       state.inbox?.sendMessage[decodeURIComponent(inboxId)]?.status ===
-      'loading'
+      'loading',
   );
   const getAvatar = (message: ShinkaiMessage) => {
     return isLocalMessage(
       message,
       setup.data?.nodeData?.profile || '',
-      setup.data?.userData.registrationName || ''
+      setup.data?.userData.registrationName || '',
     )
       ? 'https://ui-avatars.com/api/?name=Me&background=FE6162&color=fff'
       : 'https://ui-avatars.com/api/?name=O&background=363636&color=fff';
   };
   const submitSendMessage = (value: string) => {
     dispatch(
-      sendMessage({ inboxId: decodeURIComponent(inboxId), message: value })
+      sendMessage({ inboxId: decodeURIComponent(inboxId), message: value }),
     );
   };
   useEffect(() => {
@@ -51,27 +51,31 @@ export const Inbox = () => {
       dispatch(
         getLastsMessagesForInbox({
           inboxId: decodeURIComponent(inboxId),
-        })
+        }),
       );
     }, pollingMs);
   }, [polling, inboxId, dispatch]);
 
   return (
     <div className="h-full flex flex-col space-y-3 justify-between overflow-hidden">
-      <List<ShinkaiMessage>
-        bordered
-        className="h-full overflow-x-hidden overflow-y-auto"
-        dataSource={messages}
-        itemLayout="horizontal"
-        renderItem={(message) => (
-          <List.Item>
-            <List.Item.Meta
-              avatar={<Avatar src={getAvatar(message)} />}
-              description={getMessageContent(message)}
-            />
-          </List.Item>
-        )}
-      />
+        <ScrollArea className="space-y-4 p-4">
+          {messages?.map((message) => (
+            <div
+              className={`flex w-max max-w-[75%] flex-col gap-2 rounded-b-lg px-3 py-2 text-sm bg-muted ${
+                isLocalMessage(
+                  message,
+                  setup.data?.nodeData?.shinkaiIdentity || '',
+                  setup.data?.nodeData.profile || '',
+                )
+                  ? 'ml-auto bg-primary text-primary-foreground rounded-l-lg'
+                  : 'rounded-r-lg'
+              }`}
+              key={message.external_metadata?.scheduled_time}
+            >
+              {getMessageContent(message)}
+            </div>
+          ))}
+        </ScrollArea>
       <InboxInput
         disabled={isSendingMessage}
         loading={isSendingMessage}
