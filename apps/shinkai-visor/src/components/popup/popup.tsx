@@ -1,5 +1,4 @@
 import { StyleProvider } from '@ant-design/cssinjs';
-import { ConfigProvider } from 'antd';
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
 import { IntlProvider } from 'react-intl';
@@ -34,17 +33,14 @@ root.render(
       <PersistGate loading={null} persistor={storePersistor}>
         <StyleProvider hashPriority="high">
           <IntlProvider locale={locale} messages={langMessages}>
-            <ConfigProvider theme={antdTheme}>
-              <div className="fixed w-[357px] h-[600px] top-32 right-16 overflow-hidden z-[1500000000]">
-                <Router>
-                  <PopupRouting></PopupRouting>
-                </Router>
-              </div>
-            </ConfigProvider>
+            <div className="fixed w-[357px] h-[600px] top-32 right-16 overflow-hidden z-[1500000000]">
+              <Router>
+                <PopupRouting></PopupRouting>
+              </Router>
+            </div>
           </IntlProvider>
         </StyleProvider>
       </PersistGate>
     </Provider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );
-
