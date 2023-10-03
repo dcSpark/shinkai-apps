@@ -21,7 +21,10 @@ import {
 
 enum MenuOption {
   Inbox = 'inbox',
+  CreateInbox = 'create-inbox',
   Agents = 'agents',
+  AddAgent = 'add-agent',
+  CreateJob = 'create-job',
   Logout = 'logout',
 }
 
@@ -47,8 +50,17 @@ export default function NavBar() {
       case MenuOption.Inbox:
         history.replace('/inboxes');
         break;
+      case MenuOption.CreateInbox:
+          history.replace('/inboxes/create');
+          break;
+      case MenuOption.CreateJob:
+        history.replace('/jobs/create');
+        break;
       case MenuOption.Agents:
         history.replace('/agents');
+        break;
+      case MenuOption.AddAgent:
+        history.replace('/agents/add');
         break;
       case MenuOption.Logout:
         logout();
@@ -87,9 +99,8 @@ export default function NavBar() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56">
-            <DropdownMenuLabel>Appearance</DropdownMenuLabel>
+            <DropdownMenuLabel><FormattedMessage id="inbox.other"></FormattedMessage></DropdownMenuLabel>
             <DropdownMenuSeparator />
-
             <DropdownMenuItem
               onClick={() => onClickMenuOption(MenuOption.Inbox)}
             >
@@ -98,7 +109,25 @@ export default function NavBar() {
                 <FormattedMessage id="inbox.other" />
               </span>
             </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => onClickMenuOption(MenuOption.CreateInbox)}
+            >
+              <Inbox className="mr-2 h-4 w-4" />
+              <span>
+                <FormattedMessage id="create-inbox" />
+              </span>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => onClickMenuOption(MenuOption.CreateJob)}
+            >
+              <Inbox className="mr-2 h-4 w-4" />
+              <span>
+                <FormattedMessage id="create-job" />
+              </span>
+            </DropdownMenuItem>
 
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel><FormattedMessage id="agent.other"></FormattedMessage></DropdownMenuLabel>
             <DropdownMenuItem
               onClick={() => onClickMenuOption(MenuOption.Agents)}
             >
@@ -107,7 +136,16 @@ export default function NavBar() {
                 <FormattedMessage id="agent.other" />
               </span>
             </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => onClickMenuOption(MenuOption.AddAgent)}
+            >
+              <Bot className="mr-2 h-4 w-4" />
+              <span>
+                <FormattedMessage id="add-agent" />
+              </span>
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
+            <DropdownMenuLabel><FormattedMessage id="account.one"></FormattedMessage></DropdownMenuLabel>
             <DropdownMenuItem
               onClick={() => onClickMenuOption(MenuOption.Logout)}
             >

@@ -42,5 +42,7 @@
   "sleep-api": "Sleep API",
   "tmwtd": "Dime qué hacer",
   "create-job": "Crear job",
-  "menu": "Menu"
+  "menu": "Menu",
+  "account.one": "Cuenta",
+  "account.other": "Cuentas"
 }
