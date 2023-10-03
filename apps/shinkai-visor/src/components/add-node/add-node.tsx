@@ -291,7 +291,8 @@ export const AddNode = () => {
 
         {currentStep === AddNodeSteps.Connect && (
         <Form {...form}>
-          <form className="h-full flex flex-col space-y-2" onSubmit={form.handleSubmit(connect)}>
+          <form className="h-full flex flex-col space-y-2 justify-between" onSubmit={form.handleSubmit(connect)}>
+            <div className="grow flex flex-col space-y-2">
             <FormField
               control={form.control}
               name="registrationName"
@@ -319,8 +320,8 @@ export const AddNode = () => {
                 </FormItem>
               )}
             />
-
-            <Button className="w-full mb-0" disabled={!form.formState.isValid}  type="submit">
+</div>
+            <Button className="w-full" disabled={!form.formState.isValid}  type="submit">
               {isConnecting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               <FormattedMessage id="connect" />
             </Button>
