@@ -39,9 +39,9 @@ export const NavBreadcrumb = () => {
     setItems(items);
   }, [location, intl, pathToIntlDefinition, mapLocationToItems]);
   return (
-    <div className="flex h-5 items-center space-x-4 text-sm">
+    <div className="flex h-5 items-center space-x-2 text-sm">
       {breadcrumbItems.map((breadcrumbItem) => (
-        <div key={breadcrumbItem.path}>
+        <div className="flex flex-row h-4 space-x-2 items-center" key={breadcrumbItem.path}>
           <div>{breadcrumbItem.title}</div>
           <Separator orientation="vertical" />
         </div>
