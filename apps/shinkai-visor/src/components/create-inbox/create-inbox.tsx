@@ -1,37 +1,44 @@
-import { Button, Form, Input, message } from 'antd';
-import { useEffect, useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2 } from 'lucide-react';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import { z } from 'zod';
 
 import { RootState, useTypedDispatch } from '../../store';
 import { createInbox } from '../../store/inbox/inbox-actions';
+import { Button } from '../ui/button';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
+import { Input } from '../ui/input';
 
-type CreateInboxFieldType = {
-  receiverIdentity: string;
-  message: string;
-};
+const formSchema = z.object({
+  receiverIdentity: z.string().nonempty(),
+  message: z.string().nonempty(),
+});
+
+type CreateInboxFieldType = z.infer<typeof formSchema>;
 
 export const CreateInbox = () => {
   const history = useHistory();
-  const [form] = Form.useForm<CreateInboxFieldType>();
-  const intl = useIntl();
-  const [messageApi, contextHolder] = message.useMessage();
-  const createInboxStatus = useSelector(
-    (state: RootState) => state.inbox?.create?.status
+  const form = useForm<CreateInboxFieldType>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      receiverIdentity: '',
+      message: '',
+    },
+  });
+  const isLoading = useSelector(
+    (state: RootState) => state.inbox?.create?.status === 'loading'
   );
   const dispatch = useTypedDispatch();
-  const [submittable, setSubmittable] = useState(false);
   const node = useSelector((state: RootState) => state.node.data);
-  const currentFormValue = Form.useWatch([], form);
-  const isCreatingInbox = () => {
-    return createInboxStatus === 'loading';
-  };
-  const submit = () => {
+  const submit = (values: CreateInboxFieldType) => {
     dispatch(
       createInbox({
-        receiverIdentity: currentFormValue.receiverIdentity,
-        message: currentFormValue.message,
+        receiverIdentity: values.receiverIdentity,
+        message: values.message,
       })
     )
       .unwrap()
@@ -41,69 +48,64 @@ export const CreateInbox = () => {
         );
       })
       .catch(() => {
-        messageApi.open({
-          type: 'error',
-          content: 'Error creating inbox',
-        });
+        console.log('error creating inbox');
       });
   };
-  useEffect(() => {
-    form.validateFields({ validateOnly: true, recursive: true }).then(
-      () => {
-        setSubmittable(true);
-      },
-      () => {
-        setSubmittable(false);
-      }
-    );
-  }, [form, currentFormValue]);
   useEffect(() => {
     if (!node) {
       return;
     }
     const defaultReceiverIdentity = `${node.nodeData.shinkaiIdentity}/${node.nodeData.profile}/device/${node.userData.registrationName}`;
-    form.setFieldValue('receiverIdentity', defaultReceiverIdentity);
+    form.setValue('receiverIdentity', defaultReceiverIdentity);
   }, [form, node]);
   return (
-    <div className="h-full">
-      {contextHolder}
-      <Form
-        autoComplete="off"
-        className="h-full flex flex-col grow place-content-between"
-        disabled={createInboxStatus === 'loading'}
-        form={form}
-        onSubmitCapture={() => submit()}
+    <Form {...form}>
+      <form
+        className="p-1 h-full flex flex-col space-y-2 justify-between"
+        onSubmit={form.handleSubmit(submit)}
       >
-        <div className="flex flex-col grow">
-          <Form.Item<CreateInboxFieldType>
+        <div className="grow flex flex-col space-y-2">
+        <FormField
+            control={form.control}
             name="receiverIdentity"
-            rules={[{ required: true }]}
-          >
-            <Input
-              placeholder={intl.formatMessage({ id: 'message-receiver' })}
-            />
-          </Form.Item>
-          <Form.Item<CreateInboxFieldType>
-            name="message"
-            rules={[{ required: true }]}
-          >
-            <Input placeholder={intl.formatMessage({ id: 'message.one' })} />
-          </Form.Item>
-        </div>
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  <FormattedMessage id="message-receiver" />
+                </FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <Form.Item>
-          <Button
-            className="w-full"
-            disabled={isCreatingInbox() || !submittable}
-            htmlType="submit"
-            loading={isCreatingInbox()}
-            onClick={() => submit()}
-            type="primary"
-          >
-            <FormattedMessage id="create-inbox" />
-          </Button>
-        </Form.Item>
-      </Form>
-    </div>
+          <FormField
+            control={form.control}
+            name="message"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  <FormattedMessage id="message.one" />
+                </FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <Button
+          className="w-full"
+          disabled={!form.formState.isValid || isLoading}
+          type="submit"
+        >
+          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <FormattedMessage id="connect" />
+        </Button>
+      </form>
+    </Form>
   );
 };

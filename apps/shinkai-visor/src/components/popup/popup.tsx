@@ -8,7 +8,6 @@ import { PersistGate } from 'redux-persist/integration/react';
 
 import { langMessages, locale } from '../../lang/intl';
 import { store, storePersistor } from '../../store';
-import { antdTheme } from '../../theme/antd-theme';
 import globalStyle from '../../theme/styles.css?inline';
 import { PopupRouting } from '../popup-routing/popup-routing';
 import popupStyle from './popup.css?inline';
