@@ -27,8 +27,8 @@ import {
 } from '../ui/select';
 
 enum Models {
-  OpenAI,
-  SleepApi,
+  OpenAI = 'open-api',
+  SleepApi = 'sleep-api',
 }
 
 const formSchema = z.object({
@@ -45,7 +45,7 @@ export const AddAgent = () => {
   const form = useForm<AddAgentFieldType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      agentName: 'Chat-GPT',
+      agentName: 'gpt',
       externalUrl: 'https://api.openai.com',
       apiKey: '',
       model: Models.OpenAI,
@@ -150,7 +150,7 @@ export const AddAgent = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    <FormattedMessage id="api-key" />
+                    <FormattedMessage id="model.one" />
                   </FormLabel>
                   <Select
                     defaultValue={field.value as unknown as string}
