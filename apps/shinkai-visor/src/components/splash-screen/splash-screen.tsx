@@ -1,9 +1,9 @@
-import { Spin } from 'antd';
+import { Loader2 } from "lucide-react";
 
 export const SplashScreen = () => {
   return (
     <div className="h-full flex flex-col place-items-center justify-between-center space-y-3">
-      <Spin />
+      <Loader2 className="h-4 w-4 animate-spin" />
       <span>Initializing</span>
     </div>
   );
