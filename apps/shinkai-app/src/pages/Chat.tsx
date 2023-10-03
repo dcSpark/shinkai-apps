@@ -11,12 +11,15 @@ import {
   IonTextarea,
   IonTitle,
 } from '@ionic/react';
+import { IonInput } from '@ionic/react';
 import {
   getLastMessagesFromInbox,
+  sendTextMessageWithFilesForInbox,
   sendTextMessageWithInbox,
 } from '@shinkai_network/shinkai-message-ts/api';
 import { ShinkaiMessage } from '@shinkai_network/shinkai-message-ts/models';
 import { calculateMessageHash } from '@shinkai_network/shinkai-message-ts/utils';
+import { cameraOutline } from 'ionicons/icons';
 import { send } from 'ionicons/icons';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -59,6 +62,7 @@ const Chat: React.FC = () => {
   const bottomChatRef = useRef<HTMLDivElement>(null);
   const deserializedId = decodeURIComponent(id).replace(/~/g, '.');
   const [lastKey, setLastKey] = useState<string | undefined>(undefined);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [hasMoreMessages, setHasMoreMessages] = useState(true);
   const [prevMessagesLength, setPrevMessagesLength] = useState(0);
 
@@ -82,7 +86,10 @@ const Chat: React.FC = () => {
       setupDetailsState
     ).then((messages) => {
       console.log('receiveLastMessagesFromInbox Response:', messages);
-      dispatch({ type: RECEIVE_LAST_MESSAGES_FROM_INBOX, payload: {inboxId: deserializedId, messages: messages} });
+      dispatch({
+        type: RECEIVE_LAST_MESSAGES_FROM_INBOX,
+        payload: { inboxId: deserializedId, messages: messages },
+      });
     });
   }, [id, dispatch, setupDetailsState, deserializedId, lastKey]);
 
@@ -104,6 +111,12 @@ const Chat: React.FC = () => {
     }
   }, [reduxMessages, prevMessagesLength]);
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      setSelectedFile(event.target.files[0]);
+    }
+  };
+
   const sendMessage = async () => {
     console.log('Sending message: ', inputMessage);
     if (inputMessage.trim() === '') return;
@@ -118,16 +131,31 @@ const Chat: React.FC = () => {
     const receiver = extractReceiverShinkaiName(deserializedId, sender);
     console.log('Receiver:', receiver);
 
-    const { inboxId, message } = await sendTextMessageWithInbox(
-      sender,
-      '',
-      receiver,
-      inputMessage,
-      deserializedId,
-      setupDetailsState
-    );
+    let inboxId, message;
+    if (selectedFile) {
+      // Call sendTextMessageWithFilesForInbox if selectedFile is not null
+      ({ inboxId, message } = await sendTextMessageWithFilesForInbox(
+        sender,
+        '',
+        receiver,
+        inputMessage,
+        deserializedId,
+        selectedFile,
+        setupDetailsState
+      ));
+    } else {
+      ({ inboxId, message } = await sendTextMessageWithInbox(
+        sender,
+        '',
+        receiver,
+        inputMessage,
+        deserializedId,
+        setupDetailsState
+      ));
+    }
     dispatch(addMessageToInbox(inboxId, message));
     setInputMessage('');
+    setSelectedFile(null);
   };
   const handleKeyDown = (
     event: React.KeyboardEvent<HTMLIonTextareaElement>
@@ -172,61 +200,59 @@ const Chat: React.FC = () => {
           )}
           <IonList class="ion-list-chat flex flex-col gap-10 p-0 md:rounded-[1.25rem] bg-transparent">
             {messages &&
-              messages
-                .slice()
-                .map((message, index) => {
-                  const { shinkai_identity, profile, registration_name } =
-                    setupDetailsState;
+              messages.slice().map((message, index) => {
+                const { shinkai_identity, profile, registration_name } =
+                  setupDetailsState;
 
-                  const localIdentity = `${profile}/device/${registration_name}`;
-                  // console.log("Message:", message);
-                  let isLocalMessage = false;
-                  if (message.body && 'unencrypted' in message.body) {
-                    isLocalMessage =
-                      message.body.unencrypted.internal_metadata
-                        .sender_subidentity === localIdentity;
-                  }
+                const localIdentity = `${profile}/device/${registration_name}`;
+                // console.log("Message:", message);
+                let isLocalMessage = false;
+                if (message.body && 'unencrypted' in message.body) {
+                  isLocalMessage =
+                    message.body.unencrypted.internal_metadata
+                      .sender_subidentity === localIdentity;
+                }
 
-                  return (
-                    <IonItem
-                      className={cn(
-                        'ion-item-chat relative',
-                        isLocalMessage && 'isLocalMessage'
+                return (
+                  <IonItem
+                    className={cn(
+                      'ion-item-chat relative',
+                      isLocalMessage && 'isLocalMessage'
+                    )}
+                    key={index}
+                    lines="none"
+                  >
+                    <div className="px-2 py-4 flex gap-4 pb-10 w-full">
+                      <Avatar
+                        className="shrink-0 mr-4"
+                        url={
+                          isLocalMessage
+                            ? 'https://ui-avatars.com/api/?name=Me&background=FE6162&color=fff'
+                            : 'https://ui-avatars.com/api/?name=O&background=363636&color=fff'
+                        }
+                      />
+
+                      <p>
+                        {message.body && 'unencrypted' in message.body
+                          ? 'unencrypted' in
+                            message.body.unencrypted.message_data
+                            ? message.body.unencrypted.message_data.unencrypted
+                                .message_raw_content
+                            : message.body.unencrypted.message_data.encrypted
+                                .content
+                          : message.body?.encrypted.content}
+                      </p>
+                      {message?.external_metadata?.scheduled_time && (
+                        <span className="absolute bottom-[5px] right-5 text-muted text-sm">
+                          {parseDate(
+                            message.external_metadata.scheduled_time
+                          ).toLocaleTimeString()}
+                        </span>
                       )}
-                      key={index}
-                      lines="none"
-                    >
-                      <div className="px-2 py-4 flex gap-4 pb-10 w-full">
-                        <Avatar
-                          className="shrink-0 mr-4"
-                          url={
-                            isLocalMessage
-                              ? 'https://ui-avatars.com/api/?name=Me&background=FE6162&color=fff'
-                              : 'https://ui-avatars.com/api/?name=O&background=363636&color=fff'
-                          }
-                        />
-
-                        <p>
-                          {message.body && 'unencrypted' in message.body
-                            ? 'unencrypted' in
-                              message.body.unencrypted.message_data
-                              ? message.body.unencrypted.message_data
-                                  .unencrypted.message_raw_content
-                              : message.body.unencrypted.message_data.encrypted
-                                  .content
-                            : message.body?.encrypted.content}
-                        </p>
-                        {message?.external_metadata?.scheduled_time && (
-                          <span className="absolute bottom-[5px] right-5 text-muted text-sm">
-                            {parseDate(
-                              message.external_metadata.scheduled_time
-                            ).toLocaleTimeString()}
-                          </span>
-                        )}
-                      </div>
-                    </IonItem>
-                  );
-                })}
+                    </div>
+                  </IonItem>
+                );
+              })}
           </IonList>
           <div ref={bottomChatRef} />
         </div>
@@ -234,6 +260,13 @@ const Chat: React.FC = () => {
       <IonFooterCustom>
         <div className={'w-full py-2 md:py-3 md:pl-4'}>
           <div className="m-2 flex items-end h-full border border-slate-300 pr-2 rounded-xl shadow">
+            {selectedFile && (
+              <img
+                alt="Selected"
+                className="h-20 w-auto"
+                src={URL.createObjectURL(selectedFile)}
+              />
+            )}
             <IonTextarea
               autoGrow
               class="ion-textarea-chat"
@@ -243,6 +276,26 @@ const Chat: React.FC = () => {
               placeholder="Type a message"
               value={inputMessage}
             />
+
+            <input hidden onChange={handleFileChange} type="file" />
+
+            <button
+              aria-label="Add File"
+              className={cn(
+                'h-10 w-10 rounded-md text-gray-500 mb-2 mr-2',
+                'bg-brand-500 hover:bg-brand-500/80 disabled:hover:bg-transparent',
+                'dark:text-white dark:hover:text-gray-100 dark:hover:bg-gray-700 dark:disabled:hover:bg-transparent'
+              )}
+              onClick={() =>
+                (
+                  document.querySelector(
+                    'input[type="file"]'
+                  ) as HTMLInputElement
+                )?.click()
+              }
+            >
+              <IonIcon icon={cameraOutline} size="" />
+            </button>
 
             <button
               aria-label="Send Message"

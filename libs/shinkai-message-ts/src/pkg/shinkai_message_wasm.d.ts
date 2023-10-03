@@ -6,6 +6,11 @@
 */
 export function convert_encryption_sk_string_to_encryption_pk_string(encryption_sk: string): string;
 /**
+* @param {string} input
+* @returns {string}
+*/
+export function calculate_blake3_hash(input: string): string;
+/**
 */
 export class InboxNameWrapper {
   free(): void;
