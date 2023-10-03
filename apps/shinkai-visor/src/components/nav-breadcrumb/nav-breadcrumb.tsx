@@ -41,10 +41,10 @@ export const NavBreadcrumb = () => {
   return (
     <div className="flex h-5 items-center space-x-4 text-sm">
       {breadcrumbItems.map((breadcrumbItem) => (
-        <>
+        <div key={breadcrumbItem.path}>
           <div>{breadcrumbItem.title}</div>
           <Separator orientation="vertical" />
-        </>
+        </div>
       ))}
     </div>
   );
