@@ -15,7 +15,9 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@shinkai_network/shinkai-message-ts/*": ["libs/shinkai-message-ts/src/*.ts"]
+      "@shinkai_network/shinkai-message-ts/*": [
+        "libs/shinkai-message-ts/src/*.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]

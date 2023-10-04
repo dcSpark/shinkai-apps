@@ -51,14 +51,8 @@ export const getMessageContent = (message: ShinkaiMessage) => {
 
 export const isLocalMessage = (
   message: ShinkaiMessage,
+  identity: string,
   profile: string,
-  registrationName: string
 ) => {
-  const localIdentity = `${profile}/device/${registrationName}`;
-  return (
-    message.body &&
-    'unencrypted' in message.body &&
-    message.body.unencrypted.internal_metadata.sender_subidentity ===
-      localIdentity
-  );
+  return message.external_metadata?.sender === `${identity}/${profile}`;
 };
