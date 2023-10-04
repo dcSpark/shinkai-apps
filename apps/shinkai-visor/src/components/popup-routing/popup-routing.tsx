@@ -1,3 +1,4 @@
+import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Route, Switch, useHistory, useLocation } from 'react-router-dom';
@@ -30,59 +31,68 @@ export const PopupRouting = () => {
     }
   }, [authStatus, history]);
   return (
-    <div className={`h-full w-full flex flex-col ${popupVisibility ? '' : 'hidden'} p-4 border-solid border-primary border-2 rounded-lg bg-background`}>
-      <Switch key={location.pathname} location={location}>
-        <Route exact path="/">
-          <SplashScreen></SplashScreen>
-        </Route>
-        <Route path="/welcome">
-          <Welcome />
-        </Route>
-        <Route path="/nodes">
-          <Switch>
-            <Route path="/nodes/add">
-              <AddNode></AddNode>
+    <AnimatePresence>
+      {popupVisibility && (
+        <motion.div
+          animate={{ opacity: 1 }}
+          className={`h-full w-full flex flex-col p-4 border-solid border-primary border-2 rounded-lg bg-background`}
+          exit={{ opacity: 0 }}
+          initial={{ opacity: 0 }}
+        >
+          <Switch key={location.pathname} location={location}>
+            <Route exact path="/">
+              <SplashScreen></SplashScreen>
+            </Route>
+            <Route path="/welcome">
+              <Welcome />
+            </Route>
+            <Route path="/nodes">
+              <Switch>
+                <Route path="/nodes/add">
+                  <AddNode></AddNode>
+                </Route>
+              </Switch>
+            </Route>
+            <WithNav>
+              <Route path="/inboxes">
+                <Switch>
+                  <Route path="/inboxes/create">
+                    <CreateInbox></CreateInbox>
+                  </Route>
+                  <Route path="/inboxes/:inboxId">
+                    <Inbox></Inbox>
+                  </Route>
+                  <Route path="/">
+                    <Inboxes></Inboxes>
+                  </Route>
+                </Switch>
+              </Route>
+
+              <Route path="/agents">
+                <Switch>
+                  <Route path="/agents/add">
+                    <AddAgent></AddAgent>
+                  </Route>
+                  <Route path="/">
+                    <Agents></Agents>
+                  </Route>
+                </Switch>
+              </Route>
+
+              <Route path="/jobs">
+                <Switch>
+                  <Route path="/jobs/create">
+                    <CreateJob></CreateJob>
+                  </Route>
+                </Switch>
+              </Route>
+            </WithNav>
+            <Route path="*">
+              <NotFound></NotFound>
             </Route>
           </Switch>
-        </Route>
-        <WithNav>
-          <Route path="/inboxes">
-            <Switch>
-              <Route path="/inboxes/create">
-                <CreateInbox></CreateInbox>
-              </Route>
-              <Route path="/inboxes/:inboxId">
-                <Inbox></Inbox>
-              </Route>
-              <Route path="/">
-                <Inboxes></Inboxes>
-              </Route>
-            </Switch>
-          </Route>
-
-          <Route path="/agents">
-            <Switch>
-              <Route path="/agents/add">
-                <AddAgent></AddAgent>
-              </Route>
-              <Route path="/">
-                <Agents></Agents>
-              </Route>
-            </Switch>
-          </Route>
-
-          <Route path="/jobs">
-            <Switch>
-              <Route path="/jobs/create">
-                <CreateJob></CreateJob>
-              </Route>
-            </Switch>
-          </Route>
-        </WithNav>
-        <Route path="*">
-          <NotFound></NotFound>
-        </Route>
-      </Switch>
-    </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };

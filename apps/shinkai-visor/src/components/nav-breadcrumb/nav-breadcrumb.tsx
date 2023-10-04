@@ -41,7 +41,7 @@ export const NavBreadcrumb = () => {
   return (
     <div className="flex flex-row h-5 items-center space-x-2 text-sm">
       {breadcrumbItems.map((breadcrumbItem) => (
-        <div className="flex flex-row h-4 space-x-2 items-center" key={breadcrumbItem.path}>
+        <div className="flex flex-row h-4 space-x-2 items-center max-w-20" key={breadcrumbItem.path}>
           <div className="text-ellipsis overflow-hidden whitespace-nowrap">{breadcrumbItem.title}</div>
           <Separator orientation="vertical" />
         </div>
