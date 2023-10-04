@@ -57,7 +57,7 @@ export const InboxInput = (props: InboxInputProps) => {
                 <FormControl>
                   <Input
                     placeholder={intl.formatMessage({
-                      id: 'registration-name',
+                      id: 'tmwtd',
                     })}
                     {...field}
                   />
