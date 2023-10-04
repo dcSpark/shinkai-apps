@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "postinstall": "patch-package"
+    "postinstall": "npx patch-package"
   },
   "private": true,
   "devDependencies": {
