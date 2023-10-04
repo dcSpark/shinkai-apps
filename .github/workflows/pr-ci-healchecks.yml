@@ -1,4 +1,4 @@
-name: PR CI Health Check
+name: PR CI Health checks
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ defaults:
     working-directory: ./
 
 jobs:
-  healthchecks:
+  health-checks:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
@@ -39,7 +39,7 @@ jobs:
       - name: Install dependencies
         run: |
           npm cache verify
-          npm ci --prefer-offline --no-audit
+          npm ci --no-audit --verbose
 
       - name: Run NX target ${{ matrix.target }} on affected projects
         run: npx nx affected -t ${{ matrix.target }} --parallel=3
