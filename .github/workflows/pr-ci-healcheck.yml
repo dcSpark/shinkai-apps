@@ -1,0 +1,50 @@
+name: PR CI Health Check
+
+on:
+  pull_request:
+    branches: [ main ]
+
+defaults:
+  run:
+    working-directory: ./
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      packages: ${{ steps.filter.outputs.changes }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Use nx set shas
+        uses: nrwl/nx-set-shas@v3
+
+
+      - name: Setup Node version
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          check-latest: false
+          registry-url: https://registry.npmjs.org
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: |
+          npm cache verify
+          npm ci --prefer-offline --no-audit
+
+  healthchecks:
+    needs: setup
+    runs-on: ${{ matrix.target }}
+    strategy:
+      fail-fast: true
+      max-parallel: 1
+      matrix:
+        target: ['lint', 'build', 'test']
+    steps:
+      - name: nx ${{ matrix.target }}
+        run: npx nx affected -t ${{ matrix.target }} --parallel=3

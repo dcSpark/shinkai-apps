@@ -1,3 +1,4 @@
+import { ShinkaiMessage } from "../models";
 import { ShinkaiNameWrapper as ShinkaiNameWrapperWASM } from "../pkg/shinkai_message_wasm";
 
 export class ShinkaiNameWrapper {
@@ -5,6 +6,17 @@ export class ShinkaiNameWrapper {
 
     constructor(shinkai_name_js: any) {
         this.wasmWrapper = new ShinkaiNameWrapperWASM(shinkai_name_js);
+    }
+
+    static from_shinkai_message_sender(message: ShinkaiMessage): ShinkaiNameWrapper {
+        if (!message.body || !('unencrypted' in message.body)) {
+            throw new Error('shinkai message is encrypted');
+        }
+        let name = message.external_metadata?.sender;
+        if (message.body.unencrypted.internal_metadata.sender_subidentity) {
+            name += `/${message.body.unencrypted.internal_metadata.sender_subidentity}`;
+        }
+        return new ShinkaiNameWrapper(name);
     }
 
     to_jsvalue(): any {
