@@ -9,21 +9,28 @@ defaults:
     working-directory: ./
 
 jobs:
-  setup:
+  healthchecks:
     runs-on: ubuntu-latest
-    outputs:
-      packages: ${{ steps.filter.outputs.changes }}
+    strategy:
+      fail-fast: true
+      max-parallel: 1
+      matrix:
+        target: ['lint', 'build', 'test']
+    
     steps:
       - name: Check out repository
+        if: matrix.target != 'lint'
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Use nx set shas
+        if: matrix.target != 'lint'
         uses: nrwl/nx-set-shas@v3
 
 
       - name: Setup Node version
+        if: matrix.target != 'lint'
         uses: actions/setup-node@v3
         with:
           node-version: 18
@@ -33,18 +40,10 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Install dependencies
+        if: matrix.target != 'lint'
         run: |
           npm cache verify
           npm ci --prefer-offline --no-audit
 
-  healthchecks:
-    needs: setup
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-      max-parallel: 1
-      matrix:
-        target: ['lint', 'build', 'test']
-    steps:
-      - name: nx ${{ matrix.target }}
+      - name: Run NX target ${{ matrix.target }} on affected projects
         run: npx nx affected -t ${{ matrix.target }} --parallel=3
