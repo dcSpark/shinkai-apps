@@ -39,7 +39,7 @@ jobs:
 
   healthchecks:
     needs: setup
-    runs-on: ${{ matrix.target }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: true
       max-parallel: 1
