@@ -71,7 +71,7 @@ describe('shinkai_messag_handler isLocalMessage', () => {
           "internal_metadata": {
             "sender_subidentity": "main/agent/gpt",
             "recipient_subidentity": "",
-            "inbox": "inbox::@@node1.shinkai/main/agent/gpt::@@node2.shinkai::false",
+            "inbox": "job_inbox::@@node1.shinkai/main/agent/gpt::@@node2.shinkai::false",
             "signature": "",
             "encryption": "None"
         }
