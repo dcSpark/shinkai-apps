@@ -4,7 +4,7 @@ index ab56918..f137f0d 100644
 +++ b/node_modules/vite-plugin-wasm/dist/index.d.ts
 @@ -1 +1 @@
 -export default function wasm(): any;
-+export default function wasm({ bundle }: { bundle: boolean }): any;
++export default function wasm(options?: { bundle?: boolean }): any;
 diff --git a/node_modules/vite-plugin-wasm/dist/index.js b/node_modules/vite-plugin-wasm/dist/index.js
 index c099a84..813ca49 100644
 --- a/node_modules/vite-plugin-wasm/dist/index.js
@@ -14,7 +14,7 @@ index c099a84..813ca49 100644
  const wasmHelper = __importStar(require("./wasm-helper"));
  const util_1 = require("./util");
 -function wasm() {
-+function wasm({ bundle }) {
++function wasm(options) {
      // Vitest reports { ssr: false } to plugins but execute the code in SSR
      // Detect Vitest with the existance of plugin with the name "vitest"
      let runningInVitest = false;
@@ -23,7 +23,7 @@ index c099a84..813ca49 100644
              // Get WASM's download URL by Vite's ?url import
              const wasmUrlUrl = id + "?url";
 -            const wasmUrlDeclaration = options?.ssr || runningInVitest
-+            const wasmUrlDeclaration = options?.ssr || runningInVitest || bundle
++            const wasmUrlDeclaration = options?.ssr || runningInVitest || options?.bundle
                  ? `const __vite__wasmUrl = ${JSON.stringify(await (0, util_1.createBase64UriForWasm)(id))}`
                  : `import __vite__wasmUrl from ${JSON.stringify(wasmUrlUrl)}`;
              return `

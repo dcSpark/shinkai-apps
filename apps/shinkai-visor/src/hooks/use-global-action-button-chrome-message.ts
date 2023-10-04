@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-import { ContentScriptMessageType } from "../helpers/communication/content-script-message-type";
-import { sendContentScriptMessage } from "../helpers/communication/content-script-messages";
+import { ContentScriptMessageType } from "../service-worker/communication/content-script-message-type";
+import { sendContentScriptMessage } from "../service-worker/communication/content-script-messages";
 import { ServiceWorkerMessageType } from "../service-worker/communication/service-worker-message-type";
 import { useChromeMessage } from "./use-chrome-message";
 

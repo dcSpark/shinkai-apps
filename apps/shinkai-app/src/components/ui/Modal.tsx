@@ -1,6 +1,7 @@
+import './Modal.css'
+
 import { IonContent, IonHeader, IonModal, IonTitle } from "@ionic/react";
 import React from "react";
-import './Modal.css'
 
 const Modal = ({
   header,
