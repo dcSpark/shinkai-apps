@@ -1,0 +1,17 @@
+#shinkai-popup-root {
+  .popup-container {
+    width: 357px;
+    height: 600px;
+    overflow-y: hidden;
+    position: fixed;
+    top: 100px;
+    right: 80px;
+    z-index: 999999;
+    box-sizing: border-box;
+    background: white;
+    border-radius: 10px;
+    border-style: solid;
+    border-color: #FE6162;
+    border-width: 1px;
+  }
+}

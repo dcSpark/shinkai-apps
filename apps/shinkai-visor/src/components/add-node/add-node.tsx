@@ -81,7 +81,7 @@ export const AddNode = () => {
       myDeviceEncryptionPublicKey: '',
       myDeviceIdentityPublicKey: '',
       profileEncryptionSharedKey: '',
-      profileSignatureSharedKey: 'ss',
+      profileSignatureSharedKey: '',
       myDeviceEncryptionSharedKey: '',
       myDeviceIdentitySharedKey: undefined,
     }
@@ -224,7 +224,7 @@ export const AddNode = () => {
     )
       .unwrap()
       .then(() => {
-        history.replace('/inboxes/all');
+        history.replace('/inboxes');
       })
       .catch(() => {
         messageApi.open({

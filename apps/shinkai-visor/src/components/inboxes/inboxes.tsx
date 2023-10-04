@@ -32,9 +32,10 @@ export const Inboxes = () => {
   }, [dispatch]);
 
   return (
-    <div className="h-full flex flex-col space-y-3 justify-between">
+    <div className="h-full flex flex-col space-y-3 justify-between overflow-hidden">
       <List<Inbox>
         bordered
+        className="overflow-auto"
         dataSource={inboxes || []}
         loading={isLoading()}
         renderItem={(inbox) => (

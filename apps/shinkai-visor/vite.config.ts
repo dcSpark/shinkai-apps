@@ -27,7 +27,7 @@ export default defineConfig({
     host: 'localhost',
   },
 
-  plugins: [react(), nxViteTsPaths(), wasm(), topLevelAwait(), crx({ manifest })],
+  plugins: [react(), nxViteTsPaths(), wasm({ bundle: true }), topLevelAwait(), crx({ manifest })],
 
   test: {
     globals: true,

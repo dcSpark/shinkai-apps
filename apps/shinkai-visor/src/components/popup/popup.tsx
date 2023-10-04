@@ -1,6 +1,3 @@
-import '../theme/styles.css';
-import './popup.css';
-
 import { StyleProvider } from '@ant-design/cssinjs';
 import { ConfigProvider } from 'antd';
 import * as React from 'react';
@@ -10,22 +7,33 @@ import { Provider } from 'react-redux';
 import { MemoryRouter as Router } from 'react-router-dom';
 import { PersistGate } from 'redux-persist/integration/react';
 
-import { PopupRouting } from '../components/popup-routing/popup-routing';
-import { langMessages, locale } from '../lang/intl';
-import { store, storePersistor } from '../store';
-import { antdTheme } from '../theme/antd-theme';
+import { langMessages, locale } from '../../lang/intl';
+import { store, storePersistor } from '../../store';
+import { antdTheme } from '../../theme/antd-theme';
+import themeStyle from '../../theme/styles.css?inline';
+import { PopupRouting } from '../popup-routing/popup-routing';
+import popupStyle from './popup.css?inline';
 
-const container = document.getElementById('root');
+let container = document.getElementById('shinkai-popup-root');
+let shadow: ShadowRoot | undefined = undefined;
 if (!container) {
-  throw new Error('root container not found');
+  const baseContainer = document.createElement('shinkai-popup-root');
+  shadow = baseContainer.attachShadow({ mode: 'open' });
+  container = document.createElement('div');
+  container.id = 'shinkai-popup-root';
+  shadow.appendChild(container);
+  const htmlRoot = document.getElementsByTagName('html')[0];
+  htmlRoot.prepend(baseContainer);
 }
 const root = createRoot(container);
 
 root.render(
   <React.StrictMode>
+    <style>{themeStyle}</style>
+    <style>{popupStyle}</style>
     <Provider store={store}>
       <PersistGate loading={null} persistor={storePersistor}>
-        <StyleProvider hashPriority="high">
+        <StyleProvider container={shadow} hashPriority="high">
           <IntlProvider locale={locale} messages={langMessages}>
             <ConfigProvider theme={antdTheme}>
               <Router>
