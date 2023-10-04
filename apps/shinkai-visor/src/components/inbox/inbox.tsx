@@ -58,7 +58,8 @@ export const Inbox = () => {
 
   return (
     <div className="h-full flex flex-col space-y-3 justify-between overflow-hidden">
-        <ScrollArea className="space-y-4 p-4">
+      <ScrollArea className="[&>div>div]:!block">
+        <div className="flex flex-col space-y-2">
           {messages?.map((message) => (
             <div
               className={`flex w-max max-w-[75%] flex-col gap-2 rounded-b-lg px-3 py-2 text-sm bg-muted ${
@@ -75,7 +76,8 @@ export const Inbox = () => {
               {getMessageContent(message)}
             </div>
           ))}
-        </ScrollArea>
+        </div>
+      </ScrollArea>
       <InboxInput
         disabled={isSendingMessage}
         loading={isSendingMessage}
