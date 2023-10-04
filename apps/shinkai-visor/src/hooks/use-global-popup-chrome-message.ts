@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
 
-import { ContentScriptMessageType } from "../helpers/communication/content-script-message-type";
+import { ContentScriptMessageType } from "../service-worker/communication/content-script-message-type";
 import { ServiceWorkerMessageType } from "../service-worker/communication/service-worker-message-type";
 import { useChromeMessage } from "./use-chrome-message";
 

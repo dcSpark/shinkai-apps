@@ -1,6 +1,6 @@
-import { ServiceWorkerMessageType } from "../../service-worker/communication/service-worker-message-type";
-import { ServiceWorkerMessage } from "../../service-worker/communication/service-worker-messages";
 import { ContentScriptMessage } from "./content-script-message";
+import { ServiceWorkerMessageType } from "./service-worker-message-type";
+import { ServiceWorkerMessage } from "./service-worker-messages";
 
 
 export const sendContentScriptMessage = (message: ContentScriptMessage) => {

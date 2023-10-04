@@ -7,8 +7,8 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 
 import shinkaiLogo from '../../assets/icons/shinkai-min.svg';
-import { ContentScriptMessageType } from '../../helpers/communication/content-script-message-type';
-import { sendContentScriptMessage } from '../../helpers/communication/content-script-messages';
+import { ContentScriptMessageType } from '../../service-worker/communication/content-script-message-type';
+import { sendContentScriptMessage } from '../../service-worker/communication/content-script-messages';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
 import { useGlobalActionButtonChromeMessage } from '../../hooks/use-global-action-button-chrome-message';
 import { langMessages, locale } from '../../lang/intl';

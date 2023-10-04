@@ -1,4 +1,4 @@
-import { ContentScriptMessage } from '../../helpers/communication/content-script-message';
+import { ContentScriptMessage } from './content-script-message';
 import { ServiceWorkerMessageType } from './service-worker-message-type';
 
 export type ServiceWorkerMessage =
