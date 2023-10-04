@@ -39,7 +39,7 @@ jobs:
       - name: Install dependencies
         run: |
           npm cache verify
-          npm ci --no-audit --verbose
+          npm ci --no-audit
 
       - name: Run NX target ${{ matrix.target }} on affected projects
-        run: npx nx affected -t ${{ matrix.target }} --parallel=3
+        run: npx nx affected -t ${{ matrix.target }} --parallel=3 --verbose
