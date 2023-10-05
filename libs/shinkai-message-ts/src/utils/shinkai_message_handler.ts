@@ -56,5 +56,6 @@ export const isLocalMessage = (
   myProfile: string,
 ): boolean => {
   const messageNameWrapper = ShinkaiNameWrapper.from_shinkai_message_sender(message);
-  return messageNameWrapper.get_node_name === myNodeIdentity && messageNameWrapper.get_profile_name === myProfile;
+  return (messageNameWrapper.get_subidentity_type === 'None' || messageNameWrapper.get_subidentity_type === 'device') &&
+    messageNameWrapper.get_node_name === myNodeIdentity && messageNameWrapper.get_profile_name === myProfile;
 };

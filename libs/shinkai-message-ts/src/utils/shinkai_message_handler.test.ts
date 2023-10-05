@@ -26,7 +26,7 @@ describe('shinkai_messag_handler isLocalMessage', () => {
       "signature": "c6d0115c0878fbf2279f98aab67c0e9cb1af63825f49dca48d6e4420eba0ceb973e00488ba0905c9afd09254f0dac48c468fdcb1d6c5ab5ca4c5dd70a440b903",
       "other": ""
     },
-    "encryption": "DiffieHellmanChaChaPoly1305",
+    "encryption": "None",
     "version": "V1_0"
   }`;
 
@@ -55,7 +55,7 @@ describe('shinkai_messag_handler isLocalMessage', () => {
       "signature": "c6d0115c0878fbf2279f98aab67c0e9cb1af63825f49dca48d6e4420eba0ceb973e00488ba0905c9afd09254f0dac48c468fdcb1d6c5ab5ca4c5dd70a440b903",
       "other": ""
     },
-    "encryption": "DiffieHellmanChaChaPoly1305",
+    "encryption": "None",
     "version": "V1_0"
   }`;
   
@@ -84,7 +84,7 @@ describe('shinkai_messag_handler isLocalMessage', () => {
         "signature": "c6d0115c0878fbf2279f98aab67c0e9cb1af63825f49dca48d6e4420eba0ceb973e00488ba0905c9afd09254f0dac48c468fdcb1d6c5ab5ca4c5dd70a440b903",
         "other": ""
     },
-      "encryption": "DiffieHellmanChaChaPoly1305",
+      "encryption": "None",
       "version": "V1_0"
   }`;
 
@@ -113,7 +113,7 @@ describe('shinkai_messag_handler isLocalMessage', () => {
       "signature": "c6d0115c0878fbf2279f98aab67c0e9cb1af63825f49dca48d6e4420eba0ceb973e00488ba0905c9afd09254f0dac48c468fdcb1d6c5ab5ca4c5dd70a440b903",
       "other": ""
     },
-    "encryption": "DiffieHellmanChaChaPoly1305",
+    "encryption": "None",
     "version": "V1_0"
   }`;
 
