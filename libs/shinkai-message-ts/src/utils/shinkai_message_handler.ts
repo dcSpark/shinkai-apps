@@ -1,5 +1,6 @@
 import { MessageSchemaType } from '../models/SchemaTypes';
 import { ShinkaiMessage } from '../models/ShinkaiMessage';
+import { ShinkaiNameWrapper } from '../wasm';
 import { ShinkaiMessageWrapper } from '../wasm/ShinkaiMessageWrapper';
 
 export function calculateMessageHash(message: ShinkaiMessage): string {
@@ -51,8 +52,10 @@ export const getMessageContent = (message: ShinkaiMessage) => {
 
 export const isLocalMessage = (
   message: ShinkaiMessage,
-  identity: string,
-  profile: string,
-) => {
-  return message.external_metadata?.sender === `${identity}/${profile}`;
+  myNodeIdentity: string,
+  myProfile: string,
+): boolean => {
+  const messageNameWrapper = ShinkaiNameWrapper.from_shinkai_message_sender(message);
+  return (messageNameWrapper.get_subidentity_type === 'None' || messageNameWrapper.get_subidentity_type === 'device') &&
+    messageNameWrapper.get_node_name === myNodeIdentity && messageNameWrapper.get_profile_name === myProfile;
 };
