@@ -1,13 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useCreateAgent } from "@shinkai_network/shinkai-node-state/lib/mutations/createAgent/useCreateAgent";
 import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { z } from 'zod';
 
-import { RootState, useTypedDispatch } from '../../store';
-import { addAgent } from '../../store/agents/agents-actions';
+import { useAuth } from '../../store/auth/auth';
 import { Button } from '../ui/button';
 import {
   Form,
@@ -42,6 +41,7 @@ type AddAgentFieldType = z.infer<typeof formSchema>;
 
 export const AddAgent = () => {
   const history = useHistory();
+  const auth = useAuth((state) => state.auth);
   const form = useForm<AddAgentFieldType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -52,9 +52,17 @@ export const AddAgent = () => {
     },
   });
   const intl = useIntl();
-  const isLoading = useSelector(
-    (state: RootState) => state.agents?.add?.status === 'loading',
-  );
+  const {
+    mutateAsync: createAgent,
+    isLoading,
+    isError,
+    error,
+  } = useCreateAgent({
+    onSuccess: () => {
+      history.replace('/agents');
+    },
+  });
+
   const modelOptions: { value: Models; label: string }[] = [
     {
       value: Models.OpenAI,
@@ -65,28 +73,32 @@ export const AddAgent = () => {
       label: intl.formatMessage({ id: 'sleep-api' }),
     },
   ];
-  const dispatch = useTypedDispatch();
   const submit = (values: AddAgentFieldType) => {
-    dispatch(
-      addAgent({
-        agent: {
-          agentName: values.agentName,
-          externalUrl: values.externalUrl,
-          apiKey: values.apiKey,
-          model:
-            values.model === Models.OpenAI
-              ? { OpenAI: { model_type: 'gpt-3.5-turbo' } }
-              : { SleepAPI: {} },
-        },
-      }),
-    )
-      .unwrap()
-      .then(() => {
-        history.replace('/agents');
-      })
-      .catch(() => {
-        console.log('error adding agent');
-      });
+    if (!auth) return;
+    createAgent({
+      sender_subidentity: auth.profile,
+      node_name: auth.shinkai_identity,
+      agent: {
+        allowed_message_senders: [],
+        api_key: values.apiKey,
+        external_url: values.externalUrl,
+        full_identity_name: `${auth.shinkai_identity}/${auth.profile}/agent/${values.agentName}`,
+        id: values.agentName,
+        perform_locally: false,
+        storage_bucket_permissions: [],
+        toolkit_permissions: [],
+        model: values.model === Models.OpenAI
+        ? { OpenAI: { model_type: 'gpt-3.5-turbo' } }
+        : { SleepAPI: {} },
+      },
+      setupDetailsState: {
+        my_device_encryption_sk: auth.my_device_encryption_sk,
+        my_device_identity_sk: auth.my_device_identity_sk,
+        node_encryption_pk: auth.node_encryption_pk,
+        profile_encryption_sk: auth.profile_encryption_sk,
+        profile_identity_sk: auth.profile_identity_sk,
+      },
+    });
   };
   return (
     <div className="h-full p-1">

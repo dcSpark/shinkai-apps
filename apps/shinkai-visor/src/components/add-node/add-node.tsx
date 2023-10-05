@@ -5,18 +5,17 @@ import {
   generateEncryptionKeys,
   generateSignatureKeys,
 } from '@shinkai_network/shinkai-message-ts/utils';
+import { useSubmitRegistration } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistration';
 import { BrowserQRCodeReader } from '@zxing/browser';
 import { Loader2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
-import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import * as z from 'zod';
 
 import ScanQrAnimation from '../../assets/animations/scan-qr.json';
-import { RootState, useTypedDispatch } from '../../store';
-import { connectNode } from '../../store/node/node-actions';
+import { useAuth } from '../../store/auth/auth';
 import { Button } from '../ui/button';
 import {
   Form,
@@ -66,6 +65,7 @@ enum AddNodeSteps {
 
 export const AddNode = () => {
   const history = useHistory();
+  const setAuth = useAuth((state) => state.setAuth);
   const form = useForm<FormType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -88,22 +88,48 @@ export const AddNode = () => {
       myDeviceIdentitySharedKey: undefined,
     },
   });
+  const {
+    isLoading,
+    mutateAsync: submitRegistration,
+  } = useSubmitRegistration({
+    onSuccess: (response) => {
+      if (response.success) {
+        const values = form.getValues();
+        setAuth({
+          profile: values.profile,
+          permission_type: values.permissionType,
+          node_address: values.nodeAddress,
+          shinkai_identity: values.shinkaiIdentity,
+          node_signature_pk: response.data?.identity_public_key ?? values.nodeSignaturePublicKey,
+          node_encryption_pk: response.data?.encryption_public_key ?? values.nodeEncryptionPublicKey,
+          registration_name: values.registrationName,
+          my_device_identity_pk: values.myDeviceIdentityPublicKey,
+          my_device_identity_sk: values.myDeviceIdentitySharedKey,
+          my_device_encryption_pk: values.myDeviceEncryptionPublicKey,
+          my_device_encryption_sk: values.myDeviceEncryptionSharedKey,
+          profile_identity_pk: values.profileSignaturePublicKey,
+          profile_identity_sk: values.profileSignatureSharedKey,
+          profile_encryption_pk: values.profileEncryptionPublicKey,
+          profile_encryption_sk: values.profileEncryptionSharedKey,
+        });
+        history.replace('/inboxes');
+      } else {
+        throw new Error('Failed to submit registration');
+      }
+    },
+  });
+
   const fileInput = useRef<HTMLInputElement>(null);
   const [currentStep, setCurrentStep] = useState<AddNodeSteps>(
-    AddNodeSteps.ScanQR,
+    AddNodeSteps.ScanQR
   );
-  // const currentFormValue = Form.useWatch([], form);
-  const isConnecting = useSelector(
-    (state: RootState) => state?.node?.status === 'loading',
-  );
-  const dispatch = useTypedDispatch();
 
   const onFileInputClick = () => {
     fileInput.current?.click();
   };
 
   const onQrImageSelected: React.ChangeEventHandler<HTMLInputElement> = async (
-    event,
+    event
   ): Promise<void> => {
     if (!event.target.files || !event.target.files[0]) {
       return;
@@ -177,54 +203,22 @@ export const AddNode = () => {
     };
   };
 
-  const connectManually = () => {
-    setCurrentStep(AddNodeSteps.Connect);
-  };
-
-  const scanQr = () => {
-    form.reset();
-    setCurrentStep(AddNodeSteps.ScanQR);
-  };
-
   const connect = (values: FormType) => {
-    setCurrentStep(AddNodeSteps.Connect);
-    dispatch(
-      connectNode({
-        nodeData: {
-          registrationCode: values.registrationCode,
-          profile: values.profile,
-          identityType: values.identityType,
-          permissionType: values.permissionType,
-          nodeAddress: values.nodeAddress,
-          shinkaiIdentity: values.shinkaiIdentity,
-          nodeEncryptionPublicKey: values.nodeEncryptionPublicKey,
-          nodeSignaturePublicKey: values.nodeSignaturePublicKey,
-        },
-        userData: {
-          registrationName: values.registrationName,
-        },
-        credentials: {
-          myDeviceIdentityPublicKey: values.myDeviceEncryptionPublicKey,
-          myDeviceIdentitySharedKey: values.myDeviceEncryptionSharedKey,
-
-          myDeviceEncryptionPublicKey: values.myDeviceIdentityPublicKey,
-          myDeviceEncryptionSharedKey: values.myDeviceEncryptionSharedKey,
-
-          profileSignaturePublicKey: values.profileSignaturePublicKey,
-          profileSignatureSharedKey: values.profileSignatureSharedKey,
-
-          profileEncryptionPublicKey: values.profileEncryptionPublicKey,
-          profileEncryptionSharedKey: values.profileEncryptionSharedKey,
-        },
-      }),
-    )
-      .unwrap()
-      .then(() => {
-        history.replace('/inboxes');
-      })
-      .catch((e) => {
-        console.log(e);
-      });
+    console.log('values', values);
+    submitRegistration({
+      registration_code: values.registrationCode,
+      profile: values.profile,
+      identity_type: values.identityType,
+      permission_type: values.permissionType,
+      node_address: values.nodeAddress,
+      shinkai_identity: values.shinkaiIdentity,
+      node_encryption_pk: values.nodeEncryptionPublicKey,
+      registration_name: values.registrationName,
+      my_device_identity_sk: values.myDeviceIdentitySharedKey,
+      my_device_encryption_sk: values.myDeviceEncryptionSharedKey,
+      profile_identity_sk: values.profileSignatureSharedKey,
+      profile_encryption_sk: values.profileEncryptionSharedKey,
+    });
   };
 
   useEffect(() => {
@@ -247,7 +241,7 @@ export const AddNode = () => {
           ...profileEncryption,
           ...profileSignature,
         }));
-      },
+      }
     );
   }, [form]);
 
@@ -324,10 +318,10 @@ export const AddNode = () => {
               </div>
               <Button
                 className="w-full"
-                disabled={!form.formState.isValid || isConnecting}
+                disabled={!form.formState.isValid || isLoading}
                 type="submit"
               >
-                {isConnecting && (
+                {isLoading && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
                 <FormattedMessage id="connect" />
