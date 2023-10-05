@@ -44,5 +44,6 @@
   "create-job": "Crear job",
   "menu": "Menu",
   "account.one": "Cuenta",
-  "account.other": "Cuentas"
+  "account.other": "Cuentas",
+  "all-messages-loaded": "Todos los mensajes fueron descargados 🎈"
 }

@@ -1,3 +1,4 @@
+import { ApiConfig } from '@shinkai_network/shinkai-message-ts/api/api_config';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect } from 'react';
 import { Route, Switch, useHistory, useLocation } from 'react-router-dom';
@@ -24,6 +25,7 @@ export const PopupRouting = () => {
   useEffect(() => {
     const isAuthenticated = !!auth; 
     if (isAuthenticated) {
+      ApiConfig.getInstance().setEndpoint(auth.node_address);
       history.replace('/inboxes');
       return;
     } else {

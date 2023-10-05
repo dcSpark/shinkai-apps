@@ -1,16 +1,14 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
+import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { Loader2 } from 'lucide-react';
-import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
-import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { z } from 'zod';
 
 import { useQuery } from '../../hooks/use-query';
-import { RootState, useTypedDispatch } from '../../store';
-import { getAgents } from '../../store/agents/agents-actions';
-import { createJob } from '../../store/jobs/jobs-actions';
+import { useAuth } from '../../store/auth/auth';
 import { Button } from '../ui/button';
 import {
   Form,
@@ -34,46 +32,55 @@ const formSchema = z.object({
   content: z.string().nonempty(),
 });
 
-type CreateJobFieldType = z.infer<typeof formSchema>;
+type FormSchemaType = z.infer<typeof formSchema>;
 
 export const CreateJob = () => {
   const history = useHistory();
   const query = useQuery();
-  const form = useForm<CreateJobFieldType>({
+  const auth = useAuth((state) => state.auth);
+  const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       agent: '',
       content: '',
     },
   });
-  const isLoading = useSelector(
-    (state: RootState) => state.jobs?.create?.status === 'loading',
-  );
-  const dispatch = useTypedDispatch();
-  const agents = useSelector((state: RootState) => state.agents?.agents?.data);
-  const submit = (values: CreateJobFieldType) => {
+  const { agents } = useAgents({
+    sender: auth?.shinkai_identity ?? '',
+    senderSubidentity: `${auth?.profile}`,
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+    my_device_identity_sk: auth?.profile_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+  });
+  const { isLoading, mutateAsync: createJob } = useCreateJob({
+    onSuccess: (data) => {
+      // TODO: job_inbox, false is hardcoded
+      const jobId = encodeURIComponent(`job_inbox::${data.jobId}::false`);
+      history.replace(`/inboxes/${jobId}`);
+    },
+  });
+  const submit = (values: FormSchemaType) => {
+    if (!auth) return;
     let content = values.content;
     if (query.has('context')) {
       content = `${values.content} - ${query.get('context')}`;
     }
-    dispatch(
-      createJob({
-        agentId: values.agent,
-        content,
-      }),
-    )
-      .unwrap()
-      .then((value) => {
-        const jobId = encodeURIComponent(`job_inbox::${value.job.id}::false`);
-        history.replace(`/inboxes/${jobId}`);
-      })
-      .catch(() => {
-        console.log('error creating job');
-      });
+    createJob({
+      shinkaiIdentity: auth.shinkai_identity,
+      profile: auth.profile,
+      agentId: values.agent,
+      content: content,
+      files_inbox: '',
+      my_device_encryption_sk: auth.my_device_encryption_sk,
+      my_device_identity_sk: auth.my_device_identity_sk,
+      node_encryption_pk: auth.node_encryption_pk,
+      profile_encryption_sk: auth.profile_encryption_sk,
+      profile_identity_sk: auth.profile_identity_sk,
+    });
   };
-  useEffect(() => {
-    dispatch(getAgents());
-  }, [dispatch]);
 
   return (
     <Form {...form}>

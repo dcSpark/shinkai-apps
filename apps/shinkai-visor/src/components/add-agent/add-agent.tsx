@@ -37,12 +37,12 @@ const formSchema = z.object({
   model: z.nativeEnum(Models),
 });
 
-type AddAgentFieldType = z.infer<typeof formSchema>;
+type FormSchemaType = z.infer<typeof formSchema>;
 
 export const AddAgent = () => {
   const history = useHistory();
   const auth = useAuth((state) => state.auth);
-  const form = useForm<AddAgentFieldType>({
+  const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       agentName: 'gpt',
@@ -73,7 +73,7 @@ export const AddAgent = () => {
       label: intl.formatMessage({ id: 'sleep-api' }),
     },
   ];
-  const submit = (values: AddAgentFieldType) => {
+  const submit = (values: FormSchemaType) => {
     if (!auth) return;
     createAgent({
       sender_subidentity: auth.profile,
