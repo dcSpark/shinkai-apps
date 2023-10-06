@@ -82,4 +82,5 @@ module.exports = {
     },
   },
   plugins: [require('tailwindcss-animate')],
+  safelist: process.env.NODE_ENV === 'development' ? [{ pattern: /./ }] : [],
 };
