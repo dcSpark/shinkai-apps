@@ -28,15 +28,15 @@ import {
 import { Input } from '../ui/input';
 
 const formSchema = z.object({
-  registrationCode: z.string().nonempty(),
+  registrationCode: z.string().optional(),
   registrationName: z.string().nonempty(),
   permissionType: z.enum(['admin']),
   identityType: z.enum(['device']),
   profile: z.enum(['main']),
   nodeAddress: z.string().url(),
   shinkaiIdentity: z.string().nonempty(),
-  nodeEncryptionPublicKey: z.string().nonempty(),
-  nodeSignaturePublicKey: z.string().nonempty(),
+  nodeEncryptionPublicKey: z.string().optional(),
+  nodeSignaturePublicKey: z.string().optional(),
   profileEncryptionPublicKey: z.string().nonempty(),
   profileSignaturePublicKey: z.string().nonempty(),
   myDeviceEncryptionPublicKey: z.string().nonempty(),
@@ -66,6 +66,9 @@ enum AddNodeSteps {
 export const AddNode = () => {
   const history = useHistory();
   const setAuth = useAuth((state) => state.setAuth);
+  const DEFAULT_NODE_ADDRESS = 'http://127.0.0.1:9550';
+  // TODO: This value should be obtained from node
+  const DEFAULT_SHINKAI_IDENTITY = '@@node1.shinkai';
   const form = useForm<FormType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -100,8 +103,8 @@ export const AddNode = () => {
           permission_type: values.permissionType,
           node_address: values.nodeAddress,
           shinkai_identity: values.shinkaiIdentity,
-          node_signature_pk: response.data?.identity_public_key ?? values.nodeSignaturePublicKey,
-          node_encryption_pk: response.data?.encryption_public_key ?? values.nodeEncryptionPublicKey,
+          node_signature_pk: response.data?.identity_public_key ?? values.nodeSignaturePublicKey ?? '',
+          node_encryption_pk: response.data?.encryption_public_key ?? values.nodeEncryptionPublicKey ?? '',
           registration_name: values.registrationName,
           my_device_identity_pk: values.myDeviceIdentityPublicKey,
           my_device_identity_sk: values.myDeviceIdentitySharedKey,
@@ -206,13 +209,13 @@ export const AddNode = () => {
   const connect = (values: FormType) => {
     console.log('values', values);
     submitRegistration({
-      registration_code: values.registrationCode,
+      registration_code: values.registrationCode ?? '',
       profile: values.profile,
       identity_type: values.identityType,
       permission_type: values.permissionType,
       node_address: values.nodeAddress,
       shinkai_identity: values.shinkaiIdentity,
-      node_encryption_pk: values.nodeEncryptionPublicKey,
+      node_encryption_pk: values.nodeEncryptionPublicKey ?? '',
       registration_name: values.registrationName,
       my_device_identity_sk: values.myDeviceIdentitySharedKey,
       my_device_encryption_sk: values.myDeviceEncryptionSharedKey,
@@ -245,8 +248,22 @@ export const AddNode = () => {
     );
   }, [form]);
 
+  useEffect(() => {
+    fetch(`${DEFAULT_NODE_ADDRESS}/v1/shinkai_health`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === 'ok') {
+          form.setValue('nodeAddress', DEFAULT_NODE_ADDRESS);
+          form.setValue('shinkaiIdentity', DEFAULT_SHINKAI_IDENTITY);
+          setCurrentStep(AddNodeSteps.Connect)
+        }
+      })
+      .catch((error) => console.error('error polling', error));
+  }, [form]);
+
   return (
     <div className="h-full flex flex-col space-y-3">
+      <span className='text-xl'>Connect</span>
       <div className="h-full flex flex-col grow place-content-center">
         {currentStep === AddNodeSteps.ScanQR && (
           <div className="h-full flex flex-col space-y-3 justify-between">
