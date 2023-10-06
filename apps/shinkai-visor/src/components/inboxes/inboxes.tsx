@@ -2,6 +2,7 @@ import './inboxes.css';
 
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
 import { Bot } from 'lucide-react';
+import { Fragment } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
@@ -57,17 +58,12 @@ export const Inboxes = () => {
           </Button>
         </div>
       ) : (
-        <ScrollArea>
+        <ScrollArea className="[&>div>div]:!block">
           {inboxIds?.map((inboxId) => (
-            <div key={inboxId}>
-              <div
-                className="text-ellipsis overflow-hidden whitespace-nowrap"
-                onClick={() => navigateToInbox(inboxId)}
-              >
-                {inboxId}
-              </div>
+            <Fragment key={inboxId}>
+              <Button className="text-ellipsis overflow-hidden whitespace-nowrap" onClick={() => navigateToInbox(inboxId)} variant="link">{decodeURIComponent(inboxId)}</Button>
               <Separator className="my-2" />
-            </div>
+            </Fragment>
           ))}
         </ScrollArea>
       )}

@@ -181,7 +181,7 @@ export const Inbox = () => {
                       <div key={date}>
                         <div
                           className={cn(
-                            'relative z-10 m-auto flex w-[140px] items-center justify-center rounded-xl bg-slate-900 shadow-lg transition-opacity',
+                            'relative z-10 m-auto flex w-[140px] items-center justify-center rounded-xl bg-white shadow-lg transition-opacity',
                             true && 'sticky top-5'
                           )}
                         >
