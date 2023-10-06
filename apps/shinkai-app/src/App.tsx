@@ -31,8 +31,37 @@ import Home from './pages/Home';
 import JobChat from './pages/JobChat';
 import Settings from './pages/Settings';
 import { persistor, store } from './store';
+import { useAuth } from './store/auth';
 
 setupIonicReact();
+
+function PrivateRoute({
+  children,
+  ...rest
+}: {
+  children: React.ReactNode;
+  path: string;
+  exact?: boolean;
+}) {
+  const auth = useAuth((state) => state.auth);
+  return (
+    <Route
+      {...rest}
+      render={({ location }) => {
+        return auth ? (
+          children
+        ) : (
+          <Redirect
+            to={{
+              pathname: '/connect',
+              state: { from: location },
+            }}
+          />
+        );
+      }}
+    />
+  );
+}
 
 const App: React.FC = () => {
   const setupComplete = localStorage.getItem('setupComplete') === 'true';
@@ -45,19 +74,31 @@ const App: React.FC = () => {
           <IonReactRouter>
             <IonRouterOutlet>
               <Route component={Connect} path="/connect" />
-              <Route component={Home} exact path="/home" />
-              <Route component={AdminCommands} exact path="/admin-commands" />
-              <Route component={CreateJob} exact path="/create-job" />
-              <Route component={CreateChat} exact path="/create-chat" />
-              <Route component={AddAgent} exact path="/add-agent" />
-              <Route component={Chat} exact path="/chat/:id" />
-              <Route component={JobChat} exact path="/job-chat/:id" />
-              <Route component={Settings} path="/settings" />
-              {!setupComplete ? (
-                <Redirect exact from="/" to="/connect" />
-              ) : (
-                <Redirect exact from="/" to="/home" />
-              )}
+              <PrivateRoute exact path="/home">
+                <Home />
+              </PrivateRoute>
+              <PrivateRoute exact path="/admin-commands">
+                <AdminCommands />
+              </PrivateRoute>
+              <PrivateRoute exact path="/create-job">
+                <CreateJob />
+              </PrivateRoute>
+              <PrivateRoute exact path="/create-chat">
+                <CreateChat />
+              </PrivateRoute>
+              <PrivateRoute exact path="/add-agent">
+                <AddAgent />
+              </PrivateRoute>
+              <PrivateRoute exact path="/chat/:id">
+                <Chat />
+              </PrivateRoute>
+              <PrivateRoute exact path="/job-chat/:id">
+                <JobChat />
+              </PrivateRoute>
+              <PrivateRoute path="/settings">
+                <Settings />
+              </PrivateRoute>
+              <Redirect exact from="/" to="/home" />
             </IonRouterOutlet>
           </IonReactRouter>
         </IonApp>
