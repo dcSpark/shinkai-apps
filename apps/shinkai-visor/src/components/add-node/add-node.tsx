@@ -207,7 +207,6 @@ export const AddNode = () => {
   };
 
   const connect = (values: FormType) => {
-    console.log('values', values);
     submitRegistration({
       registration_code: values.registrationCode ?? '',
       profile: values.profile,

@@ -1,9 +1,14 @@
 import './inboxes.css';
 
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
+import { Bot } from 'lucide-react';
+import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
+import logo from '../../../src/assets/icons/shinkai-min.svg';
+import { srcUrlResolver } from '../../helpers/src-url-resolver';
 import { useAuth } from '../../store/auth/auth';
+import { Button } from '../ui/button';
 import { ScrollArea } from '../ui/scroll-area';
 import { Separator } from '../ui/separator';
 
@@ -29,19 +34,43 @@ export const Inboxes = () => {
 
   return (
     <div className="h-full flex flex-col space-y-3 justify-between overflow-hidden">
-      <ScrollArea>
-        {inboxIds?.map((inboxId) => (
-          <div key={inboxId}>
-            <div
-              className="text-ellipsis overflow-hidden whitespace-nowrap"
-              onClick={() => navigateToInbox(inboxId)}
-            >
-              {inboxId}
-            </div>
-            <Separator className="my-2" />
+      {!inboxIds?.length ? (
+        <div className="grow flex flex-col space-y-3 items-center justify-center">
+          <div className="grid place-content-center">
+            <img
+              alt="shinkai logo"
+              className="animate-spin-slow h-20 w-20"
+              data-cy="shinkai-logo"
+              src={srcUrlResolver(logo)}
+            />
           </div>
-        ))}
-      </ScrollArea>
+          <p className="text-lg">
+            <FormattedMessage id="ask-to-shinkai-ai" />
+          </p>
+          <p className="text-sm text-center">
+            <FormattedMessage id="ask-to-shinkai-ai-example" />
+          </p>
+
+          <Button className="w-full" onClick={() => history.push('/agents/add')}>
+            <Bot className="w-4 h-4"/>
+            <FormattedMessage id="add-agent" />
+          </Button>
+        </div>
+      ) : (
+        <ScrollArea>
+          {inboxIds?.map((inboxId) => (
+            <div key={inboxId}>
+              <div
+                className="text-ellipsis overflow-hidden whitespace-nowrap"
+                onClick={() => navigateToInbox(inboxId)}
+              >
+                {inboxId}
+              </div>
+              <Separator className="my-2" />
+            </div>
+          ))}
+        </ScrollArea>
+      )}
     </div>
   );
 };
