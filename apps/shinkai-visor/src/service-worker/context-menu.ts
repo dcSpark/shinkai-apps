@@ -47,7 +47,7 @@ const registerMenu = () => {
   );
   chrome.contextMenus.create({
     id: ContextMenu.SendToAgent,
-    title: 'Send to agent',
+    title: 'Ask to agent',
     contexts: ['all']
   });
 }

@@ -13,6 +13,7 @@ import { ContentScriptMessageType } from '../../service-worker/communication/con
 import { sendContentScriptMessage } from '../../service-worker/communication/content-script-messages';
 import { store, storePersistor } from '../../store';
 import themeStyle from '../../theme/styles.css?inline';
+import { CommandShortcut } from '../ui/command';
 import popupStyle from './action-button.css?inline';
 
 let container = document.getElementById('shinkai-action-button-root');
@@ -32,7 +33,6 @@ export const ActionButton = () => {
   const togglePopupVisibility = () => {
     sendContentScriptMessage({
       type: ContentScriptMessageType.TogglePopupVisibility,
-      data: !popupVisibility,
     });
   };
   return (
@@ -69,5 +69,5 @@ root.render(
         </IntlProvider>
       </PersistGate>
     </Provider>
-  </React.StrictMode>,
+  </React.StrictMode>
 );

@@ -14,7 +14,7 @@ export const useGlobalPopupChromeMessage = () => {
       history.replace({ pathname: '/jobs/create', search: params.toString() });
     } else if (message.type === ServiceWorkerMessageType.ContentScript) {
       if (message.data.type === ContentScriptMessageType.TogglePopupVisibility) {
-        setPopupVisibility(message.data.data);
+        setPopupVisibility(message.data.data !== undefined ? message.data.data : !popupVisibility);
       }
     }
   });

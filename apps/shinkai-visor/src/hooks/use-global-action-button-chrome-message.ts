@@ -12,7 +12,7 @@ export const useGlobalActionButtonChromeMessage = () => {
       sendContentScriptMessage({ type: ContentScriptMessageType.TogglePopupVisibility, data: true });
     } else if (message.type === ServiceWorkerMessageType.ContentScript) {
       if (message.data.type === ContentScriptMessageType.TogglePopupVisibility) {
-        setPopupVisibility(message.data.data);
+        setPopupVisibility(message.data.data !== undefined ? message.data.data : !popupVisibility);
       }
     }
   });
