@@ -1,7 +1,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 
-import { getChatConversation } from ".";
 import { FunctionKey } from "../../constants";
+import { getChatConversation } from ".";
 import { GetChatConversationInput } from "./types";
 
 export const CONVERSATION_PAGINATION_LIMIT = 10;

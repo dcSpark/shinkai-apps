@@ -1,6 +1,5 @@
-import type { ShinkaiMessage } from "@shinkai_network/shinkai-message-ts/models";
-
 import { getLastMessagesFromInbox } from "@shinkai_network/shinkai-message-ts/api";
+import type { ShinkaiMessage } from "@shinkai_network/shinkai-message-ts/models";
 
 import { GetChatConversationInput } from "./types";
 import { CONVERSATION_PAGINATION_LIMIT } from "./useGetChatConversationWithPagination";

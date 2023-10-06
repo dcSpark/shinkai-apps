@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { getLastUnreadMessages } from ".";
 import { FunctionKey } from "../../constants";
+import { getLastUnreadMessages } from ".";
 import { GetLastUnreadMessagesInput } from "./types";
 
 export const useGetLastUnreadMessages = (input: GetLastUnreadMessagesInput) => {
