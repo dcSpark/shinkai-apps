@@ -1,4 +1,7 @@
-import { submitInitialRegistrationNoCode } from "@shinkai_network/shinkai-message-ts/api";
+import {
+  submitInitialRegistrationNoCode,
+  submitRegistrationCode,
+} from "@shinkai_network/shinkai-message-ts/api";
 
 export type SetupDataArgs = {
   my_device_encryption_sk: string;
@@ -14,7 +17,12 @@ export type SetupDataArgs = {
   shinkai_identity: string;
   node_address: string;
 };
-export const submitRegistration = async (setupData: SetupDataArgs) => {
+export const submitRegistrationNoCode = async (setupData: SetupDataArgs) => {
   const response = await submitInitialRegistrationNoCode(setupData);
+  return response;
+};
+
+export const submitRegistration = async (setupData: SetupDataArgs) => {
+  const response = await submitRegistrationCode(setupData);
   return response;
 };
