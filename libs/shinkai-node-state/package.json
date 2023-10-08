@@ -1,0 +1,11 @@
+{
+  "name": "@shinkai/shinkai-node-state",
+  "version": "0.0.1",
+  "main": "./index.js",
+  "module": "./index.mjs",
+  "typings": "./index.d.ts",
+  "dependencies": {
+    "@tanstack/react-query": "^4.35.7",
+    "@shinkai_network/shinkai-message-ts": "*"
+  }
+}

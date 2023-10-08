@@ -7,8 +7,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 
 import visorLogo from '../../assets/icons/visor.svg';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
-import { useTypedDispatch } from '../../store';
-import { disconnectNode } from '../../store/node/node-actions';
+import { useAuth } from '../../store/auth/auth';
 import { Button } from '../ui/button';
 import {
   DropdownMenu,
@@ -31,18 +30,18 @@ enum MenuOption {
 export default function NavBar() {
   const history = useHistory();
   const location = useLocation();
+  const setLogout = useAuth((state) => state.setLogout);
   const [isMenuOpened, setMenuOpened] = useState(false);
   const isRootPage = ['/welcome', '/inboxes', '/agents', '/jobs'].includes(
     location.pathname,
   );
-  const dispatch = useTypedDispatch();
 
   function goBack() {
     history.goBack();
   }
 
   const logout = (): void => {
-    dispatch(disconnectNode());
+    setLogout();
   };
 
   const onClickMenuOption = (key: MenuOption) => {

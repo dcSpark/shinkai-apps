@@ -1,10 +1,10 @@
+import { ApiConfig } from '@shinkai_network/shinkai-message-ts/api/api_config';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { Route, Switch, useHistory, useLocation } from 'react-router-dom';
 
 import { useGlobalPopupChromeMessage } from '../../hooks/use-global-popup-chrome-message';
-import { RootState } from '../../store';
+import { useAuth } from '../../store/auth/auth';
 import { AddAgent } from '../add-agent/add-agent';
 import { AddNode } from '../add-node/add-node';
 import { Agents } from '../agents/agents';
@@ -19,17 +19,19 @@ import { WithNav } from '../with-nav/with-nav';
 
 export const PopupRouting = () => {
   const history = useHistory();
-  const authStatus = useSelector((state: RootState) => state?.auth?.status);
+  const auth = useAuth((state) => state.auth);
   const location = useLocation();
   const [popupVisibility] = useGlobalPopupChromeMessage();
   useEffect(() => {
-    if (authStatus === 'authenticated') {
+    const isAuthenticated = !!auth; 
+    if (isAuthenticated) {
+      ApiConfig.getInstance().setEndpoint(auth.node_address);
       history.replace('/inboxes');
       return;
-    } else if (authStatus === 'unauthenticated') {
+    } else {
       history.replace('/welcome');
     }
-  }, [authStatus, history]);
+  }, [history, auth]);
   return (
     <AnimatePresence>
       {popupVisibility && (

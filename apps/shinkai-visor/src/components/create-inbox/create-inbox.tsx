@@ -1,14 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useCreateChat } from "@shinkai_network/shinkai-node-state/lib/mutations/createChat/useCreateChat";
 import { Loader2 } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { useSelector } from 'react-redux';
+import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 import { z } from 'zod';
 
-import { RootState, useTypedDispatch } from '../../store';
-import { createInbox } from '../../store/inbox/inbox-actions';
+import { useAuth } from '../../store/auth/auth';
 import { Button } from '../ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 import { Input } from '../ui/input';
@@ -18,46 +17,49 @@ const formSchema = z.object({
   message: z.string().nonempty(),
 });
 
-type CreateInboxFieldType = z.infer<typeof formSchema>;
+type FormSchemaType = z.infer<typeof formSchema>;
 
 export const CreateInbox = () => {
   const history = useHistory();
-  const form = useForm<CreateInboxFieldType>({
+  const auth = useAuth((state) => state.auth);
+
+  const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       receiverIdentity: '',
       message: '',
     },
   });
-  const isLoading = useSelector(
-    (state: RootState) => state.inbox?.create?.status === 'loading'
-  );
-  const dispatch = useTypedDispatch();
-  const node = useSelector((state: RootState) => state.node.data);
-  const submit = (values: CreateInboxFieldType) => {
-    dispatch(
-      createInbox({
-        receiverIdentity: values.receiverIdentity,
-        message: values.message,
-      })
-    )
-      .unwrap()
-      .then((createdInbox) => {
-        history.replace(
-          `/inboxes/${encodeURIComponent(createdInbox.inbox.id)}`
-        );
-      })
-      .catch(() => {
-        console.log('error creating inbox');
-      });
+  const { isLoading, mutateAsync: createChat } = useCreateChat({
+    onSuccess: (data) => {
+      history.replace(
+        `/inboxes/${encodeURIComponent(data.inboxId)}`
+      );
+    },
+  });
+  const submit = (values: FormSchemaType) => {
+    if (!auth) return;
+    const [receiver, ...rest] = values.receiverIdentity.split("/");
+    createChat({
+      sender: auth.shinkai_identity,
+      senderSubidentity: `${auth.profile}/device/${auth.registration_name}`,
+      receiver,
+      receiverSubidentity: rest.join("/"),
+      message: values.message,
+      my_device_encryption_sk: auth.my_device_encryption_sk,
+      my_device_identity_sk: auth.my_device_identity_sk,
+      node_encryption_pk: auth.node_encryption_pk,
+    });
   };
+
   useEffect(() => {
-    if (!node) {
+    if (!auth) {
       return;
     }
-    const defaultReceiverIdentity = `${node.nodeData.shinkaiIdentity}/${node.nodeData.profile}/device/${node.userData.registrationName}`;
+    const defaultReceiverIdentity = `${auth.shinkai_identity}/${auth.profile}/device/${auth.registration_name}`;
     form.setValue('receiverIdentity', defaultReceiverIdentity);
-  }, [form, node]);
+  }, [auth, form]);
+
   return (
     <Form {...form}>
       <form
