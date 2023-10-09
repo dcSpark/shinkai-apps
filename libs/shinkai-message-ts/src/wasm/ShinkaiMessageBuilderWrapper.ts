@@ -514,10 +514,6 @@ export class ShinkaiMessageBuilderWrapper {
     sender_subidentity: string,
     receiver: string,
   ): string {
-    console.log('send_create_files_inbox_with_sym_key');
-    console.log('sender: ', sender);
-    console.log('receiver: ', receiver);
-    console.log('inbox: ', inbox);
     const builder = new ShinkaiMessageBuilderWrapperWASM(
       my_encryption_secret_key,
       my_signature_secret_key,
@@ -532,7 +528,7 @@ export class ShinkaiMessageBuilderWrapper {
       inbox,
       'None'
     );
-    builder.external_metadata(receiver, sender);
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption(
       'DiffieHellmanChaChaPoly1305'
     );

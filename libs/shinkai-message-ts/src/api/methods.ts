@@ -236,9 +236,6 @@ export const getLastMessagesFromInbox = async (
   setupDetailsState: LastMessagesFromInboxCredentialsPayload
 ): Promise<any[]> => {
   try {
-    const sender =
-      setupDetailsState.shinkai_identity + '/' + setupDetailsState.profile;
-
     const messageStr =
       ShinkaiMessageBuilderWrapper.get_last_messages_from_inbox(
         setupDetailsState.profile_encryption_sk,
@@ -247,8 +244,8 @@ export const getLastMessagesFromInbox = async (
         inbox,
         count,
         lastKey,
-        sender,
-        '',
+        setupDetailsState.shinkai_identity,
+        setupDetailsState.profile,
         setupDetailsState.shinkai_identity
       );
 
@@ -276,9 +273,6 @@ export const getLastUnreadMessagesFromInbox = async (
   setupDetailsState: LastMessagesFromInboxCredentialsPayload
 ): Promise<any[]> => {
   try {
-    const sender =
-      setupDetailsState.shinkai_identity + '/' + setupDetailsState.profile;
-
     const messageStr =
       ShinkaiMessageBuilderWrapper.get_last_messages_from_inbox(
         setupDetailsState.profile_encryption_sk,
@@ -287,8 +281,8 @@ export const getLastUnreadMessagesFromInbox = async (
         inbox,
         count,
         fromKey,
-        sender,
-        '',
+        setupDetailsState.shinkai_identity,
+        setupDetailsState.profile,
         setupDetailsState.shinkai_identity
       );
 
@@ -578,8 +572,8 @@ export const addAgent = async (
       setupDetailsState.profile_encryption_sk,
       setupDetailsState.profile_identity_sk,
       setupDetailsState.node_encryption_pk,
-      node_name + '/' + sender_subidentity,
-      '',
+      node_name,
+      sender_subidentity,
       node_name,
       agent_wrapped
     );

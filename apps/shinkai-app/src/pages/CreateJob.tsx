@@ -55,8 +55,8 @@ const CreateJob: React.FC = () => {
       const sender_subidentity = `${profile}`;
 
       const profiles = await getProfileAgents(
-        node_name + '/' + sender_subidentity,
-        '',
+        node_name,
+        sender_subidentity,
         node_name,
         setupDetailsState
       );
