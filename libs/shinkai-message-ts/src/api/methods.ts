@@ -455,6 +455,7 @@ export const pingAllNodes = async (): Promise<string> => {
 export const createJob = async (
   scope: any,
   sender: string,
+  sender_subidentity: string,
   receiver: string,
   receiver_subidentity: string,
   setupDetailsState: JobCredentialsPayload
@@ -466,6 +467,7 @@ export const createJob = async (
       setupDetailsState.node_encryption_pk,
       scope,
       sender,
+      sender_subidentity,
       receiver,
       receiver_subidentity
     );
@@ -492,6 +494,7 @@ export const sendMessageToJob = async (
   content: string,
   files_inbox: string,
   sender: string,
+  sender_subidentity: string,
   receiver: string,
   receiver_subidentity: string,
   setupDetailsState: JobCredentialsPayload
@@ -505,6 +508,7 @@ export const sendMessageToJob = async (
       setupDetailsState.profile_identity_sk,
       setupDetailsState.node_encryption_pk,
       sender,
+      sender_subidentity,
       receiver,
       receiver_subidentity
     );

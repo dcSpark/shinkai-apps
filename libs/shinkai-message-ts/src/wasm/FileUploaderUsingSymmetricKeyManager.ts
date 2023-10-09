@@ -151,6 +151,7 @@ export class FileUploader {
         this.my_signature_secret_key,
         this.receiver_public_key,
         this.sender,
+        this.sender_subidentity,
         this.receiver,
         this.sender_subidentity
       );

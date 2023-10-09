@@ -61,6 +61,7 @@ test('ShinkaiMessageBuilderWrapper should construct correctly and create a new a
     keys.my_identity_sk_string,
     keys.receiver_public_key_string,
     sender,
+    "",
     receiver
   );
 

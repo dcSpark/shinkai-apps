@@ -119,6 +119,7 @@ export class ShinkaiMessageBuilderWrapper {
     my_signature_secret_key: string,
     receiver_public_key: string,
     sender: string,
+    sender_subidentity: string,
     receiver: string
   ): string {
     return ShinkaiMessageBuilderWrapperWASM.ack_message(
@@ -126,6 +127,7 @@ export class ShinkaiMessageBuilderWrapper {
       my_signature_secret_key,
       receiver_public_key,
       sender,
+      sender_subidentity,
       receiver
     );
   }
@@ -311,6 +313,7 @@ export class ShinkaiMessageBuilderWrapper {
     receiver_public_key: string,
     scope: any,
     sender: string,
+    sender_subidentity: string,
     receiver: string,
     receiver_subidentity: string
   ): string {
@@ -320,6 +323,7 @@ export class ShinkaiMessageBuilderWrapper {
       receiver_public_key,
       scope,
       sender,
+      sender_subidentity,
       receiver,
       receiver_subidentity
     );
@@ -333,6 +337,7 @@ export class ShinkaiMessageBuilderWrapper {
     my_signature_secret_key: string,
     receiver_public_key: string,
     sender: string,
+    sender_subidentity: string,
     receiver: string,
     receiver_subidentity: string
   ): string {
@@ -344,6 +349,7 @@ export class ShinkaiMessageBuilderWrapper {
       my_signature_secret_key,
       receiver_public_key,
       sender,
+      sender_subidentity,
       receiver,
       receiver_subidentity
     );
@@ -354,6 +360,7 @@ export class ShinkaiMessageBuilderWrapper {
     my_signature_secret_key: string,
     receiver_public_key: string,
     sender: string,
+    sender_subidentity: string,
     receiver: string
   ): string {
     return ShinkaiMessageBuilderWrapperWASM.terminate_message(
@@ -361,6 +368,7 @@ export class ShinkaiMessageBuilderWrapper {
       my_signature_secret_key,
       receiver_public_key,
       sender,
+      sender_subidentity,
       receiver
     );
   }
@@ -370,6 +378,7 @@ export class ShinkaiMessageBuilderWrapper {
     my_signature_secret_key: string,
     receiver_public_key: string,
     sender: string,
+    sender_subidentity: string,
     receiver: string,
     error_msg: string
   ): string {
@@ -378,6 +387,7 @@ export class ShinkaiMessageBuilderWrapper {
       my_signature_secret_key,
       receiver_public_key,
       sender,
+      sender_subidentity,
       receiver,
       error_msg
     );
