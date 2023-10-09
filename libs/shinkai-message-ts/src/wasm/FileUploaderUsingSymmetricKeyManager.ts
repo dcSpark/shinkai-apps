@@ -129,7 +129,7 @@ export class FileUploader {
       const nonce = Array.from(iv).map(b => b.toString(16).padStart(2, '0')).join('');
 
       const formData = new FormData();
-      formData.append(filename || file.name, new Blob([encryptedFileData]));
+      formData.append('file', new Blob([encryptedFileData]), filename || file.name);
 
       await fetch(`${this.base_url}/v1/add_file_to_inbox_with_symmetric_key/${hash}/${nonce}`, {
         method: 'POST',
