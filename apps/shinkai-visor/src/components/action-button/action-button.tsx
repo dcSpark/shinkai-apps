@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 
 import shinkaiLogo from '../../assets/icons/shinkai-min.svg';
+import { cn } from '../../helpers/cn-utils';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
 import { useGlobalActionButtonChromeMessage } from '../../hooks/use-global-action-button-chrome-message';
 import { langMessages, locale } from '../../lang/intl';
@@ -32,25 +33,29 @@ export const ActionButton = () => {
   const togglePopupVisibility = () => {
     sendContentScriptMessage({
       type: ContentScriptMessageType.TogglePopupVisibility,
-      data: !popupVisibility,
     });
   };
   return (
-    <div className="p-2" onClick={() => togglePopupVisibility()}>
+    <div
+      className={cn(
+        'p-1 w-[50px] h-[50px] flex flex-col space-y-1 items-center justify-center',
+        !popupVisibility && 'animate-pulse'
+      )}
+      onClick={() => togglePopupVisibility()}
+    >
       <motion.div
         animate={{
           rotate: popupVisibility ? -22 : 0,
         }}
-        className="block"
+        className="w-4 h-4"
       >
         <img
           alt="shinkai-app-logo"
-          className={`w-full h-full ${
-            popupVisibility ? '-rotate-[22deg]' : 'animate-pulse'
-          }`}
+          className={"w-full h-full"}
           src={srcUrlResolver(shinkaiLogo)}
         />
       </motion.div>
+      <span className="text-xs text-center">⌘ + ,</span>
     </div>
   );
 };
@@ -63,11 +68,11 @@ root.render(
     <Provider store={store}>
       <PersistGate loading={null} persistor={storePersistor}>
         <IntlProvider locale={locale} messages={langMessages}>
-          <div className="fixed w-[50px] h-[50px] top-32 right-2 overflow-hidden bg-background z-[1500000000] border-solid border-primary border-2 rounded-lg">
+          <div className="fixed top-32 right-2 overflow-hidden bg-background z-[1500000000] border-solid border-primary border-2 rounded-lg">
             <ActionButton></ActionButton>
           </div>
         </IntlProvider>
       </PersistGate>
     </Provider>
-  </React.StrictMode>,
+  </React.StrictMode>
 );

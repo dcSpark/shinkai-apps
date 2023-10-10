@@ -56,6 +56,7 @@ export const InboxInput = (props: InboxInputProps) => {
               <FormItem>
                 <FormControl>
                   <Input
+                    disabled={props.loading}
                     placeholder={intl.formatMessage({
                       id: 'tmwtd',
                     })}

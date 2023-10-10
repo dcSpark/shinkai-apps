@@ -58,8 +58,11 @@ export const PopupRouting = () => {
             <WithNav>
               <Route path="/inboxes">
                 <Switch>
-                  <Route path="/inboxes/create">
+                  <Route path="/inboxes/create-inbox">
                     <CreateInbox></CreateInbox>
+                  </Route>
+                  <Route path="/inboxes/create-job">
+                    <CreateJob></CreateJob>
                   </Route>
                   <Route path="/inboxes/:inboxId">
                     <Inbox></Inbox>
@@ -77,14 +80,6 @@ export const PopupRouting = () => {
                   </Route>
                   <Route path="/">
                     <Agents></Agents>
-                  </Route>
-                </Switch>
-              </Route>
-
-              <Route path="/jobs">
-                <Switch>
-                  <Route path="/jobs/create">
-                    <CreateJob></CreateJob>
                   </Route>
                 </Switch>
               </Route>

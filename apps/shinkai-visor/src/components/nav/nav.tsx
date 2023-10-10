@@ -50,10 +50,10 @@ export default function NavBar() {
         history.replace('/inboxes');
         break;
       case MenuOption.CreateInbox:
-          history.replace('/inboxes/create');
+          history.replace('/inboxes/create-inbox');
           break;
       case MenuOption.CreateJob:
-        history.replace('/jobs/create');
+        history.replace('/inboxes/create-job');
         break;
       case MenuOption.Agents:
         history.replace('/agents');

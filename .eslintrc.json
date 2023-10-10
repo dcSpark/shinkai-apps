@@ -32,7 +32,9 @@
     {
       "files": ["*.ts", "*.tsx"],
       "extends": ["plugin:@nx/typescript"],
-      "rules": {}
+      "rules": {
+        "react/no-unknown-property": ["error", { "ignore": ["cmdk-input-wrapper"] }]
+      }
     },
     {
       "files": ["*.js", "*.jsx"],
