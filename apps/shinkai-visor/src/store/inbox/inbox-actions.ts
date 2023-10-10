@@ -122,13 +122,13 @@ export const sendMessage = createAsyncThunk<
   ApiConfig.getInstance().setEndpoint(node.nodeData.nodeAddress);
 
   if (isJobInbox(args.inboxId)) {
-    const sender = `${node.nodeData.shinkaiIdentity}/${node.nodeData.profile}`;
     const jobId = extractJobIdFromInbox(args.inboxId);
     await sendMessageToJob(
       jobId,
       args.message,
       '',
-      sender,
+      node.nodeData.shinkaiIdentity,
+      node.nodeData.profile,
       node.nodeData.shinkaiIdentity,
       '',
       {

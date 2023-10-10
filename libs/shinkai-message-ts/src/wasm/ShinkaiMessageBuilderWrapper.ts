@@ -81,6 +81,10 @@ export class ShinkaiMessageBuilderWrapper {
     this.wasmBuilder.external_metadata(recipient, sender);
   }
 
+  external_metadata_with_intra(recipient: string, sender: string, intra_sender: string): void {
+    this.wasmBuilder.external_metadata_with_intra(recipient, sender, intra_sender);
+  };
+
   external_metadata_with_other(
     recipient: string,
     sender: string,
@@ -459,9 +463,10 @@ export class ShinkaiMessageBuilderWrapper {
       inbox,
       'None'
     );
-    builder.external_metadata(receiver, sender);
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    // TODO: At this point we are forcing unencrypted message until we implement message response in shinkai-node
     builder.body_encryption(
-      'DiffieHellmanChaChaPoly1305'
+      'None'
     );
 
     const message = builder.build_to_string();

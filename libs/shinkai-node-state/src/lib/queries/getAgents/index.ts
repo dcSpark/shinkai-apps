@@ -12,8 +12,7 @@ export const getAgents = async ({
   profile_encryption_sk,
   profile_identity_sk,
 }: GetAgentsInput) => {
-  const profile_sender = sender + "/" + senderSubidentity;
-  const result = await getProfileAgents(profile_sender, "", shinkaiIdentity, {
+  const result = await getProfileAgents(sender, senderSubidentity, shinkaiIdentity, {
     my_device_encryption_sk,
     my_device_identity_sk,
     node_encryption_pk,
