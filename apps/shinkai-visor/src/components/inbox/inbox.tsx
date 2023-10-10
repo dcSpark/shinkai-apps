@@ -97,8 +97,8 @@ export const Inbox = () => {
   const getAvatar = (message: ShinkaiMessage) => {
     return isLocalMessage(
       message,
-      auth?.profile || '',
-      auth?.registration_name || ''
+      auth?.shinkai_identity || '',
+      auth?.profile || ''
     )
       ? 'https://ui-avatars.com/api/?name=Me&background=FE6162&color=fff'
       : 'https://ui-avatars.com/api/?name=O&background=363636&color=fff';
@@ -174,20 +174,6 @@ export const Inbox = () => {
             ))}
           {isChatConversationSuccess &&
             data?.pages?.map((group, index) => (
-              // <div
-              //   className={`flex w-max max-w-[75%] flex-col gap-2 rounded-b-lg px-3 py-2 text-sm bg-muted ${
-              //     isLocalMessage(
-              //       message,
-              //       setup.data?.nodeData?.shinkaiIdentity || '',
-              //       setup.data?.nodeData.profile || '',
-              //     )
-              //       ? 'ml-auto bg-primary text-primary-foreground rounded-l-lg'
-              //       : 'rounded-r-lg'
-              //   }`}
-              //   key={message.external_metadata?.scheduled_time}
-              // >
-              //   {getMessageContent(message)}
-              // </div>
               <Fragment key={index}>
                 {Object.entries(groupMessagesByDate(group)).map(
                   ([date, messages]) => {
@@ -195,7 +181,7 @@ export const Inbox = () => {
                       <div key={date}>
                         <div
                           className={cn(
-                            'relative z-10 m-auto flex w-[140px] items-center justify-center rounded-xl bg-slate-900 shadow-lg transition-opacity',
+                            'relative z-10 m-auto flex w-[140px] items-center justify-center rounded-xl bg-white shadow-lg transition-opacity',
                             true && 'sticky top-5'
                           )}
                         >
