@@ -13,36 +13,73 @@ import {
   IonToast,
 } from '@ionic/react';
 import { isPlatform } from '@ionic/react';
-import {
-  submitInitialRegistrationNoCode,
-  submitRegistrationCode,
-} from '@shinkai_network/shinkai-message-ts/api';
-import {
-  APIUseRegistrationCodeSuccessResponse,
-  QRSetupData,
-} from '@shinkai_network/shinkai-message-ts/models';
+import { QRSetupData } from '@shinkai_network/shinkai-message-ts/models';
 import {
   generateEncryptionKeys,
   generateSignatureKeys,
 } from '@shinkai_network/shinkai-message-ts/utils';
+import { queryClient } from '@shinkai_network/shinkai-node-state/lib/constants';
+import { useSubmitRegistration } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistration';
+import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
 import { QrScanner, QrScannerProps } from '@yudiel/react-qr-scanner';
 import { BrowserQRCodeReader } from '@zxing/browser';
 import { checkmarkSharp, cloudUpload, scan } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
-import type { AppDispatch, RootState } from '../store';
-import { useRegistrationCode } from '../store/actions';
+import { useAuth } from '../store/auth';
 import { SetupDetailsState } from '../store/reducers/setupDetailsReducer';
 
 export type MergedSetupType = SetupDetailsState & QRSetupData;
 
-const Connect: React.FC = () => {
+const Connect = () => {
+  const history = useHistory();
+  const setAuth = useAuth((state) => state.setAuth);
+  const setLogout = useAuth((state) => state.setLogout);
   const [mode, setMode] = useState<'Automatic' | 'Manual'>('Automatic');
+  const {
+    isLoading: isSubmitRegistrationLoading,
+    mutateAsync: submitRegistration,
+    isError: isSubmitRegistrationError,
+    error: submitRegistrationError,
+  } = useSubmitRegistration({
+    onSuccess: (response) => {
+      if (!response) throw new Error('Failed to submit registration');
+      setAuth(setupData);
+      history.push('/home');
+    },
+    onError: (error) => {
+      console.log('Error from submitRegistration', error);
+      toast.error(error.message);
+    },
+  });
+
+  const {
+    isLoading: isSubmitRegistrationNoCodeLoading,
+    mutateAsync: submitRegistrationNocode,
+    isError: isSubmitRegistrationNoCodeError,
+    error: submitRegistrationNoCodeError,
+  } = useSubmitRegistrationNoCode({
+    onSuccess: (response) => {
+      if (!response.success) throw new Error('Failed to submit registration');
+      const responseData = response.data;
+      const updatedSetupData = {
+        ...setupData,
+        node_encryption_pk: responseData?.encryption_public_key ?? '',
+        node_signature_pk: responseData?.identity_public_key ?? '',
+      };
+      setAuth(updatedSetupData);
+      history.push('/home');
+    },
+    onError: (error) => {
+      console.log('Error from submitRegistrationNocode', error);
+      toast.error(error.message);
+    },
+  });
+
   const [setupData, setSetupData] = useState<MergedSetupType>({
     registration_code: '',
     profile: 'main',
@@ -62,15 +99,18 @@ const Connect: React.FC = () => {
     my_device_identity_sk: '',
     my_device_identity_pk: '',
   });
-  const [status, setStatus] = useState<
-    'idle' | 'loading' | 'error' | 'success'
-  >('idle');
-  const [error, setError] = useState<string | null>(null);
-  const dispatch = useDispatch<AppDispatch>();
-  const history = useHistory();
-  const errorFromState = useSelector((state: RootState) => state.other.error);
+
+  const isLoading =
+    isSubmitRegistrationLoading || isSubmitRegistrationNoCodeLoading;
+
+  const isError = isSubmitRegistrationError || isSubmitRegistrationNoCodeError;
+
+  const error = submitRegistrationError || submitRegistrationNoCodeError;
 
   useEffect(() => {
+    setLogout();
+    queryClient.clear();
+
     fetch('http://127.0.0.1:9550/v1/shinkai_health')
       .then((response) => response.json())
       .then((data) => {
@@ -79,6 +119,7 @@ const Connect: React.FC = () => {
         }
       })
       .catch((error) => console.error('Error:', error));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Generate keys when the component mounts
@@ -170,39 +211,11 @@ const Connect: React.FC = () => {
   };
 
   const finishSetup = async () => {
-    setStatus('loading');
-    let success = false;
-    let responseData: APIUseRegistrationCodeSuccessResponse | undefined;
-
+    if (!setupData) return;
     if (mode === 'Automatic') {
-      const response = await submitInitialRegistrationNoCode(setupData);
-      success = response.success;
-      responseData = response.data;
+      await submitRegistrationNocode(setupData);
     } else if (mode === 'Manual') {
-      success = await submitRegistrationCode(setupData);
-    }
-
-    if (success) {
-      let updatedSetupData = { ...setupData };
-      if (responseData) {
-        // we can't update the state directly bc of race conditions
-        updatedSetupData = {
-          ...updatedSetupData,
-          node_encryption_pk: responseData.encryption_public_key,
-          node_signature_pk: responseData.identity_public_key,
-        };
-      }
-      // TODO: Fix this react warning
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      dispatch(useRegistrationCode(updatedSetupData));
-      setStatus('success');
-      localStorage.setItem('setupComplete', 'true');
-      history.push('/home');
-    } else {
-      setStatus('error');
-
-      console.log('Error from state:', errorFromState);
-      toast.error(errorFromState);
+      await submitRegistration(setupData);
     }
   };
 
@@ -215,7 +228,9 @@ const Connect: React.FC = () => {
       {/*</IonHeaderCustom>*/}
 
       <IonContent fullscreen>
-        {error && <IonToast color="danger" duration={2000} message={error} />}
+        {error && (
+          <IonToast color="danger" duration={2000} message={error.message} />
+        )}
         <div className="relative flex h-full min-h-screen-ios lg:p-6 md:px-6 md:pt-16 md:pb-10 bg-slate-900">
           <div className="relative hidden shrink-0 w-[40rem] p-20 overflow-hidden 2xl:w-[37.5rem] xl:w-[30rem] lg:p-10 lg:block">
             <div className="max-w-[25.4rem]">
@@ -386,7 +401,7 @@ const Connect: React.FC = () => {
                         />
                       </>
                     )}
-                    {status === 'error' && (
+                    {isError && (
                       <p
                         className={'text-red-600 text-base text-center'}
                         role={'alert'}
@@ -397,14 +412,11 @@ const Connect: React.FC = () => {
                     )}
                     <Button
                       className="mt-6"
-                      disabled={status === 'loading'}
+                      disabled={isLoading}
                       onClick={finishSetup}
                     >
-                      {status === 'loading' ? (
-                        <IonSpinner
-                          className={'w-10 h-10'}
-                          name="bubbles"
-                        ></IonSpinner>
+                      {isLoading ? (
+                        <IonSpinner className={'w-10 h-10'} name="bubbles" />
                       ) : (
                         'Sign In'
                       )}

@@ -17,9 +17,12 @@ import './theme/variables.css';
 
 import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
+import { ApiConfig } from '@shinkai_network/shinkai-message-ts/api';
+import { queryClient } from '@shinkai_network/shinkai-node-state/lib/constants';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { Provider } from 'react-redux';
 import { Redirect, Route } from 'react-router-dom';
-import { PersistGate } from 'redux-persist/integration/react';
 
 import AddAgent from './pages/AddAgent';
 import AdminCommands from './pages/AdminCommands';
@@ -30,7 +33,7 @@ import CreateJob from './pages/CreateJob';
 import Home from './pages/Home';
 import JobChat from './pages/JobChat';
 import Settings from './pages/Settings';
-import { persistor, store } from './store';
+import { store } from './store';
 import { useAuth } from './store/auth';
 
 setupIonicReact();
@@ -44,6 +47,10 @@ function PrivateRoute({
   exact?: boolean;
 }) {
   const auth = useAuth((state) => state.auth);
+
+  useEffect(() => {
+    ApiConfig.getInstance().setEndpoint(auth?.node_address ?? '');
+  }, [auth?.node_address]);
   return (
     <Route
       {...rest}
@@ -64,12 +71,9 @@ function PrivateRoute({
 }
 
 const App: React.FC = () => {
-  const setupComplete = localStorage.getItem('setupComplete') === 'true';
-  console.log(`Setup complete: ${setupComplete}`);
-
   return (
     <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
+      <QueryClientProvider client={queryClient}>
         <IonApp>
           <IonReactRouter>
             <IonRouterOutlet>
@@ -102,7 +106,7 @@ const App: React.FC = () => {
             </IonRouterOutlet>
           </IonReactRouter>
         </IonApp>
-      </PersistGate>
+      </QueryClientProvider>
     </Provider>
   );
 };
