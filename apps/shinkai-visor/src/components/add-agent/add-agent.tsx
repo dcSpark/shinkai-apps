@@ -55,11 +55,9 @@ export const AddAgent = () => {
   const {
     mutateAsync: createAgent,
     isLoading,
-    isError,
-    error,
   } = useCreateAgent({
-    onSuccess: () => {
-      history.replace('/agents');
+    onSuccess: (data) => {
+      history.replace({ pathname: '/inboxes/create-job' });
     },
   });
 

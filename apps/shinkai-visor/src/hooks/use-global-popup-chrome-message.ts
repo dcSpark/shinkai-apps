@@ -11,10 +11,10 @@ export const useGlobalPopupChromeMessage = () => {
   useChromeMessage((message, sender) => {
     if (message.type === ServiceWorkerMessageType.SendToAgent) {
       const params = new URLSearchParams({ context: message?.data?.textContent });
-      history.replace({ pathname: '/jobs/create', search: params.toString() });
+      history.replace({ pathname: '/inboxes/create-job', search: params.toString() });
     } else if (message.type === ServiceWorkerMessageType.ContentScript) {
       if (message.data.type === ContentScriptMessageType.TogglePopupVisibility) {
-        setPopupVisibility(message.data.data);
+        setPopupVisibility(message.data.data !== undefined ? message.data.data : !popupVisibility);
       }
     }
   });

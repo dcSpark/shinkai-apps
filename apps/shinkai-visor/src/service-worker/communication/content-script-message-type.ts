@@ -1,3 +1,3 @@
 export enum ContentScriptMessageType {
-  TogglePopupVisibility = 'toggle-popup-visibility',
+  TogglePopupVisibility = 'toggle-popup-visibility'
 }
