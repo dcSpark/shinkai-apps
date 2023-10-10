@@ -222,7 +222,7 @@ export const getAllInboxesForProfile = async (
     );
     const data = await response.json();
     await handleHttpError(response);
-    return data;
+    return data.data;
   } catch (error) {
     console.error('Error getting all inboxes for profile:', error);
     throw error;
@@ -259,7 +259,7 @@ export const getLastMessagesFromInbox = async (
     });
     await handleHttpError(response);
     const data = await response.json();
-    return data;
+    return data.data;
   } catch (error) {
     console.error('Error getting last messages from inbox:', error);
     throw error;
@@ -476,7 +476,7 @@ export const createJob = async (
     });
     await handleHttpError(response);
     const data = await response.json();
-    return data;
+    return data.data;
   } catch (error) {
     console.error('Error creating job:', error);
     throw error;
@@ -553,7 +553,7 @@ export const getProfileAgents = async (
     });
     await handleHttpError(response);
     const data = await response.json();
-    return data;
+    return data.data;
   } catch (error) {
     console.error('Error sending message to job:', error);
     throw error;
