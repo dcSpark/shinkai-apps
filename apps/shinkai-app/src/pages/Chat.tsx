@@ -135,8 +135,8 @@ const Chat: React.FC = () => {
     if (selectedFile) {
       // Call sendTextMessageWithFilesForInbox if selectedFile is not null
       ({ inboxId, message } = await sendTextMessageWithFilesForInbox(
-        sender,
-        '',
+        shinkai_identity,
+        profile,
         receiver,
         inputMessage,
         deserializedId,
@@ -145,8 +145,8 @@ const Chat: React.FC = () => {
       ));
     } else {
       ({ inboxId, message } = await sendTextMessageWithInbox(
-        sender,
-        '',
+        shinkai_identity,
+        profile,
         receiver,
         inputMessage,
         deserializedId,

@@ -24,7 +24,8 @@ const messageJson = `{
         "recipient": "@@node2.shinkai",
         "scheduled_time": "2023-08-25T22:44:01.132Z",
         "signature": "c6d0115c0878fbf2279f98aab67c0e9cb1af63825f49dca48d6e4420eba0ceb973e00488ba0905c9afd09254f0dac48c468fdcb1d6c5ab5ca4c5dd70a440b903",
-        "other": ""
+        "other": "",
+        "intra_sender": "intra_sender"
     },
     "encryption": "DiffieHellmanChaChaPoly1305",
     "version": "V1_0"

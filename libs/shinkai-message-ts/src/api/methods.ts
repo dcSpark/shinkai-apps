@@ -222,7 +222,7 @@ export const getAllInboxesForProfile = async (
     );
     const data = await response.json();
     await handleHttpError(response);
-    return data;
+    return data.data;
   } catch (error) {
     console.error('Error getting all inboxes for profile:', error);
     throw error;
@@ -236,9 +236,6 @@ export const getLastMessagesFromInbox = async (
   setupDetailsState: LastMessagesFromInboxCredentialsPayload
 ): Promise<any[]> => {
   try {
-    const sender =
-      setupDetailsState.shinkai_identity + '/' + setupDetailsState.profile;
-
     const messageStr =
       ShinkaiMessageBuilderWrapper.get_last_messages_from_inbox(
         setupDetailsState.profile_encryption_sk,
@@ -247,8 +244,8 @@ export const getLastMessagesFromInbox = async (
         inbox,
         count,
         lastKey,
-        sender,
-        '',
+        setupDetailsState.shinkai_identity,
+        setupDetailsState.profile,
         setupDetailsState.shinkai_identity
       );
 
@@ -262,7 +259,7 @@ export const getLastMessagesFromInbox = async (
     });
     await handleHttpError(response);
     const data = await response.json();
-    return data;
+    return data.data;
   } catch (error) {
     console.error('Error getting last messages from inbox:', error);
     throw error;
@@ -276,9 +273,6 @@ export const getLastUnreadMessagesFromInbox = async (
   setupDetailsState: LastMessagesFromInboxCredentialsPayload
 ): Promise<any[]> => {
   try {
-    const sender =
-      setupDetailsState.shinkai_identity + '/' + setupDetailsState.profile;
-
     const messageStr =
       ShinkaiMessageBuilderWrapper.get_last_messages_from_inbox(
         setupDetailsState.profile_encryption_sk,
@@ -287,8 +281,8 @@ export const getLastUnreadMessagesFromInbox = async (
         inbox,
         count,
         fromKey,
-        sender,
-        '',
+        setupDetailsState.shinkai_identity,
+        setupDetailsState.profile,
         setupDetailsState.shinkai_identity
       );
 
@@ -455,6 +449,7 @@ export const pingAllNodes = async (): Promise<string> => {
 export const createJob = async (
   scope: any,
   sender: string,
+  sender_subidentity: string,
   receiver: string,
   receiver_subidentity: string,
   setupDetailsState: JobCredentialsPayload
@@ -466,6 +461,7 @@ export const createJob = async (
       setupDetailsState.node_encryption_pk,
       scope,
       sender,
+      sender_subidentity,
       receiver,
       receiver_subidentity
     );
@@ -480,7 +476,7 @@ export const createJob = async (
     });
     await handleHttpError(response);
     const data = await response.json();
-    return data;
+    return data.data;
   } catch (error) {
     console.error('Error creating job:', error);
     throw error;
@@ -492,6 +488,7 @@ export const sendMessageToJob = async (
   content: string,
   files_inbox: string,
   sender: string,
+  sender_subidentity: string,
   receiver: string,
   receiver_subidentity: string,
   setupDetailsState: JobCredentialsPayload
@@ -505,6 +502,7 @@ export const sendMessageToJob = async (
       setupDetailsState.profile_identity_sk,
       setupDetailsState.node_encryption_pk,
       sender,
+      sender_subidentity,
       receiver,
       receiver_subidentity
     );
@@ -555,7 +553,7 @@ export const getProfileAgents = async (
     });
     await handleHttpError(response);
     const data = await response.json();
-    return data;
+    return data.data;
   } catch (error) {
     console.error('Error sending message to job:', error);
     throw error;
@@ -574,8 +572,8 @@ export const addAgent = async (
       setupDetailsState.profile_encryption_sk,
       setupDetailsState.profile_identity_sk,
       setupDetailsState.node_encryption_pk,
-      node_name + '/' + sender_subidentity,
-      '',
+      node_name,
+      sender_subidentity,
       node_name,
       agent_wrapped
     );

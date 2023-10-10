@@ -251,9 +251,22 @@ export class ShinkaiMessageBuilderWrapper {
 /**
 * @param {string} recipient
 * @param {string} sender
+* @param {string} intra_sender
+*/
+  external_metadata_with_intra(recipient: string, sender: string, intra_sender: string): void;
+/**
+* @param {string} recipient
+* @param {string} sender
 * @param {string} other
 */
   external_metadata_with_other(recipient: string, sender: string, other: string): void;
+/**
+* @param {string} recipient
+* @param {string} sender
+* @param {string} other
+* @param {string} intra_sender
+*/
+  external_metadata_with_other_and_intra_sender(recipient: string, sender: string, other: string, intra_sender: string): void;
 /**
 * @param {string} recipient
 * @param {string} sender
@@ -277,10 +290,11 @@ export class ShinkaiMessageBuilderWrapper {
 * @param {string} my_signature_secret_key
 * @param {string} receiver_public_key
 * @param {string} sender
+* @param {string} sender_subidentity
 * @param {string} receiver
 * @returns {string}
 */
-  static ack_message(my_encryption_secret_key: string, my_signature_secret_key: string, receiver_public_key: string, sender: string, receiver: string): string;
+  static ack_message(my_encryption_secret_key: string, my_signature_secret_key: string, receiver_public_key: string, sender: string, sender_subidentity: string, receiver: string): string;
 /**
 * @param {string} my_subidentity_encryption_sk
 * @param {string} my_subidentity_signature_sk
@@ -432,11 +446,12 @@ export class ShinkaiMessageBuilderWrapper {
 * @param {string} receiver_public_key
 * @param {any} scope
 * @param {string} sender
+* @param {string} sender_subidentity
 * @param {string} receiver
 * @param {string} receiver_subidentity
 * @returns {string}
 */
-  static job_creation(my_encryption_secret_key: string, my_signature_secret_key: string, receiver_public_key: string, scope: any, sender: string, receiver: string, receiver_subidentity: string): string;
+  static job_creation(my_encryption_secret_key: string, my_signature_secret_key: string, receiver_public_key: string, scope: any, sender: string, sender_subidentity: string, receiver: string, receiver_subidentity: string): string;
 /**
 * @param {string} job_id
 * @param {string} content
@@ -445,30 +460,33 @@ export class ShinkaiMessageBuilderWrapper {
 * @param {string} my_signature_secret_key
 * @param {string} receiver_public_key
 * @param {string} sender
+* @param {string} sender_subidentity
 * @param {string} receiver
 * @param {string} receiver_subidentity
 * @returns {string}
 */
-  static job_message(job_id: string, content: string, files_inbox: string, my_encryption_secret_key: string, my_signature_secret_key: string, receiver_public_key: string, sender: string, receiver: string, receiver_subidentity: string): string;
+  static job_message(job_id: string, content: string, files_inbox: string, my_encryption_secret_key: string, my_signature_secret_key: string, receiver_public_key: string, sender: string, sender_subidentity: string, receiver: string, receiver_subidentity: string): string;
 /**
 * @param {string} my_encryption_secret_key
 * @param {string} my_signature_secret_key
 * @param {string} receiver_public_key
 * @param {string} sender
+* @param {string} sender_subidentity
 * @param {string} receiver
 * @returns {string}
 */
-  static terminate_message(my_encryption_secret_key: string, my_signature_secret_key: string, receiver_public_key: string, sender: string, receiver: string): string;
+  static terminate_message(my_encryption_secret_key: string, my_signature_secret_key: string, receiver_public_key: string, sender: string, sender_subidentity: string, receiver: string): string;
 /**
 * @param {string} my_encryption_secret_key
 * @param {string} my_signature_secret_key
 * @param {string} receiver_public_key
 * @param {string} sender
+* @param {string} sender_subidentity
 * @param {string} receiver
 * @param {string} error_msg
 * @returns {string}
 */
-  static error_message(my_encryption_secret_key: string, my_signature_secret_key: string, receiver_public_key: string, sender: string, receiver: string, error_msg: string): string;
+  static error_message(my_encryption_secret_key: string, my_signature_secret_key: string, receiver_public_key: string, sender: string, sender_subidentity: string, receiver: string, error_msg: string): string;
 }
 /**
 */
