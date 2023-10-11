@@ -10,10 +10,9 @@ export const generatePdfFromCurrentPage = async (fileName: string): Promise<File
             windowWidth: 1920,
             windowHeight: 1080,
           },
-          image: { type: 'jpeg', quality: 0.5 },
+          image: { type: 'jpeg', quality: 0.2 },
           margin: 10,
           callback: (doc) => {
-            doc.save(fileName);
             const output = doc.output('blob');
             resolve(output);
           },
