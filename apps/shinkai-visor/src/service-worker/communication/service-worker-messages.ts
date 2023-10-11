@@ -1,5 +1,4 @@
 import { ContentScriptMessage } from './content-script-message';
-import { OffscreenMessage } from './offscreen-message';
 import { ServiceWorkerMessageType } from './service-worker-message-type';
 
 export type ServiceWorkerMessage =
@@ -12,6 +11,5 @@ export type ServiceWorkerMessage =
   }
   | {
     type: ServiceWorkerMessageType.SendPageToAgent;
-  }
-  | { type: ServiceWorkerMessageType.OffscreenMessageType; data: OffscreenMessage };
+  };
 
