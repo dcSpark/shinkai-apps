@@ -1,20 +1,21 @@
-import { Storage } from 'redux-persist';
+import { PersistStorage, StorageValue } from "zustand/middleware";
 
-type ChromeStorageType = 'local' | 'sync' | 'session';
-export class ChromeStorage implements Storage {
+type ChromeStorageType = keyof Pick<typeof chrome.storage, 'local' | 'session' | 'sync'>;
+
+export class ChromeStorage<S> implements PersistStorage<S> {
   private storageType: ChromeStorageType = 'local';
 
-  constructor(storage?: ChromeStorageType) {
-    this.storageType = storage || 'local';
+  constructor(private storage: ChromeStorageType = 'local') {
+    this.storageType = storage;
   }
 
-  getItem(key: string, ...args: any[]) {
-    return chrome.storage.local.get([key]).then((value) => value[key]);
-  }
-  setItem(key: string, value: any, ...args: any[]) {
-    return chrome.storage.local.set({ [key]: value });
-  }
-  removeItem(key: string, ...args: any[]) {
-    return chrome.storage.local.remove(key);
-  }
+  getItem(name: string): StorageValue<S> | null | Promise<StorageValue<S> | null> {
+    return chrome.storage[this.storageType].get([name]).then((value) => value[name]);
+  };
+  setItem(name: string, value: StorageValue<S>): void | Promise<void> {
+    return chrome.storage[this.storageType].set({ [name]: value });
+  };
+  removeItem(name: string): void | Promise<void> {
+    return chrome.storage[this.storageType].remove(name);
+  };
 }

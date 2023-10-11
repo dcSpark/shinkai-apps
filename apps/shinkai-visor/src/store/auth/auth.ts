@@ -1,5 +1,7 @@
 import { create } from "zustand";
-import { devtools, persist } from "zustand/middleware";
+import { createJSONStorage, devtools, persist } from "zustand/middleware";
+
+import { ChromeStorage } from "../persistor/chrome-storage";
 
 export type SetupData = {
   profile: string;
@@ -34,6 +36,7 @@ export const useAuth = create<AuthStore>()(
       }),
       {
         name: "auth",
+        storage: new ChromeStorage(),
       }
     )
   )
