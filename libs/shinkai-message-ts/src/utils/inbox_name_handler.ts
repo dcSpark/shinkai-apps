@@ -66,3 +66,8 @@ export const isJobInbox = (inboxId: string): boolean => {
   }
   return parts[0] === 'job_inbox';
 }
+
+export const buildInboxIdFromJobId = (jobId: string): string => {
+  // TODO: job_inbox, false is hardcoded
+  return `job_inbox::${jobId}::false`
+}

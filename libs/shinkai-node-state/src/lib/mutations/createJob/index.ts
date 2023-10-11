@@ -3,6 +3,7 @@ import {
   sendMessageToJob,
   sendTextMessageWithFilesForInbox,
 } from "@shinkai_network/shinkai-message-ts/api";
+import { buildInboxIdFromJobId } from "@shinkai_network/shinkai-message-ts/utils";
 import {
   JobCreationWrapper,
   JobScopeWrapper,
@@ -51,7 +52,7 @@ export const createJob = async ({
       profile, // sender subidentity
       receiver,
       content,
-      `job_inbox::${jobId}::false`,
+      buildInboxIdFromJobId(jobId),
       files[0],
       {
         my_device_encryption_sk: my_device_encryption_sk,

@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { Loader2 } from 'lucide-react';
@@ -10,6 +11,7 @@ import { z } from 'zod';
 import { useQuery } from '../../hooks/use-query';
 import { useAuth } from '../../store/auth/auth';
 import { useUIContainer } from '../../store/ui-container/ui-container';
+import { FileList } from '../file-list/file-list';
 import { Button } from '../ui/button';
 import {
   Form,
@@ -61,8 +63,7 @@ export const CreateJob = () => {
   });
   const { isLoading, mutateAsync: createJob } = useCreateJob({
     onSuccess: (data) => {
-      // TODO: job_inbox, false is hardcoded
-      const jobId = encodeURIComponent(`job_inbox::${data.jobId}::false`);
+      const jobId = encodeURIComponent(buildInboxIdFromJobId(data.jobId));
       history.replace(`/inboxes/${jobId}`);
     },
   });
@@ -136,10 +137,7 @@ export const CreateJob = () => {
 
           {location.state?.files?.length && (
             <blockquote className="max-h-28 p-4 mb-5 border-l-4 border-gray-300 bg-gray-50 dark:border-gray-500 dark:bg-gray-800">
-              <p className="italic dark:text-white text-ellipsis overflow-hidden h-full">
-                {location.state.files[0].name} -{' '}
-                {(location.state.files[0].size / 1024 ** 2).toFixed(2)}Mb
-              </p>
+              <FileList files={location.state?.files}></FileList>
             </blockquote>
           )}
 
