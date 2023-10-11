@@ -69,5 +69,5 @@ export const isJobInbox = (inboxId: string): boolean => {
 
 export const buildInboxIdFromJobId = (jobId: string): string => {
   // TODO: job_inbox, false is hardcoded
-  return `job_inbox::${jobId}::false`
+  return `job_inbox::${jobId}::false`;
 }
