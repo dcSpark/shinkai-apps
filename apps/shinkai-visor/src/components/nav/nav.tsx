@@ -8,12 +8,14 @@ import { useHistory, useLocation } from 'react-router-dom';
 import visorLogo from '../../assets/icons/visor.svg';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
 import { useAuth } from '../../store/auth/auth';
+import { useUIContainer } from '../../store/ui-container/ui-container';
 import { Button } from '../ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuPortal,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
@@ -31,9 +33,11 @@ export default function NavBar() {
   const history = useHistory();
   const location = useLocation();
   const setLogout = useAuth((state) => state.setLogout);
+  const uiContainer = useUIContainer((state) => state.uiContainer);
+
   const [isMenuOpened, setMenuOpened] = useState(false);
   const isRootPage = ['/welcome', '/inboxes', '/agents', '/jobs'].includes(
-    location.pathname,
+    location.pathname
   );
 
   function goBack() {
@@ -50,8 +54,8 @@ export default function NavBar() {
         history.replace('/inboxes');
         break;
       case MenuOption.CreateInbox:
-          history.replace('/inboxes/create-inbox');
-          break;
+        history.replace('/inboxes/create-inbox');
+        break;
       case MenuOption.CreateJob:
         history.replace('/inboxes/create-job');
         break;
@@ -68,7 +72,7 @@ export default function NavBar() {
         break;
     }
   };
-
+  console.log('ELEMENT', uiContainer?.shadowRoot ? { container: uiContainer.rootElement }: {});
   return (
     <nav className="flex flex-col bg-gray-100 shadow-lg p-5 rounded-lg space-y-6">
       <div className="flex flex-row place-items-center justify-between">
@@ -97,63 +101,71 @@ export default function NavBar() {
               )}
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
-            <DropdownMenuLabel><FormattedMessage id="inbox.other"></FormattedMessage></DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => onClickMenuOption(MenuOption.Inbox)}
-            >
-              <Inbox className="mr-2 h-4 w-4" />
-              <span>
-                <FormattedMessage id="inbox.other" />
-              </span>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => onClickMenuOption(MenuOption.CreateInbox)}
-            >
-              <Inbox className="mr-2 h-4 w-4" />
-              <span>
-                <FormattedMessage id="create-inbox" />
-              </span>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => onClickMenuOption(MenuOption.CreateJob)}
-            >
-              <Inbox className="mr-2 h-4 w-4" />
-              <span>
-                <FormattedMessage id="create-job" />
-              </span>
-            </DropdownMenuItem>
+          <DropdownMenuPortal container={uiContainer?.rootElement}>
+            <DropdownMenuContent className="w-56">
+              <DropdownMenuLabel>
+                <FormattedMessage id="inbox.other"></FormattedMessage>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => onClickMenuOption(MenuOption.Inbox)}
+              >
+                <Inbox className="mr-2 h-4 w-4" />
+                <span>
+                  <FormattedMessage id="inbox.other" />
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onClickMenuOption(MenuOption.CreateInbox)}
+              >
+                <Inbox className="mr-2 h-4 w-4" />
+                <span>
+                  <FormattedMessage id="create-inbox" />
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onClickMenuOption(MenuOption.CreateJob)}
+              >
+                <Inbox className="mr-2 h-4 w-4" />
+                <span>
+                  <FormattedMessage id="create-job" />
+                </span>
+              </DropdownMenuItem>
 
-            <DropdownMenuSeparator />
-            <DropdownMenuLabel><FormattedMessage id="agent.other"></FormattedMessage></DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => onClickMenuOption(MenuOption.Agents)}
-            >
-              <Bot className="mr-2 h-4 w-4" />
-              <span>
-                <FormattedMessage id="agent.other" />
-              </span>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => onClickMenuOption(MenuOption.AddAgent)}
-            >
-              <Bot className="mr-2 h-4 w-4" />
-              <span>
-                <FormattedMessage id="add-agent" />
-              </span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuLabel><FormattedMessage id="account.one"></FormattedMessage></DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => onClickMenuOption(MenuOption.Logout)}
-            >
-              <LogOut className="mr-2 h-4 w-4" />
-              <span>
-                <FormattedMessage id="logout" />
-              </span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel>
+                <FormattedMessage id="agent.other"></FormattedMessage>
+              </DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => onClickMenuOption(MenuOption.Agents)}
+              >
+                <Bot className="mr-2 h-4 w-4" />
+                <span>
+                  <FormattedMessage id="agent.other" />
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onClickMenuOption(MenuOption.AddAgent)}
+              >
+                <Bot className="mr-2 h-4 w-4" />
+                <span>
+                  <FormattedMessage id="add-agent" />
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel>
+                <FormattedMessage id="account.one"></FormattedMessage>
+              </DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => onClickMenuOption(MenuOption.Logout)}
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>
+                  <FormattedMessage id="logout" />
+                </span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenuPortal>
         </DropdownMenu>
       </div>
     </nav>

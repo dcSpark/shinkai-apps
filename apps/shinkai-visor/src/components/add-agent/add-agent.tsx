@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCreateAgent } from "@shinkai_network/shinkai-node-state/lib/mutations/createAgent/useCreateAgent";
+import { useCreateAgent } from '@shinkai_network/shinkai-node-state/lib/mutations/createAgent/useCreateAgent';
 import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -7,6 +7,7 @@ import { useHistory } from 'react-router-dom';
 import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
+import { useUIContainer } from '../../store/ui-container/ui-container';
 import { Button } from '../ui/button';
 import {
   Form,
@@ -21,6 +22,7 @@ import {
   Select,
   SelectContent,
   SelectItem,
+  SelectPortal,
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
@@ -42,6 +44,7 @@ type FormSchemaType = z.infer<typeof formSchema>;
 export const AddAgent = () => {
   const history = useHistory();
   const auth = useAuth((state) => state.auth);
+  const uiContainer = useUIContainer((state) => state.uiContainer);
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -52,10 +55,7 @@ export const AddAgent = () => {
     },
   });
   const intl = useIntl();
-  const {
-    mutateAsync: createAgent,
-    isLoading,
-  } = useCreateAgent({
+  const { mutateAsync: createAgent, isLoading } = useCreateAgent({
     onSuccess: (data) => {
       history.replace({ pathname: '/inboxes/create-job' });
     },
@@ -85,9 +85,10 @@ export const AddAgent = () => {
         perform_locally: false,
         storage_bucket_permissions: [],
         toolkit_permissions: [],
-        model: values.model === Models.OpenAI
-        ? { OpenAI: { model_type: 'gpt-3.5-turbo' } }
-        : { SleepAPI: {} },
+        model:
+          values.model === Models.OpenAI
+            ? { OpenAI: { model_type: 'gpt-3.5-turbo' } }
+            : { SleepAPI: {} },
       },
       setupDetailsState: {
         my_device_encryption_sk: auth.my_device_encryption_sk,
@@ -171,16 +172,18 @@ export const AddAgent = () => {
                         <SelectValue />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
-                      {modelOptions.map((model) => (
-                        <SelectItem
-                          key={model.value}
-                          value={model.value.toString()}
-                        >
-                          {model.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
+                    <SelectPortal container={uiContainer?.rootElement}>
+                      <SelectContent>
+                        {modelOptions.map((model) => (
+                          <SelectItem
+                            key={model.value}
+                            value={model.value.toString()}
+                          >
+                            {model.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </SelectPortal>
                   </Select>
                   <FormMessage />
                 </FormItem>

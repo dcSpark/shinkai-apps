@@ -3,7 +3,7 @@
 @import "tailwindcss/components";
  
 @layer base {
-  :root {
+  :host {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
 
@@ -70,7 +70,7 @@
   * {
     @apply border-border;
   }
-  body {
+  :host {
     @apply bg-background text-foreground;
   }
 }

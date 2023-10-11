@@ -1,11 +1,17 @@
 import { ContentScriptMessage } from './content-script-message';
+import { OffscreenMessage } from './offscreen-message';
 import { ServiceWorkerMessageType } from './service-worker-message-type';
 
 export type ServiceWorkerMessage =
   | { type: ServiceWorkerMessageType.ContentScript; data: ContentScriptMessage }
   | {
-      type: ServiceWorkerMessageType.SendToAgent;
-      data: {
-        textContent: string;
-      };
+    type: ServiceWorkerMessageType.SendToAgent;
+    data: {
+      textContent: string;
     };
+  }
+  | {
+    type: ServiceWorkerMessageType.SendPageToAgent;
+  }
+  | { type: ServiceWorkerMessageType.OffscreenMessageType; data: OffscreenMessage };
+

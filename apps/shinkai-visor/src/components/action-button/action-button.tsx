@@ -2,8 +2,6 @@ import { motion } from 'framer-motion';
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
 import { IntlProvider } from 'react-intl';
-import { Provider } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
 
 import shinkaiLogo from '../../assets/icons/shinkai-min.svg';
 import { cn } from '../../helpers/cn-utils';
@@ -12,21 +10,16 @@ import { useGlobalActionButtonChromeMessage } from '../../hooks/use-global-actio
 import { langMessages, locale } from '../../lang/intl';
 import { ContentScriptMessageType } from '../../service-worker/communication/content-script-message-type';
 import { sendContentScriptMessage } from '../../service-worker/communication/content-script-messages';
-import { store, storePersistor } from '../../store';
 import themeStyle from '../../theme/styles.css?inline';
 import popupStyle from './action-button.css?inline';
 
-let container = document.getElementById('shinkai-action-button-root');
-let shadow: ShadowRoot | undefined = undefined;
-if (!container) {
-  const baseContainer = document.createElement('shinkai-action-button-root');
-  shadow = baseContainer.attachShadow({ mode: 'open' });
-  container = document.createElement('div');
-  container.id = 'shinkai-action-button-root';
-  shadow.appendChild(container);
-  const htmlRoot = document.getElementsByTagName('html')[0];
-  htmlRoot.prepend(baseContainer);
-}
+const baseContainer = document.createElement('shinkai-action-button-root');
+const shadow = baseContainer.attachShadow({ mode: 'open' });
+const container = document.createElement('div');
+container.id = 'root';
+shadow.appendChild(container);
+const htmlRoot = document.getElementsByTagName('html')[0];
+htmlRoot.prepend(baseContainer);
 
 export const ActionButton = () => {
   const [popupVisibility] = useGlobalActionButtonChromeMessage();
@@ -51,7 +44,7 @@ export const ActionButton = () => {
       >
         <img
           alt="shinkai-app-logo"
-          className={"w-full h-full"}
+          className={'w-full h-full'}
           src={srcUrlResolver(shinkaiLogo)}
         />
       </motion.div>
@@ -59,20 +52,15 @@ export const ActionButton = () => {
     </div>
   );
 };
-
 const root = createRoot(container);
 root.render(
   <React.StrictMode>
     <style>{themeStyle}</style>
     <style>{popupStyle}</style>
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={storePersistor}>
-        <IntlProvider locale={locale} messages={langMessages}>
-          <div className="fixed top-32 right-2 overflow-hidden bg-background z-[1500000000] border-solid border-primary border-2 rounded-lg">
-            <ActionButton></ActionButton>
-          </div>
-        </IntlProvider>
-      </PersistGate>
-    </Provider>
+    <IntlProvider locale={locale} messages={langMessages}>
+      <div className="fixed top-32 right-2 overflow-hidden bg-background z-[1500000000] border-solid border-primary border-2 rounded-lg">
+        <ActionButton></ActionButton>
+      </div>
+    </IntlProvider>
   </React.StrictMode>
 );
