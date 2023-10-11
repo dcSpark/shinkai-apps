@@ -22,10 +22,10 @@
       }
     },
     "serve": {
-      "executor": "@nx/vite:dev-server",
+      "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "shinkai-visor:build"
+        "command": "cd apps/shinkai-visor && npx vite"
       },
       "configurations": {
         "development": {
