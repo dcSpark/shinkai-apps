@@ -108,14 +108,13 @@ export const Inbox = () => {
     fromPreviousMessagesRef.current = false;
     const decodedInboxId = decodeURIComponent(inboxId);
     if (isJobInbox(decodedInboxId)) {
-      const sender = `${auth.shinkai_identity}/${auth.profile}`;
       const jobId = extractJobIdFromInbox(decodedInboxId);
       sendMessageToJob({
         jobId,
         message: value,
-        sender,
         files_inbox: '',
         shinkaiIdentity: auth.shinkai_identity,
+        profile: auth.profile,
         my_device_encryption_sk: auth.my_device_encryption_sk,
         my_device_identity_sk: auth.my_device_identity_sk,
         node_encryption_pk: auth.node_encryption_pk,
@@ -126,12 +125,13 @@ export const Inbox = () => {
       const sender = `${auth.shinkai_identity}/${auth.profile}/device/${auth.registration_name}`;
       const receiver = extractReceiverShinkaiName(decodedInboxId, sender);
       sendMessageToInbox({
-        sender,
+        sender: auth.shinkai_identity,
+        sender_subidentity: auth.profile,
         receiver,
         message: value,
         inboxId: inboxId as string,
-        my_device_encryption_sk: auth.profile_encryption_sk,
-        my_device_identity_sk: auth.profile_identity_sk,
+        my_device_encryption_sk: auth.my_device_encryption_sk,
+        my_device_identity_sk: auth.my_device_identity_sk,
         node_encryption_pk: auth.node_encryption_pk,
         profile_encryption_sk: auth.profile_encryption_sk,
         profile_identity_sk: auth.profile_identity_sk,

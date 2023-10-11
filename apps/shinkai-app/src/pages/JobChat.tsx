@@ -63,16 +63,13 @@ const JobChat: React.FC = () => {
     console.log('Sending message: ', inputMessage);
     if (inputMessage.trim() === '') return;
 
-    const sender = `${shinkai_identity}/${profile}`;
-    console.log('Sender:', sender);
-
     const message_to_send = inputMessage;
     setInputMessage('');
     setSelectedFile(null);
     if (selectedFile) {
       sendTextMessageWithFilesForInbox(
-        sender,
-        '',
+        shinkai_identity,
+        profile,
         shinkai_identity,
         message_to_send,
         deserializedId,
@@ -86,7 +83,8 @@ const JobChat: React.FC = () => {
         extractJobIdFromInbox(deserializedId.toString()),
         message_to_send,
         '',
-        sender,
+        shinkai_identity,
+        profile,
         shinkai_identity,
         '',
         setupDetailsState

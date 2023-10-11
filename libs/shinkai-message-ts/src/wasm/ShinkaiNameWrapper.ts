@@ -9,11 +9,8 @@ export class ShinkaiNameWrapper {
     }
 
     static from_shinkai_message_sender(message: ShinkaiMessage): ShinkaiNameWrapper {
-        if (message.encryption !== 'None') {
-            throw new Error('shinkai message is encrypted');
-        }
         if (!message.body || !('unencrypted' in message.body)) {
-            throw new Error('shinkai message body doesn\'t conestains unencrypted property');
+            throw new Error('shinkai message is encrypted');
         }
         let name = message.external_metadata?.sender;
         if (message.body.unencrypted.internal_metadata.sender_subidentity) {

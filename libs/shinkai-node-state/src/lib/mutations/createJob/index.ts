@@ -21,7 +21,6 @@ export const createJob = async ({
   profile_encryption_sk,
   profile_identity_sk,
 }: CreateJobInput) => {
-  const sender = shinkaiIdentity + "/" + profile;
   const receiver = shinkaiIdentity;
   const receiver_subidentity = `${profile}/agent/${agentId}`;
 
@@ -30,7 +29,8 @@ export const createJob = async ({
 
   const jobId = await createJobApi(
     scope.to_jsvalue(),
-    sender,
+    shinkaiIdentity,
+    profile,
     receiver,
     receiver_subidentity,
     {
@@ -46,7 +46,8 @@ export const createJob = async ({
     jobId,
     content,
     files_inbox,
-    sender,
+    shinkaiIdentity,
+    profile,
     receiver,
     receiver_subidentity,
     {

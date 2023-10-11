@@ -81,6 +81,10 @@ export class ShinkaiMessageBuilderWrapper {
     this.wasmBuilder.external_metadata(recipient, sender);
   }
 
+  external_metadata_with_intra(recipient: string, sender: string, intra_sender: string): void {
+    this.wasmBuilder.external_metadata_with_intra(recipient, sender, intra_sender);
+  };
+
   external_metadata_with_other(
     recipient: string,
     sender: string,
@@ -119,6 +123,7 @@ export class ShinkaiMessageBuilderWrapper {
     my_signature_secret_key: string,
     receiver_public_key: string,
     sender: string,
+    sender_subidentity: string,
     receiver: string
   ): string {
     return ShinkaiMessageBuilderWrapperWASM.ack_message(
@@ -126,6 +131,7 @@ export class ShinkaiMessageBuilderWrapper {
       my_signature_secret_key,
       receiver_public_key,
       sender,
+      sender_subidentity,
       receiver
     );
   }
@@ -311,6 +317,7 @@ export class ShinkaiMessageBuilderWrapper {
     receiver_public_key: string,
     scope: any,
     sender: string,
+    sender_subidentity: string,
     receiver: string,
     receiver_subidentity: string
   ): string {
@@ -320,6 +327,7 @@ export class ShinkaiMessageBuilderWrapper {
       receiver_public_key,
       scope,
       sender,
+      sender_subidentity,
       receiver,
       receiver_subidentity
     );
@@ -333,6 +341,7 @@ export class ShinkaiMessageBuilderWrapper {
     my_signature_secret_key: string,
     receiver_public_key: string,
     sender: string,
+    sender_subidentity: string,
     receiver: string,
     receiver_subidentity: string
   ): string {
@@ -344,6 +353,7 @@ export class ShinkaiMessageBuilderWrapper {
       my_signature_secret_key,
       receiver_public_key,
       sender,
+      sender_subidentity,
       receiver,
       receiver_subidentity
     );
@@ -354,6 +364,7 @@ export class ShinkaiMessageBuilderWrapper {
     my_signature_secret_key: string,
     receiver_public_key: string,
     sender: string,
+    sender_subidentity: string,
     receiver: string
   ): string {
     return ShinkaiMessageBuilderWrapperWASM.terminate_message(
@@ -361,6 +372,7 @@ export class ShinkaiMessageBuilderWrapper {
       my_signature_secret_key,
       receiver_public_key,
       sender,
+      sender_subidentity,
       receiver
     );
   }
@@ -370,6 +382,7 @@ export class ShinkaiMessageBuilderWrapper {
     my_signature_secret_key: string,
     receiver_public_key: string,
     sender: string,
+    sender_subidentity: string,
     receiver: string,
     error_msg: string
   ): string {
@@ -378,6 +391,7 @@ export class ShinkaiMessageBuilderWrapper {
       my_signature_secret_key,
       receiver_public_key,
       sender,
+      sender_subidentity,
       receiver,
       error_msg
     );
@@ -449,9 +463,10 @@ export class ShinkaiMessageBuilderWrapper {
       inbox,
       'None'
     );
-    builder.external_metadata(receiver, sender);
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    // TODO: At this point we are forcing unencrypted message until we implement message response in shinkai-node
     builder.body_encryption(
-      'DiffieHellmanChaChaPoly1305'
+      'None'
     );
 
     const message = builder.build_to_string();
@@ -484,9 +499,11 @@ export class ShinkaiMessageBuilderWrapper {
       inbox,
       'None'
     );
-    builder.external_metadata(receiver, sender);
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+
+    // TODO: At this point we are forcing unencrypted message until we implement message response in shinkai-node
     builder.body_encryption(
-      'DiffieHellmanChaChaPoly1305'
+      'None'
     );
 
     const message = builder.build_to_string();
@@ -504,10 +521,6 @@ export class ShinkaiMessageBuilderWrapper {
     sender_subidentity: string,
     receiver: string,
   ): string {
-    console.log('send_create_files_inbox_with_sym_key');
-    console.log('sender: ', sender);
-    console.log('receiver: ', receiver);
-    console.log('inbox: ', inbox);
     const builder = new ShinkaiMessageBuilderWrapperWASM(
       my_encryption_secret_key,
       my_signature_secret_key,
@@ -522,7 +535,7 @@ export class ShinkaiMessageBuilderWrapper {
       inbox,
       'None'
     );
-    builder.external_metadata(receiver, sender);
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption(
       'DiffieHellmanChaChaPoly1305'
     );

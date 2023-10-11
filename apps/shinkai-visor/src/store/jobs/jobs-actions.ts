@@ -22,8 +22,6 @@ export const createJob = createAsyncThunk<
 
   ApiConfig.getInstance().setEndpoint(node.nodeData.nodeAddress);
 
-  const sender = node.nodeData.shinkaiIdentity + "/" + node.nodeData.profile;
-  const receiver = node.nodeData.shinkaiIdentity;
   const receiver_subidentity = `${node.nodeData.profile}/agent/${args.agentId}`;
 
   const job_creation = JobCreationWrapper.empty().get_scope;
@@ -34,8 +32,9 @@ export const createJob = createAsyncThunk<
 
   const jobId = await createJobApi(
     scope.to_jsvalue(),
-    sender,
-    receiver,
+    node.nodeData.shinkaiIdentity,
+    node.nodeData.profile,
+    node.nodeData.shinkaiIdentity,
     receiver_subidentity,
     {
       my_device_encryption_sk: node.credentials.myDeviceEncryptionSharedKey,
@@ -50,8 +49,9 @@ export const createJob = createAsyncThunk<
     jobId,
     args.content,
     '',
-    sender,
-    receiver,
+    node.nodeData.shinkaiIdentity,
+    node.nodeData.profile,
+    node.nodeData.shinkaiIdentity,
     receiver_subidentity,
     {
       my_device_encryption_sk: node.credentials.myDeviceEncryptionSharedKey,
