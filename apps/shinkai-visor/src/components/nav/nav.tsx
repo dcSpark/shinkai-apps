@@ -72,7 +72,6 @@ export default function NavBar() {
         break;
     }
   };
-  console.log('ELEMENT', uiContainer?.shadowRoot ? { container: uiContainer.rootElement }: {});
   return (
     <nav className="flex flex-col bg-gray-100 shadow-lg p-5 rounded-lg space-y-6">
       <div className="flex flex-row place-items-center justify-between">
