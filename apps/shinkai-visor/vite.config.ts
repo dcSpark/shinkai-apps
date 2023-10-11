@@ -41,4 +41,7 @@ export default defineConfig({
     },
   },
   root: './',
+  build: {
+    outDir:  '../../dist/apps/shinkai-visor'
+  },
 });
