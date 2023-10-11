@@ -130,6 +130,7 @@
     "framer-motion": "^10.16.3",
     "ionicons": "^7.0.0",
     "jsbi": "^4.3.0",
+    "jspdf": "^2.5.1",
     "lucide-react": "^0.263.1",
     "node-forge": ">=1.0.0",
     "react": "18.2.0",

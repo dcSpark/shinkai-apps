@@ -15,7 +15,7 @@
       "16": "icon16.png",
       "48": "icon48.png"
     },
-    "default_popup": "src/components/popup/popup.html"
+    "default_popup": ""
   },
   "background": {
     "service_worker": "src/service-worker/service-worker.ts"
@@ -38,6 +38,7 @@
     }
   },
   "permissions": ["storage", "contextMenus"],
+  "host_permissions": ["<all_urls>"],
   "content_security_policy": {
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
   },

@@ -1,4 +1,5 @@
 import { useAgents } from "@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents";
+import { Fragment } from "react";
 
 import { useAuth } from '../../store/auth/auth';
 import { ScrollArea } from '../ui/scroll-area';
@@ -17,17 +18,17 @@ export const Agents = () => {
     profile_identity_sk: auth?.profile_identity_sk ?? "",
   });
   return (
-    <div className="h-full flex flex-col space-y-3 justify-between">
+    <div className="[&>div>div]:!block h-full flex flex-col space-y-3 justify-between">
       <ScrollArea>
         {agents?.map((agent) => (
-          <div key={agent.id}>
-            <div
-              className="text-ellipsis overflow-hidden whitespace-nowrap"
+          <Fragment key={agent.id}>
+            <p
+              className="w-full truncate overflow-hidden"
             >
               {agent.id}
-            </div>
+            </p>
             <Separator className="my-2" />
-          </div>
+          </Fragment>
         ))}
       </ScrollArea>
     </div>

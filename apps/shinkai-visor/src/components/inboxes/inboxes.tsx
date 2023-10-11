@@ -52,8 +52,11 @@ export const Inboxes = () => {
             <FormattedMessage id="ask-to-shinkai-ai-example" />
           </p>
 
-          <Button className="w-full" onClick={() => history.push('/agents/add')}>
-            <Bot className="w-4 h-4"/>
+          <Button
+            className="w-full"
+            onClick={() => history.push('/agents/add')}
+          >
+            <Bot className="w-4 h-4" />
             <FormattedMessage id="add-agent" />
           </Button>
         </div>
@@ -61,7 +64,15 @@ export const Inboxes = () => {
         <ScrollArea className="[&>div>div]:!block">
           {inboxIds?.map((inboxId) => (
             <Fragment key={inboxId}>
-              <Button className="text-ellipsis overflow-hidden whitespace-nowrap" onClick={() => navigateToInbox(inboxId)} variant="link">{decodeURIComponent(inboxId)}</Button>
+              <Button
+                className="w-full"
+                onClick={() => navigateToInbox(inboxId)}
+                variant="link"
+              >
+                <span className="w-full truncate">
+                  {decodeURIComponent(inboxId)}
+                </span>
+              </Button>
               <Separator className="my-2" />
             </Fragment>
           ))}

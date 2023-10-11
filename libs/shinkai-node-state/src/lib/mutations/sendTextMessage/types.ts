@@ -7,3 +7,11 @@ export type SendMessageToInboxInput = CredentialsPayload & {
   message: string;
   inboxId: string;
 };
+
+export type SendMessageWithFilesToInboxInput = CredentialsPayload & {
+  sender: string;
+  receiver: string;
+  message: string;
+  inboxId: string;
+  file: File;
+};

@@ -1,46 +1,133 @@
+import { ApiConfig } from '@shinkai_network/shinkai-message-ts/api/api_config';
 import { queryClient } from '@shinkai_network/shinkai-node-state/lib/constants';
 import { QueryClientProvider } from '@tanstack/react-query';
+import { AnimatePresence, motion } from 'framer-motion';
 import * as React from 'react';
+import { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { IntlProvider } from 'react-intl';
-import { Provider } from 'react-redux';
 import { MemoryRouter as Router } from 'react-router-dom';
-import { PersistGate } from 'redux-persist/integration/react';
+import { Route, Switch, useHistory, useLocation } from 'react-router-dom';
 
+import { useGlobalPopupChromeMessage } from '../../hooks/use-global-popup-chrome-message';
 import { langMessages, locale } from '../../lang/intl';
-import { store, storePersistor } from '../../store';
+import { useAuth } from '../../store/auth/auth';
+import { useUIContainer } from '../../store/ui-container/ui-container';
 import globalStyle from '../../theme/styles.css?inline';
-import { PopupRouting } from '../popup-routing/popup-routing';
+import { AddAgent } from '../add-agent/add-agent';
+import { AddNode } from '../add-node/add-node';
+import { Agents } from '../agents/agents';
+import { CreateInbox } from '../create-inbox/create-inbox';
+import { CreateJob } from '../create-job/create-job';
+import { Inbox } from '../inbox/inbox';
+import { Inboxes } from '../inboxes/inboxes';
+import { NotFound } from '../not-found/not-found';
+import { SplashScreen } from '../splash-screen/splash-screen';
+import Welcome from '../welcome/welcome';
+import { WithNav } from '../with-nav/with-nav';
 import popupStyle from './popup.css?inline';
 
-let container = document.getElementById('shinkai-popup-root');
-let shadowRoot: ShadowRoot | undefined = undefined;
-if (!container) {
-  const baseContainer = document.createElement('shinkai-popup-root');
-  shadowRoot = baseContainer.attachShadow({ mode: 'closed' });
-  container = document.createElement('div');
-  container.id = 'shinkai-popup-root';
-  shadowRoot.appendChild(container);
-  const htmlRoot = document.getElementsByTagName('html')[0];
-  htmlRoot.prepend(shadowRoot);
-}
+export const Popup = ({ container }: { container: { shadowRoot: ShadowRoot, rootElement: HTMLElement }}) => {
+  const history = useHistory();
+  const auth = useAuth((state) => state.auth);
+  const location = useLocation();
+  const [popupVisibility] = useGlobalPopupChromeMessage();
+  const setUIContainer = useUIContainer((state) => state.setUIContainer);
+  setUIContainer({ shadowRoot: container.shadowRoot, rootElement: container.rootElement });
+  useEffect(() => {
+    const isAuthenticated = !!auth; 
+    if (isAuthenticated) {
+      ApiConfig.getInstance().setEndpoint(auth.node_address);
+      history.replace('/inboxes');
+      return;
+    } else {
+      history.replace('/welcome');
+    }
+  }, [history, auth]);
+
+  return (
+    <AnimatePresence>
+      {popupVisibility && (
+        <motion.div
+          animate={{ opacity: 1 }}
+          className={`h-full w-full flex flex-col p-4 border-solid border-primary border-2 rounded-lg bg-background`}
+          exit={{ opacity: 0 }}
+          initial={{ opacity: 0 }}
+        >
+          <Switch key={location.pathname} location={location}>
+            <Route exact path="/">
+              <SplashScreen></SplashScreen>
+            </Route>
+            <Route path="/welcome">
+              <Welcome />
+            </Route>
+            <Route path="/nodes">
+              <Switch>
+                <Route path="/nodes/add">
+                  <AddNode></AddNode>
+                </Route>
+              </Switch>
+            </Route>
+            <WithNav>
+              <Route path="/inboxes">
+                <Switch>
+                  <Route path="/inboxes/create-inbox">
+                    <CreateInbox></CreateInbox>
+                  </Route>
+                  <Route path="/inboxes/create-job">
+                    <CreateJob></CreateJob>
+                  </Route>
+                  <Route path="/inboxes/:inboxId">
+                    <Inbox></Inbox>
+                  </Route>
+                  <Route path="/">
+                    <Inboxes></Inboxes>
+                  </Route>
+                </Switch>
+              </Route>
+
+              <Route path="/agents">
+                <Switch>
+                  <Route path="/agents/add">
+                    <AddAgent></AddAgent>
+                  </Route>
+                  <Route path="/">
+                    <Agents></Agents>
+                  </Route>
+                </Switch>
+              </Route>
+            </WithNav>
+            <Route path="*">
+              <NotFound></NotFound>
+            </Route>
+          </Switch>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
+
+const baseContainer = document.createElement('shinkai-popup-root');
+const shadowRoot = baseContainer.attachShadow({ mode: 'closed' });
+const container = document.createElement('div');
+container.id = 'root';
+shadowRoot.appendChild(container);
+const htmlRoot = document.getElementsByTagName('html')[0];
+htmlRoot.prepend(baseContainer);
 const root = createRoot(container);
+
 root.render(
   <React.StrictMode>
     <style>{globalStyle}</style>
     <style>{popupStyle}</style>
     <QueryClientProvider client={queryClient}>
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={storePersistor}>
-          <IntlProvider locale={locale} messages={langMessages}>
-            <div className="fixed w-[357px] h-[600px] top-32 right-16 overflow-hidden z-[1500000000]">
-              <Router>
-                <PopupRouting></PopupRouting>
-              </Router>
-            </div>
-          </IntlProvider>
-        </PersistGate>
-      </Provider>
+      <IntlProvider locale={locale} messages={langMessages}>
+        <div className="fixed w-[357px] h-[600px] top-32 right-16 overflow-hidden z-[1500000000]">
+          <Router>
+           <Popup container={{ shadowRoot: shadowRoot, rootElement: container }}></Popup>
+          </Router>
+        </div>
+      </IntlProvider>
     </QueryClientProvider>
   </React.StrictMode>
 );

@@ -1,14 +1,17 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { z } from 'zod';
 
 import { useQuery } from '../../hooks/use-query';
 import { useAuth } from '../../store/auth/auth';
+import { useUIContainer } from '../../store/ui-container/ui-container';
+import { FileList } from '../file-list/file-list';
 import { Button } from '../ui/button';
 import {
   Form,
@@ -23,6 +26,7 @@ import {
   Select,
   SelectContent,
   SelectItem,
+  SelectPortal,
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
@@ -36,8 +40,10 @@ type FormSchemaType = z.infer<typeof formSchema>;
 
 export const CreateJob = () => {
   const history = useHistory();
+  const location = useLocation<{ files: File[] }>();
   const query = useQuery();
   const auth = useAuth((state) => state.auth);
+  const uiContainer = useUIContainer((state) => state.uiContainer);
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -57,8 +63,7 @@ export const CreateJob = () => {
   });
   const { isLoading, mutateAsync: createJob } = useCreateJob({
     onSuccess: (data) => {
-      // TODO: job_inbox, false is hardcoded
-      const jobId = encodeURIComponent(`job_inbox::${data.jobId}::false`);
+      const jobId = encodeURIComponent(buildInboxIdFromJobId(data.jobId));
       history.replace(`/inboxes/${jobId}`);
     },
   });
@@ -74,6 +79,7 @@ export const CreateJob = () => {
       agentId: values.agent,
       content: content,
       files_inbox: '',
+      files: location.state?.files,
       my_device_encryption_sk: auth.my_device_encryption_sk,
       my_device_identity_sk: auth.my_device_identity_sk,
       node_encryption_pk: auth.node_encryption_pk,
@@ -106,13 +112,15 @@ export const CreateJob = () => {
                       <SelectValue />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent>
-                    {agents?.map((model) => (
-                      <SelectItem key={model.id} value={model.id}>
-                        {(model.full_identity_name as any)?.subidentity_name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
+                  <SelectPortal container={uiContainer?.rootElement}>
+                    <SelectContent>
+                      {agents?.map((model) => (
+                        <SelectItem key={model.id} value={model.id}>
+                          {(model.full_identity_name as any)?.subidentity_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </SelectPortal>
                 </Select>
                 <FormMessage />
               </FormItem>
@@ -124,6 +132,12 @@ export const CreateJob = () => {
               <p className="italic dark:text-white text-ellipsis overflow-hidden h-full">
                 {query.get('context')}
               </p>
+            </blockquote>
+          )}
+
+          {location.state?.files?.length && (
+            <blockquote className="max-h-28 p-4 mb-5 border-l-4 border-gray-300 bg-gray-50 dark:border-gray-500 dark:bg-gray-800">
+              <FileList files={location.state?.files}></FileList>
             </blockquote>
           )}
 

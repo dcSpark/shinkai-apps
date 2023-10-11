@@ -2,20 +2,19 @@ import { ServiceWorkerMessageType } from "./communication/service-worker-message
 import { ServiceWorkerMessage } from "./communication/service-worker-messages";
 
 enum ContextMenu {
-  SaveToShinkaiNode = 'save-on-shinkai-node',
+  SendPageToAgent = 'send-page-to-agent',
   SendToAgent = 'send-to-agent',
 }
 
-const saveToShinkaiNode = (info: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab | undefined) => {
+const sendPageToAgent = async (info: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab | undefined) => {
+  // At this point, agents can just process text
   if (!tab?.id) {
     return;
   }
-  chrome.pageCapture.saveAsMHTML(
-    { tabId: tab?.id },
-    (mhtml) => {
-      console.log('saveToShinkaiNode - generated mhtml', mhtml);
-    },
-  )
+  const message: ServiceWorkerMessage = {
+    type: ServiceWorkerMessageType.SendPageToAgent,
+  };
+  chrome.tabs.sendMessage<ServiceWorkerMessage>(tab.id, message);  
 }
 
 const sendToAgent = (info: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab | undefined) => {
@@ -33,22 +32,22 @@ const sendToAgent = (info: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab
 }
 
 const menuActions = new Map<string | number, (info: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab | undefined) => void>([
-  [ContextMenu.SaveToShinkaiNode, saveToShinkaiNode],
+  [ContextMenu.SendPageToAgent, sendPageToAgent],
   [ContextMenu.SendToAgent, sendToAgent],
 ]);
 
 const registerMenu = () => {
   chrome.contextMenus.create(
     {
-      id: ContextMenu.SaveToShinkaiNode,
-      title: 'Save this page in my Shinkai Node',
+      id: ContextMenu.SendPageToAgent,
+      title: 'Send page to agent',
       contexts: ['all']
     }
   );
   chrome.contextMenus.create({
     id: ContextMenu.SendToAgent,
-    title: 'Ask to agent',
-    contexts: ['all']
+    title: 'Send selection to agent',
+    contexts: ['selection']
   });
 }
 
