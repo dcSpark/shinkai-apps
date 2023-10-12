@@ -1,7 +1,7 @@
 import './inboxes.css';
 
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
-import { Bot } from 'lucide-react';
+import { Bot, MessageCircleIcon } from 'lucide-react';
 import { Fragment } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
@@ -11,7 +11,6 @@ import { srcUrlResolver } from '../../helpers/src-url-resolver';
 import { useAuth } from '../../store/auth/auth';
 import { Button } from '../ui/button';
 import { ScrollArea } from '../ui/scroll-area';
-import { Separator } from '../ui/separator';
 
 export const Inboxes = () => {
   const history = useHistory();
@@ -36,47 +35,52 @@ export const Inboxes = () => {
   return (
     <div className="h-full flex flex-col space-y-3 justify-between overflow-hidden">
       {!inboxIds?.length ? (
-        <div className="grow flex flex-col space-y-3 items-center justify-center">
-          <div className="grid place-content-center">
-            <img
-              alt="shinkai logo"
-              className="animate-spin-slow h-20 w-20"
-              data-cy="shinkai-logo"
-              src={srcUrlResolver(logo)}
-            />
+        <div className="grow flex flex-col justify-center">
+          <div className="space-y-3 text-center mb-6">
+            <div className="grid place-content-center">
+              <img
+                alt="shinkai logo"
+                className="animate-spin-slow h-16 w-h-16"
+                data-cy="shinkai-logo"
+                src={srcUrlResolver(logo)}
+              />
+            </div>
+            <p className="text-lg font-semibold">
+              <FormattedMessage id="ask-to-shinkai-ai" />
+            </p>
+            <p className="text-sm text-center">
+              <FormattedMessage id="ask-to-shinkai-ai-example" />
+            </p>
           </div>
-          <p className="text-lg">
-            <FormattedMessage id="ask-to-shinkai-ai" />
-          </p>
-          <p className="text-sm text-center">
-            <FormattedMessage id="ask-to-shinkai-ai-example" />
-          </p>
 
           <Button
             className="w-full"
             onClick={() => history.push('/agents/add')}
           >
-            <Bot className="w-4 h-4" />
+            <Bot className="w-4 h-4 mr-2" />
             <FormattedMessage id="add-agent" />
           </Button>
         </div>
       ) : (
-        <ScrollArea className="[&>div>div]:!block">
-          {inboxIds?.map((inboxId) => (
-            <Fragment key={inboxId}>
-              <Button
-                className="w-full"
-                onClick={() => navigateToInbox(inboxId)}
-                variant="link"
-              >
-                <span className="w-full truncate">
-                  {decodeURIComponent(inboxId)}
-                </span>
-              </Button>
-              <Separator className="my-2" />
-            </Fragment>
-          ))}
-        </ScrollArea>
+        <div className="flex flex-col">
+          <h1 className="font-semibold mb-2">Inboxes</h1>
+          <ScrollArea className="[&>div>div]:!block">
+            {inboxIds?.map((inboxId) => (
+              <Fragment key={inboxId}>
+                <Button
+                  className="w-full"
+                  onClick={() => navigateToInbox(inboxId)}
+                  variant="tertiary"
+                >
+                  <MessageCircleIcon className="h-4 w-4 shrink-0 mr-2" />
+                  <span className="w-full truncate">
+                    {decodeURIComponent(inboxId)}
+                  </span>
+                </Button>
+              </Fragment>
+            ))}
+          </ScrollArea>
+        </div>
       )}
     </div>
   );

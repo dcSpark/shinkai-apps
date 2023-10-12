@@ -100,8 +100,8 @@ export const Inbox = () => {
       auth?.shinkai_identity || '',
       auth?.profile || ''
     )
-      ? 'https://ui-avatars.com/api/?name=Me&background=FE6162&color=fff'
-      : 'https://ui-avatars.com/api/?name=O&background=363636&color=fff';
+      ? 'https://ui-avatars.com/api/?name=Me&background=363636&color=fff'
+      : 'https://ui-avatars.com/api/?name=S&background=FE6162&color=fff';
   };
   const submitSendMessage = (value: string) => {
     if (!auth) return;
@@ -181,7 +181,7 @@ export const Inbox = () => {
                       <div key={date}>
                         <div
                           className={cn(
-                            'relative z-10 m-auto flex w-[140px] items-center justify-center rounded-xl bg-white shadow-lg transition-opacity',
+                            'relative z-10 m-auto flex w-[140px] items-center justify-center rounded-xl bg-secondary-600 shadow-lg transition-opacity',
                             true && 'sticky top-5'
                           )}
                         >
@@ -191,7 +191,11 @@ export const Inbox = () => {
                         </div>
                         <div className="flex flex-col gap-4">
                           {messages.map((message) => {
-                            const isLocal = isLocalMessage(message, auth?.shinkai_identity ?? '', auth?.profile ?? '');
+                            const isLocal = isLocalMessage(
+                              message,
+                              auth?.shinkai_identity ?? '',
+                              auth?.profile ?? ''
+                            );
                             return (
                               <div
                                 className={cn(

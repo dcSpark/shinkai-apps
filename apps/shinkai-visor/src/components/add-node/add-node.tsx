@@ -17,6 +17,7 @@ import * as z from 'zod';
 import ScanQrAnimation from '../../assets/animations/scan-qr.json';
 import { useAuth } from '../../store/auth/auth';
 import { Button } from '../ui/button';
+import ErrorMessage from '../ui/error-message';
 import {
   Form,
   FormControl,
@@ -94,6 +95,8 @@ export const AddNode = () => {
   const {
     isLoading,
     mutateAsync: submitRegistration,
+    isError: isSubmitError,
+    error: submitError,
   } = useSubmitRegistration({
     onSuccess: (response) => {
       if (response.success) {
@@ -103,8 +106,14 @@ export const AddNode = () => {
           permission_type: values.permissionType,
           node_address: values.nodeAddress,
           shinkai_identity: values.shinkaiIdentity,
-          node_signature_pk: response.data?.identity_public_key ?? values.nodeSignaturePublicKey ?? '',
-          node_encryption_pk: response.data?.encryption_public_key ?? values.nodeEncryptionPublicKey ?? '',
+          node_signature_pk:
+            response.data?.identity_public_key ??
+            values.nodeSignaturePublicKey ??
+            '',
+          node_encryption_pk:
+            response.data?.encryption_public_key ??
+            values.nodeEncryptionPublicKey ??
+            '',
           registration_name: values.registrationName,
           my_device_identity_pk: values.myDeviceIdentityPublicKey,
           my_device_identity_sk: values.myDeviceIdentitySharedKey,
@@ -254,15 +263,15 @@ export const AddNode = () => {
         if (data.status === 'ok') {
           form.setValue('nodeAddress', DEFAULT_NODE_ADDRESS);
           form.setValue('shinkaiIdentity', DEFAULT_SHINKAI_IDENTITY);
-          setCurrentStep(AddNodeSteps.Connect)
+          setCurrentStep(AddNodeSteps.Connect);
         }
       })
       .catch((error) => console.error('error polling', error));
   }, [form]);
 
   return (
-    <div className="h-full flex flex-col space-y-3">
-      <span className='text-xl'>Connect</span>
+    <div className="h-full flex flex-col space-y-3 pb-4">
+      <span className="text-xl">Connect</span>
       <div className="h-full flex flex-col grow place-content-center">
         {currentStep === AddNodeSteps.ScanQR && (
           <div className="h-full flex flex-col space-y-3 justify-between">
@@ -299,7 +308,7 @@ export const AddNode = () => {
               className="h-full flex flex-col space-y-2 justify-between"
               onSubmit={form.handleSubmit(connect)}
             >
-              <div className="grow flex flex-col space-y-2">
+              <div className="grow flex flex-col space-y-3">
                 <FormField
                   control={form.control}
                   name="registrationName"
@@ -331,15 +340,12 @@ export const AddNode = () => {
                     </FormItem>
                   )}
                 />
-              </div>
-              <Button
-                className="w-full"
-                disabled={!form.formState.isValid || isLoading}
-                type="submit"
-              >
-                {isLoading && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {isSubmitError && (
+                  <ErrorMessage message={submitError?.message} />
                 )}
+              </div>
+              <Button className="w-full" disabled={isLoading} type="submit">
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 <FormattedMessage id="connect" />
               </Button>
             </form>

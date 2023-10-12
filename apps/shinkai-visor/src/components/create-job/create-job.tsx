@@ -22,7 +22,6 @@ import {
   FormLabel,
   FormMessage,
 } from '../ui/form';
-import { Input } from '../ui/input';
 import {
   Select,
   SelectContent,
@@ -31,6 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
+import { Textarea } from '../ui/textarea';
 
 const formSchema = z.object({
   agent: z.string().nonempty(),
@@ -50,7 +50,7 @@ export const CreateJob = () => {
     defaultValues: {
       agent: '',
       content: '',
-    }
+    },
   });
   const { agents } = useAgents({
     sender: auth?.shinkai_identity ?? '',
@@ -104,7 +104,7 @@ export const CreateJob = () => {
         className="p-1 h-full flex flex-col space-y-2 justify-between"
         onSubmit={form.handleSubmit(submit)}
       >
-        <div className="grow flex flex-col space-y-2">
+        <div className="grow flex flex-col space-y-3">
           <FormField
             control={form.control}
             name="agent"
@@ -162,18 +162,18 @@ export const CreateJob = () => {
                   <FormattedMessage id="message.one" />
                 </FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Textarea
+                    className="resize-none border-white"
+                    placeholder="Eg: Give me the top 10 rock music in the 80s..."
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
         </div>
-        <Button
-          className="w-full"
-          disabled={!form.formState.isValid || isLoading}
-          type="submit"
-        >
+        <Button className="w-full" disabled={isLoading} type="submit">
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           <FormattedMessage id="create-job" />
         </Button>
