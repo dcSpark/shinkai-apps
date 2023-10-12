@@ -9,9 +9,7 @@ export const generatePdfFromCurrentPage = async (fileName: string): Promise<File
       return new Promise((resolve, reject) => {
         pdf.html(html, {
           html2canvas: {
-            windowWidth: 1920,
-            windowHeight: 1080,
-            scale: 0.1675,
+            scale: 0.1,
             ignoreElements(element) {
               return IGNORED_ELEMENTS.includes(element.tagName);
             },
