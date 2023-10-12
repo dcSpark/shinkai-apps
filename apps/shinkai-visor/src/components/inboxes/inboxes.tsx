@@ -1,7 +1,8 @@
 import './inboxes.css';
 
+import { isJobInbox } from '@shinkai_network/shinkai-message-ts/utils';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
-import { Bot, MessageCircleIcon } from 'lucide-react';
+import { Bot, MessageCircleIcon, Workflow } from 'lucide-react';
 import { Fragment } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
@@ -72,7 +73,12 @@ export const Inboxes = () => {
                   onClick={() => navigateToInbox(inboxId)}
                   variant="tertiary"
                 >
-                  <MessageCircleIcon className="h-4 w-4 shrink-0 mr-2" />
+                  {isJobInbox(decodeURIComponent(inboxId)) ? (
+                    <Workflow className="h-4 w-4 shrink-0 mr-2" />
+                  ) : (
+                    <MessageCircleIcon className="h-4 w-4 shrink-0 mr-2" />
+                  )}
+
                   <span className="w-full truncate">
                     {decodeURIComponent(inboxId)}
                   </span>

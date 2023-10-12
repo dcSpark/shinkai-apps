@@ -140,7 +140,7 @@ export const CreateJob = () => {
           />
 
           {query.has('context') && (
-            <blockquote className="max-h-28 p-4 mb-5 border-l-4 border-gray-300 bg-gray-50 dark:border-gray-500 dark:bg-gray-800">
+            <blockquote className="max-h-28 p-4 mb-5 border-l-4 border-gray-300 bg-secondary-600 dark:border-gray-500 dark:bg-gray-800">
               <p className="italic dark:text-white text-ellipsis overflow-hidden h-full">
                 {query.get('context')}
               </p>
@@ -148,7 +148,7 @@ export const CreateJob = () => {
           )}
 
           {location.state?.files?.length && (
-            <blockquote className="max-h-28 p-4 mb-5 border-l-4 border-gray-300 bg-gray-50 dark:border-gray-500 dark:bg-gray-800">
+            <blockquote className="max-h-28 p-4 mb-5 border-l-4 border-gray-300 bg-secondary-600 dark:border-gray-500 dark:bg-gray-800">
               <FileList files={location.state?.files}></FileList>
             </blockquote>
           )}

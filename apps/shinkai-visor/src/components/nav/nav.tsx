@@ -1,6 +1,6 @@
 import './nav.css';
 
-import { ArrowLeft, Bot, Inbox, LogOut, Menu, X } from 'lucide-react';
+import { ArrowLeft, Bot, Inbox, LogOut, Menu, MessageCircle, Workflow, X } from 'lucide-react';
 import { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -117,7 +117,7 @@ export default function NavBar() {
               <DropdownMenuItem
                 onClick={() => onClickMenuOption(MenuOption.CreateInbox)}
               >
-                <Inbox className="mr-2 h-4 w-4" />
+                <MessageCircle className="mr-2 h-4 w-4" />
                 <span>
                   <FormattedMessage id="create-inbox" />
                 </span>
@@ -125,7 +125,7 @@ export default function NavBar() {
               <DropdownMenuItem
                 onClick={() => onClickMenuOption(MenuOption.CreateJob)}
               >
-                <Inbox className="mr-2 h-4 w-4" />
+                <Workflow className="mr-2 h-4 w-4" />
                 <span>
                   <FormattedMessage id="create-job" />
                 </span>
