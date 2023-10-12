@@ -3,6 +3,7 @@ import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { Loader2 } from 'lucide-react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -49,7 +50,7 @@ export const CreateJob = () => {
     defaultValues: {
       agent: '',
       content: '',
-    },
+    }
   });
   const { agents } = useAgents({
     sender: auth?.shinkai_identity ?? '',
@@ -63,10 +64,19 @@ export const CreateJob = () => {
   });
   const { isLoading, mutateAsync: createJob } = useCreateJob({
     onSuccess: (data) => {
+      console.log('job created');
       const jobId = encodeURIComponent(buildInboxIdFromJobId(data.jobId));
       history.replace(`/inboxes/${jobId}`);
     },
   });
+
+  //TODO: Replace this assigment with a configured default agent
+  useEffect(() => {
+    if (agents?.length) {
+      const defaultAgentId = agents[0].id;
+      form.setValue('agent', defaultAgentId);
+    }
+  }, [agents, form]);
   const submit = (values: FormSchemaType) => {
     if (!auth) return;
     let content = values.content;
@@ -105,7 +115,9 @@ export const CreateJob = () => {
                 </FormLabel>
                 <Select
                   defaultValue={field.value}
+                  name={field.name}
                   onValueChange={field.onChange}
+                  value={field.value}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -114,9 +126,9 @@ export const CreateJob = () => {
                   </FormControl>
                   <SelectPortal container={uiContainer?.rootElement}>
                     <SelectContent>
-                      {agents?.map((model) => (
-                        <SelectItem key={model.id} value={model.id}>
-                          {(model.full_identity_name as any)?.subidentity_name}
+                      {agents?.map((agent) => (
+                        <SelectItem key={agent.id} value={agent.id}>
+                          {(agent.full_identity_name as any)?.subidentity_name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -163,7 +175,7 @@ export const CreateJob = () => {
           type="submit"
         >
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          <FormattedMessage id="connect" />
+          <FormattedMessage id="create-job" />
         </Button>
       </form>
     </Form>
