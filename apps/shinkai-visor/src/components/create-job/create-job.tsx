@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Workflow } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
@@ -174,7 +174,11 @@ export const CreateJob = () => {
           />
         </div>
         <Button className="w-full" disabled={isLoading} type="submit">
-          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {isLoading ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Workflow className="mr-2 h-4 w-4"></Workflow>
+          )}
           <FormattedMessage id="create-job" />
         </Button>
       </form>

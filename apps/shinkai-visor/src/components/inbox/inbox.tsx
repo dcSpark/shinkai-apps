@@ -190,7 +190,7 @@ export const Inbox = () => {
                           </span>
                         </div>
                         <div className="flex flex-col gap-4">
-                          {messages.map((message) => {
+                          {messages.map((message, index) => {
                             const isLocal = isLocalMessage(
                               message,
                               auth?.shinkai_identity ?? '',
@@ -204,7 +204,7 @@ export const Inbox = () => {
                                     ? 'ml-0 mr-auto flex-row'
                                     : 'ml-auto mr-0 flex-row-reverse'
                                 )}
-                                key={message.external_metadata?.scheduled_time}
+                                key={`${index}-${message.external_metadata?.scheduled_time}`}
                               >
                                 <Avatar className="mt-1 h-8 w-8">
                                   <AvatarImage
