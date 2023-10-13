@@ -250,7 +250,7 @@ const AddAgent: React.FC = () => {
                   <div className="rounded bg-red-500/10 px-4 py-2 text-sm text-red-700">
                     <span className="font-bold">Error: </span>
                     <span className="block sm:inline">
-                      {error?.message as unknown as string}
+                      {error as unknown as string}
                     </span>
                   </div>
                 )}
