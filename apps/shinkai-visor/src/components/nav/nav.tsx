@@ -1,6 +1,6 @@
 import './nav.css';
 
-import { ArrowLeft, Bot, Inbox, LogOut, Menu, X } from 'lucide-react';
+import { ArrowLeft, Bot, Inbox, LogOut, Menu, MessageCircle, Workflow, X } from 'lucide-react';
 import { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -73,18 +73,18 @@ export default function NavBar() {
     }
   };
   return (
-    <nav className="flex flex-col bg-gray-100 shadow-lg p-5 rounded-lg space-y-6">
-      <div className="flex flex-row place-items-center justify-between">
-        <div className="flex-none">
-          {!isRootPage && (
-            <Button onClick={() => goBack()}>
+    <nav className="">
+      <div className="flex items-center justify-between">
+        {!isRootPage && (
+          <div className="flex-none">
+            <Button onClick={() => goBack()} size="icon" variant="ghost">
               <ArrowLeft className="h-4 w-4" />
             </Button>
-          )}
-        </div>
+          </div>
+        )}
         <img
           alt="shinkai-app-logo"
-          className="h-full"
+          className="h-5"
           src={srcUrlResolver(visorLogo)}
         />
         <DropdownMenu
@@ -92,7 +92,7 @@ export default function NavBar() {
           open={isMenuOpened}
         >
           <DropdownMenuTrigger asChild>
-            <Button>
+            <Button size="icon" variant="ghost">
               {!isMenuOpened ? (
                 <Menu className="h-4 w-4" />
               ) : (
@@ -117,7 +117,7 @@ export default function NavBar() {
               <DropdownMenuItem
                 onClick={() => onClickMenuOption(MenuOption.CreateInbox)}
               >
-                <Inbox className="mr-2 h-4 w-4" />
+                <MessageCircle className="mr-2 h-4 w-4" />
                 <span>
                   <FormattedMessage id="create-inbox" />
                 </span>
@@ -125,7 +125,7 @@ export default function NavBar() {
               <DropdownMenuItem
                 onClick={() => onClickMenuOption(MenuOption.CreateJob)}
               >
-                <Inbox className="mr-2 h-4 w-4" />
+                <Workflow className="mr-2 h-4 w-4" />
                 <span>
                   <FormattedMessage id="create-job" />
                 </span>

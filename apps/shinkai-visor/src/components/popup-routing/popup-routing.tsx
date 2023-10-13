@@ -23,7 +23,7 @@ export const PopupRouting = () => {
   const location = useLocation();
   const [popupVisibility] = useGlobalPopupChromeMessage();
   useEffect(() => {
-    const isAuthenticated = !!auth; 
+    const isAuthenticated = !!auth;
     if (isAuthenticated) {
       ApiConfig.getInstance().setEndpoint(auth.node_address);
       history.replace('/inboxes');

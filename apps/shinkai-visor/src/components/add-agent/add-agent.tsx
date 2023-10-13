@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateAgent } from '@shinkai_network/shinkai-node-state/lib/mutations/createAgent/useCreateAgent';
-import { Loader2 } from 'lucide-react';
+import { Bot, Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
@@ -103,7 +103,7 @@ export const AddAgent = () => {
     <div className="h-full p-1">
       <Form {...form}>
         <form
-          className="h-full flex flex-col space-y-2 justify-between"
+          className="h-full flex flex-col space-y-3 justify-between"
           onSubmit={form.handleSubmit(submit)}
         >
           <div className="grow flex flex-col space-y-2">
@@ -190,13 +190,13 @@ export const AddAgent = () => {
               )}
             />
           </div>
-          <Button
-            className="w-full"
-            disabled={!form.formState.isValid || isLoading}
-            type="submit"
-          >
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            <FormattedMessage id="connect" />
+          <Button className="w-full" disabled={isLoading} type="submit">
+            {isLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Bot className="mr-2 h-4 w-4"></Bot>
+            )}
+            <FormattedMessage id="add-agent" />
           </Button>
         </form>
       </Form>

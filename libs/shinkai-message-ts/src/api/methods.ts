@@ -175,7 +175,6 @@ export const sendTextMessageWithFilesForInbox = async (
 
     await fileUploader.createFolder();
     await fileUploader.uploadEncryptedFile(selectedFile);
-
     const responseText = await fileUploader.finalizeAndSend(text_message);
     const message: ShinkaiMessage = JSON.parse(responseText);
 
@@ -183,7 +182,9 @@ export const sendTextMessageWithFilesForInbox = async (
       const inboxId = message.body.unencrypted.internal_metadata.inbox;
       return { inboxId, message };
     } else {
-      throw new Error('message body is null or encrypted');
+      console.warn('message body is null or encrypted');
+      // TODO: workaround to skip error reading encrypted message
+      return { inboxId: job_inbox, message };
     }
   } catch (error) {
     console.error('Error sending text message with file:', error);

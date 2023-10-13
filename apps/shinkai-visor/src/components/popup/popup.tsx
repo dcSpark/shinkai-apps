@@ -27,15 +27,22 @@ import Welcome from '../welcome/welcome';
 import { WithNav } from '../with-nav/with-nav';
 import popupStyle from './popup.css?inline';
 
-export const Popup = ({ container }: { container: { shadowRoot: ShadowRoot, rootElement: HTMLElement }}) => {
+export const Popup = ({
+  container,
+}: {
+  container: { shadowRoot: ShadowRoot; rootElement: HTMLElement };
+}) => {
   const history = useHistory();
   const auth = useAuth((state) => state.auth);
   const location = useLocation();
   const [popupVisibility] = useGlobalPopupChromeMessage();
   const setUIContainer = useUIContainer((state) => state.setUIContainer);
-  setUIContainer({ shadowRoot: container.shadowRoot, rootElement: container.rootElement });
+  setUIContainer({
+    shadowRoot: container.shadowRoot,
+    rootElement: container.rootElement,
+  });
   useEffect(() => {
-    const isAuthenticated = !!auth; 
+    const isAuthenticated = !!auth;
     if (isAuthenticated) {
       ApiConfig.getInstance().setEndpoint(auth.node_address);
       history.replace('/inboxes');
@@ -50,7 +57,7 @@ export const Popup = ({ container }: { container: { shadowRoot: ShadowRoot, root
       {popupVisibility && (
         <motion.div
           animate={{ opacity: 1 }}
-          className={`h-full w-full flex flex-col p-4 border-solid border-primary border-2 rounded-lg bg-background`}
+          className="h-full w-full flex flex-col p-4 shadow-xl rounded-lg bg-secondary-600 bg-app-gradient"
           exit={{ opacity: 0 }}
           initial={{ opacity: 0 }}
         >
@@ -122,9 +129,11 @@ root.render(
     <style>{popupStyle}</style>
     <QueryClientProvider client={queryClient}>
       <IntlProvider locale={locale} messages={langMessages}>
-        <div className="fixed w-[357px] h-[600px] top-32 right-16 overflow-hidden z-[1500000000]">
+        <div className="fixed font-inter w-[357px] h-[600px] top-32 right-16 overflow-hidden z-[1500000000]">
           <Router>
-           <Popup container={{ shadowRoot: shadowRoot, rootElement: container }}></Popup>
+            <Popup
+              container={{ shadowRoot: shadowRoot, rootElement: container }}
+            ></Popup>
           </Router>
         </div>
       </IntlProvider>

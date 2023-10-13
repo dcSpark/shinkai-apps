@@ -48,7 +48,12 @@ export const ActionButton = () => {
           src={srcUrlResolver(shinkaiLogo)}
         />
       </motion.div>
-      <span className="text-xs text-center">⌘ + ,</span>
+      <span className="text-xs text-white">
+        <kbd className="bg-primary pointer-events-none inline-flex justify-center h-5 select-none items-center gap-1 rounded border px-2 font-mono text-sm font-medium opacity-100">
+          <span>⌘</span>
+          <span>﹐</span>
+        </kbd>
+      </span>
     </div>
   );
 };
@@ -58,8 +63,8 @@ root.render(
     <style>{themeStyle}</style>
     <style>{popupStyle}</style>
     <IntlProvider locale={locale} messages={langMessages}>
-      <div className="fixed top-32 right-2 overflow-hidden bg-background z-[1500000000] border-solid border-primary border-2 rounded-lg">
-        <ActionButton></ActionButton>
+      <div className="fixed top-32 right-2 overflow-hidden bg-secondary-600 z-[1500000000] shadow-3xl rounded-lg">
+        <ActionButton />
       </div>
     </IntlProvider>
   </React.StrictMode>

@@ -2,7 +2,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Workflow } from 'lucide-react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -21,7 +22,6 @@ import {
   FormLabel,
   FormMessage,
 } from '../ui/form';
-import { Input } from '../ui/input';
 import {
   Select,
   SelectContent,
@@ -30,6 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
+import { Textarea } from '../ui/textarea';
 
 const formSchema = z.object({
   agent: z.string().nonempty(),
@@ -63,10 +64,19 @@ export const CreateJob = () => {
   });
   const { isLoading, mutateAsync: createJob } = useCreateJob({
     onSuccess: (data) => {
+      console.log('job created');
       const jobId = encodeURIComponent(buildInboxIdFromJobId(data.jobId));
       history.replace(`/inboxes/${jobId}`);
     },
   });
+
+  //TODO: Replace this assigment with a configured default agent
+  useEffect(() => {
+    if (agents?.length) {
+      const defaultAgentId = agents[0].id;
+      form.setValue('agent', defaultAgentId);
+    }
+  }, [agents, form]);
   const submit = (values: FormSchemaType) => {
     if (!auth) return;
     let content = values.content;
@@ -94,7 +104,7 @@ export const CreateJob = () => {
         className="p-1 h-full flex flex-col space-y-2 justify-between"
         onSubmit={form.handleSubmit(submit)}
       >
-        <div className="grow flex flex-col space-y-2">
+        <div className="grow flex flex-col space-y-3">
           <FormField
             control={form.control}
             name="agent"
@@ -105,7 +115,9 @@ export const CreateJob = () => {
                 </FormLabel>
                 <Select
                   defaultValue={field.value}
+                  name={field.name}
                   onValueChange={field.onChange}
+                  value={field.value}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -114,9 +126,9 @@ export const CreateJob = () => {
                   </FormControl>
                   <SelectPortal container={uiContainer?.rootElement}>
                     <SelectContent>
-                      {agents?.map((model) => (
-                        <SelectItem key={model.id} value={model.id}>
-                          {(model.full_identity_name as any)?.subidentity_name}
+                      {agents?.map((agent) => (
+                        <SelectItem key={agent.id} value={agent.id}>
+                          {(agent.full_identity_name as any)?.subidentity_name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -128,7 +140,7 @@ export const CreateJob = () => {
           />
 
           {query.has('context') && (
-            <blockquote className="max-h-28 p-4 mb-5 border-l-4 border-gray-300 bg-gray-50 dark:border-gray-500 dark:bg-gray-800">
+            <blockquote className="max-h-28 p-4 mb-5 border-l-4 border-gray-300 bg-secondary-600 dark:border-gray-500 dark:bg-gray-800">
               <p className="italic dark:text-white text-ellipsis overflow-hidden h-full">
                 {query.get('context')}
               </p>
@@ -136,7 +148,7 @@ export const CreateJob = () => {
           )}
 
           {location.state?.files?.length && (
-            <blockquote className="max-h-28 p-4 mb-5 border-l-4 border-gray-300 bg-gray-50 dark:border-gray-500 dark:bg-gray-800">
+            <blockquote className="max-h-28 p-4 mb-5 border-l-4 border-gray-300 bg-secondary-600 dark:border-gray-500 dark:bg-gray-800">
               <FileList files={location.state?.files}></FileList>
             </blockquote>
           )}
@@ -150,20 +162,24 @@ export const CreateJob = () => {
                   <FormattedMessage id="message.one" />
                 </FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Textarea
+                    className="resize-none border-white"
+                    placeholder="Eg: Give me the top 10 rock music in the 80s..."
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
         </div>
-        <Button
-          className="w-full"
-          disabled={!form.formState.isValid || isLoading}
-          type="submit"
-        >
-          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          <FormattedMessage id="connect" />
+        <Button className="w-full" disabled={isLoading} type="submit">
+          {isLoading ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Workflow className="mr-2 h-4 w-4"></Workflow>
+          )}
+          <FormattedMessage id="create-job" />
         </Button>
       </form>
     </Form>
