@@ -3,8 +3,6 @@ name: Release dev
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 defaults:
   run:
