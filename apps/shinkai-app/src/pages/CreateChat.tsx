@@ -1,70 +1,61 @@
-// pages/CreateChat.tsx
+import { ErrorMessage } from '@hookform/error-message';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   IonBackButton,
   IonButtons,
   IonCol,
   IonGrid,
+  IonInput,
+  IonLabel,
   IonPage,
   IonRow,
+  IonTextarea,
   IonTitle,
 } from '@ionic/react';
-import { createChatWithMessage } from '@shinkai_network/shinkai-message-ts/api';
-import { History } from 'history';
-import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useCreateChat } from '@shinkai_network/shinkai-node-state/lib/mutations/createChat/useCreateChat';
+import { Controller, useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
+import z from 'zod';
 
 import Button from '../components/ui/Button';
-import Input from '../components/ui/Input';
 import { IonContentCustom, IonHeaderCustom } from '../components/ui/Layout';
 import { useSetup } from '../hooks/usetSetup';
-import { RootState } from '../store';
-import { addMessageToInbox } from '../store/actions';
+import { useAuth } from '../store/auth';
+
+const createChatSchema = z.object({
+  receiver: z.string(),
+  message: z.string().min(1, 'Message cannot be empty'),
+});
 
 const CreateChat: React.FC = () => {
   useSetup();
-  const setupDetailsState = useSelector(
-    (state: RootState) => state.setupDetails
-  );
-  const [shinkaiIdentity, setShinkaiIdentity] = useState('');
-  const [messageText, setMessageText] = useState('');
-  const dispatch = useDispatch();
-  const history: History<unknown> = useHistory();
+  const history = useHistory();
+  const auth = useAuth((state) => state.auth);
 
-  const handleCreateChat = async () => {
-    // Perform your API request here
-    console.log('Creating chat with Shinkai Identity:', shinkaiIdentity);
-
-    // Split shinkaiIdentity into sender and the rest
-    const [receiver, ...rest] = shinkaiIdentity.split('/');
-
-    // Join the rest back together to form sender_subidentity
-    const receiver_subidentity = rest.join('/');
-
-    // Local Identity
-    const { shinkai_identity, profile, registration_name } = setupDetailsState;
-
-    const sender = shinkai_identity;
-    const sender_subidentity = `${profile}/device/${registration_name}`;
-    // console.log("Sender:", shinkai_identity);
-    // console.log("Sender Subidentity:", `${profile}/device/${registration_name}`);
-
-    // Send a message to someone
-    const { inboxId, message } = await createChatWithMessage(
-      sender,
-      sender_subidentity,
-      receiver,
-      receiver_subidentity,
-      messageText,
-      setupDetailsState
-    );
-    dispatch(addMessageToInbox(inboxId, message));
-
-    if (inboxId) {
+  const { isLoading, mutateAsync: createChat } = useCreateChat({
+    onSuccess: (data) => {
       // Hacky solution because react-router can't handle dots in the URL
-      const encodedInboxId = inboxId.toString().replace(/\./g, '~');
+      const encodedInboxId = data.inboxId.toString().replace(/\./g, '~');
       history.push(`/chat/${encodeURIComponent(encodedInboxId)}`);
-    }
+    },
+  });
+  const createChatForm = useForm<z.infer<typeof createChatSchema>>({
+    resolver: zodResolver(createChatSchema),
+  });
+  const onSubmit = async (data: z.infer<typeof createChatSchema>) => {
+    if (!auth) return;
+    const [receiver, ...rest] = data.receiver.split('/');
+
+    createChat({
+      sender: auth.shinkai_identity,
+      senderSubidentity: `${auth.profile}/device/${auth.registration_name}`,
+      receiver,
+      receiverSubidentity: rest.join('/'),
+      message: data.message,
+      my_device_encryption_sk: auth.my_device_encryption_sk,
+      my_device_identity_sk: auth.my_device_identity_sk,
+      node_encryption_pk: auth.node_encryption_pk,
+    });
   };
 
   return (
@@ -86,25 +77,67 @@ const CreateChat: React.FC = () => {
               <h2 className={'text-lg mb-3 md:mb-8 text-center'}>
                 New Chat Details
               </h2>
-              <div className={'space-y-5'}>
-                <Input
-                  aria-label="Enter Shinkai Identity"
-                  label="Enter Shinkai Identity. Eg:@@name.shinkai or @@name.shinkai/profile"
-                  onChange={(e) => setShinkaiIdentity(e.detail.value!)}
-                  value={shinkaiIdentity}
-                />
-
-                <Input
-                  aria-label="Enter Message"
-                  label="Enter Message"
-                  onChange={(e) => setMessageText(e.detail.value!)}
-                  value={messageText}
-                />
-              </div>
-
-              <div style={{ marginTop: '20px' }}>
-                <Button onClick={handleCreateChat}>Create Chat</Button>
-              </div>
+              <form
+                className="space-y-10"
+                onSubmit={createChatForm.handleSubmit(onSubmit)}
+              >
+                <div className="space-y-6">
+                  <Controller
+                    control={createChatForm.control}
+                    name="receiver"
+                    render={({ field }) => (
+                      <div>
+                        <IonLabel>Enter Shinkai Identity</IonLabel>
+                        <IonInput
+                          onIonChange={(e) =>
+                            createChatForm.setValue(
+                              'receiver',
+                              e.detail.value as string
+                            )
+                          }
+                          placeholder="@@name.shinkai or @@name.shinkai/profile"
+                          value={field.value}
+                        />
+                        <ErrorMessage
+                          errors={createChatForm.formState.errors}
+                          name="receiver"
+                          render={({ message }) => (
+                            <p className="text-red-500">{message}</p>
+                          )}
+                        />
+                      </div>
+                    )}
+                  />
+                  <Controller
+                    control={createChatForm.control}
+                    name="message"
+                    render={({ field }) => (
+                      <div>
+                        <IonLabel>Enter Message</IonLabel>
+                        <IonTextarea
+                          onIonChange={(e) =>
+                            createChatForm.setValue(
+                              'message',
+                              e.detail.value as string
+                            )
+                          }
+                          value={field.value}
+                        />
+                        <ErrorMessage
+                          errors={createChatForm.formState.errors}
+                          name="message"
+                          render={({ message }) => (
+                            <p className="text-red-500">{message}</p>
+                          )}
+                        />
+                      </div>
+                    )}
+                  />
+                </div>
+                <Button isLoading={isLoading} type="submit">
+                  Create Chat
+                </Button>
+              </form>
             </IonCol>
           </IonRow>
         </IonGrid>
