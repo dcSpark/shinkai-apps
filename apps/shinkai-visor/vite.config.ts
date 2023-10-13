@@ -1,14 +1,12 @@
 /// <reference types="vitest" />
-import { crx,ManifestV3Export } from "@crxjs/vite-plugin";
+import { crx } from "@crxjs/vite-plugin";
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import topLevelAwait from "vite-plugin-top-level-await";
 import wasm from 'vite-plugin-wasm';
 
-import manifestJson from './public/manifest.json';
-
-const manifest = manifestJson as ManifestV3Export;
+import { dynamicManifest } from './dynamic-manifest';
 
 export default defineConfig({
   cacheDir: '../../node_modules/.vite/shinkai-visor',
@@ -27,7 +25,13 @@ export default defineConfig({
     host: 'localhost',
   },
 
-  plugins: [react(), nxViteTsPaths(), wasm({ bundle: true }), topLevelAwait(), crx({ manifest })],
+  plugins: [
+    react(),
+    nxViteTsPaths(),
+    wasm({ bundle: true }),
+    topLevelAwait(),
+    crx({ manifest: dynamicManifest }),
+  ],
 
   test: {
     globals: true,

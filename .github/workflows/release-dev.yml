@@ -1,0 +1,49 @@
+name: Release dev
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+defaults:
+  run:
+    working-directory: ./
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Use nx set shas
+        uses: nrwl/nx-set-shas@v3
+
+      - name: Setup Node version
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          check-latest: false
+          registry-url: https://registry.npmjs.org
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: |
+          npm cache verify
+          npm ci --no-audit --prefer-offline
+
+      - name: Run NX build on shinkai-visor
+        run: npx nx build shinkai-visor --skip-nx-cache --verbose
+        env:
+          VERSION: 0.0.0.${{github.run_number}}
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: shinkai-visor
+          path: dist/apps/shinkai-visor
+          if-no-files-found: error
+          retention-days: 5
