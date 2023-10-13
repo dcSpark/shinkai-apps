@@ -1,68 +1,103 @@
 <h1 align="center">
-  <img src="assets/visor-logo.png" width="224px"/><br/>
-  Shinkai Visor
+  <img src="assets/icon.png"/><br/>
+  Shinkai apps
 </h1>
-<p align="center">Shinkai Visor is a chrome extension which unlocks the full capabilities/automation of first-class LLM (AI) support in the web browser. It enables creating multiple agents, each connected to either local or 3rd-party LLMs (ex. OpenAI GPT), which have permissioned (meaning secure) access to act in every webpage you visit.</p><br/>
+<p align="center">Shinkai apps unlock the full capabilities/automation of first-class LLM (AI) support in the web browser. It enables creating multiple agents, each connected to either local or 3rd-party LLMs (ex. OpenAI GPT), which have permissioned (meaning secure) access to act in every webpage you visit.</p><br/>
 
-Shinkai Visor is designed to be your go-to solution for users interacting with LLMs period, thereby offering essential features such as:
+## Projects
 
-- Pulling up the AI Launcher (think Spotlight on Macs) via hotkey to instantly request your Agent to automate anything in your web browser
-- Start/continue conversations with ChatGPT or any LLM of your choice without leaving your browser window (with entire history backlog available)
-- Full per-agent permission system, allowing you to control which agents can read/interact with certain webpages.
-- Enables development of a new generation of AV (Shinkai Visor) Web Apps that securely interact with your agents leaking your API keys or data. Web devs can treat your personal agents like external library calls, with no registration required, no API keys, just direct communication with the user's LLMs.
-- Provides a cross-extension messaging solution, enabling building Agihan Visor Web Extensions which augment Shinkai Visor's key capabilities (ex. a specific extension built for Twitter which offers advanced automation/summarization above and beyond using the LLM by itself)
+### Apps
+* shinkai-visor: Shinkai Visor is a chrome extension to interact with shinkai-node.
+* shinkai-app: Shinkai App is a mobile app to interact with shinkai-node.
 
-## Getting Started
+### Libs
 
-The fastest way to get started using Shinkai Visor is via the [Chrome Web Store]().
+* shinkai-message-ts: Typescript library that implements the features and networking layer to enable systems to interact with shinkai-nodes.
+* shinkai-node-state: Typescript library which using @tanstack/react-query enables apps to interact with shinkai-node managing the state, caching and evictions.
 
-This will provide you with a seamless install process and allow you to get up and running instantly. Alternatively the instructions below allow you to compile Shinkai Visor locally.
-
-## Compile It Yourself
+## Getting started
 
 To get started first clone this repo:
 
 ```
-$ git clone https://github.com/dcSpark-ai/shinkai-visor
+$ git clone https://github.com/dcSpark/shinkai-apps
 ```
 
-Once you have done that simply use `npm` to compile it yourself:
+Once you have done that simply use `npm` to compile/serve it yourself:
 
 ```
-$ cd shinkai-visor
+$ cd shinkai-apps
 $ nvm use
-$ npm install
-$ npm start
+$ npm ci
+$ npx nx serve {project-name}
 ```
 
-This will install all of the dependencies and build the extension. Now that the project has been built, you can add the extension to your Chrome browser via the following steps:
+### Project specific configurations
+* shinkai-visor: As this is a Chrome Extension, after build, developers needs to load it in chrome:
+  * 1. Open Chrome.
+  * 2. Navigate to `chrome://extensions`.
+  * 3. Enable _Developer mode_.
+  * 4. Click _Load unpacked_.
+  * 5. Select the `./dist/apps/shinkai-visor` folder which contains the output of the building process using commands like `npx nx serve shinkai-visor`.
 
-1. Open Chrome.
-2. Navigate to `chrome://extensions`.
-3. Enable _Developer mode_.
-4. Click _Load unpacked_.
-5. Select the `dist` directory which has been created through the compilation process.
+### Useful Commands
 
-## ⚙️ Shinkai Visor API
+Every command, if it's needed, build projects and it's dependencies according to the project dependency tree inferred from imports between them.
 
-After a user installs the Shinkai Visor extension into their web browser, the extension will inject a listener into each webpage that they visit. This allows both AV Web Apps and AV Extensions to import the `sv-core` library to use the exposed `shinkaiVisor` API object which seamlessly handles interacting directly with Shinkai Visor, and thus the user's ship, without having to do any extra setup at all. (Note: Originally Shinkai Visor injected the API directly into each web page, however in order to unify the Shinkai Web App and AV Extension development experience at his approach was reworked into the current solution)
+* Run a single task
 
-Below you will find the API which the current version of Shinkai Visor supports. If a given method requires permission, this means that the user must grant the website permission to have access to use this method. If this authorization has not yet been given, Shinkai Visor will automatically ask the user to authorize said permission upon attempt to use said method.
+  Command: `npx nx [target] [project-name]`
+  
+  Params:
+    * target: build | serve | lint | test | e2e
 
-| Method                  | Description                                                                                               | Requires Permission | Input                                                          | Returns             |
-| ----------------------- | --------------------------------------------------------------------------------------------------------- | ------------------- | -------------------------------------------------------------- | ------------------- |
-| `isConnected`           | Returns whether or not the user actively has an agent connected.                                          | No                  | `()`                                                           | `boolean`           |
-| `getLLMName`            | Returns the name of the LLM that the agent is using.                                                      | Yes                 | `()`                                                           | `string`            |
-| `requestPermissions`    | Domain/app requests for permissions to be able to use the connected Agent.                                | No                  | `Array<Permission>`                                            | `void`              |
-| `authorizedPermissions` | Returns the permissions that the user has authorized for the current domain/agent.                        | No                  | `()`                                                           | `Array<Permission>` |
-| `on`                    | Adds an event listener for a subscription to Shinkai Visor Events (ex. user switched to different agent). | No                  | `(eventType: string, keys: Array<string>, callback: Function)` | `Subscription`      |
-| `off`                   | Removes an event listener set up by `on()`.                                                               | No                  | `Subscription` (returned by `.on()`)                           | undefined           |
-| `require`               | Requests the required permissions for your app and ensures their presence before triggering callback.     | No                  | `(perms: Array<Permission>, callback: Function)`               | undefined           |
+  IE:
+    * `npx nx build shinkai-visor`
+    * `npx nx lint shinkai-message-ts`
+    * `npx nx e2e shinkai-visor`
+    * `npx nx serve shinkai-app`
 
-### .require()
+* Run many tasks
 
-Shinkai Visor offers a endpoint to make the initial setup of your app much easier, thereby cleaning up most of the boilerplate.
+  Command: `npx nx run-many --target=[target]`
 
-On the top page of your app (e.g. `App.tsx`) run `shinkaiVisor.require` and pass it two pieces of data: one array with the permissions you want, and a callback function to automatically query for the data that you know you will need.
+  Params:
+    * target: build | serve | lint | test | e2e
 
-If the connected agent has not granted the current domain the permissions required yet, they will be automatically requested, and once granted by the user, it will know that they were granted and automatically run the setData callback. This greatly reducing the amount of initial code you need to write so you can focus on your business logic for your apps.
+  IE:
+    * `npx nx run-many --target=build`
+    * `npx nx run-many --target=lint`
+    * `npx nx run-many --target=test`
+    * `npx nx run-many --target=e2e`
+    * `npx nx run-many --target=serve`
+
+* Run on affected projects
+
+  Command: `npx nx affected --target=[target]`
+
+  Params:
+    * target: build | serve | lint | test | e2e
+
+  IE:
+    * `npx nx affected --target=build`
+
+> When you build a project, NX builds a cache (to make it faster), if you want to skip it just add the parameter `--skip-nx-cache` to the previous commands.
+
+## Dev conventions
+
+### Monorepo
+To orchestrate all the tasks, dependencies and hierarchy between different projects, this repository uses [NX](https://nx.dev/) as a monorepo tooling.
+
+### Third party dependencies
+All projects share the same base of dependencies defined `./package.json` file found in the root of the repository. Nested package json files are used just to override or extends base attributes.
+
+### UI Libraries
+To build the UI there are 3 core libraries:
+* [radix](https://www.radix-ui.com/) to have base unstyled components.
+* [shadcn](https://ui.shadcn.com/) to obtain ready to use components.
+* [tailwindcss](https://tailwindui.com/) to implement css customizations, structures, layouts and helpers.
+
+### State management
+To implement state management there are two different libraries:
+* [zustand](https://docs.pmnd.rs/zustand/getting-started/introduction): To implement UI State
+* [react-query](https://tanstack.com/query/v4): To implement data state
