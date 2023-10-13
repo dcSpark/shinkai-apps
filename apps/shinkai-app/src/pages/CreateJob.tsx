@@ -1,10 +1,10 @@
-// pages/CreateJob.tsx
+import { ErrorMessage } from '@hookform/error-message';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   IonBackButton,
   IonButtons,
   IonCol,
   IonGrid,
-  IonItem,
   IonLabel,
   IonPage,
   IonRow,
@@ -13,116 +13,65 @@ import {
   IonTextarea,
   IonTitle,
 } from '@ionic/react';
-import {
-  createJob,
-  getProfileAgents,
-  sendMessageToJob,
-} from '@shinkai_network/shinkai-message-ts/api';
-import { SerializedAgent } from '@shinkai_network/shinkai-message-ts/models';
-import {
-  InboxNameWrapper,
-  JobCreationWrapper,
-  JobScopeWrapper,
-} from '@shinkai_network/shinkai-message-ts/wasm';
-import { History } from 'history';
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
+import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
+import { Controller, useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
+import z from 'zod';
 
 import Button from '../components/ui/Button';
 import { IonContentCustom, IonHeaderCustom } from '../components/ui/Layout';
 import { useSetup } from '../hooks/usetSetup';
-import { RootState } from '../store';
-import { addAgents } from '../store/actions';
+import { useAuth } from '../store/auth';
+
+const createJobSchema = z.object({
+  model: z.string(),
+  description: z.string(),
+});
 
 const CreateJob: React.FC = () => {
   useSetup();
-  const dispatch = useDispatch();
-  const setupDetailsState = useSelector(
-    (state: RootState) => state.setupDetails
-  );
-  const [jobContent, setJobContent] = useState('');
-  const [selectedAgent, setSelectedAgent] = useState<SerializedAgent | null>(
-    null
-  );
-  const agents = useSelector((state: RootState) => state.other.agents);
-  const history: History<unknown> = useHistory();
 
-  useEffect(() => {
-    const fetchAgents = async () => {
-      const { shinkai_identity, profile } = setupDetailsState;
-      const node_name = shinkai_identity;
-      const sender_subidentity = `${profile}`;
+  const auth = useAuth((state) => state.auth);
+  const { agents } = useAgents({
+    sender: auth?.shinkai_identity ?? '',
+    senderSubidentity: `${auth?.profile}`,
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+    my_device_identity_sk: auth?.profile_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+  });
 
-      const profiles = await getProfileAgents(
-        node_name,
-        sender_subidentity,
-        node_name,
-        setupDetailsState
-      );
-      dispatch(addAgents(profiles));
+  const history = useHistory();
 
-      // Set the first agent as the selected agent
-      if (profiles.length > 0) {
-        setSelectedAgent(profiles[0]);
-      }
-    };
+  const { isLoading, mutateAsync: createJob } = useCreateJob({
+    onSuccess: (data) => {
+      history.push(`/job-chat/${encodeURIComponent(data.jobId)}`);
+    },
+  });
 
-    fetchAgents();
-  }, [dispatch, setupDetailsState]);
+  const createJobForm = useForm<z.infer<typeof createJobSchema>>({
+    resolver: zodResolver(createJobSchema),
+  });
 
-  const handleCreateJob = async () => {
-    console.log('Creating job with content:', jobContent);
-
-    const { shinkai_identity, profile } = setupDetailsState;
-    const sender = shinkai_identity + '/' + profile;
-
-    const job_creation = JobCreationWrapper.empty().get_scope;
-    console.log('buckets: ', job_creation.buckets);
-    console.log('scope:', job_creation);
-
-    const scope = new JobScopeWrapper(
-      job_creation.buckets,
-      job_creation.documents
-    );
-    console.log('scope:', scope.to_jsvalue());
-
-    console.log('Selected agent:', selectedAgent);
-
-    const receiver = shinkai_identity;
-    const receiver_subidentity = `${profile}/agent/${selectedAgent?.id}`;
-
-    // Call createJob
-    const jobId = await createJob(
-      scope.to_jsvalue(),
-      shinkai_identity,
-      profile,
-      receiver,
-      receiver_subidentity,
-      setupDetailsState
-    );
-    console.log('Job created with id:', jobId);
-
-    if (jobId) {
-      const result = await sendMessageToJob(
-        jobId.toString(),
-        jobContent,
-        '',
-        shinkai_identity,
-        profile,
-        receiver,
-        receiver_subidentity,
-        setupDetailsState
-      );
-      dispatch({ type: 'SEND_MESSAGE_SUCCESS', payload: result });
-
-      // Hacky solution because react-router can't handle dots in the URL
-      const jobInboxName = InboxNameWrapper.get_job_inbox_name_from_params(
-        jobId.toString()
-      );
-      const encodedJobId = jobInboxName.get_value.replace(/\./g, '~');
-      history.push(`/job-chat/${encodeURIComponent(encodedJobId)}`);
-    }
+  const onSubmit = async (data: z.infer<typeof createJobSchema>) => {
+    console.log(data);
+    if (!auth) return;
+    createJob({
+      shinkaiIdentity: auth.shinkai_identity,
+      profile: auth.profile,
+      agentId: data.model,
+      content: data.description,
+      files_inbox: '',
+      files: [],
+      my_device_encryption_sk: auth.my_device_encryption_sk,
+      my_device_identity_sk: auth.my_device_identity_sk,
+      node_encryption_pk: auth.node_encryption_pk,
+      profile_encryption_sk: auth.profile_encryption_sk,
+      profile_identity_sk: auth.profile_identity_sk,
+    });
   };
 
   return (
@@ -145,32 +94,72 @@ const CreateJob: React.FC = () => {
                 New Job Details
               </h2>
 
-              <IonItem>
-                <IonLabel>Select Agent</IonLabel>
-                <IonSelect
-                  onIonChange={(e) => setSelectedAgent(e.detail.value)}
-                  placeholder="Select One"
-                  value={selectedAgent}
-                >
-                  {Object.values(agents).map((agent, index) => (
-                    <IonSelectOption key={index} value={agent}>
-                      {agent.id}
-                    </IonSelectOption>
-                  ))}
-                </IonSelect>
-              </IonItem>
+              <form
+                className="space-y-10"
+                onSubmit={createJobForm.handleSubmit(onSubmit)}
+              >
+                <div className="space-y-6">
+                  <Controller
+                    control={createJobForm.control}
+                    name="model"
+                    render={({ field }) => (
+                      <div>
+                        <IonLabel>Select Agent</IonLabel>
+                        <IonSelect
+                          onIonChange={(e) =>
+                            createJobForm.setValue('model', e.detail.value)
+                          }
+                          placeholder="Select One"
+                          value={field.value}
+                        >
+                          {agents.map((agent, index) => (
+                            <IonSelectOption key={index} value={agent.id}>
+                              {agent.id}
+                            </IonSelectOption>
+                          ))}
+                        </IonSelect>
+                        <ErrorMessage
+                          errors={createJobForm.formState.errors}
+                          name="model"
+                          render={({ message }) => (
+                            <p className="text-red-500">{message}</p>
+                          )}
+                        />
+                      </div>
+                    )}
+                  />
 
-              <IonItem>
-                <IonLabel position="floating">Tell me the job to do</IonLabel>
-                <IonTextarea
-                  onIonChange={(e) => setJobContent(e.detail.value!)}
-                  value={jobContent}
-                />
-              </IonItem>
+                  <Controller
+                    control={createJobForm.control}
+                    name="description"
+                    render={({ field }) => (
+                      <div>
+                        <IonLabel>Tell me the job to do</IonLabel>
+                        <IonTextarea
+                          onIonChange={(e) =>
+                            createJobForm.setValue(
+                              'description',
+                              e.detail.value as string
+                            )
+                          }
+                          value={field.value}
+                        />
+                        <ErrorMessage
+                          errors={createJobForm.formState.errors}
+                          name="description"
+                          render={({ message }) => (
+                            <p className="text-red-500">{message}</p>
+                          )}
+                        />
+                      </div>
+                    )}
+                  />
+                </div>
 
-              <div style={{ marginTop: '20px' }}>
-                <Button onClick={handleCreateJob}>Create Job</Button>
-              </div>
+                <Button isLoading={isLoading} type="submit">
+                  Create Job
+                </Button>
+              </form>
             </IonCol>
           </IonRow>
         </IonGrid>
