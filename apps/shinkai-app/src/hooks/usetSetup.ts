@@ -1,18 +1,12 @@
-// hooks/useSetup.ts
-import { ApiConfig } from "@shinkai_network/shinkai-message-ts/api";
-import { useEffect } from "react";
-import { shallowEqual, useSelector } from "react-redux";
+import { ApiConfig } from '@shinkai_network/shinkai-message-ts/api';
+import { useEffect } from 'react';
 
-import { RootState } from "../store";
+import { useAuth } from '../store/auth';
 
 export const useSetup = () => {
-  const setupDetails = useSelector(
-    (state: RootState) => state.setupDetails,
-    shallowEqual
-  );
+  const auth = useAuth((state) => state.auth);
 
   useEffect(() => {
-    console.log("Redux State:", setupDetails);
-    ApiConfig.getInstance().setEndpoint(setupDetails.node_address);
-  }, [setupDetails]);
+    ApiConfig.getInstance().setEndpoint(auth?.node_address ?? '');
+  }, [auth?.node_address]);
 };

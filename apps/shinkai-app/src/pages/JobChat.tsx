@@ -10,36 +10,28 @@ import {
   IonTitle,
 } from '@ionic/react';
 import {
-  sendMessageToJob,
-  sendTextMessageWithFilesForInbox,
-} from '@shinkai_network/shinkai-message-ts/api';
+  extractJobIdFromInbox,
+  getOtherPersonIdentity,
+} from '@shinkai_network/shinkai-message-ts/utils';
+import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMessageToJob/useSendMessageToJob';
+import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageWithFilesToInbox';
 import { send } from 'ionicons/icons';
 import { cameraOutline } from 'ionicons/icons';
 import { document as documentIcon } from 'ionicons/icons';
 import React, { useCallback, useState } from 'react';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
 import ChatMessages from '../components/ChatMessages';
 import { IonFooterCustom, IonHeaderCustom } from '../components/ui/Layout';
 import { useSetup } from '../hooks/usetSetup';
-import { RootState } from '../store';
+import { useAuth } from '../store/auth';
 import { cn } from '../theme/lib/utils';
-import {
-  extractJobIdFromInbox,
-  getOtherPersonIdentity,
-} from '../utils/inbox_name_handler';
 
 const JobChat: React.FC = () => {
-  console.log('Loading JobChat.tsx');
   useSetup();
 
-  const dispatch = useDispatch();
-  const setupDetailsState = useSelector(
-    (state: RootState) => state.setupDetails,
-    shallowEqual
-  );
-  const { shinkai_identity, profile } = setupDetailsState;
+  const auth = useAuth((state) => state.auth);
+  if (!auth) throw new Error('Auth is null');
 
   const { id } = useParams<{ id: string }>();
   const deserializedId = decodeURIComponent(id).replace(/~/g, '.');
@@ -48,8 +40,16 @@ const JobChat: React.FC = () => {
   const [fileExtension, setFileExtension] = useState<string | null>(null);
   const otherPersonIdentity = getOtherPersonIdentity(
     deserializedId,
-    setupDetailsState.shinkai_identity
+    auth?.shinkai_identity ?? ''
   );
+
+  const { mutateAsync: sendMessageToJob, isLoading: isSendingMessageToJob } =
+    useSendMessageToJob();
+
+  const {
+    mutateAsync: sendTextMessageWithFilesForInbox,
+    isLoading: isSendingTextMessageWithFilesForInbox,
+  } = useSendMessageWithFilesToInbox();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
@@ -66,40 +66,51 @@ const JobChat: React.FC = () => {
     const message_to_send = inputMessage;
     setInputMessage('');
     setSelectedFile(null);
+    const sender = `${auth.shinkai_identity}/${auth.profile}/device/${auth.registration_name}`;
+
     if (selectedFile) {
-      sendTextMessageWithFilesForInbox(
-        shinkai_identity,
-        profile,
-        shinkai_identity,
-        message_to_send,
-        deserializedId,
-        selectedFile,
-        setupDetailsState
-      ).then((message) => {
-        dispatch({ type: 'SEND_MESSAGE_SUCCESS', payload: message });
+      sendTextMessageWithFilesForInbox({
+        file: selectedFile,
+        message: message_to_send,
+        sender,
+        receiver: sender,
+        inboxId: deserializedId as string,
+        my_device_encryption_sk: auth.my_device_encryption_sk,
+        my_device_identity_sk: auth.my_device_identity_sk,
+        node_encryption_pk: auth.node_encryption_pk,
+        profile_encryption_sk: auth.profile_encryption_sk,
+        profile_identity_sk: auth.profile_identity_sk,
       });
     } else {
-      sendMessageToJob(
-        extractJobIdFromInbox(deserializedId.toString()),
-        message_to_send,
-        '',
-        shinkai_identity,
-        profile,
-        shinkai_identity,
-        '',
-        setupDetailsState
-      ).then((message) => {
-        dispatch({ type: 'SEND_MESSAGE_SUCCESS', payload: message });
+      const jobId = extractJobIdFromInbox(deserializedId);
+
+      sendMessageToJob({
+        jobId: jobId,
+        message: message_to_send,
+        files_inbox: '',
+        shinkaiIdentity: auth.shinkai_identity,
+        profile: auth.profile,
+        my_device_encryption_sk: auth.my_device_encryption_sk,
+        my_device_identity_sk: auth.my_device_identity_sk,
+        node_encryption_pk: auth.node_encryption_pk,
+        profile_encryption_sk: auth.profile_encryption_sk,
+        profile_identity_sk: auth.profile_identity_sk,
       });
     }
   }, [
     inputMessage,
-    dispatch,
-    setupDetailsState,
-    shinkai_identity,
-    deserializedId,
-    profile,
+    auth.shinkai_identity,
+    auth.profile,
+    auth.registration_name,
+    auth.my_device_encryption_sk,
+    auth.my_device_identity_sk,
+    auth.node_encryption_pk,
+    auth.profile_encryption_sk,
+    auth.profile_identity_sk,
     selectedFile,
+    sendTextMessageWithFilesForInbox,
+    deserializedId,
+    sendMessageToJob,
   ]);
 
   const handleKeyDown = (
