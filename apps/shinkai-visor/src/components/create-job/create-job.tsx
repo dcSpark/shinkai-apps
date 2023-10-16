@@ -79,12 +79,16 @@ export const CreateJob = () => {
   }, [agents, form]);
   const submit = (values: FormSchemaType) => {
     if (!auth) return;
+    let content = values.content;
+    if (query.has('context')) {
+      content = `${values.content} - \`\`\`${query.get('context')}\`\`\``;
+    }
 
     createJob({
       shinkaiIdentity: auth.shinkai_identity,
       profile: auth.profile,
       agentId: values.agent,
-      content: values.content,
+      content: content,
       files_inbox: '',
       files: location.state?.files,
       my_device_encryption_sk: auth.my_device_encryption_sk,
