@@ -21,7 +21,6 @@ import { ApiConfig } from '@shinkai_network/shinkai-message-ts/api';
 import { queryClient } from '@shinkai_network/shinkai-node-state/lib/constants';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { useEffect } from 'react';
-import { Provider } from 'react-redux';
 import { Redirect, Route } from 'react-router-dom';
 
 import AddAgent from './pages/AddAgent';
@@ -33,7 +32,6 @@ import CreateJob from './pages/CreateJob';
 import Home from './pages/Home';
 import JobChat from './pages/JobChat';
 import Settings from './pages/Settings';
-import { store } from './store';
 import { useAuth } from './store/auth';
 
 setupIonicReact();
@@ -72,42 +70,40 @@ function PrivateRoute({
 
 const App: React.FC = () => {
   return (
-    <Provider store={store}>
-      <QueryClientProvider client={queryClient}>
-        <IonApp>
-          <IonReactRouter>
-            <IonRouterOutlet>
-              <Route component={Connect} path="/connect" />
-              <PrivateRoute exact path="/home">
-                <Home />
-              </PrivateRoute>
-              <PrivateRoute exact path="/admin-commands">
-                <AdminCommands />
-              </PrivateRoute>
-              <PrivateRoute exact path="/create-job">
-                <CreateJob />
-              </PrivateRoute>
-              <PrivateRoute exact path="/create-chat">
-                <CreateChat />
-              </PrivateRoute>
-              <PrivateRoute exact path="/add-agent">
-                <AddAgent />
-              </PrivateRoute>
-              <PrivateRoute exact path="/chat/:id">
-                <Chat />
-              </PrivateRoute>
-              <PrivateRoute exact path="/job-chat/:id">
-                <JobChat />
-              </PrivateRoute>
-              <PrivateRoute path="/settings">
-                <Settings />
-              </PrivateRoute>
-              <Redirect exact from="/" to="/home" />
-            </IonRouterOutlet>
-          </IonReactRouter>
-        </IonApp>
-      </QueryClientProvider>
-    </Provider>
+    <QueryClientProvider client={queryClient}>
+      <IonApp>
+        <IonReactRouter>
+          <IonRouterOutlet>
+            <Route component={Connect} path="/connect" />
+            <PrivateRoute exact path="/home">
+              <Home />
+            </PrivateRoute>
+            <PrivateRoute exact path="/admin-commands">
+              <AdminCommands />
+            </PrivateRoute>
+            <PrivateRoute exact path="/create-job">
+              <CreateJob />
+            </PrivateRoute>
+            <PrivateRoute exact path="/create-chat">
+              <CreateChat />
+            </PrivateRoute>
+            <PrivateRoute exact path="/add-agent">
+              <AddAgent />
+            </PrivateRoute>
+            <PrivateRoute exact path="/chat/:id">
+              <Chat />
+            </PrivateRoute>
+            <PrivateRoute exact path="/job-chat/:id">
+              <JobChat />
+            </PrivateRoute>
+            <PrivateRoute path="/settings">
+              <Settings />
+            </PrivateRoute>
+            <Redirect exact from="/" to="/home" />
+          </IonRouterOutlet>
+        </IonReactRouter>
+      </IonApp>
+    </QueryClientProvider>
   );
 };
 

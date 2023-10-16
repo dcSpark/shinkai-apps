@@ -107,7 +107,7 @@ const Chat: React.FC = () => {
 
     const sender = `${auth.shinkai_identity}/${auth.profile}/device/${auth.registration_name}`;
     const receiver = extractReceiverShinkaiName(deserializedId, sender);
-    console.log(receiver, 'receiver');
+
     if (file) {
       await sendTextMessageWithFilesForInbox({
         file,
