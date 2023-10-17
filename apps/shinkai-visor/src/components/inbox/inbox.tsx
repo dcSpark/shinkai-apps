@@ -161,17 +161,36 @@ export const Inbox = () => {
       >
         {isChatConversationSuccess && (
           <div className="py-2 text-center text-xs">
-            {isFetchingPreviousPage ? (
+            {isFetchingPreviousPage && (
               <Loader2 className="flex animate-spin justify-center text-white" />
-            ) : (
+            )}
+            {!isFetchingPreviousPage && !hasPreviousPage && (
               <FormattedMessage id="all-messages-loaded"></FormattedMessage>
             )}
           </div>
         )}
         <div className="pb-4">
           {isChatConversationLoading &&
-            [1, 2, 3, 4].map((index) => (
-              <Skeleton className="h-10 w-full rounded-lg" key={index} />
+            [...Array(5).keys()].map((index) => (
+              <div
+                className={cn(
+                  'flex w-[95%] items-start gap-3',
+                  index % 2 === 0
+                    ? 'ml-0 mr-auto flex-row'
+                    : 'ml-auto mr-0 flex-row-reverse'
+                )}
+                key={`${index}`}
+              >
+                <Skeleton className="h-12 w-12 rounded-full" key={index} />
+                <Skeleton
+                  className={cn(
+                    'mt-1 rounded-lg px-2.5 py-3 w-full',
+                    index % 2 === 0
+                      ? 'rounded-tl-none border border-slate-800'
+                      : 'rounded-tr-none border-none'
+                  )}
+                />
+              </div>
             ))}
           {isChatConversationSuccess &&
             data?.pages?.map((group, index) => (

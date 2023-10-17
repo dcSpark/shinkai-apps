@@ -1,10 +1,11 @@
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { Fragment } from 'react';
+import { FormattedMessage } from 'react-intl';
 
 import { useAuth } from '../../store/auth/auth';
+import { EmptyAgents } from '../empty-agents/empty-agents';
 import { Button } from '../ui/button';
 import { ScrollArea } from '../ui/scroll-area';
-import { Separator } from '../ui/separator';
 
 export const Agents = () => {
   const auth = useAuth((state) => state.auth);
@@ -18,15 +19,20 @@ export const Agents = () => {
     profile_encryption_sk: auth?.profile_encryption_sk ?? '',
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
-  return (
-    <div className="[&>div>div]:!block h-full flex flex-col space-y-3 justify-between">
-      <ScrollArea>
+  return !agents?.length ? (
+    <div className="h-full flex flex-col justify-center">
+      <EmptyAgents></EmptyAgents>
+    </div>
+  ) : (
+    <div className="flex flex-col">
+      <h1 className="font-semibold mb-2">
+        <FormattedMessage id="agent.other"></FormattedMessage>
+      </h1>
+      <ScrollArea className="[&>div>div]:!block h-full flex flex-col space-y-3 justify-between">
         {agents?.map((agent) => (
           <Fragment key={agent.id}>
             <Button className="w-full" variant="tertiary">
-              <span className="w-full truncate text-start">
-                {agent.id}
-              </span>
+              <span className="w-full truncate text-start">{agent.id}</span>
             </Button>
           </Fragment>
         ))}
