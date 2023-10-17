@@ -42,6 +42,7 @@ export const Inbox = () => {
     node_encryption_pk: auth?.node_encryption_pk ?? '',
     profile_encryption_sk: auth?.profile_encryption_sk ?? '',
     profile_identity_sk: auth?.profile_identity_sk ?? '',
+    refetchInterval: 5000,
   });
   const {
     mutateAsync: sendMessageToInbox,
@@ -160,7 +161,7 @@ export const Inbox = () => {
       >
         {isChatConversationSuccess && (
           <div className="py-2 text-center text-xs">
-            {isFetchingPreviousPage || hasPreviousPage ? (
+            {isFetchingPreviousPage ? (
               <Loader2 className="flex animate-spin justify-center text-white" />
             ) : (
               <FormattedMessage id="all-messages-loaded"></FormattedMessage>
