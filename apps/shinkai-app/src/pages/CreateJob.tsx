@@ -59,7 +59,6 @@ const CreateJob: React.FC = () => {
   });
 
   const onSubmit = async (data: z.infer<typeof createJobSchema>) => {
-    console.log(data);
     if (!auth) return;
     createJob({
       shinkaiIdentity: auth.shinkai_identity,

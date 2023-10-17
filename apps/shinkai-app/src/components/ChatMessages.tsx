@@ -54,7 +54,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ deserializedId }) => {
     profile_encryption_sk: auth?.profile_encryption_sk ?? '',
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
-  console.log('Chat Conversation Data:', data);
+
   const [isScrolling, setScrolling] = useState(true);
 
   const chatContainerRef = React.createRef<HTMLIonContentElement>();

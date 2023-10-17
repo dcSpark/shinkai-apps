@@ -60,7 +60,6 @@ const JobChat: React.FC = () => {
   };
 
   const sendMessage = useCallback(async () => {
-    console.log('Sending message: ', inputMessage);
     if (inputMessage.trim() === '') return;
 
     const message_to_send = inputMessage;
