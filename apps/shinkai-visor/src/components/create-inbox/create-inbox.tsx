@@ -3,7 +3,7 @@ import { useCreateChat } from '@shinkai_network/shinkai-node-state/lib/mutations
 import { Loader2 } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 import { z } from 'zod';
 
@@ -18,6 +18,7 @@ import {
   FormMessage,
 } from '../ui/form';
 import { Input } from '../ui/input';
+import { Textarea } from '../ui/textarea';
 
 const formSchema = z.object({
   receiverIdentity: z.string().nonempty(),
@@ -29,7 +30,7 @@ type FormSchemaType = z.infer<typeof formSchema>;
 export const CreateInbox = () => {
   const history = useHistory();
   const auth = useAuth((state) => state.auth);
-
+  const intl = useIntl();
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -101,7 +102,14 @@ export const CreateInbox = () => {
                     <FormattedMessage id="message.one" />
                   </FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Textarea
+                      autoFocus
+                      className="resize-none border-white"
+                      placeholder={intl.formatMessage({
+                        id: 'tmwtd',
+                      })}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

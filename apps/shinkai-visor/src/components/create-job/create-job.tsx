@@ -5,7 +5,7 @@ import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAg
 import { Loader2, Workflow } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useLocation } from 'react-router-dom';
 import { z } from 'zod';
 
@@ -41,6 +41,7 @@ type FormSchemaType = z.infer<typeof formSchema>;
 
 export const CreateJob = () => {
   const history = useHistory();
+  const intl = useIntl();
   const location = useLocation<{ files: File[] }>();
   const query = useQuery();
   const auth = useAuth((state) => state.auth);
@@ -170,8 +171,11 @@ export const CreateJob = () => {
                   </FormLabel>
                   <FormControl>
                     <Textarea
+                      autoFocus
                       className="resize-none border-white"
-                      placeholder="Eg: Give me the top 10 rock music in the 80s..."
+                      placeholder={intl.formatMessage({
+                        id: 'tmwtd',
+                      })}
                       {...field}
                     />
                   </FormControl>

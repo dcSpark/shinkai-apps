@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2, Send } from 'lucide-react';
+import { useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import { z } from 'zod';
@@ -40,6 +41,10 @@ export const InboxInput = (props: InboxInputProps) => {
     if (value) {
       props.onSubmit(value);
       form.reset({ message: '' });
+      // TODO: Improve this. Workaround to set focus after submit form
+      setTimeout(() => {
+        form.setFocus('message');
+      }, 200);
     }
   };
   return (
@@ -61,6 +66,7 @@ export const InboxInput = (props: InboxInputProps) => {
                       id: 'tmwtd',
                     })}
                     {...field}
+                    autoFocus
                   />
                 </FormControl>
                 <FormMessage />
