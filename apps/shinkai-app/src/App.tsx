@@ -52,7 +52,7 @@ function PrivateRoute({
   return (
     <Route
       {...rest}
-      render={({ location }) => {
+      render={() => {
         return auth ? children : <Redirect to="/connect" />;
       }}
     />
