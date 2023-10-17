@@ -2,6 +2,8 @@ import './Connect.css';
 
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
+import { ErrorMessage } from '@hookform/error-message';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   IonContent,
   IonIcon,
@@ -9,11 +11,13 @@ import {
   IonPage,
   IonSegment,
   IonSegmentButton,
-  IonSpinner,
   IonToast,
 } from '@ionic/react';
 import { isPlatform } from '@ionic/react';
-import { QRSetupData } from '@shinkai_network/shinkai-message-ts/models';
+import {
+  QRSetupData,
+  SetupPayload,
+} from '@shinkai_network/shinkai-message-ts/models';
 import {
   generateEncryptionKeys,
   generateSignatureKeys,
@@ -25,30 +29,101 @@ import { QrScanner, QrScannerProps } from '@yudiel/react-qr-scanner';
 import { BrowserQRCodeReader } from '@zxing/browser';
 import { checkmarkSharp, cloudUpload, scan } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import * as z from 'zod';
 
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import { useAuth } from '../store/auth';
-import { SetupDetailsState } from '../store/reducers/setupDetailsReducer';
 
-export type MergedSetupType = SetupDetailsState & QRSetupData;
+export type MergedSetupType = SetupPayload &
+  QRSetupData & {
+    profile_encryption_pk: string;
+    profile_identity_pk: string;
+    my_device_encryption_pk: string;
+    my_device_identity_pk: string;
+  };
+
+const formSchema = z.object({
+  registration_code: z.string(),
+  profile: z.string(),
+  registration_name: z.string(),
+  identity_type: z.string(),
+  permission_type: z.string(),
+  node_address: z.string().url({
+    message: 'Node Address must be a valid URL',
+  }),
+  shinkai_identity: z.string(),
+  node_encryption_pk: z.string(),
+  node_signature_pk: z.string(),
+  profile_encryption_sk: z.string(),
+  profile_encryption_pk: z.string(),
+  profile_identity_sk: z.string(),
+  profile_identity_pk: z.string(),
+  my_device_encryption_sk: z.string(),
+  my_device_encryption_pk: z.string(),
+  my_device_identity_sk: z.string(),
+  my_device_identity_pk: z.string(),
+});
 
 const Connect = () => {
   const history = useHistory();
   const setAuth = useAuth((state) => state.setAuth);
   const setLogout = useAuth((state) => state.setLogout);
   const [mode, setMode] = useState<'Automatic' | 'Manual'>('Automatic');
+
+  const setupDataForm = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      node_address: 'http://localhost:9550',
+      registration_code: '',
+      profile: 'main',
+      registration_name: 'main_device',
+      identity_type: 'device',
+      permission_type: 'admin',
+      shinkai_identity: '@@node1.shinkai', // this should actually be read from ENV
+      node_encryption_pk: '',
+      node_signature_pk: '',
+      profile_encryption_sk: '',
+      profile_encryption_pk: '',
+      profile_identity_sk: '',
+      profile_identity_pk: '',
+      my_device_encryption_sk: '',
+      my_device_encryption_pk: '',
+      my_device_identity_sk: '',
+      my_device_identity_pk: '',
+    },
+  });
+
+  console.log('setupDataForm', setupDataForm.getValues());
   const {
-    isLoading: isSubmitRegistrationLoading,
+    isLoading,
     mutateAsync: submitRegistration,
-    isError: isSubmitRegistrationError,
-    error: submitRegistrationError,
+    isError,
+    error,
   } = useSubmitRegistration({
     onSuccess: (response) => {
       if (!response) throw new Error('Failed to submit registration');
-      setAuth(setupData);
+      const values = setupDataForm.getValues();
+      setAuth({
+        profile: values.profile,
+        permission_type: values.permission_type,
+        node_address: values.node_address,
+        shinkai_identity: values.shinkai_identity,
+        node_signature_pk: values.node_signature_pk ?? '',
+        node_encryption_pk: values.node_encryption_pk ?? '',
+        registration_name: values.registration_name,
+        my_device_identity_pk: values.my_device_identity_pk,
+        my_device_identity_sk: values.my_device_identity_sk,
+        my_device_encryption_pk: values.my_device_encryption_pk,
+        my_device_encryption_sk: values.my_device_encryption_sk,
+        profile_identity_pk: values.profile_identity_pk,
+        profile_identity_sk: values.profile_identity_sk,
+        profile_encryption_pk: values.profile_encryption_pk,
+        profile_encryption_sk: values.profile_encryption_sk,
+      });
       history.push('/home');
     },
     onError: (error) => {
@@ -56,56 +131,6 @@ const Connect = () => {
       toast.error(error.message);
     },
   });
-
-  const {
-    isLoading: isSubmitRegistrationNoCodeLoading,
-    mutateAsync: submitRegistrationNocode,
-    isError: isSubmitRegistrationNoCodeError,
-    error: submitRegistrationNoCodeError,
-  } = useSubmitRegistrationNoCode({
-    onSuccess: (response) => {
-      if (!response.success) throw new Error('Failed to submit registration');
-      const responseData = response.data;
-      const updatedSetupData = {
-        ...setupData,
-        node_encryption_pk: responseData?.encryption_public_key ?? '',
-        node_signature_pk: responseData?.identity_public_key ?? '',
-      };
-      setAuth(updatedSetupData);
-      history.push('/home');
-    },
-    onError: (error) => {
-      console.log('Error from submitRegistrationNocode', error);
-      toast.error(error.message);
-    },
-  });
-
-  const [setupData, setSetupData] = useState<MergedSetupType>({
-    registration_code: '',
-    profile: 'main',
-    registration_name: 'main_device',
-    identity_type: 'device',
-    permission_type: 'admin',
-    node_address: '',
-    shinkai_identity: '@@node1.shinkai', // this should actually be read from ENV
-    node_encryption_pk: '',
-    node_signature_pk: '',
-    profile_encryption_sk: '',
-    profile_encryption_pk: '',
-    profile_identity_sk: '',
-    profile_identity_pk: '',
-    my_device_encryption_sk: '',
-    my_device_encryption_pk: '',
-    my_device_identity_sk: '',
-    my_device_identity_pk: '',
-  });
-
-  const isLoading =
-    isSubmitRegistrationLoading || isSubmitRegistrationNoCodeLoading;
-
-  const isError = isSubmitRegistrationError || isSubmitRegistrationNoCodeError;
-
-  const error = submitRegistrationError || submitRegistrationNoCodeError;
 
   useEffect(() => {
     setLogout();
@@ -115,7 +140,7 @@ const Connect = () => {
       .then((response) => response.json())
       .then((data) => {
         if (data.status === 'ok') {
-          updateSetupData({ node_address: 'http://127.0.0.1:9550' });
+          setupDataForm.setValue('node_address', 'http://127.0.0.1:9550');
         }
       })
       .catch((error) => console.error('Error:', error));
@@ -128,52 +153,53 @@ const Connect = () => {
     // Device Keys
     let seed = crypto.getRandomValues(new Uint8Array(32));
     generateEncryptionKeys(seed).then(
-      ({ my_encryption_sk_string, my_encryption_pk_string }) =>
-        setSetupData((prevState) => ({
-          ...prevState,
-          my_device_encryption_pk: my_encryption_pk_string,
-          my_device_encryption_sk: my_encryption_sk_string,
-        }))
+      ({ my_encryption_sk_string, my_encryption_pk_string }) => {
+        setupDataForm.setValue(
+          'my_device_encryption_pk',
+          my_encryption_pk_string
+        );
+        setupDataForm.setValue(
+          'my_device_encryption_sk',
+          my_encryption_sk_string
+        );
+      }
     );
     generateSignatureKeys().then(
-      ({ my_identity_pk_string, my_identity_sk_string }) =>
-        setSetupData((prevState) => ({
-          ...prevState,
-          my_device_identity_pk: my_identity_pk_string,
-          my_device_identity_sk: my_identity_sk_string,
-        }))
+      ({ my_identity_pk_string, my_identity_sk_string }) => {
+        setupDataForm.setValue('my_device_identity_pk', my_identity_pk_string);
+        setupDataForm.setValue('my_device_identity_sk', my_identity_sk_string);
+      }
     );
 
     // Profile Keys
     seed = crypto.getRandomValues(new Uint8Array(32));
     generateEncryptionKeys(seed).then(
-      ({ my_encryption_sk_string, my_encryption_pk_string }) =>
-        setSetupData((prevState) => ({
-          ...prevState,
-          profile_encryption_pk: my_encryption_pk_string,
-          profile_encryption_sk: my_encryption_sk_string,
-        }))
+      ({ my_encryption_sk_string, my_encryption_pk_string }) => {
+        setupDataForm.setValue(
+          'profile_encryption_pk',
+          my_encryption_pk_string
+        );
+        setupDataForm.setValue(
+          'profile_encryption_sk',
+          my_encryption_sk_string
+        );
+      }
     );
     generateSignatureKeys().then(
-      ({ my_identity_pk_string, my_identity_sk_string }) =>
-        setSetupData((prevState) => ({
-          ...prevState,
-          profile_identity_pk: my_identity_pk_string,
-          profile_identity_sk: my_identity_sk_string,
-        }))
+      ({ my_identity_pk_string, my_identity_sk_string }) => {
+        setupDataForm.setValue('profile_identity_pk', my_identity_pk_string);
+        setupDataForm.setValue('profile_identity_sk', my_identity_sk_string);
+      }
     );
-  }, []);
+  }, [setupDataForm]);
 
-  const updateSetupData = (data: Partial<MergedSetupType>) => {
-    setSetupData((prevState) => ({ ...prevState, ...data }));
-  };
-
-  const handleScan = async (data: any) => {
+  const handleScan = async (data: string) => {
     if (data) {
       const result = JSON.parse(data);
-      console.log('Prev. QR Code Data:', setupData);
-      updateSetupData(result);
-      console.log('New QR Code Data:', setupData);
+      setupDataForm.reset((prev) => ({
+        ...prev,
+        ...result,
+      }));
     }
   };
 
@@ -191,7 +217,10 @@ const Connect = () => {
       const resultImage = await codeReader.decodeFromImageUrl(image.dataUrl);
       const json_string = resultImage.getText();
       const parsedData: QRSetupData = JSON.parse(json_string);
-      updateSetupData(parsedData);
+      setupDataForm.reset((prev) => ({
+        ...prev,
+        ...parsedData,
+      }));
     } catch (error) {
       console.error('Error uploading image:', error);
     }
@@ -210,13 +239,21 @@ const Connect = () => {
     }
   };
 
-  const finishSetup = async () => {
-    if (!setupData) return;
-    if (mode === 'Automatic') {
-      await submitRegistrationNocode(setupData);
-    } else if (mode === 'Manual') {
-      await submitRegistration(setupData);
-    }
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    await submitRegistration({
+      my_device_encryption_sk: data.my_device_encryption_sk,
+      my_device_identity_sk: data.my_device_identity_sk,
+      profile_encryption_sk: data.profile_encryption_sk,
+      profile_identity_sk: data.profile_identity_sk,
+      node_encryption_pk: data.node_encryption_pk ?? '',
+      registration_code: data.registration_code ?? '',
+      identity_type: data.identity_type,
+      permission_type: data.permission_type,
+      registration_name: data.registration_name,
+      profile: data.profile,
+      shinkai_identity: data.shinkai_identity,
+      node_address: data.node_address,
+    });
   };
 
   return (
@@ -284,7 +321,9 @@ const Connect = () => {
                   </IonSegmentButton>
                 </IonSegment>
                 <div className="px-5">
-                  {mode === 'Manual' && (
+                  {mode === 'Automatic' ? (
+                    <AutomaticForm />
+                  ) : (
                     <>
                       <div className="space-y-2">
                         <Button
@@ -310,118 +349,289 @@ const Connect = () => {
                         )}
                       </div>
                       <hr className="w-full border-b border-gray-300 dark:border-slate-600/60 mt-6 mb-6" />
+                      <form
+                        className="space-y-5"
+                        onSubmit={setupDataForm.handleSubmit(onSubmit)}
+                      >
+                        <Controller
+                          control={setupDataForm.control}
+                          name="registration_name"
+                          render={({ field }) => (
+                            <div>
+                              <Input
+                                label="Registration Name (Your choice)"
+                                {...field}
+                                onChange={(e) =>
+                                  setupDataForm.setValue(
+                                    'registration_name',
+                                    e.detail.value as string
+                                  )
+                                }
+                              />
+                              <ErrorMessage
+                                errors={setupDataForm.formState.errors}
+                                name="registration_name"
+                                render={({ message }) => (
+                                  <p className="text-red-500">{message}</p>
+                                )}
+                              />
+                            </div>
+                          )}
+                        />
+
+                        <Controller
+                          control={setupDataForm.control}
+                          name="node_address"
+                          render={({ field }) => (
+                            <div>
+                              <Input
+                                label="Node Address (IP:PORT)"
+                                {...field}
+                                onChange={(e) =>
+                                  setupDataForm.setValue(
+                                    'node_address',
+                                    e.detail.value as string
+                                  )
+                                }
+                              />
+                              <ErrorMessage
+                                errors={setupDataForm.formState.errors}
+                                name="node_address"
+                                render={({ message }) => (
+                                  <p className="text-red-500">{message}</p>
+                                )}
+                              />
+                            </div>
+                          )}
+                        />
+
+                        <Controller
+                          control={setupDataForm.control}
+                          name="shinkai_identity"
+                          render={({ field }) => (
+                            <div>
+                              <Input
+                                label="Shinkai Identity (@@IDENTITY.shinkai)"
+                                {...field}
+                                onChange={(e) =>
+                                  setupDataForm.setValue(
+                                    'shinkai_identity',
+                                    e.detail.value as string
+                                  )
+                                }
+                              />
+                              <ErrorMessage
+                                errors={setupDataForm.formState.errors}
+                                name="shinkai_identity"
+                                render={({ message }) => (
+                                  <p className="text-red-500">{message}</p>
+                                )}
+                              />
+                            </div>
+                          )}
+                        />
+
+                        <Controller
+                          control={setupDataForm.control}
+                          name="registration_code"
+                          render={({ field }) => (
+                            <div>
+                              <Input
+                                label="Registration Code"
+                                {...field}
+                                onChange={(e) =>
+                                  setupDataForm.setValue(
+                                    'registration_code',
+                                    e.detail.value as string
+                                  )
+                                }
+                              />
+                              <ErrorMessage
+                                errors={setupDataForm.formState.errors}
+                                name="registration_code"
+                                render={({ message }) => (
+                                  <p className="text-red-500">{message}</p>
+                                )}
+                              />
+                            </div>
+                          )}
+                        />
+
+                        <Controller
+                          control={setupDataForm.control}
+                          name="node_encryption_pk"
+                          render={({ field }) => (
+                            <div>
+                              <Input
+                                label="Node Encryption Public Key"
+                                {...field}
+                                onChange={(e) =>
+                                  setupDataForm.setValue(
+                                    'node_encryption_pk',
+                                    e.detail.value as string
+                                  )
+                                }
+                              />
+                              <ErrorMessage
+                                errors={setupDataForm.formState.errors}
+                                name="node_encryption_pk"
+                                render={({ message }) => (
+                                  <p className="text-red-500">{message}</p>
+                                )}
+                              />
+                            </div>
+                          )}
+                        />
+
+                        <Controller
+                          control={setupDataForm.control}
+                          name="node_signature_pk"
+                          render={({ field }) => (
+                            <div>
+                              <Input
+                                label="Node Signature Public Key"
+                                {...field}
+                                onChange={(e) =>
+                                  setupDataForm.setValue(
+                                    'node_signature_pk',
+                                    e.detail.value as string
+                                  )
+                                }
+                              />
+                              <ErrorMessage
+                                errors={setupDataForm.formState.errors}
+                                name="node_signature_pk"
+                                render={({ message }) => (
+                                  <p className="text-red-500">{message}</p>
+                                )}
+                              />
+                            </div>
+                          )}
+                        />
+
+                        <Controller
+                          control={setupDataForm.control}
+                          name="profile_encryption_pk"
+                          render={({ field }) => (
+                            <div>
+                              <Input
+                                label="Profile Encryption Public Key"
+                                {...field}
+                                onChange={(e) =>
+                                  setupDataForm.setValue(
+                                    'profile_encryption_pk',
+                                    e.detail.value as string
+                                  )
+                                }
+                              />
+                              <ErrorMessage
+                                errors={setupDataForm.formState.errors}
+                                name="profile_encryption_pk"
+                                render={({ message }) => (
+                                  <p className="text-red-500">{message}</p>
+                                )}
+                              />
+                            </div>
+                          )}
+                        />
+
+                        <Controller
+                          control={setupDataForm.control}
+                          name="profile_identity_pk"
+                          render={({ field }) => (
+                            <div>
+                              <Input
+                                label="Profile Signature Public Key"
+                                {...field}
+                                onChange={(e) =>
+                                  setupDataForm.setValue(
+                                    'profile_identity_pk',
+                                    e.detail.value as string
+                                  )
+                                }
+                              />
+                              <ErrorMessage
+                                errors={setupDataForm.formState.errors}
+                                name="profile_identity_pk"
+                                render={({ message }) => (
+                                  <p className="text-red-500">{message}</p>
+                                )}
+                              />
+                            </div>
+                          )}
+                        />
+
+                        <Controller
+                          control={setupDataForm.control}
+                          name="my_device_encryption_pk"
+                          render={({ field }) => (
+                            <div>
+                              <Input
+                                label="My Encryption Public Key"
+                                {...field}
+                                onChange={(e) =>
+                                  setupDataForm.setValue(
+                                    'my_device_encryption_pk',
+                                    e.detail.value as string
+                                  )
+                                }
+                              />
+                              <ErrorMessage
+                                errors={setupDataForm.formState.errors}
+                                name="my_device_encryption_pk"
+                                render={({ message }) => (
+                                  <p className="text-red-500">{message}</p>
+                                )}
+                              />
+                            </div>
+                          )}
+                        />
+
+                        <Controller
+                          control={setupDataForm.control}
+                          name="my_device_identity_pk"
+                          render={({ field }) => (
+                            <div>
+                              <Input
+                                label="My Signature Public Key"
+                                {...field}
+                                onChange={(e) =>
+                                  setupDataForm.setValue(
+                                    'my_device_identity_pk',
+                                    e.detail.value as string
+                                  )
+                                }
+                              />
+                              <ErrorMessage
+                                errors={setupDataForm.formState.errors}
+                                name="my_device_identity_pk"
+                                render={({ message }) => (
+                                  <p className="text-red-500">{message}</p>
+                                )}
+                              />
+                            </div>
+                          )}
+                        />
+                        {isError && (
+                          <p
+                            className={'text-red-600 text-base text-center'}
+                            role={'alert'}
+                          >
+                            Something went wrong. Please check your inputs and
+                            try again
+                          </p>
+                        )}
+                        <Button
+                          className="mt-6"
+                          disabled={isLoading}
+                          isLoading={isLoading}
+                          type="submit"
+                        >
+                          Sign In
+                        </Button>
+                      </form>
                     </>
                   )}
-                  <div className="space-y-5">
-                    <Input
-                      label="Registration Name (Your choice)"
-                      onChange={(e) =>
-                        updateSetupData({ registration_name: e.detail.value! })
-                      }
-                      value={setupData.registration_name}
-                    />
-                    <Input
-                      label="Node Address (IP:PORT)"
-                      onChange={(e) =>
-                        updateSetupData({ node_address: e.detail.value! })
-                      }
-                      value={setupData.node_address}
-                    />
-                    <Input
-                      label="Shinkai Identity (@@IDENTITY.shinkai)"
-                      onChange={(e) =>
-                        updateSetupData({ shinkai_identity: e.detail.value! })
-                      }
-                      value={setupData.shinkai_identity}
-                    />
-                    {mode === 'Manual' && (
-                      <>
-                        <Input
-                          label="Registration Code"
-                          onChange={(e) =>
-                            updateSetupData({
-                              registration_code: e.detail.value!,
-                            })
-                          }
-                          value={setupData.registration_code}
-                        />
-                        <Input
-                          label="Node Encryption Public Key"
-                          onChange={(e) =>
-                            updateSetupData({
-                              node_encryption_pk: e.detail.value!,
-                            })
-                          }
-                          value={setupData.node_encryption_pk}
-                        />
-                        <Input
-                          label="Node Signature Public Key"
-                          onChange={(e) =>
-                            updateSetupData({
-                              node_signature_pk: e.detail.value!,
-                            })
-                          }
-                          value={setupData.node_signature_pk}
-                        />
-                        <Input
-                          label="Profile Encryption Public Key"
-                          onChange={(e) =>
-                            updateSetupData({
-                              profile_encryption_pk: e.detail.value!,
-                            })
-                          }
-                          value={setupData.profile_encryption_pk}
-                        />
-                        <Input
-                          label="Profile Signature Public Key"
-                          onChange={(e) =>
-                            updateSetupData({
-                              profile_identity_pk: e.detail.value!,
-                            })
-                          }
-                          value={setupData.profile_identity_pk}
-                        />
-                        <Input
-                          label="My Encryption Public Key"
-                          onChange={(e) =>
-                            updateSetupData({
-                              my_device_encryption_pk: e.detail.value!,
-                            })
-                          }
-                          value={setupData.my_device_encryption_pk}
-                        />
-                        <Input
-                          label="My Signature Public Key"
-                          onChange={(e) =>
-                            updateSetupData({
-                              my_device_identity_pk: e.detail.value!,
-                            })
-                          }
-                          value={setupData.my_device_identity_pk}
-                        />
-                      </>
-                    )}
-                    {isError && (
-                      <p
-                        className={'text-red-600 text-base text-center'}
-                        role={'alert'}
-                      >
-                        Something went wrong. Please check your inputs and try
-                        again
-                      </p>
-                    )}
-                    <Button
-                      className="mt-6"
-                      disabled={isLoading}
-                      onClick={finishSetup}
-                    >
-                      {isLoading ? (
-                        <IonSpinner className={'w-10 h-10'} name="bubbles" />
-                      ) : (
-                        'Sign In'
-                      )}
-                    </Button>
-                  </div>
                 </div>
               </div>
             </div>
@@ -433,6 +643,239 @@ const Connect = () => {
 };
 
 export default Connect;
+
+function AutomaticForm() {
+  const setAuth = useAuth((state) => state.setAuth);
+  const history = useHistory();
+  const setupDataForm = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      node_address: 'http://localhost:9550',
+      registration_code: '',
+      profile: 'main',
+      registration_name: 'main_device',
+      identity_type: 'device',
+      permission_type: 'admin',
+      shinkai_identity: '@@node1.shinkai', // this should actually be read from ENV
+      node_encryption_pk: '',
+      node_signature_pk: '',
+      profile_encryption_sk: '',
+      profile_encryption_pk: '',
+      profile_identity_sk: '',
+      profile_identity_pk: '',
+      my_device_encryption_sk: '',
+      my_device_encryption_pk: '',
+      my_device_identity_sk: '',
+      my_device_identity_pk: '',
+    },
+  });
+
+  const {
+    isLoading: isSubmitRegistrationNoCodeLoading,
+    mutateAsync: submitRegistrationNocode,
+    isError,
+    error,
+  } = useSubmitRegistrationNoCode({
+    onSuccess: (response) => {
+      if (!response.success) throw new Error('Failed to submit registration');
+      const values = setupDataForm.getValues();
+      setAuth({
+        profile: values.profile,
+        permission_type: values.permission_type,
+        node_address: values.node_address,
+        shinkai_identity: values.shinkai_identity,
+        node_signature_pk:
+          response.data?.identity_public_key ?? values.node_signature_pk ?? '',
+        node_encryption_pk:
+          response.data?.encryption_public_key ??
+          values.node_encryption_pk ??
+          '',
+        registration_name: values.registration_name,
+        my_device_identity_pk: values.my_device_identity_pk,
+        my_device_identity_sk: values.my_device_identity_sk,
+        my_device_encryption_pk: values.my_device_encryption_pk,
+        my_device_encryption_sk: values.my_device_encryption_sk,
+        profile_identity_pk: values.profile_identity_pk,
+        profile_identity_sk: values.profile_identity_sk,
+        profile_encryption_pk: values.profile_encryption_pk,
+        profile_encryption_sk: values.profile_encryption_sk,
+      });
+      history.push('/home');
+    },
+    onError: (error) => {
+      console.log('Error from submitRegistrationNocode', error);
+      toast.error(error.message);
+    },
+  });
+
+  useEffect(() => {
+    fetch('http://127.0.0.1:9550/v1/shinkai_health')
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === 'ok') {
+          setupDataForm.setValue('node_address', 'http://127.0.0.1:9550');
+        }
+      })
+      .catch((error) => console.error('Error:', error));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Generate keys when the component mounts
+  useEffect(() => {
+    // Assuming the seed is a random 32 bytes array.
+    // Device Keys
+    let seed = crypto.getRandomValues(new Uint8Array(32));
+    generateEncryptionKeys(seed).then(
+      ({ my_encryption_sk_string, my_encryption_pk_string }) => {
+        setupDataForm.setValue(
+          'my_device_encryption_pk',
+          my_encryption_pk_string
+        );
+        setupDataForm.setValue(
+          'my_device_encryption_sk',
+          my_encryption_sk_string
+        );
+      }
+    );
+    generateSignatureKeys().then(
+      ({ my_identity_pk_string, my_identity_sk_string }) => {
+        setupDataForm.setValue('my_device_identity_pk', my_identity_pk_string);
+        setupDataForm.setValue('my_device_identity_sk', my_identity_sk_string);
+      }
+    );
+
+    // Profile Keys
+    seed = crypto.getRandomValues(new Uint8Array(32));
+    generateEncryptionKeys(seed).then(
+      ({ my_encryption_sk_string, my_encryption_pk_string }) => {
+        setupDataForm.setValue(
+          'profile_encryption_pk',
+          my_encryption_pk_string
+        );
+        setupDataForm.setValue(
+          'profile_encryption_sk',
+          my_encryption_sk_string
+        );
+      }
+    );
+    generateSignatureKeys().then(
+      ({ my_identity_pk_string, my_identity_sk_string }) => {
+        setupDataForm.setValue('profile_identity_pk', my_identity_pk_string);
+        setupDataForm.setValue('profile_identity_sk', my_identity_sk_string);
+      }
+    );
+  }, [setupDataForm]);
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    await submitRegistrationNocode({
+      registration_code: values.registration_code ?? '',
+      profile: values.profile,
+      identity_type: values.identity_type,
+      permission_type: values.permission_type,
+      node_address: values.node_address,
+      shinkai_identity: values.shinkai_identity,
+      node_encryption_pk: values.node_encryption_pk ?? '',
+      registration_name: values.registration_name,
+      my_device_identity_sk: values.my_device_identity_sk,
+      my_device_encryption_sk: values.my_device_encryption_sk,
+      profile_identity_sk: values.profile_identity_sk,
+      profile_encryption_sk: values.profile_encryption_sk,
+    });
+  };
+
+  return (
+    <form className="space-y-5" onSubmit={setupDataForm.handleSubmit(onSubmit)}>
+      <Controller
+        control={setupDataForm.control}
+        name="registration_name"
+        render={({ field }) => (
+          <div>
+            <Input
+              label="Registration Name (Your choice)"
+              {...field}
+              onChange={(e) =>
+                setupDataForm.setValue(
+                  'registration_name',
+                  e.detail.value as string
+                )
+              }
+            />
+            <ErrorMessage
+              errors={setupDataForm.formState.errors}
+              name="registration_name"
+              render={({ message }) => (
+                <p className="text-red-500">{message}</p>
+              )}
+            />
+          </div>
+        )}
+      />
+
+      <Controller
+        control={setupDataForm.control}
+        name="node_address"
+        render={({ field }) => (
+          <div>
+            <Input
+              label="Node Address (IP:PORT)"
+              {...field}
+              onChange={(e) =>
+                setupDataForm.setValue('node_address', e.detail.value as string)
+              }
+            />
+            <ErrorMessage
+              errors={setupDataForm.formState.errors}
+              name="node_address"
+              render={({ message }) => (
+                <p className="text-red-500">{message}</p>
+              )}
+            />
+          </div>
+        )}
+      />
+
+      <Controller
+        control={setupDataForm.control}
+        name="shinkai_identity"
+        render={({ field }) => (
+          <div>
+            <Input
+              label="Shinkai Identity (@@IDENTITY.shinkai)"
+              {...field}
+              onChange={(e) =>
+                setupDataForm.setValue(
+                  'shinkai_identity',
+                  e.detail.value as string
+                )
+              }
+            />
+            <ErrorMessage
+              errors={setupDataForm.formState.errors}
+              name="shinkai_identity"
+              render={({ message }) => (
+                <p className="text-red-500">{message}</p>
+              )}
+            />
+          </div>
+        )}
+      />
+      {isError && (
+        <p className={'text-red-600 text-base text-center'} role={'alert'}>
+          Something went wrong. Please check your inputs and try again.{' '}
+          {error.message}
+        </p>
+      )}
+      <Button
+        className="mt-6"
+        disabled={isSubmitRegistrationNoCodeLoading}
+        isLoading={isSubmitRegistrationNoCodeLoading}
+        type="submit"
+      >
+        Sign In
+      </Button>
+    </form>
+  );
+}
 
 function CustomQrScanner({
   onError,
