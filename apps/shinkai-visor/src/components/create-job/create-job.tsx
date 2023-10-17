@@ -134,8 +134,7 @@ export const CreateJob = () => {
                         {agents?.map((agent) => (
                           <SelectItem key={agent.id} value={agent.id}>
                             {
-                              (agent.full_identity_name as any)
-                                ?.subidentity_name
+                              agent.full_identity_name.subidentity_name
                             }
                           </SelectItem>
                         ))}

@@ -63,7 +63,13 @@ export interface APIReadUpToTimeRequest {
 
 export interface SerializedAgent {
   id: string;
-  full_identity_name: string; // ShinkaiName
+  full_identity_name: {
+    full_name: string,
+    node_name: string,
+    profile_name: string,
+    subidentity_type: 'Agent' | 'Device',
+    subidentity_name: string,
+  }; // ShinkaiName
   perform_locally: boolean;
   external_url?: string;
   api_key?: string;
