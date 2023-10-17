@@ -127,10 +127,10 @@ export const Inbox = () => {
       const receiver = extractReceiverShinkaiName(decodedInboxId, sender);
       sendMessageToInbox({
         sender: auth.shinkai_identity,
-        sender_subidentity: auth.profile,
+        sender_subidentity: `${auth.profile}/device/${auth.registration_name}`,
         receiver,
         message: value,
-        inboxId: inboxId as string,
+        inboxId: decodedInboxId,
         my_device_encryption_sk: auth.my_device_encryption_sk,
         my_device_identity_sk: auth.my_device_identity_sk,
         node_encryption_pk: auth.node_encryption_pk,
