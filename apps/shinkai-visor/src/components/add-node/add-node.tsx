@@ -5,7 +5,7 @@ import {
   generateEncryptionKeys,
   generateSignatureKeys,
 } from '@shinkai_network/shinkai-message-ts/utils';
-import { useSubmitRegistration } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistration';
+import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
 import { BrowserQRCodeReader } from '@zxing/browser';
 import { Loader2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
@@ -97,7 +97,7 @@ export const AddNode = () => {
     mutateAsync: submitRegistration,
     isError: isSubmitError,
     error: submitError,
-  } = useSubmitRegistration({
+  } = useSubmitRegistrationNoCode({
     onSuccess: (response) => {
       if (response.success) {
         const values = form.getValues();
@@ -344,6 +344,7 @@ export const AddNode = () => {
                   <ErrorMessage message={submitError?.message} />
                 )}
               </div>
+
               <Button className="w-full" disabled={isLoading} type="submit">
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 <FormattedMessage id="connect" />

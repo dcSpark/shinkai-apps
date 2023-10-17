@@ -17,9 +17,11 @@ import './theme/variables.css';
 
 import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { Provider } from 'react-redux';
+import { ApiConfig } from '@shinkai_network/shinkai-message-ts/api';
+import { queryClient } from '@shinkai_network/shinkai-node-state/lib/constants';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { Redirect, Route } from 'react-router-dom';
-import { PersistGate } from 'redux-persist/integration/react';
 
 import AddAgent from './pages/AddAgent';
 import AdminCommands from './pages/AdminCommands';
@@ -30,39 +32,69 @@ import CreateJob from './pages/CreateJob';
 import Home from './pages/Home';
 import JobChat from './pages/JobChat';
 import Settings from './pages/Settings';
-import { persistor, store } from './store';
+import { useAuth } from './store/auth';
 
 setupIonicReact();
 
-const App: React.FC = () => {
-  const setupComplete = localStorage.getItem('setupComplete') === 'true';
-  console.log(`Setup complete: ${setupComplete}`);
+function PrivateRoute({
+  children,
+  ...rest
+}: {
+  children: React.ReactNode;
+  path: string;
+  exact?: boolean;
+}) {
+  const auth = useAuth((state) => state.auth);
 
+  useEffect(() => {
+    ApiConfig.getInstance().setEndpoint(auth?.node_address ?? '');
+  }, [auth?.node_address]);
   return (
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <IonApp>
-          <IonReactRouter>
-            <IonRouterOutlet>
-              <Route component={Connect} path="/connect" />
-              <Route component={Home} exact path="/home" />
-              <Route component={AdminCommands} exact path="/admin-commands" />
-              <Route component={CreateJob} exact path="/create-job" />
-              <Route component={CreateChat} exact path="/create-chat" />
-              <Route component={AddAgent} exact path="/add-agent" />
-              <Route component={Chat} exact path="/chat/:id" />
-              <Route component={JobChat} exact path="/job-chat/:id" />
-              <Route component={Settings} path="/settings" />
-              {!setupComplete ? (
-                <Redirect exact from="/" to="/connect" />
-              ) : (
-                <Redirect exact from="/" to="/home" />
-              )}
-            </IonRouterOutlet>
-          </IonReactRouter>
-        </IonApp>
-      </PersistGate>
-    </Provider>
+    <Route
+      {...rest}
+      render={() => {
+        return auth ? children : <Redirect to="/connect" />;
+      }}
+    />
+  );
+}
+
+const App: React.FC = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <IonApp>
+        <IonReactRouter>
+          <IonRouterOutlet>
+            <Route component={Connect} path="/connect" />
+            <PrivateRoute exact path="/home">
+              <Home />
+            </PrivateRoute>
+            <PrivateRoute exact path="/admin-commands">
+              <AdminCommands />
+            </PrivateRoute>
+            <PrivateRoute exact path="/create-job">
+              <CreateJob />
+            </PrivateRoute>
+            <PrivateRoute exact path="/create-chat">
+              <CreateChat />
+            </PrivateRoute>
+            <PrivateRoute exact path="/add-agent">
+              <AddAgent />
+            </PrivateRoute>
+            <PrivateRoute exact path="/chat/:id">
+              <Chat />
+            </PrivateRoute>
+            <PrivateRoute exact path="/job-chat/:id">
+              <JobChat />
+            </PrivateRoute>
+            <PrivateRoute path="/settings">
+              <Settings />
+            </PrivateRoute>
+            <Redirect exact from="/" to="/home" />
+          </IonRouterOutlet>
+        </IonReactRouter>
+      </IonApp>
+    </QueryClientProvider>
   );
 };
 
