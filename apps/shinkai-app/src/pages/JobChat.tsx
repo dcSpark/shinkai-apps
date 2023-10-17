@@ -290,7 +290,7 @@ const JobChat: React.FC = () => {
                             </span>
                           </div>
                           <div className="flex flex-col gap-4 md:gap-8 py-10">
-                            {messages.map((message) => {
+                            {messages.map((message, idx) => {
                               const isLocal = isLocalMessage(
                                 message,
                                 auth?.shinkai_identity ?? '',
@@ -310,7 +310,9 @@ const JobChat: React.FC = () => {
                                   <div
                                     className={cn(
                                       'px-2 py-6 flex gap-2 md:gap-8 pb-14',
-                                      isLocal && 'flex-row-reverse'
+                                      isLocal
+                                        ? 'flex-row-reverse ml-auto'
+                                        : 'mr-auto'
                                     )}
                                   >
                                     <Avatar
