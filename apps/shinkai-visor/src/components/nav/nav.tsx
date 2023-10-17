@@ -75,13 +75,11 @@ export default function NavBar() {
   return (
     <nav className="">
       <div className="flex items-center justify-between">
-        {!isRootPage && (
-          <div className="flex-none">
+          <div className={`flex-none ${isRootPage ? 'invisible' : ''}`}>
             <Button onClick={() => goBack()} size="icon" variant="ghost">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </div>
-        )}
         <img
           alt="shinkai-app-logo"
           className="h-5"
