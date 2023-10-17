@@ -66,56 +66,58 @@ export const CreateInbox = () => {
   }, [auth, form]);
 
   return (
-    <Form {...form}>
+    <div className="h-full flex flex-col">
       <h1 className="font-semibold mb-2">
         <FormattedMessage id="create-inbox"></FormattedMessage>
       </h1>
-      <form
-        className="p-1 h-full flex flex-col space-y-2 justify-between"
-        onSubmit={form.handleSubmit(submit)}
-      >
-        <div className="grow flex flex-col space-y-2">
-          <FormField
-            control={form.control}
-            name="receiverIdentity"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  <FormattedMessage id="message-receiver" />
-                </FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="message"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  <FormattedMessage id="message.one" />
-                </FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        <Button
-          className="w-full"
-          disabled={!form.formState.isValid || isLoading}
-          type="submit"
+      <Form {...form}>
+        <form
+          className="p-1 h-full flex flex-col space-y-2 justify-between"
+          onSubmit={form.handleSubmit(submit)}
         >
-          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          <FormattedMessage id="create-inbox" />
-        </Button>
-      </form>
-    </Form>
+          <div className="grow flex flex-col space-y-2">
+            <FormField
+              control={form.control}
+              name="receiverIdentity"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    <FormattedMessage id="message-receiver" />
+                  </FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="message"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    <FormattedMessage id="message.one" />
+                  </FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <Button
+            className="w-full"
+            disabled={!form.formState.isValid || isLoading}
+            type="submit"
+          >
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            <FormattedMessage id="create-inbox" />
+          </Button>
+        </form>
+      </Form>
+    </div>
   );
 };

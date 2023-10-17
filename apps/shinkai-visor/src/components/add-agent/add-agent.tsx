@@ -100,7 +100,7 @@ export const AddAgent = () => {
     });
   };
   return (
-    <div className="h-full p-1">
+    <div className="h-full flex flex-col">
       <h1 className="font-semibold mb-2">
         <FormattedMessage id="add-agent"></FormattedMessage>
       </h1>

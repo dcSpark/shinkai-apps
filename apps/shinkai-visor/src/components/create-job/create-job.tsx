@@ -99,92 +99,97 @@ export const CreateJob = () => {
   };
 
   return (
-    <Form {...form}>
+    <div className="h-full flex flex-col">
       <h1 className="font-semibold mb-2">
         <FormattedMessage id="create-job"></FormattedMessage>
       </h1>
-      <form
-        className="p-1 h-full flex flex-col space-y-2 justify-between"
-        onSubmit={form.handleSubmit(submit)}
-      >
-        <div className="grow flex flex-col space-y-3">
-          <FormField
-            control={form.control}
-            name="agent"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  <FormattedMessage id="agent.one" />
-                </FormLabel>
-                <Select
-                  defaultValue={field.value}
-                  name={field.name}
-                  onValueChange={field.onChange}
-                  value={field.value}
-                >
+      <Form {...form}>
+        <form
+          className="p-1 h-full flex flex-col space-y-2 justify-between"
+          onSubmit={form.handleSubmit(submit)}
+        >
+          <div className="grow flex flex-col space-y-3">
+            <FormField
+              control={form.control}
+              name="agent"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    <FormattedMessage id="agent.one" />
+                  </FormLabel>
+                  <Select
+                    defaultValue={field.value}
+                    name={field.name}
+                    onValueChange={field.onChange}
+                    value={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectPortal container={uiContainer?.rootElement}>
+                      <SelectContent>
+                        {agents?.map((agent) => (
+                          <SelectItem key={agent.id} value={agent.id}>
+                            {
+                              (agent.full_identity_name as any)
+                                ?.subidentity_name
+                            }
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </SelectPortal>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {query.has('context') && (
+              <blockquote className="max-h-28 p-4 mb-5 border-l-4 border-gray-300 bg-secondary-600 dark:border-gray-500 dark:bg-gray-800">
+                <p className="italic dark:text-white text-ellipsis overflow-hidden h-full">
+                  {query.get('context')}
+                </p>
+              </blockquote>
+            )}
+
+            {location.state?.files?.length && (
+              <blockquote className="max-h-28 p-4 mb-5 border-l-4 border-gray-300 bg-secondary-600 dark:border-gray-500 dark:bg-gray-800">
+                <FileList files={location.state?.files}></FileList>
+              </blockquote>
+            )}
+
+            <FormField
+              control={form.control}
+              name="content"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    <FormattedMessage id="message.one" />
+                  </FormLabel>
                   <FormControl>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
+                    <Textarea
+                      className="resize-none border-white"
+                      placeholder="Eg: Give me the top 10 rock music in the 80s..."
+                      {...field}
+                    />
                   </FormControl>
-                  <SelectPortal container={uiContainer?.rootElement}>
-                    <SelectContent>
-                      {agents?.map((agent) => (
-                        <SelectItem key={agent.id} value={agent.id}>
-                          {(agent.full_identity_name as any)?.subidentity_name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </SelectPortal>
-                </Select>
-                <FormMessage />
-              </FormItem>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <Button className="w-full" disabled={isLoading} type="submit">
+            {isLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Workflow className="mr-2 h-4 w-4"></Workflow>
             )}
-          />
-
-          {query.has('context') && (
-            <blockquote className="max-h-28 p-4 mb-5 border-l-4 border-gray-300 bg-secondary-600 dark:border-gray-500 dark:bg-gray-800">
-              <p className="italic dark:text-white text-ellipsis overflow-hidden h-full">
-                {query.get('context')}
-              </p>
-            </blockquote>
-          )}
-
-          {location.state?.files?.length && (
-            <blockquote className="max-h-28 p-4 mb-5 border-l-4 border-gray-300 bg-secondary-600 dark:border-gray-500 dark:bg-gray-800">
-              <FileList files={location.state?.files}></FileList>
-            </blockquote>
-          )}
-
-          <FormField
-            control={form.control}
-            name="content"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  <FormattedMessage id="message.one" />
-                </FormLabel>
-                <FormControl>
-                  <Textarea
-                    className="resize-none border-white"
-                    placeholder="Eg: Give me the top 10 rock music in the 80s..."
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        <Button className="w-full" disabled={isLoading} type="submit">
-          {isLoading ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <Workflow className="mr-2 h-4 w-4"></Workflow>
-          )}
-          <FormattedMessage id="create-job" />
-        </Button>
-      </form>
-    </Form>
+            <FormattedMessage id="create-job" />
+          </Button>
+        </form>
+      </Form>
+    </div>
   );
 };
