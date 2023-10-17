@@ -1,25 +1,27 @@
-import { sendTextMessageWithInbox } from '@shinkai_network/shinkai-message-ts/api';
+import { sendTextMessageWithFilesForInbox } from '@shinkai_network/shinkai-message-ts/api';
 
-import { SendMessageToInboxInput } from './types';
+import { SendMessageWithFilesToInboxInput } from './types';
 
-export const sendMessageToInbox = async ({
+export const sendMessageWithFilesToInbox = async ({
   sender,
-  sender_subidentity,
+  senderSubidentity,
   receiver,
   message,
   inboxId,
+  file,
   my_device_encryption_sk,
   my_device_identity_sk,
   node_encryption_pk,
   profile_encryption_sk,
   profile_identity_sk,
-}: SendMessageToInboxInput) => {
-  return await sendTextMessageWithInbox(
+}: SendMessageWithFilesToInboxInput) => {
+  return await sendTextMessageWithFilesForInbox(
     sender,
-    sender_subidentity,
+    senderSubidentity,
     receiver,
     message,
     inboxId,
+    file,
     {
       my_device_encryption_sk,
       my_device_identity_sk,

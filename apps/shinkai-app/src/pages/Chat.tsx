@@ -18,7 +18,7 @@ import {
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMessageToJob/useSendMessageToJob';
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
-import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageWithFilesToInbox';
+import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageWithFilesToInbox/useSendMessageWithFilesToInbox';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
 import MarkdownPreview from '@uiw/react-markdown-preview';
 import { cameraOutline } from 'ionicons/icons';
@@ -104,17 +104,17 @@ const Chat: React.FC = () => {
 
   const onSubmit = async (data: z.infer<typeof chatSchema>) => {
     if (!auth) return;
-
     const sender = `${auth.shinkai_identity}/${auth.profile}/device/${auth.registration_name}`;
     const receiver = extractReceiverShinkaiName(deserializedId, sender);
 
     if (file) {
       await sendTextMessageWithFilesForInbox({
-        file,
+        sender: auth.shinkai_identity,
+        senderSubidentity: auth.profile,
+        receiver,
         message: data.message,
-        sender,
-        receiver: sender,
         inboxId: deserializedId as string,
+        file,
         my_device_encryption_sk: auth.my_device_encryption_sk,
         my_device_identity_sk: auth.my_device_identity_sk,
         node_encryption_pk: auth.node_encryption_pk,
@@ -122,10 +122,10 @@ const Chat: React.FC = () => {
         profile_identity_sk: auth.profile_identity_sk,
       });
     } else {
-      await sendMessageToInbox({
+      sendMessageToInbox({
         sender: auth.shinkai_identity,
         sender_subidentity: auth.profile,
-        receiver: sender,
+        receiver,
         message: data.message,
         inboxId: deserializedId as string,
         my_device_encryption_sk: auth.my_device_encryption_sk,

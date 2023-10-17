@@ -83,7 +83,6 @@ export const CreateJob = () => {
     if (query.has('context')) {
       content = `${values.content} - \`\`\`${query.get('context')}\`\`\``;
     }
-
     createJob({
       shinkaiIdentity: auth.shinkai_identity,
       profile: auth.profile,

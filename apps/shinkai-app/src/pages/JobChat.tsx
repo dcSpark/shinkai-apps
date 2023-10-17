@@ -14,7 +14,7 @@ import {
   getOtherPersonIdentity,
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMessageToJob/useSendMessageToJob';
-import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageWithFilesToInbox';
+import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageWithFilesToInbox/useSendMessageWithFilesToInbox';
 import { send } from 'ionicons/icons';
 import { cameraOutline } from 'ionicons/icons';
 import { document as documentIcon } from 'ionicons/icons';
@@ -66,15 +66,15 @@ const JobChat: React.FC = () => {
     const message_to_send = inputMessage;
     setInputMessage('');
     setSelectedFile(null);
-    const sender = `${auth.shinkai_identity}/${auth.profile}/device/${auth.registration_name}`;
 
     if (selectedFile) {
-      sendTextMessageWithFilesForInbox({
-        file: selectedFile,
+      await sendTextMessageWithFilesForInbox({
+        sender: auth.shinkai_identity,
+        senderSubidentity: auth.profile,
+        receiver: auth.shinkai_identity,
         message: message_to_send,
-        sender,
-        receiver: sender,
         inboxId: deserializedId as string,
+        file: selectedFile,
         my_device_encryption_sk: auth.my_device_encryption_sk,
         my_device_identity_sk: auth.my_device_identity_sk,
         node_encryption_pk: auth.node_encryption_pk,
@@ -83,8 +83,7 @@ const JobChat: React.FC = () => {
       });
     } else {
       const jobId = extractJobIdFromInbox(deserializedId);
-
-      sendMessageToJob({
+      await sendMessageToJob({
         jobId: jobId,
         message: message_to_send,
         files_inbox: '',
@@ -101,7 +100,6 @@ const JobChat: React.FC = () => {
     inputMessage,
     auth.shinkai_identity,
     auth.profile,
-    auth.registration_name,
     auth.my_device_encryption_sk,
     auth.my_device_identity_sk,
     auth.node_encryption_pk,
@@ -139,9 +137,9 @@ const JobChat: React.FC = () => {
         <div className={'w-full py-2 md:py-3 md:pl-4'}>
           <div className="m-2 flex items-end h-full border border-slate-300 pr-2 rounded-xl shadow">
             {selectedFile && (
-              <div className="flex items-center">
+              <div className="px-3 flex flex-col gap-1 justify-center items-center">
                 <IonIcon icon={documentIcon} />
-                <IonLabel>{fileExtension}</IonLabel>
+                <IonLabel className="text-xs">{fileExtension}</IonLabel>
               </div>
             )}
             <IonTextarea

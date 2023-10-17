@@ -10,7 +10,6 @@ export const useSendMessageWithFilesToInbox = () => {
       queryClient.invalidateQueries([
         FunctionKey.GET_CHAT_CONVERSATION_PAGINATION,
       ]);
-      queryClient.invalidateQueries([FunctionKey.GET_UNREAD_CHAT_CONVERSATION]);
     },
   });
 };
