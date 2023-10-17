@@ -76,7 +76,20 @@ const AdminCommands: React.FC = () => {
     await createRegistrationCode({
       permissionsType,
       identityType,
-      setupPayload: auth,
+      setupPayload: {
+        my_device_encryption_sk: auth.my_device_encryption_sk,
+        my_device_identity_sk: auth.my_device_identity_sk,
+        profile_encryption_sk: auth.profile_encryption_sk,
+        profile_identity_sk: auth.profile_identity_sk,
+        node_encryption_pk: auth.node_encryption_pk,
+        registration_code: auth.registration_code ?? '',
+        identity_type: auth.identity_type ?? '',
+        permission_type: auth.permission_type,
+        registration_name: auth.registration_name,
+        profile: auth.profile,
+        shinkai_identity: auth.shinkai_identity,
+        node_address: auth.node_address,
+      },
       profileName,
     });
 
