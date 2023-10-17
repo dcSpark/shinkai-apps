@@ -11,27 +11,35 @@ import {
   IonText,
   IonTitle,
 } from '@ionic/react';
-import {
-  ApiConfig,
-  getAllInboxesForProfile,
-} from '@shinkai_network/shinkai-message-ts/api';
+import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
 import { addOutline, arrowForward } from 'ionicons/icons';
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import Avatar from '../components/ui/Avatar';
 import { IonContentCustom, IonHeaderCustom } from '../components/ui/Layout';
-import { RootState } from '../store';
-import { clearStore, receiveAllInboxesForProfile } from '../store/actions';
+import { useAuth } from '../store/auth';
 
 const Home: React.FC = () => {
-  const setupDetails = useSelector((state: RootState) => state.setupDetails);
+  const auth = useAuth((state) => state.auth);
+  const setLogout = useAuth((state) => state.setLogout);
+
+  const { inboxIds } = useGetInboxes({
+    sender: auth?.shinkai_identity ?? '',
+    senderSubidentity: `${auth?.profile}/device/${auth?.registration_name}`,
+    // Assuming receiver and target_shinkai_name_profile are the same as sender
+    receiver: auth?.shinkai_identity ?? '',
+    targetShinkaiNameProfile: `${auth?.shinkai_identity}/${auth?.profile}`,
+    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+  });
   const history = useHistory();
-  const dispatch = useDispatch();
 
   const { shinkai_identity, profile, registration_name, permission_type } =
-    setupDetails;
+    auth ?? {};
   const displayString = (
     <>
       {`${shinkai_identity}/${profile}/device/${registration_name}`}{' '}
@@ -40,36 +48,6 @@ const Home: React.FC = () => {
   );
   const [showActionSheet, setShowActionSheet] = useState(false);
   const [showLogoutAlert, setShowLogoutAlert] = useState(false);
-  const inboxes = useSelector((state: RootState) => state.other.just_inboxes);
-  console.log('Inboxes:', inboxes);
-
-  useEffect(() => {
-    console.log('Redux State:', setupDetails);
-    ApiConfig.getInstance().setEndpoint(setupDetails.node_address);
-  }, []);
-
-  useEffect(() => {
-    console.log('Redux State:', setupDetails);
-    ApiConfig.getInstance().setEndpoint(setupDetails.node_address);
-
-    // Local Identity
-    const { shinkai_identity, profile, registration_name } = setupDetails;
-    const sender = shinkai_identity;
-    const sender_subidentity = `${profile}/device/${registration_name}`;
-
-    // Assuming receiver and target_shinkai_name_profile are the same as sender
-    const receiver = sender;
-    const target_shinkai_name_profile = `${sender}/${profile}`;
-
-    // TODO: Improve this async call to be react friendly
-    getAllInboxesForProfile(
-      sender,
-      sender_subidentity,
-      receiver,
-      target_shinkai_name_profile,
-      setupDetails
-    ).then((inboxes) => dispatch(receiveAllInboxesForProfile(inboxes)));
-  }, []);
 
   return (
     <IonPage className="bg-slate-900">
@@ -96,40 +74,35 @@ const Home: React.FC = () => {
       <IonContentCustom>
         <div className="h-full flex flex-col mt-4">
           <div className="flex-1 md:rounded-lg space-y-2 md:space-y-4">
-            {inboxes &&
-              inboxes.map((inbox_name) => (
-                <IonItem
-                  button
-                  className="ion-item-home"
-                  key={inbox_name}
-                  onClick={() => {
-                    const encodedInboxId = inbox_name
-                      .toString()
-                      .replace(/\./g, '~');
-                    if (encodedInboxId.startsWith('inbox')) {
-                      history.push(
-                        `/chat/${encodeURIComponent(encodedInboxId)}`
-                      );
-                    } else if (encodedInboxId.startsWith('job_inbox')) {
-                      history.push(
-                        `/job-chat/${encodeURIComponent(encodedInboxId)}`
-                      );
-                    }
-                  }}
-                >
-                  <Avatar
-                    className="shrink-0"
-                    url={`https://ui-avatars.com/api/?name=${inbox_name}&background=FE6162&color=fff`}
-                  />
-                  <IonText className="ml-4 font-medium md:text-lg">
-                    {JSON.stringify(inbox_name)}
-                  </IonText>
-                  <IonIcon
-                    className="hidden md:ml-auto md:block"
-                    icon={arrowForward}
-                  />
-                </IonItem>
-              ))}
+            {inboxIds?.map((inboxId) => (
+              <IonItem
+                button
+                className="ion-item-home"
+                key={inboxId}
+                onClick={() => {
+                  const encodedInboxId = inboxId.toString().replace(/\./g, '~');
+                  if (encodedInboxId.startsWith('inbox')) {
+                    history.push(`/chat/${encodeURIComponent(encodedInboxId)}`);
+                  } else if (encodedInboxId.startsWith('job_inbox')) {
+                    history.push(
+                      `/job-chat/${encodeURIComponent(encodedInboxId)}`
+                    );
+                  }
+                }}
+              >
+                <Avatar
+                  className="shrink-0"
+                  url={`https://ui-avatars.com/api/?name=${inboxId}&background=FE6162&color=fff`}
+                />
+                <IonText className="ml-4 font-medium md:text-lg">
+                  {JSON.stringify(inboxId)}
+                </IonText>
+                <IonIcon
+                  className="hidden md:ml-auto md:block"
+                  icon={arrowForward}
+                />
+              </IonItem>
+            ))}
           </div>
         </div>
       </IonContentCustom>
@@ -197,7 +170,7 @@ const Home: React.FC = () => {
           {
             text: 'Yes',
             handler: () => {
-              dispatch(clearStore());
+              setLogout();
               history.push('/connect');
             },
           },

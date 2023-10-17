@@ -8,22 +8,19 @@ import {
   IonPage,
   IonTitle,
 } from '@ionic/react';
-import { submitRequestRegistrationCode } from '@shinkai_network/shinkai-message-ts/api';
+import { useCreateRegistrationCode } from '@shinkai_network/shinkai-node-state/lib/mutations/createRegistrationCode/useCreateRegistrationCode';
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 
 import Button from '../components/ui/Button';
 import { IonContentCustom, IonHeaderCustom } from '../components/ui/Layout';
 import Modal from '../components/ui/Modal';
 import { useSetup } from '../hooks/usetSetup';
-import { RootState } from '../store';
-import { createRegistrationCode } from '../store/actions';
+import { useAuth } from '../store/auth';
 
 const AdminCommands: React.FC = () => {
   useSetup();
-  const setupDetailsState = useSelector(
-    (state: RootState) => state.setupDetails
-  );
+  const auth = useAuth((state) => state.auth);
+
   const [showCodeRegistrationActionSheet, setShowCodeRegistrationActionSheet] =
     useState(false);
   const [showCodeRegistrationModal, setCodeRegistrationShowModal] =
@@ -32,10 +29,14 @@ const AdminCommands: React.FC = () => {
     useState(false);
   const [identityType, setIdentityType] = useState('');
   const [profileName, setProfileName] = useState('');
-  const dispatch = useDispatch();
-  const registrationCode = useSelector(
-    (state: RootState) => state.other.registrationCode
-  );
+
+  const [registrationCode, setRegistrationCode] = useState('');
+
+  const { mutateAsync: createRegistrationCode } = useCreateRegistrationCode({
+    onSuccess: (data) => {
+      setRegistrationCode(data);
+    },
+  });
   const commands = [
     'Get Peers',
     'Ping All',
@@ -71,17 +72,27 @@ const AdminCommands: React.FC = () => {
   };
 
   const handleIdentityClick = async (permissionsType: string) => {
-    let finalCodeType = identityType;
-    if (identityType === 'device') {
-      // Serialize permissionsType as "device:PROFILE_NAME" when "Device" is selected
-      finalCodeType = `device:${profileName}`;
-    }
-    const code = await submitRequestRegistrationCode(
+    if (!auth) return;
+    await createRegistrationCode({
       permissionsType,
-      finalCodeType,
-      setupDetailsState as any
-    );
-    dispatch(createRegistrationCode(code));
+      identityType,
+      setupPayload: {
+        my_device_encryption_sk: auth.my_device_encryption_sk,
+        my_device_identity_sk: auth.my_device_identity_sk,
+        profile_encryption_sk: auth.profile_encryption_sk,
+        profile_identity_sk: auth.profile_identity_sk,
+        node_encryption_pk: auth.node_encryption_pk,
+        registration_code: auth.registration_code ?? '',
+        identity_type: auth.identity_type ?? '',
+        permission_type: auth.permission_type,
+        registration_name: auth.registration_name,
+        profile: auth.profile,
+        shinkai_identity: auth.shinkai_identity,
+        node_address: auth.node_address,
+      },
+      profileName,
+    });
+
     setCodeRegistrationShowModal(true);
     return true;
   };

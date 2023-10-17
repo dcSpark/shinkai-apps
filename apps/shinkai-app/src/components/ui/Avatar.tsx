@@ -1,6 +1,6 @@
-import { IonAvatar } from "@ionic/react";
+import { IonAvatar } from '@ionic/react';
 
-import { cn } from "../../theme/lib/utils";
+import { cn } from '../../theme/lib/utils';
 
 export default function Avatar({
   url,
@@ -11,15 +11,12 @@ export default function Avatar({
 }) {
   return (
     <IonAvatar
-      className={cn(
-        "bg-white w-10 h-10 md:w-12 md:h-12 [--border-radius:12px]",
-        className,
-      )}
+      className={cn('bg-white w-8 h-8 [--border-radius:7777px]', className)}
     >
       <img
         alt=""
         className="w-full h-full"
-        src={url ?? "https://ionicframework.com/docs/img/demos/avatar.svg"}
+        src={url ?? 'https://ionicframework.com/docs/img/demos/avatar.svg'}
       />
     </IonAvatar>
   );

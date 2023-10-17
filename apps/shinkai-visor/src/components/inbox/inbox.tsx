@@ -8,7 +8,7 @@ import {
   isLocalMessage,
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMessageToJob/useSendMessageToJob';
-import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendTextMessage/useSendMessageToInbox';
+import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
 import MarkdownPreview from '@uiw/react-markdown-preview';
 import { Loader2 } from 'lucide-react';
@@ -210,7 +210,7 @@ export const Inbox = () => {
                           </span>
                         </div>
                         <div className="flex flex-col gap-4">
-                          {messages.map((message, index) => {
+                          {messages.map((message) => {
                             const isLocal = isLocalMessage(
                               message,
                               auth?.shinkai_identity ?? '',

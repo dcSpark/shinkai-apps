@@ -7,12 +7,12 @@
     --background: theme('colors.slate.900');
   }
   &.isLocalMessage {
-    @apply md:ml-auto md:mr-0 border-0;
+    @apply md:ml-auto md:mr-0 border-0 w-full;
     --ion-item-background: theme('colors.slate.100');
-    --background: theme('colors.slate.100');
+    --background: theme('colors.white');
     @media (prefers-color-scheme: dark) {
       --ion-item-background: theme('colors.slate.800');
-      --background: theme('colors.slate.800');
+      --background: theme('colors.slate.900');
     }
   }
 }

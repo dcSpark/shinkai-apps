@@ -2,14 +2,14 @@ import {
   createJob as createJobApi,
   sendMessageToJob,
   sendTextMessageWithFilesForInbox,
-} from "@shinkai_network/shinkai-message-ts/api";
-import { buildInboxIdFromJobId } from "@shinkai_network/shinkai-message-ts/utils";
+} from '@shinkai_network/shinkai-message-ts/api';
+import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils';
 import {
   JobCreationWrapper,
   JobScopeWrapper,
-} from "@shinkai_network/shinkai-message-ts/wasm";
+} from '@shinkai_network/shinkai-message-ts/wasm';
 
-import { CreateJobInput } from "./types";
+import { CreateJobInput } from './types';
 
 export const createJob = async ({
   shinkaiIdentity,
@@ -28,7 +28,10 @@ export const createJob = async ({
   const receiver_subidentity = `${profile}/agent/${agentId}`;
 
   const job_creation = JobCreationWrapper.empty().get_scope;
-  const scope = new JobScopeWrapper(job_creation.buckets, job_creation.documents);
+  const scope = new JobScopeWrapper(
+    job_creation.buckets,
+    job_creation.documents
+  );
 
   const jobId = await createJobApi(
     scope.to_jsvalue(),
