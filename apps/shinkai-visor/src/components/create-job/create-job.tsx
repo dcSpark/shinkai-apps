@@ -100,6 +100,9 @@ export const CreateJob = () => {
 
   return (
     <Form {...form}>
+      <h1 className="font-semibold mb-2">
+        <FormattedMessage id="create-job"></FormattedMessage>
+      </h1>
       <form
         className="p-1 h-full flex flex-col space-y-2 justify-between"
         onSubmit={form.handleSubmit(submit)}

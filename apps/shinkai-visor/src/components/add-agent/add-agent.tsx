@@ -101,6 +101,9 @@ export const AddAgent = () => {
   };
   return (
     <div className="h-full p-1">
+      <h1 className="font-semibold mb-2">
+        <FormattedMessage id="add-agent"></FormattedMessage>
+      </h1>
       <Form {...form}>
         <form
           className="h-full flex flex-col space-y-3 justify-between"

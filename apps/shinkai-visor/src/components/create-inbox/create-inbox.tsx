@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCreateChat } from "@shinkai_network/shinkai-node-state/lib/mutations/createChat/useCreateChat";
+import { useCreateChat } from '@shinkai_network/shinkai-node-state/lib/mutations/createChat/useCreateChat';
 import { Loader2 } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -9,7 +9,14 @@ import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
 import { Button } from '../ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../ui/form';
 import { Input } from '../ui/input';
 
 const formSchema = z.object({
@@ -32,19 +39,17 @@ export const CreateInbox = () => {
   });
   const { isLoading, mutateAsync: createChat } = useCreateChat({
     onSuccess: (data) => {
-      history.replace(
-        `/inboxes/${encodeURIComponent(data.inboxId)}`
-      );
+      history.replace(`/inboxes/${encodeURIComponent(data.inboxId)}`);
     },
   });
   const submit = (values: FormSchemaType) => {
     if (!auth) return;
-    const [receiver, ...rest] = values.receiverIdentity.split("/");
+    const [receiver, ...rest] = values.receiverIdentity.split('/');
     createChat({
       sender: auth.shinkai_identity,
       senderSubidentity: `${auth.profile}/device/${auth.registration_name}`,
       receiver,
-      receiverSubidentity: rest.join("/"),
+      receiverSubidentity: rest.join('/'),
       message: values.message,
       my_device_encryption_sk: auth.my_device_encryption_sk,
       my_device_identity_sk: auth.my_device_identity_sk,
@@ -62,12 +67,15 @@ export const CreateInbox = () => {
 
   return (
     <Form {...form}>
+      <h1 className="font-semibold mb-2">
+        <FormattedMessage id="create-inbox"></FormattedMessage>
+      </h1>
       <form
         className="p-1 h-full flex flex-col space-y-2 justify-between"
         onSubmit={form.handleSubmit(submit)}
       >
         <div className="grow flex flex-col space-y-2">
-        <FormField
+          <FormField
             control={form.control}
             name="receiverIdentity"
             render={({ field }) => (
