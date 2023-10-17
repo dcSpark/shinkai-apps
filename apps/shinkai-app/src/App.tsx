@@ -53,16 +53,7 @@ function PrivateRoute({
     <Route
       {...rest}
       render={({ location }) => {
-        return auth ? (
-          children
-        ) : (
-          <Redirect
-            to={{
-              pathname: '/connect',
-              state: { from: location },
-            }}
-          />
-        );
+        return auth ? children : <Redirect to="/connect" />;
       }}
     />
   );
