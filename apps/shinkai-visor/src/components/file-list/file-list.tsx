@@ -1,7 +1,6 @@
 import { ExternalLink, Paperclip } from 'lucide-react';
 
 import { getFileExt, getFileName } from '../../helpers/file-name-utils';
-import { Button } from '../ui/button';
 
 export const FileList = ({ files }: { files: File[] }) => {
   const openFile = (file: File): void => {
