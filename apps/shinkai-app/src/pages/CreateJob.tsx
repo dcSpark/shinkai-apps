@@ -13,6 +13,7 @@ import {
   IonTextarea,
   IonTitle,
 } from '@ionic/react';
+import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { Controller, useForm } from 'react-hook-form';
@@ -48,7 +49,8 @@ const CreateJob: React.FC = () => {
 
   const { isLoading, mutateAsync: createJob } = useCreateJob({
     onSuccess: (data) => {
-      history.push(`/job-chat/${encodeURIComponent(data.jobId)}`);
+      const jobId = encodeURIComponent(buildInboxIdFromJobId(data.jobId));
+      history.push(`/job-chat/${jobId}`);
     },
   });
 
