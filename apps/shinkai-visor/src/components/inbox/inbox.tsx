@@ -170,7 +170,7 @@ export const Inbox = () => {
   return (
     <div className="h-full flex flex-col space-y-3 justify-between overflow-hidden">
       <ScrollArea
-        className="[&>div>div]:!block h-full px-5"
+        className="[&>div>div]:!block h-full"
         ref={chatContainerRef}
       >
         {isChatConversationSuccess && (
@@ -237,7 +237,7 @@ export const Inbox = () => {
                             );
                             return (
                               <div
-                                className={cn('flex w-[95%] items-start gap-3')}
+                                className={cn('flex items-start gap-3')}
                                 key={`${index}-${message.external_metadata?.scheduled_time}`}
                               >
                                 <Message

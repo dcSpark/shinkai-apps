@@ -29,7 +29,7 @@ export const Message = ({
         isLocal ? 'ml-0 mr-auto flex-row space-x-1' : 'ml-auto mr-0 flex-row-reverse space-x-1 space-x-reverse'
       )}
     >
-      <Avatar className="mt-1 h-8 w-8">
+      <Avatar className="h-8 w-8">
         <AvatarImage alt={isLocal ? inboxId : 'Shinkai AI'} src={getAvatar()} />
         <AvatarFallback className="h-8 w-8" />
       </Avatar>
