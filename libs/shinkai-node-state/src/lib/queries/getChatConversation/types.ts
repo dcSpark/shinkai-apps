@@ -6,4 +6,5 @@ export type GetChatConversationInput = JobCredentialsPayload & {
   lastKey?: string;
   shinkaiIdentity: string;
   profile: string;
+  refetchInterval?: number;
 };

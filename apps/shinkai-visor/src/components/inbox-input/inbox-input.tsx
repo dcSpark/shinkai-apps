@@ -40,6 +40,10 @@ export const InboxInput = (props: InboxInputProps) => {
     if (value) {
       props.onSubmit(value);
       form.reset({ message: '' });
+      // TODO: Improve this. Workaround to set focus after submit form
+      setTimeout(() => {
+        form.setFocus('message');
+      }, 200);
     }
   };
   return (
@@ -61,6 +65,7 @@ export const InboxInput = (props: InboxInputProps) => {
                       id: 'tmwtd',
                     })}
                     {...field}
+                    autoFocus
                   />
                 </FormControl>
                 <FormMessage />

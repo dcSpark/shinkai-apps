@@ -1,16 +1,24 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCreateChat } from "@shinkai_network/shinkai-node-state/lib/mutations/createChat/useCreateChat";
+import { useCreateChat } from '@shinkai_network/shinkai-node-state/lib/mutations/createChat/useCreateChat';
 import { Loader2 } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
 import { Button } from '../ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../ui/form';
 import { Input } from '../ui/input';
+import { Textarea } from '../ui/textarea';
 
 const formSchema = z.object({
   receiverIdentity: z.string().nonempty(),
@@ -22,7 +30,7 @@ type FormSchemaType = z.infer<typeof formSchema>;
 export const CreateInbox = () => {
   const history = useHistory();
   const auth = useAuth((state) => state.auth);
-
+  const intl = useIntl();
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -32,19 +40,17 @@ export const CreateInbox = () => {
   });
   const { isLoading, mutateAsync: createChat } = useCreateChat({
     onSuccess: (data) => {
-      history.replace(
-        `/inboxes/${encodeURIComponent(data.inboxId)}`
-      );
+      history.replace(`/inboxes/${encodeURIComponent(data.inboxId)}`);
     },
   });
   const submit = (values: FormSchemaType) => {
     if (!auth) return;
-    const [receiver, ...rest] = values.receiverIdentity.split("/");
+    const [receiver, ...rest] = values.receiverIdentity.split('/');
     createChat({
       sender: auth.shinkai_identity,
       senderSubidentity: `${auth.profile}/device/${auth.registration_name}`,
       receiver,
-      receiverSubidentity: rest.join("/"),
+      receiverSubidentity: rest.join('/'),
       message: values.message,
       my_device_encryption_sk: auth.my_device_encryption_sk,
       my_device_identity_sk: auth.my_device_identity_sk,
@@ -61,53 +67,65 @@ export const CreateInbox = () => {
   }, [auth, form]);
 
   return (
-    <Form {...form}>
-      <form
-        className="p-1 h-full flex flex-col space-y-2 justify-between"
-        onSubmit={form.handleSubmit(submit)}
-      >
-        <div className="grow flex flex-col space-y-2">
-        <FormField
-            control={form.control}
-            name="receiverIdentity"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  <FormattedMessage id="message-receiver" />
-                </FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="message"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  <FormattedMessage id="message.one" />
-                </FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        <Button
-          className="w-full"
-          disabled={!form.formState.isValid || isLoading}
-          type="submit"
+    <div className="h-full flex flex-col">
+      <h1 className="font-semibold mb-2">
+        <FormattedMessage id="create-inbox"></FormattedMessage>
+      </h1>
+      <Form {...form}>
+        <form
+          className="p-1 h-full flex flex-col space-y-2 justify-between"
+          onSubmit={form.handleSubmit(submit)}
         >
-          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          <FormattedMessage id="create-inbox" />
-        </Button>
-      </form>
-    </Form>
+          <div className="grow flex flex-col space-y-2">
+            <FormField
+              control={form.control}
+              name="receiverIdentity"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    <FormattedMessage id="message-receiver" />
+                  </FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="message"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    <FormattedMessage id="message.one" />
+                  </FormLabel>
+                  <FormControl>
+                    <Textarea
+                      autoFocus
+                      className="resize-none border-white"
+                      placeholder={intl.formatMessage({
+                        id: 'tmwtd',
+                      })}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <Button
+            className="w-full"
+            disabled={!form.formState.isValid || isLoading}
+            type="submit"
+          >
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            <FormattedMessage id="create-inbox" />
+          </Button>
+        </form>
+      </Form>
+    </div>
   );
 };
