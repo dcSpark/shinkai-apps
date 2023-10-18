@@ -46,6 +46,8 @@
   "account.one": "Account",
   "account.other": "Accounts",
   "all-messages-loaded": "All messages has been loaded 🎈",
-  "ask-to-shinkai-ai": "Ask Shinkai AI",
-  "ask-to-shinkai-ai-example": "Try \"How to make a HTTP request in Javascript\" or \"Give me the top 10 rock music in the 80s\""
+  "empty-inboxes-title": "Ask Shinkai AI",
+  "empty-inboxes-message": "Create your first job. Try \"How to make a HTTP request in Javascript\" or \"Give me the top 10 rock music in the 80s\"",
+  "empty-agents-title": "Ask Shinkai AI",
+  "empty-agents-message": "Connect your first agent to start asking Shinkai AI. Try connecting OpenAI"
 }

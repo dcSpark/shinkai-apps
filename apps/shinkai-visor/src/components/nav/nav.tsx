@@ -36,10 +36,9 @@ export default function NavBar() {
   const uiContainer = useUIContainer((state) => state.uiContainer);
 
   const [isMenuOpened, setMenuOpened] = useState(false);
-  const isRootPage = ['/welcome', '/inboxes', '/agents', '/jobs'].includes(
+  const isRootPage = ['/inboxes', '/agents'].includes(
     location.pathname
   );
-
   function goBack() {
     history.goBack();
   }
@@ -72,10 +71,11 @@ export default function NavBar() {
         break;
     }
   };
+  console.log('history', history.length);
   return (
     <nav className="">
       <div className="flex items-center justify-between">
-          <div className={`flex-none ${isRootPage ? 'invisible' : ''}`}>
+          <div className={`flex-none ${isRootPage || history.length <= 1 ? 'invisible' : ''}`}>
             <Button onClick={() => goBack()} size="icon" variant="ghost">
               <ArrowLeft className="h-4 w-4" />
             </Button>
