@@ -1,5 +1,3 @@
-import './nav.css';
-
 import { ArrowLeft, Bot, Inbox, LogOut, Menu, MessageCircle, Workflow, X } from 'lucide-react';
 import { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -70,7 +68,6 @@ export default function NavBar() {
         break;
     }
   };
-  console.log('history', history.length);
   return (
     <nav className="">
       <div className="flex items-center justify-between">
