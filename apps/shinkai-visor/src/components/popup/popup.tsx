@@ -63,49 +63,57 @@ export const Popup = ({
           transition={{ duration: 0.5 }}
         >
           <Switch key={location.pathname} location={location}>
-            <AnimatedRoute>
-              <Route exact path="/">
+            <Route exact path="/">
+              <AnimatedRoute>
                 <SplashScreen></SplashScreen>
-              </Route>
-              <Route path="/welcome">
+              </AnimatedRoute>
+            </Route>
+            <Route path="/welcome">
+              <AnimatedRoute>
                 <Welcome />
-              </Route>
-              <Route path="/nodes">
+              </AnimatedRoute>
+            </Route>
+            <Route path="/nodes">
+              <AnimatedRoute>
                 <Switch>
                   <Route path="/nodes/add">
                     <AddNode></AddNode>
                   </Route>
                 </Switch>
-              </Route>
-              <WithNav>
-                <Route path="/inboxes">
-                  <Switch>
-                    <Route path="/inboxes/create-inbox">
-                      <CreateInbox></CreateInbox>
-                    </Route>
-                    <Route path="/inboxes/create-job">
-                      <CreateJob></CreateJob>
-                    </Route>
-                    <Route path="/inboxes/:inboxId">
-                      <Inbox></Inbox>
-                    </Route>
-                    <Route path="/">
-                      <Inboxes></Inboxes>
-                    </Route>
-                  </Switch>
-                </Route>
-                <Route path="/agents">
-                  <Switch>
-                    <Route path="/agents/add">
-                      <AddAgent></AddAgent>
-                    </Route>
-                    <Route path="/">
-                      <Agents></Agents>
-                    </Route>
-                  </Switch>
-                </Route>
-              </WithNav>
-            </AnimatedRoute>
+              </AnimatedRoute>
+            </Route>
+            <Route path="*">
+              <AnimatedRoute>
+                <WithNav>
+                  <Route path="/inboxes">
+                    <Switch>
+                      <Route path="/inboxes/create-inbox">
+                        <CreateInbox></CreateInbox>
+                      </Route>
+                      <Route path="/inboxes/create-job">
+                        <CreateJob></CreateJob>
+                      </Route>
+                      <Route path="/inboxes/:inboxId">
+                        <Inbox></Inbox>
+                      </Route>
+                      <Route path="/">
+                        <Inboxes></Inboxes>
+                      </Route>
+                    </Switch>
+                  </Route>
+                  <Route path="/agents">
+                    <Switch>
+                      <Route path="/agents/add">
+                        <AddAgent></AddAgent>
+                      </Route>
+                      <Route path="/">
+                        <Agents></Agents>
+                      </Route>
+                    </Switch>
+                  </Route>
+                </WithNav>
+              </AnimatedRoute>
+            </Route>
           </Switch>
         </motion.div>
       )}
