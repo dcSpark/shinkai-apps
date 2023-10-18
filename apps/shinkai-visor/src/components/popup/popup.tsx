@@ -17,11 +17,11 @@ import globalStyle from '../../theme/styles.css?inline';
 import { AddAgent } from '../add-agent/add-agent';
 import { AddNode } from '../add-node/add-node';
 import { Agents } from '../agents/agents';
+import { AnimatedRoute } from '../animated-route/animated-routed';
 import { CreateInbox } from '../create-inbox/create-inbox';
 import { CreateJob } from '../create-job/create-job';
 import { Inbox } from '../inbox/inbox';
 import { Inboxes } from '../inboxes/inboxes';
-import { NotFound } from '../not-found/not-found';
 import { SplashScreen } from '../splash-screen/splash-screen';
 import Welcome from '../welcome/welcome';
 import { WithNav } from '../with-nav/with-nav';
@@ -60,53 +60,52 @@ export const Popup = ({
           className="h-full w-full flex flex-col p-4 shadow-xl rounded-lg bg-secondary-600 bg-app-gradient"
           exit={{ opacity: 0 }}
           initial={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
         >
           <Switch key={location.pathname} location={location}>
-            <Route exact path="/">
-              <SplashScreen></SplashScreen>
-            </Route>
-            <Route path="/welcome">
-              <Welcome />
-            </Route>
-            <Route path="/nodes">
-              <Switch>
-                <Route path="/nodes/add">
-                  <AddNode></AddNode>
+            <AnimatedRoute>
+              <Route exact path="/">
+                <SplashScreen></SplashScreen>
+              </Route>
+              <Route path="/welcome">
+                <Welcome />
+              </Route>
+              <Route path="/nodes">
+                <Switch>
+                  <Route path="/nodes/add">
+                    <AddNode></AddNode>
+                  </Route>
+                </Switch>
+              </Route>
+              <WithNav>
+                <Route path="/inboxes">
+                  <Switch>
+                    <Route path="/inboxes/create-inbox">
+                      <CreateInbox></CreateInbox>
+                    </Route>
+                    <Route path="/inboxes/create-job">
+                      <CreateJob></CreateJob>
+                    </Route>
+                    <Route path="/inboxes/:inboxId">
+                      <Inbox></Inbox>
+                    </Route>
+                    <Route path="/">
+                      <Inboxes></Inboxes>
+                    </Route>
+                  </Switch>
                 </Route>
-              </Switch>
-            </Route>
-            <WithNav>
-              <Route path="/inboxes">
-                <Switch>
-                  <Route path="/inboxes/create-inbox">
-                    <CreateInbox></CreateInbox>
-                  </Route>
-                  <Route path="/inboxes/create-job">
-                    <CreateJob></CreateJob>
-                  </Route>
-                  <Route path="/inboxes/:inboxId">
-                    <Inbox></Inbox>
-                  </Route>
-                  <Route path="/">
-                    <Inboxes></Inboxes>
-                  </Route>
-                </Switch>
-              </Route>
-
-              <Route path="/agents">
-                <Switch>
-                  <Route path="/agents/add">
-                    <AddAgent></AddAgent>
-                  </Route>
-                  <Route path="/">
-                    <Agents></Agents>
-                  </Route>
-                </Switch>
-              </Route>
-            </WithNav>
-            <Route path="*">
-              <NotFound></NotFound>
-            </Route>
+                <Route path="/agents">
+                  <Switch>
+                    <Route path="/agents/add">
+                      <AddAgent></AddAgent>
+                    </Route>
+                    <Route path="/">
+                      <Agents></Agents>
+                    </Route>
+                  </Switch>
+                </Route>
+              </WithNav>
+            </AnimatedRoute>
           </Switch>
         </motion.div>
       )}
