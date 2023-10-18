@@ -13,7 +13,7 @@ import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-n
 import MarkdownPreview from '@uiw/react-markdown-preview';
 import { Loader2 } from 'lucide-react';
 import { Fragment, useCallback, useEffect, useRef } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
 import { cn } from '../../helpers/cn-utils';
@@ -26,6 +26,7 @@ import { Skeleton } from '../ui/skeleton';
 export const Inbox = () => {
   const { inboxId } = useParams<{ inboxId: string }>();
   const auth = useAuth((state) => state.auth);
+  const intl = useIntl();
   const {
     data,
     fetchPreviousPage,
@@ -139,6 +140,7 @@ export const Inbox = () => {
       });
     }
   };
+
   const groupMessagesByDate = (messages: ShinkaiMessage[]) => {
     const groupedMessages: Record<string, ShinkaiMessage[]> = {};
     for (const message of messages) {
@@ -151,6 +153,19 @@ export const Inbox = () => {
       groupedMessages[date].push(message);
     }
     return groupedMessages;
+  };
+
+  const dateToLabel = (date: Date): string => {
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+    if (date.toDateString() === today.toDateString()) {
+      return intl.formatMessage({ id: 'today' });
+    } else if (date.toDateString() === yesterday.toDateString()) {
+      return intl.formatMessage({ id: 'yesterday' });
+    } else {
+      return date.toDateString();
+    }
   };
 
   return (
@@ -206,7 +221,7 @@ export const Inbox = () => {
                           )}
                         >
                           <span className="px-2.5 py-2 text-sm font-semibold text-foreground">
-                            {date}
+                            {dateToLabel(new Date(messages[0].external_metadata?.scheduled_time || ''))}
                           </span>
                         </div>
                         <div className="flex flex-col gap-4">

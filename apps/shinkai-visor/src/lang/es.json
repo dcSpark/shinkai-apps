@@ -49,5 +49,7 @@
   "empty-inboxes-title": "Pregunta a Shinkai AI",
   "empty-inboxes-message": "Crea tu primer trabajo. Intenta \"Cómo hacer una solicitud HTTP en Javascript\" o \"Dame las 10 mejores canciones de rock de los 80s\"",
   "empty-agents-title": "Pregunta a Shinkai AI",
-  "empty-agents-message": "Conecta tu primer agente para comenzar a preguntar a Shinkai AI"
+  "empty-agents-message": "Conecta tu primer agente para comenzar a preguntar a Shinkai AI",
+  "today": "Hoy",
+  "yesterday": "Ayer"
 }
