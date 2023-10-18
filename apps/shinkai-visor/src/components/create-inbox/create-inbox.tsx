@@ -67,7 +67,7 @@ export const CreateInbox = () => {
   }, [auth, form]);
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col space-y-3">
       <div className="flex flex-row space-x-1 items-center">
         <MessageCircle className="h-4 w-4" />
         <h1 className="font-semibold">
@@ -76,7 +76,7 @@ export const CreateInbox = () => {
       </div>
       <Form {...form}>
         <form
-          className="p-1 h-full flex flex-col space-y-2 justify-between"
+          className="h-full flex flex-col space-y-2 justify-between"
           onSubmit={form.handleSubmit(submit)}
         >
           <div className="grow flex flex-col space-y-2">
@@ -124,7 +124,11 @@ export const CreateInbox = () => {
             disabled={!form.formState.isValid || isLoading}
             type="submit"
           >
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {isLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <MessageCircle className="mr-2 h-4 w-4"></MessageCircle>
+            )}
             <FormattedMessage id="create-inbox" />
           </Button>
         </form>

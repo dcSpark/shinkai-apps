@@ -100,7 +100,7 @@ export const AddAgent = () => {
     });
   };
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col space-y-3">
       <div className="flex flex-row space-x-1 items-center">
         <Bot className="h-4 w-4" />
         <h1 className="font-semibold">
