@@ -4,22 +4,22 @@ import {
   extractJobIdFromInbox,
   extractReceiverShinkaiName,
   getMessageContent,
+  getMessageFilesInbox,
   isJobInbox,
   isLocalMessage,
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMessageToJob/useSendMessageToJob';
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
-import MarkdownPreview from '@uiw/react-markdown-preview';
 import { Loader2 } from 'lucide-react';
 import { Fragment, useCallback, useEffect, useRef } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
 import { cn } from '../../helpers/cn-utils';
+import { Message } from '../../message/message';
 import { useAuth } from '../../store/auth/auth';
 import { InboxInput } from '../inbox-input/inbox-input';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { ScrollArea } from '../ui/scroll-area';
 import { Skeleton } from '../ui/skeleton';
 
@@ -51,12 +51,12 @@ export const Inbox = () => {
   } = useSendMessageToInbox();
   const { mutateAsync: sendMessageToJob, isLoading: isSendingMessageToJob } =
     useSendMessageToJob();
-
   const isSendingMessage = isSendingMessageToJob || isSendingMessageToInbox;
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const previousChatHeightRef = useRef<number>(0);
   const fromPreviousMessagesRef = useRef<boolean>(false);
-
+  const decodedInboxIdRef = useRef<string>('');
+  const isJobInboxRef = useRef<boolean>(false);
   const fetchPreviousMessages = useCallback(async () => {
     const firstMessage = data?.pages?.[0]?.[0];
     fromPreviousMessagesRef.current = true;
@@ -86,6 +86,12 @@ export const Inbox = () => {
       chatContainerElement.removeEventListener('scroll', handleScroll);
     };
   }, [handleScroll]);
+  useEffect(() => {
+    if (inboxId) {
+      decodedInboxIdRef.current = decodeURIComponent(inboxId);
+      isJobInboxRef.current = isJobInbox(decodedInboxIdRef.current);
+    }
+  }, [inboxId]);
   const scrollToBottom = () => {
     if (!chatContainerRef.current) return;
     chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
@@ -96,21 +102,11 @@ export const Inbox = () => {
     }
   }, [data?.pages]);
 
-  const getAvatar = (message: ShinkaiMessage) => {
-    return isLocalMessage(
-      message,
-      auth?.shinkai_identity || '',
-      auth?.profile || ''
-    )
-      ? 'https://ui-avatars.com/api/?name=Me&background=363636&color=fff'
-      : 'https://ui-avatars.com/api/?name=S&background=FE6162&color=fff';
-  };
   const submitSendMessage = (value: string) => {
     if (!auth) return;
     fromPreviousMessagesRef.current = false;
-    const decodedInboxId = decodeURIComponent(inboxId);
-    if (isJobInbox(decodedInboxId)) {
-      const jobId = extractJobIdFromInbox(decodedInboxId);
+    if (isJobInboxRef.current) {
+      const jobId = extractJobIdFromInbox(decodedInboxIdRef.current);
       sendMessageToJob({
         jobId,
         message: value,
@@ -125,13 +121,16 @@ export const Inbox = () => {
       });
     } else {
       const sender = `${auth.shinkai_identity}/${auth.profile}/device/${auth.registration_name}`;
-      const receiver = extractReceiverShinkaiName(decodedInboxId, sender);
+      const receiver = extractReceiverShinkaiName(
+        decodedInboxIdRef.current,
+        sender
+      );
       sendMessageToInbox({
         sender: auth.shinkai_identity,
         sender_subidentity: `${auth.profile}/device/${auth.registration_name}`,
         receiver,
         message: value,
-        inboxId: decodedInboxId,
+        inboxId: decodedInboxIdRef.current,
         my_device_encryption_sk: auth.my_device_encryption_sk,
         my_device_identity_sk: auth.my_device_identity_sk,
         node_encryption_pk: auth.node_encryption_pk,
@@ -221,7 +220,12 @@ export const Inbox = () => {
                           )}
                         >
                           <span className="px-2.5 py-2 text-sm font-semibold text-foreground">
-                            {dateToLabel(new Date(messages[0].external_metadata?.scheduled_time || ''))}
+                            {dateToLabel(
+                              new Date(
+                                messages[0].external_metadata?.scheduled_time ||
+                                  ''
+                              )
+                            )}
                           </span>
                         </div>
                         <div className="flex flex-col gap-4">
@@ -233,30 +237,15 @@ export const Inbox = () => {
                             );
                             return (
                               <div
-                                className={cn(
-                                  'flex w-[95%] items-start gap-3',
-                                  isLocal
-                                    ? 'ml-0 mr-auto flex-row'
-                                    : 'ml-auto mr-0 flex-row-reverse'
-                                )}
+                                className={cn('flex w-[95%] items-start gap-3')}
                                 key={`${index}-${message.external_metadata?.scheduled_time}`}
                               >
-                                <Avatar className="mt-1 h-8 w-8">
-                                  <AvatarImage
-                                    alt={isLocal ? inboxId : 'Shinkai AI'}
-                                    src={getAvatar(message)}
-                                  />
-                                  <AvatarFallback className="h-8 w-8" />
-                                </Avatar>
-                                <MarkdownPreview
-                                  className={cn(
-                                    'mt-1 rounded-lg bg-transparent px-2.5 py-3 text-sm text-foreground',
-                                    isLocal
-                                      ? 'rounded-tl-none border border-slate-800'
-                                      : 'rounded-tr-none border-none bg-[rgba(217,217,217,0.04)]'
-                                  )}
-                                  source={getMessageContent(message)}
-                                />
+                                <Message
+                                  filesInbox={getMessageFilesInbox(message)}
+                                  inboxId={decodedInboxIdRef.current}
+                                  isLocal={isLocal}
+                                  messageContent={getMessageContent(message)}
+                                ></Message>
                               </div>
                             );
                           })}
