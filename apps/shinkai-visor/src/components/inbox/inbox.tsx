@@ -169,10 +169,7 @@ export const Inbox = () => {
 
   return (
     <div className="h-full flex flex-col space-y-3 justify-between overflow-hidden">
-      <ScrollArea
-        className="[&>div>div]:!block h-full"
-        ref={chatContainerRef}
-      >
+      <ScrollArea className="[&>div>div]:!block h-full" ref={chatContainerRef}>
         {isChatConversationSuccess && (
           <div className="py-2 text-center text-xs">
             {isFetchingPreviousPage && (

@@ -26,7 +26,9 @@ export const Message = ({
     <div
       className={cn(
         'flex flex-row',
-        isLocal ? 'ml-0 mr-auto flex-row space-x-1' : 'ml-auto mr-0 flex-row-reverse space-x-1 space-x-reverse'
+        isLocal
+          ? 'ml-0 mr-auto flex-row space-x-1'
+          : 'ml-auto mr-0 flex-row-reverse space-x-1 space-x-reverse'
       )}
     >
       <Avatar className="h-8 w-8">
