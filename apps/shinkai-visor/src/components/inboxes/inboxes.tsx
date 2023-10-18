@@ -1,14 +1,16 @@
 import './inboxes.css';
 
 import { isJobInbox } from '@shinkai_network/shinkai-message-ts/utils';
+import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
-import { MessageCircleIcon, Workflow } from 'lucide-react';
+import { Inbox, MessageCircleIcon, Workflow } from 'lucide-react';
 import { Fragment } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
 import { useAuth } from '../../store/auth/auth';
 import { EmptyAgents } from '../empty-agents/empty-agents';
+import { EmptyInboxes } from '../empty-inboxes/empty-inboxes';
 import { Button } from '../ui/button';
 import { ScrollArea } from '../ui/scroll-area';
 
@@ -28,19 +30,35 @@ export const Inboxes = () => {
     profile_encryption_sk: auth?.profile_encryption_sk ?? '',
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
+  const { agents } = useAgents({
+    sender: auth?.shinkai_identity ?? '',
+    senderSubidentity: `${auth?.profile}`,
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+    my_device_identity_sk: auth?.profile_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+  });
   const navigateToInbox = (inboxId: string) => {
     history.push(`/inboxes/${encodeURIComponent(inboxId)}`);
   };
 
   return (
     <div className="h-full flex flex-col space-y-3 justify-between overflow-hidden">
-      {!inboxIds?.length ? (
+      <div className="flex flex-row space-x-1 items-center">
+        <Inbox className="h-4 w-4" />
+        <h1 className="font-semibold">
+          <FormattedMessage id="inbox.other"></FormattedMessage>
+        </h1>
+      </div>
+
+      {!agents?.length ? (
         <EmptyAgents></EmptyAgents>
+      ) : !inboxIds?.length ? (
+        <EmptyInboxes></EmptyInboxes>
       ) : (
-        <div className="flex flex-col">
-          <h1 className="font-semibold mb-2">
-            <FormattedMessage id="inbox.other"></FormattedMessage>
-          </h1>
+        <div className="grow flex flex-col">
           <ScrollArea className="[&>div>div]:!block">
             {inboxIds?.map((inboxId) => (
               <Fragment key={inboxId}>

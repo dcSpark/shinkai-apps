@@ -1,5 +1,3 @@
-import './nav.css';
-
 import { ArrowLeft, Bot, Inbox, LogOut, Menu, MessageCircle, Workflow, X } from 'lucide-react';
 import { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -36,14 +34,12 @@ export default function NavBar() {
   const uiContainer = useUIContainer((state) => state.uiContainer);
 
   const [isMenuOpened, setMenuOpened] = useState(false);
-  const isRootPage = ['/welcome', '/inboxes', '/agents', '/jobs'].includes(
+  const isRootPage = ['/inboxes', '/agents'].includes(
     location.pathname
   );
-
-  function goBack() {
+  const goBack = () => {
     history.goBack();
   }
-
   const logout = (): void => {
     setLogout();
   };
@@ -51,19 +47,19 @@ export default function NavBar() {
   const onClickMenuOption = (key: MenuOption) => {
     switch (key) {
       case MenuOption.Inbox:
-        history.replace('/inboxes');
+        history.push('/inboxes');
         break;
       case MenuOption.CreateInbox:
-        history.replace('/inboxes/create-inbox');
+        history.push('/inboxes/create-inbox');
         break;
       case MenuOption.CreateJob:
-        history.replace('/inboxes/create-job');
+        history.push('/inboxes/create-job');
         break;
       case MenuOption.Agents:
-        history.replace('/agents');
+        history.push('/agents');
         break;
       case MenuOption.AddAgent:
-        history.replace('/agents/add');
+        history.push('/agents/add');
         break;
       case MenuOption.Logout:
         logout();
@@ -75,7 +71,7 @@ export default function NavBar() {
   return (
     <nav className="">
       <div className="flex items-center justify-between">
-          <div className={`flex-none ${isRootPage ? 'invisible' : ''}`}>
+          <div className={`flex-none ${isRootPage || history.length <= 1 ? 'invisible' : ''}`}>
             <Button onClick={() => goBack()} size="icon" variant="ghost">
               <ArrowLeft className="h-4 w-4" />
             </Button>

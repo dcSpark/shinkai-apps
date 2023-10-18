@@ -1,4 +1,4 @@
-import { Bot } from 'lucide-react';
+import { Workflow } from 'lucide-react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
@@ -6,7 +6,7 @@ import logo from '../../../src/assets/icons/shinkai-min.svg';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
 import { Button } from '../ui/button';
 
-export const EmptyAgents = () => {
+export const EmptyInboxes = () => {
   const history = useHistory();
   return (
     <div className="grow flex flex-col justify-center">
@@ -20,16 +20,19 @@ export const EmptyAgents = () => {
           />
         </div>
         <p className="text-lg font-semibold">
-          <FormattedMessage id="empty-agents-title" />
+          <FormattedMessage id="empty-inboxes-title" />
         </p>
         <p className="text-sm text-center">
-          <FormattedMessage id="empty-agents-message" />
+          <FormattedMessage id="empty-inboxes-message" />
         </p>
       </div>
 
-      <Button className="" onClick={() => history.push('/agents/add')}>
-        <Bot className="w-4 h-4 mr-2" />
-        <FormattedMessage id="add-agent" />
+      <Button
+        className="w-full"
+        onClick={() => history.push('/inboxes/create-job')}
+      >
+        <Workflow className="w-4 h-4 mr-2" />
+        <FormattedMessage id="create-job" />
       </Button>
     </div>
   );

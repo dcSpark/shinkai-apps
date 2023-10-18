@@ -100,10 +100,13 @@ export const AddAgent = () => {
     });
   };
   return (
-    <div className="h-full flex flex-col">
-      <h1 className="font-semibold mb-2">
-        <FormattedMessage id="add-agent"></FormattedMessage>
-      </h1>
+    <div className="h-full flex flex-col space-y-3">
+      <div className="flex flex-row space-x-1 items-center">
+        <Bot className="h-4 w-4" />
+        <h1 className="font-semibold">
+          <FormattedMessage id="add-agent"></FormattedMessage>
+        </h1>
+      </div>
       <Form {...form}>
         <form
           className="h-full flex flex-col space-y-3 justify-between"

@@ -270,7 +270,7 @@ export const AddNode = () => {
   }, [form]);
 
   return (
-    <div className="h-full flex flex-col space-y-3 pb-4">
+    <div className="h-full flex flex-col space-y-3">
       <span className="text-xl">Connect</span>
       <div className="h-full flex flex-col grow place-content-center">
         {currentStep === AddNodeSteps.ScanQR && (

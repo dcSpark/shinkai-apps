@@ -50,6 +50,30 @@ export const getMessageContent = (message: ShinkaiMessage) => {
   return message.body?.encrypted.content;
 };
 
+export const getMessageFilesInbox = (message: ShinkaiMessage): string | undefined => {
+  // unnencrypted content
+  if (message.body && 'unencrypted' in message.body) {
+    if ('unencrypted' in message.body.unencrypted.message_data) {
+      const isJobMessage =
+        message.body.unencrypted.message_data.unencrypted
+          .message_content_schema === MessageSchemaType.JobMessageSchema;
+      // job message
+      if (isJobMessage) {
+        try {
+          const parsedMessage = JSON.parse(
+            message.body.unencrypted.message_data.unencrypted
+              .message_raw_content
+          );
+          return parsedMessage?.files_inbox;
+        } catch (e) {
+          console.log('error parsing message raw content', e);
+        }
+      }
+    }
+  }
+  return undefined;
+};
+
 export const isLocalMessage = (
   message: ShinkaiMessage,
   myNodeIdentity: string,

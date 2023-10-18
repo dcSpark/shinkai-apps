@@ -9,7 +9,7 @@ import { Button } from '../ui/button';
 export default function Welcome() {
   const history = useHistory();
   return (
-    <div className="h-full flex flex-col justify-between pb-4">
+    <div className="h-full flex flex-col justify-between">
       <div className="grid place-content-center">
         <img
           alt="shinkai logo"
@@ -29,7 +29,7 @@ export default function Welcome() {
       <p className="text-md text-center py-4 pb-7" data-cy="welcome-message">
         <FormattedMessage id="welcome" />
       </p>
-      <Button onClick={() => history.push('/nodes/add')}>
+      <Button onClick={() => history.replace('/nodes/add')}>
         <FormattedMessage id="setup" />
       </Button>
     </div>

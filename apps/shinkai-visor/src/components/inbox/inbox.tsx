@@ -4,28 +4,29 @@ import {
   extractJobIdFromInbox,
   extractReceiverShinkaiName,
   getMessageContent,
-  isJobInbox,
+  getMessageFilesInbox,
+  isJobInbox as checkIsJobInbox,
   isLocalMessage,
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMessageToJob/useSendMessageToJob';
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
-import MarkdownPreview from '@uiw/react-markdown-preview';
-import { Loader2 } from 'lucide-react';
-import { Fragment, useCallback, useEffect, useRef } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { ChevronRight, Inbox as InboxIcon, Loader2 } from 'lucide-react';
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
 import { cn } from '../../helpers/cn-utils';
+import { Message } from '../../message/message';
 import { useAuth } from '../../store/auth/auth';
 import { InboxInput } from '../inbox-input/inbox-input';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { ScrollArea } from '../ui/scroll-area';
 import { Skeleton } from '../ui/skeleton';
 
 export const Inbox = () => {
   const { inboxId } = useParams<{ inboxId: string }>();
   const auth = useAuth((state) => state.auth);
+  const intl = useIntl();
   const {
     data,
     fetchPreviousPage,
@@ -50,12 +51,12 @@ export const Inbox = () => {
   } = useSendMessageToInbox();
   const { mutateAsync: sendMessageToJob, isLoading: isSendingMessageToJob } =
     useSendMessageToJob();
-
   const isSendingMessage = isSendingMessageToJob || isSendingMessageToInbox;
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const previousChatHeightRef = useRef<number>(0);
   const fromPreviousMessagesRef = useRef<boolean>(false);
-
+  const [decodedInboxId, setDecodedInboxId] = useState<string>('');
+  const [isJobInbox, setIsJobInbox] = useState<boolean>(false);
   const fetchPreviousMessages = useCallback(async () => {
     const firstMessage = data?.pages?.[0]?.[0];
     fromPreviousMessagesRef.current = true;
@@ -85,6 +86,16 @@ export const Inbox = () => {
       chatContainerElement.removeEventListener('scroll', handleScroll);
     };
   }, [handleScroll]);
+  useEffect(() => {
+    if (inboxId) {
+      setDecodedInboxId(decodeURIComponent(inboxId));
+    }
+  }, [inboxId]);
+  useEffect(() => {
+    if (decodedInboxId) {
+      setIsJobInbox(checkIsJobInbox(decodedInboxId));
+    }
+  }, [decodedInboxId]);
   const scrollToBottom = () => {
     if (!chatContainerRef.current) return;
     chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
@@ -95,20 +106,10 @@ export const Inbox = () => {
     }
   }, [data?.pages]);
 
-  const getAvatar = (message: ShinkaiMessage) => {
-    return isLocalMessage(
-      message,
-      auth?.shinkai_identity || '',
-      auth?.profile || ''
-    )
-      ? 'https://ui-avatars.com/api/?name=Me&background=363636&color=fff'
-      : 'https://ui-avatars.com/api/?name=S&background=FE6162&color=fff';
-  };
   const submitSendMessage = (value: string) => {
     if (!auth) return;
     fromPreviousMessagesRef.current = false;
-    const decodedInboxId = decodeURIComponent(inboxId);
-    if (isJobInbox(decodedInboxId)) {
+    if (isJobInbox) {
       const jobId = extractJobIdFromInbox(decodedInboxId);
       sendMessageToJob({
         jobId,
@@ -139,6 +140,7 @@ export const Inbox = () => {
       });
     }
   };
+
   const groupMessagesByDate = (messages: ShinkaiMessage[]) => {
     const groupedMessages: Record<string, ShinkaiMessage[]> = {};
     for (const message of messages) {
@@ -153,12 +155,30 @@ export const Inbox = () => {
     return groupedMessages;
   };
 
+  const dateToLabel = (date: Date): string => {
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+    if (date.toDateString() === today.toDateString()) {
+      return intl.formatMessage({ id: 'today' });
+    } else if (date.toDateString() === yesterday.toDateString()) {
+      return intl.formatMessage({ id: 'yesterday' });
+    } else {
+      return date.toDateString();
+    }
+  };
+
   return (
     <div className="h-full flex flex-col space-y-3 justify-between overflow-hidden">
-      <ScrollArea
-        className="[&>div>div]:!block h-full px-5"
-        ref={chatContainerRef}
-      >
+      <div className="flex flex-row space-x-1 items-center">
+        <InboxIcon className="h-4 w-4 shrink-0" />
+        <h1 className="font-semibold">
+          <FormattedMessage id="inbox.one"></FormattedMessage>
+        </h1>
+        <ChevronRight className="h-4 w-4 shrink-0" />
+        <h1 className="font-semibold truncate">{decodedInboxId}</h1>
+      </div>
+      <ScrollArea className="[&>div>div]:!block h-full" ref={chatContainerRef}>
         {isChatConversationSuccess && (
           <div className="py-2 text-center text-xs">
             {isFetchingPreviousPage && (
@@ -169,7 +189,7 @@ export const Inbox = () => {
             )}
           </div>
         )}
-        <div className="pb-4">
+        <div className="">
           {isChatConversationLoading &&
             [...Array(5).keys()].map((index) => (
               <div
@@ -206,7 +226,12 @@ export const Inbox = () => {
                           )}
                         >
                           <span className="px-2.5 py-2 text-sm font-semibold text-foreground">
-                            {date}
+                            {dateToLabel(
+                              new Date(
+                                messages[0].external_metadata?.scheduled_time ||
+                                  ''
+                              )
+                            )}
                           </span>
                         </div>
                         <div className="flex flex-col gap-4">
@@ -218,30 +243,15 @@ export const Inbox = () => {
                             );
                             return (
                               <div
-                                className={cn(
-                                  'flex w-[95%] items-start gap-3',
-                                  isLocal
-                                    ? 'ml-0 mr-auto flex-row'
-                                    : 'ml-auto mr-0 flex-row-reverse'
-                                )}
+                                className={cn('flex items-start gap-3')}
                                 key={`${index}-${message.external_metadata?.scheduled_time}`}
                               >
-                                <Avatar className="mt-1 h-8 w-8">
-                                  <AvatarImage
-                                    alt={isLocal ? inboxId : 'Shinkai AI'}
-                                    src={getAvatar(message)}
-                                  />
-                                  <AvatarFallback className="h-8 w-8" />
-                                </Avatar>
-                                <MarkdownPreview
-                                  className={cn(
-                                    'mt-1 rounded-lg bg-transparent px-2.5 py-3 text-sm text-foreground',
-                                    isLocal
-                                      ? 'rounded-tl-none border border-slate-800'
-                                      : 'rounded-tr-none border-none bg-[rgba(217,217,217,0.04)]'
-                                  )}
-                                  source={getMessageContent(message)}
-                                />
+                                <Message
+                                  filesInbox={getMessageFilesInbox(message)}
+                                  inboxId={decodedInboxId}
+                                  isLocal={isLocal}
+                                  messageContent={getMessageContent(message)}
+                                ></Message>
                               </div>
                             );
                           })}
