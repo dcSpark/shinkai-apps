@@ -29,7 +29,7 @@ export default function Welcome() {
       <p className="text-md text-center py-4 pb-7" data-cy="welcome-message">
         <FormattedMessage id="welcome" />
       </p>
-      <Button onClick={() => history.push('/nodes/add')}>
+      <Button onClick={() => history.replace('/nodes/add')}>
         <FormattedMessage id="setup" />
       </Button>
     </div>

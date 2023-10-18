@@ -27,7 +27,7 @@ export const EmptyAgents = () => {
         </p>
       </div>
 
-      <Button className="" onClick={() => history.replace('/agents/add')}>
+      <Button className="" onClick={() => history.push('/agents/add')}>
         <Bot className="w-4 h-4 mr-2" />
         <FormattedMessage id="add-agent" />
       </Button>

@@ -39,10 +39,9 @@ export default function NavBar() {
   const isRootPage = ['/inboxes', '/agents'].includes(
     location.pathname
   );
-  function goBack() {
+  const goBack = () => {
     history.goBack();
   }
-
   const logout = (): void => {
     setLogout();
   };
@@ -50,19 +49,19 @@ export default function NavBar() {
   const onClickMenuOption = (key: MenuOption) => {
     switch (key) {
       case MenuOption.Inbox:
-        history.replace('/inboxes');
+        history.push('/inboxes');
         break;
       case MenuOption.CreateInbox:
-        history.replace('/inboxes/create-inbox');
+        history.push('/inboxes/create-inbox');
         break;
       case MenuOption.CreateJob:
-        history.replace('/inboxes/create-job');
+        history.push('/inboxes/create-job');
         break;
       case MenuOption.Agents:
-        history.replace('/agents');
+        history.push('/agents');
         break;
       case MenuOption.AddAgent:
-        history.replace('/agents/add');
+        history.push('/agents/add');
         break;
       case MenuOption.Logout:
         logout();
