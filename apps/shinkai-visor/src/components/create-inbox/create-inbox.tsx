@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateChat } from '@shinkai_network/shinkai-node-state/lib/mutations/createChat/useCreateChat';
-import { Loader2 } from 'lucide-react';
+import { Loader2, MessageCircle } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -68,9 +68,12 @@ export const CreateInbox = () => {
 
   return (
     <div className="h-full flex flex-col">
-      <h1 className="font-semibold mb-2">
-        <FormattedMessage id="create-inbox"></FormattedMessage>
-      </h1>
+      <div className="flex flex-row space-x-1 items-center">
+        <MessageCircle className="h-4 w-4" />
+        <h1 className="font-semibold">
+          <FormattedMessage id="create-inbox"></FormattedMessage>
+        </h1>
+      </div>
       <Form {...form}>
         <form
           className="p-1 h-full flex flex-col space-y-2 justify-between"

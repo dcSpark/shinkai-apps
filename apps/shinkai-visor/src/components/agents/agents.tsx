@@ -1,4 +1,5 @@
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
+import { Bot } from 'lucide-react';
 import { Fragment } from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -25,9 +26,12 @@ export const Agents = () => {
     </div>
   ) : (
     <div className="flex flex-col">
-      <h1 className="font-semibold mb-2">
-        <FormattedMessage id="agent.other"></FormattedMessage>
-      </h1>
+      <div className="flex flex-row space-x-1 items-center">
+        <Bot className="h-4 w-4" />
+        <h1 className="font-semibold">
+          <FormattedMessage id="agent.other"></FormattedMessage>
+        </h1>
+      </div>
       <ScrollArea className="[&>div>div]:!block h-full flex flex-col space-y-3 justify-between">
         {agents?.map((agent) => (
           <Fragment key={agent.id}>

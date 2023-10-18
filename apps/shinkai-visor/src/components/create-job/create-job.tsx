@@ -101,9 +101,12 @@ export const CreateJob = () => {
 
   return (
     <div className="h-full flex flex-col">
-      <h1 className="font-semibold mb-2">
-        <FormattedMessage id="create-job"></FormattedMessage>
-      </h1>
+      <div className="flex flex-row space-x-1 items-center">
+        <Workflow className="h-4 w-4" />
+        <h1 className="font-semibold">
+          <FormattedMessage id="create-job"></FormattedMessage>
+        </h1>
+      </div>
       <Form {...form}>
         <form
           className="p-1 h-full flex flex-col space-y-2 justify-between"

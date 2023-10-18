@@ -3,7 +3,7 @@ import './inboxes.css';
 import { isJobInbox } from '@shinkai_network/shinkai-message-ts/utils';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
-import { MessageCircleIcon, Workflow } from 'lucide-react';
+import { Inbox, MessageCircleIcon, Workflow } from 'lucide-react';
 import { Fragment } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
@@ -46,9 +46,13 @@ export const Inboxes = () => {
 
   return (
     <div className="h-full flex flex-col space-y-3 justify-between overflow-hidden">
-      <h1 className="font-semibold mb-2">
-        <FormattedMessage id="inbox.other"></FormattedMessage>
-      </h1>
+      <div className="flex flex-row space-x-1 items-center">
+        <Inbox className="h-4 w-4" />
+        <h1 className="font-semibold">
+          <FormattedMessage id="inbox.other"></FormattedMessage>
+        </h1>
+      </div>
+
       {!agents?.length ? (
         <EmptyAgents></EmptyAgents>
       ) : !inboxIds?.length ? (
