@@ -5,14 +5,14 @@ import {
   extractReceiverShinkaiName,
   getMessageContent,
   getMessageFilesInbox,
-  isJobInbox,
+  isJobInbox as checkIsJobInbox,
   isLocalMessage,
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMessageToJob/useSendMessageToJob';
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
-import { Loader2 } from 'lucide-react';
-import { Fragment, useCallback, useEffect, useRef } from 'react';
+import { ChevronRight, Inbox as InboxIcon, Loader2 } from 'lucide-react';
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
@@ -55,8 +55,8 @@ export const Inbox = () => {
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const previousChatHeightRef = useRef<number>(0);
   const fromPreviousMessagesRef = useRef<boolean>(false);
-  const decodedInboxIdRef = useRef<string>('');
-  const isJobInboxRef = useRef<boolean>(false);
+  const [decodedInboxId, setDecodedInboxId] = useState<string>('');
+  const [isJobInbox, setIsJobInbox] = useState<boolean>(false);
   const fetchPreviousMessages = useCallback(async () => {
     const firstMessage = data?.pages?.[0]?.[0];
     fromPreviousMessagesRef.current = true;
@@ -88,10 +88,14 @@ export const Inbox = () => {
   }, [handleScroll]);
   useEffect(() => {
     if (inboxId) {
-      decodedInboxIdRef.current = decodeURIComponent(inboxId);
-      isJobInboxRef.current = isJobInbox(decodedInboxIdRef.current);
+      setDecodedInboxId(decodeURIComponent(inboxId));
     }
   }, [inboxId]);
+  useEffect(() => {
+    if (decodedInboxId) {
+      setIsJobInbox(checkIsJobInbox(decodedInboxId));
+    }
+  }, [decodedInboxId]);
   const scrollToBottom = () => {
     if (!chatContainerRef.current) return;
     chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
@@ -105,8 +109,8 @@ export const Inbox = () => {
   const submitSendMessage = (value: string) => {
     if (!auth) return;
     fromPreviousMessagesRef.current = false;
-    if (isJobInboxRef.current) {
-      const jobId = extractJobIdFromInbox(decodedInboxIdRef.current);
+    if (isJobInbox) {
+      const jobId = extractJobIdFromInbox(decodedInboxId);
       sendMessageToJob({
         jobId,
         message: value,
@@ -121,16 +125,13 @@ export const Inbox = () => {
       });
     } else {
       const sender = `${auth.shinkai_identity}/${auth.profile}/device/${auth.registration_name}`;
-      const receiver = extractReceiverShinkaiName(
-        decodedInboxIdRef.current,
-        sender
-      );
+      const receiver = extractReceiverShinkaiName(decodedInboxId, sender);
       sendMessageToInbox({
         sender: auth.shinkai_identity,
         sender_subidentity: `${auth.profile}/device/${auth.registration_name}`,
         receiver,
         message: value,
-        inboxId: decodedInboxIdRef.current,
+        inboxId: decodedInboxId,
         my_device_encryption_sk: auth.my_device_encryption_sk,
         my_device_identity_sk: auth.my_device_identity_sk,
         node_encryption_pk: auth.node_encryption_pk,
@@ -169,6 +170,14 @@ export const Inbox = () => {
 
   return (
     <div className="h-full flex flex-col space-y-3 justify-between overflow-hidden">
+      <div className="flex flex-row space-x-1 items-center">
+        <InboxIcon className="h-4 w-4 shrink-0" />
+        <h1 className="font-semibold">
+          <FormattedMessage id="inbox.one"></FormattedMessage>
+        </h1>
+        <ChevronRight className="h-4 w-4 shrink-0" />
+        <h1 className="font-semibold truncate">{decodedInboxId}</h1>
+      </div>
       <ScrollArea className="[&>div>div]:!block h-full" ref={chatContainerRef}>
         {isChatConversationSuccess && (
           <div className="py-2 text-center text-xs">
@@ -239,7 +248,7 @@ export const Inbox = () => {
                               >
                                 <Message
                                   filesInbox={getMessageFilesInbox(message)}
-                                  inboxId={decodedInboxIdRef.current}
+                                  inboxId={decodedInboxId}
                                   isLocal={isLocal}
                                   messageContent={getMessageContent(message)}
                                 ></Message>
