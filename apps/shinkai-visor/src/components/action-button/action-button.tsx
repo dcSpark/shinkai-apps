@@ -11,7 +11,6 @@ import { langMessages, locale } from '../../lang/intl';
 import { ContentScriptMessageType } from '../../service-worker/communication/content-script-message-type';
 import { sendContentScriptMessage } from '../../service-worker/communication/content-script-messages';
 import themeStyle from '../../theme/styles.css?inline';
-import popupStyle from './action-button.css?inline';
 
 const baseContainer = document.createElement('shinkai-action-button-root');
 const shadow = baseContainer.attachShadow({ mode: 'open' });
@@ -32,7 +31,7 @@ export const ActionButton = () => {
     <div
       className={cn(
         'p-1 w-[50px] h-[50px] flex flex-col space-y-1 items-center justify-center',
-        !popupVisibility && 'animate-pulse'
+        !popupVisibility && 'animate-breath'
       )}
       onClick={() => togglePopupVisibility()}
     >
@@ -61,7 +60,6 @@ const root = createRoot(container);
 root.render(
   <React.StrictMode>
     <style>{themeStyle}</style>
-    <style>{popupStyle}</style>
     <IntlProvider locale={locale} messages={langMessages}>
       <div className="fixed top-32 right-2 overflow-hidden bg-secondary-600 z-[1500000000] shadow-3xl rounded-lg">
         <ActionButton />
