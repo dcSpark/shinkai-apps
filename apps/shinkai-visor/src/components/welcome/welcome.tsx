@@ -9,7 +9,7 @@ import { Button } from '../ui/button';
 export default function Welcome() {
   const history = useHistory();
   return (
-    <div className="h-full flex flex-col justify-between pb-4">
+    <div className="h-full flex flex-col justify-between">
       <div className="grid place-content-center">
         <img
           alt="shinkai logo"

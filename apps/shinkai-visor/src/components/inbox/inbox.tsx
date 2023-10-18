@@ -189,7 +189,7 @@ export const Inbox = () => {
             )}
           </div>
         )}
-        <div className="pb-4">
+        <div className="">
           {isChatConversationLoading &&
             [...Array(5).keys()].map((index) => (
               <div
