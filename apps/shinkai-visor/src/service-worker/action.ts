@@ -1,4 +1,3 @@
-import { srcUrlResolver } from "../helpers/src-url-resolver";
 import { ContentScriptMessageType } from "./communication/content-script-message-type";
 import { sendContentScriptMessage } from "./communication/content-script-messages";
 
