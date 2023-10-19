@@ -1,10 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2, Send } from 'lucide-react';
+import { Send } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import { z } from 'zod';
 
 import { Button } from '../ui/button';
+import DotsLoader from '../ui/dots-loader';
 import {
   Form,
   FormControl,
@@ -15,7 +16,7 @@ import {
 import { Input } from '../ui/input';
 
 const formSchema = z.object({
-  message: z.string().nonempty(),
+  message: z.string().min(1),
 });
 
 type InboxInputFieldType = z.infer<typeof formSchema>;
@@ -60,7 +61,6 @@ export const InboxInput = (props: InboxInputProps) => {
               <FormItem>
                 <FormControl>
                   <Input
-                    disabled={props.loading}
                     placeholder={intl.formatMessage({
                       id: 'tmwtd',
                     })}
@@ -75,12 +75,12 @@ export const InboxInput = (props: InboxInputProps) => {
         </div>
         <Button
           className="grow-0"
-          disabled={!form.formState.isValid || props.disabled}
+          disabled={!form.formState.isValid || props.disabled || props.loading}
         >
           {props.loading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
+            <DotsLoader className="w-6 h-4"></DotsLoader>
           ) : (
-            <Send className="w-4 h-4" />
+            <Send className="w-6 h-4" />
           )}
         </Button>
       </form>
