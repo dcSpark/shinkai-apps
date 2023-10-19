@@ -137,6 +137,7 @@ export const CreateJob = () => {
                         {agents?.map((agent) => (
                           <SelectItem key={agent.id} value={agent.id}>
                             {
+                              // eslint-disable-next-line @typescript-eslint/no-explicit-any
                               (agent.full_identity_name as any)
                                 ?.subidentity_name
                             }

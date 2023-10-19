@@ -1,8 +1,8 @@
 import MarkdownPreview from '@uiw/react-markdown-preview';
 import { Paperclip } from 'lucide-react';
 
-import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
-import { cn } from '../helpers/cn-utils';
+import { cn } from '../../helpers/cn-utils';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 type MessageProps = {
   isLocal: boolean;

@@ -17,9 +17,9 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
 import { cn } from '../../helpers/cn-utils';
-import { Message } from '../../message/message';
 import { useAuth } from '../../store/auth/auth';
 import { InboxInput } from '../inbox-input/inbox-input';
+import { Message } from '../message/message';
 import { ScrollArea } from '../ui/scroll-area';
 import { Skeleton } from '../ui/skeleton';
 
