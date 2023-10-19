@@ -15,7 +15,7 @@
       "16": "icon16.png",
       "48": "icon48.png"
     },
-    "default_popup": ""
+    "default_popup": "src/components/installed-popup/installed-popup.html"
   },
   "background": {
     "service_worker": "src/service-worker/service-worker.ts"
@@ -23,7 +23,7 @@
   "web_accessible_resources": [
     {
       "matches": ["https://*/*", "http://*/*", "<all_urls>"],
-      "resources": ["src/components/popup/popup.tsx"]
+      "resources": []
     }
   ],
   "commands": {
@@ -45,11 +45,7 @@
   "content_scripts": [
     {
       "matches": ["https://*/*", "http://*/*", "<all_urls>"],
-      "js": ["src/components/popup/popup.tsx"]
-    },
-    {
-      "matches": ["https://*/*", "http://*/*", "<all_urls>"],
-      "js": ["src/components/action-button/action-button.tsx"]
+      "js": ["src/components/popup/popup.tsx", "src/components/action-button/action-button.tsx"]
     }
   ],
   "externally_connectable": {

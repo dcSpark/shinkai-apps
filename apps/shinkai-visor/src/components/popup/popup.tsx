@@ -25,7 +25,6 @@ import { Inboxes } from '../inboxes/inboxes';
 import { SplashScreen } from '../splash-screen/splash-screen';
 import Welcome from '../welcome/welcome';
 import { WithNav } from '../with-nav/with-nav';
-import popupStyle from './popup.css?inline';
 
 export const Popup = ({
   container,
@@ -133,7 +132,6 @@ const root = createRoot(container);
 root.render(
   <React.StrictMode>
     <style>{globalStyle}</style>
-    <style>{popupStyle}</style>
     <QueryClientProvider client={queryClient}>
       <IntlProvider locale={locale} messages={langMessages}>
         <div className="fixed font-inter w-[357px] h-[600px] top-32 right-16 overflow-hidden z-[1500000000]">

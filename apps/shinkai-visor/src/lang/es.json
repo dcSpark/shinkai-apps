@@ -51,5 +51,6 @@
   "empty-agents-title": "Pregunta a Shinkai AI",
   "empty-agents-message": "Conecta tu primer agente para comenzar a preguntar a Shinkai AI",
   "today": "Hoy",
-  "yesterday": "Ayer"
+  "yesterday": "Ayer",
+  "installed-sucessfully": "Shinkai Visor se instaló correctamente, navega a un sitio web y usa el botón de acción para comenzar a preguntar a Shinkai AI"
 }

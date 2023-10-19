@@ -51,5 +51,6 @@
   "empty-agents-title": "Ask Shinkai AI",
   "empty-agents-message": "Connect your first agent to start asking Shinkai AI. Try connecting OpenAI",
   "today": "Today",
-  "yesterday": "Yesterday"
+  "yesterday": "Yesterday",
+  "installed-sucessfully": "Shinkai Visor was installed sucessfully, navigate to a website and use the action button to start asking Shinkai AI"
 }
