@@ -88,12 +88,10 @@ module.exports = {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: 0 },
         },
-        keyframes: {
-          breath: {
-            '0%, 100%': { transform: 'opacity: 1' },
-            '50%': { transform: 'opacity: .5' },
-          }
-        }
+        breath: {
+          '0%, 100%': { transform: 'opacity: 1' },
+          '50%': { transform: 'opacity: .5' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',

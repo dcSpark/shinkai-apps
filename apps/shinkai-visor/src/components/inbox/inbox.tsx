@@ -57,6 +57,7 @@ export const Inbox = () => {
   const fromPreviousMessagesRef = useRef<boolean>(false);
   const [decodedInboxId, setDecodedInboxId] = useState<string>('');
   const [isJobInbox, setIsJobInbox] = useState<boolean>(false);
+  const [isJobProcessing, setIsJobProcessing] = useState<boolean>(false);
   const fetchPreviousMessages = useCallback(async () => {
     const firstMessage = data?.pages?.[0]?.[0];
     fromPreviousMessagesRef.current = true;
@@ -78,6 +79,10 @@ export const Inbox = () => {
       chatContainerElement.scrollTop = currentHeight - previousHeight;
     }
   }, [fetchPreviousMessages, hasPreviousPage]);
+  const scrollToBottom = () => {
+    if (!chatContainerRef.current) return;
+    chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+  };
   useEffect(() => {
     const chatContainerElement = chatContainerRef.current;
     if (!chatContainerElement) return;
@@ -96,16 +101,23 @@ export const Inbox = () => {
       setIsJobInbox(checkIsJobInbox(decodedInboxId));
     }
   }, [decodedInboxId]);
-  const scrollToBottom = () => {
-    if (!chatContainerRef.current) return;
-    chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-  };
   useEffect(() => {
     if (!fromPreviousMessagesRef.current) {
       scrollToBottom();
     }
   }, [data?.pages]);
-
+  useEffect(() => {
+    const [firstMessagePage] = data?.pages || [];
+    const lastMessage = ([...firstMessagePage || []]).pop();
+    if (lastMessage) {
+      const isLocal = isLocalMessage(
+        lastMessage,
+        auth?.shinkai_identity ?? '',
+        auth?.profile ?? ''
+      );
+      setIsJobProcessing(isJobInbox && (isSendingMessage || isLocal));
+    }
+  }, [data?.pages, auth, isSendingMessage, isJobInbox]);
   const submitSendMessage = (value: string) => {
     if (!auth) return;
     fromPreviousMessagesRef.current = false;
@@ -266,7 +278,7 @@ export const Inbox = () => {
       </ScrollArea>
       <InboxInput
         disabled={isSendingMessage}
-        loading={isSendingMessage}
+        loading={isJobProcessing}
         onSubmit={(value) => submitSendMessage(value)}
       ></InboxInput>
     </div>
