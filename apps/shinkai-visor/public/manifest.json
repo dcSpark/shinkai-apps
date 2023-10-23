@@ -37,7 +37,7 @@
       "description": "Open/Close Shinkai popup"
     }
   },
-  "permissions": ["storage", "contextMenus"],
+  "permissions": ["storage", "contextMenus", "scripting"],
   "host_permissions": ["<all_urls>"],
   "content_security_policy": {
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
@@ -45,7 +45,7 @@
   "content_scripts": [
     {
       "matches": ["https://*/*", "http://*/*", "<all_urls>"],
-      "js": ["src/components/popup/popup.tsx", "src/components/action-button/action-button.tsx"]
+      "js": ["src/components/action-button/action-button.tsx", "src/components/popup/popup-embeder.ts"]
     }
   ],
   "externally_connectable": {

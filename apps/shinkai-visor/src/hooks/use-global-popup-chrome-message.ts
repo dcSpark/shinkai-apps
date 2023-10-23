@@ -16,7 +16,7 @@ export const useGlobalPopupChromeMessage = () => {
       history.push({ pathname: '/inboxes/create-job', search: params.toString() });
       sendContentScriptMessage({ type: ContentScriptMessageType.TogglePopupVisibility, data: true });
     } else if (message.type === ServiceWorkerMessageType.SendPageToAgent) {
-        const pageAsPdf = await generatePdfFromCurrentPage(`${encodeURIComponent(window.location.href)}.pdf`);
+        const pageAsPdf = await generatePdfFromCurrentPage(`${encodeURIComponent(window.location.href)}.pdf`, message.data.html);
         if (!pageAsPdf) {
           return;
         }
@@ -25,6 +25,7 @@ export const useGlobalPopupChromeMessage = () => {
 
     } else if (message.type === ServiceWorkerMessageType.ContentScript) {
       if (message.data.type === ContentScriptMessageType.TogglePopupVisibility) {
+        console.log('toggle popup visibility', message, sender);
         setPopupVisibility(message.data.data !== undefined ? message.data.data : !popupVisibility);
       }
     }

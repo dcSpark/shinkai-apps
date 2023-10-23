@@ -11,5 +11,8 @@ export type ServiceWorkerMessage =
   }
   | {
     type: ServiceWorkerMessageType.SendPageToAgent;
+    data: {
+      html: HTMLElement;
+    }
   };
 

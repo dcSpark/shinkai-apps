@@ -37,13 +37,17 @@ export const Message = ({
       </Avatar>
       <div
         className={cn(
-          'mt-1 rounded-lg bg-transparent px-2.5 py-3 text-sm text-foreground flex flex-col space-y-2',
+          'mt-1 rounded-lg bg-transparent text-foreground px-2.5 py-3 text-sm flex flex-col space-y-2',
           isLocal
             ? 'rounded-tl-none border border-slate-800'
             : 'rounded-tr-none border-none bg-[rgba(217,217,217,0.04)]'
         )}
       >
-        <MarkdownPreview source={messageContent} />
+        <MarkdownPreview
+        className="wmde-markdown-var"
+          source={messageContent}
+          wrapperElement={{ 'data-color-mode': 'dark' }}
+        />
         {filesInbox && <Paperclip className="w-4 h-4"></Paperclip>}
       </div>
     </div>

@@ -10,7 +10,7 @@ chrome.runtime.onMessage.addListener((message: ServiceWorkerMessage, sender) => 
     if (!sender?.tab?.id) {
       return;
     }
-    console.log('sw onMessage - forwarding message to tab', message, sender);
+    console.log('sw onMessage - forwarding message to tab', message, sender, sender?.tab);
     sendContentScriptMessage(message.data, sender?.tab?.id);
   }
 });

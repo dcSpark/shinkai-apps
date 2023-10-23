@@ -7,15 +7,20 @@ export type UseChromeMessageCallback = (...params: UseChromeMessageCallbackParam
 
 export const useChromeMessage = (callback: UseChromeMessageCallback) => {
   useEffect(() => {
-    const onMessage: UseChromeMessageCallback = (message, sender) => {
+    function onMessage(message: ServiceWorkerMessage, sender: chrome.runtime.MessageSender): void {
+      if (sender.tab) {
+        return;
+      }
+      console.info('on chrome message', window.location.href, message, sender);
       if (typeof callback === 'function') {
         callback(message, sender);
       }
     };
+    chrome.runtime.onMessage.removeListener(onMessage);
     chrome.runtime.onMessage.addListener(onMessage);
     return () => {
       chrome.runtime.onMessage.removeListener(onMessage);
     };
-  }, [callback]);
+  });
   return;
 }
