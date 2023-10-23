@@ -11,17 +11,8 @@ const sendPageToAgent = async (info: chrome.contextMenus.OnClickData, tab: chrom
   if (!tab?.id) {
     return;
   }
-  const [injectionResult] = await chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    func: () => {
-      return document.body.innerHTML;
-    }
-  });
   const message: ServiceWorkerMessage = {
     type: ServiceWorkerMessageType.SendPageToAgent,
-    data: {
-      html: injectionResult.result as unknown as HTMLElement,
-    }
   };
   chrome.tabs.sendMessage<ServiceWorkerMessage>(tab.id, message);  
 }
