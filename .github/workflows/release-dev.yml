@@ -11,6 +11,7 @@ defaults:
 jobs:
   release:
     runs-on: ubuntu-latest
+    environment: development
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -56,11 +57,19 @@ jobs:
       - name: Run NX build on shinkai-app-android
         run: |
           npx capacitor-set-version -v $VERSION -b $BUILD $APP_PATH
-          npx nx build:android shinkai-app --verbose
         env:
           VERSION: 0.0.0
           BUILD: ${{github.run_number}}
           APP_PATH: ./apps/shinkai-app
+
+      - name: Run NX build on shinkai-app-android
+        run: |
+          npx nx build:android shinkai-app --verbose
+        env:
+          ANDROID_KEYSTORE_FILE_PATH: ${{ secrets.ANDROID_KEYSTORE_FILE_PATH }}
+          ANDROID_KEYSTORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
+          ANDROID_KEYSTORE_ALIAS: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
+          ANDROID_KEYSTORE_ALIAS_PASS: ${{ secrets.ANDROID_KEYSTORE_ALIAS_PASS }}
 
       - uses: actions/upload-artifact@v3
         with:

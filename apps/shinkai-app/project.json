@@ -43,7 +43,7 @@
         "commands": [
           "npx nx build shinkai-app",
           "cd apps/shinkai-app && npx cap sync android",
-          "cd apps/shinkai-app && npx cap build android --keystorepath=$KEYSTORE_FILE_PATH --keystorepass=$KEYSTORE_PASS_DEVELOPMENT --keystorealias=$KEYSTORE_ALIAS_DEVELOPMENT --keystorealiaspass=$KEYSTORE_ALIAS_PASS_DEVELOPMENT",
+          "cd apps/shinkai-app && npx cap build android --keystorepath=$ANDROID_KEYSTORE_FILE_PATH --keystorepass=$ANDROID_KEYSTORE_PASS --keystorealias=$ANDROID_KEYSTORE_ALIAS --keystorealiaspass=$ANDROID_KEYSTORE_ALIAS_PASS",
           "cp -r ./apps/shinkai-app/android/app/build/outputs/bundle/release/ ./dist/apps/shinkai-app-android"
         ],
         "parallel": false
