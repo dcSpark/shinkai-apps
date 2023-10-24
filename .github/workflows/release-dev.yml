@@ -42,7 +42,7 @@ jobs:
       - name: Run NX build on shinkai-app-android
         run: |
           npx capacitor-set-version -v $VERSION -b $BUILD $APP_PATH
-          npx nx build shinkai-app-android --verbose
+          npx nx build:android shinkai-app --verbose
         env:
           VERSION: 0.0.0
           BUILD: ${{github.run_number}}
