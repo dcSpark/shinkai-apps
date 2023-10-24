@@ -22,7 +22,7 @@ htmlRoot.prepend(baseContainer);
 
 export const ActionButton = () => {
   const [popupVisibility] = useGlobalActionButtonChromeMessage();
-  const togglePopupVisibility = () => {
+  const togglePopupVisibility = async () => {
     sendContentScriptMessage({
       type: ContentScriptMessageType.TogglePopupVisibility,
     });
@@ -61,7 +61,7 @@ root.render(
   <React.StrictMode>
     <style>{themeStyle}</style>
     <IntlProvider locale={locale} messages={langMessages}>
-      <div className="fixed top-32 right-2 overflow-hidden bg-secondary-600 z-[1500000000] shadow-3xl rounded-lg">
+      <div className="fixed top-[120px] right-[2px] overflow-hidden bg-secondary-600 z-[1500000000] shadow-3xl rounded-lg">
         <ActionButton />
       </div>
     </IntlProvider>
