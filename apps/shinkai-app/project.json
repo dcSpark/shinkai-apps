@@ -33,10 +33,31 @@
       },
       "configurations": {
         "development": {
-          "buildTarget": "shinkai-visor:build:development"
+          "buildTarget": "shinkai-app:build:development"
         },
         "production": {
-          "buildTarget": "shinkai-visor:build:production"
+          "buildTarget": "shinkai-app:build:production"
+        }
+      }
+    },
+    "build-android": {
+      "executor": "nx:run-commands",
+      "defaultConfiguration": "development",
+      "options": {
+        "commands": [
+          "npx nx build shinkai-app",
+          "cd apps/shinkai-app && npx cap sync android",
+          "cd apps/shinkai-app && npx cap build android",
+          "cp -r ./apps/shinkai-app/android/build/outputs/apk ./dist/apps/shinkai-app-android"
+        ],
+        "parallel": false
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "shinkai-app:build:development"
+        },
+        "production": {
+          "buildTarget": "shinkai-app:build:production"
         }
       }
     },
