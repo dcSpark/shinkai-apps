@@ -20,6 +20,39 @@
         }
       }
     },
+    "build:ios": {
+      "executor": "nx:run-commands",
+      "defaultConfiguration": "production",
+      "options": {
+        "commands": [
+          "npx nx build shinkai-app",
+          "cd apps/shinkai-app && npx cap sync ios",
+          "cd apps/shinkai-app && npx cap build ios"
+        ],
+        "parallel": false
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "build:android": {
+      "executor": "nx:run-commands",
+      "defaultConfiguration": "production",
+      "options": {
+        "commands": [
+          "npx nx build shinkai-app",
+          "cd apps/shinkai-app && npx cap sync android",
+          "cd apps/shinkai-app && npx cap build android --keystorepath=$ANDROID_KEYSTORE_FILE_PATH --keystorepass=$ANDROID_KEYSTORE_PASS --keystorealias=$ANDROID_KEYSTORE_ALIAS --keystorealiaspass=$ANDROID_KEYSTORE_ALIAS_PASS",
+          "cp -r ./apps/shinkai-app/android/app/build/outputs/bundle/release/ ./dist/apps/shinkai-app-android"
+        ],
+        "parallel": false
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
     "serve": {
       "executor": "@nx/vite:dev-server",
       "defaultConfiguration": "development",

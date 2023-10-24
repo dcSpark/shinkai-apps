@@ -2,7 +2,7 @@ name: Release dev
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, agallardol/mobile-build ]
 
 defaults:
   run:
@@ -11,6 +11,7 @@ defaults:
 jobs:
   release:
     runs-on: ubuntu-latest
+    environment: development
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -34,6 +35,7 @@ jobs:
           npm cache verify
           npm ci --no-audit --prefer-offline
 
+      # shinkai-visor
       - name: Run NX build on shinkai-visor
         run: npx nx build shinkai-visor --skip-nx-cache --verbose
         env:
@@ -43,5 +45,35 @@ jobs:
         with:
           name: shinkai-visor
           path: dist/apps/shinkai-visor
+          if-no-files-found: error
+          retention-days: 5
+
+      # shinkai-app-android
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Run NX build on shinkai-app-android
+        run: |
+          npx capacitor-set-version -v $VERSION -b $BUILD $APP_PATH
+        env:
+          VERSION: 0.0.0
+          BUILD: ${{github.run_number}}
+          APP_PATH: ./apps/shinkai-app
+
+      - name: Run NX build on shinkai-app-android
+        run: |
+          npx nx build:android shinkai-app --verbose
+        env:
+          ANDROID_KEYSTORE_FILE_PATH: ${{ secrets.ANDROID_KEYSTORE_FILE_PATH }}
+          ANDROID_KEYSTORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
+          ANDROID_KEYSTORE_ALIAS: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
+          ANDROID_KEYSTORE_ALIAS_PASS: ${{ secrets.ANDROID_KEYSTORE_ALIAS_PASS }}
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: shinkai-app-android
+          path: dist/apps/shinkai-app-android
           if-no-files-found: error
           retention-days: 5

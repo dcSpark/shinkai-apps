@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ShinkaiApp</string>
+    <string name="title_activity_main">ShinkaiApp</string>
+    <string name="package_name">io.dcspark.shinkai</string>
+    <string name="custom_url_scheme">io.dcspark.shinkai</string>
+</resources>
