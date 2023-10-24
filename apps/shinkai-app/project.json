@@ -20,6 +20,26 @@
         }
       }
     },
+    "build-ios": {
+      "executor": "nx:run-commands",
+      "defaultConfiguration": "development",
+      "options": {
+        "commands": [
+          "npx nx build shinkai-app",
+          "cd apps/shinkai-app && npx cap sync ios",
+          "cd apps/shinkai-app && npx cap build ios"
+        ],
+        "parallel": false
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "shinkai-visor:build:development"
+        },
+        "production": {
+          "buildTarget": "shinkai-visor:build:production"
+        }
+      }
+    },
     "serve": {
       "executor": "@nx/vite:dev-server",
       "defaultConfiguration": "development",
