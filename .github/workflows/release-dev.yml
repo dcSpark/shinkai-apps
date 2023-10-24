@@ -34,10 +34,24 @@ jobs:
           npm cache verify
           npm ci --no-audit --prefer-offline
 
+      # shinkai-visor
       - name: Run NX build on shinkai-visor
         run: npx nx build shinkai-visor --skip-nx-cache --verbose
         env:
           VERSION: 0.0.0.${{github.run_number}}
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: shinkai-visor
+          path: dist/apps/shinkai-visor
+          if-no-files-found: error
+          retention-days: 5
+
+      # shinkai-app-android
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
       - name: Run NX build on shinkai-app-android
         run: |
@@ -47,13 +61,6 @@ jobs:
           VERSION: 0.0.0
           BUILD: ${{github.run_number}}
           APP_PATH: ./apps/shinkai-app
-
-      - uses: actions/upload-artifact@v3
-        with:
-          name: shinkai-visor
-          path: dist/apps/shinkai-visor
-          if-no-files-found: error
-          retention-days: 5
 
       - uses: actions/upload-artifact@v3
         with:
