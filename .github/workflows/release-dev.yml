@@ -2,7 +2,7 @@ name: Release dev
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, agallardol/mobile-build ]
 
 defaults:
   run:
@@ -39,9 +39,25 @@ jobs:
         env:
           VERSION: 0.0.0.${{github.run_number}}
 
+      - name: Run NX build on shinkai-app-android
+        run: |
+          npx capacitor-set-version -v $VERSION -b $BUILD $APP_PATH
+          npx nx build shinkai-app-android --verbose
+        env:
+          VERSION: 0.0.0
+          BUILD: ${{github.run_number}}
+          APP_PATH: ./apps/shinkai-app
+
       - uses: actions/upload-artifact@v3
         with:
           name: shinkai-visor
           path: dist/apps/shinkai-visor
+          if-no-files-found: error
+          retention-days: 5
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: shinkai-app-android
+          path: dist/apps/shinkai-app-android
           if-no-files-found: error
           retention-days: 5

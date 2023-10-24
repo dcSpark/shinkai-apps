@@ -51,6 +51,7 @@
     "autoprefixer": "^10.4.16",
     "babel-jest": "^29.4.1",
     "babel-plugin-transform-bigint-to-jsbi": "^1.0.3",
+    "capacitor-set-version": "^2.2.0",
     "curve25519-js": "^0.0.4",
     "cypress": "^13.1.0",
     "eslint": "~8.46.0",
