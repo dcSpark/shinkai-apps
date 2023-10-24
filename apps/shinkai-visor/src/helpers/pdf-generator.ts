@@ -2,7 +2,7 @@ import { jsPDF } from 'jspdf';
 
 const IGNORED_ELEMENTS = ['img', 'svg'];
 
-export const generatePdfFromCurrentPage = async (fileName: string): Promise<File | undefined> => {
+export const generatePdfFromCurrentPage = async (fileName: string, html: HTMLElement): Promise<File | undefined> => {
   try {
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
     const getPdfFromHtml = async (html: HTMLElement | string): Promise<Blob> => {
@@ -24,7 +24,7 @@ export const generatePdfFromCurrentPage = async (fileName: string): Promise<File
         });
       });
     };
-    const siteAsPdfBlob = await getPdfFromHtml(document.body);
+    const siteAsPdfBlob = await getPdfFromHtml(html);
     const siteAsPdfFile = new File([siteAsPdfBlob], fileName, { type: siteAsPdfBlob.type });
     return siteAsPdfFile;
   } catch (e) {

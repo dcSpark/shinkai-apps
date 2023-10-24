@@ -1,3 +1,5 @@
+import '../../theme/styles.css';
+
 import { ApiConfig } from '@shinkai_network/shinkai-message-ts/api/api_config';
 import { queryClient } from '@shinkai_network/shinkai-node-state/lib/constants';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -12,8 +14,6 @@ import { Route, Switch, useHistory, useLocation } from 'react-router-dom';
 import { useGlobalPopupChromeMessage } from '../../hooks/use-global-popup-chrome-message';
 import { langMessages, locale } from '../../lang/intl';
 import { useAuth } from '../../store/auth/auth';
-import { useUIContainer } from '../../store/ui-container/ui-container';
-import globalStyle from '../../theme/styles.css?inline';
 import { AddAgent } from '../add-agent/add-agent';
 import { AddNode } from '../add-node/add-node';
 import { Agents } from '../agents/agents';
@@ -26,20 +26,12 @@ import { SplashScreen } from '../splash-screen/splash-screen';
 import Welcome from '../welcome/welcome';
 import { WithNav } from '../with-nav/with-nav';
 
-export const Popup = ({
-  container,
-}: {
-  container: { shadowRoot: ShadowRoot; rootElement: HTMLElement };
-}) => {
+export const Popup = () => {
   const history = useHistory();
   const auth = useAuth((state) => state.auth);
   const location = useLocation();
   const [popupVisibility] = useGlobalPopupChromeMessage();
-  const setUIContainer = useUIContainer((state) => state.setUIContainer);
-  setUIContainer({
-    shadowRoot: container.shadowRoot,
-    rootElement: container.rootElement,
-  });
+  
   useEffect(() => {
     const isAuthenticated = !!auth;
     if (isAuthenticated) {
@@ -50,7 +42,6 @@ export const Popup = ({
       history.replace('/welcome');
     }
   }, [history, auth]);
-
   return (
     <AnimatePresence>
       {popupVisibility && (
@@ -120,25 +111,19 @@ export const Popup = ({
   );
 };
 
-const baseContainer = document.createElement('shinkai-popup-root');
-const shadowRoot = baseContainer.attachShadow({ mode: 'closed' });
-const container = document.createElement('div');
-container.id = 'root';
-shadowRoot.appendChild(container);
-const htmlRoot = document.getElementsByTagName('html')[0];
-htmlRoot.prepend(baseContainer);
+const CONTAINER_ID = 'root';
+const container = document.getElementById(CONTAINER_ID);
+if (!container) {
+  throw new Error(`container with id ${CONTAINER_ID} not found`);
+}
 const root = createRoot(container);
-
 root.render(
   <React.StrictMode>
-    <style>{globalStyle}</style>
     <QueryClientProvider client={queryClient}>
       <IntlProvider locale={locale} messages={langMessages}>
-        <div className="fixed font-inter w-[357px] h-[600px] top-32 right-16 overflow-hidden z-[1500000000]">
+        <div className="font-inter w-full h-full">
           <Router>
-            <Popup
-              container={{ shadowRoot: shadowRoot, rootElement: container }}
-            ></Popup>
+            <Popup></Popup>
           </Router>
         </div>
       </IntlProvider>

@@ -13,6 +13,7 @@ const sendPageToAgent = async (info: chrome.contextMenus.OnClickData, tab: chrom
   }
   const message: ServiceWorkerMessage = {
     type: ServiceWorkerMessageType.SendPageToAgent,
+    data: {},
   };
   chrome.tabs.sendMessage<ServiceWorkerMessage>(tab.id, message);  
 }

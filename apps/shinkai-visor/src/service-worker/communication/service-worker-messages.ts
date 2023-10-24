@@ -11,5 +11,7 @@ export type ServiceWorkerMessage =
   }
   | {
     type: ServiceWorkerMessageType.SendPageToAgent;
+    data: {
+      pdf?: File;
+    }
   };
-
