@@ -20,9 +20,9 @@
         }
       }
     },
-    "build-ios": {
+    "build:ios": {
       "executor": "nx:run-commands",
-      "defaultConfiguration": "development",
+      "defaultConfiguration": "production",
       "options": {
         "commands": [
           "npx nx build shinkai-app",
@@ -32,33 +32,25 @@
         "parallel": false
       },
       "configurations": {
-        "development": {
-          "buildTarget": "shinkai-app:build:development"
-        },
-        "production": {
-          "buildTarget": "shinkai-app:build:production"
-        }
+        "development": {},
+        "production": {}
       }
     },
-    "build-android": {
+    "build:android": {
       "executor": "nx:run-commands",
-      "defaultConfiguration": "development",
+      "defaultConfiguration": "production",
       "options": {
         "commands": [
           "npx nx build shinkai-app",
           "cd apps/shinkai-app && npx cap sync android",
-          "cd apps/shinkai-app && npx cap build android",
-          "cp -r ./apps/shinkai-app/android/build/outputs/apk ./dist/apps/shinkai-app-android"
+          "cd apps/shinkai-app && npx cap build android --keystorepath=$KEYSTORE_FILE_PATH --keystorepass=$KEYSTORE_PASS_DEVELOPMENT --keystorealias=$KEYSTORE_ALIAS_DEVELOPMENT --keystorealiaspass=$KEYSTORE_ALIAS_PASS_DEVELOPMENT",
+          "cp -r ./apps/shinkai-app/android/app/build/outputs/bundle/release/ ./dist/apps/shinkai-app-android"
         ],
         "parallel": false
       },
       "configurations": {
-        "development": {
-          "buildTarget": "shinkai-app:build:development"
-        },
-        "production": {
-          "buildTarget": "shinkai-app:build:production"
-        }
+        "development": {},
+        "production": {}
       }
     },
     "serve": {
