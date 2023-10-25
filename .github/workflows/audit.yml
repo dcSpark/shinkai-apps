@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [main]
   schedule:
-    - cron: "0 5 ? * 0" # Weekly every Sunday 05:00 UTC
+    - cron: "0 5 * * 0" # Weekly every Sunday 05:00 UTC
 
   workflow_dispatch:
 
