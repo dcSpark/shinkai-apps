@@ -2,6 +2,7 @@
 import { crx } from "@crxjs/vite-plugin";
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import react from '@vitejs/plugin-react';
+import { resolve } from 'path'
 import { defineConfig } from 'vite';
 import topLevelAwait from "vite-plugin-top-level-await";
 import wasm from 'vite-plugin-wasm';
@@ -19,7 +20,6 @@ export default defineConfig({
       allow: ['../../'],
     },
   },
-
   preview: {
     port: 4301,
     host: 'localhost',
@@ -46,6 +46,11 @@ export default defineConfig({
   },
   root: './',
   build: {
-    outDir:  '../../dist/apps/shinkai-visor'
+    outDir:  '../../dist/apps/shinkai-visor',
+    rollupOptions: {
+      input: {
+        popup: resolve(__dirname, 'src/components/popup/popup.html'),
+      },
+    },
   },
 });

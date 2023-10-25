@@ -17,7 +17,8 @@
           "watch": true
         },
         "production": {
-          "mode": "production"
+          "mode": "production",
+          "force": true
         }
       }
     },
@@ -25,7 +26,7 @@
       "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "command": "cd apps/shinkai-visor && npx vite"
+        "command": "cd apps/shinkai-visor && npx vite --force"
       },
       "configurations": {
         "development": {
