@@ -22,7 +22,7 @@ export class ShinkaiMessageWrapper {
   }
 
   calculate_hash(): string {
-    return this.wasmWrapper.calculate_hash();
+    return this.wasmWrapper.calculate_blake3_hash();
   }
 
   static time_now(): string {
