@@ -2,7 +2,7 @@ name: Release dev
 
 on:
   push:
-    branches: [ main, agallardol/mobile-build ]
+    branches: [ main, agallardol/chrome-build, agallardol/mobile-build ]
 
 defaults:
   run:
