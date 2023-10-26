@@ -46,15 +46,16 @@ jobs:
       - name: Zip extension
         run: cd ./dist/apps && zip -r shinkai-visor.zip shinkai-visor
 
-      - name: Upload & release
+      - name: Upload & Release
         uses: mnao305/chrome-extension-upload@v4.0.1
+        continue-on-error: true
         with:
           file-path: dist/apps/shinkai-visor.zip
           extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
           client-id: ${{ secrets.CHROME_CLIENT_ID }}
           client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
           refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
-          publish: false
+          publish: true
 
       - uses: actions/upload-artifact@v3
         with:
