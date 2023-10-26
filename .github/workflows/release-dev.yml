@@ -87,7 +87,7 @@ jobs:
         run: |
           npx nx build:android shinkai-app --verbose
         env:
-          ANDROID_KEYSTORE_FILE_PATH: ./android/shinkai-keystore-android
+          ANDROID_KEYSTORE_FILE_PATH: shinkai-keystore-android
           ANDROID_KEYSTORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
           ANDROID_KEYSTORE_ALIAS: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
           ANDROID_KEYSTORE_ALIAS_PASS: ${{ secrets.ANDROID_KEYSTORE_ALIAS_PASS }}
