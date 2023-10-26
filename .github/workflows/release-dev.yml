@@ -76,7 +76,7 @@ jobs:
 
       - name: Mount shinkai android keystore from secret
         run: |
-          echo $KEYSTORE_BASE_64_STRING > KEYSTORE_BASE_64_FILE_NAME
+          echo $KEYSTORE_BASE_64_STRING > $KEYSTORE_BASE_64_FILE_NAME
           base64 -d $KEYSTORE_BASE_64_FILE_NAME > $KEYSTORE_FILE_PATH
         env:
           KEYSTORE_BASE_64_STRING: ${{ secrets.ANDROID_KEYSTORE_BASE_64 }}
