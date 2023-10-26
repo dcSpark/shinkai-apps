@@ -1,8 +1,8 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.dcspark.shinkai',
-  appName: 'ShinkaiApp',
+  appId: 'com.shinkai.app',
+  appName: 'Shinkai',
   webDir: '../../dist/apps/shinkai-app',
   server: {
     androidScheme: 'https'

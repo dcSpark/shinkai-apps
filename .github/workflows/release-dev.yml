@@ -2,7 +2,7 @@ name: Release dev
 
 on:
   push:
-    branches: [ main, agallardol/mobile-build ]
+    branches: [ main, agallardol/chrome-build, agallardol/android-build ]
 
 defaults:
   run:
@@ -39,19 +39,19 @@ jobs:
       - name: Run NX build on shinkai-visor
         run: npx nx build shinkai-visor --skip-nx-cache --verbose
         env:
-          VERSION: 0.0.0.${{github.run_number}}
+          VERSION: 0.0.0.${{ github.run_number }}
 
       - name: Zip extension
         run: cd ./dist/apps && zip -r shinkai-visor.zip shinkai-visor
 
-      - name: Upload & release
-        uses: mnao305/chrome-extension-upload@v4.0.1
-        with:
-          file-path: dist/apps/shinkai-visor.zip
-          extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
-          client-id: ${{ secrets.CHROME_CLIENT_ID }}
-          client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
-          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+      # - name: Upload & release
+      #   uses: mnao305/chrome-extension-upload@v4.0.1
+      #   with:
+      #     file-path: dist/apps/shinkai-visor.zip
+      #     extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
+      #     client-id: ${{ secrets.CHROME_CLIENT_ID }}
+      #     client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
+      #     refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
 
       - uses: actions/upload-artifact@v3
         with:
@@ -71,23 +71,32 @@ jobs:
           npx capacitor-set-version -v $VERSION -b $BUILD $APP_PATH
         env:
           VERSION: 0.0.0
-          BUILD: ${{github.run_number}}
+          BUILD: ${{ github.run_number }}
           APP_PATH: ./apps/shinkai-app
-          NAME_PREFIX: '[Dev] '
-          DESCRIPTION_PREFIX: 'This is for development purpose.\n\n'
+
+      - name: Mount shinkai android keystore from secret
+        run: |
+          echo $KEYSTORE_BASE_64_STRING > KEYSTORE_BASE_64_FILE_NAME
+          base64 -d $KEYSTORE_BASE_64_FILE_NAME > $KEYSTORE_FILE_PATH
+        env:
+          KEYSTORE_BASE_64_STRING: ${{ secrets.ANDROID_KEYSTORE_BASE_64 }}
+          KEYSTORE_BASE_64_FILE_NAME: shinkai-keystore-android-upload-base-64
+          KEYSTORE_FILE_PATH: ./apps/shinkai-app/android/shinkai-keystore-android
 
       - name: Run NX build on shinkai-app-android
         run: |
           npx nx build:android shinkai-app --verbose
         env:
-          ANDROID_KEYSTORE_FILE_PATH: ${{ secrets.ANDROID_KEYSTORE_FILE_PATH }}
+          ANDROID_KEYSTORE_FILE_PATH: ./android/shinkai-keystore-android
           ANDROID_KEYSTORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
           ANDROID_KEYSTORE_ALIAS: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
           ANDROID_KEYSTORE_ALIAS_PASS: ${{ secrets.ANDROID_KEYSTORE_ALIAS_PASS }}
 
-      - uses: actions/upload-artifact@v3
+      - name: Upload signed android .AAB file to Google Play Store
+        uses: r0adkll/upload-google-play@v1
         with:
-          name: shinkai-app-android
-          path: dist/apps/shinkai-app-android
-          if-no-files-found: error
-          retention-days: 5
+          serviceAccountJsonPlainText: ${{ secrets.ANDROID_SERVICE_ACCOUNT_JSON }}
+          packageName: com.shinkai.app
+          releaseFiles: ./dist/apps/shinkai-app-android/app-release-signed.aab
+          track: internal
+
