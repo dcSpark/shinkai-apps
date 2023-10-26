@@ -99,4 +99,4 @@ jobs:
           packageName: com.shinkai.app
           releaseFiles: ./dist/apps/shinkai-app-android/app-release-signed.aab
           track: internal
-
+          status: draft
