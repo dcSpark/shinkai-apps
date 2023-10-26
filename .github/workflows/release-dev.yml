@@ -40,6 +40,8 @@ jobs:
         run: npx nx build shinkai-visor --skip-nx-cache --verbose
         env:
           VERSION: 0.0.0.${{github.run_number}}
+          NAME_PREFIX: '[Dev] '
+          DESCRIPTION_PREFIX: 'This is for development purpose.\n\n'
 
       - name: Zip extension
         run: cd ./dist/apps && zip -r shinkai-visor.zip shinkai-visor
@@ -73,8 +75,6 @@ jobs:
           VERSION: 0.0.0
           BUILD: ${{github.run_number}}
           APP_PATH: ./apps/shinkai-app
-          NAME_PREFIX: '[Dev] '
-          DESCRIPTION_PREFIX: 'This is for development purpose.\n\n'
 
       - name: Run NX build on shinkai-app-android
         run: |
