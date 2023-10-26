@@ -517,7 +517,27 @@ export class ShinkaiMessageWrapper {
 /**
 * @returns {string}
 */
-  calculate_hash(): string;
+  calculate_blake3_hash(): string;
+/**
+* @returns {ShinkaiMessageWrapper}
+*/
+  new_with_empty_outer_signature(): ShinkaiMessageWrapper;
+/**
+* @returns {ShinkaiMessageWrapper}
+*/
+  new_with_empty_inner_signature(): ShinkaiMessageWrapper;
+/**
+* @returns {string}
+*/
+  inner_content_for_hashing(): string;
+/**
+* @returns {string}
+*/
+  calculate_blake3_hash_with_empty_outer_signature(): string;
+/**
+* @returns {string}
+*/
+  calculate_blake3_hash_with_empty_inner_signature(): string;
 /**
 * @returns {string}
 */
