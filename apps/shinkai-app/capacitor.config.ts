@@ -5,7 +5,9 @@ const config: CapacitorConfig = {
   appName: 'Shinkai',
   webDir: '../../dist/apps/shinkai-app',
   server: {
-    androidScheme: 'https'
+    androidScheme: 'https',
+    url: process.env.SERVE ? 'http://10.0.2.2:9000' : undefined,
+    cleartext: process.env.SERVE ? true : false,
   }
 };
 
