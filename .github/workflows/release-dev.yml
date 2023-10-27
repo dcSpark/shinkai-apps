@@ -2,7 +2,7 @@ name: Release dev
 
 on:
   push:
-    branches: [ main, agallardol/chrome-build, agallardol/android-build ]
+    branches: [ main ]
 
 defaults:
   run:
@@ -70,7 +70,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Run NX build on shinkai-app-android
+      - name: Set mobile apps version
         run: |
           npx capacitor-set-version -v $VERSION -b $BUILD $APP_PATH
         env:
