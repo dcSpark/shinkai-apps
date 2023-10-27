@@ -12,11 +12,11 @@ const getVersion = () => {
 };
 
 const getName = () => {
-  return `${process.env.NAME_PREFIX}${baseManifestJson.name}`;
+  return `${process.env.NAME_PREFIX || ''}${baseManifestJson.name}`;
 }
 
 const getDescription = () => {
-  return `${process.env.DESCRIPTION_PREFIX}${baseManifestJson.description}`;
+  return `${process.env.DESCRIPTION_PREFIX || ''}${baseManifestJson.description}`;
 }
 
 export const dynamicManifest = defineManifest((env) => {

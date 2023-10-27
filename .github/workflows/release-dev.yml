@@ -39,19 +39,23 @@ jobs:
       - name: Run NX build on shinkai-visor
         run: npx nx build shinkai-visor --skip-nx-cache --verbose
         env:
-          VERSION: 0.0.0.${{ github.run_number }}
+          VERSION: 0.0.0.${{github.run_number}}
+          NAME_PREFIX: '[Dev] '
+          DESCRIPTION_PREFIX: 'This is for development purpose.\n\n'
 
       - name: Zip extension
         run: cd ./dist/apps && zip -r shinkai-visor.zip shinkai-visor
 
-      # - name: Upload & release
-      #   uses: mnao305/chrome-extension-upload@v4.0.1
-      #   with:
-      #     file-path: dist/apps/shinkai-visor.zip
-      #     extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
-      #     client-id: ${{ secrets.CHROME_CLIENT_ID }}
-      #     client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
-      #     refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+      - name: Upload & Release
+        uses: mnao305/chrome-extension-upload@v4.0.1
+        continue-on-error: true
+        with:
+          file-path: dist/apps/shinkai-visor.zip
+          extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
+          client-id: ${{ secrets.CHROME_CLIENT_ID }}
+          client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+          publish: true
 
       - uses: actions/upload-artifact@v3
         with:
