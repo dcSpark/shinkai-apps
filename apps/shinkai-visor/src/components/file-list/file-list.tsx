@@ -1,3 +1,4 @@
+import { partial } from "filesize";
 import { ExternalLink, Paperclip } from 'lucide-react';
 
 import { getFileExt, getFileName } from '../../helpers/file-name-utils';
@@ -8,6 +9,8 @@ export const FileList = ({ files }: { files: File[] }) => {
     window.open(fileURL, '_blank');
     URL.revokeObjectURL(fileURL);
   };
+  const size = partial({standard: "jedec"});
+
   return (
     <ul className="divide-y divide-gray-100 rounded-md border border-gray-200">
       {files?.map((file, index) => (
@@ -28,7 +31,7 @@ export const FileList = ({ files }: { files: File[] }) => {
                 </span>
               </div>
               <span className="flex-shrink-0 text-gray-400">
-                {(file.size / 1024 ** 2).toFixed(3)}mb
+                {size(file.size)}
               </span>
             </div>
             <ExternalLink

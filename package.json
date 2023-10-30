@@ -129,6 +129,7 @@
     "crx": "^5.0.1",
     "crypto-js": "^4.1.1",
     "curve25519-js": "^0.0.4",
+    "filesize": "^10.1.0",
     "follow-redirects": ">=1.14.8",
     "framer-motion": "^10.16.3",
     "ionicons": "^7.0.0",
