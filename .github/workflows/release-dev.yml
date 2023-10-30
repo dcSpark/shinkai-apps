@@ -92,13 +92,6 @@ jobs:
           npm cache verify
           npm ci --no-audit --prefer-offline
 
-      - uses: actions/upload-artifact@v3
-        with:
-          name: shinkai-visor
-          path: dist/apps/shinkai-visor
-          if-no-files-found: error
-          retention-days: 5
-
       - uses: actions/setup-java@v3
         with:
           java-version: '17'
