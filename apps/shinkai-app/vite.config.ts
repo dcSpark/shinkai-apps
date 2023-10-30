@@ -10,7 +10,7 @@ export default defineConfig({
 
   server: {
     port: 4200,
-    host: 'localhost',
+    host: true,
     fs: {
       // Important to server files two levels ahead of the project folder
       allow: ['../../'],
