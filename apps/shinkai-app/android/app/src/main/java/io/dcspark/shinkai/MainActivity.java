@@ -1,4 +1,4 @@
-package io.dcspark.shinkai;
+package com.shinkai.app;
 
 import com.getcapacitor.BridgeActivity;
 

@@ -19,6 +19,7 @@ iframe.setAttribute('src', chrome.runtime.getURL('src/components/popup/popup.htm
 iframe.style.border = 'none';
 iframe.style.width = '100%';
 iframe.style.height = '100%';
+iframe.style.colorScheme = 'only light'; 
 
 const shadow = baseContainer.attachShadow({ mode: 'open' });
 shadow.appendChild(iframe);

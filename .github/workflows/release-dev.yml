@@ -1,15 +1,18 @@
 name: Release dev
 
 on:
-  push:
-    branches: [ main, agallardol/mobile-build ]
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *" 
+  # push:
+  #   branches: [main]
 
 defaults:
   run:
     working-directory: ./
 
 jobs:
-  release:
+  release-shinkai-visor:
     runs-on: ubuntu-latest
     environment: development
     steps:
@@ -27,7 +30,7 @@ jobs:
           node-version: 18
           check-latest: false
           registry-url: https://registry.npmjs.org
-          cache: "npm"
+          cache: 'npm'
           cache-dependency-path: package-lock.json
 
       - name: Install dependencies
@@ -35,11 +38,26 @@ jobs:
           npm cache verify
           npm ci --no-audit --prefer-offline
 
-      # shinkai-visor
       - name: Run NX build on shinkai-visor
-        run: npx nx build shinkai-visor --skip-nx-cache --verbose
+        run: npx nx build shinkai-visor --skip-nx-cache
         env:
           VERSION: 0.0.0.${{github.run_number}}
+          NAME_PREFIX: '[Dev] '
+          DESCRIPTION_PREFIX: 'This is for development purpose.\n\n'
+
+      - name: Zip extension
+        run: cd ./dist/apps && zip -r shinkai-visor.zip shinkai-visor
+
+      - name: Upload & Release
+        uses: mnao305/chrome-extension-upload@v4.0.1
+        continue-on-error: true
+        with:
+          file-path: dist/apps/shinkai-visor.zip
+          extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
+          client-id: ${{ secrets.CHROME_CLIENT_ID }}
+          client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+          publish: false
 
       - uses: actions/upload-artifact@v3
         with:
@@ -48,32 +66,68 @@ jobs:
           if-no-files-found: error
           retention-days: 5
 
-      # shinkai-app-android
+  release-shinkai-app-android:
+    runs-on: ubuntu-latest
+    environment: development
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Use nx set shas
+        uses: nrwl/nx-set-shas@v3
+
+      - name: Setup Node version
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          check-latest: false
+          registry-url: https://registry.npmjs.org
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: |
+          npm cache verify
+          npm ci --no-audit --prefer-offline
+
       - uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Run NX build on shinkai-app-android
+      - name: Set mobile apps version
         run: |
           npx capacitor-set-version -v $VERSION -b $BUILD $APP_PATH
         env:
           VERSION: 0.0.0
-          BUILD: ${{github.run_number}}
+          BUILD: ${{ github.run_number }}
           APP_PATH: ./apps/shinkai-app
+
+      - name: Mount shinkai android keystore from secret
+        run: |
+          echo $KEYSTORE_BASE_64_STRING > $KEYSTORE_BASE_64_FILE_NAME
+          base64 -d $KEYSTORE_BASE_64_FILE_NAME > $KEYSTORE_FILE_PATH
+        env:
+          KEYSTORE_BASE_64_STRING: ${{ secrets.ANDROID_KEYSTORE_BASE_64 }}
+          KEYSTORE_BASE_64_FILE_NAME: shinkai-keystore-android-upload-base-64
+          KEYSTORE_FILE_PATH: ./apps/shinkai-app/android/shinkai-keystore-android
 
       - name: Run NX build on shinkai-app-android
         run: |
-          npx nx build:android shinkai-app --verbose
+          npx nx build:android shinkai-app
         env:
-          ANDROID_KEYSTORE_FILE_PATH: ${{ secrets.ANDROID_KEYSTORE_FILE_PATH }}
+          ANDROID_KEYSTORE_FILE_PATH: shinkai-keystore-android
           ANDROID_KEYSTORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
           ANDROID_KEYSTORE_ALIAS: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
           ANDROID_KEYSTORE_ALIAS_PASS: ${{ secrets.ANDROID_KEYSTORE_ALIAS_PASS }}
 
-      - uses: actions/upload-artifact@v3
+      - name: Upload signed android .AAB file to Google Play Store
+        uses: r0adkll/upload-google-play@v1
         with:
-          name: shinkai-app-android
-          path: dist/apps/shinkai-app-android
-          if-no-files-found: error
-          retention-days: 5
+          serviceAccountJsonPlainText: ${{ secrets.ANDROID_SERVICE_ACCOUNT_JSON }}
+          packageName: com.shinkai.app
+          releaseFiles: ./dist/apps/shinkai-app-android/app-release-signed.aab
+          track: internal
+          status: draft
