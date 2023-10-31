@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { encryptMessageWithPassphrase } from '@shinkai_network/shinkai-message-ts/cryptography';
 import { Download, FileKey } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 import { useEffect, useRef, useState } from 'react';
@@ -52,10 +53,10 @@ export const ExportConnection = () => {
   useEffect(() => {
     setEncryptedSetupData('');
   }, [passphrase, confirmPassphrase, setEncryptedSetupData]);
-  const exportConnection = (values: FormSchemaType): void => {
-    // TODO: Convert to a common format
+  const exportConnection = async (values: FormSchemaType): Promise<void> => {
+    // TODO: Convert to a common format shared by visor, app and tray
     const parsedSetupData = JSON.stringify(auth);
-    const encryptedSetupData = parsedSetupData; // TODO: call shinkai-typescript
+    const encryptedSetupData = await encryptMessageWithPassphrase(parsedSetupData, values.passphrase);
     setEncryptedSetupData(encryptedSetupData);
   };
   const qrPropsCanvas = {
