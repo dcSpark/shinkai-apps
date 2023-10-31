@@ -1,4 +1,13 @@
-import { ArrowLeft, Bot, Inbox, LogOut, Menu, MessageCircle, Workflow, X } from 'lucide-react';
+import {
+  ArrowLeft,
+  Bot,
+  Inbox,
+  LogOut,
+  Menu,
+  MessageCircle,
+  Workflow,
+  X,
+} from 'lucide-react';
 import { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -7,6 +16,17 @@ import visorLogo from '../../assets/icons/visor.svg';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
 import { useAuth } from '../../store/auth/auth';
 import { useUIContainer } from '../../store/ui-container/ui-container';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '../ui/alert-dialog';
 import { Button } from '../ui/button';
 import {
   DropdownMenu,
@@ -34,12 +54,12 @@ export default function NavBar() {
   const uiContainer = useUIContainer((state) => state.uiContainer);
 
   const [isMenuOpened, setMenuOpened] = useState(false);
-  const isRootPage = ['/inboxes', '/agents'].includes(
-    location.pathname
-  );
+  const [isConfirmLogoutDialogOpened, setIsConfirmLogoutDialogOpened] = useState(false)
+
+  const isRootPage = ['/inboxes', '/agents'].includes(location.pathname);
   const goBack = () => {
     history.goBack();
-  }
+  };
   const logout = (): void => {
     setLogout();
   };
@@ -62,7 +82,7 @@ export default function NavBar() {
         history.push('/agents/add');
         break;
       case MenuOption.Logout:
-        logout();
+        setIsConfirmLogoutDialogOpened(true);
         break;
       default:
         break;
@@ -70,12 +90,41 @@ export default function NavBar() {
   };
   return (
     <nav className="">
+      <AlertDialog open={isConfirmLogoutDialogOpened}>
+        <AlertDialogContent className="w-[75%]">
+          <AlertDialogHeader>
+            <AlertDialogTitle><FormattedMessage id="are-you-sure"/></AlertDialogTitle>
+            <AlertDialogDescription>
+            <div className="flex flex-col space-y-3">
+
+                <div className="flex flex-col space-y-1">
+                  <span className="text-xs italic"><FormattedMessage id="permanently-lose-connection"/></span>
+                </div>
+
+                <div className="flex flex-col">
+                  <span className="underline decoration-dashed cursor-pointer" onClick={() => exportConnection()}>Export your conection</span>
+                  <span className="text-xs">If you want to use it later</span>
+                </div>
+
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setIsConfirmLogoutDialogOpened(false)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => logout()}>Continue</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <div className="flex items-center justify-between">
-          <div className={`flex-none ${isRootPage || history.length <= 1 ? 'invisible' : ''}`}>
-            <Button onClick={() => goBack()} size="icon" variant="ghost">
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-          </div>
+        <div
+          className={`flex-none ${
+            isRootPage || history.length <= 1 ? 'invisible' : ''
+          }`}
+        >
+          <Button onClick={() => goBack()} size="icon" variant="ghost">
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+        </div>
         <img
           alt="shinkai-app-logo"
           className="h-5"
