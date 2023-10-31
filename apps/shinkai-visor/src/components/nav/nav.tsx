@@ -105,16 +105,13 @@ export default function NavBar() {
             <AlertDialogTitle><FormattedMessage id="are-you-sure"/></AlertDialogTitle>
             <AlertDialogDescription>
             <div className="flex flex-col space-y-3">
-
                 <div className="flex flex-col space-y-1">
                   <span className="text-xs italic"><FormattedMessage id="permanently-lose-connection"/></span>
                 </div>
-
                 <div className="flex flex-col">
                   <span className="underline decoration-dashed cursor-pointer" onClick={() => exportConnection()}>Export your conection</span>
                   <span className="text-xs">If you want to use it later</span>
                 </div>
-
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
