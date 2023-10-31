@@ -11,7 +11,12 @@ import {
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMessageToJob/useSendMessageToJob';
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
-import { ChevronRight, Inbox as InboxIcon, Loader2 } from 'lucide-react';
+import {
+  ChevronRight,
+  Inbox as InboxIcon,
+  Loader2,
+  Terminal,
+} from 'lucide-react';
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
@@ -20,6 +25,8 @@ import { cn } from '../../helpers/cn-utils';
 import { useAuth } from '../../store/auth/auth';
 import { InboxInput } from '../inbox-input/inbox-input';
 import { Message } from '../message/message';
+import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
+import DotsLoader from '../ui/dots-loader';
 import { ScrollArea } from '../ui/scroll-area';
 import { Skeleton } from '../ui/skeleton';
 
@@ -58,6 +65,8 @@ export const Inbox = () => {
   const [decodedInboxId, setDecodedInboxId] = useState<string>('');
   const [isJobInbox, setIsJobInbox] = useState<boolean>(false);
   const [isJobProcessing, setIsJobProcessing] = useState<boolean>(false);
+  const [isJobProcessingFile, setIsJobProcessingFile] =
+    useState<boolean>(false);
   const fetchPreviousMessages = useCallback(async () => {
     const firstMessage = data?.pages?.[0]?.[0];
     fromPreviousMessagesRef.current = true;
@@ -108,7 +117,7 @@ export const Inbox = () => {
   }, [data?.pages]);
   useEffect(() => {
     const [firstMessagePage] = data?.pages || [];
-    const lastMessage = ([...firstMessagePage || []]).pop();
+    const lastMessage = [...(firstMessagePage || [])].pop();
     if (lastMessage) {
       const isLocal = isLocalMessage(
         lastMessage,
@@ -118,6 +127,19 @@ export const Inbox = () => {
       setIsJobProcessing(isJobInbox && (isSendingMessage || isLocal));
     }
   }, [data?.pages, auth, isSendingMessage, isJobInbox]);
+  useEffect(() => {
+    const [firstMessagePage] = data?.pages || [];
+    const lastMessage = [...(firstMessagePage || [])].pop();
+    if (lastMessage) {
+      const fileInbox = getMessageFilesInbox(lastMessage);
+      const isLocal = isLocalMessage(
+        lastMessage,
+        auth?.shinkai_identity ?? '',
+        auth?.profile ?? ''
+      );
+      setIsJobProcessingFile(isJobProcessing && isLocal && !!fileInbox);
+    }
+  }, [data?.pages, auth, isJobProcessing]);
   const submitSendMessage = (value: string) => {
     if (!auth) return;
     fromPreviousMessagesRef.current = false;
@@ -276,6 +298,23 @@ export const Inbox = () => {
             ))}
         </div>
       </ScrollArea>
+      {isJobProcessingFile && (
+        <Alert className="shadow-lg">
+          <Terminal className="h-4 w-4" />
+          <AlertTitle className="text-sm">
+            <FormattedMessage id="file-processing-alert-title" />
+          </AlertTitle>
+          <AlertDescription className="text-xs">
+            <div className="flex flex-row space-x-2 items-center">
+              <span>
+                <FormattedMessage id="file-processing-alert-description" />
+              </span>
+              <DotsLoader className="w-4 h-4"></DotsLoader>
+            </div>
+          </AlertDescription>
+          <Terminal className="h-4 w-4" />
+        </Alert>
+      )}
       <InboxInput
         disabled={isSendingMessage}
         loading={isJobProcessing}
