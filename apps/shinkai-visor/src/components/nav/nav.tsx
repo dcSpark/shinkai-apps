@@ -1,4 +1,14 @@
-import { ArrowLeft, Bot, Inbox, LogOut, Menu, MessageCircle, Workflow, X } from 'lucide-react';
+import {
+  ArrowLeft,
+  Bot,
+  Inbox,
+  LogOut,
+  Menu,
+  MessageCircle,
+  Settings,
+  Workflow,
+  X,
+} from 'lucide-react';
 import { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -24,6 +34,7 @@ enum MenuOption {
   Agents = 'agents',
   AddAgent = 'add-agent',
   CreateJob = 'create-job',
+  Settings = 'settings',
   Logout = 'logout',
 }
 
@@ -34,17 +45,16 @@ export default function NavBar() {
   const uiContainer = useUIContainer((state) => state.uiContainer);
 
   const [isMenuOpened, setMenuOpened] = useState(false);
-  const isRootPage = ['/inboxes', '/agents'].includes(
-    location.pathname
-  );
+  const isRootPage = ['/inboxes', '/agents', '/settings'].includes(location.pathname);
   const goBack = () => {
     history.goBack();
-  }
+  };
   const logout = (): void => {
     setLogout();
   };
 
   const onClickMenuOption = (key: MenuOption) => {
+    console.log('menu option', key, MenuOption.Settings);
     switch (key) {
       case MenuOption.Inbox:
         history.push('/inboxes');
@@ -61,6 +71,9 @@ export default function NavBar() {
       case MenuOption.AddAgent:
         history.push('/agents/add');
         break;
+      case MenuOption.Settings:
+        history.push('/settings');
+        break;
       case MenuOption.Logout:
         logout();
         break;
@@ -71,11 +84,15 @@ export default function NavBar() {
   return (
     <nav className="">
       <div className="flex items-center justify-between">
-          <div className={`flex-none ${isRootPage || history.length <= 1 ? 'invisible' : ''}`}>
-            <Button onClick={() => goBack()} size="icon" variant="ghost">
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-          </div>
+        <div
+          className={`flex-none ${
+            isRootPage || history.length <= 1 ? 'invisible' : ''
+          }`}
+        >
+          <Button onClick={() => goBack()} size="icon" variant="ghost">
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+        </div>
         <img
           alt="shinkai-app-logo"
           className="h-5"
@@ -149,6 +166,14 @@ export default function NavBar() {
               <DropdownMenuLabel>
                 <FormattedMessage id="account.one"></FormattedMessage>
               </DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => onClickMenuOption(MenuOption.Settings)}
+              >
+                <Settings className="mr-2 h-4 w-4" />
+                <span>
+                  <FormattedMessage id="setting.other" />
+                </span>
+              </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => onClickMenuOption(MenuOption.Logout)}
               >

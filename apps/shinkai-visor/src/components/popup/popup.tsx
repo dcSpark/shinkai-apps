@@ -20,8 +20,10 @@ import { Agents } from '../agents/agents';
 import { AnimatedRoute } from '../animated-route/animated-routed';
 import { CreateInbox } from '../create-inbox/create-inbox';
 import { CreateJob } from '../create-job/create-job';
+import { ExportConnection } from '../export-connection/export-connection';
 import { Inbox } from '../inbox/inbox';
 import { Inboxes } from '../inboxes/inboxes';
+import { Settings } from '../settings/settings';
 import { SplashScreen } from '../splash-screen/splash-screen';
 import Welcome from '../welcome/welcome';
 import { WithNav } from '../with-nav/with-nav';
@@ -31,9 +33,10 @@ export const Popup = () => {
   const auth = useAuth((state) => state.auth);
   const location = useLocation();
   const [popupVisibility] = useGlobalPopupChromeMessage();
-  
+
   useEffect(() => {
     const isAuthenticated = !!auth;
+    console.log('isAuth', isAuthenticated, auth);
     if (isAuthenticated) {
       ApiConfig.getInstance().setEndpoint(auth.node_address);
       history.replace('/inboxes');
@@ -42,6 +45,9 @@ export const Popup = () => {
       history.replace('/welcome');
     }
   }, [history, auth]);
+  useEffect(() => {
+    console.log('location', location.pathname);
+  }, [location]);
   return (
     <AnimatePresence>
       {popupVisibility && (
@@ -98,6 +104,16 @@ export const Popup = () => {
                       </Route>
                       <Route path="/">
                         <Agents></Agents>
+                      </Route>
+                    </Switch>
+                  </Route>
+                  <Route path="/settings">
+                  <Switch>
+                      <Route path="/settings/export-connection">
+                        <ExportConnection></ExportConnection>
+                      </Route>
+                      <Route path="/">
+                      <Settings></Settings>
                       </Route>
                     </Switch>
                   </Route>

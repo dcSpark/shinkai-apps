@@ -5,7 +5,7 @@
   "inbox.one": "Inbox",
   "inbox.other": "Inboxes",
   "setting.one": "Setting",
-  "settings.other": "Settings",
+  "setting.other": "Settings",
   "about": "About Shinkai",
   "add-node": "Add Node",
   "registration-code": "Registration Code",
@@ -52,5 +52,12 @@
   "empty-agents-message": "Connect your first agent to start asking Shinkai AI. Try connecting OpenAI",
   "today": "Today",
   "yesterday": "Yesterday",
-  "installed-sucessfully": "Shinkai Visor was installed sucessfully, navigate to a website and use the action button to start asking Shinkai AI"
+  "installed-sucessfully": "Shinkai Visor was installed sucessfully, navigate to a website and use the action button to start asking Shinkai AI",
+  "export-connection": "Export connection",
+  "generate-connection-file": "Generate connection file",
+  "passphrase": "Passphrase",
+  "confirm-passphrase": "Confirm passphrase",
+  "download": "Download",
+  "download-connection-file-description": "Download and keep this QR code in a safe place. Use it with your passphrase to connect to your node again.",
+  "passphrases-dont-match": "Passphrases don't match"
 }
