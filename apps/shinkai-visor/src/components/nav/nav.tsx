@@ -5,6 +5,7 @@ import {
   LogOut,
   Menu,
   MessageCircle,
+  Settings,
   Workflow,
   X,
 } from 'lucide-react';
@@ -44,6 +45,7 @@ enum MenuOption {
   Agents = 'agents',
   AddAgent = 'add-agent',
   CreateJob = 'create-job',
+  Settings = 'settings',
   Logout = 'logout',
 }
 
@@ -54,9 +56,9 @@ export default function NavBar() {
   const uiContainer = useUIContainer((state) => state.uiContainer);
 
   const [isMenuOpened, setMenuOpened] = useState(false);
+  const isRootPage = ['/inboxes', '/agents', '/settings'].includes(location.pathname);
   const [isConfirmLogoutDialogOpened, setIsConfirmLogoutDialogOpened] = useState(false)
 
-  const isRootPage = ['/inboxes', '/agents'].includes(location.pathname);
   const goBack = () => {
     history.goBack();
   };
@@ -65,6 +67,7 @@ export default function NavBar() {
   };
 
   const onClickMenuOption = (key: MenuOption) => {
+    console.log('menu option', key, MenuOption.Settings);
     switch (key) {
       case MenuOption.Inbox:
         history.push('/inboxes');
@@ -80,6 +83,9 @@ export default function NavBar() {
         break;
       case MenuOption.AddAgent:
         history.push('/agents/add');
+        break;
+      case MenuOption.Settings:
+        history.push('/settings');
         break;
       case MenuOption.Logout:
         setIsConfirmLogoutDialogOpened(true);
@@ -198,6 +204,14 @@ export default function NavBar() {
               <DropdownMenuLabel>
                 <FormattedMessage id="account.one"></FormattedMessage>
               </DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => onClickMenuOption(MenuOption.Settings)}
+              >
+                <Settings className="mr-2 h-4 w-4" />
+                <span>
+                  <FormattedMessage id="setting.other" />
+                </span>
+              </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => onClickMenuOption(MenuOption.Logout)}
               >
