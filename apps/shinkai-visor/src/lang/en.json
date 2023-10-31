@@ -59,5 +59,13 @@
   "confirm-passphrase": "Confirm passphrase",
   "download": "Download",
   "download-connection-file-description": "Download and keep this QR code in a safe place. Use it with your passphrase to connect to your node again.",
-  "passphrases-dont-match": "Passphrases don't match"
+  "passphrases-dont-match": "Passphrases don't match",
+  "connect-your-shinkai-node": "Connect your Shinkai Node",
+  "select-connection-method": "Select a method to connect your Shinkai Node",
+  "quick-connection-connection-method-title": "Quick connection",
+  "quick-connection-connection-method-description": "Use the address of your Shinai Node to connect for first time",
+  "qr-code-connection-method-title": "QR Code",
+  "qr-code-connection-method-description": "Upload a QR code image to connect your node automatically",
+  "restore-connection-connection-method-title": "Restore from QR",
+  "restore-connection-connection-method-description": "Upload an exported connection and use your passphrase to restore it"
 }
