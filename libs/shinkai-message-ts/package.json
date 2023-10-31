@@ -38,6 +38,10 @@
     "./wasm": {
       "import": "./wasm.js",
       "types": "./wasm.d.ts"
+    },
+    "./cryptography": {
+      "import": "./cryptography.js",
+      "types": "./cryptography.d.ts"
     }
   },
   "typesVersions": {
@@ -56,6 +60,9 @@
       ],
       "wasm": [
         "wasm.d.ts"
+      ],
+      "cryptography": [
+        "cryptography.d.ts"
       ]
     }
   }
