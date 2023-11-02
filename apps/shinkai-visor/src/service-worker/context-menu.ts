@@ -41,13 +41,13 @@ const registerMenu = () => {
   chrome.contextMenus.create(
     {
       id: ContextMenu.SendPageToAgent,
-      title: 'Send page to agent',
+      title: 'Send Page to Agent',
       contexts: ['all']
     }
   );
   chrome.contextMenus.create({
     id: ContextMenu.SendToAgent,
-    title: 'Send selection to agent',
+    title: 'Send Selection to Agent',
     contexts: ['selection']
   });
 }
