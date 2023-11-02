@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
-import { FileKey, Loader2, QrCode, Zap } from 'lucide-react';
+import { FileKey, Loader2, PlugZap, QrCode, Zap } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
@@ -169,7 +169,11 @@ export const ConnectMethodQuickStart = () => {
           </div>
 
           <Button className="w-full" disabled={isLoading} type="submit">
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {isLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <PlugZap className="mr-2 h-4 w-4" />
+            )}
             <FormattedMessage id="connect" />
           </Button>
         </form>

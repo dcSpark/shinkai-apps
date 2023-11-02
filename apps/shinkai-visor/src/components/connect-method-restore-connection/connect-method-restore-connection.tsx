@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { decryptMessageWithPassphrase } from '@shinkai_network/shinkai-message-ts/cryptography';
-import { FileKey, Loader2, Trash, Upload } from 'lucide-react';
+import { FileKey, PlugZap, Trash, Upload } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
@@ -32,7 +32,6 @@ export const ConnectMethodRestoreConnection = () => {
   const history = useHistory();
   const setAuth = useAuth((state) => state.setAuth);
   const [error, setError] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [encryptedConnectionFile, setEncryptedConnectionFile] =
     useState<File | null>(null);
   const form = useForm<FormType>({
@@ -117,7 +116,7 @@ export const ConnectMethodRestoreConnection = () => {
                       <div className="flex items-center justify-center">
                         {encryptedConnectionFile ? (
                           <div className="flex flex-row justify-center items-center rounded-lg border border-dashed w-full h-[100px] space-x-4">
-                            <div className="flex flex-row">
+                            <div className="flex flex-row items-center">
                               <FileKey className="w-4 h-4 space-x-1 mr-1" />
                               <span className="font-semibold">
                                 {encryptedConnectionFile.name}
@@ -188,8 +187,8 @@ export const ConnectMethodRestoreConnection = () => {
             {error && <ErrorMessage message={'Invalid connection file'} />}
           </div>
 
-          <Button className="w-full" disabled={isLoading} type="submit">
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Button className="w-full" type="submit">
+            <PlugZap className="mr-2 h-4 w-4" />
             <FormattedMessage id="restore-connection" />
           </Button>
         </form>

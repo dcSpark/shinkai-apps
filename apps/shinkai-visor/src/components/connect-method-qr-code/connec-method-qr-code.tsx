@@ -1,21 +1,17 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Player } from '@lottiefiles/react-lottie-player';
 import { QRSetupData } from '@shinkai_network/shinkai-message-ts/models';
-import {
-  generateEncryptionKeys,
-  generateSignatureKeys,
-} from '@shinkai_network/shinkai-message-ts/utils';
 import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
 import { BrowserQRCodeReader } from '@zxing/browser';
-import { Loader2 } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { Loader2, PlugZap, QrCode, Trash, Upload } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 import * as z from 'zod';
 
-import ScanQrAnimation from '../../assets/animations/scan-qr.json';
+import { generateMyEncryptionKeys } from '../../helpers/encryption-keys';
 import { SetupData, useAuth } from '../../store/auth/auth';
+import { Header } from '../header/header';
 import { Button } from '../ui/button';
 import ErrorMessage from '../ui/error-message';
 import {
@@ -29,69 +25,64 @@ import {
 import { Input } from '../ui/input';
 
 const formSchema = z.object({
-  registrationCode: z.string().optional(),
-  registrationName: z.string().nonempty(),
-  permissionType: z.enum(['admin']),
-  identityType: z.enum(['device']),
+  registration_code: z.string().min(5),
+  registration_name: z.string().min(5),
+  permission_type: z.enum(['admin']),
+  identity_type: z.enum(['device']),
   profile: z.enum(['main']),
-  nodeAddress: z.string().url(),
-  shinkaiIdentity: z.string().nonempty(),
-  nodeEncryptionPublicKey: z.string().optional(),
-  nodeSignaturePublicKey: z.string().optional(),
-  profileEncryptionPublicKey: z.string().nonempty(),
-  profileSignaturePublicKey: z.string().nonempty(),
-  myDeviceEncryptionPublicKey: z.string().nonempty(),
-  myDeviceIdentityPublicKey: z.string().nonempty(),
-  profileEncryptionSharedKey: z.string().nonempty(),
-  profileSignatureSharedKey: z.string().nonempty(),
-  myDeviceEncryptionSharedKey: z.string().nonempty(),
-  myDeviceIdentitySharedKey: z.string().nonempty(),
+  node_address: z.string().url(),
+  shinkai_identity: z.string().min(11),
+  node_encryption_pk: z.string().optional(),
+  node_signature_pk: z.string().optional(),
+  profile_encryption_pk: z.string().min(5),
+  profile_identity_pk: z.string().min(5),
+  my_device_encryption_pk: z.string().min(5),
+  my_device_identity_pk: z.string().min(5),
+  profile_encryption_sk: z.string().min(5),
+  profile_identity_sk: z.string().min(5),
+  my_device_encryption_sk: z.string().min(5),
+  my_device_identity_sk: z.string().min(5),
 });
 
 type FormType = z.infer<typeof formSchema>;
 
 type AddNodeDataFromQr = Pick<
   FormType,
-  | 'registrationCode'
-  | 'nodeAddress'
-  | 'shinkaiIdentity'
-  | 'nodeEncryptionPublicKey'
-  | 'nodeSignaturePublicKey'
+  | 'registration_code'
+  | 'node_address'
+  | 'shinkai_identity'
+  | 'node_encryption_pk'
+  | 'node_signature_pk'
 >;
-
-enum AddNodeSteps {
-  ScanQR = 0,
-  Connect,
-}
 
 export const ConnectMethodQrCode = () => {
   const history = useHistory();
   const setAuth = useAuth((state) => state.setAuth);
-  const DEFAULT_NODE_ADDRESS = 'http://127.0.0.1:9550';
-  // TODO: This value should be obtained from node
-  const DEFAULT_SHINKAI_IDENTITY = '@@localhost.shinkai';
   const form = useForm<FormType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      registrationCode: '',
-      registrationName: 'main_device',
-      permissionType: 'admin',
-      identityType: 'device',
+      registration_code: '',
+      registration_name: 'main_device',
+      permission_type: 'admin',
+      identity_type: 'device',
       profile: 'main',
-      nodeAddress: '',
-      shinkaiIdentity: '',
-      nodeEncryptionPublicKey: '',
-      nodeSignaturePublicKey: '',
-      profileEncryptionPublicKey: '',
-      profileSignaturePublicKey: '',
-      myDeviceEncryptionPublicKey: '',
-      myDeviceIdentityPublicKey: '',
-      profileEncryptionSharedKey: '',
-      profileSignatureSharedKey: '',
-      myDeviceEncryptionSharedKey: '',
-      myDeviceIdentitySharedKey: undefined,
+      node_address: '',
+      shinkai_identity: '',
+      node_encryption_pk: '',
+      node_signature_pk: '',
+      profile_encryption_pk: '',
+      profile_encryption_sk: '',
+      my_device_encryption_pk: '',
+      my_device_encryption_sk: '',
+      profile_identity_pk: '',
+      profile_identity_sk: '',
+      my_device_identity_pk: '',
+      my_device_identity_sk: '',
     },
   });
+  const [qrImageFile, setQRImageFile] = useState<File | null>(null);
+  const [qrImageUrl, setQRImageUrl] = useState<string | null>(null);
+
   const {
     isLoading,
     mutateAsync: submitRegistration,
@@ -101,29 +92,11 @@ export const ConnectMethodQrCode = () => {
     onSuccess: (response) => {
       if (response.success) {
         const values = form.getValues();
-        const authData = {
-          profile: values.profile,
-          permission_type: values.permissionType,
-          node_address: values.nodeAddress,
-          shinkai_identity: values.shinkaiIdentity,
-          node_signature_pk:
-            response.data?.identity_public_key ??
-            values.nodeSignaturePublicKey ??
-            '',
-          node_encryption_pk:
-            response.data?.encryption_public_key ??
-            values.nodeEncryptionPublicKey ??
-            '',
-          registration_name: values.registrationName,
-          my_device_identity_pk: values.myDeviceIdentityPublicKey,
-          my_device_identity_sk: values.myDeviceIdentitySharedKey,
-          my_device_encryption_pk: values.myDeviceEncryptionPublicKey,
-          my_device_encryption_sk: values.myDeviceEncryptionSharedKey,
-          profile_identity_pk: values.profileSignaturePublicKey,
-          profile_identity_sk: values.profileSignatureSharedKey,
-          profile_encryption_pk: values.profileEncryptionPublicKey,
-          profile_encryption_sk: values.profileEncryptionSharedKey,
-        }
+        const authData: SetupData = {
+          ...values,
+          node_signature_pk: values.node_signature_pk ?? '',
+          node_encryption_pk: values.node_encryption_pk ?? '',
+        };
         authSuccess(authData);
       } else {
         throw new Error('Failed to submit registration');
@@ -131,183 +104,130 @@ export const ConnectMethodQrCode = () => {
     },
   });
 
-  const fileInput = useRef<HTMLInputElement>(null);
-  const [currentStep, setCurrentStep] = useState<AddNodeSteps>(
-    AddNodeSteps.ScanQR
-  );
-
-  const onFileInputClick = () => {
-    fileInput.current?.click();
-  };
-
-  const onQrImageSelected: React.ChangeEventHandler<HTMLInputElement> = async (
+  const onQRImageSelected: React.ChangeEventHandler<HTMLInputElement> = async (
     event
   ): Promise<void> => {
     if (!event.target.files || !event.target.files[0]) {
       return;
     }
-    const qrImageUrl = URL.createObjectURL(event.target.files[0]);
+    const file = event.target.files[0];
+    const qrImageUrl = URL.createObjectURL(file);
     const codeReader = new BrowserQRCodeReader();
     const resultImage = await codeReader.decodeFromImageUrl(qrImageUrl);
     const jsonString = resultImage.getText();
     const parsedQrData: QRSetupData = JSON.parse(jsonString);
     const nodeDataFromQr = getValuesFromQr(parsedQrData);
+    setQRImageFile(file);
     form.reset((prev) => ({ ...prev, ...nodeDataFromQr }));
-    setCurrentStep(AddNodeSteps.Connect);
-  };
-
-  const generateDeviceEncryptionKeys = async (): Promise<
-    Pick<
-      FormType,
-      'myDeviceEncryptionPublicKey' | 'myDeviceEncryptionSharedKey'
-    >
-  > => {
-    const seed = crypto.getRandomValues(new Uint8Array(32));
-    const { my_encryption_pk_string, my_encryption_sk_string } =
-      await generateEncryptionKeys(seed);
-    return {
-      myDeviceEncryptionPublicKey: my_encryption_pk_string,
-      myDeviceEncryptionSharedKey: my_encryption_sk_string,
-    };
-  };
-
-  const generateDeviceSignatureKeys = async (): Promise<
-    Pick<FormType, 'myDeviceIdentityPublicKey' | 'myDeviceIdentitySharedKey'>
-  > => {
-    const { my_identity_pk_string, my_identity_sk_string } =
-      await generateSignatureKeys();
-    return {
-      myDeviceIdentityPublicKey: my_identity_pk_string,
-      myDeviceIdentitySharedKey: my_identity_sk_string,
-    };
-  };
-
-  const generateProfileEncryptionKeys = async (): Promise<
-    Pick<FormType, 'profileEncryptionPublicKey' | 'profileEncryptionSharedKey'>
-  > => {
-    const seed = crypto.getRandomValues(new Uint8Array(32));
-    const { my_encryption_pk_string, my_encryption_sk_string } =
-      await generateEncryptionKeys(seed);
-    return {
-      profileEncryptionPublicKey: my_encryption_pk_string,
-      profileEncryptionSharedKey: my_encryption_sk_string,
-    };
-  };
-
-  const generateProfileSignatureKeys = async (): Promise<
-    Pick<FormType, 'profileSignaturePublicKey' | 'profileSignatureSharedKey'>
-  > => {
-    const { my_identity_pk_string, my_identity_sk_string } =
-      await generateSignatureKeys();
-    return {
-      profileSignaturePublicKey: my_identity_pk_string,
-      profileSignatureSharedKey: my_identity_sk_string,
-    };
   };
 
   const getValuesFromQr = (qrData: QRSetupData): AddNodeDataFromQr => {
     return {
-      registrationCode: qrData.registration_code,
-      nodeAddress: qrData.node_address,
-      shinkaiIdentity: qrData.shinkai_identity,
-      nodeEncryptionPublicKey: qrData.node_encryption_pk,
-      nodeSignaturePublicKey: qrData.node_signature_pk,
+      ...qrData,
     };
   };
 
   const connect = (values: FormType) => {
     submitRegistration({
-      registration_code: values.registrationCode ?? '',
-      profile: values.profile,
-      identity_type: values.identityType,
-      permission_type: values.permissionType,
-      node_address: values.nodeAddress,
-      shinkai_identity: values.shinkaiIdentity,
-      node_encryption_pk: values.nodeEncryptionPublicKey ?? '',
-      registration_name: values.registrationName,
-      my_device_identity_sk: values.myDeviceIdentitySharedKey,
-      my_device_encryption_sk: values.myDeviceEncryptionSharedKey,
-      profile_identity_sk: values.profileSignatureSharedKey,
-      profile_encryption_sk: values.profileEncryptionSharedKey,
+      ...values,
+      registration_code: values.registration_code ?? '',
+      node_encryption_pk: values.node_encryption_pk ?? '',
     });
   };
 
   const authSuccess = (setupData: SetupData) => {
     setAuth(setupData);
     history.replace('/inboxes');
-  }
+  };
 
   useEffect(() => {
-    Promise.all([
-      generateDeviceEncryptionKeys(),
-      generateDeviceSignatureKeys(),
-      generateProfileEncryptionKeys(),
-      generateProfileSignatureKeys(),
-    ]).then(
-      ([
-        deviceEncryption,
-        deviceSignature,
-        profileEncryption,
-        profileSignature,
-      ]) => {
-        form.reset((prevInitialValues) => ({
-          ...prevInitialValues,
-          ...deviceEncryption,
-          ...deviceSignature,
-          ...profileEncryption,
-          ...profileSignature,
-        }));
-      }
-    );
+    console.log('generate keys');
+    generateMyEncryptionKeys().then((encryptionKeys) => {
+      form.reset((prevInitialValues) => ({
+        ...prevInitialValues,
+        ...encryptionKeys,
+      }));
+    });
   }, [form]);
 
   useEffect(() => {
-    fetch(`${DEFAULT_NODE_ADDRESS}/v1/shinkai_health`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.status === 'ok') {
-          form.setValue('nodeAddress', DEFAULT_NODE_ADDRESS);
-          form.setValue('shinkaiIdentity', DEFAULT_SHINKAI_IDENTITY);
-          setCurrentStep(AddNodeSteps.Connect);
-        }
-      })
-      .catch((error) => console.error('error polling', error));
-  }, [form]);
+    if (qrImageFile) {
+      const qrImageUrl = URL.createObjectURL(qrImageFile);
+      setQRImageUrl(qrImageUrl);
+    } else {
+      setQRImageUrl('');
+    }
+  }, [qrImageFile]);
+
+  const removeQRFile = () => {
+    setQRImageFile(null);
+    form.reset();
+  };
 
   return (
     <div className="h-full flex flex-col space-y-3">
-      <span className="text-xl">Connect</span>
-      <div className="h-full flex flex-col grow place-content-center">
-        {currentStep === AddNodeSteps.ScanQR && (
-          <div className="h-full flex flex-col space-y-3 justify-between">
-            <div className="grow flex flex-col justify-center">
-              <Player
-                autoplay
-                className="w-40"
-                loop
-                src={ScanQrAnimation}
-              ></Player>
-            </div>
-
-            <div className="flex flex-col space-y-1">
-              <Button className="w-full" onClick={onFileInputClick}>
-                <span>
-                  <FormattedMessage id="upload-qr-code" />
-                </span>
-              </Button>
-              <input
-                accept="image/png, image/jpeg"
-                alt="shinaki node qr code input"
-                className="hidden"
-                onChange={(event) => onQrImageSelected(event)}
-                ref={fileInput}
-                type="file"
-              />
-            </div>
+      <Header
+        description={
+          <FormattedMessage id="qr-code-connection-connection-method-description" />
+        }
+        icon={<QrCode />}
+        title={
+          <FormattedMessage id="qr-code-connection-connection-method-title" />
+        }
+      />
+      <div className="h-full flex flex-col grow space-y-6">
+        <div className="flex flex-col space-y-1">
+          <div className="flex items-center justify-center">
+            {qrImageFile && qrImageUrl ? (
+              <div className="flex flex-row justify-center items-center rounded-lg border border-dashed w-full h-[100px] space-x-3">
+                <div className="flex flex-row items-center">
+                  <QrCode className="w-4 h-4 space-x-1 mr-1" />
+                  <span className="font-semibold">{qrImageFile.name}</span>
+                </div>
+                <div className="relative">
+                  <img
+                    alt="qr connection data"
+                    className="h-[80px]"
+                    src={qrImageUrl}
+                  />
+                  <Button
+                    className="absolute top-1 right-1 h-6 w-6"
+                    onClick={() => removeQRFile()}
+                    size="icon"
+                  >
+                    <Trash className="w-4 h-4" />
+                  </Button>
+                </div>
+                
+              </div>
+            ) : (
+              <label
+                className="flex flex-col items-center justify-center w-full h-[100px] border-2 border-dashed rounded-lg cursor-pointer bg-secondary-600 hover:bg-secondary-600"
+                htmlFor="dropzone-file"
+              >
+                <div className="flex flex-col items-center justify-center space-y-1">
+                  <div>
+                    <Upload className="w-4 h-4" />
+                  </div>
+                  <p className="text-sm text-gray-500">
+                    <FormattedMessage id="click-to-upload" />
+                  </p>
+                  <p className="text-xs text-gray-500">JPG | PNG</p>
+                </div>
+                <input
+                  accept="image/png, image/jpeg"
+                  alt="shinaki conection file input"
+                  className="hidden"
+                  id="dropzone-file"
+                  onChange={(event) => onQRImageSelected(event)}
+                  type="file"
+                />
+              </label>
+            )}
           </div>
-        )}
+        </div>
 
-        {currentStep === AddNodeSteps.Connect && (
+        {qrImageFile && (
           <Form {...form}>
             <form
               className="h-full flex flex-col space-y-2 justify-between"
@@ -316,7 +236,7 @@ export const ConnectMethodQrCode = () => {
               <div className="grow flex flex-col space-y-3">
                 <FormField
                   control={form.control}
-                  name="registrationName"
+                  name="registration_name"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
@@ -332,7 +252,7 @@ export const ConnectMethodQrCode = () => {
 
                 <FormField
                   control={form.control}
-                  name="nodeAddress"
+                  name="node_address"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
@@ -345,13 +265,33 @@ export const ConnectMethodQrCode = () => {
                     </FormItem>
                   )}
                 />
+
+                <FormField
+                  control={form.control}
+                  name="shinkai_identity"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        <FormattedMessage id="shinkai-identity" />
+                      </FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 {isSubmitError && (
                   <ErrorMessage message={submitError?.message} />
                 )}
               </div>
-
               <Button className="w-full" disabled={isLoading} type="submit">
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isLoading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <PlugZap className="mr-2 h-4 w-4" />
+                )}
                 <FormattedMessage id="connect" />
               </Button>
             </form>
