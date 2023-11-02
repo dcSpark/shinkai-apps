@@ -15,7 +15,7 @@ import { useHistory } from 'react-router-dom';
 import * as z from 'zod';
 
 import ScanQrAnimation from '../../assets/animations/scan-qr.json';
-import { useAuth } from '../../store/auth/auth';
+import { SetupData, useAuth } from '../../store/auth/auth';
 import { Button } from '../ui/button';
 import ErrorMessage from '../ui/error-message';
 import {
@@ -69,7 +69,7 @@ export const AddNode = () => {
   const setAuth = useAuth((state) => state.setAuth);
   const DEFAULT_NODE_ADDRESS = 'http://127.0.0.1:9550';
   // TODO: This value should be obtained from node
-  const DEFAULT_SHINKAI_IDENTITY = '@@node1.shinkai';
+  const DEFAULT_SHINKAI_IDENTITY = '@@localhost.shinkai';
   const form = useForm<FormType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -101,7 +101,7 @@ export const AddNode = () => {
     onSuccess: (response) => {
       if (response.success) {
         const values = form.getValues();
-        setAuth({
+        const authData = {
           profile: values.profile,
           permission_type: values.permissionType,
           node_address: values.nodeAddress,
@@ -123,8 +123,8 @@ export const AddNode = () => {
           profile_identity_sk: values.profileSignatureSharedKey,
           profile_encryption_pk: values.profileEncryptionPublicKey,
           profile_encryption_sk: values.profileEncryptionSharedKey,
-        });
-        history.replace('/inboxes');
+        }
+        authSuccess(authData);
       } else {
         throw new Error('Failed to submit registration');
       }
@@ -149,8 +149,8 @@ export const AddNode = () => {
     const qrImageUrl = URL.createObjectURL(event.target.files[0]);
     const codeReader = new BrowserQRCodeReader();
     const resultImage = await codeReader.decodeFromImageUrl(qrImageUrl);
-    const json_string = resultImage.getText();
-    const parsedQrData: QRSetupData = JSON.parse(json_string);
+    const jsonString = resultImage.getText();
+    const parsedQrData: QRSetupData = JSON.parse(jsonString);
     const nodeDataFromQr = getValuesFromQr(parsedQrData);
     form.reset((prev) => ({ ...prev, ...nodeDataFromQr }));
     setCurrentStep(AddNodeSteps.Connect);
@@ -231,6 +231,11 @@ export const AddNode = () => {
       profile_encryption_sk: values.profileEncryptionSharedKey,
     });
   };
+
+  const authSuccess = (setupData: SetupData) => {
+    setAuth(setupData);
+    history.replace('/inboxes');
+  }
 
   useEffect(() => {
     Promise.all([

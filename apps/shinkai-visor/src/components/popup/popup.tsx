@@ -18,6 +18,9 @@ import { AddAgent } from '../add-agent/add-agent';
 import { AddNode } from '../add-node/add-node';
 import { Agents } from '../agents/agents';
 import { AnimatedRoute } from '../animated-route/animated-routed';
+import { ConnectMethodQuickStart } from '../connect-method-quick-start/connect-method-quick-start';
+import { ConnectMethodRestoreConnection } from '../connect-method-restore-connection/connect-method-restore-connection';
+import { ConnectSelectMethod } from '../connect-select-method/connect-select-method';
 import { CreateInbox } from '../create-inbox/create-inbox';
 import { CreateJob } from '../create-job/create-job';
 import { ExportConnection } from '../export-connection/export-connection';
@@ -69,18 +72,28 @@ export const Popup = () => {
                 <Welcome />
               </AnimatedRoute>
             </Route>
-            <Route path="/nodes">
-              <AnimatedRoute>
-                <Switch>
-                  <Route path="/nodes/add">
-                    <AddNode></AddNode>
-                  </Route>
-                </Switch>
-              </AnimatedRoute>
-            </Route>
+
             <Route path="*">
               <AnimatedRoute>
                 <WithNav>
+                  <Route path="/nodes">
+                    <AnimatedRoute>
+                      <Switch>
+                        <Route path="/nodes/connect/select-method">
+                          <ConnectSelectMethod></ConnectSelectMethod>
+                        </Route>
+                        <Route path="/nodes/connect/method/quick-start">
+                          <ConnectMethodQuickStart></ConnectMethodQuickStart>
+                        </Route>
+                        <Route path="/nodes/connect/method/restore-connection">
+                          <ConnectMethodRestoreConnection></ConnectMethodRestoreConnection>
+                        </Route>
+                        <Route path="/nodes/add">
+                          <AddNode></AddNode>
+                        </Route>
+                      </Switch>
+                    </AnimatedRoute>
+                  </Route>
                   <Route path="/inboxes">
                     <Switch>
                       <Route path="/inboxes/create-inbox">
@@ -108,12 +121,12 @@ export const Popup = () => {
                     </Switch>
                   </Route>
                   <Route path="/settings">
-                  <Switch>
+                    <Switch>
                       <Route path="/settings/export-connection">
                         <ExportConnection></ExportConnection>
                       </Route>
                       <Route path="/">
-                      <Settings></Settings>
+                        <Settings></Settings>
                       </Route>
                     </Switch>
                   </Route>

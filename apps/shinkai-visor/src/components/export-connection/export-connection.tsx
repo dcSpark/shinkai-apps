@@ -1,14 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { encryptMessageWithPassphrase } from '@shinkai_network/shinkai-message-ts/cryptography';
 import { Download, FileKey } from 'lucide-react';
-import { QRCodeCanvas } from 'qrcode.react';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { z } from 'zod';
 
-import shinkaiLogo from '../../assets/icons/shinkai-min.svg';
-import { srcUrlResolver } from '../../helpers/src-url-resolver';
 import { useAuth } from '../../store/auth/auth';
 import { Button } from '../ui/button';
 import {
@@ -46,7 +43,6 @@ export const ExportConnection = () => {
       confirmPassphrase: '',
     },
   });
-  const qrCanvasContainerRef = useRef<HTMLDivElement>(null);
   const passphrase = form.watch('passphrase');
   const confirmPassphrase = form.watch('confirmPassphrase');
   const [encryptedSetupData, setEncryptedSetupData] = useState<string>('');
@@ -59,31 +55,14 @@ export const ExportConnection = () => {
     const encryptedSetupData = await encryptMessageWithPassphrase(parsedSetupData, values.passphrase);
     setEncryptedSetupData(encryptedSetupData);
   };
-  const qrPropsCanvas = {
-    level: 'L',
-    size: 150,
-    imageSettings: {
-      src: srcUrlResolver(shinkaiLogo),
-      x: undefined,
-      y: undefined,
-      height: 24,
-      width: 24,
-      excavate: true,
-      includeMargin: false,
-    },
-  };
-  const downloadQR = (): void => {
-    const canvas: HTMLCanvasElement | undefined = qrCanvasContainerRef?.current?.children[0] as HTMLCanvasElement;
-    if (!qrCanvasContainerRef.current || !canvas) {
-      return;
-    }
-    const imageRef = canvas.toDataURL('image/jpg');
-    const dummyAnchor = document.createElement('a');
-    dummyAnchor.href = imageRef;
-    dummyAnchor.download = `shinkai-${auth?.registration_name}-backup.jpg`;
-    document.body.appendChild(dummyAnchor);
-    dummyAnchor.click();
-    document.body.removeChild(dummyAnchor);
+  const download = (): void => {
+    const link = document.createElement("a");
+    const content = encryptedSetupData;
+    const file = new Blob([content], { type: 'text/plain' });
+    link.href = URL.createObjectURL(file);
+    link.download = `${auth?.registration_name}.shinkai.key`;
+    link.click();
+    URL.revokeObjectURL(link.href);
   };
   return (
     <div className="h-full flex flex-col space-y-3">
@@ -140,19 +119,20 @@ export const ExportConnection = () => {
 
         {encryptedSetupData && (
           <div className=" grow flex flex-col items-center justify-center space-y-3">
-            <span>
-              <FormattedMessage id="download-connection-file-description" />
-            </span>
-            <div className="w-full flex flex-col space-y-2 justify-center items-center">
-            <div ref={qrCanvasContainerRef}>
-              <QRCodeCanvas
-                {...qrPropsCanvas}
-                value={encryptedSetupData}
-              />
+            <div className="flex flex-col space-y-1">
+              <span className="font-semibold">
+                <FormattedMessage id="download-keep-safe-place" />
+              </span>
+              <span>
+                <FormattedMessage id="use-it-to-restore" />
+              </span>
             </div>
-              <Button className="w-[150px]" onClick={() => downloadQR()}>
-                <Download className="mr-2 h-4 w-4" />
-                <FormattedMessage id="download" />
+            <div className="w-full flex flex-row space-x-1">
+              <div className="grow cursor-pointer"  onClick={() => download()}>
+                <Input className="truncate cursor-pointer" readOnly value={encryptedSetupData}/>
+              </div>
+              <Button className="" onClick={() => download()}>
+                <Download className="h-4 w-4" />
               </Button>
             </div>
           </div>

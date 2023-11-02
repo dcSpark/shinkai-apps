@@ -53,6 +53,7 @@ export default function NavBar() {
   const history = useHistory();
   const location = useLocation();
   const setLogout = useAuth((state) => state.setLogout);
+  const auth = useAuth((state) => state.auth);
   const uiContainer = useUIContainer((state) => state.uiContainer);
 
   const [isMenuOpened, setMenuOpened] = useState(false);
@@ -133,10 +134,10 @@ export default function NavBar() {
         </div>
         <img
           alt="shinkai-app-logo"
-          className="h-5"
+          className="h-5 absolute left-0 right-0 ml-auto mr-auto"
           src={srcUrlResolver(visorLogo)}
         />
-        <DropdownMenu
+        {auth && (<DropdownMenu
           onOpenChange={(value) => setMenuOpened(value)}
           open={isMenuOpened}
         >
@@ -222,7 +223,7 @@ export default function NavBar() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenuPortal>
-        </DropdownMenu>
+        </DropdownMenu>)}
       </div>
     </nav>
   );
