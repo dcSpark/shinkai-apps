@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { decryptMessageWithPassphrase } from '@shinkai_network/shinkai-message-ts/cryptography';
-import { FileKey, Loader2, Trash, Upload } from 'lucide-react';
+import { FileKey, PlugZap, Trash, Upload } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
@@ -8,6 +8,7 @@ import { useHistory } from 'react-router';
 import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
+import { Header } from '../header/header';
 import { Button } from '../ui/button';
 import ErrorMessage from '../ui/error-message';
 import {
@@ -31,7 +32,6 @@ export const ConnectMethodRestoreConnection = () => {
   const history = useHistory();
   const setAuth = useAuth((state) => state.setAuth);
   const [error, setError] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [encryptedConnectionFile, setEncryptedConnectionFile] =
     useState<File | null>(null);
   const form = useForm<FormType>({
@@ -65,13 +65,16 @@ export const ConnectMethodRestoreConnection = () => {
   };
   const restore = async (values: FormType) => {
     try {
-      const decryptedValue = await decryptMessageWithPassphrase(values.encryptedConnection, values.passphrase);
+      const decryptedValue = await decryptMessageWithPassphrase(
+        values.encryptedConnection,
+        values.passphrase
+      );
       if (decryptedValue) {
         const decryptedSetupData = JSON.parse(decryptedValue);
-        
+
         setAuth(decryptedSetupData);
         // TODO: Add logic to test if setup data is valid to create an authenticated connection with Shinkai Node
-         history.replace('/inboxes');
+        history.replace('/inboxes');
       }
     } catch (_) {
       setError(true);
@@ -83,17 +86,15 @@ export const ConnectMethodRestoreConnection = () => {
   };
   return (
     <div className="h-full flex flex-col space-y-3">
-      <div className="grow-0 flex flex-col space-y-1">
-        <div className="flex flex-row space-x-1 items-center">
-          <FileKey className="h-4 w-4"/>
-          <h1 className="font-semibold text-sm">
-            <FormattedMessage id="restore-connection-connection-method-title" />
-          </h1>
-        </div>
-        <span className="text-xs">
+      <Header
+        description={
           <FormattedMessage id="restore-connection-connection-method-description" />
-        </span>
-      </div>
+        }
+        icon={<FileKey />}
+        title={
+          <FormattedMessage id="restore-connection-connection-method-title" />
+        }
+      />
 
       <Form {...form}>
         <form
@@ -115,17 +116,19 @@ export const ConnectMethodRestoreConnection = () => {
                       <div className="flex items-center justify-center">
                         {encryptedConnectionFile ? (
                           <div className="flex flex-row justify-center items-center rounded-lg border border-dashed w-full h-[100px] space-x-4">
-                            <div className="flex flex-row">
+                            <div className="flex flex-row items-center">
                               <FileKey className="w-4 h-4 space-x-1 mr-1" />
-                              <span className="font-semibold">{encryptedConnectionFile.name}</span>
+                              <span className="font-semibold">
+                                {encryptedConnectionFile.name}
+                              </span>
                             </div>
                             <Button
-                                className="h-6 w-6"
-                                onClick={() => removeConnectionFile()}
-                                size="icon"
-                              >
-                                <Trash className="w-4 h-4" />
-                              </Button>
+                              className="h-6 w-6"
+                              onClick={() => removeConnectionFile()}
+                              size="icon"
+                            >
+                              <Trash className="w-4 h-4" />
+                            </Button>
                           </div>
                         ) : (
                           <label
@@ -157,7 +160,7 @@ export const ConnectMethodRestoreConnection = () => {
                         )}
                       </div>
                       {encryptedConnectionFile && (
-                      <Input {...field} className="truncate" />
+                        <Input {...field} className="truncate" />
                       )}
                     </div>
                   </FormControl>
@@ -184,8 +187,8 @@ export const ConnectMethodRestoreConnection = () => {
             {error && <ErrorMessage message={'Invalid connection file'} />}
           </div>
 
-          <Button className="w-full" disabled={isLoading} type="submit">
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Button className="w-full" type="submit">
+            <PlugZap className="mr-2 h-4 w-4" />
             <FormattedMessage id="restore-connection" />
           </Button>
         </form>

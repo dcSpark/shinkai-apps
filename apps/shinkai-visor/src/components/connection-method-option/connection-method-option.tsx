@@ -6,6 +6,7 @@ export type ConnectionMethodOptionProps = {
   description: ReactNode;
   onClick?: () => void;
 };
+
 export const ConnectionMethodOption = ({
   icon,
   title,
@@ -19,12 +20,12 @@ export const ConnectionMethodOption = ({
   };
   return (
     <div
-      className="h-[70px] group flex items-center space-x-4 rounded-md border p-4 cursor-pointer hover:bg-secondary-600"
+      className="group flex items-center space-x-2 rounded-md border p-2 cursor-pointer hover:bg-secondary-600"
       onClick={() => onConnectionMethodOptionClick()}
     >
       <div className="group-hover:animate-bounce">{icon}</div>
       <div className="flex-1 space-y-1">
-        <p className="text-sm font-medium leading-none">{title}</p>
+        <p className="text-xs font-medium leading-none">{title}</p>
         <p className="text-xs text-muted-foreground">{description}</p>
       </div>
     </div>

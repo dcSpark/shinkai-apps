@@ -1,5 +1,3 @@
-import './inboxes.css';
-
 import { isJobInbox } from '@shinkai_network/shinkai-message-ts/utils';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
@@ -11,6 +9,7 @@ import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../store/auth/auth';
 import { EmptyAgents } from '../empty-agents/empty-agents';
 import { EmptyInboxes } from '../empty-inboxes/empty-inboxes';
+import { Header } from '../header/header';
 import { Button } from '../ui/button';
 import { ScrollArea } from '../ui/scroll-area';
 
@@ -46,13 +45,12 @@ export const Inboxes = () => {
 
   return (
     <div className="h-full flex flex-col space-y-3 justify-between overflow-hidden">
-      <div className="flex flex-row space-x-1 items-center">
-        <Inbox className="h-4 w-4" />
-        <h1 className="font-semibold">
+      <Header
+        icon={<Inbox />}
+        title={
           <FormattedMessage id="inbox.other"></FormattedMessage>
-        </h1>
-      </div>
-
+        }
+      />
       {!agents?.length ? (
         <EmptyAgents></EmptyAgents>
       ) : !inboxIds?.length ? (

@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
-import { FileKey, Loader2, QrCode, Zap } from 'lucide-react';
+import { FileKey, Loader2, PlugZap, QrCode, Zap } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
@@ -13,6 +13,7 @@ import {
 } from '../../helpers/encryption-keys';
 import { SetupData, useAuth } from '../../store/auth/auth';
 import { ConnectionMethodOption } from '../connection-method-option/connection-method-option';
+import { Header } from '../header/header';
 import { Button } from '../ui/button';
 import ErrorMessage from '../ui/error-message';
 import {
@@ -37,7 +38,7 @@ export const ConnectMethodQuickStart = () => {
   const history = useHistory();
   const setAuth = useAuth((state) => state.setAuth);
   const DEFAULT_NODE_ADDRESS = 'http://127.0.0.1:9550';
-  const DEFAULT_SHINKAI_IDENTITY = '@@localhost.shinkai'
+  const DEFAULT_SHINKAI_IDENTITY = '@@localhost.shinkai';
   const [encryptionKeys, setEncryptedKeys] = useState<Encryptionkeys | null>(
     null
   );
@@ -101,77 +102,76 @@ export const ConnectMethodQuickStart = () => {
 
   return (
     <div className="h-full flex flex-col space-y-3">
-      <div className="grow-0 flex flex-col space-y-1">
-        <div className="flex flex-row space-x-1 items-center">
-          <Zap className="w-4 h-4"/>
-          <span className="font-semibold text-sm">
-            <FormattedMessage id="quick-connection-connection-method-title" />
-          </span>
-        </div>
-        <span className="text-xs">
+      <Header
+        description={
           <FormattedMessage id="quick-connection-connection-method-description" />
-        </span>
-      </div>
-
+        }
+        icon={<Zap />}
+        title={
+          <FormattedMessage id="quick-connection-connection-method-title" />
+        }
+      />
       <Form {...form}>
         <form
           className="flex flex-col space-y-2 justify-between"
           onSubmit={form.handleSubmit(connect)}
         >
-          <div className="grow flex flex-col space-y-3">
-            <FormField
-              control={form.control}
-              name="node_address"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    <FormattedMessage id="node-address" />
-                  </FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <FormField
+            control={form.control}
+            name="node_address"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  <FormattedMessage id="node-address" />
+                </FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-            <FormField
-              control={form.control}
-              name="registration_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    <FormattedMessage id="registration-name" />
-                  </FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <FormField
+            control={form.control}
+            name="registration_name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  <FormattedMessage id="registration-name" />
+                </FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-            <FormField
-              control={form.control}
-              name="shinkai_identity"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    <FormattedMessage id="shinkai-identity" />
-                  </FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <FormField
+            control={form.control}
+            name="shinkai_identity"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  <FormattedMessage id="shinkai-identity" />
+                </FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-            {isSubmitError && <ErrorMessage message={submitError?.message} />}
-          </div>
+          {isSubmitError && <ErrorMessage message={submitError?.message} />}
 
           <Button className="w-full" disabled={isLoading} type="submit">
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {isLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <PlugZap className="mr-2 h-4 w-4" />
+            )}
             <FormattedMessage id="connect" />
           </Button>
         </form>
