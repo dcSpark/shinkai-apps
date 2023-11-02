@@ -218,7 +218,7 @@ export default function NavBar() {
               >
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>
-                  <FormattedMessage id="logout" />
+                  <FormattedMessage id="delete-connection" />
                 </span>
               </DropdownMenuItem>
             </DropdownMenuContent>

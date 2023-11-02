@@ -24,7 +24,7 @@
   "connect-manually": "¿No tienes un código QR? Conectar manualmente",
   "scan": "Escanear",
   "review": "Revisar",
-  "logout": "Cerrar sesión",
+  "delete-connection": "Cerrar sesión",
   "message-receiver": "Message receiver",
   "message.one": "Mensaje",
   "message.other": "Mensajes",
