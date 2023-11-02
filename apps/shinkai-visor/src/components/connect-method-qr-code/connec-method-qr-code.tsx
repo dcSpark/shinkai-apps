@@ -175,65 +175,69 @@ export const ConnectMethodQrCode = () => {
           <FormattedMessage id="qr-code-connection-connection-method-title" />
         }
       />
-      <div className="h-full flex flex-col grow space-y-6">
-        <div className="flex flex-col space-y-1">
-          <div className="flex items-center justify-center">
-            {qrImageFile && qrImageUrl ? (
-              <div className="flex flex-row justify-center items-center rounded-lg border border-dashed w-full h-[100px] space-x-3">
-                <div className="flex flex-row items-center">
-                  <QrCode className="w-4 h-4 space-x-1 mr-1" />
-                  <span className="font-semibold">{qrImageFile.name}</span>
-                </div>
-                <div className="relative">
-                  <img
-                    alt="qr connection data"
-                    className="h-[80px]"
-                    src={qrImageUrl}
-                  />
-                  <Button
-                    className="absolute top-1 right-1 h-6 w-6"
-                    onClick={() => removeQRFile()}
-                    size="icon"
-                  >
-                    <Trash className="w-4 h-4" />
-                  </Button>
-                </div>
-                
-              </div>
-            ) : (
-              <label
-                className="flex flex-col items-center justify-center w-full h-[100px] border-2 border-dashed rounded-lg cursor-pointer bg-secondary-600 hover:bg-secondary-600"
-                htmlFor="dropzone-file"
-              >
-                <div className="flex flex-col items-center justify-center space-y-1">
-                  <div>
-                    <Upload className="w-4 h-4" />
-                  </div>
-                  <p className="text-sm text-gray-500">
-                    <FormattedMessage id="click-to-upload" />
-                  </p>
-                  <p className="text-xs text-gray-500">JPG | PNG</p>
-                </div>
-                <input
-                  accept="image/png, image/jpeg"
-                  alt="shinaki conection file input"
-                  className="hidden"
-                  id="dropzone-file"
-                  onChange={(event) => onQRImageSelected(event)}
-                  type="file"
-                />
-              </label>
-            )}
-          </div>
-        </div>
 
-        {qrImageFile && (
-          <Form {...form}>
-            <form
-              className="h-full flex flex-col space-y-2 justify-between"
-              onSubmit={form.handleSubmit(connect)}
-            >
-              <div className="grow flex flex-col space-y-3">
+      <Form {...form}>
+        <form
+          className="h-full flex flex-col space-y-2 justify-between"
+          onSubmit={form.handleSubmit(connect)}
+        >
+          <div className="flex flex-col space-y-2">
+            <div className="flex flex-col space-y-1">
+              <span className="text-sm font-semibold">QR code</span>
+              <div className="flex items-center justify-center">
+                <div className="flex flex-col justify-center items-center rounded-lg border-2 border-dashed w-full h-[100px]">
+                  {qrImageFile && qrImageUrl ? (
+                    <div className="flex flex-row justify-center items-center space-x-3">
+                      <div className="flex flex-row items-center">
+                        <QrCode className="w-4 h-4 space-x-1 mr-1" />
+                        <span className="font-semibold">
+                          {qrImageFile.name}
+                        </span>
+                      </div>
+                      <div className="relative">
+                        <img
+                          alt="qr connection data"
+                          className="h-[80px]"
+                          src={qrImageUrl}
+                        />
+                        <Button
+                          className="absolute top-1 right-1 h-6 w-6"
+                          onClick={() => removeQRFile()}
+                          size="icon"
+                        >
+                          <Trash className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <label
+                      className="flex flex-col items-center justify-center w-full h-[100px] rounded-lg cursor-pointer bg-secondary-600 hover:bg-secondary-600"
+                      htmlFor="dropzone-file"
+                    >
+                      <div className="flex flex-col items-center justify-center space-y-1">
+                        <div>
+                          <Upload className="w-4 h-4" />
+                        </div>
+                        <p className="text-sm text-gray-500">
+                          <FormattedMessage id="click-to-upload" />
+                        </p>
+                        <p className="text-xs text-gray-500">JPG | PNG</p>
+                      </div>
+                      <input
+                        accept="image/png, image/jpeg"
+                        alt="shinaki conection file input"
+                        className="hidden"
+                        id="dropzone-file"
+                        onChange={(event) => onQRImageSelected(event)}
+                        type="file"
+                      />
+                    </label>
+                  )}
+                </div>
+              </div>
+            </div>
+            {qrImageFile && (
+              <>
                 <FormField
                   control={form.control}
                   name="registration_name"
@@ -281,23 +285,21 @@ export const ConnectMethodQrCode = () => {
                     </FormItem>
                   )}
                 />
+              </>
+            )}
 
-                {isSubmitError && (
-                  <ErrorMessage message={submitError?.message} />
-                )}
-              </div>
-              <Button className="w-full" disabled={isLoading} type="submit">
-                {isLoading ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <PlugZap className="mr-2 h-4 w-4" />
-                )}
-                <FormattedMessage id="connect" />
-              </Button>
-            </form>
-          </Form>
-        )}
-      </div>
+            {isSubmitError && <ErrorMessage message={submitError?.message} />}
+          </div>
+          <Button className="w-full" disabled={isLoading} type="submit">
+            {isLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <PlugZap className="mr-2 h-4 w-4" />
+            )}
+            <FormattedMessage id="connect" />
+          </Button>
+        </form>
+      </Form>
     </div>
   );
 };

@@ -116,57 +116,55 @@ export const ConnectMethodQuickStart = () => {
           className="flex flex-col space-y-2 justify-between"
           onSubmit={form.handleSubmit(connect)}
         >
-          <div className="grow flex flex-col space-y-3">
-            <FormField
-              control={form.control}
-              name="node_address"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    <FormattedMessage id="node-address" />
-                  </FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <FormField
+            control={form.control}
+            name="node_address"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  <FormattedMessage id="node-address" />
+                </FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-            <FormField
-              control={form.control}
-              name="registration_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    <FormattedMessage id="registration-name" />
-                  </FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <FormField
+            control={form.control}
+            name="registration_name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  <FormattedMessage id="registration-name" />
+                </FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-            <FormField
-              control={form.control}
-              name="shinkai_identity"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    <FormattedMessage id="shinkai-identity" />
-                  </FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <FormField
+            control={form.control}
+            name="shinkai_identity"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  <FormattedMessage id="shinkai-identity" />
+                </FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-            {isSubmitError && <ErrorMessage message={submitError?.message} />}
-          </div>
+          {isSubmitError && <ErrorMessage message={submitError?.message} />}
 
           <Button className="w-full" disabled={isLoading} type="submit">
             {isLoading ? (
