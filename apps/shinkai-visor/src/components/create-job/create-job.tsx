@@ -13,6 +13,7 @@ import { useQuery } from '../../hooks/use-query';
 import { useAuth } from '../../store/auth/auth';
 import { useUIContainer } from '../../store/ui-container/ui-container';
 import { FileList } from '../file-list/file-list';
+import { Header } from '../header/header';
 import { Button } from '../ui/button';
 import {
   Form,
@@ -101,12 +102,10 @@ export const CreateJob = () => {
 
   return (
     <div className="h-full flex flex-col space-y-3">
-      <div className="flex flex-row space-x-1 items-center">
-        <Workflow className="h-4 w-4" />
-        <h1 className="font-semibold">
-          <FormattedMessage id="create-job"></FormattedMessage>
-        </h1>
-      </div>
+      <Header
+        icon={<Workflow />}
+        title={<FormattedMessage id="create-job"></FormattedMessage>}
+      />
       <Form {...form}>
         <form
           className="h-full flex flex-col space-y-2 justify-between"

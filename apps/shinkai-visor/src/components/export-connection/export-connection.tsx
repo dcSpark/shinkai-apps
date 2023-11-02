@@ -1,0 +1,149 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import { encryptMessageWithPassphrase } from '@shinkai_network/shinkai-message-ts/cryptography';
+import { Download, FileKey } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { z } from 'zod';
+
+import { useAuth } from '../../store/auth/auth';
+import { Header } from '../header/header';
+import { Button } from '../ui/button';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../ui/form';
+import { Input } from '../ui/input';
+
+export const ExportConnection = () => {
+  const intl = useIntl();
+  const formSchema = z
+    .object({
+      passphrase: z.string().min(8),
+      confirmPassphrase: z.string().min(8),
+    })
+    .superRefine(({ passphrase, confirmPassphrase }, ctx) => {
+      if (passphrase !== confirmPassphrase) {
+        ctx.addIssue({
+          code: 'custom',
+          message: intl.formatMessage({ id: 'passphrases-dont-match' }),
+          path: ['confirmPassphrase'],
+        });
+      }
+    });
+  type FormSchemaType = z.infer<typeof formSchema>;
+  const auth = useAuth((state) => state.auth);
+  const form = useForm<FormSchemaType>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      passphrase: '',
+      confirmPassphrase: '',
+    },
+  });
+  const passphrase = form.watch('passphrase');
+  const confirmPassphrase = form.watch('confirmPassphrase');
+  const [encryptedSetupData, setEncryptedSetupData] = useState<string>('');
+  useEffect(() => {
+    setEncryptedSetupData('');
+  }, [passphrase, confirmPassphrase, setEncryptedSetupData]);
+  const exportConnection = async (values: FormSchemaType): Promise<void> => {
+    // TODO: Convert to a common format shared by visor, app and tray
+    const parsedSetupData = JSON.stringify(auth);
+    const encryptedSetupData = await encryptMessageWithPassphrase(
+      parsedSetupData,
+      values.passphrase
+    );
+    setEncryptedSetupData(encryptedSetupData);
+  };
+  const download = (): void => {
+    const link = document.createElement('a');
+    const content = encryptedSetupData;
+    const file = new Blob([content], { type: 'text/plain' });
+    link.href = URL.createObjectURL(file);
+    link.download = `${auth?.registration_name}.shinkai.key`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  };
+  return (
+    <div className="h-full flex flex-col space-y-3">
+      <Header
+        icon={<FileKey />}
+        title={<FormattedMessage id="export-connection"></FormattedMessage>}
+      />
+      <div className="grow flex flex-col space-y-2">
+        <Form {...form}>
+          <form
+            className="flex flex-col space-y-3 justify-between"
+            onSubmit={form.handleSubmit(exportConnection)}
+          >
+            <div className="grow flex flex-col space-y-2">
+              <FormField
+                control={form.control}
+                name="passphrase"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      <FormattedMessage id="passphrase" />
+                    </FormLabel>
+                    <FormControl>
+                      <Input {...field} type="password" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="confirmPassphrase"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      <FormattedMessage id="confirm-passphrase" />
+                    </FormLabel>
+                    <FormControl>
+                      <Input {...field} type="password" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <Button className="w-full" type="submit">
+              <FileKey className="mr-2 h-4 w-4" />
+              <FormattedMessage id="generate-connection-file" />
+            </Button>
+          </form>
+        </Form>
+
+        {encryptedSetupData && (
+          <div className=" grow flex flex-col items-center justify-center space-y-3">
+            <div className="flex flex-col space-y-1">
+              <span className="font-semibold">
+                <FormattedMessage id="download-keep-safe-place" />
+              </span>
+              <span>
+                <FormattedMessage id="use-it-to-restore" />
+              </span>
+            </div>
+            <div className="w-full flex flex-row space-x-1">
+              <div className="grow cursor-pointer" onClick={() => download()}>
+                <Input
+                  className="truncate cursor-pointer"
+                  readOnly
+                  value={encryptedSetupData}
+                />
+              </div>
+              <Button className="" onClick={() => download()}>
+                <Download className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};

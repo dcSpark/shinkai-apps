@@ -204,8 +204,8 @@ export const Inbox = () => {
 
   return (
     <div className="h-full flex flex-col space-y-3 justify-between overflow-hidden">
-      <div className="flex flex-row space-x-1 items-center">
-        <InboxIcon className="h-4 w-4 shrink-0" />
+      <div className="flex flex-row space-x-1 items-center text-lg">
+        <InboxIcon className="shrink-0" />
         <h1 className="font-semibold">
           <FormattedMessage id="inbox.one"></FormattedMessage>
         </h1>

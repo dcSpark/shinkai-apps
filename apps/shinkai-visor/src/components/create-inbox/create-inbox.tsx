@@ -8,6 +8,7 @@ import { useHistory } from 'react-router-dom';
 import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
+import { Header } from '../header/header';
 import { Button } from '../ui/button';
 import {
   Form,
@@ -68,12 +69,10 @@ export const CreateInbox = () => {
 
   return (
     <div className="h-full flex flex-col space-y-3">
-      <div className="flex flex-row space-x-1 items-center">
-        <MessageCircle className="h-4 w-4" />
-        <h1 className="font-semibold">
-          <FormattedMessage id="create-inbox"></FormattedMessage>
-        </h1>
-      </div>
+      <Header
+        icon={<MessageCircle />}
+        title={<FormattedMessage id="create-inbox"></FormattedMessage>}
+      ></Header>
       <Form {...form}>
         <form
           className="h-full flex flex-col space-y-2 justify-between"
