@@ -19,9 +19,8 @@ export async function encryptMessageWithPassphrase(
   const nonce = sodium.randombytes_buf(
     sodium.crypto_aead_chacha20poly1305_IETF_NPUBBYTES
   );
-  const plaintext_bytes = sodium.from_string(message);
   const ciphertext = sodium.crypto_aead_chacha20poly1305_ietf_encrypt(
-    plaintext_bytes,
+    message,
     null,
     null,
     nonce,
