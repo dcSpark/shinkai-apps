@@ -19,7 +19,7 @@ export const ConnectionMethodOption = ({
   };
   return (
     <div
-      className="group flex items-center space-x-4 rounded-md border p-4 cursor-pointer hover:bg-secondary-600"
+      className="h-[70px] group flex items-center space-x-4 rounded-md border p-4 cursor-pointer hover:bg-secondary-600"
       onClick={() => onConnectionMethodOptionClick()}
     >
       <div className="group-hover:animate-bounce">{icon}</div>
