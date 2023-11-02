@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { BrowserQRCodeReader } from '@zxing/browser';
+import { decryptMessageWithPassphrase } from '@shinkai_network/shinkai-message-ts/cryptography';
 import { FileKey, Loader2, Trash, Upload } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -7,7 +7,7 @@ import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router';
 import { z } from 'zod';
 
-import { SetupData, useAuth } from '../../store/auth/auth';
+import { useAuth } from '../../store/auth/auth';
 import { Button } from '../ui/button';
 import ErrorMessage from '../ui/error-message';
 import {
@@ -32,7 +32,8 @@ export const ConnectMethodRestoreConnection = () => {
   const setAuth = useAuth((state) => state.setAuth);
   const [error, setError] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [qrAsDataUrl, setQRAsDataUrl] = useState<string>('');
+  const [encryptedConnectionFile, setEncryptedConnectionFile] =
+    useState<File | null>(null);
   const form = useForm<FormType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -40,44 +41,45 @@ export const ConnectMethodRestoreConnection = () => {
       passphrase: '',
     },
   });
-  const onQrImageSelected: React.ChangeEventHandler<HTMLInputElement> = async (
-    event
-  ): Promise<void> => {
+  const onConnectionFileSelected: React.ChangeEventHandler<
+    HTMLInputElement
+  > = async (event): Promise<void> => {
     if (!event.target.files || !event.target.files[0]) {
       return;
     }
     const file = event.target.files[0];
-    const qrImageUrl = URL.createObjectURL(file);
-    const codeReader = new BrowserQRCodeReader();
-    const resultImage = await codeReader.decodeFromImageUrl(qrImageUrl);
-    const encryptedConnection = resultImage.getText();
-    // if (!encryptedConnection.startsWith('encrypted:')) {
-    //   return;
-    // }
-    form.setValue('encryptedConnection', encryptedConnection);
     const reader = new FileReader();
+    reader.readAsText(file, 'UTF-8');
     reader.onload = (event) => {
       console.log('onload event', event);
-      if (
-        event?.target?.readyState !== event?.target?.DONE
-      ) {
+      if (event?.target?.readyState !== event?.target?.DONE) {
         return;
       }
-      const dataUrl = event?.target?.result as string;
-      setQRAsDataUrl(dataUrl)
+      const encryptedConnection = event?.target?.result as string;
+      if (!encryptedConnection.startsWith('encrypted:')) {
+        return;
+      }
+      setEncryptedConnectionFile(file);
+      form.setValue('encryptedConnection', encryptedConnection);
     };
-    reader.readAsDataURL(file);
-  };
-  const auth = (authData: SetupData) => {
-    setAuth(authData);
-    history.replace('/inboxes');
   };
   const restore = async (values: FormType) => {
-    const decryptedValue = JSON.parse(values.encryptedConnection);
-    auth(decryptedValue);
+    try {
+      const decryptedValue = await decryptMessageWithPassphrase(values.encryptedConnection, values.passphrase);
+      if (decryptedValue) {
+        const decryptedSetupData = JSON.parse(decryptedValue);
+        
+        setAuth(decryptedSetupData);
+        // TODO: Add logic to test if setup data is valid to create an authenticated connection with Shinkai Node
+         history.replace('/inboxes');
+      }
+    } catch (_) {
+      setError(true);
+    }
   };
-  const removeImage = () => {
-    setQRAsDataUrl('');
+  const removeConnectionFile = () => {
+    form.setValue('encryptedConnection', '');
+    setEncryptedConnectionFile(null);
   };
   return (
     <div className="h-full flex flex-col space-y-3">
@@ -101,6 +103,7 @@ export const ConnectMethodRestoreConnection = () => {
           <div className="grow flex flex-col space-y-3">
             <FormField
               control={form.control}
+              disabled={true}
               name="encryptedConnection"
               render={({ field }) => (
                 <FormItem>
@@ -110,14 +113,23 @@ export const ConnectMethodRestoreConnection = () => {
                   <FormControl>
                     <div className="flex flex-col space-y-1">
                       <div className="flex items-center justify-center">
-                        {qrAsDataUrl ? (
-                          <div className="relative">
-                          <img alt="qr preview" className="h-[150px]" src={qrAsDataUrl} />
-                          <Button className="absolute top-2 right-2 h-6 w-6" onClick={() => removeImage()} size="icon"><Trash className="w-4 h-4"/></Button>
-                        </div>
+                        {encryptedConnectionFile ? (
+                          <div className="flex flex-row justify-center items-center rounded-lg border border-dashed w-full h-[100px] space-x-4">
+                            <div className="flex flex-row">
+                              <FileKey className="w-4 h-4 space-x-1 mr-1" />
+                              <span className="font-semibold">{encryptedConnectionFile.name}</span>
+                            </div>
+                            <Button
+                                className="h-6 w-6"
+                                onClick={() => removeConnectionFile()}
+                                size="icon"
+                              >
+                                <Trash className="w-4 h-4" />
+                              </Button>
+                          </div>
                         ) : (
                           <label
-                            className="flex flex-col items-center justify-center w-full h-[150px] border-2 border-dashed rounded-lg cursor-pointer bg-secondary-600 hover:bg-secondary-600"
+                            className="flex flex-col items-center justify-center w-full h-[100px] border-2 border-dashed rounded-lg cursor-pointer bg-secondary-600 hover:bg-secondary-600"
                             htmlFor="dropzone-file"
                           >
                             <div className="flex flex-col items-center justify-center space-y-1">
@@ -128,21 +140,25 @@ export const ConnectMethodRestoreConnection = () => {
                                 <FormattedMessage id="click-to-upload" />
                               </p>
                               <p className="text-xs text-gray-500">
-                                PNG | JPEG
+                                SHINKAI.KEY
                               </p>
                             </div>
                             <input
-                              accept="image/png, image/jpeg"
-                              alt="shinaki node qr code input"
+                              accept=".key"
+                              alt="shinaki conection file input"
                               className="hidden"
                               id="dropzone-file"
-                              onChange={(event) => onQrImageSelected(event)}
+                              onChange={(event) =>
+                                onConnectionFileSelected(event)
+                              }
                               type="file"
                             />
                           </label>
                         )}
                       </div>
-                      <Input {...field} />
+                      {encryptedConnectionFile && (
+                      <Input {...field} className="truncate" />
+                      )}
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -165,7 +181,7 @@ export const ConnectMethodRestoreConnection = () => {
                 </FormItem>
               )}
             />
-            {error && <ErrorMessage message={'Error getting connection'} />}
+            {error && <ErrorMessage message={'Invalid connection file'} />}
           </div>
 
           <Button className="w-full" disabled={isLoading} type="submit">

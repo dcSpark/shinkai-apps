@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
-import { Loader2, Zap } from 'lucide-react';
+import { FileKey, Loader2, QrCode, Zap } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
@@ -12,6 +12,7 @@ import {
   generateMyEncryptionKeys,
 } from '../../helpers/encryption-keys';
 import { SetupData, useAuth } from '../../store/auth/auth';
+import { ConnectionMethodOption } from '../connection-method-option/connection-method-option';
 import { Button } from '../ui/button';
 import ErrorMessage from '../ui/error-message';
 import {
@@ -88,6 +89,13 @@ export const ConnectMethodQuickStart = () => {
     });
   };
 
+  const selectQRCodeMethod = () => {
+    history.push('/nodes/connect/method/qr-code');
+  };
+  const selectRestoreMethod = () => {
+    history.push('/nodes/connect/method/restore-connection');
+  };
+
   return (
     <div className="h-full flex flex-col space-y-3">
       <div className="grow-0 flex flex-col space-y-1">
@@ -104,7 +112,7 @@ export const ConnectMethodQuickStart = () => {
 
       <Form {...form}>
         <form
-          className="h-full flex flex-col space-y-2 justify-between"
+          className="flex flex-col space-y-2 justify-between"
           onSubmit={form.handleSubmit(connect)}
         >
           <div className="grow flex flex-col space-y-3">
@@ -148,6 +156,34 @@ export const ConnectMethodQuickStart = () => {
           </Button>
         </form>
       </Form>
+
+      <div className="grow flex flex-col space-y-3 justify-end">
+        <span className="font-semibold">
+          <FormattedMessage id="did-you-connected-before" />
+        </span>
+
+        <ConnectionMethodOption
+          description={
+            <FormattedMessage id="qr-code-connection-connection-method-description" />
+          }
+          icon={<QrCode />}
+          onClick={() => selectQRCodeMethod()}
+          title={
+            <FormattedMessage id="qr-code-connection-connection-method-title" />
+          }
+        />
+
+        <ConnectionMethodOption
+          description={
+            <FormattedMessage id="restore-connection-connection-method-description" />
+          }
+          icon={<FileKey />}
+          onClick={() => selectRestoreMethod()}
+          title={
+            <FormattedMessage id="restore-connection-connection-method-title" />
+          }
+        />
+      </div>
     </div>
   );
 };

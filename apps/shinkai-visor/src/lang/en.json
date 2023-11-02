@@ -67,9 +67,10 @@
   "quick-connection-connection-method-description": "Use the address of your Shinai Node to connect for first time",
   "qr-code-connection-connection-method-title": "QR Code",
   "qr-code-connection-connection-method-description": "Upload a QR code image to connect your node automatically",
-  "restore-connection-connection-method-title": "Restore from QR",
-  "restore-connection-connection-method-description": "Upload an exported connection and use your passphrase to restore it",
+  "restore-connection-connection-method-title": "Restore from connection file",
+  "restore-connection-connection-method-description": "Upload a connection file and use your passphrase to restore it",
   "encrypted-connection": "Encrypted connection",
   "click-to-upload": "Click to upload or drag and drop",
-  "restore-connection": "Restore connection"
+  "restore-connection": "Restore connection",
+  "did-you-connected-before": "Do you have experience using shinkai?"
 }
