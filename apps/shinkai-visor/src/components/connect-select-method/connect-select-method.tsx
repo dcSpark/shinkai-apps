@@ -13,7 +13,7 @@ export const ConnectSelectMethod = () => {
     history.push('/nodes/connect/method/qr-code');
   };
   const selectRestoreMethod = () => {
-    history.push('/nodes/connect/method/restore');
+    history.push('/nodes/connect/method/restore-connection');
   };
   return (
     <div className="h-full flex flex-col space-y-3">
@@ -50,12 +50,12 @@ export const ConnectSelectMethod = () => {
 
         <ConnectionMethodOption
           description={
-            <FormattedMessage id="restore-connection-connection-connection-method-description" />
+            <FormattedMessage id="restore-connection-connection-method-description" />
           }
           icon={<FileKey />}
           onClick={() => selectRestoreMethod()}
           title={
-            <FormattedMessage id="restore-connection-connection-connection-method-title" />
+            <FormattedMessage id="restore-connection-connection-method-title" />
           }
         />
       </div>

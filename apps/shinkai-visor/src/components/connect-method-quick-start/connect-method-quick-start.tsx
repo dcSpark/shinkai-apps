@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Zap } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
@@ -69,8 +69,9 @@ export const ConnectMethodQuickStart = () => {
   });
 
   const connect = async (values: FormType) => {
-    if (!encryptionKeys) {
-      const keys = await generateMyEncryptionKeys();
+    let keys = encryptionKeys;
+    if (!keys) {
+      keys = await generateMyEncryptionKeys();
       setEncryptedKeys(keys);
     }
     submitRegistration({
@@ -83,16 +84,19 @@ export const ConnectMethodQuickStart = () => {
       node_address: values.node_address,
       registration_name: values.registration_name,
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      ...encryptionKeys!,
+      ...keys,
     });
   };
 
   return (
     <div className="h-full flex flex-col space-y-3">
       <div className="grow-0 flex flex-col space-y-1">
-        <span className="text-xl">
-          <FormattedMessage id="quick-connection-connection-method-title" />
-        </span>
+        <div className="flex flex-row space-x-1">
+          <Zap />
+          <span className="text-xl">
+            <FormattedMessage id="quick-connection-connection-method-title" />
+          </span>
+        </div>
         <span className="text-xs">
           <FormattedMessage id="quick-connection-connection-method-description" />
         </span>

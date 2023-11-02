@@ -19,6 +19,7 @@ import { AddNode } from '../add-node/add-node';
 import { Agents } from '../agents/agents';
 import { AnimatedRoute } from '../animated-route/animated-routed';
 import { ConnectMethodQuickStart } from '../connect-method-quick-start/connect-method-quick-start';
+import { ConnectMethodRestoreConnection } from '../connect-method-restore-connection/connect-method-restore-connection';
 import { ConnectSelectMethod } from '../connect-select-method/connect-select-method';
 import { CreateInbox } from '../create-inbox/create-inbox';
 import { CreateJob } from '../create-job/create-job';
@@ -79,6 +80,9 @@ export const Popup = () => {
                   </Route>
                   <Route path="/nodes/connect/method/quick-start">
                     <ConnectMethodQuickStart></ConnectMethodQuickStart>
+                  </Route>
+                  <Route path="/nodes/connect/method/restore-connection">
+                    <ConnectMethodRestoreConnection></ConnectMethodRestoreConnection>
                   </Route>
                   <Route path="/nodes/add">
                     <AddNode></AddNode>
