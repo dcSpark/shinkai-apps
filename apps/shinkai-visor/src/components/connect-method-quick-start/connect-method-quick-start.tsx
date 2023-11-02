@@ -28,6 +28,7 @@ import { Input } from '../ui/input';
 const formSchema = z.object({
   registration_name: z.string().min(5),
   node_address: z.string().url(),
+  shinkai_identity: z.string().min(11),
 });
 
 type FormType = z.infer<typeof formSchema>;
@@ -36,6 +37,7 @@ export const ConnectMethodQuickStart = () => {
   const history = useHistory();
   const setAuth = useAuth((state) => state.setAuth);
   const DEFAULT_NODE_ADDRESS = 'http://127.0.0.1:9550';
+  const DEFAULT_SHINKAI_IDENTITY = '@@localhost.shinkai'
   const [encryptionKeys, setEncryptedKeys] = useState<Encryptionkeys | null>(
     null
   );
@@ -44,6 +46,7 @@ export const ConnectMethodQuickStart = () => {
     defaultValues: {
       registration_name: 'main_device',
       node_address: DEFAULT_NODE_ADDRESS,
+      shinkai_identity: DEFAULT_SHINKAI_IDENTITY,
     },
   });
   const {
@@ -79,7 +82,7 @@ export const ConnectMethodQuickStart = () => {
       profile: 'main',
       identity_type: 'device',
       permission_type: 'admin',
-      shinkai_identity: '@@localhost.shinkai',
+      shinkai_identity: values.shinkai_identity,
       registration_code: '',
       node_encryption_pk: '',
       node_address: values.node_address,
@@ -99,9 +102,9 @@ export const ConnectMethodQuickStart = () => {
   return (
     <div className="h-full flex flex-col space-y-3">
       <div className="grow-0 flex flex-col space-y-1">
-        <div className="flex flex-row space-x-1">
-          <Zap />
-          <span className="text-xl">
+        <div className="flex flex-row space-x-1 items-center">
+          <Zap className="w-4 h-4"/>
+          <span className="font-semibold text-sm">
             <FormattedMessage id="quick-connection-connection-method-title" />
           </span>
         </div>
@@ -147,6 +150,23 @@ export const ConnectMethodQuickStart = () => {
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="shinkai_identity"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    <FormattedMessage id="shinkai-identity" />
+                  </FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             {isSubmitError && <ErrorMessage message={submitError?.message} />}
           </div>
 
@@ -157,7 +177,7 @@ export const ConnectMethodQuickStart = () => {
         </form>
       </Form>
 
-      <div className="grow flex flex-col space-y-3 justify-end">
+      <div className="grow flex flex-col space-y-1 justify-end">
         <span className="font-semibold">
           <FormattedMessage id="did-you-connected-before" />
         </span>

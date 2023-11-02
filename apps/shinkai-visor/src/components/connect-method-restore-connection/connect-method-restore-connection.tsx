@@ -84,11 +84,11 @@ export const ConnectMethodRestoreConnection = () => {
   return (
     <div className="h-full flex flex-col space-y-3">
       <div className="grow-0 flex flex-col space-y-1">
-        <div className="flex flex-row space-x-1">
-          <FileKey />
-          <span className="text-xl ">
+        <div className="flex flex-row space-x-1 items-center">
+          <FileKey className="h-4 w-4"/>
+          <h1 className="font-semibold text-sm">
             <FormattedMessage id="restore-connection-connection-method-title" />
-          </span>
+          </h1>
         </div>
         <span className="text-xs">
           <FormattedMessage id="restore-connection-connection-method-description" />
