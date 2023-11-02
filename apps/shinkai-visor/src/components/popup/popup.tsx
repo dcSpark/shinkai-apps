@@ -15,12 +15,11 @@ import { useGlobalPopupChromeMessage } from '../../hooks/use-global-popup-chrome
 import { langMessages, locale } from '../../lang/intl';
 import { useAuth } from '../../store/auth/auth';
 import { AddAgent } from '../add-agent/add-agent';
-import { AddNode } from '../add-node/add-node';
 import { Agents } from '../agents/agents';
 import { AnimatedRoute } from '../animated-route/animated-routed';
+import { ConnectMethodQrCode } from '../connect-method-qr-code/connec-method-qr-code';
 import { ConnectMethodQuickStart } from '../connect-method-quick-start/connect-method-quick-start';
 import { ConnectMethodRestoreConnection } from '../connect-method-restore-connection/connect-method-restore-connection';
-import { ConnectSelectMethod } from '../connect-select-method/connect-select-method';
 import { CreateInbox } from '../create-inbox/create-inbox';
 import { CreateJob } from '../create-job/create-job';
 import { ExportConnection } from '../export-connection/export-connection';
@@ -79,17 +78,14 @@ export const Popup = () => {
                   <Route path="/nodes">
                     <AnimatedRoute>
                       <Switch>
-                        <Route path="/nodes/connect/select-method">
-                          <ConnectSelectMethod></ConnectSelectMethod>
-                        </Route>
                         <Route path="/nodes/connect/method/quick-start">
                           <ConnectMethodQuickStart></ConnectMethodQuickStart>
                         </Route>
                         <Route path="/nodes/connect/method/restore-connection">
                           <ConnectMethodRestoreConnection></ConnectMethodRestoreConnection>
                         </Route>
-                        <Route path="/nodes/add">
-                          <AddNode></AddNode>
+                        <Route path="/nodes/connect/method/qr-code">
+                          <ConnectMethodQrCode></ConnectMethodQrCode>
                         </Route>
                       </Switch>
                     </AnimatedRoute>

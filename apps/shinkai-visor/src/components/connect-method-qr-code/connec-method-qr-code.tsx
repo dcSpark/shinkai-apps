@@ -64,7 +64,7 @@ enum AddNodeSteps {
   Connect,
 }
 
-export const AddNode = () => {
+export const ConnectMethodQrCode = () => {
   const history = useHistory();
   const setAuth = useAuth((state) => state.setAuth);
   const DEFAULT_NODE_ADDRESS = 'http://127.0.0.1:9550';
