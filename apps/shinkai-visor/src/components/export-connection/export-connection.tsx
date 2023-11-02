@@ -1,12 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { encryptMessageWithPassphrase } from '@shinkai_network/shinkai-message-ts/cryptography';
 import { Download, FileKey } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
+import { Header } from '../header/header';
 import { Button } from '../ui/button';
 import {
   Form,
@@ -21,19 +22,19 @@ import { Input } from '../ui/input';
 export const ExportConnection = () => {
   const intl = useIntl();
   const formSchema = z
-  .object({
-    passphrase: z.string().min(8),
-    confirmPassphrase: z.string().min(8),
-  })
-  .superRefine(({ passphrase, confirmPassphrase }, ctx) => {
-    if (passphrase !== confirmPassphrase) {
-      ctx.addIssue({
-        code: 'custom',
-        message: intl.formatMessage({ id: 'passphrases-dont-match'}),
-        path: ['confirmPassphrase'],
-      });
-    }
-  });
+    .object({
+      passphrase: z.string().min(8),
+      confirmPassphrase: z.string().min(8),
+    })
+    .superRefine(({ passphrase, confirmPassphrase }, ctx) => {
+      if (passphrase !== confirmPassphrase) {
+        ctx.addIssue({
+          code: 'custom',
+          message: intl.formatMessage({ id: 'passphrases-dont-match' }),
+          path: ['confirmPassphrase'],
+        });
+      }
+    });
   type FormSchemaType = z.infer<typeof formSchema>;
   const auth = useAuth((state) => state.auth);
   const form = useForm<FormSchemaType>({
@@ -52,11 +53,14 @@ export const ExportConnection = () => {
   const exportConnection = async (values: FormSchemaType): Promise<void> => {
     // TODO: Convert to a common format shared by visor, app and tray
     const parsedSetupData = JSON.stringify(auth);
-    const encryptedSetupData = await encryptMessageWithPassphrase(parsedSetupData, values.passphrase);
+    const encryptedSetupData = await encryptMessageWithPassphrase(
+      parsedSetupData,
+      values.passphrase
+    );
     setEncryptedSetupData(encryptedSetupData);
   };
   const download = (): void => {
-    const link = document.createElement("a");
+    const link = document.createElement('a');
     const content = encryptedSetupData;
     const file = new Blob([content], { type: 'text/plain' });
     link.href = URL.createObjectURL(file);
@@ -66,12 +70,10 @@ export const ExportConnection = () => {
   };
   return (
     <div className="h-full flex flex-col space-y-3">
-      <div className="flex flex-row space-x-1 items-center">
-        <FileKey className="h-4 w-4" />
-        <h1 className="font-semibold">
-          <FormattedMessage id="export-connection"></FormattedMessage>
-        </h1>
-      </div>
+      <Header
+        icon={<FileKey />}
+        title={<FormattedMessage id="export-connection"></FormattedMessage>}
+      />
       <div className="grow flex flex-col space-y-2">
         <Form {...form}>
           <form
@@ -128,8 +130,12 @@ export const ExportConnection = () => {
               </span>
             </div>
             <div className="w-full flex flex-row space-x-1">
-              <div className="grow cursor-pointer"  onClick={() => download()}>
-                <Input className="truncate cursor-pointer" readOnly value={encryptedSetupData}/>
+              <div className="grow cursor-pointer" onClick={() => download()}>
+                <Input
+                  className="truncate cursor-pointer"
+                  readOnly
+                  value={encryptedSetupData}
+                />
               </div>
               <Button className="" onClick={() => download()}>
                 <Download className="h-4 w-4" />

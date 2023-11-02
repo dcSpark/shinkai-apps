@@ -6,6 +6,7 @@ export type ConnectionMethodOptionProps = {
   description: ReactNode;
   onClick?: () => void;
 };
+
 export const ConnectionMethodOption = ({
   icon,
   title,

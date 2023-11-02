@@ -2,6 +2,7 @@ import { FileKey, SettingsIcon } from 'lucide-react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router';
 
+import { Header } from '../header/header';
 import { Button } from '../ui/button';
 
 export const Settings = () => {
@@ -11,12 +12,10 @@ export const Settings = () => {
   };
   return (
     <div className="flex flex-col space-y-3">
-      <div className="flex flex-row space-x-1 items-center">
-        <SettingsIcon className="h-4 w-4" />
-        <h1 className="font-semibold">
-          <FormattedMessage id="setting.other"></FormattedMessage>
-        </h1>
-      </div>
+      <Header
+        icon={<SettingsIcon />}
+        title={<FormattedMessage id="setting.other"></FormattedMessage>}
+      />
       <div>
         <Button className="w-full" onClick={() => exportConnection()}>
           <FileKey className="mr-2 h-4 w-4" />

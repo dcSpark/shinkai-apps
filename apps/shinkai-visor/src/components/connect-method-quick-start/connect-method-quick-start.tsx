@@ -13,6 +13,7 @@ import {
 } from '../../helpers/encryption-keys';
 import { SetupData, useAuth } from '../../store/auth/auth';
 import { ConnectionMethodOption } from '../connection-method-option/connection-method-option';
+import { Header } from '../header/header';
 import { Button } from '../ui/button';
 import ErrorMessage from '../ui/error-message';
 import {
@@ -37,7 +38,7 @@ export const ConnectMethodQuickStart = () => {
   const history = useHistory();
   const setAuth = useAuth((state) => state.setAuth);
   const DEFAULT_NODE_ADDRESS = 'http://127.0.0.1:9550';
-  const DEFAULT_SHINKAI_IDENTITY = '@@localhost.shinkai'
+  const DEFAULT_SHINKAI_IDENTITY = '@@localhost.shinkai';
   const [encryptionKeys, setEncryptedKeys] = useState<Encryptionkeys | null>(
     null
   );
@@ -101,18 +102,15 @@ export const ConnectMethodQuickStart = () => {
 
   return (
     <div className="h-full flex flex-col space-y-3">
-      <div className="grow-0 flex flex-col space-y-1">
-        <div className="flex flex-row space-x-1 items-center">
-          <Zap className="w-4 h-4"/>
-          <span className="font-semibold text-sm">
-            <FormattedMessage id="quick-connection-connection-method-title" />
-          </span>
-        </div>
-        <span className="text-xs">
+      <Header
+        description={
           <FormattedMessage id="quick-connection-connection-method-description" />
-        </span>
-      </div>
-
+        }
+        icon={<Zap />}
+        title={
+          <FormattedMessage id="quick-connection-connection-method-title" />
+        }
+      />
       <Form {...form}>
         <form
           className="flex flex-col space-y-2 justify-between"

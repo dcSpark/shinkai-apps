@@ -8,6 +8,7 @@ import { useHistory } from 'react-router';
 import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
+import { Header } from '../header/header';
 import { Button } from '../ui/button';
 import ErrorMessage from '../ui/error-message';
 import {
@@ -65,13 +66,16 @@ export const ConnectMethodRestoreConnection = () => {
   };
   const restore = async (values: FormType) => {
     try {
-      const decryptedValue = await decryptMessageWithPassphrase(values.encryptedConnection, values.passphrase);
+      const decryptedValue = await decryptMessageWithPassphrase(
+        values.encryptedConnection,
+        values.passphrase
+      );
       if (decryptedValue) {
         const decryptedSetupData = JSON.parse(decryptedValue);
-        
+
         setAuth(decryptedSetupData);
         // TODO: Add logic to test if setup data is valid to create an authenticated connection with Shinkai Node
-         history.replace('/inboxes');
+        history.replace('/inboxes');
       }
     } catch (_) {
       setError(true);
@@ -83,17 +87,15 @@ export const ConnectMethodRestoreConnection = () => {
   };
   return (
     <div className="h-full flex flex-col space-y-3">
-      <div className="grow-0 flex flex-col space-y-1">
-        <div className="flex flex-row space-x-1 items-center">
-          <FileKey className="h-4 w-4"/>
-          <h1 className="font-semibold text-sm">
-            <FormattedMessage id="restore-connection-connection-method-title" />
-          </h1>
-        </div>
-        <span className="text-xs">
+      <Header
+        description={
           <FormattedMessage id="restore-connection-connection-method-description" />
-        </span>
-      </div>
+        }
+        icon={<FileKey />}
+        title={
+          <FormattedMessage id="restore-connection-connection-method-title" />
+        }
+      />
 
       <Form {...form}>
         <form
@@ -117,15 +119,17 @@ export const ConnectMethodRestoreConnection = () => {
                           <div className="flex flex-row justify-center items-center rounded-lg border border-dashed w-full h-[100px] space-x-4">
                             <div className="flex flex-row">
                               <FileKey className="w-4 h-4 space-x-1 mr-1" />
-                              <span className="font-semibold">{encryptedConnectionFile.name}</span>
+                              <span className="font-semibold">
+                                {encryptedConnectionFile.name}
+                              </span>
                             </div>
                             <Button
-                                className="h-6 w-6"
-                                onClick={() => removeConnectionFile()}
-                                size="icon"
-                              >
-                                <Trash className="w-4 h-4" />
-                              </Button>
+                              className="h-6 w-6"
+                              onClick={() => removeConnectionFile()}
+                              size="icon"
+                            >
+                              <Trash className="w-4 h-4" />
+                            </Button>
                           </div>
                         ) : (
                           <label
@@ -157,7 +161,7 @@ export const ConnectMethodRestoreConnection = () => {
                         )}
                       </div>
                       {encryptedConnectionFile && (
-                      <Input {...field} className="truncate" />
+                        <Input {...field} className="truncate" />
                       )}
                     </div>
                   </FormControl>
