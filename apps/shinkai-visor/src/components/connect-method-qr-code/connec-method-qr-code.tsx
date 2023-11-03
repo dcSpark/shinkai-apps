@@ -204,6 +204,7 @@ export const ConnectMethodQrCode = () => {
                           className="absolute top-1 right-1 h-6 w-6"
                           onClick={() => removeQRFile()}
                           size="icon"
+                          type="button"
                         >
                           <Trash className="w-4 h-4" />
                         </Button>
