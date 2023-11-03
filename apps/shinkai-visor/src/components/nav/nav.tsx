@@ -2,7 +2,6 @@ import {
   ArrowLeft,
   Bot,
   Inbox,
-  LogOut,
   Menu,
   MessageCircle,
   Settings,
@@ -157,7 +156,7 @@ export default function NavBar() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuPortal container={uiContainer?.rootElement}>
-              <DropdownMenuContent className="w-56">
+              <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>
                   <FormattedMessage id="inbox.other"></FormattedMessage>
                 </DropdownMenuLabel>
