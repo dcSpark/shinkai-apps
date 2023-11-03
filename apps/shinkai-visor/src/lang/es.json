@@ -24,7 +24,7 @@
   "connect-manually": "¿No tienes un código QR? Conectar manualmente",
   "scan": "Escanear",
   "review": "Revisar",
-  "logout": "Cerrar sesión",
+  "disconnect": "Desconectar",
   "message-receiver": "Message receiver",
   "message.one": "Mensaje",
   "message.other": "Mensajes",
@@ -74,5 +74,10 @@
   "encrypted-connection": "Conexión cifrada",
   "click-to-upload": "Haz clic para subir o arrastra y suelta",
   "restore-connection": "Restaurar conexión",
-  "did-you-connected-before": "¿Tienes experiencia usando shinkai?"
+  "did-you-connected-before": "¿Tienes experiencia usando shinkai?",
+  "cancel": "Cancelar",
+  "continue": "Continuar",
+  "are-you-sure": "Estás absolutamente seguro?",
+  "permanently-lose-connection": "Esta acción eliminará permanentemente la conexión con tu Shinkai Node",
+  "action-cant-be-undone": "Esta acción no se puede revertir"
 }
