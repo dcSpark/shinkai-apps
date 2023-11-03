@@ -126,6 +126,7 @@ export const ConnectMethodRestoreConnection = () => {
                               className="h-6 w-6"
                               onClick={() => removeConnectionFile()}
                               size="icon"
+                              type="button"
                             >
                               <Trash className="w-4 h-4" />
                             </Button>
