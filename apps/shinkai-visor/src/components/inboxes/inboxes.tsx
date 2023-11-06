@@ -1,4 +1,7 @@
-import { isJobInbox } from '@shinkai_network/shinkai-message-ts/utils';
+import {
+  getMessageContent,
+  isJobInbox,
+} from '@shinkai_network/shinkai-message-ts/utils';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
 import {
@@ -33,7 +36,7 @@ export const Inboxes = () => {
   const dialContainerRef = useRef<HTMLDivElement>(null);
   const [dialOpened, setDialOpened] = useState<boolean>(false);
   const sender = auth?.shinkai_identity ?? '';
-  const { inboxIds } = useGetInboxes({
+  const { inboxes } = useGetInboxes({
     sender: auth?.shinkai_identity ?? '',
     senderSubidentity: `${auth?.profile}/device/${auth?.registration_name}`,
     // Assuming receiver and target_shinkai_name_profile are the same as sender
@@ -73,27 +76,29 @@ export const Inboxes = () => {
       />
       {!agents?.length ? (
         <EmptyAgents></EmptyAgents>
-      ) : !inboxIds?.length ? (
+      ) : !inboxes?.length ? (
         <EmptyInboxes></EmptyInboxes>
       ) : (
         <>
           <div className="grow flex flex-col overflow-hidden">
             <ScrollArea className="[&>div>div]:!block">
-              {inboxIds?.map((inboxId) => (
-                <Fragment key={inboxId}>
+              {inboxes?.map((inbox) => (
+                <Fragment key={inbox.inbox_id}>
                   <Button
                     className="w-full"
-                    onClick={() => navigateToInbox(inboxId)}
+                    onClick={() => navigateToInbox(inbox.inbox_id)}
                     variant="tertiary"
                   >
-                    {isJobInbox(decodeURIComponent(inboxId)) ? (
+                    {isJobInbox(decodeURIComponent(inbox.inbox_id)) ? (
                       <Workflow className="h-4 w-4 shrink-0 mr-2" />
                     ) : (
                       <MessageCircleIcon className="h-4 w-4 shrink-0 mr-2" />
                     )}
 
                     <span className="w-full truncate">
-                      {decodeURIComponent(inboxId)}
+                      {inbox.custom_name === inbox.inbox_id
+                        ? getMessageContent(inbox.last_message)?.slice(0, 40)
+                        : inbox.custom_name}
                     </span>
                   </Button>
                 </Fragment>
