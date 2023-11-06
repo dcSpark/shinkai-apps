@@ -547,14 +547,14 @@ export class ShinkaiMessageBuilderWrapper {
     receiver: string,
     receiver_subidentity: string,
     inbox: string,
-    inboxName: string
+    inbox_name: string
   ): string {
     const builder = new ShinkaiMessageBuilderWrapperWASM(
       my_encryption_secret_key,
       my_signature_secret_key,
       receiver_public_key
     );
-    builder.message_raw_content(inboxName);
+    builder.message_raw_content(inbox_name);
     builder.message_schema_type(MessageSchemaType.TextContent.toString());
     builder.internal_metadata_with_inbox(
       sender_subidentity,
