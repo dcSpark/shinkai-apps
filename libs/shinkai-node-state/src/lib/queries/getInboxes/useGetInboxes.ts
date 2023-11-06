@@ -11,6 +11,6 @@ export const useGetInboxes = (input: GetInboxesInput) => {
   });
   return {
     ...response,
-    inboxIds: response.data ?? [],
+    inboxes: response.data ?? [],
   };
 };

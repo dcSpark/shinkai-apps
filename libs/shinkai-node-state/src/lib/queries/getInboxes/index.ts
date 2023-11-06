@@ -26,5 +26,8 @@ export const getInboxes = async ({
       profile_identity_sk,
     }
   );
-  return inboxes.map((inbox) => encodeURIComponent(inbox));
-};
+ return inboxes.map((inbox) => ({
+   ...inbox,
+   inbox_id: encodeURIComponent(inbox.inbox_id),
+   custom_name: encodeURIComponent(inbox.custom_name),
+ }));};
