@@ -66,31 +66,42 @@ const MessageButton = ({ inbox }: { inbox: SmartInbox }) => {
   if (isEditable) {
     return (
       <form
-        className="space-y-10"
+        className="flex justify-between items-center gap-2"
         onSubmit={updateInboxNameForm.handleSubmit(onSubmit)}
       >
         <Controller
           control={updateInboxNameForm.control}
           name="inboxName"
           render={({ field }) => (
-            <div>
-              <IonLabel>Enter Shinkai Identity</IonLabel>
+            <div className="flex-1">
+              <IonLabel className="sr-only">Rename inbox name</IonLabel>
               <IonInput
-                onIonChange={(e) =>
+                onIonInput={(e) =>
                   updateInboxNameForm.setValue(
                     'inboxName',
                     e.detail.value as string
                   )
                 }
-                placeholder="@@name.shinkai or @@name.shinkai/profile"
+                placeholder={decodeURIComponent(inbox.custom_name)}
                 value={field.value}
               />
             </div>
           )}
         />
-        <Button isLoading={false} type="submit">
-          Save
-        </Button>
+        {inboxNameValue ? (
+          <Button className="w-auto" isLoading={false} type="submit">
+            Save
+          </Button>
+        ) : (
+          <Button
+            className="w-auto"
+            isLoading={false}
+            onClick={() => setIsEditable(false)}
+            variant="secondary"
+          >
+            Cancel
+          </Button>
+        )}
       </form>
     );
   }
@@ -114,7 +125,7 @@ const MessageButton = ({ inbox }: { inbox: SmartInbox }) => {
           url={`https://ui-avatars.com/api/?name=${inbox.custom_name}&background=FE6162&color=fff`}
         />
         <IonText className="ml-4 font-medium md:text-lg">
-          {JSON.stringify(inbox.custom_name)}
+          {decodeURIComponent(inbox.custom_name)}
         </IonText>
         <IonIcon className="hidden md:ml-auto md:block" icon={arrowForward} />
       </IonItem>
