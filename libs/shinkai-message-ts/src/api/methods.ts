@@ -248,10 +248,10 @@ export const updateInboxName = async (
         setupDetailsState.my_device_encryption_sk,
         setupDetailsState.my_device_identity_sk,
         setupDetailsState.node_encryption_pk,
-        sender,
-        sender_subidentity,
+        sender + '/' + sender_subidentity,
+        "",
         receiver,
-        receiver_subidentity,
+        "",
         inboxId,
         inboxName
       );
