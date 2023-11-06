@@ -5,6 +5,7 @@ import {
   LastMessagesFromInboxCredentialsPayload,
   SetupPayload,
   ShinkaiMessage,
+  SmartInbox,
 } from '../models';
 import { APIUseRegistrationCodeSuccessResponse } from '../models/Payloads';
 import { SerializedAgent } from '../models/SchemaTypes';
@@ -198,23 +199,24 @@ export const getAllInboxesForProfile = async (
   receiver: string,
   target_shinkai_name_profile: string,
   setupDetailsState: CredentialsPayload
-): Promise<string[]> => {
+): Promise<SmartInbox[]> => {
   try {
-    const messageStr = ShinkaiMessageBuilderWrapper.get_all_inboxes_for_profile(
-      setupDetailsState.my_device_encryption_sk,
-      setupDetailsState.my_device_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      sender + '/' + sender_subidentity,
-      '',
-      receiver,
-      target_shinkai_name_profile
-    );
+    const messageString =
+      ShinkaiMessageBuilderWrapper.get_all_inboxes_for_profile(
+        setupDetailsState.my_device_encryption_sk,
+        setupDetailsState.my_device_identity_sk,
+        setupDetailsState.node_encryption_pk,
+        sender + '/' + sender_subidentity,
+        '',
+        receiver,
+        target_shinkai_name_profile
+      );
 
-    const message = JSON.parse(messageStr);
+    const message = JSON.parse(messageString);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
     const response = await fetch(
-      `${apiEndpoint}/v1/get_all_inboxes_for_profile`,
+      `${apiEndpoint}/v1/get_all_smart_inboxes_for_profile`,
       {
         method: 'POST',
         body: JSON.stringify(message),
