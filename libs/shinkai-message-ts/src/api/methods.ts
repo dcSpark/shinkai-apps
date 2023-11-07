@@ -206,8 +206,8 @@ export const getAllInboxesForProfile = async (
         setupDetailsState.my_device_encryption_sk,
         setupDetailsState.my_device_identity_sk,
         setupDetailsState.node_encryption_pk,
-        sender + '/' + sender_subidentity,
-        '',
+        sender,
+        sender_subidentity,
         receiver,
         target_shinkai_name_profile
       );

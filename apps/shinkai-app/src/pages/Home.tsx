@@ -27,6 +27,7 @@ import { z } from 'zod';
 import Avatar from '../components/ui/Avatar';
 import Button from '../components/ui/Button';
 import { IonContentCustom, IonHeaderCustom } from '../components/ui/Layout';
+import { useSetup } from '../hooks/usetSetup';
 import { useAuth } from '../store/auth';
 
 const updateInboxNameSchema = z.object({
@@ -142,6 +143,7 @@ const MessageButton = ({ inbox }: { inbox: SmartInbox }) => {
 };
 
 const Home: React.FC = () => {
+  useSetup();
   const auth = useAuth((state) => state.auth);
   const setLogout = useAuth((state) => state.setLogout);
 
