@@ -79,5 +79,7 @@
   "continue": "Continuar",
   "are-you-sure": "Estás absolutamente seguro?",
   "permanently-lose-connection": "Esta acción eliminará permanentemente la conexión con tu Shinkai Node",
-  "action-cant-be-undone": "Esta acción no se puede revertir"
+  "action-cant-be-undone": "Esta acción no se puede revertir",
+  "file.one": "Archivo",
+  "file.other": "Archivos"
 }

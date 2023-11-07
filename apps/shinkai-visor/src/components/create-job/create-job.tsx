@@ -12,7 +12,7 @@ import { z } from 'zod';
 import { useQuery } from '../../hooks/use-query';
 import { useAuth } from '../../store/auth/auth';
 import { useUIContainer } from '../../store/ui-container/ui-container';
-import { FileList } from '../file-list/file-list';
+import { FileInput } from '../file-input/file-input';
 import { Header } from '../header/header';
 import { Button } from '../ui/button';
 import {
@@ -23,6 +23,7 @@ import {
   FormLabel,
   FormMessage,
 } from '../ui/form';
+import { ScrollArea } from '../ui/scroll-area';
 import {
   Select,
   SelectContent,
@@ -36,6 +37,7 @@ import { Textarea } from '../ui/textarea';
 const formSchema = z.object({
   agent: z.string().nonempty(),
   content: z.string().nonempty(),
+  files: z.array(z.any()).max(3),
 });
 
 type FormSchemaType = z.infer<typeof formSchema>;
@@ -52,6 +54,7 @@ export const CreateJob = () => {
     defaultValues: {
       agent: '',
       content: '',
+      files: [],
     },
   });
   const { agents } = useAgents({
@@ -71,6 +74,7 @@ export const CreateJob = () => {
       history.replace(`/inboxes/${jobId}`);
     },
   });
+  const extensions = [".eml", ".html", ".json", ".md", ".msg", ".rst", ".rtf", ".txt", ".xml", ".jpeg", ".png", ".csv", ".doc", ".docx", ".epub", ".odt", ".pdf", ".ppt", ".pptx", ".tsv", ".xlsx"];
 
   //TODO: Replace this assigment with a configured default agent
   useEffect(() => {
@@ -79,6 +83,9 @@ export const CreateJob = () => {
       form.setValue('agent', defaultAgentId);
     }
   }, [agents, form]);
+  useEffect(() => {
+    form.setValue('files', location?.state?.files || []);
+  }, [location, form]);
   const submit = (values: FormSchemaType) => {
     if (!auth) return;
     let content = values.content;
@@ -91,7 +98,7 @@ export const CreateJob = () => {
       agentId: values.agent,
       content: content,
       files_inbox: '',
-      files: location.state?.files,
+      files: values.files,
       my_device_encryption_sk: auth.my_device_encryption_sk,
       my_device_identity_sk: auth.my_device_identity_sk,
       node_encryption_pk: auth.node_encryption_pk,
@@ -99,7 +106,6 @@ export const CreateJob = () => {
       profile_identity_sk: auth.profile_identity_sk,
     });
   };
-
   return (
     <div className="h-full flex flex-col space-y-3">
       <Header
@@ -108,10 +114,10 @@ export const CreateJob = () => {
       />
       <Form {...form}>
         <form
-          className="h-full flex flex-col space-y-2 justify-between"
+          className="grow flex flex-col space-y-2 justify-between overflow-hidden"
           onSubmit={form.handleSubmit(submit)}
         >
-          <div className="grow flex flex-col space-y-3">
+          <ScrollArea className="[&>div>div]:!block">
             <FormField
               control={form.control}
               name="agent"
@@ -149,44 +155,54 @@ export const CreateJob = () => {
                 </FormItem>
               )}
             />
-
-            {query.has('context') && (
-              <blockquote className="max-h-28 p-4 mb-5 border-l-4 border-gray-300 bg-secondary-600 dark:border-gray-500 dark:bg-gray-800">
-                <p className="italic dark:text-white text-ellipsis overflow-hidden h-full">
-                  {query.get('context')}
-                </p>
-              </blockquote>
-            )}
-
-            {location.state?.files?.length && (
-              <blockquote className="max-h-28 p-4 mb-5 border-l-4 border-gray-300 bg-secondary-600 dark:border-gray-500 dark:bg-gray-800">
-                <FileList files={location.state?.files}></FileList>
-              </blockquote>
-            )}
-
             <FormField
               control={form.control}
-              name="content"
+              name="files"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="mt-3">
                   <FormLabel>
-                    <FormattedMessage id="message.one" />
+                    <FormattedMessage id="file.one" />
                   </FormLabel>
                   <FormControl>
-                    <Textarea
-                      autoFocus
-                      className="resize-none border-white"
-                      placeholder={intl.formatMessage({
-                        id: 'tmwtd',
-                      })}
-                      {...field}
-                    />
+                    <FileInput extensions={extensions} multiple onValueChange={field.onChange} value={field.value}/>      
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-          </div>
+            <FormField
+              control={form.control}
+              name="content"
+              render={({ field }) => (
+                <FormItem className="mt-3">
+                  <FormLabel>
+                    <FormattedMessage id="message.one" />
+                  </FormLabel>
+                  <FormControl>
+                    <div className="flex flex-col space-y-1">
+                      {query.has('context') && (
+                        <blockquote className="max-h-28 p-4 mb-5 border-l-4 border-gray-300 bg-secondary-600 dark:border-gray-500 dark:bg-gray-800 overflow-hidden">
+                          <p className="italic dark:text-white h-full truncate">
+                            {query.get('context')}
+                          </p>
+                        </blockquote>
+                      )}
+                      <Textarea
+                        autoFocus
+                        className="resize-none border-white"
+                        placeholder={intl.formatMessage({
+                          id: 'tmwtd',
+                        })}
+                        {...field}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </ScrollArea>
+
           <Button className="w-full" disabled={isLoading} type="submit">
             {isLoading ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
