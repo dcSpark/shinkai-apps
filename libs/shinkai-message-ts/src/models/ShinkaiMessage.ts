@@ -50,3 +50,9 @@ export interface RegistrationCode {
   encryptionPk: string;
   permissionType: string;
 }
+
+export type SmartInbox = {
+  custom_name: string;
+  inbox_id: string;
+  last_message: ShinkaiMessage;
+};

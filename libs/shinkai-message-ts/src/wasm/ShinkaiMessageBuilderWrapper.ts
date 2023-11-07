@@ -277,8 +277,9 @@ export class ShinkaiMessageBuilderWrapper {
       'None'
     );
     builder.external_metadata(receiver, sender);
+    // TODO: fix encryption
     builder.body_encryption(
-      'None' // todo: change back to encrypted
+      'None'
     );
 
     const message = builder.build_to_string();
@@ -464,10 +465,7 @@ export class ShinkaiMessageBuilderWrapper {
       'None'
     );
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
-    // TODO: At this point we are forcing unencrypted message until we implement message response in shinkai-node
-    builder.body_encryption(
-      'None'
-    );
+    builder.body_encryption('None');
 
     const message = builder.build_to_string();
 
@@ -501,10 +499,7 @@ export class ShinkaiMessageBuilderWrapper {
     );
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
 
-    // TODO: At this point we are forcing unencrypted message until we implement message response in shinkai-node
-    builder.body_encryption(
-      'None'
-    );
+    builder.body_encryption('None');
 
     const message = builder.build_to_string();
 
@@ -540,6 +535,39 @@ export class ShinkaiMessageBuilderWrapper {
       'DiffieHellmanChaChaPoly1305'
     );
     const message = builder.build_to_string();
+    return message;
+  }
+
+  static update_shinkai_inbox_name(
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+    receiver_subidentity: string,
+    inbox: string,
+    inbox_name: string
+  ): string {
+    const builder = new ShinkaiMessageBuilderWrapperWASM(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key
+    );
+    builder.message_raw_content(inbox_name);
+    builder.message_schema_type(MessageSchemaType.TextContent.toString());
+    builder.internal_metadata_with_inbox(
+      sender_subidentity,
+      receiver_subidentity,
+      inbox,
+      'None'
+    );
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    // TODO: fix encryption
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
+
+    const message = builder.build_to_string();
+
     return message;
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@shinkai_network/shinkai-message-ts",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "Shinkai Message TS wrapper for wasm library",
   "type": "module",
   "main": "src/index.js",

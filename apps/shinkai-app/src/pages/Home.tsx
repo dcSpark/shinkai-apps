@@ -1,30 +1,153 @@
 import './Home.css';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   IonActionSheet,
   IonAlert,
   IonButton,
   IonButtons,
   IonIcon,
+  IonInput,
   IonItem,
+  IonLabel,
   IonPage,
   IonText,
   IonTitle,
 } from '@ionic/react';
+import { SmartInbox } from '@shinkai_network/shinkai-message-ts/models';
+import { useUpdateInboxName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateInboxName/useUpdateInboxName';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
 import { addOutline, arrowForward } from 'ionicons/icons';
+import { Edit3Icon } from 'lucide-react';
 import React, { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
+import { z } from 'zod';
 
 import Avatar from '../components/ui/Avatar';
+import Button from '../components/ui/Button';
 import { IonContentCustom, IonHeaderCustom } from '../components/ui/Layout';
+import { useSetup } from '../hooks/usetSetup';
 import { useAuth } from '../store/auth';
 
+const updateInboxNameSchema = z.object({
+  inboxName: z.string(),
+});
+
+const MessageButton = ({ inbox }: { inbox: SmartInbox }) => {
+  const history = useHistory();
+  const auth = useAuth((state) => state.auth);
+  const [isEditable, setIsEditable] = useState(false);
+  const updateInboxNameForm = useForm<z.infer<typeof updateInboxNameSchema>>({
+    resolver: zodResolver(updateInboxNameSchema),
+  });
+
+  const { inboxName: inboxNameValue } = updateInboxNameForm.watch();
+  const { mutateAsync: updateInboxName } = useUpdateInboxName();
+
+  const onSubmit = async (data: z.infer<typeof updateInboxNameSchema>) => {
+    if (!auth) return;
+    console.log('data', data);
+    await updateInboxName({
+      sender: auth?.shinkai_identity ?? '',
+      senderSubidentity: auth?.profile,
+      receiver: auth.shinkai_identity,
+      receiverSubidentity: '',
+      my_device_encryption_sk: auth.my_device_encryption_sk,
+      my_device_identity_sk: auth.my_device_identity_sk,
+      node_encryption_pk: auth.node_encryption_pk,
+      profile_encryption_sk: auth.profile_encryption_sk,
+      profile_identity_sk: auth.profile_identity_sk,
+      inboxId: decodeURIComponent(inbox.inbox_id),
+      inboxName: data.inboxName,
+    });
+    setIsEditable(false);
+  };
+
+  if (isEditable) {
+    return (
+      <form
+        className="flex justify-between items-center gap-2"
+        onSubmit={updateInboxNameForm.handleSubmit(onSubmit)}
+      >
+        <Controller
+          control={updateInboxNameForm.control}
+          name="inboxName"
+          render={({ field }) => (
+            <div className="flex-1">
+              <IonLabel className="sr-only">Rename inbox name</IonLabel>
+              <IonInput
+                onIonInput={(e) =>
+                  updateInboxNameForm.setValue(
+                    'inboxName',
+                    e.detail.value as string
+                  )
+                }
+                placeholder={decodeURIComponent(inbox.custom_name)}
+                value={field.value}
+              />
+            </div>
+          )}
+        />
+        {inboxNameValue ? (
+          <Button className="w-auto" isLoading={false} type="submit">
+            Save
+          </Button>
+        ) : (
+          <Button
+            className="w-auto"
+            isLoading={false}
+            onClick={() => setIsEditable(false)}
+            variant="secondary"
+          >
+            Cancel
+          </Button>
+        )}
+      </form>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-2" key={inbox.inbox_id}>
+      <IonItem
+        button
+        className="ion-item-home"
+        onClick={() => {
+          const encodedInboxId = inbox.inbox_id.toString().replace(/\./g, '~');
+          if (encodedInboxId.startsWith('inbox')) {
+            history.push(`/chat/${encodeURIComponent(encodedInboxId)}`);
+          } else if (encodedInboxId.startsWith('job_inbox')) {
+            history.push(`/job-chat/${encodeURIComponent(encodedInboxId)}`);
+          }
+        }}
+      >
+        <Avatar
+          className="shrink-0"
+          url={`https://ui-avatars.com/api/?name=${inbox.custom_name}&background=FE6162&color=fff`}
+        />
+        <IonText className="ml-4 font-medium md:text-lg">
+          {decodeURIComponent(inbox.custom_name)}
+        </IonText>
+        <IonIcon className="hidden md:ml-auto md:block" icon={arrowForward} />
+      </IonItem>
+      <button
+        onClick={() => {
+          console.log(inbox.inbox_id);
+          setIsEditable(true);
+        }}
+      >
+        <Edit3Icon />
+      </button>
+    </div>
+  );
+};
+
 const Home: React.FC = () => {
+  useSetup();
   const auth = useAuth((state) => state.auth);
   const setLogout = useAuth((state) => state.setLogout);
 
-  const { inboxIds } = useGetInboxes({
+  const { inboxes } = useGetInboxes({
     sender: auth?.shinkai_identity ?? '',
     senderSubidentity: `${auth?.profile}/device/${auth?.registration_name}`,
     // Assuming receiver and target_shinkai_name_profile are the same as sender
@@ -74,34 +197,8 @@ const Home: React.FC = () => {
       <IonContentCustom>
         <div className="h-full flex flex-col mt-4">
           <div className="flex-1 md:rounded-lg space-y-2 md:space-y-4">
-            {inboxIds?.map((inboxId) => (
-              <IonItem
-                button
-                className="ion-item-home"
-                key={inboxId}
-                onClick={() => {
-                  const encodedInboxId = inboxId.toString().replace(/\./g, '~');
-                  if (encodedInboxId.startsWith('inbox')) {
-                    history.push(`/chat/${encodeURIComponent(encodedInboxId)}`);
-                  } else if (encodedInboxId.startsWith('job_inbox')) {
-                    history.push(
-                      `/job-chat/${encodeURIComponent(encodedInboxId)}`
-                    );
-                  }
-                }}
-              >
-                <Avatar
-                  className="shrink-0"
-                  url={`https://ui-avatars.com/api/?name=${inboxId}&background=FE6162&color=fff`}
-                />
-                <IonText className="ml-4 font-medium md:text-lg">
-                  {JSON.stringify(inboxId)}
-                </IonText>
-                <IonIcon
-                  className="hidden md:ml-auto md:block"
-                  icon={arrowForward}
-                />
-              </IonItem>
+            {inboxes?.map((inbox) => (
+              <MessageButton inbox={inbox} key={inbox.inbox_id} />
             ))}
           </div>
         </div>
