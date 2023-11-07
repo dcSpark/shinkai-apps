@@ -137,12 +137,12 @@ export const sendTextMessageWithInbox = async (
       headers: { 'Content-Type': 'application/json' },
     });
     await handleHttpError(response);
-    // if (message.body && 'unencrypted' in message.body) {
-    //   const inboxId = message.body.unencrypted.internal_metadata.inbox;
-    //   return { inboxId, message };
-    // } else {
-    //   throw new Error('message body is null or encrypted');
-    // }
+    if (message.body && 'unencrypted' in message.body) {
+      const inboxId = message.body.unencrypted.internal_metadata.inbox;
+      return { inboxId, message };
+    } else {
+      throw new Error('message body is null or encrypted');
+    }
   } catch (error) {
     console.error('Error sending text message:', error);
     throw error;
