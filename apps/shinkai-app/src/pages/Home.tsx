@@ -49,7 +49,7 @@ const MessageButton = ({ inbox }: { inbox: SmartInbox }) => {
     console.log('data', data);
     await updateInboxName({
       sender: auth?.shinkai_identity ?? '',
-      senderSubidentity: `${auth?.profile}/device/${auth?.registration_name}`,
+      senderSubidentity: auth?.profile,
       receiver: auth.shinkai_identity,
       receiverSubidentity: '',
       my_device_encryption_sk: auth.my_device_encryption_sk,

@@ -564,7 +564,7 @@ export class ShinkaiMessageBuilderWrapper {
     );
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     // TODO: fix encryption
-    builder.body_encryption('None');
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
     const message = builder.build_to_string();
 
