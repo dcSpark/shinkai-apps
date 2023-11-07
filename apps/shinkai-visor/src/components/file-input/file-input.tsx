@@ -1,5 +1,5 @@
 import { ExternalLink, Trash, Upload } from 'lucide-react';
-import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { cn } from '../../helpers/cn-utils';
@@ -26,6 +26,8 @@ export const FileInput = ({
 }: FileInputProps) => {
   const files = useRef<File[]>([]);
   const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [, updateState] = useState<number>(0);
+  const forceUpdate = useCallback(() => updateState(Date.now()), []);
   const onAddFiles = (event: ChangeEvent<HTMLInputElement>): void => {
     const filesAdded = Array.from(event?.target?.files || []);
     files.current = [...files.current, ...filesAdded];
@@ -84,6 +86,7 @@ export const FileInput = ({
   };
   useEffect(() => {
     files.current = value;
+    forceUpdate();
   }, [value]);
   return (
     <div className="flex flex-col space-y-1">
