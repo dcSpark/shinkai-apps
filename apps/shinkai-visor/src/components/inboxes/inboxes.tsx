@@ -38,7 +38,7 @@ export const Inboxes = () => {
   const sender = auth?.shinkai_identity ?? '';
   const { inboxes } = useGetInboxes({
     sender: auth?.shinkai_identity ?? '',
-    senderSubidentity: `${auth?.profile}/device/${auth?.registration_name}`,
+    senderSubidentity: auth?.profile ?? '',
     // Assuming receiver and target_shinkai_name_profile are the same as sender
     receiver: sender,
     targetShinkaiNameProfile: `${auth?.shinkai_identity}/${auth?.profile}`,

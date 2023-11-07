@@ -58,7 +58,7 @@ const MessageButton = ({ inbox }: { inbox: SmartInbox }) => {
       node_encryption_pk: auth.node_encryption_pk,
       profile_encryption_sk: auth.profile_encryption_sk,
       profile_identity_sk: auth.profile_identity_sk,
-      inboxId: decodeURIComponent(inbox.inbox_id),
+      inboxId: inbox.inbox_id,
       inboxName: data.inboxName,
     });
     setIsEditable(false);
@@ -149,7 +149,7 @@ const Home: React.FC = () => {
 
   const { inboxes } = useGetInboxes({
     sender: auth?.shinkai_identity ?? '',
-    senderSubidentity: `${auth?.profile}/device/${auth?.registration_name}`,
+    senderSubidentity: auth?.profile ?? '',
     // Assuming receiver and target_shinkai_name_profile are the same as sender
     receiver: auth?.shinkai_identity ?? '',
     targetShinkaiNameProfile: `${auth?.shinkai_identity}/${auth?.profile}`,
