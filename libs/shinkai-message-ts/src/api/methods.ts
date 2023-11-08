@@ -50,11 +50,7 @@ export const createChatWithMessage = async (
   receiver: string,
   receiver_subidentity: string,
   text_message: string,
-  setupDetailsState: {
-    my_device_encryption_sk: string;
-    my_device_identity_sk: string;
-    node_encryption_pk: string;
-  }
+  setupDetailsState: CredentialsPayload
 ): Promise<{ inboxId: string; message: ShinkaiMessage }> => {
   const senderShinkaiName = new ShinkaiNameWrapper(
     sender + '/' + sender_subidentity
@@ -76,8 +72,8 @@ export const createChatWithMessage = async (
 
   try {
     const messageStr = ShinkaiMessageBuilderWrapper.create_chat_with_message(
-      setupDetailsState.my_device_encryption_sk,
-      setupDetailsState.my_device_identity_sk,
+      setupDetailsState.profile_encryption_sk,
+      setupDetailsState.profile_identity_sk,
       setupDetailsState.node_encryption_pk,
       sender,
       sender_subidentity,
@@ -121,8 +117,8 @@ export const sendTextMessageWithInbox = async (
   try {
     const messageStr =
       ShinkaiMessageBuilderWrapper.send_text_message_with_inbox(
-        setupDetailsState.my_device_encryption_sk,
-        setupDetailsState.my_device_identity_sk,
+        setupDetailsState.profile_encryption_sk,
+        setupDetailsState.profile_identity_sk,
         setupDetailsState.node_encryption_pk,
         sender,
         sender_subidentity,
@@ -203,8 +199,8 @@ export const getAllInboxesForProfile = async (
   try {
     const messageString =
       ShinkaiMessageBuilderWrapper.get_all_inboxes_for_profile(
-        setupDetailsState.my_device_encryption_sk,
-        setupDetailsState.my_device_identity_sk,
+        setupDetailsState.profile_encryption_sk,
+        setupDetailsState.profile_identity_sk,
         setupDetailsState.node_encryption_pk,
         sender,
         sender_subidentity,
@@ -240,8 +236,7 @@ export const updateInboxName = async (
   setupDetailsState: CredentialsPayload,
   inboxName: string,
   inboxId: string
-  // TODO: fix type
-): Promise<any> => {
+): Promise<{ success: string; data: null }> => {
   try {
     const messageString =
       ShinkaiMessageBuilderWrapper.update_shinkai_inbox_name(
@@ -251,7 +246,7 @@ export const updateInboxName = async (
         sender,
         sender_subidentity,
         receiver,
-        "",
+        '',
         inboxId,
         inboxName
       );
@@ -266,7 +261,7 @@ export const updateInboxName = async (
     });
     const data = await response.json();
     await handleHttpError(response);
-    return data.data;
+    return data;
   } catch (error) {
     console.error('Error updating inbox name:', error);
     throw error;
@@ -278,7 +273,7 @@ export const getLastMessagesFromInbox = async (
   count: number,
   lastKey: string | undefined,
   setupDetailsState: LastMessagesFromInboxCredentialsPayload
-): Promise<any[]> => {
+): Promise<ShinkaiMessage[]> => {
   try {
     const messageStr =
       ShinkaiMessageBuilderWrapper.get_last_messages_from_inbox(
@@ -304,47 +299,6 @@ export const getLastMessagesFromInbox = async (
     await handleHttpError(response);
     const data = await response.json();
     return data.data;
-  } catch (error) {
-    console.error('Error getting last messages from inbox:', error);
-    throw error;
-  }
-};
-
-export const getLastUnreadMessagesFromInbox = async (
-  inbox: string,
-  count: number,
-  fromKey: string | undefined,
-  setupDetailsState: LastMessagesFromInboxCredentialsPayload
-): Promise<any[]> => {
-  try {
-    const messageStr =
-      ShinkaiMessageBuilderWrapper.get_last_messages_from_inbox(
-        setupDetailsState.profile_encryption_sk,
-        setupDetailsState.profile_identity_sk,
-        setupDetailsState.node_encryption_pk,
-        inbox,
-        count,
-        fromKey,
-        setupDetailsState.shinkai_identity,
-        setupDetailsState.profile,
-        setupDetailsState.shinkai_identity
-      );
-
-    const message = JSON.parse(messageStr);
-
-    const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await fetch(
-      `${apiEndpoint}/v1/last_unread_messages_from_inbox`,
-      {
-        method: 'POST',
-        body: JSON.stringify(message),
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
-    await handleHttpError(response);
-    const data = await response.json();
-    return data;
-    // dispatch(receiveUnreadMessagesFromInbox(inbox, results));
   } catch (error) {
     console.error('Error getting last messages from inbox:', error);
     throw error;

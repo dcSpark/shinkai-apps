@@ -1,6 +1,6 @@
-import { getAllInboxesForProfile } from "@shinkai_network/shinkai-message-ts/api";
+import { getAllInboxesForProfile } from '@shinkai_network/shinkai-message-ts/api';
 
-import type { GetInboxesInput } from "./types";
+import type { GetInboxesInput } from './types';
 
 export const getInboxes = async ({
   receiver,
@@ -26,8 +26,5 @@ export const getInboxes = async ({
       profile_identity_sk,
     }
   );
- return inboxes.map((inbox) => ({
-   ...inbox,
-   inbox_id: encodeURIComponent(inbox.inbox_id),
-   custom_name: encodeURIComponent(inbox.custom_name),
- }));};
+  return inboxes;
+};

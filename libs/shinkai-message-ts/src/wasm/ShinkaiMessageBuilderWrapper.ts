@@ -81,9 +81,17 @@ export class ShinkaiMessageBuilderWrapper {
     this.wasmBuilder.external_metadata(recipient, sender);
   }
 
-  external_metadata_with_intra(recipient: string, sender: string, intra_sender: string): void {
-    this.wasmBuilder.external_metadata_with_intra(recipient, sender, intra_sender);
-  };
+  external_metadata_with_intra(
+    recipient: string,
+    sender: string,
+    intra_sender: string
+  ): void {
+    this.wasmBuilder.external_metadata_with_intra(
+      recipient,
+      sender,
+      intra_sender
+    );
+  }
 
   external_metadata_with_other(
     recipient: string,
@@ -271,16 +279,9 @@ export class ShinkaiMessageBuilderWrapper {
 
     builder.message_raw_content(target_shinkai_name_profile);
     builder.message_schema_type(MessageSchemaType.TextContent.toString());
-    builder.internal_metadata(
-      sender_subidentity,
-      '',
-      'None'
-    );
-    builder.external_metadata(receiver, sender);
-    // TODO: fix encryption
-    builder.body_encryption(
-      'None'
-    );
+    builder.internal_metadata(sender_subidentity, '', 'None');
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
     const message = builder.build_to_string();
 
@@ -435,7 +436,7 @@ export class ShinkaiMessageBuilderWrapper {
       sender,
       sender_subidentity,
       receiver,
-      ""
+      ''
     );
   }
 
@@ -465,7 +466,7 @@ export class ShinkaiMessageBuilderWrapper {
       'None'
     );
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
-    builder.body_encryption('None');
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
     const message = builder.build_to_string();
 
@@ -499,7 +500,7 @@ export class ShinkaiMessageBuilderWrapper {
     );
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
 
-    builder.body_encryption('None');
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
     const message = builder.build_to_string();
 
@@ -514,7 +515,7 @@ export class ShinkaiMessageBuilderWrapper {
     symmetric_key_sk: string,
     sender: string,
     sender_subidentity: string,
-    receiver: string,
+    receiver: string
   ): string {
     const builder = new ShinkaiMessageBuilderWrapperWASM(
       my_encryption_secret_key,
@@ -523,17 +524,12 @@ export class ShinkaiMessageBuilderWrapper {
     );
 
     builder.message_raw_content(symmetric_key_sk);
-    builder.message_schema_type(MessageSchemaType.SymmetricKeyExchange.toString());
-    builder.internal_metadata_with_inbox(
-      sender_subidentity,
-      '',
-      inbox,
-      'None'
+    builder.message_schema_type(
+      MessageSchemaType.SymmetricKeyExchange.toString()
     );
+    builder.internal_metadata_with_inbox(sender_subidentity, '', inbox, 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
-    builder.body_encryption(
-      'DiffieHellmanChaChaPoly1305'
-    );
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
     const message = builder.build_to_string();
     return message;
   }
@@ -563,7 +559,6 @@ export class ShinkaiMessageBuilderWrapper {
       'None'
     );
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
-    // TODO: fix encryption
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
     const message = builder.build_to_string();
