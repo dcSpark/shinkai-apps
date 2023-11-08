@@ -8,3 +8,20 @@ export type GetChatConversationInput = JobCredentialsPayload & {
   profile: string;
   refetchInterval?: number;
 };
+
+export type ChatConversationMessage = {
+  hash: string,
+  inboxId: string,
+  scheduledTime: string | undefined,
+  content: string,
+  isLocal: boolean,
+  sender: {
+    avatar: string,
+  },
+  fileInbox?: {
+    id: string;
+    files: {
+      name: string;
+    }[];
+  },
+};

@@ -565,4 +565,36 @@ export class ShinkaiMessageBuilderWrapper {
 
     return message;
   }
+
+  static get_filenames_for_file_inbox(
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+    receiver_subidentity: string,
+    inbox: string,
+    file_inbox: string,
+  ): string {
+    const builder = new ShinkaiMessageBuilderWrapperWASM(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key
+    );
+    builder.message_raw_content(file_inbox);
+    builder.message_schema_type(MessageSchemaType.TextContent.toString());
+    builder.internal_metadata_with_inbox(
+      sender_subidentity,
+      receiver_subidentity,
+      inbox,
+      'None'
+    );
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
+
+    const message = builder.build_to_string();
+
+    return message;
+  }
 }

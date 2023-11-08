@@ -10,6 +10,7 @@ import {
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMessageToJob/useSendMessageToJob';
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
+import { ChatConversationMessage } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
 import {
@@ -93,8 +94,8 @@ export const Inbox = () => {
     const firstMessage = data?.pages?.[0]?.[0];
     fromPreviousMessagesRef.current = true;
     if (!firstMessage) return;
-    const timeKey = firstMessage?.external_metadata?.scheduled_time;
-    const hashKey = calculateMessageHash(firstMessage);
+    const timeKey = firstMessage.scheduledTime;
+    const hashKey = firstMessage.hash;
     const firstMessageKey = `${timeKey}:::${hashKey}`;
     await fetchPreviousPage({ pageParam: { lastKey: firstMessageKey } });
   }, [data?.pages, fetchPreviousPage]);
@@ -148,11 +149,11 @@ export const Inbox = () => {
       });
     }
   };
-  const groupMessagesByDate = (messages: ShinkaiMessage[]) => {
-    const groupedMessages: Record<string, ShinkaiMessage[]> = {};
+  const groupMessagesByDate = (messages: ChatConversationMessage[]) => {
+    const groupedMessages: Record<string, ChatConversationMessage[]> = {};
     for (const message of messages) {
       const date = new Date(
-        message.external_metadata?.scheduled_time ?? ''
+        message.scheduledTime ?? ''
       ).toDateString();
       if (!groupedMessages[date]) {
         groupedMessages[date] = [];
@@ -208,25 +209,14 @@ export const Inbox = () => {
     const [firstMessagePage] = data?.pages || [];
     const lastMessage = [...(firstMessagePage || [])].pop();
     if (lastMessage) {
-      const isLocal = isLocalMessage(
-        lastMessage,
-        auth?.shinkai_identity ?? '',
-        auth?.profile ?? ''
-      );
-      setIsJobProcessing(isJobInbox && (isSendingMessage || isLocal));
+      setIsJobProcessing(isJobInbox && (isSendingMessage || lastMessage.isLocal));
     }
   }, [data?.pages, auth, isSendingMessage, isJobInbox]);
   useEffect(() => {
     const [firstMessagePage] = data?.pages || [];
     const lastMessage = [...(firstMessagePage || [])].pop();
     if (lastMessage) {
-      const fileInbox = getMessageFilesInbox(lastMessage);
-      const isLocal = isLocalMessage(
-        lastMessage,
-        auth?.shinkai_identity ?? '',
-        auth?.profile ?? ''
-      );
-      setIsJobProcessingFile(isJobProcessing && isLocal && !!fileInbox);
+      setIsJobProcessingFile(isJobProcessing && lastMessage.isLocal && !!lastMessage.fileInbox);
     }
   }, [data?.pages, auth, isJobProcessing]);
 
@@ -296,7 +286,7 @@ export const Inbox = () => {
                           <span className="px-2.5 py-2 text-sm font-semibold text-foreground">
                             {dateToLabel(
                               new Date(
-                                messages[0].external_metadata?.scheduled_time ||
+                                messages[0].scheduledTime ||
                                   ''
                               )
                             )}
@@ -304,21 +294,13 @@ export const Inbox = () => {
                         </div>
                         <div className="flex flex-col gap-4">
                           {messages.map((message) => {
-                            const isLocal = isLocalMessage(
-                              message,
-                              auth?.shinkai_identity ?? '',
-                              auth?.profile ?? ''
-                            );
                             return (
                               <div
                                 className={cn('flex items-start gap-3')}
-                                key={`${index}-${message.external_metadata?.scheduled_time}`}
+                                key={`${index}-${message.scheduledTime}`}
                               >
                                 <Message
-                                  filesInbox={getMessageFilesInbox(message)}
-                                  inboxId={decodedInboxId}
-                                  isLocal={isLocal}
-                                  messageContent={getMessageContent(message)}
+                                  message={message}
                                 ></Message>
                               </div>
                             );

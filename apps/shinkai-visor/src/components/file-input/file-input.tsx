@@ -38,7 +38,8 @@ export const FileInput = ({
       onValueChanged(files.current);
     }
   };
-  const removeFile = (file: File, index: number): void => {
+  const removeFile = (index: number): void => {
+    const file = files.current[index];
     // Warn: We are mutating files
     files.current.splice(index, 1);
     if (typeof onFileRemoved === 'function') {
@@ -48,7 +49,8 @@ export const FileInput = ({
       onValueChanged(files.current);
     }
   };
-  const openFile = (file: File): void => {
+  const openFile = (index: number): void => {
+    const file = files.current[index];
     const fileURL = window.URL.createObjectURL(file);
     window.open(fileURL, '_blank');
     URL.revokeObjectURL(fileURL);
@@ -87,7 +89,7 @@ export const FileInput = ({
   useEffect(() => {
     files.current = value;
     forceUpdate();
-  }, [value]);
+  }, [value, forceUpdate]);
   return (
     <div className="flex flex-col space-y-1">
       <div className="flex items-center justify-center">
@@ -143,7 +145,7 @@ export const FileInput = ({
             },
             {
               render: <Trash className="w-4 h-4 cursor-pointer"></Trash>,
-              onClick: (file, index) => removeFile(file, index),
+              onClick: (index) => removeFile(index),
             },
           ]}
           files={files.current}
