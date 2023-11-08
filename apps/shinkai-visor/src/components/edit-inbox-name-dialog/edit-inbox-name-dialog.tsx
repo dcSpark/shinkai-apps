@@ -67,7 +67,6 @@ export const EditInboxNameDialog = ({
       sender: auth?.shinkai_identity ?? '',
       senderSubidentity: auth?.profile ?? '',
       receiver: auth?.shinkai_identity ?? '',
-      receiverSubidentity: '',
       my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
       my_device_identity_sk: auth?.my_device_identity_sk ?? '',
       node_encryption_pk: auth?.node_encryption_pk ?? '',

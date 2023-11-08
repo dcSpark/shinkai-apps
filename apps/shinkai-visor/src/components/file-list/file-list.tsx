@@ -3,16 +3,19 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Paperclip } from 'lucide-react';
 import { ReactNode } from 'react';
 
+import { cn } from '../../helpers/cn-utils';
 import { getFileExt, getFileName } from '../../helpers/file-name-utils';
 
 export type FileListProps = {
-  files: File[];
+  files: { name: string; size?: number }[];
   actions: {
     render: ReactNode;
-    onClick?: (file: File, index: number) => void;
+    onClick?: (index: number) => void;
   }[];
+  className?: string;
 };
-export const FileList = ({ files, actions }: FileListProps) => {
+
+export const FileList = ({ files, actions, className }: FileListProps) => {
   const size = partial({ standard: 'jedec' });
   const animations = {
     initial: { scale: 0, opacity: 0 },
@@ -20,7 +23,7 @@ export const FileList = ({ files, actions }: FileListProps) => {
     exit: { scale: 0, opacity: 0 },
   };
   return (
-    <ul className="divide-y divide-gray-100 rounded-md border border-gray-200">
+    <ul className={cn("divide-y divide-gray-100 rounded-md border border-gray-200", className || '')}>
       <AnimatePresence>
         {files?.map((file, index) => (
           <motion.li
@@ -40,9 +43,11 @@ export const FileList = ({ files, actions }: FileListProps) => {
                     {getFileExt(decodeURIComponent(file.name))}
                   </span>
                 </div>
-                <span className="flex-shrink-0 text-gray-400">
-                  {size(file.size)}
-                </span>
+                {file.size && (
+                  <span className="flex-shrink-0 text-gray-400">
+                    {size(file.size)}
+                  </span>
+                )}
               </div>
               <div className="flex flex-row space-x-1">
                 {actions?.map((action, actionIndex) => {
@@ -51,7 +56,7 @@ export const FileList = ({ files, actions }: FileListProps) => {
                       key={actionIndex}
                       onClick={() => {
                         if (typeof action.onClick === 'function') {
-                          action.onClick(file, index);
+                          action.onClick(index);
                         }
                       }}
                     >

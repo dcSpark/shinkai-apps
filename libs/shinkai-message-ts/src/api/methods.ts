@@ -591,3 +591,46 @@ export const addAgent = async (
     throw error;
   }
 };
+
+export const getFileNames = async (
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  setupDetailsState: {
+    profile_encryption_sk: string,
+    profile_identity_sk: string,
+    node_encryption_pk: string,
+  },
+  inboxId: string,
+  fileInbox: string,
+): Promise<{ success: string; data: string[] }> => {
+  try {
+    const messageString =
+      ShinkaiMessageBuilderWrapper.get_filenames_for_file_inbox(
+        setupDetailsState.profile_encryption_sk,
+        setupDetailsState.profile_identity_sk,
+        setupDetailsState.node_encryption_pk,
+        sender,
+        sender_subidentity,
+        receiver,
+        '',
+        inboxId,
+        fileInbox
+      );
+
+    const message = JSON.parse(messageString);
+
+    const apiEndpoint = ApiConfig.getInstance().getEndpoint();
+    const response = await fetch(`${apiEndpoint}/v1/get_filenames_for_file_inbox`, {
+      method: 'POST',
+      body: JSON.stringify(message),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    const data = await response.json();
+    await handleHttpError(response);
+    return data;
+  } catch (error) {
+    console.error('Error updating inbox name:', error);
+    throw error;
+  }
+};
