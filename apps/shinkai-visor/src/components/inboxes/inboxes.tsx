@@ -1,3 +1,4 @@
+import { ShinkaiMessage } from '@shinkai_network/shinkai-message-ts/models';
 import {
   getMessageContent,
   isJobInbox,
@@ -5,6 +6,7 @@ import {
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
 import {
+  Edit,
   Inbox,
   MessageCircle,
   MessageCircleIcon,
@@ -17,6 +19,7 @@ import { useHistory } from 'react-router-dom';
 
 import { cn } from '../../helpers/cn-utils';
 import { useAuth } from '../../store/auth/auth';
+import { EditInboxNameDialog } from '../edit-inbox-name-dialog/edit-inbox-name-dialog';
 import { EmptyAgents } from '../empty-agents/empty-agents';
 import { EmptyInboxes } from '../empty-inboxes/empty-inboxes';
 import { Header } from '../header/header';
@@ -36,6 +39,12 @@ export const Inboxes = () => {
   const dialContainerRef = useRef<HTMLDivElement>(null);
   const [dialOpened, setDialOpened] = useState<boolean>(false);
   const sender = auth?.shinkai_identity ?? '';
+  const [isEditInboxNameDialogOpened, setIsEditInboxNameDialogOpened] =
+    useState<{ isOpened: boolean; inboxId: string; name: string }>({
+      isOpened: false,
+      inboxId: '',
+      name: '',
+    });
   const { inboxes } = useGetInboxes({
     sender: auth?.shinkai_identity ?? '',
     senderSubidentity: auth?.profile ?? '',
@@ -58,8 +67,12 @@ export const Inboxes = () => {
     profile_encryption_sk: auth?.profile_encryption_sk ?? '',
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
-  const navigateToInbox = (inboxId: string) => {
-    history.push(`/inboxes/${encodeURIComponent(inboxId)}`);
+  const navigateToInbox = (inbox: {
+    inbox_id: string;
+    custom_name: string;
+    last_message: ShinkaiMessage;
+  }) => {
+    history.push(`/inboxes/${encodeURIComponent(inbox.inbox_id)}`, { inbox });
   };
   const onCreateJobClick = () => {
     history.push('/inboxes/create-job');
@@ -67,7 +80,28 @@ export const Inboxes = () => {
   const onCreateInboxClick = () => {
     history.push('/inboxes/create-inbox');
   };
-
+  const openEditInboxNameDialog = (inboxId: string, name: string) => {
+    setIsEditInboxNameDialogOpened({
+      isOpened: true,
+      inboxId: decodeURIComponent(inboxId),
+      name: name,
+    });
+  };
+  const closeEditInboxNameDialog = () => {
+    setIsEditInboxNameDialogOpened({
+      isOpened: false,
+      inboxId: '',
+      name: '',
+    });
+  };
+  const editInboxNameClick = (
+    event: React.MouseEvent,
+    inboxId: string,
+    name: string
+  ) => {
+    event.stopPropagation();
+    openEditInboxNameDialog(inboxId, name);
+  };
   return (
     <div className="h-full flex flex-col space-y-3 justify-between overflow-hidden">
       <Header
@@ -85,21 +119,37 @@ export const Inboxes = () => {
               {inboxes?.map((inbox) => (
                 <Fragment key={inbox.inbox_id}>
                   <Button
-                    className="w-full"
-                    onClick={() => navigateToInbox(inbox.inbox_id)}
+                    className="group h-14 w-full"
+                    onClick={() => navigateToInbox(inbox)}
                     variant="tertiary"
                   >
-                    {isJobInbox(decodeURIComponent(inbox.inbox_id)) ? (
-                      <Workflow className="h-4 w-4 shrink-0 mr-2" />
-                    ) : (
-                      <MessageCircleIcon className="h-4 w-4 shrink-0 mr-2" />
-                    )}
-
-                    <span className="w-full truncate">
-                      {inbox.custom_name === inbox.inbox_id
-                        ? getMessageContent(inbox.last_message)?.slice(0, 40)
-                        : inbox.custom_name}
-                    </span>
+                    <div className="w-full flex flex-row space-x-2 items-center justify-between">
+                      {isJobInbox(decodeURIComponent(inbox.inbox_id)) ? (
+                        <Workflow className="h-4 w-4 shrink-0" />
+                      ) : (
+                        <MessageCircleIcon className="h-4 w-4 shrink-0" />
+                      )}
+                      <div className="flex-auto overflow-hidden">
+                        <div className="flex flex-col space-y-1">
+                        <span className="truncate text-left">
+                          {inbox.custom_name}
+                        </span>
+                        <div className="truncate text-left text-xs text-muted-foreground">
+                          {getMessageContent(inbox.last_message)}
+                        </div>
+                        </div>
+                      </div>
+                      <Edit
+                        className="shrink-0 h-4 w-4 hidden group-hover:block"
+                        onClick={(event) =>
+                          editInboxNameClick(
+                            event,
+                            inbox.inbox_id,
+                            inbox.custom_name
+                          )
+                        }
+                      />
+                    </div>
                   </Button>
                 </Fragment>
               ))}
@@ -135,6 +185,13 @@ export const Inboxes = () => {
               </DropdownMenuPortal>
             </DropdownMenu>
           </div>
+          <EditInboxNameDialog
+            inboxId={isEditInboxNameDialogOpened.inboxId || ''}
+            name={isEditInboxNameDialogOpened.name}
+            onCancel={() => closeEditInboxNameDialog()}
+            onSaved={() => closeEditInboxNameDialog()}
+            open={isEditInboxNameDialogOpened.isOpened}
+          ></EditInboxNameDialog>
         </>
       )}
     </div>
