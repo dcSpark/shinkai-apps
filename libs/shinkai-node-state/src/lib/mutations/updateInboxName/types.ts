@@ -1,5 +1,11 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { CredentialsPayload } from '@shinkai_network/shinkai-message-ts/models';
 
-export type UpdateInboxNamebInput = any;
+export type UpdateInboxNameInput = CredentialsPayload & {
+  senderSubidentity: string;
+  sender: string;
+  receiver: string;
+  inboxName: string;
+  inboxId: string;
+};
 
-export type UpdateInboxNameOutput = any;
+export type UpdateInboxNameOutput = { success: string; data: null };

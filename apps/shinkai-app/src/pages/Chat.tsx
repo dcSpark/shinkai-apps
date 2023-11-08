@@ -122,7 +122,7 @@ const Chat: React.FC = () => {
         profile_identity_sk: auth.profile_identity_sk,
       });
     } else {
-      sendMessageToInbox({
+      await sendMessageToInbox({
         sender: auth.shinkai_identity,
         sender_subidentity: auth.profile,
         receiver,

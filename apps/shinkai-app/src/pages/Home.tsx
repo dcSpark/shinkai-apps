@@ -47,18 +47,16 @@ const MessageButton = ({ inbox }: { inbox: SmartInbox }) => {
 
   const onSubmit = async (data: z.infer<typeof updateInboxNameSchema>) => {
     if (!auth) return;
-    console.log('data', data);
     await updateInboxName({
       sender: auth?.shinkai_identity ?? '',
       senderSubidentity: auth?.profile,
       receiver: auth.shinkai_identity,
-      receiverSubidentity: '',
       my_device_encryption_sk: auth.my_device_encryption_sk,
       my_device_identity_sk: auth.my_device_identity_sk,
       node_encryption_pk: auth.node_encryption_pk,
       profile_encryption_sk: auth.profile_encryption_sk,
       profile_identity_sk: auth.profile_identity_sk,
-      inboxId: decodeURIComponent(inbox.inbox_id),
+      inboxId: inbox.inbox_id,
       inboxName: data.inboxName,
     });
     setIsEditable(false);
@@ -149,7 +147,7 @@ const Home: React.FC = () => {
 
   const { inboxes } = useGetInboxes({
     sender: auth?.shinkai_identity ?? '',
-    senderSubidentity: `${auth?.profile}/device/${auth?.registration_name}`,
+    senderSubidentity: auth?.profile ?? '',
     // Assuming receiver and target_shinkai_name_profile are the same as sender
     receiver: auth?.shinkai_identity ?? '',
     targetShinkaiNameProfile: `${auth?.shinkai_identity}/${auth?.profile}`,
