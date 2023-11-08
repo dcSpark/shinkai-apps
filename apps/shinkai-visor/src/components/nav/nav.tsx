@@ -16,7 +16,6 @@ import { useHistory, useLocation } from 'react-router-dom';
 import visorLogo from '../../assets/icons/visor.svg';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
 import { useAuth } from '../../store/auth/auth';
-import { useUIContainer } from '../../store/ui-container/ui-container';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -53,7 +52,6 @@ export default function NavBar() {
   const location = useLocation();
   const setLogout = useAuth((state) => state.setLogout);
   const auth = useAuth((state) => state.auth);
-  const uiContainer = useUIContainer((state) => state.uiContainer);
 
   const [isMenuOpened, setMenuOpened] = useState(false);
   const isRootPage = [
@@ -171,7 +169,7 @@ export default function NavBar() {
                 )}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuPortal container={uiContainer?.rootElement}>
+            <DropdownMenuPortal>
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>
                   <FormattedMessage id="inbox.other"></FormattedMessage>

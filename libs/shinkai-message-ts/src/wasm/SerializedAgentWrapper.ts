@@ -24,8 +24,8 @@ export class SerializedAgentWrapper {
     let modelStr = "";
     if (agent.model && agent.model.OpenAI && agent.model.OpenAI.model_type) {
       modelStr = "openai:" + agent.model.OpenAI.model_type;
-    } else if (agent.model && agent.model.SleepAPI) {
-      modelStr = "sleep";
+    } else if (agent.model && agent.model.GenericAPI && agent.model.GenericAPI.model_type) {
+      modelStr = "genericapi:" + agent.model.GenericAPI.model_type;
     } else {
       throw new Error("Invalid model: " + JSON.stringify(agent.model));
     }

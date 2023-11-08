@@ -39,7 +39,6 @@
   "model.one": "Model",
   "model.other": "Models",
   "openai": "OpenAI",
-  "sleep-api": "Sleep API",
   "tmwtd": "Tell me what to do",
   "create-job": "Create job",
   "menu": "Menu",
@@ -84,5 +83,7 @@
   "file.other": "Files",
   "save": "Save",
   "name.one": "Name",
-  "edit": "Edit"
+  "edit": "Edit",
+  "togethercomputer": "Together AI",
+  "alphanumeric_with_underscore": "It just accepts alphanumeric characters and underscores"
 }

@@ -11,7 +11,6 @@ import { z } from 'zod';
 
 import { useQuery } from '../../hooks/use-query';
 import { useAuth } from '../../store/auth/auth';
-import { useUIContainer } from '../../store/ui-container/ui-container';
 import { FileInput } from '../file-input/file-input';
 import { Header } from '../header/header';
 import { Button } from '../ui/button';
@@ -48,7 +47,6 @@ export const CreateJob = () => {
   const location = useLocation<{ files: File[] }>();
   const query = useQuery();
   const auth = useAuth((state) => state.auth);
-  const uiContainer = useUIContainer((state) => state.uiContainer);
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -137,7 +135,7 @@ export const CreateJob = () => {
                         <SelectValue />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectPortal container={uiContainer?.rootElement}>
+                    <SelectPortal>
                       <SelectContent>
                         {agents?.map((agent) => (
                           <SelectItem key={agent.id} value={agent.id}>
