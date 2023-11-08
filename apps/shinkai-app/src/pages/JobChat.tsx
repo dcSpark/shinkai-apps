@@ -22,6 +22,7 @@ import {
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMessageToJob/useSendMessageToJob';
 import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageWithFilesToInbox/useSendMessageWithFilesToInbox';
+import { ChatConversationMessage } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
 import MarkdownPreview from '@uiw/react-markdown-preview';
 import { send } from 'ionicons/icons';
@@ -40,12 +41,10 @@ import { useSetup } from '../hooks/usetSetup';
 import { useAuth } from '../store/auth';
 import { cn } from '../theme/lib/utils';
 
-const groupMessagesByDate = (messages: ShinkaiMessage[]) => {
-  const groupedMessages: Record<string, ShinkaiMessage[]> = {};
+const groupMessagesByDate = (messages: ChatConversationMessage[]) => {
+  const groupedMessages: Record<string, ChatConversationMessage[]> = {};
   messages.forEach((message) => {
-    const date = new Date(
-      message.external_metadata?.scheduled_time ?? ''
-    ).toDateString();
+    const date = new Date(message.scheduledTime ?? '').toDateString();
 
     if (!groupedMessages[date]) {
       groupedMessages[date] = [];
@@ -291,42 +290,35 @@ const JobChat: React.FC = () => {
                           </div>
                           <div className="flex flex-col gap-4 md:gap-8 py-10">
                             {messages.map((message, idx) => {
-                              const isLocal = isLocalMessage(
-                                message,
-                                auth?.shinkai_identity ?? '',
-                                auth?.profile ?? ''
-                              );
                               return (
                                 <IonItem
                                   className={cn(
                                     'ion-item-chat relative',
-                                    isLocal && 'isLocalMessage'
+                                    message.isLocal && 'isLocalMessage'
                                   )}
-                                  key={
-                                    message?.external_metadata?.scheduled_time
-                                  }
+                                  key={message.scheduledTime}
                                   lines="none"
                                 >
                                   <div
                                     className={cn(
                                       'px-2 py-6 flex gap-2 md:gap-8 pb-14',
-                                      isLocal
+                                      message.isLocal
                                         ? 'flex-row-reverse ml-auto'
                                         : 'mr-auto'
                                     )}
                                   >
                                     <Avatar
                                       className="shrink-0"
-                                      url={getAvatar(message)}
+                                      url={message.sender.avatar}
                                     />
                                     <MarkdownPreview
                                       className={cn(
                                         'mt-1 rounded-lg bg-transparent px-2.5 py-3 text-sm text-foreground',
-                                        isLocal
+                                        message.isLocal
                                           ? 'rounded-tl-none border border-slate-800'
                                           : 'rounded-tr-none border-none bg-[rgba(217,217,217,0.04)]'
                                       )}
-                                      source={getMessageContent(message)}
+                                      source={message.content}
                                     />{' '}
                                   </div>
                                 </IonItem>

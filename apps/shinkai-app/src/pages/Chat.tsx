@@ -19,6 +19,7 @@ import {
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMessageToJob/useSendMessageToJob';
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
 import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageWithFilesToInbox/useSendMessageWithFilesToInbox';
+import { ChatConversationMessage } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
 import MarkdownPreview from '@uiw/react-markdown-preview';
 import { cameraOutline } from 'ionicons/icons';
@@ -137,11 +138,11 @@ const Chat: React.FC = () => {
     }
     chatForm.reset();
   };
-  const groupMessagesByDate = (messages: ShinkaiMessage[]) => {
-    const groupedMessages: Record<string, ShinkaiMessage[]> = {};
+  const groupMessagesByDate = (messages: ChatConversationMessage[]) => {
+    const groupedMessages: Record<string, ChatConversationMessage[]> = {};
     for (const message of messages) {
       const date = new Date(
-        message.external_metadata?.scheduled_time ?? ''
+        message.scheduledTime ?? ''
       ).toDateString();
       if (!groupedMessages[date]) {
         groupedMessages[date] = [];
@@ -149,15 +150,6 @@ const Chat: React.FC = () => {
       groupedMessages[date].push(message);
     }
     return groupedMessages;
-  };
-  const getAvatar = (message: ShinkaiMessage) => {
-    return isLocalMessage(
-      message,
-      auth?.shinkai_identity || '',
-      auth?.profile || ''
-    )
-      ? 'https://ui-avatars.com/api/?name=Me&background=FE6162&color=fff'
-      : 'https://ui-avatars.com/api/?name=O&background=363636&color=fff';
   };
 
   const handleKeyDown = (
@@ -204,16 +196,11 @@ const Chat: React.FC = () => {
                           </div>
                           <div className="flex flex-col gap-4">
                             {messages.map((message) => {
-                              const isLocal = isLocalMessage(
-                                message,
-                                auth?.shinkai_identity ?? '',
-                                auth?.profile ?? ''
-                              );
                               return (
                                 <IonItem
                                   className={cn(
                                     'ion-item-chat relative',
-                                    isLocal && 'isLocalMessage'
+                                    message.isLocal && 'isLocalMessage'
                                   )}
                                   key={index}
                                   lines="none"
@@ -221,17 +208,17 @@ const Chat: React.FC = () => {
                                   <div className="px-2 py-4 flex gap-4 pb-10 w-full">
                                     <Avatar
                                       className="shrink-0 mr-4"
-                                      url={getAvatar(message)}
+                                      url={message.sender.avatar}
                                     />
 
                                     <MarkdownPreview
                                       className={cn(
                                         'mt-1 rounded-lg bg-transparent px-2.5 py-3 text-sm text-foreground',
-                                        isLocal
+                                        message.isLocal
                                           ? 'rounded-tl-none border border-slate-800'
                                           : 'rounded-tr-none border-none bg-[rgba(217,217,217,0.04)]'
                                       )}
-                                      source={getMessageContent(message)}
+                                      source={message.content}
                                     />
                                   </div>
                                 </IonItem>
