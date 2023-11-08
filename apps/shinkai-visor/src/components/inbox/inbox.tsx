@@ -325,7 +325,7 @@ export const Inbox = () => {
               <span>
                 <FormattedMessage id="file-processing-alert-description" />
               </span>
-              <DotsLoader className="w-4 h-4"></DotsLoader>
+              <DotsLoader className="w-6 h-full"></DotsLoader>
             </div>
           </AlertDescription>
           <Terminal className="h-4 w-4" />
