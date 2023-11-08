@@ -1,7 +1,7 @@
 import { updateInboxName as updateInboxNameApi } from '@shinkai_network/shinkai-message-ts/api';
 import { type ShinkaiMessage } from '@shinkai_network/shinkai-message-ts/models';
 
-import { UpdateInboxNamebInput } from './types';
+import { UpdateInboxNameInput } from './types';
 export type SmartInbox = {
   custom_name: string;
   inbox_id: string;
@@ -12,7 +12,6 @@ export const updateInboxName = async ({
   senderSubidentity,
   sender,
   receiver,
-  receiverSubidentity,
   my_device_encryption_sk,
   my_device_identity_sk,
   node_encryption_pk,
@@ -20,12 +19,12 @@ export const updateInboxName = async ({
   profile_identity_sk,
   inboxName,
   inboxId,
-}: UpdateInboxNamebInput) => {
+}: UpdateInboxNameInput) => {
   const response = await updateInboxNameApi(
     sender,
     senderSubidentity,
     receiver,
-    receiverSubidentity,
+
     {
       my_device_encryption_sk,
       my_device_identity_sk,

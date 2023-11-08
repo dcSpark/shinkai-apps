@@ -232,7 +232,6 @@ export const updateInboxName = async (
   sender: string,
   sender_subidentity: string,
   receiver: string,
-  receiver_subidentity: string,
   setupDetailsState: CredentialsPayload,
   inboxName: string,
   inboxId: string
