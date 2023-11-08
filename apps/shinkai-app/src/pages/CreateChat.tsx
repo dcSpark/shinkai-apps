@@ -46,7 +46,7 @@ const CreateChat: React.FC = () => {
     if (!auth) return;
     const [receiver, ...rest] = data.receiver.split('/');
 
-    createChat({
+    await createChat({
       sender: auth.shinkai_identity,
       senderSubidentity: auth.profile,
       receiver,
