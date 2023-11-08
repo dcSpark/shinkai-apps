@@ -62,7 +62,8 @@ export default function NavBar() {
     '/settings',
     '/nodes/connect/method/quick-start',
   ].includes(location.pathname);
-  const [isConfirmLogoutDialogOpened, setIsConfirmLogoutDialogOpened] = useState(false)
+  const [isConfirmLogoutDialogOpened, setIsConfirmLogoutDialogOpened] =
+    useState(false);
 
   const goBack = () => {
     history.goBack();
@@ -107,22 +108,37 @@ export default function NavBar() {
       <AlertDialog open={isConfirmLogoutDialogOpened}>
         <AlertDialogContent className="w-[75%]">
           <AlertDialogHeader>
-            <AlertDialogTitle><FormattedMessage id="are-you-sure"/></AlertDialogTitle>
+            <AlertDialogTitle>
+              <FormattedMessage id="are-you-sure" />
+            </AlertDialogTitle>
             <AlertDialogDescription>
-            <div className="flex flex-col space-y-3">
+              <div className="flex flex-col space-y-3">
                 <div className="flex flex-col space-y-1">
-                  <span className="text-xs italic"><FormattedMessage id="permanently-lose-connection"/></span>
+                  <span className="text-xs italic">
+                    <FormattedMessage id="permanently-lose-connection" />
+                  </span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="underline decoration-dashed cursor-pointer" onClick={() => exportConnection()}>Export your conection</span>
+                  <span
+                    className="underline decoration-dashed cursor-pointer"
+                    onClick={() => exportConnection()}
+                  >
+                    Export your conection
+                  </span>
                   <span className="text-xs">If you want to use it later</span>
                 </div>
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setIsConfirmLogoutDialogOpened(false)}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => logout()}>Continue</AlertDialogAction>
+            <AlertDialogCancel
+              onClick={() => setIsConfirmLogoutDialogOpened(false)}
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={() => logout()}>
+              Continue
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
