@@ -8,8 +8,8 @@ export const modelsConfig = {
     apiUrl: 'https://api.openai.com',
     modelTypes: [
       {
-        name: 'GPT 3.5 Turbo',
-        value: 'gpt-3.5-turbo',
+        name: 'GPT 3.5 Turbo (1106)',
+        value: 'gpt-3.5-turbo-1106',
       },
       {
         name: 'GPT 4 Turbo',
