@@ -85,5 +85,6 @@
   "name.one": "Nombre",
   "edit": "Editar",
   "togethercomputer": "Together AI",
-  "alphanumeric_with_underscore": "Solo se permiten caracteres alfanuméricos y guiones bajos"
+  "alphanumeric_with_underscore": "Solo se permiten caracteres alfanuméricos y guiones bajos",
+  "default-agent": "Agente por defecto"
 }
