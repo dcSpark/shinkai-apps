@@ -44,7 +44,7 @@ type FormSchemaType = z.infer<typeof formSchema>;
 export const CreateJob = () => {
   const history = useHistory();
   const intl = useIntl();
-  const location = useLocation<{ files: File[] }>();
+  const location = useLocation<{ files: File[], agentName: string }>();
   const query = useQuery();
   const auth = useAuth((state) => state.auth);
   const form = useForm<FormSchemaType>({
@@ -84,6 +84,14 @@ export const CreateJob = () => {
   useEffect(() => {
     form.setValue('files', location?.state?.files || []);
   }, [location, form]);
+  useEffect(() => {
+    if (location?.state?.agentName) {
+      const agent = agents.find(agent => (agent.full_identity_name as any)?.subidentity_name === location.state.agentName);
+      if (agent) {
+        form.setValue('agent', agent.id);
+      }
+    }
+  }, [form, location, agents]);
   const submit = (values: FormSchemaType) => {
     if (!auth) return;
     let content = values.content;

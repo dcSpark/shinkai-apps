@@ -60,7 +60,7 @@ export const AddAgent = () => {
   });
   const { mutateAsync: createAgent, isLoading } = useCreateAgent({
     onSuccess: () => {
-      history.replace({ pathname: '/inboxes/create-job' });
+      history.replace({ pathname: '/inboxes/create-job' }, { agentName: form.getValues().agentName });
     },
   });
   const modelOptions: { value: Models; label: string }[] = [
