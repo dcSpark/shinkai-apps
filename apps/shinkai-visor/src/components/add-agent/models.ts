@@ -11,6 +11,10 @@ export const modelsConfig = {
         name: 'GPT 3.5 Turbo',
         value: 'gpt-3.5-turbo',
       },
+      {
+        name: 'GPT 4 Turbo',
+        value: 'gpt-4-1106-preview',
+      }
     ],
   },
   [Models.TogetherComputer]: {
