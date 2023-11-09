@@ -74,15 +74,16 @@ export interface SerializedAgent {
 }
 export interface AgentAPIModel {
   OpenAI?: OpenAI;
-  SleepAPI?: SleepAPI;
+  GenericAPI?: GenericAPI;
 }
 
 export interface OpenAI {
   model_type: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface SleepAPI {}
+export interface GenericAPI {
+  model_type: string;
+}
 
 export interface APIAddAgentRequest {
   agent: SerializedAgent;

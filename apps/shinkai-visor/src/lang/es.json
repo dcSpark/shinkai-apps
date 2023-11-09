@@ -39,7 +39,6 @@
   "model.one": "Modelo",
   "model.other": "Modelos",
   "openai": "OpenAI",
-  "sleep-api": "Sleep API",
   "tmwtd": "Dime qué hacer",
   "create-job": "Crear job",
   "menu": "Menu",
@@ -84,5 +83,7 @@
   "file.other": "Archivos",
   "save": "Guardar",
   "name.one": "Nombre",
-  "edit": "Editar"
+  "edit": "Editar",
+  "togethercomputer": "Together AI",
+  "alphanumeric_with_underscore": "Solo se permiten caracteres alfanuméricos y guiones bajos"
 }

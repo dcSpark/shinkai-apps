@@ -57,7 +57,6 @@ const AddAgent: React.FC = () => {
   const onSubmit = (data: z.infer<typeof addAgentSchema>) => {
     const modelMapping: Record<string, { model_type: string }> = {
       OpenAI: { model_type: modelType },
-      SleepAPI: { model_type: modelType },
     };
 
     if (!auth) return;
@@ -207,9 +206,6 @@ const AddAgent: React.FC = () => {
                         >
                           <IonSelectOption value="OpenAI">
                             OpenAI
-                          </IonSelectOption>
-                          <IonSelectOption value="SleepAPI">
-                            SleepAPI
                           </IonSelectOption>
                         </IonSelect>
                         <ErrorMessage
