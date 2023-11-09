@@ -85,5 +85,6 @@
   "name.one": "Name",
   "edit": "Edit",
   "togethercomputer": "Together AI",
-  "alphanumeric_with_underscore": "It just accepts alphanumeric characters and underscores"
+  "alphanumeric_with_underscore": "It just accepts alphanumeric characters and underscores",
+  "default-agent": "Default agent"
 }

@@ -11,6 +11,7 @@ import { z } from 'zod';
 
 import { useQuery } from '../../hooks/use-query';
 import { useAuth } from '../../store/auth/auth';
+import { useSettings } from '../../store/settings/settings';
 import { FileInput } from '../file-input/file-input';
 import { Header } from '../header/header';
 import { Button } from '../ui/button';
@@ -47,6 +48,7 @@ export const CreateJob = () => {
   const location = useLocation<{ files: File[], agentName: string }>();
   const query = useQuery();
   const auth = useAuth((state) => state.auth);
+  const settings = useSettings(state => state.settings);
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -85,13 +87,15 @@ export const CreateJob = () => {
     form.setValue('files', location?.state?.files || []);
   }, [location, form]);
   useEffect(() => {
+    let defaultAgentId: string = settings?.defaultAgentId ?? '';
     if (location?.state?.agentName) {
       const agent = agents.find(agent => (agent.full_identity_name as any)?.subidentity_name === location.state.agentName);
       if (agent) {
-        form.setValue('agent', agent.id);
+        defaultAgentId = agent.id;
       }
     }
-  }, [form, location, agents]);
+    form.setValue('agent', defaultAgentId);
+  }, [form, location, agents, settings]);
   const submit = (values: FormSchemaType) => {
     if (!auth) return;
     let content = values.content;
