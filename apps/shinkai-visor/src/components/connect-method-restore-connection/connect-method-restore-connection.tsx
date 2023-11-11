@@ -71,7 +71,7 @@ export const ConnectMethodRestoreConnection = () => {
       );
       if (decryptedValue) {
         const decryptedSetupData = JSON.parse(decryptedValue);
-
+        console.log('auth', decryptedSetupData);
         setAuth(decryptedSetupData);
         // TODO: Add logic to test if setup data is valid to create an authenticated connection with Shinkai Node
         history.replace('/inboxes');

@@ -22,6 +22,7 @@ import { ConnectMethodQuickStart } from '../connect-method-quick-start/connect-m
 import { ConnectMethodRestoreConnection } from '../connect-method-restore-connection/connect-method-restore-connection';
 import { CreateInbox } from '../create-inbox/create-inbox';
 import { CreateJob } from '../create-job/create-job';
+import { CreateRegistrationCode } from '../create-registration-code/create-registration-code';
 import { ExportConnection } from '../export-connection/export-connection';
 import { Inbox } from '../inbox/inbox';
 import { Inboxes } from '../inboxes/inboxes';
@@ -38,7 +39,6 @@ export const Popup = () => {
 
   useEffect(() => {
     const isAuthenticated = !!auth;
-    console.log('isAuth', isAuthenticated, auth);
     if (isAuthenticated) {
       ApiConfig.getInstance().setEndpoint(auth.node_address);
       history.replace('/inboxes');
@@ -120,6 +120,9 @@ export const Popup = () => {
                     <Switch>
                       <Route path="/settings/export-connection">
                         <ExportConnection></ExportConnection>
+                      </Route>
+                      <Route path="/settings/create-registration-code">
+                        <CreateRegistrationCode></CreateRegistrationCode>
                       </Route>
                       <Route path="/">
                         <Settings></Settings>

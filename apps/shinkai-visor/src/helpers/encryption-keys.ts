@@ -15,9 +15,10 @@ export type Encryptionkeys = {
 };
 
 export const generateMyEncryptionKeys = async (): Promise<Encryptionkeys> => {
-  const seed = crypto.getRandomValues(new Uint8Array(32));
+  let seed = crypto.getRandomValues(new Uint8Array(32));
   const deviceEncryptionKeys = await generateEncryptionKeys(seed);
   const deviceSignataureKeys = await generateSignatureKeys();
+  seed = crypto.getRandomValues(new Uint8Array(32));
   const profileEncryptionKeys = await generateEncryptionKeys(seed);
   const profileSignatureKeys = await generateSignatureKeys();
 

@@ -20,6 +20,7 @@ export type SetupData = {
   my_device_identity_sk: string;
   my_device_identity_pk: string;
 };
+
 type AuthStore = {
   auth: SetupData | null;
   setAuth: (auth: SetupData) => void;

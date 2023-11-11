@@ -86,5 +86,18 @@
   "edit": "Edit",
   "togethercomputer": "Together AI",
   "alphanumeric_with_underscore": "It just accepts alphanumeric characters and underscores",
-  "default-agent": "Default agent"
+  "default-agent": "Default agent",
+  "create-registration-code": "Create registration code",
+  "profile.one": "Profile",
+  "profile.other": "Profiles",
+  "device.one": "Device",
+  "device.other": "Devices",
+  "generate-registration-code": "Generate registration code",
+  "permission-type": "Permission type",
+  "admin": "Admin",
+  "standard": "Standard",
+  "none": "None",
+  "scan-or-download-registration-code": "Scan or download this registration code",
+  "use-it-to-register-and-connect": "Use this QR code to register a new profile or device and connect to your Shinkai Node",
+  "identity-type": "Identity type"
 }
