@@ -86,5 +86,18 @@
   "edit": "Editar",
   "togethercomputer": "Together AI",
   "alphanumeric_with_underscore": "Solo se permiten caracteres alfanuméricos y guiones bajos",
-  "default-agent": "Agente por defecto"
+  "default-agent": "Agente por defecto",
+  "create-registration-code": "Crear código de registro",
+  "profile.one": "Perfil",
+  "profile.other": "Perfiles",
+  "device.one": "Dispositivo",
+  "device.other": "Dispositivos",
+  "generate-registration-code": "Generar código de registro",
+  "permission-type": "Tipo de permiso",
+  "admin": "Administrador",
+  "standard": "Estándar",
+  "none": "Ninguno",
+  "scan-or-download-registration-code": "Escanea o descarga este código de registro",
+  "use-it-to-register-and-connect": "Usa este código para registrar un nuevo dispositivo y conectarlo a tu Shinkai Node",
+  "identity-type": "Tipo de identidad"
 }

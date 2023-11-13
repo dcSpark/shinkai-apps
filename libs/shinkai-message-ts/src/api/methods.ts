@@ -347,7 +347,7 @@ export const submitRequestRegistrationCode = async (
 
 export const submitRegistrationCode = async (
   setupData: SetupPayload
-): Promise<boolean> => {
+): Promise<{ encryption_public_key: string, identity_public_key: string } | undefined> => {
   try {
     const messageStr =
       ShinkaiMessageBuilderWrapper.use_code_registration_for_device(
@@ -380,10 +380,10 @@ export const submitRegistrationCode = async (
 
     // Update the API_ENDPOINT after successful registration
     ApiConfig.getInstance().setEndpoint(setupData.node_address);
-    return true;
+    return response.json();
   } catch (error) {
     console.error('Error using registration code:', error);
-    return false;
+    return undefined;
   }
 };
 

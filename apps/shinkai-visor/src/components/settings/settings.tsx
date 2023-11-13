@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
-import { FileKey, SettingsIcon } from 'lucide-react';
+import { FileKey, QrCode, SettingsIcon } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
@@ -59,6 +59,9 @@ export const Settings = () => {
   });
   const exportConnection = () => {
     history.push('settings/export-connection');
+  };
+  const createRegistrationCode = () => {
+    history.push('settings/create-registration-code');
   };
   useEffect(() => {
     if (defaultAgentId) {
@@ -122,6 +125,10 @@ export const Settings = () => {
         <Button className="w-full" onClick={() => exportConnection()}>
           <FileKey className="mr-2 h-4 w-4" />
           <FormattedMessage id="export-connection" />
+        </Button>
+        <Button className="w-full" onClick={() => createRegistrationCode()}>
+          <QrCode className="mr-2 h-4 w-4" />
+          <FormattedMessage id="create-registration-code" />
         </Button>
       </div>
     </div>

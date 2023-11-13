@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { QRSetupData } from '@shinkai_network/shinkai-message-ts/models';
-import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
+import { useSubmitRegistration } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistration';
 import { BrowserQRCodeReader } from '@zxing/browser';
 import { Loader2, PlugZap, QrCode, Trash, Upload } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -32,8 +32,8 @@ const formSchema = z.object({
   profile: z.enum(['main']),
   node_address: z.string().url(),
   shinkai_identity: z.string().min(11),
-  node_encryption_pk: z.string().optional(),
-  node_signature_pk: z.string().optional(),
+  node_encryption_pk: z.string(),
+  node_signature_pk: z.string(),
   profile_encryption_pk: z.string().min(5),
   profile_identity_pk: z.string().min(5),
   my_device_encryption_pk: z.string().min(5),
@@ -88,15 +88,16 @@ export const ConnectMethodQrCode = () => {
     mutateAsync: submitRegistration,
     isError: isSubmitError,
     error: submitError,
-  } = useSubmitRegistrationNoCode({
+  } = useSubmitRegistration({
     onSuccess: (response) => {
-      if (response.success) {
+      if (response) {
         const values = form.getValues();
         const authData: SetupData = {
           ...values,
-          node_signature_pk: values.node_signature_pk ?? '',
-          node_encryption_pk: values.node_encryption_pk ?? '',
+          node_signature_pk: response.identity_public_key ?? '',
+          node_encryption_pk: response.encryption_public_key ?? '',
         };
+        console.log(authData, response.identity_public_key, response.identity_public_key === values.node_signature_pk);
         authSuccess(authData);
       } else {
         throw new Error('Failed to submit registration');

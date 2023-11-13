@@ -4,7 +4,7 @@ import { useMutation } from '@tanstack/react-query';
 
 import { submitRegistration } from '.';
 
-type Options = UseMutationOptions<boolean, Error, SetupPayload>;
+type Options = UseMutationOptions<Awaited<ReturnType<typeof submitRegistration>>, Error, SetupPayload>;
 
 export const useSubmitRegistration = (options?: Options) => {
   return useMutation({
