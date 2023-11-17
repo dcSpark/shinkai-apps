@@ -66,7 +66,7 @@ const Chat: React.FC = () => {
     data,
     fetchPreviousPage,
     hasPreviousPage,
-    isLoading: isChatConversationLoading,
+    isPending: isChatConversationLoading,
     isFetchingPreviousPage,
     isSuccess: isChatConversationSuccess,
   } = useGetChatConversationWithPagination({
@@ -81,14 +81,14 @@ const Chat: React.FC = () => {
   });
   const {
     mutateAsync: sendMessageToInbox,
-    isLoading: isSendingMessageToInbox,
+    isPending: isSendingMessageToInbox,
   } = useSendMessageToInbox();
-  const { mutateAsync: sendMessageToJob, isLoading: isSendingMessageToJob } =
+  const { mutateAsync: sendMessageToJob, isPending: isSendingMessageToJob } =
     useSendMessageToJob();
 
   const {
     mutateAsync: sendTextMessageWithFilesForInbox,
-    isLoading: isSendingTextMessageWithFilesForInbox,
+    isPending: isSendingTextMessageWithFilesForInbox,
   } = useSendMessageWithFilesToInbox();
 
   const otherPersonIdentity = getOtherPersonIdentity(
@@ -141,9 +141,7 @@ const Chat: React.FC = () => {
   const groupMessagesByDate = (messages: ChatConversationMessage[]) => {
     const groupedMessages: Record<string, ChatConversationMessage[]> = {};
     for (const message of messages) {
-      const date = new Date(
-        message.scheduledTime ?? ''
-      ).toDateString();
+      const date = new Date(message.scheduledTime ?? '').toDateString();
       if (!groupedMessages[date]) {
         groupedMessages[date] = [];
       }

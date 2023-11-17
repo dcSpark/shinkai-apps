@@ -47,7 +47,7 @@ const CreateJob: React.FC = () => {
 
   const history = useHistory();
 
-  const { isLoading, mutateAsync: createJob } = useCreateJob({
+  const { isPending, mutateAsync: createJob } = useCreateJob({
     onSuccess: (data) => {
       const jobId = encodeURIComponent(buildInboxIdFromJobId(data.jobId));
       history.push(`/job-chat/${jobId}`);
@@ -157,7 +157,7 @@ const CreateJob: React.FC = () => {
                   />
                 </div>
 
-                <Button isLoading={isLoading} type="submit">
+                <Button isLoading={isPending} type="submit">
                   Create Job
                 </Button>
               </form>

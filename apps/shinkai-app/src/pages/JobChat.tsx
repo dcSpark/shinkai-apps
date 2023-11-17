@@ -129,13 +129,13 @@ const JobChat: React.FC = () => {
 
   const {
     mutateAsync: sendMessageToJob,
-    isLoading: isSendingMessageToJob,
+    isPending: isSendingMessageToJob,
     isSuccess: isMessageToJobSuccess,
   } = useSendMessageToJob();
 
   const {
     mutateAsync: sendTextMessageWithFilesForInbox,
-    isLoading: isSendingTextMessageWithFilesForInbox,
+    isPending: isSendingTextMessageWithFilesForInbox,
     isSuccess: isTextMessageWithFilesForInboxSuccess,
   } = useSendMessageWithFilesToInbox();
 
