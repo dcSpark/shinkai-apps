@@ -39,7 +39,7 @@ export const CreateInbox = () => {
       message: '',
     },
   });
-  const { isLoading, mutateAsync: createChat } = useCreateChat({
+  const { isPending, mutateAsync: createChat } = useCreateChat({
     onSuccess: (data) => {
       history.replace(`/inboxes/${encodeURIComponent(data.inboxId)}`);
     },
@@ -122,10 +122,10 @@ export const CreateInbox = () => {
           </div>
           <Button
             className="w-full"
-            disabled={!form.formState.isValid || isLoading}
+            disabled={!form.formState.isValid || isPending}
             type="submit"
           >
-            {isLoading ? (
+            {isPending ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
               <MessageCircle className="mr-2 h-4 w-4"></MessageCircle>

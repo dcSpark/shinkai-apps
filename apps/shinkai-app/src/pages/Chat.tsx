@@ -11,11 +11,6 @@ import {
   IonTextarea,
   IonTitle,
 } from '@ionic/react';
-import { ShinkaiMessage } from '@shinkai_network/shinkai-message-ts/models';
-import {
-  getMessageContent,
-  isLocalMessage,
-} from '@shinkai_network/shinkai-message-ts/utils';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMessageToJob/useSendMessageToJob';
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
 import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageWithFilesToInbox/useSendMessageWithFilesToInbox';

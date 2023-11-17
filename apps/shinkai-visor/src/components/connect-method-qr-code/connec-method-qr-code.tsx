@@ -84,7 +84,7 @@ export const ConnectMethodQrCode = () => {
   const [qrImageUrl, setQRImageUrl] = useState<string | null>(null);
 
   const {
-    isLoading,
+    isPending,
     mutateAsync: submitRegistration,
     isError: isSubmitError,
     error: submitError,
@@ -97,7 +97,11 @@ export const ConnectMethodQrCode = () => {
           node_signature_pk: response.identity_public_key ?? '',
           node_encryption_pk: response.encryption_public_key ?? '',
         };
-        console.log(authData, response.identity_public_key, response.identity_public_key === values.node_signature_pk);
+        console.log(
+          authData,
+          response.identity_public_key,
+          response.identity_public_key === values.node_signature_pk
+        );
         authSuccess(authData);
       } else {
         throw new Error('Failed to submit registration');
@@ -292,8 +296,8 @@ export const ConnectMethodQrCode = () => {
 
             {isSubmitError && <ErrorMessage message={submitError?.message} />}
           </div>
-          <Button className="w-full" disabled={isLoading} type="submit">
-            {isLoading ? (
+          <Button className="w-full" disabled={isPending} type="submit">
+            {isPending ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
               <PlugZap className="mr-2 h-4 w-4" />

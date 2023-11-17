@@ -67,7 +67,7 @@ export const CreateJob = () => {
     profile_encryption_sk: auth?.profile_encryption_sk ?? '',
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
-  const { isLoading, mutateAsync: createJob } = useCreateJob({
+  const { isPending, mutateAsync: createJob } = useCreateJob({
     onSuccess: (data) => {
       console.log('job created');
       const jobId = encodeURIComponent(buildInboxIdFromJobId(data.jobId));
@@ -249,8 +249,8 @@ export const CreateJob = () => {
             />
           </ScrollArea>
 
-          <Button className="w-full" disabled={isLoading} type="submit">
-            {isLoading ? (
+          <Button className="w-full" disabled={isPending} type="submit">
+            {isPending ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
               <Workflow className="mr-2 h-4 w-4"></Workflow>

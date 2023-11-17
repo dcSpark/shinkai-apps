@@ -1,12 +1,8 @@
 import { ShinkaiMessage } from '@shinkai_network/shinkai-message-ts/models';
 import {
-  calculateMessageHash,
   extractJobIdFromInbox,
   extractReceiverShinkaiName,
-  getMessageContent,
-  getMessageFilesInbox,
   isJobInbox as checkIsJobInbox,
-  isLocalMessage,
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMessageToJob/useSendMessageToJob';
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
@@ -49,7 +45,7 @@ export const Inbox = () => {
     data,
     fetchPreviousPage,
     hasPreviousPage,
-    isLoading: isChatConversationLoading,
+    isPending: isChatConversationLoading,
     isFetchingPreviousPage,
     isSuccess: isChatConversationSuccess,
   } = useGetChatConversationWithPagination({
@@ -65,9 +61,9 @@ export const Inbox = () => {
   });
   const {
     mutateAsync: sendMessageToInbox,
-    isLoading: isSendingMessageToInbox,
+    isPending: isSendingMessageToInbox,
   } = useSendMessageToInbox();
-  const { mutateAsync: sendMessageToJob, isLoading: isSendingMessageToJob } =
+  const { mutateAsync: sendMessageToJob, isPending: isSendingMessageToJob } =
     useSendMessageToJob();
   const { inboxes } = useGetInboxes({
     sender: auth?.shinkai_identity ?? '',
@@ -91,14 +87,9 @@ export const Inbox = () => {
   const [isJobProcessingFile, setIsJobProcessingFile] =
     useState<boolean>(false);
   const fetchPreviousMessages = useCallback(async () => {
-    const firstMessage = data?.pages?.[0]?.[0];
     fromPreviousMessagesRef.current = true;
-    if (!firstMessage) return;
-    const timeKey = firstMessage.scheduledTime;
-    const hashKey = firstMessage.hash;
-    const firstMessageKey = `${timeKey}:::${hashKey}`;
-    await fetchPreviousPage({ pageParam: { lastKey: firstMessageKey } });
-  }, [data?.pages, fetchPreviousPage]);
+    await fetchPreviousPage();
+  }, [fetchPreviousPage]);
   const handleScroll = useCallback(async () => {
     const chatContainerElement = chatContainerRef.current;
     if (!chatContainerElement) return;
@@ -152,9 +143,7 @@ export const Inbox = () => {
   const groupMessagesByDate = (messages: ChatConversationMessage[]) => {
     const groupedMessages: Record<string, ChatConversationMessage[]> = {};
     for (const message of messages) {
-      const date = new Date(
-        message.scheduledTime ?? ''
-      ).toDateString();
+      const date = new Date(message.scheduledTime ?? '').toDateString();
       if (!groupedMessages[date]) {
         groupedMessages[date] = [];
       }
@@ -194,9 +183,11 @@ export const Inbox = () => {
   }, [decodedInboxId]);
   useEffect(() => {
     if (decodedInboxId) {
-      const currentInbox = inboxes.find(inbox => decodedInboxId === inbox.inbox_id);
+      const currentInbox = inboxes.find(
+        (inbox) => decodedInboxId === inbox.inbox_id
+      );
       if (currentInbox) {
-        setInbox(currentInbox)
+        setInbox(currentInbox);
       }
     }
   }, [inboxes, decodedInboxId]);
@@ -209,14 +200,18 @@ export const Inbox = () => {
     const [firstMessagePage] = data?.pages || [];
     const lastMessage = [...(firstMessagePage || [])].pop();
     if (lastMessage) {
-      setIsJobProcessing(isJobInbox && (isSendingMessage || lastMessage.isLocal));
+      setIsJobProcessing(
+        isJobInbox && (isSendingMessage || lastMessage.isLocal)
+      );
     }
   }, [data?.pages, auth, isSendingMessage, isJobInbox]);
   useEffect(() => {
     const [firstMessagePage] = data?.pages || [];
     const lastMessage = [...(firstMessagePage || [])].pop();
     if (lastMessage) {
-      setIsJobProcessingFile(isJobProcessing && lastMessage.isLocal && !!lastMessage.fileInbox);
+      setIsJobProcessingFile(
+        isJobProcessing && lastMessage.isLocal && !!lastMessage.fileInbox
+      );
     }
   }, [data?.pages, auth, isJobProcessing]);
 
@@ -228,9 +223,7 @@ export const Inbox = () => {
           <FormattedMessage id="inbox.one"></FormattedMessage>
         </h1>
         <ChevronRight className="h-4 w-4 shrink-0" />
-        <h1 className="grow font-semibold truncate">
-          {inbox?.custom_name}
-        </h1>
+        <h1 className="grow font-semibold truncate">{inbox?.custom_name}</h1>
         <Edit
           className="cursor-pointer invisible group-hover:visible shrink-0"
           onClick={() => setIsEditInboxNameDialogOpened(true)}
@@ -285,10 +278,7 @@ export const Inbox = () => {
                         >
                           <span className="px-2.5 py-2 text-sm font-semibold text-foreground">
                             {dateToLabel(
-                              new Date(
-                                messages[0].scheduledTime ||
-                                  ''
-                              )
+                              new Date(messages[0].scheduledTime || '')
                             )}
                           </span>
                         </div>
@@ -299,9 +289,7 @@ export const Inbox = () => {
                                 className={cn('flex items-start gap-3')}
                                 key={`${index}-${message.scheduledTime}`}
                               >
-                                <Message
-                                  message={message}
-                                ></Message>
+                                <Message message={message}></Message>
                               </div>
                             );
                           })}

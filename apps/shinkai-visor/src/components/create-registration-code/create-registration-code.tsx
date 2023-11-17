@@ -67,7 +67,7 @@ export const CreateRegistrationCode = () => {
     | Partial<SetupData & { registration_code: string; identity_type: string }>
     | undefined
   >();
-  const { mutateAsync: createRegistrationCode, isLoading } =
+  const { mutateAsync: createRegistrationCode, isPending } =
     useCreateRegistrationCode({
       onSuccess: (registrationCode) => {
         const formValues = form.getValues();
@@ -267,7 +267,7 @@ export const CreateRegistrationCode = () => {
               />
             </div>
             <Button className="w-full" type="submit">
-              {isLoading ? (
+              {isPending ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
                 <QrCode className="mr-2 h-4 w-4" />
@@ -288,7 +288,10 @@ export const CreateRegistrationCode = () => {
               </span>
             </div>
             <div className="w-full flex flex-row justify-center items-center">
-              <div className="relative flex flex-col group" ref={canvasContainer}>
+              <div
+                className="relative flex flex-col group"
+                ref={canvasContainer}
+              >
                 <QRCodeCanvas
                   imageSettings={{
                     src: shinkaiLogo,
@@ -312,7 +315,11 @@ export const CreateRegistrationCode = () => {
                   size={512}
                   value={JSON.stringify(generatedSetupData)}
                 />
-                <Button className="absolute bottom-1 right-1 invisible group-hover:visible" onClick={() => download()} size="icon">
+                <Button
+                  className="absolute bottom-1 right-1 invisible group-hover:visible"
+                  onClick={() => download()}
+                  size="icon"
+                >
                   <Download className="h-4 w-4" />
                 </Button>
               </div>

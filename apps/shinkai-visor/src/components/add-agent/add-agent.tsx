@@ -31,7 +31,12 @@ import { Models, modelsConfig } from './models';
 
 const formSchema = z.object({
   // TODO: Translate this error message
-  agentName: z.string().regex(/^[a-zA-Z0-9]+(_[a-zA-Z0-9]+)*$/, 'It just accepts alphanumeric characters and underscores'),
+  agentName: z
+    .string()
+    .regex(
+      /^[a-zA-Z0-9]+(_[a-zA-Z0-9]+)*$/,
+      'It just accepts alphanumeric characters and underscores'
+    ),
   externalUrl: z.string().url(),
   apiKey: z.string().min(4),
   model: z.nativeEnum(Models),
@@ -58,9 +63,12 @@ export const AddAgent = () => {
     control: form.control,
     name: 'model',
   });
-  const { mutateAsync: createAgent, isLoading } = useCreateAgent({
+  const { mutateAsync: createAgent, isPending } = useCreateAgent({
     onSuccess: () => {
-      history.replace({ pathname: '/inboxes/create-job' }, { agentName: form.getValues().agentName });
+      history.replace(
+        { pathname: '/inboxes/create-job' },
+        { agentName: form.getValues().agentName }
+      );
     },
   });
   const modelOptions: { value: Models; label: string }[] = [
@@ -257,8 +265,8 @@ export const AddAgent = () => {
               )}
             />
           </div>
-          <Button className="w-full" disabled={isLoading} type="submit">
-            {isLoading ? (
+          <Button className="w-full" disabled={isPending} type="submit">
+            {isPending ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
               <Bot className="mr-2 h-4 w-4"></Bot>

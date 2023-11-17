@@ -16,7 +16,6 @@ import {
 import { ShinkaiMessage } from '@shinkai_network/shinkai-message-ts/models';
 import {
   extractJobIdFromInbox,
-  getMessageContent,
   getOtherPersonIdentity,
   isLocalMessage,
 } from '@shinkai_network/shinkai-message-ts/utils';
