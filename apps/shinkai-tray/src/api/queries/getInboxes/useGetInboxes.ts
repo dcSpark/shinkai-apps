@@ -1,10 +1,10 @@
-import { isLocalMessage } from "@shinkai_network/shinkai-message-ts/utils";
-import { useQuery } from "@tanstack/react-query";
+import { isLocalMessage } from '@shinkai_network/shinkai-message-ts/utils';
+import { useQuery } from '@tanstack/react-query';
 
-import { getInboxes } from ".";
-import { useAuth } from "../../../store/auth.ts";
-import { FunctionKey } from "../../constants";
-import { GetInboxesInput } from "./types";
+import { useAuth } from '../../../store/auth';
+import { FunctionKey } from '../../constants';
+import { getInboxes } from '.';
+import { GetInboxesInput } from './types';
 
 export const useGetInboxes = (input: GetInboxesInput) => {
   const auth = useAuth((state) => state.auth);
@@ -17,8 +17,8 @@ export const useGetInboxes = (input: GetInboxesInput) => {
       const allInboxesAreCompleted = state.data?.every((inbox) => {
         return !isLocalMessage(
           inbox.last_message,
-          auth?.shinkai_identity ?? "",
-          auth?.profile ?? ""
+          auth?.shinkai_identity ?? '',
+          auth?.profile ?? '',
         );
       });
       return allInboxesAreCompleted ? 0 : 3000;

@@ -1,16 +1,15 @@
-import { useEffect } from "react";
-import { useDropzone } from "react-dropzone";
-import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { FileCheck2, ImagePlusIcon, PlusIcon, X } from 'lucide-react';
+import { useEffect } from 'react';
+import { useDropzone } from 'react-dropzone';
+import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { z } from 'zod';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { FileCheck2, ImagePlusIcon, PlusIcon, X } from "lucide-react";
-import { z } from "zod";
-
-import { buildInboxIdFromJobId } from "../api/mutations/createJob";
-import { useCreateJob } from "../api/mutations/createJob/useCreateJob";
-import { useAgents } from "../api/queries/getAgents/useGetAgents";
-import { Button } from "../components/ui/button";
+import { buildInboxIdFromJobId } from '../api/mutations/createJob';
+import { useCreateJob } from '../api/mutations/createJob/useCreateJob';
+import { useAgents } from '../api/queries/getAgents/useGetAgents';
+import { Button } from '../components/ui/button';
 import {
   Form,
   FormControl,
@@ -18,19 +17,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../components/ui/form";
+} from '../components/ui/form';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../components/ui/select";
-import { Textarea } from "../components/ui/textarea";
-import { cn } from "../lib/utils";
-import { ADD_AGENT_PATH } from "../routes/name";
-import { useAuth } from "../store/auth";
-import SimpleLayout from "./layout/simple-layout";
+} from '../components/ui/select';
+import { Textarea } from '../components/ui/textarea';
+import { cn } from '../lib/utils';
+import { ADD_AGENT_PATH } from '../routes/name';
+import { useAuth } from '../store/auth';
+import SimpleLayout from './layout/simple-layout';
 
 const createJobSchema = z.object({
   model: z.string(),
@@ -40,7 +39,9 @@ const createJobSchema = z.object({
 
 export function isImageOrPdf(file: File): boolean {
   if (!file) return false;
-  return file?.type.startsWith("image/") || file?.type.startsWith("application/pdf");
+  return (
+    file?.type.startsWith('image/') || file?.type.startsWith('application/pdf')
+  );
 }
 const CreateJobPage = () => {
   const auth = useAuth((state) => state.auth);
@@ -62,21 +63,28 @@ const CreateJobPage = () => {
         const file = acceptedFiles[0];
         if (isImageOrPdf(file)) {
           const reader = new FileReader();
-          reader.addEventListener("abort", () => console.log("file reading was aborted"));
-          reader.addEventListener("load", (event: ProgressEvent<FileReader>) => {
-            const binaryUrl = event.target?.result;
-            const image = new Image();
-            image.addEventListener("load", function () {
-              const imageInfo = Object.assign(file, {
-                preview: URL.createObjectURL(file),
+          reader.addEventListener('abort', () =>
+            console.log('file reading was aborted'),
+          );
+          reader.addEventListener(
+            'load',
+            (event: ProgressEvent<FileReader>) => {
+              const binaryUrl = event.target?.result;
+              const image = new Image();
+              image.addEventListener('load', function () {
+                const imageInfo = Object.assign(file, {
+                  preview: URL.createObjectURL(file),
+                });
+                createJobForm.setValue('file', imageInfo, {
+                  shouldValidate: true,
+                });
               });
-              createJobForm.setValue("file", imageInfo, { shouldValidate: true });
-            });
-            image.src = binaryUrl as string;
-          });
+              image.src = binaryUrl as string;
+            },
+          );
           reader.readAsDataURL(file);
         } else {
-          createJobForm.setValue("file", file, { shouldValidate: true });
+          createJobForm.setValue('file', file, { shouldValidate: true });
         }
       },
     });
@@ -84,20 +92,22 @@ const CreateJobPage = () => {
   const { file } = createJobForm.watch();
 
   const { agents, isSuccess } = useAgents({
-    sender: auth?.shinkai_identity ?? "",
+    sender: auth?.shinkai_identity ?? '',
     senderSubidentity: `${auth?.profile}`,
-    shinkaiIdentity: auth?.shinkai_identity ?? "",
-    my_device_encryption_sk: auth?.profile_encryption_sk ?? "",
-    my_device_identity_sk: auth?.profile_identity_sk ?? "",
-    node_encryption_pk: auth?.node_encryption_pk ?? "",
-    profile_encryption_sk: auth?.profile_encryption_sk ?? "",
-    profile_identity_sk: auth?.profile_identity_sk ?? "",
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+    my_device_identity_sk: auth?.profile_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
 
   const { isPending, mutateAsync: createJob } = useCreateJob({
     onSuccess: (data) => {
       // TODO: job_inbox, false is hardcoded
-      navigate(`/inboxes/${encodeURIComponent(buildInboxIdFromJobId(data.jobId))}`);
+      navigate(
+        `/inboxes/${encodeURIComponent(buildInboxIdFromJobId(data.jobId))}`,
+      );
     },
   });
 
@@ -108,7 +118,7 @@ const CreateJobPage = () => {
       profile: auth.profile,
       agentId: data.model,
       content: data.description,
-      files_inbox: "",
+      files_inbox: '',
       file: data.file,
       my_device_encryption_sk: auth.my_device_encryption_sk,
       my_device_identity_sk: auth.my_device_identity_sk,
@@ -120,7 +130,7 @@ const CreateJobPage = () => {
 
   useEffect(() => {
     if (isSuccess && agents?.length) {
-      createJobForm.setValue("model", agents[0].id);
+      createJobForm.setValue('model', agents[0].id);
     }
   }, [agents, createJobForm, isSuccess]);
   useEffect(() => {
@@ -133,22 +143,29 @@ const CreateJobPage = () => {
   return (
     <SimpleLayout title="Create Job">
       <Form {...createJobForm}>
-        <form className="space-y-8" onSubmit={createJobForm.handleSubmit(onSubmit)}>
+        <form
+          className="space-y-8"
+          onSubmit={createJobForm.handleSubmit(onSubmit)}
+        >
           <div className="space-y-6">
             <FormField
+              control={createJobForm.control}
+              name="description"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Tell us the job you want to do</FormLabel>
                   <FormControl>
                     <Textarea
+                      autoFocus={true}
+                      className="resize-none border-white"
                       onKeyDown={(event) => {
-                        if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
+                        if (
+                          event.key === 'Enter' &&
+                          (event.metaKey || event.ctrlKey)
+                        ) {
                           createJobForm.handleSubmit(onSubmit)();
                         }
                       }}
-                      // eslint-disable-next-line jsx-a11y/no-autofocus
-                      autoFocus={true}
-                      className="resize-none border-white"
                       placeholder="Eg: Explain me how internet works..."
                       {...field}
                     />
@@ -156,11 +173,11 @@ const CreateJobPage = () => {
                   <FormMessage />
                 </FormItem>
               )}
-              control={createJobForm.control}
-              name="description"
             />
 
             <FormField
+              control={createJobForm.control}
+              name="model"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Select your AI Agent</FormLabel>
@@ -192,21 +209,19 @@ const CreateJobPage = () => {
                   </Select>
                 </FormItem>
               )}
-              control={createJobForm.control}
-              name="model"
             />
 
             <div>
               <FormLabel>
                 Upload a file
-                <span className="ml-1 text-muted-foreground">(optional)</span>
+                <span className="text-muted-foreground ml-1">(optional)</span>
               </FormLabel>
               <div className="flex gap-5">
                 <div
                   {...getRootFileProps({
                     className: cn(
-                      "dropzone group relative relative mt-3 flex h-[6.375rem] w-[9.5rem] cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-dashed border-slate-500 border-slate-500 transition-colors hover:border-white",
-                      file && "border border-solid border-slate-500"
+                      'dropzone group relative relative mt-3 flex h-[6.375rem] w-[9.5rem] cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-dashed border-slate-500 border-slate-500 transition-colors hover:border-white',
+                      file && 'border border-solid border-slate-500',
                     ),
                   })}
                 >
@@ -220,9 +235,9 @@ const CreateJobPage = () => {
                     </div>
                   )}
                   <input
-                    {...createJobForm.register("file")}
+                    {...createJobForm.register('file')}
                     {...getInputFileProps({
-                      onChange: createJobForm.register("file").onChange,
+                      onChange: createJobForm.register('file').onChange,
                     })}
                   />
                   {file && (
@@ -236,7 +251,7 @@ const CreateJobPage = () => {
                       )}
                       {!isImageOrPdf(file) && (
                         <div className="flex flex-col items-center gap-2">
-                          <FileCheck2 className="h-6 w-6 text-muted-foreground " />
+                          <FileCheck2 className="text-muted-foreground h-6 w-6 " />
                           <span className="line-clamp-3 break-all px-2 text-center text-xs ">
                             {file?.name}
                           </span>
@@ -247,12 +262,12 @@ const CreateJobPage = () => {
                   {file != null && (
                     <button
                       className={cn(
-                        "absolute right-1 top-1 h-6 w-6 cursor-pointer rounded-full bg-slate-900 p-1 hover:bg-slate-800",
-                        file ? "block" : "hidden"
+                        'absolute right-1 top-1 h-6 w-6 cursor-pointer rounded-full bg-slate-900 p-1 hover:bg-slate-800',
+                        file ? 'block' : 'hidden',
                       )}
                       onClick={(event) => {
                         event.stopPropagation();
-                        createJobForm.setValue("file", undefined, {
+                        createJobForm.setValue('file', undefined, {
                           shouldValidate: true,
                         });
                       }}
@@ -261,39 +276,39 @@ const CreateJobPage = () => {
                     </button>
                   )}
                 </div>
-                <span className="pt-4 text-xs font-bold text-muted-foreground">
+                <span className="text-muted-foreground pt-4 text-xs font-bold">
                   Supported formats
                   <p className="mt-2">
                     Plain Text
                     <span className="block font-normal">
-                      {" "}
+                      {' '}
                       {[
-                        "eml",
-                        "html",
-                        "json",
-                        "md",
-                        "msg",
-                        "rst",
-                        "rtf",
-                        "txt",
-                        "xml",
-                      ].join(" • ")}
+                        'eml',
+                        'html',
+                        'json',
+                        'md',
+                        'msg',
+                        'rst',
+                        'rtf',
+                        'txt',
+                        'xml',
+                      ].join(' • ')}
                     </span>
                   </p>
-                  <p className="mt-1 font-bold text-muted-foreground">
+                  <p className="text-muted-foreground mt-1 font-bold">
                     Documents
                     <span className="block font-normal">
                       {[
-                        "csv",
-                        "doc",
-                        "epub",
-                        "odt",
-                        "pdf",
-                        "ppt",
-                        "pptx",
-                        "tsv",
-                        "xlsx",
-                      ].join(" • ")}
+                        'csv',
+                        'doc',
+                        'epub',
+                        'odt',
+                        'pdf',
+                        'ppt',
+                        'pptx',
+                        'tsv',
+                        'xlsx',
+                      ].join(' • ')}
                     </span>
                   </p>
                 </span>

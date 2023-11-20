@@ -1,9 +1,8 @@
-import { useState } from "react";
+import { CheckCircle2, CopyIcon } from 'lucide-react';
+import { useState } from 'react';
 
-import { CheckCircle2, CopyIcon } from "lucide-react";
-
-import { cn } from "../../lib/utils";
-import { Button } from "./button";
+import { cn } from '../../lib/utils';
+import { Button } from './button';
 
 type CopyToClipboardIconProps = {
   string?: string;
@@ -33,14 +32,14 @@ const CopyToClipboardIcon = ({
   return (
     <Button
       className={cn(
-        "flex gap-2 px-2 text-xs font-normal text-muted-foreground",
-        className
+        'text-muted-foreground flex gap-2 px-2 text-xs font-normal',
+        className,
       )}
       disabled={!string}
       onClick={onCopy}
       variant="ghost"
     >
-      <ClipboardIcon className={cn("h-4 w-4", clipboard && "text-green-600")} />
+      <ClipboardIcon className={cn('h-4 w-4', clipboard && 'text-green-600')} />
       {children}
     </Button>
   );

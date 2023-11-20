@@ -1,11 +1,10 @@
-import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { z } from 'zod';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-
-import { useCreateChat } from "../api/mutations/createChat/useCreateChat";
-import { Button } from "../components/ui/button";
+import { useCreateChat } from '../api/mutations/createChat/useCreateChat';
+import { Button } from '../components/ui/button';
 import {
   Form,
   FormControl,
@@ -13,15 +12,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../components/ui/form";
-import { Input } from "../components/ui/input";
-import { Textarea } from "../components/ui/textarea";
-import { useAuth } from "../store/auth";
-import SimpleLayout from "./layout/simple-layout";
+} from '../components/ui/form';
+import { Input } from '../components/ui/input';
+import { Textarea } from '../components/ui/textarea';
+import { useAuth } from '../store/auth';
+import SimpleLayout from './layout/simple-layout';
 
 const createChatSchema = z.object({
   receiver: z.string(),
-  message: z.string().min(1, "Message cannot be empty"),
+  message: z.string().min(1, 'Message cannot be empty'),
 });
 
 const CreateChatPage = () => {
@@ -41,13 +40,13 @@ const CreateChatPage = () => {
 
   const onSubmit = async (data: z.infer<typeof createChatSchema>) => {
     if (!auth) return;
-    const [receiver, ...rest] = data.receiver.split("/");
+    const [receiver, ...rest] = data.receiver.split('/');
 
     createChat({
       sender: auth.shinkai_identity,
       senderSubidentity: `${auth.profile}/device/${auth.registration_name}`,
       receiver,
-      receiverSubidentity: rest.join("/"),
+      receiverSubidentity: rest.join('/'),
       message: data.message,
       my_device_encryption_sk: auth.my_device_encryption_sk,
       my_device_identity_sk: auth.my_device_identity_sk,
@@ -59,9 +58,14 @@ const CreateChatPage = () => {
   return (
     <SimpleLayout title="Create Chat">
       <Form {...createChatForm}>
-        <form className="space-y-10" onSubmit={createChatForm.handleSubmit(onSubmit)}>
+        <form
+          className="space-y-10"
+          onSubmit={createChatForm.handleSubmit(onSubmit)}
+        >
           <div className="space-y-6">
             <FormField
+              control={createChatForm.control}
+              name="receiver"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Shinkai Identity</FormLabel>
@@ -73,21 +77,24 @@ const CreateChatPage = () => {
                   </FormControl>
                 </FormItem>
               )}
-              control={createChatForm.control}
-              name="receiver"
             />
             <FormField
+              control={createChatForm.control}
+              name="message"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Message</FormLabel>
                   <FormControl>
                     <Textarea
+                      className="resize-none border-white"
                       onKeyDown={(event) => {
-                        if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
+                        if (
+                          event.key === 'Enter' &&
+                          (event.metaKey || event.ctrlKey)
+                        ) {
                           createChatForm.handleSubmit(onSubmit)();
                         }
                       }}
-                      className="resize-none border-white"
                       placeholder="Enter your message"
                       {...field}
                     />
@@ -95,8 +102,6 @@ const CreateChatPage = () => {
                   <FormMessage />
                 </FormItem>
               )}
-              control={createChatForm.control}
-              name="message"
             />
           </div>
 

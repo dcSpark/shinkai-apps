@@ -2,13 +2,13 @@ import {
   createJob as createJobApi,
   sendMessageToJob,
   sendTextMessageWithFilesForInbox,
-} from "@shinkai_network/shinkai-message-ts/api";
+} from '@shinkai_network/shinkai-message-ts/api';
 import {
   JobCreationWrapper,
   JobScopeWrapper,
-} from "@shinkai_network/shinkai-message-ts/wasm";
+} from '@shinkai_network/shinkai-message-ts/wasm';
 
-import { CreateJobInput } from "./types";
+import { CreateJobInput } from './types';
 
 export const buildInboxIdFromJobId = (jobId: string): string => {
   // TODO: job_inbox, false is hardcoded
@@ -32,7 +32,10 @@ export const createJob = async ({
   const receiver_subidentity = `${profile}/agent/${agentId}`;
 
   const job_creation = JobCreationWrapper.empty().get_scope;
-  const scope = new JobScopeWrapper(job_creation.buckets, job_creation.documents);
+  const scope = new JobScopeWrapper(
+    job_creation.buckets,
+    job_creation.documents,
+  );
 
   const jobId = await createJobApi(
     scope.to_jsvalue(),
@@ -46,7 +49,7 @@ export const createJob = async ({
       node_encryption_pk: node_encryption_pk,
       profile_encryption_sk,
       profile_identity_sk,
-    }
+    },
   );
 
   const response = file
@@ -63,7 +66,7 @@ export const createJob = async ({
           node_encryption_pk: node_encryption_pk,
           profile_encryption_sk,
           profile_identity_sk,
-        }
+        },
       )
     : await sendMessageToJob(
         jobId,
@@ -79,7 +82,7 @@ export const createJob = async ({
           node_encryption_pk: node_encryption_pk,
           profile_encryption_sk,
           profile_identity_sk,
-        }
+        },
       );
   return { jobId, response };
 };

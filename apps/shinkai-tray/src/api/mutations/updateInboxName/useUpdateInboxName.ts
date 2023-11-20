@@ -1,13 +1,15 @@
-import type { UseMutationOptions } from "@tanstack/react-query";
+import type { UseMutationOptions } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 
-import { useMutation } from "@tanstack/react-query";
+import { FunctionKey, queryClient } from '../../constants';
+import { updateInboxName } from '.';
+import type { UpdateInboxNameInput, UpdateInboxNameOutput } from './types';
 
-import type { UpdateInboxNameInput, UpdateInboxNameOutput } from "./types";
-
-import { updateInboxName } from ".";
-import { FunctionKey, queryClient } from "../../constants";
-
-type Options = UseMutationOptions<UpdateInboxNameOutput, Error, UpdateInboxNameInput>;
+type Options = UseMutationOptions<
+  UpdateInboxNameOutput,
+  Error,
+  UpdateInboxNameInput
+>;
 
 export const useUpdateInboxName = (options?: Options) => {
   return useMutation({

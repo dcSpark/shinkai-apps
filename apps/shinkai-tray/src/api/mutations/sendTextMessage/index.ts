@@ -1,6 +1,6 @@
-import { sendTextMessageWithInbox } from "@shinkai_network/shinkai-message-ts/api";
+import { sendTextMessageWithInbox } from '@shinkai_network/shinkai-message-ts/api';
 
-import { SendMessageToInboxInput } from "./types";
+import { SendMessageToInboxInput } from './types';
 
 export const sendMessageToInbox = async ({
   sender,
@@ -26,6 +26,6 @@ export const sendMessageToInbox = async ({
       node_encryption_pk,
       profile_encryption_sk,
       profile_identity_sk,
-    }
+    },
   );
 };

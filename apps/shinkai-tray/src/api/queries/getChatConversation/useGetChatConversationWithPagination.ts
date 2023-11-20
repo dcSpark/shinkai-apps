@@ -2,17 +2,19 @@ import {
   calculateMessageHash,
   isJobInbox,
   isLocalMessage,
-} from "@shinkai_network/shinkai-message-ts/utils";
-import { InfiniteData, useInfiniteQuery } from "@tanstack/react-query";
+} from '@shinkai_network/shinkai-message-ts/utils';
+import { InfiniteData, useInfiniteQuery } from '@tanstack/react-query';
 
-import { getChatConversation } from ".";
-import { FunctionKey } from "../../constants";
-import { GetChatConversationInput, GetChatConversationOutput } from "./types";
+import { FunctionKey } from '../../constants';
+import { getChatConversation } from '.';
+import { GetChatConversationInput, GetChatConversationOutput } from './types';
 
 export const CONVERSATION_PAGINATION_LIMIT = 10;
 export const CONVERSATION_PAGINATION_REFETCH = 5000;
 
-export const useGetChatConversationWithPagination = (input: GetChatConversationInput) => {
+export const useGetChatConversationWithPagination = (
+  input: GetChatConversationInput,
+) => {
   const response = useInfiniteQuery<
     GetChatConversationOutput,
     Error,
@@ -39,8 +41,13 @@ export const useGetChatConversationWithPagination = (input: GetChatConversationI
     refetchInterval: ({ state }) => {
       const lastMessage = state.data?.pages?.at(-1)?.at(-1);
       if (!lastMessage) return 0;
-      const isLocal = isLocalMessage(lastMessage, input.shinkaiIdentity, input.profile);
-      if (isJobInbox(input.inboxId) && isLocal) return CONVERSATION_PAGINATION_REFETCH;
+      const isLocal = isLocalMessage(
+        lastMessage,
+        input.shinkaiIdentity,
+        input.profile,
+      );
+      if (isJobInbox(input.inboxId) && isLocal)
+        return CONVERSATION_PAGINATION_REFETCH;
       return 0;
     },
     initialPageParam: { lastKey: null },

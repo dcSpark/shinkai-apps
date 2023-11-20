@@ -1,8 +1,7 @@
-import type { ShinkaiMessage } from "@shinkai_network/shinkai-message-ts/models";
+import { getAllInboxesForProfile } from '@shinkai_network/shinkai-message-ts/api';
+import type { ShinkaiMessage } from '@shinkai_network/shinkai-message-ts/models';
 
-import { getAllInboxesForProfile } from "@shinkai_network/shinkai-message-ts/api";
-
-import type { GetInboxesInput } from "./types";
+import type { GetInboxesInput } from './types';
 
 export type SmartInbox = {
   custom_name: string;
@@ -32,7 +31,7 @@ export const getInboxes = async ({
       node_encryption_pk,
       profile_encryption_sk,
       profile_identity_sk,
-    }
+    },
   );
 
   return inboxes;

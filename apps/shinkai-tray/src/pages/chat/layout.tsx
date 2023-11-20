@@ -1,32 +1,31 @@
-import { useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
-import { Link, Outlet, useMatch } from "react-router-dom";
-
-import { zodResolver } from "@hookform/resolvers/zod";
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   getMessageContent,
   isJobInbox,
   isLocalMessage,
-} from "@shinkai_network/shinkai-message-ts/utils";
-import { Edit3, MessageCircleIcon, Workflow } from "lucide-react";
-import { z } from "zod";
+} from '@shinkai_network/shinkai-message-ts/utils';
+import { Edit3, MessageCircleIcon, Workflow } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { Link, Outlet, useMatch } from 'react-router-dom';
+import { z } from 'zod';
 
-import { useUpdateInboxName } from "../../api/mutations/updateInboxName/useUpdateInboxName";
-import { useGetInboxes } from "../../api/queries/getInboxes/useGetInboxes";
-import { Button } from "../../components/ui/button";
+import { useUpdateInboxName } from '../../api/mutations/updateInboxName/useUpdateInboxName';
+import { useGetInboxes } from '../../api/queries/getInboxes/useGetInboxes';
+import { Button } from '../../components/ui/button';
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-} from "../../components/ui/form";
-import { Input } from "../../components/ui/input";
-import { ScrollArea } from "../../components/ui/scroll-area";
-import { Separator } from "../../components/ui/separator";
-import { handleSendNotification } from "../../lib/notifications.ts";
-import { cn } from "../../lib/utils";
-import { useAuth } from "../../store/auth";
+} from '../../components/ui/form';
+import { Input } from '../../components/ui/input';
+import { ScrollArea } from '../../components/ui/scroll-area';
+import { Separator } from '../../components/ui/separator';
+import { handleSendNotification } from '../../lib/notifications';
+import { cn } from '../../lib/utils';
+import { useAuth } from '../../store/auth';
 
 const updateInboxNameSchema = z.object({
   inboxName: z.string(),
@@ -61,7 +60,7 @@ const InboxNameInput = ({
       sender: auth.shinkai_identity,
       senderSubidentity: auth.profile,
       receiver: `${auth.shinkai_identity}`,
-      receiverSubidentity: "",
+      receiverSubidentity: '',
       my_device_encryption_sk: auth.my_device_encryption_sk,
       my_device_identity_sk: auth.my_device_identity_sk,
       node_encryption_pk: auth.node_encryption_pk,
@@ -81,8 +80,10 @@ const InboxNameInput = ({
       >
         <div className="w-full">
           <FormField
+            control={updateInboxNameForm.control}
+            name="inboxName"
             render={({ field }) => (
-              <div className="flex h-[46px] items-center  rounded-lg bg-app-gradient">
+              <div className="bg-app-gradient flex h-[46px]  items-center rounded-lg">
                 <Edit3 className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 transform text-white" />
                 <FormItem className="space-y-0 pl-7 text-xs">
                   <FormLabel className="sr-only">Update inbox name</FormLabel>
@@ -97,8 +98,6 @@ const InboxNameInput = ({
                 </FormItem>
               </div>
             )}
-            control={updateInboxNameForm.control}
-            name="inboxName"
           />
         </div>
 
@@ -151,10 +150,16 @@ const MessageButton = ({
     ) {
       handleSendNotification(
         `${inboxName} response received`,
-        "Go to Shinkai Tray to see the response"
+        'Go to Shinkai Tray to see the response',
       );
     }
-  }, [lastMessageTime, isJobLastMessage, inboxId, previousLastMessageTime, inboxName]);
+  }, [
+    lastMessageTime,
+    isJobLastMessage,
+    inboxId,
+    previousLastMessageTime,
+    inboxName,
+  ]);
 
   const [isEditable, setIsEditable] = useState(false);
 
@@ -167,8 +172,8 @@ const MessageButton = ({
   ) : (
     <Link
       className={cn(
-        "group flex h-[46px] w-full items-center gap-2 rounded-lg px-2 py-2 text-muted-foreground hover:bg-slate-800",
-        match && "bg-slate-800 text-foreground"
+        'text-muted-foreground group flex h-[46px] w-full items-center gap-2 rounded-lg px-2 py-2 hover:bg-slate-800',
+        match && 'text-foreground bg-slate-800',
       )}
       key={inboxId}
       to={to}
@@ -178,14 +183,16 @@ const MessageButton = ({
       ) : (
         <MessageCircleIcon className="mr-2 h-4 w-4 shrink-0" />
       )}
-      <span className="line-clamp-1 flex-1 break-all text-left text-xs">{inboxName}</span>
+      <span className="line-clamp-1 flex-1 break-all text-left text-xs">
+        {inboxName}
+      </span>
       <Button
-        className={cn("hidden justify-self-end", match && "flex")}
+        className={cn('hidden justify-self-end', match && 'flex')}
         onClick={() => setIsEditable(true)}
         size="icon"
         variant="ghost"
       >
-        <Edit3 className="h-4 w-4 text-muted-foreground" />
+        <Edit3 className="text-muted-foreground h-4 w-4" />
       </Button>
     </Link>
   );
@@ -195,16 +202,16 @@ const ChatLayout = () => {
   const auth = useAuth((state) => state.auth);
 
   const { inboxes } = useGetInboxes({
-    sender: auth?.shinkai_identity ?? "",
-    senderSubidentity: auth?.profile ?? "",
+    sender: auth?.shinkai_identity ?? '',
+    senderSubidentity: auth?.profile ?? '',
     // Assuming receiver and target_shinkai_name_profile are the same as sender
-    receiver: auth?.shinkai_identity ?? "",
+    receiver: auth?.shinkai_identity ?? '',
     targetShinkaiNameProfile: `${auth?.shinkai_identity}/${auth?.profile}`,
-    my_device_encryption_sk: auth?.my_device_encryption_sk ?? "",
-    my_device_identity_sk: auth?.my_device_identity_sk ?? "",
-    node_encryption_pk: auth?.node_encryption_pk ?? "",
-    profile_encryption_sk: auth?.profile_encryption_sk ?? "",
-    profile_identity_sk: auth?.profile_identity_sk ?? "",
+    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
 
   return (
@@ -217,6 +224,7 @@ const ChatLayout = () => {
               <div className="space-y-1">
                 {inboxes.map((inbox) => (
                   <MessageButton
+                    inboxId={inbox.inbox_id}
                     inboxName={
                       inbox.custom_name === inbox.inbox_id
                         ? getMessageContent(inbox.last_message)?.slice(0, 40)
@@ -225,15 +233,14 @@ const ChatLayout = () => {
                     isJobLastMessage={
                       !isLocalMessage(
                         inbox.last_message,
-                        auth?.shinkai_identity ?? "",
-                        auth?.profile ?? ""
+                        auth?.shinkai_identity ?? '',
+                        auth?.profile ?? '',
                       )
                     }
-                    lastMessageTime={
-                      inbox.last_message.external_metadata?.scheduled_time ?? ""
-                    }
-                    inboxId={inbox.inbox_id}
                     key={inbox.inbox_id}
+                    lastMessageTime={
+                      inbox.last_message.external_metadata?.scheduled_time ?? ''
+                    }
                     to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
                   />
                 ))}

@@ -1,5 +1,5 @@
-import { create } from "zustand";
-import { devtools, persist } from "zustand/middleware";
+import { create } from 'zustand';
+import { devtools, persist } from 'zustand/middleware';
 
 export type SetupData = {
   profile: string;
@@ -33,8 +33,8 @@ export const useAuth = create<AuthStore>()(
         setLogout: () => set({ auth: null }),
       }),
       {
-        name: "auth",
-      }
-    )
-  )
+        name: 'auth',
+      },
+    ),
+  ),
 );

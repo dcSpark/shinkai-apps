@@ -1,12 +1,11 @@
-import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { z } from 'zod';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-
-import { useCreateAgent } from "../api/mutations/createAgent/useCreateAgent";
-import { Button } from "../components/ui/button";
-import ErrorMessage from "../components/ui/error-message";
+import { useCreateAgent } from '../api/mutations/createAgent/useCreateAgent';
+import { Button } from '../components/ui/button';
+import ErrorMessage from '../components/ui/error-message';
 import {
   Form,
   FormControl,
@@ -14,18 +13,18 @@ import {
   FormField,
   FormItem,
   FormLabel,
-} from "../components/ui/form";
-import { Input } from "../components/ui/input";
+} from '../components/ui/form';
+import { Input } from '../components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../components/ui/select";
-import { CREATE_JOB_PATH } from "../routes/name";
-import { useAuth } from "../store/auth";
-import SimpleLayout from "./layout/simple-layout";
+} from '../components/ui/select';
+import { CREATE_JOB_PATH } from '../routes/name';
+import { useAuth } from '../store/auth';
+import SimpleLayout from './layout/simple-layout';
 
 const addAgentSchema = z.object({
   agentName: z.string(),
@@ -43,7 +42,7 @@ const CreateAgentPage = () => {
     resolver: zodResolver(addAgentSchema),
     defaultValues: {
       performLocally: false,
-      modelType: "gpt-3.5-turbo-1106",
+      modelType: 'gpt-3.5-turbo-1106',
     },
   });
   const {
@@ -94,9 +93,14 @@ const CreateAgentPage = () => {
   return (
     <SimpleLayout title="Add Agent AI">
       <Form {...addAgentForm}>
-        <form className="space-y-10" onSubmit={addAgentForm.handleSubmit(onSubmit)}>
+        <form
+          className="space-y-10"
+          onSubmit={addAgentForm.handleSubmit(onSubmit)}
+        >
           <div className="space-y-6">
             <FormField
+              control={addAgentForm.control}
+              name="agentName"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Agent Name</FormLabel>
@@ -105,22 +109,25 @@ const CreateAgentPage = () => {
                   </FormControl>
                 </FormItem>
               )}
-              control={addAgentForm.control}
-              name="agentName"
             />
             <FormField
+              control={addAgentForm.control}
+              name="externalUrl"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>External URL</FormLabel>
                   <FormControl>
-                    <Input placeholder="Eg: https://api.openai.com" {...field} />
+                    <Input
+                      placeholder="Eg: https://api.openai.com"
+                      {...field}
+                    />
                   </FormControl>
                 </FormItem>
               )}
-              control={addAgentForm.control}
-              name="externalUrl"
             />
             <FormField
+              control={addAgentForm.control}
+              name="apikey"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Api Key</FormLabel>
@@ -132,15 +139,18 @@ const CreateAgentPage = () => {
                   </FormDescription>
                 </FormItem>
               )}
-              control={addAgentForm.control}
-              name="apikey"
             />
 
             <FormField
+              control={addAgentForm.control}
+              name="model"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Select your Model</FormLabel>
-                  <Select defaultValue={field.value} onValueChange={field.onChange}>
+                  <Select
+                    defaultValue={field.value}
+                    onValueChange={field.onChange}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select your Model" />
@@ -152,12 +162,12 @@ const CreateAgentPage = () => {
                   </Select>
                 </FormItem>
               )}
-              control={addAgentForm.control}
-              name="model"
             />
 
             {model && (
               <FormField
+                control={addAgentForm.control}
+                name="modelType"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{model} Model Type</FormLabel>
@@ -166,8 +176,6 @@ const CreateAgentPage = () => {
                     </FormControl>
                   </FormItem>
                 )}
-                control={addAgentForm.control}
-                name="modelType"
               />
             )}
           </div>

@@ -1,4 +1,4 @@
-import { updateInboxName as updateInboxNameApi } from "@shinkai_network/shinkai-message-ts/api";
+import { updateInboxName as updateInboxNameApi } from '@shinkai_network/shinkai-message-ts/api';
 
 export const updateInboxName = async ({
   senderSubidentity,
@@ -36,7 +36,7 @@ export const updateInboxName = async ({
       profile_identity_sk,
     },
     inboxName,
-    inboxId
+    inboxId,
   );
   return response;
 };

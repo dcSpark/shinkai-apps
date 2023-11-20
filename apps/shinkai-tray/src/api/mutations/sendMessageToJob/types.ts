@@ -1,4 +1,4 @@
-import type { JobCredentialsPayload } from "@shinkai_network/shinkai-message-ts/models";
+import type { JobCredentialsPayload } from '@shinkai_network/shinkai-message-ts/models';
 
 export type SendMessageToJobInput = JobCredentialsPayload & {
   jobId: string;

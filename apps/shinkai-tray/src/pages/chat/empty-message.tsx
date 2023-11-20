@@ -1,23 +1,22 @@
-import { Link } from "react-router-dom";
+import { LightningBoltIcon } from '@radix-ui/react-icons';
+import { Link } from 'react-router-dom';
 
-import { LightningBoltIcon } from "@radix-ui/react-icons";
-
-import { useAgents } from "../../api/queries/getAgents/useGetAgents";
-import { ADD_AGENT_PATH, CREATE_JOB_PATH } from "../../routes/name";
-import { useAuth } from "../../store/auth";
+import { useAgents } from '../../api/queries/getAgents/useGetAgents';
+import { ADD_AGENT_PATH, CREATE_JOB_PATH } from '../../routes/name';
+import { useAuth } from '../../store/auth';
 
 const EmptyMessage = () => {
   const auth = useAuth((state) => state.auth);
 
   const { agents } = useAgents({
-    sender: auth?.shinkai_identity ?? "",
+    sender: auth?.shinkai_identity ?? '',
     senderSubidentity: `${auth?.profile}`,
-    shinkaiIdentity: auth?.shinkai_identity ?? "",
-    my_device_encryption_sk: auth?.profile_encryption_sk ?? "",
-    my_device_identity_sk: auth?.profile_identity_sk ?? "",
-    node_encryption_pk: auth?.node_encryption_pk ?? "",
-    profile_encryption_sk: auth?.profile_encryption_sk ?? "",
-    profile_identity_sk: auth?.profile_identity_sk ?? "",
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+    my_device_identity_sk: auth?.profile_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
 
   return (
@@ -39,16 +38,16 @@ const EmptyMessage = () => {
           />
         </svg>
 
-        <h1 className="text-2xl font-bold text-foreground">Ask Shinkai AI</h1>
-        <p className="text-sm text-muted-foreground">
-          Try “How to make a HTTP request in JavaScript” , “Give me the top 10 rock music
-          in the 80s”, “Explain me how internet works”
+        <h1 className="text-foreground text-2xl font-bold">Ask Shinkai AI</h1>
+        <p className="text-muted-foreground text-sm">
+          Try “How to make a HTTP request in JavaScript” , “Give me the top 10
+          rock music in the 80s”, “Explain me how internet works”
         </p>
 
         <div className="mt-4">
           {agents.length === 0 ? (
             <Link
-              className="flex h-9 items-center rounded-md bg-primary-600 px-6 py-2 font-medium text-white shadow transition-colors duration-150 hover:bg-primary-700 "
+              className="bg-primary-600 hover:bg-primary-700 flex h-9 items-center rounded-md px-6 py-2 font-medium text-white shadow transition-colors duration-150 "
               to={ADD_AGENT_PATH}
             >
               <LightningBoltIcon className="mr-2" />
@@ -56,7 +55,7 @@ const EmptyMessage = () => {
             </Link>
           ) : (
             <Link
-              className="flex h-9 items-center rounded-md bg-primary-600 px-6 py-2 font-medium text-white shadow transition-colors duration-150 hover:bg-primary-700 "
+              className="bg-primary-600 hover:bg-primary-700 flex h-9 items-center rounded-md px-6 py-2 font-medium text-white shadow transition-colors duration-150 "
               to={CREATE_JOB_PATH}
             >
               <LightningBoltIcon className="mr-2" />

@@ -1,9 +1,9 @@
-import { cn } from "../../lib/utils";
+import { cn } from '../../lib/utils';
 
 export const ShinkaiLogo = ({ className }: { className?: string }) => {
   return (
     <svg
-      className={cn("text-white", className)}
+      className={cn('text-white', className)}
       fill="none"
       height="60"
       viewBox="0 0 60 60"

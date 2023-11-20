@@ -1,8 +1,14 @@
-import * as React from "react";
-import { Outlet, useNavigate } from "react-router-dom";
-
-import { ExitIcon, GearIcon, PersonIcon, TokensIcon } from "@radix-ui/react-icons";
-import { listen } from "@tauri-apps/api/event";
+import {
+  ExitIcon,
+  GearIcon,
+  PersonIcon,
+  TokensIcon,
+} from '@radix-ui/react-icons';
+import { listen } from '@tauri-apps/api/event';
+import { BotIcon, BoxesIcon, MessageCircleIcon } from 'lucide-react';
+import * as React from 'react';
+import { useCallback } from 'react';
+import { Outlet, useNavigate } from 'react-router-dom';
 
 import {
   Command,
@@ -11,9 +17,13 @@ import {
   CommandList,
   CommandSeparator,
   CommandShortcut,
-} from "../../components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "../../components/ui/popover";
-import { Separator } from "../../components/ui/separator";
+} from '../../components/ui/command';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '../../components/ui/popover';
+import { Separator } from '../../components/ui/separator';
 import {
   ADD_AGENT_PATH,
   CREATE_CHAT_PATH,
@@ -21,40 +31,41 @@ import {
   GENERATE_CODE_PATH,
   ONBOARDING_PATH,
   SETTINGS_PATH,
-} from "../../routes/name";
-import { useAuth } from "../../store/auth";
-import { BotIcon, BoxesIcon, MessageCircleIcon } from "lucide-react";
+} from '../../routes/name';
+import { useAuth } from '../../store/auth';
 
 export function Footer() {
   const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
   const logout = useAuth((state) => state.setLogout);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const goToCreateJob = useCallback(() => {
+    navigate(CREATE_JOB_PATH);
+    setOpen(false);
+  }, [navigate]);
+
   React.useEffect(() => {
     const unlisten = async () =>
-      listen("navigate-job-and-focus", (event) => {
-        console.log("Received event from Rust:", event);
+      listen('navigate-job-and-focus', (event) => {
+        console.log('Received event from Rust:', event);
         goToCreateJob();
       });
 
     const down = (event: KeyboardEvent) => {
-      if (event.key === "k" && (event.metaKey || event.ctrlKey)) {
+      if (event.key === 'k' && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
         setOpen((open) => !open);
       }
     };
 
-    document.addEventListener("keydown", down);
+    document.addEventListener('keydown', down);
     return () => {
       unlisten();
-      document.removeEventListener("keydown", down);
+      document.removeEventListener('keydown', down);
     };
-  }, []);
+  }, [goToCreateJob]);
 
-  const goToCreateJob = () => {
-    navigate(CREATE_JOB_PATH);
-    setOpen(false);
-  };
   const goToCreateChat = () => {
     navigate(CREATE_CHAT_PATH);
     setOpen(false);
@@ -82,30 +93,32 @@ export function Footer() {
     navigate(ONBOARDING_PATH);
   };
 
-  const handleCommandCardKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+  const handleCommandCardKeyDown = (
+    event: React.KeyboardEvent<HTMLDivElement>,
+  ) => {
     if (event.metaKey || event.ctrlKey) {
       switch (event.key) {
-        case "1": {
+        case '1': {
           goToCreateJob();
           break;
         }
-        case "2": {
+        case '2': {
           goToCreateChat();
           break;
         }
-        case "3": {
+        case '3': {
           goToCreateAgent();
           break;
         }
-        case "4": {
+        case '4': {
           goToProfile();
           break;
         }
-        case "5": {
+        case '5': {
           goToGenerateCode();
           break;
         }
-        case "6": {
+        case '6': {
           goToSettings();
           break;
         }
@@ -117,16 +130,16 @@ export function Footer() {
   };
 
   return (
-    <div className="absolute bottom-2 left-2 text-sm text-muted-foreground">
-      <Popover onOpenChange={setOpen} open={open} modal>
+    <div className="text-muted-foreground absolute bottom-2 left-2 text-sm">
+      <Popover modal onOpenChange={setOpen} open={open}>
         <PopoverTrigger
           aria-expanded={open}
-          className="rounded-lg bg-app-gradient px-2.5 py-2 shadow-lg transition-colors duration-150 hover:bg-gray-700/40"
+          className="bg-app-gradient rounded-lg px-2.5 py-2 shadow-lg transition-colors duration-150 hover:bg-gray-700/40"
           onClick={() => setOpen(true)}
         >
           <span className="text-xs">
             Actions
-            <kbd className="bg-muted pointer-events-none ml-2 inline-flex h-5 select-none items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+            <kbd className="bg-muted text-muted-foreground pointer-events-none ml-2 inline-flex h-5 select-none items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium opacity-100">
               <span className="text-xs">⌘</span>K
             </kbd>
           </span>
@@ -134,10 +147,10 @@ export function Footer() {
         <PopoverContent
           align="start"
           alignOffset={0}
+          asChild
           className="rounded-md border-0 bg-black bg-gradient-to-r from-[#19242D] to-[#19242D]/90 p-4 shadow-xl"
           side="top"
           sideOffset={2}
-          asChild
         >
           <Command
             className="p-0 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-gray-500 dark:[&_[cmdk-group-heading]]:text-gray-400 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-3 [&_[cmdk-item]_svg]:w-3"
@@ -195,7 +208,7 @@ export function Footer() {
 const MainLayout = () => {
   const auth = useAuth((state) => state.auth);
   return (
-    <div className="relative flex h-full flex-col bg-app-gradient bg-cover text-white">
+    <div className="bg-app-gradient relative flex h-full flex-col bg-cover text-white">
       <div
         className="flex h-9 shrink-0 cursor-default select-none items-center justify-center text-xs"
         data-tauri-drag-region

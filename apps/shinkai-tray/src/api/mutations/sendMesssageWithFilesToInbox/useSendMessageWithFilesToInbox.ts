@@ -1,7 +1,7 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation } from '@tanstack/react-query';
 
-import { sendMessageWithFilesToInbox } from ".";
-import { FunctionKey, queryClient } from "../../constants";
+import { FunctionKey, queryClient } from '../../constants';
+import { sendMessageWithFilesToInbox } from '.';
 
 export const useSendMessageWithFilesToInbox = () => {
   return useMutation({

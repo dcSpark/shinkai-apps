@@ -1,7 +1,7 @@
 import {
   submitInitialRegistrationNoCode,
   submitRegistrationCode,
-} from "@shinkai_network/shinkai-message-ts/api";
+} from '@shinkai_network/shinkai-message-ts/api';
 
 export type SetupDataArgs = {
   my_device_encryption_sk: string;

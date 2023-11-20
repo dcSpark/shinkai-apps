@@ -1,16 +1,15 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { DownloadIcon } from '@radix-ui/react-icons';
+import { save } from '@tauri-apps/api/dialog';
+import { BaseDirectory, writeBinaryFile } from '@tauri-apps/api/fs';
+import { Check } from 'lucide-react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { DownloadIcon } from "@radix-ui/react-icons";
-import { save } from "@tauri-apps/api/dialog";
-import { BaseDirectory, writeBinaryFile } from "@tauri-apps/api/fs";
-import { Check } from "lucide-react";
-import { z } from "zod";
-
-import { useCreateRegistrationCode } from "../api/mutations/createRegistrationCode/useCreateRegistrationCode.ts";
-import { Button } from "../components/ui/button.tsx";
-import { Dialog, DialogContent } from "../components/ui/dialog.tsx";
+import { useCreateRegistrationCode } from '../api/mutations/createRegistrationCode/useCreateRegistrationCode';
+import { Button } from '../components/ui/button';
+import { Dialog, DialogContent } from '../components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -18,38 +17,38 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../components/ui/form.tsx";
-import { Input } from "../components/ui/input.tsx";
-import QRCode from "../components/ui/qr-code.tsx";
+} from '../components/ui/form';
+import { Input } from '../components/ui/input';
+import QRCode from '../components/ui/qr-code';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../components/ui/select.tsx";
-import { SetupData, useAuth } from "../store/auth.ts";
-import SimpleLayout from "./layout/simple-layout.tsx";
+} from '../components/ui/select';
+import { SetupData, useAuth } from '../store/auth';
+import SimpleLayout from './layout/simple-layout';
 
 const saveImage = async (dataUrl: string) => {
-  const suggestedFilename = "registration-code-shinkai.png";
-  await save({ defaultPath: BaseDirectory.Download + "/" + suggestedFilename });
+  const suggestedFilename = 'registration-code-shinkai.png';
+  await save({ defaultPath: BaseDirectory.Download + '/' + suggestedFilename });
   await writeBinaryFile(
     suggestedFilename,
     await fetch(dataUrl).then((response) => response.arrayBuffer()),
-    { dir: BaseDirectory.Download }
+    { dir: BaseDirectory.Download },
   );
 };
 
 enum IdentityType {
-  Profile = "profile",
-  Device = "device",
+  Profile = 'profile',
+  Device = 'device',
 }
 
 enum PermissionType {
-  Admin = "admin",
-  Standard = "standard",
-  None = "none",
+  Admin = 'admin',
+  Standard = 'standard',
+  None = 'none',
 }
 
 const generateCodeSchema = z.object({
@@ -78,38 +77,39 @@ const GenerateCodePage = () => {
   const form = useForm<z.infer<typeof generateCodeSchema>>({
     resolver: zodResolver(generateCodeSchema),
     defaultValues: {
-      profile: "",
+      profile: '',
       permissionType: PermissionType.Admin,
       identityType: IdentityType.Device,
     },
   });
 
-  const { mutateAsync: createRegistrationCode, isPending } = useCreateRegistrationCode({
-    onSuccess: (registrationCode) => {
-      const formValues = form.getValues();
-      const setupData: GeneratedSetupData = {
-        registration_code: registrationCode,
-        permission_type: formValues.permissionType,
-        identity_type: formValues.identityType,
-        profile: formValues.profile,
-        node_address: auth?.node_address,
-        shinkai_identity: auth?.shinkai_identity,
-        node_encryption_pk: auth?.node_encryption_pk,
-        node_signature_pk: auth?.node_signature_pk,
-        ...(formValues.identityType === IdentityType.Device &&
-        formValues.profile === auth?.profile
-          ? {
-              profile_encryption_pk: auth.profile_encryption_pk,
-              profile_encryption_sk: auth.profile_encryption_sk,
-              profile_identity_pk: auth.profile_identity_pk,
-              profile_identity_sk: auth.profile_identity_sk,
-            }
-          : {}),
-      };
-      setGeneratedSetupData(setupData);
-      setQrCodeModalOpen(true);
-    },
-  });
+  const { mutateAsync: createRegistrationCode, isPending } =
+    useCreateRegistrationCode({
+      onSuccess: (registrationCode) => {
+        const formValues = form.getValues();
+        const setupData: GeneratedSetupData = {
+          registration_code: registrationCode,
+          permission_type: formValues.permissionType,
+          identity_type: formValues.identityType,
+          profile: formValues.profile,
+          node_address: auth?.node_address,
+          shinkai_identity: auth?.shinkai_identity,
+          node_encryption_pk: auth?.node_encryption_pk,
+          node_signature_pk: auth?.node_signature_pk,
+          ...(formValues.identityType === IdentityType.Device &&
+          formValues.profile === auth?.profile
+            ? {
+                profile_encryption_pk: auth.profile_encryption_pk,
+                profile_encryption_sk: auth.profile_encryption_sk,
+                profile_identity_pk: auth.profile_identity_pk,
+                profile_identity_sk: auth.profile_identity_sk,
+              }
+            : {}),
+        };
+        setGeneratedSetupData(setupData);
+        setQrCodeModalOpen(true);
+      },
+    });
 
   const { identityType } = form.watch();
 
@@ -118,19 +118,19 @@ const GenerateCodePage = () => {
       permissionsType: data.permissionType,
       identityType: data.identityType,
       setupPayload: {
-        my_device_encryption_sk: auth?.my_device_encryption_sk ?? "",
-        my_device_identity_sk: auth?.my_device_identity_sk ?? "",
-        profile_encryption_sk: auth?.profile_encryption_sk ?? "",
-        profile_identity_sk: auth?.profile_identity_sk ?? "",
-        node_encryption_pk: auth?.node_encryption_pk ?? "",
-        permission_type: auth?.permission_type ?? "",
-        registration_name: auth?.registration_name ?? "",
-        profile: auth?.profile ?? "",
-        shinkai_identity: auth?.shinkai_identity ?? "",
-        node_address: auth?.node_address ?? "",
+        my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+        my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+        profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+        profile_identity_sk: auth?.profile_identity_sk ?? '',
+        node_encryption_pk: auth?.node_encryption_pk ?? '',
+        permission_type: auth?.permission_type ?? '',
+        registration_name: auth?.registration_name ?? '',
+        profile: auth?.profile ?? '',
+        shinkai_identity: auth?.shinkai_identity ?? '',
+        node_address: auth?.node_address ?? '',
         //TODO: remove from network lib these unused params
-        registration_code: "",
-        identity_type: "",
+        registration_code: '',
+        identity_type: '',
       },
       profileName: data.profile,
     });
@@ -144,6 +144,8 @@ const GenerateCodePage = () => {
         >
           <div className="flex grow flex-col space-y-2">
             <FormField
+              control={form.control}
+              name="identityType"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Select Identity Type</FormLabel>
@@ -164,12 +166,12 @@ const GenerateCodePage = () => {
                   <FormMessage />
                 </FormItem>
               )}
-              control={form.control}
-              name="identityType"
             />
 
             {identityType === IdentityType.Device && (
               <FormField
+                control={form.control}
+                name="profile"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Profile</FormLabel>
@@ -179,12 +181,12 @@ const GenerateCodePage = () => {
                     <FormMessage />
                   </FormItem>
                 )}
-                control={form.control}
-                name="profile"
               />
             )}
 
             <FormField
+              control={form.control}
+              name="permissionType"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Select Permission Type</FormLabel>
@@ -205,8 +207,6 @@ const GenerateCodePage = () => {
                   </Select>
                 </FormItem>
               )}
-              control={form.control}
-              name="permissionType"
             />
           </div>
           <Button
@@ -241,7 +241,7 @@ function QrCodeModal({
 }) {
   const [saved, setSaved] = useState(false);
   const downloadCode = async () => {
-    const canvas = document.querySelector("#registration-code-qr");
+    const canvas = document.querySelector('#registration-code-qr');
     if (canvas instanceof HTMLCanvasElement) {
       /*
        Tauri has this feature in the roadmap, but it's not available yet.
@@ -274,8 +274,9 @@ function QrCodeModal({
         <div className="flex flex-col items-center py-4">
           {/* eslint-disable-next-line react/no-unescaped-entities */}
           <h2 className="mb-1 text-lg font-semibold">Here's your QR Code</h2>
-          <p className="mb-5 text-center text-xs text-foreground">
-            Scan the QR code with your Shinkai app or download it to register your device.
+          <p className="text-foreground mb-5 text-center text-xs">
+            Scan the QR code with your Shinkai app or download it to register
+            your device.
           </p>
           <div className="mb-7 overflow-hidden rounded-lg shadow-2xl">
             <QRCode
@@ -287,13 +288,13 @@ function QrCodeModal({
           <div className="flex gap-4">
             <Button className="flex gap-1" onClick={downloadCode}>
               {saved ? <Check /> : <DownloadIcon className="h-4 w-4" />}
-              {saved ? "Saved" : "Download"}
+              {saved ? 'Saved' : 'Download'}
             </Button>
             <Button
+              className="flex gap-1"
               onClick={() => {
                 onOpenChange(false);
               }}
-              className="flex gap-1"
               variant="ghost"
             >
               I saved it, close

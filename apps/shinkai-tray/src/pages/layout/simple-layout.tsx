@@ -1,8 +1,7 @@
-import { Link } from "react-router-dom";
+import { LucideArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
-import { LucideArrowLeft } from "lucide-react";
-
-import { HOME_PATH } from "../../routes/name";
+import { HOME_PATH } from '../../routes/name';
 
 const SimpleLayout = ({
   title,
@@ -17,7 +16,9 @@ const SimpleLayout = ({
         <LucideArrowLeft />
         <span className="sr-only">Back</span>
       </Link>
-      <h1 className="mb-8 text-center text-2xl font-semibold tracking-tight">{title}</h1>
+      <h1 className="mb-8 text-center text-2xl font-semibold tracking-tight">
+        {title}
+      </h1>
       <div>{children}</div>
     </div>
   );

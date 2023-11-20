@@ -1,4 +1,4 @@
-import SimpleLayout from "./layout/simple-layout.tsx";
+import SimpleLayout from './layout/simple-layout';
 
 const SettingsPage = () => {
   return (

@@ -1,9 +1,11 @@
-import type { UseMutationOptions } from "@tanstack/react-query";
+import type { UseMutationOptions } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 
-import { useMutation } from "@tanstack/react-query";
-
-import { createRegistrationCode } from ".";
-import { CreateRegistrationCodeInput, CreateRegistrationCodeOutput } from "./types";
+import { createRegistrationCode } from '.';
+import {
+  CreateRegistrationCodeInput,
+  CreateRegistrationCodeOutput,
+} from './types';
 
 type Options = UseMutationOptions<
   CreateRegistrationCodeOutput,

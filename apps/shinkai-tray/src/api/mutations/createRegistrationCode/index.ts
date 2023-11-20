@@ -17,7 +17,7 @@ export const createRegistrationCode = async ({
   const code = await submitRequestRegistrationCode(
     permissionsType,
     finalCodeType,
-    setupPayload
+    setupPayload,
   );
   return code;
 };
