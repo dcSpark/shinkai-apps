@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import './Chat.css';
 
 import {
@@ -68,7 +70,7 @@ const JobChat: React.FC = () => {
   const [fileExtension, setFileExtension] = useState<string | null>(null);
   const otherPersonIdentity = getOtherPersonIdentity(
     deserializedId,
-    auth?.shinkai_identity ?? ''
+    auth?.shinkai_identity ?? '',
   );
 
   const {
@@ -120,7 +122,7 @@ const JobChat: React.FC = () => {
     return isLocalMessage(
       message,
       auth?.shinkai_identity || '',
-      auth?.profile || ''
+      auth?.profile || '',
     )
       ? 'https://ui-avatars.com/api/?name=Me&background=FE6162&color=fff'
       : 'https://ui-avatars.com/api/?name=S&background=363636&color=fff';
@@ -198,7 +200,7 @@ const JobChat: React.FC = () => {
   ]);
 
   const handleKeyDown = (
-    event: React.KeyboardEvent<HTMLIonTextareaElement>
+    event: React.KeyboardEvent<HTMLIonTextareaElement>,
   ) => {
     if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
       sendMessage();
@@ -224,7 +226,7 @@ const JobChat: React.FC = () => {
           <IonBackButton defaultHref="/home" />
         </IonButtons>
         <div className="flex gap-4 px-4">
-          <IonTitle className="w-auto text-accent text-center text-inherit">
+          <IonTitle className="text-accent w-auto text-center text-inherit">
             {otherPersonIdentity}
           </IonTitle>
           {/*<Avatar className="shrink-0" />*/}
@@ -232,18 +234,18 @@ const JobChat: React.FC = () => {
       </IonHeaderCustom>
       <IonContentCustom ref={chatContainerRef}>
         <div className="bg-white dark:bg-slate-900">
-          <IonList class="ion-list-chat flex flex-col gap-10 p-0 md:rounded-[1.25rem] bg-transparent">
+          <IonList class="ion-list-chat flex flex-col gap-10 bg-transparent p-0 md:rounded-[1.25rem]">
             {isChatConversationLoading &&
               Array.from({ length: 4 }).map((item, idx) => (
                 <IonItem
                   className={cn(
                     'ion-item-chat relative',
-                    idx % 2 === 1 && 'isLocalMessage'
+                    idx % 2 === 1 && 'isLocalMessage',
                   )}
                   key={idx}
                   lines="none"
                 >
-                  <div className="px-2 py-4 flex gap-4 pb-10 w-full">
+                  <div className="flex w-full gap-4 px-2 py-4 pb-10">
                     <IonThumbnail className={'rounded-[1.5rem]'} slot="start">
                       <IonSkeletonText
                         animated={true}
@@ -279,31 +281,31 @@ const JobChat: React.FC = () => {
                         <div key={date}>
                           <div
                             className={cn(
-                              'relative z-10 m-auto flex w-[140px] items-center justify-center rounded-xl bg-white dark:bg-slate-800 shadow-lg transition-opacity',
-                              isScrolling && 'sticky top-5'
+                              'relative z-10 m-auto flex w-[140px] items-center justify-center rounded-xl bg-white shadow-lg transition-opacity dark:bg-slate-800',
+                              isScrolling && 'sticky top-5',
                             )}
                           >
-                            <span className="px-2.5 py-2 text-sm font-semibold text-foreground">
+                            <span className="text-foreground px-2.5 py-2 text-sm font-semibold">
                               {date}
                             </span>
                           </div>
-                          <div className="flex flex-col gap-4 md:gap-8 py-10">
+                          <div className="flex flex-col gap-4 py-10 md:gap-8">
                             {messages.map((message, idx) => {
                               return (
                                 <IonItem
                                   className={cn(
                                     'ion-item-chat relative',
-                                    message.isLocal && 'isLocalMessage'
+                                    message.isLocal && 'isLocalMessage',
                                   )}
                                   key={message.scheduledTime}
                                   lines="none"
                                 >
                                   <div
                                     className={cn(
-                                      'px-2 py-6 flex gap-2 md:gap-8 pb-14',
+                                      'flex gap-2 px-2 py-6 pb-14 md:gap-8',
                                       message.isLocal
-                                        ? 'flex-row-reverse ml-auto'
-                                        : 'mr-auto'
+                                        ? 'ml-auto flex-row-reverse'
+                                        : 'mr-auto',
                                     )}
                                   >
                                     <Avatar
@@ -312,10 +314,10 @@ const JobChat: React.FC = () => {
                                     />
                                     <MarkdownPreview
                                       className={cn(
-                                        'mt-1 rounded-lg bg-transparent px-2.5 py-3 text-sm text-foreground',
+                                        'text-foreground mt-1 rounded-lg bg-transparent px-2.5 py-3 text-sm',
                                         message.isLocal
                                           ? 'rounded-tl-none border border-slate-800'
-                                          : 'rounded-tr-none border-none bg-[rgba(217,217,217,0.04)]'
+                                          : 'rounded-tr-none border-none bg-[rgba(217,217,217,0.04)]',
                                       )}
                                       source={message.content}
                                     />{' '}
@@ -326,7 +328,7 @@ const JobChat: React.FC = () => {
                           </div>
                         </div>
                       );
-                    }
+                    },
                   )}
                 </Fragment>
               ))}
@@ -335,9 +337,9 @@ const JobChat: React.FC = () => {
       </IonContentCustom>
       <IonFooterCustom>
         <div className={'w-full py-2 md:py-3 md:pl-4'}>
-          <div className="m-2 flex items-end h-full border border-slate-300 pr-2 rounded-xl shadow">
+          <div className="m-2 flex h-full items-end rounded-xl border border-slate-300 pr-2 shadow">
             {selectedFile && (
-              <div className="px-3 flex flex-col gap-1 justify-center items-center">
+              <div className="flex flex-col items-center justify-center gap-1 px-3">
                 <IonIcon icon={documentIcon} />
                 <IonLabel className="text-xs">{fileExtension}</IonLabel>
               </div>
@@ -360,14 +362,14 @@ const JobChat: React.FC = () => {
             <button
               aria-label="Add File"
               className={cn(
-                'h-10 w-10 rounded-md text-gray-500 mb-2 mr-2',
+                'mb-2 mr-2 h-10 w-10 rounded-md text-gray-500',
                 'bg-brand-500 hover:bg-brand-500/80 disabled:hover:bg-transparent',
-                'dark:text-white dark:hover:text-gray-100 dark:hover:bg-gray-700 dark:disabled:hover:bg-transparent'
+                'dark:text-white dark:hover:bg-gray-700 dark:hover:text-gray-100 dark:disabled:hover:bg-transparent',
               )}
               onClick={() =>
                 (
                   document.querySelector(
-                    'input[type="file"]'
+                    'input[type="file"]',
                   ) as HTMLInputElement
                 )?.click()
               }
@@ -378,9 +380,9 @@ const JobChat: React.FC = () => {
             <button
               aria-label="Send Message"
               className={cn(
-                'h-10 w-10 rounded-md text-gray-500 mb-2',
+                'mb-2 h-10 w-10 rounded-md text-gray-500',
                 'bg-brand-500 hover:bg-brand-500/80 disabled:hover:bg-transparent',
-                'dark:text-white dark:hover:text-gray-100 dark:hover:bg-gray-700 dark:disabled:hover:bg-transparent'
+                'dark:text-white dark:hover:bg-gray-700 dark:hover:text-gray-100 dark:disabled:hover:bg-transparent',
               )}
               onClick={sendMessage}
             >

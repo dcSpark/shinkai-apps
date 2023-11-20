@@ -134,6 +134,7 @@ export const CreateRegistrationCode = () => {
         profile: auth?.profile ?? '',
         shinkai_identity: auth?.shinkai_identity ?? '',
         node_address: auth?.node_address ?? '',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
       profileName: values.profile,
     });
@@ -162,20 +163,20 @@ export const CreateRegistrationCode = () => {
     }
   }, [form, identityType, auth]);
   return (
-    <div className="h-full flex flex-col space-y-3">
+    <div className="flex h-full flex-col space-y-3">
       <Header
         icon={<QrCode />}
         title={
           <FormattedMessage id="create-registration-code"></FormattedMessage>
         }
       />
-      <div className="grow flex flex-col space-y-2">
+      <div className="flex grow flex-col space-y-2">
         <Form {...form}>
           <form
-            className="flex flex-col space-y-3 justify-between"
+            className="flex flex-col justify-between space-y-3"
             onSubmit={form.handleSubmit(submit)}
           >
-            <div className="grow flex flex-col space-y-2">
+            <div className="flex grow flex-col space-y-2">
               <FormField
                 control={form.control}
                 name="identityType"
@@ -278,7 +279,7 @@ export const CreateRegistrationCode = () => {
         </Form>
 
         {generatedSetupData && (
-          <div className=" grow flex flex-col items-center justify-center space-y-3">
+          <div className=" flex grow flex-col items-center justify-center space-y-3">
             <div className="flex flex-col space-y-1">
               <span className="font-semibold">
                 <FormattedMessage id="scan-or-download-registration-code" />
@@ -287,9 +288,9 @@ export const CreateRegistrationCode = () => {
                 <FormattedMessage id="use-it-to-register-and-connect" />
               </span>
             </div>
-            <div className="w-full flex flex-row justify-center items-center">
+            <div className="flex w-full flex-row items-center justify-center">
               <div
-                className="relative flex flex-col group"
+                className="group relative flex flex-col"
                 ref={canvasContainer}
               >
                 <QRCodeCanvas
@@ -316,7 +317,7 @@ export const CreateRegistrationCode = () => {
                   value={JSON.stringify(generatedSetupData)}
                 />
                 <Button
-                  className="absolute bottom-1 right-1 invisible group-hover:visible"
+                  className="invisible absolute bottom-1 right-1 group-hover:visible"
                   onClick={() => download()}
                   size="icon"
                 >
