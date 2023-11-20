@@ -5,6 +5,7 @@
   "scripts": {
     "postinstall": "npx patch-package"
   },
+  "workspaces": ["apps/shinkai-tray"],
   "private": true,
   "devDependencies": {
     "@babel/cli": "^7.22.10",
