@@ -38,7 +38,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-#          npm cache verify
+          npm cache verify
           npm ci --no-audit --prefer-offline
 
       - name: Run NX target ${{ matrix.target }} on affected projects
