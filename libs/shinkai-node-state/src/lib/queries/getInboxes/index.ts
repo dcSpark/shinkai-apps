@@ -1,5 +1,4 @@
 import { getAllInboxesForProfile } from '@shinkai_network/shinkai-message-ts/api';
-import { SmartInbox } from '@shinkai_network/shinkai-message-ts/models/ShinkaiMessage';
 
 import type { GetInboxesInput, GetInboxesOutput } from './types';
 

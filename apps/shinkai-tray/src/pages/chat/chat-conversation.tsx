@@ -198,8 +198,6 @@ const ChatConversation = () => {
     isSendingMessageToInbox,
     isSendingTextMessageWithFilesForInbox,
     data?.pages,
-    auth?.shinkai_identity,
-    auth?.profile,
     inboxId,
   ]);
 
