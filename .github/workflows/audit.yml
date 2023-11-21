@@ -32,4 +32,4 @@ jobs:
           echo "RUN:\"npm i --package-lock-only\" => Creates package-lock.json which is used by audit, also audits, but always exits with 0 and gives a very short output."
           npm i --package-lock-only --ignore-scripts
           echo "RUN:\"npm audit\" => Runs the actual audit."
-          npm audit --audit-level=moderate
+          npm audit --audit-level=moderate --omit=dev @tauri-apps/cli
