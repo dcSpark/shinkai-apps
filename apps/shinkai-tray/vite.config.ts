@@ -1,15 +1,18 @@
-import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
-import wasm from "vite-plugin-wasm";
+import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
+import wasm from 'vite-plugin-wasm';
 
 // https://vitejs.dev/config/
 export default defineConfig(() => ({
-  plugins: [react(), wasm()],
+  plugins: [react(), nxViteTsPaths(), wasm()],
 
   esbuild: {
     // Important for wasm plugin
     supported: {
-      "top-level-await": true,
+      'top-level-await': true,
       bigint: true,
     },
   },
@@ -24,10 +27,10 @@ export default defineConfig(() => ({
     strictPort: true,
     watch: {
       // Exclude output.wav from being watched
-      ignored: ["**/output.wav"],
+      ignored: ['**/output.wav'],
     },
   },
   // 3. to make use of `TAURI_DEBUG` and other env variables
   // https://tauri.studio/v1/api/config#buildconfig.beforedevcommand
-  envPrefix: ["VITE_", "TAURI_"],
+  envPrefix: ['VITE_', 'TAURI_'],
 }));

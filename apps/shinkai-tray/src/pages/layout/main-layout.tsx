@@ -39,7 +39,6 @@ export function Footer() {
   const navigate = useNavigate();
   const logout = useAuth((state) => state.setLogout);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const goToCreateJob = useCallback(() => {
     navigate(CREATE_JOB_PATH);
     setOpen(false);
