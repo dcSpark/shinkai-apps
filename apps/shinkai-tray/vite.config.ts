@@ -32,5 +32,14 @@ export default defineConfig(() => ({
   },
   // 3. to make use of `TAURI_DEBUG` and other env variables
   // https://tauri.studio/v1/api/config#buildconfig.beforedevcommand
-  envPrefix: ['VITE_', 'TAURI_'],
+  // to access the Tauri environment variables set by the CLI with information about the current target
+  envPrefix: [
+    'VITE_',
+    'TAURI_PLATFORM',
+    'TAURI_ARCH',
+    'TAURI_FAMILY',
+    'TAURI_PLATFORM_VERSION',
+    'TAURI_PLATFORM_TYPE',
+    'TAURI_DEBUG',
+  ],
 }));
