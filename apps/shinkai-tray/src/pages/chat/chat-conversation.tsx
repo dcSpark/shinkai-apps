@@ -4,8 +4,8 @@ import {
   extractJobIdFromInbox,
   extractReceiverShinkaiName,
   isJobInbox,
-  isLocalMessage,
 } from '@shinkai_network/shinkai-message-ts/utils';
+import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
 import { Placeholder } from '@tiptap/extension-placeholder';
 import { EditorContent, Extension, useEditor } from '@tiptap/react';
 import { StarterKit } from '@tiptap/starter-kit';
@@ -27,7 +27,6 @@ import { z } from 'zod';
 import { useSendMessageToJob } from '../../api/mutations/sendMessageToJob/useSendMessageToJob';
 import { useSendMessageWithFilesToInbox } from '../../api/mutations/sendMesssageWithFilesToInbox/useSendMessageWithFilesToInbox';
 import { useSendMessageToInbox } from '../../api/mutations/sendTextMessage/useSendMessageToInbox';
-import { useGetChatConversationWithPagination } from '../../api/queries/getChatConversation/useGetChatConversationWithPagination';
 import Message from '../../components/chat/message';
 import { Button } from '../../components/ui/button';
 import DotsLoader from '../../components/ui/dots-loader';
@@ -190,15 +189,8 @@ const ChatConversation = () => {
       return true;
 
     const lastMessage = data?.pages?.at(-1)?.at(-1);
-
     if (!lastMessage) return false;
-    const isLocal = isLocalMessage(
-      lastMessage,
-      auth?.shinkai_identity ?? '',
-      auth?.profile ?? '',
-    );
-
-    if (isJobInbox(inboxId) && isLocal) return true;
+    if (isJobInbox(inboxId) && lastMessage.isLocal) return true;
 
     return false;
   }, [
@@ -295,7 +287,7 @@ const ChatConversation = () => {
                             return (
                               <Message
                                 inboxId={inboxId}
-                                key={message.external_metadata?.scheduled_time}
+                                key={message.scheduledTime}
                                 message={message}
                               />
                             );

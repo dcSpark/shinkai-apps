@@ -1,11 +1,9 @@
-import type { ShinkaiMessage } from '@shinkai_network/shinkai-message-ts/models';
+import { GetChatConversationOutput } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
 
-export const groupMessagesByDate = (messages: ShinkaiMessage[]) => {
-  const groupedMessages: Record<string, ShinkaiMessage[]> = {};
+export const groupMessagesByDate = (messages: GetChatConversationOutput) => {
+  const groupedMessages: Record<string, GetChatConversationOutput> = {};
   for (const message of messages) {
-    const date = new Date(
-      message.external_metadata?.scheduled_time ?? '',
-    ).toDateString();
+    const date = new Date(message.scheduledTime ?? '').toDateString();
     if (!groupedMessages[date]) {
       groupedMessages[date] = [];
     }

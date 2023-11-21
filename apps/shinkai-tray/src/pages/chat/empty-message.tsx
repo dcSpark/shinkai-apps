@@ -1,7 +1,7 @@
 import { LightningBoltIcon } from '@radix-ui/react-icons';
+import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { Link } from 'react-router-dom';
 
-import { useAgents } from '../../api/queries/getAgents/useGetAgents';
 import { ADD_AGENT_PATH, CREATE_JOB_PATH } from '../../routes/name';
 import { useAuth } from '../../store/auth';
 

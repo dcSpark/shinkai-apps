@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { FileCheck2, ImagePlusIcon, PlusIcon, X } from 'lucide-react';
 import { useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
@@ -8,7 +9,6 @@ import { z } from 'zod';
 
 import { buildInboxIdFromJobId } from '../api/mutations/createJob';
 import { useCreateJob } from '../api/mutations/createJob/useCreateJob';
-import { useAgents } from '../api/queries/getAgents/useGetAgents';
 import { Button } from '../components/ui/button';
 import {
   Form,

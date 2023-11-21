@@ -4,6 +4,9 @@ import {
   isJobInbox,
   isLocalMessage,
 } from '@shinkai_network/shinkai-message-ts/utils';
+import { GetInboxesOutput } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/types';
+import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
+import { Query } from '@tanstack/react-query';
 import { Edit3, MessageCircleIcon, Workflow } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -11,7 +14,6 @@ import { Link, Outlet, useMatch } from 'react-router-dom';
 import { z } from 'zod';
 
 import { useUpdateInboxName } from '../../api/mutations/updateInboxName/useUpdateInboxName';
-import { useGetInboxes } from '../../api/queries/getInboxes/useGetInboxes';
 import { Button } from '../../components/ui/button';
 import {
   Form,
@@ -201,18 +203,33 @@ const MessageButton = ({
 const ChatLayout = () => {
   const auth = useAuth((state) => state.auth);
 
-  const { inboxes } = useGetInboxes({
-    sender: auth?.shinkai_identity ?? '',
-    senderSubidentity: auth?.profile ?? '',
-    // Assuming receiver and target_shinkai_name_profile are the same as sender
-    receiver: auth?.shinkai_identity ?? '',
-    targetShinkaiNameProfile: `${auth?.shinkai_identity}/${auth?.profile}`,
-    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-    node_encryption_pk: auth?.node_encryption_pk ?? '',
-    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-    profile_identity_sk: auth?.profile_identity_sk ?? '',
-  });
+  const { inboxes } = useGetInboxes(
+    {
+      sender: auth?.shinkai_identity ?? '',
+      senderSubidentity: auth?.profile ?? '',
+      // Assuming receiver and target_shinkai_name_profile are the same as sender
+      receiver: auth?.shinkai_identity ?? '',
+      targetShinkaiNameProfile: `${auth?.shinkai_identity}/${auth?.profile}`,
+      my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+      my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+    },
+    {
+      refetchIntervalInBackground: true,
+      refetchInterval: (query: Query<GetInboxesOutput>) => {
+        const allInboxesAreCompleted = query.state.data?.every((inbox) => {
+          return !isLocalMessage(
+            inbox.last_message,
+            auth?.shinkai_identity ?? '',
+            auth?.profile ?? '',
+          );
+        });
+        return allInboxesAreCompleted ? 0 : 3000;
+      },
+    },
+  );
 
   return (
     <div className="flex h-full">
