@@ -34,11 +34,11 @@ jobs:
           check-latest: false
           registry-url: https://registry.npmjs.org
           cache: "npm"
-#          cache-dependency-path: package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: |
-          npm cache verify
+#          npm cache verify
           npm ci --no-audit --prefer-offline
 
       - name: Run NX target ${{ matrix.target }} on affected projects
