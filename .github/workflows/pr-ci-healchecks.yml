@@ -16,7 +16,7 @@ jobs:
       max-parallel: 1
       matrix:
         target: ['lint', 'build', 'test']
-    
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -34,7 +34,7 @@ jobs:
           check-latest: false
           registry-url: https://registry.npmjs.org
           cache: "npm"
-          cache-dependency-path: package-lock.json
+#          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: |
