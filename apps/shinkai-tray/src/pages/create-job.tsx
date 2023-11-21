@@ -1,4 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
+import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { FileCheck2, ImagePlusIcon, PlusIcon, X } from 'lucide-react';
 import { useEffect } from 'react';
@@ -7,8 +9,6 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
-import { buildInboxIdFromJobId } from '../api/mutations/createJob';
-import { useCreateJob } from '../api/mutations/createJob/useCreateJob';
 import { Button } from '../components/ui/button';
 import {
   Form,
@@ -113,7 +113,7 @@ const CreateJobPage = () => {
 
   const onSubmit = async (data: z.infer<typeof createJobSchema>) => {
     if (!auth) return;
-    createJob({
+    await createJob({
       shinkaiIdentity: auth.shinkai_identity,
       profile: auth.profile,
       agentId: data.model,

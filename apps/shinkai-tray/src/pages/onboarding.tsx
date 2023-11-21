@@ -3,13 +3,13 @@ import {
   generateEncryptionKeys,
   generateSignatureKeys,
 } from '@shinkai_network/shinkai-message-ts/utils';
+import { queryClient } from '@shinkai_network/shinkai-node-state/lib/constants';
+import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
-import { queryClient } from '../api/constants';
-import { useSubmitRegistrationNoCode } from '../api/mutations/submitRegistation/useSubmitRegistrationNoCode';
 import { Button } from '../components/ui/button';
 import ErrorMessage from '../components/ui/error-message';
 import {

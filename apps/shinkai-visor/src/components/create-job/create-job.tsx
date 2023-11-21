@@ -140,7 +140,7 @@ export const CreateJob = () => {
       agentId: values.agent,
       content: content,
       files_inbox: '',
-      files: values.files,
+      file: values.files[0],
       my_device_encryption_sk: auth.my_device_encryption_sk,
       my_device_identity_sk: auth.my_device_identity_sk,
       node_encryption_pk: auth.node_encryption_pk,

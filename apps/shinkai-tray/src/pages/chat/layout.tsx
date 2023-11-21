@@ -4,6 +4,7 @@ import {
   isJobInbox,
   isLocalMessage,
 } from '@shinkai_network/shinkai-message-ts/utils';
+import { useUpdateInboxName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateInboxName/useUpdateInboxName';
 import { GetInboxesOutput } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/types';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
 import { Query } from '@tanstack/react-query';
@@ -13,7 +14,6 @@ import { useForm } from 'react-hook-form';
 import { Link, Outlet, useMatch } from 'react-router-dom';
 import { z } from 'zod';
 
-import { useUpdateInboxName } from '../../api/mutations/updateInboxName/useUpdateInboxName';
 import { Button } from '../../components/ui/button';
 import {
   Form,
@@ -62,7 +62,6 @@ const InboxNameInput = ({
       sender: auth.shinkai_identity,
       senderSubidentity: auth.profile,
       receiver: `${auth.shinkai_identity}`,
-      receiverSubidentity: '',
       my_device_encryption_sk: auth.my_device_encryption_sk,
       my_device_identity_sk: auth.my_device_identity_sk,
       node_encryption_pk: auth.node_encryption_pk,

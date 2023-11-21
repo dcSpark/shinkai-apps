@@ -1,9 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useCreateAgent } from '@shinkai_network/shinkai-node-state/lib/mutations/createAgent/useCreateAgent';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
-import { useCreateAgent } from '../api/mutations/createAgent/useCreateAgent';
 import { Button } from '../components/ui/button';
 import ErrorMessage from '../components/ui/error-message';
 import {

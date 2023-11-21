@@ -5,6 +5,9 @@ import {
   extractReceiverShinkaiName,
   isJobInbox,
 } from '@shinkai_network/shinkai-message-ts/utils';
+import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMessageToJob/useSendMessageToJob';
+import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
+import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageWithFilesToInbox/useSendMessageWithFilesToInbox';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
 import { Placeholder } from '@tiptap/extension-placeholder';
 import { EditorContent, Extension, useEditor } from '@tiptap/react';
@@ -24,9 +27,6 @@ import { useParams } from 'react-router-dom';
 import { Markdown } from 'tiptap-markdown';
 import { z } from 'zod';
 
-import { useSendMessageToJob } from '../../api/mutations/sendMessageToJob/useSendMessageToJob';
-import { useSendMessageWithFilesToInbox } from '../../api/mutations/sendMesssageWithFilesToInbox/useSendMessageWithFilesToInbox';
-import { useSendMessageToInbox } from '../../api/mutations/sendTextMessage/useSendMessageToInbox';
 import Message from '../../components/chat/message';
 import { Button } from '../../components/ui/button';
 import DotsLoader from '../../components/ui/dots-loader';

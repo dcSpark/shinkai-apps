@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DownloadIcon } from '@radix-ui/react-icons';
+import { useCreateRegistrationCode } from '@shinkai_network/shinkai-node-state/lib/mutations/createRegistrationCode/useCreateRegistrationCode';
 import { save } from '@tauri-apps/api/dialog';
 import { BaseDirectory, writeBinaryFile } from '@tauri-apps/api/fs';
 import { Check } from 'lucide-react';
@@ -7,7 +8,6 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { useCreateRegistrationCode } from '../api/mutations/createRegistrationCode/useCreateRegistrationCode';
 import { Button } from '../components/ui/button';
 import { Dialog, DialogContent } from '../components/ui/dialog';
 import {

@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-
 import { QueryClient } from '@tanstack/react-query';
 
 export const queryClient = new QueryClient();
