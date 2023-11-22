@@ -1,25 +1,22 @@
 {
   "compilerOptions": {
-    "useDefineForClassFields": true,
-    /* Bundler mode */
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
     "jsx": "react-jsx",
-    "noEmit": true,
-
-    /* Linting */
+    "allowJs": false,
+    "moduleResolution": "bundler",
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": true,
     "strict": true,
+    "types": ["vite/client", "vitest"],
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
+    "noFallthroughCasesInSwitch": true
   },
-  "include": ["./src/**/*"],
+  "files": [],
+  "include": [],
   "references": [
     { "path": "./tsconfig.node.json" },
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.spec.json" }
+    {      "path": "./tsconfig.app.json"    },
+    {      "path": "./tsconfig.spec.json"    }
   ],
   "extends": "../../tsconfig.base.json"
 }
