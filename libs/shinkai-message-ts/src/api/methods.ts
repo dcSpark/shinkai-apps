@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   AgentCredentialsPayload,
   CredentialsPayload,
@@ -28,7 +29,7 @@ export const handleHttpError = async (response: Response): Promise<void> => {
       error = undefined;
     }
     throw new Error(
-      `HTTP error: ${response.status} ${error?.code}, ${error?.error}, ${error?.message}`
+      `HTTP error: ${response.status} ${error?.code}, ${error?.error}, ${error?.message}`,
     );
   }
 };
@@ -50,13 +51,13 @@ export const createChatWithMessage = async (
   receiver: string,
   receiver_subidentity: string,
   text_message: string,
-  setupDetailsState: CredentialsPayload
+  setupDetailsState: CredentialsPayload,
 ): Promise<{ inboxId: string; message: ShinkaiMessage }> => {
   const senderShinkaiName = new ShinkaiNameWrapper(
-    sender + '/' + sender_subidentity
+    sender + '/' + sender_subidentity,
   );
   const receiverShinkaiName = new ShinkaiNameWrapper(
-    receiver + '/' + receiver_subidentity
+    receiver + '/' + receiver_subidentity,
   );
 
   const senderProfile = senderShinkaiName.extract_profile();
@@ -67,7 +68,7 @@ export const createChatWithMessage = async (
     senderProfile.get_profile_name,
     receiverProfile.get_node_name,
     receiverProfile.get_profile_name,
-    true
+    true,
   );
 
   try {
@@ -80,7 +81,7 @@ export const createChatWithMessage = async (
       receiver,
       receiver_subidentity,
       text_message,
-      inbox.get_value
+      inbox.get_value,
     );
 
     const message: ShinkaiMessage = JSON.parse(messageStr);
@@ -112,7 +113,7 @@ export const sendTextMessageWithInbox = async (
   receiver: string,
   text_message: string,
   inbox_name: string,
-  setupDetailsState: CredentialsPayload
+  setupDetailsState: CredentialsPayload,
 ): Promise<{ inboxId: string; message: ShinkaiMessage }> => {
   try {
     const messageStr =
@@ -125,7 +126,7 @@ export const sendTextMessageWithInbox = async (
         receiver,
         '',
         inbox_name,
-        text_message
+        text_message,
       );
 
     const message: ShinkaiMessage = JSON.parse(messageStr);
@@ -156,7 +157,7 @@ export const sendTextMessageWithFilesForInbox = async (
   text_message: string,
   job_inbox: string,
   selectedFile: File,
-  setupDetailsState: CredentialsPayload
+  setupDetailsState: CredentialsPayload,
 ): Promise<{ inboxId: string; message: ShinkaiMessage }> => {
   try {
     const fileUploader = new FileUploader(
@@ -167,7 +168,7 @@ export const sendTextMessageWithFilesForInbox = async (
       job_inbox,
       sender,
       sender_subidentity,
-      receiver
+      receiver,
     );
 
     await fileUploader.createFolder();
@@ -194,7 +195,7 @@ export const getAllInboxesForProfile = async (
   sender_subidentity: string,
   receiver: string,
   target_shinkai_name_profile: string,
-  setupDetailsState: CredentialsPayload
+  setupDetailsState: CredentialsPayload,
 ): Promise<SmartInbox[]> => {
   try {
     const messageString =
@@ -205,7 +206,7 @@ export const getAllInboxesForProfile = async (
         sender,
         sender_subidentity,
         receiver,
-        target_shinkai_name_profile
+        target_shinkai_name_profile,
       );
 
     const message = JSON.parse(messageString);
@@ -217,7 +218,7 @@ export const getAllInboxesForProfile = async (
         method: 'POST',
         body: JSON.stringify(message),
         headers: { 'Content-Type': 'application/json' },
-      }
+      },
     );
     const data = await response.json();
     await handleHttpError(response);
@@ -234,7 +235,7 @@ export const updateInboxName = async (
   receiver: string,
   setupDetailsState: CredentialsPayload,
   inboxName: string,
-  inboxId: string
+  inboxId: string,
 ): Promise<{ success: string; data: null }> => {
   try {
     const messageString =
@@ -247,7 +248,7 @@ export const updateInboxName = async (
         receiver,
         '',
         inboxId,
-        inboxName
+        inboxName,
       );
 
     const message = JSON.parse(messageString);
@@ -271,7 +272,7 @@ export const getLastMessagesFromInbox = async (
   inbox: string,
   count: number,
   lastKey: string | undefined,
-  setupDetailsState: LastMessagesFromInboxCredentialsPayload
+  setupDetailsState: LastMessagesFromInboxCredentialsPayload,
 ): Promise<ShinkaiMessage[]> => {
   try {
     const messageStr =
@@ -284,7 +285,7 @@ export const getLastMessagesFromInbox = async (
         lastKey,
         setupDetailsState.shinkai_identity,
         setupDetailsState.profile,
-        setupDetailsState.shinkai_identity
+        setupDetailsState.shinkai_identity,
       );
 
     const message = JSON.parse(messageStr);
@@ -307,7 +308,7 @@ export const getLastMessagesFromInbox = async (
 export const submitRequestRegistrationCode = async (
   identity_permissions: string,
   code_type = 'profile',
-  setupDetailsState: SetupPayload
+  setupDetailsState: SetupPayload,
 ): Promise<string> => {
   try {
     // TODO: refactor the profile name to be a constant
@@ -324,7 +325,7 @@ export const submitRequestRegistrationCode = async (
       identity_permissions,
       code_type,
       sender_profile_name,
-      setupDetailsState.shinkai_identity
+      setupDetailsState.shinkai_identity,
     );
 
     const message = JSON.parse(messageStr);
@@ -346,8 +347,10 @@ export const submitRequestRegistrationCode = async (
 };
 
 export const submitRegistrationCode = async (
-  setupData: SetupPayload
-): Promise<{ encryption_public_key: string, identity_public_key: string } | undefined> => {
+  setupData: SetupPayload,
+): Promise<
+  { encryption_public_key: string; identity_public_key: string } | undefined
+> => {
   try {
     const messageStr =
       ShinkaiMessageBuilderWrapper.use_code_registration_for_device(
@@ -361,7 +364,7 @@ export const submitRegistrationCode = async (
         setupData.permission_type,
         setupData.registration_name,
         setupData.profile || '', // sender_profile_name: it doesn't exist yet in the Node
-        setupData.shinkai_identity
+        setupData.shinkai_identity,
       );
 
     const message = JSON.parse(messageStr);
@@ -373,7 +376,7 @@ export const submitRegistrationCode = async (
         method: 'POST',
         body: JSON.stringify(message),
         headers: { 'Content-Type': 'application/json' },
-      }
+      },
     );
 
     await handleHttpError(response);
@@ -388,7 +391,7 @@ export const submitRegistrationCode = async (
 };
 
 export const submitInitialRegistrationNoCode = async (
-  setupData: SetupPayload
+  setupData: SetupPayload,
 ): Promise<{
   success: boolean;
   data?: APIUseRegistrationCodeSuccessResponse;
@@ -403,7 +406,7 @@ export const submitInitialRegistrationNoCode = async (
         setupData.registration_name,
         setupData.registration_name,
         setupData.profile || '', // sender_profile_name: it doesn't exist yet in the Node
-        setupData.shinkai_identity
+        setupData.shinkai_identity,
       );
 
     const message = JSON.parse(messageStr);
@@ -415,7 +418,7 @@ export const submitInitialRegistrationNoCode = async (
         method: 'POST',
         body: JSON.stringify(message),
         headers: { 'Content-Type': 'application/json' },
-      }
+      },
     );
 
     await handleHttpError(response);
@@ -449,7 +452,7 @@ export const createJob = async (
   sender_subidentity: string,
   receiver: string,
   receiver_subidentity: string,
-  setupDetailsState: JobCredentialsPayload
+  setupDetailsState: JobCredentialsPayload,
 ): Promise<string> => {
   try {
     const messageStr = ShinkaiMessageBuilderWrapper.job_creation(
@@ -460,7 +463,7 @@ export const createJob = async (
       sender,
       sender_subidentity,
       receiver,
-      receiver_subidentity
+      receiver_subidentity,
     );
 
     const message = JSON.parse(messageStr);
@@ -488,7 +491,7 @@ export const sendMessageToJob = async (
   sender_subidentity: string,
   receiver: string,
   receiver_subidentity: string,
-  setupDetailsState: JobCredentialsPayload
+  setupDetailsState: JobCredentialsPayload,
 ): Promise<string> => {
   try {
     const messageStr = ShinkaiMessageBuilderWrapper.job_message(
@@ -501,7 +504,7 @@ export const sendMessageToJob = async (
       sender,
       sender_subidentity,
       receiver,
-      receiver_subidentity
+      receiver_subidentity,
     );
 
     const message = JSON.parse(messageStr);
@@ -525,7 +528,7 @@ export const getProfileAgents = async (
   sender: string,
   sender_subidentity: string,
   receiver: string,
-  setupDetailsState: CredentialsPayload
+  setupDetailsState: CredentialsPayload,
 ): Promise<SerializedAgent[]> => {
   try {
     const messageStr = ShinkaiMessageBuilderWrapper.get_profile_agents(
@@ -534,7 +537,7 @@ export const getProfileAgents = async (
       setupDetailsState.node_encryption_pk,
       sender,
       sender_subidentity,
-      receiver
+      receiver,
     );
 
     const message = JSON.parse(messageStr);
@@ -561,7 +564,7 @@ export const addAgent = async (
   sender_subidentity: string,
   node_name: string,
   agent: SerializedAgent,
-  setupDetailsState: AgentCredentialsPayload
+  setupDetailsState: AgentCredentialsPayload,
 ) => {
   try {
     const agent_wrapped = SerializedAgentWrapper.fromSerializedAgent(agent);
@@ -572,7 +575,7 @@ export const addAgent = async (
       node_name,
       sender_subidentity,
       node_name,
-      agent_wrapped
+      agent_wrapped,
     );
 
     const message = JSON.parse(messageStr);
@@ -597,9 +600,9 @@ export const getFileNames = async (
   sender_subidentity: string,
   receiver: string,
   setupDetailsState: {
-    profile_encryption_sk: string,
-    profile_identity_sk: string,
-    node_encryption_pk: string,
+    profile_encryption_sk: string;
+    profile_identity_sk: string;
+    node_encryption_pk: string;
   },
   inboxId: string,
   fileInbox: string,
@@ -615,17 +618,20 @@ export const getFileNames = async (
         receiver,
         '',
         inboxId,
-        fileInbox
+        fileInbox,
       );
 
     const message = JSON.parse(messageString);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await fetch(`${apiEndpoint}/v1/get_filenames_for_file_inbox`, {
-      method: 'POST',
-      body: JSON.stringify(message),
-      headers: { 'Content-Type': 'application/json' },
-    });
+    const response = await fetch(
+      `${apiEndpoint}/v1/get_filenames_for_file_inbox`,
+      {
+        method: 'POST',
+        body: JSON.stringify(message),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
     const data = await response.json();
     await handleHttpError(response);
     return data;

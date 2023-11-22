@@ -1,5 +1,7 @@
-import { SerializedAgent } from "../models/SchemaTypes";
-import { SerializedAgentWrapper as SerializedAgentWrapperWASM } from "../pkg/shinkai_message_wasm";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { SerializedAgent } from '../models/SchemaTypes';
+import { SerializedAgentWrapper as SerializedAgentWrapperWASM } from '../pkg/shinkai_message_wasm';
 
 export class SerializedAgentWrapper {
   private wasmWrapper: SerializedAgentWrapperWASM;
@@ -21,37 +23,41 @@ export class SerializedAgentWrapper {
   }
 
   static fromSerializedAgent(agent: SerializedAgent): SerializedAgentWrapper {
-    let modelStr = "";
+    let modelStr = '';
     if (agent.model && agent.model.OpenAI && agent.model.OpenAI.model_type) {
-      modelStr = "openai:" + agent.model.OpenAI.model_type;
-    } else if (agent.model && agent.model.GenericAPI && agent.model.GenericAPI.model_type) {
-      modelStr = "genericapi:" + agent.model.GenericAPI.model_type;
+      modelStr = 'openai:' + agent.model.OpenAI.model_type;
+    } else if (
+      agent.model &&
+      agent.model.GenericAPI &&
+      agent.model.GenericAPI.model_type
+    ) {
+      modelStr = 'genericapi:' + agent.model.GenericAPI.model_type;
     } else {
-      throw new Error("Invalid model: " + JSON.stringify(agent.model));
+      throw new Error('Invalid model: ' + JSON.stringify(agent.model));
     }
     const toolkitPermissionsStr =
       agent.toolkit_permissions.length > 0
-        ? agent.toolkit_permissions.join(",")
-        : "";
+        ? agent.toolkit_permissions.join(',')
+        : '';
     const storageBucketPermissionsStr =
       agent.storage_bucket_permissions.length > 0
-        ? agent.storage_bucket_permissions.join(",")
-        : "";
+        ? agent.storage_bucket_permissions.join(',')
+        : '';
     const allowedMessageSendersStr =
       agent.allowed_message_senders.length > 0
-        ? agent.allowed_message_senders.join(",")
-        : "";
+        ? agent.allowed_message_senders.join(',')
+        : '';
 
     const wasmWrapper = SerializedAgentWrapperWASM.fromStrings(
       agent.id,
       agent.full_identity_name,
       agent.perform_locally.toString(),
-      agent.external_url || "",
-      agent.api_key || "",
+      agent.external_url || '',
+      agent.api_key || '',
       modelStr,
       toolkitPermissionsStr,
       storageBucketPermissionsStr,
-      allowedMessageSendersStr
+      allowedMessageSendersStr,
     );
     return new SerializedAgentWrapper(wasmWrapper.to_jsvalue());
   }
@@ -65,7 +71,7 @@ export class SerializedAgentWrapper {
     model: string,
     toolkit_permissions: string,
     storage_bucket_permissions: string,
-    allowed_message_senders: string
+    allowed_message_senders: string,
   ): SerializedAgentWrapper {
     const wasmWrapper = SerializedAgentWrapperWASM.fromStrings(
       id,
@@ -76,7 +82,7 @@ export class SerializedAgentWrapper {
       model,
       toolkit_permissions,
       storage_bucket_permissions,
-      allowed_message_senders
+      allowed_message_senders,
     );
     return new SerializedAgentWrapper(wasmWrapper.to_jsvalue());
   }
