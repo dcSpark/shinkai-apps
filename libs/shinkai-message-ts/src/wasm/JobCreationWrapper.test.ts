@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { JobCreationWrapper } from './JobCreationWrapper';
 
 const jobCreationJson = `{
@@ -36,10 +38,10 @@ describe('JobCreationWrapper', () => {
     const jsonString = wrapper.to_json_str();
 
     expect(JSON.parse(jsonString)).toEqual({
-        scope: {
-            database: [],
-            local: []
-        }
+      scope: {
+        database: [],
+        local: [],
+      },
     });
   });
 });

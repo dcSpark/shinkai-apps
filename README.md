@@ -9,6 +9,7 @@
 ### Apps
 * shinkai-visor: Shinkai Visor is a chrome extension to interact with shinkai-node.
 * shinkai-app: Shinkai App is a mobile app to interact with shinkai-node.
+* shinkai-tray: Shinkai Tray is a desktop app to interact with shinkai-node.
 
 ### Libs
 
@@ -39,7 +40,13 @@ $ npx nx serve {project-name}
   * 3. Enable _Developer mode_.
   * 4. Click _Load unpacked_.
   * 5. Select the `./dist/apps/shinkai-visor` folder which contains the output of the building process using commands like `npx nx serve shinkai-visor`.
-
+  
+* shinkai-tray: For development and building purposes
+  - Run as a Desktop App using Vite:
+    Run `npx nx serve:tauri shinkai-tray` and it will automatically launch the Shinkai Tray desktop application.
+  - Run as a Web App:
+     Run `npx nx serve shinkai-tray` and open a browser and navigate to `http://localhost:1420`.
+ 
 ### Useful Commands
 
 Every command, if it's needed, build projects and it's dependencies according to the project dependency tree inferred from imports between them.

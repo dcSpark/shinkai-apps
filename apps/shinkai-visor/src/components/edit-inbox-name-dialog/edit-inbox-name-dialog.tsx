@@ -54,7 +54,7 @@ export const EditInboxNameDialog = ({
       name: '',
     },
   });
-  const { mutateAsync: updateInboxName, isLoading } = useUpdateInboxName({
+  const { mutateAsync: updateInboxName, isPending } = useUpdateInboxName({
     onSuccess: (data) => {
       onSaved(form.getValues().name);
     },
@@ -116,8 +116,8 @@ export const EditInboxNameDialog = ({
             </div>
             <DialogFooter>
               <div className="flex flex-col justify-between space-y-2">
-                <Button disabled={isLoading} type="submit">
-                  {isLoading ? (
+                <Button disabled={isPending} type="submit">
+                  {isPending ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   ) : (
                     <Save className="mr-2 h-4 w-4"></Save>

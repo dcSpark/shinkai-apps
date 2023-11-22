@@ -9,18 +9,27 @@ export default defineConfig({
   build: {
     lib: {
       entry: {
-        'index': './src/index.ts',
-        'api': './src/api.ts',
-        'models': './src/models.ts',
-        'utils': './src/utils.ts',
-        'wasm': './src/wasm.ts',
+        index: './src/index.ts',
+        api: './src/api.ts',
+        models: './src/models.ts',
+        utils: './src/utils.ts',
+        wasm: './src/wasm.ts',
       },
       formats: ['es'],
     },
     target: 'esnext',
-    outDir: 'dist'
+    outDir: 'dist',
   },
-  plugins: [nxViteTsPaths(), wasm(), dts({ tsConfigFilePath: 'tsconfig.lib.json', rollupTypes: true, copyDtsFiles: true, clearPureImport: false }),],
+  plugins: [
+    nxViteTsPaths(),
+    wasm(),
+    dts({
+      tsConfigFilePath: 'tsconfig.lib.json',
+      rollupTypes: true,
+      copyDtsFiles: true,
+      clearPureImport: false,
+    }),
+  ],
   test: {
     watch: false,
     cache: {

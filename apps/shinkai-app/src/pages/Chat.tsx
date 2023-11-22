@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import './Chat.css';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -11,11 +13,6 @@ import {
   IonTextarea,
   IonTitle,
 } from '@ionic/react';
-import { ShinkaiMessage } from '@shinkai_network/shinkai-message-ts/models';
-import {
-  getMessageContent,
-  isLocalMessage,
-} from '@shinkai_network/shinkai-message-ts/utils';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMessageToJob/useSendMessageToJob';
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
 import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageWithFilesToInbox/useSendMessageWithFilesToInbox';
@@ -66,7 +63,7 @@ const Chat: React.FC = () => {
     data,
     fetchPreviousPage,
     hasPreviousPage,
-    isLoading: isChatConversationLoading,
+    isPending: isChatConversationLoading,
     isFetchingPreviousPage,
     isSuccess: isChatConversationSuccess,
   } = useGetChatConversationWithPagination({
@@ -81,19 +78,19 @@ const Chat: React.FC = () => {
   });
   const {
     mutateAsync: sendMessageToInbox,
-    isLoading: isSendingMessageToInbox,
+    isPending: isSendingMessageToInbox,
   } = useSendMessageToInbox();
-  const { mutateAsync: sendMessageToJob, isLoading: isSendingMessageToJob } =
+  const { mutateAsync: sendMessageToJob, isPending: isSendingMessageToJob } =
     useSendMessageToJob();
 
   const {
     mutateAsync: sendTextMessageWithFilesForInbox,
-    isLoading: isSendingTextMessageWithFilesForInbox,
+    isPending: isSendingTextMessageWithFilesForInbox,
   } = useSendMessageWithFilesToInbox();
 
   const otherPersonIdentity = getOtherPersonIdentity(
     deserializedId,
-    auth?.shinkai_identity ?? ''
+    auth?.shinkai_identity ?? '',
   );
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -141,9 +138,7 @@ const Chat: React.FC = () => {
   const groupMessagesByDate = (messages: ChatConversationMessage[]) => {
     const groupedMessages: Record<string, ChatConversationMessage[]> = {};
     for (const message of messages) {
-      const date = new Date(
-        message.scheduledTime ?? ''
-      ).toDateString();
+      const date = new Date(message.scheduledTime ?? '').toDateString();
       if (!groupedMessages[date]) {
         groupedMessages[date] = [];
       }
@@ -153,7 +148,7 @@ const Chat: React.FC = () => {
   };
 
   const handleKeyDown = (
-    event: React.KeyboardEvent<HTMLIonTextareaElement>
+    event: React.KeyboardEvent<HTMLIonTextareaElement>,
   ) => {
     if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
       chatForm.handleSubmit(onSubmit);
@@ -167,7 +162,7 @@ const Chat: React.FC = () => {
           <IonBackButton defaultHref="/home" />
         </IonButtons>
         <div className="flex gap-4 px-4">
-          <IonTitle className="w-auto text-accent text-center text-inherit">
+          <IonTitle className="text-accent w-auto text-center text-inherit">
             {otherPersonIdentity}
           </IonTitle>
           {/*<Avatar className="shrink-0" />*/}
@@ -176,7 +171,7 @@ const Chat: React.FC = () => {
 
       <IonContentCustom>
         <div className="bg-white dark:bg-slate-900">
-          <IonList class="ion-list-chat flex flex-col gap-10 p-0 md:rounded-[1.25rem] bg-transparent">
+          <IonList class="ion-list-chat flex flex-col gap-10 bg-transparent p-0 md:rounded-[1.25rem]">
             {isChatConversationSuccess &&
               data?.pages?.map((group, index) => (
                 <Fragment key={index}>
@@ -186,11 +181,11 @@ const Chat: React.FC = () => {
                         <div key={date}>
                           <div
                             className={cn(
-                              'relative z-10 m-auto flex w-[140px] items-center justify-center rounded-xl bg-white dark:bg-slate-800 shadow-lg transition-opacity',
-                              true && 'sticky top-5'
+                              'relative z-10 m-auto flex w-[140px] items-center justify-center rounded-xl bg-white shadow-lg transition-opacity dark:bg-slate-800',
+                              true && 'sticky top-5',
                             )}
                           >
-                            <span className="px-2.5 py-2 text-sm font-semibold text-foreground">
+                            <span className="text-foreground px-2.5 py-2 text-sm font-semibold">
                               {date}
                             </span>
                           </div>
@@ -200,23 +195,23 @@ const Chat: React.FC = () => {
                                 <IonItem
                                   className={cn(
                                     'ion-item-chat relative',
-                                    message.isLocal && 'isLocalMessage'
+                                    message.isLocal && 'isLocalMessage',
                                   )}
                                   key={index}
                                   lines="none"
                                 >
-                                  <div className="px-2 py-4 flex gap-4 pb-10 w-full">
+                                  <div className="flex w-full gap-4 px-2 py-4 pb-10">
                                     <Avatar
-                                      className="shrink-0 mr-4"
+                                      className="mr-4 shrink-0"
                                       url={message.sender.avatar}
                                     />
 
                                     <MarkdownPreview
                                       className={cn(
-                                        'mt-1 rounded-lg bg-transparent px-2.5 py-3 text-sm text-foreground',
+                                        'text-foreground mt-1 rounded-lg bg-transparent px-2.5 py-3 text-sm',
                                         message.isLocal
                                           ? 'rounded-tl-none border border-slate-800'
-                                          : 'rounded-tr-none border-none bg-[rgba(217,217,217,0.04)]'
+                                          : 'rounded-tr-none border-none bg-[rgba(217,217,217,0.04)]',
                                       )}
                                       source={message.content}
                                     />
@@ -227,7 +222,7 @@ const Chat: React.FC = () => {
                           </div>
                         </div>
                       );
-                    }
+                    },
                   )}
                 </Fragment>
               ))}
@@ -236,7 +231,7 @@ const Chat: React.FC = () => {
       </IonContentCustom>
       <IonFooterCustom>
         <div className={'w-full py-2 md:py-3 md:pl-4'}>
-          <div className="m-2 flex items-end h-full border border-slate-300 pr-2 rounded-xl shadow">
+          <div className="m-2 flex h-full items-end rounded-xl border border-slate-300 pr-2 shadow">
             {file && (
               <img
                 alt="Selected"
@@ -252,14 +247,14 @@ const Chat: React.FC = () => {
                   <button
                     aria-label="Add File"
                     className={cn(
-                      'h-10 w-10 rounded-md text-gray-500 mb-2 mr-2',
+                      'mb-2 mr-2 h-10 w-10 rounded-md text-gray-500',
                       'bg-brand-500 hover:bg-brand-500/80 disabled:hover:bg-transparent',
-                      'dark:text-white dark:hover:text-gray-100 dark:hover:bg-gray-700 dark:disabled:hover:bg-transparent'
+                      'dark:text-white dark:hover:bg-gray-700 dark:hover:text-gray-100 dark:disabled:hover:bg-transparent',
                     )}
                     onClick={() =>
                       (
                         document.querySelector(
-                          'input[type="file"]'
+                          'input[type="file"]',
                         ) as HTMLInputElement
                       )?.click()
                     }
@@ -294,9 +289,9 @@ const Chat: React.FC = () => {
             <button
               aria-label="Send Message"
               className={cn(
-                'h-10 w-10 rounded-md text-gray-500 mb-2',
+                'mb-2 h-10 w-10 rounded-md text-gray-500',
                 'bg-brand-500 hover:bg-brand-500/80 disabled:hover:bg-transparent',
-                'dark:text-white dark:hover:text-gray-100 dark:hover:bg-gray-700 dark:disabled:hover:bg-transparent'
+                'dark:text-white dark:hover:bg-gray-700 dark:hover:text-gray-100 dark:disabled:hover:bg-transparent',
               )}
               onClick={chatForm.handleSubmit(onSubmit)}
             >

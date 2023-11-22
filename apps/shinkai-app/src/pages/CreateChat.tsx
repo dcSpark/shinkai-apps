@@ -32,7 +32,7 @@ const CreateChat: React.FC = () => {
   const history = useHistory();
   const auth = useAuth((state) => state.auth);
 
-  const { isLoading, mutateAsync: createChat } = useCreateChat({
+  const { isPending, mutateAsync: createChat } = useCreateChat({
     onSuccess: (data) => {
       // Hacky solution because react-router can't handle dots in the URL
       const encodedInboxId = data.inboxId.toString().replace(/\./g, '~');
@@ -136,7 +136,7 @@ const CreateChat: React.FC = () => {
                     )}
                   />
                 </div>
-                <Button isLoading={isLoading} type="submit">
+                <Button isLoading={isPending} type="submit">
                   Create Chat
                 </Button>
               </form>

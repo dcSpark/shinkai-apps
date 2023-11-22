@@ -51,7 +51,7 @@ export const ConnectMethodQuickStart = () => {
     },
   });
   const {
-    isLoading,
+    isPending,
     mutateAsync: submitRegistration,
     isError: isSubmitError,
     error: submitError,
@@ -166,8 +166,8 @@ export const ConnectMethodQuickStart = () => {
 
           {isSubmitError && <ErrorMessage message={submitError?.message} />}
 
-          <Button className="w-full" disabled={isLoading} type="submit">
-            {isLoading ? (
+          <Button className="w-full" disabled={isPending} type="submit">
+            {isPending ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
               <PlugZap className="mr-2 h-4 w-4" />

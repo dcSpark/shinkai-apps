@@ -67,7 +67,7 @@ export const CreateJob = () => {
     profile_encryption_sk: auth?.profile_encryption_sk ?? '',
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
-  const { isLoading, mutateAsync: createJob } = useCreateJob({
+  const { isPending, mutateAsync: createJob } = useCreateJob({
     onSuccess: (data) => {
       console.log('job created');
       const jobId = encodeURIComponent(buildInboxIdFromJobId(data.jobId));
@@ -106,8 +106,9 @@ export const CreateJob = () => {
     }
     const agent = agents.find(
       (agent) =>
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (agent.full_identity_name as any)?.subidentity_name ===
-        location.state.agentName
+        location.state.agentName,
     );
     if (agent) {
       form.setValue('agent', agent.id);
@@ -139,7 +140,7 @@ export const CreateJob = () => {
       agentId: values.agent,
       content: content,
       files_inbox: '',
-      files: values.files,
+      file: values.files[0],
       my_device_encryption_sk: auth.my_device_encryption_sk,
       my_device_identity_sk: auth.my_device_identity_sk,
       node_encryption_pk: auth.node_encryption_pk,
@@ -148,14 +149,14 @@ export const CreateJob = () => {
     });
   };
   return (
-    <div className="h-full flex flex-col space-y-3">
+    <div className="flex h-full flex-col space-y-3">
       <Header
         icon={<Workflow />}
         title={<FormattedMessage id="create-job"></FormattedMessage>}
       />
       <Form {...form}>
         <form
-          className="grow flex flex-col space-y-2 justify-between overflow-hidden"
+          className="flex grow flex-col justify-between space-y-2 overflow-hidden"
           onSubmit={form.handleSubmit(submit)}
         >
           <ScrollArea className="[&>div>div]:!block">
@@ -227,8 +228,8 @@ export const CreateJob = () => {
                   <FormControl>
                     <div className="flex flex-col space-y-1">
                       {query.has('context') && (
-                        <blockquote className="max-h-28 p-4 mb-5 border-l-4 border-gray-300 bg-secondary-600 dark:border-gray-500 dark:bg-gray-800 overflow-hidden">
-                          <p className="italic dark:text-white h-full truncate">
+                        <blockquote className="bg-secondary-600 mb-5 max-h-28 overflow-hidden border-l-4 border-gray-300 p-4 dark:border-gray-500 dark:bg-gray-800">
+                          <p className="h-full truncate italic dark:text-white">
                             {query.get('context')}
                           </p>
                         </blockquote>
@@ -249,8 +250,8 @@ export const CreateJob = () => {
             />
           </ScrollArea>
 
-          <Button className="w-full" disabled={isLoading} type="submit">
-            {isLoading ? (
+          <Button className="w-full" disabled={isPending} type="submit">
+            {isPending ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
               <Workflow className="mr-2 h-4 w-4"></Workflow>

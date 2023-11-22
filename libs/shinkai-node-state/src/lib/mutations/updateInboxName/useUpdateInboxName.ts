@@ -15,7 +15,7 @@ export const useUpdateInboxName = (options?: Options) => {
   return useMutation({
     mutationFn: updateInboxName,
     onSuccess: (...onSuccessParameters) => {
-      queryClient.invalidateQueries([FunctionKey.GET_INBOXES]);
+      queryClient.invalidateQueries({ queryKey: [FunctionKey.GET_INBOXES] });
       if (options?.onSuccess) {
         options.onSuccess(...onSuccessParameters);
       }

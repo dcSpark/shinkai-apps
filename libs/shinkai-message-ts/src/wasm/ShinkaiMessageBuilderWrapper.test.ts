@@ -4,7 +4,7 @@ import { Crypto } from '@peculiar/webcrypto';
 import { generateKeyPair } from 'curve25519-js';
 import { test } from 'vitest';
 
-import { MessageSchemaType, TSEncryptionMethod } from '../models/SchemaTypes';
+import { MessageSchemaType } from '../models/SchemaTypes';
 import { toHexString } from '../utils/wasm_helpers';
 import { ShinkaiMessageBuilderWrapper } from './ShinkaiMessageBuilderWrapper';
 
@@ -18,10 +18,10 @@ const generateKeys = async () => {
   const seed = new Uint8Array(32);
   const encryptionKeys = generateKeyPair(seed);
   const my_encryption_sk_string = toHexString(
-    new Uint8Array(encryptionKeys.private)
+    new Uint8Array(encryptionKeys.private),
   );
   const my_encryption_pk_string = toHexString(
-    new Uint8Array(encryptionKeys.public)
+    new Uint8Array(encryptionKeys.public),
   );
 
   const privKey = ed.utils.randomPrivateKey(); // Secure random private key
@@ -47,7 +47,7 @@ test('ShinkaiMessageBuilderWrapper should construct correctly and create a new a
   const messageBuilder = new ShinkaiMessageBuilderWrapper(
     keys.my_encryption_sk_string,
     keys.my_identity_sk_string,
-    keys.receiver_public_key_string
+    keys.receiver_public_key_string,
   );
 
   expect(messageBuilder).toBeTruthy();
@@ -61,8 +61,8 @@ test('ShinkaiMessageBuilderWrapper should construct correctly and create a new a
     keys.my_identity_sk_string,
     keys.receiver_public_key_string,
     sender,
-    "",
-    receiver
+    '',
+    receiver,
   );
 
   expect(ackMessage).toBeTruthy();
@@ -75,7 +75,7 @@ test('ShinkaiMessageBuilderWrapper should set body content correctly', async () 
   const messageBuilder = new ShinkaiMessageBuilderWrapper(
     keys.my_encryption_sk_string,
     keys.my_identity_sk_string,
-    keys.receiver_public_key_string
+    keys.receiver_public_key_string,
   );
 
   // Pass the enum value directly
@@ -86,12 +86,12 @@ test('ShinkaiMessageBuilderWrapper should set body content correctly', async () 
     'sender_user2',
     'recipient_user1',
     '',
-    'None'
+    'None',
   );
   await messageBuilder.external_metadata_with_schedule(
     '@@other_node.shinkai',
     '@@my_node.shinkai',
-    '2023-07-02T20:53:34Z'
+    '2023-07-02T20:53:34Z',
   );
 
   const message = messageBuilder.build_to_string();
@@ -120,7 +120,7 @@ test('ShinkaiMessageBuilderWrapper should create a use code registration message
       permissionType,
       registrationName,
       '', // sender_profile_name: it doesn't exist yet in the Node
-      shinkaiIdentity
+      shinkaiIdentity,
     );
 
   expect(codeRegistrationMessage).toBeTruthy();
@@ -145,7 +145,7 @@ test('ShinkaiMessageBuilderWrapper should create an initial registration with no
       registrationName,
       senderSubidentity,
       sender,
-      receiver
+      receiver,
     );
 
   expect(initialRegistrationMessage).toBeTruthy();
@@ -168,7 +168,7 @@ test('ShinkaiMessageBuilderWrapper should create a new request code registration
       permissionType,
       codeType,
       senderProfileName,
-      shinkaiIdentity
+      shinkaiIdentity,
     );
 
   expect(requestCodeRegistrationMessage).toBeTruthy();
@@ -194,7 +194,7 @@ test('ShinkaiMessageBuilderWrapper should get last messages from inbox', async (
       offset,
       shinkaiIdentity,
       senderProfileName,
-      shinkaiIdentity
+      shinkaiIdentity,
     );
 
   expect(lastMessages).toBeTruthy();
@@ -208,21 +208,14 @@ test('ShinkaiMessageBuilderWrapper should generate the same results using build 
   const builder = new ShinkaiMessageBuilderWrapper(
     keys.my_encryption_sk_string,
     keys.my_identity_sk_string,
-    keys.receiver_public_key_string
+    keys.receiver_public_key_string,
   );
 
   builder.message_raw_content('content');
   builder.message_schema_type(MessageSchemaType.TextContent.toString());
-  builder.internal_metadata(
-    '',
-    '',
-    'inbox::@@node.shinkai::true',
-    'None'
-  );
+  builder.internal_metadata('', '', 'inbox::@@node.shinkai::true', 'None');
   builder.external_metadata(shinkaiIdentity, shinkaiIdentity);
-  builder.body_encryption(
-    'DiffieHellmanChaChaPoly1305'
-  );
+  builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
   const message = builder.build_to_string();
   expect(message).toBeTruthy();
@@ -232,17 +225,21 @@ test('ShinkaiMessageBuilderWrapper should generate the same results using build 
 
   const message_json = JSON.parse(message);
   expect(message_json.body).toHaveProperty('encrypted');
-  expect(message_json.external_metadata).toEqual(expect.objectContaining({
-    sender: shinkaiIdentity,
-    recipient: shinkaiIdentity
-  }));
+  expect(message_json.external_metadata).toEqual(
+    expect.objectContaining({
+      sender: shinkaiIdentity,
+      recipient: shinkaiIdentity,
+    }),
+  );
 
   const message_js = builder.build_to_jsvalue();
   expect(message_js.body).toHaveProperty('encrypted');
-  expect(message_js.external_metadata).toEqual(expect.objectContaining({
-    sender: shinkaiIdentity,
-    recipient: shinkaiIdentity
-  }));
+  expect(message_js.external_metadata).toEqual(
+    expect.objectContaining({
+      sender: shinkaiIdentity,
+      recipient: shinkaiIdentity,
+    }),
+  );
   expect(message_js.encryption).toBe('DiffieHellmanChaChaPoly1305');
 });
 
@@ -253,21 +250,14 @@ test('ShinkaiMessageBuilderWrapper should generate an encrypted body', async () 
   const builder = new ShinkaiMessageBuilderWrapper(
     keys.my_encryption_sk_string,
     keys.my_identity_sk_string,
-    keys.receiver_public_key_string
+    keys.receiver_public_key_string,
   );
 
   builder.message_raw_content('content');
   builder.message_schema_type(MessageSchemaType.TextContent.toString());
-  builder.internal_metadata(
-    '',
-    '',
-    'inbox::@@node.shinkai::true',
-    'None'
-  );
+  builder.internal_metadata('', '', 'inbox::@@node.shinkai::true', 'None');
   builder.external_metadata(shinkaiIdentity, shinkaiIdentity);
-  builder.body_encryption(
-    'DiffieHellmanChaChaPoly1305'
-  );
+  builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
   const message = builder.build_to_string();
   expect(message).toBeTruthy();
@@ -283,7 +273,7 @@ test('ShinkaiMessageBuilderWrapper should generate an encrypted message_data but
   const builder = new ShinkaiMessageBuilderWrapper(
     keys.my_encryption_sk_string,
     keys.my_identity_sk_string,
-    keys.receiver_public_key_string
+    keys.receiver_public_key_string,
   );
 
   builder.message_raw_content('content');
@@ -292,30 +282,33 @@ test('ShinkaiMessageBuilderWrapper should generate an encrypted message_data but
     'sender_subidentity',
     'recipient_subidentity',
     'inbox::@@node.shinkai::true',
-    'DiffieHellmanChaChaPoly1305'
+    'DiffieHellmanChaChaPoly1305',
   );
   builder.external_metadata(shinkaiIdentity, shinkaiIdentity);
-  builder.body_encryption(
-    'None'
-  );
+  builder.body_encryption('None');
 
   const message = builder.build_to_string();
   expect(message).toBeTruthy();
 
   const message_json = JSON.parse(message);
   expect(message_json.body).toHaveProperty('unencrypted');
-  expect(message_json.body.unencrypted.message_data).toHaveProperty('encrypted');
-  expect(message_json.body.unencrypted.internal_metadata).toEqual(expect.objectContaining({
-    sender_subidentity: 'sender_subidentity',
-    recipient_subidentity: 'recipient_subidentity',
-    inbox: 'inbox::@@node.shinkai::true',
-    encryption: 'DiffieHellmanChaChaPoly1305'
-  }));
-  expect(message_json.external_metadata).toEqual(expect.objectContaining({
-    sender: shinkaiIdentity,
-    recipient: shinkaiIdentity,
-    other: ''
-  }));
+  expect(message_json.body.unencrypted.message_data).toHaveProperty(
+    'encrypted',
+  );
+  expect(message_json.body.unencrypted.internal_metadata).toEqual(
+    expect.objectContaining({
+      sender_subidentity: 'sender_subidentity',
+      recipient_subidentity: 'recipient_subidentity',
+      inbox: 'inbox::@@node.shinkai::true',
+      encryption: 'DiffieHellmanChaChaPoly1305',
+    }),
+  );
+  expect(message_json.external_metadata).toEqual(
+    expect.objectContaining({
+      sender: shinkaiIdentity,
+      recipient: shinkaiIdentity,
+      other: '',
+    }),
+  );
   expect(message_json.encryption).toBe('None');
 });
-

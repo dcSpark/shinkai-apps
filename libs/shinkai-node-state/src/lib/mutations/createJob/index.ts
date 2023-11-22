@@ -17,7 +17,7 @@ export const createJob = async ({
   agentId,
   content,
   files_inbox,
-  files,
+  file,
   my_device_encryption_sk,
   my_device_identity_sk,
   node_encryption_pk,
@@ -30,7 +30,7 @@ export const createJob = async ({
   const job_creation = JobCreationWrapper.empty().get_scope;
   const scope = new JobScopeWrapper(
     job_creation.buckets,
-    job_creation.documents
+    job_creation.documents,
   );
 
   const jobId = await createJobApi(
@@ -45,43 +45,40 @@ export const createJob = async ({
       node_encryption_pk: node_encryption_pk,
       profile_encryption_sk,
       profile_identity_sk,
-    }
+    },
   );
 
-  let response: any;
-  if (files?.length) {
-    response = await sendTextMessageWithFilesForInbox(
-      shinkaiIdentity,
-      profile, // sender subidentity
-      receiver,
-      content,
-      buildInboxIdFromJobId(jobId),
-      files[0],
-      {
-        my_device_encryption_sk: my_device_encryption_sk,
-        my_device_identity_sk: my_device_identity_sk,
-        node_encryption_pk: node_encryption_pk,
-        profile_encryption_sk,
-        profile_identity_sk,
-      }
-    );
-  } else {
-    response = await sendMessageToJob(
-      jobId,
-      content,
-      files_inbox,
-      shinkaiIdentity,
-      profile,
-      receiver,
-      receiver_subidentity,
-      {
-        my_device_encryption_sk: my_device_encryption_sk,
-        my_device_identity_sk: my_device_identity_sk,
-        node_encryption_pk: node_encryption_pk,
-        profile_encryption_sk,
-        profile_identity_sk,
-      }
-    );
-  }
+  const response = file
+    ? await sendTextMessageWithFilesForInbox(
+        shinkaiIdentity,
+        profile, // sender subidentity
+        receiver,
+        content,
+        buildInboxIdFromJobId(jobId),
+        file,
+        {
+          my_device_encryption_sk: my_device_encryption_sk,
+          my_device_identity_sk: my_device_identity_sk,
+          node_encryption_pk: node_encryption_pk,
+          profile_encryption_sk,
+          profile_identity_sk,
+        },
+      )
+    : await sendMessageToJob(
+        jobId,
+        content,
+        files_inbox,
+        shinkaiIdentity,
+        profile,
+        receiver,
+        receiver_subidentity,
+        {
+          my_device_encryption_sk: my_device_encryption_sk,
+          my_device_identity_sk: my_device_identity_sk,
+          node_encryption_pk: node_encryption_pk,
+          profile_encryption_sk,
+          profile_identity_sk,
+        },
+      );
   return { jobId, response };
 };

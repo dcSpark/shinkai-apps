@@ -24,7 +24,6 @@ export const updateInboxName = async ({
     sender,
     senderSubidentity,
     receiver,
-
     {
       my_device_encryption_sk,
       my_device_identity_sk,
@@ -33,7 +32,7 @@ export const updateInboxName = async ({
       profile_identity_sk,
     },
     inboxName,
-    inboxId
+    inboxId,
   );
 
   return response;

@@ -99,7 +99,7 @@ const Connect = () => {
 
   console.log('setupDataForm', setupDataForm.getValues());
   const {
-    isLoading,
+    isPending,
     mutateAsync: submitRegistration,
     isError,
     error,
@@ -623,8 +623,8 @@ const Connect = () => {
                         )}
                         <Button
                           className="mt-6"
-                          disabled={isLoading}
-                          isLoading={isLoading}
+                          disabled={isPending}
+                          isLoading={isPending}
                           type="submit"
                         >
                           Sign In
@@ -671,7 +671,7 @@ function AutomaticForm() {
   });
 
   const {
-    isLoading: isSubmitRegistrationNoCodeLoading,
+    isPending: isSubmitRegistrationNoCodePending,
     mutateAsync: submitRegistrationNocode,
     isError,
     error,
@@ -867,8 +867,8 @@ function AutomaticForm() {
       )}
       <Button
         className="mt-6"
-        disabled={isSubmitRegistrationNoCodeLoading}
-        isLoading={isSubmitRegistrationNoCodeLoading}
+        disabled={isSubmitRegistrationNoCodePending}
+        isLoading={isSubmitRegistrationNoCodePending}
         type="submit"
       >
         Sign In

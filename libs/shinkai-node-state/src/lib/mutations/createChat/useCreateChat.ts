@@ -11,7 +11,9 @@ export const useCreateChat = (options?: Options) => {
   return useMutation({
     mutationFn: createChat,
     onSuccess: (...onSuccessParameters) => {
-      queryClient.invalidateQueries([FunctionKey.GET_INBOXES]);
+      queryClient.invalidateQueries({
+        queryKey: [FunctionKey.GET_INBOXES],
+      });
       if (options?.onSuccess) {
         options.onSuccess(...onSuccessParameters);
       }

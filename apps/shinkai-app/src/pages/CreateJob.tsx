@@ -47,7 +47,7 @@ const CreateJob: React.FC = () => {
 
   const history = useHistory();
 
-  const { isLoading, mutateAsync: createJob } = useCreateJob({
+  const { isPending, mutateAsync: createJob } = useCreateJob({
     onSuccess: (data) => {
       const jobId = encodeURIComponent(buildInboxIdFromJobId(data.jobId));
       history.push(`/job-chat/${jobId}`);
@@ -66,7 +66,7 @@ const CreateJob: React.FC = () => {
       agentId: data.model,
       content: data.description,
       files_inbox: '',
-      files: [],
+      file: undefined,
       my_device_encryption_sk: auth.my_device_encryption_sk,
       my_device_identity_sk: auth.my_device_identity_sk,
       node_encryption_pk: auth.node_encryption_pk,
@@ -86,12 +86,12 @@ const CreateJob: React.FC = () => {
       <IonContentCustom>
         <IonGrid
           className={
-            'md:rounded-[1.25rem] bg-white dark:bg-slate-800 p-4 md:p-10 space-y-2 md:space-y-4'
+            'space-y-2 bg-white p-4 dark:bg-slate-800 md:space-y-4 md:rounded-[1.25rem] md:p-10'
           }
         >
           <IonRow>
             <IonCol>
-              <h2 className={'text-lg mb-3 md:mb-8 text-center'}>
+              <h2 className={'mb-3 text-center text-lg md:mb-8'}>
                 New Job Details
               </h2>
 
@@ -140,7 +140,7 @@ const CreateJob: React.FC = () => {
                           onIonChange={(e) =>
                             createJobForm.setValue(
                               'description',
-                              e.detail.value as string
+                              e.detail.value as string,
                             )
                           }
                           value={field.value}
@@ -157,7 +157,7 @@ const CreateJob: React.FC = () => {
                   />
                 </div>
 
-                <Button isLoading={isLoading} type="submit">
+                <Button isLoading={isPending} type="submit">
                   Create Job
                 </Button>
               </form>

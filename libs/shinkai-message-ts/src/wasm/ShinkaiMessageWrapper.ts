@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { ExternalMetadata, ShinkaiMessage } from '../models/ShinkaiMessage';
 import { ShinkaiMessageWrapper as ShinkaiMessageWrapperWASM } from '../pkg/shinkai_message_wasm';
 

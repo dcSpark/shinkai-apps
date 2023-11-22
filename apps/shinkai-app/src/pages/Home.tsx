@@ -88,13 +88,12 @@ const MessageButton = ({ inbox }: { inbox: SmartInbox }) => {
           )}
         />
         {inboxNameValue ? (
-          <Button className="w-auto" isLoading={false} type="submit">
+          <Button className="w-auto" type="submit">
             Save
           </Button>
         ) : (
           <Button
             className="w-auto"
-            isLoading={false}
             onClick={() => setIsEditable(false)}
             variant="secondary"
           >

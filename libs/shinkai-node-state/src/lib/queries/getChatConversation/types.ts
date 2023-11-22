@@ -1,4 +1,4 @@
-import type { JobCredentialsPayload } from "@shinkai_network/shinkai-message-ts/models";
+import type { JobCredentialsPayload } from '@shinkai_network/shinkai-message-ts/models';
 
 export type GetChatConversationInput = JobCredentialsPayload & {
   inboxId: string;
@@ -10,18 +10,20 @@ export type GetChatConversationInput = JobCredentialsPayload & {
 };
 
 export type ChatConversationMessage = {
-  hash: string,
-  inboxId: string,
-  scheduledTime: string | undefined,
-  content: string,
-  isLocal: boolean,
+  hash: string;
+  inboxId: string;
+  scheduledTime: string | undefined;
+  content: string;
+  isLocal: boolean;
   sender: {
-    avatar: string,
-  },
+    avatar: string;
+  };
   fileInbox?: {
     id: string;
     files: {
       name: string;
     }[];
-  },
+  };
 };
+
+export type GetChatConversationOutput = ChatConversationMessage[];

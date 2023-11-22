@@ -1,13 +1,14 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery } from '@tanstack/react-query';
 
-import { FunctionKey } from "../../constants";
-import { getInboxes } from ".";
-import { GetInboxesInput } from "./types";
+import { FunctionKey } from '../../constants';
+import { getInboxes } from '.';
+import { GetInboxesInput, GetInboxesOutput, Options } from './types';
 
-export const useGetInboxes = (input: GetInboxesInput) => {
-  const response = useQuery({
+export const useGetInboxes = (input: GetInboxesInput, options?: Options) => {
+  const response = useQuery<GetInboxesOutput>({
     queryKey: [FunctionKey.GET_INBOXES, input],
     queryFn: async () => getInboxes(input),
+    ...options,
   });
   return {
     ...response,

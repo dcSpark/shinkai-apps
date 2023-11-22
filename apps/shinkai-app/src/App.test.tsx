@@ -24,6 +24,7 @@ Object.defineProperty(window.navigator, 'mediaDevices', {
 // Mock React Markdown library
 vi.mock('@uiw/react-markdown-preview', () => ({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   default: ({ content, ...otherProps }: any) => <p {...otherProps}>content</p>,
 }));
 

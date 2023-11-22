@@ -44,7 +44,7 @@ const AddAgent: React.FC = () => {
 
   const {
     mutateAsync: createAgent,
-    isLoading,
+    isPending,
     isError,
     error,
   } = useCreateAgent({
@@ -251,7 +251,7 @@ const AddAgent: React.FC = () => {
                   </div>
                 )}
 
-                <Button isLoading={isLoading} type="submit">
+                <Button isLoading={isPending} type="submit">
                   Create Agent
                 </Button>
               </form>
