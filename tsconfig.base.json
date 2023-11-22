@@ -10,14 +10,12 @@
     "importHelpers": true,
     "target": "es2015",
     "module": "esnext",
-    "lib": [
-      "es2020",
-      "dom"
-    ],
+    "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@shinkai/shinkai-ui": ["libs/shinkai-ui/src/index.ts"],
       "@shinkai_network/shinkai-message-ts/*": [
         "libs/shinkai-message-ts/src/*.ts"
       ],
@@ -26,8 +24,5 @@
       ]
     }
   },
-  "exclude": [
-    "node_modules",
-    "tmp"
-  ]
+  "exclude": ["node_modules", "tmp"]
 }

@@ -15,6 +15,7 @@
 
 * shinkai-message-ts: Typescript library that implements the features and networking layer to enable systems to interact with shinkai-nodes.
 * shinkai-node-state: Typescript library which using @tanstack/react-query enables apps to interact with shinkai-node managing the state, caching and evictions.
+* shinkai-ui: React UI library to build shinkai apps.
 
 ## Getting started
 
