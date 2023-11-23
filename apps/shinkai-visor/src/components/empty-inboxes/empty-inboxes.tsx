@@ -1,24 +1,15 @@
 import { Button } from '@shinkai_network/shinkai-ui';
-import { Workflow } from 'lucide-react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
-
-import logo from '../../../src/assets/icons/shinkai-min.svg';
-import { srcUrlResolver } from '../../helpers/src-url-resolver';
 
 export const EmptyInboxes = () => {
   const history = useHistory();
   return (
     <div className="flex grow flex-col justify-center">
-      <div className="mb-6 space-y-3 text-center">
-        <div className="grid place-content-center">
-          <img
-            alt="shinkai logo"
-            className="animate-spin-slow w-h-16 h-16"
-            data-cy="shinkai-logo"
-            src={srcUrlResolver(logo)}
-          />
-        </div>
+      <div className="mb-8 space-y-3 text-center">
+        <span aria-hidden className="text-5xl">
+          🤖
+        </span>
         <p className="text-lg font-semibold">
           <FormattedMessage id="empty-inboxes-title" />
         </p>
@@ -27,11 +18,7 @@ export const EmptyInboxes = () => {
         </p>
       </div>
 
-      <Button
-        className="w-full"
-        onClick={() => history.push('/inboxes/create-job')}
-      >
-        <Workflow className="mr-2 h-4 w-4" />
+      <Button onClick={() => history.push('/inboxes/create-job')}>
         <FormattedMessage id="create-job" />
       </Button>
     </div>

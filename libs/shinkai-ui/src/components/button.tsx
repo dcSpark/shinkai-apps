@@ -10,7 +10,8 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-brand hover:bg-brand-500 text-white',
+        default:
+          'bg-brand hover:bg-brand-500 text-white disabled:bg-gray-200 disabled:text-gray-100',
         destructive:
           'bg-red-500 text-gray-50 shadow-sm hover:bg-red-500/90 dark:bg-red-900 dark:text-gray-50 dark:hover:bg-red-900/90',
         outline:
@@ -21,7 +22,7 @@ const buttonVariants = cva(
         link: 'text-gray-900 underline-offset-4 hover:underline dark:text-gray-50',
       },
       size: {
-        default: 'h-[54px] px-2 py-4 text-base',
+        default: 'h-[54px] px-8 py-4 text-base',
         sm: 'h-8  px-3 text-xs',
         lg: 'h-[54px] px-2 py-4 text-base',
         icon: 'h-9 w-9',
