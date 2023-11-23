@@ -51,7 +51,6 @@ export const ConnectMethodRestoreConnection = () => {
     const reader = new FileReader();
     reader.readAsText(file, 'UTF-8');
     reader.onload = (event) => {
-      console.log('onload event', event);
       if (event?.target?.readyState !== event?.target?.DONE) {
         return;
       }

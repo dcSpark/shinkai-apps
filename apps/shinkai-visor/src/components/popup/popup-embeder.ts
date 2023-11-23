@@ -35,11 +35,10 @@ chrome.runtime.onMessage.addListener(async (message: ServiceWorkerInternalMessag
     }
   } else if (message.type === ServiceWorkerInternalMessageType.SendPageToAgent) {
     const pageAsPdf = await generatePdfFromCurrentPage(`${encodeURIComponent(window.location.href)}.pdf`, document.body);
-    if (!pageAsPdf) {
-      return;
-    }
-    message.data = {
-      pdf: pageAsPdf,
+    if (pageAsPdf) {
+      message.data = {
+        pdf: pageAsPdf,
+      }
     }
   }
   iframe.contentWindow?.postMessage({ message, sender }, srcUrlResolver('/'));

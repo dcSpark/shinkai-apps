@@ -2,10 +2,11 @@ export enum ServiceWorkerInternalMessageType {
   ContentScriptBridge = 'content-script-bridge',
   SendToAgent = 'send-to-agent',
   SendPageToAgent = 'send-page-to-agent',
+  RehydrateStore = 'rehydrate-store',
 }
 
 export enum ContentScriptBridgeMessageType {
-  TogglePopupVisibility = 'toggle-popup-visibility'
+  TogglePopupVisibility = 'toggle-popup-visibility',
 }
 
 export type ContentScriptBridgeMessage =
@@ -24,4 +25,6 @@ export type ServiceWorkerInternalMessage =
     data: {
       pdf?: File;
     }
-  };
+  }
+  | { type: ServiceWorkerInternalMessageType.RehydrateStore, data?: never };
+;

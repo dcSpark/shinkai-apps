@@ -69,7 +69,6 @@ export const CreateJob = () => {
   });
   const { isPending, mutateAsync: createJob } = useCreateJob({
     onSuccess: (data) => {
-      console.log('job created');
       const jobId = encodeURIComponent(buildInboxIdFromJobId(data.jobId));
       history.replace(`/inboxes/${jobId}`);
     },

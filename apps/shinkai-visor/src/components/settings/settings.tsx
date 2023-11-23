@@ -37,8 +37,11 @@ type FormSchemaType = z.infer<typeof formSchema>;
 export const Settings = () => {
   const history = useHistory();
   const auth = useAuth((authStore) => authStore.auth);
-  const { settings, setSettings } = useSettings(
-    (settingsStore) => settingsStore
+  const settings = useSettings(
+    (settingsStore) => settingsStore.settings
+  );
+  const setSettings = useSettings(
+    (settingsStore) => settingsStore.setSettings
   );
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
@@ -69,6 +72,7 @@ export const Settings = () => {
     }
   }, [defaultAgentId, setSettings]);
   useEffect(() => {
+    console.log('settings changed', settings);
     form.setValue('defaultAgentId', settings?.defaultAgentId);
   }, [settings, form]);
   return (

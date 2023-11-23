@@ -50,9 +50,8 @@ enum MenuOption {
 export default function NavBar() {
   const history = useHistory();
   const location = useLocation();
-  const setLogout = useAuth((state) => state.setLogout);
+  const setAuth = useAuth((state) => state.setAuth);
   const auth = useAuth((state) => state.auth);
-
   const [isMenuOpened, setMenuOpened] = useState(false);
   const isRootPage = [
     '/inboxes',
@@ -67,7 +66,7 @@ export default function NavBar() {
     history.goBack();
   };
   const logout = (): void => {
-    setLogout();
+    setAuth(null);
   };
 
   const onClickMenuOption = (key: MenuOption) => {
@@ -110,32 +109,35 @@ export default function NavBar() {
               <FormattedMessage id="are-you-sure" />
             </AlertDialogTitle>
             <AlertDialogDescription>
-              <div className="flex flex-col space-y-3">
-                <div className="flex flex-col space-y-1">
-                  <span className="text-xs italic">
-                    <FormattedMessage id="permanently-lose-connection" />
-                  </span>
-                </div>
-                <div className="flex flex-col">
-                  <span
-                    className="underline decoration-dashed cursor-pointer"
-                    onClick={() => exportConnection()}
-                  >
-                    Export your conection
-                  </span>
-                  <span className="text-xs">If you want to use it later</span>
-                </div>
-              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
+          <div className="flex flex-col space-y-3 items-center">
+            <div className="flex flex-col space-y-1">
+              <span className="text-xs italic text-center">
+                <FormattedMessage id="permanently-lose-connection" />
+              </span>
+            </div>
+            <div className="flex flex-col">
+              <span
+                className="underline decoration-dashed cursor-pointer"
+                onClick={() => exportConnection()}
+              >
+                <FormattedMessage id="disconnect-warning-link" />
+              </span>
+              <span className="text-xs">
+              <FormattedMessage id="disconnect-warning-link-description" />
+
+              </span>
+            </div>
+          </div>
           <AlertDialogFooter>
             <AlertDialogCancel
               onClick={() => setIsConfirmLogoutDialogOpened(false)}
             >
-              Cancel
+              <FormattedMessage id="cancel" />
             </AlertDialogCancel>
             <AlertDialogAction onClick={() => logout()}>
-              Continue
+              <FormattedMessage id="continue" />
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -157,8 +159,8 @@ export default function NavBar() {
         />
         {auth && (
           <DropdownMenu
-            onOpenChange={(value) => setMenuOpened(value)}
-            open={isMenuOpened}
+            modal={false}
+            onOpenChange={(value) => setMenuOpened(value)} open={isMenuOpened}
           >
             <DropdownMenuTrigger asChild>
               <Button size="icon" variant="ghost">

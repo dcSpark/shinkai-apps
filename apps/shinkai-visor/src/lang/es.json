@@ -99,5 +99,7 @@
   "none": "Ninguno",
   "scan-or-download-registration-code": "Escanea o descarga este código de registro",
   "use-it-to-register-and-connect": "Usa este código para registrar un nuevo dispositivo y conectarlo a tu Shinkai Node",
-  "identity-type": "Tipo de identidad"
+  "identity-type": "Tipo de identidad",
+  "disconnect-warning-link": "Exporta tu conexión",
+  "disconnect-warning-link-description": "Si quieres usarla más tarde"
 }
