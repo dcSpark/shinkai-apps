@@ -37,6 +37,9 @@ module.exports = {
           700: '#FF5E5F',
           800: '#FF3E3F',
         },
+        secondary: {
+          600: '#19242D',
+        },
         foreground: '#FFFFFF',
         'muted-foreground': '#c7c7c7',
         // TODO: remove visor

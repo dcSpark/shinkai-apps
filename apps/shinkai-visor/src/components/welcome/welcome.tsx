@@ -1,15 +1,14 @@
+import { Button } from '@shinkai_network/shinkai-ui';
 import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router';
 
-import heroImg from '../../../src/assets/icons/permanent-hero.svg';
 import logo from '../../../src/assets/icons/visor.svg';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
-import { Button } from '../ui/button';
 
 export default function Welcome() {
   const history = useHistory();
   return (
-    <div className="h-full flex flex-col justify-between">
+    <div className="flex h-full flex-col justify-between">
       <div className="grid place-content-center">
         <img
           alt="shinkai logo"
@@ -18,18 +17,20 @@ export default function Welcome() {
           src={srcUrlResolver(logo)}
         />
       </div>
-      <div className="flex-1 flex justify-center items-end pb-6">
+      <div className="-ml-4 -mr-4 pb-6">
         <img
           alt="shinkai logo"
-          className="animate-spin-slow w-3/4 px-6"
+          className="animate-spin-slow w-full"
           data-cy="shinkai-logo"
-          src={srcUrlResolver(heroImg)}
+          src={'/welcome.jpg'}
         />
       </div>
-      <p className="text-md text-center py-4 pb-7" data-cy="welcome-message">
+      <p className="text-md py-4 pb-7 text-center" data-cy="welcome-message">
         <FormattedMessage id="welcome" />
       </p>
-      <Button onClick={() => history.replace('/nodes/connect/method/quick-start')}>
+      <Button
+        onClick={() => history.replace('/nodes/connect/method/quick-start')}
+      >
         <FormattedMessage id="setup" />
       </Button>
     </div>

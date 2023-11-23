@@ -58,7 +58,7 @@ export const Popup = () => {
       {popupVisibility && (
         <motion.div
           animate={{ opacity: 1 }}
-          className="bg-secondary-600 bg-app-gradient flex h-full w-full flex-col rounded-lg p-4 shadow-xl"
+          className="flex h-full w-full flex-col rounded-lg bg-gray-500 p-4 shadow-xl"
           exit={{ opacity: 0 }}
           initial={{ opacity: 0 }}
           transition={{ duration: 0.5 }}
