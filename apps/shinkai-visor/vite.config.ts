@@ -19,6 +19,9 @@ export default defineConfig({
       // Important to server files two levels ahead of the project folder
       allow: ['../../'],
     },
+    hmr: {
+      port: 4201
+    }
   },
   preview: {
     port: 4301,

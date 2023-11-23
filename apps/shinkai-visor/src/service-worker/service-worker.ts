@@ -1,4 +1,9 @@
 import './context-menu';
-import './communication/message';
 import './shortcuts';
 import './action';
+
+import { listen as listenInternal } from './communication/external';
+import { listen as listenExternal } from './communication/internal';
+
+listenInternal();
+listenExternal();

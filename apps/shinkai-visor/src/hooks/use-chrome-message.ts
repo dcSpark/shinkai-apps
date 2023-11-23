@@ -1,13 +1,14 @@
 import { useEffect } from "react";
 
-import { ServiceWorkerMessage } from "../service-worker/communication/service-worker-messages";
+import { ServiceWorkerInternalMessage } from "../service-worker/communication/internal/types";
 
-export type UseChromeMessageCallbackParameters = [message: ServiceWorkerMessage, sender: chrome.runtime.MessageSender];
+
+export type UseChromeMessageCallbackParameters = [message: ServiceWorkerInternalMessage, sender: chrome.runtime.MessageSender];
 export type UseChromeMessageCallback = (...params: UseChromeMessageCallbackParameters) => void;
 
 export const useChromeMessage = (callback: UseChromeMessageCallback) => {
   useEffect(() => {
-    function onMessage(message: ServiceWorkerMessage, sender: chrome.runtime.MessageSender): void {
+    function onMessage(message: ServiceWorkerInternalMessage, sender: chrome.runtime.MessageSender): void {
       if (sender.tab) {
         return;
       }

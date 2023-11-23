@@ -99,5 +99,7 @@
   "none": "None",
   "scan-or-download-registration-code": "Scan or download this registration code",
   "use-it-to-register-and-connect": "Use this QR code to register a new profile or device and connect to your Shinkai Node",
-  "identity-type": "Identity type"
+  "identity-type": "Identity type",
+  "disconnect-warning-link": "Export your connection",
+  "disconnect-warning-link-description": "If you want to use it later"
 }

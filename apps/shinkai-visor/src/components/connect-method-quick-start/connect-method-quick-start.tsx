@@ -57,7 +57,6 @@ export const ConnectMethodQuickStart = () => {
     error: submitError,
   } = useSubmitRegistrationNoCode({
     onSuccess: (response, setupPayload) => {
-      console.log(response);
       if (response.success && encryptionKeys) {
         const authData: SetupData = {
           ...encryptionKeys,

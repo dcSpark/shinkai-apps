@@ -36,17 +36,20 @@ export const Popup = () => {
   const auth = useAuth((state) => state.auth);
   const location = useLocation();
   const [popupVisibility] = useGlobalPopupChromeMessage();
+  const isAuthenticated = !!auth;
 
   useEffect(() => {
-    const isAuthenticated = !!auth;
     if (isAuthenticated) {
-      ApiConfig.getInstance().setEndpoint(auth.node_address);
       history.replace('/inboxes');
-      return;
     } else {
       history.replace('/welcome');
     }
-  }, [history, auth]);
+  }, [history, isAuthenticated]);
+  useEffect(() => {
+    if (isAuthenticated) {
+      ApiConfig.getInstance().setEndpoint(auth.node_address);
+    }
+  }, [auth, isAuthenticated]);
   useEffect(() => {
     console.log('location', location.pathname);
   }, [location]);

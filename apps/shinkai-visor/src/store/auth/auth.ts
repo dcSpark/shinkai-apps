@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 
+import { sendMessage } from "../../service-worker/communication/internal";
+import { ServiceWorkerInternalMessageType } from "../../service-worker/communication/internal/types";
 import { ChromeStorage } from "../persistor/chrome-storage";
 
 export type SetupData = {
@@ -23,21 +25,25 @@ export type SetupData = {
 
 type AuthStore = {
   auth: SetupData | null;
-  setAuth: (auth: SetupData) => void;
-  setLogout: () => void;
+  setAuth: (auth: SetupData | null) => void;
 };
 
 export const useAuth = create<AuthStore>()(
   devtools(
     persist(
-      (set) => ({
+      (set, get) => ({
         auth: null,
-        setAuth: (auth: SetupData) => set({ auth }),
-        setLogout: () => set({ auth: null }),
+        setAuth: (auth) => {
+          const valueChanged = JSON.stringify(get().auth) !== JSON.stringify(auth);
+          set({ auth });
+          if (valueChanged) {
+            sendMessage({ type: ServiceWorkerInternalMessageType.RehydrateStore });
+          }
+        },
       }),
       {
         name: "auth",
-        storage: new ChromeStorage(),
+        storage: new ChromeStorage<SetupData>(),
       }
     )
   )

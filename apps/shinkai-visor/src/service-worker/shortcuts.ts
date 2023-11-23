@@ -1,12 +1,12 @@
-import { ContentScriptMessageType } from "./communication/content-script-message-type";
-import { sendContentScriptMessage } from "./communication/content-script-messages";
+import { sendContentScriptMessage } from "./communication/internal";
+import { ContentScriptBridgeMessageType } from "./communication/internal/types";
 
 export enum ServiceWorkerShortcut {
   TogglePopup = 'toggle-popup'
 };
 
 const handleTogglePopup = (tabId: number) => {
-  sendContentScriptMessage({ type: ContentScriptMessageType.TogglePopupVisibility }, tabId);
+  sendContentScriptMessage({ type: ContentScriptBridgeMessageType.TogglePopupVisibility }, tabId);
 }
 chrome.commands.onCommand.addListener((command, tab) => {
   console.log('command', command, tab);

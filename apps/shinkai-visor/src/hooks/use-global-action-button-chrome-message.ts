@@ -1,16 +1,29 @@
 import { useState } from "react";
 
-import { ContentScriptMessageType } from "../service-worker/communication/content-script-message-type";
-import { ServiceWorkerMessageType } from "../service-worker/communication/service-worker-message-type";
+import { ContentScriptBridgeMessageType, ServiceWorkerInternalMessageType } from "../service-worker/communication/internal/types";
+import { useAuth } from "../store/auth/auth";
+import { useSettings } from "../store/settings/settings";
 import { useChromeMessage } from "./use-chrome-message";
 
 export const useGlobalActionButtonChromeMessage = () => {
   const [popupVisibility, setPopupVisibility] = useState(false);
   useChromeMessage((message, sender) => {
-    if (message.type === ServiceWorkerMessageType.ContentScript) {
-      if (message.data.type === ContentScriptMessageType.TogglePopupVisibility) {
-        setPopupVisibility(message.data.data !== undefined ? message.data.data : !popupVisibility);
-      }
+    switch (message.type) {
+      case ServiceWorkerInternalMessageType.ContentScriptBridge:
+        switch (message.data.type) {
+          case ContentScriptBridgeMessageType.TogglePopupVisibility:
+            setPopupVisibility(message.data.data !== undefined ? message.data.data : !popupVisibility);
+            break;
+          default:
+            break;
+        }
+        break;
+      case ServiceWorkerInternalMessageType.RehydrateStore:
+        useAuth.persist.rehydrate();
+        useSettings.persist.rehydrate();
+        break;
+      default:
+        break;
     }
   });
   return [popupVisibility];

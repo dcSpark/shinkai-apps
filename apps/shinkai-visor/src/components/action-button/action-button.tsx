@@ -8,8 +8,8 @@ import { cn } from '../../helpers/cn-utils';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
 import { useGlobalActionButtonChromeMessage } from '../../hooks/use-global-action-button-chrome-message';
 import { langMessages, locale } from '../../lang/intl';
-import { ContentScriptMessageType } from '../../service-worker/communication/content-script-message-type';
-import { sendContentScriptMessage } from '../../service-worker/communication/content-script-messages';
+import { sendContentScriptMessage } from '../../service-worker/communication/internal';
+import { ContentScriptBridgeMessageType } from '../../service-worker/communication/internal/types';
 import themeStyle from '../../theme/styles.css?inline';
 
 const baseContainer = document.createElement('shinkai-action-button-root');
@@ -24,7 +24,7 @@ export const ActionButton = () => {
   const [popupVisibility] = useGlobalActionButtonChromeMessage();
   const togglePopupVisibility = async () => {
     sendContentScriptMessage({
-      type: ContentScriptMessageType.TogglePopupVisibility,
+      type: ContentScriptBridgeMessageType.TogglePopupVisibility,
     });
   };
   return (
