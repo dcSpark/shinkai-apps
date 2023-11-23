@@ -1,8 +1,11 @@
 /** @type {import('tailwindcss').Config} */
 const tailwindTypography = require('@tailwindcss/typography');
 const tailwindAnimate = require('tailwindcss-animate');
+const defaultTheme = require('tailwindcss/defaultTheme');
 module.exports = {
   content: [],
+  darkMode: ['class'],
+
   theme: {
     container: {
       center: true,
@@ -36,14 +39,46 @@ module.exports = {
         },
         foreground: '#FFFFFF',
         'muted-foreground': '#c7c7c7',
+        // TODO: remove visor
+        destructive: {
+          DEFAULT: 'hsl(var(--destructive))',
+          foreground: 'hsl(var(--destructive-foreground))',
+        },
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))',
+        },
+        accent: {
+          DEFAULT: 'hsl(var(--accent))',
+          foreground: 'hsl(var(--accent-foreground))',
+        },
+        popover: {
+          DEFAULT: 'hsl(var(--popover))',
+          foreground: 'hsl(var(--popover-foreground))',
+        },
+        card: {
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))',
+        },
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
+        background: 'hsl(var(--background))',
+      },
+      border: {
+        input: 'hsl(var(--input))',
       },
       fontFamily: {
-        inter: ['Inter', 'sans-serif'],
-        newake: ['Newake', 'sans-serif'],
+        inter: ['Inter', ...defaultTheme.fontFamily.sans],
       },
       backgroundImage: {
         'app-gradient':
           'linear-gradient(90deg, rgba(0, 0, 0, 0.30) 0%, rgba(0, 0, 0, 0.20) 100%)',
+      },
+      borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)',
       },
       keyframes: {
         'accordion-down': {
@@ -54,10 +89,26 @@ module.exports = {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: '0' },
         },
+        breath: {
+          '0%, 100%': { transform: 'opacity: 1' },
+          '50%': { transform: 'opacity: .5' },
+        },
+        'big-bounce': {
+          '0%, 100%': {
+            transform: 'translateY(-75%)',
+            'animation-timing-function': 'cubic-bezier(0.8, 0, 1, 1)',
+          },
+          '50%': {
+            transform: 'translateY(0)',
+            'animation-timing-function': 'cubic-bezier(0, 0, 0.2, 1)',
+          },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        breath: 'pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite;',
+        'big-bounce': 'big-bounce 1s infinite',
       },
     },
   },
