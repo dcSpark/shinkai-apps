@@ -1,5 +1,4 @@
-import { ServiceWorkerMessageType } from "./communication/service-worker-message-type";
-import { ServiceWorkerMessage } from "./communication/service-worker-messages";
+import { ServiceWorkerInternalMessage, ServiceWorkerInternalMessageType } from "./communication/internal/types";
 
 enum ContextMenu {
   SendPageToAgent = 'send-page-to-agent',
@@ -11,11 +10,11 @@ const sendPageToAgent = async (info: chrome.contextMenus.OnClickData, tab: chrom
   if (!tab?.id) {
     return;
   }
-  const message: ServiceWorkerMessage = {
-    type: ServiceWorkerMessageType.SendPageToAgent,
+  const message: ServiceWorkerInternalMessage = {
+    type: ServiceWorkerInternalMessageType.SendPageToAgent,
     data: {},
   };
-  chrome.tabs.sendMessage<ServiceWorkerMessage>(tab.id, message);  
+  chrome.tabs.sendMessage<ServiceWorkerInternalMessage>(tab.id, message);  
 }
 
 const sendToAgent = (info: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab | undefined) => {
@@ -23,13 +22,13 @@ const sendToAgent = (info: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab
   if (!info.selectionText || !tab?.id) {
     return;
   }
-  const message: ServiceWorkerMessage = {
-    type: ServiceWorkerMessageType.SendToAgent,
+  const message: ServiceWorkerInternalMessage = {
+    type: ServiceWorkerInternalMessageType.SendToAgent,
     data: {
       textContent: info.selectionText,
     },
   }
-  chrome.tabs.sendMessage<ServiceWorkerMessage>(tab.id, message);
+  chrome.tabs.sendMessage<ServiceWorkerInternalMessage>(tab.id, message);
 }
 
 const menuActions = new Map<string | number, (info: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab | undefined) => void>([

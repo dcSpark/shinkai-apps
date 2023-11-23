@@ -26,7 +26,8 @@
       "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "command": "cd apps/shinkai-visor && npx vite --force"
+        "cwd": "apps/shinkai-visor",
+        "command": "npx vite"
       },
       "configurations": {
         "development": {

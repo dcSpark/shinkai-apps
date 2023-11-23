@@ -1,5 +1,5 @@
-import { ContentScriptMessageType } from "./communication/content-script-message-type";
-import { sendContentScriptMessage } from "./communication/content-script-messages";
+import { sendContentScriptMessage } from "./communication/internal";
+import { ContentScriptBridgeMessageType } from "./communication/internal/types";
 
 const isChromeInternalUrl = (urlString: string): boolean => {
   const url = new URL(urlString);
@@ -21,7 +21,7 @@ chrome.action.onClicked.addListener(async (tab) => {
   if (!tab?.id) {
     return;
   }
-  sendContentScriptMessage({ type: ContentScriptMessageType.TogglePopupVisibility }, tab.id);
+  sendContentScriptMessage({ type: ContentScriptBridgeMessageType.TogglePopupVisibility }, tab.id);
 });
 
 chrome.tabs.onUpdated.addListener((tabId, _, tab) => {

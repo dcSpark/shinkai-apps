@@ -1,8 +1,6 @@
 import { generatePdfFromCurrentPage } from "../../helpers/pdf-generator";
 import { srcUrlResolver } from "../../helpers/src-url-resolver";
-import { ContentScriptMessageType } from "../../service-worker/communication/content-script-message-type";
-import { ServiceWorkerMessageType } from "../../service-worker/communication/service-worker-message-type";
-import { ServiceWorkerMessage } from "../../service-worker/communication/service-worker-messages";
+import { ContentScriptBridgeMessageType, ServiceWorkerInternalMessage, ServiceWorkerInternalMessageType } from "../../service-worker/communication/internal/types";
 
 const baseContainer = document.createElement('shinkai-popup-root');
 baseContainer.style.position = 'fixed';
@@ -19,7 +17,7 @@ iframe.setAttribute('src', chrome.runtime.getURL('src/components/popup/popup.htm
 iframe.style.border = 'none';
 iframe.style.width = '100%';
 iframe.style.height = '100%';
-iframe.style.colorScheme = 'only light'; 
+iframe.style.colorScheme = 'only light';
 
 const shadow = baseContainer.attachShadow({ mode: 'open' });
 shadow.appendChild(iframe);
@@ -29,13 +27,13 @@ htmlRoot.prepend(baseContainer);
 
 let isVisible = false;
 
-chrome.runtime.onMessage.addListener(async (message: ServiceWorkerMessage, sender: chrome.runtime.MessageSender) => {
-  if (message.type === ServiceWorkerMessageType.ContentScript) {
-    if (message.data.type === ContentScriptMessageType.TogglePopupVisibility) {
+chrome.runtime.onMessage.addListener(async (message: ServiceWorkerInternalMessage, sender: chrome.runtime.MessageSender) => {
+  if (message.type === ServiceWorkerInternalMessageType.ContentScriptBridge) {
+    if (message.data.type === ContentScriptBridgeMessageType.TogglePopupVisibility) {
       isVisible = message.data.data !== undefined ? message.data.data : !isVisible;
       baseContainer.style.pointerEvents = isVisible ? 'auto' : 'none';
     }
-  } else if (message.type === ServiceWorkerMessageType.SendPageToAgent) {
+  } else if (message.type === ServiceWorkerInternalMessageType.SendPageToAgent) {
     const pageAsPdf = await generatePdfFromCurrentPage(`${encodeURIComponent(window.location.href)}.pdf`, document.body);
     if (!pageAsPdf) {
       return;
