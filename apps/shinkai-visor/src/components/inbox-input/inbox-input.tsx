@@ -1,19 +1,19 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from '@shinkai_network/shinkai-ui';
+import {
+  Button,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+  Input,
+} from '@shinkai_network/shinkai-ui';
 import { Send } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import { z } from 'zod';
 
 import DotsLoader from '../ui/dots-loader';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from '../ui/form';
-import { Input } from '../ui/input';
 
 const formSchema = z.object({
   message: z.string().min(1),

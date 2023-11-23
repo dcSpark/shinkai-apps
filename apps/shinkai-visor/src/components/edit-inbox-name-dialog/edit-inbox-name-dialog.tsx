@@ -1,6 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useUpdateInboxName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateInboxName/useUpdateInboxName';
-import { Button } from '@shinkai_network/shinkai-ui';
+import {
+  Button,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
+} from '@shinkai_network/shinkai-ui';
 import { Loader2, Save } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -16,15 +25,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../ui/dialog';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../ui/form';
-import { Input } from '../ui/input';
 
 export type EditInboxNameDialogProps = {
   open: boolean;

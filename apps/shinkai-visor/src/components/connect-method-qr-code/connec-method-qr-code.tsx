@@ -1,7 +1,16 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { QRSetupData } from '@shinkai_network/shinkai-message-ts/models';
 import { useSubmitRegistration } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistration';
-import { Button } from '@shinkai_network/shinkai-ui';
+import {
+  Button,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
+} from '@shinkai_network/shinkai-ui';
 import { BrowserQRCodeReader } from '@zxing/browser';
 import { Loader2, PlugZap, QrCode, Trash, Upload } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -14,15 +23,6 @@ import { generateMyEncryptionKeys } from '../../helpers/encryption-keys';
 import { SetupData, useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
 import ErrorMessage from '../ui/error-message';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../ui/form';
-import { Input } from '../ui/input';
 
 const formSchema = z.object({
   registration_code: z.string().min(5),

@@ -78,11 +78,6 @@ module.exports = {
         'app-gradient':
           'linear-gradient(90deg, rgba(0, 0, 0, 0.30) 0%, rgba(0, 0, 0, 0.20) 100%)',
       },
-      borderRadius: {
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
-      },
       keyframes: {
         'accordion-down': {
           from: { height: '0' },

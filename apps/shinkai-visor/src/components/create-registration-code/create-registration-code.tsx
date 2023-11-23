@@ -1,6 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateRegistrationCode } from '@shinkai_network/shinkai-node-state/lib/mutations/createRegistrationCode/useCreateRegistrationCode';
-import { Button } from '@shinkai_network/shinkai-ui';
+import {
+  Button,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
+} from '@shinkai_network/shinkai-ui';
 import { Download, Loader2, QrCode } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 import { useEffect, useRef, useState } from 'react';
@@ -11,15 +20,6 @@ import { z } from 'zod';
 import shinkaiLogo from '../../assets/icons/shinkai-min.svg';
 import { SetupData, useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../ui/form';
-import { Input } from '../ui/input';
 import {
   Select,
   SelectContent,

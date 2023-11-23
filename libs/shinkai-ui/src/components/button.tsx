@@ -6,7 +6,7 @@ import * as React from 'react';
 import { cn } from '../utils';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center rounded-full text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center rounded-full text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-gray-50',
   {
     variants: {
       variant: {
@@ -17,15 +17,15 @@ const buttonVariants = cva(
           'border border-gray-200 bg-transparent shadow-sm hover:bg-gray-100 hover:text-gray-900 dark:border-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-50',
         secondary:
           'bg-gray-100 text-gray-900 shadow-sm hover:bg-gray-100/80 dark:bg-gray-800 dark:text-gray-50 dark:hover:bg-gray-800/80',
-        ghost:
-          'hover:bg-gray-800 hover:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-50',
+        ghost: 'bg-gray-400 hover:bg-gray-400/60',
         link: 'text-gray-900 underline-offset-4 hover:underline dark:text-gray-50',
       },
       size: {
         default: 'h-[54px] px-2 py-4 text-base',
-        sm: 'h-8 rounded-md px-3 text-xs',
+        sm: 'h-8  px-3 text-xs',
         lg: 'h-[54px] px-2 py-4 text-base',
         icon: 'h-9 w-9',
+        auto: 'h-auto p-4',
       },
     },
     defaultVariants: {

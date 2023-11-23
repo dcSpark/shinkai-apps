@@ -1,6 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateChat } from '@shinkai_network/shinkai-node-state/lib/mutations/createChat/useCreateChat';
-import { Button } from '@shinkai_network/shinkai-ui';
+import {
+  Button,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
+} from '@shinkai_network/shinkai-ui';
 import { Loader2, MessageCircle } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -10,15 +19,6 @@ import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../ui/form';
-import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 
 const formSchema = z.object({

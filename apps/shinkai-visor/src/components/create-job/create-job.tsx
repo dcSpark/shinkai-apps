@@ -2,7 +2,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
-import { Button } from '@shinkai_network/shinkai-ui';
+import {
+  Button,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@shinkai_network/shinkai-ui';
 import { Loader2, Workflow } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -15,14 +23,6 @@ import { useAuth } from '../../store/auth/auth';
 import { useSettings } from '../../store/settings/settings';
 import { FileInput } from '../file-input/file-input';
 import { Header } from '../header/header';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../ui/form';
 import { ScrollArea } from '../ui/scroll-area';
 import {
   Select,

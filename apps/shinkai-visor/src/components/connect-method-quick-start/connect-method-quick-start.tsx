@@ -1,6 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
-import { Button } from '@shinkai_network/shinkai-ui';
+import {
+  Button,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
+} from '@shinkai_network/shinkai-ui';
 import { FileKey, Loader2, PlugZap, QrCode, Zap } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -16,15 +25,6 @@ import { SetupData, useAuth } from '../../store/auth/auth';
 import { ConnectionMethodOption } from '../connection-method-option/connection-method-option';
 import { Header } from '../header/header';
 import ErrorMessage from '../ui/error-message';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../ui/form';
-import { Input } from '../ui/input';
 
 const formSchema = z.object({
   registration_name: z.string().min(5),
@@ -100,90 +100,89 @@ export const ConnectMethodQuickStart = () => {
   };
 
   return (
-    <div className="flex h-full flex-col space-y-3">
-      <Header
-        description={
-          <FormattedMessage id="quick-connection-connection-method-description" />
-        }
-        icon={<Zap />}
-        title={
-          <FormattedMessage id="quick-connection-connection-method-title" />
-        }
-      />
-      <Form {...form}>
-        <form
-          className="flex flex-col justify-between space-y-2"
-          onSubmit={form.handleSubmit(connect)}
-        >
-          <FormField
-            control={form.control}
-            name="node_address"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormLabel>
-                  <FormattedMessage id="node-address" />
-                </FormLabel>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+    <div className="flex h-full flex-col justify-between">
+      <div>
+        <Header
+          description={
+            <FormattedMessage id="quick-connection-connection-method-description" />
+          }
+          icon={<Zap />}
+          title={
+            <FormattedMessage id="quick-connection-connection-method-title" />
+          }
+        />
+        <Form {...form}>
+          <form
+            className="mt-8 space-y-5"
+            onSubmit={form.handleSubmit(connect)}
+          >
+            <div className="flex flex-col justify-between space-y-2">
+              <FormField
+                control={form.control}
+                name="node_address"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormLabel>
+                      <FormattedMessage id="node-address" />
+                    </FormLabel>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <FormField
-            control={form.control}
-            name="registration_name"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-                <FormLabel>
-                  <FormattedMessage id="registration-name" />
-                </FormLabel>
-              </FormItem>
-            )}
-          />
+              <FormField
+                control={form.control}
+                name="registration_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormLabel>
+                      <FormattedMessage id="registration-name" />
+                    </FormLabel>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <FormField
-            control={form.control}
-            name="shinkai_identity"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-                <FormLabel>
-                  <FormattedMessage id="shinkai-identity" />
-                </FormLabel>
-              </FormItem>
-            )}
-          />
+              <FormField
+                control={form.control}
+                name="shinkai_identity"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormLabel>
+                      <FormattedMessage id="shinkai-identity" />
+                    </FormLabel>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          {isSubmitError && <ErrorMessage message={submitError?.message} />}
+              {isSubmitError && <ErrorMessage message={submitError?.message} />}
+            </div>
+            <Button className="w-full" disabled={isPending} type="submit">
+              {isPending ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : null}
+              <FormattedMessage id="connect" />
+            </Button>
+          </form>
+        </Form>
+      </div>
 
-          <Button className="w-full" disabled={isPending} type="submit">
-            {isPending ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : null}
-            <FormattedMessage id="connect" />
-          </Button>
-        </form>
-      </Form>
-
-      <div className="flex grow flex-col justify-end space-y-1">
-        <span className="font-semibold">
-          <FormattedMessage id="did-you-connected-before" />
-        </span>
-
+      <div className="flex gap-4">
         <ConnectionMethodOption
           description={
             <FormattedMessage id="qr-code-connection-connection-method-description" />
           }
-          icon={<QrCode />}
+          icon={<QrCode className="text-gray-100" />}
           onClick={() => selectQRCodeMethod()}
           title={
             <FormattedMessage id="qr-code-connection-connection-method-title" />
@@ -194,7 +193,7 @@ export const ConnectMethodQuickStart = () => {
           description={
             <FormattedMessage id="restore-connection-connection-method-description" />
           }
-          icon={<FileKey />}
+          icon={<span className="text-base">🔑</span>}
           onClick={() => selectRestoreMethod()}
           title={
             <FormattedMessage id="restore-connection-connection-method-title" />

@@ -1,6 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { encryptMessageWithPassphrase } from '@shinkai_network/shinkai-message-ts/cryptography';
-import { Button } from '@shinkai_network/shinkai-ui';
+import {
+  Button,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
+} from '@shinkai_network/shinkai-ui';
 import { Download, FileKey } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -9,15 +18,6 @@ import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../ui/form';
-import { Input } from '../ui/input';
 
 export const ExportConnection = () => {
   const intl = useIntl();

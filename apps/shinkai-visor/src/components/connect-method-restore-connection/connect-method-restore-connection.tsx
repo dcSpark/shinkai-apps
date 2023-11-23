@@ -1,6 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { decryptMessageWithPassphrase } from '@shinkai_network/shinkai-message-ts/cryptography';
-import { Button } from '@shinkai_network/shinkai-ui';
+import {
+  Button,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
+} from '@shinkai_network/shinkai-ui';
 import { FileKey, PlugZap, Trash, Upload } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -11,15 +20,6 @@ import { z } from 'zod';
 import { useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
 import ErrorMessage from '../ui/error-message';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../ui/form';
-import { Input } from '../ui/input';
 
 const formSchema = z.object({
   encryptedConnection: z.string().min(1),
