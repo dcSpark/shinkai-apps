@@ -1,3 +1,4 @@
+import { Button } from '@shinkai_network/shinkai-ui';
 import {
   ArrowLeft,
   Bot,
@@ -26,7 +27,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '../ui/alert-dialog';
-import { Button } from '../ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -109,27 +109,24 @@ export default function NavBar() {
               <FormattedMessage id="are-you-sure" />
             </AlertDialogTitle>
             <AlertDialogDescription>
+              <div className="flex flex-col space-y-3">
+                <div className="flex flex-col space-y-1">
+                  <span className="text-xs italic">
+                    <FormattedMessage id="permanently-lose-connection" />
+                  </span>
+                </div>
+                <div className="flex flex-col">
+                  <span
+                    className="cursor-pointer underline decoration-dashed"
+                    onClick={() => exportConnection()}
+                  >
+                    Export your conection
+                  </span>
+                  <span className="text-xs">If you want to use it later</span>
+                </div>
+              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <div className="flex flex-col space-y-3 items-center">
-            <div className="flex flex-col space-y-1">
-              <span className="text-xs italic text-center">
-                <FormattedMessage id="permanently-lose-connection" />
-              </span>
-            </div>
-            <div className="flex flex-col">
-              <span
-                className="underline decoration-dashed cursor-pointer"
-                onClick={() => exportConnection()}
-              >
-                <FormattedMessage id="disconnect-warning-link" />
-              </span>
-              <span className="text-xs">
-              <FormattedMessage id="disconnect-warning-link-description" />
-
-              </span>
-            </div>
-          </div>
           <AlertDialogFooter>
             <AlertDialogCancel
               onClick={() => setIsConfirmLogoutDialogOpened(false)}
@@ -154,7 +151,7 @@ export default function NavBar() {
         </div>
         <img
           alt="shinkai-app-logo"
-          className="h-5 absolute left-0 right-0 ml-auto mr-auto"
+          className="absolute left-0 right-0 ml-auto mr-auto h-5"
           src={srcUrlResolver(visorLogo)}
         />
         {auth && (

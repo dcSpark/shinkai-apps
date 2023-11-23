@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { encryptMessageWithPassphrase } from '@shinkai_network/shinkai-message-ts/cryptography';
+import { Button } from '@shinkai_network/shinkai-ui';
 import { Download, FileKey } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -8,7 +9,6 @@ import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
-import { Button } from '../ui/button';
 import {
   Form,
   FormControl,
@@ -55,7 +55,7 @@ export const ExportConnection = () => {
     const parsedSetupData = JSON.stringify(auth);
     const encryptedSetupData = await encryptMessageWithPassphrase(
       parsedSetupData,
-      values.passphrase
+      values.passphrase,
     );
     setEncryptedSetupData(encryptedSetupData);
   };
@@ -69,18 +69,18 @@ export const ExportConnection = () => {
     URL.revokeObjectURL(link.href);
   };
   return (
-    <div className="h-full flex flex-col space-y-3">
+    <div className="flex h-full flex-col space-y-3">
       <Header
         icon={<FileKey />}
         title={<FormattedMessage id="export-connection"></FormattedMessage>}
       />
-      <div className="grow flex flex-col space-y-2">
+      <div className="flex grow flex-col space-y-2">
         <Form {...form}>
           <form
-            className="flex flex-col space-y-3 justify-between"
+            className="flex flex-col justify-between space-y-3"
             onSubmit={form.handleSubmit(exportConnection)}
           >
-            <div className="grow flex flex-col space-y-2">
+            <div className="flex grow flex-col space-y-2">
               <FormField
                 control={form.control}
                 name="passphrase"
@@ -120,7 +120,7 @@ export const ExportConnection = () => {
         </Form>
 
         {encryptedSetupData && (
-          <div className=" grow flex flex-col items-center justify-center space-y-3">
+          <div className=" flex grow flex-col items-center justify-center space-y-3">
             <div className="flex flex-col space-y-1">
               <span className="font-semibold">
                 <FormattedMessage id="download-keep-safe-place" />
@@ -129,10 +129,10 @@ export const ExportConnection = () => {
                 <FormattedMessage id="use-it-to-restore" />
               </span>
             </div>
-            <div className="w-full flex flex-row space-x-1">
+            <div className="flex w-full flex-row space-x-1">
               <div className="grow cursor-pointer" onClick={() => download()}>
                 <Input
-                  className="truncate cursor-pointer"
+                  className="cursor-pointer truncate"
                   readOnly
                   value={encryptedSetupData}
                 />

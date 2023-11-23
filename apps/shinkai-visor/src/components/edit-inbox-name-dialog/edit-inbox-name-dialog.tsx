@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useUpdateInboxName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateInboxName/useUpdateInboxName';
+import { Button } from '@shinkai_network/shinkai-ui';
 import { Loader2, Save } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -7,7 +8,6 @@ import { FormattedMessage } from 'react-intl';
 import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
-import { Button } from '../ui/button';
 import {
   Dialog,
   DialogContent,
@@ -94,10 +94,10 @@ export const EditInboxNameDialog = ({
 
         <Form {...form}>
           <form
-            className="h-full flex flex-col space-y-3 justify-between"
+            className="flex h-full flex-col justify-between space-y-3"
             onSubmit={form.handleSubmit(submit)}
           >
-            <div className="grow flex flex-col space-y-2">
+            <div className="flex grow flex-col space-y-2">
               <FormField
                 control={form.control}
                 name="name"

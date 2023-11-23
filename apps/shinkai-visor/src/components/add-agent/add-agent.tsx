@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateAgent } from '@shinkai_network/shinkai-node-state/lib/mutations/createAgent/useCreateAgent';
+import { Button } from '@shinkai_network/shinkai-ui';
 import { Bot, Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
@@ -9,7 +10,6 @@ import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
-import { Button } from '../ui/button';
 import {
   Form,
   FormControl,
@@ -35,7 +35,7 @@ const formSchema = z.object({
     .string()
     .regex(
       /^[a-zA-Z0-9]+(_[a-zA-Z0-9]+)*$/,
-      'It just accepts alphanumeric characters and underscores'
+      'It just accepts alphanumeric characters and underscores',
     ),
   externalUrl: z.string().url(),
   apiKey: z.string().min(4),
@@ -67,7 +67,7 @@ export const AddAgent = () => {
     onSuccess: () => {
       history.replace(
         { pathname: '/inboxes/create-job' },
-        { agentName: form.getValues().agentName }
+        { agentName: form.getValues().agentName },
       );
     },
   });
@@ -126,7 +126,7 @@ export const AddAgent = () => {
       modelsConfig[currentModel as Models].modelTypes.map((modelType) => ({
         label: modelType.name,
         value: modelType.value,
-      }))
+      })),
     );
   }, [currentModel, form]);
   useEffect(() => {
@@ -137,17 +137,17 @@ export const AddAgent = () => {
   }, [modelTypeOptions, form]);
 
   return (
-    <div className="h-full flex flex-col space-y-3">
+    <div className="flex h-full flex-col space-y-3">
       <Header
         icon={<Bot />}
         title={<FormattedMessage id="add-agent"></FormattedMessage>}
       />
       <Form {...form}>
         <form
-          className="h-full flex flex-col space-y-3 justify-between"
+          className="flex h-full flex-col justify-between space-y-3"
           onSubmit={form.handleSubmit(submit)}
         >
-          <div className="grow flex flex-col space-y-2">
+          <div className="flex grow flex-col space-y-2">
             <FormField
               control={form.control}
               name="agentName"
@@ -248,7 +248,7 @@ export const AddAgent = () => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectPortal>
-                      <SelectContent className="max-h-[150px] max-w-[325px] text-xs overflow-y-auto">
+                      <SelectContent className="max-h-[150px] max-w-[325px] overflow-y-auto text-xs">
                         {modelTypeOptions.map((modelType) => (
                           <SelectItem
                             key={modelType.value}

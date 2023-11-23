@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateChat } from '@shinkai_network/shinkai-node-state/lib/mutations/createChat/useCreateChat';
+import { Button } from '@shinkai_network/shinkai-ui';
 import { Loader2, MessageCircle } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -9,7 +10,6 @@ import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
-import { Button } from '../ui/button';
 import {
   Form,
   FormControl,
@@ -70,17 +70,17 @@ export const CreateInbox = () => {
   }, [auth, form]);
 
   return (
-    <div className="h-full flex flex-col space-y-3">
+    <div className="flex h-full flex-col space-y-3">
       <Header
         icon={<MessageCircle />}
         title={<FormattedMessage id="create-inbox"></FormattedMessage>}
       ></Header>
       <Form {...form}>
         <form
-          className="h-full flex flex-col space-y-2 justify-between"
+          className="flex h-full flex-col justify-between space-y-2"
           onSubmit={form.handleSubmit(submit)}
         >
-          <div className="grow flex flex-col space-y-2">
+          <div className="flex grow flex-col space-y-2">
             <FormField
               control={form.control}
               name="receiverIdentity"

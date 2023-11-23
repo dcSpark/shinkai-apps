@@ -5,6 +5,7 @@ import {
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
+import { Button } from '@shinkai_network/shinkai-ui';
 import {
   Edit,
   Inbox,
@@ -23,7 +24,6 @@ import { EditInboxNameDialog } from '../edit-inbox-name-dialog/edit-inbox-name-d
 import { EmptyAgents } from '../empty-agents/empty-agents';
 import { EmptyInboxes } from '../empty-inboxes/empty-inboxes';
 import { Header } from '../header/header';
-import { Button } from '../ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -97,13 +97,13 @@ export const Inboxes = () => {
   const editInboxNameClick = (
     event: React.MouseEvent,
     inboxId: string,
-    name: string
+    name: string,
   ) => {
     event.stopPropagation();
     openEditInboxNameDialog(inboxId, name);
   };
   return (
-    <div className="h-full flex flex-col space-y-3 justify-between overflow-hidden">
+    <div className="flex h-full flex-col justify-between space-y-3 overflow-hidden">
       <Header
         icon={<Inbox />}
         title={<FormattedMessage id="inbox.other"></FormattedMessage>}
@@ -114,7 +114,7 @@ export const Inboxes = () => {
         <EmptyInboxes></EmptyInboxes>
       ) : (
         <>
-          <div className="grow flex flex-col overflow-hidden">
+          <div className="flex grow flex-col overflow-hidden">
             <ScrollArea className="[&>div>div]:!block">
               {inboxes?.map((inbox) => (
                 <Fragment key={inbox.inbox_id}>
@@ -123,7 +123,7 @@ export const Inboxes = () => {
                     onClick={() => navigateToInbox(inbox)}
                     variant="tertiary"
                   >
-                    <div className="w-full flex flex-row space-x-2 items-center justify-between">
+                    <div className="flex w-full flex-row items-center justify-between space-x-2">
                       {isJobInbox(decodeURIComponent(inbox.inbox_id)) ? (
                         <Workflow className="h-4 w-4 shrink-0" />
                       ) : (
@@ -131,21 +131,21 @@ export const Inboxes = () => {
                       )}
                       <div className="flex-auto overflow-hidden">
                         <div className="flex flex-col space-y-1">
-                        <span className="truncate text-left">
-                          {inbox.custom_name}
-                        </span>
-                        <div className="truncate text-left text-xs text-muted-foreground">
-                          {getMessageContent(inbox.last_message)}
-                        </div>
+                          <span className="truncate text-left">
+                            {inbox.custom_name}
+                          </span>
+                          <div className="text-muted-foreground truncate text-left text-xs">
+                            {getMessageContent(inbox.last_message)}
+                          </div>
                         </div>
                       </div>
                       <Edit
-                        className="shrink-0 h-4 w-4 hidden group-hover:block"
+                        className="hidden h-4 w-4 shrink-0 group-hover:block"
                         onClick={(event) =>
                           editInboxNameClick(
                             event,
                             inbox.inbox_id,
-                            inbox.custom_name
+                            inbox.custom_name,
                           )
                         }
                       />
@@ -155,14 +155,14 @@ export const Inboxes = () => {
               ))}
             </ScrollArea>
           </div>
-          <div className="fixed right-4 bottom-4" ref={dialContainerRef}>
+          <div className="fixed bottom-4 right-4" ref={dialContainerRef}>
             <DropdownMenu onOpenChange={(isOpen) => setDialOpened(isOpen)}>
               <DropdownMenuTrigger asChild>
                 <Button size="icon">
                   <Plus
                     className={cn(
-                      'w-4 h-4 transition-transform',
-                      dialOpened && 'rotate-45'
+                      'h-4 w-4 transition-transform',
+                      dialOpened && 'rotate-45',
                     )}
                   />
                 </Button>

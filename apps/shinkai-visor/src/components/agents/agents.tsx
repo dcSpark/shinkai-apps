@@ -1,4 +1,5 @@
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
+import { Button } from '@shinkai_network/shinkai-ui';
 import { Bot, Plus } from 'lucide-react';
 import { Fragment } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -7,7 +8,6 @@ import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../store/auth/auth';
 import { EmptyAgents } from '../empty-agents/empty-agents';
 import { Header } from '../header/header';
-import { Button } from '../ui/button';
 import { ScrollArea } from '../ui/scroll-area';
 
 export const Agents = () => {
@@ -27,18 +27,18 @@ export const Agents = () => {
     history.push('/agents/add');
   };
   return (
-    <div className="h-full flex flex-col space-y-3">
+    <div className="flex h-full flex-col space-y-3">
       <Header
         icon={<Bot />}
         title={<FormattedMessage id="agent.other"></FormattedMessage>}
       />
       {!agents?.length ? (
-        <div className="h-full flex flex-col justify-center">
+        <div className="flex h-full flex-col justify-center">
           <EmptyAgents></EmptyAgents>
         </div>
       ) : (
         <>
-          <ScrollArea className="[&>div>div]:!block h-full flex flex-col space-y-3 justify-between">
+          <ScrollArea className="flex h-full flex-col justify-between space-y-3 [&>div>div]:!block">
             {agents?.map((agent) => (
               <Fragment key={agent.id}>
                 <Button className="w-full" variant="tertiary">
@@ -47,9 +47,9 @@ export const Agents = () => {
               </Fragment>
             ))}
           </ScrollArea>
-          <div className="fixed right-4 bottom-4">
+          <div className="fixed bottom-4 right-4">
             <Button onClick={() => onAddAgentClick()} size="icon">
-              <Plus className="w-4 h-4" />
+              <Plus className="h-4 w-4" />
             </Button>
           </div>
         </>

@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
+import { Button, Checkbox } from '@shinkai_network/shinkai-ui';
 import { FileKey, QrCode, SettingsIcon } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
@@ -10,8 +11,6 @@ import { z } from 'zod';
 import { useAuth } from '../../store/auth/auth';
 import { useSettings } from '../../store/settings/settings';
 import { Header } from '../header/header';
-import { Button } from '../ui/button';
-import { Checkbox } from '../ui/checkbox';
 import {
   Form,
   FormControl,

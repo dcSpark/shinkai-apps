@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
+import { Button } from '@shinkai_network/shinkai-ui';
 import { FileKey, Loader2, PlugZap, QrCode, Zap } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -14,7 +15,6 @@ import {
 import { SetupData, useAuth } from '../../store/auth/auth';
 import { ConnectionMethodOption } from '../connection-method-option/connection-method-option';
 import { Header } from '../header/header';
-import { Button } from '../ui/button';
 import ErrorMessage from '../ui/error-message';
 import {
   Form,
@@ -40,7 +40,7 @@ export const ConnectMethodQuickStart = () => {
   const DEFAULT_NODE_ADDRESS = 'http://127.0.0.1:9550';
   const DEFAULT_SHINKAI_IDENTITY = '@@localhost.shinkai';
   const [encryptionKeys, setEncryptedKeys] = useState<Encryptionkeys | null>(
-    null
+    null,
   );
   const form = useForm<FormType>({
     resolver: zodResolver(formSchema),
@@ -100,7 +100,7 @@ export const ConnectMethodQuickStart = () => {
   };
 
   return (
-    <div className="h-full flex flex-col space-y-3">
+    <div className="flex h-full flex-col space-y-3">
       <Header
         description={
           <FormattedMessage id="quick-connection-connection-method-description" />
@@ -112,7 +112,7 @@ export const ConnectMethodQuickStart = () => {
       />
       <Form {...form}>
         <form
-          className="flex flex-col space-y-2 justify-between"
+          className="flex flex-col justify-between space-y-2"
           onSubmit={form.handleSubmit(connect)}
         >
           <FormField
@@ -120,12 +120,12 @@ export const ConnectMethodQuickStart = () => {
             name="node_address"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>
-                  <FormattedMessage id="node-address" />
-                </FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
+                <FormLabel>
+                  <FormattedMessage id="node-address" />
+                </FormLabel>
                 <FormMessage />
               </FormItem>
             )}
@@ -136,13 +136,13 @@ export const ConnectMethodQuickStart = () => {
             name="registration_name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>
-                  <FormattedMessage id="registration-name" />
-                </FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
                 <FormMessage />
+                <FormLabel>
+                  <FormattedMessage id="registration-name" />
+                </FormLabel>
               </FormItem>
             )}
           />
@@ -152,13 +152,13 @@ export const ConnectMethodQuickStart = () => {
             name="shinkai_identity"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>
-                  <FormattedMessage id="shinkai-identity" />
-                </FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
                 <FormMessage />
+                <FormLabel>
+                  <FormattedMessage id="shinkai-identity" />
+                </FormLabel>
               </FormItem>
             )}
           />
@@ -168,15 +168,13 @@ export const ConnectMethodQuickStart = () => {
           <Button className="w-full" disabled={isPending} type="submit">
             {isPending ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <PlugZap className="mr-2 h-4 w-4" />
-            )}
+            ) : null}
             <FormattedMessage id="connect" />
           </Button>
         </form>
       </Form>
 
-      <div className="grow flex flex-col space-y-1 justify-end">
+      <div className="flex grow flex-col justify-end space-y-1">
         <span className="font-semibold">
           <FormattedMessage id="did-you-connected-before" />
         </span>
