@@ -15,7 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@shinkai/shinkai-ui": ["libs/shinkai-ui/src/index.ts"],
+      "@shinkai_network/shinkai-ui": ["libs/shinkai-ui/src/index.ts"],
       "@shinkai_network/shinkai-message-ts/*": [
         "libs/shinkai-message-ts/src/*.ts"
       ],

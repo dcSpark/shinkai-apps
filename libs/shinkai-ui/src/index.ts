@@ -1,5 +1,5 @@
-import './styles/globals.css';
-import './styles/tailwind.css';
+// import './styles/globals.css';
+// import './styles/tailwind.css';
 
 export * from './components/avatar';
 export * from './components/button';
