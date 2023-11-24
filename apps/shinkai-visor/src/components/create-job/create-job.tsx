@@ -10,6 +10,11 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@shinkai_network/shinkai-ui';
 import { Loader2, Workflow } from 'lucide-react';
 import { useEffect } from 'react';
@@ -24,14 +29,6 @@ import { useSettings } from '../../store/settings/settings';
 import { FileInput } from '../file-input/file-input';
 import { Header } from '../header/header';
 import { ScrollArea } from '../ui/scroll-area';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectPortal,
-  SelectTrigger,
-  SelectValue,
-} from '../ui/select';
 import { Textarea } from '../ui/textarea';
 
 const formSchema = z.object({
@@ -178,19 +175,16 @@ export const CreateJob = () => {
                         <SelectValue />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectPortal>
-                      <SelectContent>
-                        {agents?.map((agent) => (
-                          <SelectItem key={agent.id} value={agent.id}>
-                            {
-                              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                              (agent.full_identity_name as any)
-                                ?.subidentity_name
-                            }
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </SelectPortal>
+                    <SelectContent>
+                      {agents?.map((agent) => (
+                        <SelectItem key={agent.id} value={agent.id}>
+                          {
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            (agent.full_identity_name as any)?.subidentity_name
+                          }
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
                   </Select>
                   <FormMessage />
                 </FormItem>

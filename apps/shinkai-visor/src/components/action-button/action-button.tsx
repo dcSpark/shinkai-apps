@@ -30,7 +30,7 @@ export const ActionButton = () => {
     });
   };
   return (
-    <div
+    <button
       className={cn(
         'p-1 w-[50px] h-[50px] flex flex-col space-y-1 items-center justify-center',
         !popupVisibility && 'animate-breath',
@@ -38,25 +38,21 @@ export const ActionButton = () => {
       )}
       onClick={() => togglePopupVisibility()}
     >
-      <motion.div
-        animate={{
-          rotate: popupVisibility ? -22 : 0,
-        }}
-        className="w-4 h-4"
-      >
-        <img
+      <motion.div className="h-[50px] w-[50px] rounded-lg bg-gray-500 p-2">
+        <motion.img
           alt="shinkai-app-logo"
-          className={'w-full h-full'}
+          animate={{
+            rotate: popupVisibility ? -10 : 0,
+          }}
+          className={'h-full w-full'}
           src={srcUrlResolver(shinkaiLogo)}
         />
       </motion.div>
-      <span className="text-xs text-white">
-        <kbd className="bg-primary pointer-events-none inline-flex justify-center h-5 select-none items-center gap-1 rounded border px-2 font-mono text-sm font-medium opacity-100">
-          <span>⌘</span>
-          <span>﹐</span>
-        </kbd>
-      </span>
-    </div>
+      <motion.kbd className="pointer-events-none block h-0 w-full select-none space-x-1 rounded-md bg-gray-500 px-2 font-mono text-sm font-medium text-gray-500 text-white  group-hover:h-auto">
+        <span>⌘</span>
+        <span>﹐</span>
+      </motion.kbd>
+    </button>
   );
 };
 const root = createRoot(container);
@@ -64,9 +60,9 @@ root.render(
   <React.StrictMode>
     <style>{themeStyle}</style>
     <IntlProvider locale={locale} messages={langMessages}>
-      <div className="fixed top-[120px] right-[2px] overflow-hidden bg-secondary-600 z-[1500000000] shadow-3xl rounded-lg">
+      <div className="shadow-4xl fixed right-[2px] top-[120px] z-[1500000000] overflow-hidden">
         <ActionButton />
       </div>
     </IntlProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

@@ -121,7 +121,7 @@ export const Inboxes = () => {
                   <Button
                     className="group h-14 w-full"
                     onClick={() => navigateToInbox(inbox)}
-                    variant="tertiary"
+                    variant="ghost"
                   >
                     <div className="flex w-full flex-row items-center justify-between space-x-2">
                       {isJobInbox(decodeURIComponent(inbox.inbox_id)) ? (

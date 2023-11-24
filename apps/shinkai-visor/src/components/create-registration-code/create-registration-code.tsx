@@ -9,6 +9,11 @@ import {
   FormLabel,
   FormMessage,
   Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@shinkai_network/shinkai-ui';
 import { Download, Loader2, QrCode } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
@@ -20,14 +25,6 @@ import { z } from 'zod';
 import shinkaiLogo from '../../assets/icons/shinkai-min.svg';
 import { SetupData, useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectPortal,
-  SelectTrigger,
-  SelectValue,
-} from '../ui/select';
 
 enum IdentityType {
   Profile = 'profile',
@@ -196,18 +193,16 @@ export const CreateRegistrationCode = () => {
                           <SelectValue />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectPortal>
-                        <SelectContent>
-                          {identityTypeOptions?.map((identityTypeOption) => (
-                            <SelectItem
-                              key={identityTypeOption.value}
-                              value={identityTypeOption.value}
-                            >
-                              {identityTypeOption.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </SelectPortal>
+                      <SelectContent>
+                        {identityTypeOptions?.map((identityTypeOption) => (
+                          <SelectItem
+                            key={identityTypeOption.value}
+                            value={identityTypeOption.value}
+                          >
+                            {identityTypeOption.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
                     </Select>
                     <FormMessage />
                   </FormItem>
@@ -249,18 +244,16 @@ export const CreateRegistrationCode = () => {
                           <SelectValue />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectPortal>
-                        <SelectContent>
-                          {permissionOptions?.map((permissionTypeOption) => (
-                            <SelectItem
-                              key={permissionTypeOption.value}
-                              value={permissionTypeOption.value}
-                            >
-                              {permissionTypeOption.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </SelectPortal>
+                      <SelectContent>
+                        {permissionOptions?.map((permissionTypeOption) => (
+                          <SelectItem
+                            key={permissionTypeOption.value}
+                            value={permissionTypeOption.value}
+                          >
+                            {permissionTypeOption.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
                     </Select>
                     <FormMessage />
                   </FormItem>

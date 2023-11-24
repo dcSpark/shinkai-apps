@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom';
 export const EmptyAgents = () => {
   const history = useHistory();
   return (
-    <div className="align-center flex grow flex-col justify-center">
+    <div className="flex grow flex-col items-center justify-center">
       <div className="mb-8 space-y-3 text-center">
         <span aria-hidden className="text-5xl">
           🤖
@@ -18,7 +18,7 @@ export const EmptyAgents = () => {
         </p>
       </div>
 
-      <Button className="" onClick={() => history.push('/agents/add')}>
+      <Button onClick={() => history.push('/agents/add')}>
         <FormattedMessage id="add-agent" />
       </Button>
     </div>

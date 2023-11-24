@@ -9,6 +9,11 @@ import {
   FormLabel,
   FormMessage,
   Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@shinkai_network/shinkai-ui';
 import { Bot, Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -19,14 +24,6 @@ import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectPortal,
-  SelectTrigger,
-  SelectValue,
-} from '../ui/select';
 import { Models, modelsConfig } from './models';
 
 const formSchema = z.object({
@@ -153,12 +150,12 @@ export const AddAgent = () => {
               name="agentName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    <FormattedMessage id="agent-name" />
-                  </FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
+                  <FormLabel>
+                    <FormattedMessage id="agent-name" />
+                  </FormLabel>
                   <FormMessage />
                 </FormItem>
               )}
@@ -169,12 +166,12 @@ export const AddAgent = () => {
               name="externalUrl"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    <FormattedMessage id="external-url" />
-                  </FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
+                  <FormLabel>
+                    <FormattedMessage id="external-url" />
+                  </FormLabel>
                   <FormMessage />
                 </FormItem>
               )}
@@ -185,12 +182,12 @@ export const AddAgent = () => {
               name="apiKey"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    <FormattedMessage id="api-key" />
-                  </FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
+                  <FormLabel>
+                    <FormattedMessage id="api-key" />
+                  </FormLabel>
                   <FormMessage />
                 </FormItem>
               )}
@@ -201,8 +198,43 @@ export const AddAgent = () => {
               name="model"
               render={({ field }) => (
                 <FormItem>
+                  <Select
+                    defaultValue={field.value as unknown as string}
+                    onValueChange={field.onChange}
+                    value={field.value}
+                  >
+                    <FormLabel>
+                      <FormattedMessage id="model.one" />
+                    </FormLabel>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Models place" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {modelOptions.map((model) => (
+                        <SelectItem
+                          key={model.value}
+                          value={model.value.toString()}
+                        >
+                          {model.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="modelType"
+              render={({ field }) => (
+                <FormItem>
                   <FormLabel>
-                    <FormattedMessage id="model.one" />
+                    <FormattedMessage id="model.other" />
                   </FormLabel>
                   <Select
                     defaultValue={field.value as unknown as string}
@@ -214,51 +246,16 @@ export const AddAgent = () => {
                         <SelectValue />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectPortal>
-                      <SelectContent>
-                        {modelOptions.map((model) => (
-                          <SelectItem
-                            key={model.value}
-                            value={model.value.toString()}
-                          >
-                            {model.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </SelectPortal>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="modelType"
-              render={({ field }) => (
-                <FormItem>
-                  <Select
-                    defaultValue={field.value as unknown as string}
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectPortal>
-                      <SelectContent className="max-h-[150px] max-w-[325px] overflow-y-auto text-xs">
-                        {modelTypeOptions.map((modelType) => (
-                          <SelectItem
-                            key={modelType.value}
-                            value={modelType.value}
-                          >
-                            {modelType.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </SelectPortal>
+                    <SelectContent className="max-h-[150px] overflow-y-auto text-xs">
+                      {modelTypeOptions.map((modelType) => (
+                        <SelectItem
+                          key={modelType.value}
+                          value={modelType.value}
+                        >
+                          {modelType.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
                   </Select>
                   <FormMessage />
                 </FormItem>
@@ -268,9 +265,7 @@ export const AddAgent = () => {
           <Button className="w-full" disabled={isPending} type="submit">
             {isPending ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Bot className="mr-2 h-4 w-4"></Bot>
-            )}
+            ) : null}
             <FormattedMessage id="add-agent" />
           </Button>
         </form>

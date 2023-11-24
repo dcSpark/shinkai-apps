@@ -16,6 +16,9 @@ module.exports = {
     },
 
     extend: {
+      height: {
+        input: '59px',
+      },
       colors: {
         brand: {
           DEFAULT: 'hsla(360, 99%, 69%, 1)',
@@ -88,8 +91,8 @@ module.exports = {
           to: { height: '0' },
         },
         breath: {
-          '0%, 100%': { transform: 'opacity: 1' },
-          '50%': { transform: 'opacity: .5' },
+          from: { opacity: 1 },
+          to: { opacity: 0.8 },
         },
         'big-bounce': {
           '0%, 100%': {
@@ -105,7 +108,7 @@ module.exports = {
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
-        breath: 'pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite;',
+        breath: 'breath 5s ease-out infinite',
         'big-bounce': 'big-bounce 1s infinite',
       },
     },

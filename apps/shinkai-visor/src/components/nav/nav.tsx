@@ -151,7 +151,7 @@ export default function NavBar() {
         </div>
         <img
           alt="shinkai-app-logo"
-          className="absolute left-0 right-0 ml-auto mr-auto h-5"
+          className="absolute left-0 right-0 ml-auto mr-auto w-[100px]"
           src={srcUrlResolver(visorLogo)}
         />
         {auth && (

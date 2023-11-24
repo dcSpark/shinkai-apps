@@ -9,7 +9,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription
+  FormDescription,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@shinkai_network/shinkai-ui';
 import { FileKey, QrCode, SettingsIcon } from 'lucide-react';
 import { useEffect } from 'react';
@@ -21,14 +26,6 @@ import { z } from 'zod';
 import { useAuth } from '../../store/auth/auth';
 import { useSettings } from '../../store/settings/settings';
 import { Header } from '../header/header';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectPortal,
-  SelectTrigger,
-  SelectValue,
-} from '../ui/select';
 
 const formSchema = z.object({
   defaultAgentId: z.string(),
@@ -85,9 +82,6 @@ export const Settings = () => {
               name="defaultAgentId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    <FormattedMessage id="default-agent" />
-                  </FormLabel>
                   <Select
                     defaultValue={field.value}
                     name={field.name}
@@ -99,20 +93,21 @@ export const Settings = () => {
                         <SelectValue />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectPortal>
-                      <SelectContent>
-                        {agents?.map((agent) => (
-                          <SelectItem key={agent.id} value={agent.id}>
-                            {
-                              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                              (agent.full_identity_name as any)
-                                ?.subidentity_name
-                            }
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </SelectPortal>
+                    <FormLabel>
+                      <FormattedMessage id="default-agent" />
+                    </FormLabel>
+                    <SelectContent>
+                      {agents?.map((agent) => (
+                        <SelectItem key={agent.id} value={agent.id}>
+                          {
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            (agent.full_identity_name as any)?.subidentity_name
+                          }
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
                   </Select>
+
                   <FormMessage />
                 </FormItem>
               )}

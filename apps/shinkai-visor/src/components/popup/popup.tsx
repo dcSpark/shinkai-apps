@@ -96,16 +96,16 @@ export const Popup = () => {
                   <Route path="/inboxes">
                     <Switch>
                       <Route path="/inboxes/create-inbox">
-                        <CreateInbox></CreateInbox>
+                        <CreateInbox />
                       </Route>
                       <Route path="/inboxes/create-job">
-                        <CreateJob></CreateJob>
+                        <CreateJob />
                       </Route>
                       <Route path="/inboxes/:inboxId">
-                        <Inbox></Inbox>
+                        <Inbox />
                       </Route>
                       <Route path="/">
-                        <Inboxes></Inboxes>
+                        <Inboxes />
                       </Route>
                     </Switch>
                   </Route>
