@@ -1,6 +1,7 @@
 import { generatePdfFromCurrentPage } from "../../helpers/pdf-generator";
 import { srcUrlResolver } from "../../helpers/src-url-resolver";
 import { ContentScriptBridgeMessageType, ServiceWorkerInternalMessage, ServiceWorkerInternalMessageType } from "../../service-worker/communication/internal/types";
+import { sendContentScriptMessage } from "../../service-worker/communication/internal";
 
 const baseContainer = document.createElement('shinkai-popup-root');
 baseContainer.style.position = 'fixed';
@@ -27,6 +28,27 @@ shadow.appendChild(iframe);
 
 const htmlRoot = document.getElementsByTagName('html')[0];
 htmlRoot.prepend(baseContainer);
+
+htmlRoot.addEventListener('keydown', function (ev) {
+  if (ev.code === 'Escape') {
+    sendContentScriptMessage({
+      type: ContentScriptBridgeMessageType.TogglePopupVisibility,
+      data: false,
+    });
+  }
+});
+htmlRoot.addEventListener('click', function (ev) {
+  if (
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    ev.target?.localName !== SHINKAI_ACTION_ELEMENT_NAME
+  ) {
+    sendContentScriptMessage({
+      type: ContentScriptBridgeMessageType.TogglePopupVisibility,
+      data: false,
+    });
+  }
+});
 
 let isVisible = false;
 

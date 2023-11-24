@@ -13,7 +13,9 @@ import { ContentScriptBridgeMessageType } from '../../service-worker/communicati
 import { useSettings } from '../../store/settings/settings';
 import themeStyle from '../../theme/styles.css?inline';
 
-const baseContainer = document.createElement('shinkai-action-button-root');
+export const SHINKAI_ACTION_ELEMENT_NAME = 'shinkai-action-button-root';
+
+const baseContainer = document.createElement(SHINKAI_ACTION_ELEMENT_NAME);
 const shadow = baseContainer.attachShadow({ mode: 'open' });
 const container = document.createElement('div');
 container.id = 'root';
