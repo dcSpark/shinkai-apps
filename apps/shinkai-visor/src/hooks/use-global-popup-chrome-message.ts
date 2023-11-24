@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
 
+import { dataUrlToFile } from "../helpers/blob-utils";
 import { sendContentScriptMessage } from "../service-worker/communication/internal";
 import { ContentScriptBridgeMessageType, ServiceWorkerInternalMessageType } from "../service-worker/communication/internal/types";
 import { useAuth } from "../store/auth/auth";
@@ -22,6 +23,12 @@ export const useGlobalPopupChromeMessage = () => {
         history.push({ pathname: '/inboxes/create-job', state: { files: [message.data.pdf] } });
         sendContentScriptMessage({ type: ContentScriptBridgeMessageType.TogglePopupVisibility, data: true });
         break;
+      case ServiceWorkerInternalMessageType.SendCaptureToAgent: {
+        const imageFile = dataUrlToFile(message.data.image, `capture.png`);
+        history.push({ pathname: '/inboxes/create-job', state: { files: [imageFile] } });
+        sendContentScriptMessage({ type: ContentScriptBridgeMessageType.TogglePopupVisibility, data: true });
+        break;
+      }
       case ServiceWorkerInternalMessageType.ContentScriptBridge:
         switch (message.data.type) {
           case ContentScriptBridgeMessageType.TogglePopupVisibility:

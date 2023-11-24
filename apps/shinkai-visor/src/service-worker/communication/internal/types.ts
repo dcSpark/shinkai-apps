@@ -3,6 +3,8 @@ export enum ServiceWorkerInternalMessageType {
   SendToAgent = 'send-to-agent',
   SendPageToAgent = 'send-page-to-agent',
   RehydrateStore = 'rehydrate-store',
+  CaptureImage = 'capture-image',
+  SendCaptureToAgent = 'send-capture-to-agent',
 }
 
 export enum ContentScriptBridgeMessageType {
@@ -26,5 +28,7 @@ export type ServiceWorkerInternalMessage =
       pdf?: File;
     }
   }
-  | { type: ServiceWorkerInternalMessageType.RehydrateStore, data?: never };
+  | { type: ServiceWorkerInternalMessageType.RehydrateStore, data?: never }
+  | { type: ServiceWorkerInternalMessageType.CaptureImage, data: { image: string } }
+  | { type: ServiceWorkerInternalMessageType.SendCaptureToAgent, data: { image: string } };
 ;

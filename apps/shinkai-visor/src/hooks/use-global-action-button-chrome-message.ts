@@ -7,7 +7,7 @@ import { useChromeMessage } from "./use-chrome-message";
 
 export const useGlobalActionButtonChromeMessage = () => {
   const [popupVisibility, setPopupVisibility] = useState(false);
-  useChromeMessage((message, sender) => {
+  useChromeMessage((message) => {
     switch (message.type) {
       case ServiceWorkerInternalMessageType.ContentScriptBridge:
         switch (message.data.type) {

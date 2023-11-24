@@ -28,18 +28,24 @@ htmlRoot.prepend(baseContainer);
 let isVisible = false;
 
 chrome.runtime.onMessage.addListener(async (message: ServiceWorkerInternalMessage, sender: chrome.runtime.MessageSender) => {
-  if (message.type === ServiceWorkerInternalMessageType.ContentScriptBridge) {
-    if (message.data.type === ContentScriptBridgeMessageType.TogglePopupVisibility) {
-      isVisible = message.data.data !== undefined ? message.data.data : !isVisible;
-      baseContainer.style.pointerEvents = isVisible ? 'auto' : 'none';
-    }
-  } else if (message.type === ServiceWorkerInternalMessageType.SendPageToAgent) {
-    const pageAsPdf = await generatePdfFromCurrentPage(`${encodeURIComponent(window.location.href)}.pdf`, document.body);
-    if (pageAsPdf) {
-      message.data = {
-        pdf: pageAsPdf,
+  switch (message.type) {
+    case ServiceWorkerInternalMessageType.ContentScriptBridge:
+      if (message.data.type === ContentScriptBridgeMessageType.TogglePopupVisibility) {
+        isVisible = message.data.data !== undefined ? message.data.data : !isVisible;
+        baseContainer.style.pointerEvents = isVisible ? 'auto' : 'none';
       }
+      break;
+    case ServiceWorkerInternalMessageType.SendPageToAgent: {
+      const pageAsPdf = await generatePdfFromCurrentPage(`${encodeURIComponent(window.location.href)}.pdf`, document.body);
+      if (pageAsPdf) {
+        message.data = {
+          pdf: pageAsPdf,
+        }
+      }
+      break;
     }
+    default:
+      break;
   }
   iframe.contentWindow?.postMessage({ message, sender }, srcUrlResolver('/'));
 });
