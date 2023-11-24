@@ -80,7 +80,7 @@ const registerMenu = () => {
   chrome.contextMenus.create(
     {
       id: ContextMenu.SendCaptureToAgent,
-      title: 'Send capture to Agent',
+      title: 'Send Capture to Agent',
       contexts: ['all']
     }
   );
