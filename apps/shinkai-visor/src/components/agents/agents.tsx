@@ -28,20 +28,17 @@ export const Agents = () => {
   };
   return (
     <div className="flex h-full flex-col space-y-3">
-      <Header
-        icon={<Bot />}
-        title={<FormattedMessage id="agent.other"></FormattedMessage>}
-      />
+      <Header title={<FormattedMessage id="agent.other"></FormattedMessage>} />
       {!agents?.length ? (
         <div className="flex h-full flex-col justify-center">
-          <EmptyAgents></EmptyAgents>
+          <EmptyAgents />
         </div>
       ) : (
         <>
           <ScrollArea className="flex h-full flex-col justify-between space-y-3 [&>div>div]:!block">
             {agents?.map((agent) => (
               <Fragment key={agent.id}>
-                <Button className="w-full" variant="tertiary">
+                <Button className="w-full" variant="ghost">
                   <span className="w-full truncate text-start">{agent.id}</span>
                 </Button>
               </Fragment>

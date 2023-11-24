@@ -89,7 +89,6 @@ export const ConnectMethodRestoreConnection = () => {
         description={
           <FormattedMessage id="restore-connection-connection-method-description" />
         }
-        icon={<FileKey />}
         title={
           <FormattedMessage id="restore-connection-connection-method-title" />
         }

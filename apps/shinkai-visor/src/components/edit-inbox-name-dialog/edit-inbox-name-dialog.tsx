@@ -55,7 +55,7 @@ export const EditInboxNameDialog = ({
     },
   });
   const { mutateAsync: updateInboxName, isPending } = useUpdateInboxName({
-    onSuccess: (data) => {
+    onSuccess: () => {
       onSaved(form.getValues().name);
     },
   });

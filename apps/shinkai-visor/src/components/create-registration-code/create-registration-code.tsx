@@ -162,7 +162,6 @@ export const CreateRegistrationCode = () => {
   return (
     <div className="flex h-full flex-col space-y-3">
       <Header
-        icon={<QrCode />}
         title={
           <FormattedMessage id="create-registration-code"></FormattedMessage>
         }

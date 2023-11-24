@@ -104,10 +104,7 @@ export const Inboxes = () => {
   };
   return (
     <div className="flex h-full flex-col justify-between space-y-3 overflow-hidden">
-      <Header
-        icon={<Inbox />}
-        title={<FormattedMessage id="inbox.other"></FormattedMessage>}
-      />
+      <Header title={<FormattedMessage id="inbox.other"></FormattedMessage>} />
       {!agents?.length ? (
         <EmptyAgents></EmptyAgents>
       ) : !inboxes?.length ? (

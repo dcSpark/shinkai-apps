@@ -71,7 +71,6 @@ export const ExportConnection = () => {
   return (
     <div className="flex h-full flex-col space-y-3">
       <Header
-        icon={<FileKey />}
         title={<FormattedMessage id="export-connection"></FormattedMessage>}
       />
       <div className="flex grow flex-col space-y-2">

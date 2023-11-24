@@ -71,7 +71,6 @@ export const Settings = () => {
   return (
     <div className="flex flex-col space-y-3">
       <Header
-        icon={<SettingsIcon />}
         title={<FormattedMessage id="setting.other"></FormattedMessage>}
       />
       <div className="flex flex-col space-y-2">

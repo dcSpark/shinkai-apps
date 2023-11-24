@@ -175,7 +175,6 @@ export const ConnectMethodQrCode = () => {
         description={
           <FormattedMessage id="qr-code-connection-connection-method-description" />
         }
-        icon={<QrCode />}
         title={
           <FormattedMessage id="qr-code-connection-connection-method-title" />
         }

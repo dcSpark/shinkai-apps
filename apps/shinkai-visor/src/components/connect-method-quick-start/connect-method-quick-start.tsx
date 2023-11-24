@@ -10,7 +10,7 @@ import {
   FormMessage,
   Input,
 } from '@shinkai_network/shinkai-ui';
-import { FileKey, Loader2, PlugZap, QrCode, Zap } from 'lucide-react';
+import { Loader2, QrCode, Zap } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
@@ -193,7 +193,11 @@ export const ConnectMethodQuickStart = () => {
           description={
             <FormattedMessage id="restore-connection-connection-method-description" />
           }
-          icon={<span className="text-base">🔑</span>}
+          icon={
+            <span aria-hidden className="text-base">
+              🔑
+            </span>
+          }
           onClick={() => selectRestoreMethod()}
           title={
             <FormattedMessage id="restore-connection-connection-method-title" />
