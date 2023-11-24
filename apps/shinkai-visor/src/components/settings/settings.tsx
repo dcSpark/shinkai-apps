@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@shinkai_network/shinkai-ui';
-import { FileKey, QrCode, SettingsIcon } from 'lucide-react';
+import { FileKey, QrCode } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';

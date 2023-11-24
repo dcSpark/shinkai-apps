@@ -10,7 +10,7 @@ import {
   FormMessage,
   Input,
 } from '@shinkai_network/shinkai-ui';
-import { Loader2, QrCode, Zap } from 'lucide-react';
+import { Loader2, QrCode } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
@@ -106,7 +106,6 @@ export const ConnectMethodQuickStart = () => {
           description={
             <FormattedMessage id="quick-connection-connection-method-description" />
           }
-          icon={<Zap />}
           title={
             <FormattedMessage id="quick-connection-connection-method-title" />
           }
