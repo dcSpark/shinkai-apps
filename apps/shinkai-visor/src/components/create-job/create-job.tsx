@@ -15,6 +15,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Textarea,
 } from '@shinkai_network/shinkai-ui';
 import { Loader2, Workflow } from 'lucide-react';
 import { useEffect } from 'react';
@@ -29,7 +30,6 @@ import { useSettings } from '../../store/settings/settings';
 import { FileInput } from '../file-input/file-input';
 import { Header } from '../header/header';
 import { ScrollArea } from '../ui/scroll-area';
-import { Textarea } from '../ui/textarea';
 
 const formSchema = z.object({
   agent: z.string().nonempty(),
@@ -146,10 +146,7 @@ export const CreateJob = () => {
   };
   return (
     <div className="flex h-full flex-col space-y-3">
-      <Header
-        icon={<Workflow />}
-        title={<FormattedMessage id="create-job"></FormattedMessage>}
-      />
+      <Header title={<FormattedMessage id="create-job"></FormattedMessage>} />
       <Form {...form}>
         <form
           className="flex grow flex-col justify-between space-y-2 overflow-hidden"
@@ -195,7 +192,7 @@ export const CreateJob = () => {
               name="files"
               render={({ field }) => (
                 <FormItem className="mt-3">
-                  <FormLabel>
+                  <FormLabel className="sr-only">
                     <FormattedMessage id="file.one" />
                   </FormLabel>
                   <FormControl>
@@ -229,7 +226,7 @@ export const CreateJob = () => {
                       )}
                       <Textarea
                         autoFocus
-                        className="resize-none border-white"
+                        className="resize-none"
                         placeholder={intl.formatMessage({
                           id: 'tmwtd',
                         })}
@@ -237,6 +234,7 @@ export const CreateJob = () => {
                       />
                     </div>
                   </FormControl>
+
                   <FormMessage />
                 </FormItem>
               )}
@@ -246,9 +244,7 @@ export const CreateJob = () => {
           <Button className="w-full" disabled={isPending} type="submit">
             {isPending ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Workflow className="mr-2 h-4 w-4"></Workflow>
-            )}
+            ) : null}
             <FormattedMessage id="create-job" />
           </Button>
         </form>

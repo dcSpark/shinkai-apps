@@ -1,6 +1,6 @@
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { Button } from '@shinkai_network/shinkai-ui';
-import { Bot, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { Fragment } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
