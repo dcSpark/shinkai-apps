@@ -36,9 +36,10 @@ chrome.runtime.onMessage.addListener(async (message: ServiceWorkerInternalMessag
       }
       break;
     case ServiceWorkerInternalMessageType.SendPageToAgent: {
-      const pageAsPdf = await generatePdfFromCurrentPage(`${encodeURIComponent(window.location.href)}.pdf`, document.body);
+      const pageAsPdf = await generatePdfFromCurrentPage(message.data.filename, document.body);
       if (pageAsPdf) {
         message.data = {
+          ...message.data,
           pdf: pageAsPdf,
         }
       }

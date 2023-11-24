@@ -26,9 +26,10 @@ export type ServiceWorkerInternalMessage =
     type: ServiceWorkerInternalMessageType.SendPageToAgent;
     data: {
       pdf?: File;
+      filename: string;
     }
   }
   | { type: ServiceWorkerInternalMessageType.RehydrateStore, data?: never }
   | { type: ServiceWorkerInternalMessageType.CaptureImage, data: { image: string } }
-  | { type: ServiceWorkerInternalMessageType.SendCaptureToAgent, data: { image: string } };
+  | { type: ServiceWorkerInternalMessageType.SendCaptureToAgent, data: { image: string, filename: string } };
 ;

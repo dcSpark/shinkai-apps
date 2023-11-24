@@ -1,13 +1,13 @@
 import { partial } from 'filesize';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Paperclip } from 'lucide-react';
-import { ReactNode } from 'react';
+import { Loader2, Paperclip } from 'lucide-react';
+import { ReactNode, useEffect, useState } from 'react';
 
 import { cn } from '../../helpers/cn-utils';
 import { getFileExt, getFileName } from '../../helpers/file-name-utils';
 
 export type FileListProps = {
-  files: { name: string; size?: number }[];
+  files: ({ name: string; size?: number } | File)[];
   actions: {
     render: ReactNode;
     onClick?: (index: number) => void;
@@ -15,6 +15,27 @@ export type FileListProps = {
   className?: string;
 };
 
+interface FileImagePreview extends React.HTMLAttributes<HTMLDivElement> {
+  file: File;
+}
+
+const FileImagePreview = ({ file, ...props }: FileImagePreview) => {
+  const [imageSrc, setImageSrc] = useState('');
+  useEffect(() => {
+    const reader = new FileReader();
+    reader.addEventListener(
+      'load',
+      function () {
+        setImageSrc(reader.result as string);
+      },
+      false,
+    );
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  }, [file]);
+  return imageSrc ? <img alt="preview" src={imageSrc} {...props}/> : <Loader2 />;
+};
 export const FileList = ({ files, actions, className }: FileListProps) => {
   const size = partial({ standard: 'jedec' });
   const animations = {
@@ -22,8 +43,22 @@ export const FileList = ({ files, actions, className }: FileListProps) => {
     animate: { scale: 1, opacity: 1 },
     exit: { scale: 0, opacity: 0 },
   };
+  const hasPreview = (file: File): boolean => {
+    return file?.type?.includes('image/');
+  };
+  const getFilePreview = (file: File): ReactNode | undefined => {
+    console.log('type', file.type);
+    if (file?.type?.includes('image/')) {
+      return <FileImagePreview className="h-full object-cover rounded-lg" file={file}></FileImagePreview>;
+    }
+  };
   return (
-    <ul className={cn("divide-y divide-gray-100 rounded-md border border-gray-200", className || '')}>
+    <ul
+      className={cn(
+        'divide-y divide-gray-100 rounded-md border border-gray-200',
+        className || '',
+      )}
+    >
       <AnimatePresence>
         {files?.map((file, index) => (
           <motion.li
@@ -31,17 +66,20 @@ export const FileList = ({ files, actions, className }: FileListProps) => {
             className="flex items-center justify-between p-2 text-sm leading-6"
             key={index}
           >
-            <div className="flex w-0 flex-1 space-x-2 items-center">
-              <Paperclip className="w-4 h-4"></Paperclip>
-              <div className="ml-4 flex min-w-0 flex-1 gap-2 justify-between">
-                <div className="flex flex-row overflow-hidden">
-                  <span className="truncate font-medium">
-                    {getFileName(decodeURIComponent(file.name))}
-                  </span>
-                  <span className="font-medium">.</span>
-                  <span className="font-medium">
-                    {getFileExt(decodeURIComponent(file.name))}
-                  </span>
+            <div className="flex w-0 flex-1 items-center space-x-2">
+              <Paperclip className="h-4 w-4"></Paperclip>
+              <div className="ml-4 flex min-w-0 flex-1 justify-between gap-2 items-center">
+                <div className="flex flex-col space-y-2 truncate justify-center">
+                  {(file instanceof File && hasPreview(file)) && <div className="h-10 self-center">{getFilePreview(file)}</div>}
+                  <div className="flex flex-row overflow-hidden">
+                    <span className="truncate font-medium">
+                      {getFileName(decodeURIComponent(file.name))}
+                    </span>
+                    <span className="font-medium">.</span>
+                    <span className="font-medium">
+                      {getFileExt(decodeURIComponent(file.name))}
+                    </span>
+                  </div>
                 </div>
                 {file.size && (
                   <span className="flex-shrink-0 text-gray-400">

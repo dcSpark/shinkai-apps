@@ -13,7 +13,9 @@ const sendPageToAgent = async (info: chrome.contextMenus.OnClickData, tab: chrom
   }
   const message: ServiceWorkerInternalMessage = {
     type: ServiceWorkerInternalMessageType.SendPageToAgent,
-    data: {},
+    data: {
+      filename: `${encodeURIComponent(tab.url || Date.now())}.pdf`
+    },
   };
   chrome.tabs.sendMessage<ServiceWorkerInternalMessage>(tab.id, message);
 }
@@ -51,7 +53,7 @@ const sendCaptureToAgent = async (info: chrome.contextMenus.OnClickData, tab: ch
   console.log('cropped image', croppedImage);
   message = {
     type: ServiceWorkerInternalMessageType.SendCaptureToAgent,
-    data: { image: croppedImage },
+    data: { image: croppedImage, filename: `${encodeURIComponent(tab.url || 'capture')}.png` },
   };
   chrome.tabs.sendMessage<ServiceWorkerInternalMessage>(tab.id, message);
 }

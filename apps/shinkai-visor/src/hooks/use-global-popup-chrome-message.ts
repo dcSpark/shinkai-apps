@@ -24,7 +24,7 @@ export const useGlobalPopupChromeMessage = () => {
         sendContentScriptMessage({ type: ContentScriptBridgeMessageType.TogglePopupVisibility, data: true });
         break;
       case ServiceWorkerInternalMessageType.SendCaptureToAgent: {
-        const imageFile = dataUrlToFile(message.data.image, `capture.png`);
+        const imageFile = dataUrlToFile(message.data.image, message.data.filename);
         history.push({ pathname: '/inboxes/create-job', state: { files: [imageFile] } });
         sendContentScriptMessage({ type: ContentScriptBridgeMessageType.TogglePopupVisibility, data: true });
         break;
