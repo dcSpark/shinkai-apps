@@ -3,6 +3,7 @@ import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAg
 import {
   Button,
   Checkbox,
+  ExportIcon,
   Form,
   FormControl,
   FormField,
@@ -10,13 +11,13 @@ import {
   FormLabel,
   FormMessage,
   FormDescription,
+  QrIcon,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@shinkai_network/shinkai-ui';
-import { FileKey, QrCode } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
@@ -73,7 +74,7 @@ export const Settings = () => {
       <Header
         title={<FormattedMessage id="setting.other"></FormattedMessage>}
       />
-      <div className="flex flex-col space-y-2">
+      <div className="flex flex-col space-y-8">
         <Form {...form}>
           <form className="flex grow flex-col justify-between space-y-2 overflow-hidden">
             <FormField
@@ -136,15 +137,32 @@ export const Settings = () => {
             />
           </form>
         </Form>
-
-        <Button className="w-full" onClick={() => exportConnection()}>
-          <FileKey className="mr-2 h-4 w-4" />
-          <FormattedMessage id="export-connection" />
-        </Button>
-        <Button className="w-full" onClick={() => createRegistrationCode()}>
-          <QrCode className="mr-2 h-4 w-4" />
-          <FormattedMessage id="create-registration-code" />
-        </Button>
+        <div className="flex gap-4">
+          <Button
+            className="flex flex-1 cursor-pointer flex-col items-start gap-2 rounded-lg p-4 pr-8 text-left"
+            onClick={() => exportConnection()}
+            size="auto"
+            variant="ghost"
+          >
+            <ExportIcon />
+            <p className="text-smm text-white">
+              <FormattedMessage id="export-connection" />
+            </p>
+          </Button>
+          <Button
+            className="flex flex-1 cursor-pointer flex-col items-start gap-2 rounded-lg p-4 pr-8 text-left"
+            onClick={() => createRegistrationCode()}
+            size="auto"
+            variant="ghost"
+          >
+            <div className="">
+              <QrIcon />
+            </div>
+            <p className="text-smm text-white">
+              <FormattedMessage id="create-registration-code" />
+            </p>
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -10,7 +10,7 @@ import {
   FormMessage,
   Input,
 } from '@shinkai_network/shinkai-ui';
-import { Download, FileKey } from 'lucide-react';
+import { Download } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -69,14 +69,14 @@ export const ExportConnection = () => {
     URL.revokeObjectURL(link.href);
   };
   return (
-    <div className="flex h-full flex-col space-y-3">
+    <div className="flex h-full flex-col gap-8">
       <Header
         title={<FormattedMessage id="export-connection"></FormattedMessage>}
       />
       <div className="flex grow flex-col space-y-2">
         <Form {...form}>
           <form
-            className="flex flex-col justify-between space-y-3"
+            className="flex flex-col justify-between space-y-8"
             onSubmit={form.handleSubmit(exportConnection)}
           >
             <div className="flex grow flex-col space-y-2">
@@ -85,12 +85,12 @@ export const ExportConnection = () => {
                 name="passphrase"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      <FormattedMessage id="passphrase" />
-                    </FormLabel>
                     <FormControl>
                       <Input {...field} type="password" />
                     </FormControl>
+                    <FormLabel>
+                      <FormattedMessage id="passphrase" />
+                    </FormLabel>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -100,19 +100,18 @@ export const ExportConnection = () => {
                 name="confirmPassphrase"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      <FormattedMessage id="confirm-passphrase" />
-                    </FormLabel>
                     <FormControl>
                       <Input {...field} type="password" />
                     </FormControl>
+                    <FormLabel>
+                      <FormattedMessage id="confirm-passphrase" />
+                    </FormLabel>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
             <Button className="w-full" type="submit">
-              <FileKey className="mr-2 h-4 w-4" />
               <FormattedMessage id="generate-connection-file" />
             </Button>
           </form>

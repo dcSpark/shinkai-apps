@@ -9,8 +9,9 @@ import {
   FormLabel,
   FormMessage,
   Input,
+  Textarea,
 } from '@shinkai_network/shinkai-ui';
-import { Loader2, MessageCircle } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -19,7 +20,6 @@ import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
-import { Textarea } from '../ui/textarea';
 
 const formSchema = z.object({
   receiverIdentity: z.string().nonempty(),
@@ -70,11 +70,8 @@ export const CreateInbox = () => {
   }, [auth, form]);
 
   return (
-    <div className="flex h-full flex-col space-y-3">
-      <Header
-        icon={<MessageCircle />}
-        title={<FormattedMessage id="create-inbox"></FormattedMessage>}
-      ></Header>
+    <div className="flex h-full flex-col space-y-8">
+      <Header title={<FormattedMessage id="create-inbox"></FormattedMessage>} />
       <Form {...form}>
         <form
           className="flex h-full flex-col justify-between space-y-2"
@@ -108,7 +105,7 @@ export const CreateInbox = () => {
                   <FormControl>
                     <Textarea
                       autoFocus
-                      className="resize-none border-white"
+                      className="resize-none"
                       placeholder={intl.formatMessage({
                         id: 'tmwtd',
                       })}
@@ -127,9 +124,7 @@ export const CreateInbox = () => {
           >
             {isPending ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <MessageCircle className="mr-2 h-4 w-4"></MessageCircle>
-            )}
+            ) : null}
             <FormattedMessage id="create-inbox" />
           </Button>
         </form>

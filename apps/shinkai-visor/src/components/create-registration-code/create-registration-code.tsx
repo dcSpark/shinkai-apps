@@ -160,7 +160,7 @@ export const CreateRegistrationCode = () => {
     }
   }, [form, identityType, auth]);
   return (
-    <div className="flex h-full flex-col space-y-3">
+    <div className="flex h-full flex-col space-y-8">
       <Header
         title={
           <FormattedMessage id="create-registration-code"></FormattedMessage>
@@ -169,7 +169,7 @@ export const CreateRegistrationCode = () => {
       <div className="flex grow flex-col space-y-2">
         <Form {...form}>
           <form
-            className="flex flex-col justify-between space-y-3"
+            className="flex flex-col justify-between space-y-6"
             onSubmit={form.handleSubmit(submit)}
           >
             <div className="flex grow flex-col space-y-2">
@@ -213,12 +213,12 @@ export const CreateRegistrationCode = () => {
                   name="profile"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>
-                        <FormattedMessage id="profile.one" />
-                      </FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
+                      <FormLabel>
+                        <FormattedMessage id="profile.one" />
+                      </FormLabel>
                       <FormMessage />
                     </FormItem>
                   )}

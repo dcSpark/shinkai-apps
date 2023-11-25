@@ -1,5 +1,4 @@
-// import './styles/globals.css';
-// import './styles/tailwind.css';
+export * from './assets/icons';
 
 export * from './components/avatar';
 export * from './components/button';
@@ -22,3 +21,4 @@ export * from './components/skeleton';
 export * from './components/switch';
 export * from './components/textarea';
 export * from './components/tooltip';
+export * from './components/dropdown-menu';

@@ -1,4 +1,11 @@
-import { Button } from '@shinkai_network/shinkai-ui';
+import {
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '@shinkai_network/shinkai-ui';
 import {
   ArrowLeft,
   Bot,
@@ -12,7 +19,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useHistory, useLocation } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 
 import visorLogo from '../../assets/icons/visor.svg';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
@@ -27,15 +34,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '../ui/alert-dialog';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
 
 enum MenuOption {
   Inbox = 'inbox',
@@ -109,31 +107,33 @@ export default function NavBar() {
               <FormattedMessage id="are-you-sure" />
             </AlertDialogTitle>
             <AlertDialogDescription>
-              <div className="flex flex-col space-y-3">
-                <div className="flex flex-col space-y-1">
-                  <span className="text-xs italic">
+              <div className="flex flex-col space-y-3 text-left text-white/70">
+                <div className="flex flex-col space-y-1 ">
+                  <span className="text-sm">
                     <FormattedMessage id="permanently-lose-connection" />
                   </span>
                 </div>
-                <div className="flex flex-col">
-                  <span
-                    className="cursor-pointer underline decoration-dashed"
-                    onClick={() => exportConnection()}
+                <div className="text-sm">
+                  Before continuing, please
+                  <Link
+                    className="mr-1 inline-block cursor-pointer text-white underline"
+                    to={'/settings/export-connection'}
                   >
-                    Export your conection
-                  </span>
-                  <span className="text-xs">If you want to use it later</span>
+                    export your connection
+                  </Link>
+                  to restore your connection at any time.
                 </div>
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
+          <AlertDialogFooter className="mt-4 flex gap-1">
             <AlertDialogCancel
+              className="mt-0 flex-1"
               onClick={() => setIsConfirmLogoutDialogOpened(false)}
             >
               <FormattedMessage id="cancel" />
             </AlertDialogCancel>
-            <AlertDialogAction onClick={() => logout()}>
+            <AlertDialogAction className="flex-1" onClick={() => logout()}>
               <FormattedMessage id="continue" />
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -168,79 +168,79 @@ export default function NavBar() {
                 )}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>
-                  <FormattedMessage id="inbox.other"></FormattedMessage>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => onClickMenuOption(MenuOption.Inbox)}
-                >
-                  <Inbox className="mr-2 h-4 w-4" />
-                  <span>
-                    <FormattedMessage id="inbox.other" />
-                  </span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => onClickMenuOption(MenuOption.CreateInbox)}
-                >
-                  <MessageCircle className="mr-2 h-4 w-4" />
-                  <span>
-                    <FormattedMessage id="create-inbox" />
-                  </span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => onClickMenuOption(MenuOption.CreateJob)}
-                >
-                  <Workflow className="mr-2 h-4 w-4" />
-                  <span>
-                    <FormattedMessage id="create-job" />
-                  </span>
-                </DropdownMenuItem>
+            <DropdownMenuContent
+              align="end"
+              alignOffset={-22}
+              className="w-[300px] space-y-2.5 rounded-br-none rounded-tr-none"
+              sideOffset={10}
+            >
+              <DropdownMenuLabel>
+                <FormattedMessage id="inbox.other"></FormattedMessage>
+              </DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => onClickMenuOption(MenuOption.Inbox)}
+              >
+                <Inbox className="mr-2 h-4 w-4" />
+                <span>
+                  <FormattedMessage id="inbox.other" />
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onClickMenuOption(MenuOption.CreateInbox)}
+              >
+                <MessageCircle className="mr-2 h-4 w-4" />
+                <span>
+                  <FormattedMessage id="create-inbox" />
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onClickMenuOption(MenuOption.CreateJob)}
+              >
+                <Workflow className="mr-2 h-4 w-4" />
+                <span>
+                  <FormattedMessage id="create-job" />
+                </span>
+              </DropdownMenuItem>
 
-                <DropdownMenuSeparator />
-                <DropdownMenuLabel>
-                  <FormattedMessage id="agent.other"></FormattedMessage>
-                </DropdownMenuLabel>
-                <DropdownMenuItem
-                  onClick={() => onClickMenuOption(MenuOption.Agents)}
-                >
-                  <Bot className="mr-2 h-4 w-4" />
-                  <span>
-                    <FormattedMessage id="agent.other" />
-                  </span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => onClickMenuOption(MenuOption.AddAgent)}
-                >
-                  <Bot className="mr-2 h-4 w-4" />
-                  <span>
-                    <FormattedMessage id="add-agent" />
-                  </span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuLabel>
-                  <FormattedMessage id="account.one"></FormattedMessage>
-                </DropdownMenuLabel>
-                <DropdownMenuItem
-                  onClick={() => onClickMenuOption(MenuOption.Settings)}
-                >
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>
-                    <FormattedMessage id="setting.other" />
-                  </span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => onClickMenuOption(MenuOption.Logout)}
-                >
-                  <Unplug className="mr-2 h-4 w-4" />
-                  <span>
-                    <FormattedMessage id="disconnect" />
-                  </span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenuPortal>
+              <DropdownMenuLabel>
+                <FormattedMessage id="agent.other"></FormattedMessage>
+              </DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => onClickMenuOption(MenuOption.Agents)}
+              >
+                <Bot className="mr-2 h-4 w-4" />
+                <span>
+                  <FormattedMessage id="agent.other" />
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onClickMenuOption(MenuOption.AddAgent)}
+              >
+                <Bot className="mr-2 h-4 w-4" />
+                <span>
+                  <FormattedMessage id="add-agent" />
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuLabel>
+                <FormattedMessage id="account.one"></FormattedMessage>
+              </DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => onClickMenuOption(MenuOption.Settings)}
+              >
+                <Settings className="mr-2 h-4 w-4" />
+                <span>
+                  <FormattedMessage id="setting.other" />
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onClickMenuOption(MenuOption.Logout)}
+              >
+                <Unplug className="mr-2 h-4 w-4" />
+                <span>
+                  <FormattedMessage id="disconnect" />
+                </span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
           </DropdownMenu>
         )}
       </div>

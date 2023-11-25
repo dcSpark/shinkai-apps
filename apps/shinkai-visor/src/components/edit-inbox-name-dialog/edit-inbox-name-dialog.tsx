@@ -85,9 +85,10 @@ export const EditInboxNameDialog = ({
         <DialogHeader className="overflow-x-hidden">
           <DialogTitle>
             <FormattedMessage id="edit" />{' '}
-            <span className="lowercase">
+            <span className="mr-1 capitalize">
               <FormattedMessage id="inbox.one" />
             </span>
+            Name
           </DialogTitle>
           <DialogDescription className="truncate">{inboxId}</DialogDescription>
         </DialogHeader>
@@ -103,34 +104,32 @@ export const EditInboxNameDialog = ({
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      <FormattedMessage id="name.one" />
-                    </FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
+                    <FormLabel>
+                      <FormattedMessage id="name.one" />
+                    </FormLabel>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
             <DialogFooter>
-              <div className="flex flex-col justify-between space-y-2">
-                <Button disabled={isPending} type="submit">
-                  {isPending ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Save className="mr-2 h-4 w-4"></Save>
-                  )}
-                  <FormattedMessage id="save" />
-                </Button>
+              <div className="flex flex-col gap-2 pt-4">
                 <Button
-                  className="text-secondary-600"
+                  className="flex-1"
                   onClick={() => cancel()}
                   type="button"
-                  variant="outline"
+                  variant="ghost"
                 >
                   <FormattedMessage id="cancel"></FormattedMessage>
+                </Button>
+                <Button className="flex-1" disabled={isPending} type="submit">
+                  {isPending ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : null}
+                  <FormattedMessage id="save" />
                 </Button>
               </div>
             </DialogFooter>

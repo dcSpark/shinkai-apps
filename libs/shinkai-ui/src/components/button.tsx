@@ -19,11 +19,11 @@ const buttonVariants = cva(
         secondary:
           'bg-gray-100 text-gray-900 shadow-sm hover:bg-gray-100/80 dark:bg-gray-800 dark:text-gray-50 dark:hover:bg-gray-800/80',
         ghost: 'bg-gray-400 hover:bg-gray-400/60',
-        link: 'text-gray-900 underline-offset-4 hover:underline dark:text-gray-50',
+        link: 'text-white underline-offset-4 hover:underline dark:text-gray-50',
       },
       size: {
         default: 'h-[54px] px-8 py-4 text-base',
-        sm: 'h-8  px-3 text-xs',
+        sm: 'h-[40px] px-3 py-3 text-xs',
         lg: 'h-[54px] px-2 py-4 text-base',
         icon: 'h-9 w-9',
         auto: 'h-auto p-4',

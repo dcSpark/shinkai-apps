@@ -1,6 +1,6 @@
 {
   "app-name": "Shinkai Visor",
-  "welcome": "Transform your web browsing experience with Shinkai Visor ✨",
+  "welcome": "Transform your web browsing experience using AI with Shinkai Visor ✨",
   "setup": "Get started",
   "inbox.one": "Chat",
   "inbox.other": "Conversations",
@@ -76,8 +76,8 @@
   "did-you-connected-before": "Do you have experience using shinkai?",
   "cancel": "Cancel",
   "continue": "Continue",
-  "are-you-sure": "Are you absolutely sure?",
-  "permanently-lose-connection": "This action will permanently delete your connection with your Shinkai Node",
+  "are-you-sure": "Disconnect Shinkai",
+  "permanently-lose-connection": "Are you sure you want to disconnect? This will permanently delete your data",
   "action-cant-be-undone": "This action cannot be undone",
   "file.one": "File",
   "file.other": "Files",
