@@ -95,9 +95,7 @@ export default function NavBar() {
         break;
     }
   };
-  const exportConnection = () => {
-    history.push('settings/export-connection');
-  };
+
   return (
     <nav className="">
       <AlertDialog open={isConfirmLogoutDialogOpened}>
