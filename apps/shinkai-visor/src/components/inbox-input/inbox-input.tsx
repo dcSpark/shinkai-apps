@@ -5,10 +5,11 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
   Input,
 } from '@shinkai_network/shinkai-ui';
-import { Send } from 'lucide-react';
+import { SendHorizonal } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import { z } from 'zod';
@@ -56,31 +57,31 @@ export const InboxInput = (props: InboxInputProps) => {
         <div className="flex grow flex-col space-y-2">
           <FormField
             control={form.control}
+            disabled={props.disabled || props.loading}
             name="message"
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <Input
-                    placeholder={intl.formatMessage({
-                      id: 'tmwtd',
-                    })}
-                    {...field}
-                    autoFocus
-                  />
+                  <Input {...field} autoFocus />
                 </FormControl>
+                <FormLabel>
+                  {intl.formatMessage({
+                    id: 'tmwtd',
+                  })}
+                </FormLabel>
                 <FormMessage />
               </FormItem>
             )}
           />
         </div>
         <Button
-          className="grow-0"
+          className="h-[60px] w-[60px] grow-0 rounded-xl p-0"
           disabled={!form.formState.isValid || props.disabled || props.loading}
         >
           {props.loading ? (
-            <DotsLoader className="h-4 w-6"></DotsLoader>
+            <DotsLoader className="h-4 w-4" />
           ) : (
-            <Send className="h-4 w-6" />
+            <SendHorizonal className="h-6 w-6" />
           )}
         </Button>
       </form>

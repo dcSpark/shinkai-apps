@@ -1,6 +1,6 @@
+import { PaperClipIcon } from '@shinkai_network/shinkai-ui';
 import { partial } from 'filesize';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Paperclip } from 'lucide-react';
 import { ReactNode } from 'react';
 
 import { cn } from '../../helpers/cn-utils';
@@ -23,7 +23,12 @@ export const FileList = ({ files, actions, className }: FileListProps) => {
     exit: { scale: 0, opacity: 0 },
   };
   return (
-    <ul className={cn("divide-y divide-gray-100 rounded-md border border-gray-200", className || '')}>
+    <ul
+      className={cn(
+        'divide-y divide-gray-100 rounded-md border border-gray-100',
+        className || '',
+      )}
+    >
       <AnimatePresence>
         {files?.map((file, index) => (
           <motion.li
@@ -31,15 +36,14 @@ export const FileList = ({ files, actions, className }: FileListProps) => {
             className="flex items-center justify-between p-2 text-sm leading-6"
             key={index}
           >
-            <div className="flex w-0 flex-1 space-x-2 items-center">
-              <Paperclip className="w-4 h-4"></Paperclip>
-              <div className="ml-4 flex min-w-0 flex-1 gap-2 justify-between">
+            <div className="flex w-0 flex-1 items-center space-x-2">
+              <PaperClipIcon className="h-4 w-4" />
+              <div className="ml-4 flex min-w-0 flex-1 justify-between gap-2">
                 <div className="flex flex-row overflow-hidden">
-                  <span className="truncate font-medium">
+                  <span className="text-gray-80 truncate font-medium">
                     {getFileName(decodeURIComponent(file.name))}
                   </span>
-                  <span className="font-medium">.</span>
-                  <span className="font-medium">
+                  <span className="text-gray-80 rounded-md bg-gray-200 px-1 text-[10px] font-medium uppercase">
                     {getFileExt(decodeURIComponent(file.name))}
                   </span>
                 </div>

@@ -2,7 +2,9 @@ import { ChatConversationMessage } from '@shinkai_network/shinkai-node-state/lib
 import MarkdownPreview from '@uiw/react-markdown-preview';
 import { Copy } from 'lucide-react';
 
+import shinkaiMiniLogo from '../../assets/icons/shinkai-min.svg';
 import { cn } from '../../helpers/cn-utils';
+import { srcUrlResolver } from '../../helpers/src-url-resolver';
 import { sendMessage } from '../../service-worker/communication/internal';
 import { ServiceWorkerInternalMessageType } from '../../service-worker/communication/internal/types';
 import { FileList } from '../file-list/file-list';
@@ -25,23 +27,24 @@ export const Message = ({ message }: MessageProps) => {
       className={cn(
         'flex flex-row space-x-2',
         message.isLocal
-          ? 'ml-auto mr-0 flex-row-reverse  space-x-reverse'
-          : 'ml-0 mr-auto flex-row',
+          ? 'ml-auto mr-0 flex-row-reverse space-x-reverse'
+          : 'ml-0 mr-auto flex-row items-end',
       )}
     >
       <Avatar className="h-8 w-8">
-        <AvatarImage
-          alt={message.isLocal ? message.inboxId : 'Shinkai AI'}
-          src={message.sender.avatar}
-        />
+        {message.isLocal ? (
+          <AvatarImage alt={''} src={message.sender.avatar} />
+        ) : (
+          <img alt="Shinkai AI" src={srcUrlResolver(shinkaiMiniLogo)} />
+        )}
         <AvatarFallback className="h-8 w-8" />
       </Avatar>
       <div
         className={cn(
-          'text-foreground mt-1 flex flex-col space-y-2 rounded-lg bg-transparent px-2.5 py-3 text-sm',
+          'mt-1 flex flex-col space-y-2 rounded-lg bg-transparent px-2.5 py-3 text-sm text-white',
           message.isLocal
-            ? 'rounded-tl-none bg-gray-300'
-            : 'rounded-tr-none border-none bg-gray-200',
+            ? 'rounded-tr-none bg-gray-300'
+            : 'rounded-bl-none border-none bg-gray-200',
         )}
       >
         <Button
@@ -62,7 +65,7 @@ export const Message = ({ message }: MessageProps) => {
             actions={[]}
             className="w-[200px]"
             files={message.fileInbox?.files}
-          ></FileList>
+          />
         )}
       </div>
     </div>

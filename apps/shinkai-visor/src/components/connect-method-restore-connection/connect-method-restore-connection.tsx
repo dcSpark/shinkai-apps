@@ -106,7 +106,7 @@ export const ConnectMethodRestoreConnection = () => {
               name="encryptedConnection"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
+                  <FormLabel className="sr-only">
                     <FormattedMessage id="encrypted-connection" />
                   </FormLabel>
                   <FormControl>
@@ -115,8 +115,7 @@ export const ConnectMethodRestoreConnection = () => {
                         {encryptedConnectionFile ? (
                           <div className="flex h-[100px] w-full flex-row items-center justify-center space-x-4 rounded-lg border border-dashed">
                             <div className="flex flex-row items-center">
-                              <FileKey className="mr-1 h-4 w-4 space-x-1" />
-                              <span className="font-semibold">
+                              <span className="text-gray-80 font-medium uppercase">
                                 {encryptedConnectionFile.name}
                               </span>
                             </div>
@@ -125,24 +124,25 @@ export const ConnectMethodRestoreConnection = () => {
                               onClick={() => removeConnectionFile()}
                               size="icon"
                               type="button"
+                              variant={'ghost'}
                             >
                               <Trash className="h-4 w-4" />
                             </Button>
                           </div>
                         ) : (
                           <label
-                            className="bg-secondary-600 hover:bg-secondary-600 flex h-[100px] w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed"
+                            className="flex h-[100px] w-full cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-gray-100 bg-gray-400"
                             htmlFor="dropzone-file"
                           >
                             <div className="flex flex-col items-center justify-center space-y-1">
                               <div>
                                 <Upload className="h-4 w-4" />
                               </div>
-                              <p className="text-sm text-gray-500">
+                              <p className="text-sm text-white">
                                 <FormattedMessage id="click-to-upload" />
                               </p>
-                              <p className="text-xs text-gray-500">
-                                SHINKAI.KEY
+                              <p className="text-gray-80 text-xs">
+                                Eg: shinkai.key
                               </p>
                             </div>
                             <input
@@ -159,7 +159,9 @@ export const ConnectMethodRestoreConnection = () => {
                         )}
                       </div>
                       {encryptedConnectionFile && (
-                        <Input {...field} className="truncate" />
+                        <div className="truncate rounded-lg bg-gray-400 px-2 py-2">
+                          {field.value}
+                        </div>
                       )}
                     </div>
                   </FormControl>
@@ -173,12 +175,12 @@ export const ConnectMethodRestoreConnection = () => {
               name="passphrase"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    <FormattedMessage id="passphrase" />
-                  </FormLabel>
                   <FormControl>
                     <Input {...field} type="password" />
                   </FormControl>
+                  <FormLabel>
+                    <FormattedMessage id="passphrase" />
+                  </FormLabel>
                   <FormMessage />
                 </FormItem>
               )}
@@ -187,7 +189,6 @@ export const ConnectMethodRestoreConnection = () => {
           </div>
 
           <Button className="w-full" type="submit">
-            <PlugZap className="mr-2 h-4 w-4" />
             <FormattedMessage id="restore-connection" />
           </Button>
         </form>

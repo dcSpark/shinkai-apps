@@ -58,7 +58,7 @@ export const Popup = () => {
       {popupVisibility && (
         <motion.div
           animate={{ opacity: 1 }}
-          className="flex h-full w-full flex-col rounded-lg bg-gray-500 px-6 py-8 shadow-xl"
+          className="flex h-full w-full flex-col rounded-lg bg-gray-500 px-6 pb-6 pt-8 shadow-xl"
           exit={{ opacity: 0 }}
           initial={{ opacity: 0 }}
           transition={{ duration: 0.5 }}
@@ -66,7 +66,7 @@ export const Popup = () => {
           <Switch key={location.pathname} location={location}>
             <Route exact path="/">
               <AnimatedRoute>
-                <SplashScreen></SplashScreen>
+                <SplashScreen />
               </AnimatedRoute>
             </Route>
             <Route path="/welcome">
@@ -82,13 +82,13 @@ export const Popup = () => {
                     <AnimatedRoute>
                       <Switch>
                         <Route path="/nodes/connect/method/quick-start">
-                          <ConnectMethodQuickStart></ConnectMethodQuickStart>
+                          <ConnectMethodQuickStart />
                         </Route>
                         <Route path="/nodes/connect/method/restore-connection">
-                          <ConnectMethodRestoreConnection></ConnectMethodRestoreConnection>
+                          <ConnectMethodRestoreConnection />
                         </Route>
                         <Route path="/nodes/connect/method/qr-code">
-                          <ConnectMethodQrCode></ConnectMethodQrCode>
+                          <ConnectMethodQrCode />
                         </Route>
                       </Switch>
                     </AnimatedRoute>
@@ -112,23 +112,23 @@ export const Popup = () => {
                   <Route path="/agents">
                     <Switch>
                       <Route path="/agents/add">
-                        <AddAgent></AddAgent>
+                        <AddAgent />
                       </Route>
                       <Route path="/">
-                        <Agents></Agents>
+                        <Agents />
                       </Route>
                     </Switch>
                   </Route>
                   <Route path="/settings">
                     <Switch>
                       <Route path="/settings/export-connection">
-                        <ExportConnection></ExportConnection>
+                        <ExportConnection />
                       </Route>
                       <Route path="/settings/create-registration-code">
-                        <CreateRegistrationCode></CreateRegistrationCode>
+                        <CreateRegistrationCode />
                       </Route>
                       <Route path="/">
-                        <Settings></Settings>
+                        <Settings />
                       </Route>
                     </Switch>
                   </Route>
@@ -154,7 +154,7 @@ root.render(
       <IntlProvider locale={locale} messages={langMessages}>
         <div className="font-inter h-full w-full">
           <Router>
-            <Popup></Popup>
+            <Popup />
           </Router>
         </div>
       </IntlProvider>

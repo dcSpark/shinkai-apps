@@ -187,7 +187,6 @@ export const ConnectMethodQrCode = () => {
         >
           <div className="flex flex-col space-y-2">
             <div className="flex flex-col space-y-1">
-              <span className="text-sm font-semibold">QR code</span>
               <div className="flex items-center justify-center">
                 <div className="flex h-[100px] w-full flex-col items-center justify-center rounded-lg border-2 border-dashed">
                   {qrImageFile && qrImageUrl ? (
@@ -216,17 +215,17 @@ export const ConnectMethodQrCode = () => {
                     </div>
                   ) : (
                     <label
-                      className="bg-secondary-600 hover:bg-secondary-600 flex h-[100px] w-full cursor-pointer flex-col items-center justify-center rounded-lg"
+                      className="flex h-[100px] w-full cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-gray-100 bg-gray-400"
                       htmlFor="dropzone-file"
                     >
                       <div className="flex flex-col items-center justify-center space-y-1">
                         <div>
                           <Upload className="h-4 w-4" />
                         </div>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-white">
                           <FormattedMessage id="click-to-upload" />
                         </p>
-                        <p className="text-xs text-gray-500">JPG | PNG</p>
+                        <p className="text-gray-80 text-xs">JPG | PNG</p>
                       </div>
                       <input
                         accept="image/png, image/jpeg"
@@ -248,12 +247,12 @@ export const ConnectMethodQrCode = () => {
                   name="registration_name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>
-                        <FormattedMessage id="registration-name" />
-                      </FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
+                      <FormLabel>
+                        <FormattedMessage id="registration-name" />
+                      </FormLabel>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -264,12 +263,12 @@ export const ConnectMethodQrCode = () => {
                   name="node_address"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>
-                        <FormattedMessage id="node-address" />
-                      </FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
+                      <FormLabel>
+                        <FormattedMessage id="node-address" />
+                      </FormLabel>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -280,12 +279,12 @@ export const ConnectMethodQrCode = () => {
                   name="shinkai_identity"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>
-                        <FormattedMessage id="shinkai-identity" />
-                      </FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
+                      <FormLabel>
+                        <FormattedMessage id="shinkai-identity" />
+                      </FormLabel>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -298,9 +297,7 @@ export const ConnectMethodQrCode = () => {
           <Button className="w-full" disabled={isPending} type="submit">
             {isPending ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <PlugZap className="mr-2 h-4 w-4" />
-            )}
+            ) : null}
             <FormattedMessage id="connect" />
           </Button>
         </form>

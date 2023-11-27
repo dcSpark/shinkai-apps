@@ -1,4 +1,3 @@
-import { ShinkaiMessage } from '@shinkai_network/shinkai-message-ts/models';
 import {
   extractJobIdFromInbox,
   extractReceiverShinkaiName,
@@ -8,21 +7,13 @@ import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mut
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
 import { ChatConversationMessage } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
-import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
-import {
-  ChevronRight,
-  Edit,
-  Inbox as InboxIcon,
-  Loader2,
-  Terminal,
-} from 'lucide-react';
+import { Loader2, Terminal } from 'lucide-react';
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useParams } from 'react-router-dom';
 
 import { cn } from '../../helpers/cn-utils';
 import { useAuth } from '../../store/auth/auth';
-import { EditInboxNameDialog } from '../edit-inbox-name-dialog/edit-inbox-name-dialog';
 import { InboxInput } from '../inbox-input/inbox-input';
 import { Message } from '../message/message';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
@@ -34,12 +25,6 @@ export const Inbox = () => {
   const { inboxId } = useParams<{ inboxId: string }>();
   const auth = useAuth((state) => state.auth);
   const intl = useIntl();
-  const history = useHistory();
-  const [inbox, setInbox] = useState<{
-    inbox_id: string;
-    custom_name: string;
-    last_message: ShinkaiMessage;
-  } | null>(null);
   const {
     data,
     fetchPreviousPage,
@@ -64,18 +49,6 @@ export const Inbox = () => {
   } = useSendMessageToInbox();
   const { mutateAsync: sendMessageToJob, isPending: isSendingMessageToJob } =
     useSendMessageToJob();
-  const { inboxes } = useGetInboxes({
-    sender: auth?.shinkai_identity ?? '',
-    senderSubidentity: auth?.profile ?? '',
-    // Assuming receiver and target_shinkai_name_profile are the same as sender
-    receiver: auth?.shinkai_identity ?? '',
-    targetShinkaiNameProfile: `${auth?.shinkai_identity}/${auth?.profile}`,
-    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-    node_encryption_pk: auth?.node_encryption_pk ?? '',
-    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-    profile_identity_sk: auth?.profile_identity_sk ?? '',
-  });
   const isSendingMessage = isSendingMessageToJob || isSendingMessageToInbox;
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const previousChatHeightRef = useRef<number>(0);
@@ -180,16 +153,7 @@ export const Inbox = () => {
       setIsJobInbox(checkIsJobInbox(decodedInboxId));
     }
   }, [decodedInboxId]);
-  useEffect(() => {
-    if (decodedInboxId) {
-      const currentInbox = inboxes.find(
-        (inbox) => decodedInboxId === inbox.inbox_id,
-      );
-      if (currentInbox) {
-        setInbox(currentInbox);
-      }
-    }
-  }, [inboxes, decodedInboxId]);
+
   useEffect(() => {
     if (!fromPreviousMessagesRef.current) {
       scrollToBottom();
@@ -215,15 +179,15 @@ export const Inbox = () => {
   }, [data?.pages, auth, isJobProcessing]);
 
   return (
-    <div className="flex h-full flex-col justify-between space-y-3 overflow-hidden">
-      <ScrollArea className="h-full [&>div>div]:!block" ref={chatContainerRef}>
+    <div className="flex h-full flex-col justify-between space-y-3">
+      <ScrollArea className="h-full pr-4" ref={chatContainerRef}>
         {isChatConversationSuccess && (
           <div className="py-2 text-center text-xs">
             {isFetchingPreviousPage && (
               <Loader2 className="flex animate-spin justify-center text-white" />
             )}
             {!isFetchingPreviousPage && !hasPreviousPage && (
-              <FormattedMessage id="all-messages-loaded"></FormattedMessage>
+              <FormattedMessage id="all-messages-loaded" />
             )}
           </div>
         )}
@@ -242,7 +206,7 @@ export const Inbox = () => {
                 <Skeleton className="h-12 w-12 rounded-full" key={index} />
                 <Skeleton
                   className={cn(
-                    'mt-1 w-full rounded-lg px-2.5 py-3',
+                    'w-full rounded-lg px-2.5 py-3',
                     index % 2 === 0
                       ? 'rounded-tl-none border border-slate-800'
                       : 'rounded-tr-none border-none',
@@ -273,7 +237,7 @@ export const Inbox = () => {
                           {messages.map((message) => {
                             return (
                               <div
-                                className={cn('flex items-start gap-3')}
+                                className={cn('pl-2')}
                                 key={`${index}-${message.scheduledTime}`}
                               >
                                 <Message message={message} />
@@ -300,7 +264,7 @@ export const Inbox = () => {
               <span>
                 <FormattedMessage id="file-processing-alert-description" />
               </span>
-              <DotsLoader className="h-full w-6"></DotsLoader>
+              <DotsLoader className="h-full w-6" />
             </div>
           </AlertDescription>
           <Terminal className="h-4 w-4" />

@@ -50,7 +50,7 @@ export const getChatConversation = async ({
         content,
         sender: {
           avatar: isLocal
-            ? 'https://ui-avatars.com/api/?name=Me&background=313336&color=7B788A'
+            ? 'https://ui-avatars.com/api/?name=Me&background=313336&color=b0b0b0'
             : 'https://ui-avatars.com/api/?name=S&background=FF7E7F&color=ffffff',
         },
         isLocal,

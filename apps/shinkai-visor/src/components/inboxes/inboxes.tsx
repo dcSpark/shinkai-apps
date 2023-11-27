@@ -101,7 +101,7 @@ export const Inboxes = () => {
   };
   return (
     <div className="flex h-full flex-col justify-between space-y-3 overflow-hidden">
-      <Header title={<FormattedMessage id="inbox.other"></FormattedMessage>} />
+      <Header title={<FormattedMessage id="inbox.other" />} />
       {!agents?.length ? (
         <EmptyAgents />
       ) : !inboxes?.length ? (
@@ -156,25 +156,25 @@ export const Inboxes = () => {
           <div className="fixed bottom-4 right-4" ref={dialContainerRef}>
             <DropdownMenu onOpenChange={(isOpen) => setDialOpened(isOpen)}>
               <DropdownMenuTrigger asChild>
-                <Button size="icon">
+                <Button className="h-[60px] w-[60px]" size="icon">
                   <Plus
                     className={cn(
-                      'h-4 w-4 transition-transform',
+                      'h-7 w-7 transition-transform',
                       dialOpened && 'rotate-45',
                     )}
                   />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuPortal container={dialContainerRef.current}>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem className="h-14 w-[170px] justify-center" onClick={() => onCreateInboxClick()}>
-                    <MessageCircle className="mr-2 h-4 w-4" />
+                <DropdownMenuContent align="end" className="px-2.5 py-2">
+                  <DropdownMenuItem onClick={() => onCreateInboxClick()}>
+                    <ChatBubbleIcon className="mr-2 h-4 w-4" />
                     <span>
                       <FormattedMessage id="create-inbox" />
                     </span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="h-14 w-[170px] justify-center" onClick={() => onCreateJobClick()}>
-                    <Workflow className="mr-2 h-4 w-4" />
+                  <DropdownMenuItem onClick={() => onCreateJobClick()}>
+                    <JobBubbleIcon className="mr-2 h-4 w-4" />
                     <span>
                       <FormattedMessage id="create-job" />
                     </span>

@@ -28,25 +28,33 @@ export const Agents = () => {
   };
   return (
     <div className="flex h-full flex-col space-y-3">
-      <Header title={<FormattedMessage id="agent.other"></FormattedMessage>} />
+      <Header title={<FormattedMessage id="agent.other" />} />
       {!agents?.length ? (
         <div className="flex h-full flex-col justify-center">
           <EmptyAgents />
         </div>
       ) : (
         <>
-          <ScrollArea className="flex h-full flex-col justify-between space-y-3 [&>div>div]:!block">
-            {agents?.map((agent) => (
-              <Fragment key={agent.id}>
-                <Button className="w-full" variant="ghost">
-                  <span className="w-full truncate text-start">{agent.id}</span>
-                </Button>
-              </Fragment>
-            ))}
+          <ScrollArea className="flex h-full flex-col justify-between  [&>div>div]:!block">
+            <div className="space-y-3">
+              {agents?.map((agent) => (
+                <Fragment key={agent.id}>
+                  <Button className="w-full" variant="ghost">
+                    <span className="w-full truncate text-start">
+                      {agent.id}
+                    </span>
+                  </Button>
+                </Fragment>
+              ))}
+            </div>
           </ScrollArea>
           <div className="fixed bottom-4 right-4">
-            <Button onClick={() => onAddAgentClick()} size="icon">
-              <Plus className="h-4 w-4" />
+            <Button
+              className="h-[60px] w-[60px]"
+              onClick={onAddAgentClick}
+              size="icon"
+            >
+              <Plus className="h-7 w-7" />
             </Button>
           </div>
         </>

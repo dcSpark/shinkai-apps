@@ -1,16 +1,22 @@
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
 import {
+  AddAgentIcon,
+  AgentIcon,
   Button,
+  ChatBubbleIcon,
+  DisconnectIcon,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
+  InboxIcon,
+  JobBubbleIcon,
 } from '@shinkai_network/shinkai-ui';
 import {
   ArrowLeft,
   Bot,
-  Edit,
+  Edit3,
   Inbox,
   Menu,
   MessageCircle,
@@ -19,9 +25,9 @@ import {
   Workflow,
   X,
 } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 
 import visorLogo from '../../assets/icons/visor.svg';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
@@ -51,7 +57,6 @@ enum MenuOption {
 const DisplayInboxName = () => {
   const auth = useAuth((state) => state.auth);
   const location = useLocation();
-  console.log(location, 'location');
 
   const { inboxes } = useGetInboxes({
     sender: auth?.shinkai_identity ?? '',
@@ -78,14 +83,18 @@ const DisplayInboxName = () => {
     return currentInbox;
   }, [inboxes, location.pathname]);
   return (
-    <div>
-      <span className="text-base font-medium text-white">
-        {currentInbox?.custom_name || currentInbox?.inbox_id}
-      </span>
-      <Edit
-        className="invisible shrink-0 cursor-pointer group-hover:visible"
-        onClick={() => setIsEditInboxNameDialogOpened(true)}
-      />
+    <>
+      <Button
+        className="relative inline-flex h-auto max-w-[250px] bg-transparent px-2.5 py-1.5"
+        variant="ghost"
+      >
+        <span
+          className="line-clamp-1 text-base font-medium text-white"
+          onClick={() => setIsEditInboxNameDialogOpened(true)}
+        >
+          {currentInbox?.custom_name || currentInbox?.inbox_id}
+        </span>
+      </Button>
       <EditInboxNameDialog
         inboxId={currentInbox?.inbox_id || ''}
         name={currentInbox?.custom_name || ''}
@@ -93,13 +102,14 @@ const DisplayInboxName = () => {
         onSaved={() => setIsEditInboxNameDialogOpened(false)}
         open={isEditInboxNameDialogOpened}
       />
-    </div>
+    </>
   );
 };
 
 export default function NavBar() {
   const history = useHistory();
   const location = useLocation();
+
   const setAuth = useAuth((state) => state.setAuth);
   const auth = useAuth((state) => state.auth);
   const [isMenuOpened, setMenuOpened] = useState(false);
@@ -232,12 +242,12 @@ export default function NavBar() {
               sideOffset={10}
             >
               <DropdownMenuLabel>
-                <FormattedMessage id="inbox.other"></FormattedMessage>
+                <FormattedMessage id="inbox.other" />
               </DropdownMenuLabel>
               <DropdownMenuItem
                 onClick={() => onClickMenuOption(MenuOption.Inbox)}
               >
-                <Inbox className="mr-2 h-4 w-4" />
+                <InboxIcon className="mr-2 h-4 w-4" />
                 <span>
                   <FormattedMessage id="inbox.other" />
                 </span>
@@ -245,7 +255,7 @@ export default function NavBar() {
               <DropdownMenuItem
                 onClick={() => onClickMenuOption(MenuOption.CreateInbox)}
               >
-                <MessageCircle className="mr-2 h-4 w-4" />
+                <ChatBubbleIcon className="mr-2 h-4 w-4" />
                 <span>
                   <FormattedMessage id="create-inbox" />
                 </span>
@@ -253,19 +263,19 @@ export default function NavBar() {
               <DropdownMenuItem
                 onClick={() => onClickMenuOption(MenuOption.CreateJob)}
               >
-                <Workflow className="mr-2 h-4 w-4" />
+                <JobBubbleIcon className="mr-2 h-4 w-4" />
                 <span>
                   <FormattedMessage id="create-job" />
                 </span>
               </DropdownMenuItem>
 
               <DropdownMenuLabel>
-                <FormattedMessage id="agent.other"></FormattedMessage>
+                <FormattedMessage id="agent.other" />
               </DropdownMenuLabel>
               <DropdownMenuItem
                 onClick={() => onClickMenuOption(MenuOption.Agents)}
               >
-                <Bot className="mr-2 h-4 w-4" />
+                <AgentIcon className="mr-2 h-4 w-4" />
                 <span>
                   <FormattedMessage id="agent.other" />
                 </span>
@@ -273,13 +283,13 @@ export default function NavBar() {
               <DropdownMenuItem
                 onClick={() => onClickMenuOption(MenuOption.AddAgent)}
               >
-                <Bot className="mr-2 h-4 w-4" />
+                <AddAgentIcon className="mr-2 h-4 w-4" />
                 <span>
                   <FormattedMessage id="add-agent" />
                 </span>
               </DropdownMenuItem>
               <DropdownMenuLabel>
-                <FormattedMessage id="account.one"></FormattedMessage>
+                <FormattedMessage id="account.one" />
               </DropdownMenuLabel>
               <DropdownMenuItem
                 onClick={() => onClickMenuOption(MenuOption.Settings)}
@@ -292,7 +302,7 @@ export default function NavBar() {
               <DropdownMenuItem
                 onClick={() => onClickMenuOption(MenuOption.Logout)}
               >
-                <Unplug className="mr-2 h-4 w-4" />
+                <DisconnectIcon className="mr-2 h-4 w-4" />
                 <span>
                   <FormattedMessage id="disconnect" />
                 </span>
