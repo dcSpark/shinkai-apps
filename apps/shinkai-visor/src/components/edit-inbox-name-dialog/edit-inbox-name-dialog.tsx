@@ -123,7 +123,7 @@ export const EditInboxNameDialog = ({
                   type="button"
                   variant="ghost"
                 >
-                  <FormattedMessage id="cancel"></FormattedMessage>
+                  <FormattedMessage id="cancel" />
                 </Button>
                 <Button className="flex-1" disabled={isPending} type="submit">
                   {isPending ? (

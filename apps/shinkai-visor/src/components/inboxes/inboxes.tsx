@@ -10,7 +10,7 @@ import {
   ChatBubbleIcon,
   JobBubbleIcon,
 } from '@shinkai_network/shinkai-ui';
-import { Edit, MessageCircle, Plus, Workflow } from 'lucide-react';
+import { Edit, Plus } from 'lucide-react';
 import { Fragment, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';

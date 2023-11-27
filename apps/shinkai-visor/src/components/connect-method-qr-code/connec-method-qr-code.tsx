@@ -12,7 +12,7 @@ import {
   Input,
 } from '@shinkai_network/shinkai-ui';
 import { BrowserQRCodeReader } from '@zxing/browser';
-import { Loader2, PlugZap, QrCode, Trash, Upload } from 'lucide-react';
+import { Loader2, QrCode, Trash, Upload } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';

@@ -13,18 +13,7 @@ import {
   InboxIcon,
   JobBubbleIcon,
 } from '@shinkai_network/shinkai-ui';
-import {
-  ArrowLeft,
-  Bot,
-  Edit3,
-  Inbox,
-  Menu,
-  MessageCircle,
-  Settings,
-  Unplug,
-  Workflow,
-  X,
-} from 'lucide-react';
+import { ArrowLeft, Menu, Settings, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useHistory, useLocation } from 'react-router-dom';

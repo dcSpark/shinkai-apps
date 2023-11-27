@@ -10,7 +10,7 @@ import {
   FormMessage,
   Input,
 } from '@shinkai_network/shinkai-ui';
-import { FileKey, PlugZap, Trash, Upload } from 'lucide-react';
+import { Trash, Upload } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
