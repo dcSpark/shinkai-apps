@@ -11,6 +11,7 @@ import { IntlProvider } from 'react-intl';
 import { MemoryRouter as Router } from 'react-router-dom';
 import { Route, Switch, useHistory, useLocation } from 'react-router-dom';
 
+import { cn } from '../../helpers/cn-utils';
 import { useGlobalPopupChromeMessage } from '../../hooks/use-global-popup-chrome-message';
 import { langMessages, locale } from '../../lang/intl';
 import { useAuth } from '../../store/auth/auth';
@@ -58,7 +59,7 @@ export const Popup = () => {
       {popupVisibility && (
         <motion.div
           animate={{ opacity: 1 }}
-          className="h-full w-full flex flex-col p-4 shadow-xl rounded-lg bg-secondary-600 bg-app-gradient"
+          className={cn("h-full w-full flex flex-col p-4 shadow-xl rounded-lg bg-secondary-600 bg-app-gradient")}
           exit={{ opacity: 0 }}
           initial={{ opacity: 0 }}
           transition={{ duration: 0.5 }}

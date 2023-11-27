@@ -11,9 +11,11 @@ import { useAuth } from '../../store/auth/auth';
 import { useSettings } from '../../store/settings/settings';
 import { Header } from '../header/header';
 import { Button } from '../ui/button';
+import { Checkbox } from '../ui/checkbox';
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -29,7 +31,8 @@ import {
 } from '../ui/select';
 
 const formSchema = z.object({
-  defaultAgentId: z.string().optional(),
+  defaultAgentId: z.string(),
+  hideActionButton: z.boolean(),
 });
 
 type FormSchemaType = z.infer<typeof formSchema>;
@@ -37,19 +40,16 @@ type FormSchemaType = z.infer<typeof formSchema>;
 export const Settings = () => {
   const history = useHistory();
   const auth = useAuth((authStore) => authStore.auth);
-  const settings = useSettings(
-    (settingsStore) => settingsStore.settings
-  );
-  const setSettings = useSettings(
-    (settingsStore) => settingsStore.setSettings
-  );
+  const settings = useSettings((settingsStore) => settingsStore.settings);
+  const setSettings = useSettings((settingsStore) => settingsStore.setSettings);
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      defaultAgentId: '',
+      defaultAgentId: settings?.defaultAgentId,
+      hideActionButton: settings?.hideActionButton,
     },
   });
-  const defaultAgentId = useWatch<FormSchemaType>({ name: 'defaultAgentId', control: form.control });
+  const currentFormValue = useWatch<FormSchemaType>({ control: form.control });
   const { agents } = useAgents({
     sender: auth?.shinkai_identity ?? '',
     senderSubidentity: `${auth?.profile}`,
@@ -67,14 +67,10 @@ export const Settings = () => {
     history.push('settings/create-registration-code');
   };
   useEffect(() => {
-    if (defaultAgentId) {
-      setSettings({ defaultAgentId })
+    if (JSON.stringify(currentFormValue) !== JSON.stringify(settings)) {
+      setSettings({ ...currentFormValue });
     }
-  }, [defaultAgentId, setSettings]);
-  useEffect(() => {
-    console.log('settings changed', settings);
-    form.setValue('defaultAgentId', settings?.defaultAgentId);
-  }, [settings, form]);
+  }, [currentFormValue, settings, setSettings]);
   return (
     <div className="flex flex-col space-y-3">
       <Header
@@ -83,9 +79,7 @@ export const Settings = () => {
       />
       <div className="flex flex-col space-y-2">
         <Form {...form}>
-          <form
-            className="grow flex flex-col space-y-2 justify-between overflow-hidden"
-          >
+          <form className="flex grow flex-col justify-between space-y-2 overflow-hidden">
             <FormField
               control={form.control}
               name="defaultAgentId"
@@ -120,6 +114,29 @@ export const Settings = () => {
                     </SelectPortal>
                   </Select>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="hideActionButton"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-2 space-y-0 rounded-sm border p-2">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>
+                      <FormattedMessage id="hide-action-button-label"></FormattedMessage>
+                    </FormLabel>
+                    <FormDescription>
+                      <FormattedMessage id="hide-action-button-description"></FormattedMessage>
+                    </FormDescription>
+                  </div>
                 </FormItem>
               )}
             />

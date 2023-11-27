@@ -10,6 +10,7 @@ import { useGlobalActionButtonChromeMessage } from '../../hooks/use-global-actio
 import { langMessages, locale } from '../../lang/intl';
 import { sendContentScriptMessage } from '../../service-worker/communication/internal';
 import { ContentScriptBridgeMessageType } from '../../service-worker/communication/internal/types';
+import { useSettings } from '../../store/settings/settings';
 import themeStyle from '../../theme/styles.css?inline';
 
 const baseContainer = document.createElement('shinkai-action-button-root');
@@ -22,6 +23,7 @@ htmlRoot.prepend(baseContainer);
 
 export const ActionButton = () => {
   const [popupVisibility] = useGlobalActionButtonChromeMessage();
+  const settings = useSettings(settingsStore => settingsStore.settings);
   const togglePopupVisibility = async () => {
     sendContentScriptMessage({
       type: ContentScriptBridgeMessageType.TogglePopupVisibility,
@@ -31,7 +33,8 @@ export const ActionButton = () => {
     <div
       className={cn(
         'p-1 w-[50px] h-[50px] flex flex-col space-y-1 items-center justify-center',
-        !popupVisibility && 'animate-breath'
+        !popupVisibility && 'animate-breath',
+        settings?.hideActionButton ? 'hidden' : 'flex'
       )}
       onClick={() => togglePopupVisibility()}
     >
