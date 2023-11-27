@@ -169,13 +169,13 @@ export const Inboxes = () => {
               </DropdownMenuTrigger>
               <DropdownMenuPortal container={dialContainerRef.current}>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => onCreateInboxClick()}>
+                  <DropdownMenuItem className="h-14 w-[170px] justify-center" onClick={() => onCreateInboxClick()}>
                     <MessageCircle className="mr-2 h-4 w-4" />
                     <span>
                       <FormattedMessage id="create-inbox" />
                     </span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => onCreateJobClick()}>
+                  <DropdownMenuItem className="h-14 w-[170px] justify-center" onClick={() => onCreateJobClick()}>
                     <Workflow className="mr-2 h-4 w-4" />
                     <span>
                       <FormattedMessage id="create-job" />
