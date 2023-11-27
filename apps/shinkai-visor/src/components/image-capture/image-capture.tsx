@@ -38,7 +38,7 @@ export const ImageCapture = () => {
   ): Promise<Blob | null> => {
     const canvas = document.createElement('canvas');
     await canvasPreview(image, canvas, crop, scale, rotate);
-    const blob = await canvasToBlob(canvas);
+    const blob = await canvasToBlob(canvas, 'image/jpeg', 0.5);
     if (!blob) {
       console.error('Failed to create blob');
       return null;

@@ -40,7 +40,7 @@ const sendCaptureToAgent = async (info: chrome.contextMenus.OnClickData, tab: ch
   }
   const image = await new Promise<string>((resolve) => {
     chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
-      chrome.tabs.captureVisibleTab(tab.windowId, { format: 'png', quality: 100 }, (image) => {
+      chrome.tabs.captureVisibleTab(tab.windowId, { format: 'jpeg', quality: 92 }, (image) => {
         resolve(image);
       });
     })
@@ -53,7 +53,7 @@ const sendCaptureToAgent = async (info: chrome.contextMenus.OnClickData, tab: ch
   console.log('cropped image', croppedImage);
   message = {
     type: ServiceWorkerInternalMessageType.SendCaptureToAgent,
-    data: { image: croppedImage, filename: `${encodeURIComponent(tab.url || 'capture')}.png` },
+    data: { image: croppedImage, filename: `${encodeURIComponent(tab.url || 'capture')}.jpeg` },
   };
   chrome.tabs.sendMessage<ServiceWorkerInternalMessage>(tab.id, message);
 }
