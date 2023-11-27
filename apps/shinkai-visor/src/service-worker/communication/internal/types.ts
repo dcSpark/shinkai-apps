@@ -3,6 +3,7 @@ export enum ServiceWorkerInternalMessageType {
   SendToAgent = 'send-to-agent',
   SendPageToAgent = 'send-page-to-agent',
   RehydrateStore = 'rehydrate-store',
+  CopyToClipboard = 'copy-to-clipboard',
 }
 
 export enum ContentScriptBridgeMessageType {
@@ -26,5 +27,6 @@ export type ServiceWorkerInternalMessage =
       pdf?: File;
     }
   }
-  | { type: ServiceWorkerInternalMessageType.RehydrateStore, data?: never };
+  | { type: ServiceWorkerInternalMessageType.RehydrateStore, data?: never }
+  | { type: ServiceWorkerInternalMessageType.CopyToClipboard, data: { content: string } };
 ;

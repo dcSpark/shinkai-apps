@@ -58,7 +58,7 @@ export const Popup = () => {
       {popupVisibility && (
         <motion.div
           animate={{ opacity: 1 }}
-          className="h-full w-full flex flex-col p-4 shadow-xl rounded-lg bg-secondary-600 bg-app-gradient"
+          className="bg-secondary-600 bg-app-gradient flex h-full w-full flex-col rounded-lg p-4 shadow-xl"
           exit={{ opacity: 0 }}
           initial={{ opacity: 0 }}
           transition={{ duration: 0.5 }}
@@ -152,12 +152,12 @@ root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <IntlProvider locale={locale} messages={langMessages}>
-        <div className="font-inter w-full h-full">
+        <div className="font-inter h-full w-full">
           <Router>
             <Popup></Popup>
           </Router>
         </div>
       </IntlProvider>
     </QueryClientProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

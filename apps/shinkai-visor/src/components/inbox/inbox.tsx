@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 
 import { cn } from '../../helpers/cn-utils';
 import { useAuth } from '../../store/auth/auth';
@@ -34,6 +34,7 @@ export const Inbox = () => {
   const { inboxId } = useParams<{ inboxId: string }>();
   const auth = useAuth((state) => state.auth);
   const intl = useIntl();
+  const history = useHistory();
   const [inbox, setInbox] = useState<{
     inbox_id: string;
     custom_name: string;
@@ -218,10 +219,12 @@ export const Inbox = () => {
   return (
     <div className="h-full flex flex-col space-y-3 justify-between overflow-hidden">
       <div className="flex flex-row space-x-1 items-center text-lg group">
-        <InboxIcon className="shrink-0" />
-        <h1 className="font-semibold">
-          <FormattedMessage id="inbox.one"></FormattedMessage>
-        </h1>
+        <div className="flex flex-row space-x-1 items-center cursor-pointer" onClick={() => history.push('/inboxes')}>
+          <InboxIcon className="shrink-0" />
+          <h1 className="font-semibold">
+            <FormattedMessage id="inbox.one"></FormattedMessage>
+          </h1>
+        </div>
         <ChevronRight className="h-4 w-4 shrink-0" />
         <h1 className="grow font-semibold truncate">{inbox?.custom_name}</h1>
         <Edit

@@ -6,12 +6,13 @@ import { ServiceWorkerInternalMessageType } from "../../service-worker/communica
 import { ChromeStorage } from "../persistor/chrome-storage";
 
 type SettingsData = {
-  defaultAgentId: string | undefined;
+  defaultAgentId: string;
+  hideActionButton: boolean;
 };
 
 type SettingsStore = {
-  settings: SettingsData | null;
-  setSettings: (settings: SettingsData) => void;
+  settings: Partial<SettingsData> | null;
+  setSettings: (settings: Partial<SettingsData>) => void;
 };
 
 export const useSettings = create<SettingsStore>()(
@@ -19,7 +20,7 @@ export const useSettings = create<SettingsStore>()(
     persist(
       (set, get) => ({
         settings: null,
-        setSettings: (settings: SettingsData) => {
+        setSettings: (settings) => {
           const valueChanged = JSON.stringify(get().settings) !== JSON.stringify(settings);
           set({ settings });
           if (valueChanged) {
