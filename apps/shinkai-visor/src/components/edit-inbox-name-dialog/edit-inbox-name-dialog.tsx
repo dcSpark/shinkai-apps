@@ -82,14 +82,14 @@ export const EditInboxNameDialog = ({
   return (
     <Dialog open={open}>
       <DialogContent className="w-[75%]">
-        <DialogHeader>
+        <DialogHeader className="overflow-x-hidden">
           <DialogTitle>
             <FormattedMessage id="edit" />{' '}
             <span className="lowercase">
               <FormattedMessage id="inbox.one" />
             </span>
           </DialogTitle>
-          <DialogDescription>{inboxId}</DialogDescription>
+          <DialogDescription className="truncate">{inboxId}</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
