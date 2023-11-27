@@ -6,11 +6,11 @@ import {
   ExportIcon,
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
   QrIcon,
   Select,
   SelectContent,
@@ -71,9 +71,7 @@ export const Settings = () => {
   }, [currentFormValue, settings, setSettings]);
   return (
     <div className="flex flex-col space-y-3">
-      <Header
-        title={<FormattedMessage id="setting.other"></FormattedMessage>}
-      />
+      <Header title={<FormattedMessage id="setting.other" />} />
       <div className="flex flex-col space-y-8">
         <Form {...form}>
           <form className="flex grow flex-col justify-between space-y-2 overflow-hidden">
@@ -126,10 +124,10 @@ export const Settings = () => {
                   </FormControl>
                   <div className="space-y-1 leading-none">
                     <FormLabel>
-                      <FormattedMessage id="hide-action-button-label"></FormattedMessage>
+                      <FormattedMessage id="hide-action-button-label" />
                     </FormLabel>
                     <FormDescription>
-                      <FormattedMessage id="hide-action-button-description"></FormattedMessage>
+                      <FormattedMessage id="hide-action-button-description" />
                     </FormDescription>
                   </div>
                 </FormItem>

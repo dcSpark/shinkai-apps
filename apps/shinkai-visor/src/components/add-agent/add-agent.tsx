@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@shinkai_network/shinkai-ui';
-import { Bot, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -135,10 +135,7 @@ export const AddAgent = () => {
 
   return (
     <div className="flex h-full flex-col space-y-3">
-      <Header
-        icon={<Bot />}
-        title={<FormattedMessage id="add-agent"></FormattedMessage>}
-      />
+      <Header title={<FormattedMessage id="add-agent" />} />
       <Form {...form}>
         <form
           className="flex h-full flex-col justify-between space-y-3"

@@ -1,7 +1,12 @@
-import { generatePdfFromCurrentPage } from "../../helpers/pdf-generator";
-import { srcUrlResolver } from "../../helpers/src-url-resolver";
-import { ContentScriptBridgeMessageType, ServiceWorkerInternalMessage, ServiceWorkerInternalMessageType } from "../../service-worker/communication/internal/types";
-import { sendContentScriptMessage } from "../../service-worker/communication/internal";
+import { generatePdfFromCurrentPage } from '../../helpers/pdf-generator';
+import { srcUrlResolver } from '../../helpers/src-url-resolver';
+import { sendContentScriptMessage } from '../../service-worker/communication/internal';
+import {
+  ContentScriptBridgeMessageType,
+  ServiceWorkerInternalMessage,
+  ServiceWorkerInternalMessageType,
+} from '../../service-worker/communication/internal/types';
+import { SHINKAI_ACTION_ELEMENT_NAME } from '../action-button/action-button';
 
 const baseContainer = document.createElement('shinkai-popup-root');
 baseContainer.style.position = 'fixed';
@@ -52,19 +57,33 @@ htmlRoot.addEventListener('click', function (ev) {
 
 let isVisible = false;
 
-chrome.runtime.onMessage.addListener(async (message: ServiceWorkerInternalMessage, sender: chrome.runtime.MessageSender) => {
-  if (message.type === ServiceWorkerInternalMessageType.ContentScriptBridge) {
-    if (message.data.type === ContentScriptBridgeMessageType.TogglePopupVisibility) {
-      isVisible = message.data.data !== undefined ? message.data.data : !isVisible;
-      baseContainer.style.pointerEvents = isVisible ? 'auto' : 'none';
-    }
-  } else if (message.type === ServiceWorkerInternalMessageType.SendPageToAgent) {
-    const pageAsPdf = await generatePdfFromCurrentPage(`${encodeURIComponent(window.location.href)}.pdf`, document.body);
-    if (pageAsPdf) {
-      message.data = {
-        pdf: pageAsPdf,
+chrome.runtime.onMessage.addListener(
+  async (
+    message: ServiceWorkerInternalMessage,
+    sender: chrome.runtime.MessageSender,
+  ) => {
+    if (message.type === ServiceWorkerInternalMessageType.ContentScriptBridge) {
+      if (
+        message.data.type ===
+        ContentScriptBridgeMessageType.TogglePopupVisibility
+      ) {
+        isVisible =
+          message.data.data !== undefined ? message.data.data : !isVisible;
+        baseContainer.style.pointerEvents = isVisible ? 'auto' : 'none';
+      }
+    } else if (
+      message.type === ServiceWorkerInternalMessageType.SendPageToAgent
+    ) {
+      const pageAsPdf = await generatePdfFromCurrentPage(
+        `${encodeURIComponent(window.location.href)}.pdf`,
+        document.body,
+      );
+      if (pageAsPdf) {
+        message.data = {
+          pdf: pageAsPdf,
+        };
       }
     }
-  }
-  iframe.contentWindow?.postMessage({ message, sender }, srcUrlResolver('/'));
-});
+    iframe.contentWindow?.postMessage({ message, sender }, srcUrlResolver('/'));
+  },
+);

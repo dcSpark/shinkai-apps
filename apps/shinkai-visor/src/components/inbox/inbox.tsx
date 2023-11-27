@@ -10,7 +10,7 @@ import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-n
 import { Loader2, Terminal } from 'lucide-react';
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useHistory, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import { cn } from '../../helpers/cn-utils';
 import { useAuth } from '../../store/auth/auth';

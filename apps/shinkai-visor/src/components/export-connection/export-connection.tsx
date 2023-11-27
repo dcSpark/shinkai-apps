@@ -70,9 +70,7 @@ export const ExportConnection = () => {
   };
   return (
     <div className="flex h-full flex-col gap-8">
-      <Header
-        title={<FormattedMessage id="export-connection"></FormattedMessage>}
-      />
+      <Header title={<FormattedMessage id="export-connection" />} />
       <div className="flex grow flex-col space-y-2">
         <Form {...form}>
           <form

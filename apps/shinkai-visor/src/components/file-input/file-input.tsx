@@ -138,18 +138,16 @@ export const FileInput = ({
         <FileList
           actions={[
             {
-              render: (
-                <ExternalLink className="h-4 w-4 cursor-pointer"></ExternalLink>
-              ),
+              render: <ExternalLink className="h-4 w-4 cursor-pointer" />,
               onClick: (file) => openFile(file),
             },
             {
-              render: <Trash className="h-4 w-4 cursor-pointer"></Trash>,
+              render: <Trash className="h-4 w-4 cursor-pointer" />,
               onClick: (index) => removeFile(index),
             },
           ]}
           files={files.current}
-        ></FileList>
+        />
       )}
     </div>
   );

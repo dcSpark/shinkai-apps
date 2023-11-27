@@ -146,7 +146,7 @@ export const CreateJob = () => {
   };
   return (
     <div className="flex h-full flex-col space-y-3">
-      <Header title={<FormattedMessage id="create-job"></FormattedMessage>} />
+      <Header title={<FormattedMessage id="create-job" />} />
       <Form {...form}>
         <form
           className="flex grow flex-col justify-between space-y-2 overflow-hidden"

@@ -12,7 +12,7 @@ import { langMessages, locale } from '../../lang/intl';
 
 const InstalledPopup = () => {
   return (
-    <div className="h-full flex flex-col justify-start">
+    <div className="flex h-full flex-col justify-start">
       <div className="grid place-content-center">
         <img
           alt="shinkai logo"
@@ -21,14 +21,14 @@ const InstalledPopup = () => {
           src={srcUrlResolver(logo)}
         />
       </div>
-      <div className="flex-1 flex flex-col space-y-3 justify-center items-center">
+      <div className="flex flex-1 flex-col items-center justify-center space-y-3">
         <div className="p-3">
           <Player
             autoplay
             className="w-full"
             loop
             src={InstalledPopupAnimation}
-          ></Player>
+          />
         </div>
 
         <p className="text-md text-center text-white" data-cy="welcome-message">
@@ -46,9 +46,9 @@ const root = createRoot(container);
 root.render(
   <React.StrictMode>
     <IntlProvider locale={locale} messages={langMessages}>
-      <div className="w-full h-full font-inter overflow-hidden p-3 bg-secondary-600 bg-app-gradient shadow-xl">
-        <InstalledPopup></InstalledPopup>
+      <div className="font-inter bg-secondary-600 bg-app-gradient h-full w-full overflow-hidden p-3 shadow-xl">
+        <InstalledPopup />
       </div>
     </IntlProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

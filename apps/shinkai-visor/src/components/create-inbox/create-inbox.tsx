@@ -71,7 +71,7 @@ export const CreateInbox = () => {
 
   return (
     <div className="flex h-full flex-col space-y-8">
-      <Header title={<FormattedMessage id="create-inbox"></FormattedMessage>} />
+      <Header title={<FormattedMessage id="create-inbox" />} />
       <Form {...form}>
         <form
           className="flex h-full flex-col justify-between space-y-2"

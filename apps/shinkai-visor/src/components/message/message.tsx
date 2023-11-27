@@ -1,4 +1,5 @@
 import { ChatConversationMessage } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
+import { Button } from '@shinkai_network/shinkai-ui';
 import MarkdownPreview from '@uiw/react-markdown-preview';
 import { Copy } from 'lucide-react';
 
@@ -9,7 +10,6 @@ import { sendMessage } from '../../service-worker/communication/internal';
 import { ServiceWorkerInternalMessageType } from '../../service-worker/communication/internal/types';
 import { FileList } from '../file-list/file-list';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { Button } from '@shinkai_network/shinkai-ui';
 
 type MessageProps = {
   message: ChatConversationMessage;

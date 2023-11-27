@@ -161,11 +161,7 @@ export const CreateRegistrationCode = () => {
   }, [form, identityType, auth]);
   return (
     <div className="flex h-full flex-col space-y-8">
-      <Header
-        title={
-          <FormattedMessage id="create-registration-code"></FormattedMessage>
-        }
-      />
+      <Header title={<FormattedMessage id="create-registration-code" />} />
       <div className="flex grow flex-col space-y-2">
         <Form {...form}>
           <form
