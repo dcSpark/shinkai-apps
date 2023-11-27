@@ -40,8 +40,6 @@ export const Inbox = () => {
     custom_name: string;
     last_message: ShinkaiMessage;
   } | null>(null);
-  const [isEditInboxNameDialogOpened, setIsEditInboxNameDialogOpened] =
-    useState<boolean>(false);
   const {
     data,
     fetchPreviousPage,
@@ -185,7 +183,7 @@ export const Inbox = () => {
   useEffect(() => {
     if (decodedInboxId) {
       const currentInbox = inboxes.find(
-        (inbox) => decodedInboxId === inbox.inbox_id
+        (inbox) => decodedInboxId === inbox.inbox_id,
       );
       if (currentInbox) {
         setInbox(currentInbox);
@@ -202,7 +200,7 @@ export const Inbox = () => {
     const lastMessage = [...(firstMessagePage || [])].pop();
     if (lastMessage) {
       setIsJobProcessing(
-        isJobInbox && (isSendingMessage || lastMessage.isLocal)
+        isJobInbox && (isSendingMessage || lastMessage.isLocal),
       );
     }
   }, [data?.pages, auth, isSendingMessage, isJobInbox]);
@@ -211,28 +209,14 @@ export const Inbox = () => {
     const lastMessage = [...(firstMessagePage || [])].pop();
     if (lastMessage) {
       setIsJobProcessingFile(
-        isJobProcessing && lastMessage.isLocal && !!lastMessage.fileInbox
+        isJobProcessing && lastMessage.isLocal && !!lastMessage.fileInbox,
       );
     }
   }, [data?.pages, auth, isJobProcessing]);
 
   return (
-    <div className="h-full flex flex-col space-y-3 justify-between overflow-hidden">
-      <div className="flex flex-row space-x-1 items-center text-lg group">
-        <div className="flex flex-row space-x-1 items-center cursor-pointer" onClick={() => history.push('/inboxes')}>
-          <InboxIcon className="shrink-0" />
-          <h1 className="font-semibold">
-            <FormattedMessage id="inbox.one"></FormattedMessage>
-          </h1>
-        </div>
-        <ChevronRight className="h-4 w-4 shrink-0" />
-        <h1 className="grow font-semibold truncate">{inbox?.custom_name}</h1>
-        <Edit
-          className="cursor-pointer invisible group-hover:visible shrink-0"
-          onClick={() => setIsEditInboxNameDialogOpened(true)}
-        />
-      </div>
-      <ScrollArea className="[&>div>div]:!block h-full" ref={chatContainerRef}>
+    <div className="flex h-full flex-col justify-between space-y-3 overflow-hidden">
+      <ScrollArea className="h-full [&>div>div]:!block" ref={chatContainerRef}>
         {isChatConversationSuccess && (
           <div className="py-2 text-center text-xs">
             {isFetchingPreviousPage && (
@@ -251,17 +235,17 @@ export const Inbox = () => {
                   'flex w-[95%] items-start gap-3',
                   index % 2 === 0
                     ? 'ml-0 mr-auto flex-row'
-                    : 'ml-auto mr-0 flex-row-reverse'
+                    : 'ml-auto mr-0 flex-row-reverse',
                 )}
                 key={`${index}`}
               >
                 <Skeleton className="h-12 w-12 rounded-full" key={index} />
                 <Skeleton
                   className={cn(
-                    'mt-1 rounded-lg px-2.5 py-3 w-full',
+                    'mt-1 w-full rounded-lg px-2.5 py-3',
                     index % 2 === 0
                       ? 'rounded-tl-none border border-slate-800'
-                      : 'rounded-tr-none border-none'
+                      : 'rounded-tr-none border-none',
                   )}
                 />
               </div>
@@ -275,13 +259,13 @@ export const Inbox = () => {
                       <div key={date}>
                         <div
                           className={cn(
-                            'relative z-10 m-auto flex w-[140px] items-center justify-center rounded-xl bg-secondary-600 shadow-lg transition-opacity',
-                            true && 'sticky top-5'
+                            'relative z-10 m-auto flex h-[30px] w-[70px] items-center justify-center rounded-xl bg-gray-400',
+                            true && 'sticky top-5',
                           )}
                         >
-                          <span className="px-2.5 py-2 text-sm font-semibold text-foreground">
+                          <span className="text-sm font-medium text-gray-100">
                             {dateToLabel(
-                              new Date(messages[0].scheduledTime || '')
+                              new Date(messages[0].scheduledTime || ''),
                             )}
                           </span>
                         </div>
@@ -292,14 +276,14 @@ export const Inbox = () => {
                                 className={cn('flex items-start gap-3')}
                                 key={`${index}-${message.scheduledTime}`}
                               >
-                                <Message message={message}></Message>
+                                <Message message={message} />
                               </div>
                             );
                           })}
                         </div>
                       </div>
                     );
-                  }
+                  },
                 )}
               </Fragment>
             ))}
@@ -312,11 +296,11 @@ export const Inbox = () => {
             <FormattedMessage id="file-processing-alert-title" />
           </AlertTitle>
           <AlertDescription className="text-xs">
-            <div className="flex flex-row space-x-2 items-center">
+            <div className="flex flex-row items-center space-x-2">
               <span>
                 <FormattedMessage id="file-processing-alert-description" />
               </span>
-              <DotsLoader className="w-6 h-full"></DotsLoader>
+              <DotsLoader className="h-full w-6"></DotsLoader>
             </div>
           </AlertDescription>
           <Terminal className="h-4 w-4" />
@@ -326,14 +310,7 @@ export const Inbox = () => {
         disabled={isSendingMessage}
         loading={isJobProcessing}
         onSubmit={(value) => submitSendMessage(value)}
-      ></InboxInput>
-      <EditInboxNameDialog
-        inboxId={inbox?.inbox_id || ''}
-        name={inbox?.custom_name || ''}
-        onCancel={() => setIsEditInboxNameDialogOpened(false)}
-        onSaved={() => setIsEditInboxNameDialogOpened(false)}
-        open={isEditInboxNameDialogOpened}
-      ></EditInboxNameDialog>
+      />
     </div>
   );
 };

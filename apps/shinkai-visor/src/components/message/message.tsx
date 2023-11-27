@@ -7,7 +7,7 @@ import { sendMessage } from '../../service-worker/communication/internal';
 import { ServiceWorkerInternalMessageType } from '../../service-worker/communication/internal/types';
 import { FileList } from '../file-list/file-list';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { Button } from '../ui/button';
+import { Button } from '@shinkai_network/shinkai-ui';
 
 type MessageProps = {
   message: ChatConversationMessage;
@@ -23,10 +23,10 @@ export const Message = ({ message }: MessageProps) => {
   return (
     <div
       className={cn(
-        'flex flex-row',
+        'flex flex-row space-x-2',
         message.isLocal
-          ? 'ml-0 mr-auto flex-row space-x-1'
-          : 'ml-auto mr-0 flex-row-reverse space-x-1 space-x-reverse',
+          ? 'ml-auto mr-0 flex-row-reverse  space-x-reverse'
+          : 'ml-0 mr-auto flex-row',
       )}
     >
       <Avatar className="h-8 w-8">
@@ -38,10 +38,10 @@ export const Message = ({ message }: MessageProps) => {
       </Avatar>
       <div
         className={cn(
-          'text-foreground group relative mt-1 flex flex-col space-y-2 rounded-lg bg-transparent px-2.5 py-3 text-sm min-w-[75px]',
+          'text-foreground mt-1 flex flex-col space-y-2 rounded-lg bg-transparent px-2.5 py-3 text-sm',
           message.isLocal
-            ? 'rounded-tl-none border border-slate-800'
-            : 'rounded-tr-none border-none bg-[rgba(217,217,217,0.04)]',
+            ? 'rounded-tl-none bg-gray-300'
+            : 'rounded-tr-none border-none bg-gray-200',
         )}
       >
         <Button

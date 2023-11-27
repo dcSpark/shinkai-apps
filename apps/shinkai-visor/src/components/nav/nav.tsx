@@ -1,3 +1,4 @@
+import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
 import {
   Button,
   DropdownMenu,
@@ -9,6 +10,7 @@ import {
 import {
   ArrowLeft,
   Bot,
+  Edit,
   Inbox,
   Menu,
   MessageCircle,
@@ -17,13 +19,14 @@ import {
   Workflow,
   X,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 
 import visorLogo from '../../assets/icons/visor.svg';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
 import { useAuth } from '../../store/auth/auth';
+import { EditInboxNameDialog } from '../edit-inbox-name-dialog/edit-inbox-name-dialog';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,6 +48,55 @@ enum MenuOption {
   Logout = 'logout',
 }
 
+const DisplayInboxName = () => {
+  const auth = useAuth((state) => state.auth);
+  const location = useLocation();
+  console.log(location, 'location');
+
+  const { inboxes } = useGetInboxes({
+    sender: auth?.shinkai_identity ?? '',
+    senderSubidentity: auth?.profile ?? '',
+    // Assuming receiver and target_shinkai_name_profile are the same as sender
+    receiver: auth?.shinkai_identity ?? '',
+    targetShinkaiNameProfile: `${auth?.shinkai_identity}/${auth?.profile}`,
+    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+  });
+
+  const [isEditInboxNameDialogOpened, setIsEditInboxNameDialogOpened] =
+    useState<boolean>(false);
+
+  const currentInbox = useMemo(() => {
+    const inboxId = location.pathname.split('/')?.[2];
+    const decodedInboxId = decodeURIComponent(inboxId);
+    const currentInbox = inboxes.find(
+      (inbox) => decodedInboxId === inbox.inbox_id,
+    );
+    return currentInbox;
+  }, [inboxes, location.pathname]);
+  return (
+    <div>
+      <span className="text-base font-medium text-white">
+        {currentInbox?.custom_name || currentInbox?.inbox_id}
+      </span>
+      <Edit
+        className="invisible shrink-0 cursor-pointer group-hover:visible"
+        onClick={() => setIsEditInboxNameDialogOpened(true)}
+      />
+      <EditInboxNameDialog
+        inboxId={currentInbox?.inbox_id || ''}
+        name={currentInbox?.custom_name || ''}
+        onCancel={() => setIsEditInboxNameDialogOpened(false)}
+        onSaved={() => setIsEditInboxNameDialogOpened(false)}
+        open={isEditInboxNameDialogOpened}
+      />
+    </div>
+  );
+};
+
 export default function NavBar() {
   const history = useHistory();
   const location = useLocation();
@@ -57,6 +109,8 @@ export default function NavBar() {
     '/settings',
     '/nodes/connect/method/quick-start',
   ].includes(location.pathname);
+
+  const isInboxPage = location.pathname.includes('/inboxes/job_inbox');
   const [isConfirmLogoutDialogOpened, setIsConfirmLogoutDialogOpened] =
     useState(false);
 
@@ -147,11 +201,16 @@ export default function NavBar() {
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </div>
-        <img
-          alt="shinkai-app-logo"
-          className="absolute left-0 right-0 ml-auto mr-auto w-[100px]"
-          src={srcUrlResolver(visorLogo)}
-        />
+        {isInboxPage ? (
+          <DisplayInboxName />
+        ) : (
+          <img
+            alt="shinkai-app-logo"
+            className="absolute left-0 right-0 ml-auto mr-auto w-[100px]"
+            src={srcUrlResolver(visorLogo)}
+          />
+        )}
+
         {auth && (
           <DropdownMenu
             modal={false}

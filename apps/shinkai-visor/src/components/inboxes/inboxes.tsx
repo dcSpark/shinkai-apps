@@ -189,7 +189,7 @@ export const Inboxes = () => {
             onCancel={() => closeEditInboxNameDialog()}
             onSaved={() => closeEditInboxNameDialog()}
             open={isEditInboxNameDialogOpened.isOpened}
-          ></EditInboxNameDialog>
+          />
         </>
       )}
     </div>

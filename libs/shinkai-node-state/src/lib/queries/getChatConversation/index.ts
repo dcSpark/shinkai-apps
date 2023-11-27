@@ -37,7 +37,7 @@ export const getChatConversation = async ({
       profile_encryption_sk,
       profile_identity_sk,
       node_encryption_pk,
-    }
+    },
   );
   const transformedMessagePromises: Promise<ChatConversationMessage>[] =
     data.map(async (shinkaiMessage) => {
@@ -50,8 +50,8 @@ export const getChatConversation = async ({
         content,
         sender: {
           avatar: isLocal
-            ? 'https://ui-avatars.com/api/?name=Me&background=363636&color=fff'
-            : 'https://ui-avatars.com/api/?name=S&background=FE6162&color=fff',
+            ? 'https://ui-avatars.com/api/?name=Me&background=313336&color=7B788A'
+            : 'https://ui-avatars.com/api/?name=S&background=FF7E7F&color=ffffff',
         },
         isLocal,
         scheduledTime: shinkaiMessage.external_metadata?.scheduled_time,
@@ -67,7 +67,7 @@ export const getChatConversation = async ({
             node_encryption_pk: node_encryption_pk,
           },
           inboxId,
-          filesInbox
+          filesInbox,
         );
         message.fileInbox = {
           id: filesInbox,
