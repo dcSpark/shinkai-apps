@@ -40,7 +40,7 @@ export const Message = ({ message }: MessageProps) => {
       </Avatar>
       <div
         className={cn(
-          'group relative mt-1 flex flex-col rounded-lg bg-transparent px-2.5 py-3 text-sm text-white',
+          'group relative mt-1 flex flex-col rounded-lg bg-transparent px-2.5 py-3 text-sm text-white overflow-hidden',
           message.isLocal
             ? 'rounded-tr-none bg-gray-300'
             : 'rounded-bl-none border-none bg-gray-200',
@@ -48,7 +48,7 @@ export const Message = ({ message }: MessageProps) => {
       >
         {message.isLocal ? null : (
           <CopyToClipboardIcon
-            className="duration-30 absolute right-3 bg-gray-300 opacity-0 group-hover:opacity-100 group-hover:transition-opacity"
+            className="duration-30 absolute right-2 top-2 bg-gray-300 opacity-0 group-hover:opacity-100 group-hover:transition-opacity"
             onCopyClipboard={() => copyToClipboard(message.content)}
             string={message.content}
           />

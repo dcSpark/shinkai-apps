@@ -1,10 +1,4 @@
-import {
-  PaperClipIcon,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@shinkai_network/shinkai-ui';
+import { PaperClipIcon } from '@shinkai_network/shinkai-ui';
 import { partial } from 'filesize';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
