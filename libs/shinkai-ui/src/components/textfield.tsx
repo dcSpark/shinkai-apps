@@ -1,6 +1,3 @@
-import * as React from 'react';
-
-import { cn } from '../utils';
 import {
   FormControl,
   FormItem,
@@ -8,6 +5,8 @@ import {
   FormMessage,
   Input,
 } from '@shinkai_network/shinkai-ui';
+import React from 'react';
+import { cn } from '../utils';
 
 const TextField = ({
   classes,
@@ -42,6 +41,5 @@ const TextField = ({
     </FormItem>
   );
 };
-TextField.displayName = 'TextField';
 
 export { TextField };
