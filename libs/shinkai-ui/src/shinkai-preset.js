@@ -5,16 +5,12 @@ const defaultTheme = require('tailwindcss/defaultTheme');
 module.exports = {
   content: [],
   darkMode: ['class'],
-
   theme: {
     container: {
       center: true,
       padding: '2rem',
-      screens: {
-        '2xl': '1400px',
-      },
+      screens: { '2xl': '1400px' },
     },
-
     extend: {
       height: {
         input: '59px',
@@ -35,7 +31,7 @@ module.exports = {
         red: {
           DEFAULT: 'hsla(0, 63%, 51%, 1)',
         },
-        // TODO: remove
+        // TODO: remove tray
         primary: {
           600: '#FF7E7F',
           700: '#FF5E5F',
@@ -46,31 +42,6 @@ module.exports = {
         },
         foreground: '#FFFFFF',
         'muted-foreground': '#c7c7c7',
-        // TODO: remove visor
-        destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))',
-        },
-        muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))',
-        },
-        accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))',
-        },
-        popover: {
-          DEFAULT: 'hsl(var(--popover))',
-          foreground: 'hsl(var(--popover-foreground))',
-        },
-        card: {
-          DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))',
-        },
-        border: 'hsl(var(--border))',
-        input: 'hsl(var(--input))',
-        ring: 'hsl(var(--ring))',
-        background: 'hsl(var(--background))',
       },
       border: {
         input: 'hsl(var(--input))',
