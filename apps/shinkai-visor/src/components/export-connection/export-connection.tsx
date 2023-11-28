@@ -9,6 +9,7 @@ import {
   FormLabel,
   FormMessage,
   Input,
+  TextField,
 } from '@shinkai_network/shinkai-ui';
 import { Download } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -82,30 +83,22 @@ export const ExportConnection = () => {
                 control={form.control}
                 name="passphrase"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input {...field} type="password" />
-                    </FormControl>
-                    <FormLabel>
-                      <FormattedMessage id="passphrase" />
-                    </FormLabel>
-                    <FormMessage />
-                  </FormItem>
+                  <TextField
+                    field={field}
+                    label={<FormattedMessage id="passphrase" />}
+                    type="password"
+                  />
                 )}
               />
               <FormField
                 control={form.control}
                 name="confirmPassphrase"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input {...field} type="password" />
-                    </FormControl>
-                    <FormLabel>
-                      <FormattedMessage id="confirm-passphrase" />
-                    </FormLabel>
-                    <FormMessage />
-                  </FormItem>
+                  <TextField
+                    field={field}
+                    label={<FormattedMessage id="confirm-passphrase" />}
+                    type="password"
+                  />
                 )}
               />
             </div>

@@ -10,6 +10,7 @@ import {
   FormLabel,
   FormMessage,
   Input,
+  TextField,
 } from '@shinkai_network/shinkai-ui';
 import { BrowserQRCodeReader } from '@zxing/browser';
 import { Loader2, QrCode, Trash, Upload } from 'lucide-react';
@@ -246,15 +247,10 @@ export const ConnectMethodQrCode = () => {
                   control={form.control}
                   name="registration_name"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormLabel>
-                        <FormattedMessage id="registration-name" />
-                      </FormLabel>
-                      <FormMessage />
-                    </FormItem>
+                    <TextField
+                      field={field}
+                      label={<FormattedMessage id="registration-name" />}
+                    />
                   )}
                 />
 
@@ -262,15 +258,10 @@ export const ConnectMethodQrCode = () => {
                   control={form.control}
                   name="node_address"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormLabel>
-                        <FormattedMessage id="node-address" />
-                      </FormLabel>
-                      <FormMessage />
-                    </FormItem>
+                    <TextField
+                      field={field}
+                      label={<FormattedMessage id="node-address" />}
+                    />
                   )}
                 />
 
@@ -278,15 +269,10 @@ export const ConnectMethodQrCode = () => {
                   control={form.control}
                   name="shinkai_identity"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormLabel>
-                        <FormattedMessage id="shinkai-identity" />
-                      </FormLabel>
-                      <FormMessage />
-                    </FormItem>
+                    <TextField
+                      field={field}
+                      label={<FormattedMessage id="shinkai-identity" />}
+                    />
                   )}
                 />
               </>
@@ -294,10 +280,12 @@ export const ConnectMethodQrCode = () => {
 
             {isSubmitError && <ErrorMessage message={submitError?.message} />}
           </div>
-          <Button className="w-full" disabled={isPending} type="submit">
-            {isPending ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : null}
+          <Button
+            className="w-full"
+            disabled={isPending}
+            isLoading={isPending}
+            type="submit"
+          >
             <FormattedMessage id="connect" />
           </Button>
         </form>

@@ -9,6 +9,7 @@ import {
   FormLabel,
   FormMessage,
   Input,
+  TextField,
 } from '@shinkai_network/shinkai-ui';
 import { Trash, Upload } from 'lucide-react';
 import { useState } from 'react';
@@ -174,15 +175,11 @@ export const ConnectMethodRestoreConnection = () => {
               control={form.control}
               name="passphrase"
               render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input {...field} type="password" />
-                  </FormControl>
-                  <FormLabel>
-                    <FormattedMessage id="passphrase" />
-                  </FormLabel>
-                  <FormMessage />
-                </FormItem>
+                <TextField
+                  field={field}
+                  label={<FormattedMessage id="passphrase" />}
+                  type={'password'}
+                />
               )}
             />
             {error && <ErrorMessage message={'Invalid connection file'} />}

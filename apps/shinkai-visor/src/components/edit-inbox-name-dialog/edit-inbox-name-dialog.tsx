@@ -9,6 +9,7 @@ import {
   FormLabel,
   FormMessage,
   Input,
+  TextField,
 } from '@shinkai_network/shinkai-ui';
 import { Loader2 } from 'lucide-react';
 import { useEffect } from 'react';
@@ -103,15 +104,10 @@ export const EditInboxNameDialog = ({
                 control={form.control}
                 name="name"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormLabel>
-                      <FormattedMessage id="name.one" />
-                    </FormLabel>
-                    <FormMessage />
-                  </FormItem>
+                  <TextField
+                    field={field}
+                    label={<FormattedMessage id="name.one" />}
+                  />
                 )}
               />
             </div>
@@ -125,10 +121,12 @@ export const EditInboxNameDialog = ({
                 >
                   <FormattedMessage id="cancel" />
                 </Button>
-                <Button className="flex-1" disabled={isPending} type="submit">
-                  {isPending ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : null}
+                <Button
+                  className="flex-1"
+                  disabled={isPending}
+                  isLoading={isPending}
+                  type="submit"
+                >
                   <FormattedMessage id="save" />
                 </Button>
               </div>

@@ -14,6 +14,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  TextField,
 } from '@shinkai_network/shinkai-ui';
 import { Download, Loader2, QrCode } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
@@ -208,15 +209,10 @@ export const CreateRegistrationCode = () => {
                   control={form.control}
                   name="profile"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormLabel>
-                        <FormattedMessage id="profile.one" />
-                      </FormLabel>
-                      <FormMessage />
-                    </FormItem>
+                    <TextField
+                      field={field}
+                      label={<FormattedMessage id="profile.one" />}
+                    />
                   )}
                 />
               )}
@@ -255,12 +251,7 @@ export const CreateRegistrationCode = () => {
                 )}
               />
             </div>
-            <Button className="w-full" type="submit">
-              {isPending ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <QrCode className="mr-2 h-4 w-4" />
-              )}
+            <Button className="w-full" isLoading={isPending} type="submit">
               <FormattedMessage id="generate-registration-code" />
             </Button>
           </form>

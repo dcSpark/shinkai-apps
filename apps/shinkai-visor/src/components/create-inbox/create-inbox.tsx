@@ -10,6 +10,7 @@ import {
   FormMessage,
   Input,
   Textarea,
+  TextField,
 } from '@shinkai_network/shinkai-ui';
 import { Loader2 } from 'lucide-react';
 import { useEffect } from 'react';
@@ -82,15 +83,10 @@ export const CreateInbox = () => {
               control={form.control}
               name="receiverIdentity"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    <FormattedMessage id="message-receiver" />
-                  </FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+                <TextField
+                  field={field}
+                  label={<FormattedMessage id="message-receiver" />}
+                />
               )}
             />
 
@@ -120,11 +116,9 @@ export const CreateInbox = () => {
           <Button
             className="w-full"
             disabled={!form.formState.isValid || isPending}
+            isLoading={isPending}
             type="submit"
           >
-            {isPending ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : null}
             <FormattedMessage id="create-inbox" />
           </Button>
         </form>

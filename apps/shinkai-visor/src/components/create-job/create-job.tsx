@@ -242,10 +242,12 @@ export const CreateJob = () => {
             />
           </ScrollArea>
 
-          <Button className="w-full" disabled={isPending} type="submit">
-            {isPending ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : null}
+          <Button
+            className="w-full"
+            disabled={isPending}
+            isLoading={isPending}
+            type="submit"
+          >
             <FormattedMessage id="create-job" />
           </Button>
         </form>

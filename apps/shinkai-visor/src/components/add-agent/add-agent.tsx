@@ -14,6 +14,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  TextField,
 } from '@shinkai_network/shinkai-ui';
 import { Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -146,15 +147,10 @@ export const AddAgent = () => {
               control={form.control}
               name="agentName"
               render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormLabel>
-                    <FormattedMessage id="agent-name" />
-                  </FormLabel>
-                  <FormMessage />
-                </FormItem>
+                <TextField
+                  field={field}
+                  label={<FormattedMessage id="agent-name" />}
+                />
               )}
             />
 
@@ -162,15 +158,10 @@ export const AddAgent = () => {
               control={form.control}
               name="externalUrl"
               render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormLabel>
-                    <FormattedMessage id="external-url" />
-                  </FormLabel>
-                  <FormMessage />
-                </FormItem>
+                <TextField
+                  field={field}
+                  label={<FormattedMessage id="external-url" />}
+                />
               )}
             />
 
@@ -178,15 +169,10 @@ export const AddAgent = () => {
               control={form.control}
               name="apiKey"
               render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormLabel>
-                    <FormattedMessage id="api-key" />
-                  </FormLabel>
-                  <FormMessage />
-                </FormItem>
+                <TextField
+                  field={field}
+                  label={<FormattedMessage id="api-key" />}
+                />
               )}
             />
 
@@ -259,10 +245,12 @@ export const AddAgent = () => {
               )}
             />
           </div>
-          <Button className="w-full" disabled={isPending} type="submit">
-            {isPending ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : null}
+          <Button
+            className="w-full"
+            disabled={isPending}
+            isLoading={isPending}
+            type="submit"
+          >
             <FormattedMessage id="add-agent" />
           </Button>
         </form>
