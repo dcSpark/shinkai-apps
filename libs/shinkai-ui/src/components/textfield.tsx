@@ -1,5 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Input } from './input';
-
 import { FormControl, FormItem, FormLabel, FormMessage } from './form';
 import React from 'react';
 import { cn } from '../utils';
