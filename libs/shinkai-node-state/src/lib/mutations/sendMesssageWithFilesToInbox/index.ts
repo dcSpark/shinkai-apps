@@ -8,7 +8,7 @@ export const sendMessageWithFilesToInbox = async ({
   receiver,
   message,
   inboxId,
-  file,
+  files,
   my_device_encryption_sk,
   my_device_identity_sk,
   node_encryption_pk,
@@ -21,7 +21,7 @@ export const sendMessageWithFilesToInbox = async ({
     receiver,
     message,
     inboxId,
-    file,
+    files,
     {
       my_device_encryption_sk,
       my_device_identity_sk,

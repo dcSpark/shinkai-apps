@@ -14,5 +14,5 @@ export type SendMessageWithFilesToInboxInput = CredentialsPayload & {
   senderSubidentity: string;
   message: string;
   inboxId: string;
-  file: File;
+  files: File[];
 };
