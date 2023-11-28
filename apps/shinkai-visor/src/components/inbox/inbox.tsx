@@ -180,7 +180,7 @@ export const Inbox = () => {
 
   return (
     <div className="flex h-full flex-col justify-between space-y-3">
-      <ScrollArea className="h-full pr-4" ref={chatContainerRef}>
+      <ScrollArea className="h-full pr-4 [&>div>div]:!block" ref={chatContainerRef}>
         {isChatConversationSuccess && (
           <div className="py-2 text-center text-xs">
             {isFetchingPreviousPage && (
@@ -192,28 +192,31 @@ export const Inbox = () => {
           </div>
         )}
         <div className="">
-          {isChatConversationLoading &&
-            [...Array(5).keys()].map((index) => (
-              <div
-                className={cn(
-                  'flex w-[95%] items-start gap-3',
-                  index % 2 === 0
-                    ? 'ml-0 mr-auto flex-row'
-                    : 'ml-auto mr-0 flex-row-reverse',
-                )}
-                key={`${index}`}
-              >
-                <Skeleton className="h-12 w-12 rounded-full" key={index} />
-                <Skeleton
+          {isChatConversationLoading && (
+            <div className="flex flex-col space-y-2">
+              {[...Array(5).keys()].map((index) => (
+                <div
                   className={cn(
-                    'w-full rounded-lg px-2.5 py-3',
+                    'flex w-[95%] items-start gap-3',
                     index % 2 === 0
-                      ? 'rounded-tl-none border border-slate-800'
-                      : 'rounded-tr-none border-none',
+                      ? 'ml-0 mr-auto flex-row'
+                      : 'ml-auto mr-0 flex-row-reverse',
                   )}
-                />
-              </div>
-            ))}
+                  key={`${index}`}
+                >
+                  <Skeleton className="shrink-0 h-12 w-12 rounded-full" key={index} />
+                  <Skeleton
+                    className={cn(
+                      'w-full h-16 rounded-lg px-2.5 py-3',
+                      index % 2 === 0
+                        ? 'rounded-tl-none border border-slate-800'
+                        : 'rounded-tr-none border-none',
+                    )}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
           {isChatConversationSuccess &&
             data?.pages?.map((group, index) => (
               <Fragment key={index}>
@@ -223,7 +226,7 @@ export const Inbox = () => {
                       <div key={date}>
                         <div
                           className={cn(
-                            'relative z-10 m-auto flex h-[30px] w-[70px] items-center justify-center rounded-xl bg-gray-400',
+                            'relative z-10 m-auto flex h-[30px] w-[150px] items-center justify-center rounded-xl bg-gray-400',
                             true && 'sticky top-5',
                           )}
                         >

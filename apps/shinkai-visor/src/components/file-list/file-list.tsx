@@ -58,7 +58,7 @@ export const FileList = ({ files, actions, className }: FileListProps) => {
         <FileImagePreview
           className="h-full rounded-lg object-cover"
           file={file}
-         />
+        />
       );
     }
   };
