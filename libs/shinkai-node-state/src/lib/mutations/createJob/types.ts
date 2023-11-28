@@ -7,7 +7,7 @@ export type CreateJobInput = JobCredentialsPayload & {
   agentId: string;
   content: string;
   files_inbox: string;
-  file?: File;
+  files?: File[];
 };
 
 export type CreateJobOutput = {

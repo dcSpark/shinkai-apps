@@ -162,7 +162,7 @@ const JobChat: React.FC = () => {
         receiver: auth.shinkai_identity,
         message: message_to_send,
         inboxId: deserializedId as string,
-        file: selectedFile,
+        files: [selectedFile],
         my_device_encryption_sk: auth.my_device_encryption_sk,
         my_device_identity_sk: auth.my_device_identity_sk,
         node_encryption_pk: auth.node_encryption_pk,

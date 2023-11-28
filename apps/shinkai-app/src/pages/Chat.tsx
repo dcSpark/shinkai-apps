@@ -112,7 +112,7 @@ const Chat: React.FC = () => {
         receiver,
         message: data.message,
         inboxId: deserializedId as string,
-        file,
+        files: [file],
         my_device_encryption_sk: auth.my_device_encryption_sk,
         my_device_identity_sk: auth.my_device_identity_sk,
         node_encryption_pk: auth.node_encryption_pk,

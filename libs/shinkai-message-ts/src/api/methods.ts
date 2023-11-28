@@ -156,7 +156,7 @@ export const sendTextMessageWithFilesForInbox = async (
   receiver: string,
   text_message: string,
   job_inbox: string,
-  selectedFile: File,
+  files: File[],
   setupDetailsState: CredentialsPayload,
 ): Promise<{ inboxId: string; message: ShinkaiMessage }> => {
   try {
@@ -172,7 +172,9 @@ export const sendTextMessageWithFilesForInbox = async (
     );
 
     await fileUploader.createFolder();
-    await fileUploader.uploadEncryptedFile(selectedFile);
+    for (const fileToUpload of files) {
+      await fileUploader.uploadEncryptedFile(fileToUpload);
+    }
     const responseText = await fileUploader.finalizeAndSend(text_message);
     const message: ShinkaiMessage = JSON.parse(responseText);
 

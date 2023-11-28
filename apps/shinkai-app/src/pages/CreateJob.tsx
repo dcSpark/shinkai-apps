@@ -66,7 +66,7 @@ const CreateJob: React.FC = () => {
       agentId: data.model,
       content: data.description,
       files_inbox: '',
-      file: undefined,
+      files: [],
       my_device_encryption_sk: auth.my_device_encryption_sk,
       my_device_identity_sk: auth.my_device_identity_sk,
       node_encryption_pk: auth.node_encryption_pk,
