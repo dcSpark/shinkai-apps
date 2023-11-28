@@ -2,7 +2,21 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
-import { Loader2, Workflow } from 'lucide-react';
+import {
+  Button,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Textarea,
+} from '@shinkai_network/shinkai-ui';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -14,25 +28,7 @@ import { useAuth } from '../../store/auth/auth';
 import { useSettings } from '../../store/settings/settings';
 import { FileInput } from '../file-input/file-input';
 import { Header } from '../header/header';
-import { Button } from '../ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../ui/form';
 import { ScrollArea } from '../ui/scroll-area';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectPortal,
-  SelectTrigger,
-  SelectValue,
-} from '../ui/select';
-import { Textarea } from '../ui/textarea';
 
 const formSchema = z.object({
   agent: z.string().nonempty(),
@@ -149,10 +145,7 @@ export const CreateJob = () => {
   };
   return (
     <div className="flex h-full flex-col space-y-3">
-      <Header
-        icon={<Workflow />}
-        title={<FormattedMessage id="create-job"></FormattedMessage>}
-      />
+      <Header title={<FormattedMessage id="create-job" />} />
       <Form {...form}>
         <form
           className="flex grow flex-col justify-between space-y-2 overflow-hidden"
@@ -178,19 +171,16 @@ export const CreateJob = () => {
                         <SelectValue />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectPortal>
-                      <SelectContent>
-                        {agents?.map((agent) => (
-                          <SelectItem key={agent.id} value={agent.id}>
-                            {
-                              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                              (agent.full_identity_name as any)
-                                ?.subidentity_name
-                            }
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </SelectPortal>
+                    <SelectContent>
+                      {agents?.map((agent) => (
+                        <SelectItem key={agent.id} value={agent.id}>
+                          {
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            (agent.full_identity_name as any)?.subidentity_name
+                          }
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
                   </Select>
                   <FormMessage />
                 </FormItem>
@@ -201,7 +191,7 @@ export const CreateJob = () => {
               name="files"
               render={({ field }) => (
                 <FormItem className="mt-3">
-                  <FormLabel>
+                  <FormLabel className="sr-only">
                     <FormattedMessage id="file.one" />
                   </FormLabel>
                   <FormControl>
@@ -216,6 +206,7 @@ export const CreateJob = () => {
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="content"
@@ -235,7 +226,7 @@ export const CreateJob = () => {
                       )}
                       <Textarea
                         autoFocus
-                        className="resize-none border-white"
+                        className="resize-none"
                         placeholder={intl.formatMessage({
                           id: 'tmwtd',
                         })}
@@ -243,18 +234,19 @@ export const CreateJob = () => {
                       />
                     </div>
                   </FormControl>
+
                   <FormMessage />
                 </FormItem>
               )}
             />
           </ScrollArea>
 
-          <Button className="w-full" disabled={isPending} type="submit">
-            {isPending ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Workflow className="mr-2 h-4 w-4"></Workflow>
-            )}
+          <Button
+            className="w-full"
+            disabled={isPending}
+            isLoading={isPending}
+            type="submit"
+          >
             <FormattedMessage id="create-job" />
           </Button>
         </form>

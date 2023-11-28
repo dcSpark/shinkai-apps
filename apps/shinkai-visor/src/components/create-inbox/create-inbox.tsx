@@ -1,6 +1,16 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateChat } from '@shinkai_network/shinkai-node-state/lib/mutations/createChat/useCreateChat';
-import { Loader2, MessageCircle } from 'lucide-react';
+import {
+  Button,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Textarea,
+  TextField,
+} from '@shinkai_network/shinkai-ui';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -9,17 +19,6 @@ import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
-import { Button } from '../ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../ui/form';
-import { Input } from '../ui/input';
-import { Textarea } from '../ui/textarea';
 
 const formSchema = z.object({
   receiverIdentity: z.string().nonempty(),
@@ -70,30 +69,22 @@ export const CreateInbox = () => {
   }, [auth, form]);
 
   return (
-    <div className="h-full flex flex-col space-y-3">
-      <Header
-        icon={<MessageCircle />}
-        title={<FormattedMessage id="create-inbox"></FormattedMessage>}
-      ></Header>
+    <div className="flex h-full flex-col space-y-8">
+      <Header title={<FormattedMessage id="create-inbox" />} />
       <Form {...form}>
         <form
-          className="h-full flex flex-col space-y-2 justify-between"
+          className="flex h-full flex-col justify-between space-y-2"
           onSubmit={form.handleSubmit(submit)}
         >
-          <div className="grow flex flex-col space-y-2">
+          <div className="flex grow flex-col space-y-2">
             <FormField
               control={form.control}
               name="receiverIdentity"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    <FormattedMessage id="message-receiver" />
-                  </FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+                <TextField
+                  field={field}
+                  label={<FormattedMessage id="message-receiver" />}
+                />
               )}
             />
 
@@ -108,7 +99,7 @@ export const CreateInbox = () => {
                   <FormControl>
                     <Textarea
                       autoFocus
-                      className="resize-none border-white"
+                      className="resize-none"
                       placeholder={intl.formatMessage({
                         id: 'tmwtd',
                       })}
@@ -123,13 +114,9 @@ export const CreateInbox = () => {
           <Button
             className="w-full"
             disabled={!form.formState.isValid || isPending}
+            isLoading={isPending}
             type="submit"
           >
-            {isPending ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <MessageCircle className="mr-2 h-4 w-4"></MessageCircle>
-            )}
             <FormattedMessage id="create-inbox" />
           </Button>
         </form>

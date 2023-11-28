@@ -1,21 +1,27 @@
+import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
 import {
-  ArrowLeft,
-  Bot,
-  Inbox,
-  Menu,
-  MessageCircle,
-  Settings,
-  Unplug,
-  Workflow,
-  X,
-} from 'lucide-react';
-import { useState } from 'react';
+  AddAgentIcon,
+  AgentIcon,
+  Button,
+  ChatBubbleIcon,
+  DisconnectIcon,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+  InboxIcon,
+  JobBubbleIcon,
+} from '@shinkai_network/shinkai-ui';
+import { ArrowLeft, Menu, Settings, X } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useHistory, useLocation } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 
 import visorLogo from '../../assets/icons/visor.svg';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
 import { useAuth } from '../../store/auth/auth';
+import { EditInboxNameDialog } from '../edit-inbox-name-dialog/edit-inbox-name-dialog';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,16 +32,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '../ui/alert-dialog';
-import { Button } from '../ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
 
 enum MenuOption {
   Inbox = 'inbox',
@@ -47,9 +43,62 @@ enum MenuOption {
   Logout = 'logout',
 }
 
+const DisplayInboxName = () => {
+  const auth = useAuth((state) => state.auth);
+  const location = useLocation();
+
+  const { inboxes } = useGetInboxes({
+    sender: auth?.shinkai_identity ?? '',
+    senderSubidentity: auth?.profile ?? '',
+    // Assuming receiver and target_shinkai_name_profile are the same as sender
+    receiver: auth?.shinkai_identity ?? '',
+    targetShinkaiNameProfile: `${auth?.shinkai_identity}/${auth?.profile}`,
+    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+  });
+
+  const [isEditInboxNameDialogOpened, setIsEditInboxNameDialogOpened] =
+    useState<boolean>(false);
+
+  const currentInbox = useMemo(() => {
+    const inboxId = location.pathname.split('/')?.[2];
+    const decodedInboxId = decodeURIComponent(inboxId);
+    const currentInbox = inboxes.find(
+      (inbox) => decodedInboxId === inbox.inbox_id,
+    );
+    return currentInbox;
+  }, [inboxes, location.pathname]);
+  return (
+    <>
+      <Button
+        className="relative inline-flex h-auto max-w-[250px] bg-transparent px-2.5 py-1.5"
+        variant="ghost"
+      >
+        <span
+          className="line-clamp-1 text-base font-medium text-white"
+          onClick={() => setIsEditInboxNameDialogOpened(true)}
+        >
+          {currentInbox?.custom_name || currentInbox?.inbox_id}
+        </span>
+      </Button>
+      <EditInboxNameDialog
+        inboxId={currentInbox?.inbox_id || ''}
+        name={currentInbox?.custom_name || ''}
+        onCancel={() => setIsEditInboxNameDialogOpened(false)}
+        onSaved={() => setIsEditInboxNameDialogOpened(false)}
+        open={isEditInboxNameDialogOpened}
+      />
+    </>
+  );
+};
+
 export default function NavBar() {
   const history = useHistory();
   const location = useLocation();
+
   const setAuth = useAuth((state) => state.setAuth);
   const auth = useAuth((state) => state.auth);
   const [isMenuOpened, setMenuOpened] = useState(false);
@@ -59,6 +108,8 @@ export default function NavBar() {
     '/settings',
     '/nodes/connect/method/quick-start',
   ].includes(location.pathname);
+
+  const isInboxPage = location.pathname.includes('/inboxes/job_inbox');
   const [isConfirmLogoutDialogOpened, setIsConfirmLogoutDialogOpened] =
     useState(false);
 
@@ -97,9 +148,7 @@ export default function NavBar() {
         break;
     }
   };
-  const exportConnection = () => {
-    history.push('settings/export-connection');
-  };
+
   return (
     <nav className="">
       <AlertDialog open={isConfirmLogoutDialogOpened}>
@@ -109,34 +158,33 @@ export default function NavBar() {
               <FormattedMessage id="are-you-sure" />
             </AlertDialogTitle>
             <AlertDialogDescription>
+              <div className="flex flex-col space-y-3 text-left text-white/70">
+                <div className="flex flex-col space-y-1 ">
+                  <span className="text-sm">
+                    <FormattedMessage id="permanently-lose-connection" />
+                  </span>
+                </div>
+                <div className="text-sm">
+                  Before continuing, please
+                  <Link
+                    className="mr-1 inline-block cursor-pointer text-white underline"
+                    to={'/settings/export-connection'}
+                  >
+                    export your connection
+                  </Link>
+                  to restore your connection at any time.
+                </div>
+              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <div className="flex flex-col space-y-3 items-center">
-            <div className="flex flex-col space-y-1">
-              <span className="text-xs italic text-center">
-                <FormattedMessage id="permanently-lose-connection" />
-              </span>
-            </div>
-            <div className="flex flex-col">
-              <span
-                className="underline decoration-dashed cursor-pointer"
-                onClick={() => exportConnection()}
-              >
-                <FormattedMessage id="disconnect-warning-link" />
-              </span>
-              <span className="text-xs">
-              <FormattedMessage id="disconnect-warning-link-description" />
-
-              </span>
-            </div>
-          </div>
-          <AlertDialogFooter>
+          <AlertDialogFooter className="mt-4 flex gap-1">
             <AlertDialogCancel
+              className="mt-0 flex-1"
               onClick={() => setIsConfirmLogoutDialogOpened(false)}
             >
               <FormattedMessage id="cancel" />
             </AlertDialogCancel>
-            <AlertDialogAction onClick={() => logout()}>
+            <AlertDialogAction className="flex-1" onClick={() => logout()}>
               <FormattedMessage id="continue" />
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -152,11 +200,16 @@ export default function NavBar() {
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </div>
-        <img
-          alt="shinkai-app-logo"
-          className="h-5 absolute left-0 right-0 ml-auto mr-auto"
-          src={srcUrlResolver(visorLogo)}
-        />
+        {isInboxPage ? (
+          <DisplayInboxName />
+        ) : (
+          <img
+            alt="shinkai-app-logo"
+            className="absolute left-0 right-0 ml-auto mr-auto w-[100px]"
+            src={srcUrlResolver(visorLogo)}
+          />
+        )}
+
         {auth && (
           <DropdownMenu
             modal={false}
@@ -171,79 +224,79 @@ export default function NavBar() {
                 )}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>
-                  <FormattedMessage id="inbox.other"></FormattedMessage>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => onClickMenuOption(MenuOption.Inbox)}
-                >
-                  <Inbox className="mr-2 h-4 w-4" />
-                  <span>
-                    <FormattedMessage id="inbox.other" />
-                  </span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => onClickMenuOption(MenuOption.CreateInbox)}
-                >
-                  <MessageCircle className="mr-2 h-4 w-4" />
-                  <span>
-                    <FormattedMessage id="create-inbox" />
-                  </span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => onClickMenuOption(MenuOption.CreateJob)}
-                >
-                  <Workflow className="mr-2 h-4 w-4" />
-                  <span>
-                    <FormattedMessage id="create-job" />
-                  </span>
-                </DropdownMenuItem>
+            <DropdownMenuContent
+              align="end"
+              alignOffset={-22}
+              className="w-[300px] space-y-2.5 rounded-br-none rounded-tr-none"
+              sideOffset={10}
+            >
+              <DropdownMenuLabel>
+                <FormattedMessage id="inbox.other" />
+              </DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => onClickMenuOption(MenuOption.Inbox)}
+              >
+                <InboxIcon className="mr-2 h-4 w-4" />
+                <span>
+                  <FormattedMessage id="inbox.other" />
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onClickMenuOption(MenuOption.CreateInbox)}
+              >
+                <ChatBubbleIcon className="mr-2 h-4 w-4" />
+                <span>
+                  <FormattedMessage id="create-inbox" />
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onClickMenuOption(MenuOption.CreateJob)}
+              >
+                <JobBubbleIcon className="mr-2 h-4 w-4" />
+                <span>
+                  <FormattedMessage id="create-job" />
+                </span>
+              </DropdownMenuItem>
 
-                <DropdownMenuSeparator />
-                <DropdownMenuLabel>
-                  <FormattedMessage id="agent.other"></FormattedMessage>
-                </DropdownMenuLabel>
-                <DropdownMenuItem
-                  onClick={() => onClickMenuOption(MenuOption.Agents)}
-                >
-                  <Bot className="mr-2 h-4 w-4" />
-                  <span>
-                    <FormattedMessage id="agent.other" />
-                  </span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => onClickMenuOption(MenuOption.AddAgent)}
-                >
-                  <Bot className="mr-2 h-4 w-4" />
-                  <span>
-                    <FormattedMessage id="add-agent" />
-                  </span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuLabel>
-                  <FormattedMessage id="account.one"></FormattedMessage>
-                </DropdownMenuLabel>
-                <DropdownMenuItem
-                  onClick={() => onClickMenuOption(MenuOption.Settings)}
-                >
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>
-                    <FormattedMessage id="setting.other" />
-                  </span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => onClickMenuOption(MenuOption.Logout)}
-                >
-                  <Unplug className="mr-2 h-4 w-4" />
-                  <span>
-                    <FormattedMessage id="disconnect" />
-                  </span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenuPortal>
+              <DropdownMenuLabel>
+                <FormattedMessage id="agent.other" />
+              </DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => onClickMenuOption(MenuOption.Agents)}
+              >
+                <AgentIcon className="mr-2 h-4 w-4" />
+                <span>
+                  <FormattedMessage id="agent.other" />
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onClickMenuOption(MenuOption.AddAgent)}
+              >
+                <AddAgentIcon className="mr-2 h-4 w-4" />
+                <span>
+                  <FormattedMessage id="add-agent" />
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuLabel>
+                <FormattedMessage id="account.one" />
+              </DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => onClickMenuOption(MenuOption.Settings)}
+              >
+                <Settings className="mr-2 h-4 w-4" />
+                <span>
+                  <FormattedMessage id="setting.other" />
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onClickMenuOption(MenuOption.Logout)}
+              >
+                <DisconnectIcon className="mr-2 h-4 w-4" />
+                <span>
+                  <FormattedMessage id="disconnect" />
+                </span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
           </DropdownMenu>
         )}
       </div>

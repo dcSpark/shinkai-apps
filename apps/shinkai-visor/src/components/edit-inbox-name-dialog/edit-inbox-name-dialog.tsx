@@ -1,13 +1,17 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useUpdateInboxName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateInboxName/useUpdateInboxName';
-import { Loader2, Save } from 'lucide-react';
+import {
+  Button,
+  Form,
+  FormField,
+  TextField,
+} from '@shinkai_network/shinkai-ui';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
-import { Button } from '../ui/button';
 import {
   Dialog,
   DialogContent,
@@ -16,15 +20,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../ui/dialog';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../ui/form';
-import { Input } from '../ui/input';
 
 export type EditInboxNameDialogProps = {
   open: boolean;
@@ -55,7 +50,7 @@ export const EditInboxNameDialog = ({
     },
   });
   const { mutateAsync: updateInboxName, isPending } = useUpdateInboxName({
-    onSuccess: (data) => {
+    onSuccess: () => {
       onSaved(form.getValues().name);
     },
   });
@@ -85,52 +80,48 @@ export const EditInboxNameDialog = ({
         <DialogHeader className="overflow-x-hidden">
           <DialogTitle>
             <FormattedMessage id="edit" />{' '}
-            <span className="lowercase">
+            <span className="mr-1 capitalize">
               <FormattedMessage id="inbox.one" />
             </span>
+            Name
           </DialogTitle>
           <DialogDescription className="truncate">{inboxId}</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
           <form
-            className="h-full flex flex-col space-y-3 justify-between"
+            className="flex h-full flex-col justify-between space-y-3"
             onSubmit={form.handleSubmit(submit)}
           >
-            <div className="grow flex flex-col space-y-2">
+            <div className="flex grow flex-col space-y-2">
               <FormField
                 control={form.control}
                 name="name"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      <FormattedMessage id="name.one" />
-                    </FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                  <TextField
+                    field={field}
+                    label={<FormattedMessage id="name.one" />}
+                  />
                 )}
               />
             </div>
             <DialogFooter>
-              <div className="flex flex-col justify-between space-y-2">
-                <Button disabled={isPending} type="submit">
-                  {isPending ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Save className="mr-2 h-4 w-4"></Save>
-                  )}
-                  <FormattedMessage id="save" />
+              <div className="flex flex-col gap-2 pt-4">
+                <Button
+                  className="flex-1"
+                  onClick={cancel}
+                  type="button"
+                  variant="ghost"
+                >
+                  <FormattedMessage id="cancel" />
                 </Button>
                 <Button
-                  className="text-secondary-600"
-                  onClick={() => cancel()}
-                  type="button"
-                  variant="outline"
+                  className="flex-1"
+                  disabled={isPending}
+                  isLoading={isPending}
+                  type="submit"
                 >
-                  <FormattedMessage id="cancel"></FormattedMessage>
+                  <FormattedMessage id="save" />
                 </Button>
               </div>
             </DialogFooter>
