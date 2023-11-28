@@ -1,5 +1,5 @@
 import { CheckCircle2, CopyIcon } from 'lucide-react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 import { cn } from '../utils';
 import { Button } from './button';
@@ -8,12 +8,14 @@ type CopyToClipboardIconProps = {
   string?: string;
   children?: React.ReactNode;
   className?: string;
+  onCopyClipboard?: () => void;
 };
 
 const CopyToClipboardIcon = ({
   string,
   children,
   className,
+  onCopyClipboard,
 }: CopyToClipboardIconProps) => {
   const [clipboard, setClipboard] = useState(false);
 
@@ -21,7 +23,11 @@ const CopyToClipboardIcon = ({
   const onCopy = () => {
     if (!string) return;
     const string_ = string.trim();
-    navigator.clipboard.writeText(string_);
+    if (onCopyClipboard && typeof onCopyClipboard === 'function') {
+      onCopyClipboard();
+    } else {
+      navigator.clipboard.writeText(string_);
+    }
     setClipboard(true);
     clearTimeout(timeout);
     timeout = setTimeout(() => setClipboard(false), 1000);
@@ -32,17 +38,20 @@ const CopyToClipboardIcon = ({
   return (
     <Button
       className={cn(
-        'text-muted-foreground flex gap-2 px-2 text-xs font-normal',
+        'text-gray-80 flex gap-2 rounded-lg bg-gray-400 px-2 text-xs font-normal transition-colors hover:bg-gray-400 hover:text-white',
         className,
       )}
       disabled={!string}
       onClick={onCopy}
+      size={'icon'}
       variant="ghost"
     >
-      <ClipboardIcon className={cn('h-4 w-4', clipboard && 'text-green-600')} />
+      <ClipboardIcon
+        className={cn('h-3.5 w-3.5', clipboard && 'text-green-600')}
+      />
       {children}
     </Button>
   );
 };
 
-export default CopyToClipboardIcon;
+export { CopyToClipboardIcon };

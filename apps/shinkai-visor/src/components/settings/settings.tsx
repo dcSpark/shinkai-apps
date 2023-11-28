@@ -70,7 +70,7 @@ export const Settings = () => {
     }
   }, [currentFormValue, settings, setSettings]);
   return (
-    <div className="flex flex-col space-y-3">
+    <div className="flex flex-col space-y-8">
       <Header title={<FormattedMessage id="setting.other" />} />
       <div className="flex flex-col space-y-8">
         <Form {...form}>
@@ -115,15 +115,15 @@ export const Settings = () => {
               control={form.control}
               name="hideActionButton"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-2 space-y-0 rounded-sm border p-2">
-                  <FormControl>
+                <FormItem className="flex gap-2.5 pt-4">
+                  <FormControl id={'hide-action'}>
                     <Checkbox
                       checked={field.value}
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
-                    <FormLabel>
+                    <FormLabel className="static space-y-1.5 text-sm text-white">
                       <FormattedMessage id="hide-action-button-label" />
                     </FormLabel>
                     <FormDescription>

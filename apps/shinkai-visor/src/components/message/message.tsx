@@ -1,7 +1,6 @@
 import { ChatConversationMessage } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
-import { Button } from '@shinkai_network/shinkai-ui';
+import { CopyToClipboardIcon } from '@shinkai_network/shinkai-ui';
 import MarkdownPreview from '@uiw/react-markdown-preview';
-import { Copy } from 'lucide-react';
 
 import shinkaiMiniLogo from '../../assets/icons/shinkai-min.svg';
 import { cn } from '../../helpers/cn-utils';
@@ -14,14 +13,14 @@ import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 type MessageProps = {
   message: ChatConversationMessage;
 };
+const copyToClipboard = (content: string) => {
+  sendMessage({
+    type: ServiceWorkerInternalMessageType.CopyToClipboard,
+    data: { content: content },
+  });
+};
 
 export const Message = ({ message }: MessageProps) => {
-  const copyToClipboard = () => {
-    sendMessage({
-      type: ServiceWorkerInternalMessageType.CopyToClipboard,
-      data: { content: message.content },
-    });
-  };
   return (
     <div
       className={cn(
@@ -41,20 +40,19 @@ export const Message = ({ message }: MessageProps) => {
       </Avatar>
       <div
         className={cn(
-          'mt-1 flex flex-col space-y-2 rounded-lg bg-transparent px-2.5 py-3 text-sm text-white',
+          'group relative mt-1 flex flex-col rounded-lg bg-transparent px-2.5 py-3 text-sm text-white',
           message.isLocal
             ? 'rounded-tr-none bg-gray-300'
             : 'rounded-bl-none border-none bg-gray-200',
         )}
       >
-        <Button
-          className="absolute right-2 top-2 hidden group-hover:flex"
-          onClick={() => copyToClipboard()}
-          size="icon"
-          variant="ghost"
-        >
-          <Copy className="h-4 w-4" />
-        </Button>
+        {message.isLocal ? null : (
+          <CopyToClipboardIcon
+            className="duration-30 absolute right-3 bg-gray-300 opacity-0 group-hover:opacity-100 group-hover:transition-opacity"
+            onCopyClipboard={() => copyToClipboard(message.content)}
+            string={message.content}
+          />
+        )}
         <MarkdownPreview
           className="wmde-markdown-var"
           source={message.content}

@@ -26,7 +26,9 @@ htmlRoot.prepend(baseContainer);
 export const ActionButton = () => {
   const [popupVisibility] = useGlobalActionButtonChromeMessage();
   const settings = useSettings((settingsStore) => settingsStore.settings);
+
   const togglePopupVisibility = async () => {
+    console.log('clicked!');
     sendContentScriptMessage({
       type: ContentScriptBridgeMessageType.TogglePopupVisibility,
     });
@@ -34,7 +36,7 @@ export const ActionButton = () => {
   return (
     <button
       className={cn(
-        'flex h-[50px] w-[50px] flex-col items-center justify-center space-y-1 p-1',
+        'flex flex-col items-center justify-center space-y-1',
         !popupVisibility && 'animate-breath',
         settings?.hideActionButton ? 'hidden' : 'flex',
       )}
