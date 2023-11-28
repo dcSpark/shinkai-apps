@@ -14,6 +14,10 @@ export const modelsConfig = {
       {
         name: 'GPT 4 Turbo',
         value: 'gpt-4-1106-preview',
+      },
+      {
+        name: 'GPT 4 Vision',
+        value: 'gpt-4-vision-preview'
       }
     ],
   },
