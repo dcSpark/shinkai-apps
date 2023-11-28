@@ -1,10 +1,10 @@
 import { PaperClipIcon } from '@shinkai_network/shinkai-ui';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { partial } from 'filesize';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
 import { ReactNode, useEffect, useState } from 'react';
 
-import { cn } from '../../helpers/cn-utils';
 import { getFileExt, getFileName } from '../../helpers/file-name-utils';
 
 export type FileListProps = {

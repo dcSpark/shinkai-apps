@@ -7,19 +7,22 @@ import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mut
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
 import { ChatConversationMessage } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+  ScrollArea,
+  Skeleton,
+} from '@shinkai_network/shinkai-ui';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Loader2, Terminal } from 'lucide-react';
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
-import { cn } from '../../helpers/cn-utils';
 import { useAuth } from '../../store/auth/auth';
 import { InboxInput } from '../inbox-input/inbox-input';
 import { Message } from '../message/message';
-import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
-import DotsLoader from '../ui/dots-loader';
-import { ScrollArea } from '../ui/scroll-area';
-import { Skeleton } from '../ui/skeleton';
 
 export const Inbox = () => {
   const { inboxId } = useParams<{ inboxId: string }>();
@@ -180,7 +183,10 @@ export const Inbox = () => {
 
   return (
     <div className="flex h-full flex-col justify-between space-y-3">
-      <ScrollArea className="h-full pr-4 [&>div>div]:!block" ref={chatContainerRef}>
+      <ScrollArea
+        className="h-full pr-4 [&>div>div]:!block"
+        ref={chatContainerRef}
+      >
         {isChatConversationSuccess && (
           <div className="py-2 text-center text-xs">
             {isFetchingPreviousPage && (
@@ -204,10 +210,13 @@ export const Inbox = () => {
                   )}
                   key={`${index}`}
                 >
-                  <Skeleton className="shrink-0 h-12 w-12 rounded-full" key={index} />
+                  <Skeleton
+                    className="h-12 w-12 shrink-0 rounded-full"
+                    key={index}
+                  />
                   <Skeleton
                     className={cn(
-                      'w-full h-16 rounded-lg px-2.5 py-3',
+                      'h-16 w-full rounded-lg px-2.5 py-3',
                       index % 2 === 0
                         ? 'rounded-tl-none border border-slate-800'
                         : 'rounded-tr-none border-none',
@@ -267,7 +276,6 @@ export const Inbox = () => {
               <span>
                 <FormattedMessage id="file-processing-alert-description" />
               </span>
-              <DotsLoader className="h-full w-6" />
             </div>
           </AlertDescription>
           <Terminal className="h-4 w-4" />

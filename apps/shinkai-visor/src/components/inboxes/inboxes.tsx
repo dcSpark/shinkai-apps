@@ -10,25 +10,25 @@ import {
   ChatBubbleIcon,
   JobBubbleIcon,
 } from '@shinkai_network/shinkai-ui';
-import { Edit, Plus } from 'lucide-react';
-import { Fragment, useRef, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
-import { useHistory } from 'react-router-dom';
-
-import { cn } from '../../helpers/cn-utils';
-import { useAuth } from '../../store/auth/auth';
-import { EditInboxNameDialog } from '../edit-inbox-name-dialog/edit-inbox-name-dialog';
-import { EmptyAgents } from '../empty-agents/empty-agents';
-import { EmptyInboxes } from '../empty-inboxes/empty-inboxes';
-import { Header } from '../header/header';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuPortal,
   DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
-import { ScrollArea } from '../ui/scroll-area';
+} from '@shinkai_network/shinkai-ui';
+import { ScrollArea } from '@shinkai_network/shinkai-ui';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { Edit, Plus } from 'lucide-react';
+import { Fragment, useRef, useState } from 'react';
+import { FormattedMessage } from 'react-intl';
+import { useHistory } from 'react-router-dom';
+
+import { useAuth } from '../../store/auth/auth';
+import { EditInboxNameDialog } from '../edit-inbox-name-dialog/edit-inbox-name-dialog';
+import { EmptyAgents } from '../empty-agents/empty-agents';
+import { EmptyInboxes } from '../empty-inboxes/empty-inboxes';
+import { Header } from '../header/header';
 
 export const Inboxes = () => {
   const history = useHistory();

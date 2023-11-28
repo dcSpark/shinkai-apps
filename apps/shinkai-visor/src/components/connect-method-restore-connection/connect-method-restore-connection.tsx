@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { decryptMessageWithPassphrase } from '@shinkai_network/shinkai-message-ts/cryptography';
 import {
   Button,
+  ErrorMessage,
   Form,
   FormControl,
   FormField,
@@ -19,7 +20,6 @@ import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
-import ErrorMessage from '../ui/error-message';
 
 const formSchema = z.object({
   encryptedConnection: z.string().min(1),
