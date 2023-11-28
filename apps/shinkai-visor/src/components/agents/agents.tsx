@@ -35,7 +35,7 @@ export const Agents = () => {
         </div>
       ) : (
         <>
-          <ScrollArea className="flex h-full flex-col justify-between  [&>div>div]:!block">
+          <ScrollArea className="flex h-full flex-col justify-between [&>div>div]:!block">
             <div className="space-y-3">
               {agents?.map((agent) => (
                 <Fragment key={agent.id}>

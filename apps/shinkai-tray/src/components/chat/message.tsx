@@ -70,7 +70,7 @@ const Message = ({
       </Avatar>
       <div
         className={cn(
-          'group flex items-start gap-1 break-words rounded-lg bg-transparent px-2.5 py-3',
+          'group flex items-start gap-1 break-words rounded-lg bg-transparent px-2.5 py-3 overflow-x-hidden',
           message.isLocal
             ? 'rounded-tl-none border border-slate-800'
             : 'rounded-tr-none border-none bg-[rgba(217,217,217,0.04)]',
