@@ -22,7 +22,7 @@ htmlRoot.prepend(baseContainer);
 export const ImageCapture = () => {
   const [baseImage, setBaseImage] = useState<string | undefined>(undefined);
   const [crop, setCrop] = useState<Crop>();
-  const imageRef= useRef<HTMLImageElement | null>(null);
+  const imageRef = useRef<HTMLImageElement | null>(null);
   const finishCaptureRef = useRef<(image: string) => void>();
   useGlobalImageCaptureChromeMessage({
     capture: ({ image: baseImage, finishCapture }) => {
@@ -45,39 +45,49 @@ export const ImageCapture = () => {
     }
     return blob;
   };
-  return baseImage && (
-    <ReactCrop
-      className="h-full w-full"
-      crop={crop}
-      onChange={(_, percentCrop) => {
-        console.log('crop change', _, percentCrop);
-        setCrop(percentCrop);
-      }}
-      onComplete={async (c) => {
-        console.log('crop completed', c);
-        if (typeof finishCaptureRef.current === 'function' && imageRef.current) {
-          if (c.width === 0 || c.height === 0) {
-            return;
+  return (
+    baseImage && (
+      <ReactCrop
+        className="h-full w-full"
+        crop={crop}
+        onChange={(_, percentCrop) => {
+          console.log('crop change', _, percentCrop);
+          setCrop(percentCrop);
+        }}
+        onComplete={async (c) => {
+          console.log('crop completed', c);
+          if (
+            typeof finishCaptureRef.current === 'function' &&
+            imageRef.current
+          ) {
+            if (c.width === 0 || c.height === 0) {
+              return;
+            }
+            const croppedImage = await getCroppedImage(
+              imageRef.current,
+              c,
+              1,
+              0,
+            );
+            if (!croppedImage) {
+              return;
+            }
+            const croppedImageAsBase64 = await blobToBase64(croppedImage);
+            finishCaptureRef.current(croppedImageAsBase64);
+            setBaseImage('');
+            setCrop(undefined);
           }
-          const croppedImage = await getCroppedImage(imageRef.current, c, 1, 0);
-          if (!croppedImage) {
-            return;
-          }
-          const croppedImageAsBase64 = await blobToBase64(croppedImage);
-          finishCaptureRef.current(croppedImageAsBase64);
-          setBaseImage('');
-          setCrop(undefined);
-        }
-      }}
-      style={{pointerEvents: 'all'}}
-    >
-      <img
-        alt="capture-placeholder"
-        className="h-full w-full invisible"
-        ref={imageRef}
-        src={`${baseImage}`}
-      ></img>
-    </ReactCrop>
+        }}
+        style={{ pointerEvents: 'all' }}
+      >
+        <img
+          alt="capture-placeholder"
+          className="invisible h-full w-full"
+          ref={imageRef}
+          src={`${baseImage}`}
+        />
+      </ReactCrop>
+    )
   );
 };
 const root = createRoot(container);
@@ -86,8 +96,8 @@ root.render(
     <style>{themeStyle}</style>
     <style>{reactCropStyle}</style>
     <IntlProvider locale={locale} messages={langMessages}>
-      <div className="fixed z-[2000000000] h-full w-full overflow-hidden pointer-events-none">
-        <ImageCapture></ImageCapture>
+      <div className="pointer-events-none fixed z-[2000000000] h-full w-full overflow-hidden">
+        <ImageCapture />
       </div>
     </IntlProvider>
   </React.StrictMode>,
