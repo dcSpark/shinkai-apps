@@ -109,7 +109,7 @@ export const Inboxes = () => {
       ) : (
         <>
           <div className="flex grow flex-col overflow-hidden">
-            <ScrollArea className="[&>div>div]:!block">
+            <ScrollArea className="pr-4 [&>div>div]:!block">
               <div className="space-y-4">
                 {inboxes?.map((inbox) => (
                   <Fragment key={inbox.inbox_id}>
