@@ -31,8 +31,8 @@ import { Header } from '../header/header';
 import { ScrollArea } from '../ui/scroll-area';
 
 const formSchema = z.object({
-  agent: z.string().nonempty(),
-  content: z.string().nonempty(),
+  agent: z.string().min(1),
+  content: z.string().min(1),
   files: z.array(z.any()).max(3),
 });
 
@@ -151,7 +151,7 @@ export const CreateJob = () => {
           className="flex grow flex-col justify-between space-y-2 overflow-hidden"
           onSubmit={form.handleSubmit(submit)}
         >
-          <ScrollArea className="[&>div>div]:!block">
+          <ScrollArea className="pr-4 [&>div>div]:!block">
             <FormField
               control={form.control}
               name="agent"

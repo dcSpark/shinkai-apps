@@ -1,4 +1,10 @@
-import { PaperClipIcon } from '@shinkai_network/shinkai-ui';
+import {
+  PaperClipIcon,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@shinkai_network/shinkai-ui';
 import { partial } from 'filesize';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
@@ -76,46 +82,42 @@ export const FileList = ({ files, actions, className }: FileListProps) => {
             className="flex items-center justify-between p-2 text-sm leading-6"
             key={index}
           >
-            <div className="flex w-0 flex-1 items-center space-x-2">
-              <PaperClipIcon className="h-4 w-4" />
-              <div className="ml-4 flex min-w-0 flex-1 justify-between gap-2">
-                <div className="flex flex-col justify-center space-y-2 truncate">
-                  {file instanceof File && hasPreview(file) && (
-                    <div className="h-10 self-center">
-                      {getFilePreview(file)}
-                    </div>
-                  )}
-                  <div className="flex flex-row overflow-hidden">
-                    <span className="text-gray-80 truncate font-medium">
-                      {getFileName(decodeURIComponent(file.name))}
-                    </span>
-                    <span className="text-gray-80 rounded-md bg-gray-200 px-1 text-[10px] font-medium uppercase">
-                      {getFileExt(decodeURIComponent(file.name))}
-                    </span>
-                  </div>
+            <div className="flex w-full flex-col space-y-2 overflow-hidden">
+              {file instanceof File && hasPreview(file) && (
+                <div className="h-10 self-center">{getFilePreview(file)}</div>
+              )}
+              <div className="flex min-w-0 flex-1 flex-row items-center justify-between gap-2">
+                <PaperClipIcon className="h-4 w-4" />
+
+                <span className="text-gray-80 grow truncate font-medium">
+                  {getFileName(decodeURIComponent(file.name))}
+                </span>
+                <div className="flex shrink-0 flex-row space-x-1 overflow-hidden">
+                  <span className="text-gray-80 w-[40px] rounded-md bg-gray-200 px-1 text-center text-[10px] font-medium uppercase">
+                    {getFileExt(decodeURIComponent(file.name))}
+                  </span>
                   {file.size && (
-                    <span className="flex-shrink-0 text-gray-400">
+                    <span className="w-[70px] shrink-0 text-center text-gray-200">
                       {size(file.size)}
                     </span>
                   )}
+                  <div className="flex flex-row items-center space-x-1">
+                    {actions?.map((action, actionIndex) => {
+                      return (
+                        <div
+                          key={actionIndex}
+                          onClick={() => {
+                            if (typeof action.onClick === 'function') {
+                              action.onClick(index);
+                            }
+                          }}
+                        >
+                          {action.render}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-
-              <div className="flex flex-row space-x-1">
-                {actions?.map((action, actionIndex) => {
-                  return (
-                    <div
-                      key={actionIndex}
-                      onClick={() => {
-                        if (typeof action.onClick === 'function') {
-                          action.onClick(index);
-                        }
-                      }}
-                    >
-                      {action.render}
-                    </div>
-                  );
-                })}
               </div>
             </div>
           </motion.li>
