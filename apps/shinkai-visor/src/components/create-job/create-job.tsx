@@ -207,6 +207,7 @@ export const CreateJob = () => {
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="content"

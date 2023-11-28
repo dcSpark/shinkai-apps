@@ -105,6 +105,14 @@ module.exports = {
             'animation-timing-function': 'cubic-bezier(0, 0, 0.2, 1)',
           },
         },
+        loaderDots: {
+          '0%': {
+            opacity: 1,
+          },
+          '50%, 100%': {
+            opacity: 0.15,
+          },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',

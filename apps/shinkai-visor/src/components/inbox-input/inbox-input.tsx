@@ -1,20 +1,19 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
+  DotsLoader,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
   Input,
 } from '@shinkai_network/shinkai-ui';
+import { motion } from 'framer-motion';
 import { SendHorizonal } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import { z } from 'zod';
-
-import DotsLoader from '../ui/dots-loader';
 
 const formSchema = z.object({
   message: z.string().min(1),
@@ -36,6 +35,7 @@ export const InboxInput = (props: InboxInputProps) => {
       message: '',
     },
   });
+  const { message } = form.watch();
   const intl = useIntl();
   const submit = (values: InboxInputFieldType) => {
     const value = values?.message?.trim();
@@ -51,39 +51,56 @@ export const InboxInput = (props: InboxInputProps) => {
   return (
     <Form {...form}>
       <form
-        className="flex flex-row justify-between space-x-2 p-1"
+        className="flex flex-row justify-between space-x-2  p-1"
         onSubmit={form.handleSubmit(submit)}
       >
-        <div className="flex grow flex-col space-y-2">
+        <div className="flex grow flex-col space-y-2 ">
           <FormField
             control={form.control}
             disabled={props.disabled || props.loading}
             name="message"
             render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input {...field} autoFocus />
-                </FormControl>
-                <FormLabel>
-                  {intl.formatMessage({
-                    id: 'tmwtd',
-                  })}
-                </FormLabel>
-                <FormMessage />
-              </FormItem>
+              <motion.div
+                animate={{ width: message?.length ? '99%' : '100%' }}
+                initial={{ width: '100%' }}
+                transition={{
+                  type: 'tween',
+                }}
+              >
+                <FormItem>
+                  <FormControl>
+                    <Input {...field} autoFocus />
+                  </FormControl>
+                  {props.loading ? (
+                    <DotsLoader className="absolute left-4 top-6" />
+                  ) : (
+                    <FormLabel>
+                      {intl.formatMessage({
+                        id: 'tmwtd',
+                      })}
+                    </FormLabel>
+                  )}
+                </FormItem>
+              </motion.div>
             )}
           />
         </div>
-        <Button
-          className="h-[60px] w-[60px] grow-0 rounded-xl p-0"
-          disabled={!form.formState.isValid || props.disabled || props.loading}
-        >
-          {props.loading ? (
-            <DotsLoader className="h-4 w-4" />
-          ) : (
-            <SendHorizonal className="h-6 w-6" />
-          )}
-        </Button>
+        {!!message?.length && (
+          <motion.div
+            animate={{ opacity: 1 }}
+            initial={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Button
+              className="h-[60px] w-[60px] grow-0 rounded-xl p-0"
+              disabled={
+                !form.formState.isValid || props.disabled || props.loading
+              }
+            >
+              <SendHorizonal className="h-6 w-6" />
+            </Button>
+          </motion.div>
+        )}
       </form>
     </Form>
   );
