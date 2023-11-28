@@ -58,7 +58,7 @@ export const Popup = () => {
       {popupVisibility && (
         <motion.div
           animate={{ opacity: 1 }}
-          className="h-full w-full flex flex-col p-4 shadow-xl rounded-lg bg-secondary-600 bg-app-gradient"
+          className="flex h-full w-full flex-col rounded-lg bg-gray-500 px-6 pb-6 pt-8 shadow-xl"
           exit={{ opacity: 0 }}
           initial={{ opacity: 0 }}
           transition={{ duration: 0.5 }}
@@ -66,7 +66,7 @@ export const Popup = () => {
           <Switch key={location.pathname} location={location}>
             <Route exact path="/">
               <AnimatedRoute>
-                <SplashScreen></SplashScreen>
+                <SplashScreen />
               </AnimatedRoute>
             </Route>
             <Route path="/welcome">
@@ -82,13 +82,13 @@ export const Popup = () => {
                     <AnimatedRoute>
                       <Switch>
                         <Route path="/nodes/connect/method/quick-start">
-                          <ConnectMethodQuickStart></ConnectMethodQuickStart>
+                          <ConnectMethodQuickStart />
                         </Route>
                         <Route path="/nodes/connect/method/restore-connection">
-                          <ConnectMethodRestoreConnection></ConnectMethodRestoreConnection>
+                          <ConnectMethodRestoreConnection />
                         </Route>
                         <Route path="/nodes/connect/method/qr-code">
-                          <ConnectMethodQrCode></ConnectMethodQrCode>
+                          <ConnectMethodQrCode />
                         </Route>
                       </Switch>
                     </AnimatedRoute>
@@ -96,39 +96,39 @@ export const Popup = () => {
                   <Route path="/inboxes">
                     <Switch>
                       <Route path="/inboxes/create-inbox">
-                        <CreateInbox></CreateInbox>
+                        <CreateInbox />
                       </Route>
                       <Route path="/inboxes/create-job">
-                        <CreateJob></CreateJob>
+                        <CreateJob />
                       </Route>
                       <Route path="/inboxes/:inboxId">
-                        <Inbox></Inbox>
+                        <Inbox />
                       </Route>
                       <Route path="/">
-                        <Inboxes></Inboxes>
+                        <Inboxes />
                       </Route>
                     </Switch>
                   </Route>
                   <Route path="/agents">
                     <Switch>
                       <Route path="/agents/add">
-                        <AddAgent></AddAgent>
+                        <AddAgent />
                       </Route>
                       <Route path="/">
-                        <Agents></Agents>
+                        <Agents />
                       </Route>
                     </Switch>
                   </Route>
                   <Route path="/settings">
                     <Switch>
                       <Route path="/settings/export-connection">
-                        <ExportConnection></ExportConnection>
+                        <ExportConnection />
                       </Route>
                       <Route path="/settings/create-registration-code">
-                        <CreateRegistrationCode></CreateRegistrationCode>
+                        <CreateRegistrationCode />
                       </Route>
                       <Route path="/">
-                        <Settings></Settings>
+                        <Settings />
                       </Route>
                     </Switch>
                   </Route>
@@ -152,12 +152,12 @@ root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <IntlProvider locale={locale} messages={langMessages}>
-        <div className="font-inter w-full h-full">
+        <div className="font-inter h-full w-full">
           <Router>
-            <Popup></Popup>
+            <Popup />
           </Router>
         </div>
       </IntlProvider>
     </QueryClientProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

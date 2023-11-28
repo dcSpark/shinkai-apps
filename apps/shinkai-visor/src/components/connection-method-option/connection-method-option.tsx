@@ -1,3 +1,4 @@
+import { Button } from '@shinkai_network/shinkai-ui';
 import { ReactNode } from 'react';
 
 export type ConnectionMethodOptionProps = {
@@ -19,15 +20,15 @@ export const ConnectionMethodOption = ({
     }
   };
   return (
-    <div
-      className="group flex items-center space-x-2 rounded-md border p-2 cursor-pointer hover:bg-secondary-600"
+    <Button
+      className="flex flex-1 cursor-pointer flex-col items-start gap-1 rounded-lg p-4 text-left"
       onClick={() => onConnectionMethodOptionClick()}
+      size="auto"
+      variant="ghost"
     >
-      <div className="group-hover:animate-bounce">{icon}</div>
-      <div className="flex-1 space-y-1">
-        <p className="text-xs font-medium leading-none">{title}</p>
-        <p className="text-xs text-muted-foreground">{description}</p>
-      </div>
-    </div>
+      <div className="">{icon}</div>
+      <p className="text-[15px] font-medium leading-none">{title}</p>
+      <p className="text-xs text-gray-100">{description}</p>
+    </Button>
   );
 };

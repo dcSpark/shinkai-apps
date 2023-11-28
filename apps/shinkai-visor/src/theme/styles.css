@@ -76,6 +76,8 @@
     }
     .wmde-markdown-var[data-color-mode*='dark'] {
       --color-canvas-default: var(--background);
+      --color-fg-default: theme('colors.white');
+      @apply text-[15px];
     }
   }
 }

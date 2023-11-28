@@ -95,8 +95,8 @@ export const FileInput = ({
       <div className="flex items-center justify-center">
         <label
           className={cn(
-            'flex flex-col items-center justify-center w-full h-[80px] p-2 border-2 border-dashed rounded-lg cursor-pointer bg-secondary-600',
-            isDragging && 'border-solid'
+            'flex h-[100px] w-full cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-gray-100 bg-gray-400 p-2',
+            isDragging && 'border-solid',
           )}
           htmlFor="dropzone-file"
           onDragEnter={() => setIsDragging(true)}
@@ -106,19 +106,19 @@ export const FileInput = ({
         >
           <div
             className={cn(
-              'flex flex-col items-center justify-center space-y-1 w-full',
-              isDragging && 'pointer-events-none'
+              'flex w-full flex-col items-center justify-center space-y-1',
+              isDragging && 'pointer-events-none',
             )}
           >
             <div>
               <Upload
-                className={cn('w-4 h-4', isDragging && 'animate-pulse')}
+                className={cn('h-4 w-4', isDragging && 'animate-pulse')}
               />
             </div>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-white">
               <FormattedMessage id="click-to-upload" />
             </p>
-            <p className="text-xs text-gray-500 truncate w-full">
+            <p className="w-full truncate text-xs text-gray-100">
               {extensions?.join(' | ')}
             </p>
           </div>
@@ -138,18 +138,16 @@ export const FileInput = ({
         <FileList
           actions={[
             {
-              render: (
-                <ExternalLink className="w-4 h-4 cursor-pointer"></ExternalLink>
-              ),
+              render: <ExternalLink className="h-4 w-4 cursor-pointer" />,
               onClick: (file) => openFile(file),
             },
             {
-              render: <Trash className="w-4 h-4 cursor-pointer"></Trash>,
+              render: <Trash className="h-4 w-4 cursor-pointer" />,
               onClick: (index) => removeFile(index),
             },
           ]}
           files={files.current}
-        ></FileList>
+        />
       )}
     </div>
   );

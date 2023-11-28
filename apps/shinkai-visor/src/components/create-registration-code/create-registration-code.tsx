@@ -1,6 +1,21 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateRegistrationCode } from '@shinkai_network/shinkai-node-state/lib/mutations/createRegistrationCode/useCreateRegistrationCode';
-import { Download, Loader2, QrCode } from 'lucide-react';
+import {
+  Button,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  TextField,
+} from '@shinkai_network/shinkai-ui';
+import { Download } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 import { useEffect, useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
@@ -10,24 +25,6 @@ import { z } from 'zod';
 import shinkaiLogo from '../../assets/icons/shinkai-min.svg';
 import { SetupData, useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
-import { Button } from '../ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../ui/form';
-import { Input } from '../ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectPortal,
-  SelectTrigger,
-  SelectValue,
-} from '../ui/select';
 
 enum IdentityType {
   Profile = 'profile',
@@ -163,17 +160,12 @@ export const CreateRegistrationCode = () => {
     }
   }, [form, identityType, auth]);
   return (
-    <div className="flex h-full flex-col space-y-3">
-      <Header
-        icon={<QrCode />}
-        title={
-          <FormattedMessage id="create-registration-code"></FormattedMessage>
-        }
-      />
+    <div className="flex h-full flex-col space-y-8">
+      <Header title={<FormattedMessage id="create-registration-code" />} />
       <div className="flex grow flex-col space-y-2">
         <Form {...form}>
           <form
-            className="flex flex-col justify-between space-y-3"
+            className="flex flex-col justify-between space-y-6"
             onSubmit={form.handleSubmit(submit)}
           >
             <div className="flex grow flex-col space-y-2">
@@ -196,18 +188,16 @@ export const CreateRegistrationCode = () => {
                           <SelectValue />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectPortal>
-                        <SelectContent>
-                          {identityTypeOptions?.map((identityTypeOption) => (
-                            <SelectItem
-                              key={identityTypeOption.value}
-                              value={identityTypeOption.value}
-                            >
-                              {identityTypeOption.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </SelectPortal>
+                      <SelectContent>
+                        {identityTypeOptions?.map((identityTypeOption) => (
+                          <SelectItem
+                            key={identityTypeOption.value}
+                            value={identityTypeOption.value}
+                          >
+                            {identityTypeOption.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
                     </Select>
                     <FormMessage />
                   </FormItem>
@@ -218,15 +208,10 @@ export const CreateRegistrationCode = () => {
                   control={form.control}
                   name="profile"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        <FormattedMessage id="profile.one" />
-                      </FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+                    <TextField
+                      field={field}
+                      label={<FormattedMessage id="profile.one" />}
+                    />
                   )}
                 />
               )}
@@ -249,30 +234,23 @@ export const CreateRegistrationCode = () => {
                           <SelectValue />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectPortal>
-                        <SelectContent>
-                          {permissionOptions?.map((permissionTypeOption) => (
-                            <SelectItem
-                              key={permissionTypeOption.value}
-                              value={permissionTypeOption.value}
-                            >
-                              {permissionTypeOption.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </SelectPortal>
+                      <SelectContent>
+                        {permissionOptions?.map((permissionTypeOption) => (
+                          <SelectItem
+                            key={permissionTypeOption.value}
+                            value={permissionTypeOption.value}
+                          >
+                            {permissionTypeOption.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
                     </Select>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
-            <Button className="w-full" type="submit">
-              {isPending ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <QrCode className="mr-2 h-4 w-4" />
-              )}
+            <Button className="w-full" isLoading={isPending} type="submit">
               <FormattedMessage id="generate-registration-code" />
             </Button>
           </form>

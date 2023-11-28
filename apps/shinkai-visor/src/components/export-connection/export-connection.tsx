@@ -1,6 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { encryptMessageWithPassphrase } from '@shinkai_network/shinkai-message-ts/cryptography';
-import { Download, FileKey } from 'lucide-react';
+import {
+  Button,
+  Form,
+  FormField,
+  Input,
+  TextField,
+} from '@shinkai_network/shinkai-ui';
+import { Download } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -8,16 +15,6 @@ import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
-import { Button } from '../ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../ui/form';
-import { Input } from '../ui/input';
 
 export const ExportConnection = () => {
   const intl = useIntl();
@@ -55,7 +52,7 @@ export const ExportConnection = () => {
     const parsedSetupData = JSON.stringify(auth);
     const encryptedSetupData = await encryptMessageWithPassphrase(
       parsedSetupData,
-      values.passphrase
+      values.passphrase,
     );
     setEncryptedSetupData(encryptedSetupData);
   };
@@ -69,58 +66,46 @@ export const ExportConnection = () => {
     URL.revokeObjectURL(link.href);
   };
   return (
-    <div className="h-full flex flex-col space-y-3">
-      <Header
-        icon={<FileKey />}
-        title={<FormattedMessage id="export-connection"></FormattedMessage>}
-      />
-      <div className="grow flex flex-col space-y-2">
+    <div className="flex h-full flex-col gap-8">
+      <Header title={<FormattedMessage id="export-connection" />} />
+      <div className="flex grow flex-col space-y-2">
         <Form {...form}>
           <form
-            className="flex flex-col space-y-3 justify-between"
+            className="flex flex-col justify-between space-y-8"
             onSubmit={form.handleSubmit(exportConnection)}
           >
-            <div className="grow flex flex-col space-y-2">
+            <div className="flex grow flex-col space-y-2">
               <FormField
                 control={form.control}
                 name="passphrase"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      <FormattedMessage id="passphrase" />
-                    </FormLabel>
-                    <FormControl>
-                      <Input {...field} type="password" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                  <TextField
+                    field={field}
+                    label={<FormattedMessage id="passphrase" />}
+                    type="password"
+                  />
                 )}
               />
               <FormField
                 control={form.control}
                 name="confirmPassphrase"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      <FormattedMessage id="confirm-passphrase" />
-                    </FormLabel>
-                    <FormControl>
-                      <Input {...field} type="password" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                  <TextField
+                    field={field}
+                    label={<FormattedMessage id="confirm-passphrase" />}
+                    type="password"
+                  />
                 )}
               />
             </div>
             <Button className="w-full" type="submit">
-              <FileKey className="mr-2 h-4 w-4" />
               <FormattedMessage id="generate-connection-file" />
             </Button>
           </form>
         </Form>
 
         {encryptedSetupData && (
-          <div className=" grow flex flex-col items-center justify-center space-y-3">
+          <div className=" flex grow flex-col items-center justify-center space-y-3">
             <div className="flex flex-col space-y-1">
               <span className="font-semibold">
                 <FormattedMessage id="download-keep-safe-place" />
@@ -129,10 +114,10 @@ export const ExportConnection = () => {
                 <FormattedMessage id="use-it-to-restore" />
               </span>
             </div>
-            <div className="w-full flex flex-row space-x-1">
+            <div className="flex w-full flex-row space-x-1">
               <div className="grow cursor-pointer" onClick={() => download()}>
                 <Input
-                  className="truncate cursor-pointer"
+                  className="cursor-pointer truncate"
                   readOnly
                   value={encryptedSetupData}
                 />

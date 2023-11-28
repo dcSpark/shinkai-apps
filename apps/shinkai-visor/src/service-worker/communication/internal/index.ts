@@ -34,6 +34,18 @@ export const listen = (): void => {
         // Internal rehydrate
         chrome.tabs.query({}, (tabs) => tabs.forEach(tab => sendMessage(message, tab.id)));
         break;
+      case ServiceWorkerInternalMessageType.CopyToClipboard:
+        if (!sender?.tab?.id) {
+          return;
+        }
+        chrome.scripting.executeScript({
+          target: { tabId: sender?.tab?.id },
+          func: (text: string) => {
+            navigator.clipboard.writeText(text);
+          },
+          args: [message.data.content],
+        });
+        break;
       default:
         break;
     }

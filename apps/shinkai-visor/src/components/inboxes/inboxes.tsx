@@ -6,13 +6,11 @@ import {
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
 import {
-  Edit,
-  Inbox,
-  MessageCircle,
-  MessageCircleIcon,
-  Plus,
-  Workflow,
-} from 'lucide-react';
+  Button,
+  ChatBubbleIcon,
+  JobBubbleIcon,
+} from '@shinkai_network/shinkai-ui';
+import { Edit, Plus } from 'lucide-react';
 import { Fragment, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
@@ -23,7 +21,6 @@ import { EditInboxNameDialog } from '../edit-inbox-name-dialog/edit-inbox-name-d
 import { EmptyAgents } from '../empty-agents/empty-agents';
 import { EmptyInboxes } from '../empty-inboxes/empty-inboxes';
 import { Header } from '../header/header';
-import { Button } from '../ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -97,86 +94,87 @@ export const Inboxes = () => {
   const editInboxNameClick = (
     event: React.MouseEvent,
     inboxId: string,
-    name: string
+    name: string,
   ) => {
     event.stopPropagation();
     openEditInboxNameDialog(inboxId, name);
   };
   return (
-    <div className="h-full flex flex-col space-y-3 justify-between overflow-hidden">
-      <Header
-        icon={<Inbox />}
-        title={<FormattedMessage id="inbox.other"></FormattedMessage>}
-      />
+    <div className="flex h-full flex-col justify-between space-y-3 overflow-hidden">
+      <Header title={<FormattedMessage id="inbox.other" />} />
       {!agents?.length ? (
-        <EmptyAgents></EmptyAgents>
+        <EmptyAgents />
       ) : !inboxes?.length ? (
-        <EmptyInboxes></EmptyInboxes>
+        <EmptyInboxes />
       ) : (
         <>
-          <div className="grow flex flex-col overflow-hidden">
+          <div className="flex grow flex-col overflow-hidden">
             <ScrollArea className="[&>div>div]:!block">
-              {inboxes?.map((inbox) => (
-                <Fragment key={inbox.inbox_id}>
-                  <Button
-                    className="group h-14 w-full"
-                    onClick={() => navigateToInbox(inbox)}
-                    variant="tertiary"
-                  >
-                    <div className="w-full flex flex-row space-x-2 items-center justify-between">
-                      {isJobInbox(decodeURIComponent(inbox.inbox_id)) ? (
-                        <Workflow className="h-4 w-4 shrink-0" />
-                      ) : (
-                        <MessageCircleIcon className="h-4 w-4 shrink-0" />
-                      )}
-                      <div className="flex-auto overflow-hidden">
-                        <div className="flex flex-col space-y-1">
-                        <span className="truncate text-left">
-                          {inbox.custom_name}
+              <div className="space-y-4">
+                {inboxes?.map((inbox) => (
+                  <Fragment key={inbox.inbox_id}>
+                    <Button
+                      className="group h-14 w-full rounded-none bg-transparent px-1 hover:bg-transparent"
+                      onClick={() => navigateToInbox(inbox)}
+                      variant="ghost"
+                    >
+                      <div className="flex w-full flex-row items-center justify-between gap-4">
+                        <span className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-gray-300">
+                          {isJobInbox(decodeURIComponent(inbox.inbox_id)) ? (
+                            <JobBubbleIcon />
+                          ) : (
+                            <ChatBubbleIcon className="h-4 w-4 shrink-0" />
+                          )}
                         </span>
-                        <div className="truncate text-left text-xs text-muted-foreground">
-                          {getMessageContent(inbox.last_message)}
+                        <div className="flex-auto overflow-hidden">
+                          <div className="flex flex-col space-y-1">
+                            <span className="truncate text-left text-white">
+                              {inbox.custom_name}
+                            </span>
+                            <div className="truncate text-left text-xs text-gray-100">
+                              {getMessageContent(inbox.last_message)}
+                            </div>
+                          </div>
                         </div>
-                        </div>
+                        <Edit
+                          className="hidden h-4 w-4 shrink-0 group-hover:block"
+                          onClick={(event) =>
+                            editInboxNameClick(
+                              event,
+                              inbox.inbox_id,
+                              inbox.custom_name,
+                            )
+                          }
+                        />
                       </div>
-                      <Edit
-                        className="shrink-0 h-4 w-4 hidden group-hover:block"
-                        onClick={(event) =>
-                          editInboxNameClick(
-                            event,
-                            inbox.inbox_id,
-                            inbox.custom_name
-                          )
-                        }
-                      />
-                    </div>
-                  </Button>
-                </Fragment>
-              ))}
+                    </Button>
+                  </Fragment>
+                ))}
+              </div>
             </ScrollArea>
           </div>
-          <div className="fixed right-4 bottom-4" ref={dialContainerRef}>
+          <div className="fixed bottom-4 right-4" ref={dialContainerRef}>
             <DropdownMenu onOpenChange={(isOpen) => setDialOpened(isOpen)}>
               <DropdownMenuTrigger asChild>
-                <Button size="icon">
+                <Button className="h-[60px] w-[60px]" size="icon">
                   <Plus
                     className={cn(
-                      'w-4 h-4 transition-transform',
-                      dialOpened && 'rotate-45'
+                      'h-7 w-7 transition-transform',
+                      dialOpened && 'rotate-45',
                     )}
                   />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuPortal container={dialContainerRef.current}>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent align="end" className="px-2.5 py-2">
                   <DropdownMenuItem onClick={() => onCreateInboxClick()}>
-                    <MessageCircle className="mr-2 h-4 w-4" />
+                    <ChatBubbleIcon className="mr-2 h-4 w-4" />
                     <span>
                       <FormattedMessage id="create-inbox" />
                     </span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => onCreateJobClick()}>
-                    <Workflow className="mr-2 h-4 w-4" />
+                    <JobBubbleIcon className="mr-2 h-4 w-4" />
                     <span>
                       <FormattedMessage id="create-job" />
                     </span>
@@ -191,7 +189,7 @@ export const Inboxes = () => {
             onCancel={() => closeEditInboxNameDialog()}
             onSaved={() => closeEditInboxNameDialog()}
             open={isEditInboxNameDialogOpened.isOpened}
-          ></EditInboxNameDialog>
+          />
         </>
       )}
     </div>

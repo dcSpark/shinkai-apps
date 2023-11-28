@@ -1,46 +1,69 @@
 import { ChatConversationMessage } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
+import { CopyToClipboardIcon } from '@shinkai_network/shinkai-ui';
 import MarkdownPreview from '@uiw/react-markdown-preview';
 
+import shinkaiMiniLogo from '../../assets/icons/shinkai-min.svg';
 import { cn } from '../../helpers/cn-utils';
+import { srcUrlResolver } from '../../helpers/src-url-resolver';
+import { sendMessage } from '../../service-worker/communication/internal';
+import { ServiceWorkerInternalMessageType } from '../../service-worker/communication/internal/types';
 import { FileList } from '../file-list/file-list';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 type MessageProps = {
   message: ChatConversationMessage;
 };
+const copyToClipboard = (content: string) => {
+  sendMessage({
+    type: ServiceWorkerInternalMessageType.CopyToClipboard,
+    data: { content: content },
+  });
+};
 
 export const Message = ({ message }: MessageProps) => {
   return (
     <div
       className={cn(
-        'flex flex-row',
+        'flex flex-row space-x-2',
         message.isLocal
-          ? 'ml-0 mr-auto flex-row space-x-1'
-          : 'ml-auto mr-0 flex-row-reverse space-x-1 space-x-reverse'
+          ? 'ml-auto mr-0 flex-row-reverse space-x-reverse'
+          : 'ml-0 mr-auto flex-row items-end',
       )}
     >
       <Avatar className="h-8 w-8">
-        <AvatarImage
-          alt={message.isLocal ? message.inboxId : 'Shinkai AI'}
-          src={message.sender.avatar}
-        />
+        {message.isLocal ? (
+          <AvatarImage alt={''} src={message.sender.avatar} />
+        ) : (
+          <img alt="Shinkai AI" src={srcUrlResolver(shinkaiMiniLogo)} />
+        )}
         <AvatarFallback className="h-8 w-8" />
       </Avatar>
       <div
         className={cn(
-          'mt-1 rounded-lg bg-transparent text-foreground px-2.5 py-3 text-sm flex flex-col space-y-2',
+          'group relative mt-1 flex flex-col rounded-lg bg-transparent px-2.5 py-3 text-sm text-white',
           message.isLocal
-            ? 'rounded-tl-none border border-slate-800'
-            : 'rounded-tr-none border-none bg-[rgba(217,217,217,0.04)]'
+            ? 'rounded-tr-none bg-gray-300'
+            : 'rounded-bl-none border-none bg-gray-200',
         )}
       >
+        {message.isLocal ? null : (
+          <CopyToClipboardIcon
+            className="duration-30 absolute right-3 bg-gray-300 opacity-0 group-hover:opacity-100 group-hover:transition-opacity"
+            onCopyClipboard={() => copyToClipboard(message.content)}
+            string={message.content}
+          />
+        )}
         <MarkdownPreview
           className="wmde-markdown-var"
           source={message.content}
           wrapperElement={{ 'data-color-mode': 'dark' }}
         />
         {!!message.fileInbox?.files?.length && (
-          <FileList actions={[]} className="w-[200px]" files={message.fileInbox?.files}></FileList>
+          <FileList
+            actions={[]}
+            className="w-[200px]"
+            files={message.fileInbox?.files}
+          />
         )}
       </div>
     </div>

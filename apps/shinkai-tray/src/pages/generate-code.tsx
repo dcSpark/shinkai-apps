@@ -128,7 +128,7 @@ const GenerateCodePage = () => {
         profile: auth?.profile ?? '',
         shinkai_identity: auth?.shinkai_identity ?? '',
         node_address: auth?.node_address ?? '',
-        //TODO: remove from network lib these unused params
+        //TODO: remove from network components these unused params
         registration_code: '',
         identity_type: '',
       },

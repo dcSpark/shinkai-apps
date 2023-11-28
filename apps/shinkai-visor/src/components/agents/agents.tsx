@@ -1,5 +1,6 @@
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
-import { Bot, Plus } from 'lucide-react';
+import { Button } from '@shinkai_network/shinkai-ui';
+import { Plus } from 'lucide-react';
 import { Fragment } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
@@ -7,7 +8,6 @@ import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../store/auth/auth';
 import { EmptyAgents } from '../empty-agents/empty-agents';
 import { Header } from '../header/header';
-import { Button } from '../ui/button';
 import { ScrollArea } from '../ui/scroll-area';
 
 export const Agents = () => {
@@ -27,29 +27,34 @@ export const Agents = () => {
     history.push('/agents/add');
   };
   return (
-    <div className="h-full flex flex-col space-y-3">
-      <Header
-        icon={<Bot />}
-        title={<FormattedMessage id="agent.other"></FormattedMessage>}
-      />
+    <div className="flex h-full flex-col space-y-3">
+      <Header title={<FormattedMessage id="agent.other" />} />
       {!agents?.length ? (
-        <div className="h-full flex flex-col justify-center">
-          <EmptyAgents></EmptyAgents>
+        <div className="flex h-full flex-col justify-center">
+          <EmptyAgents />
         </div>
       ) : (
         <>
-          <ScrollArea className="[&>div>div]:!block h-full flex flex-col space-y-3 justify-between">
-            {agents?.map((agent) => (
-              <Fragment key={agent.id}>
-                <Button className="w-full" variant="tertiary">
-                  <span className="w-full truncate text-start">{agent.id}</span>
-                </Button>
-              </Fragment>
-            ))}
+          <ScrollArea className="flex h-full flex-col justify-between  [&>div>div]:!block">
+            <div className="space-y-3">
+              {agents?.map((agent) => (
+                <Fragment key={agent.id}>
+                  <Button className="w-full" variant="ghost">
+                    <span className="w-full truncate text-start">
+                      {agent.id}
+                    </span>
+                  </Button>
+                </Fragment>
+              ))}
+            </div>
           </ScrollArea>
-          <div className="fixed right-4 bottom-4">
-            <Button onClick={() => onAddAgentClick()} size="icon">
-              <Plus className="w-4 h-4" />
+          <div className="fixed bottom-4 right-4">
+            <Button
+              className="h-[60px] w-[60px]"
+              onClick={onAddAgentClick}
+              size="icon"
+            >
+              <Plus className="h-7 w-7" />
             </Button>
           </div>
         </>

@@ -1,6 +1,16 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { decryptMessageWithPassphrase } from '@shinkai_network/shinkai-message-ts/cryptography';
-import { FileKey, PlugZap, Trash, Upload } from 'lucide-react';
+import {
+  Button,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  TextField,
+} from '@shinkai_network/shinkai-ui';
+import { Trash, Upload } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
@@ -9,17 +19,7 @@ import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
-import { Button } from '../ui/button';
 import ErrorMessage from '../ui/error-message';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../ui/form';
-import { Input } from '../ui/input';
 
 const formSchema = z.object({
   encryptedConnection: z.string().min(1),
@@ -66,7 +66,7 @@ export const ConnectMethodRestoreConnection = () => {
     try {
       const decryptedValue = await decryptMessageWithPassphrase(
         values.encryptedConnection,
-        values.passphrase
+        values.passphrase,
       );
       if (decryptedValue) {
         const decryptedSetupData = JSON.parse(decryptedValue);
@@ -84,12 +84,11 @@ export const ConnectMethodRestoreConnection = () => {
     setEncryptedConnectionFile(null);
   };
   return (
-    <div className="h-full flex flex-col space-y-3">
+    <div className="flex h-full flex-col space-y-3">
       <Header
         description={
           <FormattedMessage id="restore-connection-connection-method-description" />
         }
-        icon={<FileKey />}
         title={
           <FormattedMessage id="restore-connection-connection-method-title" />
         }
@@ -97,27 +96,26 @@ export const ConnectMethodRestoreConnection = () => {
 
       <Form {...form}>
         <form
-          className="h-full flex flex-col space-y-2 justify-between"
+          className="flex h-full flex-col justify-between space-y-2"
           onSubmit={form.handleSubmit(restore)}
         >
-          <div className="grow flex flex-col space-y-3">
+          <div className="flex grow flex-col space-y-3">
             <FormField
               control={form.control}
               disabled={true}
               name="encryptedConnection"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
+                  <FormLabel className="sr-only">
                     <FormattedMessage id="encrypted-connection" />
                   </FormLabel>
                   <FormControl>
                     <div className="flex flex-col space-y-1">
                       <div className="flex items-center justify-center">
                         {encryptedConnectionFile ? (
-                          <div className="flex flex-row justify-center items-center rounded-lg border border-dashed w-full h-[100px] space-x-4">
+                          <div className="flex h-[100px] w-full flex-row items-center justify-center space-x-4 rounded-lg border border-dashed">
                             <div className="flex flex-row items-center">
-                              <FileKey className="w-4 h-4 space-x-1 mr-1" />
-                              <span className="font-semibold">
+                              <span className="text-gray-80 font-medium uppercase">
                                 {encryptedConnectionFile.name}
                               </span>
                             </div>
@@ -126,24 +124,25 @@ export const ConnectMethodRestoreConnection = () => {
                               onClick={() => removeConnectionFile()}
                               size="icon"
                               type="button"
+                              variant={'ghost'}
                             >
-                              <Trash className="w-4 h-4" />
+                              <Trash className="h-4 w-4" />
                             </Button>
                           </div>
                         ) : (
                           <label
-                            className="flex flex-col items-center justify-center w-full h-[100px] border-2 border-dashed rounded-lg cursor-pointer bg-secondary-600 hover:bg-secondary-600"
+                            className="flex h-[100px] w-full cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-gray-100 bg-gray-400"
                             htmlFor="dropzone-file"
                           >
                             <div className="flex flex-col items-center justify-center space-y-1">
                               <div>
-                                <Upload className="w-4 h-4" />
+                                <Upload className="h-4 w-4" />
                               </div>
-                              <p className="text-sm text-gray-500">
+                              <p className="text-sm text-white">
                                 <FormattedMessage id="click-to-upload" />
                               </p>
-                              <p className="text-xs text-gray-500">
-                                SHINKAI.KEY
+                              <p className="text-gray-80 text-xs">
+                                Eg: shinkai.key
                               </p>
                             </div>
                             <input
@@ -160,7 +159,9 @@ export const ConnectMethodRestoreConnection = () => {
                         )}
                       </div>
                       {encryptedConnectionFile && (
-                        <Input {...field} className="truncate" />
+                        <div className="truncate rounded-lg bg-gray-400 px-2 py-2">
+                          {field.value}
+                        </div>
                       )}
                     </div>
                   </FormControl>
@@ -173,22 +174,17 @@ export const ConnectMethodRestoreConnection = () => {
               control={form.control}
               name="passphrase"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    <FormattedMessage id="passphrase" />
-                  </FormLabel>
-                  <FormControl>
-                    <Input {...field} type="password" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+                <TextField
+                  field={field}
+                  label={<FormattedMessage id="passphrase" />}
+                  type={'password'}
+                />
               )}
             />
             {error && <ErrorMessage message={'Invalid connection file'} />}
           </div>
 
           <Button className="w-full" type="submit">
-            <PlugZap className="mr-2 h-4 w-4" />
             <FormattedMessage id="restore-connection" />
           </Button>
         </form>

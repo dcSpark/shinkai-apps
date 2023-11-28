@@ -1,6 +1,7 @@
+import { PaperClipIcon } from '@shinkai_network/shinkai-ui';
 import { partial } from 'filesize';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Loader2, Paperclip } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { ReactNode, useEffect, useState } from 'react';
 
 import { cn } from '../../helpers/cn-utils';
@@ -34,7 +35,11 @@ const FileImagePreview = ({ file, ...props }: FileImagePreview) => {
       reader.readAsDataURL(file);
     }
   }, [file]);
-  return imageSrc ? <img alt="preview" src={imageSrc} {...props}/> : <Loader2 />;
+  return imageSrc ? (
+    <img alt="preview" src={imageSrc} {...props} />
+  ) : (
+    <Loader2 />
+  );
 };
 export const FileList = ({ files, actions, className }: FileListProps) => {
   const size = partial({ standard: 'jedec' });
@@ -49,13 +54,18 @@ export const FileList = ({ files, actions, className }: FileListProps) => {
   const getFilePreview = (file: File): ReactNode | undefined => {
     console.log('type', file.type);
     if (file?.type?.includes('image/')) {
-      return <FileImagePreview className="h-full object-cover rounded-lg" file={file}></FileImagePreview>;
+      return (
+        <FileImagePreview
+          className="h-full rounded-lg object-cover"
+          file={file}
+         />
+      );
     }
   };
   return (
     <ul
       className={cn(
-        'divide-y divide-gray-100 rounded-md border border-gray-200',
+        'divide-y divide-gray-100 rounded-md border border-gray-100',
         className || '',
       )}
     >
@@ -67,26 +77,30 @@ export const FileList = ({ files, actions, className }: FileListProps) => {
             key={index}
           >
             <div className="flex w-0 flex-1 items-center space-x-2">
-              <Paperclip className="h-4 w-4"></Paperclip>
-              <div className="ml-4 flex min-w-0 flex-1 justify-between gap-2 items-center">
-                <div className="flex flex-col space-y-2 truncate justify-center">
-                  {(file instanceof File && hasPreview(file)) && <div className="h-10 self-center">{getFilePreview(file)}</div>}
+              <PaperClipIcon className="h-4 w-4" />
+              <div className="ml-4 flex min-w-0 flex-1 justify-between gap-2">
+                <div className="flex flex-col justify-center space-y-2 truncate">
+                  {file instanceof File && hasPreview(file) && (
+                    <div className="h-10 self-center">
+                      {getFilePreview(file)}
+                    </div>
+                  )}
                   <div className="flex flex-row overflow-hidden">
-                    <span className="truncate font-medium">
+                    <span className="text-gray-80 truncate font-medium">
                       {getFileName(decodeURIComponent(file.name))}
                     </span>
-                    <span className="font-medium">.</span>
-                    <span className="font-medium">
+                    <span className="text-gray-80 rounded-md bg-gray-200 px-1 text-[10px] font-medium uppercase">
                       {getFileExt(decodeURIComponent(file.name))}
                     </span>
                   </div>
+                  {file.size && (
+                    <span className="flex-shrink-0 text-gray-400">
+                      {size(file.size)}
+                    </span>
+                  )}
                 </div>
-                {file.size && (
-                  <span className="flex-shrink-0 text-gray-400">
-                    {size(file.size)}
-                  </span>
-                )}
               </div>
+
               <div className="flex flex-row space-x-1">
                 {actions?.map((action, actionIndex) => {
                   return (
