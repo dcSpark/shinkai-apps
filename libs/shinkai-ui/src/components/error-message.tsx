@@ -7,4 +7,4 @@ const ErrorMessage = ({ message }: { message: string }) => {
   );
 };
 
-export default ErrorMessage;
+export { ErrorMessage };

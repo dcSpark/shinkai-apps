@@ -2,6 +2,14 @@ import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/g
 import {
   AddAgentIcon,
   AgentIcon,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
   Button,
   ChatBubbleIcon,
   DisconnectIcon,
@@ -22,16 +30,6 @@ import visorLogo from '../../assets/icons/visor.svg';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
 import { useAuth } from '../../store/auth/auth';
 import { EditInboxNameDialog } from '../edit-inbox-name-dialog/edit-inbox-name-dialog';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '../ui/alert-dialog';
 
 enum MenuOption {
   Inbox = 'inbox',
@@ -213,7 +211,8 @@ export default function NavBar() {
         {auth && (
           <DropdownMenu
             modal={false}
-            onOpenChange={(value) => setMenuOpened(value)} open={isMenuOpened}
+            onOpenChange={(value) => setMenuOpened(value)}
+            open={isMenuOpened}
           >
             <DropdownMenuTrigger asChild>
               <Button size="icon" variant="ghost">

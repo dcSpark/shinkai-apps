@@ -3,6 +3,7 @@ import { QRSetupData } from '@shinkai_network/shinkai-message-ts/models';
 import { useSubmitRegistration } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistration';
 import {
   Button,
+  ErrorMessage,
   Form,
   FormField,
   TextField,
@@ -18,7 +19,6 @@ import * as z from 'zod';
 import { generateMyEncryptionKeys } from '../../helpers/encryption-keys';
 import { SetupData, useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
-import ErrorMessage from '../ui/error-message';
 
 const formSchema = z.object({
   registration_code: z.string().min(5),

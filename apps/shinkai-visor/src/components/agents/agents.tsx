@@ -1,5 +1,6 @@
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { Button } from '@shinkai_network/shinkai-ui';
+import { ScrollArea } from '@shinkai_network/shinkai-ui';
 import { Plus } from 'lucide-react';
 import { Fragment } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -8,7 +9,6 @@ import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../store/auth/auth';
 import { EmptyAgents } from '../empty-agents/empty-agents';
 import { Header } from '../header/header';
-import { ScrollArea } from '../ui/scroll-area';
 
 export const Agents = () => {
   const auth = useAuth((state) => state.auth);

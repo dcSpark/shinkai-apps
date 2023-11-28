@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
 import {
   Button,
+  ErrorMessage,
   Form,
   FormField,
   TextField,
@@ -20,7 +21,6 @@ import {
 import { SetupData, useAuth } from '../../store/auth/auth';
 import { ConnectionMethodOption } from '../connection-method-option/connection-method-option';
 import { Header } from '../header/header';
-import ErrorMessage from '../ui/error-message';
 
 const formSchema = z.object({
   registration_name: z.string().min(5),

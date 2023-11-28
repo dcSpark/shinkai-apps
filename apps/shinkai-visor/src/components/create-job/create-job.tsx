@@ -10,6 +10,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  ScrollArea,
   Select,
   SelectContent,
   SelectItem,
@@ -28,7 +29,6 @@ import { useAuth } from '../../store/auth/auth';
 import { useSettings } from '../../store/settings/settings';
 import { FileInput } from '../file-input/file-input';
 import { Header } from '../header/header';
-import { ScrollArea } from '../ui/scroll-area';
 
 const formSchema = z.object({
   agent: z.string().min(1),

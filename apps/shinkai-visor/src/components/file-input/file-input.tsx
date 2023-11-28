@@ -1,8 +1,8 @@
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { ExternalLink, Trash, Upload } from 'lucide-react';
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { cn } from '../../helpers/cn-utils';
 import { getFileExt } from '../../helpers/file-name-utils';
 import { FileList } from '../file-list/file-list';
 

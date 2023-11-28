@@ -1,7 +1,7 @@
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { PropsWithChildren } from 'react';
 import { useLocation } from 'react-router-dom';
 
-import { cn } from '../../helpers/cn-utils';
 import NavBar from '../nav/nav';
 
 export const WithNav = (props: PropsWithChildren) => {

@@ -1,10 +1,10 @@
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
 import { IntlProvider } from 'react-intl';
 
 import shinkaiLogo from '../../assets/icons/shinkai-min.svg';
-import { cn } from '../../helpers/cn-utils';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
 import { useGlobalActionButtonChromeMessage } from '../../hooks/use-global-action-button-chrome-message';
 import { langMessages, locale } from '../../lang/intl';

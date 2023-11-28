@@ -2,6 +2,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useUpdateInboxName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateInboxName/useUpdateInboxName';
 import {
   Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
   Form,
   FormField,
   TextField,
@@ -12,14 +18,6 @@ import { FormattedMessage } from 'react-intl';
 import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '../ui/dialog';
 
 export type EditInboxNameDialogProps = {
   open: boolean;

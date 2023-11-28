@@ -1,14 +1,18 @@
 import { ChatConversationMessage } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
-import { CopyToClipboardIcon } from '@shinkai_network/shinkai-ui';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  CopyToClipboardIcon,
+} from '@shinkai_network/shinkai-ui';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 import MarkdownPreview from '@uiw/react-markdown-preview';
 
 import shinkaiMiniLogo from '../../assets/icons/shinkai-min.svg';
-import { cn } from '../../helpers/cn-utils';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
 import { sendMessage } from '../../service-worker/communication/internal';
 import { ServiceWorkerInternalMessageType } from '../../service-worker/communication/internal/types';
 import { FileList } from '../file-list/file-list';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 type MessageProps = {
   message: ChatConversationMessage;
@@ -40,7 +44,7 @@ export const Message = ({ message }: MessageProps) => {
       </Avatar>
       <div
         className={cn(
-          'group relative mt-1 flex flex-col rounded-lg bg-transparent px-2.5 py-3 text-sm text-white overflow-hidden',
+          'group relative mt-1 flex flex-col overflow-hidden rounded-lg bg-transparent px-2.5 py-3 text-sm text-white',
           message.isLocal
             ? 'rounded-tr-none bg-gray-300'
             : 'rounded-bl-none border-none bg-gray-200',
