@@ -1,3 +1,5 @@
+import { Buffer } from 'buffer';
+
 import { ServiceWorkerInternalMessage, ServiceWorkerInternalMessageType } from "./communication/internal/types";
 
 enum ContextMenu {
@@ -11,10 +13,20 @@ const sendPageToAgent = async (info: chrome.contextMenus.OnClickData, tab: chrom
   if (!tab?.id) {
     return;
   }
+  const [htmlContent] = await chrome.scripting.executeScript({
+    target: { tabId: tab?.id },
+    func: () => {
+      return document.documentElement.outerHTML;
+    },
+    args: [],
+  });
+  const fileType = 'text/html';
   const message: ServiceWorkerInternalMessage = {
     type: ServiceWorkerInternalMessageType.SendPageToAgent,
     data: {
-      filename: `${encodeURIComponent(tab.url || Date.now())}.pdf`
+      filename: `${encodeURIComponent(tab.url || Date.now())}.html`,
+      fileType: fileType,
+      fileDataUrl: `data:${fileType};base64,${Buffer.from(htmlContent.result).toString('base64')}`,
     },
   };
   chrome.tabs.sendMessage<ServiceWorkerInternalMessage>(tab.id, message);
@@ -53,7 +65,7 @@ const sendCaptureToAgent = async (info: chrome.contextMenus.OnClickData, tab: ch
   console.log('cropped image', croppedImage);
   message = {
     type: ServiceWorkerInternalMessageType.SendCaptureToAgent,
-    data: { image: croppedImage, filename: `${encodeURIComponent(tab.url || 'capture')}.jpeg` },
+    data: { imageDataUrl: croppedImage, filename: `${encodeURIComponent(tab.url || 'capture')}.jpeg` },
   };
   chrome.tabs.sendMessage<ServiceWorkerInternalMessage>(tab.id, message);
 }

@@ -26,12 +26,13 @@ export type ServiceWorkerInternalMessage =
   | {
     type: ServiceWorkerInternalMessageType.SendPageToAgent;
     data: {
-      pdf?: File;
       filename: string;
+      fileDataUrl: string;
+      fileType: string;
     }
   }
   | { type: ServiceWorkerInternalMessageType.RehydrateStore, data?: never }
   | { type: ServiceWorkerInternalMessageType.CopyToClipboard, data: { content: string } }
   | { type: ServiceWorkerInternalMessageType.CaptureImage, data: { image: string } }
-  | { type: ServiceWorkerInternalMessageType.SendCaptureToAgent, data: { image: string, filename: string } };
+  | { type: ServiceWorkerInternalMessageType.SendCaptureToAgent, data: { imageDataUrl: string, filename: string } };
 ;

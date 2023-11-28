@@ -19,12 +19,14 @@ export const useGlobalPopupChromeMessage = () => {
         sendContentScriptMessage({ type: ContentScriptBridgeMessageType.TogglePopupVisibility, data: true });
         break;
       }
-      case ServiceWorkerInternalMessageType.SendPageToAgent:
-        history.push({ pathname: '/inboxes/create-job', state: { files: [message.data.pdf] } });
+      case ServiceWorkerInternalMessageType.SendPageToAgent: {
+        const file = dataUrlToFile(message.data.fileDataUrl, message.data.filename);
+        history.push({ pathname: '/inboxes/create-job', state: { files: [file] } });
         sendContentScriptMessage({ type: ContentScriptBridgeMessageType.TogglePopupVisibility, data: true });
         break;
+      }
       case ServiceWorkerInternalMessageType.SendCaptureToAgent: {
-        const imageFile = dataUrlToFile(message.data.image, message.data.filename);
+        const imageFile = dataUrlToFile(message.data.imageDataUrl, message.data.filename);
         history.push({ pathname: '/inboxes/create-job', state: { files: [imageFile] } });
         sendContentScriptMessage({ type: ContentScriptBridgeMessageType.TogglePopupVisibility, data: true });
         break;
