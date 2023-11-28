@@ -1,4 +1,3 @@
-import { generatePdfFromCurrentPage } from '../../helpers/pdf-generator';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
 import { sendContentScriptMessage } from '../../service-worker/communication/internal';
 import {
@@ -66,16 +65,6 @@ chrome.runtime.onMessage.addListener(async (message: ServiceWorkerInternalMessag
         baseContainer.style.pointerEvents = isVisible ? 'auto' : 'none';
       }
       break;
-    case ServiceWorkerInternalMessageType.SendPageToAgent: {
-      const pageAsPdf = await generatePdfFromCurrentPage(message.data.filename, document.body);
-      if (pageAsPdf) {
-        message.data = {
-          ...message.data,
-          pdf: pageAsPdf,
-        }
-      }
-      break;
-    }
     default:
       break;
   }
