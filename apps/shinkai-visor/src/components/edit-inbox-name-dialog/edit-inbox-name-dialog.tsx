@@ -3,15 +3,9 @@ import { useUpdateInboxName } from '@shinkai_network/shinkai-node-state/lib/muta
 import {
   Button,
   Form,
-  FormControl,
   FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  Input,
   TextField,
 } from '@shinkai_network/shinkai-ui';
-import { Loader2 } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';

@@ -3,15 +3,10 @@ import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state
 import {
   Button,
   Form,
-  FormControl,
   FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  Input,
   TextField,
 } from '@shinkai_network/shinkai-ui';
-import { Loader2, QrCode } from 'lucide-react';
+import { QrCode } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';

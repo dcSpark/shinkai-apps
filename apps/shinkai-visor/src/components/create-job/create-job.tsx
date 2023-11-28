@@ -17,7 +17,6 @@ import {
   SelectValue,
   Textarea,
 } from '@shinkai_network/shinkai-ui';
-import { Loader2 } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';

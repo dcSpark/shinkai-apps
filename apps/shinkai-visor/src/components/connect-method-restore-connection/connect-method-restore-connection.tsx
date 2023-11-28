@@ -8,7 +8,6 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  Input,
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import { Trash, Upload } from 'lucide-react';

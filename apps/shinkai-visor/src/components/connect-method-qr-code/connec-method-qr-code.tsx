@@ -4,16 +4,11 @@ import { useSubmitRegistration } from '@shinkai_network/shinkai-node-state/lib/m
 import {
   Button,
   Form,
-  FormControl,
   FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  Input,
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import { BrowserQRCodeReader } from '@zxing/browser';
-import { Loader2, QrCode, Trash, Upload } from 'lucide-react';
+import { QrCode, Trash, Upload } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';

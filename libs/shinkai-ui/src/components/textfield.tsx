@@ -8,7 +8,6 @@ import {
   FormMessage,
   Input,
 } from '@shinkai_network/shinkai-ui';
-import { FieldPathValue, Noop, RefCallBack } from 'react-hook-form/dist/types';
 
 const TextField = ({
   classes,
@@ -24,11 +23,11 @@ const TextField = ({
   };
   field: {
     onChange: (...event: any[]) => void;
-    onBlur: Noop;
+    onBlur: () => void;
     value: any;
     disabled?: boolean;
     name: string;
-    ref: RefCallBack;
+    ref: (instance: any) => void;
   };
   label: React.ReactNode;
   type?: 'text' | 'password';

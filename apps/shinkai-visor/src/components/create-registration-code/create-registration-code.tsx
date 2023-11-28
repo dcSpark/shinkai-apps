@@ -8,7 +8,6 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  Input,
   Select,
   SelectContent,
   SelectItem,
@@ -16,7 +15,7 @@ import {
   SelectValue,
   TextField,
 } from '@shinkai_network/shinkai-ui';
-import { Download, Loader2, QrCode } from 'lucide-react';
+import { Download } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 import { useEffect, useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
