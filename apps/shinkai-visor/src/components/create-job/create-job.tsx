@@ -206,6 +206,18 @@ export const CreateJob = () => {
                 </FormItem>
               )}
             />
+            {query.has('context') && (
+              <div className="my-4">
+                <blockquote className="border-l-4 border-gray-200 bg-gray-300 py-2.5 pl-3 pr-3">
+                  <span className="text-gray-80 font-medium">
+                    Your selected text
+                  </span>
+                  <p className="line-clamp-2 h-full text-white">
+                    {query.get('context')}
+                  </p>
+                </blockquote>
+              </div>
+            )}
 
             <FormField
               control={form.control}
@@ -216,23 +228,14 @@ export const CreateJob = () => {
                     <FormattedMessage id="message.one" />
                   </FormLabel>
                   <FormControl>
-                    <div className="flex flex-col space-y-1">
-                      {query.has('context') && (
-                        <blockquote className="bg-secondary-600 mb-5 max-h-28 overflow-hidden border-l-4 border-gray-300 p-4 dark:border-gray-500 dark:bg-gray-800">
-                          <p className="h-full truncate italic dark:text-white">
-                            {query.get('context')}
-                          </p>
-                        </blockquote>
-                      )}
-                      <Textarea
-                        autoFocus
-                        className="resize-none"
-                        placeholder={intl.formatMessage({
-                          id: 'tmwtd',
-                        })}
-                        {...field}
-                      />
-                    </div>
+                    <Textarea
+                      autoFocus
+                      className="resize-none"
+                      placeholder={intl.formatMessage({
+                        id: 'tmwtd',
+                      })}
+                      {...field}
+                    />
                   </FormControl>
 
                   <FormMessage />

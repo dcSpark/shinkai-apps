@@ -46,7 +46,7 @@ const root = createRoot(container);
 root.render(
   <React.StrictMode>
     <IntlProvider locale={locale} messages={langMessages}>
-      <div className="font-inter bg-secondary-600 bg-app-gradient h-full w-full overflow-hidden p-3 shadow-xl">
+      <div className="font-inter h-full w-full overflow-hidden bg-gray-500 p-3 shadow-xl">
         <InstalledPopup />
       </div>
     </IntlProvider>

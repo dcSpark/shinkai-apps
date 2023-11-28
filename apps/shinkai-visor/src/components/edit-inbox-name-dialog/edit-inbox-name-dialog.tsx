@@ -104,7 +104,7 @@ export const EditInboxNameDialog = ({
               />
             </div>
             <DialogFooter>
-              <div className="flex flex-col gap-2 pt-4">
+              <div className="flex gap-2 pt-4">
                 <Button
                   className="flex-1"
                   onClick={cancel}
