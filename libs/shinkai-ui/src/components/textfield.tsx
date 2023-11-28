@@ -1,10 +1,6 @@
-import {
-  FormControl,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  Input,
-} from '@shinkai_network/shinkai-ui';
+import { Input } from './input';
+
+import { FormControl, FormItem, FormLabel, FormMessage } from './form';
 import React from 'react';
 import { cn } from '../utils';
 
