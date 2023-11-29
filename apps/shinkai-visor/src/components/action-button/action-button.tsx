@@ -28,7 +28,6 @@ export const ActionButton = () => {
   const settings = useSettings((settingsStore) => settingsStore.settings);
 
   const togglePopupVisibility = async () => {
-    console.log('clicked!');
     sendContentScriptMessage({
       type: ContentScriptBridgeMessageType.TogglePopupVisibility,
     });

@@ -1,6 +1,6 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/utilities';
-@import 'tailwindcss/components';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
   @font-face {
@@ -17,7 +17,8 @@
   :host,
   body {
     .wmde-markdown-var[data-color-mode*='dark'] {
-      --color-canvas-default: var(--background);
+      --color-canvas-default: transparent;
+      --color-border-default: theme('colors.gray.400');
       --color-fg-default: theme('colors.white');
       @apply text-[15px];
     }
