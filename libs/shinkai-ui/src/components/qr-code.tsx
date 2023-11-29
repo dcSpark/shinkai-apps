@@ -1,10 +1,14 @@
-import React from 'react';
+import { DownloadIcon } from '@radix-ui/react-icons';
+import { Check } from 'lucide-react';
+import React, { useState } from 'react';
 import type { IProps } from 'react-qrcode-logo';
 import { QRCode as ReactQRCode } from 'react-qrcode-logo';
 
 import shinkaiLogo from '../assets/app-icon.png';
+import { Button } from './button';
+import { Dialog, DialogContent } from './dialog';
 
-export default function QRCode({
+export function QRCode({
   value,
   size,
   id,
@@ -28,5 +32,72 @@ export default function QRCode({
       size={size ?? 300}
       value={value}
     />
+  );
+}
+
+export function QrCodeModal({
+  open,
+  onOpenChange,
+  value,
+  onSave,
+  title,
+  description,
+  modalClassName,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  value: IProps['value'];
+  onSave: (key: string) => void;
+  title: React.ReactNode;
+  description: React.ReactNode;
+  modalClassName?: string;
+}) {
+  const [saved, setSaved] = useState(false);
+  const downloadCode = async () => {
+    const canvas = document.querySelector('#registration-code-qr');
+    if (canvas instanceof HTMLCanvasElement) {
+      try {
+        const pngUrl = canvas.toDataURL();
+        onSave(pngUrl);
+        setSaved(true);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setTimeout(() => {
+          setSaved(false);
+        }, 3000);
+      }
+    }
+  };
+
+  return (
+    <Dialog onOpenChange={onOpenChange} open={open}>
+      <DialogContent className={modalClassName}>
+        <div className="flex flex-col items-center py-4">
+          <h2 className="mb-1 text-lg font-semibold">{title}</h2>
+          <p className="text-foreground text-gray-80 mb-5 text-center text-xs">
+            {description}
+          </p>
+          <div className="mb-7 overflow-hidden rounded-lg shadow-2xl">
+            <QRCode id="registration-code-qr" size={190} value={value} />
+          </div>
+          <div className="flex flex-col gap-4">
+            <Button className="flex gap-1" onClick={downloadCode}>
+              {saved ? <Check /> : <DownloadIcon className="h-4 w-4" />}
+              {saved ? 'Saved' : 'Download'}
+            </Button>
+            <Button
+              className="flex gap-1"
+              onClick={() => {
+                onOpenChange(false);
+              }}
+              variant="ghost"
+            >
+              I saved it, close
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
