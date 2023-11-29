@@ -188,7 +188,7 @@ export const Inbox = () => {
         ref={chatContainerRef}
       >
         {isChatConversationSuccess && (
-          <div className="py-2 text-center text-xs">
+          <div className="py-2 text-center text-xs text-gray-100">
             {isFetchingPreviousPage && (
               <Loader2 className="flex animate-spin justify-center text-white" />
             )}
@@ -199,7 +199,7 @@ export const Inbox = () => {
         )}
         <div className="">
           {isChatConversationLoading && (
-            <div className="flex flex-col space-y-2">
+            <div className="flex flex-col space-y-3">
               {[...Array(5).keys()].map((index) => (
                 <div
                   className={cn(

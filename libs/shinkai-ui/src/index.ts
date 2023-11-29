@@ -25,3 +25,4 @@ export * from './components/textarea';
 export * from './components/tooltip';
 export * from './components/dropdown-menu';
 export * from './components/textfield';
+export * from './components/markdown-preview';

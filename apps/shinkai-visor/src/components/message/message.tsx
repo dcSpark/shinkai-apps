@@ -4,9 +4,9 @@ import {
   AvatarFallback,
   AvatarImage,
   CopyToClipboardIcon,
+  MarkdownPreview,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import MarkdownPreview from '@uiw/react-markdown-preview';
 
 import shinkaiMiniLogo from '../../assets/icons/shinkai-min.svg';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
@@ -57,11 +57,7 @@ export const Message = ({ message }: MessageProps) => {
             string={message.content}
           />
         )}
-        <MarkdownPreview
-          className="wmde-markdown-var"
-          source={message.content}
-          wrapperElement={{ 'data-color-mode': 'dark' }}
-        />
+        <MarkdownPreview source={message.content} />
         {!!message.fileInbox?.files?.length && (
           <FileList
             actions={[]}

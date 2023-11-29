@@ -8,6 +8,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  QrCodeModal,
   Select,
   SelectContent,
   SelectItem,
@@ -15,14 +16,11 @@ import {
   SelectValue,
   TextField,
 } from '@shinkai_network/shinkai-ui';
-import { Download } from 'lucide-react';
-import { QRCodeCanvas } from 'qrcode.react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { z } from 'zod';
 
-import shinkaiLogo from '../../assets/icons/shinkai-min.svg';
 import { SetupData, useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
 
@@ -47,7 +45,6 @@ export const CreateRegistrationCode = () => {
   const intl = useIntl();
   type FormSchemaType = z.infer<typeof formSchema>;
   const auth = useAuth((state) => state.auth);
-  const canvasContainer = useRef<HTMLDivElement>(null);
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -64,6 +61,8 @@ export const CreateRegistrationCode = () => {
     | Partial<SetupData & { registration_code: string; identity_type: string }>
     | undefined
   >();
+  const [qrCodeModalOpen, setQrCodeModalOpen] = useState(false);
+
   const { mutateAsync: createRegistrationCode, isPending } =
     useCreateRegistrationCode({
       onSuccess: (registrationCode) => {
@@ -90,6 +89,7 @@ export const CreateRegistrationCode = () => {
             : {}),
         };
         setGeneratedSetupData(setupData);
+        setQrCodeModalOpen(true);
       },
     });
   const identityTypeOptions: { value: IdentityType; label: string }[] = [
@@ -117,7 +117,7 @@ export const CreateRegistrationCode = () => {
     },
   ];
   const submit = async (values: FormSchemaType): Promise<void> => {
-    createRegistrationCode({
+    await createRegistrationCode({
       permissionsType: values.permissionType,
       identityType: values.identityType,
       setupPayload: {
@@ -136,14 +136,9 @@ export const CreateRegistrationCode = () => {
       profileName: values.profile,
     });
   };
-  const download = (): void => {
-    const canvas =
-      canvasContainer?.current?.getElementsByTagName('canvas')?.[1];
-    if (!canvas) {
-      return;
-    }
+  const download = (dataUrl: string): void => {
     const link = document.createElement('a');
-    link.href = canvas.toDataURL();
+    link.href = dataUrl;
     link.download = 'registration_code.shinkai.png';
     link.click();
     URL.revokeObjectURL(link.href);
@@ -256,55 +251,15 @@ export const CreateRegistrationCode = () => {
           </form>
         </Form>
 
-        {generatedSetupData && (
-          <div className=" flex grow flex-col items-center justify-center space-y-3">
-            <div className="flex flex-col space-y-1">
-              <span className="font-semibold">
-                <FormattedMessage id="scan-or-download-registration-code" />
-              </span>
-              <span>
-                <FormattedMessage id="use-it-to-register-and-connect" />
-              </span>
-            </div>
-            <div className="flex w-full flex-row items-center justify-center">
-              <div
-                className="group relative flex flex-col"
-                ref={canvasContainer}
-              >
-                <QRCodeCanvas
-                  imageSettings={{
-                    src: shinkaiLogo,
-                    excavate: true,
-                    height: 24,
-                    width: 24,
-                  }}
-                  level="H"
-                  size={128}
-                  value={JSON.stringify(generatedSetupData)}
-                />
-                <QRCodeCanvas
-                  className="hidden"
-                  imageSettings={{
-                    src: shinkaiLogo,
-                    excavate: true,
-                    height: 24,
-                    width: 24,
-                  }}
-                  level="H"
-                  size={512}
-                  value={JSON.stringify(generatedSetupData)}
-                />
-                <Button
-                  className="invisible absolute bottom-1 right-1 group-hover:visible"
-                  onClick={() => download()}
-                  size="icon"
-                >
-                  <Download className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
+        <QrCodeModal
+          description={<FormattedMessage id="use-it-to-register-and-connect" />}
+          modalClassName={'w-[85%]'}
+          onOpenChange={setQrCodeModalOpen}
+          onSave={download}
+          open={qrCodeModalOpen}
+          title={<FormattedMessage id="scan-or-download-registration-code" />}
+          value={JSON.stringify(generatedSetupData)}
+        />
       </div>
     </div>
   );
