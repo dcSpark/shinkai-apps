@@ -132,7 +132,7 @@ export const Inboxes = () => {
                               {inbox.custom_name}
                             </span>
                             <div className="truncate text-left text-xs text-gray-100">
-                              {getMessageContent(inbox.last_message)}
+                              {inbox.last_message && getMessageContent(inbox.last_message)}
                             </div>
                           </div>
                         </div>

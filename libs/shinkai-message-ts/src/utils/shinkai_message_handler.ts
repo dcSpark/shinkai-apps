@@ -18,7 +18,8 @@ export const isJobMessage = (message: ShinkaiMessage) => {
   );
 };
 
-export const getMessageContent = (message: ShinkaiMessage) => {
+export const getMessageContent = (message: ShinkaiMessage): string => {
+  if (!message) return '';
   // unnencrypted content
   if (message.body && 'unencrypted' in message.body) {
     if ('unencrypted' in message.body.unencrypted.message_data) {
@@ -47,7 +48,7 @@ export const getMessageContent = (message: ShinkaiMessage) => {
     return message.body.unencrypted.message_data.encrypted.content;
   }
   // raw content for encrypted body
-  return message.body?.encrypted.content;
+  return message.body?.encrypted.content || '';
 };
 
 export const getMessageFilesInbox = (message: ShinkaiMessage): string | undefined => {
