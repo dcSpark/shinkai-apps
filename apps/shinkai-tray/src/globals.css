@@ -49,12 +49,4 @@ body,
   @apply grid;
 }
 
-@keyframes loaderDots {
-  0% {
-    opacity: 1;
-  }
-  50%,
-  100% {
-    opacity: 0.15;
-  }
-}
+

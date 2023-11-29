@@ -5,22 +5,18 @@ import {
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { queryClient } from '@shinkai_network/shinkai-node-state/lib/constants';
 import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
+import {
+  Button,
+  ErrorMessage,
+  Form,
+  FormField,
+  TextField,
+} from '@shinkai_network/shinkai-ui';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
-import { Button } from '../components/ui/button';
-import ErrorMessage from '../components/ui/error-message';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../components/ui/form';
-import { Input } from '../components/ui/input';
 import { HOME_PATH } from '../routes/name';
 import { useAuth } from '../store/auth';
 
@@ -175,13 +171,7 @@ const OnboardingPage = () => {
             control={setupDataForm.control}
             name="node_address"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Node Address</FormLabel>
-                <FormControl>
-                  <Input placeholder="Eg: http://localhost:9550" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+              <TextField field={field} label={'Node Address'} />
             )}
           />
           {isError && <ErrorMessage message={error.message} />}

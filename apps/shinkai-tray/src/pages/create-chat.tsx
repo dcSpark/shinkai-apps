@@ -1,20 +1,20 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateChat } from '@shinkai_network/shinkai-node-state/lib/mutations/createChat/useCreateChat';
-import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
-import { z } from 'zod';
-
-import { Button } from '../components/ui/button';
 import {
+  Button,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '../components/ui/form';
-import { Input } from '../components/ui/input';
-import { Textarea } from '../components/ui/textarea';
+  Input,
+  Textarea,
+} from '@shinkai_network/shinkai-ui';
+import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { z } from 'zod';
+
 import { useAuth } from '../store/auth';
 import SimpleLayout from './layout/simple-layout';
 
@@ -86,7 +86,7 @@ const CreateChatPage = () => {
                   <FormLabel>Message</FormLabel>
                   <FormControl>
                     <Textarea
-                      className="resize-none border-white"
+                      className="resize-nonee"
                       onKeyDown={(event) => {
                         if (
                           event.key === 'Enter' &&

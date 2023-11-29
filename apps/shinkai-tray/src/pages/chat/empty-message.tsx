@@ -1,5 +1,5 @@
-import { LightningBoltIcon } from '@radix-ui/react-icons';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
+import { buttonVariants } from '@shinkai_network/shinkai-ui';
 import { Link } from 'react-router-dom';
 
 import { ADD_AGENT_PATH, CREATE_JOB_PATH } from '../../routes/name';
@@ -38,8 +38,8 @@ const EmptyMessage = () => {
           />
         </svg>
 
-        <h1 className="text-foreground text-2xl font-bold">Ask Shinkai AI</h1>
-        <p className="text-muted-foreground text-sm">
+        <h1 className="text-2xl font-bold text-white">Ask Shinkai AI</h1>
+        <p className="text-gray-80 text-sm">
           Try “How to make a HTTP request in JavaScript” , “Give me the top 10
           rock music in the 80s”, “Explain me how internet works”
         </p>
@@ -47,18 +47,20 @@ const EmptyMessage = () => {
         <div className="mt-4">
           {agents.length === 0 ? (
             <Link
-              className="bg-primary-600 hover:bg-primary-700 flex h-9 items-center rounded-md px-6 py-2 font-medium text-white shadow transition-colors duration-150 "
+              className={buttonVariants({
+                variant: 'default',
+              })}
               to={ADD_AGENT_PATH}
             >
-              <LightningBoltIcon className="mr-2" />
               <span>Add Agent</span>
             </Link>
           ) : (
             <Link
-              className="bg-primary-600 hover:bg-primary-700 flex h-9 items-center rounded-md px-6 py-2 font-medium text-white shadow transition-colors duration-150 "
+              className={buttonVariants({
+                variant: 'default',
+              })}
               to={CREATE_JOB_PATH}
             >
-              <LightningBoltIcon className="mr-2" />
               <span>Create Job</span>
             </Link>
           )}

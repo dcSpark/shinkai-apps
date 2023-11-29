@@ -2,6 +2,21 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
+import {
+  Button,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Textarea,
+} from '@shinkai_network/shinkai-ui';
 import { FileCheck2, ImagePlusIcon, PlusIcon, X } from 'lucide-react';
 import { useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
@@ -9,23 +24,6 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
-import { Button } from '../components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../components/ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../components/ui/select';
-import { Textarea } from '../components/ui/textarea';
 import { cn } from '../lib/utils';
 import { ADD_AGENT_PATH } from '../routes/name';
 import { useAuth } from '../store/auth';
@@ -157,7 +155,7 @@ const CreateJobPage = () => {
                   <FormControl>
                     <Textarea
                       autoFocus={true}
-                      className="resize-none border-white"
+                      className="resize-none"
                       onKeyDown={(event) => {
                         if (
                           event.key === 'Enter' &&
@@ -214,7 +212,7 @@ const CreateJobPage = () => {
             <div>
               <FormLabel>
                 Upload a file
-                <span className="text-muted-foreground ml-1">(optional)</span>
+                <span className="text-gray-80 ml-1">(optional)</span>
               </FormLabel>
               <div className="flex gap-5">
                 <div
@@ -251,7 +249,7 @@ const CreateJobPage = () => {
                       )}
                       {!isImageOrPdf(file) && (
                         <div className="flex flex-col items-center gap-2">
-                          <FileCheck2 className="text-muted-foreground h-6 w-6 " />
+                          <FileCheck2 className="text-gray-80 h-6 w-6 " />
                           <span className="line-clamp-3 break-all px-2 text-center text-xs ">
                             {file?.name}
                           </span>
@@ -276,7 +274,7 @@ const CreateJobPage = () => {
                     </button>
                   )}
                 </div>
-                <span className="text-muted-foreground pt-4 text-xs font-bold">
+                <span className="text-gray-80 pt-4 text-xs font-bold">
                   Supported formats
                   <p className="mt-2">
                     Plain Text
@@ -295,7 +293,7 @@ const CreateJobPage = () => {
                       ].join(' • ')}
                     </span>
                   </p>
-                  <p className="text-muted-foreground mt-1 font-bold">
+                  <p className="text-gray-80 mt-1 font-bold">
                     Documents
                     <span className="block font-normal">
                       {[

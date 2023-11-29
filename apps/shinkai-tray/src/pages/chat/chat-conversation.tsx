@@ -9,6 +9,17 @@ import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mut
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
 import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageWithFilesToInbox/useSendMessageWithFilesToInbox';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
+import {
+  Button,
+  DotsLoader,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  ScrollArea,
+  Skeleton,
+} from '@shinkai_network/shinkai-ui';
 import { Placeholder } from '@tiptap/extension-placeholder';
 import { EditorContent, Extension, useEditor } from '@tiptap/react';
 import { StarterKit } from '@tiptap/starter-kit';
@@ -24,21 +35,12 @@ import {
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 import { Markdown } from 'tiptap-markdown';
 import { z } from 'zod';
 
 import Message from '../../components/chat/message';
-import { Button } from '../../components/ui/button';
-import DotsLoader from '../../components/ui/dots-loader';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from '../../components/ui/form';
-import { ScrollArea } from '../../components/ui/scroll-area';
-import { Skeleton } from '../../components/ui/skeleton';
 import { formatDate, groupMessagesByDate } from '../../lib/chat-conversation';
 import { cn } from '../../lib/utils';
 import { useAuth } from '../../store/auth';
@@ -336,7 +338,7 @@ const ChatConversation = () => {
                   )}
                   {!isImageOrPdf(file) && (
                     <div className="flex flex-col items-center gap-2">
-                      <FileCheck2 className="text-muted-foreground h-4 w-4 " />
+                      <FileCheck2 className="text-gray-80 h-4 w-4 " />
                       <span className="line-clamp-2 break-all px-2 text-center text-xs ">
                         {file?.name}
                       </span>

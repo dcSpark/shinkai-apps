@@ -4,12 +4,6 @@ import {
   PersonIcon,
   TokensIcon,
 } from '@radix-ui/react-icons';
-import { listen } from '@tauri-apps/api/event';
-import { BotIcon, BoxesIcon, MessageCircleIcon } from 'lucide-react';
-import * as React from 'react';
-import { useCallback } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
-
 import {
   Command,
   CommandGroup,
@@ -17,13 +11,17 @@ import {
   CommandList,
   CommandSeparator,
   CommandShortcut,
-} from '../../components/ui/command';
-import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '../../components/ui/popover';
-import { Separator } from '../../components/ui/separator';
+  Separator,
+} from '@shinkai_network/shinkai-ui';
+import { listen } from '@tauri-apps/api/event';
+import { BotIcon, BoxesIcon, MessageCircleIcon } from 'lucide-react';
+import * as React from 'react';
+import { useCallback } from 'react';
+import { Outlet, useNavigate } from 'react-router-dom';
+
 import {
   ADD_AGENT_PATH,
   CREATE_CHAT_PATH,
@@ -129,16 +127,16 @@ export function Footer() {
   };
 
   return (
-    <div className="text-muted-foreground absolute bottom-2 left-2 text-sm">
+    <div className="text-gray-80 absolute bottom-2 left-2 text-sm">
       <Popover modal onOpenChange={setOpen} open={open}>
         <PopoverTrigger
           aria-expanded={open}
-          className="bg-app-gradient rounded-lg px-2.5 py-2 shadow-lg transition-colors duration-150 hover:bg-gray-700/40"
+          className="rounded-lg bg-gray-400 px-2.5 py-2 shadow-lg transition-colors duration-150 hover:bg-gray-500/40"
           onClick={() => setOpen(true)}
         >
           <span className="text-xs">
             Actions
-            <kbd className="bg-muted text-muted-foreground pointer-events-none ml-2 inline-flex h-5 select-none items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium opacity-100">
+            <kbd className="pointer-events-none ml-2 inline-flex h-5 select-none items-center gap-1 rounded border bg-gray-500 px-1.5 font-mono text-[10px] font-medium text-gray-100 opacity-100">
               <span className="text-xs">⌘</span>K
             </kbd>
           </span>
@@ -147,7 +145,7 @@ export function Footer() {
           align="start"
           alignOffset={0}
           asChild
-          className="rounded-md border-0 bg-black bg-gradient-to-r from-[#19242D] to-[#19242D]/90 p-4 shadow-xl"
+          className="rounded-md border-0 bg-gray-500 p-4 shadow-xl"
           side="top"
           sideOffset={2}
         >
@@ -207,7 +205,7 @@ export function Footer() {
 const MainLayout = () => {
   const auth = useAuth((state) => state.auth);
   return (
-    <div className="bg-app-gradient relative flex h-full flex-col bg-cover text-white">
+    <div className="bg-app-gradient relative flex h-full flex-col bg-gray-500 text-white">
       <div
         className="flex h-9 shrink-0 cursor-default select-none items-center justify-center text-xs"
         data-tauri-drag-region

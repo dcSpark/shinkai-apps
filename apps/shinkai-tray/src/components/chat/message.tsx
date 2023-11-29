@@ -1,17 +1,19 @@
 import type { ShinkaiMessage } from '@shinkai_network/shinkai-message-ts/models';
 import { MessageSchemaType } from '@shinkai_network/shinkai-message-ts/models';
 import { ChatConversationMessage } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
-import MarkdownPreview from '@uiw/react-markdown-preview';
-
-import { cn } from '../../lib/utils';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import CopyToClipboardIcon from '../ui/copy-to-clipboard-icon';
 import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  CopyToClipboardIcon,
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '../ui/tooltip';
+} from '@shinkai_network/shinkai-ui';
+import MarkdownPreview from '@uiw/react-markdown-preview';
+
+import { cn } from '../../lib/utils';
 
 export const getMessageFilesInbox = (
   message: ShinkaiMessage,
@@ -70,7 +72,7 @@ const Message = ({
       </Avatar>
       <div
         className={cn(
-          'group flex items-start gap-1 break-words rounded-lg bg-transparent px-2.5 py-3 overflow-x-hidden',
+          'group flex items-start gap-1 overflow-x-hidden break-words rounded-lg bg-transparent px-2.5 py-3',
           message.isLocal
             ? 'rounded-tl-none border border-slate-800'
             : 'rounded-tr-none border-none bg-[rgba(217,217,217,0.04)]',

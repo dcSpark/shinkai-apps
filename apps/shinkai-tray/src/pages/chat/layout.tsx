@@ -7,6 +7,17 @@ import {
 import { useUpdateInboxName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateInboxName/useUpdateInboxName';
 import { GetInboxesOutput } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/types';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
+import {
+  Button,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  Input,
+  ScrollArea,
+  Separator,
+} from '@shinkai_network/shinkai-ui';
 import { Query } from '@tanstack/react-query';
 import { Edit3, MessageCircleIcon, Workflow } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
@@ -14,17 +25,6 @@ import { useForm } from 'react-hook-form';
 import { Link, Outlet, useMatch } from 'react-router-dom';
 import { z } from 'zod';
 
-import { Button } from '../../components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from '../../components/ui/form';
-import { Input } from '../../components/ui/input';
-import { ScrollArea } from '../../components/ui/scroll-area';
-import { Separator } from '../../components/ui/separator';
 import { handleSendNotification } from '../../lib/notifications';
 import { cn } from '../../lib/utils';
 import { useAuth } from '../../store/auth';
@@ -173,7 +173,7 @@ const MessageButton = ({
   ) : (
     <Link
       className={cn(
-        'text-muted-foreground group flex h-[46px] w-full items-center gap-2 rounded-lg px-2 py-2 hover:bg-slate-800',
+        'text-gray-80 group flex h-[46px] w-full items-center gap-2 rounded-lg px-2 py-2 hover:bg-slate-800',
         match && 'text-foreground bg-slate-800',
       )}
       key={inboxId}
@@ -193,7 +193,7 @@ const MessageButton = ({
         size="icon"
         variant="ghost"
       >
-        <Edit3 className="text-muted-foreground h-4 w-4" />
+        <Edit3 className="text-gray-80 h-4 w-4" />
       </Button>
     </Link>
   );

@@ -1,27 +1,24 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateAgent } from '@shinkai_network/shinkai-node-state/lib/mutations/createAgent/useCreateAgent';
-import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
-import { z } from 'zod';
-
-import { Button } from '../components/ui/button';
-import ErrorMessage from '../components/ui/error-message';
 import {
+  Button,
+  ErrorMessage,
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-} from '../components/ui/form';
-import { Input } from '../components/ui/input';
-import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../components/ui/select';
+  TextField,
+} from '@shinkai_network/shinkai-ui';
+import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { z } from 'zod';
+
 import { CREATE_JOB_PATH } from '../routes/name';
 import { useAuth } from '../store/auth';
 import SimpleLayout from './layout/simple-layout';
@@ -102,42 +99,25 @@ const CreateAgentPage = () => {
               control={addAgentForm.control}
               name="agentName"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Agent Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Eg: Personal AI Agent" {...field} />
-                  </FormControl>
-                </FormItem>
+                <TextField field={field} label="Agent Name" />
               )}
             />
             <FormField
               control={addAgentForm.control}
               name="externalUrl"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>External URL</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Eg: https://api.openai.com"
-                      {...field}
-                    />
-                  </FormControl>
-                </FormItem>
+                <TextField field={field} label="External URL" />
               )}
             />
             <FormField
               control={addAgentForm.control}
               name="apikey"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Api Key</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="Eg: xYz1DFa..." />
-                  </FormControl>
-                  <FormDescription className="pt-1 text-left text-xs">
-                    Enter the API key for your agent
-                  </FormDescription>
-                </FormItem>
+                <TextField
+                  field={field}
+                  helperMessage="Enter the API key for your agent"
+                  label="Api Key"
+                />
               )}
             />
 
@@ -169,12 +149,7 @@ const CreateAgentPage = () => {
                 control={addAgentForm.control}
                 name="modelType"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{model} Model Type</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Eg: gpt-3.5-turbo" {...field} />
-                    </FormControl>
-                  </FormItem>
+                  <TextField field={field} label={`${model} Model Type`} />
                 )}
               />
             )}
