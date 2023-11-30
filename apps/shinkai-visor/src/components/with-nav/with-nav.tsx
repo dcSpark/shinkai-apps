@@ -10,7 +10,7 @@ export const WithNav = (props: PropsWithChildren) => {
   return (
     <div
       className={cn(
-        'flex h-full w-full flex-col space-y-8',
+        'flex h-full w-full flex-col space-y-3.5',
         isInboxPage && 'space-y-4',
       )}
     >
