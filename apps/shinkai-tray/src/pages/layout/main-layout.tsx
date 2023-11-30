@@ -205,10 +205,10 @@ export function Footer() {
 const MainLayout = () => {
   const auth = useAuth((state) => state.auth);
   return (
-    <div className="bg-app-gradient relative flex h-full flex-col bg-gray-500 text-white">
+    <div className="relative flex h-full flex-col bg-gray-500 text-white">
       <div
         className="flex h-9 shrink-0 cursor-default select-none items-center justify-center text-xs"
-        data-tauri-drag-region
+        data-tauri-drag-region={true}
       >
         Shinkai AI
       </div>

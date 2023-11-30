@@ -24,7 +24,7 @@
 html,
 body,
 #root {
-  @apply font-inter h-full overflow-hidden rounded-lg border-0 bg-[#19242D] text-white  shadow-2xl;
+  @apply font-inter h-full overflow-hidden rounded-lg border-0 bg-gray-500 text-white shadow-2xl;
 }
 
 /* prose styling for chat editor */

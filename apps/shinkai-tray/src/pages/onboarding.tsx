@@ -12,13 +12,15 @@ import {
   FormField,
   TextField,
 } from '@shinkai_network/shinkai-ui';
-import { useEffect } from 'react';
+import { QrCode } from 'lucide-react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
 import { HOME_PATH } from '../routes/name';
 import { useAuth } from '../store/auth';
+import OnboardingLayout from './layout/onboarding-layout';
 
 const formSchema = z.object({
   registration_code: z.string(),
@@ -41,6 +43,31 @@ const formSchema = z.object({
   my_device_identity_sk: z.string(),
   my_device_identity_pk: z.string(),
 });
+
+const ConnectionOptionButton = ({
+  onClick,
+  description,
+  icon,
+  title,
+}: {
+  onClick: () => void;
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+}) => {
+  return (
+    <Button
+      className="flex flex-1 cursor-pointer flex-col items-start gap-1 rounded-lg p-4 text-left"
+      onClick={() => onClick()}
+      size="auto"
+      variant="ghost"
+    >
+      <div className="">{icon}</div>
+      <p className="text-[15px] font-medium leading-none">{title}</p>
+      <p className="text-xs text-gray-100">{description}</p>
+    </Button>
+  );
+};
 
 const OnboardingPage = () => {
   const navigate = useNavigate();
@@ -156,25 +183,29 @@ const OnboardingPage = () => {
   }, []);
 
   async function onSubmit(currentValues: z.infer<typeof formSchema>) {
-    submitRegistration(currentValues);
+    await submitRegistration(currentValues);
   }
 
   return (
-    <div className="mx-auto max-w-lg p-10">
-      <h1 className="mb-4 text-center text-3xl font-semibold">Register</h1>
+    <OnboardingLayout>
+      <h1 className="mb-4 text-left text-2xl font-semibold">
+        Quick Connection ⚡
+      </h1>
       <Form {...setupDataForm}>
         <form
-          className="space-y-8"
+          className="space-y-6"
           onSubmit={setupDataForm.handleSubmit(onSubmit)}
         >
-          <FormField
-            control={setupDataForm.control}
-            name="node_address"
-            render={({ field }) => (
-              <TextField field={field} label={'Node Address'} />
-            )}
-          />
-          {isError && <ErrorMessage message={error.message} />}
+          <div className="space-y-4">
+            <FormField
+              control={setupDataForm.control}
+              name="node_address"
+              render={({ field }) => (
+                <TextField field={field} label={'Node Address'} />
+              )}
+            />
+            {isError && <ErrorMessage message={error.message} />}
+          </div>
           <Button
             className="w-full"
             disabled={isPending}
@@ -182,11 +213,30 @@ const OnboardingPage = () => {
             type="submit"
             variant="default"
           >
-            Submit
+            Connect
           </Button>
         </form>
       </Form>
-    </div>
+      <div className="mt-8 flex gap-4">
+        <ConnectionOptionButton
+          description={'Use the QR code to connect'}
+          icon={<QrCode className="text-gray-100" />}
+          onClick={() => {}}
+          title={'QR Code'}
+        />
+
+        <ConnectionOptionButton
+          description={'Use a connection file and passphrase'}
+          icon={
+            <span aria-hidden className="text-base">
+              🔑
+            </span>
+          }
+          onClick={() => {}}
+          title={'Restore'}
+        />
+      </div>
+    </OnboardingLayout>
   );
 };
 

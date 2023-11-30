@@ -138,7 +138,7 @@ const ChatConversation = () => {
         receiver: auth.shinkai_identity,
         message: data.message,
         inboxId: inboxId,
-        file: file,
+        files: [file],
         my_device_encryption_sk: auth.my_device_encryption_sk,
         my_device_identity_sk: auth.my_device_identity_sk,
         node_encryption_pk: auth.node_encryption_pk,

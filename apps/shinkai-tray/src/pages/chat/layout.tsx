@@ -9,14 +9,17 @@ import { GetInboxesOutput } from '@shinkai_network/shinkai-node-state/lib/querie
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
 import {
   Button,
+  ChatBubbleIcon,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   Input,
+  JobBubbleIcon,
   ScrollArea,
   Separator,
+  TextField,
 } from '@shinkai_network/shinkai-ui';
 import { Query } from '@tanstack/react-query';
 import { Edit3, MessageCircleIcon, Workflow } from 'lucide-react';
@@ -48,13 +51,13 @@ const InboxNameInput = ({
   });
   const { inboxName: inboxNameValue } = updateInboxNameForm.watch();
   const { mutateAsync: updateInboxName } = useUpdateInboxName();
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current?.focus();
-    }
-  }, []);
+  // const inputRef = useRef<HTMLInputElement>(null);
+  //
+  // useEffect(() => {
+  //   if (inputRef.current) {
+  //     inputRef.current?.focus();
+  //   }
+  // }, []);
   const onSubmit = async (data: z.infer<typeof updateInboxNameSchema>) => {
     if (!auth) return;
 
@@ -84,19 +87,20 @@ const InboxNameInput = ({
             control={updateInboxNameForm.control}
             name="inboxName"
             render={({ field }) => (
-              <div className="bg-app-gradient flex h-[46px]  items-center rounded-lg">
+              <div className=" flex h-[46px]  items-center rounded-lg">
                 <Edit3 className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 transform text-white" />
-                <FormItem className="space-y-0 pl-7 text-xs">
-                  <FormLabel className="sr-only">Update inbox name</FormLabel>
-                  <FormControl>
-                    <Input
-                      className="border-none pr-16 text-xs caret-white placeholder:text-gray-600 focus-visible:ring-0 focus-visible:ring-white"
-                      placeholder={inboxName}
-                      {...field}
-                      ref={inputRef}
-                    />
-                  </FormControl>
-                </FormItem>
+                <TextField field={field} label="Update inbox name" />
+                {/*<FormItem className="space-y-0 pl-7 text-xs">*/}
+                {/*  <FormLabel className="sr-only">Update inbox name</FormLabel>*/}
+                {/*  <FormControl>*/}
+                {/*    <Input*/}
+                {/*      className="border-none pr-16 text-xs caret-white placeholder:text-gray-600 focus-visible:ring-0 focus-visible:ring-white"*/}
+                {/*      placeholder={inboxName}*/}
+                {/*      {...field}*/}
+                {/*      ref={inputRef}*/}
+                {/*    />*/}
+                {/*  </FormControl>*/}
+                {/*</FormItem>*/}
               </div>
             )}
           />
@@ -104,7 +108,7 @@ const InboxNameInput = ({
 
         {inboxNameValue ? (
           <Button
-            className="transformtext-xs absolute right-1 top-1/2 h-8 -translate-y-1/2 text-white"
+            className="absolute right-1 top-1/2 h-8 -translate-y-1/2 transform text-xs text-white"
             size="sm"
             type="submit"
             variant="default"
@@ -173,16 +177,16 @@ const MessageButton = ({
   ) : (
     <Link
       className={cn(
-        'text-gray-80 group flex h-[46px] w-full items-center gap-2 rounded-lg px-2 py-2 hover:bg-slate-800',
-        match && 'text-foreground bg-slate-800',
+        'text-gray-80 group flex h-[46px] w-full items-center gap-2 rounded-lg px-2 py-2 hover:bg-gray-500',
+        match && 'bg-gray-400 text-white',
       )}
       key={inboxId}
       to={to}
     >
       {isJobInbox(inboxId) ? (
-        <Workflow className="mr-2 h-4 w-4 shrink-0" />
+        <JobBubbleIcon className="mr-2 h-4 w-4 shrink-0" />
       ) : (
-        <MessageCircleIcon className="mr-2 h-4 w-4 shrink-0" />
+        <ChatBubbleIcon className="mr-2 h-4 w-4 shrink-0" />
       )}
       <span className="line-clamp-1 flex-1 break-all text-left text-xs">
         {inboxName}
