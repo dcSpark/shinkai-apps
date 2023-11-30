@@ -17,6 +17,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  TextField,
 } from '@shinkai_network/shinkai-ui';
 import { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
@@ -31,6 +32,7 @@ import { Header } from '../header/header';
 const formSchema = z.object({
   defaultAgentId: z.string(),
   hideActionButton: z.boolean(),
+  nodeAddress: z.string(),
 });
 
 type FormSchemaType = z.infer<typeof formSchema>;
@@ -45,6 +47,7 @@ export const Settings = () => {
     defaultValues: {
       defaultAgentId: settings?.defaultAgentId,
       hideActionButton: settings?.hideActionButton,
+      nodeAddress: auth?.node_address,
     },
   });
   const currentFormValue = useWatch<FormSchemaType>({ control: form.control });
@@ -74,7 +77,7 @@ export const Settings = () => {
       <Header title={<FormattedMessage id="setting.other" />} />
       <div className="flex flex-col space-y-8">
         <Form {...form}>
-          <form className="flex grow flex-col justify-between space-y-2 overflow-hidden">
+          <form className="flex grow flex-col justify-between space-y-6 overflow-hidden">
             <FormField
               control={form.control}
               name="defaultAgentId"
@@ -110,12 +113,22 @@ export const Settings = () => {
                 </FormItem>
               )}
             />
-
+            <FormField
+              control={form.control}
+              disabled
+              name="nodeAddress"
+              render={({ field }) => (
+                <TextField
+                  field={field}
+                  label={<FormattedMessage id="node-address" />}
+                />
+              )}
+            />
             <FormField
               control={form.control}
               name="hideActionButton"
               render={({ field }) => (
-                <FormItem className="flex gap-2.5 pt-4">
+                <FormItem className="flex gap-2.5">
                   <FormControl id={'hide-action'}>
                     <Checkbox
                       checked={field.value}

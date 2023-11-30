@@ -91,6 +91,7 @@ export const CreateJob = () => {
     '.pptx',
     '.tsv',
     '.xlsx',
+    '.jobkai',
   ];
   useEffect(() => {
     form.setValue('files', location?.state?.files || []);
@@ -231,6 +232,14 @@ export const CreateJob = () => {
                     <Textarea
                       autoFocus
                       className="resize-none"
+                      onKeyDown={(event) => {
+                        if (
+                          event.key === 'Enter' &&
+                          (event.metaKey || event.ctrlKey)
+                        ) {
+                          form.handleSubmit(submit)();
+                        }
+                      }}
                       placeholder={intl.formatMessage({
                         id: 'tmwtd',
                       })}

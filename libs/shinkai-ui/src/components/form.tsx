@@ -96,7 +96,7 @@ const FormLabel = React.forwardRef<
         'pointer-events-none absolute left-4 top-3 flex select-none text-xs font-medium leading-tight text-gray-100 transition-all',
         // input
         'z-[1] peer-placeholder-shown:text-base peer-placeholder-shown:leading-[2.3] peer-placeholder-shown:text-gray-100',
-        'peer-focus:text-xs peer-focus:leading-tight peer-focus:text-gray-100 peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-gray-100/80',
+        'peer-focus:text-xs peer-focus:leading-tight peer-focus:text-gray-100 peer-disabled:text-gray-100 peer-disabled:peer-placeholder-shown:text-gray-100/80',
         // select
         'peer-data-[placeholder]/select:top-5 peer-data-[placeholder]/select:text-base',
         error && 'text-red-500 dark:text-red-900',
