@@ -136,7 +136,7 @@ export const Inboxes = () => {
                             </div>
                           </div>
                         </div>
-                        <span className="shrink-0 self-start text-xs lowercase text-gray-100">
+                        <span className="shrink-0 self-start pt-[2px] text-xs lowercase text-gray-100">
                           {inbox.last_message.external_metadata
                             ?.scheduled_time &&
                             formatDateToMonthAndDay(
