@@ -8,22 +8,21 @@ import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/g
 import {
   Button,
   ChatBubbleIcon,
-  JobBubbleIcon,
-} from '@shinkai_network/shinkai-ui';
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuPortal,
   DropdownMenuTrigger,
+  JobBubbleIcon,
 } from '@shinkai_network/shinkai-ui';
 import { ScrollArea } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { Edit, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { Fragment, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
+import { formatDateToMonthAndDay } from '../../helpers/date';
 import { useAuth } from '../../store/auth/auth';
 import { EditInboxNameDialog } from '../edit-inbox-name-dialog/edit-inbox-name-dialog';
 import { EmptyAgents } from '../empty-agents/empty-agents';
@@ -77,13 +76,13 @@ export const Inboxes = () => {
   const onCreateInboxClick = () => {
     history.push('/inboxes/create-inbox');
   };
-  const openEditInboxNameDialog = (inboxId: string, name: string) => {
-    setIsEditInboxNameDialogOpened({
-      isOpened: true,
-      inboxId: decodeURIComponent(inboxId),
-      name: name,
-    });
-  };
+  // const openEditInboxNameDialog = (inboxId: string, name: string) => {
+  //   setIsEditInboxNameDialogOpened({
+  //     isOpened: true,
+  //     inboxId: decodeURIComponent(inboxId),
+  //     name: name,
+  //   });
+  // };
   const closeEditInboxNameDialog = () => {
     setIsEditInboxNameDialogOpened({
       isOpened: false,
@@ -91,14 +90,14 @@ export const Inboxes = () => {
       name: '',
     });
   };
-  const editInboxNameClick = (
-    event: React.MouseEvent,
-    inboxId: string,
-    name: string,
-  ) => {
-    event.stopPropagation();
-    openEditInboxNameDialog(inboxId, name);
-  };
+  // const editInboxNameClick = (
+  //   event: React.MouseEvent,
+  //   inboxId: string,
+  //   name: string,
+  // ) => {
+  //   event.stopPropagation();
+  //   openEditInboxNameDialog(inboxId, name);
+  // };
   return (
     <div className="flex h-full flex-col justify-between space-y-3 overflow-hidden">
       <Header title={<FormattedMessage id="inbox.other" />} />
@@ -118,7 +117,7 @@ export const Inboxes = () => {
                       onClick={() => navigateToInbox(inbox)}
                       variant="ghost"
                     >
-                      <div className="flex w-full flex-row items-center justify-between gap-4">
+                      <div className="relative flex w-full items-center justify-between gap-4">
                         <span className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-gray-300">
                           {isJobInbox(decodeURIComponent(inbox.inbox_id)) ? (
                             <JobBubbleIcon />
@@ -132,20 +131,34 @@ export const Inboxes = () => {
                               {inbox.custom_name}
                             </span>
                             <div className="truncate text-left text-xs text-gray-100">
-                              {inbox.last_message && getMessageContent(inbox.last_message)}
+                              {inbox.last_message &&
+                                getMessageContent(inbox.last_message)}
                             </div>
                           </div>
                         </div>
-                        <Edit
-                          className="hidden h-4 w-4 shrink-0 group-hover:block"
-                          onClick={(event) =>
-                            editInboxNameClick(
-                              event,
-                              inbox.inbox_id,
-                              inbox.custom_name,
-                            )
-                          }
-                        />
+                        <span className="shrink-0 self-start text-xs lowercase text-gray-100">
+                          {inbox.last_message.external_metadata
+                            ?.scheduled_time &&
+                            formatDateToMonthAndDay(
+                              new Date(
+                                inbox.last_message.external_metadata.scheduled_time,
+                              ),
+                            )}
+                        </span>
+                        {/*<Button*/}
+                        {/*  className="absolute right-0 top-0 hidden shrink-0 hover:bg-gray-500 group-hover:flex"*/}
+                        {/*  onClick={(event) =>*/}
+                        {/*    editInboxNameClick(*/}
+                        {/*      event,*/}
+                        {/*      inbox.inbox_id,*/}
+                        {/*      inbox.custom_name,*/}
+                        {/*    )*/}
+                        {/*  }*/}
+                        {/*  size={'icon'}*/}
+                        {/*  variant={'ghost'}*/}
+                        {/*>*/}
+                        {/*  <Edit3 className="h-4 w-4" />*/}
+                        {/*</Button>*/}
                       </div>
                     </Button>
                   </Fragment>
