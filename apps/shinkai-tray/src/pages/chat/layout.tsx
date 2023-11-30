@@ -11,18 +11,14 @@ import {
   Button,
   ChatBubbleIcon,
   Form,
-  FormControl,
   FormField,
-  FormItem,
-  FormLabel,
-  Input,
   JobBubbleIcon,
   ScrollArea,
   Separator,
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import { Query } from '@tanstack/react-query';
-import { Edit3, MessageCircleIcon, Workflow } from 'lucide-react';
+import { Edit3 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, Outlet, useMatch } from 'react-router-dom';

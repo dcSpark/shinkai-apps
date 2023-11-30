@@ -113,11 +113,7 @@ const CreateAgentPage = () => {
               control={addAgentForm.control}
               name="apikey"
               render={({ field }) => (
-                <TextField
-                  field={field}
-                  helperMessage="Enter the API key for your agent"
-                  label="Api Key"
-                />
+                <TextField field={field} label="Api Key" />
               )}
             />
 
@@ -133,7 +129,7 @@ const CreateAgentPage = () => {
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select your Model" />
+                        <SelectValue placeholder={' '} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>

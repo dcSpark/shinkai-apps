@@ -210,7 +210,7 @@ const MainLayout = () => {
         className="flex h-9 shrink-0 cursor-default select-none items-center justify-center text-xs"
         data-tauri-drag-region={true}
       >
-        Shinkai AI
+        {/*Shinkai AI*/}
       </div>
       <Separator />
       <div className="flex-auto overflow-auto">
