@@ -526,6 +526,41 @@ export const sendMessageToJob = async (
   }
 };
 
+export const closeJob = async (
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  inbox: string,
+  setupDetailsState: CredentialsPayload,
+): Promise<void> => {
+  try {
+    const messageStr = ShinkaiMessageBuilderWrapper.close_job(
+      setupDetailsState.profile_encryption_sk,
+      setupDetailsState.profile_identity_sk,
+      setupDetailsState.node_encryption_pk,
+      sender,
+      sender_subidentity,
+      receiver,
+      receiver_subidentity,
+      inbox,
+    );
+
+    const message = JSON.parse(messageStr);
+
+    const apiEndpoint = ApiConfig.getInstance().getEndpoint();
+    const response = await fetch(`${apiEndpoint}/v1/update_job_to_finished`, {
+      method: 'POST',
+      body: JSON.stringify(message),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    await handleHttpError(response);
+  } catch (error) {
+    console.error('Error closing job:', error);
+    throw error;
+  }
+};
+
 export const getProfileAgents = async (
   sender: string,
   sender_subidentity: string,

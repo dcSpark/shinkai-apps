@@ -16,6 +16,7 @@ export enum MessageSchemaType {
   APIAddAgentRequest = "APIAddAgentRequest",
   TextContent = "TextContent",
   SymmetricKeyExchange = "SymmetricKeyExchange",
+  APIFinishJob = "APIFinishJob",
   Empty = "",
 }
 

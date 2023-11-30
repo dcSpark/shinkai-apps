@@ -4,6 +4,7 @@ import './Chat.css';
 
 import {
   IonBackButton,
+  IonButton,
   IonButtons,
   IonIcon,
   IonItem,
@@ -21,6 +22,7 @@ import {
   getOtherPersonIdentity,
   isLocalMessage,
 } from '@shinkai_network/shinkai-message-ts/utils';
+import { useCloseJob } from '@shinkai_network/shinkai-node-state/lib/mutations/closeJob/useCloseJob';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMessageToJob/useSendMessageToJob';
 import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageWithFilesToInbox/useSendMessageWithFilesToInbox';
 import { ChatConversationMessage } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
@@ -148,6 +150,32 @@ const JobChat: React.FC = () => {
     }
   };
 
+  const { mutateAsync: closeJob } = useCloseJob();
+
+  const finishJob = useCallback(async () => {
+    console.log('closeJob being called');
+    await closeJob({
+      inboxId: deserializedId,
+      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      profile: auth?.profile ?? '',
+      my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+      my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+    });
+  }, [
+    closeJob,
+    deserializedId,
+    auth?.shinkai_identity,
+    auth?.profile,
+    auth?.my_device_encryption_sk,
+    auth?.my_device_identity_sk,
+    auth?.node_encryption_pk,
+    auth?.profile_encryption_sk,
+    auth?.profile_identity_sk,
+  ]);
+
   const sendMessage = useCallback(async () => {
     if (inputMessage.trim() === '') return;
 
@@ -231,6 +259,9 @@ const JobChat: React.FC = () => {
           </IonTitle>
           {/*<Avatar className="shrink-0" />*/}
         </div>
+        <IonButtons slot="end">
+          <IonButton onClick={finishJob}>Finish</IonButton>
+        </IonButtons>
       </IonHeaderCustom>
       <IonContentCustom ref={chatContainerRef}>
         <div className="bg-white dark:bg-slate-900">
