@@ -241,19 +241,19 @@ export default function NavBar() {
                 </span>
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => onClickMenuOption(MenuOption.CreateInbox)}
-              >
-                <ChatBubbleIcon className="mr-2 h-4 w-4" />
-                <span>
-                  <FormattedMessage id="create-inbox" />
-                </span>
-              </DropdownMenuItem>
-              <DropdownMenuItem
                 onClick={() => onClickMenuOption(MenuOption.CreateJob)}
               >
                 <JobBubbleIcon className="mr-2 h-4 w-4" />
                 <span>
                   <FormattedMessage id="create-job" />
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onClickMenuOption(MenuOption.CreateInbox)}
+              >
+                <ChatBubbleIcon className="mr-2 h-4 w-4" />
+                <span>
+                  <FormattedMessage id="create-inbox" />
                 </span>
               </DropdownMenuItem>
 

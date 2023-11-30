@@ -180,16 +180,16 @@ export const Inboxes = () => {
               </DropdownMenuTrigger>
               <DropdownMenuPortal container={dialContainerRef.current}>
                 <DropdownMenuContent align="end" className="px-2.5 py-2">
-                  <DropdownMenuItem onClick={() => onCreateInboxClick()}>
-                    <ChatBubbleIcon className="mr-2 h-4 w-4" />
-                    <span>
-                      <FormattedMessage id="create-inbox" />
-                    </span>
-                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => onCreateJobClick()}>
                     <JobBubbleIcon className="mr-2 h-4 w-4" />
                     <span>
                       <FormattedMessage id="create-job" />
+                    </span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => onCreateInboxClick()}>
+                    <ChatBubbleIcon className="mr-2 h-4 w-4" />
+                    <span>
+                      <FormattedMessage id="create-inbox" />
                     </span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
