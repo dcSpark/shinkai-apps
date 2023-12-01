@@ -66,7 +66,7 @@ export const Inboxes = () => {
   const navigateToInbox = (inbox: {
     inbox_id: string;
     custom_name: string;
-    last_message: ShinkaiMessage;
+    last_message?: ShinkaiMessage;
   }) => {
     history.push(`/inboxes/${encodeURIComponent(inbox.inbox_id)}`, { inbox });
   };
@@ -136,8 +136,8 @@ export const Inboxes = () => {
                             </div>
                           </div>
                         </div>
-                        <span className="shrink-0 self-start pt-[2px] text-xs lowercase text-gray-100">
-                          {inbox.last_message.external_metadata
+                        <span className="min-w-[32px] text-end shrink-0 self-start pt-[2px] text-xs lowercase text-gray-100">
+                          {inbox.last_message?.external_metadata
                             ?.scheduled_time &&
                             formatDateToMonthAndDay(
                               new Date(
