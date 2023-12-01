@@ -29,18 +29,18 @@ const WelcomePage = () => {
                 htmlFor="terms"
               >
                 <span className={'leading-4 tracking-wide'}>
-                  By continuing, you agree to our{' '}
+                  I agree to our{' '}
                   <a
-                    className={'text-blue-400 underline'}
+                    className={'text-white underline'}
                     href={'https://www.shinkai.com/terms-of-service'}
                     rel="noreferrer"
                     target={'_blank'}
                   >
-                    Terms of Service{' '}
-                  </a>
+                    Terms of Service
+                  </a>{' '}
                   and{' '}
                   <a
-                    className={'block text-blue-400 underline'}
+                    className={'text-white underline'}
                     href={'https://www.shinkai.com/privacy-policy'}
                     rel="noreferrer"
                     target={'_blank'}

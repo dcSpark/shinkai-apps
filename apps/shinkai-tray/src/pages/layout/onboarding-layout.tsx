@@ -2,16 +2,16 @@ import React from 'react';
 
 const OnboardingLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="mx-auto flex h-full">
-      <div className="bg-app-gradient grid flex-1 place-items-center">
+    <div className="mx-auto grid h-full grid-cols-2">
+      <div className="grid place-items-center bg-gray-500 px-8">
         <img
           alt="shinkai logo"
           className="w-full"
           data-cy="shinkai-logo"
-          src={'/welcome.jpg'}
+          src={'/onboarding.svg'}
         />
       </div>
-      <div className="flex flex-1 flex-col justify-between">
+      <div className="flex flex-col justify-between">
         <img
           alt="shinkai logo"
           className="w-30 mx-auto py-10"

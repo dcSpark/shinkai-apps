@@ -11,11 +11,14 @@ import {
   Button,
   ChatBubbleIcon,
   Form,
+  FormControl,
   FormField,
+  FormItem,
+  FormLabel,
+  Input,
   JobBubbleIcon,
   ScrollArea,
   Separator,
-  TextField,
 } from '@shinkai_network/shinkai-ui';
 import { Query } from '@tanstack/react-query';
 import { Edit3 } from 'lucide-react';
@@ -47,13 +50,13 @@ const InboxNameInput = ({
   });
   const { inboxName: inboxNameValue } = updateInboxNameForm.watch();
   const { mutateAsync: updateInboxName } = useUpdateInboxName();
-  // const inputRef = useRef<HTMLInputElement>(null);
-  //
-  // useEffect(() => {
-  //   if (inputRef.current) {
-  //     inputRef.current?.focus();
-  //   }
-  // }, []);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current?.focus();
+    }
+  }, []);
   const onSubmit = async (data: z.infer<typeof updateInboxNameSchema>) => {
     if (!auth) return;
 
@@ -83,20 +86,22 @@ const InboxNameInput = ({
             control={updateInboxNameForm.control}
             name="inboxName"
             render={({ field }) => (
-              <div className=" flex h-[46px]  items-center rounded-lg">
+              <div className="flex h-[46px] items-center rounded-lg bg-gray-300">
                 <Edit3 className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 transform text-white" />
-                <TextField field={field} label="Update inbox name" />
-                {/*<FormItem className="space-y-0 pl-7 text-xs">*/}
-                {/*  <FormLabel className="sr-only">Update inbox name</FormLabel>*/}
-                {/*  <FormControl>*/}
-                {/*    <Input*/}
-                {/*      className="border-none pr-16 text-xs caret-white placeholder:text-gray-600 focus-visible:ring-0 focus-visible:ring-white"*/}
-                {/*      placeholder={inboxName}*/}
-                {/*      {...field}*/}
-                {/*      ref={inputRef}*/}
-                {/*    />*/}
-                {/*  </FormControl>*/}
-                {/*</FormItem>*/}
+
+                <FormItem className="space-y-0 pl-7 text-xs">
+                  <FormLabel className="sr-only static">
+                    Update inbox name
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      className="h-full border-none bg-transparent py-2 pr-16 text-xs caret-white placeholder:text-gray-100 focus-visible:ring-0 focus-visible:ring-white"
+                      placeholder={inboxName}
+                      {...field}
+                      ref={inputRef}
+                    />
+                  </FormControl>
+                </FormItem>
               </div>
             )}
           />
@@ -173,8 +178,8 @@ const MessageButton = ({
   ) : (
     <Link
       className={cn(
-        'text-gray-80 group flex h-[46px] w-full items-center gap-2 rounded-lg px-2 py-2 hover:bg-gray-500',
-        match && 'bg-gray-400 text-white',
+        'text-gray-80 group flex h-[46px] w-full items-center gap-2 rounded-lg px-2 py-2 hover:bg-gray-300',
+        match && 'bg-gray-300 text-white',
       )}
       key={inboxId}
       to={to}
@@ -188,12 +193,15 @@ const MessageButton = ({
         {inboxName}
       </span>
       <Button
-        className={cn('hidden justify-self-end', match && 'flex')}
+        className={cn(
+          'hidden justify-self-end bg-transparent',
+          match && 'flex',
+        )}
         onClick={() => setIsEditable(true)}
         size="icon"
         variant="ghost"
       >
-        <Edit3 className="text-gray-80 h-4 w-4" />
+        <Edit3 className="h-4 w-4 text-gray-100" />
       </Button>
     </Link>
   );

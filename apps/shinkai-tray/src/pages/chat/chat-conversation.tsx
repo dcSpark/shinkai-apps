@@ -274,19 +274,20 @@ const ChatConversation = () => {
                       <div key={date}>
                         <div
                           className={cn(
-                            'relative z-10 m-auto flex w-[140px] items-center justify-center rounded-xl border border-slate-800 bg-[#131B23] transition-opacity',
+                            'relative z-10 m-auto flex h-[30px] w-[150px] items-center justify-center rounded-xl bg-gray-400',
                             true && 'sticky top-5',
                           )}
                         >
-                          <span className="text-foreground px-2.5 py-2 text-xs capitalize">
-                            {formatDate(new Date(date))}
+                          <span className="text-sm font-medium capitalize text-gray-100">
+                            {formatDate(
+                              new Date(messages[0].scheduledTime || ''),
+                            )}
                           </span>
                         </div>
                         <div className="flex flex-col gap-4">
                           {messages.map((message) => {
                             return (
                               <Message
-                                inboxId={inboxId}
                                 key={message.scheduledTime}
                                 message={message}
                               />
@@ -303,7 +304,7 @@ const ChatConversation = () => {
       </ScrollArea>
 
       <div className="flex flex-col justify-start">
-        <div className="bg-app-gradient relative flex items-start gap-2 p-2 pb-3">
+        <div className="relative flex items-start gap-2 p-2 pb-3">
           {isLoading ? (
             <DotsLoader className="absolute left-8 top-10 flex items-center justify-center" />
           ) : null}
@@ -312,7 +313,7 @@ const ChatConversation = () => {
             <div
               {...getRootFileProps({
                 className: cn(
-                  'dropzone group relative relative flex h-12 w-12 flex-shrink-0 cursor-pointer items-center justify-center rounded border-2 border-dashed border-slate-500 border-slate-500 transition-colors hover:border-white',
+                  'dropzone group relative flex h-12 w-12 flex-shrink-0 cursor-pointer items-center justify-center rounded border-2 border-dashed border-slate-500 border-slate-500 transition-colors hover:border-white',
                   file && 'border-0',
                   isLoading && 'hidden',
                 ),

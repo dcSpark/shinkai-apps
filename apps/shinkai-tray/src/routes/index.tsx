@@ -11,6 +11,7 @@ import CreateJobPage from '../pages/create-job';
 import GenerateCodePage from '../pages/generate-code';
 import MainLayout from '../pages/layout/main-layout';
 import OnboardingPage from '../pages/onboarding';
+import RestoreConnectionPage from '../pages/restore-connection';
 import SettingsPage from '../pages/settings';
 import WelcomePage from '../pages/welcome';
 import { useAuth } from '../store/auth';
@@ -42,6 +43,7 @@ const AppRoutes = () => {
       <Route element={<MainLayout />}>
         <Route element={<WelcomePage />} path={'/welcome'} />
         <Route element={<OnboardingPage />} path={ONBOARDING_PATH} />
+        <Route element={<RestoreConnectionPage />} path={'/restore'} />
         <Route
           element={
             <ProtectedRoute>

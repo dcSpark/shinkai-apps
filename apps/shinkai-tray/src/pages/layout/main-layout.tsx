@@ -127,16 +127,16 @@ export function Footer() {
   };
 
   return (
-    <div className="text-gray-80 absolute bottom-2 left-2 text-sm">
+    <div className="absolute bottom-2 left-2 text-sm text-white">
       <Popover modal onOpenChange={setOpen} open={open}>
         <PopoverTrigger
           aria-expanded={open}
-          className="rounded-lg bg-gray-400 px-2.5 py-2 shadow-lg transition-colors duration-150 hover:bg-gray-500/40"
+          className="rounded-lg bg-gray-300 px-2.5 py-2 shadow-lg transition-colors duration-150 hover:bg-gray-300/40"
           onClick={() => setOpen(true)}
         >
-          <span className="text-xs">
+          <span className="text-xs text-white">
             Actions
-            <kbd className="pointer-events-none ml-2 inline-flex h-5 select-none items-center gap-1 rounded border bg-gray-500 px-1.5 font-mono text-[10px] font-medium text-gray-100 opacity-100">
+            <kbd className="text-gray-80 pointer-events-none ml-2 inline-flex h-5 select-none items-center gap-1 rounded border bg-gray-300 px-1.5 font-mono text-[10px] font-medium opacity-100">
               <span className="text-xs">⌘</span>K
             </kbd>
           </span>
@@ -150,7 +150,7 @@ export function Footer() {
           sideOffset={2}
         >
           <Command
-            className="p-0 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-gray-500 dark:[&_[cmdk-group-heading]]:text-gray-400 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-3 [&_[cmdk-item]_svg]:w-3"
+            className="p-0 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-gray-500 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-3 [&_[cmdk-item]_svg]:w-3"
             onKeyDown={handleCommandCardKeyDown}
           >
             <CommandList className="p-0 pt-2">

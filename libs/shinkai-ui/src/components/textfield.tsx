@@ -30,7 +30,8 @@ const TextField = ({
     value: any;
     disabled?: boolean;
     name: string;
-    ref: (instance: any) => void;
+    ref: React.ForwardedRef<HTMLInputElement>;
+    placeholder?: string;
   };
   label: React.ReactNode;
   helperMessage?: React.ReactNode;

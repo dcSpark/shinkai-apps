@@ -221,7 +221,9 @@ const OnboardingPage = () => {
         <ConnectionOptionButton
           description={'Use the QR code to connect'}
           icon={<QrCode className="text-gray-100" />}
-          onClick={() => {}}
+          onClick={() => {
+            navigate('/');
+          }}
           title={'QR Code'}
         />
 
@@ -232,7 +234,9 @@ const OnboardingPage = () => {
               🔑
             </span>
           }
-          onClick={() => {}}
+          onClick={() => {
+            navigate('/restore');
+          }}
           title={'Restore'}
         />
       </div>
