@@ -8,8 +8,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  Input,
   Textarea,
+  TextField,
 } from '@shinkai_network/shinkai-ui';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -67,15 +67,7 @@ const CreateChatPage = () => {
               control={createChatForm.control}
               name="receiver"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Shinkai Identity</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Eg: @@name.shinkai or @@name.shinkai/profile"
-                      {...field}
-                    />
-                  </FormControl>
-                </FormItem>
+                <TextField field={field} label="Shinkai Identity" />
               )}
             />
             <FormField
