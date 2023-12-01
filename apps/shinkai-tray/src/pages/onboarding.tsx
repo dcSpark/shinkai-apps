@@ -189,7 +189,7 @@ const OnboardingPage = () => {
   return (
     <OnboardingLayout>
       <h1 className="mb-4 text-left text-2xl font-semibold">
-        Quick Connection ⚡
+        Quick Connection <span aria-hidden>⚡</span>
       </h1>
       <Form {...setupDataForm}>
         <form

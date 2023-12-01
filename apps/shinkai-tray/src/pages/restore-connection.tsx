@@ -87,7 +87,7 @@ const RestoreConnectionPage = () => {
     <OnboardingLayout>
       <div className="flex h-full flex-col space-y-3">
         <h1 className="mb-4 text-left text-2xl font-semibold">
-          Restore connection 🔑
+          Restore connection <span aria-hidden>🔑</span>
         </h1>
         <p>Use a connection file and passphrase</p>
 
