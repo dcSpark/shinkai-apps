@@ -63,7 +63,7 @@ root.render(
   <React.StrictMode>
     <style>{themeStyle}</style>
     <IntlProvider locale={locale} messages={langMessages}>
-      <div className="shadow-4xl fixed right-[2px] top-[120px] z-[1500000000] overflow-hidden">
+      <div className="shadow-4xl fixed right-[2px] top-[80px] z-[1500000000] overflow-hidden">
         <ActionButton />
       </div>
     </IntlProvider>
