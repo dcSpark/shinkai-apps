@@ -11,7 +11,7 @@ const baseContainer = document.createElement('shinkai-popup-root');
 baseContainer.style.position = 'fixed';
 baseContainer.style.height = '640px';
 baseContainer.style.width = '400px';
-baseContainer.style.top = '120px';
+baseContainer.style.top = '80px';
 baseContainer.style.right = '56px';
 baseContainer.style.zIndex = '1500000000';
 baseContainer.style.pointerEvents = 'none';
@@ -57,16 +57,25 @@ htmlRoot.addEventListener('click', function (ev) {
 
 let isVisible = false;
 
-chrome.runtime.onMessage.addListener(async (message: ServiceWorkerInternalMessage, sender: chrome.runtime.MessageSender) => {
-  switch (message.type) {
-    case ServiceWorkerInternalMessageType.ContentScriptBridge:
-      if (message.data.type === ContentScriptBridgeMessageType.TogglePopupVisibility) {
-        isVisible = message.data.data !== undefined ? message.data.data : !isVisible;
-        baseContainer.style.pointerEvents = isVisible ? 'auto' : 'none';
-      }
-      break;
-    default:
-      break;
-  }
-  iframe.contentWindow?.postMessage({ message, sender }, srcUrlResolver('/'));
-});
+chrome.runtime.onMessage.addListener(
+  async (
+    message: ServiceWorkerInternalMessage,
+    sender: chrome.runtime.MessageSender,
+  ) => {
+    switch (message.type) {
+      case ServiceWorkerInternalMessageType.ContentScriptBridge:
+        if (
+          message.data.type ===
+          ContentScriptBridgeMessageType.TogglePopupVisibility
+        ) {
+          isVisible =
+            message.data.data !== undefined ? message.data.data : !isVisible;
+          baseContainer.style.pointerEvents = isVisible ? 'auto' : 'none';
+        }
+        break;
+      default:
+        break;
+    }
+    iframe.contentWindow?.postMessage({ message, sender }, srcUrlResolver('/'));
+  },
+);
