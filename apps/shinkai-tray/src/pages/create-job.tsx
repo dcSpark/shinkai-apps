@@ -2,31 +2,30 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
-import { FileCheck2, ImagePlusIcon, PlusIcon, X } from 'lucide-react';
-import { useEffect } from 'react';
-import { useDropzone } from 'react-dropzone';
-import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
-import { z } from 'zod';
-
-import { Button } from '../components/ui/button';
 import {
+  Button,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '../components/ui/form';
-import {
+  PaperClipIcon,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../components/ui/select';
-import { Textarea } from '../components/ui/textarea';
-import { cn } from '../lib/utils';
+  Textarea,
+} from '@shinkai_network/shinkai-ui';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { ImagePlusIcon, PlusIcon, X } from 'lucide-react';
+import { useEffect } from 'react';
+import { Accept, useDropzone } from 'react-dropzone';
+import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { z } from 'zod';
+
 import { ADD_AGENT_PATH } from '../routes/name';
 import { useAuth } from '../store/auth';
 import SimpleLayout from './layout/simple-layout';
@@ -34,8 +33,138 @@ import SimpleLayout from './layout/simple-layout';
 const createJobSchema = z.object({
   model: z.string(),
   description: z.string(),
-  file: z.any().optional(),
+  files: z.array(z.any()).optional(),
 });
+
+export const FileList = ({
+  files,
+  className,
+}: {
+  files: ({ name: string; size?: number } | File)[];
+  className?: string;
+}) => {
+  if (!files) return null;
+  return (
+    <div className={cn('flex w-full flex-col', className)}>
+      {files?.map((file, idx) => (
+        <div
+          className="relative flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-3"
+          key={idx}
+        >
+          <PaperClipIcon className="text-gray-100" />
+          <span className="text-gray-80 flex-1 truncate text-sm">
+            {file.name}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const FileInput = ({
+  value,
+  onChange,
+  maxFiles,
+  accept,
+}: {
+  value: File[];
+  onChange: (files: File[]) => void;
+  maxFiles?: number;
+  accept?: Accept;
+}) => {
+  const { getRootProps: getRootFileProps, getInputProps: getInputFileProps } =
+    useDropzone({
+      multiple: true,
+      maxFiles: maxFiles ?? 5,
+      accept,
+      onDrop: (acceptedFiles) => {
+        onChange(acceptedFiles);
+      },
+    });
+
+  return (
+    <>
+      <div className="flex gap-5">
+        <div
+          {...getRootFileProps({
+            className:
+              'dropzone group relative mt-3 flex h-[6.375rem] w-[9.5rem] cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-dashed border-gray-100 transition-colors hover:border-white',
+          })}
+        >
+          <div className="flex flex-col items-center gap-2 p-4 text-xs">
+            <ImagePlusIcon className="stroke-gray-100 transition-colors group-hover:stroke-white" />
+            <span className="text-center font-semibold text-gray-100">
+              Drag & drop your documents here
+            </span>
+          </div>
+          <input {...getInputFileProps({})} />
+        </div>
+        <span className="text-gray-80 pt-4 text-xs font-bold">
+          Supported formats
+          <p className="mt-2">
+            Plain Text
+            <span className="block font-normal">
+              {' '}
+              {[
+                'eml',
+                'html',
+                'json',
+                'md',
+                'msg',
+                'rst',
+                'rtf',
+                'txt',
+                'xml',
+              ].join(' • ')}
+            </span>
+          </p>
+          <p className="text-gray-80 mt-1 font-bold">
+            Documents
+            <span className="block font-normal">
+              {[
+                'csv',
+                'doc',
+                'epub',
+                'odt',
+                'pdf',
+                'ppt',
+                'pptx',
+                'tsv',
+                'xlsx',
+              ].join(' • ')}
+            </span>
+          </p>
+        </span>
+      </div>
+      {!!value?.length && (
+        <div className="flex flex-col gap-2 pt-8">
+          {value?.map((file, idx) => (
+            <div
+              className="relative flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-3"
+              key={idx}
+            >
+              <PaperClipIcon className="text-gray-100" />
+              <span className="text-gray-80 flex-1 truncate text-sm">
+                {file.name}
+              </span>
+              <button
+                className="h-6 w-6 cursor-pointer rounded-full bg-gray-400 p-1 transition-colors hover:bg-gray-300"
+                onClick={() => {
+                  const newFiles = [...value];
+                  newFiles.splice(newFiles.indexOf(file), 1);
+                  onChange(newFiles);
+                }}
+                type={'button'}
+              >
+                <X className="h-full w-full text-gray-100" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </>
+  );
+};
 
 export function isImageOrPdf(file: File): boolean {
   if (!file) return false;
@@ -50,46 +179,6 @@ const CreateJobPage = () => {
   const createJobForm = useForm<z.infer<typeof createJobSchema>>({
     resolver: zodResolver(createJobSchema),
   });
-
-  const { getRootProps: getRootFileProps, getInputProps: getInputFileProps } =
-    useDropzone({
-      multiple: false,
-      // accept: {
-      //   "image/png": [".png"],
-      //   "text/html": [".html", ".htm"],
-      //   "application/pdf": [".pdf"],
-      // },
-      onDrop: (acceptedFiles) => {
-        const file = acceptedFiles[0];
-        if (isImageOrPdf(file)) {
-          const reader = new FileReader();
-          reader.addEventListener('abort', () =>
-            console.log('file reading was aborted'),
-          );
-          reader.addEventListener(
-            'load',
-            (event: ProgressEvent<FileReader>) => {
-              const binaryUrl = event.target?.result;
-              const image = new Image();
-              image.addEventListener('load', function () {
-                const imageInfo = Object.assign(file, {
-                  preview: URL.createObjectURL(file),
-                });
-                createJobForm.setValue('file', imageInfo, {
-                  shouldValidate: true,
-                });
-              });
-              image.src = binaryUrl as string;
-            },
-          );
-          reader.readAsDataURL(file);
-        } else {
-          createJobForm.setValue('file', file, { shouldValidate: true });
-        }
-      },
-    });
-
-  const { file } = createJobForm.watch();
 
   const { agents, isSuccess } = useAgents({
     sender: auth?.shinkai_identity ?? '',
@@ -119,7 +208,7 @@ const CreateJobPage = () => {
       agentId: data.model,
       content: data.description,
       files_inbox: '',
-      file: data.file,
+      files: data.files,
       my_device_encryption_sk: auth.my_device_encryption_sk,
       my_device_identity_sk: auth.my_device_identity_sk,
       node_encryption_pk: auth.node_encryption_pk,
@@ -133,12 +222,12 @@ const CreateJobPage = () => {
       createJobForm.setValue('model', agents[0].id);
     }
   }, [agents, createJobForm, isSuccess]);
-  useEffect(() => {
-    return () => {
-      file && URL.revokeObjectURL(file.preview);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // useEffect(() => {
+  //   return () => {
+  //     file && URL.revokeObjectURL(file.preview);
+  //   };
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   return (
     <SimpleLayout title="Create Job">
@@ -157,7 +246,7 @@ const CreateJobPage = () => {
                   <FormControl>
                     <Textarea
                       autoFocus={true}
-                      className="resize-none border-white"
+                      className="resize-none"
                       onKeyDown={(event) => {
                         if (
                           event.key === 'Enter' &&
@@ -210,112 +299,22 @@ const CreateJobPage = () => {
                 </FormItem>
               )}
             />
-
-            <div>
-              <FormLabel>
-                Upload a file
-                <span className="text-muted-foreground ml-1">(optional)</span>
-              </FormLabel>
-              <div className="flex gap-5">
-                <div
-                  {...getRootFileProps({
-                    className: cn(
-                      'dropzone group relative relative mt-3 flex h-[6.375rem] w-[9.5rem] cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-dashed border-slate-500 border-slate-500 transition-colors hover:border-white',
-                      file && 'border border-solid border-slate-500',
-                    ),
-                  })}
-                >
-                  {!file && (
-                    <div className="flex flex-col items-center gap-2 p-4 text-xs">
-                      <ImagePlusIcon className="stroke-slate-500 transition-colors group-hover:stroke-white" />
-                      <span className="text-center  font-semibold text-slate-400">
-                        Drag & drop your documents here
-                      </span>
-                      {/* <span className="text-foreground">Click here to Upload</span> */}
-                    </div>
-                  )}
-                  <input
-                    {...createJobForm.register('file')}
-                    {...getInputFileProps({
-                      onChange: createJobForm.register('file').onChange,
-                    })}
-                  />
-                  {file && (
-                    <>
-                      {isImageOrPdf(file) && (
-                        <img
-                          alt=""
-                          className="absolute inset-0 h-full w-full rounded-lg bg-white object-cover"
-                          src={file.preview}
-                        />
-                      )}
-                      {!isImageOrPdf(file) && (
-                        <div className="flex flex-col items-center gap-2">
-                          <FileCheck2 className="text-muted-foreground h-6 w-6 " />
-                          <span className="line-clamp-3 break-all px-2 text-center text-xs ">
-                            {file?.name}
-                          </span>
-                        </div>
-                      )}
-                    </>
-                  )}
-                  {file != null && (
-                    <button
-                      className={cn(
-                        'absolute right-1 top-1 h-6 w-6 cursor-pointer rounded-full bg-slate-900 p-1 hover:bg-slate-800',
-                        file ? 'block' : 'hidden',
-                      )}
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        createJobForm.setValue('file', undefined, {
-                          shouldValidate: true,
-                        });
-                      }}
-                    >
-                      <X className="h-full w-full text-slate-500" />
-                    </button>
-                  )}
-                </div>
-                <span className="text-muted-foreground pt-4 text-xs font-bold">
-                  Supported formats
-                  <p className="mt-2">
-                    Plain Text
-                    <span className="block font-normal">
-                      {' '}
-                      {[
-                        'eml',
-                        'html',
-                        'json',
-                        'md',
-                        'msg',
-                        'rst',
-                        'rtf',
-                        'txt',
-                        'xml',
-                      ].join(' • ')}
-                    </span>
-                  </p>
-                  <p className="text-muted-foreground mt-1 font-bold">
-                    Documents
-                    <span className="block font-normal">
-                      {[
-                        'csv',
-                        'doc',
-                        'epub',
-                        'odt',
-                        'pdf',
-                        'ppt',
-                        'pptx',
-                        'tsv',
-                        'xlsx',
-                      ].join(' • ')}
-                    </span>
-                  </p>
-                </span>
-              </div>
-            </div>
+            <FormField
+              control={createJobForm.control}
+              name="files"
+              render={({ field }) => (
+                <FormItem className="mt-3">
+                  <FormLabel className="sr-only">
+                    Upload a file (optional)
+                  </FormLabel>
+                  <FormControl>
+                    <FileInput onChange={field.onChange} value={field.value} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
-
           <Button
             className="w-full"
             disabled={isPending}

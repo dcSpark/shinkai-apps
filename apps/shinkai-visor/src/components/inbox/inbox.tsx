@@ -5,8 +5,11 @@ import {
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMessageToJob/useSendMessageToJob';
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
-import { ChatConversationMessage } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
+import {
+  getRelativeDateLabel,
+  groupMessagesByDate,
+} from '@shinkai_network/shinkai-node-state/lib/utils/date';
 import {
   Alert,
   AlertDescription,
@@ -115,29 +118,7 @@ export const Inbox = () => {
       });
     }
   };
-  const groupMessagesByDate = (messages: ChatConversationMessage[]) => {
-    const groupedMessages: Record<string, ChatConversationMessage[]> = {};
-    for (const message of messages) {
-      const date = new Date(message.scheduledTime ?? '').toDateString();
-      if (!groupedMessages[date]) {
-        groupedMessages[date] = [];
-      }
-      groupedMessages[date].push(message);
-    }
-    return groupedMessages;
-  };
-  const dateToLabel = (date: Date): string => {
-    const today = new Date();
-    const yesterday = new Date();
-    yesterday.setDate(today.getDate() - 1);
-    if (date.toDateString() === today.toDateString()) {
-      return intl.formatMessage({ id: 'today' });
-    } else if (date.toDateString() === yesterday.toDateString()) {
-      return intl.formatMessage({ id: 'yesterday' });
-    } else {
-      return date.toDateString();
-    }
-  };
+
   useEffect(() => {
     const chatContainerElement = chatContainerRef.current;
     if (!chatContainerElement) return;
@@ -240,9 +221,11 @@ export const Inbox = () => {
                           )}
                         >
                           <span className="text-sm font-medium text-gray-100">
-                            {dateToLabel(
-                              new Date(messages[0].scheduledTime || ''),
-                            )}
+                            {intl.formatMessage({
+                              id: getRelativeDateLabel(
+                                new Date(messages[0].scheduledTime || ''),
+                              ),
+                            })}
                           </span>
                         </div>
                         <div className="flex flex-col gap-4">

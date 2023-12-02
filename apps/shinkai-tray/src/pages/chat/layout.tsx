@@ -7,24 +7,26 @@ import {
 import { useUpdateInboxName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateInboxName/useUpdateInboxName';
 import { GetInboxesOutput } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/types';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
-import { Query } from '@tanstack/react-query';
-import { Edit3, MessageCircleIcon, Workflow } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { Link, Outlet, useMatch } from 'react-router-dom';
-import { z } from 'zod';
-
-import { Button } from '../../components/ui/button';
 import {
+  Button,
+  ChatBubbleIcon,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-} from '../../components/ui/form';
-import { Input } from '../../components/ui/input';
-import { ScrollArea } from '../../components/ui/scroll-area';
-import { Separator } from '../../components/ui/separator';
+  Input,
+  JobBubbleIcon,
+  ScrollArea,
+  Separator,
+} from '@shinkai_network/shinkai-ui';
+import { Query } from '@tanstack/react-query';
+import { Edit3 } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { Link, Outlet, useMatch } from 'react-router-dom';
+import { z } from 'zod';
+
 import { handleSendNotification } from '../../lib/notifications';
 import { cn } from '../../lib/utils';
 import { useAuth } from '../../store/auth';
@@ -84,13 +86,16 @@ const InboxNameInput = ({
             control={updateInboxNameForm.control}
             name="inboxName"
             render={({ field }) => (
-              <div className="bg-app-gradient flex h-[46px]  items-center rounded-lg">
+              <div className="flex h-[46px] items-center rounded-lg bg-gray-300">
                 <Edit3 className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 transform text-white" />
+
                 <FormItem className="space-y-0 pl-7 text-xs">
-                  <FormLabel className="sr-only">Update inbox name</FormLabel>
+                  <FormLabel className="sr-only static">
+                    Update inbox name
+                  </FormLabel>
                   <FormControl>
                     <Input
-                      className="border-none pr-16 text-xs caret-white placeholder:text-gray-600 focus-visible:ring-0 focus-visible:ring-white"
+                      className="h-full border-none bg-transparent py-2 pr-16 text-xs caret-white placeholder:text-gray-100 focus-visible:ring-0 focus-visible:ring-white"
                       placeholder={inboxName}
                       {...field}
                       ref={inputRef}
@@ -104,7 +109,7 @@ const InboxNameInput = ({
 
         {inboxNameValue ? (
           <Button
-            className="transformtext-xs absolute right-1 top-1/2 h-8 -translate-y-1/2 text-white"
+            className="absolute right-1 top-1/2 h-8 -translate-y-1/2 transform text-xs text-white"
             size="sm"
             type="submit"
             variant="default"
@@ -173,27 +178,30 @@ const MessageButton = ({
   ) : (
     <Link
       className={cn(
-        'text-muted-foreground group flex h-[46px] w-full items-center gap-2 rounded-lg px-2 py-2 hover:bg-slate-800',
-        match && 'text-foreground bg-slate-800',
+        'text-gray-80 group flex h-[46px] w-full items-center gap-2 rounded-lg px-2 py-2 hover:bg-gray-300',
+        match && 'bg-gray-300 text-white',
       )}
       key={inboxId}
       to={to}
     >
       {isJobInbox(inboxId) ? (
-        <Workflow className="mr-2 h-4 w-4 shrink-0" />
+        <JobBubbleIcon className="mr-2 h-4 w-4 shrink-0" />
       ) : (
-        <MessageCircleIcon className="mr-2 h-4 w-4 shrink-0" />
+        <ChatBubbleIcon className="mr-2 h-4 w-4 shrink-0" />
       )}
       <span className="line-clamp-1 flex-1 break-all text-left text-xs">
         {inboxName}
       </span>
       <Button
-        className={cn('hidden justify-self-end', match && 'flex')}
+        className={cn(
+          'hidden justify-self-end bg-transparent',
+          match && 'flex',
+        )}
         onClick={() => setIsEditable(true)}
         size="icon"
         variant="ghost"
       >
-        <Edit3 className="text-muted-foreground h-4 w-4" />
+        <Edit3 className="h-4 w-4 text-gray-100" />
       </Button>
     </Link>
   );

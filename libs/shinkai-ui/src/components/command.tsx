@@ -86,7 +86,7 @@ const CommandGroup = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <CommandPrimitive.Group
     className={cn(
-      'text-foreground overflow-hidden p-1 dark:text-gray-50 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-gray-500 dark:[&_[cmdk-group-heading]]:text-gray-400',
+      '[&_[cmdk-group-heading]]:text-gray-80 overflow-hidden p-1 text-white [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium dark:[&_[cmdk-group-heading]]:text-gray-400',
       className,
     )}
     ref={ref}
@@ -114,7 +114,7 @@ const CommandItem = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <CommandPrimitive.Item
     className={cn(
-      'relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none aria-selected:bg-gray-800 aria-selected:text-gray-100 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 dark:aria-selected:bg-gray-800 dark:aria-selected:text-gray-50',
+      'relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none aria-selected:bg-gray-300 aria-selected:text-white data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
       className,
     )}
     ref={ref}
@@ -130,10 +130,7 @@ const CommandShortcut = ({
 }: React.HTMLAttributes<HTMLSpanElement>) => {
   return (
     <span
-      className={cn(
-        'ml-auto text-xs tracking-widest text-gray-500 dark:text-gray-400',
-        className,
-      )}
+      className={cn('text-gray-80 ml-auto text-xs tracking-widest', className)}
       {...props}
     />
   );

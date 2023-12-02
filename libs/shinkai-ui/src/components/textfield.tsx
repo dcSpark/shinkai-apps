@@ -2,7 +2,13 @@
 import React from 'react';
 
 import { cn } from '../utils';
-import { FormControl, FormItem, FormLabel, FormMessage } from './form';
+import {
+  FormControl,
+  FormDescription,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from './form';
 import { Input } from './input';
 
 const TextField = ({
@@ -10,6 +16,7 @@ const TextField = ({
   field,
   label,
   type = 'text',
+  helperMessage,
 }: {
   classes?: {
     formItem?: string;
@@ -23,9 +30,11 @@ const TextField = ({
     value: any;
     disabled?: boolean;
     name: string;
-    ref: (instance: any) => void;
+    ref: React.ForwardedRef<HTMLInputElement>;
+    placeholder?: string;
   };
   label: React.ReactNode;
+  helperMessage?: React.ReactNode;
   type?: 'text' | 'password';
 }) => {
   return (
@@ -34,6 +43,7 @@ const TextField = ({
         <Input {...field} className={cn(classes?.input)} type={type} />
       </FormControl>
       <FormLabel className={cn(classes?.label)}>{label}</FormLabel>
+      <FormDescription>{helperMessage}</FormDescription>
       <FormMessage className={cn(classes?.helperMessage)} />
     </FormItem>
   );

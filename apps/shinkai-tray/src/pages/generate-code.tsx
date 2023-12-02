@@ -1,6 +1,24 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DownloadIcon } from '@radix-ui/react-icons';
 import { useCreateRegistrationCode } from '@shinkai_network/shinkai-node-state/lib/mutations/createRegistrationCode/useCreateRegistrationCode';
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  QRCode,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  TextField,
+} from '@shinkai_network/shinkai-ui';
 import { save } from '@tauri-apps/api/dialog';
 import { BaseDirectory, writeBinaryFile } from '@tauri-apps/api/fs';
 import { Check } from 'lucide-react';
@@ -8,25 +26,6 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { Button } from '../components/ui/button';
-import { Dialog, DialogContent } from '../components/ui/dialog';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../components/ui/form';
-import { Input } from '../components/ui/input';
-import QRCode from '../components/ui/qr-code';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../components/ui/select';
 import { SetupData, useAuth } from '../store/auth';
 import SimpleLayout from './layout/simple-layout';
 
@@ -173,13 +172,7 @@ const GenerateCodePage = () => {
                 control={form.control}
                 name="profile"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Profile</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                  <TextField field={field} label="Profile" />
                 )}
               />
             )}

@@ -1,6 +1,5 @@
 import { ApiConfig } from '@shinkai_network/shinkai-message-ts/api';
-import { invoke } from '@tauri-apps/api/tauri';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import ChatConversation from '../pages/chat/chat-conversation';
@@ -9,10 +8,12 @@ import ChatLayout from '../pages/chat/layout';
 import CreateAgentPage from '../pages/create-agent';
 import CreateChatPage from '../pages/create-chat';
 import CreateJobPage from '../pages/create-job';
-import GenerateCodePage from '../pages/generate-code.tsx';
+import GenerateCodePage from '../pages/generate-code';
 import MainLayout from '../pages/layout/main-layout';
-import OnboardingPage from '../pages/onboarding.tsx';
+import OnboardingPage from '../pages/onboarding';
+import RestoreConnectionPage from '../pages/restore-connection';
 import SettingsPage from '../pages/settings';
+import WelcomePage from '../pages/welcome';
 import { useAuth } from '../store/auth';
 import {
   ADD_AGENT_PATH,
@@ -31,33 +32,18 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   }, [auth?.node_address]);
 
   if (!auth) {
-    return <Navigate replace to={ONBOARDING_PATH} />;
+    return <Navigate replace to={'/welcome'} />;
   }
   return children;
 };
 
 const AppRoutes = () => {
-  useEffect(() => {
-    console.log('Registering hotkey');
-    // Register the global shortcut
-    // register("Alt+Shift+Enter", async () => {
-    //   console.log("Hotkey activated");
-    // });
-
-    // Check if setup data is valid
-    (invoke('validate_setup_data') as Promise<boolean>)
-      .then((isValid: boolean) => {
-        console.log('is already', isValid);
-      })
-      .catch((error: string) => {
-        console.error('Failed to validate setup data:', error);
-      });
-  }, []);
-
   return (
     <Routes>
       <Route element={<MainLayout />}>
+        <Route element={<WelcomePage />} path={'/welcome'} />
         <Route element={<OnboardingPage />} path={ONBOARDING_PATH} />
+        <Route element={<RestoreConnectionPage />} path={'/restore'} />
         <Route
           element={
             <ProtectedRoute>
