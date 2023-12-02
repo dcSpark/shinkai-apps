@@ -10,6 +10,10 @@ import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/m
 import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageWithFilesToInbox/useSendMessageWithFilesToInbox';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
 import {
+  getRelativeDateLabel,
+  groupMessagesByDate,
+} from '@shinkai_network/shinkai-node-state/lib/utils/date';
+import {
   Button,
   DotsLoader,
   Form,
@@ -41,7 +45,6 @@ import { Markdown } from 'tiptap-markdown';
 import { z } from 'zod';
 
 import Message from '../../components/chat/message';
-import { formatDate, groupMessagesByDate } from '../../lib/chat-conversation';
 import { cn } from '../../lib/utils';
 import { useAuth } from '../../store/auth';
 import { isImageOrPdf } from '../create-job';
@@ -279,7 +282,7 @@ const ChatConversation = () => {
                           )}
                         >
                           <span className="text-sm font-medium capitalize text-gray-100">
-                            {formatDate(
+                            {getRelativeDateLabel(
                               new Date(messages[0].scheduledTime || ''),
                             )}
                           </span>

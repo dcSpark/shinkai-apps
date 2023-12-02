@@ -131,7 +131,7 @@ export function Footer() {
       <Popover modal onOpenChange={setOpen} open={open}>
         <PopoverTrigger
           aria-expanded={open}
-          className="rounded-lg bg-gray-300 px-2.5 py-2 shadow-lg transition-colors duration-150 hover:bg-gray-300/40"
+          className="rounded-lg bg-gray-400 px-2.5 py-2 shadow-lg transition-colors duration-150 hover:bg-gray-300"
           onClick={() => setOpen(true)}
         >
           <span className="text-xs text-white">

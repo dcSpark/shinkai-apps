@@ -5,6 +5,7 @@ import {
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
+import { formatDateToMonthAndDay } from '@shinkai_network/shinkai-node-state/lib/utils/date';
 import {
   Button,
   ChatBubbleIcon,
@@ -14,15 +15,14 @@ import {
   DropdownMenuPortal,
   DropdownMenuTrigger,
   JobBubbleIcon,
+  ScrollArea,
 } from '@shinkai_network/shinkai-ui';
-import { ScrollArea } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Plus } from 'lucide-react';
 import { Fragment, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
-import { formatDateToMonthAndDay } from '../../helpers/date';
 import { useAuth } from '../../store/auth/auth';
 import { EditInboxNameDialog } from '../edit-inbox-name-dialog/edit-inbox-name-dialog';
 import { EmptyAgents } from '../empty-agents/empty-agents';
