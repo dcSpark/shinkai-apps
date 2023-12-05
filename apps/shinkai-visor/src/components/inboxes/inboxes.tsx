@@ -5,6 +5,7 @@ import {
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
+import { formatDateToMonthAndDay } from '@shinkai_network/shinkai-node-state/lib/utils/date';
 import {
   Button,
   ChatBubbleIcon,
@@ -14,15 +15,14 @@ import {
   DropdownMenuPortal,
   DropdownMenuTrigger,
   JobBubbleIcon,
+  ScrollArea,
 } from '@shinkai_network/shinkai-ui';
-import { ScrollArea } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Plus } from 'lucide-react';
 import { Fragment, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
-import { formatDateToMonthAndDay } from '../../helpers/date';
 import { useAuth } from '../../store/auth/auth';
 import { EditInboxNameDialog } from '../edit-inbox-name-dialog/edit-inbox-name-dialog';
 import { EmptyAgents } from '../empty-agents/empty-agents';
@@ -66,7 +66,7 @@ export const Inboxes = () => {
   const navigateToInbox = (inbox: {
     inbox_id: string;
     custom_name: string;
-    last_message: ShinkaiMessage;
+    last_message?: ShinkaiMessage;
   }) => {
     history.push(`/inboxes/${encodeURIComponent(inbox.inbox_id)}`, { inbox });
   };
@@ -136,8 +136,8 @@ export const Inboxes = () => {
                             </div>
                           </div>
                         </div>
-                        <span className="shrink-0 self-start pt-[2px] text-xs lowercase text-gray-100">
-                          {inbox.last_message.external_metadata
+                        <span className="min-w-[32px] text-end shrink-0 self-start pt-[2px] text-xs lowercase text-gray-100">
+                          {inbox.last_message?.external_metadata
                             ?.scheduled_time &&
                             formatDateToMonthAndDay(
                               new Date(

@@ -81,7 +81,7 @@ export const FileList = ({ files, actions, className }: FileListProps) => {
                 <div className="h-10 self-center">{getFilePreview(file)}</div>
               )}
               <div className="flex min-w-0 flex-1 flex-row items-center justify-between gap-2">
-                <PaperClipIcon className="h-4 w-4" />
+                <PaperClipIcon className="h-4 w-4 text-gray-100" />
 
                 <span className="text-gray-80 grow truncate font-medium">
                   {getFileName(decodeURIComponent(file.name))}

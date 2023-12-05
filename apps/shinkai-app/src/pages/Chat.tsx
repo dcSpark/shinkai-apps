@@ -18,6 +18,7 @@ import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/m
 import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageWithFilesToInbox/useSendMessageWithFilesToInbox';
 import { ChatConversationMessage } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
+import { groupMessagesByDate } from '@shinkai_network/shinkai-node-state/lib/utils/date';
 import MarkdownPreview from '@uiw/react-markdown-preview';
 import { cameraOutline } from 'ionicons/icons';
 import { send } from 'ionicons/icons';
@@ -134,17 +135,6 @@ const Chat: React.FC = () => {
       });
     }
     chatForm.reset();
-  };
-  const groupMessagesByDate = (messages: ChatConversationMessage[]) => {
-    const groupedMessages: Record<string, ChatConversationMessage[]> = {};
-    for (const message of messages) {
-      const date = new Date(message.scheduledTime ?? '').toDateString();
-      if (!groupedMessages[date]) {
-        groupedMessages[date] = [];
-      }
-      groupedMessages[date].push(message);
-    }
-    return groupedMessages;
   };
 
   const handleKeyDown = (

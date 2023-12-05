@@ -54,5 +54,5 @@ export interface RegistrationCode {
 export type SmartInbox = {
   custom_name: string;
   inbox_id: string;
-  last_message: ShinkaiMessage;
+  last_message?: ShinkaiMessage;
 };
