@@ -19,11 +19,12 @@ export function QRCode({
 }): React.ReactElement {
   return (
     <ReactQRCode
+      ecLevel='H'
       eyeColor="black"
       eyeRadius={10}
       fgColor="black"
       id={id}
-      logoHeight={40}
+      logoHeight={size ? size * 0.2 : undefined}
       logoImage={shinkaiLogo}
       logoPaddingStyle="circle"
       logoWidth={size ? size * 0.2 : undefined}
@@ -54,7 +55,7 @@ export function QrCodeModal({
 }) {
   const [saved, setSaved] = useState(false);
   const downloadCode = async () => {
-    const canvas = document.querySelector('#registration-code-qr');
+    const canvas = document.querySelector('#registration-code-qr-dummy');
     if (canvas instanceof HTMLCanvasElement) {
       try {
         const pngUrl = canvas.toDataURL();
@@ -80,6 +81,9 @@ export function QrCodeModal({
           </p>
           <div className="mb-7 overflow-hidden rounded-lg shadow-2xl">
             <QRCode id="registration-code-qr" size={190} value={value} />
+            <div className="hidden">
+              <QRCode id="registration-code-qr-dummy" size={500} value={value} />
+            </div>
           </div>
           <div className="flex flex-col gap-4">
             <Button className="flex gap-1" onClick={downloadCode}>
