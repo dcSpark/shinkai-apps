@@ -103,5 +103,6 @@
   "disconnect-warning-link": "Export your connection",
   "disconnect-warning-link-description": "If you want to use it later",
   "hide-action-button-label": "Hide action button",
-  "hide-action-button-description": "You will need to use ⌘ , hotkey to show/hide Shinkai Visor"
+  "hide-action-button-description": "You will need to use ⌘ , hotkey to show/hide Shinkai Visor",
+  "stop-job": "Stop processing"
 }

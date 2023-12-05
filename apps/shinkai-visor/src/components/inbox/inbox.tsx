@@ -3,6 +3,7 @@ import {
   extractReceiverShinkaiName,
   isJobInbox as checkIsJobInbox,
 } from '@shinkai_network/shinkai-message-ts/utils';
+import { useCloseJob } from '@shinkai_network/shinkai-node-state/lib/mutations/closeJob/useCloseJob';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMessageToJob/useSendMessageToJob';
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
@@ -14,11 +15,16 @@ import {
   Alert,
   AlertDescription,
   AlertTitle,
+  Button,
   ScrollArea,
   Skeleton,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { Loader2, Terminal } from 'lucide-react';
+import { Loader2, Terminal, XOctagonIcon } from 'lucide-react';
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
@@ -55,6 +61,9 @@ export const Inbox = () => {
   } = useSendMessageToInbox();
   const { mutateAsync: sendMessageToJob, isPending: isSendingMessageToJob } =
     useSendMessageToJob();
+  const { mutateAsync: closeJob, isPending: isClosoJobLoading } = useCloseJob({
+
+  });
   const isSendingMessage = isSendingMessageToJob || isSendingMessageToInbox;
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const previousChatHeightRef = useRef<number>(0);
@@ -118,7 +127,19 @@ export const Inbox = () => {
       });
     }
   };
-
+  const onCloseJobButtonClick = (): void => {
+    if (!auth) return;
+    closeJob({
+      shinkaiIdentity: auth.shinkai_identity,
+      profile: auth.profile,
+      inboxId: decodedInboxId,
+      my_device_encryption_sk: auth.my_device_encryption_sk,
+      my_device_identity_sk: auth.my_device_identity_sk,
+      node_encryption_pk: auth.node_encryption_pk,
+      profile_encryption_sk: auth.profile_encryption_sk,
+      profile_identity_sk: auth.profile_identity_sk,
+    });
+  };
   useEffect(() => {
     const chatContainerElement = chatContainerRef.current;
     if (!chatContainerElement) return;
@@ -264,11 +285,36 @@ export const Inbox = () => {
           <Terminal className="h-4 w-4" />
         </Alert>
       )}
-      <InboxInput
-        disabled={isSendingMessage}
-        loading={isJobProcessing}
-        onSubmit={(value) => submitSendMessage(value)}
-      />
+      <div className="flex flex-row items-center space-x-2">
+        <InboxInput
+          className="grow"
+          disabled={isSendingMessage}
+          loading={isJobProcessing}
+          onSubmit={(value) => submitSendMessage(value)}
+        />
+
+        {isJobInbox && isJobProcessing && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <Button
+                  className="grow-0 h-[60px] w-[60px] rounded-xl p-0"
+                  onClick={() => onCloseJobButtonClick()}
+                  size="icon"
+                  variant={'destructive'}
+                >
+                  <XOctagonIcon className="h-6 w-6" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>
+                  <FormattedMessage id="stop-job" />
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+      </div>
     </div>
   );
 };

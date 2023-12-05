@@ -9,6 +9,7 @@ import {
   FormLabel,
   Input,
 } from '@shinkai_network/shinkai-ui';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
 import { SendHorizonal } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -22,6 +23,7 @@ const formSchema = z.object({
 type InboxInputFieldType = z.infer<typeof formSchema>;
 
 type InboxInputProps = {
+  className: string,
   onSubmit: (value: string) => void;
   onChange?: (value: string) => void;
   disabled?: boolean;
@@ -51,7 +53,7 @@ export const InboxInput = (props: InboxInputProps) => {
   return (
     <Form {...form}>
       <form
-        className="flex flex-row justify-between space-x-2  p-1"
+        className={cn("flex flex-row justify-between space-x-2  p-1", props.className || '')}
         onSubmit={form.handleSubmit(submit)}
       >
         <div className="flex grow flex-col space-y-2 ">
