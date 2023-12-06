@@ -12,6 +12,7 @@ import { APIUseRegistrationCodeSuccessResponse } from '../models/Payloads';
 import { SerializedAgent } from '../models/SchemaTypes';
 import { InboxNameWrapper } from '../pkg/shinkai_message_wasm';
 import { calculateMessageHash } from '../utils';
+import { urlJoin } from '../utils/url-join';
 import { FileUploader } from '../wasm/FileUploaderUsingSymmetricKeyManager';
 import { SerializedAgentWrapper } from '../wasm/SerializedAgentWrapper';
 import { ShinkaiMessageBuilderWrapper } from '../wasm/ShinkaiMessageBuilderWrapper';
@@ -87,7 +88,7 @@ export const createChatWithMessage = async (
     const message: ShinkaiMessage = JSON.parse(messageStr);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await fetch(`${apiEndpoint}/v1/send`, {
+    const response = await fetch(urlJoin(apiEndpoint, '/v1/send'), {
       method: 'POST',
       body: JSON.stringify(message),
       headers: { 'Content-Type': 'application/json' },
@@ -132,7 +133,7 @@ export const sendTextMessageWithInbox = async (
     const message: ShinkaiMessage = JSON.parse(messageStr);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await fetch(`${apiEndpoint}/v1/send`, {
+    const response = await fetch(urlJoin(apiEndpoint, '/v1/send'), {
       method: 'POST',
       body: JSON.stringify(message),
       headers: { 'Content-Type': 'application/json' },
@@ -215,7 +216,7 @@ export const getAllInboxesForProfile = async (
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
     const response = await fetch(
-      `${apiEndpoint}/v1/get_all_smart_inboxes_for_profile`,
+      urlJoin(apiEndpoint, '/v1/get_all_smart_inboxes_for_profile'),
       {
         method: 'POST',
         body: JSON.stringify(message),
@@ -256,7 +257,7 @@ export const updateInboxName = async (
     const message = JSON.parse(messageString);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await fetch(`${apiEndpoint}/v1/update_smart_inbox_name`, {
+    const response = await fetch(urlJoin(apiEndpoint, '/v1/update_smart_inbox_name'), {
       method: 'POST',
       body: JSON.stringify(message),
       headers: { 'Content-Type': 'application/json' },
@@ -293,7 +294,7 @@ export const getLastMessagesFromInbox = async (
     const message = JSON.parse(messageStr);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await fetch(`${apiEndpoint}/v1/last_messages_from_inbox`, {
+    const response = await fetch(urlJoin(apiEndpoint, '/v1/last_messages_from_inbox'), {
       method: 'POST',
       body: JSON.stringify(message),
       headers: { 'Content-Type': 'application/json' },
@@ -333,7 +334,7 @@ export const submitRequestRegistrationCode = async (
     const message = JSON.parse(messageStr);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await fetch(`${apiEndpoint}/v1/create_registration_code`, {
+    const response = await fetch(urlJoin(apiEndpoint, '/v1/create_registration_code'), {
       method: 'POST',
       body: JSON.stringify(message),
       headers: { 'Content-Type': 'application/json' },
@@ -373,7 +374,7 @@ export const submitRegistrationCode = async (
 
     // Use node_address from setupData for API endpoint
     const response = await fetch(
-      `${setupData.node_address}/v1/use_registration_code`,
+      urlJoin(setupData.node_address, '/v1/use_registration_code'),
       {
         method: 'POST',
         body: JSON.stringify(message),
@@ -415,7 +416,7 @@ export const submitInitialRegistrationNoCode = async (
 
     // Use node_address from setupData for API endpoint
     const response = await fetch(
-      `${setupData.node_address}/v1/use_registration_code`,
+      urlJoin(setupData.node_address, '/v1/use_registration_code'),
       {
         method: 'POST',
         body: JSON.stringify(message),
@@ -471,7 +472,7 @@ export const createJob = async (
     const message = JSON.parse(messageStr);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await fetch(`${apiEndpoint}/v1/create_job`, {
+    const response = await fetch(urlJoin(apiEndpoint, '/v1/create_job'), {
       method: 'POST',
       body: JSON.stringify(message),
       headers: { 'Content-Type': 'application/json' },
@@ -512,7 +513,7 @@ export const sendMessageToJob = async (
     const message = JSON.parse(messageStr);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await fetch(`${apiEndpoint}/v1/job_message`, {
+    const response = await fetch(urlJoin(apiEndpoint, '/v1/job_message'), {
       method: 'POST',
       body: JSON.stringify(message),
       headers: { 'Content-Type': 'application/json' },
@@ -548,7 +549,7 @@ export const getProfileAgents = async (
     console.log('Get Profile Agents Message Hash:', messageHash);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await fetch(`${apiEndpoint}/v1/available_agents`, {
+    const response = await fetch(urlJoin(apiEndpoint, '/v1/available_agents'), {
       method: 'POST',
       body: JSON.stringify(message),
       headers: { 'Content-Type': 'application/json' },
@@ -583,7 +584,7 @@ export const addAgent = async (
     const message = JSON.parse(messageStr);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await fetch(`${apiEndpoint}/v1/add_agent`, {
+    const response = await fetch(urlJoin(apiEndpoint, '/v1/add_agent'), {
       method: 'POST',
       body: JSON.stringify(message),
       headers: { 'Content-Type': 'application/json' },
@@ -627,7 +628,7 @@ export const getFileNames = async (
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
     const response = await fetch(
-      `${apiEndpoint}/v1/get_filenames_for_file_inbox`,
+      urlJoin(apiEndpoint, '/v1/get_filenames_for_file_inbox'),
       {
         method: 'POST',
         body: JSON.stringify(message),
