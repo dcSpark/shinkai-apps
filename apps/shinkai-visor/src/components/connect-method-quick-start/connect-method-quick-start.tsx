@@ -25,7 +25,6 @@ import { Header } from '../header/header';
 const formSchema = z.object({
   registration_name: z.string().min(5),
   node_address: z.string().url(),
-  shinkai_identity: z.string().min(11),
 });
 
 type FormType = z.infer<typeof formSchema>;
@@ -34,7 +33,6 @@ export const ConnectMethodQuickStart = () => {
   const history = useHistory();
   const setAuth = useAuth((state) => state.setAuth);
   const DEFAULT_NODE_ADDRESS = 'http://127.0.0.1:9550';
-  const DEFAULT_SHINKAI_IDENTITY = '@@localhost.shinkai';
   const [encryptionKeys, setEncryptedKeys] = useState<Encryptionkeys | null>(
     null,
   );
@@ -43,7 +41,6 @@ export const ConnectMethodQuickStart = () => {
     defaultValues: {
       registration_name: 'main_device',
       node_address: DEFAULT_NODE_ADDRESS,
-      shinkai_identity: DEFAULT_SHINKAI_IDENTITY,
     },
   });
   const {
@@ -57,6 +54,7 @@ export const ConnectMethodQuickStart = () => {
         const authData: SetupData = {
           ...encryptionKeys,
           ...setupPayload,
+          shinkai_identity: response.data?.shinkai_identity ?? '',
           node_signature_pk: response.data?.identity_public_key ?? '',
           node_encryption_pk: response.data?.encryption_public_key ?? '',
         };
@@ -78,7 +76,7 @@ export const ConnectMethodQuickStart = () => {
       profile: 'main',
       identity_type: 'device',
       permission_type: 'admin',
-      shinkai_identity: values.shinkai_identity,
+      shinkai_identity: '',
       registration_code: '',
       node_encryption_pk: '',
       node_address: values.node_address,
@@ -130,17 +128,6 @@ export const ConnectMethodQuickStart = () => {
                   <TextField
                     field={field}
                     label={<FormattedMessage id="registration-name" />}
-                  />
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="shinkai_identity"
-                render={({ field }) => (
-                  <TextField
-                    field={field}
-                    label={<FormattedMessage id="shinkai-identity" />}
                   />
                 )}
               />

@@ -9,7 +9,7 @@
   "about": "About Shinkai",
   "add-node": "Add Node",
   "registration-code": "Registration Code",
-  "registration-name": "Registration Name",
+  "registration-name": "Device Nickname",
   "node-address": "Node Address",
   "shinkai-identity": "Shinkai Identity",
   "node-encryption-public-key": "Node Encryption Public Key",
