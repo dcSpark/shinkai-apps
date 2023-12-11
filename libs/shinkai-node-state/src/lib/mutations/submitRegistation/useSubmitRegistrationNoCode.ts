@@ -1,6 +1,6 @@
 import type {
   APIUseRegistrationCodeSuccessResponse,
-  SetupPayload,
+  SubmitInitialRegistrationNoCodePayload,
 } from '@shinkai_network/shinkai-message-ts/models';
 import type { UseMutationOptions } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
@@ -11,7 +11,7 @@ type Data = {
   success: boolean;
   data?: APIUseRegistrationCodeSuccessResponse | undefined;
 };
-type Options = UseMutationOptions<Data, Error, SetupPayload>;
+type Options = UseMutationOptions<Data, Error, SubmitInitialRegistrationNoCodePayload>;
 
 export const useSubmitRegistrationNoCode = (options?: Options) => {
   return useMutation({
