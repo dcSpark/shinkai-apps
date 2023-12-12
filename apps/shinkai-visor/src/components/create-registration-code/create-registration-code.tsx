@@ -164,40 +164,43 @@ export const CreateRegistrationCode = () => {
             onSubmit={form.handleSubmit(submit)}
           >
             <div className="flex grow flex-col space-y-2">
-              <FormField
-                control={form.control}
-                name="identityType"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      <FormattedMessage id="identity-type" />
-                    </FormLabel>
-                    <Select
-                      defaultValue={field.value}
-                      name={field.name}
-                      onValueChange={field.onChange}
-                      value={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {identityTypeOptions?.map((identityTypeOption) => (
-                          <SelectItem
-                            key={identityTypeOption.value}
-                            value={identityTypeOption.value}
-                          >
-                            {identityTypeOption.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {/* TODO: Re enable identity type selector later, Profiles probably won't be relevant to any frontend experiences for the next 6+ months @Rob */}
+              {false && (
+                <FormField
+                  control={form.control}
+                  name="identityType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        <FormattedMessage id="identity-type" />
+                      </FormLabel>
+                      <Select
+                        defaultValue={field.value}
+                        name={field.name}
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {identityTypeOptions?.map((identityTypeOption) => (
+                            <SelectItem
+                              key={identityTypeOption.value}
+                              value={identityTypeOption.value}
+                            >
+                              {identityTypeOption.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
               {identityType === IdentityType.Device && (
                 <FormField
                   control={form.control}
