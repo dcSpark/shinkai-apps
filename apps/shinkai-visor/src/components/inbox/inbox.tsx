@@ -61,7 +61,7 @@ export const Inbox = () => {
   } = useSendMessageToInbox();
   const { mutateAsync: sendMessageToJob, isPending: isSendingMessageToJob } =
     useSendMessageToJob();
-  const { mutateAsync: closeJob, isPending: isClosoJobLoading } = useCloseJob({
+  const { mutateAsync: closeJob } = useCloseJob({
 
   });
   const isSendingMessage = isSendingMessageToJob || isSendingMessageToInbox;
