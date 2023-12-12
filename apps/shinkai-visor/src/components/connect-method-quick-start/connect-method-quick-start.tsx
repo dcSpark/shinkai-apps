@@ -55,7 +55,7 @@ export const ConnectMethodQuickStart = () => {
           ...encryptionKeys,
           ...setupPayload,
           permission_type: '',
-          shinkai_identity: response.data?.shinkai_identity ?? '',
+          shinkai_identity: response.data?.node_name ?? '',
           node_signature_pk: response.data?.identity_public_key ?? '',
           node_encryption_pk: response.data?.encryption_public_key ?? '',
         };

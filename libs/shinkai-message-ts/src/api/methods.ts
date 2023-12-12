@@ -409,10 +409,10 @@ export const submitInitialRegistrationNoCode = async (
       },
     );
     await handleHttpError(healthResponse);
-    const { status, shinkai_identity }: { status: 'ok', shinkai_identity: string } = await healthResponse.json();
+    const { status, node_name }: { status: 'ok', node_name: string } = await healthResponse.json();
     if (status !== 'ok') {
       throw new Error(
-        `Node status error, can't fetch shinkai identity from health ${status} ${shinkai_identity}`,
+        `Node status error, can't fetch shinkai identity from health ${status} ${node_name}`,
       );
     }
     const messageStr =
@@ -424,7 +424,7 @@ export const submitInitialRegistrationNoCode = async (
         payload.registration_name,
         payload.registration_name,
         payload.profile || '', // sender_profile_name: it doesn't exist yet in the Node
-        shinkai_identity,
+        node_name,
       );
 
     const message = JSON.parse(messageStr);

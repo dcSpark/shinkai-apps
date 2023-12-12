@@ -38,7 +38,7 @@ export interface APIUseRegistrationCodeSuccessResponse {
   message: string;
   encryption_public_key: string;
   identity_public_key: string;
-  shinkai_identity: string;
+  node_name: string;
 }
 
 export interface SubmitInitialRegistrationNoCodePayload {
