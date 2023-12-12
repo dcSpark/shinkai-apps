@@ -1,3 +1,5 @@
+import { urlJoin } from "../utils/url-join";
+
 export class ApiConfig {
     private static instance: ApiConfig;
     private API_ENDPOINT: string;
@@ -14,7 +16,8 @@ export class ApiConfig {
     }
   
     public setEndpoint(endpoint: string) {
-      this.API_ENDPOINT = endpoint;
+      // hack to sanitize/remove '/' at the end
+      this.API_ENDPOINT = urlJoin(endpoint);
     }
   
     public getEndpoint() {
