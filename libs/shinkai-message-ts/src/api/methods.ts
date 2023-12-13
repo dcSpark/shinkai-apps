@@ -8,7 +8,7 @@ import {
   ShinkaiMessage,
   SmartInbox,
 } from '../models';
-import { APIUseRegistrationCodeSuccessResponse } from '../models/Payloads';
+import { APIUseRegistrationCodeSuccessResponse, SubmitInitialRegistrationNoCodePayload } from '../models/Payloads';
 import { SerializedAgent } from '../models/SchemaTypes';
 import { InboxNameWrapper } from '../pkg/shinkai_message_wasm';
 import { calculateMessageHash } from '../utils';
@@ -394,29 +394,44 @@ export const submitRegistrationCode = async (
 };
 
 export const submitInitialRegistrationNoCode = async (
-  setupData: SetupPayload,
+  payload: SubmitInitialRegistrationNoCodePayload,
 ): Promise<{
   success: boolean;
   data?: APIUseRegistrationCodeSuccessResponse;
 }> => {
   try {
+    // Used to fetch the shinkai identity
+    const healthResponse = await fetch(
+      urlJoin(payload.node_address, '/v1/shinkai_health'),
+      {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+    await handleHttpError(healthResponse);
+    const { status, node_name }: { status: 'ok', node_name: string } = await healthResponse.json();
+    if (status !== 'ok') {
+      throw new Error(
+        `Node status error, can't fetch shinkai identity from health ${status} ${node_name}`,
+      );
+    }
     const messageStr =
       ShinkaiMessageBuilderWrapper.initial_registration_with_no_code_for_device(
-        setupData.my_device_encryption_sk,
-        setupData.my_device_identity_sk,
-        setupData.profile_encryption_sk,
-        setupData.profile_identity_sk,
-        setupData.registration_name,
-        setupData.registration_name,
-        setupData.profile || '', // sender_profile_name: it doesn't exist yet in the Node
-        setupData.shinkai_identity,
+        payload.my_device_encryption_sk,
+        payload.my_device_identity_sk,
+        payload.profile_encryption_sk,
+        payload.profile_identity_sk,
+        payload.registration_name,
+        payload.registration_name,
+        payload.profile || '', // sender_profile_name: it doesn't exist yet in the Node
+        node_name,
       );
 
     const message = JSON.parse(messageStr);
 
     // Use node_address from setupData for API endpoint
     const response = await fetch(
-      urlJoin(setupData.node_address, '/v1/use_registration_code'),
+      urlJoin(payload.node_address, '/v1/use_registration_code'),
       {
         method: 'POST',
         body: JSON.stringify(message),
@@ -427,7 +442,7 @@ export const submitInitialRegistrationNoCode = async (
     await handleHttpError(response);
 
     // Update the API_ENDPOINT after successful registration
-    ApiConfig.getInstance().setEndpoint(setupData.node_address);
+    ApiConfig.getInstance().setEndpoint(payload.node_address);
     const data = await response.json();
     return { success: true, data };
   } catch (error) {
