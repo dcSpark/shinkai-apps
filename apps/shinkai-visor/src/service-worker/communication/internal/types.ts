@@ -6,6 +6,7 @@ export enum ServiceWorkerInternalMessageType {
   CopyToClipboard = 'copy-to-clipboard',
   CaptureImage = 'capture-image',
   SendCaptureToAgent = 'send-capture-to-agent',
+  OpenLink = 'open-link',
 }
 
 export enum ContentScriptBridgeMessageType {
@@ -34,5 +35,6 @@ export type ServiceWorkerInternalMessage =
   | { type: ServiceWorkerInternalMessageType.RehydrateStore, data?: never }
   | { type: ServiceWorkerInternalMessageType.CopyToClipboard, data: { content: string } }
   | { type: ServiceWorkerInternalMessageType.CaptureImage, data: { image: string } }
-  | { type: ServiceWorkerInternalMessageType.SendCaptureToAgent, data: { imageDataUrl: string, filename: string } };
+  | { type: ServiceWorkerInternalMessageType.SendCaptureToAgent, data: { imageDataUrl: string, filename: string } }
+  | { type: ServiceWorkerInternalMessageType.OpenLink, data: { url: string } };
 ;

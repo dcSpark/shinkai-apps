@@ -46,6 +46,9 @@ export const listen = (): void => {
           args: [message.data.content],
         });
         break;
+      case ServiceWorkerInternalMessageType.OpenLink:
+        chrome.tabs.create({ url: message.data.url });
+        break;
       default:
         break;
     }
