@@ -41,6 +41,11 @@ export const useGlobalPopupChromeMessage = () => {
             break;
         }
         break;
+      case ServiceWorkerInternalMessageType.QuickConnectionIntent: {
+        history.push({ pathname: '/nodes/connect/method/quick-start', state: { nodeAddress: message.data.nodeAddress } });
+        setPopupVisibility(true);
+        break;
+      }
       case ServiceWorkerInternalMessageType.RehydrateStore:
         useAuth.persist.rehydrate();
         useSettings.persist.rehydrate();

@@ -393,6 +393,27 @@ export const submitRegistrationCode = async (
   }
 };
 
+export const health = async (
+  payload: {
+    node_address: string,
+  },
+): Promise<{
+  status: 'ok',
+  node_name: string,
+  first_connection_available: boolean,
+}> => {
+  const healthResponse = await fetch(
+    urlJoin(payload.node_address, '/v1/shinkai_health'),
+    {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    },
+  );
+  await handleHttpError(healthResponse);
+  const responseData = await healthResponse.json();
+  return responseData;
+};
+
 export const submitInitialRegistrationNoCode = async (
   payload: SubmitInitialRegistrationNoCodePayload,
 ): Promise<{
@@ -401,15 +422,7 @@ export const submitInitialRegistrationNoCode = async (
 }> => {
   try {
     // Used to fetch the shinkai identity
-    const healthResponse = await fetch(
-      urlJoin(payload.node_address, '/v1/shinkai_health'),
-      {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
-    await handleHttpError(healthResponse);
-    const { status, node_name }: { status: 'ok', node_name: string } = await healthResponse.json();
+    const { status, node_name } = await health({ node_address: payload.node_address });
     if (status !== 'ok') {
       throw new Error(
         `Node status error, can't fetch shinkai identity from health ${status} ${node_name}`,
