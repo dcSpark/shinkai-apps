@@ -400,7 +400,7 @@ export const health = async (
 ): Promise<{
   status: 'ok',
   node_name: string,
-  first_connection_available: boolean,
+  is_pristine: boolean,
 }> => {
   const healthResponse = await fetch(
     urlJoin(payload.node_address, '/v1/shinkai_health'),

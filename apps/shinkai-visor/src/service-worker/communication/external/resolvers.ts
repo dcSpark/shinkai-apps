@@ -1,22 +1,25 @@
+import { health } from '@shinkai_network/shinkai-message-ts/api';
+
 import { useAuth } from '../../../store/auth/auth';
 import { sendMessage } from '../internal';
 import { ServiceWorkerInternalMessageType } from '../internal/types';
 import {
-  ServiceWorkerExternalMessageIsNodeAcceptingFirstConnection,
-  ServiceWorkerExternalMessageIsNodeAcceptingFirstConnectionResponse,
+  ServiceWorkerExternalMessageIsNodePristine,
+  ServiceWorkerExternalMessageIsNodePristineResponse,
   ServiceWorkerExternalMessageQuickConnectionIntent,
   ServiceWorkerExternalMessageQuickConnectionIntentResponse,
   ServiceWorkerExternalMessageType,
 } from './types';
 
-export const isNodeAcceptingFirstConnectionResolver = async (
-  message: ServiceWorkerExternalMessageIsNodeAcceptingFirstConnection,
+export const isNodePristineResolver = async (
+  message: ServiceWorkerExternalMessageIsNodePristine,
   tabId: number,
-): Promise<ServiceWorkerExternalMessageIsNodeAcceptingFirstConnectionResponse> => {
+): Promise<ServiceWorkerExternalMessageIsNodePristineResponse> => {
+  const nodeHealth = await health({ node_address: message.payload.nodeAddress });
   return {
-    type: ServiceWorkerExternalMessageType.IsNodeAcceptingFirstConnection,
+    type: ServiceWorkerExternalMessageType.IsNodePristine,
     payload: {
-      isNodeAcceptingFirstConnection: true,
+      isPristine: nodeHealth.is_pristine,
     },
   };
 };

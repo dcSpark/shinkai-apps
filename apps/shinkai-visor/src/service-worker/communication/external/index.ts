@@ -1,29 +1,37 @@
-import { isNodeAcceptingFirstConnectionResolver, quickConnectionIntent } from "./resolvers";
+import { isNodePristineResolver, quickConnectionIntent } from "./resolvers";
 import { ServiceWorkerExternalMessage, ServiceWorkerExternalMessageActionsMap, ServiceWorkerExternalMessageResponse, ServiceWorkerExternalMessageResponseStatus, ServiceWorkerExternalMessageType } from "./types";
 
 const GLOBALLY_ALLOWED_ORIGINS: RegExp[] = [/.*\.shinkai\.com/, ...(import.meta.env.DEV ? [/localhost/, /typescriptlang\.org/] : [])];
-const isGloballyAllowed = (origin: string): boolean => GLOBALLY_ALLOWED_ORIGINS.some(globallyAllowedOrigin => origin.match(globallyAllowedOrigin));
-const isSpecificallyAllowed = (origin: string): boolean => {
+const originIsGloballyAllowed = (origin: string): boolean => GLOBALLY_ALLOWED_ORIGINS.some(globallyAllowedOrigin => origin.match(globallyAllowedOrigin));
+const originIsAllowed = (origin: string): boolean => {
   // Implements specific auth. IE control permissions o
   return false;
 }
+const originHasPermission = (origin: string): boolean => {
+  return true;
+}
 const authenticate = (origin: string): boolean => {
-  const isAuthenticated = isGloballyAllowed(origin ?? '') || isSpecificallyAllowed(origin);
-
+  const isAuthenticated = originIsGloballyAllowed(origin ?? '') || originIsAllowed(origin);
   if (!isAuthenticated) {
-    // TODO: Implemented auth workflow
+    // TODO: Implemented authentication workflow
   }
-
   return isAuthenticated;
+}
+const authorize = (origin: string): boolean => {
+  const isAuthorized = originIsGloballyAllowed(origin ?? '') || originHasPermission(origin);
+  if (!isAuthorized) {
+    // TODO: Implemented authorization workflow
+  }
+  return isAuthorized;
 }
 
 const ACTIONS_MAP: ServiceWorkerExternalMessageActionsMap = {
-  [ServiceWorkerExternalMessageType.IsNodeAcceptingFirstConnection]: {
-    permissions: [],
-    resolver: isNodeAcceptingFirstConnectionResolver,
+  [ServiceWorkerExternalMessageType.IsNodePristine]: {
+    permission: 'node-is-pristine',
+    resolver: isNodePristineResolver,
   },
   [ServiceWorkerExternalMessageType.QuickConnectionIntent]: {
-    permissions: [],
+    permission: 'visor-connect',
     resolver: quickConnectionIntent,
   },
 };
@@ -35,10 +43,11 @@ export const listen = (): void => {
       return;
     }
     // Authentication layer
-    const isAuthenticated = authenticate(sender.origin ?? '');
+    const isAuthenticated = authenticate(sender.origin);
     if (!isAuthenticated) {
       return sendResponse({
         status: ServiceWorkerExternalMessageResponseStatus.Unauthorized,
+        message: `origin:${sender.origin} is not allowed`,
       });
     }
 
@@ -51,13 +60,13 @@ export const listen = (): void => {
       });
     }
 
-    // TODO: Add Authorization layer
-    // const isAuthorized = authorize(...);
-    // if (!isAuthorized) {
-    //   return sendResponse({
-    //     status: ServiceWorkerExternalMessageResponseStatus.Forbidden,
-    //   });
-    // }
+    const isAuthorized = authorize(sender.origin);
+    if (!isAuthorized) {
+      return sendResponse({
+        status: ServiceWorkerExternalMessageResponseStatus.Forbidden,
+        message: `permission:${action.permission} for origin:${sender.origin} not found`
+      });
+    }
 
     // Execute action
     try {

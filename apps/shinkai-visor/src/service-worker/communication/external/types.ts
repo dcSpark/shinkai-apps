@@ -1,6 +1,6 @@
 export enum ServiceWorkerExternalMessageType {
   InstallToolkit = 'install-toolkit',
-  IsNodeAcceptingFirstConnection = 'is-node-accepting-first-connection',
+  IsNodePristine = 'is-node-pristine',
   QuickConnectionIntent = 'quick-connection-intent',
 }
 
@@ -29,16 +29,16 @@ export interface ServiceWorkerExternalMessageInstallToolkit
 export interface ServiceWorkerExternalMessageInstallToolkitResponse
   extends BaseServiceWorkerExternalMessageResponse<ServiceWorkerExternalMessageType.InstallToolkit> {}
 
-export interface ServiceWorkerExternalMessageIsNodeAcceptingFirstConnection
-  extends BaseServiceWorkerExternalMessage<ServiceWorkerExternalMessageType.IsNodeAcceptingFirstConnection> {
+export interface ServiceWorkerExternalMessageIsNodePristine
+  extends BaseServiceWorkerExternalMessage<ServiceWorkerExternalMessageType.IsNodePristine> {
   payload: {
     nodeAddress: string;
   };
 }
-export interface ServiceWorkerExternalMessageIsNodeAcceptingFirstConnectionResponse
-  extends BaseServiceWorkerExternalMessageResponse<ServiceWorkerExternalMessageType.IsNodeAcceptingFirstConnection> {
+export interface ServiceWorkerExternalMessageIsNodePristineResponse
+  extends BaseServiceWorkerExternalMessageResponse<ServiceWorkerExternalMessageType.IsNodePristine> {
   payload: {
-    isNodeAcceptingFirstConnection: boolean;
+    isPristine: boolean;
   };
 }
 
@@ -53,27 +53,29 @@ export interface ServiceWorkerExternalMessageQuickConnectionIntentResponse
 
 export type ServiceWorkerExternalMessage =
   | ServiceWorkerExternalMessageInstallToolkit
-  | ServiceWorkerExternalMessageIsNodeAcceptingFirstConnection
+  | ServiceWorkerExternalMessageIsNodePristine
   | ServiceWorkerExternalMessageQuickConnectionIntent;
 
 export enum ServiceWorkerExternalMessageResponseStatus {
-  Unauthorized = 'unauthenticated',
+  Unauthorized = 'unauthorized',
   Forbidden = 'forbidden',
   Error = 'error',
   Success = 'success',
 }
 export interface ServiceWorkerExternalMessageResponseUnauthorized {
   status: ServiceWorkerExternalMessageResponseStatus.Unauthorized;
+  message: string;
 }
 export interface ServiceWorkerExternalMessageResponseForbidden {
   status: ServiceWorkerExternalMessageResponseStatus.Forbidden;
+  message: string;
 }
 export interface ServiceWorkerExternalMessageResponseError {
   status: ServiceWorkerExternalMessageResponseStatus.Error;
   message: string;
 }
 export type ServiceWorkerExternalMessageResponsePayload =
-  ServiceWorkerExternalMessageIsNodeAcceptingFirstConnectionResponse;
+  ServiceWorkerExternalMessageIsNodePristineResponse;
 
 export interface ServiceWorkerExternalMessageResponseSuccess {
   status: ServiceWorkerExternalMessageResponseStatus.Success;
@@ -95,7 +97,7 @@ export type ServiceWorkerExternalMessageResolver = (
 
 export type ServiceWorkerExternalMessageActionsMap = {
   [Key in ServiceWorkerExternalMessageType]?: {
-    permissions: string[];
+    permission: string;
     resolver: ServiceWorkerExternalMessageResolver;
   };
 };
