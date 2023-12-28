@@ -15,7 +15,9 @@ export const isNodePristineResolver = async (
   message: ServiceWorkerExternalMessageIsNodePristine,
   tabId: number,
 ): Promise<ServiceWorkerExternalMessageIsNodePristineResponse> => {
-  const nodeHealth = await health({ node_address: message.payload.nodeAddress });
+  const nodeHealth = await health({
+    node_address: message.payload.nodeAddress,
+  });
   return {
     type: ServiceWorkerExternalMessageType.IsNodePristine,
     payload: {
@@ -32,12 +34,15 @@ export const quickConnectionIntent = async (
   if (auth) {
     throw new Error('visor is currently connected to a node');
   }
-  await sendMessage({
-    type: ServiceWorkerInternalMessageType.QuickConnectionIntent,
-    data: {
-      nodeAddress: message.payload.nodeAddress,
+  await sendMessage(
+    {
+      type: ServiceWorkerInternalMessageType.QuickConnectionIntent,
+      data: {
+        nodeAddress: message.payload.nodeAddress,
+      },
     },
-  }, tabId);
+    tabId,
+  );
   return {
     type: ServiceWorkerExternalMessageType.QuickConnectionIntent,
   };
