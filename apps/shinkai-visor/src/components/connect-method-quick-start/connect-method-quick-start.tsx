@@ -33,7 +33,7 @@ export const ConnectMethodQuickStart = () => {
   const history = useHistory();
   const location = useLocation<{ nodeAddress: string }>();
   const setAuth = useAuth((state) => state.setAuth);
-  const DEFAULT_NODE_ADDRESS = location.state.nodeAddress ?? 'http://127.0.0.1:9550';
+  const DEFAULT_NODE_ADDRESS = location.state?.nodeAddress ?? 'http://127.0.0.1:9550';
   const [encryptionKeys, setEncryptedKeys] = useState<Encryptionkeys | null>(
     null,
   );
