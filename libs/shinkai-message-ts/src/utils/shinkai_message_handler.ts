@@ -1,19 +1,23 @@
-import { MessageSchemaType } from '../models/SchemaTypes';
-import { ShinkaiMessage } from '../models/ShinkaiMessage';
-import { ShinkaiNameWrapper } from '../wasm';
-import { ShinkaiMessageWrapper } from '../wasm/ShinkaiMessageWrapper';
+import {
+  blake3FromObj,
+  EncryptedMessageBody,
+  EncryptedShinkaiBody,
+  MessageSchemaType,
+  ShinkaiMessage,
+  ShinkaiName,
+  UnencryptedMessageBody,
+  UnencryptedMessageData,
+} from '@shinkai_network/shinkai-typescript';
 
 export function calculateMessageHash(message: ShinkaiMessage): string {
-  const messageWrapper = new ShinkaiMessageWrapper(message);
-  return messageWrapper.calculate_hash();
+  return blake3FromObj(message.body);
 }
 
 export const isJobMessage = (message: ShinkaiMessage) => {
   return (
-    message.body &&
-    'unencrypted' in message.body &&
-    'unencrypted' in message.body.unencrypted.message_data &&
-    message.body.unencrypted.message_data.unencrypted.message_content_schema ===
+    message.body instanceof UnencryptedMessageBody &&
+    message.body.unencrypted.message_data instanceof UnencryptedMessageData &&
+    message.body.unencrypted.message_data.data.message_content_schema ===
       MessageSchemaType.JobMessageSchema
   );
 };
@@ -21,49 +25,53 @@ export const isJobMessage = (message: ShinkaiMessage) => {
 export const getMessageContent = (message: ShinkaiMessage): string => {
   if (!message) return '';
   // unnencrypted content
-  if (message.body && 'unencrypted' in message.body) {
-    if ('unencrypted' in message.body.unencrypted.message_data) {
+  if (message.body instanceof UnencryptedMessageBody) {
+    if (
+      message.body.unencrypted.message_data instanceof UnencryptedMessageData
+    ) {
       const isJobMessage =
-        message.body.unencrypted.message_data.unencrypted
-          .message_content_schema === MessageSchemaType.JobMessageSchema;
+        message.body.unencrypted.message_data.data.message_content_schema ===
+        MessageSchemaType.JobMessageSchema;
       // job message
       if (isJobMessage) {
         try {
           return JSON.parse(
-            message.body.unencrypted.message_data.unencrypted
-              .message_raw_content
+            message.body.unencrypted.message_data.data.message_raw_content,
           )?.content;
         } catch (e) {
           // fallback to raw content even if it's a job mesage
           console.log('error parsing message raw content', e);
-          return message.body.unencrypted.message_data.unencrypted
-            .message_raw_content;
+          return message.body.unencrypted.message_data.data.message_raw_content;
         }
       }
       // default message
-      return message.body.unencrypted.message_data.unencrypted
-        .message_raw_content;
+      return message.body.unencrypted.message_data.data.message_raw_content;
     }
     // raw content for unnencrypted body
-    return message.body.unencrypted.message_data.encrypted.content;
+    return (
+      message.body.unencrypted.message_data as unknown as EncryptedShinkaiBody
+    ).content;
   }
   // raw content for encrypted body
-  return message.body?.encrypted.content || '';
+  return (message.body as EncryptedMessageBody).encrypted.content || '';
 };
 
-export const getMessageFilesInbox = (message: ShinkaiMessage): string | undefined => {
+export const getMessageFilesInbox = (
+  message: ShinkaiMessage,
+): string | undefined => {
   // unnencrypted content
-  if (message.body && 'unencrypted' in message.body) {
-    if ('unencrypted' in message.body.unencrypted.message_data) {
+  if (message.body instanceof UnencryptedMessageBody) {
+    if (
+      message.body.unencrypted.message_data instanceof UnencryptedMessageData
+    ) {
       const isJobMessage =
-        message.body.unencrypted.message_data.unencrypted
-          .message_content_schema === MessageSchemaType.JobMessageSchema;
+        message.body.unencrypted.message_data.data.message_content_schema ===
+        MessageSchemaType.JobMessageSchema;
       // job message
       if (isJobMessage) {
         try {
           const parsedMessage = JSON.parse(
-            message.body.unencrypted.message_data.unencrypted
-              .message_raw_content
+            message.body.unencrypted.message_data.data.message_raw_content,
           );
           return parsedMessage?.files_inbox;
         } catch (e) {
@@ -80,7 +88,13 @@ export const isLocalMessage = (
   myNodeIdentity: string,
   myProfile: string,
 ): boolean => {
-  const messageNameWrapper = ShinkaiNameWrapper.from_shinkai_message_sender(message);
-  return (!messageNameWrapper.get_subidentity_type || messageNameWrapper.get_subidentity_type === 'None' || messageNameWrapper.get_subidentity_type === 'device') &&
-    messageNameWrapper.get_node_name === myNodeIdentity && messageNameWrapper.get_profile_name === myProfile;
+  const messageNameWrapper =
+    ShinkaiName.fromShinkaiMessageUsingSenderAndIntraSender(message);
+  return (
+    (!messageNameWrapper.subidentityType ||
+      messageNameWrapper.subidentityType === 'None' ||
+      messageNameWrapper.subidentityType === 'device') &&
+    messageNameWrapper.nodeName === myNodeIdentity &&
+    messageNameWrapper.profileName === myProfile
+  );
 };

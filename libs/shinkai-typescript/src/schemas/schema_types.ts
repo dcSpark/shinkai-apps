@@ -1,3 +1,22 @@
+export enum TSEncryptionMethod {
+  DiffieHellmanChaChaPoly1305 = 'DiffieHellmanChaChaPoly1305',
+  None = 'None',
+}
+
+export enum MessageSchemaType {
+  JobCreationSchema = 'JobCreationSchema',
+  JobMessageSchema = 'JobMessageSchema',
+  PreMessageSchema = 'PreMessageSchema',
+  CreateRegistrationCode = 'CreateRegistrationCode',
+  UseRegistrationCode = 'UseRegistrationCode',
+  APIGetMessagesFromInboxRequest = 'APIGetMessagesFromInboxRequest',
+  APIReadUpToTimeRequest = 'APIReadUpToTimeRequest',
+  APIAddAgentRequest = 'APIAddAgentRequest',
+  TextContent = 'TextContent',
+  SymmetricKeyExchange = 'SymmetricKeyExchange',
+  Empty = '',
+}
+
 export interface JobScope {
   buckets: string[];
   documents: string[];
@@ -18,9 +37,9 @@ export interface JobToolCall {
 }
 
 export enum JobRecipient {
-  SelfNode = "SelfNode",
-  User = "User",
-  ExternalIdentity = "ExternalIdentity",
+  SelfNode = 'SelfNode',
+  User = 'User',
+  ExternalIdentity = 'ExternalIdentity',
 }
 
 export interface JobPreMessage {
@@ -53,17 +72,24 @@ export interface SerializedAgent {
 }
 export interface AgentAPIModel {
   OpenAI?: OpenAI;
-  GenericAPI?: GenericAPI;
+  SleepAPI?: SleepAPI;
 }
 
 export interface OpenAI {
   model_type: string;
 }
 
-export interface GenericAPI {
-  model_type: string;
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface SleepAPI {}
 
 export interface APIAddAgentRequest {
   agent: SerializedAgent;
+}
+
+export interface RegistrationCode {
+  code: string;
+  profileName: string;
+  identityPk: string;
+  encryptionPk: string;
+  permissionType: string;
 }

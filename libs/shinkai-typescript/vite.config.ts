@@ -4,7 +4,7 @@ import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
 
 export default defineConfig({
-  cacheDir: '../../node_modules/.vite/shinkai-message-ts',
+  cacheDir: '../../node_modules/.vite/shinkai-typescript',
   build: {
     lib: {
       entry: {

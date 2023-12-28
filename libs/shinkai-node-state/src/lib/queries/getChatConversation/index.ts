@@ -30,7 +30,7 @@ export const getChatConversation = async ({
   const data: ShinkaiMessage[] = await getLastMessagesFromInbox(
     inboxId,
     count,
-    lastKey,
+    lastKey ?? null,
     {
       shinkai_identity: shinkaiIdentity,
       profile: profile,

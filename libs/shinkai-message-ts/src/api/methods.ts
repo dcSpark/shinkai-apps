@@ -1,24 +1,31 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
+  MessageSchemaType,
+  SerializedAgent,
+  ShinkaiMessage,
+  ShinkaiMessageBuilder,
+  ShinkaiName,
+  TSEncryptionMethod,
+  UnencryptedMessageBody,
+} from '@shinkai_network/shinkai-typescript';
+import { Buffer } from 'buffer';
+
+import {
   AgentCredentialsPayload,
   CredentialsPayload,
   JobCredentialsPayload,
   LastMessagesFromInboxCredentialsPayload,
   SetupPayload,
-  ShinkaiMessage,
   SmartInbox,
 } from '../models';
-import { APIUseRegistrationCodeSuccessResponse, SubmitInitialRegistrationNoCodePayload } from '../models/Payloads';
-import { SerializedAgent } from '../models/SchemaTypes';
-import { InboxNameWrapper } from '../pkg/shinkai_message_wasm';
+import {
+  APIUseRegistrationCodeSuccessResponse,
+  SubmitInitialRegistrationNoCodePayload,
+} from '../models/Payloads';
 import { calculateMessageHash } from '../utils';
 import { urlJoin } from '../utils/url-join';
-import { FileUploader } from '../wasm/FileUploaderUsingSymmetricKeyManager';
-import { SerializedAgentWrapper } from '../wasm/SerializedAgentWrapper';
-import { ShinkaiMessageBuilderWrapper } from '../wasm/ShinkaiMessageBuilderWrapper';
-import { ShinkaiNameWrapper } from '../wasm/ShinkaiNameWrapper';
 import { ApiConfig } from './api_config';
-
+import { FileUploader } from './files/file_uploader';
 // Helper function to handle HTTP errors
 export const handleHttpError = async (response: Response): Promise<void> => {
   if (response.status < 200 || response.status >= 300) {
@@ -54,38 +61,38 @@ export const createChatWithMessage = async (
   text_message: string,
   setupDetailsState: CredentialsPayload,
 ): Promise<{ inboxId: string; message: ShinkaiMessage }> => {
-  const senderShinkaiName = new ShinkaiNameWrapper(
-    sender + '/' + sender_subidentity,
-  );
-  const receiverShinkaiName = new ShinkaiNameWrapper(
+  const receiverShinkaiName = new ShinkaiName(
     receiver + '/' + receiver_subidentity,
   );
 
-  const senderProfile = senderShinkaiName.extract_profile();
-  const receiverProfile = receiverShinkaiName.extract_profile();
-
-  const inbox = InboxNameWrapper.get_regular_inbox_name_from_params(
-    senderProfile.get_node_name,
-    senderProfile.get_profile_name,
-    receiverProfile.get_node_name,
-    receiverProfile.get_profile_name,
-    true,
-  );
-
   try {
-    const messageStr = ShinkaiMessageBuilderWrapper.create_chat_with_message(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      sender,
-      sender_subidentity,
-      receiver,
-      receiver_subidentity,
-      text_message,
-      inbox.get_value,
+    const shinkaiMessageBuilder = new ShinkaiMessageBuilder(
+      Buffer.from(setupDetailsState.profile_encryption_sk, 'hex'),
+      Buffer.from(setupDetailsState.profile_identity_sk, 'hex'),
+      Buffer.from(setupDetailsState.node_encryption_pk, 'hex'),
     );
 
-    const message: ShinkaiMessage = JSON.parse(messageStr);
+    await shinkaiMessageBuilder.init();
+
+    shinkaiMessageBuilder.set_message_raw_content(text_message);
+    shinkaiMessageBuilder.set_message_schema_type(
+      MessageSchemaType.TextContent,
+    );
+    shinkaiMessageBuilder.set_internal_metadata(
+      sender_subidentity,
+      receiver_subidentity,
+      TSEncryptionMethod.None,
+    );
+    shinkaiMessageBuilder.set_external_metadata_with_intra_sender(
+      receiverShinkaiName.fullName,
+      sender,
+      sender_subidentity,
+    );
+    shinkaiMessageBuilder.set_body_encryption(
+      TSEncryptionMethod.DiffieHellmanChaChaPoly1305,
+    );
+
+    const message: ShinkaiMessage = await shinkaiMessageBuilder.build();
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
     const response = await fetch(urlJoin(apiEndpoint, '/v1/send'), {
@@ -96,7 +103,7 @@ export const createChatWithMessage = async (
 
     await handleHttpError(response);
 
-    if (message.body && 'unencrypted' in message.body) {
+    if (message.body instanceof UnencryptedMessageBody) {
       const inboxId = message.body.unencrypted.internal_metadata.inbox;
       return { inboxId, message };
     } else {
@@ -117,21 +124,17 @@ export const sendTextMessageWithInbox = async (
   setupDetailsState: CredentialsPayload,
 ): Promise<{ inboxId: string; message: ShinkaiMessage }> => {
   try {
-    const messageStr =
-      ShinkaiMessageBuilderWrapper.send_text_message_with_inbox(
-        setupDetailsState.profile_encryption_sk,
-        setupDetailsState.profile_identity_sk,
-        setupDetailsState.node_encryption_pk,
-        sender,
-        sender_subidentity,
-        receiver,
-        '',
-        inbox_name,
-        text_message,
-      );
-
-    const message: ShinkaiMessage = JSON.parse(messageStr);
-
+    const message = await ShinkaiMessageBuilder.sendTextMessageWithInbox(
+      Buffer.from(setupDetailsState.profile_encryption_sk, 'hex'),
+      Buffer.from(setupDetailsState.profile_identity_sk, 'hex'),
+      Buffer.from(setupDetailsState.node_encryption_pk, 'hex'),
+      sender,
+      sender_subidentity,
+      receiver,
+      '',
+      inbox_name,
+      text_message,
+    );
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
     const response = await fetch(urlJoin(apiEndpoint, '/v1/send'), {
       method: 'POST',
@@ -139,7 +142,7 @@ export const sendTextMessageWithInbox = async (
       headers: { 'Content-Type': 'application/json' },
     });
     await handleHttpError(response);
-    if (message.body && 'unencrypted' in message.body) {
+    if (message.body instanceof UnencryptedMessageBody) {
       const inboxId = message.body.unencrypted.internal_metadata.inbox;
       return { inboxId, message };
     } else {
@@ -179,7 +182,7 @@ export const sendTextMessageWithFilesForInbox = async (
     const responseText = await fileUploader.finalizeAndSend(text_message);
     const message: ShinkaiMessage = JSON.parse(responseText);
 
-    if (message.body && 'unencrypted' in message.body) {
+    if (message.body instanceof UnencryptedMessageBody) {
       const inboxId = message.body.unencrypted.internal_metadata.inbox;
       return { inboxId, message };
     } else {
@@ -201,19 +204,15 @@ export const getAllInboxesForProfile = async (
   setupDetailsState: CredentialsPayload,
 ): Promise<SmartInbox[]> => {
   try {
-    const messageString =
-      ShinkaiMessageBuilderWrapper.get_all_inboxes_for_profile(
-        setupDetailsState.profile_encryption_sk,
-        setupDetailsState.profile_identity_sk,
-        setupDetailsState.node_encryption_pk,
-        sender,
-        sender_subidentity,
-        receiver,
-        target_shinkai_name_profile,
-      );
-
-    const message = JSON.parse(messageString);
-
+    const message = await ShinkaiMessageBuilder.getAllInboxesForProfile(
+      Buffer.from(setupDetailsState.profile_encryption_sk, 'hex'),
+      Buffer.from(setupDetailsState.profile_identity_sk, 'hex'),
+      Buffer.from(setupDetailsState.node_encryption_pk, 'hex'),
+      target_shinkai_name_profile,
+      sender_subidentity,
+      sender,
+      receiver,
+    );
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
     const response = await fetch(
       urlJoin(apiEndpoint, '/v1/get_all_smart_inboxes_for_profile'),
@@ -241,27 +240,26 @@ export const updateInboxName = async (
   inboxId: string,
 ): Promise<{ success: string; data: null }> => {
   try {
-    const messageString =
-      ShinkaiMessageBuilderWrapper.update_shinkai_inbox_name(
-        setupDetailsState.profile_encryption_sk,
-        setupDetailsState.profile_identity_sk,
-        setupDetailsState.node_encryption_pk,
-        sender,
-        sender_subidentity,
-        receiver,
-        '',
-        inboxId,
-        inboxName,
-      );
-
-    const message = JSON.parse(messageString);
-
+    const message = await ShinkaiMessageBuilder.updateInboxName(
+      Buffer.from(setupDetailsState.profile_encryption_sk, 'hex'),
+      Buffer.from(setupDetailsState.profile_identity_sk, 'hex'),
+      Buffer.from(setupDetailsState.node_encryption_pk, 'hex'),
+      sender,
+      sender_subidentity,
+      receiver,
+      '',
+      inboxId,
+      inboxName,
+    );
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await fetch(urlJoin(apiEndpoint, '/v1/update_smart_inbox_name'), {
-      method: 'POST',
-      body: JSON.stringify(message),
-      headers: { 'Content-Type': 'application/json' },
-    });
+    const response = await fetch(
+      urlJoin(apiEndpoint, '/v1/update_smart_inbox_name'),
+      {
+        method: 'POST',
+        body: JSON.stringify(message),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
     const data = await response.json();
     await handleHttpError(response);
     return data;
@@ -274,31 +272,30 @@ export const updateInboxName = async (
 export const getLastMessagesFromInbox = async (
   inbox: string,
   count: number,
-  lastKey: string | undefined,
+  lastKey: string | null,
   setupDetailsState: LastMessagesFromInboxCredentialsPayload,
 ): Promise<ShinkaiMessage[]> => {
   try {
-    const messageStr =
-      ShinkaiMessageBuilderWrapper.get_last_messages_from_inbox(
-        setupDetailsState.profile_encryption_sk,
-        setupDetailsState.profile_identity_sk,
-        setupDetailsState.node_encryption_pk,
-        inbox,
-        count,
-        lastKey,
-        setupDetailsState.shinkai_identity,
-        setupDetailsState.profile,
-        setupDetailsState.shinkai_identity,
-      );
-
-    const message = JSON.parse(messageStr);
-
+    const message = await ShinkaiMessageBuilder.getLastMessagesFromInbox(
+      Buffer.from(setupDetailsState.profile_encryption_sk, 'hex'),
+      Buffer.from(setupDetailsState.profile_identity_sk, 'hex'),
+      Buffer.from(setupDetailsState.node_encryption_pk, 'hex'),
+      inbox,
+      count,
+      lastKey,
+      setupDetailsState.profile,
+      setupDetailsState.shinkai_identity,
+      setupDetailsState.shinkai_identity,
+    );
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await fetch(urlJoin(apiEndpoint, '/v1/last_messages_from_inbox'), {
-      method: 'POST',
-      body: JSON.stringify(message),
-      headers: { 'Content-Type': 'application/json' },
-    });
+    const response = await fetch(
+      urlJoin(apiEndpoint, '/v1/last_messages_from_inbox'),
+      {
+        method: 'POST',
+        body: JSON.stringify(message),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
     await handleHttpError(response);
     const data = await response.json();
     return data.data;
@@ -321,24 +318,25 @@ export const submitRequestRegistrationCode = async (
       '/device/' +
       setupDetailsState.registration_name;
 
-    const messageStr = ShinkaiMessageBuilderWrapper.request_code_registration(
-      setupDetailsState.my_device_encryption_sk,
-      setupDetailsState.my_device_identity_sk,
-      setupDetailsState.node_encryption_pk,
+    const message = await ShinkaiMessageBuilder.requestCodeRegistration(
+      Buffer.from(setupDetailsState.profile_encryption_sk, 'hex'),
+      Buffer.from(setupDetailsState.profile_identity_sk, 'hex'),
+      Buffer.from(setupDetailsState.node_encryption_pk, 'hex'),
       identity_permissions,
       code_type,
       sender_profile_name,
       setupDetailsState.shinkai_identity,
+      setupDetailsState.shinkai_identity,
     );
-
-    const message = JSON.parse(messageStr);
-
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await fetch(urlJoin(apiEndpoint, '/v1/create_registration_code'), {
-      method: 'POST',
-      body: JSON.stringify(message),
-      headers: { 'Content-Type': 'application/json' },
-    });
+    const response = await fetch(
+      urlJoin(apiEndpoint, '/v1/create_registration_code'),
+      {
+        method: 'POST',
+        body: JSON.stringify(message),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
 
     await handleHttpError(response);
     const data = await response.json();
@@ -355,23 +353,20 @@ export const submitRegistrationCode = async (
   { encryption_public_key: string; identity_public_key: string } | undefined
 > => {
   try {
-    const messageStr =
-      ShinkaiMessageBuilderWrapper.use_code_registration_for_device(
-        setupData.my_device_encryption_sk,
-        setupData.my_device_identity_sk,
-        setupData.profile_encryption_sk,
-        setupData.profile_identity_sk,
-        setupData.node_encryption_pk,
-        setupData.registration_code,
-        setupData.identity_type,
-        setupData.permission_type,
-        setupData.registration_name,
-        setupData.profile || '', // sender_profile_name: it doesn't exist yet in the Node
-        setupData.shinkai_identity,
-      );
-
-    const message = JSON.parse(messageStr);
-
+    const message = await ShinkaiMessageBuilder.useCodeRegistrationForDevice(
+      Buffer.from(setupData.my_device_encryption_sk, 'hex'),
+      Buffer.from(setupData.my_device_identity_sk, 'hex'),
+      Buffer.from(setupData.profile_encryption_sk, 'hex'),
+      Buffer.from(setupData.profile_identity_sk, 'hex'),
+      Buffer.from(setupData.node_encryption_pk, 'hex'),
+      setupData.registration_code,
+      setupData.identity_type,
+      setupData.permission_type,
+      setupData.registration_name,
+      setupData.profile || '', // sender_profile_name: it doesn't exist yet in the Node
+      setupData.shinkai_identity,
+      setupData.shinkai_identity,
+    );
     // Use node_address from setupData for API endpoint
     const response = await fetch(
       urlJoin(setupData.node_address, '/v1/use_registration_code'),
@@ -393,14 +388,12 @@ export const submitRegistrationCode = async (
   }
 };
 
-export const health = async (
-  payload: {
-    node_address: string,
-  },
-): Promise<{
-  status: 'ok',
-  node_name: string,
-  is_pristine: boolean,
+export const health = async (payload: {
+  node_address: string;
+}): Promise<{
+  status: 'ok';
+  node_name: string;
+  is_pristine: boolean;
 }> => {
   const healthResponse = await fetch(
     urlJoin(payload.node_address, '/v1/shinkai_health'),
@@ -422,26 +415,25 @@ export const submitInitialRegistrationNoCode = async (
 }> => {
   try {
     // Used to fetch the shinkai identity
-    const { status, node_name } = await health({ node_address: payload.node_address });
+    const { status, node_name } = await health({
+      node_address: payload.node_address,
+    });
     if (status !== 'ok') {
       throw new Error(
         `Node status error, can't fetch shinkai identity from health ${status} ${node_name}`,
       );
     }
-    const messageStr =
-      ShinkaiMessageBuilderWrapper.initial_registration_with_no_code_for_device(
-        payload.my_device_encryption_sk,
-        payload.my_device_identity_sk,
-        payload.profile_encryption_sk,
-        payload.profile_identity_sk,
+    const message =
+      await ShinkaiMessageBuilder.initialRegistrationWithNoCodeForDevice(
+        Buffer.from(payload.my_device_encryption_sk, 'hex'),
+        Buffer.from(payload.my_device_identity_sk, 'hex'),
+        Buffer.from(payload.profile_encryption_sk, 'hex'),
+        Buffer.from(payload.profile_identity_sk, 'hex'),
         payload.registration_name,
         payload.registration_name,
         payload.profile || '', // sender_profile_name: it doesn't exist yet in the Node
         node_name,
       );
-
-    const message = JSON.parse(messageStr);
-
     // Use node_address from setupData for API endpoint
     const response = await fetch(
       urlJoin(payload.node_address, '/v1/use_registration_code'),
@@ -486,19 +478,16 @@ export const createJob = async (
   setupDetailsState: JobCredentialsPayload,
 ): Promise<string> => {
   try {
-    const messageStr = ShinkaiMessageBuilderWrapper.job_creation(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
+    const message = await ShinkaiMessageBuilder.jobCreation(
       scope,
+      Buffer.from(setupDetailsState.profile_encryption_sk, 'hex'),
+      Buffer.from(setupDetailsState.profile_identity_sk, 'hex'),
+      Buffer.from(setupDetailsState.node_encryption_pk, 'hex'),
       sender,
       sender_subidentity,
       receiver,
       receiver_subidentity,
     );
-
-    const message = JSON.parse(messageStr);
-
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
     const response = await fetch(urlJoin(apiEndpoint, '/v1/create_job'), {
       method: 'POST',
@@ -525,20 +514,18 @@ export const sendMessageToJob = async (
   setupDetailsState: JobCredentialsPayload,
 ): Promise<string> => {
   try {
-    const messageStr = ShinkaiMessageBuilderWrapper.job_message(
+    const message = await ShinkaiMessageBuilder.jobMessage(
       jobId,
       content,
       files_inbox,
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
+      Buffer.from(setupDetailsState.profile_encryption_sk, 'hex'),
+      Buffer.from(setupDetailsState.profile_identity_sk, 'hex'),
+      Buffer.from(setupDetailsState.node_encryption_pk, 'hex'),
       sender,
       sender_subidentity,
       receiver,
       receiver_subidentity,
     );
-
-    const message = JSON.parse(messageStr);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
     const response = await fetch(urlJoin(apiEndpoint, '/v1/job_message'), {
@@ -562,16 +549,18 @@ export const getProfileAgents = async (
   setupDetailsState: CredentialsPayload,
 ): Promise<SerializedAgent[]> => {
   try {
-    const messageStr = ShinkaiMessageBuilderWrapper.get_profile_agents(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      sender,
-      sender_subidentity,
-      receiver,
-    );
+    const message =
+      await ShinkaiMessageBuilder.createCustomShinkaiMessageToNode(
+        Buffer.from(setupDetailsState.profile_encryption_sk, 'hex'),
+        Buffer.from(setupDetailsState.profile_identity_sk, 'hex'),
+        Buffer.from(setupDetailsState.node_encryption_pk, 'hex'),
+        '',
+        sender,
+        sender_subidentity,
+        receiver,
+        MessageSchemaType.Empty,
+      );
 
-    const message = JSON.parse(messageStr);
     console.log('Get Profile Agents Message:', message);
     const messageHash = calculateMessageHash(message);
     console.log('Get Profile Agents Message Hash:', messageHash);
@@ -598,18 +587,15 @@ export const addAgent = async (
   setupDetailsState: AgentCredentialsPayload,
 ) => {
   try {
-    const agent_wrapped = SerializedAgentWrapper.fromSerializedAgent(agent);
-    const messageStr = ShinkaiMessageBuilderWrapper.request_add_agent(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      node_name,
+    const message = await ShinkaiMessageBuilder.requestAddAgent(
+      Buffer.from(setupDetailsState.profile_encryption_sk, 'hex'),
+      Buffer.from(setupDetailsState.profile_identity_sk, 'hex'),
+      Buffer.from(setupDetailsState.node_encryption_pk, 'hex'),
+      agent,
       sender_subidentity,
       node_name,
-      agent_wrapped,
+      node_name,
     );
-
-    const message = JSON.parse(messageStr);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
     const response = await fetch(urlJoin(apiEndpoint, '/v1/add_agent'), {
@@ -639,20 +625,29 @@ export const getFileNames = async (
   fileInbox: string,
 ): Promise<{ success: string; data: string[] }> => {
   try {
-    const messageString =
-      ShinkaiMessageBuilderWrapper.get_filenames_for_file_inbox(
-        setupDetailsState.profile_encryption_sk,
-        setupDetailsState.profile_identity_sk,
-        setupDetailsState.node_encryption_pk,
-        sender,
-        sender_subidentity,
-        receiver,
-        '',
-        inboxId,
-        fileInbox,
-      );
+    const builder = new ShinkaiMessageBuilder(
+      Buffer.from(setupDetailsState.profile_encryption_sk, 'hex'),
+      Buffer.from(setupDetailsState.profile_identity_sk, 'hex'),
+      Buffer.from(setupDetailsState.node_encryption_pk, 'hex'),
+    );
+    await builder.init();
 
-    const message = JSON.parse(messageString);
+    builder.set_message_raw_content(fileInbox);
+    builder.set_message_schema_type(MessageSchemaType.TextContent);
+    builder.set_internal_metadata_with_inbox(
+      sender_subidentity,
+      receiver,
+      inboxId,
+      TSEncryptionMethod.None,
+    );
+    builder.set_external_metadata_with_intra_sender(
+      receiver,
+      sender,
+      sender_subidentity,
+    );
+    builder.set_body_encryption(TSEncryptionMethod.DiffieHellmanChaChaPoly1305);
+
+    const message = await builder.build();
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
     const response = await fetch(

@@ -22,6 +22,9 @@
       ],
       "@shinkai_network/shinkai-node-state/*": [
         "libs/shinkai-node-state/src/*.ts"
+      ],
+      "@shinkai_network/shinkai-typescript": [
+        "libs/shinkai-typescript/src/index.ts"
       ]
     }
   },
