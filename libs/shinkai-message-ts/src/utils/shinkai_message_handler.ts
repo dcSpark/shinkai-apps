@@ -17,7 +17,7 @@ export const isJobMessage = (message: ShinkaiMessage) => {
   return (
     message.body instanceof UnencryptedMessageBody &&
     message.body.unencrypted.message_data instanceof UnencryptedMessageData &&
-    message.body.unencrypted.message_data.data.message_content_schema ===
+    message.body.unencrypted.message_data.unencrypted.message_content_schema ===
       MessageSchemaType.JobMessageSchema
   );
 };
@@ -30,22 +30,22 @@ export const getMessageContent = (message: ShinkaiMessage): string => {
       message.body.unencrypted.message_data instanceof UnencryptedMessageData
     ) {
       const isJobMessage =
-        message.body.unencrypted.message_data.data.message_content_schema ===
+        message.body.unencrypted.message_data.unencrypted.message_content_schema ===
         MessageSchemaType.JobMessageSchema;
       // job message
       if (isJobMessage) {
         try {
           return JSON.parse(
-            message.body.unencrypted.message_data.data.message_raw_content,
+            message.body.unencrypted.message_data.unencrypted.message_raw_content,
           )?.content;
         } catch (e) {
           // fallback to raw content even if it's a job mesage
           console.log('error parsing message raw content', e);
-          return message.body.unencrypted.message_data.data.message_raw_content;
+          return message.body.unencrypted.message_data.unencrypted.message_raw_content;
         }
       }
       // default message
-      return message.body.unencrypted.message_data.data.message_raw_content;
+      return message.body.unencrypted.message_data.unencrypted.message_raw_content;
     }
     // raw content for unnencrypted body
     return (
@@ -65,13 +65,13 @@ export const getMessageFilesInbox = (
       message.body.unencrypted.message_data instanceof UnencryptedMessageData
     ) {
       const isJobMessage =
-        message.body.unencrypted.message_data.data.message_content_schema ===
+        message.body.unencrypted.message_data.unencrypted.message_content_schema ===
         MessageSchemaType.JobMessageSchema;
       // job message
       if (isJobMessage) {
         try {
           const parsedMessage = JSON.parse(
-            message.body.unencrypted.message_data.data.message_raw_content,
+            message.body.unencrypted.message_data.unencrypted.message_raw_content,
           );
           return parsedMessage?.files_inbox;
         } catch (e) {

@@ -555,8 +555,8 @@ export const getProfileAgents = async (
         Buffer.from(setupDetailsState.profile_identity_sk, 'hex'),
         Buffer.from(setupDetailsState.node_encryption_pk, 'hex'),
         '',
-        sender,
         sender_subidentity,
+        sender,
         receiver,
         MessageSchemaType.Empty,
       );

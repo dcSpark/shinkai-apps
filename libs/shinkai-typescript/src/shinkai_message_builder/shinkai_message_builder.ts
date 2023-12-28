@@ -396,7 +396,6 @@ export class ShinkaiMessageBuilder {
         newSelf.encryption,
         newSelf.version,
       );
-
       signedMsg = await signedMsg.sign_outer_layer(
         newSelf.my_signature_secret_key,
       );
@@ -568,12 +567,13 @@ export class ShinkaiMessageBuilder {
       .map((byte) => byte.toString(16).padStart(2, '0'))
       .join('');
 
-    return new ShinkaiMessageBuilder(
+    const builder = new ShinkaiMessageBuilder(
       my_subidentity_encryption_sk,
       my_subidentity_signature_sk,
       receiver_public_key,
-    )
-      .set_message_raw_content(body)
+    );
+    await builder.init();
+    return builder.set_message_raw_content(body)
       .set_body_encryption(TSEncryptionMethod.DiffieHellmanChaChaPoly1305)
       .set_internal_metadata_with_schema(
         sender_subidentity,
@@ -792,11 +792,13 @@ export class ShinkaiMessageBuilder {
     sender: ProfileName,
     receiver: ProfileName,
   ): Promise<ShinkaiMessage> {
-    return new ShinkaiMessageBuilder(
+    const builder = new ShinkaiMessageBuilder(
       my_subidentity_encryption_sk,
       my_subidentity_signature_sk,
       receiver_public_key,
-    )
+    );
+    await builder.init();
+    return builder
       .set_message_raw_content(full_profile)
       .set_internal_metadata_with_schema(
         sender_subidentity,
@@ -950,7 +952,8 @@ export class ShinkaiMessageBuilder {
     receiver: ProfileName,
   ): Promise<ShinkaiMessage> {
     const payload = {
-      permissions, code_type,
+      permissions,
+      code_type,
     };
     const data = JSON.stringify(payload);
     return ShinkaiMessageBuilder.createCustomShinkaiMessageToNode(
@@ -984,7 +987,12 @@ export class ShinkaiMessageBuilder {
       .set_message_raw_content(inbox_name)
       .set_message_schema_type(MessageSchemaType.TextContent)
       .set_body_encryption(TSEncryptionMethod.DiffieHellmanChaChaPoly1305)
-      .set_internal_metadata_with_inbox(sender_subidentity, receiver_subidentity, inbox, TSEncryptionMethod.None)
+      .set_internal_metadata_with_inbox(
+        sender_subidentity,
+        receiver_subidentity,
+        inbox,
+        TSEncryptionMethod.None,
+      )
       .set_external_metadata_with_intra_sender(
         receiver,
         sender,
@@ -1013,7 +1021,12 @@ export class ShinkaiMessageBuilder {
       .set_message_raw_content(text_message)
       .set_message_schema_type(MessageSchemaType.TextContent)
       .set_body_encryption(TSEncryptionMethod.DiffieHellmanChaChaPoly1305)
-      .set_internal_metadata_with_inbox(sender_subidentity, receiver_subidentity, inbox, TSEncryptionMethod.None)
+      .set_internal_metadata_with_inbox(
+        sender_subidentity,
+        receiver_subidentity,
+        inbox,
+        TSEncryptionMethod.None,
+      )
       .set_external_metadata_with_intra_sender(
         receiver,
         sender,
@@ -1040,7 +1053,12 @@ export class ShinkaiMessageBuilder {
     )
       .set_message_raw_content(symmetric_key_sk)
       .set_message_schema_type(MessageSchemaType.SymmetricKeyExchange)
-      .set_internal_metadata_with_inbox(sender_subidentity, '', inbox, TSEncryptionMethod.None)
+      .set_internal_metadata_with_inbox(
+        sender_subidentity,
+        '',
+        inbox,
+        TSEncryptionMethod.None,
+      )
       .set_external_metadata_with_intra_sender(
         receiver,
         sender,

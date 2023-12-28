@@ -14,7 +14,7 @@ export enum MessageSchemaType {
   APIAddAgentRequest = 'APIAddAgentRequest',
   TextContent = 'TextContent',
   SymmetricKeyExchange = 'SymmetricKeyExchange',
-  Empty = '',
+  Empty = 'Empty',
 }
 
 export interface JobScope {

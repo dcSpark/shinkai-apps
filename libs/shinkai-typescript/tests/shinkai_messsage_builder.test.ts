@@ -46,8 +46,8 @@ describe('ShinkaiMessageBuilder pre-made methods', () => {
     if (message.body instanceof UnencryptedMessageBody) {
       const messageData = message.body.unencrypted
         .message_data as UnencryptedMessageData;
-      if ('message_raw_content' in messageData.data) {
-        expect(messageData.data.message_raw_content).toBe('ACK');
+      if ('message_raw_content' in messageData.unencrypted) {
+        expect(messageData.unencrypted.message_raw_content).toBe('ACK');
       } else {
         throw new Error('Message data is not unencrypted');
       }
@@ -85,8 +85,8 @@ describe('ShinkaiMessageBuilder pre-made methods', () => {
     if (message.body instanceof UnencryptedMessageBody) {
       const messageData = message.body.unencrypted
         .message_data as UnencryptedMessageData;
-      if ('message_raw_content' in messageData.data) {
-        expect(messageData.data.message_raw_content).toBe('terminate');
+      if ('message_raw_content' in messageData.unencrypted) {
+        expect(messageData.unencrypted.message_raw_content).toBe('terminate');
       } else {
         throw new Error('Message data is not unencrypted');
       }
@@ -693,8 +693,8 @@ describe('ShinkaiMessageBuilder general tests', () => {
     if (message.body instanceof UnencryptedMessageBody) {
       const messageData = message.body.unencrypted
         .message_data as UnencryptedMessageData;
-      if ('message_raw_content' in messageData.data) {
-        expect(messageData.data.message_raw_content).toBe('body content');
+      if ('message_raw_content' in messageData.unencrypted) {
+        expect(messageData.unencrypted.message_raw_content).toBe('body content');
       } else {
         throw new Error('Message data is not unencrypted');
       }
@@ -766,8 +766,8 @@ describe('ShinkaiMessageBuilder general tests', () => {
       if (decryptedMessage.body instanceof UnencryptedMessageBody) {
         const messageData = decryptedMessage.body.unencrypted
           .message_data as UnencryptedMessageData;
-        if ('message_raw_content' in messageData.data) {
-          expect(messageData.data.message_raw_content).toBe('body content');
+        if ('message_raw_content' in messageData.unencrypted) {
+          expect(messageData.unencrypted.message_raw_content).toBe('body content');
         } else {
           throw new Error('Message data is not unencrypted');
         }

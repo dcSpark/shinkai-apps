@@ -28,11 +28,11 @@ export class EncryptedMessageData extends MessageData {
 }
 
 export class UnencryptedMessageData extends MessageData {
-  data: ShinkaiData;
+  unencrypted: ShinkaiData;
 
   constructor(data: ShinkaiData) {
     super();
-    this.data = data;
+    this.unencrypted = data;
   }
 
   async encrypt(
@@ -41,7 +41,7 @@ export class UnencryptedMessageData extends MessageData {
   ): Promise<EncryptedMessageData> {
     // Encrypt the message data
     const encryptedData = await encryptMessageData(
-      this.data,
+      this.unencrypted,
       senderPrivateKey,
       recipientPublicKey,
     );
