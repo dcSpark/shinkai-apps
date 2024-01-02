@@ -1,7 +1,11 @@
+import { SerializedAgent } from '@shinkai_network/shinkai-message-ts/models';
+import { ZodSchema } from "zod";
+
 export enum ServiceWorkerExternalMessageType {
   InstallToolkit = 'install-toolkit',
   IsNodePristine = 'is-node-pristine',
   QuickConnectionIntent = 'quick-connection-intent',
+  GetProfileAgents = 'get-profile-agents',
 }
 
 export interface BaseServiceWorkerExternalMessage<
@@ -42,6 +46,15 @@ export interface ServiceWorkerExternalMessageIsNodePristineResponse
   };
 }
 
+export interface ServiceWorkerExternalMessageGetProfileAgents
+  extends BaseServiceWorkerExternalMessage<ServiceWorkerExternalMessageType.GetProfileAgents> {}
+export interface ServiceWorkerExternalMessageGetProfileAgentsResponse
+  extends BaseServiceWorkerExternalMessageResponse<ServiceWorkerExternalMessageType.GetProfileAgents> {
+  payload: {
+    agents: SerializedAgent[];
+  };
+}
+
 export interface ServiceWorkerExternalMessageQuickConnectionIntent
   extends BaseServiceWorkerExternalMessage<ServiceWorkerExternalMessageType.QuickConnectionIntent> {
   payload: {
@@ -59,6 +72,7 @@ export type ServiceWorkerExternalMessage =
 export enum ServiceWorkerExternalMessageResponseStatus {
   Unauthorized = 'unauthorized',
   Forbidden = 'forbidden',
+  BadRequest = 'bad-request',
   Error = 'error',
   Success = 'success',
 }
@@ -68,6 +82,10 @@ export interface ServiceWorkerExternalMessageResponseUnauthorized {
 }
 export interface ServiceWorkerExternalMessageResponseForbidden {
   status: ServiceWorkerExternalMessageResponseStatus.Forbidden;
+  message: string;
+}
+export interface ServiceWorkerExternalMessageResponseBadRequest {
+  status: ServiceWorkerExternalMessageResponseStatus.BadRequest;
   message: string;
 }
 export interface ServiceWorkerExternalMessageResponseError {
@@ -84,6 +102,7 @@ export interface ServiceWorkerExternalMessageResponseSuccess {
 export type ServiceWorkerExternalMessageResponse =
   | ServiceWorkerExternalMessageResponseUnauthorized
   | ServiceWorkerExternalMessageResponseForbidden
+  | ServiceWorkerExternalMessageResponseBadRequest
   | ServiceWorkerExternalMessageResponseError
   | ServiceWorkerExternalMessageResponseSuccess;
 
@@ -99,5 +118,6 @@ export type ServiceWorkerExternalMessageActionsMap = {
   [Key in ServiceWorkerExternalMessageType]?: {
     permission: string;
     resolver: ServiceWorkerExternalMessageResolver;
+    validator: ZodSchema,
   };
 };

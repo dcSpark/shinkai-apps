@@ -1,9 +1,15 @@
-import { health } from '@shinkai_network/shinkai-message-ts/api';
+import {
+  ApiConfig,
+  getProfileAgents,
+  health,
+} from '@shinkai_network/shinkai-message-ts/api';
 
 import { useAuth } from '../../../store/auth/auth';
 import { sendMessage } from '../internal';
 import { ServiceWorkerInternalMessageType } from '../internal/types';
 import {
+  ServiceWorkerExternalMessageGetProfileAgents,
+  ServiceWorkerExternalMessageGetProfileAgentsResponse,
   ServiceWorkerExternalMessageIsNodePristine,
   ServiceWorkerExternalMessageIsNodePristineResponse,
   ServiceWorkerExternalMessageQuickConnectionIntent,
@@ -22,6 +28,35 @@ export const isNodePristineResolver = async (
     type: ServiceWorkerExternalMessageType.IsNodePristine,
     payload: {
       isPristine: nodeHealth.is_pristine,
+    },
+  };
+};
+
+export const getProfileAgentsResolver = async (
+  message: ServiceWorkerExternalMessageGetProfileAgents,
+  tabId: number,
+): Promise<ServiceWorkerExternalMessageGetProfileAgentsResponse> => {
+  const auth = useAuth.getState().auth;
+  if (!auth) {
+    throw new Error('visor is not connected to a node');
+  }
+  ApiConfig.getInstance().setEndpoint(auth.node_address);
+  const agents = await getProfileAgents(
+    auth.shinkai_identity,
+    auth.profile,
+    auth.shinkai_identity,
+    {
+      my_device_encryption_sk: auth.profile_encryption_sk,
+      my_device_identity_sk: auth.profile_identity_sk,
+      node_encryption_pk: auth.node_encryption_pk,
+      profile_encryption_sk: auth.profile_encryption_sk,
+      profile_identity_sk: auth.profile_identity_sk,
+    },
+  );
+  return {
+    type: ServiceWorkerExternalMessageType.GetProfileAgents,
+    payload: {
+      agents,
     },
   };
 };

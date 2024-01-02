@@ -1,4 +1,6 @@
-import { isNodePristineResolver, quickConnectionIntent } from './resolvers';
+import { z } from 'zod';
+
+import { getProfileAgentsResolver, isNodePristineResolver, quickConnectionIntent } from './resolvers';
 import {
   ServiceWorkerExternalMessage,
   ServiceWorkerExternalMessageActionsMap,
@@ -43,10 +45,21 @@ const ACTIONS_MAP: ServiceWorkerExternalMessageActionsMap = {
   [ServiceWorkerExternalMessageType.IsNodePristine]: {
     permission: 'node-is-pristine',
     resolver: isNodePristineResolver,
+    validator: z.object({
+      nodeAddress: z.string().url(),
+    }),
   },
   [ServiceWorkerExternalMessageType.QuickConnectionIntent]: {
     permission: 'visor-connect',
     resolver: quickConnectionIntent,
+    validator: z.object({
+      nodeAddress: z.string().url(),
+    }),
+  },
+  [ServiceWorkerExternalMessageType.GetProfileAgents]: {
+    permission: 'agents-list',
+    resolver: getProfileAgentsResolver,
+    validator: z.undefined().or(z.object({})),
   },
 };
 
@@ -84,6 +97,14 @@ export const listen = (): void => {
         return sendResponse({
           status: ServiceWorkerExternalMessageResponseStatus.Forbidden,
           message: `permission:${action.permission} for origin:${sender.origin} not found`,
+        });
+      }
+
+      const validationResult = action.validator.safeParse(message.payload);
+      if (!validationResult.success) {
+        return sendResponse({
+          status: ServiceWorkerExternalMessageResponseStatus.BadRequest,
+          message: `invalid message payload for origin:${sender.origin} errors:${validationResult.error.flatten().formErrors.join('\n')}`,
         });
       }
 

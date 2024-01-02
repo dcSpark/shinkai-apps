@@ -1,6 +1,6 @@
 import '../../theme/styles.css';
 
-import { ApiConfig } from '@shinkai_network/shinkai-message-ts/api/api_config';
+import { ApiConfig } from '@shinkai_network/shinkai-message-ts/api';
 import { queryClient } from '@shinkai_network/shinkai-node-state/lib/constants';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
