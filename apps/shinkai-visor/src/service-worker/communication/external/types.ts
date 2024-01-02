@@ -1,6 +1,10 @@
-import { SerializedAgent, SmartInbox } from '@shinkai_network/shinkai-message-ts/models';
-import { ZodSchema } from "zod";
+import {
+  SerializedAgent,
+  SmartInbox,
+} from '@shinkai_network/shinkai-message-ts/models';
+import { ZodSchema } from 'zod';
 
+import { ACTIONS_MAP } from './actions';
 export enum ServiceWorkerExternalMessageType {
   InstallToolkit = 'install-toolkit',
   IsNodePristine = 'is-node-pristine',
@@ -9,75 +13,53 @@ export enum ServiceWorkerExternalMessageType {
   GetProfileInboxes = 'get-profile-inboxes',
 }
 
-export interface BaseServiceWorkerExternalMessage<
-  T extends ServiceWorkerExternalMessageType,
-> {
-  type: T;
+export type BaseServiceWorkerExternalMessage = {
+  type: ServiceWorkerExternalMessageType;
+  payload: Parameters<
+    (typeof ACTIONS_MAP)[ServiceWorkerExternalMessageType]['resolver']
+  >[0];
+};
+export type BaseServiceWorkerExternalMessageResponse = {
+  type: ServiceWorkerExternalMessageType;
+  payload: ReturnType<
+    (typeof ACTIONS_MAP)[ServiceWorkerExternalMessageType]['resolver']
+  >;
+};
+
+export interface ServiceWorkerExternalMessageInstallToolkit {
+  toolkit: {
+    toolkitName: string;
+    version: string;
+    cover: string;
+  };
+  url: string;
 }
-export interface BaseServiceWorkerExternalMessageResponse<
-  T extends ServiceWorkerExternalMessageType,
-> {
-  type: T;
+export interface ServiceWorkerExternalMessageInstallToolkitResponse {}
+
+export interface ServiceWorkerExternalMessageIsNodePristine {
+  nodeAddress: string;
+}
+export interface ServiceWorkerExternalMessageIsNodePristineResponse {
+  isPristine: boolean;
 }
 
-export interface ServiceWorkerExternalMessageInstallToolkit
-  extends BaseServiceWorkerExternalMessage<ServiceWorkerExternalMessageType.InstallToolkit> {
-  payload: {
-    toolkit: {
-      toolkitName: string;
-      version: string;
-      cover: string;
-    };
-    url: string;
-  };
-}
-export interface ServiceWorkerExternalMessageInstallToolkitResponse
-  extends BaseServiceWorkerExternalMessageResponse<ServiceWorkerExternalMessageType.InstallToolkit> {}
-
-export interface ServiceWorkerExternalMessageIsNodePristine
-  extends BaseServiceWorkerExternalMessage<ServiceWorkerExternalMessageType.IsNodePristine> {
-  payload: {
-    nodeAddress: string;
-  };
-}
-export interface ServiceWorkerExternalMessageIsNodePristineResponse
-  extends BaseServiceWorkerExternalMessageResponse<ServiceWorkerExternalMessageType.IsNodePristine> {
-  payload: {
-    isPristine: boolean;
-  };
+export type ServiceWorkerExternalMessageGetProfileAgents = never;
+export interface ServiceWorkerExternalMessageGetProfileAgentsResponse {
+  agents: SerializedAgent[];
 }
 
-export interface ServiceWorkerExternalMessageGetProfileAgents
-  extends BaseServiceWorkerExternalMessage<ServiceWorkerExternalMessageType.GetProfileAgents> {}
-export interface ServiceWorkerExternalMessageGetProfileAgentsResponse
-  extends BaseServiceWorkerExternalMessageResponse<ServiceWorkerExternalMessageType.GetProfileAgents> {
-  payload: {
-    agents: SerializedAgent[];
-  };
+export type ServiceWorkerExternalMessageGetProfileInboxes = never;
+export interface ServiceWorkerExternalMessageGetProfileInboxesResponse {
+  inboxes: SmartInbox[];
 }
 
-export interface ServiceWorkerExternalMessageGetProfileInboxes
-  extends BaseServiceWorkerExternalMessage<ServiceWorkerExternalMessageType.GetProfileInboxes> {}
-export interface ServiceWorkerExternalMessageGetProfileInboxesResponse
-  extends BaseServiceWorkerExternalMessageResponse<ServiceWorkerExternalMessageType.GetProfileInboxes> {
-  payload: {
-    inboxes: SmartInbox[];
-  };
+export interface ServiceWorkerExternalMessageQuickConnectionIntent {
+  nodeAddress: string;
+  tabId: number;
 }
+export type ServiceWorkerExternalMessageQuickConnectionIntentResponse = void;
 
-export interface ServiceWorkerExternalMessageQuickConnectionIntent
-  extends BaseServiceWorkerExternalMessage<ServiceWorkerExternalMessageType.QuickConnectionIntent> {
-  payload: {
-    nodeAddress: string;
-  };
-}
-export interface ServiceWorkerExternalMessageQuickConnectionIntentResponse
-  extends BaseServiceWorkerExternalMessageResponse<ServiceWorkerExternalMessageType.QuickConnectionIntent> {}
-
-export type ServiceWorkerExternalMessage =
-  | ServiceWorkerExternalMessageInstallToolkit
-  | ServiceWorkerExternalMessageIsNodePristine
-  | ServiceWorkerExternalMessageQuickConnectionIntent;
+export type ServiceWorkerExternalMessage = BaseServiceWorkerExternalMessage;
 
 export enum ServiceWorkerExternalMessageResponseStatus {
   Unauthorized = 'unauthorized',
@@ -103,13 +85,15 @@ export interface ServiceWorkerExternalMessageResponseError {
   status: ServiceWorkerExternalMessageResponseStatus.Error;
   message: string;
 }
-export type ServiceWorkerExternalMessageResponsePayload =
-  ServiceWorkerExternalMessageIsNodePristineResponse;
+export type ServiceWorkerExternalMessageResponsePayload = ReturnType<
+  (typeof ACTIONS_MAP)[ServiceWorkerExternalMessageType]['resolver']
+>;
 
 export interface ServiceWorkerExternalMessageResponseSuccess {
   status: ServiceWorkerExternalMessageResponseStatus.Success;
   payload: ServiceWorkerExternalMessageResponsePayload;
 }
+
 export type ServiceWorkerExternalMessageResponse =
   | ServiceWorkerExternalMessageResponseUnauthorized
   | ServiceWorkerExternalMessageResponseForbidden
@@ -117,18 +101,17 @@ export type ServiceWorkerExternalMessageResponse =
   | ServiceWorkerExternalMessageResponseError
   | ServiceWorkerExternalMessageResponseSuccess;
 
-// TODO: Improve this tipification
 export type ServiceWorkerExternalMessageResolver = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  message: any,
+  payload: any,
   tabId: number,
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ) => Promise<any>;
 
 export type ServiceWorkerExternalMessageActionsMap = {
-  [Key in ServiceWorkerExternalMessageType]?: {
+  [Key in ServiceWorkerExternalMessageType]: {
     permission: string;
     resolver: ServiceWorkerExternalMessageResolver;
-    validator: ZodSchema,
+    validator: ZodSchema;
   };
 };

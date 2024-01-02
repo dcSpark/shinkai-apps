@@ -1,12 +1,8 @@
-import { z } from 'zod';
-
-import { getProfileAgentsResolver, getProfileInboxes, isNodePristineResolver, quickConnectionIntent } from './resolvers';
+import { ACTIONS_MAP } from './actions';
 import {
   ServiceWorkerExternalMessage,
-  ServiceWorkerExternalMessageActionsMap,
   ServiceWorkerExternalMessageResponse,
   ServiceWorkerExternalMessageResponseStatus,
-  ServiceWorkerExternalMessageType,
 } from './types';
 
 const GLOBALLY_ALLOWED_ORIGINS: RegExp[] = [
@@ -39,33 +35,6 @@ const authorize = (origin: string): boolean => {
     // TODO: Implemented authorization workflow
   }
   return isAuthorized;
-};
-
-const ACTIONS_MAP: ServiceWorkerExternalMessageActionsMap = {
-  [ServiceWorkerExternalMessageType.IsNodePristine]: {
-    permission: 'node-is-pristine',
-    resolver: isNodePristineResolver,
-    validator: z.object({
-      nodeAddress: z.string().url(),
-    }),
-  },
-  [ServiceWorkerExternalMessageType.QuickConnectionIntent]: {
-    permission: 'visor-connect',
-    resolver: quickConnectionIntent,
-    validator: z.object({
-      nodeAddress: z.string().url(),
-    }),
-  },
-  [ServiceWorkerExternalMessageType.GetProfileAgents]: {
-    permission: 'agent-list',
-    resolver: getProfileAgentsResolver,
-    validator: z.undefined().or(z.object({})),
-  },
-  [ServiceWorkerExternalMessageType.GetProfileInboxes]: {
-    permission: 'inbox-list',
-    resolver: getProfileInboxes,
-    validator: z.undefined().or(z.object({})),
-  },
 };
 
 export const listen = (): void => {
@@ -108,19 +77,24 @@ export const listen = (): void => {
       const validationResult = action.validator.safeParse(message.payload);
       if (!validationResult.success) {
         const flatErrors = validationResult.error.flatten();
-        const errorMessage = Object.entries(flatErrors.fieldErrors).map(([field, errors]) => {
-          return `${field}:[${errors?.join(', ')}]`;
-        }).join('\n');
+        const errorMessage = Object.entries(flatErrors.fieldErrors)
+          .map(([field, errors]) => {
+            return `${field}:[${errors?.join(', ')}]`;
+          })
+          .join('\n');
         return sendResponse({
           status: ServiceWorkerExternalMessageResponseStatus.BadRequest,
-          message: `invalid message payload for origin:"${sender.origin}" errors:\n${errorMessage}`,
+          message: `invalid message payload errors:\n${errorMessage}`,
           errors: flatErrors.fieldErrors,
         });
       }
 
       // Execute action
       try {
-        const responsePayload = await action.resolver(message, sender.tab?.id);
+        const responsePayload = await action.resolver(
+          message.payload,
+          sender.tab.id,
+        );
         return sendResponse({
           status: ServiceWorkerExternalMessageResponseStatus.Success,
           payload: responsePayload,
