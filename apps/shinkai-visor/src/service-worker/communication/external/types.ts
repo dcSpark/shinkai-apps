@@ -97,6 +97,7 @@ export interface ServiceWorkerExternalMessageResponseForbidden {
 export interface ServiceWorkerExternalMessageResponseBadRequest {
   status: ServiceWorkerExternalMessageResponseStatus.BadRequest;
   message: string;
+  errors: { [field: string]: string[] | undefined };
 }
 export interface ServiceWorkerExternalMessageResponseError {
   status: ServiceWorkerExternalMessageResponseStatus.Error;

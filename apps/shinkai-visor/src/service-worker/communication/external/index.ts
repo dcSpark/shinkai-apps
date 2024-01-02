@@ -84,7 +84,7 @@ export const listen = (): void => {
       if (!isAuthenticated) {
         return sendResponse({
           status: ServiceWorkerExternalMessageResponseStatus.Unauthorized,
-          message: `origin:${sender.origin} is not allowed`,
+          message: `origin:"${sender.origin}" is not allowed`,
         });
       }
 
@@ -101,15 +101,20 @@ export const listen = (): void => {
       if (!isAuthorized) {
         return sendResponse({
           status: ServiceWorkerExternalMessageResponseStatus.Forbidden,
-          message: `permission:${action.permission} for origin:${sender.origin} not found`,
+          message: `permission:${action.permission} for origin:"${sender.origin}" not found`,
         });
       }
 
       const validationResult = action.validator.safeParse(message.payload);
       if (!validationResult.success) {
+        const flatErrors = validationResult.error.flatten();
+        const errorMessage = Object.entries(flatErrors.fieldErrors).map(([field, errors]) => {
+          return `${field}:[${errors?.join(', ')}]`;
+        }).join('\n');
         return sendResponse({
           status: ServiceWorkerExternalMessageResponseStatus.BadRequest,
-          message: `invalid message payload for origin:${sender.origin} errors:${validationResult.error.flatten().formErrors.join('\n')}`,
+          message: `invalid message payload for origin:"${sender.origin}" errors:\n${errorMessage}`,
+          errors: flatErrors.fieldErrors,
         });
       }
 
