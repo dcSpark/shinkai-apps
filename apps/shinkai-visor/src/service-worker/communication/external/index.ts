@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { getProfileAgentsResolver, isNodePristineResolver, quickConnectionIntent } from './resolvers';
+import { getProfileAgentsResolver, getProfileInboxes, isNodePristineResolver, quickConnectionIntent } from './resolvers';
 import {
   ServiceWorkerExternalMessage,
   ServiceWorkerExternalMessageActionsMap,
@@ -57,8 +57,13 @@ const ACTIONS_MAP: ServiceWorkerExternalMessageActionsMap = {
     }),
   },
   [ServiceWorkerExternalMessageType.GetProfileAgents]: {
-    permission: 'agents-list',
+    permission: 'agent-list',
     resolver: getProfileAgentsResolver,
+    validator: z.undefined().or(z.object({})),
+  },
+  [ServiceWorkerExternalMessageType.GetProfileInboxes]: {
+    permission: 'inbox-list',
+    resolver: getProfileInboxes,
     validator: z.undefined().or(z.object({})),
   },
 };

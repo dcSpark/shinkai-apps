@@ -1,5 +1,6 @@
 import {
   ApiConfig,
+  getAllInboxesForProfile,
   getProfileAgents,
   health,
 } from '@shinkai_network/shinkai-message-ts/api';
@@ -10,6 +11,8 @@ import { ServiceWorkerInternalMessageType } from '../internal/types';
 import {
   ServiceWorkerExternalMessageGetProfileAgents,
   ServiceWorkerExternalMessageGetProfileAgentsResponse,
+  ServiceWorkerExternalMessageGetProfileInboxes,
+  ServiceWorkerExternalMessageGetProfileInboxesResponse,
   ServiceWorkerExternalMessageIsNodePristine,
   ServiceWorkerExternalMessageIsNodePristineResponse,
   ServiceWorkerExternalMessageQuickConnectionIntent,
@@ -80,5 +83,35 @@ export const quickConnectionIntent = async (
   );
   return {
     type: ServiceWorkerExternalMessageType.QuickConnectionIntent,
+  };
+};
+
+export const getProfileInboxes = async (
+  message: ServiceWorkerExternalMessageGetProfileInboxes,
+  tabId: number,
+): Promise<ServiceWorkerExternalMessageGetProfileInboxesResponse> => {
+  const auth = useAuth.getState().auth;
+  if (!auth) {
+    throw new Error('visor is not connected to a node');
+  }
+  ApiConfig.getInstance().setEndpoint(auth.node_address);
+  const inboxes = await getAllInboxesForProfile(
+    auth.shinkai_identity,
+    auth.profile,
+    auth.shinkai_identity,
+    `${auth?.shinkai_identity}/${auth?.profile}`,
+    {
+      my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+      my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+    },
+  );
+  return {
+    type: ServiceWorkerExternalMessageType.GetProfileInboxes,
+    payload: {
+      inboxes,
+    },
   };
 };

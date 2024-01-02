@@ -1,4 +1,4 @@
-import { SerializedAgent } from '@shinkai_network/shinkai-message-ts/models';
+import { SerializedAgent, SmartInbox } from '@shinkai_network/shinkai-message-ts/models';
 import { ZodSchema } from "zod";
 
 export enum ServiceWorkerExternalMessageType {
@@ -6,6 +6,7 @@ export enum ServiceWorkerExternalMessageType {
   IsNodePristine = 'is-node-pristine',
   QuickConnectionIntent = 'quick-connection-intent',
   GetProfileAgents = 'get-profile-agents',
+  GetProfileInboxes = 'get-profile-inboxes',
 }
 
 export interface BaseServiceWorkerExternalMessage<
@@ -52,6 +53,15 @@ export interface ServiceWorkerExternalMessageGetProfileAgentsResponse
   extends BaseServiceWorkerExternalMessageResponse<ServiceWorkerExternalMessageType.GetProfileAgents> {
   payload: {
     agents: SerializedAgent[];
+  };
+}
+
+export interface ServiceWorkerExternalMessageGetProfileInboxes
+  extends BaseServiceWorkerExternalMessage<ServiceWorkerExternalMessageType.GetProfileInboxes> {}
+export interface ServiceWorkerExternalMessageGetProfileInboxesResponse
+  extends BaseServiceWorkerExternalMessageResponse<ServiceWorkerExternalMessageType.GetProfileInboxes> {
+  payload: {
+    inboxes: SmartInbox[];
   };
 }
 
