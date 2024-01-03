@@ -23,7 +23,6 @@
       }
     },
     "serve": {
-      "dependsOn": ["shinkai-message-ts:build"],
       "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
