@@ -6,8 +6,8 @@ import {
 } from './types';
 
 const GLOBALLY_ALLOWED_ORIGINS: RegExp[] = [
-  /.*\.shinkai\.com/,
-  ...(import.meta.env.DEV ? [/localhost/, /typescriptlang\.org/] : []),
+  /^.*[.]?shinkai\.com$/,
+  ...(import.meta.env.DEV ? [/localhost/] : []),
 ];
 const originIsGloballyAllowed = (origin: string): boolean =>
   GLOBALLY_ALLOWED_ORIGINS.some((globallyAllowedOrigin) =>

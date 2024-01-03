@@ -18,7 +18,8 @@
       "@shinkai_network/shinkai-ui": ["libs/shinkai-ui/src/index.ts"],
       "@shinkai_network/shinkai-ui/utils": ["libs/shinkai-ui/src/utils.ts"],
       "@shinkai_network/shinkai-message-ts/*": [
-        "libs/shinkai-message-ts/src/*.ts"
+        "dist/libs/shinkai-message-ts/*.js",
+        "dist/libs/shinkai-message-ts/*.d.ts",
       ],
       "@shinkai_network/shinkai-node-state/*": [
         "libs/shinkai-node-state/src/*.ts"
