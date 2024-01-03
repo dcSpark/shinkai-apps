@@ -1,64 +1,70 @@
+import {
+  SerializedAgent,
+  SmartInbox,
+} from '@shinkai_network/shinkai-message-ts/models';
+import { ZodSchema } from 'zod';
+
+import { ACTIONS_MAP } from './actions';
 export enum ServiceWorkerExternalMessageType {
   InstallToolkit = 'install-toolkit',
   IsNodePristine = 'is-node-pristine',
   QuickConnectionIntent = 'quick-connection-intent',
+  GetProfileAgents = 'get-profile-agents',
+  GetProfileInboxes = 'get-profile-inboxes',
 }
 
-export interface BaseServiceWorkerExternalMessage<
-  T extends ServiceWorkerExternalMessageType,
-> {
-  type: T;
-}
-export interface BaseServiceWorkerExternalMessageResponse<
-  T extends ServiceWorkerExternalMessageType,
-> {
-  type: T;
-}
+export type BaseServiceWorkerExternalMessage = {
+  type: ServiceWorkerExternalMessageType;
+  payload: Parameters<
+    (typeof ACTIONS_MAP)[ServiceWorkerExternalMessageType]['resolver']
+  >[0];
+};
+export type BaseServiceWorkerExternalMessageResponse = {
+  type: ServiceWorkerExternalMessageType;
+  payload: ReturnType<
+    (typeof ACTIONS_MAP)[ServiceWorkerExternalMessageType]['resolver']
+  >;
+};
 
-export interface ServiceWorkerExternalMessageInstallToolkit
-  extends BaseServiceWorkerExternalMessage<ServiceWorkerExternalMessageType.InstallToolkit> {
-  payload: {
-    toolkit: {
-      toolkitName: string;
-      version: string;
-      cover: string;
-    };
-    url: string;
+export interface ServiceWorkerExternalMessageInstallToolkit {
+  toolkit: {
+    toolkitName: string;
+    version: string;
+    cover: string;
   };
+  url: string;
 }
-export interface ServiceWorkerExternalMessageInstallToolkitResponse
-  extends BaseServiceWorkerExternalMessageResponse<ServiceWorkerExternalMessageType.InstallToolkit> {}
+export interface ServiceWorkerExternalMessageInstallToolkitResponse {}
 
-export interface ServiceWorkerExternalMessageIsNodePristine
-  extends BaseServiceWorkerExternalMessage<ServiceWorkerExternalMessageType.IsNodePristine> {
-  payload: {
-    nodeAddress: string;
-  };
+export interface ServiceWorkerExternalMessageIsNodePristine {
+  nodeAddress: string;
 }
-export interface ServiceWorkerExternalMessageIsNodePristineResponse
-  extends BaseServiceWorkerExternalMessageResponse<ServiceWorkerExternalMessageType.IsNodePristine> {
-  payload: {
-    isPristine: boolean;
-  };
+export interface ServiceWorkerExternalMessageIsNodePristineResponse {
+  isPristine: boolean;
 }
 
-export interface ServiceWorkerExternalMessageQuickConnectionIntent
-  extends BaseServiceWorkerExternalMessage<ServiceWorkerExternalMessageType.QuickConnectionIntent> {
-  payload: {
-    nodeAddress: string;
-  };
+export type ServiceWorkerExternalMessageGetProfileAgents = never;
+export interface ServiceWorkerExternalMessageGetProfileAgentsResponse {
+  agents: SerializedAgent[];
 }
-export interface ServiceWorkerExternalMessageQuickConnectionIntentResponse
-  extends BaseServiceWorkerExternalMessageResponse<ServiceWorkerExternalMessageType.QuickConnectionIntent> {}
 
-export type ServiceWorkerExternalMessage =
-  | ServiceWorkerExternalMessageInstallToolkit
-  | ServiceWorkerExternalMessageIsNodePristine
-  | ServiceWorkerExternalMessageQuickConnectionIntent;
+export type ServiceWorkerExternalMessageGetProfileInboxes = never;
+export interface ServiceWorkerExternalMessageGetProfileInboxesResponse {
+  inboxes: SmartInbox[];
+}
+
+export interface ServiceWorkerExternalMessageQuickConnectionIntent {
+  nodeAddress: string;
+  tabId: number;
+}
+export type ServiceWorkerExternalMessageQuickConnectionIntentResponse = void;
+
+export type ServiceWorkerExternalMessage = BaseServiceWorkerExternalMessage;
 
 export enum ServiceWorkerExternalMessageResponseStatus {
   Unauthorized = 'unauthorized',
   Forbidden = 'forbidden',
+  BadRequest = 'bad-request',
   Error = 'error',
   Success = 'success',
 }
@@ -70,34 +76,42 @@ export interface ServiceWorkerExternalMessageResponseForbidden {
   status: ServiceWorkerExternalMessageResponseStatus.Forbidden;
   message: string;
 }
+export interface ServiceWorkerExternalMessageResponseBadRequest {
+  status: ServiceWorkerExternalMessageResponseStatus.BadRequest;
+  message: string;
+  errors: { [field: string]: string[] | undefined };
+}
 export interface ServiceWorkerExternalMessageResponseError {
   status: ServiceWorkerExternalMessageResponseStatus.Error;
   message: string;
 }
-export type ServiceWorkerExternalMessageResponsePayload =
-  ServiceWorkerExternalMessageIsNodePristineResponse;
+export type ServiceWorkerExternalMessageResponsePayload = ReturnType<
+  (typeof ACTIONS_MAP)[ServiceWorkerExternalMessageType]['resolver']
+>;
 
 export interface ServiceWorkerExternalMessageResponseSuccess {
   status: ServiceWorkerExternalMessageResponseStatus.Success;
   payload: ServiceWorkerExternalMessageResponsePayload;
 }
+
 export type ServiceWorkerExternalMessageResponse =
   | ServiceWorkerExternalMessageResponseUnauthorized
   | ServiceWorkerExternalMessageResponseForbidden
+  | ServiceWorkerExternalMessageResponseBadRequest
   | ServiceWorkerExternalMessageResponseError
   | ServiceWorkerExternalMessageResponseSuccess;
 
-// TODO: Improve this tipification
 export type ServiceWorkerExternalMessageResolver = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  message: any,
+  payload: any,
   tabId: number,
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ) => Promise<any>;
 
 export type ServiceWorkerExternalMessageActionsMap = {
-  [Key in ServiceWorkerExternalMessageType]?: {
+  [Key in ServiceWorkerExternalMessageType]: {
     permission: string;
     resolver: ServiceWorkerExternalMessageResolver;
+    validator: ZodSchema;
   };
 };

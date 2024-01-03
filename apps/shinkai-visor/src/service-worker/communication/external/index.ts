@@ -1,10 +1,8 @@
-import { isNodePristineResolver, quickConnectionIntent } from './resolvers';
+import { ACTIONS_MAP } from './actions';
 import {
   ServiceWorkerExternalMessage,
-  ServiceWorkerExternalMessageActionsMap,
   ServiceWorkerExternalMessageResponse,
   ServiceWorkerExternalMessageResponseStatus,
-  ServiceWorkerExternalMessageType,
 } from './types';
 
 const GLOBALLY_ALLOWED_ORIGINS: RegExp[] = [
@@ -39,17 +37,6 @@ const authorize = (origin: string): boolean => {
   return isAuthorized;
 };
 
-const ACTIONS_MAP: ServiceWorkerExternalMessageActionsMap = {
-  [ServiceWorkerExternalMessageType.IsNodePristine]: {
-    permission: 'node-is-pristine',
-    resolver: isNodePristineResolver,
-  },
-  [ServiceWorkerExternalMessageType.QuickConnectionIntent]: {
-    permission: 'visor-connect',
-    resolver: quickConnectionIntent,
-  },
-};
-
 export const listen = (): void => {
   chrome.runtime.onMessageExternal.addListener(
     async (
@@ -66,7 +53,7 @@ export const listen = (): void => {
       if (!isAuthenticated) {
         return sendResponse({
           status: ServiceWorkerExternalMessageResponseStatus.Unauthorized,
-          message: `origin:${sender.origin} is not allowed`,
+          message: `origin:"${sender.origin}" is not allowed`,
         });
       }
 
@@ -83,13 +70,31 @@ export const listen = (): void => {
       if (!isAuthorized) {
         return sendResponse({
           status: ServiceWorkerExternalMessageResponseStatus.Forbidden,
-          message: `permission:${action.permission} for origin:${sender.origin} not found`,
+          message: `permission:${action.permission} for origin:"${sender.origin}" not found`,
+        });
+      }
+
+      const validationResult = action.validator.safeParse(message.payload);
+      if (!validationResult.success) {
+        const flatErrors = validationResult.error.flatten();
+        const errorMessage = Object.entries(flatErrors.fieldErrors)
+          .map(([field, errors]) => {
+            return `${field}:[${errors?.join(', ')}]`;
+          })
+          .join('\n');
+        return sendResponse({
+          status: ServiceWorkerExternalMessageResponseStatus.BadRequest,
+          message: `invalid message payload errors:\n${errorMessage}`,
+          errors: flatErrors.fieldErrors,
         });
       }
 
       // Execute action
       try {
-        const responsePayload = await action.resolver(message, sender.tab?.id);
+        const responsePayload = await action.resolver(
+          message.payload,
+          sender.tab.id,
+        );
         return sendResponse({
           status: ServiceWorkerExternalMessageResponseStatus.Success,
           payload: responsePayload,
