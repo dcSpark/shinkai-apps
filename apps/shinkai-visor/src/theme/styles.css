@@ -31,28 +31,22 @@
   }
 
   ::-webkit-scrollbar {
-    height: 1rem;
-    width: 0.5rem;
+    @apply h-4 w-2;
   }
 
   ::-webkit-scrollbar:horizontal {
-    height: 0.5rem;
-    width: 1rem;
+    @apply h-2 w-4;
   }
 
   ::-webkit-scrollbar-track {
-    background-color: transparent;
-    border-radius: 9999px;
+    @apply rounded-full bg-transparent;
   }
 
   ::-webkit-scrollbar-thumb {
-    background-color: theme('colors.gray.200');
-    border-color: white;
-    border-radius: 9999px;
-    border-width: 1px;
+    @apply rounded-full border-[1px] border-white bg-gray-200;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background-color: theme('colors.gray.100');
+    @apply bg-gray-100;
   }
 }
