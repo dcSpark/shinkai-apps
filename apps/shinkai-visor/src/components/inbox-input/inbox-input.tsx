@@ -1,13 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
-  DotsLoader,
   Form,
-  FormControl,
   FormField,
   FormItem,
-  FormLabel,
-  Input,
+  PromptTextarea,
 } from '@shinkai_network/shinkai-ui';
 import { motion } from 'framer-motion';
 import { SendHorizonal } from 'lucide-react';
@@ -50,11 +47,8 @@ export const InboxInput = (props: InboxInputProps) => {
   };
   return (
     <Form {...form}>
-      <form
-        className="flex flex-row justify-between space-x-2  p-1"
-        onSubmit={form.handleSubmit(submit)}
-      >
-        <div className="flex grow flex-col space-y-2 ">
+      <form className="flex gap-2" onSubmit={form.handleSubmit(submit)}>
+        <div className="flex grow flex-col">
           <FormField
             control={form.control}
             disabled={props.disabled || props.loading}
@@ -63,23 +57,22 @@ export const InboxInput = (props: InboxInputProps) => {
               <motion.div
                 animate={{ width: message?.length ? '99%' : '100%' }}
                 initial={{ width: '100%' }}
-                transition={{
-                  type: 'tween',
-                }}
+                transition={{ type: 'tween' }}
               >
                 <FormItem>
-                  <FormControl>
-                    <Input {...field} autoFocus />
-                  </FormControl>
-                  {props.loading ? (
-                    <DotsLoader className="absolute left-4 top-6" />
-                  ) : (
-                    <FormLabel>
-                      {intl.formatMessage({
-                        id: 'tmwtd',
-                      })}
-                    </FormLabel>
-                  )}
+                  <PromptTextarea
+                    autoFocus
+                    field={field}
+                    isLoading={props.loading}
+                    label={intl.formatMessage({ id: 'tmwtd' })}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' && !event.shiftKey) {
+                        event.preventDefault();
+                        form.handleSubmit(submit)();
+                      }
+                    }}
+                    value={field.value}
+                  />
                 </FormItem>
               </motion.div>
             )}
