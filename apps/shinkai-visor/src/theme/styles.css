@@ -43,7 +43,7 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply rounded-full border-[1px] border-white bg-gray-200;
+    @apply rounded-full border-[1px] border-white bg-gray-100/40;
   }
 
   ::-webkit-scrollbar-thumb:hover {
