@@ -29,4 +29,30 @@
   body {
     @apply bg-gray-500 text-white;
   }
+
+  ::-webkit-scrollbar {
+    height: 1rem;
+    width: 0.5rem;
+  }
+
+  ::-webkit-scrollbar:horizontal {
+    height: 0.5rem;
+    width: 1rem;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: transparent;
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: theme('colors.gray.200');
+    border-color: white;
+    border-radius: 9999px;
+    border-width: 1px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: theme('colors.gray.100');
+  }
 }
