@@ -31,10 +31,10 @@ const PromptTextarea = React.forwardRef<
 
     if (!textareaRef.current) return;
 
-    textareaRef.current.style.height = 'inherit';
+    textareaRef.current.style.height = '60px';
     // Set height
     textareaRef.current.style.height = `${Math.max(
-      textareaRef.current.scrollHeight + 5,
+      textareaRef.current.scrollHeight + 2,
       MIN_TEXTAREA_HEIGHT,
     )}px`;
 

@@ -47,11 +47,8 @@ export const InboxInput = (props: InboxInputProps) => {
   };
   return (
     <Form {...form}>
-      <form
-        className="flex flex-row justify-between space-x-2"
-        onSubmit={form.handleSubmit(submit)}
-      >
-        <div className="flex grow flex-col space-y-2">
+      <form className="flex gap-2" onSubmit={form.handleSubmit(submit)}>
+        <div className="flex grow flex-col">
           <FormField
             control={form.control}
             disabled={props.disabled || props.loading}
