@@ -5,19 +5,10 @@
   "projectType": "application",
   "targets": {
     "e2e": {
-      "executor": "@nx/cypress:cypress",
+      "executor": "@nx/playwright:playwright",
+      "outputs": ["{workspaceRoot}/dist/.playwright/apps/shinkai-visor-e2e"],
       "options": {
-        "cypressConfig": "apps/shinkai-visor-e2e/cypress.config.ts",
-        "devServerTarget": "shinkai-visor:serve:development",
-        "testingType": "e2e"
-      },
-      "configurations": {
-        "production": {
-          "devServerTarget": "shinkai-visor:serve:production"
-        },
-        "ci": {
-          "devServerTarget": "shinkai-visor:serve-static"
-        }
+        "config": "apps/shinkai-visor-e2e/playwright.config.ts"
       }
     },
     "lint": {

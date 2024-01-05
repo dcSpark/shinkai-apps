@@ -39,6 +39,7 @@ export const ActionButton = () => {
         !popupVisibility && 'animate-breath',
         settings?.hideActionButton ? 'hidden' : 'flex',
       )}
+      data-testid="action-button"
       onClick={() => togglePopupVisibility()}
     >
       <motion.div className="h-[50px] w-[50px] rounded-lg bg-gray-500 p-2">

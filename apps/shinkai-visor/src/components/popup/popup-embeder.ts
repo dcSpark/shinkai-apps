@@ -18,6 +18,7 @@ baseContainer.style.pointerEvents = 'none';
 baseContainer.style.overflow = 'hidden';
 
 const iframe = document.createElement('iframe');
+iframe.setAttribute('id', 'popup-iframe');
 iframe.setAttribute(
   'src',
   chrome.runtime.getURL('src/components/popup/popup.html'),
