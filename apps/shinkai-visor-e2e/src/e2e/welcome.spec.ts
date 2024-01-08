@@ -18,9 +18,15 @@ test('welcome should be the first page', async ({ page }) => {
   const ppLink = popupIframe.getByTestId('privacy-policy-link');
 
   await expect(tosLink).toBeVisible();
-  await expect(tosLink).toHaveAttribute('href', 'https://www.shinkai.com/terms-of-service');
+  await expect(tosLink).toHaveAttribute(
+    'href',
+    'https://www.shinkai.com/terms-of-service',
+  );
   await expect(ppLink).toBeVisible();
-  await expect(ppLink).toHaveAttribute('href', 'https://www.shinkai.com/privacy-policy');
+  await expect(ppLink).toHaveAttribute(
+    'href',
+    'https://www.shinkai.com/privacy-policy',
+  );
 });
 
 test('terms button should start unchecked', async ({ page }) => {
@@ -40,10 +46,20 @@ test('get started button start disabled', async ({ page }) => {
   await expect(getStartedButton).toHaveAttribute('disabled');
 });
 
-test('get started button should be enabled when terms are accepted', async ({ page }) => {
+test('get started button should be enabled when terms are accepted', async ({
+  page,
+}) => {
   const termsInput = popupIframe.getByTestId('terms');
   await termsInput.click();
 
   const getStartedButton = popupIframe.getByTestId('get-started-button');
   await expect(getStartedButton).not.toHaveAttribute('disabled');
+});
+
+test('navigate to login after terms accepted', async ({ page }) => {
+  const termsInput = popupIframe.getByTestId('terms');
+  await termsInput.click();
+
+  const getStartedButton = popupIframe.getByTestId('get-started-button');
+  await getStartedButton.click();
 });
