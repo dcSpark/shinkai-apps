@@ -11,7 +11,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   Button,
-  ChatBubbleIcon,
   DisconnectIcon,
   DropdownMenu,
   DropdownMenuContent,
@@ -248,14 +247,16 @@ export default function NavBar() {
                   <FormattedMessage id="create-job" />
                 </span>
               </DropdownMenuItem>
-              <DropdownMenuItem
+
+              {/* Temporarily disabled while shinkai-node implements networking layer */}
+              {/* <DropdownMenuItem
                 onClick={() => onClickMenuOption(MenuOption.CreateInbox)}
               >
                 <ChatBubbleIcon className="mr-2 h-4 w-4" />
                 <span>
                   <FormattedMessage id="create-inbox" />
                 </span>
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
 
               <DropdownMenuLabel>
                 <FormattedMessage id="agent.other" />

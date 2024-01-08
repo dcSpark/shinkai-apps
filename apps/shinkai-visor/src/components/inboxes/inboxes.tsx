@@ -9,15 +9,9 @@ import { formatDateToMonthAndDay } from '@shinkai_network/shinkai-node-state/lib
 import {
   Button,
   ChatBubbleIcon,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuPortal,
-  DropdownMenuTrigger,
   JobBubbleIcon,
   ScrollArea,
 } from '@shinkai_network/shinkai-ui';
-import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Plus } from 'lucide-react';
 import { Fragment, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -33,7 +27,7 @@ export const Inboxes = () => {
   const history = useHistory();
   const auth = useAuth((state) => state.auth);
   const dialContainerRef = useRef<HTMLDivElement>(null);
-  const [dialOpened, setDialOpened] = useState<boolean>(false);
+  // const [dialOpened, setDialOpened] = useState<boolean>(false);
   const sender = auth?.shinkai_identity ?? '';
   const [isEditInboxNameDialogOpened, setIsEditInboxNameDialogOpened] =
     useState<{ isOpened: boolean; inboxId: string; name: string }>({
@@ -73,9 +67,11 @@ export const Inboxes = () => {
   const onCreateJobClick = () => {
     history.push('/inboxes/create-job');
   };
-  const onCreateInboxClick = () => {
-    history.push('/inboxes/create-inbox');
-  };
+  // Temporarily disabled while shinkai-node implements networking layer
+  // const onCreateInboxClick = () => {
+  //   history.push('/inboxes/create-inbox');
+  // };
+
   // const openEditInboxNameDialog = (inboxId: string, name: string) => {
   //   setIsEditInboxNameDialogOpened({
   //     isOpened: true,
@@ -136,7 +132,7 @@ export const Inboxes = () => {
                             </div>
                           </div>
                         </div>
-                        <span className="min-w-[32px] text-end shrink-0 self-start pt-[2px] text-xs lowercase text-gray-100">
+                        <span className="min-w-[32px] shrink-0 self-start pt-[2px] text-end text-xs lowercase text-gray-100">
                           {inbox.last_message?.external_metadata
                             ?.scheduled_time &&
                             formatDateToMonthAndDay(
@@ -167,7 +163,16 @@ export const Inboxes = () => {
             </ScrollArea>
           </div>
           <div className="fixed bottom-4 right-4" ref={dialContainerRef}>
-            <DropdownMenu onOpenChange={(isOpen) => setDialOpened(isOpen)}>
+            <Button
+              className="h-[60px] w-[60px]"
+              onClick={() => onCreateJobClick()}
+              size="icon"
+            >
+              <Plus />
+            </Button>
+
+            {/* Temporarily disabled while shinkai-node implements networking layer */}
+            {/* <DropdownMenu onOpenChange={(isOpen) => setDialOpened(isOpen)}>
               <DropdownMenuTrigger asChild>
                 <Button className="h-[60px] w-[60px]" size="icon">
                   <Plus
@@ -194,7 +199,7 @@ export const Inboxes = () => {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenuPortal>
-            </DropdownMenu>
+            </DropdownMenu> */}
           </div>
           <EditInboxNameDialog
             inboxId={isEditInboxNameDialogOpened.inboxId || ''}
