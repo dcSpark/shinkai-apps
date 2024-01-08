@@ -62,4 +62,6 @@ test('navigate to login after terms accepted', async ({ page }) => {
 
   const getStartedButton = popupIframe.getByTestId('get-started-button');
   await getStartedButton.click();
+
+  await expect(popupIframe.getByTestId('quick-connect-button')).toBeVisible();
 });

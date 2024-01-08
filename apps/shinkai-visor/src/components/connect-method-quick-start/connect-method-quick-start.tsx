@@ -133,10 +133,11 @@ export const ConnectMethodQuickStart = () => {
                 )}
               />
 
-              {isSubmitError && <ErrorMessage message={submitError?.message} />}
+              {isSubmitError && <ErrorMessage data-testid="quick-connect-error-message" message={submitError?.message} />}
             </div>
             <Button
               className="w-full"
+              data-testid="quick-connect-button"
               disabled={isPending}
               isLoading={isPending}
               type="submit"
