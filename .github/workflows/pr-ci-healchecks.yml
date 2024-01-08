@@ -15,7 +15,7 @@ jobs:
       fail-fast: true
       max-parallel: 1
       matrix:
-        target: ['lint', 'build', 'test']
+        target: ['lint', 'build', 'test', 'e2e']
 
     steps:
       - name: Check out repository
@@ -43,3 +43,4 @@ jobs:
 
       - name: Run NX target ${{ matrix.target }} on affected projects
         run: npx nx affected -t ${{ matrix.target }} --parallel=3 --skip-nx-cache --verbose
+

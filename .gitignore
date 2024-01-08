@@ -40,3 +40,4 @@ testem.log
 Thumbs.db
 apps/shinkai-visor-e2e/src/shinkai-node/db
 apps/shinkai-visor-e2e/src/shinkai-node/qr_code_device_0.png
+qr_code_device_0.png
