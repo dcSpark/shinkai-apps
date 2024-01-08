@@ -40,4 +40,5 @@ export default defineConfig({
   //   reuseExistingServer: !process.env.CI,
   //   cwd: workspaceRoot,
   // },
+  workers: process.env.CI ? 1 : undefined,
 });

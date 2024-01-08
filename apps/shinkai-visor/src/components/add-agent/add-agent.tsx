@@ -146,6 +146,7 @@ export const AddAgent = () => {
               name="agentName"
               render={({ field }) => (
                 <TextField
+                  data-testid="agent-name-input"
                   field={field}
                   label={<FormattedMessage id="agent-name" />}
                 />
@@ -245,6 +246,7 @@ export const AddAgent = () => {
           </div>
           <Button
             className="w-full"
+            data-testid="add-agent-submit-button"
             disabled={isPending}
             isLoading={isPending}
             type="submit"
