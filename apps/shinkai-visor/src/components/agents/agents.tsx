@@ -39,7 +39,7 @@ export const Agents = () => {
             <div className="space-y-3">
               {agents?.map((agent) => (
                 <Fragment key={agent.id}>
-                  <Button className="w-full" data-testid={`agent-button`} variant="ghost">
+                  <Button className="w-full" data-testid={`${agent.id}-agent-button`} variant="ghost">
                     <span className="w-full truncate text-start">
                       {agent.id}
                     </span>

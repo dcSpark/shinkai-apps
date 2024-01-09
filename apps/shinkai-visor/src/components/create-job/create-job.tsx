@@ -255,6 +255,7 @@ export const CreateJob = () => {
 
           <Button
             className="w-full"
+            data-testid="create-job-submit-button"
             disabled={isPending}
             isLoading={isPending}
             type="submit"

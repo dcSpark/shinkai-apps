@@ -15,7 +15,7 @@ const baseURL = 'https://google.com'; // process.env['BASE_URL'] || 'http://loca
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  ...nxE2EPreset(__filename, { testDir: './src/e2e',  }),
+  ...nxE2EPreset(__filename, { testDir: './src/e2e' }),
   projects: [
     /* Test against desktop browsers */
     {
@@ -41,4 +41,6 @@ export default defineConfig({
   //   cwd: workspaceRoot,
   // },
   workers: process.env.CI ? 1 : undefined,
+  testMatch: 'src/e2e/all.spec.ts',
+  fullyParallel: false,
 });
