@@ -1,5 +1,5 @@
 import { expect, test } from '../fixtures/base';
-import { popupVisible } from '../utils/basic-actions';
+import { togglePopup } from '../utils/basic-actions';
 export const popupTests = () => {
   test.beforeEach(async ({ page }) => {});
   test('popup should be initially hidden', async ({ popup }) => {
@@ -11,7 +11,7 @@ export const popupTests = () => {
     actionButton,
     popup,
   }) => {
-    await popupVisible(actionButton, popup);
+    await togglePopup(actionButton, popup);
     const popupContent = popup.getByTestId('popup');
     await expect(popupContent).toBeVisible();
   });

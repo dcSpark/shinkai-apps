@@ -2,7 +2,7 @@ import { FrameLocator, Locator } from "@playwright/test";
 
 import { expect } from '../fixtures/base';
 
-export const popupVisible = async (actionButton: Locator, popupIframe: FrameLocator): Promise<void> => {
+export const togglePopup = async (actionButton: Locator, popupIframe: FrameLocator): Promise<void> => {
   await actionButton.click();
   const popup = popupIframe.getByTestId('popup');
   await expect(popup).toBeVisible();

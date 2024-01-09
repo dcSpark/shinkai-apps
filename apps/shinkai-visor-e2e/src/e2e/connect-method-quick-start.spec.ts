@@ -1,7 +1,7 @@
 import { expect, test } from '../fixtures/base';
 import {
   acceptTerms,
-  popupVisible,
+  togglePopup,
   quickConnect,
 } from '../utils/basic-actions';
 import { NodeManager } from '../utils/node-manager';
@@ -14,7 +14,7 @@ export const connectMethodQuickStartTests = () => {
   test.describe.configure({ mode: 'serial' });
 
   test.beforeEach(async ({ page, actionButton, popup }) => {
-    await popupVisible(actionButton, popup);
+    await togglePopup(actionButton, popup);
     await acceptTerms(popup);
   });
 

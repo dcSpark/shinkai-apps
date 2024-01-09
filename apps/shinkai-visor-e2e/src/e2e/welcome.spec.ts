@@ -1,9 +1,9 @@
 import { expect, test } from '../fixtures/base';
-import { acceptTerms, popupVisible } from '../utils/basic-actions';
+import { acceptTerms, togglePopup } from '../utils/basic-actions';
 
 export const welcomeTests = () => {
   test.beforeEach(async ({ page, actionButton, popup }) => {
-    await popupVisible(actionButton, popup);
+    await togglePopup(actionButton, popup);
   });
 
   test('welcome should be the first page', async ({ page, popup }) => {

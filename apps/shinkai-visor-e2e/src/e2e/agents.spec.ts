@@ -3,9 +3,11 @@ import {
   acceptTerms,
   addAgent,
   navigateToMenu,
-  popupVisible,
   quickConnect,
+  togglePopup,
 } from '../utils/basic-actions';
+import { getAgent } from '../utils/dummy-data';
+import { hasError } from '../utils/input-errors';
 import { NodeManager } from '../utils/node-manager';
 
 export const agentTests = () => {
@@ -17,7 +19,7 @@ export const agentTests = () => {
 
   test.beforeEach(async ({ actionButton, popup }) => {
     await nodeManager.startNode(true);
-    await popupVisible(actionButton, popup);
+    await togglePopup(actionButton, popup);
     await acceptTerms(popup);
     await quickConnect(popup);
   });
@@ -34,26 +36,19 @@ export const agentTests = () => {
     await expect(emptyAgents).toBeAttached();
   });
 
+  // eslint-disable-next-line playwright/expect-expect
   test('add agent fail when form is invalid', async ({ popup }) => {
     await navigateToMenu(popup, 'nav-menu-add-agent-button');
     const agentName = popup.getByLabel('Agent name');
     await agentName.fill('');
     await popup.getByTestId('add-agent-submit-button').click();
-    const errorMessage = agentName.locator('..').locator('p').last();
-    await expect(errorMessage).toBeVisible();
-    await expect(errorMessage).toHaveClass(/text-red/);
+    await hasError(agentName);
   });
 
   test('add agent send user to create job form with new agent pre selected', async ({
     popup,
   }) => {
-    const agent = {
-      agentName: `test_gpt4_turbo_${Date.now()}`,
-      externalUrl: 'https://api.openai.com',
-      apiKey: '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',
-      model: 'open-ai',
-      models: 'gpt-4-1106-preview',
-    };
+    const agent = getAgent();
     await addAgent(popup, agent);
     const agentInput = popup
       .getByLabel('Agent')
@@ -63,13 +58,7 @@ export const agentTests = () => {
   });
 
   test('new added agent appears on agents list', async ({ popup }) => {
-    const agent = {
-      agentName: `test_gpt4_turbo_${Date.now()}`,
-      externalUrl: 'https://api.openai.com',
-      apiKey: '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',
-      model: 'open-ai',
-      models: 'gpt-4-1106-preview',
-    };
+    const agent = getAgent();
     await addAgent(popup, agent);
 
     // It's just to await agent created

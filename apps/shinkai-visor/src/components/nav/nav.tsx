@@ -241,6 +241,7 @@ export default function NavBar() {
                 </span>
               </DropdownMenuItem>
               <DropdownMenuItem
+                data-testid="nav-menu-create-job-button"
                 onClick={() => onClickMenuOption(MenuOption.CreateJob)}
               >
                 <JobBubbleIcon className="mr-2 h-4 w-4" />
