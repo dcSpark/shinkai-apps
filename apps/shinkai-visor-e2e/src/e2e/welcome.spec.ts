@@ -1,29 +1,14 @@
-import { FrameLocator } from '@playwright/test';
-
 import { expect, test } from '../fixtures/base';
-
-export const acceptTerms = async (popupIframe: FrameLocator): Promise<void> => {
-  const termsInput = popupIframe.getByTestId('terms');
-  await termsInput.click();
-  const getStartedButton = popupIframe.getByTestId('get-started-button');
-  await getStartedButton.click();
-}
+import { acceptTerms, popupVisible } from '../utils/basic-actions';
 
 export const welcomeTests = () => {
-  let popupIframe: FrameLocator;
-  test.beforeEach(async ({ page }, testInfo) => {
-    await page.goto('/');
-    // eslint-disable-next-line playwright/no-networkidle
-    await page.waitForLoadState('networkidle');
-    popupIframe = page.frameLocator('#popup-iframe');
-    await expect(popupIframe).toBeDefined();
-    const actionButton = page.getByTestId('action-button');
-    await actionButton.click();
+  test.beforeEach(async ({ page, actionButton, popup }) => {
+    await popupVisible(actionButton, popup);
   });
 
-  test('welcome should be the first page', async ({ page }) => {
-    const tosLink = popupIframe.getByTestId('terms-of-service-link');
-    const ppLink = popupIframe.getByTestId('privacy-policy-link');
+  test('welcome should be the first page', async ({ page, popup }) => {
+    const tosLink = popup.getByTestId('terms-of-service-link');
+    const ppLink = popup.getByTestId('privacy-policy-link');
 
     await expect(tosLink).toBeVisible();
     await expect(tosLink).toHaveAttribute(
@@ -37,35 +22,35 @@ export const welcomeTests = () => {
     );
   });
 
-  test('terms button should start unchecked', async ({ page }) => {
-    const termsInput = popupIframe.getByTestId('terms');
+  test('terms button should start unchecked', async ({ popup }) => {
+    const termsInput = popup.getByTestId('terms');
     await expect(termsInput).toHaveAttribute('data-state', 'unchecked');
   });
 
-  test('terms button start should be able to change', async ({ page }) => {
-    const termsInput = popupIframe.getByTestId('terms');
+  test('terms button start should be able to change', async ({ popup }) => {
+    const termsInput = popup.getByTestId('terms');
     await expect(termsInput).toHaveAttribute('data-state', 'unchecked');
     await termsInput.click();
     await expect(termsInput).toHaveAttribute('data-state', 'checked');
   });
 
-  test('get started button start disabled', async ({ page }) => {
-    const getStartedButton = popupIframe.getByTestId('get-started-button');
+  test('get started button start disabled', async ({ popup }) => {
+    const getStartedButton = popup.getByTestId('get-started-button');
     await expect(getStartedButton).toHaveAttribute('disabled');
   });
 
   test('get started button should be enabled when terms are accepted', async ({
-    page,
+    popup,
   }) => {
-    const termsInput = popupIframe.getByTestId('terms');
+    const termsInput = popup.getByTestId('terms');
     await termsInput.click();
 
-    const getStartedButton = popupIframe.getByTestId('get-started-button');
+    const getStartedButton = popup.getByTestId('get-started-button');
     await expect(getStartedButton).not.toHaveAttribute('disabled');
   });
 
-  test('navigate to login after terms accepted', async ({ page }) => {
-    await acceptTerms(popupIframe);
-    await expect(popupIframe.getByTestId('quick-connect-button')).toBeVisible();
+  test('navigate to login after terms accepted', async ({ popup }) => {
+    await acceptTerms(popup);
+    await expect(popup.getByTestId('quick-connect-button')).toBeVisible();
   });
 };

@@ -1,9 +1,8 @@
-import { expect,test } from '../fixtures/base';
+import { expect, test } from '../fixtures/base';
 
 export const actionButtonTests = () => {
-  test('action button appear', async ({ page }) => {
-    await page.goto('/');
-    const actionButton = page.getByTestId('action-button');
+  test.beforeEach(async ({ page }) => {});
+  test('action button appear', async ({ actionButton }) => {
     await expect(actionButton).toBeVisible();
   });
-}
+};

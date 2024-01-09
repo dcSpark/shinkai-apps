@@ -1,27 +1,18 @@
-import { FrameLocator } from '@playwright/test';
-
 import { expect, test } from '../fixtures/base';
-
+import { popupVisible } from '../utils/basic-actions';
 export const popupTests = () => {
-  let popupIframe: FrameLocator;
-  test.beforeEach(async ({ page }, testInfo) => {
-    await page.goto('/');
-    // eslint-disable-next-line playwright/no-networkidle
-    await page.waitForLoadState('networkidle');
-    popupIframe = page.frameLocator('#popup-iframe');
-    await expect(popupIframe).toBeDefined();
+  test.beforeEach(async ({ page }) => {});
+  test('popup should be initially hidden', async ({ popup }) => {
+    const popupContent = popup.getByTestId('popup');
+    await expect(popupContent).toBeHidden();
   });
 
-  test('popup should be initially hidden', async ({ page }) => {
-    const popup = popupIframe.getByTestId('popup');
-    await expect(popup).toBeHidden();
-  });
-
-  test('popup appear after press action button', async ({ page }) => {
-    const actionButton = page.getByTestId('action-button');
-    await actionButton.click();
-
-    const popup = popupIframe.getByTestId('popup');
-    await expect(popup).toBeVisible();
+  test('popup appear after press action button', async ({
+    actionButton,
+    popup,
+  }) => {
+    await popupVisible(actionButton, popup);
+    const popupContent = popup.getByTestId('popup');
+    await expect(popupContent).toBeVisible();
   });
 };
