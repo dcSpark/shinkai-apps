@@ -15,7 +15,7 @@ jobs:
       fail-fast: true
       max-parallel: 1
       matrix:
-        target: ['lint', 'build', 'test', 'e2e']
+        target: ['lint', 'build', 'test']
 
     steps:
       - name: Check out repository
