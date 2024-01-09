@@ -1,9 +1,5 @@
 import { expect, test } from '../fixtures/base';
-import {
-  acceptTerms,
-  togglePopup,
-  quickConnect,
-} from '../utils/basic-actions';
+import { acceptTerms, quickConnect,togglePopup } from '../utils/basic-actions';
 import { NodeManager } from '../utils/node-manager';
 
 export const connectMethodQuickStartTests = () => {
