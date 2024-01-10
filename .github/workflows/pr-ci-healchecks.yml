@@ -11,12 +11,6 @@ defaults:
 jobs:
   health-checks:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-      max-parallel: 1
-      matrix:
-        target: ['lint', 'build', 'test']
-
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -45,4 +39,4 @@ jobs:
         env:
           CI: true
           OPEN_AI_API_KEY: ${{ secrets.OPEN_AI_API_KEY }}
-        run: npx nx affected -t ${{ matrix.target }} --parallel=3 --skip-nx-cache --verbose
+        run: npx nx affected -t lint,build,test --parallel=3 --skip-nx-cache --verbose
