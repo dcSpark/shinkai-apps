@@ -6,6 +6,7 @@ import { resolve } from 'path'
 import { defineConfig } from 'vite';
 import topLevelAwait from "vite-plugin-top-level-await";
 import wasm from 'vite-plugin-wasm';
+import tsconfigPaths from 'vite-tsconfig-paths'
 
 import { dynamicManifest } from './dynamic-manifest';
 
@@ -30,12 +31,13 @@ export default defineConfig({
 
   plugins: [
     react(),
-    nxViteTsPaths(),
+    nxViteTsPaths({ debug: true }),
+    tsconfigPaths({ projects: ['./'] }),
     wasm({ bundle: true }),
     topLevelAwait(),
     crx({ manifest: dynamicManifest }),
   ],
-
+  
   test: {
     globals: true,
     cache: {

@@ -16,8 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@shinkai_network/shinkai-message-ts/*": [
-        "dist/libs/shinkai-message-ts/*.js",
-        "dist/libs/shinkai-message-ts/*.d.ts",
+        "libs/shinkai-message-ts/src/*.ts"
       ],
       "@shinkai_network/shinkai-node-state/*": [
         "libs/shinkai-node-state/src/*.ts"
