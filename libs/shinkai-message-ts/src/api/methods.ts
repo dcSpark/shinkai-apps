@@ -393,6 +393,27 @@ export const submitRegistrationCode = async (
   }
 };
 
+export const health = async (
+  payload: {
+    node_address: string,
+  },
+): Promise<{
+  status: 'ok',
+  node_name: string,
+  is_pristine: boolean,
+}> => {
+  const healthResponse = await fetch(
+    urlJoin(payload.node_address, '/v1/shinkai_health'),
+    {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    },
+  );
+  await handleHttpError(healthResponse);
+  const responseData = await healthResponse.json();
+  return responseData;
+};
+
 export const submitInitialRegistrationNoCode = async (
   payload: SubmitInitialRegistrationNoCodePayload,
 ): Promise<{

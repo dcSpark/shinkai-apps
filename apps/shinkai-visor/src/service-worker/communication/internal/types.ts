@@ -7,6 +7,7 @@ export enum ServiceWorkerInternalMessageType {
   CaptureImage = 'capture-image',
   SendCaptureToAgent = 'send-capture-to-agent',
   OpenLink = 'open-link',
+  QuickConnectionIntent = 'quick-connection-intent',
 }
 
 export enum ContentScriptBridgeMessageType {
@@ -36,5 +37,6 @@ export type ServiceWorkerInternalMessage =
   | { type: ServiceWorkerInternalMessageType.CopyToClipboard, data: { content: string } }
   | { type: ServiceWorkerInternalMessageType.CaptureImage, data: { image: string } }
   | { type: ServiceWorkerInternalMessageType.SendCaptureToAgent, data: { imageDataUrl: string, filename: string } }
-  | { type: ServiceWorkerInternalMessageType.OpenLink, data: { url: string } };
+  | { type: ServiceWorkerInternalMessageType.OpenLink, data: { url: string } }
+  | { type: ServiceWorkerInternalMessageType.QuickConnectionIntent, data: { nodeAddress: string } };
 ;

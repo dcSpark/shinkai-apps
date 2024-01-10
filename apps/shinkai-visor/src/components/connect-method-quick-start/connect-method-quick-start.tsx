@@ -11,7 +11,7 @@ import { QrCode } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
-import { useHistory } from 'react-router';
+import { useHistory, useLocation } from 'react-router';
 import { z } from 'zod';
 
 import {
@@ -31,8 +31,9 @@ type FormType = z.infer<typeof formSchema>;
 
 export const ConnectMethodQuickStart = () => {
   const history = useHistory();
+  const location = useLocation<{ nodeAddress: string }>();
   const setAuth = useAuth((state) => state.setAuth);
-  const DEFAULT_NODE_ADDRESS = 'http://127.0.0.1:9550';
+  const DEFAULT_NODE_ADDRESS = location.state?.nodeAddress ?? 'http://127.0.0.1:9550';
   const [encryptionKeys, setEncryptedKeys] = useState<Encryptionkeys | null>(
     null,
   );
