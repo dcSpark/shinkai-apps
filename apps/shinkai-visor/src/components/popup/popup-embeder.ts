@@ -75,9 +75,7 @@ chrome.runtime.onMessage.addListener(
         }
         break;
       case ServiceWorkerInternalMessageType.QuickConnectionIntent:
-        baseContainer.style.pointerEvents = 'auto';
         break;
-
       default:
         break;
     }
