@@ -2,10 +2,13 @@ import { Button } from '@shinkai_network/shinkai-ui';
 import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
-export const EmptyInboxes = () => {
+interface EmptyInboxesProps extends React.HTMLAttributes<HTMLDivElement> {
+}
+
+export const EmptyInboxes = ({ ...props }: EmptyInboxesProps) => {
   const history = useHistory();
   return (
-    <div className="flex grow flex-col items-center justify-center">
+    <div className="flex grow flex-col items-center justify-center" { ...props }>
       <div className="mb-8 space-y-3 text-center">
         <span aria-hidden className="text-5xl">
           🤖

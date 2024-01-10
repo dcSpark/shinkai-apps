@@ -16,7 +16,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       textareaRef.current.style.height = 'inherit';
       // Set height
       textareaRef.current.style.height = `${Math.max(
-        textareaRef.current.scrollHeight,
+        textareaRef.current.scrollHeight + 2,
         MIN_TEXTAREA_HEIGHT,
       )}px`;
 

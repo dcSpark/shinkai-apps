@@ -11,7 +11,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   Button,
-  ChatBubbleIcon,
   DisconnectIcon,
   DropdownMenu,
   DropdownMenuContent,
@@ -215,7 +214,7 @@ export default function NavBar() {
             open={isMenuOpened}
           >
             <DropdownMenuTrigger asChild>
-              <Button size="icon" variant="ghost">
+              <Button data-testid="nav-menu-button" size="icon" variant="ghost">
                 {!isMenuOpened ? (
                   <Menu className="h-4 w-4" />
                 ) : (
@@ -241,6 +240,7 @@ export default function NavBar() {
                 </span>
               </DropdownMenuItem>
               <DropdownMenuItem
+                data-testid="nav-menu-create-job-button"
                 onClick={() => onClickMenuOption(MenuOption.CreateJob)}
               >
                 <JobBubbleIcon className="mr-2 h-4 w-4" />
@@ -248,19 +248,22 @@ export default function NavBar() {
                   <FormattedMessage id="create-job" />
                 </span>
               </DropdownMenuItem>
-              <DropdownMenuItem
+
+              {/* Temporarily disabled while shinkai-node implements networking layer */}
+              {/* <DropdownMenuItem
                 onClick={() => onClickMenuOption(MenuOption.CreateInbox)}
               >
                 <ChatBubbleIcon className="mr-2 h-4 w-4" />
                 <span>
                   <FormattedMessage id="create-inbox" />
                 </span>
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
 
               <DropdownMenuLabel>
                 <FormattedMessage id="agent.other" />
               </DropdownMenuLabel>
               <DropdownMenuItem
+                data-testid="nav-menu-agents-button"
                 onClick={() => onClickMenuOption(MenuOption.Agents)}
               >
                 <AgentIcon className="mr-2 h-4 w-4" />
@@ -269,6 +272,7 @@ export default function NavBar() {
                 </span>
               </DropdownMenuItem>
               <DropdownMenuItem
+                data-testid="nav-menu-add-agent-button"
                 onClick={() => onClickMenuOption(MenuOption.AddAgent)}
               >
                 <AddAgentIcon className="mr-2 h-4 w-4" />

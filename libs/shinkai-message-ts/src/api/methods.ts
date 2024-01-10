@@ -422,7 +422,14 @@ export const submitInitialRegistrationNoCode = async (
 }> => {
   try {
     // Used to fetch the shinkai identity
-    const { status, node_name } = await health({ node_address: payload.node_address });
+    const healthResponse = await fetch(
+      urlJoin(payload.node_address, '/v1/shinkai_health'),
+      {
+        method: 'GET'
+      },
+    );
+    await handleHttpError(healthResponse);
+    const { status, node_name }: { status: 'ok', node_name: string } = await healthResponse.json();
     if (status !== 'ok') {
       throw new Error(
         `Node status error, can't fetch shinkai identity from health ${status} ${node_name}`,
