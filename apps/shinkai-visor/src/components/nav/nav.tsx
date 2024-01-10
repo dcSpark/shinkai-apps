@@ -214,7 +214,7 @@ export default function NavBar() {
             open={isMenuOpened}
           >
             <DropdownMenuTrigger asChild>
-              <Button size="icon" variant="ghost">
+              <Button data-testid="nav-menu-button" size="icon" variant="ghost">
                 {!isMenuOpened ? (
                   <Menu className="h-4 w-4" />
                 ) : (
@@ -240,6 +240,7 @@ export default function NavBar() {
                 </span>
               </DropdownMenuItem>
               <DropdownMenuItem
+                data-testid="nav-menu-create-job-button"
                 onClick={() => onClickMenuOption(MenuOption.CreateJob)}
               >
                 <JobBubbleIcon className="mr-2 h-4 w-4" />
@@ -262,6 +263,7 @@ export default function NavBar() {
                 <FormattedMessage id="agent.other" />
               </DropdownMenuLabel>
               <DropdownMenuItem
+                data-testid="nav-menu-agents-button"
                 onClick={() => onClickMenuOption(MenuOption.Agents)}
               >
                 <AgentIcon className="mr-2 h-4 w-4" />
@@ -270,6 +272,7 @@ export default function NavBar() {
                 </span>
               </DropdownMenuItem>
               <DropdownMenuItem
+                data-testid="nav-menu-add-agent-button"
                 onClick={() => onClickMenuOption(MenuOption.AddAgent)}
               >
                 <AddAgentIcon className="mr-2 h-4 w-4" />

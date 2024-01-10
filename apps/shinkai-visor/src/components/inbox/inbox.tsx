@@ -233,6 +233,7 @@ export const Inbox = () => {
                             return (
                               <div
                                 className={cn('pl-2')}
+                                data-testid={`message-${message.isLocal ? 'local' : 'remote'}-${message.hash}`}
                                 key={`${index}-${message.scheduledTime}`}
                               >
                                 <Message message={message} />

@@ -404,8 +404,7 @@ export const submitInitialRegistrationNoCode = async (
     const healthResponse = await fetch(
       urlJoin(payload.node_address, '/v1/shinkai_health'),
       {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'GET'
       },
     );
     await handleHttpError(healthResponse);

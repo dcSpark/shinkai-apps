@@ -42,4 +42,7 @@ jobs:
           npm ci --no-audit --prefer-offline
 
       - name: Run NX target ${{ matrix.target }} on affected projects
+        env:
+          CI: true
+          OPEN_AI_API_KEY: ${{ secrets.OPEN_AI_API_KEY }}
         run: npx nx affected -t ${{ matrix.target }} --parallel=3 --skip-nx-cache --verbose

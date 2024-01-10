@@ -59,6 +59,7 @@ export const Popup = () => {
         <motion.div
           animate={{ opacity: 1 }}
           className="flex h-full w-full flex-col rounded-lg bg-gray-500 px-6 pb-6 pt-8 shadow-xl"
+          data-testid="popup"
           exit={{ opacity: 0 }}
           initial={{ opacity: 0 }}
           transition={{ duration: 0.5 }}

@@ -98,14 +98,14 @@ export const Inboxes = () => {
     <div className="flex h-full flex-col justify-between space-y-3 overflow-hidden">
       <Header title={<FormattedMessage id="inbox.other" />} />
       {!agents?.length ? (
-        <EmptyAgents />
+        <EmptyAgents data-testid="empty-agents" />
       ) : !inboxes?.length ? (
-        <EmptyInboxes />
+        <EmptyInboxes data-testid="empty-inboxes"/>
       ) : (
         <>
           <div className="flex grow flex-col overflow-hidden">
             <ScrollArea className="pr-4 [&>div>div]:!block">
-              <div className="space-y-4">
+              <div className="space-y-4" data-testid="inboxes-container">
                 {inboxes?.map((inbox) => (
                   <Fragment key={inbox.inbox_id}>
                     <Button
