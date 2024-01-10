@@ -74,8 +74,6 @@ chrome.runtime.onMessage.addListener(
           baseContainer.style.pointerEvents = isVisible ? 'auto' : 'none';
         }
         break;
-      case ServiceWorkerInternalMessageType.QuickConnectionIntent:
-        break;
       default:
         break;
     }
