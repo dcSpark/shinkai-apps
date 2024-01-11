@@ -1,3 +1,6 @@
+
+import { useAuth } from "../../../store/auth/auth";
+import { useSettings } from "../../../store/settings/settings";
 import { ContentScriptBridgeMessage, ServiceWorkerInternalMessage, ServiceWorkerInternalMessageType } from "./types";
 
 export const sendContentScriptMessage = (message: ContentScriptBridgeMessage, tabId?: number) => {
@@ -33,6 +36,8 @@ export const listen = (): void => {
       case ServiceWorkerInternalMessageType.RehydrateStore:
         // Internal rehydrate
         chrome.tabs.query({}, (tabs) => tabs.forEach(tab => sendMessage(message, tab.id)));
+        useAuth.persist.rehydrate();
+        useSettings.persist.rehydrate();
         break;
       case ServiceWorkerInternalMessageType.CopyToClipboard:
         if (!sender?.tab?.id) {

@@ -1,3 +1,5 @@
+import * as path from 'path';
+
 import { expect, test } from '../fixtures/base';
 import {
   acceptTerms,
@@ -12,7 +14,7 @@ import { NodeManager } from '../utils/node-manager';
 
 export const agentTests = () => {
   const nodeManager = new NodeManager(
-    '/Users/agallardol/Documents/github/shinkai-node/target/debug/shinkai_node',
+    path.join(__filename, '../../shinkai-node/shinkai_node'),
   );
 
   test.describe.configure({ mode: 'serial' });

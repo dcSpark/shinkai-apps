@@ -6,12 +6,12 @@ import {
 } from './types';
 
 const GLOBALLY_ALLOWED_ORIGINS: RegExp[] = [
-  /^.*[.]?shinkai\.com$/,
-  ...(import.meta.env.DEV ? [/localhost/] : []),
+  /shinkai\.com$/,
+  ...(import.meta.env.DEV ? [/localhost$/, /typescriptlang/] : []),
 ];
 const originIsGloballyAllowed = (origin: string): boolean =>
   GLOBALLY_ALLOWED_ORIGINS.some((globallyAllowedOrigin) =>
-    origin.match(globallyAllowedOrigin),
+    globallyAllowedOrigin.test(origin),
   );
 const originIsAllowed = (origin: string): boolean => {
   // Implements specific auth. IE control permissions o
