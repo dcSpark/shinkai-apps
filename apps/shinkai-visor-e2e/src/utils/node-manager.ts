@@ -33,7 +33,7 @@ export class NodeManager {
           shell: true,
       });
       childProcess.on('close', (err) => {
-        console.log(`Error spawning process with command ${command}`, err);
+        console.log(`Process closed ${command}`, err);
         reject(err);
       });
       
