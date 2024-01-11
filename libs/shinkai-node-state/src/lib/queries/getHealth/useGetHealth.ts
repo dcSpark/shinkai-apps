@@ -7,8 +7,7 @@ import { GetHealthInput, GetHealthOutput, Options } from './types';
 export const useGetHealth = (input: GetHealthInput, options?: Options) => {
   const response = useQuery<GetHealthOutput>({
     queryKey: [FunctionKey.GET_HEALTH, input],
-    queryFn: async () => getHealth(input),
-    enabled: !!input.node_address,
+    queryFn: async () => await getHealth(input),
     ...options,
   });
   return { ...response, nodeInfo: response.data };

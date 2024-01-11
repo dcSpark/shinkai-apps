@@ -48,6 +48,7 @@ export const Settings = () => {
   const { nodeInfo, isSuccess: isNodeInfoSuccess } = useGetHealth({
     node_address: auth?.node_address ?? '',
   });
+  console.log(nodeInfo, 'nodeInfo');
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -74,17 +75,22 @@ export const Settings = () => {
     history.push('settings/create-registration-code');
   };
   useEffect(() => {
+    if (isNodeInfoSuccess) {
+      form.reset({
+        nodeVersion: nodeInfo?.version ?? '',
+        shinkaiIdentity: nodeInfo?.node_name ?? '',
+        defaultAgentId: settings?.defaultAgentId,
+        hideActionButton: settings?.hideActionButton,
+        nodeAddress: auth?.node_address,
+      });
+    }
+  }, [form, isNodeInfoSuccess, nodeInfo?.node_name, nodeInfo?.version]);
+
+  useEffect(() => {
     if (JSON.stringify(currentFormValue) !== JSON.stringify(settings)) {
       setSettings({ ...currentFormValue });
     }
   }, [currentFormValue, settings, setSettings]);
-
-  useEffect(() => {
-    if (isNodeInfoSuccess && nodeInfo?.status === 'ok') {
-      form.setValue('shinkaiIdentity', nodeInfo?.node_name ?? '');
-      form.setValue('nodeVersion', nodeInfo?.version ?? '');
-    }
-  }, [isNodeInfoSuccess, form, nodeInfo]);
 
   return (
     <div className="flex flex-col space-y-8 pr-2.5">
