@@ -87,7 +87,7 @@ export const Settings = () => {
   }, [isNodeInfoSuccess, form, nodeInfo]);
 
   return (
-    <div className="flex flex-col space-y-8">
+    <div className="flex flex-col space-y-8 pr-2.5">
       <Header title={<FormattedMessage id="setting.other" />} />
       <div className="flex flex-col space-y-8">
         <Form {...form}>
