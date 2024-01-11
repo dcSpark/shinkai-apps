@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
+import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import {
   Button,
   Checkbox,
@@ -33,6 +34,8 @@ const formSchema = z.object({
   defaultAgentId: z.string(),
   hideActionButton: z.boolean(),
   nodeAddress: z.string(),
+  shinkaiIdentity: z.string(),
+  nodeVersion: z.string(),
 });
 
 type FormSchemaType = z.infer<typeof formSchema>;
@@ -42,6 +45,9 @@ export const Settings = () => {
   const auth = useAuth((authStore) => authStore.auth);
   const settings = useSettings((settingsStore) => settingsStore.settings);
   const setSettings = useSettings((settingsStore) => settingsStore.setSettings);
+  const { nodeInfo, isSuccess: isNodeInfoSuccess } = useGetHealth({
+    node_address: auth?.node_address ?? '',
+  });
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -72,6 +78,14 @@ export const Settings = () => {
       setSettings({ ...currentFormValue });
     }
   }, [currentFormValue, settings, setSettings]);
+
+  useEffect(() => {
+    if (isNodeInfoSuccess && nodeInfo?.status === 'ok') {
+      form.setValue('shinkaiIdentity', nodeInfo?.node_name ?? '');
+      form.setValue('nodeVersion', nodeInfo?.version ?? '');
+    }
+  }, [isNodeInfoSuccess, form, nodeInfo]);
+
   return (
     <div className="flex flex-col space-y-8">
       <Header title={<FormattedMessage id="setting.other" />} />
@@ -121,6 +135,28 @@ export const Settings = () => {
                 <TextField
                   field={field}
                   label={<FormattedMessage id="node-address" />}
+                />
+              )}
+            />
+            <FormField
+              control={form.control}
+              disabled
+              name="shinkaiIdentity"
+              render={({ field }) => (
+                <TextField
+                  field={field}
+                  label={<FormattedMessage id="shinkai-identity" />}
+                />
+              )}
+            />
+            <FormField
+              control={form.control}
+              disabled
+              name="nodeVersion"
+              render={({ field }) => (
+                <TextField
+                  field={field}
+                  label={<FormattedMessage id="node-version" />}
                 />
               )}
             />

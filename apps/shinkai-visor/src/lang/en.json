@@ -11,6 +11,7 @@
   "registration-code": "Registration Code",
   "registration-name": "Device Nickname",
   "node-address": "Node Address",
+  "node-version": "Node Version",
   "shinkai-identity": "Shinkai Identity",
   "node-encryption-public-key": "Node Encryption Public Key",
   "node-signature-public-key": "Node Signature Public Key",
