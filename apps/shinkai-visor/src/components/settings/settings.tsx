@@ -79,9 +79,6 @@ export const Settings = () => {
       form.reset({
         nodeVersion: nodeInfo?.version ?? '',
         shinkaiIdentity: nodeInfo?.node_name ?? '',
-        defaultAgentId: settings?.defaultAgentId,
-        hideActionButton: settings?.hideActionButton,
-        nodeAddress: auth?.node_address,
       });
     }
   }, [form, isNodeInfoSuccess, nodeInfo?.node_name, nodeInfo?.version]);
