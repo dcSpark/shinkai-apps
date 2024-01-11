@@ -28,10 +28,15 @@ export class NodeManager {
     console.log(`executing ${command}`);
     return new Promise((resolve, reject) => {
       const childProcess = spawn(command, {
-        detached: false,
-        stdio: 'pipe',
-        shell: true,
+          detached: false,
+          stdio: 'pipe',
+          shell: true,
       });
+      childProcess.on('close', (err) => {
+        console.log(`Process closed ${command}`, err);
+        reject(err);
+      });
+      
       if (options.pipeLogs) {
         childProcess.stdout?.pipe(process.stdout);
       }

@@ -1,10 +1,12 @@
+import * as path from 'path';
+
 import { expect, test } from '../fixtures/base';
-import { acceptTerms, quickConnect,togglePopup } from '../utils/basic-actions';
+import { acceptTerms, quickConnect, togglePopup } from '../utils/basic-actions';
 import { NodeManager } from '../utils/node-manager';
 
 export const connectMethodQuickStartTests = () => {
   const nodeManager = new NodeManager(
-    '/Users/agallardol/Documents/github/shinkai-node/target/debug/shinkai_node',
+    path.join(__filename, '../../shinkai-node/shinkai_node'),
   );
 
   test.describe.configure({ mode: 'serial' });
