@@ -8,7 +8,10 @@ import {
   ShinkaiMessage,
   SmartInbox,
 } from '../models';
-import { APIUseRegistrationCodeSuccessResponse, SubmitInitialRegistrationNoCodePayload } from '../models/Payloads';
+import {
+  APIUseRegistrationCodeSuccessResponse,
+  SubmitInitialRegistrationNoCodePayload,
+} from '../models/Payloads';
 import { SerializedAgent } from '../models/SchemaTypes';
 import { InboxNameWrapper } from '../pkg/shinkai_message_wasm';
 import { calculateMessageHash } from '../utils';
@@ -257,11 +260,14 @@ export const updateInboxName = async (
     const message = JSON.parse(messageString);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await fetch(urlJoin(apiEndpoint, '/v1/update_smart_inbox_name'), {
-      method: 'POST',
-      body: JSON.stringify(message),
-      headers: { 'Content-Type': 'application/json' },
-    });
+    const response = await fetch(
+      urlJoin(apiEndpoint, '/v1/update_smart_inbox_name'),
+      {
+        method: 'POST',
+        body: JSON.stringify(message),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
     const data = await response.json();
     await handleHttpError(response);
     return data;
@@ -294,11 +300,14 @@ export const getLastMessagesFromInbox = async (
     const message = JSON.parse(messageStr);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await fetch(urlJoin(apiEndpoint, '/v1/last_messages_from_inbox'), {
-      method: 'POST',
-      body: JSON.stringify(message),
-      headers: { 'Content-Type': 'application/json' },
-    });
+    const response = await fetch(
+      urlJoin(apiEndpoint, '/v1/last_messages_from_inbox'),
+      {
+        method: 'POST',
+        body: JSON.stringify(message),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
     await handleHttpError(response);
     const data = await response.json();
     return data.data;
@@ -334,11 +343,14 @@ export const submitRequestRegistrationCode = async (
     const message = JSON.parse(messageStr);
 
     const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await fetch(urlJoin(apiEndpoint, '/v1/create_registration_code'), {
-      method: 'POST',
-      body: JSON.stringify(message),
-      headers: { 'Content-Type': 'application/json' },
-    });
+    const response = await fetch(
+      urlJoin(apiEndpoint, '/v1/create_registration_code'),
+      {
+        method: 'POST',
+        body: JSON.stringify(message),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
 
     await handleHttpError(response);
     const data = await response.json();
@@ -393,14 +405,13 @@ export const submitRegistrationCode = async (
   }
 };
 
-export const health = async (
-  payload: {
-    node_address: string,
-  },
-): Promise<{
-  status: 'ok',
-  node_name: string,
-  is_pristine: boolean,
+export const health = async (payload: {
+  node_address: string;
+}): Promise<{
+  status: 'ok';
+  node_name: string;
+  is_pristine: boolean;
+  version: string;
 }> => {
   const healthResponse = await fetch(
     urlJoin(payload.node_address, '/v1/shinkai_health'),
@@ -425,11 +436,12 @@ export const submitInitialRegistrationNoCode = async (
     const healthResponse = await fetch(
       urlJoin(payload.node_address, '/v1/shinkai_health'),
       {
-        method: 'GET'
+        method: 'GET',
       },
     );
     await handleHttpError(healthResponse);
-    const { status, node_name }: { status: 'ok', node_name: string } = await healthResponse.json();
+    const { status, node_name }: { status: 'ok'; node_name: string } =
+      await healthResponse.json();
     if (status !== 'ok') {
       throw new Error(
         `Node status error, can't fetch shinkai identity from health ${status} ${node_name}`,
