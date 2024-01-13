@@ -34,8 +34,7 @@ const formSchema = z.object({
     .regex(
       /^@@[a-zA-Z0-9_]+\.shinkai.*$/,
       `It should be in the format of @@<name>.shinkai`,
-    )
-    .optional(),
+    ),
 });
 
 type FormType = z.infer<typeof formSchema>;
@@ -54,6 +53,7 @@ export const ConnectMethodQuickStart = () => {
     defaultValues: {
       registration_name: 'main_device',
       node_address: DEFAULT_NODE_ADDRESS,
+      shinkai_identity: '@@localhost.shinkai',
     },
   });
   const {
@@ -69,7 +69,7 @@ export const ConnectMethodQuickStart = () => {
           ...setupPayload,
           permission_type: '',
           shinkai_identity:
-            setupPayload.shinkai_identity || (response.data?.node_name ?? ''),
+            setupPayload.shinkai_identity ?? response.data?.node_name ?? '',
           node_signature_pk: response.data?.identity_public_key ?? '',
           node_encryption_pk: response.data?.encryption_public_key ?? '',
         };
@@ -91,7 +91,7 @@ export const ConnectMethodQuickStart = () => {
       profile: 'main',
       identity_type: 'device',
       permission_type: 'admin',
-      shinkai_identity: values.shinkai_identity ?? '',
+      shinkai_identity: values.shinkai_identity,
       registration_code: '',
       node_encryption_pk: '',
       node_address: values.node_address,
