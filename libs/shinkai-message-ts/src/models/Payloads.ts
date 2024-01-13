@@ -22,9 +22,9 @@ export interface CredentialsPayload {
   node_encryption_pk: string;
 }
 
-export type JobCredentialsPayload = CredentialsPayload
+export type JobCredentialsPayload = CredentialsPayload;
 
-export type AgentCredentialsPayload = CredentialsPayload
+export type AgentCredentialsPayload = CredentialsPayload;
 
 export type LastMessagesFromInboxCredentialsPayload = {
   shinkai_identity: string;
@@ -32,7 +32,7 @@ export type LastMessagesFromInboxCredentialsPayload = {
   profile_encryption_sk: string;
   profile_identity_sk: string;
   node_encryption_pk: string;
-}
+};
 
 export interface APIUseRegistrationCodeSuccessResponse {
   message: string;
@@ -49,4 +49,5 @@ export interface SubmitInitialRegistrationNoCodePayload {
   profile_identity_sk: string;
   registration_name: string;
   profile: string;
+  shinkai_identity: string;
 }

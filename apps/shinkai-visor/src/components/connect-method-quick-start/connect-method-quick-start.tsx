@@ -1,6 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
   Button,
   ErrorMessage,
   Form,
@@ -25,6 +29,13 @@ import { Header } from '../header/header';
 const formSchema = z.object({
   registration_name: z.string().min(5),
   node_address: z.string().url(),
+  shinkai_identity: z
+    .string()
+    .regex(
+      /^@@[a-zA-Z0-9_]+\.shinkai.*$/,
+      `It should be in the format of @@<name>.shinkai`,
+    )
+    .optional(),
 });
 
 type FormType = z.infer<typeof formSchema>;
@@ -33,7 +44,8 @@ export const ConnectMethodQuickStart = () => {
   const history = useHistory();
   const location = useLocation<{ nodeAddress: string }>();
   const setAuth = useAuth((state) => state.setAuth);
-  const DEFAULT_NODE_ADDRESS = location.state?.nodeAddress ?? 'http://127.0.0.1:9550';
+  const DEFAULT_NODE_ADDRESS =
+    location.state?.nodeAddress ?? 'http://127.0.0.1:9550';
   const [encryptionKeys, setEncryptedKeys] = useState<Encryptionkeys | null>(
     null,
   );
@@ -56,7 +68,8 @@ export const ConnectMethodQuickStart = () => {
           ...encryptionKeys,
           ...setupPayload,
           permission_type: '',
-          shinkai_identity: response.data?.node_name ?? '',
+          shinkai_identity:
+            setupPayload.shinkai_identity || (response.data?.node_name ?? ''),
           node_signature_pk: response.data?.identity_public_key ?? '',
           node_encryption_pk: response.data?.encryption_public_key ?? '',
         };
@@ -74,11 +87,11 @@ export const ConnectMethodQuickStart = () => {
       keys = await generateMyEncryptionKeys();
       setEncryptedKeys(keys);
     }
-    submitRegistration({
+    await submitRegistration({
       profile: 'main',
       identity_type: 'device',
       permission_type: 'admin',
-      shinkai_identity: '',
+      shinkai_identity: values.shinkai_identity ?? '',
       registration_code: '',
       node_encryption_pk: '',
       node_address: values.node_address,
@@ -96,7 +109,7 @@ export const ConnectMethodQuickStart = () => {
   };
 
   return (
-    <div className="flex h-full flex-col justify-between">
+    <div className="flex h-full flex-col justify-between gap-6 overflow-auto pr-2">
       <div>
         <Header
           description={
@@ -111,7 +124,7 @@ export const ConnectMethodQuickStart = () => {
             className="mt-8 space-y-5"
             onSubmit={form.handleSubmit(connect)}
           >
-            <div className="flex flex-col justify-between space-y-2">
+            <div className="flex flex-col justify-between gap-2">
               <FormField
                 control={form.control}
                 name="node_address"
@@ -123,18 +136,43 @@ export const ConnectMethodQuickStart = () => {
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="registration_name"
-                render={({ field }) => (
-                  <TextField
-                    field={field}
-                    label={<FormattedMessage id="registration-name" />}
-                  />
-                )}
-              />
+              <Accordion collapsible type="single">
+                <AccordionItem value="item-1">
+                  <AccordionTrigger className="pl-2">
+                    Advance Options
+                  </AccordionTrigger>
 
-              {isSubmitError && <ErrorMessage data-testid="quick-connect-error-message" message={submitError?.message} />}
+                  <AccordionContent className="flex flex-col justify-between space-y-2 pb-0">
+                    <FormField
+                      control={form.control}
+                      name="registration_name"
+                      render={({ field }) => (
+                        <TextField
+                          field={field}
+                          label={<FormattedMessage id="registration-name" />}
+                        />
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="shinkai_identity"
+                      render={({ field }) => (
+                        <TextField
+                          field={field}
+                          label={<FormattedMessage id="shinkai-identity" />}
+                        />
+                      )}
+                    />
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+
+              {isSubmitError && (
+                <ErrorMessage
+                  data-testid="quick-connect-error-message"
+                  message={submitError?.message}
+                />
+              )}
             </div>
             <Button
               className="w-full"
