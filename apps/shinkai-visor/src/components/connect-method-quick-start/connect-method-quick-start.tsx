@@ -139,7 +139,7 @@ export const ConnectMethodQuickStart = () => {
               <Accordion collapsible type="single">
                 <AccordionItem value="item-1">
                   <AccordionTrigger className="pl-2">
-                    Advance Options
+                    <FormattedMessage id="advanced-options" />
                   </AccordionTrigger>
 
                   <AccordionContent className="flex flex-col justify-between space-y-2 pb-0">
