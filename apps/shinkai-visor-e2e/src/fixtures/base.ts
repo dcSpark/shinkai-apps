@@ -39,12 +39,12 @@ export const test = base.extend<{
     await page.waitForLoadState('networkidle');
     await use(page);
   },
-  actionButton: async ({ context, page, popup }, use) => {
+  actionButton: async ({ page }, use) => {
     const actionButton = page.getByTestId('action-button');
     await expect(actionButton).toBeDefined();
     await use(actionButton);
   },
-  popup: async ({ context, page }, use) => {
+  popup: async ({ page }, use) => {
     const popupIframe = page.frameLocator('#popup-iframe');
     await expect(popupIframe).toBeDefined();
     await use(popupIframe);
