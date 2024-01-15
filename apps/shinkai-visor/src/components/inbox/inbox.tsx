@@ -1,6 +1,6 @@
 import {
   extractJobIdFromInbox,
-  extractReceiverShinkaiName,
+  getOtherPersonIdentity,
   isJobInbox as checkIsJobInbox,
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMessageToJob/useSendMessageToJob';
@@ -102,11 +102,12 @@ export const Inbox = () => {
         profile_identity_sk: auth.profile_identity_sk,
       });
     } else {
-      const sender = `${auth.shinkai_identity}/${auth.profile}/device/${auth.registration_name}`;
-      const receiver = extractReceiverShinkaiName(decodedInboxId, sender);
+      const sender = `${auth.shinkai_identity}/${auth.profile}`;
+      const receiver_fullname = getOtherPersonIdentity(decodedInboxId, sender);
+      const receiver = receiver_fullname.split('/')[0];
       sendMessageToInbox({
         sender: auth.shinkai_identity,
-        sender_subidentity: `${auth.profile}/device/${auth.registration_name}`,
+        sender_subidentity: `${auth.profile}`,
         receiver,
         message: value,
         inboxId: decodedInboxId,

@@ -120,13 +120,19 @@ export const sendTextMessageWithInbox = async (
   setupDetailsState: CredentialsPayload,
 ): Promise<{ inboxId: string; message: ShinkaiMessage }> => {
   try {
+    // Note(Nico): we are forcing to send messages from profiles by removing device related stuff
+    const senderShinkaiName = new ShinkaiNameWrapper(
+      sender + '/' + sender_subidentity,
+    );
+    const senderProfile = senderShinkaiName.get_profile_name;
+
     const messageStr =
       ShinkaiMessageBuilderWrapper.send_text_message_with_inbox(
         setupDetailsState.profile_encryption_sk,
         setupDetailsState.profile_identity_sk,
         setupDetailsState.node_encryption_pk,
         sender,
-        sender_subidentity,
+        senderProfile,
         receiver,
         '',
         inbox_name,
