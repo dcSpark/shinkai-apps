@@ -39,7 +39,7 @@ export const test = base.extend<{
     await page.waitForLoadState('networkidle');
     await use(page);
   },
-  actionButton: async ({ context, page }, use) => {
+  actionButton: async ({ context, page, popup }, use) => {
     const actionButton = page.getByTestId('action-button');
     await expect(actionButton).toBeDefined();
     await use(actionButton);
