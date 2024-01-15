@@ -3,6 +3,7 @@ import { sendTextMessageWithInbox } from '@shinkai_network/shinkai-message-ts/ap
 import { SendMessageToInboxInput } from './types';
 
 export const sendMessageToInbox = async ({
+  nodeAddress,
   sender,
   sender_subidentity,
   receiver,
@@ -15,6 +16,7 @@ export const sendMessageToInbox = async ({
   profile_identity_sk,
 }: SendMessageToInboxInput) => {
   return await sendTextMessageWithInbox(
+    nodeAddress,
     sender,
     sender_subidentity,
     receiver,

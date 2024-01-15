@@ -1,4 +1,4 @@
-import { type BrowserContext, chromium, FrameLocator,Locator,test as base } from '@playwright/test';
+import { type BrowserContext, chromium, FrameLocator,Locator, test as base } from '@playwright/test';
 import * as path from 'path';
 
 export const test = base.extend<{

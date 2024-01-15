@@ -3,6 +3,7 @@ import { sendTextMessageWithFilesForInbox } from '@shinkai_network/shinkai-messa
 import { SendMessageWithFilesToInboxInput } from './types';
 
 export const sendMessageWithFilesToInbox = async ({
+  nodeAddress,
   sender,
   senderSubidentity,
   receiver,
@@ -16,6 +17,7 @@ export const sendMessageWithFilesToInbox = async ({
   profile_identity_sk,
 }: SendMessageWithFilesToInboxInput) => {
   return await sendTextMessageWithFilesForInbox(
+    nodeAddress,
     sender,
     senderSubidentity,
     receiver,

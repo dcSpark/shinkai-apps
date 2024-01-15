@@ -3,6 +3,7 @@ import { SmartInbox } from '@shinkai_network/shinkai-message-ts/models';
 import { UndefinedInitialDataOptions } from '@tanstack/react-query/src/queryOptions';
 
 export type GetInboxesInput = CredentialsPayload & {
+  nodeAddress: string;
   sender: string;
   receiver: string;
   senderSubidentity: string;

@@ -39,6 +39,7 @@ export const Inbox = () => {
     isFetchingPreviousPage,
     isSuccess: isChatConversationSuccess,
   } = useGetChatConversationWithPagination({
+    nodeAddress: auth?.node_address ?? '',
     inboxId: decodeURIComponent(inboxId) as string,
     shinkaiIdentity: auth?.shinkai_identity ?? '',
     profile: auth?.profile ?? '',
@@ -90,6 +91,7 @@ export const Inbox = () => {
     if (isJobInbox) {
       const jobId = extractJobIdFromInbox(decodedInboxId);
       sendMessageToJob({
+        nodeAddress: auth.node_address,
         jobId,
         message: value,
         files_inbox: '',
@@ -106,6 +108,7 @@ export const Inbox = () => {
       const receiver_fullname = getOtherPersonIdentity(decodedInboxId, sender);
       const receiver = receiver_fullname.split('/')[0];
       sendMessageToInbox({
+        nodeAddress: auth.node_address,
         sender: auth.shinkai_identity,
         sender_subidentity: `${auth.profile}`,
         receiver,

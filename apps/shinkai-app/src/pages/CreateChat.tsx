@@ -19,7 +19,6 @@ import z from 'zod';
 
 import Button from '../components/ui/Button';
 import { IonContentCustom, IonHeaderCustom } from '../components/ui/Layout';
-import { useSetup } from '../hooks/usetSetup';
 import { useAuth } from '../store/auth';
 
 const createChatSchema = z.object({
@@ -28,7 +27,6 @@ const createChatSchema = z.object({
 });
 
 const CreateChat: React.FC = () => {
-  useSetup();
   const history = useHistory();
   const auth = useAuth((state) => state.auth);
 
@@ -47,6 +45,7 @@ const CreateChat: React.FC = () => {
     const [receiver, ...rest] = data.receiver.split('/');
 
     await createChat({
+      nodeAddress: auth.node_address,
       sender: auth.shinkai_identity,
       senderSubidentity: auth.profile,
       receiver,

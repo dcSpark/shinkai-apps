@@ -2,6 +2,7 @@ import type { JobCredentialsPayload } from '@shinkai_network/shinkai-message-ts/
 import { ShinkaiMessage } from '@shinkai_network/shinkai-message-ts/models';
 
 export type CreateJobInput = JobCredentialsPayload & {
+  nodeAddress: string;
   shinkaiIdentity: string;
   profile: string;
   agentId: string;

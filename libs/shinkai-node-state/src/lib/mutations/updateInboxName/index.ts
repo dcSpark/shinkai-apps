@@ -9,6 +9,7 @@ export type SmartInbox = {
 };
 
 export const updateInboxName = async ({
+  nodeAddress,
   senderSubidentity,
   sender,
   receiver,
@@ -21,6 +22,7 @@ export const updateInboxName = async ({
   inboxId,
 }: UpdateInboxNameInput) => {
   const response = await updateInboxNameApi(
+    nodeAddress,
     sender,
     senderSubidentity,
     receiver,

@@ -118,6 +118,7 @@ export const CreateRegistrationCode = () => {
   ];
   const submit = async (values: FormSchemaType): Promise<void> => {
     await createRegistrationCode({
+      nodeAddress: auth?.node_address ?? '',
       permissionsType: values.permissionType,
       identityType: values.identityType,
       setupPayload: {

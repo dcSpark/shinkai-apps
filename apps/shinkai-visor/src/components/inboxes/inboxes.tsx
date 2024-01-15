@@ -36,6 +36,7 @@ export const Inboxes = () => {
       name: '',
     });
   const { inboxes } = useGetInboxes({
+    nodeAddress: auth?.node_address ?? '',
     sender: auth?.shinkai_identity ?? '',
     senderSubidentity: auth?.profile ?? '',
     // Assuming receiver and target_shinkai_name_profile are the same as sender
@@ -48,6 +49,7 @@ export const Inboxes = () => {
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
   const { agents } = useAgents({
+    nodeAddress: auth?.node_address ?? '',
     sender: auth?.shinkai_identity ?? '',
     senderSubidentity: `${auth?.profile}`,
     shinkaiIdentity: auth?.shinkai_identity ?? '',

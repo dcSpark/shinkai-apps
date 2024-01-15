@@ -3,6 +3,7 @@ import { sendMessageToJob as sendMessageToJobApi } from "@shinkai_network/shinka
 import { SendMessageToJobInput } from "./types";
 
 export const sendMessageToJob = async ({
+  nodeAddress,
   jobId,
   message,
   files_inbox,
@@ -15,6 +16,7 @@ export const sendMessageToJob = async ({
   profile_identity_sk,
 }: SendMessageToJobInput) => {
   return await sendMessageToJobApi(
+    nodeAddress,
     jobId,
     message,
     files_inbox,

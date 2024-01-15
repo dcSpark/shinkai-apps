@@ -1,5 +1,4 @@
-import { ApiConfig } from '@shinkai_network/shinkai-message-ts/api';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import ChatConversation from '../pages/chat/chat-conversation';
@@ -26,10 +25,6 @@ import {
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const auth = useAuth((state) => state.auth);
-
-  useEffect(() => {
-    ApiConfig.getInstance().setEndpoint(auth?.node_address ?? '');
-  }, [auth?.node_address]);
 
   if (!auth) {
     return <Navigate replace to={'/welcome'} />;

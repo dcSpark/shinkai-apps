@@ -20,7 +20,6 @@ import { FileUploader } from '../wasm/FileUploaderUsingSymmetricKeyManager';
 import { SerializedAgentWrapper } from '../wasm/SerializedAgentWrapper';
 import { ShinkaiMessageBuilderWrapper } from '../wasm/ShinkaiMessageBuilderWrapper';
 import { ShinkaiNameWrapper } from '../wasm/ShinkaiNameWrapper';
-import { ApiConfig } from './api_config';
 
 // Helper function to handle HTTP errors
 export const handleHttpError = async (response: Response): Promise<void> => {
@@ -38,18 +37,19 @@ export const handleHttpError = async (response: Response): Promise<void> => {
   }
 };
 
-export const fetchPublicKey = () => async (): Promise<any> => {
-  const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-  try {
-    const response = await fetch(`${apiEndpoint}/get_public_key`);
-    return response.json();
-  } catch (error) {
-    console.error('Error fetching public key:', error);
-    throw error;
-  }
-};
+export const fetchPublicKey =
+  (nodeAddress: string) => async (): Promise<any> => {
+    try {
+      const response = await fetch(`${nodeAddress}/get_public_key`);
+      return response.json();
+    } catch (error) {
+      console.error('Error fetching public key:', error);
+      throw error;
+    }
+  };
 
 export const createChatWithMessage = async (
+  nodeAddress: string,
   sender: string,
   sender_subidentity: string,
   receiver: string,
@@ -90,8 +90,7 @@ export const createChatWithMessage = async (
 
     const message: ShinkaiMessage = JSON.parse(messageStr);
 
-    const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await fetch(urlJoin(apiEndpoint, '/v1/send'), {
+    const response = await fetch(urlJoin(nodeAddress, '/v1/send'), {
       method: 'POST',
       body: JSON.stringify(message),
       headers: { 'Content-Type': 'application/json' },
@@ -112,6 +111,7 @@ export const createChatWithMessage = async (
 };
 
 export const sendTextMessageWithInbox = async (
+  nodeAddress: string,
   sender: string,
   sender_subidentity: string,
   receiver: string,
@@ -141,8 +141,7 @@ export const sendTextMessageWithInbox = async (
 
     const message: ShinkaiMessage = JSON.parse(messageStr);
 
-    const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await fetch(urlJoin(apiEndpoint, '/v1/send'), {
+    const response = await fetch(urlJoin(nodeAddress, '/v1/send'), {
       method: 'POST',
       body: JSON.stringify(message),
       headers: { 'Content-Type': 'application/json' },
@@ -161,6 +160,7 @@ export const sendTextMessageWithInbox = async (
 };
 
 export const sendTextMessageWithFilesForInbox = async (
+  nodeAddress: string,
   sender: string,
   sender_subidentity: string,
   receiver: string,
@@ -171,7 +171,7 @@ export const sendTextMessageWithFilesForInbox = async (
 ): Promise<{ inboxId: string; message: ShinkaiMessage }> => {
   try {
     const fileUploader = new FileUploader(
-      ApiConfig.getInstance().getEndpoint(),
+      nodeAddress,
       setupDetailsState.profile_encryption_sk,
       setupDetailsState.profile_identity_sk,
       setupDetailsState.node_encryption_pk,
@@ -203,6 +203,7 @@ export const sendTextMessageWithFilesForInbox = async (
 };
 
 export const getAllInboxesForProfile = async (
+  nodeAddress: string,
   sender: string,
   sender_subidentity: string,
   receiver: string,
@@ -223,9 +224,8 @@ export const getAllInboxesForProfile = async (
 
     const message = JSON.parse(messageString);
 
-    const apiEndpoint = ApiConfig.getInstance().getEndpoint();
     const response = await fetch(
-      urlJoin(apiEndpoint, '/v1/get_all_smart_inboxes_for_profile'),
+      urlJoin(nodeAddress, '/v1/get_all_smart_inboxes_for_profile'),
       {
         method: 'POST',
         body: JSON.stringify(message),
@@ -242,6 +242,7 @@ export const getAllInboxesForProfile = async (
 };
 
 export const updateInboxName = async (
+  nodeAddress: string,
   sender: string,
   sender_subidentity: string,
   receiver: string,
@@ -265,9 +266,8 @@ export const updateInboxName = async (
 
     const message = JSON.parse(messageString);
 
-    const apiEndpoint = ApiConfig.getInstance().getEndpoint();
     const response = await fetch(
-      urlJoin(apiEndpoint, '/v1/update_smart_inbox_name'),
+      urlJoin(nodeAddress, '/v1/update_smart_inbox_name'),
       {
         method: 'POST',
         body: JSON.stringify(message),
@@ -284,6 +284,7 @@ export const updateInboxName = async (
 };
 
 export const getLastMessagesFromInbox = async (
+  nodeAddress: string,
   inbox: string,
   count: number,
   lastKey: string | undefined,
@@ -305,9 +306,8 @@ export const getLastMessagesFromInbox = async (
 
     const message = JSON.parse(messageStr);
 
-    const apiEndpoint = ApiConfig.getInstance().getEndpoint();
     const response = await fetch(
-      urlJoin(apiEndpoint, '/v1/last_messages_from_inbox'),
+      urlJoin(nodeAddress, '/v1/last_messages_from_inbox'),
       {
         method: 'POST',
         body: JSON.stringify(message),
@@ -324,6 +324,7 @@ export const getLastMessagesFromInbox = async (
 };
 
 export const submitRequestRegistrationCode = async (
+  nodeAddress: string,
   identity_permissions: string,
   code_type = 'profile',
   setupDetailsState: SetupPayload,
@@ -348,9 +349,8 @@ export const submitRequestRegistrationCode = async (
 
     const message = JSON.parse(messageStr);
 
-    const apiEndpoint = ApiConfig.getInstance().getEndpoint();
     const response = await fetch(
-      urlJoin(apiEndpoint, '/v1/create_registration_code'),
+      urlJoin(nodeAddress, '/v1/create_registration_code'),
       {
         method: 'POST',
         body: JSON.stringify(message),
@@ -403,7 +403,7 @@ export const submitRegistrationCode = async (
     await handleHttpError(response);
 
     // Update the API_ENDPOINT after successful registration
-    ApiConfig.getInstance().setEndpoint(setupData.node_address);
+    setupData.node_address;
     return response.json();
   } catch (error) {
     console.error('Error using registration code:', error);
@@ -480,7 +480,6 @@ export const submitInitialRegistrationNoCode = async (
     await handleHttpError(response);
 
     // Update the API_ENDPOINT after successful registration
-    ApiConfig.getInstance().setEndpoint(payload.node_address);
     const data = await response.json();
     return { success: true, data };
   } catch (error) {
@@ -489,10 +488,9 @@ export const submitInitialRegistrationNoCode = async (
   }
 };
 
-export const pingAllNodes = async (): Promise<string> => {
-  const apiEndpoint = ApiConfig.getInstance().getEndpoint();
+export const pingAllNodes = async (nodeAddress: string): Promise<string> => {
   try {
-    const response = await fetch(`${apiEndpoint}/ping_all`, { method: 'POST' });
+    const response = await fetch(`${nodeAddress}/ping_all`, { method: 'POST' });
     await handleHttpError(response);
     const data = await response.json();
     return data.result;
@@ -503,6 +501,7 @@ export const pingAllNodes = async (): Promise<string> => {
 };
 
 export const createJob = async (
+  nodeAddress: string,
   scope: any,
   sender: string,
   sender_subidentity: string,
@@ -524,8 +523,7 @@ export const createJob = async (
 
     const message = JSON.parse(messageStr);
 
-    const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await fetch(urlJoin(apiEndpoint, '/v1/create_job'), {
+    const response = await fetch(urlJoin(nodeAddress, '/v1/create_job'), {
       method: 'POST',
       body: JSON.stringify(message),
       headers: { 'Content-Type': 'application/json' },
@@ -540,6 +538,7 @@ export const createJob = async (
 };
 
 export const sendMessageToJob = async (
+  nodeAddress: string,
   jobId: string,
   content: string,
   files_inbox: string,
@@ -565,8 +564,7 @@ export const sendMessageToJob = async (
 
     const message = JSON.parse(messageStr);
 
-    const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await fetch(urlJoin(apiEndpoint, '/v1/job_message'), {
+    const response = await fetch(urlJoin(nodeAddress, '/v1/job_message'), {
       method: 'POST',
       body: JSON.stringify(message),
       headers: { 'Content-Type': 'application/json' },
@@ -581,6 +579,7 @@ export const sendMessageToJob = async (
 };
 
 export const getProfileAgents = async (
+  nodeAddress: string,
   sender: string,
   sender_subidentity: string,
   receiver: string,
@@ -601,8 +600,7 @@ export const getProfileAgents = async (
     const messageHash = calculateMessageHash(message);
     console.log('Get Profile Agents Message Hash:', messageHash);
 
-    const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await fetch(urlJoin(apiEndpoint, '/v1/available_agents'), {
+    const response = await fetch(urlJoin(nodeAddress, '/v1/available_agents'), {
       method: 'POST',
       body: JSON.stringify(message),
       headers: { 'Content-Type': 'application/json' },
@@ -617,6 +615,7 @@ export const getProfileAgents = async (
 };
 
 export const addAgent = async (
+  nodeAddress: string,
   sender_subidentity: string,
   node_name: string,
   agent: SerializedAgent,
@@ -636,8 +635,7 @@ export const addAgent = async (
 
     const message = JSON.parse(messageStr);
 
-    const apiEndpoint = ApiConfig.getInstance().getEndpoint();
-    const response = await fetch(urlJoin(apiEndpoint, '/v1/add_agent'), {
+    const response = await fetch(urlJoin(nodeAddress, '/v1/add_agent'), {
       method: 'POST',
       body: JSON.stringify(message),
       headers: { 'Content-Type': 'application/json' },
@@ -652,6 +650,7 @@ export const addAgent = async (
 };
 
 export const getFileNames = async (
+  nodeAddress: string,
   sender: string,
   sender_subidentity: string,
   receiver: string,
@@ -679,9 +678,8 @@ export const getFileNames = async (
 
     const message = JSON.parse(messageString);
 
-    const apiEndpoint = ApiConfig.getInstance().getEndpoint();
     const response = await fetch(
-      urlJoin(apiEndpoint, '/v1/get_filenames_for_file_inbox'),
+      urlJoin(nodeAddress, '/v1/get_filenames_for_file_inbox'),
       {
         method: 'POST',
         body: JSON.stringify(message),

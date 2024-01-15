@@ -90,6 +90,7 @@ export const AddAgent = () => {
   const submit = (values: FormSchemaType) => {
     if (!auth) return;
     createAgent({
+      nodeAddress: auth?.node_address ?? '',
       sender_subidentity: auth.profile,
       node_name: auth.shinkai_identity,
       agent: {
