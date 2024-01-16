@@ -51,6 +51,7 @@ export const addAgent = async (
   await model.selectOption('open-ai');
   await models.selectOption('gpt-4-1106-preview');
   await popup.getByTestId('add-agent-submit-button').click();
+  await expect(popup.getByTestId('create-job-submit-button')).toBeVisible();
 };
 
 export const navigateToMenu = async (popup: FrameLocator, menuTestId: string): Promise<void> => {

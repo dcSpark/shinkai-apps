@@ -14,6 +14,7 @@ export const Agents = () => {
   const auth = useAuth((state) => state.auth);
   const history = useHistory();
   const { agents } = useAgents({
+    nodeAddress: auth?.node_address ?? '',
     sender: auth?.shinkai_identity ?? '',
     senderSubidentity: `${auth?.profile}`,
     shinkaiIdentity: auth?.shinkai_identity ?? '',

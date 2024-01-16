@@ -17,13 +17,6 @@ export const extenralCommunicationTests = () => {
 
   test.describe.configure({ mode: 'serial' });
 
-  test.beforeEach(async ({ page, actionButton, popup }) => {
-    // It's really important because shinkai.com is an allowed origin
-    await page.goto('https://shinkai.com');
-    // eslint-disable-next-line playwright/no-networkidle
-    await page.waitForLoadState('networkidle');
-  });
-
   test.afterEach(async () => {
     await nodeManager.stopNode();
   });

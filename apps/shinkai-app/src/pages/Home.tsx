@@ -27,7 +27,6 @@ import { z } from 'zod';
 import Avatar from '../components/ui/Avatar';
 import Button from '../components/ui/Button';
 import { IonContentCustom, IonHeaderCustom } from '../components/ui/Layout';
-import { useSetup } from '../hooks/usetSetup';
 import { useAuth } from '../store/auth';
 
 const updateInboxNameSchema = z.object({
@@ -48,6 +47,7 @@ const MessageButton = ({ inbox }: { inbox: SmartInbox }) => {
   const onSubmit = async (data: z.infer<typeof updateInboxNameSchema>) => {
     if (!auth) return;
     await updateInboxName({
+      nodeAddress: auth.node_address,
       sender: auth?.shinkai_identity ?? '',
       senderSubidentity: auth?.profile,
       receiver: auth.shinkai_identity,
@@ -140,11 +140,11 @@ const MessageButton = ({ inbox }: { inbox: SmartInbox }) => {
 };
 
 const Home: React.FC = () => {
-  useSetup();
   const auth = useAuth((state) => state.auth);
   const setLogout = useAuth((state) => state.setLogout);
 
   const { inboxes } = useGetInboxes({
+    nodeAddress: auth?.node_address ?? '',
     sender: auth?.shinkai_identity ?? '',
     senderSubidentity: auth?.profile ?? '',
     // Assuming receiver and target_shinkai_name_profile are the same as sender
@@ -251,7 +251,7 @@ const Home: React.FC = () => {
         className="ion-actionSheet-custom"
         isOpen={showActionSheet}
         onDidDismiss={() => setShowActionSheet(false)}
-      ></IonActionSheet>
+       />
       <IonAlert
         buttons={[
           {

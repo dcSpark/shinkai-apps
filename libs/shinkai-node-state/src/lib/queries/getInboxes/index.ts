@@ -3,6 +3,7 @@ import { getAllInboxesForProfile } from '@shinkai_network/shinkai-message-ts/api
 import type { GetInboxesInput, GetInboxesOutput } from './types';
 
 export const getInboxes = async ({
+  nodeAddress,
   receiver,
   senderSubidentity,
   sender,
@@ -14,6 +15,7 @@ export const getInboxes = async ({
   profile_identity_sk,
 }: GetInboxesInput): Promise<GetInboxesOutput> => {
   const inboxes = await getAllInboxesForProfile(
+    nodeAddress,
     sender,
     senderSubidentity,
     receiver,

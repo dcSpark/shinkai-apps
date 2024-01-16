@@ -59,6 +59,7 @@ export const Settings = () => {
   });
   const currentFormValue = useWatch<FormSchemaType>({ control: form.control });
   const { agents } = useAgents({
+    nodeAddress: auth?.node_address ?? '',
     sender: auth?.shinkai_identity ?? '',
     senderSubidentity: `${auth?.profile}`,
     shinkaiIdentity: auth?.shinkai_identity ?? '',

@@ -3,6 +3,7 @@ import { createChatWithMessage } from '@shinkai_network/shinkai-message-ts/api';
 import { CreateChatInput } from './types';
 
 export const createChat = async ({
+  nodeAddress,
   sender,
   senderSubidentity,
   receiver,
@@ -15,6 +16,7 @@ export const createChat = async ({
   profile_identity_sk,
 }: CreateChatInput) => {
   const response = await createChatWithMessage(
+    nodeAddress,
     sender,
     senderSubidentity,
     receiver,

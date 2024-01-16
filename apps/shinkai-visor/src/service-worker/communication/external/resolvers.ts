@@ -1,5 +1,4 @@
 import {
-  ApiConfig,
   getAllInboxesForProfile,
   getProfileAgents,
   health,
@@ -34,8 +33,8 @@ export const getProfileAgentsResolver =
     if (!auth) {
       throw new Error('visor is not connected to a node');
     }
-    ApiConfig.getInstance().setEndpoint(auth.node_address);
     const agents = await getProfileAgents(
+      auth.node_address,
       auth.shinkai_identity,
       auth.profile,
       auth.shinkai_identity,
@@ -78,8 +77,8 @@ export const getProfileInboxes =
     if (!auth) {
       throw new Error('visor is not connected to a node');
     }
-    ApiConfig.getInstance().setEndpoint(auth.node_address);
     const inboxes = await getAllInboxesForProfile(
+      auth.node_address,
       auth.shinkai_identity,
       auth.profile,
       auth.shinkai_identity,

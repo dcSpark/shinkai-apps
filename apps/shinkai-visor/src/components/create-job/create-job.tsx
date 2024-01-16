@@ -54,6 +54,7 @@ export const CreateJob = () => {
     },
   });
   const { agents } = useAgents({
+    nodeAddress: auth?.node_address ?? '',
     sender: auth?.shinkai_identity ?? '',
     senderSubidentity: `${auth?.profile}`,
     shinkaiIdentity: auth?.shinkai_identity ?? '',
@@ -131,6 +132,7 @@ export const CreateJob = () => {
       content = `${values.content} - \`\`\`${query.get('context')}\`\`\``;
     }
     createJob({
+      nodeAddress: auth?.node_address ?? '',
       shinkaiIdentity: auth.shinkai_identity,
       profile: auth.profile,
       agentId: values.agent,

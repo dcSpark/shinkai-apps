@@ -22,7 +22,6 @@ import z from 'zod';
 
 import Button from '../components/ui/Button';
 import { IonContentCustom, IonHeaderCustom } from '../components/ui/Layout';
-import { useSetup } from '../hooks/usetSetup';
 import { useAuth } from '../store/auth';
 
 const createJobSchema = z.object({
@@ -31,10 +30,9 @@ const createJobSchema = z.object({
 });
 
 const CreateJob: React.FC = () => {
-  useSetup();
-
   const auth = useAuth((state) => state.auth);
   const { agents } = useAgents({
+    nodeAddress: auth?.node_address ?? '',
     sender: auth?.shinkai_identity ?? '',
     senderSubidentity: `${auth?.profile}`,
     shinkaiIdentity: auth?.shinkai_identity ?? '',
@@ -61,6 +59,7 @@ const CreateJob: React.FC = () => {
   const onSubmit = async (data: z.infer<typeof createJobSchema>) => {
     if (!auth) return;
     createJob({
+      nodeAddress: auth.node_address,
       shinkaiIdentity: auth.shinkai_identity,
       profile: auth.profile,
       agentId: data.model,

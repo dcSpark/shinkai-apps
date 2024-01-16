@@ -1,4 +1,4 @@
-import { type BrowserContext, chromium, FrameLocator,Locator,test as base } from '@playwright/test';
+import { type BrowserContext, chromium, FrameLocator,Locator, test as base } from '@playwright/test';
 import * as path from 'path';
 
 export const test = base.extend<{
@@ -39,12 +39,12 @@ export const test = base.extend<{
     await page.waitForLoadState('networkidle');
     await use(page);
   },
-  actionButton: async ({ context, page }, use) => {
+  actionButton: async ({ page }, use) => {
     const actionButton = page.getByTestId('action-button');
     await expect(actionButton).toBeDefined();
     await use(actionButton);
   },
-  popup: async ({ context, page }, use) => {
+  popup: async ({ page }, use) => {
     const popupIframe = page.frameLocator('#popup-iframe');
     await expect(popupIframe).toBeDefined();
     await use(popupIframe);

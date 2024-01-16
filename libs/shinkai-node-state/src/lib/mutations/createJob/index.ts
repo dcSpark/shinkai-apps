@@ -12,6 +12,7 @@ import {
 import { CreateJobInput } from './types';
 
 export const createJob = async ({
+  nodeAddress,
   shinkaiIdentity,
   profile,
   agentId,
@@ -34,6 +35,7 @@ export const createJob = async ({
   );
 
   const jobId = await createJobApi(
+    nodeAddress,
     scope.to_jsvalue(),
     shinkaiIdentity,
     profile,
@@ -50,6 +52,7 @@ export const createJob = async ({
 
   const response = files?.length
     ? await sendTextMessageWithFilesForInbox(
+        nodeAddress,
         shinkaiIdentity,
         profile, // sender subidentity
         receiver,
@@ -65,6 +68,7 @@ export const createJob = async ({
         },
       )
     : await sendMessageToJob(
+        nodeAddress,
         jobId,
         content,
         files_inbox,
