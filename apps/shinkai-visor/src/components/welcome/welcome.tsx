@@ -1,16 +1,16 @@
 import { Button, Checkbox } from '@shinkai_network/shinkai-ui';
-import { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router';
 
 import logo from '../../../src/assets/icons/visor.svg';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
+import { useOnboarding } from '../../store/onboarding/onboarding';
 
 export default function Welcome() {
   const history = useHistory();
-  const [acceptedTermsAndContidions, setAcceptedTermsAndContidions] = useState<
-    boolean | 'indeterminate'
-  >(false);
+
+  const termsAcceptance = useOnboarding((state) => state.termsAcceptance);
+  const setTermsAcceptance = useOnboarding((state) => state.setTermsAcceptance);
   return (
     <div className="flex h-full flex-col justify-between gap-3">
       <div>
@@ -36,10 +36,12 @@ export default function Welcome() {
       </div>
       <div className="flex items-start space-x-2">
         <Checkbox
-          checked={acceptedTermsAndContidions}
-          data-testid='terms'
+          checked={termsAcceptance}
+          data-testid="terms"
           id="terms"
-          onCheckedChange={setAcceptedTermsAndContidions}
+          onCheckedChange={() => {
+            setTermsAcceptance(!termsAcceptance);
+          }}
         />
         <label
           className="inline-block cursor-pointer text-xs leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -49,7 +51,7 @@ export default function Welcome() {
             By continuing, you agree to our{' '}
             <a
               className={'text-blue-400 underline'}
-              data-testid='terms-of-service-link'
+              data-testid="terms-of-service-link"
               href={'https://www.shinkai.com/terms-of-service'}
               rel="noreferrer"
               target={'_blank'}
@@ -59,7 +61,7 @@ export default function Welcome() {
             and{' '}
             <a
               className={'block text-blue-400 underline'}
-              data-testid='privacy-policy-link'
+              data-testid="privacy-policy-link"
               href={'https://www.shinkai.com/privacy-policy'}
               rel="noreferrer"
               target={'_blank'}
@@ -71,9 +73,11 @@ export default function Welcome() {
       </div>
 
       <Button
-        data-testid='get-started-button'
-        disabled={!acceptedTermsAndContidions}
-        onClick={() => history.replace('/nodes/connect/method/quick-start')}
+        data-testid="get-started-button"
+        disabled={!termsAcceptance}
+        onClick={() => {
+          history.replace('/onboarding/encryption');
+        }}
       >
         <FormattedMessage id="setup" />
       </Button>

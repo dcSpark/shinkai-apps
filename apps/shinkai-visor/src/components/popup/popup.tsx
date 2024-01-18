@@ -13,6 +13,7 @@ import { Route, Switch, useHistory, useLocation } from 'react-router-dom';
 import { useGlobalPopupChromeMessage } from '../../hooks/use-global-popup-chrome-message';
 import { langMessages, locale } from '../../lang/intl';
 import { useAuth } from '../../store/auth/auth';
+import { useOnboarding } from '../../store/onboarding/onboarding';
 import { AddAgent } from '../add-agent/add-agent';
 import { Agents } from '../agents/agents';
 import { AnimatedRoute } from '../animated-route/animated-routed';
@@ -22,6 +23,7 @@ import { ConnectMethodRestoreConnection } from '../connect-method-restore-connec
 import { CreateInbox } from '../create-inbox/create-inbox';
 import { CreateJob } from '../create-job/create-job';
 import { CreateRegistrationCode } from '../create-registration-code/create-registration-code';
+import CredentialsEncryption from '../credentials-encryption/credentials-encryption';
 import { ExportConnection } from '../export-connection/export-connection';
 import { Inbox } from '../inbox/inbox';
 import { Inboxes } from '../inboxes/inboxes';
@@ -30,20 +32,36 @@ import { SplashScreen } from '../splash-screen/splash-screen';
 import Welcome from '../welcome/welcome';
 import { WithNav } from '../with-nav/with-nav';
 
-export const Popup = () => {
+const useRedirectBasedOnOnboardingStatus = () => {
   const history = useHistory();
   const auth = useAuth((state) => state.auth);
+  const isAuthenticated = !!auth;
+  const termsAcceptance = useOnboarding((state) => state.termsAcceptance);
+  const hasCredentialsEncrypted = useOnboarding(
+    (state) => state.hasCredentialsEncrypted,
+  );
+  console.log({
+    termsAcceptance,
+    hasCredentialsEncrypted,
+    isAuthenticated,
+  });
+  useEffect(() => {
+    if (termsAcceptance === undefined) {
+      history.push('/onboarding/terms');
+    } else if (hasCredentialsEncrypted === undefined) {
+      history.push('/onboarding/encryption');
+    } else if (isAuthenticated) {
+      history.push('/inboxes');
+    } else {
+      history.push('/onboarding/encryption');
+    }
+  }, [isAuthenticated, history]);
+};
+export const Popup = () => {
+  useRedirectBasedOnOnboardingStatus();
   const location = useLocation();
   const [popupVisibility] = useGlobalPopupChromeMessage();
-  const isAuthenticated = !!auth;
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      history.replace('/inboxes');
-    } else {
-      history.replace('/welcome');
-    }
-  }, [history, isAuthenticated]);
   useEffect(() => {
     console.log('location', location.pathname);
   }, [location]);
@@ -64,9 +82,21 @@ export const Popup = () => {
                 <SplashScreen />
               </AnimatedRoute>
             </Route>
-            <Route path="/welcome">
+
+            <Route path="/onboarding">
               <AnimatedRoute>
-                <Welcome />
+                <Switch>
+                  <Route path="/onboarding/terms">
+                    <AnimatedRoute>
+                      <Welcome />
+                    </AnimatedRoute>
+                  </Route>
+                  <Route path="/onboarding/encryption">
+                    <AnimatedRoute>
+                      <CredentialsEncryption />
+                    </AnimatedRoute>
+                  </Route>
+                </Switch>
               </AnimatedRoute>
             </Route>
 
