@@ -53,14 +53,15 @@ const useRedirectBasedOnOnboardingStatus = () => {
     } else if (isAuthenticated) {
       history.push('/inboxes');
     } else {
-      history.push('/onboarding/encryption');
+      history.push('/nodes/connect/method/quick-start');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, history]);
 };
 export const Popup = () => {
-  useRedirectBasedOnOnboardingStatus();
   const location = useLocation();
   const [popupVisibility] = useGlobalPopupChromeMessage();
+  useRedirectBasedOnOnboardingStatus();
 
   useEffect(() => {
     console.log('location', location.pathname);

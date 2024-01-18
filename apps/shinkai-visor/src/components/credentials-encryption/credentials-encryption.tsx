@@ -88,7 +88,7 @@ export default function CredentialsEncryption() {
       <div className="flex flex-col gap-4">
         <Form {...form}>
           <form
-            className="flex h-full flex-col justify-between space-y-2"
+            className="flex h-full flex-col justify-between space-y-12"
             onSubmit={form.handleSubmit(onSubmit)}
           >
             <div className="flex grow flex-col space-y-3">
@@ -115,16 +115,18 @@ export default function CredentialsEncryption() {
                 )}
               />
             </div>
-            <Button
-              onClick={() => {
-                setHasCredentialsEncrypted(false);
-                history.replace('/nodes/connect/method/quick-start');
-              }}
-              variant="outline"
-            >
-              Skip
-            </Button>
-            <Button type="submit">Set up password</Button>
+            <div className="flex flex-col gap-4">
+              <Button
+                onClick={() => {
+                  setHasCredentialsEncrypted(false);
+                  history.replace('/nodes/connect/method/quick-start');
+                }}
+                variant="outline"
+              >
+                Skip
+              </Button>
+              <Button type="submit">Set up password</Button>
+            </div>
           </form>
         </Form>
       </div>
