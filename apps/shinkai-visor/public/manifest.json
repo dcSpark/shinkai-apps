@@ -10,12 +10,9 @@
     "128": "icon128.png"
   },
   "action": {
-    "default_icon": {
-      "16": "icon16.png",
-      "48": "icon48.png"
-    },
-    "default_popup": "src/components/installed-popup/installed-popup.html"
+    "default_title": "Click to shinkai sidepanel"
   },
+  "minimum_chrome_version": "114",
   "background": {
     "service_worker": "src/service-worker/service-worker.ts"
   },
@@ -37,7 +34,16 @@
       "description": "Open/Close Shinkai popup"
     }
   },
-  "permissions": ["storage", "contextMenus", "scripting", "activeTab"],
+  "permissions": [
+    "storage",
+    "contextMenus",
+    "scripting",
+    "activeTab",
+    "sidePanel"
+  ],
+  "side_panel": {
+    "default_path": "src/components/popup/popup.html"
+  },
   "host_permissions": ["<all_urls>"],
   "content_security_policy": {
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
@@ -45,7 +51,9 @@
   "content_scripts": [
     {
       "matches": ["https://*/*", "http://*/*", "<all_urls>"],
-      "js": ["src/components/action-button/action-button.tsx", "src/components/popup/popup-embeder.ts", "src/components/image-capture/image-capture.tsx"]
+      "js": [
+        "src/components/image-capture/image-capture.tsx"
+      ]
     }
   ],
   "externally_connectable": {
