@@ -34,7 +34,7 @@ export const Popup = () => {
   const history = useHistory();
   const auth = useAuth((state) => state.auth);
   const location = useLocation();
-  const [popupVisibility] = useGlobalPopupChromeMessage();
+  useGlobalPopupChromeMessage();
   const isAuthenticated = !!auth;
 
   useEffect(() => {
