@@ -10,7 +10,11 @@
     "128": "icon128.png"
   },
   "action": {
-    "default_title": "Click to shinkai sidepanel"
+    "default_title": "Click to open sidepanel",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png"
+    }
   },
   "minimum_chrome_version": "114",
   "background": {
