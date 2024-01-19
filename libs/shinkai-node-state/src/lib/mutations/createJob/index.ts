@@ -25,8 +25,8 @@ export const createJob = async ({
   const receiver_subidentity = `${profile}/agent/${agentId}`;
 
   const scope: JobScope = {
-    buckets: [],
-    documents: [],
+    local: [],
+    database: [],
   };
 
   const jobId = await createJobApi(

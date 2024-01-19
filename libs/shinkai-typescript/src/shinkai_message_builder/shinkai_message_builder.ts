@@ -253,6 +253,25 @@ export class ShinkaiMessageBuilder {
     return this;
   }
 
+  set_external_metadata_with_schedule_and_other(
+    recipient: ProfileName,
+    sender: ProfileName,
+    scheduled_time: string,
+    other: string
+  ): this {
+    const signature = "";
+    const intra_sender = "";
+    this.external_metadata = {
+      sender,
+      recipient,
+      scheduled_time,
+      signature,
+      other,
+      intra_sender,
+    };
+    return this;
+  }
+
   update_intra_sender(intra_sender: string): this {
     if (this.external_metadata) {
       this.external_metadata.intra_sender = intra_sender;
@@ -449,7 +468,7 @@ export class ShinkaiMessageBuilder {
         TSEncryptionMethod.None,
       )
       .set_message_schema_type(MessageSchemaType.JobCreationSchema)
-      .set_body_encryption(TSEncryptionMethod.DiffieHellmanChaChaPoly1305)
+      .set_body_encryption(TSEncryptionMethod.None)
       .set_external_metadata_with_intra_sender(
         node_receiver,
         sender,
@@ -472,6 +491,7 @@ export class ShinkaiMessageBuilder {
   ): Promise<ShinkaiMessage> {
     const jobMessage = { job_id, content, files_inbox };
     const body = JSON.stringify(jobMessage);
+    const inbox = InboxName.getJobInboxNameFromParams(job_id).value;
 
     return new ShinkaiMessageBuilder(
       my_encryption_secret_key,
@@ -479,13 +499,14 @@ export class ShinkaiMessageBuilder {
       receiver_public_key,
     )
       .set_message_raw_content(body)
-      .set_internal_metadata(
+      .set_internal_metadata_with_inbox(
         sender_subidentity,
         node_receiver_subidentity,
+        inbox,
         TSEncryptionMethod.None,
       )
       .set_message_schema_type(MessageSchemaType.JobMessageSchema)
-      .set_body_encryption(TSEncryptionMethod.DiffieHellmanChaChaPoly1305)
+      .set_body_encryption(TSEncryptionMethod.None)
       .set_external_metadata_with_intra_sender(
         node_receiver,
         node_sender,

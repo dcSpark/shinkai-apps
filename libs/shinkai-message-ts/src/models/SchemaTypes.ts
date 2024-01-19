@@ -1,6 +1,6 @@
 export interface JobScope {
-  buckets: string[];
-  documents: string[];
+  local: string[];
+  database: string[];
 }
 
 export interface JobCreation {

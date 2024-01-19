@@ -163,7 +163,7 @@ export async function verify_inner_layer_signature(
 }
 
 export const blake3FromObj = (obj: object): string => {
-  const sortedString = JSON.stringify(obj, Object.keys(obj).sort());
+  const sortedString = JSON.stringify(obj);
   const hashAlt = blake3(sortedString);
   const hashAltHex = Array.from(new Uint8Array(hashAlt))
     .map((b) => b.toString(16).padStart(2, '0'))
