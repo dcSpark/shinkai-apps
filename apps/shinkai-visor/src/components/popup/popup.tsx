@@ -34,7 +34,7 @@ export const Popup = () => {
   const history = useHistory();
   const auth = useAuth((state) => state.auth);
   const location = useLocation();
-  const [popupVisibility] = useGlobalPopupChromeMessage();
+  useGlobalPopupChromeMessage();
   const isAuthenticated = !!auth;
 
   useEffect(() => {
@@ -49,90 +49,88 @@ export const Popup = () => {
   }, [location]);
   return (
     <AnimatePresence>
-      {popupVisibility && (
-        <motion.div
-          animate={{ opacity: 1 }}
-          className="flex h-full w-full flex-col rounded-lg bg-gray-500 px-6 pb-6 pt-8 shadow-xl"
-          data-testid="popup"
-          exit={{ opacity: 0 }}
-          initial={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <Switch key={location.pathname} location={location}>
-            <Route exact path="/">
-              <AnimatedRoute>
-                <SplashScreen />
-              </AnimatedRoute>
-            </Route>
-            <Route path="/welcome">
-              <AnimatedRoute>
-                <Welcome />
-              </AnimatedRoute>
-            </Route>
+      <motion.div
+        animate={{ opacity: 1 }}
+        className="flex h-full w-full flex-col bg-gray-500 px-6 pb-6 pt-8 shadow-xl"
+        data-testid="popup"
+        exit={{ opacity: 0 }}
+        initial={{ opacity: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <Switch key={location.pathname} location={location}>
+          <Route exact path="/">
+            <AnimatedRoute>
+              <SplashScreen />
+            </AnimatedRoute>
+          </Route>
+          <Route path="/welcome">
+            <AnimatedRoute>
+              <Welcome />
+            </AnimatedRoute>
+          </Route>
 
-            <Route path="*">
-              <AnimatedRoute>
-                <WithNav>
-                  <Route path="/nodes">
-                    <AnimatedRoute>
-                      <Switch>
-                        <Route path="/nodes/connect/method/quick-start">
-                          <ConnectMethodQuickStart />
-                        </Route>
-                        <Route path="/nodes/connect/method/restore-connection">
-                          <ConnectMethodRestoreConnection />
-                        </Route>
-                        <Route path="/nodes/connect/method/qr-code">
-                          <ConnectMethodQrCode />
-                        </Route>
-                      </Switch>
-                    </AnimatedRoute>
-                  </Route>
-                  <Route path="/inboxes">
+          <Route path="*">
+            <AnimatedRoute>
+              <WithNav>
+                <Route path="/nodes">
+                  <AnimatedRoute>
                     <Switch>
-                      <Route path="/inboxes/create-inbox">
-                        <CreateInbox />
+                      <Route path="/nodes/connect/method/quick-start">
+                        <ConnectMethodQuickStart />
                       </Route>
-                      <Route path="/inboxes/create-job">
-                        <CreateJob />
+                      <Route path="/nodes/connect/method/restore-connection">
+                        <ConnectMethodRestoreConnection />
                       </Route>
-                      <Route path="/inboxes/:inboxId">
-                        <Inbox />
-                      </Route>
-                      <Route path="/">
-                        <Inboxes />
+                      <Route path="/nodes/connect/method/qr-code">
+                        <ConnectMethodQrCode />
                       </Route>
                     </Switch>
-                  </Route>
-                  <Route path="/agents">
-                    <Switch>
-                      <Route path="/agents/add">
-                        <AddAgent />
-                      </Route>
-                      <Route path="/">
-                        <Agents />
-                      </Route>
-                    </Switch>
-                  </Route>
-                  <Route path="/settings">
-                    <Switch>
-                      <Route path="/settings/export-connection">
-                        <ExportConnection />
-                      </Route>
-                      <Route path="/settings/create-registration-code">
-                        <CreateRegistrationCode />
-                      </Route>
-                      <Route path="/">
-                        <Settings />
-                      </Route>
-                    </Switch>
-                  </Route>
-                </WithNav>
-              </AnimatedRoute>
-            </Route>
-          </Switch>
-        </motion.div>
-      )}
+                  </AnimatedRoute>
+                </Route>
+                <Route path="/inboxes">
+                  <Switch>
+                    <Route path="/inboxes/create-inbox">
+                      <CreateInbox />
+                    </Route>
+                    <Route path="/inboxes/create-job">
+                      <CreateJob />
+                    </Route>
+                    <Route path="/inboxes/:inboxId">
+                      <Inbox />
+                    </Route>
+                    <Route path="/">
+                      <Inboxes />
+                    </Route>
+                  </Switch>
+                </Route>
+                <Route path="/agents">
+                  <Switch>
+                    <Route path="/agents/add">
+                      <AddAgent />
+                    </Route>
+                    <Route path="/">
+                      <Agents />
+                    </Route>
+                  </Switch>
+                </Route>
+                <Route path="/settings">
+                  <Switch>
+                    <Route path="/settings/export-connection">
+                      <ExportConnection />
+                    </Route>
+                    <Route path="/settings/create-registration-code">
+                      <CreateRegistrationCode />
+                    </Route>
+                    <Route path="/">
+                      <Settings />
+                    </Route>
+                  </Switch>
+                </Route>
+              </WithNav>
+            </AnimatedRoute>
+          </Route>
+        </Switch>
+      </motion.div>
     </AnimatePresence>
   );
 };
