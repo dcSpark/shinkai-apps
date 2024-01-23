@@ -1,17 +1,24 @@
 import {
   type BrowserContext,
   chromium,
-  FrameLocator,
   Locator,
+  Page,
   test as base,
 } from '@playwright/test';
 import * as path from 'path';
 
+import { waitFor } from '../utils/test-utils';
+
+/*
+  This ENV variable is really important to allow Playwirght to get access to the popup page running in a Chrome side panel
+  We got this workaround from: https://github.com/microsoft/playwright/issues/26693
+*/
 process.env.PW_CHROMIUM_ATTACH_TO_OTHER = '1';
+
 export const test = base.extend<{
   context: BrowserContext;
   extensionId: string;
-  popup: FrameLocator;
+  popup: Page;
   actionButton: Locator;
 }>({
   // eslint-disable-next-line no-empty-pattern
@@ -55,15 +62,19 @@ export const test = base.extend<{
   },
   popup: async ({ page, actionButton, extensionId }, use) => {
     await actionButton.click();
-    // index 0 is the main page shinkai website, 1 is a blank page
-    const sidePanelExtension = page.context().pages()[2]; //
-    console.log(sidePanelExtension, 'extension');
-
-    //
-    // await page.goto(
-    //   `chrome-extension://${extensionId}/src/components/popup/popup.html`,
-    // );
-    // await expect(popup).toBeDefined();
+    let popupPage: Page | undefined = undefined;
+    await waitFor(
+      async () => {
+        popupPage = page
+          .context()
+          .pages()
+          .find((value) => value.url().match(extensionId));
+        await expect(popupPage).toBeDefined();
+      },
+      500,
+      1000,
+    );
+    await use(popupPage);
   },
 });
 export const expect = test.expect;
