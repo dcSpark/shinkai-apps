@@ -135,11 +135,13 @@ chrome.sidePanel
   .catch((error) => console.error(error));
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
-  if (!tab) return;
-  // TODO: context menus doesnt work
+  if (!tab || !tab.id) return;
   chrome.sidePanel.open({ windowId: tab.windowId });
-  const action = menuActions.get(info.menuItemId);
-  if (action) {
-    action(info, tab);
-  }
+  // wait for side panel to open
+  setTimeout(() => {
+    const action = menuActions.get(info.menuItemId);
+    if (action) {
+      action(info, tab);
+    }
+  }, 300);
 });
