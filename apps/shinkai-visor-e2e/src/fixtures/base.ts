@@ -1,6 +1,13 @@
-import { type BrowserContext, chromium, FrameLocator,Locator, test as base } from '@playwright/test';
+import {
+  type BrowserContext,
+  chromium,
+  FrameLocator,
+  Locator,
+  test as base,
+} from '@playwright/test';
 import * as path from 'path';
 
+process.env.PW_CHROMIUM_ATTACH_TO_OTHER = '1';
 export const test = base.extend<{
   context: BrowserContext;
   extensionId: string;
@@ -34,7 +41,9 @@ export const test = base.extend<{
   },
   page: async ({ page, extensionId }, use) => {
     await page.goto('/');
-    console.log(`page configured and extension is installed extensionId:${extensionId}`);
+    console.log(
+      `page configured and extension is installed extensionId:${extensionId}`,
+    );
     // eslint-disable-next-line playwright/no-networkidle
     await page.waitForLoadState('networkidle');
     await use(page);
@@ -44,10 +53,17 @@ export const test = base.extend<{
     await expect(actionButton).toBeDefined();
     await use(actionButton);
   },
-  popup: async ({ page }, use) => {
-    const popupIframe = page.frameLocator('#popup-iframe');
-    await expect(popupIframe).toBeDefined();
-    await use(popupIframe);
-  }
+  popup: async ({ page, actionButton, extensionId }, use) => {
+    await actionButton.click();
+    // index 0 is the main page shinkai website, 1 is a blank page
+    const sidePanelExtension = page.context().pages()[2]; //
+    console.log(sidePanelExtension, 'extension');
+
+    //
+    // await page.goto(
+    //   `chrome-extension://${extensionId}/src/components/popup/popup.html`,
+    // );
+    // await expect(popup).toBeDefined();
+  },
 });
 export const expect = test.expect;
