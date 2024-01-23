@@ -12,6 +12,8 @@ enum ContextMenu {
   SendCaptureToAgent = 'send-capture-to-agent',
 }
 
+export const OPEN_SIDEPANEL_DELAY_MS = 600;
+
 const sendPageToAgent = async (
   info: chrome.contextMenus.OnClickData,
   tab: chrome.tabs.Tab | undefined,
@@ -142,5 +144,5 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
   // wait for side panel to open
   setTimeout(() => {
     action(info, tab);
-  }, 400);
+  }, OPEN_SIDEPANEL_DELAY_MS);
 });

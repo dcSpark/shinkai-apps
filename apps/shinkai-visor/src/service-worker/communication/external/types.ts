@@ -113,5 +113,6 @@ export type ServiceWorkerExternalMessageActionsMap = {
     permission: string;
     resolver: ServiceWorkerExternalMessageResolver;
     validator: ZodSchema;
+    openSidePanel?: boolean;
   };
 };

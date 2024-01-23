@@ -1,3 +1,4 @@
+import { OPEN_SIDEPANEL_DELAY_MS } from '../../context-menu';
 import { ACTIONS_MAP } from './actions';
 import {
   ServiceWorkerExternalMessage,
@@ -91,6 +92,22 @@ export const listen = (): void => {
 
       // Execute action
       try {
+        // check if action needs to open sidepanel to add a delay
+        if (action.openSidePanel) {
+          await chrome.sidePanel.open({ windowId: sender.tab?.windowId });
+          // add a delay to allow the sidepanel to open first
+          setTimeout(async () => {
+            const responsePayload = await action.resolver(
+              message.payload,
+              sender.tab?.id as number,
+            );
+            return sendResponse({
+              status: ServiceWorkerExternalMessageResponseStatus.Success,
+              payload: responsePayload,
+            });
+          }, OPEN_SIDEPANEL_DELAY_MS);
+        }
+
         const responsePayload = await action.resolver(
           message.payload,
           sender.tab.id,

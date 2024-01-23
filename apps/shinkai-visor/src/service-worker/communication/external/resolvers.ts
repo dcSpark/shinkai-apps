@@ -51,23 +51,17 @@ export const getProfileAgentsResolver =
     };
   };
 
-export const quickConnectionIntent = async (
-  { nodeAddress }: ServiceWorkerExternalMessageQuickConnectionIntent,
-  tabId: number,
-): Promise<ServiceWorkerExternalMessageQuickConnectionIntentResponse> => {
+export const quickConnectionIntent = async ({
+  nodeAddress,
+}: ServiceWorkerExternalMessageQuickConnectionIntent): Promise<ServiceWorkerExternalMessageQuickConnectionIntentResponse> => {
   const auth = useAuth.getState().auth;
   if (auth) {
     throw new Error('visor is currently connected to a node');
   }
-  await sendMessage(
-    {
-      type: ServiceWorkerInternalMessageType.QuickConnectionIntent,
-      data: {
-        nodeAddress: nodeAddress,
-      },
-    },
-    tabId,
-  );
+  sendMessage({
+    type: ServiceWorkerInternalMessageType.QuickConnectionIntent,
+    data: { nodeAddress: nodeAddress },
+  });
   return;
 };
 
