@@ -136,12 +136,11 @@ chrome.sidePanel
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (!tab || !tab.id) return;
+  const action = menuActions.get(info.menuItemId);
+  if (!action) return;
   chrome.sidePanel.open({ windowId: tab.windowId });
   // wait for side panel to open
   setTimeout(() => {
-    const action = menuActions.get(info.menuItemId);
-    if (action) {
-      action(info, tab);
-    }
-  }, 300);
+    action(info, tab);
+  }, 400);
 });
