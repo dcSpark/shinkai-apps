@@ -108,6 +108,7 @@ const SetupStepTwo = () => {
         </div>
         <div className="relative">
           <img
+            alt={''}
             className="w-full object-cover"
             src="https://www.shinkai.com/assets/images/website-type.webp"
           />
