@@ -1,12 +1,7 @@
 import * as path from 'path';
 
 import { expect, test } from '../fixtures/base';
-import {
-  acceptTerms,
-  addAgent,
-  quickConnect,
-  togglePopup,
-} from '../utils/basic-actions';
+import { acceptTerms, addAgent, quickConnect } from '../utils/basic-actions';
 import { getAgent } from '../utils/dummy-data';
 import { NodeManager } from '../utils/node-manager';
 
@@ -90,7 +85,6 @@ export const extenralCommunicationTests = () => {
     extensionId,
   }) => {
     await nodeManager.startNode(true);
-    await togglePopup(actionButton, popup);
     await acceptTerms(popup);
     await quickConnect(popup);
     const response = await page.evaluate(
@@ -142,7 +136,6 @@ export const extenralCommunicationTests = () => {
     extensionId,
   }) => {
     await nodeManager.startNode(true);
-    await togglePopup(actionButton, popup);
     await acceptTerms(popup);
     await quickConnect(popup);
     await addAgent(popup, getAgent());
@@ -167,7 +160,6 @@ export const extenralCommunicationTests = () => {
     extensionId,
   }) => {
     await nodeManager.startNode(true);
-    await togglePopup(actionButton, popup);
     await acceptTerms(popup);
     await quickConnect(popup);
     await addAgent(popup, getAgent());

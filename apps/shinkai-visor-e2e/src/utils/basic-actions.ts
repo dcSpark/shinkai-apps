@@ -1,28 +1,22 @@
-import { FrameLocator, Locator } from "@playwright/test";
+import { Page } from '@playwright/test';
 
 import { expect } from '../fixtures/base';
 
-export const togglePopup = async (actionButton: Locator, popupIframe: FrameLocator): Promise<void> => {
-  await actionButton.click();
-  const popup = popupIframe.getByTestId('popup');
-  await expect(popup).toBeVisible();
-}
-
-export const acceptTerms = async (popup: FrameLocator): Promise<void> => {
+export const acceptTerms = async (popup: Page): Promise<void> => {
   const termsInput = popup.getByTestId('terms');
   await termsInput.click();
   const getStartedButton = popup.getByTestId('get-started-button');
   await getStartedButton.click();
 };
 
-export const quickConnect = async (popup: FrameLocator): Promise<void> => {
+export const quickConnect = async (popup: Page): Promise<void> => {
   const quickConnectButton = popup.getByTestId('quick-connect-button');
   await quickConnectButton.click();
   await expect(popup.getByTestId('nav-menu-button')).toBeVisible();
 };
 
 export const addAgent = async (
-  popup: FrameLocator,
+  popup: Page,
   agent: {
     agentName: string;
     externalUrl: string;
@@ -54,7 +48,10 @@ export const addAgent = async (
   await expect(popup.getByTestId('create-job-submit-button')).toBeVisible();
 };
 
-export const navigateToMenu = async (popup: FrameLocator, menuTestId: string): Promise<void> => {
+export const navigateToMenu = async (
+  popup: Page,
+  menuTestId: string,
+): Promise<void> => {
   await popup.getByTestId('nav-menu-button').click();
   await popup.getByTestId(menuTestId).click();
-}
+};

@@ -1,11 +1,7 @@
 import { expect, test } from '../fixtures/base';
-import { acceptTerms, togglePopup } from '../utils/basic-actions';
+import { acceptTerms } from '../utils/basic-actions';
 
 export const welcomeTests = () => {
-  test.beforeEach(async ({ page, actionButton, popup }) => {
-    await togglePopup(actionButton, popup);
-  });
-
   test('welcome should be the first page', async ({ page, popup }) => {
     const tosLink = popup.getByTestId('terms-of-service-link');
     const ppLink = popup.getByTestId('privacy-policy-link');

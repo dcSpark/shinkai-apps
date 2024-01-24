@@ -12,6 +12,8 @@ enum ContextMenu {
   SendCaptureToAgent = 'send-capture-to-agent',
 }
 
+export const OPEN_SIDEPANEL_DELAY_MS = 600;
+
 const sendPageToAgent = async (
   info: chrome.contextMenus.OnClickData,
   tab: chrome.tabs.Tab | undefined,
@@ -135,11 +137,12 @@ chrome.sidePanel
   .catch((error) => console.error(error));
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
-  if (!tab) return;
-  // TODO: context menus doesnt work
-  chrome.sidePanel.open({ windowId: tab.windowId });
+  if (!tab || !tab.id) return;
   const action = menuActions.get(info.menuItemId);
-  if (action) {
+  if (!action) return;
+  chrome.sidePanel.open({ windowId: tab.windowId });
+  // wait for side panel to open
+  setTimeout(() => {
     action(info, tab);
-  }
+  }, OPEN_SIDEPANEL_DELAY_MS);
 });

@@ -25,6 +25,7 @@ export const ACTIONS_MAP: ServiceWorkerExternalMessageActionsMap = {
     validator: z.object({
       nodeAddress: z.string().url(),
     }),
+    openSidePanel: true,
   },
   [ServiceWorkerExternalMessageType.GetProfileAgents]: {
     permission: 'agent-list',
@@ -38,7 +39,9 @@ export const ACTIONS_MAP: ServiceWorkerExternalMessageActionsMap = {
   },
   [ServiceWorkerExternalMessageType.InstallToolkit]: {
     permission: '',
-    resolver: () => { throw new Error('NYI') },
+    resolver: () => {
+      throw new Error('NYI');
+    },
     validator: z.undefined().or(z.object({})),
-  }
+  },
 };

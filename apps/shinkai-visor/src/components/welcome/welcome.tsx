@@ -37,7 +37,7 @@ export default function Welcome() {
       <div className="flex items-start space-x-2">
         <Checkbox
           checked={acceptedTermsAndContidions}
-          data-testid='terms'
+          data-testid="terms"
           id="terms"
           onCheckedChange={setAcceptedTermsAndContidions}
         />
@@ -49,7 +49,7 @@ export default function Welcome() {
             By continuing, you agree to our{' '}
             <a
               className={'text-blue-400 underline'}
-              data-testid='terms-of-service-link'
+              data-testid="terms-of-service-link"
               href={'https://www.shinkai.com/terms-of-service'}
               rel="noreferrer"
               target={'_blank'}
@@ -59,7 +59,7 @@ export default function Welcome() {
             and{' '}
             <a
               className={'block text-blue-400 underline'}
-              data-testid='privacy-policy-link'
+              data-testid="privacy-policy-link"
               href={'https://www.shinkai.com/privacy-policy'}
               rel="noreferrer"
               target={'_blank'}
@@ -71,7 +71,7 @@ export default function Welcome() {
       </div>
 
       <Button
-        data-testid='get-started-button'
+        data-testid="get-started-button"
         disabled={!acceptedTermsAndContidions}
         onClick={() => history.replace('/nodes/connect/method/quick-start')}
       >

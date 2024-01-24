@@ -1,10 +1,24 @@
-import { type BrowserContext, chromium, FrameLocator,Locator, test as base } from '@playwright/test';
+import {
+  type BrowserContext,
+  chromium,
+  Locator,
+  Page,
+  test as base,
+} from '@playwright/test';
 import * as path from 'path';
+
+import { waitFor } from '../utils/test-utils';
+
+/*
+  This ENV variable is really important to allow Playwirght to get access to the popup page running in a Chrome side panel
+  We got this workaround from: https://github.com/microsoft/playwright/issues/26693
+*/
+process.env.PW_CHROMIUM_ATTACH_TO_OTHER = '1';
 
 export const test = base.extend<{
   context: BrowserContext;
   extensionId: string;
-  popup: FrameLocator;
+  popup: Page;
   actionButton: Locator;
 }>({
   // eslint-disable-next-line no-empty-pattern
@@ -34,7 +48,9 @@ export const test = base.extend<{
   },
   page: async ({ page, extensionId }, use) => {
     await page.goto('/');
-    console.log(`page configured and extension is installed extensionId:${extensionId}`);
+    console.log(
+      `page configured and extension is installed extensionId:${extensionId}`,
+    );
     // eslint-disable-next-line playwright/no-networkidle
     await page.waitForLoadState('networkidle');
     await use(page);
@@ -44,10 +60,21 @@ export const test = base.extend<{
     await expect(actionButton).toBeDefined();
     await use(actionButton);
   },
-  popup: async ({ page }, use) => {
-    const popupIframe = page.frameLocator('#popup-iframe');
-    await expect(popupIframe).toBeDefined();
-    await use(popupIframe);
-  }
+  popup: async ({ page, actionButton, extensionId }, use) => {
+    await actionButton.click();
+    let popupPage: Page | undefined = undefined;
+    await waitFor(
+      async () => {
+        popupPage = page
+          .context()
+          .pages()
+          .find((value) => value.url().match(extensionId));
+        await expect(popupPage).toBeDefined();
+      },
+      500,
+      1000,
+    );
+    await use(popupPage);
+  },
 });
 export const expect = test.expect;

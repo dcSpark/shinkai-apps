@@ -6,7 +6,6 @@ import {
   addAgent,
   navigateToMenu,
   quickConnect,
-  togglePopup,
 } from '../utils/basic-actions';
 import { getAgent } from '../utils/dummy-data';
 import { NodeManager } from '../utils/node-manager';
@@ -20,7 +19,6 @@ export const storageTests = () => {
 
   test.beforeEach(async ({ actionButton, popup }) => {
     await nodeManager.startNode(true);
-    await togglePopup(actionButton, popup);
     await acceptTerms(popup);
     await quickConnect(popup);
   });
@@ -29,7 +27,11 @@ export const storageTests = () => {
     await nodeManager.stopNode();
   });
 
-  test('data should persist after refresh browser', async ({ actionButton, popup, page }) => {
+  test('data should persist after refresh browser', async ({
+    actionButton,
+    popup,
+    page,
+  }) => {
     const agent = getAgent();
     await addAgent(popup, agent);
 
@@ -39,14 +41,18 @@ export const storageTests = () => {
     ).toBeVisible();
 
     await page.reload({ waitUntil: 'networkidle' });
-    await togglePopup(actionButton, popup);
     await navigateToMenu(popup, 'nav-menu-agents-button');
     await expect(
       popup.getByTestId(`${agent.agentName}-agent-button`),
     ).toBeVisible();
   });
 
-  test('data should persist after open a new tab', async ({ actionButton, popup, page, context }) => {
+  test('data should persist after open a new tab', async ({
+    actionButton,
+    popup,
+    page,
+    context,
+  }) => {
     const agent = getAgent();
     await addAgent(popup, agent);
 
@@ -60,12 +66,10 @@ export const storageTests = () => {
     await newPage.waitForLoadState('networkidle');
     const newPageActionButton = newPage.getByTestId('action-button');
     await expect(newPageActionButton).toBeDefined();
-    const newPagePopupIframe = newPage.frameLocator('#popup-iframe');
-    await expect(newPagePopupIframe).toBeDefined();
-    await togglePopup(newPageActionButton, newPagePopupIframe);
-    await navigateToMenu(newPagePopupIframe, 'nav-menu-agents-button');
+
+    await navigateToMenu(popup, 'nav-menu-agents-button');
     await expect(
-      newPagePopupIframe.getByTestId(`${agent.agentName}-agent-button`),
+      popup.getByTestId(`${agent.agentName}-agent-button`),
     ).toBeVisible();
   });
 };
