@@ -6,7 +6,6 @@ import {
   addAgent,
   navigateToMenu,
   quickConnect,
-  togglePopup,
 } from '../utils/basic-actions';
 import { getAgent } from '../utils/dummy-data';
 import { hasError } from '../utils/input-errors';
@@ -21,7 +20,6 @@ export const jobsTests = () => {
 
   test.beforeEach(async ({ actionButton, popup }) => {
     await nodeManager.startNode(true);
-    await togglePopup(actionButton, popup);
     await acceptTerms(popup);
     await quickConnect(popup);
     const agent = getAgent();

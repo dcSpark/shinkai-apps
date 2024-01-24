@@ -1,7 +1,7 @@
 import * as path from 'path';
 
 import { expect, test } from '../fixtures/base';
-import { acceptTerms, quickConnect, togglePopup } from '../utils/basic-actions';
+import { acceptTerms, quickConnect } from '../utils/basic-actions';
 import { NodeManager } from '../utils/node-manager';
 
 export const connectMethodQuickStartTests = () => {
@@ -12,7 +12,6 @@ export const connectMethodQuickStartTests = () => {
   test.describe.configure({ mode: 'serial' });
 
   test.beforeEach(async ({ page, actionButton, popup }) => {
-    await togglePopup(actionButton, popup);
     await acceptTerms(popup);
   });
 
