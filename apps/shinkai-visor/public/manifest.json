@@ -10,7 +10,7 @@
     "128": "icon128.png"
   },
   "action": {
-    "default_title": "Click to open sidepanel",
+    "default_title": "Click to toggle sidepanel",
     "default_icon": {
       "16": "icon16.png",
       "48": "icon48.png"
@@ -35,7 +35,7 @@
         "chromeos": "Ctrl+Comma",
         "linux": "Ctrl+Comma"
       },
-      "description": "Open/Close Shinkai popup"
+      "description": "Open/Close Shinkai sidepanel"
     }
   },
   "permissions": [
