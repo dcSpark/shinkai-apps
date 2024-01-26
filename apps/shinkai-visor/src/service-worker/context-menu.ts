@@ -128,8 +128,14 @@ const registerMenu = () => {
   });
 };
 
-chrome.runtime.onInstalled.addListener(() => {
+chrome.runtime.onInstalled.addListener(async (details) => {
   registerMenu();
+
+  if (details.reason === 'install') {
+    await chrome.tabs.create({
+      url: chrome.runtime.getURL('src/components/setup/setup.html'),
+    });
+  }
 });
 
 chrome.sidePanel
