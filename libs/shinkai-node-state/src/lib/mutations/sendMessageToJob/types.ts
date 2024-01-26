@@ -5,6 +5,7 @@ export type SendMessageToJobInput = JobCredentialsPayload & {
   jobId: string;
   message: string;
   files_inbox: string;
+  parent: string | null;
   shinkaiIdentity: string;
   profile: string;
 };

@@ -5,11 +5,12 @@ import { JobMessageWrapper as JobMessageWrapperWASM } from '../pkg/shinkai_messa
 export class JobMessageWrapper {
   private wasmWrapper: JobMessageWrapperWASM;
 
-  constructor(job_id_js: any, content_js: any, files_inbox_js: any) {
+  constructor(job_id_js: any, content_js: any, files_inbox_js: any, parent: any) {
     this.wasmWrapper = new JobMessageWrapperWASM(
       job_id_js,
       content_js,
       files_inbox_js,
+      parent,
     );
   }
 
@@ -27,6 +28,7 @@ export class JobMessageWrapper {
       js_value.job_id_js,
       js_value.content_js,
       js_value.files_inbox_js,
+      js_value.parent_js,
     );
   }
 
@@ -35,19 +37,21 @@ export class JobMessageWrapper {
       js_value.job_id_js,
       js_value.content_js,
       js_value.files_inbox_js,
+      js_value.parent_js,
     );
   }
 
   static fromStrings(job_id: string, content: string): JobMessageWrapper {
-    return new JobMessageWrapper(job_id, content, []);
+    return new JobMessageWrapper(job_id, content, [], '');
   }
 
   static fromStringsWithFileInbox(
     job_id: string,
     content: string,
     file_inbox: string,
+    parent: string,
   ): JobMessageWrapper {
-    return new JobMessageWrapper(job_id, content, file_inbox);
+    return new JobMessageWrapper(job_id, content, file_inbox, parent);
   }
 
   free(): void {

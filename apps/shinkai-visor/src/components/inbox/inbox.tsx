@@ -95,6 +95,7 @@ export const Inbox = () => {
         jobId,
         message: value,
         files_inbox: '',
+        parent: '', // Note: we should set the parent if we want to retry or branch out
         shinkaiIdentity: auth.shinkai_identity,
         profile: auth.profile,
         my_device_encryption_sk: auth.my_device_encryption_sk,

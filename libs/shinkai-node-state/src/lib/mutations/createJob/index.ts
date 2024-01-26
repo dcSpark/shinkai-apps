@@ -72,6 +72,7 @@ export const createJob = async ({
         jobId,
         content,
         files_inbox,
+        '',
         shinkaiIdentity,
         profile,
         receiver,
