@@ -102,8 +102,9 @@ export class JobMessageWrapper {
 * @param {any} job_id_js
 * @param {any} content_js
 * @param {any} files_inbox
+* @param {any} parent
 */
-  constructor(job_id_js: any, content_js: any, files_inbox: any);
+  constructor(job_id_js: any, content_js: any, files_inbox: any, parent: any);
 /**
 * @returns {any}
 */
@@ -126,9 +127,10 @@ export class JobMessageWrapper {
 * @param {string} job_id
 * @param {string} content
 * @param {string} files_inbox
+* @param {string} parent
 * @returns {JobMessageWrapper}
 */
-  static fromStrings(job_id: string, content: string, files_inbox: string): JobMessageWrapper;
+  static fromStrings(job_id: string, content: string, files_inbox: string, parent: string): JobMessageWrapper;
 }
 /**
 */
@@ -456,6 +458,7 @@ export class ShinkaiMessageBuilderWrapper {
 * @param {string} job_id
 * @param {string} content
 * @param {string} files_inbox
+* @param {string} parent
 * @param {string} my_encryption_secret_key
 * @param {string} my_signature_secret_key
 * @param {string} receiver_public_key
@@ -465,7 +468,7 @@ export class ShinkaiMessageBuilderWrapper {
 * @param {string} receiver_subidentity
 * @returns {string}
 */
-  static job_message(job_id: string, content: string, files_inbox: string, my_encryption_secret_key: string, my_signature_secret_key: string, receiver_public_key: string, sender: string, sender_subidentity: string, receiver: string, receiver_subidentity: string): string;
+  static job_message(job_id: string, content: string, files_inbox: string, parent: string, my_encryption_secret_key: string, my_signature_secret_key: string, receiver_public_key: string, sender: string, sender_subidentity: string, receiver: string, receiver_subidentity: string): string;
 /**
 * @param {string} my_encryption_secret_key
 * @param {string} my_signature_secret_key
@@ -594,7 +597,7 @@ export class ShinkaiNameWrapper {
 }
 /**
 */
-export class ShinkaiTime {
+export class ShinkaiStringTime {
   free(): void;
 /**
 * @returns {string}

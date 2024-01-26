@@ -175,6 +175,7 @@ const JobChat: React.FC = () => {
         jobId: jobId,
         message: message_to_send,
         files_inbox: '',
+        parent: '', // Note: this should be defined if we want to retry or branch out
         shinkaiIdentity: auth.shinkai_identity,
         profile: auth.profile,
         my_device_encryption_sk: auth.my_device_encryption_sk,

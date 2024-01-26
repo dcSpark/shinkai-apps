@@ -185,7 +185,7 @@ export const sendTextMessageWithFilesForInbox = async (
     for (const fileToUpload of files) {
       await fileUploader.uploadEncryptedFile(fileToUpload);
     }
-    const responseText = await fileUploader.finalizeAndSend(text_message);
+    const responseText = await fileUploader.finalizeAndSend(text_message, null);
     const message: ShinkaiMessage = JSON.parse(responseText);
 
     if (message.body && 'unencrypted' in message.body) {
@@ -542,6 +542,7 @@ export const sendMessageToJob = async (
   jobId: string,
   content: string,
   files_inbox: string,
+  parent: string | null,
   sender: string,
   sender_subidentity: string,
   receiver: string,
@@ -553,6 +554,7 @@ export const sendMessageToJob = async (
       jobId,
       content,
       files_inbox,
+      parent || '',
       setupDetailsState.profile_encryption_sk,
       setupDetailsState.profile_identity_sk,
       setupDetailsState.node_encryption_pk,

@@ -141,12 +141,13 @@ export class FileUploader {
     }
   }
 
-  async finalizeAndSend(content: string): Promise<string> {
+  async finalizeAndSend(content: string, parent: string | null): Promise<string> {
     try {
       const messageStr = ShinkaiMessageBuilderWrapper.job_message(
         this.job_id,
         content,
         this.folder_id || '',
+        parent,
         this.my_encryption_secret_key,
         this.my_signature_secret_key,
         this.receiver_public_key,
