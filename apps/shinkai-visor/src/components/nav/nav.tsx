@@ -164,7 +164,7 @@ export default function NavBar() {
                 <div className="text-sm">
                   Before continuing, please
                   <Link
-                    className="mr-1 inline-block cursor-pointer text-white underline"
+                    className="mx-1 inline-block cursor-pointer text-white underline"
                     to={'/settings/export-connection'}
                   >
                     export your connection

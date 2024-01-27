@@ -185,6 +185,26 @@ export const ConnectMethodQuickStart = () => {
             </Button>
           </form>
         </Form>
+        <div className="text-gray-80 space-y-4 py-8 pt-12 text-center text-sm">
+          <p>
+            Don’t have an account?{' '}
+            <a
+              className="font-semibold text-white underline"
+              href="https://develop.shinkai-website.pages.dev/sign-up"
+            >
+              Sign up
+            </a>
+          </p>
+          <p>
+            Already have an account?{' '}
+            <a
+              className="font-semibold text-white underline"
+              href="https://develop.shinkai-website.pages.dev/user"
+            >
+              Get shinkai node
+            </a>
+          </p>
+        </div>
       </div>
 
       <div className="flex gap-4">
