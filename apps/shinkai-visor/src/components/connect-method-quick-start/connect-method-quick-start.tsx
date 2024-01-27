@@ -191,6 +191,8 @@ export const ConnectMethodQuickStart = () => {
             <a
               className="font-semibold text-white underline"
               href="https://develop.shinkai-website.pages.dev/sign-up"
+              rel="noreferrer"
+              target={'_blank'}
             >
               Sign up
             </a>
@@ -200,6 +202,8 @@ export const ConnectMethodQuickStart = () => {
             <a
               className="font-semibold text-white underline"
               href="https://develop.shinkai-website.pages.dev/user"
+              rel="noreferrer"
+              target={'_blank'}
             >
               Get shinkai node
             </a>
