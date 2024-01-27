@@ -1,8 +1,11 @@
-import { UndefinedInitialDataOptions } from '@tanstack/react-query/src/queryOptions';
+import { QueryObserverOptions } from '@tanstack/react-query';
+
+import { FunctionKey } from '../../constants';
 
 export type GetHealthInput = {
   node_address: string;
 };
+export type UseGetHealth = [FunctionKey.GET_HEALTH, GetHealthInput];
 export type GetHealthOutput = {
   is_pristine: boolean;
   node_name: string;
@@ -10,4 +13,10 @@ export type GetHealthOutput = {
   version: string;
 };
 
-export type Options = UndefinedInitialDataOptions<GetHealthOutput>;
+export type Options = QueryObserverOptions<
+  GetHealthOutput,
+  Error,
+  GetHealthOutput,
+  GetHealthOutput,
+  UseGetHealth
+>;

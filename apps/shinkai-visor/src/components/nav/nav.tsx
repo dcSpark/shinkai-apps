@@ -119,7 +119,6 @@ export default function NavBar() {
   };
 
   const onClickMenuOption = (key: MenuOption) => {
-    console.log('menu option', key, MenuOption.Settings);
     switch (key) {
       case MenuOption.Inbox:
         history.push('/inboxes');
