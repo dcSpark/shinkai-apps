@@ -32,7 +32,11 @@ htmlRoot.prepend(baseContainer);
 
 const ActionButton = () => {
   const settings = useSettings((settingsStore) => settingsStore.settings);
-
+  const openPanel = () => {
+    sendMessage({
+      type: ServiceWorkerInternalMessageType.OpenSidePanel,
+    });
+  };
   return (
     <div
       className={cn(
@@ -45,11 +49,7 @@ const ActionButton = () => {
           <button
             className=" h-[45px] w-[45px] rounded-lg bg-gray-500 p-2 shadow-2xl"
             data-testid="action-button"
-            onClick={() => {
-              sendMessage({
-                type: ServiceWorkerInternalMessageType.OpenSidePanel,
-              });
-            }}
+            onClick={openPanel}
           >
             <img
               alt="shinkai-app-logo "
@@ -102,12 +102,16 @@ const ActionButton = () => {
           {[
             {
               label: 'Send Capture',
-              onClick: () => {},
+              onClick: () => {
+                openPanel();
+              },
               icon: <ScanIcon className="w-full" />,
             },
             {
               label: 'Send Page',
-              onClick: () => {},
+              onClick: () => {
+                openPanel();
+              },
               icon: <FileInputIcon className="w-full" />,
             },
           ].map((item) => (
