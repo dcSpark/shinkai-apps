@@ -1,4 +1,5 @@
 import { calculate_blake3_hash } from '../pkg/shinkai_message_wasm';
+import { urlJoin } from '../utils/url-join';
 import { InboxNameWrapper } from './InboxNameWrapper';
 import { ShinkaiMessageBuilderWrapper } from './ShinkaiMessageBuilderWrapper';
 
@@ -23,7 +24,7 @@ export class FileUploader {
     job_inbox: string,
     sender: string,
     sender_subidentity: string,
-    receiver: string
+    receiver: string,
   ) {
     this.base_url = base_url;
     this.my_encryption_secret_key = my_encryption_secret_key;
@@ -44,9 +45,14 @@ export class FileUploader {
       throw new Error('Symmetric key is not set');
     }
 
-    const rawKey = await window.crypto.subtle.exportKey('raw', this.symmetric_key);
+    const rawKey = await window.crypto.subtle.exportKey(
+      'raw',
+      this.symmetric_key,
+    );
     const rawKeyArray = new Uint8Array(rawKey);
-    const rawKeyString = Array.from(rawKeyArray).map(b => b.toString(16).padStart(2, '0')).join('');
+    const rawKeyString = Array.from(rawKeyArray)
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('');
     const hash = calculate_blake3_hash(rawKeyString);
 
     return hash;
@@ -60,13 +66,13 @@ export class FileUploader {
         keyData,
         'AES-GCM',
         true,
-        ['encrypt', 'decrypt']
+        ['encrypt', 'decrypt'],
       );
 
       // Export symmetric key
       const exportedKey = await window.crypto.subtle.exportKey(
         'raw',
-        this.symmetric_key
+        this.symmetric_key,
       );
       const exportedKeyArray = new Uint8Array(exportedKey);
       const exportedKeyString = Array.from(exportedKeyArray)
@@ -82,18 +88,18 @@ export class FileUploader {
           exportedKeyString,
           this.sender,
           this.sender_subidentity,
-          this.receiver
+          this.receiver,
         );
 
       const response = await fetch(
-        `${this.base_url}/v1/create_files_inbox_with_symmetric_key`,
+        urlJoin(this.base_url, '/v1/create_files_inbox_with_symmetric_key'),
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: message,
-        }
+        },
       );
 
       if (!response.ok) {
@@ -122,26 +128,43 @@ export class FileUploader {
       const encryptedFileData = await window.crypto.subtle.encrypt(
         algorithm,
         this.symmetric_key,
-        fileData
+        fileData,
       );
 
       const hash = await this.calculateHashFromSymmetricKey();
-      const nonce = Array.from(iv).map(b => b.toString(16).padStart(2, '0')).join('');
+      const nonce = Array.from(iv)
+        .map((b) => b.toString(16).padStart(2, '0'))
+        .join('');
 
       const formData = new FormData();
-      formData.append('file', new Blob([encryptedFileData]), filename || file.name);
+      formData.append(
+        'file',
+        new Blob([encryptedFileData]),
+        filename || file.name,
+      );
 
-      await fetch(`${this.base_url}/v1/add_file_to_inbox_with_symmetric_key/${hash}/${nonce}`, {
-        method: 'POST',
-        body: formData,
-      });
+      await fetch(
+        urlJoin(
+          this.base_url,
+          '/v1/add_file_to_inbox_with_symmetric_key',
+          hash,
+          nonce,
+        ),
+        {
+          method: 'POST',
+          body: formData,
+        },
+      );
     } catch (error) {
       console.error('Error uploading encrypted file:', error);
       throw error;
     }
   }
 
-  async finalizeAndSend(content: string, parent: string | null): Promise<string> {
+  async finalizeAndSend(
+    content: string,
+    parent: string | null,
+  ): Promise<string> {
     try {
       const messageStr = ShinkaiMessageBuilderWrapper.job_message(
         this.job_id,
@@ -154,12 +177,12 @@ export class FileUploader {
         this.sender,
         this.sender_subidentity,
         this.receiver,
-        this.sender_subidentity
+        this.sender_subidentity,
       );
 
       const message = JSON.parse(messageStr);
 
-      const response = await fetch(`${this.base_url}/v1/job_message`, {
+      const response = await fetch(urlJoin(this.base_url, '/v1/job_message'), {
         method: 'POST',
         body: JSON.stringify(message),
         headers: { 'Content-Type': 'application/json' },
