@@ -13,7 +13,7 @@ export const WithNav = (props: PropsWithChildren) => {
   const isInboxPage = location.pathname.includes('/inboxes/');
   const { toast } = useToast();
 
-  const { nodeInfo, isSuccess, isFetching, ...data } = useGetHealth(
+  const { nodeInfo, isSuccess, isFetching } = useGetHealth(
     { node_address: auth?.node_address ?? '' },
     { refetchInterval: 10000, enabled: !!auth },
   );
