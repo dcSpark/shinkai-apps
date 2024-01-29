@@ -40,7 +40,7 @@ export const handleHttpError = async (response: Response): Promise<void> => {
 export const fetchPublicKey =
   (nodeAddress: string) => async (): Promise<any> => {
     try {
-      const response = await fetch(`${nodeAddress}/get_public_key`);
+      const response = await fetch(urlJoin(nodeAddress, '/get_public_key'));
       return response.json();
     } catch (error) {
       console.error('Error fetching public key:', error);
@@ -490,7 +490,7 @@ export const submitInitialRegistrationNoCode = async (
 
 export const pingAllNodes = async (nodeAddress: string): Promise<string> => {
   try {
-    const response = await fetch(`${nodeAddress}/ping_all`, { method: 'POST' });
+    const response = await fetch(urlJoin(nodeAddress, '/ping_all'), { method: 'POST' });
     await handleHttpError(response);
     const data = await response.json();
     return data.result;
