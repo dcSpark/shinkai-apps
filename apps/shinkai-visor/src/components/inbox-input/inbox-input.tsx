@@ -4,7 +4,7 @@ import {
   Form,
   FormField,
   FormItem,
-  PromptTextarea,
+  MessageEditor,
 } from '@shinkai_network/shinkai-ui';
 import { motion } from 'framer-motion';
 import { SendHorizonal } from 'lucide-react';
@@ -60,17 +60,12 @@ export const InboxInput = (props: InboxInputProps) => {
                 transition={{ type: 'tween' }}
               >
                 <FormItem>
-                  <PromptTextarea
-                    autoFocus
-                    field={field}
+                  <MessageEditor
+                    disabled={props.loading}
                     isLoading={props.loading}
-                    label={intl.formatMessage({ id: 'tmwtd' })}
-                    onKeyDown={(event) => {
-                      if (event.key === 'Enter' && !event.shiftKey) {
-                        event.preventDefault();
-                        form.handleSubmit(submit)();
-                      }
-                    }}
+                    onChange={field.onChange}
+                    onSubmit={form.handleSubmit(submit)}
+                    placeholder={intl.formatMessage({ id: 'tmwtd' })}
                     value={field.value}
                   />
                 </FormItem>
@@ -91,6 +86,7 @@ export const InboxInput = (props: InboxInputProps) => {
               }
             >
               <SendHorizonal className="h-6 w-6" />
+              <span className="sr-only">Send Message</span>
             </Button>
           </motion.div>
         )}
