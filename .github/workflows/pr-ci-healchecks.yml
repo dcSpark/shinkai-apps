@@ -42,6 +42,8 @@ jobs:
         run: npx nx run-many -t lint,build,test --parallel=3 --skip-nx-cache --verbose
 
       - name: Run E2E for Visor
+        id: visor-e2e-tests
+        continue-on-error: true
         env:
           CI: true
           OPEN_AI_API_KEY: ${{ secrets.OPEN_AI_API_KEY }}
@@ -49,7 +51,14 @@ jobs:
 
       - name: Upload playwright trace and videos
         uses: actions/upload-artifact@v4
+        if: steps.visor-e2e-tests.outcome == 'failure'
         with:
           name: visor-e2e-results
           path: ./apps/shinkai-visor-e2e/test-[results|report]/
           retention-days: 1
+
+      - name: Fail when Visor E2E failed and reports were uploaded
+        if: steps.visor-e2e-tests.outcome == 'failure'
+        run: |
+          echo "Visor E2E failed"
+          exit 1
