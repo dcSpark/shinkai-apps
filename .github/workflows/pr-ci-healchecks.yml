@@ -35,8 +35,14 @@ jobs:
           npm cache verify
           npm ci --no-audit --prefer-offline
 
-      - name: Run NX target ${{ matrix.target }} on affected projects
+      - name: Run NX target on all projects
         env:
           CI: true
           OPEN_AI_API_KEY: ${{ secrets.OPEN_AI_API_KEY }}
         run: npx nx run-many -t lint,build,test --parallel=3 --skip-nx-cache --verbose
+
+      - name: Run E2E for Visor
+        env:
+          CI: true
+          OPEN_AI_API_KEY: ${{ secrets.OPEN_AI_API_KEY }}
+        run: npx nx e2e shinkai-visor-e2e

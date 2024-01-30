@@ -48,6 +48,8 @@ export const test = base.extend<{
   },
   page: async ({ page, extensionId }, use) => {
     await page.goto('/');
+    // Required because a new tab is created after install the extension
+    await page.bringToFront();
     console.log(
       `page configured and extension is installed extensionId:${extensionId}`,
     );
@@ -68,12 +70,15 @@ export const test = base.extend<{
         popupPage = page
           .context()
           .pages()
-          .find((value) => value.url().match(extensionId));
+          // eslint-disable-next-line no-useless-escape
+          .find((value) => value.url().match(new RegExp(`^chrome-extension:\/\/${extensionId}.*popup.html$`)));
         await expect(popupPage).toBeDefined();
       },
       500,
       1000,
     );
+    // eslint-disable-next-line playwright/no-networkidle
+    await popupPage.waitForLoadState('networkidle');
     await use(popupPage);
   },
 });
