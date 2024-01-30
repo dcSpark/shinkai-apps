@@ -1,7 +1,6 @@
 import {
   type BrowserContext,
   chromium,
-  ChromiumBrowser,
   Locator,
   Page,
   test as base,
