@@ -1,0 +1,11 @@
+---------------------------------------------------------------
+Node API address: 127.0.0.1:9550
+Node TCP address: 0.0.0.0:9552
+Node WS address: 0.0.0.0:9551
+Node Shinkai identity: @@localhost.shinkai
+Node Main Profile: main (assumption)
+Node encryption pk: d4add99e0d4ff596786d1ddcd8825a0396d93a1b65acee696f6662ba190f2121
+Node signature pk: f9c5188a83750a07ee5304c1d9192f26efa22a619f2e915239f7c276a8add1f6
+Main DB path: /Users/agallardol/Documents/github/shinkai-visor/apps/shinkai-visor-e2e/src/shinkai-node/db/main_db/31af52571a68326d3e36c8d81472021632f9b2b915a6e3f05c7dcd641bd94e9e
+Vector FS DB path: /Users/agallardol/Documents/github/shinkai-visor/apps/shinkai-visor-e2e/src/shinkai-node/db/vector_fs_db/31af52571a68326d3e36c8d81472021632f9b2b915a6e3f05c7dcd641bd94e9e
+---------------------------------------------------------------

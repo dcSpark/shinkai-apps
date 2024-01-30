@@ -1,0 +1,11 @@
+Please scan the QR code below with your phone to register this device:
+---------------------------------------------------------------
+Node registration code: cd8baf6a96ddc1c01ab5c11935d1d8def8757355e6bc1da09c3304ae52bdfb16225cdba027f51e8a690a2fa8649a492e5575d7857e66e61959697b8e0e3af9fb
+Node profile: device
+Node identity type: device
+Node permission type: admin
+Node address: http://127.0.0.1:9550
+Node Shinkai identity: @@localhost.shinkai
+Node encryption pk: d4add99e0d4ff596786d1ddcd8825a0396d93a1b65acee696f6662ba190f2121
+Node signature pk: f9c5188a83750a07ee5304c1d9192f26efa22a619f2e915239f7c276a8add1f6
+---------------------------------------------------------------

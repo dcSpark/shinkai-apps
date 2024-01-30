@@ -39,4 +39,15 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   testMatch: 'src/e2e/all.spec.ts',
   fullyParallel: false,
+  reporter: [
+    ['html', { outputFolder: 'test-report' }],
+    [
+      '@estruyf/github-actions-reporter',
+      {
+        title: 'Playwright E2E Summary',
+        useDetails: true,
+        showError: true,
+      },
+    ],
+  ],
 });
