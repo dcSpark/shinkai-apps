@@ -1,6 +1,7 @@
 import '../../theme/styles.css';
 
 import { queryClient } from '@shinkai_network/shinkai-node-state/lib/constants';
+import { Toaster } from '@shinkai_network/shinkai-ui';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
 import * as React from 'react';
@@ -29,7 +30,6 @@ import { Settings } from '../settings/settings';
 import { SplashScreen } from '../splash-screen/splash-screen';
 import Welcome from '../welcome/welcome';
 import { WithNav } from '../with-nav/with-nav';
-
 export const Popup = () => {
   const history = useHistory();
   const auth = useAuth((state) => state.auth);
@@ -150,6 +150,7 @@ root.render(
             <Popup />
           </Router>
         </div>
+        <Toaster />
       </IntlProvider>
     </QueryClientProvider>
   </React.StrictMode>,

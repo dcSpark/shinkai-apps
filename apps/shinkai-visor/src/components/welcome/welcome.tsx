@@ -54,11 +54,11 @@ export default function Welcome() {
               rel="noreferrer"
               target={'_blank'}
             >
-              Terms of Service{' '}
-            </a>
+              Terms of Service
+            </a>{' '}
             and{' '}
             <a
-              className={'block text-blue-400 underline'}
+              className={'text-blue-400 underline'}
               data-testid="privacy-policy-link"
               href={'https://www.shinkai.com/privacy-policy'}
               rel="noreferrer"

@@ -7,6 +7,7 @@ import {
   MarkdownPreview,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import React from 'react';
 
 import shinkaiMiniLogo from '../../assets/icons/shinkai-min.svg';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
@@ -25,7 +26,10 @@ const copyToClipboard = (content: string) => {
 };
 
 export const Message = ({ message }: MessageProps) => {
-  const openMarkdownLink = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>, url?: string) => {
+  const openMarkdownLink = (
+    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+    url?: string,
+  ) => {
     event.preventDefault();
     if (!url) return;
     sendMessage({
