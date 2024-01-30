@@ -46,3 +46,10 @@ jobs:
           CI: true
           OPEN_AI_API_KEY: ${{ secrets.OPEN_AI_API_KEY }}
         run: npx nx e2e shinkai-visor-e2e --verbose
+
+      - name: Upload playwright trace and videos
+        uses: actions/upload-artifact@v4
+        with:
+          name: visor-e2e-results
+          path: ./apps/shinkai-visor-e2e/test-[results|report]/
+          retention-days: 1
