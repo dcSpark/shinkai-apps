@@ -1,9 +1,11 @@
 import {
   type BrowserContext,
   chromium,
+  ChromiumBrowser,
   Locator,
   Page,
   test as base,
+  Worker,
 } from '@playwright/test';
 import * as path from 'path';
 
@@ -17,6 +19,7 @@ process.env.PW_CHROMIUM_ATTACH_TO_OTHER = '1';
 
 export const test = base.extend<{
   context: BrowserContext;
+  worker: Worker;
   extensionId: string;
   popup: Page;
   actionButton: Locator;
@@ -30,7 +33,7 @@ export const test = base.extend<{
     const context = await chromium.launchPersistentContext('', {
       headless: false,
       args: [
-        ...[process.env.CI ? '--headless=new' : ''],
+        ...['--headless=new'],
         `--disable-extensions-except=${pathToExtension}`,
         `--load-extension=${pathToExtension}`,
       ],
@@ -38,12 +41,14 @@ export const test = base.extend<{
     await use(context);
     await context.close();
   },
-  extensionId: async ({ context }, use) => {
+  worker: async ({ context }, use) => {
     // for manifest v3:
     let [background] = context.serviceWorkers();
     if (!background) background = await context.waitForEvent('serviceworker');
-
-    const extensionId = background.url().split('/')[2];
+    await use(background);
+  },
+  extensionId: async ({ worker }, use) => {
+    const extensionId = worker.url().split('/')[2];
     await use(extensionId);
   },
   page: async ({ page, extensionId }, use) => {
@@ -60,18 +65,27 @@ export const test = base.extend<{
   actionButton: async ({ page }, use) => {
     const actionButton = page.getByTestId('action-button');
     await expect(actionButton).toBeDefined();
+    await expect(actionButton).toBeAttached();
     await use(actionButton);
   },
-  popup: async ({ page, actionButton, extensionId }, use) => {
-    await actionButton.click();
+  popup: async ({ context, page, actionButton, worker, extensionId }, use) => {
+    // eslint-disable-next-line playwright/no-force-option
+    await actionButton.dispatchEvent('click');
+
     let popupPage: Page | undefined = undefined;
     await waitFor(
       async () => {
         popupPage = page
           .context()
           .pages()
-          // eslint-disable-next-line no-useless-escape
-          .find((value) => value.url().match(new RegExp(`^chrome-extension:\/\/${extensionId}.*popup.html$`)));
+          .find((value) =>
+            value
+              .url()
+              .match(
+                // eslint-disable-next-line no-useless-escape
+                new RegExp(`^chrome-extension:\/\/${extensionId}.*popup.html$`),
+              ),
+          );
         await expect(popupPage).toBeDefined();
       },
       500,

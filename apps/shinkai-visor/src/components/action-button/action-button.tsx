@@ -41,16 +41,14 @@ const ActionButton = () => {
   );
 };
 
-if (import.meta.env.DEV || process.env.CI) {
-  const root = createRoot(container);
-  root.render(
-    <React.StrictMode>
-      <style>{themeStyle}</style>
-      <IntlProvider locale={locale} messages={langMessages}>
-        <div className="shadow-4xl fixed right-[2px] top-[80px] z-[1500000000] overflow-hidden">
-          <ActionButton />
-        </div>
-      </IntlProvider>
-    </React.StrictMode>,
-  );
-}
+const root = createRoot(container);
+root.render(
+  <React.StrictMode>
+    <style>{themeStyle}</style>
+    <IntlProvider locale={locale} messages={langMessages}>
+      <div className="shadow-4xl fixed right-[2px] top-[80px] z-[1500000000] overflow-hidden hidden">
+        <ActionButton />
+      </div>
+    </IntlProvider>
+  </React.StrictMode>,
+);
