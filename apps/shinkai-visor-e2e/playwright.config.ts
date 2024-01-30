@@ -36,7 +36,7 @@ export default defineConfig({
   //   reuseExistingServer: !process.env.CI,
   //   cwd: workspaceRoot,
   // },
-  workers: process.env.CI ? 1 : undefined,
+  workers: 1,
   testMatch: 'src/e2e/all.spec.ts',
   fullyParallel: false,
   reporter: [

@@ -37,7 +37,6 @@ jobs:
 
       - name: Run NX target on all projects
         env:
-          CI: true
           OPEN_AI_API_KEY: ${{ secrets.OPEN_AI_API_KEY }}
         run: npx nx run-many -t lint,build,test --parallel=3 --skip-nx-cache --verbose
 
@@ -45,7 +44,6 @@ jobs:
         id: visor-e2e-tests
         continue-on-error: true
         env:
-          CI: true
           OPEN_AI_API_KEY: ${{ secrets.OPEN_AI_API_KEY }}
         run: npx nx e2e shinkai-visor-e2e --verbose
 
