@@ -41,7 +41,7 @@ const ActionButton = () => {
   );
 };
 
-if (import.meta.env.DEV || import.meta.env.CI) {
+if (import.meta.env.DEV || process.env.CI) {
   const root = createRoot(container);
   root.render(
     <React.StrictMode>
