@@ -1,6 +1,7 @@
 import { ChildProcess, spawn } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
+
 export class NodeManager {
   private defaultNodeOptions = {
     FIRST_DEVICE_NEEDS_REGISTRATION_CODE: false,
@@ -103,6 +104,17 @@ export class NodeManager {
 
   async stopNode(): Promise<void> {
     console.log('stopping node');
+    await new Promise<void>((resolve) => {
+      const timeout = setTimeout(() => {
+        console.warn('stopping node timeout');
+        resolve();
+      }, 5000)
+      this.node.once('exit', () => {
+        console.log('stopping node success');
+        clearTimeout(timeout);
+        resolve();
+      });
+    });
     this.node?.kill();
     this.node = undefined;
   }
