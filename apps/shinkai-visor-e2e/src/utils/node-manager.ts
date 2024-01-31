@@ -32,33 +32,44 @@ export class NodeManager {
       readyMatcher?: RegExp;
       readyMatcherTimeoutMs?: number;
       pipeLogs: boolean;
+      logsId?: string;
     },
   ): Promise<ChildProcess> {
-    console.log(`executing ${command}`);
+    const logsId = options?.logsId || 'unknown';
+    const logger = (message: string) => console.log(`${logsId}: ${message}`);
+    logger(`executing ${command}`);
     return new Promise((resolve, reject) => {
       const childProcess = spawn(command, {
-          detached: false,
-          stdio: 'pipe',
-          shell: true,
+        detached: false,
+        stdio: 'pipe',
+        shell: true,
       });
       childProcess.on('close', (err) => {
-        console.log(`Process closed ${command}`, err);
+        logger(`close with code ${String(err)}`);
         reject(err);
       });
-      
+      childProcess.on('error', (err) => {
+        logger(`error ${String(err)}`);
+      });
+      childProcess.stderr.on('error', (data) => {
+        logger(String(data));
+      });
       if (options.pipeLogs) {
-        childProcess.stdout?.pipe(process.stdout);
+        childProcess.stderr.on('data', (data) => {
+          logger(data.toString());
+        });
+        childProcess.stdout.on('data', (data) => {
+          logger(data.toString());
+        });
       }
       if (options.readyMatcher) {
         const timeoutRef = setTimeout(() => {
           childProcess.kill();
-          reject(
-            `ready matcher timeout after ${options.readyMatcherTimeoutMs}`,
-          );
+          reject(`ready matcher timeout after ${options.readyMatcherTimeoutMs}`);
         }, options.readyMatcherTimeoutMs ?? 15000);
         childProcess.stdout?.on('data', (chunk: Buffer) => {
           if (options.readyMatcher?.test(chunk.toString())) {
-            console.log(`Process ready, with readyMatcher:${chunk.toString()}`);
+            logger(`process ready, with readyMatcher:${chunk.toString()}`);
             clearTimeout(timeoutRef);
             resolve(childProcess);
           }
@@ -81,7 +92,8 @@ export class NodeManager {
 
     this.node = await this.spawnNode(`${nodeEnv} ${this.nodeExecPath}`, {
       pipeLogs: true,
-      readyMatcher: /Server::run/
+      logsId: 'shinkai-node',
+      readyMatcher: /Server::run/,
     });
     console.log('node started');
   }
