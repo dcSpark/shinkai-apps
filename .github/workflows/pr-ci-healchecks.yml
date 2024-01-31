@@ -45,7 +45,9 @@ jobs:
         continue-on-error: true
         env:
           OPEN_AI_API_KEY: ${{ secrets.OPEN_AI_API_KEY }}
-        run: npx nx e2e shinkai-visor-e2e --verbose
+        run: |
+          git update-index --chmod=+x ./apps/shinkai-visor-e2e/src/shinkai-node/shinkai_node
+          npx nx e2e shinkai-visor-e2e --verbose
 
       - name: Upload playwright trace and videos
         uses: actions/upload-artifact@v4
