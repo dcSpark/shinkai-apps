@@ -15,8 +15,11 @@ export class NodeManager {
   };
 
   private node: ChildProcess | undefined;
+  private nodeExecPath: string;
 
-  constructor(private nodeExecPath: string) {}
+  constructor(nodeExecPath?: string) {
+    this.nodeExecPath = nodeExecPath || process.env.SHINKAI_NODE_EXEC_PATH || path.join(__filename, '../../shinkai-node/shinkai_node_macos');
+  }
 
   private resetToPristine(nodeStoragePath: string) {
     fs.rmSync(nodeStoragePath, { recursive: true, force: true });

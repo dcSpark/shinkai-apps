@@ -45,8 +45,9 @@ jobs:
         continue-on-error: true
         env:
           OPEN_AI_API_KEY: ${{ secrets.OPEN_AI_API_KEY }}
+          SHINKAI_NODE_EXEC_PATH: ./apps/shinkai-visor-e2e/src/shinkai-node/shinkai_node_linux
         run: |
-          chmod +x ./apps/shinkai-visor-e2e/src/shinkai-node/shinkai_node
+          chmod +x ./apps/shinkai-visor-e2e/src/shinkai-node/shinkai_node_linux
           npx nx e2e shinkai-visor-e2e --verbose
 
       - name: Upload playwright trace and videos
