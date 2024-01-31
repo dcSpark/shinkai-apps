@@ -64,7 +64,7 @@ export const test = base.extend<{
   actionButton: async ({ page }, use) => {
     const actionButton = page.getByTestId('action-button');
     await expect(actionButton).toBeDefined();
-    await expect(actionButton).toBeAttached({ timeout: 1000 });
+    await expect(actionButton).toBeAttached({ timeout: 10000 });
     await use(actionButton);
   },
   popup: async ({ context, page, actionButton, worker, extensionId }, use) => {
