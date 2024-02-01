@@ -76,7 +76,6 @@ export const extenralCommunicationTests = () => {
 
   test('is-node-pristine error when node is not pristine', async ({
     page,
-    actionButton,
     popup,
     extensionId,
   }) => {
@@ -127,7 +126,6 @@ export const extenralCommunicationTests = () => {
 
   test('get-profile-agents success with length 1 when add node', async ({
     page,
-    actionButton,
     popup,
     extensionId,
   }) => {
@@ -151,7 +149,6 @@ export const extenralCommunicationTests = () => {
 
   test('get-profile-inboxes success with length 1', async ({
     page,
-    actionButton,
     popup,
     extensionId,
   }) => {

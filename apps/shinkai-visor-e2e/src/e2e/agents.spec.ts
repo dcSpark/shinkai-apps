@@ -14,7 +14,7 @@ export const agentTests = () => {
 
   test.describe.configure({ mode: 'serial' });
 
-  test.beforeEach(async ({ actionButton, popup }) => {
+  test.beforeEach(async ({ popup }) => {
     await nodeManager.startNode(true);
     await acceptTerms(popup);
     await quickConnect(popup);

@@ -5,7 +5,6 @@ import {
   ServiceWorkerInternalMessage,
   ServiceWorkerInternalMessageType,
 } from '../../service-worker/communication/internal/types';
-import { SHINKAI_ACTION_ELEMENT_NAME } from '../action-button/action-button';
 
 const baseContainer = document.createElement('shinkai-popup-root');
 baseContainer.style.position = 'fixed';
@@ -37,18 +36,6 @@ htmlRoot.prepend(baseContainer);
 
 htmlRoot.addEventListener('keydown', function (ev) {
   if (ev.code === 'Escape') {
-    sendContentScriptMessage({
-      type: ContentScriptBridgeMessageType.TogglePopupVisibility,
-      data: false,
-    });
-  }
-});
-htmlRoot.addEventListener('click', function (ev) {
-  if (
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    ev.target?.localName !== SHINKAI_ACTION_ELEMENT_NAME
-  ) {
     sendContentScriptMessage({
       type: ContentScriptBridgeMessageType.TogglePopupVisibility,
       data: false,

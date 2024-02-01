@@ -1,7 +1,6 @@
 import {
   type BrowserContext,
   chromium,
-  Locator,
   Page,
   test as base,
   Worker,
@@ -21,10 +20,10 @@ export const test = base.extend<{
   worker: Worker;
   extensionId: string;
   popup: Page;
-  actionButton: Locator;
 }>({
   // eslint-disable-next-line no-empty-pattern
   context: async ({}, use) => {
+    console.log('Start context fixture');
     const pathToExtension = path.join(
       __dirname,
       '../../../../dist/apps/shinkai-visor',
@@ -39,40 +38,47 @@ export const test = base.extend<{
     });
     await use(context);
     await context.close();
+    console.log('End context fixture');
   },
   worker: async ({ context }, use) => {
+    console.log('Start worker fixture');
     // for manifest v3:
     let [background] = context.serviceWorkers();
     if (!background) background = await context.waitForEvent('serviceworker');
     await use(background);
+    console.log('End worker fixture');
   },
   extensionId: async ({ worker }, use) => {
+    console.log('Start extensionId fixture');
     const extensionId = worker.url().split('/')[2];
+    console.log(`extension is installed extensionId:${extensionId}`);
     await use(extensionId);
+    console.log('End extensionId fixture');
   },
   page: async ({ page, extensionId }, use) => {
+    console.log('Start page fixture');
     await page.goto('/');
     // Required because a new tab is created after install the extension
     await page.bringToFront();
-    console.log(
-      `page configured and extension is installed extensionId:${extensionId}`,
-    );
     // eslint-disable-next-line playwright/no-networkidle
     await page.waitForLoadState('networkidle');
     await use(page);
+    console.log('End page fixture');
   },
-  actionButton: async ({ page }, use) => {
+  popup: async ({ context, page, worker, extensionId }, use) => {
+    console.log('Start popup fixture');
+
+    const manifestPage = await context.newPage();
+    await manifestPage.goto(`chrome-extension://${extensionId}/manifest.json`);
+    await manifestPage.evaluate(async () => {
+      await chrome.runtime.sendMessage({
+        type: 'open-side-panel',
+      });
+    });
+
+    await page.bringToFront();
     // eslint-disable-next-line playwright/no-networkidle
     await page.waitForLoadState('networkidle');
-    const actionButton = page.getByTestId('action-button');
-    await expect(actionButton).toBeDefined();
-    await expect(actionButton).toBeAttached({ timeout: 10000 });
-    await use(actionButton);
-  },
-  popup: async ({ context, page, actionButton, worker, extensionId }, use) => {
-    // eslint-disable-next-line playwright/no-force-option
-    await actionButton.dispatchEvent('click');
-
     let popupPage: Page | undefined = undefined;
     await waitFor(
       async () => {
@@ -80,12 +86,10 @@ export const test = base.extend<{
           .context()
           .pages()
           .find((value) =>
-            value
-              .url()
-              .match(
-                // eslint-disable-next-line no-useless-escape
-                new RegExp(`^chrome-extension:\/\/${extensionId}.*popup.html$`),
-              ),
+            value.url().match(
+              // eslint-disable-next-line no-useless-escape
+              new RegExp(`^chrome-extension:\/\/${extensionId}.*popup.html$`),
+            ),
           );
         await expect(popupPage).toBeDefined();
       },
@@ -95,6 +99,7 @@ export const test = base.extend<{
     // eslint-disable-next-line playwright/no-networkidle
     await popupPage.waitForLoadState('networkidle');
     await use(popupPage);
+    console.log('End popup fixture');
   },
 });
 export const expect = test.expect;
