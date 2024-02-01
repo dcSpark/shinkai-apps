@@ -18,6 +18,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Switch,
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import { useEffect } from 'react';
@@ -32,7 +33,7 @@ import { Header } from '../header/header';
 
 const formSchema = z.object({
   defaultAgentId: z.string(),
-  hideActionButton: z.boolean(),
+  displayActionButton: z.boolean(),
   nodeAddress: z.string(),
   shinkaiIdentity: z.string(),
   nodeVersion: z.string(),
@@ -53,7 +54,7 @@ export const Settings = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       defaultAgentId: settings?.defaultAgentId,
-      hideActionButton: settings?.hideActionButton,
+      displayActionButton: settings?.displayActionButton,
       nodeAddress: auth?.node_address,
     },
   });
@@ -163,18 +164,19 @@ export const Settings = () => {
             />
             <FormField
               control={form.control}
-              name="hideActionButton"
+              name="displayActionButton"
               render={({ field }) => (
                 <FormItem className="flex gap-2.5">
                   <FormControl id={'hide-action'}>
-                    <Checkbox
+                    <Switch
+                      aria-readonly
                       checked={field.value}
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
                     <FormLabel className="static space-y-1.5 text-sm text-white">
-                      <FormattedMessage id="hide-action-button-label" />
+                      <FormattedMessage id="display-action-button-label" />
                     </FormLabel>
                     <FormDescription>
                       <FormattedMessage id="hide-action-button-description" />

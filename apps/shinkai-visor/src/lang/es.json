@@ -102,6 +102,6 @@
   "identity-type": "Tipo de identidad",
   "disconnect-warning-link": "Exporta tu conexión",
   "disconnect-warning-link-description": "Si quieres usarla más tarde",
-  "hide-action-button-label": "Ocultar botón de acción",
+  "display-action-button-label": "Siempre mostrar botón de acción",
   "hide-action-button-description": "Necesitarás usar el acceso rápido ⌘ , para mostar/ocultar Shinkai Visor"
 }

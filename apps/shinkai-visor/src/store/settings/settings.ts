@@ -1,13 +1,13 @@
-import { create } from "zustand";
-import { devtools, persist } from "zustand/middleware";
+import { create } from 'zustand';
+import { devtools, persist } from 'zustand/middleware';
 
-import { sendMessage } from "../../service-worker/communication/internal";
-import { ServiceWorkerInternalMessageType } from "../../service-worker/communication/internal/types";
-import { ChromeStorage } from "../persistor/chrome-storage";
+import { sendMessage } from '../../service-worker/communication/internal';
+import { ServiceWorkerInternalMessageType } from '../../service-worker/communication/internal/types';
+import { ChromeStorage } from '../persistor/chrome-storage';
 
 type SettingsData = {
   defaultAgentId: string;
-  hideActionButton: boolean;
+  displayActionButton: boolean;
 };
 
 type SettingsStore = {
@@ -21,17 +21,20 @@ export const useSettings = create<SettingsStore>()(
       (set, get) => ({
         settings: null,
         setSettings: (settings) => {
-          const valueChanged = JSON.stringify(get().settings) !== JSON.stringify(settings);
+          const valueChanged =
+            JSON.stringify(get().settings) !== JSON.stringify(settings);
           set({ settings });
           if (valueChanged) {
-            sendMessage({ type: ServiceWorkerInternalMessageType.RehydrateStore });
+            sendMessage({
+              type: ServiceWorkerInternalMessageType.RehydrateStore,
+            });
           }
         },
       }),
       {
-        name: "settings",
+        name: 'settings',
         storage: new ChromeStorage(),
-      }
-    )
-  )
+      },
+    ),
+  ),
 );
