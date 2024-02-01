@@ -1,14 +1,11 @@
 name: Release production
 
 on:
-  # push:
-  #   branches:
-  #     - 'main'
-  #   tags:
-  #     - '[0-9]+.[0-9]+.[0-9]+'
   push:
     branches:
-      - 'agallardol/ci-production'
+      - 'main'
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
 
 defaults:
   run:
@@ -41,8 +38,7 @@ jobs:
       - name: Run NX build on shinkai-visor
         run: npx nx build shinkai-visor --skip-nx-cache
         env:
-          # VERSION: ${{ github.ref }}.${{github.run_number}}
-          VERSION: 0.0.0.${{github.run_number}}
+          VERSION: ${{ github.ref }}.${{github.run_number}}
           NAME_PREFIX: ''
           DESCRIPTION_PREFIX: ''
           PUBLIC_KEY: ${{ secrets.CHROME_EXTENSION_PUBLIC_KEY }}
