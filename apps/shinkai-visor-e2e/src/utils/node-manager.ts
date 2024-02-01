@@ -110,6 +110,7 @@ export class NodeManager {
     if (!this.node) {
       return Promise.resolve();
     }
+    this.node.kill();
     await new Promise<void>((resolve) => {
       const timeout = setTimeout(() => {
         console.warn('stopping node timeout');
@@ -121,7 +122,6 @@ export class NodeManager {
         resolve();
       });
     });
-    this.node.kill();
     this.node = undefined;
   }
 }
