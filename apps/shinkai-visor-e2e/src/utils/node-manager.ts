@@ -58,6 +58,9 @@ export class NodeManager {
       childProcess.stderr.on('error', (data) => {
         logger(String(data));
       });
+      childProcess.stdout.on('error', (data) => {
+        logger(String(data));
+      });
       if (options.pipeLogs) {
         childProcess.stderr.on('data', (data) => {
           logger(data.toString());
