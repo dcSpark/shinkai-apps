@@ -68,6 +68,7 @@ export const test = base.extend<{
   popup: async ({ context, page, worker, extensionId }, use) => {
     console.log('Start popup fixture');
 
+    // Hack: This code let use control the sidel panel open/close
     const manifestPage = await context.newPage();
     await manifestPage.goto(`chrome-extension://${extensionId}/manifest.json`);
     await manifestPage.evaluate(async () => {
