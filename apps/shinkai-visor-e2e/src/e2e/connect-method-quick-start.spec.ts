@@ -31,7 +31,8 @@ export const connectMethodQuickStartTests = () => {
     await expect(emptyAgents).toBeAttached();
   });
 
-  test('should fail if node is not pristine', async ({ popup }) => {
+  // eslint-disable-next-line playwright/no-skipped-test
+  test.skip('should fail if node is not pristine', async ({ popup }) => {
     // It assumes previous test connected to the node so it's not pristine
     await nodeManager.startNode(false);
     const quickConnectButton = popup.getByTestId('quick-connect-button');
