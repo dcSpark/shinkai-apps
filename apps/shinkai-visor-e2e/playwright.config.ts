@@ -50,4 +50,5 @@ export default defineConfig({
       },
     ],
   ],
+  retries: 0,
 });
