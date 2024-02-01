@@ -62,6 +62,8 @@ export const test = base.extend<{
     await use(page);
   },
   actionButton: async ({ page }, use) => {
+    // eslint-disable-next-line playwright/no-networkidle
+    await page.waitForLoadState('networkidle');
     const actionButton = page.getByTestId('action-button');
     await expect(actionButton).toBeDefined();
     await expect(actionButton).toBeAttached({ timeout: 10000 });
