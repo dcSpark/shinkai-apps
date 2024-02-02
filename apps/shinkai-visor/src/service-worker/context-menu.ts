@@ -5,6 +5,7 @@ import {
   ServiceWorkerInternalMessage,
   ServiceWorkerInternalMessageType,
 } from './communication/internal/types';
+import ContextType = chrome.runtime.ContextType;
 
 enum ContextMenu {
   SendPageToAgent = 'send-page-to-agent',
@@ -14,8 +15,17 @@ enum ContextMenu {
 
 export const OPEN_SIDEPANEL_DELAY_MS = 600;
 
-const sendPageToAgent = async (
-  info: chrome.contextMenus.OnClickData,
+export const openSidePanel = async (tab: chrome.tabs.Tab | undefined) => {
+  if (!tab) return;
+  await chrome.sidePanel.open({ windowId: tab.windowId });
+  const contexts = await chrome.runtime.getContexts({
+    contextTypes: [ContextType.SIDE_PANEL],
+  });
+  return contexts.length > 0;
+};
+
+export const sendPageToAgent = async (
+  info: chrome.contextMenus.OnClickData | undefined,
   tab: chrome.tabs.Tab | undefined,
 ) => {
   // At this point, agents can just process text
@@ -43,12 +53,12 @@ const sendPageToAgent = async (
   sendMessage(message);
 };
 
-const sendToAgent = async (
-  info: chrome.contextMenus.OnClickData,
+export const sendToAgent = async (
+  info: chrome.contextMenus.OnClickData | undefined,
   tab: chrome.tabs.Tab | undefined,
 ) => {
   // At this point, agents can just process text
-  if (!info.selectionText || !tab?.id) {
+  if (!info?.selectionText || !tab?.id) {
     return;
   }
   const message: ServiceWorkerInternalMessage = {
@@ -60,8 +70,8 @@ const sendToAgent = async (
   sendMessage(message);
 };
 
-const sendCaptureToAgent = async (
-  info: chrome.contextMenus.OnClickData,
+export const sendCaptureToAgent = async (
+  info: chrome.contextMenus.OnClickData | undefined,
   tab: chrome.tabs.Tab | undefined,
 ) => {
   if (!tab?.id) {
@@ -87,7 +97,6 @@ const sendCaptureToAgent = async (
       tab.id,
       message,
     );
-  console.log('cropped image', croppedImage);
   message = {
     type: ServiceWorkerInternalMessageType.SendCaptureToAgent,
     data: {
@@ -101,7 +110,7 @@ const sendCaptureToAgent = async (
 const menuActions = new Map<
   string | number,
   (
-    info: chrome.contextMenus.OnClickData,
+    info: chrome.contextMenus.OnClickData | undefined,
     tab: chrome.tabs.Tab | undefined,
   ) => void
 >([

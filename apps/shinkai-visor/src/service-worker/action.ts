@@ -11,13 +11,6 @@
 //   }
 // };
 
-export const openSidePanel = async (tab: chrome.tabs.Tab | undefined) => {
-  if (!tab) return;
-  await chrome.sidePanel.open({ windowId: tab.windowId }).then((res) => {
-    console.log('sidePanel.open', res);
-  });
-};
-
 // chrome.action.onClicked.addListener(async (tab) => {
 //   console.log('actions.onClicked', tab?.id);
 //   if (!tab?.id) {

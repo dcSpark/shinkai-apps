@@ -49,7 +49,7 @@ export const Settings = () => {
   const { nodeInfo, isSuccess: isNodeInfoSuccess } = useGetHealth({
     node_address: auth?.node_address ?? '',
   });
-  console.log(nodeInfo, 'nodeInfo');
+
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -179,7 +179,7 @@ export const Settings = () => {
                       <FormattedMessage id="display-action-button-label" />
                     </FormLabel>
                     <FormDescription>
-                      <FormattedMessage id="hide-action-button-description" />
+                      <FormattedMessage id="show-action-button-description" />
                     </FormDescription>
                   </div>
                 </FormItem>

@@ -91,6 +91,9 @@ module.exports = {
         breath: 'breath 5s ease-out infinite',
         'big-bounce': 'big-bounce 1s infinite',
       },
+      zIndex: {
+        max: 2147483647,
+      },
     },
   },
   plugins: [tailwindAnimate, tailwindTypography],

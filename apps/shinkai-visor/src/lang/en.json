@@ -105,5 +105,5 @@
   "disconnect-warning-link": "Export your connection",
   "disconnect-warning-link-description": "If you want to use it later",
   "display-action-button-label": "Display always sidebar icon",
-  "hide-action-button-description": "You will need to use ⌘ , hotkey to show/hide Shinkai Visor"
+  "show-action-button-description": "You will need to use ⌘ , hotkey to show/hide Shinkai Visor. You can drag to move it up and down. "
 }

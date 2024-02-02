@@ -8,6 +8,7 @@ import { ChromeStorage } from '../persistor/chrome-storage';
 type SettingsData = {
   defaultAgentId: string;
   displayActionButton: boolean;
+  sideButtonOffset: number;
 };
 
 type SettingsStore = {

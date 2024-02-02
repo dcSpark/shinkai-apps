@@ -20,7 +20,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
-import { FileInputIcon, ScanIcon } from 'lucide-react';
+import { FileInputIcon, ScissorsIcon } from 'lucide-react';
 import * as React from 'react';
 import { useState } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -81,7 +81,7 @@ const ActionButton = () => {
       modifiers={[restrictToWindowEdges]}
       onDragEnd={({ delta, ...rest }) => {
         setCoordinates(({ x, y }) => {
-          const EDGE_OFFSET = 5;
+          const EDGE_OFFSET = 8;
           const BUTTON_OFFSET = 60;
 
           let newX = x + delta.x;
@@ -93,7 +93,7 @@ const ActionButton = () => {
           );
           newX =
             Math.abs(newX) >= window.innerWidth / 2
-              ? -(window.innerWidth - BUTTON_OFFSET - EDGE_OFFSET)
+              ? -(window.innerWidth - BUTTON_OFFSET)
               : 0;
 
           return {
@@ -111,13 +111,13 @@ const ActionButton = () => {
         <HoverCard openDelay={150}>
           <HoverCardTrigger asChild>
             <motion.button
-              className="hover:bg-brand overflow h-[45px] w-[45px] rounded-2xl bg-gray-500 p-2 shadow-2xl transition-colors"
+              className="hover:bg-brand overflow h-[48px] w-[48px] rounded-2xl bg-gray-500 p-2 shadow-2xl transition-colors"
               data-testid="action-button"
               onClick={toggleSidePanel}
             >
               <img
-                alt="shinkai-app-logo select-none "
-                className={'h-full w-full group-hover:rotate-45'}
+                alt="shinkai-app-logo select-none"
+                className={'h-full w-full select-none group-hover:rotate-45'}
                 src={srcUrlResolver(shinkaiLogo)}
               />
             </motion.button>
@@ -149,14 +149,18 @@ const ActionButton = () => {
               {
                 label: 'Send Capture',
                 onClick: () => {
-                  toggleSidePanel();
+                  chrome.runtime.sendMessage({
+                    type: ServiceWorkerInternalMessageType.SendCaptureToAgent,
+                  });
                 },
-                icon: <ScanIcon className="h-full w-full" />,
+                icon: <ScissorsIcon className="h-full w-full" />,
               },
               {
                 label: 'Send Page',
                 onClick: () => {
-                  toggleSidePanel();
+                  chrome.runtime.sendMessage({
+                    type: ServiceWorkerInternalMessageType.SendPageToAgent,
+                  });
                 },
                 icon: <FileInputIcon className="h-full w-full" />,
               },
@@ -189,7 +193,7 @@ root.render(
   <React.StrictMode>
     <style>{themeStyle}</style>
     <IntlProvider locale={locale} messages={langMessages}>
-      <div className="shadow-4xl fixed right-[2px] top-0 z-[1500000000]">
+      <div className="shadow-4xl z-max fixed right-[2px] top-0">
         <ActionButton />
       </div>
     </IntlProvider>
