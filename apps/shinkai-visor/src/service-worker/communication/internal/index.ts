@@ -6,7 +6,7 @@ import {
   ServiceWorkerInternalMessageType,
 } from './types';
 import ContextType = chrome.runtime.ContextType;
-import { sendCaptureToAgent, sendPageToAgent } from '../../context-menu';
+import { sendCaptureToAgent, sendPageToAgent } from '../../action';
 
 export const sendContentScriptMessage = (
   message: ContentScriptBridgeMessage,
@@ -78,15 +78,19 @@ export const listen = (): void => {
           if (!sender?.tab?.id) {
             return;
           }
-          sendCaptureToAgent(undefined, sender.tab);
-          break;
+          (async () => {
+            await sendCaptureToAgent(undefined, sender.tab);
+          })();
+          return true;
         }
         case ServiceWorkerInternalMessageType.SendPageToAgent: {
           if (!sender?.tab?.id) {
             return;
           }
-          sendPageToAgent(undefined, sender.tab);
-          break;
+          (async () => {
+            await sendPageToAgent(undefined, sender.tab);
+          })();
+          return true;
         }
 
         case ServiceWorkerInternalMessageType.ContentScriptBridge:

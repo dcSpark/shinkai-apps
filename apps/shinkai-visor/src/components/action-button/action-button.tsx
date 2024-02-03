@@ -27,9 +27,11 @@ import { createRoot } from 'react-dom/client';
 import { IntlProvider } from 'react-intl';
 
 import shinkaiLogo from '../../assets/icons/shinkai-min.svg';
+import { delay } from '../../helpers/misc';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
 import { useGlobalActionButtonChromeMessage } from '../../hooks/use-global-action-button-chrome-message';
 import { langMessages, locale } from '../../lang/intl';
+import { OPEN_SIDEPANEL_DELAY_MS } from '../../service-worker/action';
 import { ServiceWorkerInternalMessageType } from '../../service-worker/communication/internal/types';
 import { useSettings } from '../../store/settings/settings';
 import themeStyle from '../../theme/styles.css?inline';
@@ -58,6 +60,25 @@ const toggleSidePanel = async () => {
   }
 };
 
+const sendPage = async () => {
+  await chrome.runtime.sendMessage({
+    type: ServiceWorkerInternalMessageType.OpenSidePanel,
+  });
+  await delay(OPEN_SIDEPANEL_DELAY_MS);
+  await chrome.runtime.sendMessage({
+    type: ServiceWorkerInternalMessageType.SendPageToAgent,
+  });
+};
+
+const sendCapture = async () => {
+  await chrome.runtime.sendMessage({
+    type: ServiceWorkerInternalMessageType.OpenSidePanel,
+  });
+  await chrome.runtime.sendMessage({
+    type: ServiceWorkerInternalMessageType.SendCaptureToAgent,
+  });
+};
+
 const ActionButton = () => {
   const settings = useSettings((settingsStore) => settingsStore.settings);
   useGlobalActionButtonChromeMessage();
@@ -76,51 +97,44 @@ const ActionButton = () => {
   const keyboardSensor = useSensor(KeyboardSensor, {});
   const sensors = useSensors(mouseSensor, touchSensor, keyboardSensor);
 
+  const isLeft = Math.abs(x) >= window.innerWidth / 2;
   return (
     <DndContext
       modifiers={[restrictToWindowEdges]}
-      onDragEnd={({ delta, ...rest }) => {
-        setCoordinates(({ x, y }) => {
-          const EDGE_OFFSET = 8;
-          const BUTTON_OFFSET = 60;
-
-          let newX = x + delta.x;
-          let newY = y + delta.y;
-
-          newY = Math.max(
-            EDGE_OFFSET,
-            Math.min(newY, window.innerHeight - BUTTON_OFFSET),
-          );
-          newX =
-            Math.abs(newX) >= window.innerWidth / 2
-              ? -(window.innerWidth - BUTTON_OFFSET)
-              : 0;
-
-          return {
-            x: newX,
-            y: newY,
-          };
-        });
+      onDragEnd={({ delta }) => {
+        setCoordinates(({ x, y }) => ({
+          x: x + delta.x,
+          y: y + delta.y,
+        }));
       }}
       sensors={sensors}
     >
-      <DraggableItem
-        left={settings?.displayActionButton ? x : 65}
-        top={settings?.displayActionButton ? y : 0}
+      <div
+        className={cn(
+          'z-max fixed transition-transform duration-300 ease-in-out',
+          settings?.displayActionButton
+            ? 'translate-z-0 right-1 top-1'
+            : isLeft // adding extra 10% to hide the button
+              ? '-translate-x-[110%]'
+              : 'translate-x-[110%]',
+          isLeft ? 'left-1 right-auto' : 'left-auto right-1',
+        )}
       >
         <HoverCard openDelay={150}>
           <HoverCardTrigger asChild>
-            <motion.button
-              className="hover:bg-brand overflow h-[48px] w-[48px] rounded-2xl bg-gray-500 p-2 shadow-2xl transition-colors"
-              data-testid="action-button"
-              onClick={toggleSidePanel}
-            >
-              <img
-                alt="shinkai-app-logo select-none"
-                className={'h-full w-full select-none group-hover:rotate-45'}
-                src={srcUrlResolver(shinkaiLogo)}
-              />
-            </motion.button>
+            <DraggableItem top={y}>
+              <motion.button
+                className="hover:bg-brand overflow shadow-4xl h-[48px] w-[48px] rounded-2xl bg-gray-500 p-2 shadow-2xl transition-colors duration-75"
+                data-testid="action-button"
+                onClick={toggleSidePanel}
+              >
+                <img
+                  alt="shinkai-app-logo select-none"
+                  className={'h-full w-full select-none group-hover:rotate-45'}
+                  src={srcUrlResolver(shinkaiLogo)}
+                />
+              </motion.button>
+            </DraggableItem>
           </HoverCardTrigger>
           <HoverCardContent>
             <kbd
@@ -148,20 +162,12 @@ const ActionButton = () => {
             {[
               {
                 label: 'Send Capture',
-                onClick: () => {
-                  chrome.runtime.sendMessage({
-                    type: ServiceWorkerInternalMessageType.SendCaptureToAgent,
-                  });
-                },
+                onClick: sendCapture,
                 icon: <ScissorsIcon className="h-full w-full" />,
               },
               {
                 label: 'Send Page',
-                onClick: () => {
-                  chrome.runtime.sendMessage({
-                    type: ServiceWorkerInternalMessageType.SendPageToAgent,
-                  });
-                },
+                onClick: sendPage,
                 icon: <FileInputIcon className="h-full w-full" />,
               },
             ].map((item) => (
@@ -183,7 +189,7 @@ const ActionButton = () => {
             ))}
           </HoverCardContent>
         </HoverCard>
-      </DraggableItem>
+      </div>
     </DndContext>
   );
 };
@@ -193,9 +199,7 @@ root.render(
   <React.StrictMode>
     <style>{themeStyle}</style>
     <IntlProvider locale={locale} messages={langMessages}>
-      <div className="shadow-4xl z-max fixed right-[2px] top-0">
-        <ActionButton />
-      </div>
+      <ActionButton />
     </IntlProvider>
   </React.StrictMode>,
 );

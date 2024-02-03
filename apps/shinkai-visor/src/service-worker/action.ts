@@ -1,31 +1,91 @@
-// const setDefaultPopup = (tabId: number, url: string): Promise<void> => {
-//   if (!url || isChromeInternalUrl(url)) {
-//     console.log('setting the default popup');
-//     return chrome.action.setPopup({
-//       popup: 'src/components/installed-popup/installed-popup.html',
-//       tabId,
-//     });
-//   } else {
-//     console.log('setting undefined default popup');
-//     return chrome.action.setPopup({ popup: '', tabId });
-//   }
-// };
+import { Buffer } from 'buffer';
 
-// chrome.action.onClicked.addListener(async (tab) => {
-//   console.log('actions.onClicked', tab?.id);
-//   if (!tab?.id) {
-//     return;
-//   }
-//   openSidePanel(tab);
-// });
+import { sendMessage } from './communication/internal';
+import {
+  ServiceWorkerInternalMessage,
+  ServiceWorkerInternalMessageType,
+} from './communication/internal/types';
 
-// chrome.tabs.onUpdated.addListener((tabId, _, tab) => {
-//   console.log('tabs.onUpdated', tabId);
-//   setDefaultPopup(tabId, tab.url || '');
-// });
-//
-// chrome.tabs.onActivated.addListener(async (activeInfo) => {
-//   const tab = await chrome.tabs.get(activeInfo.tabId);
-//   console.log('tabs.onActivated', tab.id, tab.url);
-//   setDefaultPopup(activeInfo.tabId, tab.url || '');
-// });
+export const OPEN_SIDEPANEL_DELAY_MS = 600;
+
+export const sendPageToAgent = async (
+  info: chrome.contextMenus.OnClickData | undefined,
+  tab: chrome.tabs.Tab | undefined,
+) => {
+  // At this point, agents can just process text
+  if (!tab?.id) {
+    return;
+  }
+  const [htmlContent] = await chrome.scripting.executeScript({
+    target: { tabId: tab?.id },
+    func: () => {
+      return document.documentElement.outerHTML;
+    },
+    args: [],
+  });
+  const fileType = 'text/html';
+  const message: ServiceWorkerInternalMessage = {
+    type: ServiceWorkerInternalMessageType.SendPageToAgent,
+    data: {
+      filename: `${encodeURIComponent(tab.url || Date.now())}.html`,
+      fileType: fileType,
+      fileDataUrl: `data:${fileType};base64,${Buffer.from(
+        htmlContent.result,
+      ).toString('base64')}`,
+    },
+  };
+  sendMessage(message);
+};
+export const sendCaptureToAgent = async (
+  info: chrome.contextMenus.OnClickData | undefined,
+  tab: chrome.tabs.Tab | undefined,
+) => {
+  if (!tab?.id) {
+    return;
+  }
+  const image = await new Promise<string>((resolve) => {
+    chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
+      chrome.tabs.captureVisibleTab(
+        tab.windowId,
+        { format: 'jpeg', quality: 92 },
+        (image) => {
+          resolve(image);
+        },
+      );
+    });
+  });
+  let message: ServiceWorkerInternalMessage = {
+    type: ServiceWorkerInternalMessageType.CaptureImage,
+    data: { image },
+  };
+  const croppedImage =
+    await chrome.tabs.sendMessage<ServiceWorkerInternalMessage>(
+      tab.id,
+      message,
+    );
+  message = {
+    type: ServiceWorkerInternalMessageType.SendCaptureToAgent,
+    data: {
+      imageDataUrl: croppedImage,
+      filename: `${encodeURIComponent(tab.url || 'capture')}.jpeg`,
+    },
+  };
+  sendMessage(message);
+};
+
+export const sendToAgent = async (
+  info: chrome.contextMenus.OnClickData | undefined,
+  tab: chrome.tabs.Tab | undefined,
+) => {
+  // At this point, agents can just process text
+  if (!info?.selectionText || !tab?.id) {
+    return;
+  }
+  const message: ServiceWorkerInternalMessage = {
+    type: ServiceWorkerInternalMessageType.SendToAgent,
+    data: {
+      textContent: info.selectionText,
+    },
+  };
+  sendMessage(message);
+};
