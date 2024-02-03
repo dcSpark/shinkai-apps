@@ -1,13 +1,13 @@
-import { sendContentScriptMessage } from "./communication/internal";
-import { ContentScriptBridgeMessageType } from "./communication/internal/types";
+import { sendMessage } from './communication/internal';
+import { ServiceWorkerInternalMessageType } from './communication/internal/types';
 
 export enum ServiceWorkerShortcut {
-  TogglePopup = 'toggle-popup'
-};
-
-const handleTogglePopup = (tabId: number) => {
-  sendContentScriptMessage({ type: ContentScriptBridgeMessageType.TogglePopupVisibility }, tabId);
+  TogglePopup = 'toggle-popup',
 }
+
+const handleSidePanel = (tabId: number) => {
+  sendMessage({ type: ServiceWorkerInternalMessageType.OpenSidePanel });
+};
 chrome.commands.onCommand.addListener((command, tab) => {
   console.log('command', command, tab);
   switch (command) {
@@ -15,7 +15,7 @@ chrome.commands.onCommand.addListener((command, tab) => {
       if (!tab.id) {
         return;
       }
-      handleTogglePopup(tab.id);
+      handleSidePanel(tab.id);
       break;
     default:
       break;
