@@ -7,7 +7,6 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 import { restrictToWindowEdges } from '@dnd-kit/modifiers';
-import { Coordinates } from '@dnd-kit/utilities';
 import {
   DraggableItem,
   HoverCard,
@@ -22,7 +21,6 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
 import { FileInputIcon, ScissorsIcon } from 'lucide-react';
 import * as React from 'react';
-import { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { IntlProvider } from 'react-intl';
 
@@ -81,13 +79,19 @@ const sendCapture = async () => {
 
 const ActionButton = () => {
   const settings = useSettings((settingsStore) => settingsStore.settings);
+  const sideButtonOffset = useSettings(
+    (settingsStore) => settingsStore.sideButtonOffset,
+  );
+  const setSideButtonOffset = useSettings(
+    (settingsStore) => settingsStore.setSideButtonOffset,
+  );
   useGlobalActionButtonChromeMessage();
 
   const activationConstraint = {
     delay: 150,
     tolerance: 5,
   };
-  const [{ x, y }, setCoordinates] = useState<Coordinates>({ x: 0, y: 10 });
+
   const mouseSensor = useSensor(MouseSensor, {
     activationConstraint,
   });
@@ -97,12 +101,12 @@ const ActionButton = () => {
   const keyboardSensor = useSensor(KeyboardSensor, {});
   const sensors = useSensors(mouseSensor, touchSensor, keyboardSensor);
 
-  const isLeft = Math.abs(x) >= window.innerWidth / 2;
+  const isLeft = Math.abs(sideButtonOffset.x) >= window.innerWidth / 2;
   return (
     <DndContext
       modifiers={[restrictToWindowEdges]}
       onDragEnd={({ delta }) => {
-        setCoordinates(({ x, y }) => ({
+        setSideButtonOffset(({ x, y }) => ({
           x: x + delta.x,
           y: y + delta.y,
         }));
@@ -120,11 +124,11 @@ const ActionButton = () => {
           isLeft ? 'left-1 right-auto' : 'left-auto right-1',
         )}
       >
-        <DraggableItem top={y}>
+        <DraggableItem top={sideButtonOffset.y}>
           <HoverCard openDelay={150}>
             <HoverCardTrigger asChild>
               <motion.button
-                className="hover:bg-brand overflow shadow-4xl h-[48px] w-[48px] rounded-2xl bg-gray-500 p-2 shadow-2xl transition-colors duration-75"
+                className="hover:bg-brand overflow shadow-4xl h-[48px] w-[48px] rounded-2xl bg-gray-500 p-2 shadow-2xl transition-colors duration-75 "
                 data-testid="action-button"
                 onClick={toggleSidePanel}
               >
@@ -136,12 +140,7 @@ const ActionButton = () => {
               </motion.button>
             </HoverCardTrigger>
             <HoverCardContent>
-              <kbd
-                className={cn(
-                  'pointer-events-none flex w-full  select-none items-center rounded-md bg-gray-800 pl-2 font-mono text-sm font-medium text-gray-500 text-white',
-                  'group-hover:translate-y-[44px] group-hover:opacity-100 group-hover:transition-opacity group-hover:duration-300 group-hover:ease-in-out',
-                )}
-              >
+              <kbd className="pointer-events-none flex w-full  select-none items-center rounded-md bg-gray-800 pl-2 font-mono text-sm font-medium text-gray-500 text-white">
                 <span>⌘</span>
                 <span>
                   <svg
@@ -174,7 +173,7 @@ const ActionButton = () => {
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <button
-                        className="hover:bg-brand mt-4 flex h-8 w-8 items-center justify-center rounded-full bg-gray-500 p-2 text-white shadow-2xl transition-colors duration-75"
+                        className="hover:bg-brand flex h-8 w-8 items-center justify-center rounded-full bg-gray-500 p-2 text-white shadow-2xl transition-colors duration-75"
                         onClick={item.onClick}
                       >
                         {item.icon}

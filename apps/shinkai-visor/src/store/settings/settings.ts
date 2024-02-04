@@ -1,3 +1,4 @@
+import { Coordinates } from '@dnd-kit/utilities';
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 
@@ -8,12 +9,13 @@ import { ChromeStorage } from '../persistor/chrome-storage';
 type SettingsData = {
   defaultAgentId: string;
   displayActionButton: boolean;
-  sideButtonOffset: number;
 };
 
 type SettingsStore = {
   settings: Partial<SettingsData> | null;
   setSettings: (settings: Partial<SettingsData>) => void;
+  sideButtonOffset: Coordinates;
+  setSideButtonOffset: (fn: (prev: Coordinates) => Coordinates) => void;
 };
 
 export const useSettings = create<SettingsStore>()(
@@ -30,6 +32,10 @@ export const useSettings = create<SettingsStore>()(
               type: ServiceWorkerInternalMessageType.RehydrateStore,
             });
           }
+        },
+        sideButtonOffset: { x: 0, y: 10 },
+        setSideButtonOffset: (fn: (prev: Coordinates) => Coordinates) => {
+          set((state) => ({ sideButtonOffset: fn(state.sideButtonOffset) }));
         },
       }),
       {
