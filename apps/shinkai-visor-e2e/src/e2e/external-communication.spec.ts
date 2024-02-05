@@ -1,14 +1,10 @@
-import * as path from 'path';
-
 import { expect, test } from '../fixtures/base';
 import { acceptTerms, addAgent, quickConnect } from '../utils/basic-actions';
 import { getAgent } from '../utils/dummy-data';
 import { NodeManager } from '../utils/node-manager';
 
 export const extenralCommunicationTests = () => {
-  const nodeManager = new NodeManager(
-    path.join(__filename, '../../shinkai-node/shinkai_node'),
-  );
+  const nodeManager = new NodeManager();
 
   test.describe.configure({ mode: 'serial' });
 
@@ -80,7 +76,6 @@ export const extenralCommunicationTests = () => {
 
   test('is-node-pristine error when node is not pristine', async ({
     page,
-    actionButton,
     popup,
     extensionId,
   }) => {
@@ -131,7 +126,6 @@ export const extenralCommunicationTests = () => {
 
   test('get-profile-agents success with length 1 when add node', async ({
     page,
-    actionButton,
     popup,
     extensionId,
   }) => {
@@ -155,7 +149,6 @@ export const extenralCommunicationTests = () => {
 
   test('get-profile-inboxes success with length 1', async ({
     page,
-    actionButton,
     popup,
     extensionId,
   }) => {

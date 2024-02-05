@@ -1,5 +1,4 @@
 import { test } from '../fixtures/base';
-import { actionButtonTests } from './action-button.spec';
 import { agentTests } from './agents.spec';
 import { connectMethodQuickStartTests } from './connect-method-quick-start.spec';
 import { extenralCommunicationTests } from './external-communication.spec';
@@ -9,8 +8,10 @@ import { storageTests } from './storage.spec';
 import { welcomeTests } from './welcome.spec';
 
 test.describe.configure({ mode: 'serial' });
-
-test.describe('action button', actionButtonTests);
+// eslint-disable-next-line no-empty-pattern
+test.beforeEach(({}, testInfo) => {
+  console.log(`Executing ${testInfo.title}`);
+});
 test.describe('popup', popupTests);
 test.describe('welcome', welcomeTests);
 test.describe('connect method quick start', connectMethodQuickStartTests);

@@ -1,5 +1,3 @@
-import * as path from 'path';
-
 import { expect, test } from '../fixtures/base';
 import {
   acceptTerms,
@@ -11,13 +9,11 @@ import { getAgent } from '../utils/dummy-data';
 import { NodeManager } from '../utils/node-manager';
 
 export const storageTests = () => {
-  const nodeManager = new NodeManager(
-    path.join(__filename, '../../shinkai-node/shinkai_node'),
-  );
+  const nodeManager = new NodeManager();
 
   test.describe.configure({ mode: 'serial' });
 
-  test.beforeEach(async ({ actionButton, popup }) => {
+  test.beforeEach(async ({ popup }) => {
     await nodeManager.startNode(true);
     await acceptTerms(popup);
     await quickConnect(popup);
@@ -28,7 +24,6 @@ export const storageTests = () => {
   });
 
   test('data should persist after refresh browser', async ({
-    actionButton,
     popup,
     page,
   }) => {
@@ -48,7 +43,6 @@ export const storageTests = () => {
   });
 
   test('data should persist after open a new tab', async ({
-    actionButton,
     popup,
     page,
     context,
@@ -64,8 +58,6 @@ export const storageTests = () => {
     await newPage.goto('https://shinkai.com');
     // eslint-disable-next-line playwright/no-networkidle
     await newPage.waitForLoadState('networkidle');
-    const newPageActionButton = newPage.getByTestId('action-button');
-    await expect(newPageActionButton).toBeDefined();
 
     await navigateToMenu(popup, 'nav-menu-agents-button');
     await expect(

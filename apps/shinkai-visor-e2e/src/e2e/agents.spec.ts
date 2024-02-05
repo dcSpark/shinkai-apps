@@ -1,5 +1,3 @@
-import * as path from 'path';
-
 import { expect, test } from '../fixtures/base';
 import {
   acceptTerms,
@@ -12,13 +10,11 @@ import { hasError } from '../utils/input-errors';
 import { NodeManager } from '../utils/node-manager';
 
 export const agentTests = () => {
-  const nodeManager = new NodeManager(
-    path.join(__filename, '../../shinkai-node/shinkai_node'),
-  );
+  const nodeManager = new NodeManager();
 
   test.describe.configure({ mode: 'serial' });
 
-  test.beforeEach(async ({ actionButton, popup }) => {
+  test.beforeEach(async ({ popup }) => {
     await nodeManager.startNode(true);
     await acceptTerms(popup);
     await quickConnect(popup);

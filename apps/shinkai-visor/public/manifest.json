@@ -56,8 +56,7 @@
     {
       "matches": ["https://*/*", "http://*/*", "<all_urls>"],
       "js": [
-        "src/components/image-capture/image-capture.tsx",
-        "src/components/action-button/action-button.tsx"
+        "src/components/image-capture/image-capture.tsx"
       ]
     }
   ],

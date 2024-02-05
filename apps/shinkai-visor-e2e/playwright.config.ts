@@ -36,7 +36,19 @@ export default defineConfig({
   //   reuseExistingServer: !process.env.CI,
   //   cwd: workspaceRoot,
   // },
-  workers: process.env.CI ? 1 : undefined,
+  workers: 1,
   testMatch: 'src/e2e/all.spec.ts',
   fullyParallel: false,
+  reporter: [
+    ['html', { outputFolder: 'test-report' }],
+    [
+      '@estruyf/github-actions-reporter',
+      {
+        title: 'Playwright E2E Summary',
+        useDetails: true,
+        showError: true,
+      },
+    ],
+  ],
+  retries: 0,
 });
