@@ -78,7 +78,9 @@ const sendCapture = async () => {
 };
 
 const ActionButton = () => {
-  const settings = useSettings((settingsStore) => settingsStore.settings);
+  const displayActionButton = useSettings(
+    (settingsStore) => settingsStore.displayActionButton,
+  );
   const sideButtonOffset = useSettings(
     (settingsStore) => settingsStore.sideButtonOffset,
   );
@@ -116,7 +118,7 @@ const ActionButton = () => {
       <div
         className={cn(
           'z-max fixed transition-transform duration-300 ease-in-out',
-          settings?.displayActionButton
+          displayActionButton
             ? 'translate-z-0 right-1 top-1'
             : isLeft // adding extra 10% to hide the button
               ? '-translate-x-[110%]'

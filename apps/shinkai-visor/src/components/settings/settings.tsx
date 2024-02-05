@@ -3,7 +3,6 @@ import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAg
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import {
   Button,
-  Checkbox,
   ExportIcon,
   Form,
   FormControl,
@@ -44,8 +43,18 @@ type FormSchemaType = z.infer<typeof formSchema>;
 export const Settings = () => {
   const history = useHistory();
   const auth = useAuth((authStore) => authStore.auth);
-  const settings = useSettings((settingsStore) => settingsStore.settings);
-  const setSettings = useSettings((settingsStore) => settingsStore.setSettings);
+  const displayActionButton = useSettings(
+    (settingsStore) => settingsStore.displayActionButton,
+  );
+  const setDisplayActionButton = useSettings(
+    (settingsStore) => settingsStore.setDisplayActionButton,
+  );
+  const defaultAgentId = useSettings(
+    (settingsStore) => settingsStore.defaultAgentId,
+  );
+  const setDefaultAgentId = useSettings(
+    (settingsStore) => settingsStore.setDefaultAgentId,
+  );
   const { nodeInfo, isSuccess: isNodeInfoSuccess } = useGetHealth({
     node_address: auth?.node_address ?? '',
   });
@@ -53,8 +62,8 @@ export const Settings = () => {
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      defaultAgentId: settings?.defaultAgentId,
-      displayActionButton: settings?.displayActionButton,
+      defaultAgentId: defaultAgentId,
+      displayActionButton: displayActionButton,
       nodeAddress: auth?.node_address,
     },
   });
@@ -86,10 +95,16 @@ export const Settings = () => {
   }, [form, isNodeInfoSuccess, nodeInfo?.node_name, nodeInfo?.version]);
 
   useEffect(() => {
-    if (JSON.stringify(currentFormValue) !== JSON.stringify(settings)) {
-      setSettings({ ...currentFormValue });
-    }
-  }, [currentFormValue, settings, setSettings]);
+    setDisplayActionButton(
+      currentFormValue.displayActionButton ?? displayActionButton,
+    );
+    setDefaultAgentId(currentFormValue.defaultAgentId ?? defaultAgentId);
+  }, [
+    currentFormValue.displayActionButton,
+    currentFormValue.defaultAgentId,
+    setDisplayActionButton,
+    setDefaultAgentId,
+  ]);
 
   return (
     <div className="flex flex-col space-y-8 pr-2.5">
