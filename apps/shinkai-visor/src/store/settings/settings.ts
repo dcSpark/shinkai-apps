@@ -18,7 +18,7 @@ type SettingsStore = {
 export const useSettings = create<SettingsStore>()(
   devtools(
     persist(
-      (set, get) => ({
+      (set) => ({
         displayActionButton: true,
         setDisplayActionButton: (displayActionButton) => {
           set({ displayActionButton });

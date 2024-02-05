@@ -104,6 +104,8 @@ export const Settings = () => {
     currentFormValue.defaultAgentId,
     setDisplayActionButton,
     setDefaultAgentId,
+    displayActionButton,
+    defaultAgentId,
   ]);
 
   return (
