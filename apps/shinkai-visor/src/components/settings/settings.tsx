@@ -3,7 +3,6 @@ import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAg
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import {
   Button,
-  Checkbox,
   ExportIcon,
   Form,
   FormControl,
@@ -18,6 +17,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Switch,
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import { useEffect } from 'react';
@@ -32,7 +32,7 @@ import { Header } from '../header/header';
 
 const formSchema = z.object({
   defaultAgentId: z.string(),
-  hideActionButton: z.boolean(),
+  displayActionButton: z.boolean(),
   nodeAddress: z.string(),
   shinkaiIdentity: z.string(),
   nodeVersion: z.string(),
@@ -43,17 +43,27 @@ type FormSchemaType = z.infer<typeof formSchema>;
 export const Settings = () => {
   const history = useHistory();
   const auth = useAuth((authStore) => authStore.auth);
-  const settings = useSettings((settingsStore) => settingsStore.settings);
-  const setSettings = useSettings((settingsStore) => settingsStore.setSettings);
+  const displayActionButton = useSettings(
+    (settingsStore) => settingsStore.displayActionButton,
+  );
+  const setDisplayActionButton = useSettings(
+    (settingsStore) => settingsStore.setDisplayActionButton,
+  );
+  const defaultAgentId = useSettings(
+    (settingsStore) => settingsStore.defaultAgentId,
+  );
+  const setDefaultAgentId = useSettings(
+    (settingsStore) => settingsStore.setDefaultAgentId,
+  );
   const { nodeInfo, isSuccess: isNodeInfoSuccess } = useGetHealth({
     node_address: auth?.node_address ?? '',
   });
-  console.log(nodeInfo, 'nodeInfo');
+
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      defaultAgentId: settings?.defaultAgentId,
-      hideActionButton: settings?.hideActionButton,
+      defaultAgentId: defaultAgentId,
+      displayActionButton: displayActionButton,
       nodeAddress: auth?.node_address,
     },
   });
@@ -85,10 +95,18 @@ export const Settings = () => {
   }, [form, isNodeInfoSuccess, nodeInfo?.node_name, nodeInfo?.version]);
 
   useEffect(() => {
-    if (JSON.stringify(currentFormValue) !== JSON.stringify(settings)) {
-      setSettings({ ...currentFormValue });
-    }
-  }, [currentFormValue, settings, setSettings]);
+    setDisplayActionButton(
+      currentFormValue.displayActionButton ?? displayActionButton,
+    );
+    setDefaultAgentId(currentFormValue.defaultAgentId ?? defaultAgentId);
+  }, [
+    currentFormValue.displayActionButton,
+    currentFormValue.defaultAgentId,
+    setDisplayActionButton,
+    setDefaultAgentId,
+    displayActionButton,
+    defaultAgentId,
+  ]);
 
   return (
     <div className="flex flex-col space-y-8 pr-2.5">
@@ -163,21 +181,22 @@ export const Settings = () => {
             />
             <FormField
               control={form.control}
-              name="hideActionButton"
+              name="displayActionButton"
               render={({ field }) => (
                 <FormItem className="flex gap-2.5">
                   <FormControl id={'hide-action'}>
-                    <Checkbox
+                    <Switch
+                      aria-readonly
                       checked={field.value}
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
                     <FormLabel className="static space-y-1.5 text-sm text-white">
-                      <FormattedMessage id="hide-action-button-label" />
+                      <FormattedMessage id="display-action-button-label" />
                     </FormLabel>
                     <FormDescription>
-                      <FormattedMessage id="hide-action-button-description" />
+                      <FormattedMessage id="show-action-button-description" />
                     </FormDescription>
                   </div>
                 </FormItem>

@@ -1,4 +1,4 @@
-import { OPEN_SIDEPANEL_DELAY_MS } from '../../context-menu';
+import { OPEN_SIDEPANEL_DELAY_MS } from '../../action';
 import { ACTIONS_MAP } from './actions';
 import {
   ServiceWorkerExternalMessage,

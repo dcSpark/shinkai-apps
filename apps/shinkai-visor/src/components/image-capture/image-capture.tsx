@@ -96,7 +96,7 @@ root.render(
     <style>{themeStyle}</style>
     <style>{reactCropStyle}</style>
     <IntlProvider locale={locale} messages={langMessages}>
-      <div className="pointer-events-none fixed z-[2000000000] h-full w-full overflow-hidden">
+      <div className="z-max pointer-events-none fixed h-full w-full overflow-hidden">
         <ImageCapture />
       </div>
     </IntlProvider>

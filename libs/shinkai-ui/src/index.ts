@@ -8,6 +8,7 @@ export * from './components/button';
 export * from './components/checkbox';
 export * from './components/command';
 export * from './components/message-editor';
+export * from './components/drag-n-drop';
 export * from './components/copy-to-clipboard-icon';
 export * from './components/dialog';
 export * from './components/toaster';

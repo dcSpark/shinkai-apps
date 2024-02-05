@@ -5,6 +5,8 @@ import {
   ServiceWorkerInternalMessage,
   ServiceWorkerInternalMessageType,
 } from './types';
+import ContextType = chrome.runtime.ContextType;
+import { sendCaptureToAgent, sendPageToAgent } from '../../action';
 
 export const sendContentScriptMessage = (
   message: ContentScriptBridgeMessage,
@@ -39,16 +41,58 @@ export const sendMessage = (
 
 export const listen = (): void => {
   chrome.runtime.onMessage.addListener(
-    (message: ServiceWorkerInternalMessage, sender) => {
+    (message: ServiceWorkerInternalMessage, sender, sendResponse) => {
       console.log('sw onMessage', message, sender);
       // It allows inter content scripts communication.
       // SW act as a reverse proxy between content scripts in the same tab id
       switch (message.type) {
-        case ServiceWorkerInternalMessageType.OpenSidePanel: {
-          if (!sender?.tab?.id) return;
-          chrome.sidePanel.open({ windowId: sender.tab.windowId });
-          break;
+        case ServiceWorkerInternalMessageType.IsSidePanelOpen: {
+          (async () => {
+            if (!sender?.tab?.id) return;
+            const contexts = await chrome.runtime.getContexts({
+              contextTypes: [ContextType.SIDE_PANEL],
+            });
+            return sendResponse(contexts.length > 0);
+          })();
+          return true;
         }
+        case ServiceWorkerInternalMessageType.OpenSidePanel: {
+          (async () => {
+            if (!sender?.tab?.id) return;
+            await chrome.sidePanel.open({ windowId: sender.tab.windowId });
+            const contexts = await chrome.runtime.getContexts({
+              contextTypes: [ContextType.SIDE_PANEL],
+            });
+            return sendResponse(contexts.length > 0);
+          })();
+          return true;
+        }
+        case ServiceWorkerInternalMessageType.CloseSidePanel: {
+          (async () => {
+            await chrome.sidePanel.setOptions({ enabled: false });
+            await chrome.sidePanel.setOptions({ enabled: true });
+          })();
+          return true;
+        }
+        case ServiceWorkerInternalMessageType.SendCaptureToAgent: {
+          if (!sender?.tab?.id) {
+            return;
+          }
+          (async () => {
+            await sendCaptureToAgent(undefined, sender.tab);
+          })();
+          return true;
+        }
+        case ServiceWorkerInternalMessageType.SendPageToAgent: {
+          if (!sender?.tab?.id) {
+            return;
+          }
+          (async () => {
+            await sendPageToAgent(undefined, sender.tab);
+          })();
+          return true;
+        }
+
         case ServiceWorkerInternalMessageType.ContentScriptBridge:
           if (!sender?.tab?.id) {
             return;
