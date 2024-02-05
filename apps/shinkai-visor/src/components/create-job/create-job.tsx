@@ -44,7 +44,8 @@ export const CreateJob = () => {
   const location = useLocation<{ files: File[]; agentName: string }>();
   const query = useQuery();
   const auth = useAuth((state) => state.auth);
-  const settings = useSettings((state) => state.settings);
+  // const settings = useSettings((state) => state.settings);
+  const currentDefaultAgentId = useSettings((state) => state.defaultAgentId);
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -118,13 +119,13 @@ export const CreateJob = () => {
     let defaultAgentId = '';
     defaultAgentId =
       defaultAgentId ||
-      (settings?.defaultAgentId &&
-      agents.find((agent) => agent.id === settings.defaultAgentId)
-        ? settings.defaultAgentId
+      (currentDefaultAgentId &&
+      agents.find((agent) => agent.id === currentDefaultAgentId)
+        ? currentDefaultAgentId
         : '');
     defaultAgentId = defaultAgentId || (agents?.length ? agents[0].id : '');
     form.setValue('agent', defaultAgentId);
-  }, [form, location, agents, settings]);
+  }, [form, location, agents, currentDefaultAgentId]);
   const submit = (values: FormSchemaType) => {
     if (!auth) return;
     let content = values.content;
