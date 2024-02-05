@@ -3,6 +3,7 @@ import { submitRequestRegistrationCode } from '@shinkai_network/shinkai-message-
 import { CreateRegistrationCodeInput } from './types';
 
 export const createRegistrationCode = async ({
+  nodeAddress,
   permissionsType,
   identityType,
   setupPayload,
@@ -15,6 +16,7 @@ export const createRegistrationCode = async ({
   }
 
   const code = await submitRequestRegistrationCode(
+    nodeAddress,
     permissionsType,
     finalCodeType,
     setupPayload

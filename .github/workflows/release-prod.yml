@@ -1,0 +1,57 @@
+name: Release production
+
+on:
+  push:
+    branches:
+      - 'main'
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+
+defaults:
+  run:
+    working-directory: ./
+
+jobs:
+  release-shinkai-visor:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node version
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          check-latest: false
+          registry-url: https://registry.npmjs.org
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: |
+          npm cache verify
+          npm ci --no-audit --prefer-offline
+
+      - name: Run NX build on shinkai-visor
+        run: npx nx build shinkai-visor --skip-nx-cache
+        env:
+          VERSION: ${{ github.ref }}.${{github.run_number}}
+          NAME_PREFIX: ''
+          DESCRIPTION_PREFIX: ''
+          PUBLIC_KEY: ${{ secrets.CHROME_EXTENSION_PUBLIC_KEY }}
+
+      - name: Zip extension
+        run: cd ./dist/apps && zip -r shinkai-visor.zip shinkai-visor
+
+      - name: Upload & Release
+        uses: mnao305/chrome-extension-upload@v4.0.1
+        with:
+          file-path: dist/apps/shinkai-visor.zip
+          extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
+          client-id: ${{ secrets.CHROME_CLIENT_ID }}
+          client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+          publish: false

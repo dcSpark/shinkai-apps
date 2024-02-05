@@ -1,6 +1,6 @@
 import {
   extractJobIdFromInbox,
-  extractReceiverShinkaiName,
+  getOtherPersonIdentity,
   isJobInbox as checkIsJobInbox,
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { useCloseJob } from '@shinkai_network/shinkai-node-state/lib/mutations/closeJob/useCloseJob';
@@ -45,6 +45,7 @@ export const Inbox = () => {
     isFetchingPreviousPage,
     isSuccess: isChatConversationSuccess,
   } = useGetChatConversationWithPagination({
+    nodeAddress: auth?.node_address ?? '',
     inboxId: decodeURIComponent(inboxId) as string,
     shinkaiIdentity: auth?.shinkai_identity ?? '',
     profile: auth?.profile ?? '',
@@ -99,9 +100,11 @@ export const Inbox = () => {
     if (isJobInbox) {
       const jobId = extractJobIdFromInbox(decodedInboxId);
       sendMessageToJob({
+        nodeAddress: auth.node_address,
         jobId,
         message: value,
         files_inbox: '',
+        parent: '', // Note: we should set the parent if we want to retry or branch out
         shinkaiIdentity: auth.shinkai_identity,
         profile: auth.profile,
         my_device_encryption_sk: auth.my_device_encryption_sk,
@@ -111,11 +114,13 @@ export const Inbox = () => {
         profile_identity_sk: auth.profile_identity_sk,
       });
     } else {
-      const sender = `${auth.shinkai_identity}/${auth.profile}/device/${auth.registration_name}`;
-      const receiver = extractReceiverShinkaiName(decodedInboxId, sender);
+      const sender = `${auth.shinkai_identity}/${auth.profile}`;
+      const receiver_fullname = getOtherPersonIdentity(decodedInboxId, sender);
+      const receiver = receiver_fullname.split('/')[0];
       sendMessageToInbox({
+        nodeAddress: auth.node_address,
         sender: auth.shinkai_identity,
-        sender_subidentity: `${auth.profile}/device/${auth.registration_name}`,
+        sender_subidentity: `${auth.profile}`,
         receiver,
         message: value,
         inboxId: decodedInboxId,
@@ -254,6 +259,7 @@ export const Inbox = () => {
                             return (
                               <div
                                 className={cn('pl-2')}
+                                data-testid={`message-${message.isLocal ? 'local' : 'remote'}-${message.hash}`}
                                 key={`${index}-${message.scheduledTime}`}
                               >
                                 <Message message={message} />

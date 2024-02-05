@@ -14,6 +14,7 @@ export const Agents = () => {
   const auth = useAuth((state) => state.auth);
   const history = useHistory();
   const { agents } = useAgents({
+    nodeAddress: auth?.node_address ?? '',
     sender: auth?.shinkai_identity ?? '',
     senderSubidentity: `${auth?.profile}`,
     shinkaiIdentity: auth?.shinkai_identity ?? '',
@@ -31,7 +32,7 @@ export const Agents = () => {
       <Header title={<FormattedMessage id="agent.other" />} />
       {!agents?.length ? (
         <div className="flex h-full flex-col justify-center">
-          <EmptyAgents />
+          <EmptyAgents data-testid="empty-agents" />
         </div>
       ) : (
         <>
@@ -39,7 +40,7 @@ export const Agents = () => {
             <div className="space-y-3">
               {agents?.map((agent) => (
                 <Fragment key={agent.id}>
-                  <Button className="w-full" variant="ghost">
+                  <Button className="w-full" data-testid={`${agent.id}-agent-button`} variant="ghost">
                     <span className="w-full truncate text-start">
                       {agent.id}
                     </span>
@@ -51,6 +52,7 @@ export const Agents = () => {
           <div className="fixed bottom-4 right-4">
             <Button
               className="h-[60px] w-[60px]"
+              data-testid="add-agent-button"
               onClick={onAddAgentClick}
               size="icon"
             >

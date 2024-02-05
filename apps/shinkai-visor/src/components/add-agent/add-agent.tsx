@@ -90,6 +90,7 @@ export const AddAgent = () => {
   const submit = (values: FormSchemaType) => {
     if (!auth) return;
     createAgent({
+      nodeAddress: auth?.node_address ?? '',
       sender_subidentity: auth.profile,
       node_name: auth.shinkai_identity,
       agent: {
@@ -146,6 +147,7 @@ export const AddAgent = () => {
               name="agentName"
               render={({ field }) => (
                 <TextField
+                  data-testid="agent-name-input"
                   field={field}
                   label={<FormattedMessage id="agent-name" />}
                 />
@@ -180,6 +182,7 @@ export const AddAgent = () => {
               render={({ field }) => (
                 <FormItem>
                   <Select
+                    data-testid="patata1"
                     defaultValue={field.value as unknown as string}
                     onValueChange={field.onChange}
                     value={field.value}
@@ -192,7 +195,7 @@ export const AddAgent = () => {
                         <SelectValue placeholder="Models place" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
+                    <SelectContent data-testid="patata2">
                       {modelOptions.map((model) => (
                         <SelectItem
                           key={model.value}
@@ -245,6 +248,7 @@ export const AddAgent = () => {
           </div>
           <Button
             className="w-full"
+            data-testid="add-agent-submit-button"
             disabled={isPending}
             isLoading={isPending}
             type="submit"

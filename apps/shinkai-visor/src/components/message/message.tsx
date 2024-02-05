@@ -7,6 +7,7 @@ import {
   MarkdownPreview,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import React from 'react';
 
 import shinkaiMiniLogo from '../../assets/icons/shinkai-min.svg';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
@@ -25,6 +26,17 @@ const copyToClipboard = (content: string) => {
 };
 
 export const Message = ({ message }: MessageProps) => {
+  const openMarkdownLink = (
+    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+    url?: string,
+  ) => {
+    event.preventDefault();
+    if (!url) return;
+    sendMessage({
+      type: ServiceWorkerInternalMessageType.OpenLink,
+      data: { url },
+    });
+  };
   return (
     <div
       className={cn(
@@ -57,7 +69,18 @@ export const Message = ({ message }: MessageProps) => {
             string={message.content}
           />
         )}
-        <MarkdownPreview source={message.content} />
+        <MarkdownPreview
+          components={{
+            a: ({ node, ...props }) => (
+              // eslint-disable-next-line jsx-a11y/anchor-has-content
+              <a
+                {...props}
+                onClick={(event) => openMarkdownLink(event, props.href)}
+              />
+            ),
+          }}
+          source={message.content}
+        />
         {!!message.fileInbox?.files?.length && (
           <FileList
             actions={[]}

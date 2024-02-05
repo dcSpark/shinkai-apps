@@ -1,5 +1,10 @@
 {
-  "extends": ["plugin:@nx/react", "../../.eslintrc.json"],
+  "extends": [
+    "plugin:playwright/recommended",
+    "plugin:playwright/recommended",
+    "plugin:@nx/react",
+    "../../.eslintrc.json"
+  ],
   "ignorePatterns": ["!**/*", "dist"],
   "overrides": [
     {
@@ -12,6 +17,14 @@
     },
     {
       "files": ["*.js", "*.jsx"],
+      "rules": {}
+    },
+    {
+      "files": ["e2e/**/*.{ts,js,tsx,jsx}"],
+      "rules": {}
+    },
+    {
+      "files": ["e2e/**/*.{ts,js,tsx,jsx}"],
       "rules": {}
     }
   ]

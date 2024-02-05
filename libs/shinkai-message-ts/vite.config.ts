@@ -2,6 +2,7 @@
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
+import topLevelAwait from "vite-plugin-top-level-await";
 import wasm from 'vite-plugin-wasm';
 
 export default defineConfig({
@@ -14,6 +15,7 @@ export default defineConfig({
         models: './src/models.ts',
         utils: './src/utils.ts',
         wasm: './src/wasm.ts',
+        cryptography: './src/cryptography.ts'
       },
       formats: ['es'],
     },
@@ -23,6 +25,7 @@ export default defineConfig({
   plugins: [
     nxViteTsPaths(),
     wasm(),
+    topLevelAwait(),
     dts({
       tsConfigFilePath: 'tsconfig.lib.json',
       rollupTypes: true,

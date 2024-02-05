@@ -4,7 +4,7 @@ import { JobCreationWrapper } from './JobCreationWrapper';
 
 const jobCreationJson = `{
     "scope": {
-        "database": [],
+        "vector_fs": [],
         "local": []
     }
 }`;
@@ -39,7 +39,7 @@ describe('JobCreationWrapper', () => {
 
     expect(JSON.parse(jsonString)).toEqual({
       scope: {
-        database: [],
+        vector_fs: [],
         local: [],
       },
     });

@@ -33,7 +33,6 @@ import {
   IonFooterCustom,
   IonHeaderCustom,
 } from '../components/ui/Layout';
-import { useSetup } from '../hooks/usetSetup';
 import { useAuth } from '../store/auth';
 import { cn } from '../theme/lib/utils';
 import {
@@ -47,7 +46,6 @@ const chatSchema = z.object({
 });
 
 const Chat: React.FC = () => {
-  useSetup();
   const { id } = useParams<{ id: string }>();
   const auth = useAuth((state) => state.auth);
   const deserializedId = decodeURIComponent(id).replace(/~/g, '.');
@@ -68,6 +66,7 @@ const Chat: React.FC = () => {
     isFetchingPreviousPage,
     isSuccess: isChatConversationSuccess,
   } = useGetChatConversationWithPagination({
+    nodeAddress: auth?.node_address ?? '',
     inboxId: deserializedId as string,
     shinkaiIdentity: auth?.shinkai_identity ?? '',
     profile: auth?.profile ?? '',
@@ -108,6 +107,7 @@ const Chat: React.FC = () => {
 
     if (file) {
       await sendTextMessageWithFilesForInbox({
+        nodeAddress: auth.node_address,
         sender: auth.shinkai_identity,
         senderSubidentity: auth.profile,
         receiver,
@@ -122,6 +122,7 @@ const Chat: React.FC = () => {
       });
     } else {
       await sendMessageToInbox({
+        nodeAddress: auth.node_address,
         sender: auth.shinkai_identity,
         sender_subidentity: auth.profile,
         receiver,

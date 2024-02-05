@@ -40,7 +40,6 @@ import {
   IonFooterCustom,
   IonHeaderCustom,
 } from '../components/ui/Layout';
-import { useSetup } from '../hooks/usetSetup';
 import { useAuth } from '../store/auth';
 import { cn } from '../theme/lib/utils';
 
@@ -60,8 +59,6 @@ const groupMessagesByDate = (messages: ChatConversationMessage[]) => {
 };
 
 const JobChat: React.FC = () => {
-  useSetup();
-
   const auth = useAuth((state) => state.auth);
   if (!auth) throw new Error('Auth is null');
 
@@ -83,6 +80,7 @@ const JobChat: React.FC = () => {
     isFetchingPreviousPage,
     isSuccess: isChatConversationSuccess,
   } = useGetChatConversationWithPagination({
+    nodeAddress: auth.node_address,
     inboxId: deserializedId as string,
     shinkaiIdentity: auth?.shinkai_identity ?? '',
     profile: auth?.profile ?? '',
@@ -185,6 +183,7 @@ const JobChat: React.FC = () => {
 
     if (selectedFile) {
       await sendTextMessageWithFilesForInbox({
+        nodeAddress: auth.node_address,
         sender: auth.shinkai_identity,
         senderSubidentity: auth.profile,
         receiver: auth.shinkai_identity,
@@ -200,9 +199,11 @@ const JobChat: React.FC = () => {
     } else {
       const jobId = extractJobIdFromInbox(deserializedId);
       await sendMessageToJob({
+        nodeAddress: auth.node_address,
         jobId: jobId,
         message: message_to_send,
         files_inbox: '',
+        parent: '', // Note: this should be defined if we want to retry or branch out
         shinkaiIdentity: auth.shinkai_identity,
         profile: auth.profile,
         my_device_encryption_sk: auth.my_device_encryption_sk,

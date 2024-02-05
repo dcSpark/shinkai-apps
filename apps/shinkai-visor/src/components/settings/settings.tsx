@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
+import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import {
   Button,
   Checkbox,
@@ -33,6 +34,8 @@ const formSchema = z.object({
   defaultAgentId: z.string(),
   hideActionButton: z.boolean(),
   nodeAddress: z.string(),
+  shinkaiIdentity: z.string(),
+  nodeVersion: z.string(),
 });
 
 type FormSchemaType = z.infer<typeof formSchema>;
@@ -42,6 +45,10 @@ export const Settings = () => {
   const auth = useAuth((authStore) => authStore.auth);
   const settings = useSettings((settingsStore) => settingsStore.settings);
   const setSettings = useSettings((settingsStore) => settingsStore.setSettings);
+  const { nodeInfo, isSuccess: isNodeInfoSuccess } = useGetHealth({
+    node_address: auth?.node_address ?? '',
+  });
+  console.log(nodeInfo, 'nodeInfo');
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -52,6 +59,7 @@ export const Settings = () => {
   });
   const currentFormValue = useWatch<FormSchemaType>({ control: form.control });
   const { agents } = useAgents({
+    nodeAddress: auth?.node_address ?? '',
     sender: auth?.shinkai_identity ?? '',
     senderSubidentity: `${auth?.profile}`,
     shinkaiIdentity: auth?.shinkai_identity ?? '',
@@ -68,12 +76,22 @@ export const Settings = () => {
     history.push('settings/create-registration-code');
   };
   useEffect(() => {
+    if (isNodeInfoSuccess) {
+      form.reset({
+        nodeVersion: nodeInfo?.version ?? '',
+        shinkaiIdentity: nodeInfo?.node_name ?? '',
+      });
+    }
+  }, [form, isNodeInfoSuccess, nodeInfo?.node_name, nodeInfo?.version]);
+
+  useEffect(() => {
     if (JSON.stringify(currentFormValue) !== JSON.stringify(settings)) {
       setSettings({ ...currentFormValue });
     }
   }, [currentFormValue, settings, setSettings]);
+
   return (
-    <div className="flex flex-col space-y-8">
+    <div className="flex flex-col space-y-8 pr-2.5">
       <Header title={<FormattedMessage id="setting.other" />} />
       <div className="flex flex-col space-y-8">
         <Form {...form}>
@@ -100,10 +118,7 @@ export const Settings = () => {
                     <SelectContent>
                       {agents?.map((agent) => (
                         <SelectItem key={agent.id} value={agent.id}>
-                          {
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            (agent.full_identity_name as any)?.subidentity_name
-                          }
+                          {agent.id}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -121,6 +136,28 @@ export const Settings = () => {
                 <TextField
                   field={field}
                   label={<FormattedMessage id="node-address" />}
+                />
+              )}
+            />
+            <FormField
+              control={form.control}
+              disabled
+              name="shinkaiIdentity"
+              render={({ field }) => (
+                <TextField
+                  field={field}
+                  label={<FormattedMessage id="shinkai-identity" />}
+                />
+              )}
+            />
+            <FormField
+              control={form.control}
+              disabled
+              name="nodeVersion"
+              render={({ field }) => (
+                <TextField
+                  field={field}
+                  label={<FormattedMessage id="node-version" />}
                 />
               )}
             />

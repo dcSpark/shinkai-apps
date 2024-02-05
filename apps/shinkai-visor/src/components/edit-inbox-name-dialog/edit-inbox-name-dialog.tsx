@@ -57,6 +57,7 @@ export const EditInboxNameDialog = ({
   };
   const submit = (values: FormSchemaType) => {
     updateInboxName({
+      nodeAddress: auth?.node_address ?? '',
       sender: auth?.shinkai_identity ?? '',
       senderSubidentity: auth?.profile ?? '',
       receiver: auth?.shinkai_identity ?? '',

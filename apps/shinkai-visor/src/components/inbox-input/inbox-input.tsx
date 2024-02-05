@@ -1,13 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
-  DotsLoader,
   Form,
-  FormControl,
   FormField,
   FormItem,
-  FormLabel,
-  Input,
+  MessageEditor,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
@@ -65,23 +62,17 @@ export const InboxInput = (props: InboxInputProps) => {
               <motion.div
                 animate={{ width: message?.length ? '99%' : '100%' }}
                 initial={{ width: '100%' }}
-                transition={{
-                  type: 'tween',
-                }}
+                transition={{ type: 'tween' }}
               >
                 <FormItem>
-                  <FormControl>
-                    <Input {...field} autoFocus />
-                  </FormControl>
-                  {props.loading ? (
-                    <DotsLoader className="absolute left-4 top-6" />
-                  ) : (
-                    <FormLabel>
-                      {intl.formatMessage({
-                        id: 'tmwtd',
-                      })}
-                    </FormLabel>
-                  )}
+                  <MessageEditor
+                    disabled={props.loading}
+                    isLoading={props.loading}
+                    onChange={field.onChange}
+                    onSubmit={form.handleSubmit(submit)}
+                    placeholder={intl.formatMessage({ id: 'tmwtd' })}
+                    value={field.value}
+                  />
                 </FormItem>
               </motion.div>
             )}
@@ -100,6 +91,7 @@ export const InboxInput = (props: InboxInputProps) => {
               }
             >
               <SendHorizonal className="h-6 w-6" />
+              <span className="sr-only">Send Message</span>
             </Button>
           </motion.div>
         )}

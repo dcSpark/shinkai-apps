@@ -20,7 +20,6 @@ import z from 'zod';
 
 import Button from '../components/ui/Button';
 import { IonContentCustom, IonHeaderCustom } from '../components/ui/Layout';
-import { useSetup } from '../hooks/usetSetup';
 import { useAuth } from '../store/auth';
 
 const addAgentSchema = z.object({
@@ -32,7 +31,6 @@ const addAgentSchema = z.object({
 });
 
 const AddAgent: React.FC = () => {
-  useSetup();
   const history = useHistory();
   const auth = useAuth((state) => state.auth);
   const addAgentForm = useForm<z.infer<typeof addAgentSchema>>({
@@ -61,6 +59,7 @@ const AddAgent: React.FC = () => {
 
     if (!auth) return;
     createAgent({
+      nodeAddress: auth.node_address,
       sender_subidentity: auth.profile,
       node_name: auth.shinkai_identity,
       agent: {

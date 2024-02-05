@@ -47,6 +47,7 @@ export const CreateInbox = () => {
     if (!auth) return;
     const [receiver, ...rest] = values.receiverIdentity.split('/');
     createChat({
+      nodeAddress: auth?.node_address ?? '',
       sender: auth.shinkai_identity,
       senderSubidentity: auth.profile,
       receiver,

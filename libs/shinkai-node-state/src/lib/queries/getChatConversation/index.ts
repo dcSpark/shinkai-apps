@@ -18,6 +18,7 @@ import {
 import { CONVERSATION_PAGINATION_LIMIT } from './useGetChatConversationWithPagination';
 
 export const getChatConversation = async ({
+  nodeAddress,
   inboxId,
   count = CONVERSATION_PAGINATION_LIMIT,
   lastKey,
@@ -28,6 +29,7 @@ export const getChatConversation = async ({
   node_encryption_pk,
 }: GetChatConversationInput): Promise<GetChatConversationOutput> => {
   const data: ShinkaiMessage[] = await getLastMessagesFromInbox(
+    nodeAddress,
     inboxId,
     count,
     lastKey,
@@ -58,6 +60,7 @@ export const getChatConversation = async ({
       };
       if (filesInbox) {
         const fileNames = await getFileNames(
+          nodeAddress,
           shinkaiIdentity,
           profile,
           shinkaiIdentity,

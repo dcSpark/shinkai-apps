@@ -54,6 +54,7 @@ export const CreateJob = () => {
     },
   });
   const { agents } = useAgents({
+    nodeAddress: auth?.node_address ?? '',
     sender: auth?.shinkai_identity ?? '',
     senderSubidentity: `${auth?.profile}`,
     shinkaiIdentity: auth?.shinkai_identity ?? '',
@@ -131,6 +132,7 @@ export const CreateJob = () => {
       content = `${values.content} - \`\`\`${query.get('context')}\`\`\``;
     }
     createJob({
+      nodeAddress: auth?.node_address ?? '',
       shinkaiIdentity: auth.shinkai_identity,
       profile: auth.profile,
       agentId: values.agent,
@@ -175,10 +177,7 @@ export const CreateJob = () => {
                     <SelectContent>
                       {agents?.map((agent) => (
                         <SelectItem key={agent.id} value={agent.id}>
-                          {
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            (agent.full_identity_name as any)?.subidentity_name
-                          }
+                          {agent.id}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -255,6 +254,7 @@ export const CreateJob = () => {
 
           <Button
             className="w-full"
+            data-testid="create-job-submit-button"
             disabled={isPending}
             isLoading={isPending}
             type="submit"

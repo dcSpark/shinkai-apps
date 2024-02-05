@@ -14,11 +14,9 @@ import React, { useState } from 'react';
 import Button from '../components/ui/Button';
 import { IonContentCustom, IonHeaderCustom } from '../components/ui/Layout';
 import Modal from '../components/ui/Modal';
-import { useSetup } from '../hooks/usetSetup';
 import { useAuth } from '../store/auth';
 
 const AdminCommands: React.FC = () => {
-  useSetup();
   const auth = useAuth((state) => state.auth);
 
   const [showCodeRegistrationActionSheet, setShowCodeRegistrationActionSheet] =
@@ -74,6 +72,7 @@ const AdminCommands: React.FC = () => {
   const handleIdentityClick = async (permissionsType: string) => {
     if (!auth) return;
     await createRegistrationCode({
+      nodeAddress: auth.node_address,
       permissionsType,
       identityType,
       setupPayload: {
