@@ -33,6 +33,9 @@ export const useSettings = create<SettingsStore>()(
         sideButtonOffset: { x: 0, y: 10 },
         setSideButtonOffset: (fn: (prev: Coordinates) => Coordinates) => {
           set((state) => ({ sideButtonOffset: fn(state.sideButtonOffset) }));
+          sendMessage({
+            type: ServiceWorkerInternalMessageType.RehydrateStore,
+          });
         },
       }),
       {
