@@ -36,7 +36,7 @@ jobs:
       - name: Run NX build on shinkai-visor
         run: npx nx build shinkai-visor --skip-nx-cache
         env:
-          VERSION: ${{ github.ref }}.${{github.run_number}}
+          VERSION: ${{ github.ref_name }}.${{github.run_number}}
           NAME_PREFIX: ''
           DESCRIPTION_PREFIX: ''
           PUBLIC_KEY: ${{ secrets.CHROME_EXTENSION_PUBLIC_KEY }}
