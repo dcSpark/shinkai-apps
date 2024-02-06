@@ -5,6 +5,7 @@ import {
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMessageToJob/useSendMessageToJob';
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
+import { ChatConversationMessage } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
 import {
   getRelativeDateLabel,
@@ -18,7 +19,7 @@ import {
   Skeleton,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { Loader2, Terminal } from 'lucide-react';
+import { Loader2, RotateCcw, Terminal } from 'lucide-react';
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
@@ -122,6 +123,27 @@ export const Inbox = () => {
         profile_identity_sk: auth.profile_identity_sk,
       });
     }
+  };
+
+  const retrySendMessage = (message: ChatConversationMessage) => {
+    console.log('retrySendMessage');
+    if (!auth) return;
+    const jobId = extractJobIdFromInbox(decodedInboxId);
+    sendMessageToJob({
+      nodeAddress: auth.node_address,
+      jobId,
+      message: message.content,
+      files_inbox: '',
+      parent:
+        '9a3906a120840750cac0147b2d50f1412aeb4a4e4ab1bc8d880a96608857e2c2',
+      shinkaiIdentity: auth.shinkai_identity,
+      profile: auth.profile,
+      my_device_encryption_sk: auth.my_device_encryption_sk,
+      my_device_identity_sk: auth.my_device_identity_sk,
+      node_encryption_pk: auth.node_encryption_pk,
+      profile_encryption_sk: auth.profile_encryption_sk,
+      profile_identity_sk: auth.profile_identity_sk,
+    });
   };
 
   useEffect(() => {
@@ -234,14 +256,28 @@ export const Inbox = () => {
                           </span>
                         </div>
                         <div className="flex flex-col gap-4">
+                          {console.log(messages, 'messages')}
                           {messages.map((message) => {
                             return (
                               <div
-                                className={cn('pl-2')}
-                                data-testid={`message-${message.isLocal ? 'local' : 'remote'}-${message.hash}`}
+                                className={cn('relative pl-2')}
+                                data-testid={`message-${
+                                  message.isLocal ? 'local' : 'remote'
+                                }-${message.hash}`}
                                 key={`${index}-${message.scheduledTime}`}
                               >
                                 <Message message={message} />
+                                {message.isLocal && (
+                                  <button
+                                    className="absolute left-2 top-1/2 -translate-y-1/2 transform rounded-full bg-gray-300"
+                                    onClick={() => {
+                                      retrySendMessage(message);
+                                    }}
+                                  >
+                                    <RotateCcw className="h-4 w-4" />
+                                    <span className="sr-only">Retry</span>
+                                  </button>
+                                )}
                               </div>
                             );
                           })}
