@@ -29,7 +29,7 @@ const menuActions = new Map<
 const registerMenu = () => {
   chrome.contextMenus.create({
     id: ContextMenu.SummarizePage,
-    title: 'Summarize page',
+    title: 'Summarize This Page',
     contexts: ['all'],
   });
   chrome.contextMenus.create({
