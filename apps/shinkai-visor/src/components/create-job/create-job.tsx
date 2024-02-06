@@ -121,6 +121,12 @@ export const CreateJob = () => {
     defaultAgentId = defaultAgentId || (agents?.length ? agents[0].id : '');
     form.setValue('agent', defaultAgentId);
   }, [form, location, agents, currentDefaultAgentId]);
+
+  useEffect(() => {
+    if (query.get('initialText')) {
+      form.handleSubmit(submit)();
+    }
+  }, []);
   const submit = (values: FormSchemaType) => {
     if (!auth) return;
     let content = values.content;
