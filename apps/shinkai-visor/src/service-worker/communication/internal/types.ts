@@ -2,6 +2,7 @@ export enum ServiceWorkerInternalMessageType {
   ContentScriptBridge = 'content-script-bridge',
   SendToAgent = 'send-to-agent',
   SendPageToAgent = 'send-page-to-agent',
+  SummarizePage = 'summarize-page',
   RehydrateStore = 'rehydrate-store',
   CopyToClipboard = 'copy-to-clipboard',
   CaptureImage = 'capture-image',
@@ -47,6 +48,14 @@ export type ServiceWorkerInternalMessage =
     }
   | {
       type: ServiceWorkerInternalMessageType.SendPageToAgent;
+      data: {
+        filename: string;
+        fileDataUrl: string;
+        fileType: string;
+      };
+    }
+  | {
+      type: ServiceWorkerInternalMessageType.SummarizePage;
       data: {
         filename: string;
         fileDataUrl: string;

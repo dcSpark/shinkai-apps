@@ -91,7 +91,7 @@ export const FileInput = ({
     forceUpdate();
   }, [value, forceUpdate]);
   return (
-    <div className="flex flex-col space-y-1">
+    <div className="flex flex-col space-y-3">
       <div className="flex items-center justify-center">
         <label
           className={cn(

@@ -19,7 +19,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
-import { FileInputIcon, ScissorsIcon } from 'lucide-react';
+import { FileInputIcon, NotebookPenIcon, ScissorsIcon } from 'lucide-react';
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
 import { IntlProvider } from 'react-intl';
@@ -160,6 +160,11 @@ const ActionButton = () => {
                 </span>
               </kbd>
               {[
+                {
+                  label: 'Summarize page',
+                  onClick: sendPage,
+                  icon: <NotebookPenIcon className="h-full w-full" />,
+                },
                 {
                   label: 'Send Capture',
                   onClick: sendCapture,
