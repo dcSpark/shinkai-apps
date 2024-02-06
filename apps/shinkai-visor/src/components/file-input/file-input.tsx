@@ -1,6 +1,12 @@
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { ExternalLink, Trash, Upload } from 'lucide-react';
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { getFileExt } from '../../helpers/file-name-utils';
@@ -62,7 +68,7 @@ export const FileInput = ({
     event.preventDefault();
     let draggedFiles: File[] = [];
     if (event.dataTransfer.items) {
-      Array.from(event.dataTransfer.items || []).forEach((item, i) => {
+      Array.from(event.dataTransfer.items || []).forEach((item) => {
         if (item.kind === 'file') {
           const file = item.getAsFile();
           if (!file) {
