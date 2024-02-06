@@ -36,6 +36,34 @@ export const sendPageToAgent = async (
   };
   sendMessage(message);
 };
+export const summarizePage = async (
+  info: chrome.contextMenus.OnClickData | undefined,
+  tab: chrome.tabs.Tab | undefined,
+) => {
+  // At this point, agents can just process text
+  if (!tab?.id) {
+    return;
+  }
+  const [htmlContent] = await chrome.scripting.executeScript({
+    target: { tabId: tab?.id },
+    func: () => {
+      return document.documentElement.outerHTML;
+    },
+    args: [],
+  });
+  const fileType = 'text/html';
+  const message: ServiceWorkerInternalMessage = {
+    type: ServiceWorkerInternalMessageType.SummarizePage,
+    data: {
+      filename: `${encodeURIComponent(tab.url || Date.now())}.html`,
+      fileType: fileType,
+      fileDataUrl: `data:${fileType};base64,${Buffer.from(
+        htmlContent.result,
+      ).toString('base64')}`,
+    },
+  };
+  sendMessage(message);
+};
 export const sendCaptureToAgent = async (
   info: chrome.contextMenus.OnClickData | undefined,
   tab: chrome.tabs.Tab | undefined,

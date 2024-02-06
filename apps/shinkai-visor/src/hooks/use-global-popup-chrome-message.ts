@@ -31,6 +31,21 @@ export const useGlobalPopupChromeMessage = () => {
         });
         break;
       }
+      case ServiceWorkerInternalMessageType.SummarizePage: {
+        const params = new URLSearchParams({
+          initialText: 'Summarize this',
+        });
+        const file = dataUrlToFile(
+          message.data.fileDataUrl,
+          message.data.filename,
+        );
+        history.push({
+          pathname: '/inboxes/create-job',
+          state: { files: [file] },
+          search: params.toString(),
+        });
+        break;
+      }
       case ServiceWorkerInternalMessageType.SendCaptureToAgent: {
         const imageFile = dataUrlToFile(
           message.data.imageDataUrl,

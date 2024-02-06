@@ -50,7 +50,7 @@ export const CreateJob = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       agent: '',
-      content: '',
+      content: query.get('initialText') ?? '',
       files: [],
     },
   });
@@ -102,12 +102,7 @@ export const CreateJob = () => {
     if (!location?.state?.agentName) {
       return;
     }
-    const agent = agents.find(
-      (agent) =>
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (agent.full_identity_name as any)?.subidentity_name ===
-        location.state.agentName,
-    );
+    const agent = agents.find((agent) => agent.id === location.state.agentName);
     if (agent) {
       form.setValue('agent', agent.id);
     }
@@ -126,6 +121,12 @@ export const CreateJob = () => {
     defaultAgentId = defaultAgentId || (agents?.length ? agents[0].id : '');
     form.setValue('agent', defaultAgentId);
   }, [form, location, agents, currentDefaultAgentId]);
+
+  useEffect(() => {
+    if (query.get('initialText')) {
+      form.handleSubmit(submit)();
+    }
+  }, []);
   const submit = (values: FormSchemaType) => {
     if (!auth) return;
     let content = values.content;

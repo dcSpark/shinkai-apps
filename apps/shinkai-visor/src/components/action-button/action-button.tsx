@@ -19,7 +19,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
-import { FileInputIcon, ScissorsIcon } from 'lucide-react';
+import { Focus, PanelTopIcon } from 'lucide-react';
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
 import { IntlProvider } from 'react-intl';
@@ -163,12 +163,12 @@ const ActionButton = () => {
                 {
                   label: 'Send Capture',
                   onClick: sendCapture,
-                  icon: <ScissorsIcon className="h-full w-full" />,
+                  icon: <Focus className="h-full w-full" />,
                 },
                 {
                   label: 'Send Page',
                   onClick: sendPage,
-                  icon: <FileInputIcon className="h-full w-full" />,
+                  icon: <PanelTopIcon className="h-full w-full" />,
                 },
               ].map((item) => (
                 <TooltipProvider key={item.label}>

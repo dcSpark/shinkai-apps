@@ -160,7 +160,7 @@
     "jsbi": "^4.3.0",
     "jspdf": "^2.5.1",
     "libsodium-wrappers-sumo": "^0.7.13",
-    "lucide-react": "^0.263.1",
+    "lucide-react": "^0.323.0",
     "node-forge": ">=1.0.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",

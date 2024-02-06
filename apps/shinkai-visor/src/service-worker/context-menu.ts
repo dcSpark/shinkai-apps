@@ -1,29 +1,61 @@
 import { delay } from '../helpers/misc';
-import { OPEN_SIDEPANEL_DELAY_MS, sendToAgent } from './action';
+import {
+  OPEN_SIDEPANEL_DELAY_MS,
+  sendCaptureToAgent,
+  sendPageToAgent,
+  sendToAgent,
+  summarizePage,
+} from './action';
 
 enum ContextMenu {
+  SendPageToAgent = 'send-page-to-agent',
   SendToAgent = 'send-to-agent',
+  SendCaptureToAgent = 'send-capture-to-agent',
+  SummarizePage = 'summarize-page',
 }
 
 const menuActions = new Map<
   string | number,
   (
-    info: chrome.contextMenus.OnClickData | undefined,
+    info: chrome.contextMenus.OnClickData,
     tab: chrome.tabs.Tab | undefined,
   ) => void
->([[ContextMenu.SendToAgent, sendToAgent]]);
-//
+>([
+  [ContextMenu.SendPageToAgent, sendPageToAgent],
+  [ContextMenu.SendToAgent, sendToAgent],
+  [ContextMenu.SendCaptureToAgent, sendCaptureToAgent],
+  [ContextMenu.SummarizePage, summarizePage],
+]);
 const registerMenu = () => {
   chrome.contextMenus.create({
+    id: ContextMenu.SummarizePage,
+    title: 'Summarize This Page',
+    contexts: ['all'],
+  });
+  chrome.contextMenus.create({
+    id: 'separator',
+    type: 'separator',
+    contexts: ['all'],
+  });
+  chrome.contextMenus.create({
+    id: ContextMenu.SendPageToAgent,
+    title: 'Send Page to Agent',
+    contexts: ['all'],
+  });
+  chrome.contextMenus.create({
     id: ContextMenu.SendToAgent,
-    title: 'Send Selection to Shinkai Chat',
+    title: 'Send Selection to Agent',
     contexts: ['selection'],
+  });
+  chrome.contextMenus.create({
+    id: ContextMenu.SendCaptureToAgent,
+    title: 'Send Capture to Agent',
+    contexts: ['all'],
   });
 };
 
 chrome.runtime.onInstalled.addListener(async (details) => {
   registerMenu();
-
   if (details.reason === 'install') {
     await chrome.tabs.create({
       url: chrome.runtime.getURL('src/components/setup/setup.html'),
