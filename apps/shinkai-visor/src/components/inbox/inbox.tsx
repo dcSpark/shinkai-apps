@@ -260,7 +260,7 @@ export const Inbox = () => {
                           </span>
                         </div>
                         <div className="flex flex-col gap-4">
-                          {console.log(messages, 'messages')}
+                          {void console.log(messages, 'messages')}
                           {messages.map((message) => {
                             return (
                               <div
