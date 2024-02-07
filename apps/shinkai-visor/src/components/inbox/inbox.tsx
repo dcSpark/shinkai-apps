@@ -7,6 +7,7 @@ import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mut
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
 import { ChatConversationMessage } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
+import { useGetChatConversationBranchesWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversationBranches/useGetChatConversationBranchesWithPagination';
 import {
   getRelativeDateLabel,
   groupMessagesByDate,
@@ -39,7 +40,7 @@ export const Inbox = () => {
     isPending: isChatConversationLoading,
     isFetchingPreviousPage,
     isSuccess: isChatConversationSuccess,
-  } = useGetChatConversationWithPagination({
+  } = useGetChatConversationBranchesWithPagination({
     nodeAddress: auth?.node_address ?? '',
     inboxId: decodeURIComponent(inboxId) as string,
     shinkaiIdentity: auth?.shinkai_identity ?? '',
@@ -49,7 +50,7 @@ export const Inbox = () => {
     node_encryption_pk: auth?.node_encryption_pk ?? '',
     profile_encryption_sk: auth?.profile_encryption_sk ?? '',
     profile_identity_sk: auth?.profile_identity_sk ?? '',
-    refetchInterval: 5000,
+    // refetchInterval: 5000,
   });
   const {
     mutateAsync: sendMessageToInbox,
@@ -132,10 +133,13 @@ export const Inbox = () => {
     sendMessageToJob({
       nodeAddress: auth.node_address,
       jobId,
-      message: message.content,
+      // message: 'what is html in 1 one line',
+      message: 'what is css in 3 words',
       files_inbox: '',
       parent:
-        '9a3906a120840750cac0147b2d50f1412aeb4a4e4ab1bc8d880a96608857e2c2',
+        '57b61385ac57ccdbc3447a8175b7442d7a2fe9aafcbf5203dc9e719411f6db7d',
+      // parent:
+      // '530f2a9a6107e9918a88f74e69aab8ed12e81aa07cc92569bf2fdac4e463f047',
       shinkaiIdentity: auth.shinkai_identity,
       profile: auth.profile,
       my_device_encryption_sk: auth.my_device_encryption_sk,

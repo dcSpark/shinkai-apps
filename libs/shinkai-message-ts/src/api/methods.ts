@@ -283,6 +283,46 @@ export const updateInboxName = async (
   }
 };
 
+export const getLastMessagesFromInboxWithBranches = async (
+  nodeAddress: string,
+  inbox: string,
+  count: number,
+  lastKey: string | undefined,
+  setupDetailsState: LastMessagesFromInboxCredentialsPayload,
+): Promise<ShinkaiMessage[]> => {
+  try {
+    const messageStr =
+      ShinkaiMessageBuilderWrapper.get_last_messages_from_inbox(
+        setupDetailsState.profile_encryption_sk,
+        setupDetailsState.profile_identity_sk,
+        setupDetailsState.node_encryption_pk,
+        inbox,
+        count,
+        lastKey,
+        setupDetailsState.shinkai_identity,
+        setupDetailsState.profile,
+        setupDetailsState.shinkai_identity,
+      );
+
+    const message = JSON.parse(messageStr);
+
+    const response = await fetch(
+      urlJoin(nodeAddress, '/v1/last_messages_from_inbox_with_branches'),
+      {
+        method: 'POST',
+        body: JSON.stringify(message),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+    await handleHttpError(response);
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    console.error('Error getting last messages from inbox:', error);
+    throw error;
+  }
+};
+
 export const getLastMessagesFromInbox = async (
   nodeAddress: string,
   inbox: string,
@@ -490,7 +530,9 @@ export const submitInitialRegistrationNoCode = async (
 
 export const pingAllNodes = async (nodeAddress: string): Promise<string> => {
   try {
-    const response = await fetch(urlJoin(nodeAddress, '/ping_all'), { method: 'POST' });
+    const response = await fetch(urlJoin(nodeAddress, '/ping_all'), {
+      method: 'POST',
+    });
     await handleHttpError(response);
     const data = await response.json();
     return data.result;
