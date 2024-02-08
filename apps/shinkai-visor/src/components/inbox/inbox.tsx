@@ -260,31 +260,7 @@ export const Inbox = () => {
                           </span>
                         </div>
                         <div className="flex flex-col gap-4">
-                          {void console.log(messages, 'messages')}
-                          {messages.map((message) => {
-                            return (
-                              <div
-                                className={cn('relative pl-2')}
-                                data-testid={`message-${
-                                  message.isLocal ? 'local' : 'remote'
-                                }-${message.hash}`}
-                                key={`${index}-${message.scheduledTime}`}
-                              >
-                                <Message message={message} />
-                                {message.isLocal && (
-                                  <button
-                                    className="absolute left-2 top-1/2 -translate-y-1/2 transform rounded-full bg-gray-300"
-                                    onClick={() => {
-                                      retrySendMessage(message);
-                                    }}
-                                  >
-                                    <RotateCcw className="h-4 w-4" />
-                                    <span className="sr-only">Retry</span>
-                                  </button>
-                                )}
-                              </div>
-                            );
-                          })}
+                          <ChatMessages messages={messages} />
                         </div>
                       </div>
                     );
@@ -318,3 +294,33 @@ export const Inbox = () => {
     </div>
   );
 };
+
+function ChatMessages({ messages }: { messages: ChatConversationMessage[] }) {
+  console.log(messages, 'messages');
+  const [mainThread, setMainThread] = useState<ChatConversationMessage[]>([]);
+
+  useEffect(() => {
+    // TODO:  get main thread
+    setMainThread(messages);
+  }, [messages]);
+
+  return mainThread.map((message, index) => {
+    return (
+      <div
+        className={cn('relative pl-2')}
+        data-testid={`message-${message.isLocal ? 'local' : 'remote'}-${
+          message.hash
+        }`}
+        key={`${index}-${message.scheduledTime}`}
+      >
+        <Message message={message} />
+        {message.isLocal && (
+          <button className="absolute left-2 top-1/2 -translate-y-1/2 transform rounded-full bg-gray-300">
+            <RotateCcw className="h-4 w-4" />
+            <span className="sr-only">Retry</span>
+          </button>
+        )}
+      </div>
+    );
+  });
+}
