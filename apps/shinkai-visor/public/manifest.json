@@ -1,6 +1,6 @@
 {
-  "name": "Shinkai Visor",
-  "description": "Transforms your web browser into a first class Shinkai client.",
+  "name": "Shinkai Visor: Supercharged AI for Tasks",
+  "description": "Shinkai supercharges AI to better handle your daily tasks and helps the AI to stay up-to-date with global information.",
   "manifest_version": 3,
   "update_url": "https://clients2.google.com/service/update2/crx",
   "version": "0.0.0.1",
