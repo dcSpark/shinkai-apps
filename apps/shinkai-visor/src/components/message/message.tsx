@@ -3,10 +3,12 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
+  buttonVariants,
   CopyToClipboardIcon,
   MarkdownPreview,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { RotateCcw } from 'lucide-react';
 import React from 'react';
 
 import shinkaiMiniLogo from '../../assets/icons/shinkai-min.svg';
@@ -17,6 +19,8 @@ import { FileList } from '../file-list/file-list';
 
 type MessageProps = {
   message: ChatConversationMessage;
+  isLastMessage?: boolean;
+  regenerateLastMessage: () => void;
 };
 const copyToClipboard = (content: string) => {
   sendMessage({
@@ -25,7 +29,11 @@ const copyToClipboard = (content: string) => {
   });
 };
 
-export const Message = ({ message }: MessageProps) => {
+export const Message = ({
+  message,
+  isLastMessage,
+  regenerateLastMessage,
+}: MessageProps) => {
   const openMarkdownLink = (
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
     url?: string,
@@ -81,6 +89,15 @@ export const Message = ({ message }: MessageProps) => {
           }}
           source={message.content}
         />
+        {isLastMessage && (
+          <button
+            className={cn('mt-2 h-7 w-7 rounded-full bg-gray-500 p-2')}
+            onClick={regenerateLastMessage}
+          >
+            <RotateCcw className="h-full w-full" />
+            <span className="sr-only">Regenerate</span>
+          </button>
+        )}
         {!!message.fileInbox?.files?.length && (
           <FileList
             actions={[]}

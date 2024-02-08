@@ -25,6 +25,7 @@ export type ChatConversationMessage = {
       name: string;
     }[];
   };
+  parentHash?: string;
 };
 
 export type GetChatConversationOutput = ChatConversationMessage[];

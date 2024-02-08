@@ -126,30 +126,6 @@ export const Inbox = () => {
     }
   };
 
-  const retrySendMessage = (message: ChatConversationMessage) => {
-    console.log('retrySendMessage');
-    if (!auth) return;
-    const jobId = extractJobIdFromInbox(decodedInboxId);
-    sendMessageToJob({
-      nodeAddress: auth.node_address,
-      jobId,
-      // message: 'what is html in 1 one line',
-      message: 'what is css in 3 words',
-      files_inbox: '',
-      parent:
-        '57b61385ac57ccdbc3447a8175b7442d7a2fe9aafcbf5203dc9e719411f6db7d',
-      // parent:
-      // '530f2a9a6107e9918a88f74e69aab8ed12e81aa07cc92569bf2fdac4e463f047',
-      shinkaiIdentity: auth.shinkai_identity,
-      profile: auth.profile,
-      my_device_encryption_sk: auth.my_device_encryption_sk,
-      my_device_identity_sk: auth.my_device_identity_sk,
-      node_encryption_pk: auth.node_encryption_pk,
-      profile_encryption_sk: auth.profile_encryption_sk,
-      profile_identity_sk: auth.profile_identity_sk,
-    });
-  };
-
   useEffect(() => {
     const chatContainerElement = chatContainerRef.current;
     if (!chatContainerElement) return;
@@ -260,7 +236,7 @@ export const Inbox = () => {
                           </span>
                         </div>
                         <div className="flex flex-col gap-4">
-                          <ChatMessages messages={messages} />
+                          <ChatMessages initialMessages={messages} />
                         </div>
                       </div>
                     );
@@ -295,16 +271,70 @@ export const Inbox = () => {
   );
 };
 
-function ChatMessages({ messages }: { messages: ChatConversationMessage[] }) {
-  console.log(messages, 'messages');
-  const [mainThread, setMainThread] = useState<ChatConversationMessage[]>([]);
+function ChatMessages({
+  initialMessages,
+}: {
+  initialMessages: ChatConversationMessage[];
+}) {
+  const auth = useAuth((state) => state.auth);
+  const { inboxId } = useParams<{ inboxId: string }>();
+
+  const { mutateAsync: sendMessageToJob, isPending: isSendingMessageToJob } =
+    useSendMessageToJob();
+
+  console.log(initialMessages, 'messages');
+  const [activeThread, setActiveThread] = useState<ChatConversationMessage[]>(
+    [],
+  );
+  const messagesRef = useRef<ChatConversationMessage[]>([]);
+  console.log(messagesRef, 'messagesRef');
+  const buildActiveThread = useCallback(
+    (messages: ChatConversationMessage[]) => {
+      const thread = [];
+      let currentMessage = messages.find((m) => m.parentHash === 'root'); // Start from root
+
+      while (currentMessage) {
+        thread.push(currentMessage);
+        currentMessage = messages.find(
+          (message) => message.parentHash === currentMessage?.hash,
+        );
+      }
+
+      return thread;
+    },
+    [],
+  );
 
   useEffect(() => {
-    // TODO:  get main thread
-    setMainThread(messages);
-  }, [messages]);
+    const thread = buildActiveThread(initialMessages);
+    setActiveThread(thread);
+  }, [initialMessages, buildActiveThread]);
 
-  return mainThread.map((message, index) => {
+  const regenerateLastMessage = () => {
+    const content = activeThread.at(-2)?.content;
+    const parentHash = activeThread.at(-3)?.hash;
+    console.log(content, parentHash, 'activeThread');
+    console.log('retrySendMessage');
+    if (!auth) return;
+    const decodedInboxId = decodeURIComponent(inboxId);
+    const jobId = extractJobIdFromInbox(decodedInboxId);
+    sendMessageToJob({
+      nodeAddress: auth.node_address,
+      jobId,
+      message: content!,
+      files_inbox: '',
+      parent: parentHash!,
+      shinkaiIdentity: auth.shinkai_identity,
+      profile: auth.profile,
+      my_device_encryption_sk: auth.my_device_encryption_sk,
+      my_device_identity_sk: auth.my_device_identity_sk,
+      node_encryption_pk: auth.node_encryption_pk,
+      profile_encryption_sk: auth.profile_encryption_sk,
+      profile_identity_sk: auth.profile_identity_sk,
+    });
+  };
+
+  return activeThread.map((message, index) => {
     return (
       <div
         className={cn('relative pl-2')}
@@ -313,13 +343,11 @@ function ChatMessages({ messages }: { messages: ChatConversationMessage[] }) {
         }`}
         key={`${index}-${message.scheduledTime}`}
       >
-        <Message message={message} />
-        {message.isLocal && (
-          <button className="absolute left-2 top-1/2 -translate-y-1/2 transform rounded-full bg-gray-300">
-            <RotateCcw className="h-4 w-4" />
-            <span className="sr-only">Retry</span>
-          </button>
-        )}
+        <Message
+          isLastMessage={index === activeThread.length - 1}
+          message={message}
+          regenerateLastMessage={regenerateLastMessage}
+        />
       </div>
     );
   });
