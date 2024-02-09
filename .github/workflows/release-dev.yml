@@ -42,8 +42,8 @@ jobs:
         run: npx nx build shinkai-visor --skip-nx-cache
         env:
           VERSION: 0.0.0.${{github.run_number}}
-          NAME_PREFIX: '[Dev] '
-          DESCRIPTION_PREFIX: 'This is for development purpose.\n\n'
+          NAME_PREFIX: '[Dev]'
+          DESCRIPTION_PREFIX: '[Dev]'
 
       - name: Zip extension
         run: cd ./dist/apps && zip -r shinkai-visor.zip shinkai-visor
