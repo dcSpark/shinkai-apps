@@ -193,7 +193,7 @@ export const Settings = () => {
                   </FormControl>
                   <div className="space-y-1 leading-none">
                     <FormLabel className="static space-y-1.5 text-sm text-white">
-                      <FormattedMessage id="display-action-button-label" />
+                      <FormattedMessage id="show-action-button-label" />
                     </FormLabel>
                     <FormDescription>
                       <FormattedMessage id="show-action-button-description" />
