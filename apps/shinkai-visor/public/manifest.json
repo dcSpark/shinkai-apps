@@ -27,17 +27,6 @@
       "use_dynamic_url": true
     }
   ],
-  "commands": {
-    "toggle-popup": {
-      "suggested_key": {
-        "windows": "Ctrl+Comma",
-        "mac": "Command+Comma",
-        "chromeos": "Ctrl+Comma",
-        "linux": "Ctrl+Comma"
-      },
-      "description": "Open/Close Shinkai panel"
-    }
-  },
   "permissions": [
     "storage",
     "contextMenus",
