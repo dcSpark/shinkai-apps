@@ -105,5 +105,7 @@
   "disconnect-warning-link": "Export your connection",
   "disconnect-warning-link-description": "If you want to use it later",
   "show-action-button-label": "Show Shinkai Quick Access Button",
-  "show-action-button-description": "The Quick Access Button can be moved by clicking and holding."
+  "show-action-button-description": "The Quick Access Button can be moved by clicking and holding.",
+  "shortcut-key": "Shortcut Key",
+  "shortcut-key-description": "Modify the shortcut key to launch sidebar"
 }

@@ -25,12 +25,13 @@ const TextField = ({
     helperMessage?: string;
   };
   field: {
-    onChange: (...event: any[]) => void;
-    onBlur: () => void;
+    onChange?: (...event: any[]) => void;
+    onKeyDown?: (...event: any[]) => void;
+    onBlur?: () => void;
     value: any;
     disabled?: boolean;
-    name: string;
-    ref: React.ForwardedRef<HTMLInputElement>;
+    name?: string;
+    ref?: React.ForwardedRef<HTMLInputElement>;
     placeholder?: string;
   };
   label: React.ReactNode;
