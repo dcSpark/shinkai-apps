@@ -26,6 +26,12 @@ import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router';
 import { z } from 'zod';
 
+import {
+  areShortcutKeysEqual,
+  formatShortcutKey,
+  getKeyInfo,
+  isValidKeyCombination,
+} from '../../hooks/use-keyboard-shortcut';
 import { useAuth } from '../../store/auth/auth';
 import { useSettings } from '../../store/settings/settings';
 import { Header } from '../header/header';
@@ -36,6 +42,14 @@ const formSchema = z.object({
   nodeAddress: z.string(),
   shinkaiIdentity: z.string(),
   nodeVersion: z.string(),
+  shortcutSidebar: z.object({
+    key: z.string(),
+    altKey: z.boolean(),
+    ctrlKey: z.boolean(),
+    metaKey: z.boolean(),
+    shiftKey: z.boolean(),
+    keyCode: z.number(),
+  }),
 });
 
 type FormSchemaType = z.infer<typeof formSchema>;
@@ -55,6 +69,13 @@ export const Settings = () => {
   const setDefaultAgentId = useSettings(
     (settingsStore) => settingsStore.setDefaultAgentId,
   );
+  const sidebarShortcut = useSettings(
+    (settingsStore) => settingsStore.sidebarShortcut,
+  );
+  const setSidebarShortcut = useSettings(
+    (settingsStore) => settingsStore.setSidebarShortcut,
+  );
+
   const { nodeInfo, isSuccess: isNodeInfoSuccess } = useGetHealth({
     node_address: auth?.node_address ?? '',
   });
@@ -65,9 +86,28 @@ export const Settings = () => {
       defaultAgentId: defaultAgentId,
       displayActionButton: displayActionButton,
       nodeAddress: auth?.node_address,
+      shortcutSidebar: sidebarShortcut,
     },
   });
-  const currentFormValue = useWatch<FormSchemaType>({ control: form.control });
+
+  const currentDisplayActionButton = useWatch({
+    control: form.control,
+    name: 'displayActionButton',
+  });
+  const currentDefaultAgentId = useWatch({
+    control: form.control,
+    name: 'defaultAgentId',
+  });
+  const currentSidebarShorcut = useWatch({
+    control: form.control,
+    name: 'shortcutSidebar',
+  });
+
+  console.log({
+    values: form.getValues(),
+    currentSidebarShorcut,
+    sidebarShortcut,
+  });
   const { agents } = useAgents({
     nodeAddress: auth?.node_address ?? '',
     sender: auth?.shinkai_identity ?? '',
@@ -88,6 +128,7 @@ export const Settings = () => {
   useEffect(() => {
     if (isNodeInfoSuccess) {
       form.reset({
+        ...form.getValues(),
         nodeVersion: nodeInfo?.version ?? '',
         shinkaiIdentity: nodeInfo?.node_name ?? '',
       });
@@ -95,18 +136,9 @@ export const Settings = () => {
   }, [form, isNodeInfoSuccess, nodeInfo?.node_name, nodeInfo?.version]);
 
   useEffect(() => {
-    setDisplayActionButton(
-      currentFormValue.displayActionButton ?? displayActionButton,
-    );
-    setDefaultAgentId(currentFormValue.defaultAgentId ?? defaultAgentId);
-  }, [
-    currentFormValue.displayActionButton,
-    currentFormValue.defaultAgentId,
-    setDisplayActionButton,
-    setDefaultAgentId,
-    displayActionButton,
-    defaultAgentId,
-  ]);
+    setDisplayActionButton(currentDisplayActionButton);
+    setDefaultAgentId(currentDefaultAgentId);
+  }, [currentDefaultAgentId, currentDisplayActionButton]);
 
   return (
     <div className="flex flex-col space-y-8 pr-2.5">
@@ -114,38 +146,35 @@ export const Settings = () => {
       <div className="flex flex-col space-y-8">
         <Form {...form}>
           <form className="flex grow flex-col justify-between space-y-6 overflow-hidden">
-            <FormField
-              control={form.control}
-              name="defaultAgentId"
-              render={({ field }) => (
-                <FormItem>
-                  <Select
-                    defaultValue={field.value}
-                    name={field.name}
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <FormLabel>
-                      <FormattedMessage id="default-agent" />
-                    </FormLabel>
-                    <SelectContent>
-                      {agents?.map((agent) => (
-                        <SelectItem key={agent.id} value={agent.id}>
-                          {agent.id}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+            <FormItem>
+              <Select
+                defaultValue={defaultAgentId}
+                name="defaultAgentId"
+                onValueChange={(value) => {
+                  form.setValue('defaultAgentId', value);
+                }}
+                value={agents?.find((agent) => agent.id === defaultAgentId)?.id}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                </FormControl>
+                <FormLabel>
+                  <FormattedMessage id="default-agent" />
+                </FormLabel>
+                <SelectContent>
+                  {agents?.map((agent) => (
+                    <SelectItem key={agent.id} value={agent.id}>
+                      {agent.id}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormMessage />
+            </FormItem>
+
             <FormField
               control={form.control}
               disabled
@@ -202,6 +231,56 @@ export const Settings = () => {
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="displayActionButton"
+              render={() => (
+                <TextField
+                  classes={{
+                    input:
+                      'text-gray-80 text-base font-semibold tracking-widest caret-transparent',
+                  }}
+                  field={{
+                    value: formatShortcutKey(currentSidebarShorcut),
+                    name: 'shortcutSidebar',
+                    onKeyDown: (event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      const keyInfo = getKeyInfo(event);
+                      form.setValue('shortcutSidebar', keyInfo);
+                    },
+                  }}
+                  helperMessage={
+                    <FormattedMessage id="shortcut-key-description" />
+                  }
+                  label={<FormattedMessage id="shortcut-key" />}
+                />
+              )}
+            />
+            {!areShortcutKeysEqual(currentSidebarShorcut, sidebarShortcut) ? (
+              <div className="flex items-center gap-3">
+                <Button
+                  className="h-10 w-10 rounded-lg text-sm"
+                  disabled={!isValidKeyCombination(currentSidebarShorcut)}
+                  onClick={() => {
+                    setSidebarShortcut(currentSidebarShorcut);
+                  }}
+                  type="button"
+                >
+                  <FormattedMessage id="save" />
+                </Button>
+                <Button
+                  className="h-10 w-10 rounded-lg text-sm"
+                  onClick={() => {
+                    form.setValue('shortcutSidebar', sidebarShortcut);
+                  }}
+                  type="button"
+                  variant="outline"
+                >
+                  <FormattedMessage id="cancel" />
+                </Button>
+              </div>
+            ) : null}
           </form>
         </Form>
         <div className="flex gap-4">

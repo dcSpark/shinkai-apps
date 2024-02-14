@@ -28,6 +28,7 @@ import shinkaiLogo from '../../assets/icons/shinkai-min.svg';
 import { delay } from '../../helpers/misc';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
 import { useGlobalActionButtonChromeMessage } from '../../hooks/use-global-action-button-chrome-message';
+import useKeyboardShortcut from '../../hooks/use-keyboard-shortcut';
 import { langMessages, locale } from '../../lang/intl';
 import { OPEN_SIDEPANEL_DELAY_MS } from '../../service-worker/action';
 import { ServiceWorkerInternalMessageType } from '../../service-worker/communication/internal/types';
@@ -78,6 +79,7 @@ const sendCapture = async () => {
 };
 
 const ActionButton = () => {
+  useGlobalActionButtonChromeMessage();
   const displayActionButton = useSettings(
     (settingsStore) => settingsStore.displayActionButton,
   );
@@ -87,7 +89,10 @@ const ActionButton = () => {
   const setSideButtonOffset = useSettings(
     (settingsStore) => settingsStore.setSideButtonOffset,
   );
-  useGlobalActionButtonChromeMessage();
+  const sidebarShortcut = useSettings(
+    (settingsStore) => settingsStore.sidebarShortcut,
+  );
+  useKeyboardShortcut(sidebarShortcut, toggleSidePanel);
 
   const activationConstraint = {
     delay: 150,
@@ -142,23 +147,9 @@ const ActionButton = () => {
               </motion.button>
             </HoverCardTrigger>
             <HoverCardContent>
-              <kbd className="pointer-events-none flex w-full  select-none items-center rounded-md bg-gray-800 pl-2 font-mono text-sm font-medium text-gray-500 text-white">
-                <span>⌘</span>
-                <span>
-                  <svg
-                    className={'h-3 w-3'}
-                    fill="none"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    width="24"
-                  >
-                    <path
-                      d="M14.1995 12.343C13.4747 12.8201 12.6144 13.0486 11.7484 12.994C10.8824 12.9395 10.0576 12.6047 9.39845 12.0404C8.73931 11.476 8.28158 10.7126 8.09429 9.86531C7.907 9.01803 8.00031 8.13282 8.36015 7.34321C8.71999 6.5536 9.32684 5.90242 10.0892 5.48789C10.8515 5.07336 11.7279 4.91797 12.5863 5.04516C13.4447 5.17235 14.2384 5.57521 14.8478 6.19299C15.4571 6.81076 15.8491 7.60994 15.9645 8.46997C16.3295 10.262 16.4715 12.417 15.7575 14.368C14.9915 16.458 13.2935 18.172 10.2525 18.968C9.99906 19.0262 9.73293 18.9834 9.51052 18.8487C9.28811 18.7141 9.1269 18.498 9.06109 18.2465C8.99527 17.9949 9.03003 17.7276 9.15798 17.5013C9.28593 17.2749 9.49701 17.1073 9.74647 17.034C12.2065 16.39 13.3565 15.104 13.8795 13.68C14.0345 13.255 14.1395 12.806 14.1995 12.342"
-                      fill="currentColor"
-                    />
-                  </svg>
-                </span>
-              </kbd>
+              {/*<kbd className="pointer-events-none flex w-full select-none  items-center rounded-md bg-gray-800 px-2 py-1 font-mono text-xs font-medium tracking-widest text-gray-500 text-white">*/}
+              {/*  {formatShortcutKey(sidebarShortcut)}*/}
+              {/*</kbd>*/}
               {[
                 {
                   label: 'Send Capture',

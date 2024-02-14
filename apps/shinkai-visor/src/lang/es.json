@@ -103,5 +103,7 @@
   "disconnect-warning-link": "Exporta tu conexión",
   "disconnect-warning-link-description": "Si quieres usarla más tarde",
   "show-action-button-label": "Mostrar botón de acceso rápido de Shinkai",
-  "show-action-button-description": "El botón de acceso rápido se puede mover haciendo clic y manteniendo presionado."
+  "show-action-button-description": "El botón de acceso rápido se puede mover haciendo clic y manteniendo presionado.",
+  "shortcut-key": "Tecla de acceso rápido",
+  "shortcut-key-description": "Presiona la tecla de acceso rápido para abrir Shinkai Visor"
 }
