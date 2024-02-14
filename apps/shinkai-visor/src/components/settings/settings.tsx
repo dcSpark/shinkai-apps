@@ -31,7 +31,6 @@ import {
   formatShortcutKey,
   getKeyInfo,
   isValidKeyCombination,
-  ShorcutKey,
 } from '../../hooks/use-keyboard-shortcut';
 import { useAuth } from '../../store/auth/auth';
 import { useSettings } from '../../store/settings/settings';
@@ -235,7 +234,7 @@ export const Settings = () => {
             <FormField
               control={form.control}
               name="displayActionButton"
-              render={({ field }) => (
+              render={() => (
                 <TextField
                   classes={{
                     input:
