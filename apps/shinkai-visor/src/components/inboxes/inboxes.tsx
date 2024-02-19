@@ -128,16 +128,28 @@ export const Inboxes = () => {
                 </TabsList>
                 <TabsContent value="actives">
                   <div className="space-y-4" data-testid="inboxes-container">
-                    {activesInboxes?.map((inbox) => (
-                      <ActiveInboxItem inbox={inbox} key={inbox.inbox_id} />
-                    ))}
+                    {activesInboxes?.length ? (
+                      activesInboxes.map((inbox) => (
+                        <ActiveInboxItem inbox={inbox} key={inbox.inbox_id} />
+                      ))
+                    ) : (
+                      <p className="py-5 text-center">
+                        No actives inboxes found.{' '}
+                      </p>
+                    )}
                   </div>
                 </TabsContent>
                 <TabsContent value="archives">
                   <div className="space-y-4" data-testid="inboxes-container">
-                    {archivesInboxes?.map((inbox) => (
-                      <ArchiveInboxItem inbox={inbox} key={inbox.inbox_id} />
-                    ))}
+                    {archivesInboxes?.length ? (
+                      archivesInboxes.map((inbox) => (
+                        <ArchiveInboxItem inbox={inbox} key={inbox.inbox_id} />
+                      ))
+                    ) : (
+                      <p className="py-5 text-center">
+                        No archived inboxes found.{' '}
+                      </p>
+                    )}
                   </div>
                 </TabsContent>
               </Tabs>
