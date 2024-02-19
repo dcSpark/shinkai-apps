@@ -1,27 +1,17 @@
-import { ArchiveIcon } from '@radix-ui/react-icons';
-import { ShinkaiMessage } from '@shinkai_network/shinkai-message-ts/models';
-import {
-  getMessageContent,
-  isJobInbox,
-} from '@shinkai_network/shinkai-message-ts/utils';
-import { useArchiveJob } from '@shinkai_network/shinkai-node-state/lib/mutations/archiveJob/useArchiveJob';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
-import { formatDateToMonthAndDay } from '@shinkai_network/shinkai-node-state/lib/utils/date';
 import {
+  ActiveIcon,
+  ArchiveIcon,
   Button,
-  ChatBubbleIcon,
-  JobBubbleIcon,
   ScrollArea,
-  Tooltip,
-  TooltipContent,
-  TooltipPortal,
-  TooltipProvider,
-  TooltipTrigger,
-  useToast,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { Plus } from 'lucide-react';
-import { Fragment, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
@@ -30,6 +20,7 @@ import { EditInboxNameDialog } from '../edit-inbox-name-dialog/edit-inbox-name-d
 import { EmptyAgents } from '../empty-agents/empty-agents';
 import { EmptyInboxes } from '../empty-inboxes/empty-inboxes';
 import { Header } from '../header/header';
+import { ActiveInboxItem, ArchiveInboxItem } from './inbox-item';
 
 export const Inboxes = () => {
   const history = useHistory();
@@ -67,32 +58,7 @@ export const Inboxes = () => {
     profile_encryption_sk: auth?.profile_encryption_sk ?? '',
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
-  const { toast } = useToast();
-  const { mutateAsync: archiveJob } = useArchiveJob({
-    onSuccess: () => {
-      toast({
-        variant: 'success',
-        title: 'Your conversation has been archived',
-        duration: 3000,
-      });
-    },
-    onError: (error) => {
-      toast({
-        variant: 'destructive',
-        title: 'Error archiving job',
-        description: error.message,
-        duration: 3000,
-      });
-    },
-  });
 
-  const navigateToInbox = (inbox: {
-    inbox_id: string;
-    custom_name: string;
-    last_message?: ShinkaiMessage;
-  }) => {
-    history.push(`/inboxes/${encodeURIComponent(inbox.inbox_id)}`, { inbox });
-  };
   const onCreateJobClick = () => {
     history.push('/inboxes/create-job');
   };
@@ -123,6 +89,15 @@ export const Inboxes = () => {
   //   event.stopPropagation();
   //   openEditInboxNameDialog(inboxId, name);
   // };
+
+  const activesInboxes = useMemo(() => {
+    return inboxes?.filter((inbox) => !inbox.is_finished);
+  }, [inboxes]);
+
+  const archivesInboxes = useMemo(() => {
+    return inboxes?.filter((inbox) => inbox.is_finished);
+  }, [inboxes]);
+
   return (
     <div className="flex h-full flex-col justify-between space-y-3 overflow-hidden">
       <Header title={<FormattedMessage id="inbox.other" />} />
@@ -134,120 +109,38 @@ export const Inboxes = () => {
         <>
           <div className="flex grow flex-col overflow-hidden">
             <ScrollArea className="pr-4 [&>div>div]:!block">
-              <div className="space-y-4" data-testid="inboxes-container">
-                {inboxes?.map((inbox) => (
-                  <Fragment key={inbox.inbox_id}>
-                    <Button
-                      className="group h-14 w-full rounded-none bg-transparent px-1 hover:bg-transparent"
-                      onClick={() => navigateToInbox(inbox)}
-                      variant="ghost"
-                    >
-                      <div className="flex w-full items-center justify-between gap-4">
-                        <span className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-gray-300">
-                          {isJobInbox(decodeURIComponent(inbox.inbox_id)) ? (
-                            <JobBubbleIcon />
-                          ) : (
-                            <ChatBubbleIcon className="h-4 w-4 shrink-0" />
-                          )}
-                        </span>
-                        <div className="flex-auto overflow-hidden">
-                          <div className="flex flex-col space-y-1">
-                            <span className="truncate text-left text-white">
-                              {inbox.custom_name}
-                            </span>
-                            <div className="truncate text-left text-xs text-gray-100">
-                              {inbox.last_message &&
-                                getMessageContent(inbox.last_message)}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-end gap-1">
-                          <span className="shrink-0 self-start whitespace-nowrap text-end text-xs lowercase text-gray-100">
-                            {inbox.last_message?.external_metadata
-                              ?.scheduled_time &&
-                              formatDateToMonthAndDay(
-                                new Date(
-                                  inbox.last_message.external_metadata.scheduled_time,
-                                ),
-                              )}
-                          </span>
-                          <div className="translate-x-full transition duration-200 group-hover:translate-x-0">
-                            <TooltipProvider delayDuration={0}>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    className="hover:text-gray-80 shrink-0 bg-inherit hover:bg-inherit"
-                                    onClick={async (event) => {
-                                      event.stopPropagation();
-                                      await archiveJob({
-                                        nodeAddress: auth?.node_address ?? '',
-                                        shinkaiIdentity:
-                                          auth?.shinkai_identity ?? '',
-                                        profile: auth?.profile ?? '',
-                                        inboxId: inbox.inbox_id,
-                                        my_device_encryption_sk:
-                                          auth?.my_device_encryption_sk ?? '',
-                                        my_device_identity_sk:
-                                          auth?.my_device_identity_sk ?? '',
-                                        node_encryption_pk:
-                                          auth?.node_encryption_pk ?? '',
-                                        profile_encryption_sk:
-                                          auth?.profile_encryption_sk ?? '',
-                                        profile_identity_sk:
-                                          auth?.profile_identity_sk ?? '',
-                                      });
-                                      console.log('ckicked', {
-                                        nodeAddress: auth?.node_address ?? '',
-                                        shinkaiIdentity:
-                                          auth?.shinkai_identity ?? '',
-                                        profile: auth?.profile ?? '',
-                                        inboxId: inbox.inbox_id,
-                                        my_device_encryption_sk:
-                                          auth?.my_device_encryption_sk ?? '',
-                                        my_device_identity_sk:
-                                          auth?.my_device_identity_sk ?? '',
-                                        node_encryption_pk:
-                                          auth?.node_encryption_pk ?? '',
-                                        profile_encryption_sk:
-                                          auth?.profile_encryption_sk ?? '',
-                                        profile_identity_sk:
-                                          auth?.profile_identity_sk ?? '',
-                                      });
-                                    }}
-                                    size={'icon'}
-                                    variant={'ghost'}
-                                  >
-                                    <ArchiveIcon className="h-4 w-4" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipPortal>
-                                  <TooltipContent>
-                                    <p>Archive</p>
-                                  </TooltipContent>
-                                </TooltipPortal>
-                              </Tooltip>
-                            </TooltipProvider>
-                          </div>
-                        </div>
-                        {/*<Button*/}
-                        {/*  className="absolute right-0 top-0 hidden shrink-0 hover:bg-gray-500 group-hover:flex"*/}
-                        {/*  onClick={(event) =>*/}
-                        {/*    editInboxNameClick(*/}
-                        {/*      event,*/}
-                        {/*      inbox.inbox_id,*/}
-                        {/*      inbox.custom_name,*/}
-                        {/*    )*/}
-                        {/*  }*/}
-                        {/*  size={'icon'}*/}
-                        {/*  variant={'ghost'}*/}
-                        {/*>*/}
-                        {/*  <Edit3 className="h-4 w-4" />*/}
-                        {/*</Button>*/}
-                      </div>
-                    </Button>
-                  </Fragment>
-                ))}
-              </div>
+              <Tabs defaultValue="actives">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger
+                    className="flex items-center gap-1"
+                    value="actives"
+                  >
+                    <ActiveIcon className="h-4 w-4" />
+                    Actives
+                  </TabsTrigger>
+                  <TabsTrigger
+                    className="flex items-center gap-1"
+                    value="archives"
+                  >
+                    <ArchiveIcon className="h-4 w-4" />
+                    Archives
+                  </TabsTrigger>
+                </TabsList>
+                <TabsContent value="actives">
+                  <div className="space-y-4" data-testid="inboxes-container">
+                    {activesInboxes?.map((inbox) => (
+                      <ActiveInboxItem inbox={inbox} key={inbox.inbox_id} />
+                    ))}
+                  </div>
+                </TabsContent>
+                <TabsContent value="archives">
+                  <div className="space-y-4" data-testid="inboxes-container">
+                    {archivesInboxes?.map((inbox) => (
+                      <ArchiveInboxItem inbox={inbox} key={inbox.inbox_id} />
+                    ))}
+                  </div>
+                </TabsContent>
+              </Tabs>
             </ScrollArea>
           </div>
           <div className="fixed bottom-4 right-4" ref={dialContainerRef}>
