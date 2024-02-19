@@ -112,14 +112,14 @@ export const Inboxes = () => {
               <Tabs defaultValue="actives">
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger
-                    className="flex items-center gap-1"
+                    className="flex items-center gap-1.5"
                     value="actives"
                   >
                     <ActiveIcon className="h-4 w-4" />
                     Actives
                   </TabsTrigger>
                   <TabsTrigger
-                    className="flex items-center gap-1"
+                    className="flex items-center gap-1.5"
                     value="archives"
                   >
                     <ArchiveIcon className="h-4 w-4" />
@@ -134,7 +134,7 @@ export const Inboxes = () => {
                       ))
                     ) : (
                       <p className="py-5 text-center">
-                        No actives inboxes found.{' '}
+                        No actives conversations found.{' '}
                       </p>
                     )}
                   </div>
@@ -147,7 +147,7 @@ export const Inboxes = () => {
                       ))
                     ) : (
                       <p className="py-5 text-center">
-                        No archived inboxes found.{' '}
+                        No archived conversations found.{' '}
                       </p>
                     )}
                   </div>
