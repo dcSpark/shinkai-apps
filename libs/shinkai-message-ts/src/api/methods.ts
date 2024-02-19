@@ -490,7 +490,9 @@ export const submitInitialRegistrationNoCode = async (
 
 export const pingAllNodes = async (nodeAddress: string): Promise<string> => {
   try {
-    const response = await fetch(urlJoin(nodeAddress, '/ping_all'), { method: 'POST' });
+    const response = await fetch(urlJoin(nodeAddress, '/ping_all'), {
+      method: 'POST',
+    });
     await handleHttpError(response);
     const data = await response.json();
     return data.result;
@@ -693,6 +695,46 @@ export const getFileNames = async (
     return data;
   } catch (error) {
     console.error('Error updating inbox name:', error);
+    throw error;
+  }
+};
+export const archiveJob = async (
+  nodeAddress: string,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  inbox: string,
+  setupDetailsState: CredentialsPayload,
+): Promise<{ status: string }> => {
+  try {
+    const messageStr = ShinkaiMessageBuilderWrapper.archive_job(
+      setupDetailsState.profile_encryption_sk,
+      setupDetailsState.profile_identity_sk,
+      setupDetailsState.node_encryption_pk,
+      sender,
+      sender_subidentity,
+      receiver,
+      receiver_subidentity,
+      inbox,
+    );
+
+    const message = JSON.parse(messageStr);
+
+    const response = await fetch(
+      urlJoin(nodeAddress, '/v1/update_job_to_finished'),
+      {
+        method: 'POST',
+        body: JSON.stringify(message),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+
+    await handleHttpError(response);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error closing job:', error);
     throw error;
   }
 };

@@ -600,4 +600,35 @@ export class ShinkaiMessageBuilderWrapper {
 
     return message;
   }
+
+  static archive_job(
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+    receiver_subidentity: string,
+    inbox: string,
+  ): string {
+    const builder = new ShinkaiMessageBuilderWrapper(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key,
+    );
+
+    builder.message_raw_content('');
+    builder.message_schema_type(MessageSchemaType.APIFinishJob.toString());
+    builder.internal_metadata(
+      sender_subidentity,
+      receiver_subidentity,
+      inbox,
+      'None',
+    );
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
+
+    const message = builder.build_to_string();
+    return message;
+  }
 }
