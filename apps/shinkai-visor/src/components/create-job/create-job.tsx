@@ -94,6 +94,7 @@ export const CreateJob = () => {
     '.tsv',
     '.xlsx',
     '.jobkai',
+    '.vrkai',
   ];
   useEffect(() => {
     form.setValue('files', location?.state?.files || []);
