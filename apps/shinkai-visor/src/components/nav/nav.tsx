@@ -1,4 +1,4 @@
-import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
+import { useArchiveJob } from '@shinkai_network/shinkai-node-state/lib/mutations/archiveJob/useArchiveJob';
 import {
   AddAgentIcon,
   AgentIcon,
@@ -10,6 +10,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  ArchiveIcon,
   Button,
   ChatBubbleIcon,
   DisconnectIcon,
@@ -20,14 +21,21 @@ import {
   DropdownMenuTrigger,
   InboxIcon,
   JobBubbleIcon,
+  Tooltip,
+  TooltipContent,
+  TooltipPortal,
+  TooltipProvider,
+  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { ArrowLeft, Menu, Settings, X } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 
 import visorLogo from '../../assets/icons/visor.svg';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
+import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAuth } from '../../store/auth/auth';
 import { EditInboxNameDialog } from '../edit-inbox-name-dialog/edit-inbox-name-dialog';
 
@@ -42,34 +50,10 @@ enum MenuOption {
 }
 
 const DisplayInboxName = () => {
-  const auth = useAuth((state) => state.auth);
-  const location = useLocation();
-
-  const { inboxes } = useGetInboxes({
-    nodeAddress: auth?.node_address ?? '',
-    sender: auth?.shinkai_identity ?? '',
-    senderSubidentity: auth?.profile ?? '',
-    // Assuming receiver and target_shinkai_name_profile are the same as sender
-    receiver: auth?.shinkai_identity ?? '',
-    targetShinkaiNameProfile: `${auth?.shinkai_identity}/${auth?.profile}`,
-    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-    node_encryption_pk: auth?.node_encryption_pk ?? '',
-    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-    profile_identity_sk: auth?.profile_identity_sk ?? '',
-  });
-
+  const currentInbox = useGetCurrentInbox();
   const [isEditInboxNameDialogOpened, setIsEditInboxNameDialogOpened] =
     useState<boolean>(false);
 
-  const currentInbox = useMemo(() => {
-    const inboxId = location.pathname.split('/')?.[2];
-    const decodedInboxId = decodeURIComponent(inboxId);
-    const currentInbox = inboxes.find(
-      (inbox) => decodedInboxId === inbox.inbox_id,
-    );
-    return currentInbox;
-  }, [inboxes, location.pathname]);
   return (
     <>
       <Button
@@ -91,6 +75,53 @@ const DisplayInboxName = () => {
         open={isEditInboxNameDialogOpened}
       />
     </>
+  );
+};
+
+const ArchiveJobButton = () => {
+  const currentInbox = useGetCurrentInbox();
+  const auth = useAuth((state) => state.auth);
+  const { mutateAsync: archiveJob } = useArchiveJob();
+
+  const handleArchiveJob = async () => {
+    if (!currentInbox) return;
+    await archiveJob({
+      nodeAddress: auth?.node_address ?? '',
+      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      profile: auth?.profile ?? '',
+      inboxId: currentInbox.inbox_id,
+      my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+      my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+    });
+  };
+  return (
+    <TooltipProvider delayDuration={0}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            className={cn(
+              'absolute right-10 shrink-0 bg-inherit hover:bg-gray-400',
+              currentInbox?.is_finished &&
+                'opacity-70 hover:bg-inherit hover:text-white ',
+            )}
+            disabled={currentInbox?.is_finished}
+            onClick={handleArchiveJob}
+            size={'icon'}
+            variant={'ghost'}
+          >
+            <ArchiveIcon className="h-4 w-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipPortal>
+          <TooltipContent sideOffset={0}>
+            <p>{currentInbox?.is_finished ? 'Archived' : 'Archive'}</p>
+          </TooltipContent>
+        </TooltipPortal>
+      </Tooltip>
+    </TooltipProvider>
   );
 };
 
@@ -188,7 +219,7 @@ export default function NavBar() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      <div className="flex items-center justify-between">
+      <div className="relative flex items-center justify-between">
         <div
           className={`flex-none ${
             isRootPage || history.length <= 1 ? 'invisible' : ''
@@ -207,7 +238,6 @@ export default function NavBar() {
             src={srcUrlResolver(visorLogo)}
           />
         )}
-
         {auth && (
           <DropdownMenu
             modal={false}
@@ -304,6 +334,7 @@ export default function NavBar() {
             </DropdownMenuContent>
           </DropdownMenu>
         )}
+        {isInboxPage && <ArchiveJobButton />}
       </div>
     </nav>
   );

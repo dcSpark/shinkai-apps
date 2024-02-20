@@ -1,5 +1,6 @@
 import type { UseMutationOptions } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 import { FunctionKey, queryClient } from '../../constants';
 import { archiveJob } from '.';
@@ -15,9 +16,16 @@ export const useArchiveJob = (options?: Options) => {
       queryClient.invalidateQueries({
         queryKey: [FunctionKey.GET_INBOXES],
       });
+
+      toast.success('Your conversation has been archived');
       if (options?.onSuccess) {
         options.onSuccess(response, variables, context);
       }
+    },
+    onError: (error) => {
+      toast.error('Error archiving job', {
+        description: error.message,
+      });
     },
   });
 };

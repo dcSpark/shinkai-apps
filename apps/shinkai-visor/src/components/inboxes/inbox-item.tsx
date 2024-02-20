@@ -125,16 +125,7 @@ const InboxItem = ({
 const ActiveInboxItem = ({ inbox }: { inbox: SmartInbox }) => {
   const auth = useAuth((state) => state.auth);
 
-  const { mutateAsync: archiveJob } = useArchiveJob({
-    onSuccess: () => {
-      toast.success('Your conversation has been archived');
-    },
-    onError: (error) => {
-      toast.error('Error archiving job', {
-        description: error.message,
-      });
-    },
-  });
+  const { mutateAsync: archiveJob } = useArchiveJob();
 
   const handleArchiveJob = async (
     event: React.MouseEvent,
