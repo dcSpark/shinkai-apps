@@ -18,10 +18,10 @@ import {
   TooltipPortal,
   TooltipProvider,
   TooltipTrigger,
-  useToast,
 } from '@shinkai_network/shinkai-ui';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import { useAuth } from '../../store/auth/auth';
 
@@ -125,21 +125,13 @@ const InboxItem = ({
 const ActiveInboxItem = ({ inbox }: { inbox: SmartInbox }) => {
   const auth = useAuth((state) => state.auth);
 
-  const { toast } = useToast();
   const { mutateAsync: archiveJob } = useArchiveJob({
     onSuccess: () => {
-      toast({
-        variant: 'success',
-        title: 'Your conversation has been archived',
-        duration: 3000,
-      });
+      toast.success('Your conversation has been archived');
     },
     onError: (error) => {
-      toast({
-        variant: 'destructive',
-        title: 'Error archiving job',
+      toast.error('Error archiving job', {
         description: error.message,
-        duration: 3000,
       });
     },
   });
