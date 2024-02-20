@@ -3,6 +3,7 @@ import {
   SmartInbox,
 } from '@shinkai_network/shinkai-message-ts/models';
 import {
+  extractErrorPropertyOrContent,
   getMessageContent,
   isJobInbox,
 } from '@shinkai_network/shinkai-message-ts/utils';
@@ -65,7 +66,11 @@ const InboxItem = ({
               {inbox.custom_name}
             </span>
             <div className="truncate text-left text-xs text-gray-100">
-              {inbox.last_message && getMessageContent(inbox.last_message)}
+              {inbox.last_message &&
+                extractErrorPropertyOrContent(
+                  getMessageContent(inbox.last_message),
+                  'error_message',
+                )}
             </div>
           </div>
         </div>
