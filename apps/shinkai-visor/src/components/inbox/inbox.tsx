@@ -1,4 +1,5 @@
 import {
+  extractErrorPropertyOrContent,
   extractJobIdFromInbox,
   getOtherPersonIdentity,
   isJobInbox as checkIsJobInbox,
@@ -18,14 +19,26 @@ import {
   Skeleton,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { Loader2, Terminal } from 'lucide-react';
-import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
+import { AlertCircle, Loader2, Terminal } from 'lucide-react';
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
 import { useAuth } from '../../store/auth/auth';
 import { InboxInput } from '../inbox-input/inbox-input';
 import { Message } from '../message/message';
+
+enum ErrorCodes {
+  VectorResource = 'VectorResource',
+  ShinkaiBackendInferenceLimitReached = 'ShinkaiBackendInferenceLimitReached',
+}
 
 export const Inbox = () => {
   const { inboxId } = useParams<{ inboxId: string }>();
@@ -167,6 +180,16 @@ export const Inbox = () => {
     }
   }, [data?.pages, auth, isJobProcessing]);
 
+  const isLimitReachedErrorLastMessage = useMemo(() => {
+    const lastMessage = data?.pages?.at(-1)?.at(-1);
+    if (!lastMessage) return;
+    const errorCode = extractErrorPropertyOrContent(
+      lastMessage.content,
+      'error',
+    );
+    return errorCode === ErrorCodes.ShinkaiBackendInferenceLimitReached;
+  }, [data?.pages]);
+
   return (
     <div className="flex h-full flex-col justify-between space-y-3">
       <ScrollArea
@@ -238,7 +261,9 @@ export const Inbox = () => {
                             return (
                               <div
                                 className={cn('pl-2')}
-                                data-testid={`message-${message.isLocal ? 'local' : 'remote'}-${message.hash}`}
+                                data-testid={`message-${
+                                  message.isLocal ? 'local' : 'remote'
+                                }-${message.hash}`}
                                 key={`${index}-${message.scheduledTime}`}
                               >
                                 <Message message={message} />
@@ -270,8 +295,21 @@ export const Inbox = () => {
           <Terminal className="h-4 w-4" />
         </Alert>
       )}
+      {isLimitReachedErrorLastMessage && (
+        <Alert className="shadow-lg" variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle className="text-sm">
+            <FormattedMessage id="limit-reached" />
+          </AlertTitle>
+          <AlertDescription className="text-gray-80 text-xs">
+            <div className="flex flex-row items-center space-x-2">
+              <FormattedMessage id="limit-reached-description" />
+            </div>
+          </AlertDescription>
+        </Alert>
+      )}
       <InboxInput
-        disabled={isSendingMessage}
+        disabled={isSendingMessage || isLimitReachedErrorLastMessage}
         loading={isJobProcessing}
         onSubmit={(value) => submitSendMessage(value)}
       />

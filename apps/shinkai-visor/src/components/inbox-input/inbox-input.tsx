@@ -61,7 +61,7 @@ export const InboxInput = (props: InboxInputProps) => {
               >
                 <FormItem>
                   <MessageEditor
-                    disabled={props.loading}
+                    disabled={props.loading || props.disabled}
                     isLoading={props.loading}
                     onChange={field.onChange}
                     onSubmit={form.handleSubmit(submit)}

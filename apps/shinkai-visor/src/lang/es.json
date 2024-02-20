@@ -105,5 +105,7 @@
   "show-action-button-label": "Mostrar botón de acceso rápido de Shinkai",
   "show-action-button-description": "El botón de acceso rápido se puede mover haciendo clic y manteniendo presionado.",
   "shortcut-key": "Tecla de acceso rápido",
-  "shortcut-key-description": "Presiona la tecla de acceso rápido para abrir Shinkai Visor"
+  "shortcut-key-description": "Presiona la tecla de acceso rápido para abrir Shinkai Visor",
+  "limit-reached": "Límite alcanzado",
+  "limit-reached-description": "Has utilizado todas tus consultas para el mes en este modelo/agente. Por favor, inicia un nuevo chat con otro agente."
 }

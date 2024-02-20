@@ -31,7 +31,7 @@ export const getMessageContent = (message: ShinkaiMessage): string => {
         try {
           return JSON.parse(
             message.body.unencrypted.message_data.unencrypted
-              .message_raw_content
+              .message_raw_content,
           )?.content;
         } catch (e) {
           // fallback to raw content even if it's a job mesage
@@ -51,7 +51,9 @@ export const getMessageContent = (message: ShinkaiMessage): string => {
   return message.body?.encrypted.content || '';
 };
 
-export const getMessageFilesInbox = (message: ShinkaiMessage): string | undefined => {
+export const getMessageFilesInbox = (
+  message: ShinkaiMessage,
+): string | undefined => {
   // unnencrypted content
   if (message.body && 'unencrypted' in message.body) {
     if ('unencrypted' in message.body.unencrypted.message_data) {
@@ -63,7 +65,7 @@ export const getMessageFilesInbox = (message: ShinkaiMessage): string | undefine
         try {
           const parsedMessage = JSON.parse(
             message.body.unencrypted.message_data.unencrypted
-              .message_raw_content
+              .message_raw_content,
           );
           return parsedMessage?.files_inbox;
         } catch (e) {
@@ -80,7 +82,35 @@ export const isLocalMessage = (
   myNodeIdentity: string,
   myProfile: string,
 ): boolean => {
-  const messageNameWrapper = ShinkaiNameWrapper.from_shinkai_message_sender(message);
-  return (!messageNameWrapper.get_subidentity_type || messageNameWrapper.get_subidentity_type === 'None' || messageNameWrapper.get_subidentity_type === 'device') &&
-    messageNameWrapper.get_node_name === myNodeIdentity && messageNameWrapper.get_profile_name === myProfile;
+  // if the message does not have a sender value, it's a error message
+  if (
+    message?.body &&
+    'unencrypted' in message.body &&
+    message.external_metadata?.sender === '' &&
+    message.body.unencrypted.internal_metadata.sender_subidentity === ''
+  ) {
+    return false;
+  }
+
+  const messageNameWrapper =
+    ShinkaiNameWrapper.from_shinkai_message_sender(message);
+
+  return (
+    (!messageNameWrapper.get_subidentity_type ||
+      messageNameWrapper.get_subidentity_type === 'None' ||
+      messageNameWrapper.get_subidentity_type === 'device') &&
+    messageNameWrapper.get_node_name === myNodeIdentity &&
+    messageNameWrapper.get_profile_name === myProfile
+  );
+};
+
+export const extractErrorPropertyOrContent = (
+  content: string,
+  property: 'error' | 'error_message',
+) => {
+  try {
+    return JSON.parse(content)?.[property];
+  } catch (e) {
+    return content;
+  }
 };

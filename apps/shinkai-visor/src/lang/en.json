@@ -107,5 +107,7 @@
   "show-action-button-label": "Show Shinkai Quick Access Button",
   "show-action-button-description": "The Quick Access Button can be moved by clicking and holding.",
   "shortcut-key": "Shortcut Key",
-  "shortcut-key-description": "Modify the shortcut key to launch sidebar"
+  "shortcut-key-description": "Modify the shortcut key to launch sidebar",
+  "limit-reached": "Limit Reached",
+  "limit-reached-description": "You've used all of your queries for the month on this model/agent. Please start a new chat with another agent."
 }
