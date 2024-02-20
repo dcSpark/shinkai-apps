@@ -3,6 +3,7 @@
 import { JobCreationWrapper } from './JobCreationWrapper';
 
 const jobCreationJson = `{
+    "is_hidden": false,
     "scope": {
         "vector_fs": [],
         "local": []
@@ -38,6 +39,7 @@ describe('JobCreationWrapper', () => {
     const jsonString = wrapper.to_json_str();
 
     expect(JSON.parse(jsonString)).toEqual({
+      is_hidden: false,
       scope: {
         vector_fs: [],
         local: [],
