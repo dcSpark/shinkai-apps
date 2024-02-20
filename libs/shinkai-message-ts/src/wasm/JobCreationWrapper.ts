@@ -4,8 +4,8 @@ import { JobCreationWrapper as JobCreationWrapperWASM } from '../pkg/shinkai_mes
 export class JobCreationWrapper {
   private wasmWrapper: JobCreationWrapperWASM;
 
-  constructor(scope_js: any) {
-    this.wasmWrapper = new JobCreationWrapperWASM(scope_js);
+  constructor(scope_js: any, is_hidden = false) {
+    this.wasmWrapper = new JobCreationWrapperWASM(scope_js, is_hidden);
   }
 
   to_jsvalue(): any {

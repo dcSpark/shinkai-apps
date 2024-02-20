@@ -19,6 +19,7 @@ export const createJob = async ({
   content,
   files_inbox,
   files,
+  is_hidden,
   my_device_encryption_sk,
   my_device_identity_sk,
   node_encryption_pk,
@@ -37,6 +38,7 @@ export const createJob = async ({
   const jobId = await createJobApi(
     nodeAddress,
     scope.to_jsvalue(),
+    is_hidden == null ? false : is_hidden,
     shinkaiIdentity,
     profile,
     receiver,
