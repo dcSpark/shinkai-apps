@@ -21,7 +21,6 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { toast } from 'sonner';
 
 import { useAuth } from '../../store/auth/auth';
 
