@@ -10,6 +10,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  ArchivedIcon,
   ArchiveIcon,
   Button,
   ChatBubbleIcon,
@@ -105,14 +106,18 @@ const ArchiveJobButton = () => {
             className={cn(
               'absolute right-10 shrink-0 bg-inherit hover:bg-gray-400',
               currentInbox?.is_finished &&
-                'opacity-70 hover:bg-inherit hover:text-white ',
+                'text-gray-80 hover:bg-inherit hover:text-white ',
             )}
             disabled={currentInbox?.is_finished}
             onClick={handleArchiveJob}
             size={'icon'}
             variant={'ghost'}
           >
-            <ArchiveIcon className="h-4 w-4" />
+            {currentInbox?.is_finished ? (
+              <ArchivedIcon className="h-4 w-4" />
+            ) : (
+              <ArchiveIcon className="h-4 w-4" />
+            )}
           </Button>
         </TooltipTrigger>
         <TooltipPortal>
