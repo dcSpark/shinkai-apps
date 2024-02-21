@@ -69,6 +69,34 @@ test('ShinkaiMessageBuilderWrapper should construct correctly and create a new a
   expect(typeof ackMessage).toBe('string');
 });
 
+test('ShinkaiMessageBuilderWrapper should construct correctly and create a new ack message for sepolia-shinkai', async () => {
+  const keys = await generateKeys();
+
+  const messageBuilder = new ShinkaiMessageBuilderWrapper(
+    keys.my_encryption_sk_string,
+    keys.my_identity_sk_string,
+    keys.receiver_public_key_string,
+  );
+
+  expect(messageBuilder).toBeTruthy();
+  expect(messageBuilder).toBeInstanceOf(ShinkaiMessageBuilderWrapper);
+
+  const sender = '@@sender_node.sepolia-shinkai';
+  const receiver = '@@receiver_node.sepolia-shinkai';
+
+  const ackMessage = ShinkaiMessageBuilderWrapper.ack_message(
+    keys.my_encryption_sk_string,
+    keys.my_identity_sk_string,
+    keys.receiver_public_key_string,
+    sender,
+    '',
+    receiver,
+  );
+
+  expect(ackMessage).toBeTruthy();
+  expect(typeof ackMessage).toBe('string');
+});
+
 test('ShinkaiMessageBuilderWrapper should set body content correctly', async () => {
   const keys = await generateKeys();
 

@@ -505,6 +505,7 @@ export const pingAllNodes = async (nodeAddress: string): Promise<string> => {
 export const createJob = async (
   nodeAddress: string,
   scope: any,
+  is_hidden: boolean,
   sender: string,
   sender_subidentity: string,
   receiver: string,
@@ -517,6 +518,7 @@ export const createJob = async (
       setupDetailsState.profile_identity_sk,
       setupDetailsState.node_encryption_pk,
       scope,
+      is_hidden,
       sender,
       sender_subidentity,
       receiver,

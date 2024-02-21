@@ -9,6 +9,7 @@ export type CreateJobInput = JobCredentialsPayload & {
   content: string;
   files_inbox: string;
   files?: File[];
+  is_hidden?: boolean;
 };
 
 export type CreateJobOutput = {

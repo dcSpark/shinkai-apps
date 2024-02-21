@@ -8,6 +8,10 @@ test("ShinkaiNameWrapper", () => {
     "@@alice.shinkai/profileName",
     "@@alice.shinkai/profileName/agent/myChatGPTAgent",
     "@@alice.shinkai/profileName/device/myPhone",
+    "@@alice.sepolia-shinkai",
+    "@@alice.sepolia-shinkai/profileName",
+    "@@alice.sepolia-shinkai/profileName/agent/myChatGPTAgent",
+    "@@alice.sepolia-shinkai/profileName/device/myPhone",
   ];
 
   const invalidNames = [
@@ -15,6 +19,7 @@ test("ShinkaiNameWrapper", () => {
     "@@al!ce.shinkai",
     "@@alice.shinkai//",
     "@@node1.shinkai/profile_1.shinkai",
+    "@@alice.sepolia--shinkai",
   ];
 
   for (const name of validNames) {
