@@ -45,7 +45,12 @@ export const CreateInbox = () => {
   });
   const submit = (values: FormSchemaType) => {
     if (!auth) return;
-    const [receiver, ...rest] = values.receiverIdentity.split('/');
+    const { shinkai_identity, profile, registration_name } = auth ?? {};
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [_, identity] = shinkai_identity?.split('.') ?? [];
+    const defaultReceiverIdentity = `@@${values.receiverIdentity}.${identity}/${profile}/device/${registration_name}`;
+
+    const [receiver, ...rest] = defaultReceiverIdentity.split('/');
     createChat({
       nodeAddress: auth?.node_address ?? '',
       sender: auth.shinkai_identity,
@@ -65,10 +70,14 @@ export const CreateInbox = () => {
     if (!auth) {
       return;
     }
-    const defaultReceiverIdentity = `${auth.shinkai_identity}/${auth.profile}/device/${auth.registration_name}`;
-    form.setValue('receiverIdentity', defaultReceiverIdentity);
+    const receiverIdentity = auth.shinkai_identity.replace(/@/g, '');
+    const [identity] = receiverIdentity.split('.');
+    form.setValue('receiverIdentity', identity);
   }, [auth, form]);
 
+  const endAdornment = auth
+    ? `.${auth.shinkai_identity.split('.')[1]}/${auth.profile}`
+    : '';
   return (
     <div className="flex h-full flex-col space-y-8">
       <Header title={<FormattedMessage id="create-inbox" />} />
@@ -83,8 +92,10 @@ export const CreateInbox = () => {
               name="receiverIdentity"
               render={({ field }) => (
                 <TextField
+                  endAdornment={endAdornment}
                   field={field}
                   label={<FormattedMessage id="message-receiver" />}
+                  startAdornment={'@@'}
                 />
               )}
             />
@@ -101,6 +112,14 @@ export const CreateInbox = () => {
                     <Textarea
                       autoFocus
                       className="resize-none"
+                      onKeyDown={(event) => {
+                        if (
+                          event.key === 'Enter' &&
+                          (event.metaKey || event.ctrlKey)
+                        ) {
+                          form.handleSubmit(submit)();
+                        }
+                      }}
                       placeholder={intl.formatMessage({
                         id: 'tmwtd',
                       })}
