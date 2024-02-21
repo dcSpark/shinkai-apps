@@ -84,7 +84,9 @@ export const EditInboxNameDialog = ({
             </span>
             Name
           </DialogTitle>
-          <DialogDescription className="truncate">{inboxId}</DialogDescription>
+          <DialogDescription className="truncate">
+            {name ?? inboxId}
+          </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
