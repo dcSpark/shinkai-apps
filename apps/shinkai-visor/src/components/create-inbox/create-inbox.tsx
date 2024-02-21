@@ -11,7 +11,6 @@ import {
   Textarea,
   TextField,
 } from '@shinkai_network/shinkai-ui';
-import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
@@ -65,15 +64,6 @@ export const CreateInbox = () => {
       profile_identity_sk: auth.profile_identity_sk,
     });
   };
-
-  useEffect(() => {
-    if (!auth) {
-      return;
-    }
-    const receiverIdentity = auth.shinkai_identity.replace(/@/g, '');
-    const [identity] = receiverIdentity.split('.');
-    form.setValue('receiverIdentity', identity);
-  }, [auth, form]);
 
   const endAdornment = auth
     ? `.${auth.shinkai_identity.split('.')[1]}/${auth.profile}`
