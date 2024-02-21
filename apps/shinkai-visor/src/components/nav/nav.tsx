@@ -33,6 +33,7 @@ import { ArrowLeft, Menu, Settings, X } from 'lucide-react';
 import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useHistory, useLocation } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import visorLogo from '../../assets/icons/visor.svg';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
@@ -82,7 +83,16 @@ const DisplayInboxName = () => {
 const ArchiveJobButton = () => {
   const currentInbox = useGetCurrentInbox();
   const auth = useAuth((state) => state.auth);
-  const { mutateAsync: archiveJob } = useArchiveJob();
+  const { mutateAsync: archiveJob } = useArchiveJob({
+    onSuccess: () => {
+      toast.success('Your conversation has been archived');
+    },
+    onError: (error) => {
+      toast.error('Error archiving job', {
+        description: error.message,
+      });
+    },
+  });
 
   const handleArchiveJob = async () => {
     if (!currentInbox) return;
