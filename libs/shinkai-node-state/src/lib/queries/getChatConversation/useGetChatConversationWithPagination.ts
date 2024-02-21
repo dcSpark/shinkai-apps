@@ -5,11 +5,11 @@ import { FunctionKey } from '../../constants';
 import { getChatConversation } from '.';
 import { GetChatConversationInput, GetChatConversationOutput } from './types';
 
-export const CONVERSATION_PAGINATION_LIMIT = 10;
+export const CONVERSATION_PAGINATION_LIMIT = 12;
 export const CONVERSATION_PAGINATION_REFETCH = 5000;
 
 export const useGetChatConversationWithPagination = (
-  input: GetChatConversationInput
+  input: GetChatConversationInput,
 ) => {
   const response = useInfiniteQuery<
     GetChatConversationOutput,
@@ -30,6 +30,7 @@ export const useGetChatConversationWithPagination = (
       const firstMessage = pages?.[0]?.[0];
       if (!firstMessage) return;
       const firstMessageKey = `${firstMessage.scheduledTime}:::${firstMessage.hash}`;
+      console.log(firstMessage, 'firstMessage', firstMessageKey);
       return { lastKey: firstMessageKey };
     },
     refetchInterval: ({ state }) => {

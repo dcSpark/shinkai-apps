@@ -28,6 +28,15 @@ export const getChatConversation = async ({
   profile_identity_sk,
   node_encryption_pk,
 }: GetChatConversationInput): Promise<GetChatConversationOutput> => {
+  console.log(
+    'fetching message ===>',
+    lastKey,
+    count,
+    inboxId,
+    nodeAddress,
+    profile,
+    shinkaiIdentity,
+  );
   const data: ShinkaiMessage[] = await getLastMessagesFromInbox(
     nodeAddress,
     inboxId,
