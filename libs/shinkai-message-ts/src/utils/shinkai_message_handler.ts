@@ -82,16 +82,6 @@ export const isLocalMessage = (
   myNodeIdentity: string,
   myProfile: string,
 ): boolean => {
-  // if the message does not have a sender value, it's a error message
-  if (
-    message?.body &&
-    'unencrypted' in message.body &&
-    message.external_metadata?.sender === '' &&
-    message.body.unencrypted.internal_metadata.sender_subidentity === ''
-  ) {
-    return false;
-  }
-
   const messageNameWrapper =
     ShinkaiNameWrapper.from_shinkai_message_sender(message);
 
