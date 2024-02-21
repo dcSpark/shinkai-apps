@@ -44,7 +44,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         />
         {startAdornment ? (
           <Badge
-            className="absolute left-4 top-[30px]"
+            className="peer/adornment adornment absolute left-4 top-[30px]"
             ref={startAdornmentRef}
             variant="inputAdornment"
           >
@@ -53,7 +53,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         ) : null}
         {endAdornment ? (
           <Badge
-            className="absolute right-4 top-[30px]"
+            className="peer/adornment adornment absolute right-4 top-[30px]"
             ref={endAdornmentRef}
             variant="inputAdornment"
           >

@@ -99,6 +99,8 @@ const FormLabel = React.forwardRef<
         'peer-focus:text-xs peer-focus:leading-tight peer-focus:text-gray-100 peer-disabled:text-gray-100 peer-disabled:peer-placeholder-shown:text-gray-100/80',
         // select
         'peer-data-[placeholder]/select:top-5 peer-data-[placeholder]/select:text-base',
+        // adornment
+        'peer-[.adornment]/adornment:text-xs',
         error && 'text-red-500 dark:text-red-900',
         className,
       )}
