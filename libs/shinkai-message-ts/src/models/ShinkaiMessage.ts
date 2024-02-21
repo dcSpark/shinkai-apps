@@ -61,3 +61,14 @@ export type SmartInbox = {
   last_message?: ShinkaiMessage;
   is_finished: boolean;
 };
+
+export type CreateChatInboxResponse = {
+  status: string;
+  message: string;
+  data: {
+    message_id: string;
+    parent_message_id: string | null;
+    inbox: string;
+    scheduled_time: string;
+  };
+};

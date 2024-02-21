@@ -154,7 +154,9 @@ export default function NavBar() {
     '/nodes/connect/method/quick-start',
   ].includes(location.pathname);
 
-  const isInboxPage = location.pathname.includes('/inboxes/job_inbox');
+  const isInboxPage = location.pathname.includes('/inboxes');
+  const isJobInbox = location.pathname.includes('/inboxes/job_inbox');
+
   const [isConfirmLogoutDialogOpened, setIsConfirmLogoutDialogOpened] =
     useState(false);
 
@@ -349,7 +351,7 @@ export default function NavBar() {
             </DropdownMenuContent>
           </DropdownMenu>
         )}
-        {isInboxPage && <ArchiveJobButton />}
+        {isJobInbox && <ArchiveJobButton />}
       </div>
     </nav>
   );

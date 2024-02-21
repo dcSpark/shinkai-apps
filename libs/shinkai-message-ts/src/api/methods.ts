@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   AgentCredentialsPayload,
+  CreateChatInboxResponse,
   CredentialsPayload,
   JobCredentialsPayload,
   LastMessagesFromInboxCredentialsPayload,
@@ -56,7 +57,7 @@ export const createChatWithMessage = async (
   receiver_subidentity: string,
   text_message: string,
   setupDetailsState: CredentialsPayload,
-): Promise<{ inboxId: string; message: ShinkaiMessage }> => {
+): Promise<{ inboxId: string }> => {
   const senderShinkaiName = new ShinkaiNameWrapper(
     sender + '/' + sender_subidentity,
   );
@@ -95,14 +96,15 @@ export const createChatWithMessage = async (
       body: JSON.stringify(message),
       headers: { 'Content-Type': 'application/json' },
     });
+    const data: CreateChatInboxResponse = await response.json();
 
     await handleHttpError(response);
 
     if (message.body && 'unencrypted' in message.body) {
       const inboxId = message.body.unencrypted.internal_metadata.inbox;
-      return { inboxId, message };
+      return { inboxId };
     } else {
-      throw new Error('message body is null or encrypted');
+      return { inboxId: data.data.inbox };
     }
   } catch (error) {
     console.error('Error sending text message:', error);
@@ -118,7 +120,7 @@ export const sendTextMessageWithInbox = async (
   text_message: string,
   inbox_name: string,
   setupDetailsState: CredentialsPayload,
-): Promise<{ inboxId: string; message: ShinkaiMessage }> => {
+): Promise<{ inboxId: string }> => {
   try {
     // Note(Nico): we are forcing to send messages from profiles by removing device related stuff
     const senderShinkaiName = new ShinkaiNameWrapper(
@@ -146,12 +148,15 @@ export const sendTextMessageWithInbox = async (
       body: JSON.stringify(message),
       headers: { 'Content-Type': 'application/json' },
     });
+    const data: CreateChatInboxResponse = await response.json();
+
     await handleHttpError(response);
+
     if (message.body && 'unencrypted' in message.body) {
       const inboxId = message.body.unencrypted.internal_metadata.inbox;
-      return { inboxId, message };
+      return { inboxId };
     } else {
-      throw new Error('message body is null or encrypted');
+      return { inboxId: data.data.inbox };
     }
   } catch (error) {
     console.error('Error sending text message:', error);
