@@ -1,22 +1,24 @@
-import { WasmEncryptionMethod } from "../pkg/shinkai_message_wasm";
+import { WasmEncryptionMethod } from '../pkg/shinkai_message_wasm';
 
 export const TSEncryptionMethod = {
-  DiffieHellmanChaChaPoly1305: WasmEncryptionMethod.DiffieHellmanChaChaPoly1305(),
+  DiffieHellmanChaChaPoly1305:
+    WasmEncryptionMethod.DiffieHellmanChaChaPoly1305(),
   None: WasmEncryptionMethod.None(),
-}
+};
 
 export enum MessageSchemaType {
-  JobCreationSchema = "JobCreationSchema",
-  JobMessageSchema = "JobMessageSchema",
-  PreMessageSchema = "PreMessageSchema",
-  CreateRegistrationCode = "CreateRegistrationCode",
-  UseRegistrationCode = "UseRegistrationCode",
-  APIGetMessagesFromInboxRequest = "APIGetMessagesFromInboxRequest",
-  APIReadUpToTimeRequest = "APIReadUpToTimeRequest",
-  APIAddAgentRequest = "APIAddAgentRequest",
-  TextContent = "TextContent",
-  SymmetricKeyExchange = "SymmetricKeyExchange",
-  Empty = "",
+  JobCreationSchema = 'JobCreationSchema',
+  JobMessageSchema = 'JobMessageSchema',
+  PreMessageSchema = 'PreMessageSchema',
+  CreateRegistrationCode = 'CreateRegistrationCode',
+  UseRegistrationCode = 'UseRegistrationCode',
+  APIGetMessagesFromInboxRequest = 'APIGetMessagesFromInboxRequest',
+  APIReadUpToTimeRequest = 'APIReadUpToTimeRequest',
+  APIAddAgentRequest = 'APIAddAgentRequest',
+  TextContent = 'TextContent',
+  SymmetricKeyExchange = 'SymmetricKeyExchange',
+  APIFinishJob = 'APIFinishJob',
+  Empty = '',
 }
 
 export interface JobScope {
@@ -39,9 +41,9 @@ export interface JobToolCall {
 }
 
 export enum JobRecipient {
-  SelfNode = "SelfNode",
-  User = "User",
-  ExternalIdentity = "ExternalIdentity",
+  SelfNode = 'SelfNode',
+  User = 'User',
+  ExternalIdentity = 'ExternalIdentity',
 }
 
 export interface JobPreMessage {

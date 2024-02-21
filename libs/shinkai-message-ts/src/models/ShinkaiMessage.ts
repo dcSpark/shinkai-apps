@@ -1,4 +1,4 @@
-import { MessageSchemaType, TSEncryptionMethod } from "./SchemaTypes";
+import { MessageSchemaType, TSEncryptionMethod } from './SchemaTypes';
 
 export interface InternalMetadata {
   sender_subidentity: string;
@@ -24,7 +24,9 @@ export interface ShinkaiData {
   message_content_schema: MessageSchemaType;
 }
 
-export type MessageData = { encrypted: EncryptedShinkaiData } | { unencrypted: ShinkaiData };
+export type MessageData =
+  | { encrypted: EncryptedShinkaiData }
+  | { unencrypted: ShinkaiData };
 
 export interface EncryptedShinkaiBody {
   content: string;
@@ -35,7 +37,9 @@ export interface ShinkaiBody {
   internal_metadata: InternalMetadata;
 }
 
-export type MessageBody = { encrypted: EncryptedShinkaiBody } | { unencrypted: ShinkaiBody };
+export type MessageBody =
+  | { encrypted: EncryptedShinkaiBody }
+  | { unencrypted: ShinkaiBody };
 
 export interface ShinkaiMessage {
   body: MessageBody | null;
@@ -55,4 +59,5 @@ export type SmartInbox = {
   custom_name: string;
   inbox_id: string;
   last_message?: ShinkaiMessage;
+  is_finished: boolean;
 };

@@ -1,3 +1,4 @@
+import { extractErrorPropertyOrContent } from '@shinkai_network/shinkai-message-ts/utils';
 import { ChatConversationMessage } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
 import {
   Avatar,
@@ -65,8 +66,15 @@ export const Message = ({ message }: MessageProps) => {
         {message.isLocal ? null : (
           <CopyToClipboardIcon
             className="duration-30 absolute right-2 top-2 bg-gray-300 opacity-0 group-hover:opacity-100 group-hover:transition-opacity"
-            onCopyClipboard={() => copyToClipboard(message.content)}
-            string={message.content}
+            onCopyClipboard={() =>
+              copyToClipboard(
+                extractErrorPropertyOrContent(message.content, 'error_message'),
+              )
+            }
+            string={extractErrorPropertyOrContent(
+              message.content,
+              'error_message',
+            )}
           />
         )}
         <MarkdownPreview
@@ -79,7 +87,10 @@ export const Message = ({ message }: MessageProps) => {
               />
             ),
           }}
-          source={message.content}
+          source={extractErrorPropertyOrContent(
+            message.content,
+            'error_message',
+          )}
         />
         {!!message.fileInbox?.files?.length && (
           <FileList

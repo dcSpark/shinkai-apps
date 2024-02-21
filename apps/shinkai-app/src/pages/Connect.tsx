@@ -31,7 +31,7 @@ import { checkmarkSharp, cloudUpload, scan } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 import * as z from 'zod';
 
 import Button from '../components/ui/Button';
@@ -156,19 +156,19 @@ const Connect = () => {
       ({ my_encryption_sk_string, my_encryption_pk_string }) => {
         setupDataForm.setValue(
           'my_device_encryption_pk',
-          my_encryption_pk_string
+          my_encryption_pk_string,
         );
         setupDataForm.setValue(
           'my_device_encryption_sk',
-          my_encryption_sk_string
+          my_encryption_sk_string,
         );
-      }
+      },
     );
     generateSignatureKeys().then(
       ({ my_identity_pk_string, my_identity_sk_string }) => {
         setupDataForm.setValue('my_device_identity_pk', my_identity_pk_string);
         setupDataForm.setValue('my_device_identity_sk', my_identity_sk_string);
-      }
+      },
     );
 
     // Profile Keys
@@ -177,19 +177,19 @@ const Connect = () => {
       ({ my_encryption_sk_string, my_encryption_pk_string }) => {
         setupDataForm.setValue(
           'profile_encryption_pk',
-          my_encryption_pk_string
+          my_encryption_pk_string,
         );
         setupDataForm.setValue(
           'profile_encryption_sk',
-          my_encryption_sk_string
+          my_encryption_sk_string,
         );
-      }
+      },
     );
     generateSignatureKeys().then(
       ({ my_identity_pk_string, my_identity_sk_string }) => {
         setupDataForm.setValue('profile_identity_pk', my_identity_pk_string);
         setupDataForm.setValue('profile_identity_sk', my_identity_sk_string);
-      }
+      },
     );
   }, [setupDataForm]);
 
@@ -268,11 +268,11 @@ const Connect = () => {
         {error && (
           <IonToast color="danger" duration={2000} message={error.message} />
         )}
-        <div className="relative flex h-full min-h-screen-ios lg:p-6 md:px-6 md:pt-16 md:pb-10 bg-slate-900">
-          <div className="relative hidden shrink-0 w-[40rem] p-20 overflow-hidden 2xl:w-[37.5rem] xl:w-[30rem] lg:p-10 lg:block">
+        <div className="min-h-screen-ios relative flex h-full bg-slate-900 md:px-6 md:pb-10 md:pt-16 lg:p-6">
+          <div className="relative hidden w-[40rem] shrink-0 overflow-hidden p-20 lg:block lg:p-10 xl:w-[30rem] 2xl:w-[37.5rem]">
             <div className="max-w-[25.4rem]">
               <div
-                className="mb-4 text-7xl font-bold leading-none uppercase font-newake text-white"
+                className="font-newake mb-4 text-7xl font-bold uppercase leading-none text-white"
                 data-cy="shinkai-app-description"
               >
                 AI AGENT OS THAT UNLOCKS THE POTENTIAL OF LLMs
@@ -281,30 +281,30 @@ const Connect = () => {
                 For devices, identities, and digital money
               </div>
             </div>
-            <div className="h-[16rem] mt-20 flex justify-center">
+            <div className="mt-20 flex h-[16rem] justify-center">
               <img
                 alt=""
-                className="inline-block align-top opacity-0 transition-opacity opacity-100 object-contain h-full"
+                className="inline-block h-full object-contain align-top opacity-0 opacity-100 transition-opacity"
                 src="/messaging.png"
               />
             </div>
           </div>
-          <div className="flex grow p-10 md:rounded-[1.25rem] bg-white dark:bg-slate-800 overflow-auto ">
-            <div className="w-full max-w-[31.5rem] mx-auto pt-10">
+          <div className="flex grow overflow-auto bg-white p-10 dark:bg-slate-800 md:rounded-[1.25rem] ">
+            <div className="mx-auto w-full max-w-[31.5rem] pt-10">
               <a href="https://shinkai.com/" rel="noreferrer" target="_blank">
                 <img
                   alt=""
-                  className="block dark:hidden mx-auto mb-10"
+                  className="mx-auto mb-10 block dark:hidden"
                   src="/shinkai-logo.svg"
                 />
                 <img
                   alt=""
-                  className="hidden dark:block mx-auto mb-10"
+                  className="mx-auto mb-10 hidden dark:block"
                   src="/shinkai-logo-white.svg"
                 />
               </a>
 
-              <div className="rounded-xl border border-slate-100 pb-5 md:pb-10 dark:border-slate-700">
+              <div className="rounded-xl border border-slate-100 pb-5 dark:border-slate-700 md:pb-10">
                 <IonSegment
                   class="ion-segment"
                   onIonChange={(e) =>
@@ -348,7 +348,7 @@ const Connect = () => {
                           />
                         )}
                       </div>
-                      <hr className="w-full border-b border-gray-300 dark:border-slate-600/60 mt-6 mb-6" />
+                      <hr className="mb-6 mt-6 w-full border-b border-gray-300 dark:border-slate-600/60" />
                       <form
                         className="space-y-5"
                         onSubmit={setupDataForm.handleSubmit(onSubmit)}
@@ -364,7 +364,7 @@ const Connect = () => {
                                 onChange={(e) =>
                                   setupDataForm.setValue(
                                     'registration_name',
-                                    e.detail.value as string
+                                    e.detail.value as string,
                                   )
                                 }
                               />
@@ -390,7 +390,7 @@ const Connect = () => {
                                 onChange={(e) =>
                                   setupDataForm.setValue(
                                     'node_address',
-                                    e.detail.value as string
+                                    e.detail.value as string,
                                   )
                                 }
                               />
@@ -416,7 +416,7 @@ const Connect = () => {
                                 onChange={(e) =>
                                   setupDataForm.setValue(
                                     'shinkai_identity',
-                                    e.detail.value as string
+                                    e.detail.value as string,
                                   )
                                 }
                               />
@@ -442,7 +442,7 @@ const Connect = () => {
                                 onChange={(e) =>
                                   setupDataForm.setValue(
                                     'registration_code',
-                                    e.detail.value as string
+                                    e.detail.value as string,
                                   )
                                 }
                               />
@@ -468,7 +468,7 @@ const Connect = () => {
                                 onChange={(e) =>
                                   setupDataForm.setValue(
                                     'node_encryption_pk',
-                                    e.detail.value as string
+                                    e.detail.value as string,
                                   )
                                 }
                               />
@@ -494,7 +494,7 @@ const Connect = () => {
                                 onChange={(e) =>
                                   setupDataForm.setValue(
                                     'node_signature_pk',
-                                    e.detail.value as string
+                                    e.detail.value as string,
                                   )
                                 }
                               />
@@ -520,7 +520,7 @@ const Connect = () => {
                                 onChange={(e) =>
                                   setupDataForm.setValue(
                                     'profile_encryption_pk',
-                                    e.detail.value as string
+                                    e.detail.value as string,
                                   )
                                 }
                               />
@@ -546,7 +546,7 @@ const Connect = () => {
                                 onChange={(e) =>
                                   setupDataForm.setValue(
                                     'profile_identity_pk',
-                                    e.detail.value as string
+                                    e.detail.value as string,
                                   )
                                 }
                               />
@@ -572,7 +572,7 @@ const Connect = () => {
                                 onChange={(e) =>
                                   setupDataForm.setValue(
                                     'my_device_encryption_pk',
-                                    e.detail.value as string
+                                    e.detail.value as string,
                                   )
                                 }
                               />
@@ -598,7 +598,7 @@ const Connect = () => {
                                 onChange={(e) =>
                                   setupDataForm.setValue(
                                     'my_device_identity_pk',
-                                    e.detail.value as string
+                                    e.detail.value as string,
                                   )
                                 }
                               />
@@ -614,7 +614,7 @@ const Connect = () => {
                         />
                         {isError && (
                           <p
-                            className={'text-red-600 text-base text-center'}
+                            className={'text-center text-base text-red-600'}
                             role={'alert'}
                           >
                             Something went wrong. Please check your inputs and
@@ -729,19 +729,19 @@ function AutomaticForm() {
       ({ my_encryption_sk_string, my_encryption_pk_string }) => {
         setupDataForm.setValue(
           'my_device_encryption_pk',
-          my_encryption_pk_string
+          my_encryption_pk_string,
         );
         setupDataForm.setValue(
           'my_device_encryption_sk',
-          my_encryption_sk_string
+          my_encryption_sk_string,
         );
-      }
+      },
     );
     generateSignatureKeys().then(
       ({ my_identity_pk_string, my_identity_sk_string }) => {
         setupDataForm.setValue('my_device_identity_pk', my_identity_pk_string);
         setupDataForm.setValue('my_device_identity_sk', my_identity_sk_string);
-      }
+      },
     );
 
     // Profile Keys
@@ -750,19 +750,19 @@ function AutomaticForm() {
       ({ my_encryption_sk_string, my_encryption_pk_string }) => {
         setupDataForm.setValue(
           'profile_encryption_pk',
-          my_encryption_pk_string
+          my_encryption_pk_string,
         );
         setupDataForm.setValue(
           'profile_encryption_sk',
-          my_encryption_sk_string
+          my_encryption_sk_string,
         );
-      }
+      },
     );
     generateSignatureKeys().then(
       ({ my_identity_pk_string, my_identity_sk_string }) => {
         setupDataForm.setValue('profile_identity_pk', my_identity_pk_string);
         setupDataForm.setValue('profile_identity_sk', my_identity_sk_string);
-      }
+      },
     );
   }, [setupDataForm]);
 
@@ -796,7 +796,7 @@ function AutomaticForm() {
               onChange={(e) =>
                 setupDataForm.setValue(
                   'registration_name',
-                  e.detail.value as string
+                  e.detail.value as string,
                 )
               }
             />
@@ -845,7 +845,7 @@ function AutomaticForm() {
               onChange={(e) =>
                 setupDataForm.setValue(
                   'shinkai_identity',
-                  e.detail.value as string
+                  e.detail.value as string,
                 )
               }
             />
@@ -860,7 +860,7 @@ function AutomaticForm() {
         )}
       />
       {isError && (
-        <p className={'text-red-600 text-base text-center'} role={'alert'}>
+        <p className={'text-center text-base text-red-600'} role={'alert'}>
           Something went wrong. Please check your inputs and try again.{' '}
           {error.message}
         </p>
@@ -906,7 +906,7 @@ function CustomQrScanner({
         scanDelay={scanDelay}
       />
       <Button
-        className="absolute bottom-2 z-10 max-w-[80px] left-1/2 transform -translate-x-1/2"
+        className="absolute bottom-2 left-1/2 z-10 max-w-[80px] -translate-x-1/2 transform"
         onClick={() => setShowScanner(false)}
         variant={'tertiary'}
       >
@@ -917,7 +917,7 @@ function CustomQrScanner({
         icon={checkmarkSharp}
         isOpen={status === 'success'}
         message={'QR Code scanned successfully!'}
-      ></IonToast>
+      />
     </div>
   ) : (
     <Button

@@ -61,7 +61,10 @@ export const ExportConnection = () => {
     const content = encryptedSetupData;
     const file = new Blob([content], { type: 'text/plain' });
     link.href = URL.createObjectURL(file);
-    link.download = `${auth?.registration_name}.shinkai.key`;
+    link.download =
+      `${auth?.shinkai_identity}_${auth?.registration_name}.shinkai.key`
+        .replace(/@/g, '')
+        .replace(/\//g, '_');
     link.click();
     URL.revokeObjectURL(link.href);
   };
