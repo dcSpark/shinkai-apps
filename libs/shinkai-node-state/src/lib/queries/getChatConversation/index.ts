@@ -4,7 +4,6 @@ import {
 } from '@shinkai_network/shinkai-message-ts/api';
 import type { ShinkaiMessage } from '@shinkai_network/shinkai-message-ts/models';
 import {
-  calculateMessageHash,
   getMessageContent,
   getMessageFilesInbox,
   isLocalMessage,
