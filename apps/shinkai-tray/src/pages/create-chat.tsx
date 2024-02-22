@@ -42,7 +42,8 @@ const CreateChatPage = () => {
     if (!auth) return;
     const [receiver, ...rest] = data.receiver.split('/');
 
-    createChat({
+    await createChat({
+      nodeAddress: auth?.node_address ?? '',
       sender: auth.shinkai_identity,
       senderSubidentity: `${auth.profile}/device/${auth.registration_name}`,
       receiver,

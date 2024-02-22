@@ -110,6 +110,7 @@ const ChatConversation = () => {
     isFetchingPreviousPage,
     isSuccess: isChatConversationSuccess,
   } = useGetChatConversationWithPagination({
+    nodeAddress: auth?.node_address ?? '',
     inboxId: inboxId as string,
     shinkaiIdentity: auth?.shinkai_identity ?? '',
     profile: auth?.profile ?? '',
@@ -136,6 +137,7 @@ const ChatConversation = () => {
     fromPreviousMessagesRef.current = false;
     if (data.file) {
       await sendTextMessageWithFilesForInbox({
+        nodeAddress: auth?.node_address ?? '',
         sender: auth.shinkai_identity,
         senderSubidentity: auth.profile,
         receiver: auth.shinkai_identity,
@@ -155,9 +157,11 @@ const ChatConversation = () => {
     if (isJobInbox(inboxId)) {
       const jobId = extractJobIdFromInbox(inboxId);
       await sendMessageToJob({
+        nodeAddress: auth.node_address,
         jobId: jobId,
         message: data.message,
         files_inbox: '',
+        parent: '', // Note: we should set the parent if we want to retry or branch out
         shinkaiIdentity: auth.shinkai_identity,
         profile: auth.profile,
         my_device_encryption_sk: auth.my_device_encryption_sk,
@@ -170,6 +174,7 @@ const ChatConversation = () => {
       const sender = `${auth.shinkai_identity}/${auth.profile}/device/${auth.registration_name}`;
       const receiver = extractReceiverShinkaiName(inboxId, sender);
       await sendMessageToInbox({
+        nodeAddress: auth?.node_address ?? '',
         sender: auth.shinkai_identity,
         sender_subidentity: `${auth.profile}/device/${auth.registration_name}`,
         receiver,

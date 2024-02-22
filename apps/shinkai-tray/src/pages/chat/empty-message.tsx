@@ -9,6 +9,7 @@ const EmptyMessage = () => {
   const auth = useAuth((state) => state.auth);
 
   const { agents } = useAgents({
+    nodeAddress: auth?.node_address ?? '',
     sender: auth?.shinkai_identity ?? '',
     senderSubidentity: `${auth?.profile}`,
     shinkaiIdentity: auth?.shinkai_identity ?? '',

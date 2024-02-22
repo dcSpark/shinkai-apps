@@ -114,6 +114,7 @@ const GenerateCodePage = () => {
 
   const onSubmit = async (data: z.infer<typeof generateCodeSchema>) => {
     await createRegistrationCode({
+      nodeAddress: auth?.node_address ?? '',
       permissionsType: data.permissionType,
       identityType: data.identityType,
       setupPayload: {

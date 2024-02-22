@@ -61,6 +61,7 @@ const InboxNameInput = ({
     if (!auth) return;
 
     await updateInboxName({
+      nodeAddress: auth.node_address,
       sender: auth.shinkai_identity,
       senderSubidentity: auth.profile,
       receiver: `${auth.shinkai_identity}`,
@@ -212,6 +213,7 @@ const ChatLayout = () => {
 
   const { inboxes } = useGetInboxes(
     {
+      nodeAddress: auth?.node_address ?? '',
       sender: auth?.shinkai_identity ?? '',
       senderSubidentity: auth?.profile ?? '',
       // Assuming receiver and target_shinkai_name_profile are the same as sender
@@ -227,10 +229,13 @@ const ChatLayout = () => {
       refetchIntervalInBackground: true,
       refetchInterval: (query: Query<GetInboxesOutput>) => {
         const allInboxesAreCompleted = query.state.data?.every((inbox) => {
-          return !isLocalMessage(
-            inbox.last_message,
-            auth?.shinkai_identity ?? '',
-            auth?.profile ?? '',
+          return (
+            inbox.last_message &&
+            !isLocalMessage(
+              inbox.last_message,
+              auth?.shinkai_identity ?? '',
+              auth?.profile ?? '',
+            )
           );
         });
         return allInboxesAreCompleted ? 0 : 3000;
@@ -250,20 +255,23 @@ const ChatLayout = () => {
                   <MessageButton
                     inboxId={inbox.inbox_id}
                     inboxName={
-                      inbox.custom_name === inbox.inbox_id
+                      inbox.last_message && inbox.custom_name === inbox.inbox_id
                         ? getMessageContent(inbox.last_message)?.slice(0, 40)
                         : inbox.custom_name?.slice(0, 40)
                     }
                     isJobLastMessage={
-                      !isLocalMessage(
-                        inbox.last_message,
-                        auth?.shinkai_identity ?? '',
-                        auth?.profile ?? '',
-                      )
+                      inbox.last_message
+                        ? !isLocalMessage(
+                            inbox.last_message,
+                            auth?.shinkai_identity ?? '',
+                            auth?.profile ?? '',
+                          )
+                        : false
                     }
                     key={inbox.inbox_id}
                     lastMessageTime={
-                      inbox.last_message.external_metadata?.scheduled_time ?? ''
+                      inbox.last_message?.external_metadata?.scheduled_time ??
+                      ''
                     }
                     to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
                   />

@@ -33,7 +33,7 @@ import SimpleLayout from './layout/simple-layout';
 const createJobSchema = z.object({
   model: z.string(),
   description: z.string(),
-  files: z.array(z.any()).optional(),
+  files: z.array(z.any()).max(3),
 });
 
 export const FileList = ({
@@ -178,9 +178,13 @@ const CreateJobPage = () => {
 
   const createJobForm = useForm<z.infer<typeof createJobSchema>>({
     resolver: zodResolver(createJobSchema),
+    defaultValues: {
+      files: [],
+    },
   });
 
   const { agents, isSuccess } = useAgents({
+    nodeAddress: auth?.node_address ?? '',
     sender: auth?.shinkai_identity ?? '',
     senderSubidentity: `${auth?.profile}`,
     shinkaiIdentity: auth?.shinkai_identity ?? '',
@@ -203,6 +207,7 @@ const CreateJobPage = () => {
   const onSubmit = async (data: z.infer<typeof createJobSchema>) => {
     if (!auth) return;
     await createJob({
+      nodeAddress: auth?.node_address ?? '',
       shinkaiIdentity: auth.shinkai_identity,
       profile: auth.profile,
       agentId: data.model,
