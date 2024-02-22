@@ -57,7 +57,7 @@ const CreateChatPage = () => {
     });
   };
   return (
-    <SimpleLayout title="Create Chat">
+    <SimpleLayout title="Create DM Chat">
       <Form {...createChatForm}>
         <form
           className="space-y-10"
@@ -104,7 +104,7 @@ const CreateChatPage = () => {
             isLoading={isPending}
             type="submit"
           >
-            Create Chat
+            Create DM Chat
           </Button>
         </form>
       </Form>

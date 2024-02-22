@@ -157,12 +157,12 @@ export function Footer() {
               <CommandGroup heading="Actions">
                 <CommandItem onSelect={goToCreateJob}>
                   <BoxesIcon className="mr-2" />
-                  <span>Create Job</span>
+                  <span>Create AI Chat</span>
                   <CommandShortcut>⌘1</CommandShortcut>
                 </CommandItem>
                 <CommandItem onSelect={goToCreateChat}>
                   <MessageCircleIcon className="mr-2" />
-                  <span>Create Chat</span>
+                  <span>Create DM Chat</span>
                   <CommandShortcut>⌘2</CommandShortcut>
                 </CommandItem>
                 <CommandItem onSelect={goToCreateAgent}>

@@ -50,7 +50,7 @@ const EmptyMessage = () => {
               })}
               to={CREATE_JOB_PATH}
             >
-              <span>Create Job</span>
+              <span>Create AI Chat</span>
             </Link>
           )}
         </div>

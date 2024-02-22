@@ -236,7 +236,7 @@ const CreateJobPage = () => {
   // }, []);
 
   return (
-    <SimpleLayout title="Create Job">
+    <SimpleLayout title="Create AI Chat">
       <Form {...createJobForm}>
         <form
           className="space-y-8"
@@ -327,7 +327,7 @@ const CreateJobPage = () => {
             isLoading={isPending}
             type="submit"
           >
-            Create Job
+            Create AI Chat
           </Button>
         </form>
       </Form>
