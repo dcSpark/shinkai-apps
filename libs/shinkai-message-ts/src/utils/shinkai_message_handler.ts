@@ -104,8 +104,12 @@ export const extractErrorPropertyOrContent = (
   property: 'error' | 'error_message',
 ) => {
   try {
-    return JSON.parse(content)?.[property];
-  } catch (e) {
-    return content;
+    const parsedContent = JSON.parse(content);
+    if (property in parsedContent) {
+      return parsedContent[property];
+    }
+  } catch (error) {
+    console.log('extractErrorPropertyOrContent: ', error);
   }
+  return String(content);
 };
