@@ -29,8 +29,7 @@ export const useGetChatConversationWithPagination = (
       if (firstPage?.length < CONVERSATION_PAGINATION_LIMIT) return;
       const firstMessage = pages?.[0]?.[0];
       if (!firstMessage) return;
-      const firstMessageKey = `${firstMessage.scheduledTime}:::${firstMessage.hash}`;
-      return { lastKey: firstMessageKey };
+      return { lastKey: firstMessage.hash };
     },
     refetchInterval: ({ state }) => {
       const lastMessage = state.data?.pages?.at(-1)?.at(-1);
