@@ -7,12 +7,19 @@ export interface InternalMetadata {
   encryption: keyof typeof TSEncryptionMethod;
 }
 
+export type NodeApiData = {
+  node_message_hash: string;
+  node_timestamp: string;
+  parent_hash: string;
+};
+
 export interface ExternalMetadata {
   sender: string;
   recipient: string;
   scheduled_time: string;
   signature: string;
   other: string;
+  node_api_data: NodeApiData;
 }
 
 export interface EncryptedShinkaiData {
