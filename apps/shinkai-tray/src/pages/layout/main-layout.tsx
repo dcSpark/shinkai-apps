@@ -5,19 +5,21 @@ import {
   TokensIcon,
 } from '@radix-ui/react-icons';
 import {
+  ChatBubbleIcon,
   Command,
   CommandGroup,
   CommandItem,
   CommandList,
   CommandSeparator,
   CommandShortcut,
+  JobBubbleIcon,
   Popover,
   PopoverContent,
   PopoverTrigger,
   Separator,
 } from '@shinkai_network/shinkai-ui';
 import { listen } from '@tauri-apps/api/event';
-import { BotIcon, BoxesIcon, MessageCircleIcon } from 'lucide-react';
+import { BotIcon } from 'lucide-react';
 import * as React from 'react';
 import { useCallback } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
@@ -156,12 +158,12 @@ export function Footer() {
             <CommandList className="p-0 pt-2">
               <CommandGroup heading="Actions">
                 <CommandItem onSelect={goToCreateJob}>
-                  <BoxesIcon className="mr-2" />
+                  <JobBubbleIcon className="mr-2" />
                   <span>Create AI Chat</span>
                   <CommandShortcut>⌘1</CommandShortcut>
                 </CommandItem>
                 <CommandItem onSelect={goToCreateChat}>
-                  <MessageCircleIcon className="mr-2" />
+                  <ChatBubbleIcon className="mr-2" />
                   <span>Create DM Chat</span>
                   <CommandShortcut>⌘2</CommandShortcut>
                 </CommandItem>
