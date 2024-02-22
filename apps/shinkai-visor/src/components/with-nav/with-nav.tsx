@@ -22,6 +22,9 @@ export const WithNav = (props: PropsWithChildren) => {
       toast.error('Node Unavailable', {
         description:
           'Visor is having trouble connecting to your Shinkai Node. Your node may be offline, or your internet connection may be down.',
+        important: true,
+        id: 'node-unavailable',
+        duration: 20000,
       });
     }
   }, [isSuccess, nodeInfo?.status, isFetching]);
