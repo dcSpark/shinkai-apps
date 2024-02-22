@@ -38,6 +38,7 @@ export function Footer() {
   const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
   const logout = useAuth((state) => state.setLogout);
+  const auth = useAuth((state) => state.auth);
 
   const goToCreateJob = useCallback(() => {
     navigate(CREATE_JOB_PATH);
@@ -162,11 +163,13 @@ export function Footer() {
                   <span>Create AI Chat</span>
                   <CommandShortcut>⌘1</CommandShortcut>
                 </CommandItem>
-                <CommandItem onSelect={goToCreateChat}>
-                  <ChatBubbleIcon className="mr-2" />
-                  <span>Create DM Chat</span>
-                  <CommandShortcut>⌘2</CommandShortcut>
-                </CommandItem>
+                {auth?.shinkai_identity.includes('localhost') ? null : (
+                  <CommandItem onSelect={goToCreateChat}>
+                    <ChatBubbleIcon className="mr-2" />
+                    <span>Create DM Chat</span>
+                    <CommandShortcut>⌘2</CommandShortcut>
+                  </CommandItem>
+                )}
                 <CommandItem onSelect={goToCreateAgent}>
                   <BotIcon className="mr-2" />
                   <span>Add Agent</span>
