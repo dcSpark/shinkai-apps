@@ -1,7 +1,4 @@
-import type {
-  CredentialsPayload,
-  ShinkaiMessage,
-} from '@shinkai_network/shinkai-message-ts/models';
+import type { CredentialsPayload } from '@shinkai_network/shinkai-message-ts/models';
 
 export type CreateChatInput = CredentialsPayload & {
   nodeAddress: string;
@@ -14,5 +11,4 @@ export type CreateChatInput = CredentialsPayload & {
 
 export type CreateChatOutput = {
   inboxId: string;
-  message: ShinkaiMessage;
 };

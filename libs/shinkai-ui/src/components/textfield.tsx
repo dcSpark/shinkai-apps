@@ -17,6 +17,8 @@ const TextField = ({
   label,
   type = 'text',
   helperMessage,
+  startAdornment,
+  endAdornment,
 }: {
   classes?: {
     formItem?: string;
@@ -37,11 +39,19 @@ const TextField = ({
   label: React.ReactNode;
   helperMessage?: React.ReactNode;
   type?: 'text' | 'password';
+  startAdornment?: React.ReactNode;
+  endAdornment?: React.ReactNode;
 }) => {
   return (
     <FormItem className={cn(classes?.formItem)}>
       <FormControl>
-        <Input {...field} className={cn(classes?.input)} type={type} />
+        <Input
+          {...field}
+          className={cn(classes?.input)}
+          endAdornment={endAdornment}
+          startAdornment={startAdornment}
+          type={type}
+        />
       </FormControl>
       <FormLabel className={cn(classes?.label)}>{label}</FormLabel>
       <FormDescription>{helperMessage}</FormDescription>

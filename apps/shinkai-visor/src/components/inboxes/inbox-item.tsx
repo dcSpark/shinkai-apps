@@ -46,6 +46,8 @@ const InboxItem = ({
     history.push(`/inboxes/${encodeURIComponent(inbox.inbox_id)}`, { inbox });
   };
 
+  const isJobChatInbox = isJobInbox(decodeURIComponent(inbox.inbox_id));
+
   return (
     <Button
       className="group h-14 w-full rounded-none bg-transparent px-1 hover:bg-transparent"
@@ -55,7 +57,7 @@ const InboxItem = ({
     >
       <div className="flex w-full items-center justify-between gap-4">
         <span className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-gray-300">
-          {isJobInbox(decodeURIComponent(inbox.inbox_id)) ? (
+          {isJobChatInbox ? (
             <JobBubbleIcon />
           ) : (
             <ChatBubbleIcon className="h-4 w-4 shrink-0" />
@@ -82,7 +84,7 @@ const InboxItem = ({
                 new Date(inbox.last_message.external_metadata.scheduled_time),
               )}
           </span>
-          {!!actions?.length && (
+          {!!actions?.length && isJobChatInbox && (
             <div className="translate-x-full transition duration-200 group-hover:translate-x-0">
               {actions.map((action) => (
                 <TooltipProvider delayDuration={0} key={action.label}>
