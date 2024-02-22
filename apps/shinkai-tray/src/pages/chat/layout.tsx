@@ -367,25 +367,37 @@ const ChatLayout = () => {
                 </TabsList>
                 <TabsContent value="actives">
                   <div className="space-y-1">
-                    {activesInboxes.map((inbox) => (
-                      <MessageButton
-                        inbox={inbox}
-                        key={inbox.inbox_id}
-                        to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
-                      />
-                    ))}
+                    {activesInboxes?.length > 0 ? (
+                      activesInboxes.map((inbox) => (
+                        <MessageButton
+                          inbox={inbox}
+                          key={inbox.inbox_id}
+                          to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
+                        />
+                      ))
+                    ) : (
+                      <p className="text-gray-80 py-3 text-center text-sm">
+                        No active conversations found.{' '}
+                      </p>
+                    )}
                   </div>
                 </TabsContent>
                 <TabsContent value="archives">
                   <div className="space-y-1">
-                    {archivesInboxes.map((inbox) => (
-                      <MessageButton
-                        inbox={inbox}
-                        isArchivedMessage
-                        key={inbox.inbox_id}
-                        to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
-                      />
-                    ))}
+                    {archivesInboxes.length > 0 ? (
+                      archivesInboxes.map((inbox) => (
+                        <MessageButton
+                          inbox={inbox}
+                          isArchivedMessage
+                          key={inbox.inbox_id}
+                          to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
+                        />
+                      ))
+                    ) : (
+                      <p className="text-gray-80 py-3 text-center text-sm">
+                        No archived conversations found.{' '}
+                      </p>
+                    )}
                   </div>
                 </TabsContent>
               </Tabs>
