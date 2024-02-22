@@ -4,7 +4,6 @@ import {
 } from '@shinkai_network/shinkai-message-ts/api';
 import type { ShinkaiMessage } from '@shinkai_network/shinkai-message-ts/models';
 import {
-  calculateMessageHash,
   getMessageContent,
   getMessageFilesInbox,
   isLocalMessage,
@@ -47,7 +46,9 @@ export const getChatConversation = async ({
       const content = getMessageContent(shinkaiMessage);
       const isLocal = isLocalMessage(shinkaiMessage, shinkaiIdentity, profile);
       const message: ChatConversationMessage = {
-        hash: calculateMessageHash(shinkaiMessage),
+        hash:
+          shinkaiMessage?.external_metadata?.node_api_data.node_message_hash ??
+          '',
         inboxId,
         content,
         sender: {
@@ -56,7 +57,8 @@ export const getChatConversation = async ({
             : 'https://ui-avatars.com/api/?name=S&background=FF7E7F&color=ffffff',
         },
         isLocal,
-        scheduledTime: shinkaiMessage.external_metadata?.scheduled_time,
+        scheduledTime:
+          shinkaiMessage.external_metadata?.node_api_data.node_timestamp,
       };
       if (filesInbox) {
         const fileNames = await getFileNames(
