@@ -1,13 +1,17 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { SmartInbox } from '@shinkai_network/shinkai-message-ts/models/ShinkaiMessage';
 import {
   getMessageContent,
   isJobInbox,
   isLocalMessage,
 } from '@shinkai_network/shinkai-message-ts/utils';
+import { useArchiveJob } from '@shinkai_network/shinkai-node-state/lib/mutations/archiveJob/useArchiveJob';
 import { useUpdateInboxName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateInboxName/useUpdateInboxName';
 import { GetInboxesOutput } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/types';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
 import {
+  ActiveIcon,
+  ArchiveIcon,
   Button,
   ChatBubbleIcon,
   Form,
@@ -19,12 +23,22 @@ import {
   JobBubbleIcon,
   ScrollArea,
   Separator,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipPortal,
+  TooltipProvider,
+  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { Query } from '@tanstack/react-query';
 import { Edit3 } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, Outlet, useMatch } from 'react-router-dom';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { handleSendNotification } from '../../lib/notifications';
@@ -61,6 +75,7 @@ const InboxNameInput = ({
     if (!auth) return;
 
     await updateInboxName({
+      nodeAddress: auth.node_address,
       sender: auth.shinkai_identity,
       senderSubidentity: auth.profile,
       receiver: `${auth.shinkai_identity}`,
@@ -133,17 +148,31 @@ const InboxNameInput = ({
 
 const MessageButton = ({
   to,
-  inboxId,
-  inboxName,
-  lastMessageTime,
-  isJobLastMessage,
+  isArchivedMessage,
+  inbox,
 }: {
   to: string;
-  inboxId: string;
-  inboxName: string;
-  lastMessageTime: string;
-  isJobLastMessage: boolean;
+  isArchivedMessage?: boolean;
+  inbox: SmartInbox;
 }) => {
+  const auth = useAuth((state) => state.auth);
+
+  const inboxId = inbox.inbox_id;
+  const inboxName =
+    inbox.last_message && inbox.custom_name === inbox.inbox_id
+      ? getMessageContent(inbox.last_message)?.slice(0, 40)
+      : inbox.custom_name?.slice(0, 40);
+
+  const lastMessageTime =
+    inbox.last_message?.external_metadata?.scheduled_time ?? '';
+  const isJobLastMessage = inbox.last_message
+    ? !isLocalMessage(
+        inbox.last_message,
+        auth?.shinkai_identity ?? '',
+        auth?.profile ?? '',
+      )
+    : false;
+
   const match = useMatch(to);
   const previousDataRef = useRef<string>(lastMessageTime);
   const previousLastMessageTime = previousDataRef.current;
@@ -169,6 +198,35 @@ const MessageButton = ({
 
   const [isEditable, setIsEditable] = useState(false);
 
+  const { mutateAsync: archiveJob } = useArchiveJob({
+    onSuccess: () => {
+      toast.success('Your conversation has been archived');
+    },
+    onError: (error) => {
+      toast.error('Error archiving job', {
+        description: error.message,
+      });
+    },
+  });
+
+  const handleArchiveJob = async (
+    event: React.MouseEvent,
+    inbox: SmartInbox,
+  ) => {
+    event.preventDefault();
+    await archiveJob({
+      nodeAddress: auth?.node_address ?? '',
+      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      profile: auth?.profile ?? '',
+      inboxId: inbox.inbox_id,
+      my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+      my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+    });
+  };
+
   return isEditable ? (
     <InboxNameInput
       closeEditable={() => setIsEditable(false)}
@@ -178,7 +236,7 @@ const MessageButton = ({
   ) : (
     <Link
       className={cn(
-        'text-gray-80 group flex h-[46px] w-full items-center gap-2 rounded-lg px-2 py-2 hover:bg-gray-300',
+        'text-gray-80 group group flex h-[46px] w-full items-center gap-2 rounded-lg px-2 py-2 hover:bg-gray-300',
         match && 'bg-gray-300 text-white',
       )}
       key={inboxId}
@@ -192,17 +250,50 @@ const MessageButton = ({
       <span className="line-clamp-1 flex-1 break-all text-left text-xs">
         {inboxName}
       </span>
-      <Button
-        className={cn(
-          'hidden justify-self-end bg-transparent',
-          match && 'flex',
+      <div className="translate-x-full transition duration-200 group-hover:translate-x-0">
+        <TooltipProvider delayDuration={0}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                className={cn('justify-self-end bg-transparent')}
+                onClick={() => setIsEditable(true)}
+                size="icon"
+                type="button"
+                variant="ghost"
+              >
+                <Edit3 className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipPortal>
+              <TooltipContent>
+                <p>Rename</p>
+              </TooltipContent>
+            </TooltipPortal>
+          </Tooltip>
+        </TooltipProvider>
+        {isJobInbox(inboxId) && !isArchivedMessage && (
+          <TooltipProvider delayDuration={0}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  className={cn('justify-self-end bg-transparent')}
+                  onClick={(event) => handleArchiveJob(event, inbox)}
+                  size={'icon'}
+                  type="button"
+                  variant={'ghost'}
+                >
+                  <ArchiveIcon className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipPortal>
+                <TooltipContent>
+                  <p>Archive</p>
+                </TooltipContent>
+              </TooltipPortal>
+            </Tooltip>
+          </TooltipProvider>
         )}
-        onClick={() => setIsEditable(true)}
-        size="icon"
-        variant="ghost"
-      >
-        <Edit3 className="h-4 w-4 text-gray-100" />
-      </Button>
+      </div>
     </Link>
   );
 };
@@ -212,6 +303,7 @@ const ChatLayout = () => {
 
   const { inboxes } = useGetInboxes(
     {
+      nodeAddress: auth?.node_address ?? '',
       sender: auth?.shinkai_identity ?? '',
       senderSubidentity: auth?.profile ?? '',
       // Assuming receiver and target_shinkai_name_profile are the same as sender
@@ -227,10 +319,13 @@ const ChatLayout = () => {
       refetchIntervalInBackground: true,
       refetchInterval: (query: Query<GetInboxesOutput>) => {
         const allInboxesAreCompleted = query.state.data?.every((inbox) => {
-          return !isLocalMessage(
-            inbox.last_message,
-            auth?.shinkai_identity ?? '',
-            auth?.profile ?? '',
+          return (
+            inbox.last_message &&
+            !isLocalMessage(
+              inbox.last_message,
+              auth?.shinkai_identity ?? '',
+              auth?.profile ?? '',
+            )
           );
         });
         return allInboxesAreCompleted ? 0 : 3000;
@@ -238,37 +333,74 @@ const ChatLayout = () => {
     },
   );
 
+  const activesInboxes = useMemo(() => {
+    return inboxes?.filter((inbox) => !inbox.is_finished);
+  }, [inboxes]);
+
+  const archivesInboxes = useMemo(() => {
+    return inboxes?.filter((inbox) => inbox.is_finished);
+  }, [inboxes]);
+
   return (
     <div className="flex h-full">
       {inboxes.length > 0 ? (
         <>
           <div className="flex max-w-[280px] flex-[280px] shrink-0 flex-col px-2 py-4">
-            <h2 className="mb-4 px-2">Recent Conversations</h2>
+            <h2 className="mb-4 px-2">Conversations</h2>
             <ScrollArea>
-              <div className="space-y-1">
-                {inboxes.map((inbox) => (
-                  <MessageButton
-                    inboxId={inbox.inbox_id}
-                    inboxName={
-                      inbox.custom_name === inbox.inbox_id
-                        ? getMessageContent(inbox.last_message)?.slice(0, 40)
-                        : inbox.custom_name?.slice(0, 40)
-                    }
-                    isJobLastMessage={
-                      !isLocalMessage(
-                        inbox.last_message,
-                        auth?.shinkai_identity ?? '',
-                        auth?.profile ?? '',
-                      )
-                    }
-                    key={inbox.inbox_id}
-                    lastMessageTime={
-                      inbox.last_message.external_metadata?.scheduled_time ?? ''
-                    }
-                    to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
-                  />
-                ))}
-              </div>
+              <Tabs defaultValue="actives">
+                <TabsList className="grid w-full grid-cols-2 bg-transparent">
+                  <TabsTrigger
+                    className="flex items-center gap-1.5"
+                    value="actives"
+                  >
+                    <ActiveIcon className="h-4 w-4" />
+                    Actives
+                  </TabsTrigger>
+                  <TabsTrigger
+                    className="flex items-center gap-1.5"
+                    value="archives"
+                  >
+                    <ArchiveIcon className="h-4 w-4" />
+                    Archives
+                  </TabsTrigger>
+                </TabsList>
+                <TabsContent value="actives">
+                  <div className="space-y-1">
+                    {activesInboxes?.length > 0 ? (
+                      activesInboxes.map((inbox) => (
+                        <MessageButton
+                          inbox={inbox}
+                          key={inbox.inbox_id}
+                          to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
+                        />
+                      ))
+                    ) : (
+                      <p className="text-gray-80 py-3 text-center text-sm">
+                        No active conversations found.{' '}
+                      </p>
+                    )}
+                  </div>
+                </TabsContent>
+                <TabsContent value="archives">
+                  <div className="space-y-1">
+                    {archivesInboxes.length > 0 ? (
+                      archivesInboxes.map((inbox) => (
+                        <MessageButton
+                          inbox={inbox}
+                          isArchivedMessage
+                          key={inbox.inbox_id}
+                          to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
+                        />
+                      ))
+                    ) : (
+                      <p className="text-gray-80 py-3 text-center text-sm">
+                        No archived conversations found.{' '}
+                      </p>
+                    )}
+                  </div>
+                </TabsContent>
+              </Tabs>
             </ScrollArea>
           </div>
           <Separator orientation="vertical" />

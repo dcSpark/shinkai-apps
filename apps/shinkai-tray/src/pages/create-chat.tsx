@@ -42,7 +42,8 @@ const CreateChatPage = () => {
     if (!auth) return;
     const [receiver, ...rest] = data.receiver.split('/');
 
-    createChat({
+    await createChat({
+      nodeAddress: auth?.node_address ?? '',
       sender: auth.shinkai_identity,
       senderSubidentity: `${auth.profile}/device/${auth.registration_name}`,
       receiver,
@@ -56,7 +57,7 @@ const CreateChatPage = () => {
     });
   };
   return (
-    <SimpleLayout title="Create Chat">
+    <SimpleLayout title="Create DM Chat">
       <Form {...createChatForm}>
         <form
           className="space-y-10"
@@ -103,7 +104,7 @@ const CreateChatPage = () => {
             isLoading={isPending}
             type="submit"
           >
-            Create Chat
+            Create DM Chat
           </Button>
         </form>
       </Form>
