@@ -28,6 +28,7 @@ import { z } from 'zod';
 
 import { ADD_AGENT_PATH } from '../routes/name';
 import { useAuth } from '../store/auth';
+import { useSettings } from '../store/settings';
 import SimpleLayout from './layout/simple-layout';
 
 const createJobSchema = z.object({
@@ -174,6 +175,7 @@ export function isImageOrPdf(file: File): boolean {
 }
 const CreateJobPage = () => {
   const auth = useAuth((state) => state.auth);
+  const defaulAgentId = useSettings((state) => state.defaultAgentId);
   const navigate = useNavigate();
 
   const createJobForm = useForm<z.infer<typeof createJobSchema>>({
@@ -224,10 +226,12 @@ const CreateJobPage = () => {
   };
 
   useEffect(() => {
-    if (isSuccess && agents?.length) {
+    if (isSuccess && agents?.length && !defaulAgentId) {
       createJobForm.setValue('model', agents[0].id);
+    } else {
+      createJobForm.setValue('model', defaulAgentId);
     }
-  }, [agents, createJobForm, isSuccess]);
+  }, [agents, createJobForm, defaulAgentId, isSuccess]);
   // useEffect(() => {
   //   return () => {
   //     file && URL.revokeObjectURL(file.preview);

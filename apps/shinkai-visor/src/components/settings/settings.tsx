@@ -103,11 +103,6 @@ export const Settings = () => {
     name: 'shortcutSidebar',
   });
 
-  console.log({
-    values: form.getValues(),
-    currentSidebarShorcut,
-    sidebarShortcut,
-  });
   const { agents } = useAgents({
     nodeAddress: auth?.node_address ?? '',
     sender: auth?.shinkai_identity ?? '',
