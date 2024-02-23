@@ -1,9 +1,4 @@
-import {
-  ExitIcon,
-  GearIcon,
-  PersonIcon,
-  TokensIcon,
-} from '@radix-ui/react-icons';
+import { ExitIcon, GearIcon, TokensIcon } from '@radix-ui/react-icons';
 import {
   ChatBubbleIcon,
   Command,
@@ -16,6 +11,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
+  ScrollArea,
   Separator,
 } from '@shinkai_network/shinkai-ui';
 import { listen } from '@tauri-apps/api/event';
@@ -29,6 +25,7 @@ import {
   CREATE_CHAT_PATH,
   CREATE_JOB_PATH,
   GENERATE_CODE_PATH,
+  INBOXES,
   ONBOARDING_PATH,
   SETTINGS_PATH,
 } from '../../routes/name';
@@ -70,13 +67,13 @@ export function Footer() {
     navigate(CREATE_CHAT_PATH);
     setOpen(false);
   };
-  const goToCreateAgent = () => {
-    navigate(ADD_AGENT_PATH);
+
+  const goToConversations = () => {
+    navigate(INBOXES);
     setOpen(false);
   };
-
-  const goToProfile = () => {
-    navigate(SETTINGS_PATH);
+  const goToCreateAgent = () => {
+    navigate(ADD_AGENT_PATH);
     setOpen(false);
   };
 
@@ -110,18 +107,7 @@ export function Footer() {
           goToCreateAgent();
           break;
         }
-        case '4': {
-          goToProfile();
-          break;
-        }
-        case '5': {
-          goToGenerateCode();
-          break;
-        }
-        case '6': {
-          goToSettings();
-          break;
-        }
+
         default: {
           break;
         }
@@ -156,49 +142,48 @@ export function Footer() {
             className="p-0 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-gray-500 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-3 [&_[cmdk-item]_svg]:w-3"
             onKeyDown={handleCommandCardKeyDown}
           >
-            <CommandList className="p-0 pt-2">
-              <CommandGroup heading="Actions">
-                <CommandItem onSelect={goToCreateJob}>
-                  <JobBubbleIcon className="mr-2" />
-                  <span>Create AI Chat</span>
-                  <CommandShortcut>⌘1</CommandShortcut>
-                </CommandItem>
-                {auth?.shinkai_identity.includes('localhost') ? null : (
-                  <CommandItem onSelect={goToCreateChat}>
-                    <ChatBubbleIcon className="mr-2" />
-                    <span>Create DM Chat</span>
-                    <CommandShortcut>⌘2</CommandShortcut>
+            <CommandList className="bg-gray-400 p-0 pt-2">
+              <ScrollArea className="h-[280px]">
+                <CommandGroup heading="Actions">
+                  <CommandItem onSelect={goToCreateJob}>
+                    <JobBubbleIcon className="mr-2" />
+                    <span>Create AI Chat</span>
+                    <CommandShortcut>⌘1</CommandShortcut>
                   </CommandItem>
-                )}
-                <CommandItem onSelect={goToCreateAgent}>
-                  <BotIcon className="mr-2" />
-                  <span>Add Agent</span>
-                  <CommandShortcut>⌘3</CommandShortcut>
-                </CommandItem>
-              </CommandGroup>
-              <CommandSeparator />
-              <CommandGroup heading="General">
-                <CommandItem onSelect={goToProfile}>
-                  <PersonIcon className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
-                  <CommandShortcut>⌘4</CommandShortcut>
-                </CommandItem>
-                <CommandItem onSelect={goToGenerateCode}>
-                  <TokensIcon className="mr-2 h-4 w-4" />
-                  <span>Generate Code</span>
-                  <CommandShortcut>⌘5</CommandShortcut>
-                </CommandItem>
-                <CommandItem onSelect={goToSettings}>
-                  <GearIcon className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
-                  <CommandShortcut>⌘6</CommandShortcut>
-                </CommandItem>
-                <CommandItem onSelect={handleDisconnect}>
-                  <ExitIcon className="mr-2 h-4 w-4" />
-                  <span>Disconnect</span>
-                  {/*<CommandShortcut>⌘6</CommandShortcut>*/}
-                </CommandItem>
-              </CommandGroup>
+                  {auth?.shinkai_identity.includes('localhost') ? null : (
+                    <CommandItem onSelect={goToCreateChat}>
+                      <ChatBubbleIcon className="mr-2" />
+                      <span>Create DM Chat</span>
+                      <CommandShortcut>⌘2</CommandShortcut>
+                    </CommandItem>
+                  )}
+                  <CommandItem onSelect={goToCreateAgent}>
+                    <BotIcon className="mr-2" />
+                    <span>Add Agent</span>
+                    <CommandShortcut>⌘3</CommandShortcut>
+                  </CommandItem>
+                </CommandGroup>
+                <CommandSeparator />
+                <CommandGroup heading="General">
+                  <CommandItem onSelect={goToConversations}>
+                    <JobBubbleIcon className="mr-2" />
+                    <span>Conversations</span>
+                  </CommandItem>
+                  <CommandItem onSelect={goToGenerateCode}>
+                    <TokensIcon className="mr-2 h-4 w-4" />
+                    <span>Generate Code</span>
+                  </CommandItem>
+                  <CommandItem onSelect={goToSettings}>
+                    <GearIcon className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </CommandItem>
+                  <CommandItem onSelect={handleDisconnect}>
+                    <ExitIcon className="mr-2 h-4 w-4" />
+                    <span>Disconnect</span>
+                    {/*<CommandShortcut>⌘6</CommandShortcut>*/}
+                  </CommandItem>
+                </CommandGroup>
+              </ScrollArea>
             </CommandList>
           </Command>
         </PopoverContent>
