@@ -1,6 +1,14 @@
 import { ExitIcon, GearIcon, TokensIcon } from '@radix-ui/react-icons';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
   ChatBubbleIcon,
   Command,
   CommandGroup,
@@ -18,8 +26,8 @@ import {
 import { listen } from '@tauri-apps/api/event';
 import { BotIcon } from 'lucide-react';
 import * as React from 'react';
-import { useCallback, useEffect } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { useCallback, useEffect, useState } from 'react';
+import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import {
@@ -39,6 +47,8 @@ export function Footer() {
   const logout = useAuth((state) => state.setLogout);
   const auth = useAuth((state) => state.auth);
 
+  const [isConfirmLogoutDialogOpened, setIsConfirmLogoutDialogOpened] =
+    useState(false);
   const goToCreateJob = useCallback(() => {
     navigate(CREATE_JOB_PATH);
     setOpen(false);
@@ -87,6 +97,11 @@ export function Footer() {
     navigate(SETTINGS_PATH);
     setOpen(false);
   };
+  const confirmDisconnect = () => {
+    setIsConfirmLogoutDialogOpened(true);
+    setOpen(false);
+  };
+
   const handleDisconnect = () => {
     logout();
     navigate(ONBOARDING_PATH);
@@ -119,7 +134,7 @@ export function Footer() {
 
   return (
     <div className="absolute bottom-2 left-2 text-sm text-white">
-      <Popover modal onOpenChange={setOpen} open={open}>
+      <Popover modal={false} onOpenChange={setOpen} open={open}>
         <PopoverTrigger
           aria-expanded={open}
           className="rounded-lg bg-gray-400 px-2.5 py-2 shadow-lg transition-colors duration-150 hover:bg-gray-300"
@@ -179,9 +194,10 @@ export function Footer() {
                     <GearIcon className="mr-2 h-4 w-4" />
                     <span>Settings</span>
                   </CommandItem>
-                  <CommandItem onSelect={handleDisconnect}>
+                  <CommandItem onSelect={confirmDisconnect}>
                     <ExitIcon className="mr-2 h-4 w-4" />
                     <span>Disconnect</span>
+
                     {/*<CommandShortcut>⌘6</CommandShortcut>*/}
                   </CommandItem>
                 </CommandGroup>
@@ -190,6 +206,52 @@ export function Footer() {
           </Command>
         </PopoverContent>
       </Popover>
+      <AlertDialog
+        onOpenChange={setIsConfirmLogoutDialogOpened}
+        open={isConfirmLogoutDialogOpened}
+      >
+        <AlertDialogContent className="w-[75%]">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Disconnect Shinkai</AlertDialogTitle>
+            <AlertDialogDescription>
+              <div className="flex flex-col space-y-3 text-left text-white/70">
+                <div className="flex flex-col space-y-1 ">
+                  <span className="text-sm">
+                    Are you sure you want to disconnect? This will permanently
+                    delete your data
+                  </span>
+                </div>
+                <div className="text-sm">
+                  Before continuing, please
+                  <Link
+                    className="mx-1 inline-block cursor-pointer text-white underline"
+                    onClick={() => {
+                      setIsConfirmLogoutDialogOpened(false);
+                    }}
+                    to={'/export-connection'}
+                  >
+                    export your connection
+                  </Link>
+                  to restore your connection at any time.
+                </div>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="mt-4 flex gap-1">
+            <AlertDialogCancel
+              className="mt-0 flex-1"
+              onClick={() => {
+                setIsConfirmLogoutDialogOpened(false);
+              }}
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction className="flex-1" onClick={handleDisconnect}>
+              Disconnect
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
@@ -202,7 +264,7 @@ const MainLayout = () => {
   );
 
   useEffect(() => {
-    if (isSuccess && nodeInfo?.status === 'ok') {
+    if (isSuccess && nodeInfo?.status !== 'ok') {
       toast.error('Node Unavailable', {
         description:
           'Visor is having trouble connecting to your Shinkai Node. Your node may be offline, or your internet connection may be down.',
@@ -211,7 +273,7 @@ const MainLayout = () => {
         duration: 20000,
       });
     }
-    if (isSuccess && nodeInfo?.status !== 'ok') {
+    if (isSuccess && nodeInfo?.status === 'ok') {
       toast.dismiss('node-unavailable');
     }
   }, [isSuccess, nodeInfo?.status, isFetching]);
