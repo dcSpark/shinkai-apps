@@ -27,6 +27,9 @@ export const WithNav = (props: PropsWithChildren) => {
         duration: 20000,
       });
     }
+    if (isSuccess && nodeInfo?.status === 'ok') {
+      toast.dismiss('node-unavailable');
+    }
   }, [isSuccess, nodeInfo?.status, isFetching]);
 
   return (

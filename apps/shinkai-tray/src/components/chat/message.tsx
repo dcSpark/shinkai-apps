@@ -1,5 +1,6 @@
 import type { ShinkaiMessage } from '@shinkai_network/shinkai-message-ts/models';
 import { MessageSchemaType } from '@shinkai_network/shinkai-message-ts/models';
+import { extractErrorPropertyOrContent } from '@shinkai_network/shinkai-message-ts/utils/shinkai_message_handler';
 import { ChatConversationMessage } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
 import {
   Avatar,
@@ -83,14 +84,20 @@ const Message = ({ message }: { message: ChatConversationMessage }) => {
       >
         <MarkdownPreview
           className="!text-foreground !bg-transparent !text-sm"
-          source={message.content}
+          source={extractErrorPropertyOrContent(
+            message.content,
+            'error_message',
+          )}
           wrapperElement={{ 'data-color-mode': 'dark' }}
         />
 
         {message.isLocal ? null : (
           <CopyToClipboardIcon
             className="duration-30 absolute right-2 top-2 bg-gray-300 opacity-0 group-hover:opacity-100 group-hover:transition-opacity"
-            string={message.content}
+            string={extractErrorPropertyOrContent(
+              message.content,
+              'error_message',
+            )}
           />
         )}
         {!!message.fileInbox?.files?.length && (

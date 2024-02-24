@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PaperPlaneIcon } from '@radix-ui/react-icons';
 import {
+  extractErrorPropertyOrContent,
   extractJobIdFromInbox,
   extractReceiverShinkaiName,
   isJobInbox,
@@ -14,6 +15,9 @@ import {
   groupMessagesByDate,
 } from '@shinkai_network/shinkai-node-state/lib/utils/date';
 import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
   Button,
   DotsLoader,
   Form,
@@ -27,7 +31,13 @@ import {
 import { Placeholder } from '@tiptap/extension-placeholder';
 import { EditorContent, Extension, useEditor } from '@tiptap/react';
 import { StarterKit } from '@tiptap/starter-kit';
-import { FileCheck2, ImagePlusIcon, Loader, X } from 'lucide-react';
+import {
+  AlertCircle,
+  FileCheck2,
+  ImagePlusIcon,
+  Loader,
+  X,
+} from 'lucide-react';
 import {
   Fragment,
   useCallback,
@@ -54,6 +64,10 @@ const chatSchema = z.object({
   file: z.any().optional(),
 });
 
+enum ErrorCodes {
+  VectorResource = 'VectorResource',
+  ShinkaiBackendInferenceLimitReached = 'ShinkaiBackendInferenceLimitReached',
+}
 const ChatConversation = () => {
   const { inboxId: encodedInboxId = '' } = useParams();
   const auth = useAuth((state) => state.auth);
@@ -256,6 +270,16 @@ const ChatConversation = () => {
     chatForm.reset();
   }, [chatForm, inboxId]);
 
+  const isLimitReachedErrorLastMessage = useMemo(() => {
+    const lastMessage = data?.pages?.at(-1)?.at(-1);
+    if (!lastMessage) return;
+    const errorCode = extractErrorPropertyOrContent(
+      lastMessage.content,
+      'error',
+    );
+    return errorCode === ErrorCodes.ShinkaiBackendInferenceLimitReached;
+  }, [data?.pages]);
+
   return (
     <div className="flex flex-1 flex-col pt-2">
       <ScrollArea className="h-full px-5" ref={chatContainerRef}>
@@ -310,99 +334,114 @@ const ChatConversation = () => {
             ))}
         </div>
       </ScrollArea>
-
-      <div className="flex flex-col justify-start">
-        <div className="relative flex items-start gap-2 p-2 pb-3">
-          {isLoading ? (
-            <DotsLoader className="absolute left-8 top-10 flex items-center justify-center" />
-          ) : null}
-
-          <Form {...chatForm}>
-            <div
-              {...getRootFileProps({
-                className: cn(
-                  'dropzone group relative flex h-12 w-12 flex-shrink-0 cursor-pointer items-center justify-center rounded border-2 border-dashed border-slate-500 border-slate-500 transition-colors hover:border-white',
-                  file && 'border-0',
-                  isLoading && 'hidden',
-                ),
-              })}
-            >
-              {!file && (
-                <ImagePlusIcon className="stroke-slate-500 transition-colors group-hover:stroke-white" />
-              )}
-              <input
-                {...chatForm.register('file')}
-                {...getInputFileProps({
-                  onChange: chatForm.register('file').onChange,
-                })}
-              />
-              {file && (
-                <>
-                  {isImageOrPdf(file) && (
-                    <img
-                      alt=""
-                      className="absolute inset-0 h-full w-full rounded-lg bg-white object-cover"
-                      src={file.preview}
-                    />
-                  )}
-                  {!isImageOrPdf(file) && (
-                    <div className="flex flex-col items-center gap-2">
-                      <FileCheck2 className="text-gray-80 h-4 w-4 " />
-                      <span className="line-clamp-2 break-all px-2 text-center text-xs ">
-                        {file?.name}
-                      </span>
-                    </div>
-                  )}
-                </>
-              )}
-              {file != null && (
-                <button
-                  className={cn(
-                    'absolute -right-1 -top-1 h-6 w-6 cursor-pointer rounded-full bg-slate-900 p-1 hover:bg-slate-800',
-                    file ? 'block' : 'hidden',
-                  )}
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    chatForm.setValue('file', undefined, {
-                      shouldValidate: true,
-                    });
-                  }}
-                >
-                  <X className="h-full w-full text-slate-500" />
-                </button>
-              )}
+      {isLimitReachedErrorLastMessage && (
+        <Alert className="mx-auto w-[98%] shadow-lg" variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle className="text-sm">Limit Reached</AlertTitle>
+          <AlertDescription className="text-gray-80 text-xs">
+            <div className="flex flex-row items-center space-x-2">
+              {/* eslint-disable-next-line react/no-unescaped-entities */}
+              You've used all of your queries for the month on this model/agent.
+              Please start a new chat with another agent.
             </div>
+          </AlertDescription>
+        </Alert>
+      )}
 
-            <FormField
-              control={chatForm.control}
-              name="message"
-              render={({ field }) => (
-                <FormItem className="flex-1 space-y-0">
-                  <FormLabel className="sr-only">Enter message</FormLabel>
-                  <FormControl>
-                    <MessageEditor
-                      disabled={isLoading}
-                      onChange={field.onChange}
-                      onSubmit={chatForm.handleSubmit(onSubmit)}
-                      value={field.value}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+      {!isLimitReachedErrorLastMessage && (
+        <div className="flex flex-col justify-start">
+          <div className="relative flex items-start gap-2 p-2 pb-3">
+            {isLoading ? (
+              <DotsLoader className="absolute left-8 top-10 flex items-center justify-center" />
+            ) : null}
 
-            <Button
-              disabled={isLoading}
-              isLoading={isLoading}
-              onClick={chatForm.handleSubmit(onSubmit)}
-              size="icon"
-            >
-              <PaperPlaneIcon />
-              <span className="sr-only">Send Message</span>
-            </Button>
-          </Form>
+            <Form {...chatForm}>
+              <div
+                {...getRootFileProps({
+                  className: cn(
+                    'dropzone group relative flex h-12 w-12 flex-shrink-0 cursor-pointer items-center justify-center rounded border-2 border-dashed border-slate-500 border-slate-500 transition-colors hover:border-white',
+                    file && 'border-0',
+                    isLoading && 'hidden',
+                  ),
+                })}
+              >
+                {!file && (
+                  <ImagePlusIcon className="stroke-slate-500 transition-colors group-hover:stroke-white" />
+                )}
+                <input
+                  {...chatForm.register('file')}
+                  {...getInputFileProps({
+                    onChange: chatForm.register('file').onChange,
+                  })}
+                />
+                {file && (
+                  <>
+                    {isImageOrPdf(file) && (
+                      <img
+                        alt=""
+                        className="absolute inset-0 h-full w-full rounded-lg bg-white object-cover"
+                        src={file.preview}
+                      />
+                    )}
+                    {!isImageOrPdf(file) && (
+                      <div className="flex flex-col items-center gap-2">
+                        <FileCheck2 className="text-gray-80 h-4 w-4 " />
+                        <span className="line-clamp-2 break-all px-2 text-center text-xs ">
+                          {file?.name}
+                        </span>
+                      </div>
+                    )}
+                  </>
+                )}
+                {file != null && (
+                  <button
+                    className={cn(
+                      'absolute -right-1 -top-1 h-6 w-6 cursor-pointer rounded-full bg-slate-900 p-1 hover:bg-slate-800',
+                      file ? 'block' : 'hidden',
+                    )}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      chatForm.setValue('file', undefined, {
+                        shouldValidate: true,
+                      });
+                    }}
+                  >
+                    <X className="h-full w-full text-slate-500" />
+                  </button>
+                )}
+              </div>
+
+              <FormField
+                control={chatForm.control}
+                name="message"
+                render={({ field }) => (
+                  <FormItem className="flex-1 space-y-0">
+                    <FormLabel className="sr-only">Enter message</FormLabel>
+                    <FormControl>
+                      <MessageEditor
+                        disabled={isLoading}
+                        onChange={field.onChange}
+                        onSubmit={chatForm.handleSubmit(onSubmit)}
+                        value={field.value}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <Button
+                disabled={isLoading}
+                isLoading={isLoading}
+                onClick={chatForm.handleSubmit(onSubmit)}
+                size="icon"
+              >
+                <PaperPlaneIcon />
+                <span className="sr-only">Send Message</span>
+              </Button>
+            </Form>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
