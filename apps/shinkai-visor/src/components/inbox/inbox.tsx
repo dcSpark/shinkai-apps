@@ -308,11 +308,13 @@ export const Inbox = () => {
           </AlertDescription>
         </Alert>
       )}
-      <InboxInput
-        disabled={isSendingMessage || isLimitReachedErrorLastMessage}
-        loading={isJobProcessing}
-        onSubmit={(value) => submitSendMessage(value)}
-      />
+      {!isLimitReachedErrorLastMessage && (
+        <InboxInput
+          disabled={isSendingMessage || isLimitReachedErrorLastMessage}
+          loading={isJobProcessing}
+          onSubmit={(value) => submitSendMessage(value)}
+        />
+      )}
     </div>
   );
 };
