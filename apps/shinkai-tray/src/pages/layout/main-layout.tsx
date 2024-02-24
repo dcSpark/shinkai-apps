@@ -1,4 +1,5 @@
 import { ExitIcon, GearIcon, TokensIcon } from '@radix-ui/react-icons';
+import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import {
   ChatBubbleIcon,
   Command,
@@ -17,8 +18,9 @@ import {
 import { listen } from '@tauri-apps/api/event';
 import { BotIcon } from 'lucide-react';
 import * as React from 'react';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import {
   ADD_AGENT_PATH,
@@ -194,6 +196,26 @@ export function Footer() {
 
 const MainLayout = () => {
   const auth = useAuth((state) => state.auth);
+  const { nodeInfo, isSuccess, isFetching } = useGetHealth(
+    { node_address: auth?.node_address ?? '' },
+    { refetchInterval: 10000, enabled: !!auth },
+  );
+
+  useEffect(() => {
+    if (isSuccess && nodeInfo?.status === 'ok') {
+      toast.error('Node Unavailable', {
+        description:
+          'Visor is having trouble connecting to your Shinkai Node. Your node may be offline, or your internet connection may be down.',
+        important: true,
+        id: 'node-unavailable',
+        duration: 20000,
+      });
+    }
+    if (isSuccess && nodeInfo?.status !== 'ok') {
+      toast.dismiss('node-unavailable');
+    }
+  }, [isSuccess, nodeInfo?.status, isFetching]);
+
   return (
     <div className="relative flex h-full flex-col bg-gray-500 text-white">
       <div
