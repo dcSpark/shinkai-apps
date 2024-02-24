@@ -7,6 +7,7 @@ import ChatLayout from '../pages/chat/layout';
 import CreateAgentPage from '../pages/create-agent';
 import CreateChatPage from '../pages/create-chat';
 import CreateJobPage from '../pages/create-job';
+import { ExportConnection } from '../pages/export-connection';
 import GenerateCodePage from '../pages/generate-code';
 import MainLayout from '../pages/layout/main-layout';
 import OnboardingPage from '../pages/onboarding';
@@ -18,6 +19,7 @@ import {
   ADD_AGENT_PATH,
   CREATE_CHAT_PATH,
   CREATE_JOB_PATH,
+  EXPORT_CONNECTION,
   GENERATE_CODE_PATH,
   ONBOARDING_PATH,
   SETTINGS_PATH,
@@ -89,6 +91,14 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
           path={GENERATE_CODE_PATH}
+        />
+        <Route
+          element={
+            <ProtectedRoute>
+              <ExportConnection />
+            </ProtectedRoute>
+          }
+          path={EXPORT_CONNECTION}
         />
       </Route>
       <Route element={<Navigate replace to={'inboxes/'} />} path="/" />

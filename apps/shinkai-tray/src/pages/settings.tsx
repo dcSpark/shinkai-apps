@@ -2,12 +2,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import {
+  Button,
+  ExportIcon,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
+  QrIcon,
   Select,
   SelectContent,
   SelectItem,
@@ -17,8 +20,10 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
+import { GENERATE_CODE_PATH } from '../routes/name';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import SimpleLayout from './layout/simple-layout';
@@ -34,6 +39,7 @@ const formSchema = z.object({
 type FormSchemaType = z.infer<typeof formSchema>;
 
 const SettingsPage = () => {
+  const navigate = useNavigate();
   const auth = useAuth((authStore) => authStore.auth);
 
   const defaultAgentId = useSettings(
@@ -148,6 +154,28 @@ const SettingsPage = () => {
               />
             </form>
           </Form>
+        </div>
+        <div className="flex gap-4">
+          <Button
+            className="flex flex-1 cursor-pointer flex-col items-start gap-2 rounded-lg p-4 pr-8 text-left"
+            onClick={() => navigate('/export-connection')}
+            size="auto"
+            variant="ghost"
+          >
+            <ExportIcon />
+            <p className="text-smm text-white">Export Connection</p>
+          </Button>
+          <Button
+            className="flex flex-1 cursor-pointer flex-col items-start gap-2 rounded-lg p-4 pr-8 text-left"
+            onClick={() => navigate(GENERATE_CODE_PATH)}
+            size="auto"
+            variant="ghost"
+          >
+            <div className="">
+              <QrIcon />
+            </div>
+            <p className="text-smm text-white">Create Registration Code</p>
+          </Button>
         </div>
       </div>
     </SimpleLayout>

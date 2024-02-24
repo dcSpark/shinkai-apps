@@ -6,4 +6,5 @@ export const ADD_AGENT_PATH = '/add-agent';
 export const CREATE_JOB_PATH = '/create-job';
 export const CREATE_CHAT_PATH = '/create-chat';
 export const GENERATE_CODE_PATH = '/generate-code';
+export const EXPORT_CONNECTION = '/export-connection';
 export const INBOXES = '/inboxes';
