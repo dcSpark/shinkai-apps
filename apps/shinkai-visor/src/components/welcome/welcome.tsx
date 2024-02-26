@@ -17,7 +17,7 @@ export default function Welcome() {
         <div className="grid place-content-center ">
           <img
             alt="shinkai logo"
-            className="animate-spin-slow h-10 w-20"
+            className="animate-spin-slow w-[100px]"
             data-cy="shinkai-logo"
             src={srcUrlResolver(logo)}
           />
