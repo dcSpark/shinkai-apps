@@ -13,6 +13,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Switch,
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import { useEffect, useState } from 'react';
@@ -25,19 +26,61 @@ import { useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
 import { Models, modelsConfig } from './models';
 
-const formSchema = z.object({
-  // TODO: Translate this error message
-  agentName: z
-    .string()
-    .regex(
-      /^[a-zA-Z0-9]+(_[a-zA-Z0-9]+)*$/,
-      'It just accepts alphanumeric characters and underscores',
-    ),
-  externalUrl: z.string().url(),
-  apiKey: z.string().min(4),
-  model: z.nativeEnum(Models),
-  modelType: z.string().min(4),
-});
+const formSchema = z
+  .object({
+    // TODO: Translate this error message
+    agentName: z
+      .string()
+      .regex(
+        /^[a-zA-Z0-9]+(_[a-zA-Z0-9]+)*$/,
+        'It just accepts alphanumeric characters and underscores',
+      ),
+    externalUrl: z.string().url(),
+    apiKey: z.string().min(4),
+    model: z.nativeEnum(Models),
+    modelType: z.string(),
+    isCustomModel: z.boolean().default(false).optional(),
+    modelCustom: z.string().optional(),
+    modelTypeCustom: z.string().optional(),
+  })
+  .superRefine(
+    (
+      { isCustomModel, model, modelType, modelCustom, modelTypeCustom },
+      ctx,
+    ) => {
+      if (isCustomModel) {
+        if (!modelCustom) {
+          ctx.addIssue({
+            path: ['modelCustom'],
+            code: z.ZodIssueCode.custom,
+            message: 'Model Name is required',
+          });
+        }
+        if (!modelTypeCustom) {
+          ctx.addIssue({
+            path: ['modelTypeCustom'],
+            code: z.ZodIssueCode.custom,
+            message: 'Model ID is required',
+          });
+        }
+      } else {
+        if (!model) {
+          ctx.addIssue({
+            path: ['model'],
+            code: z.ZodIssueCode.custom,
+            message: 'Model is required',
+          });
+        }
+        if (!modelType) {
+          ctx.addIssue({
+            path: ['modelType'],
+            code: z.ZodIssueCode.custom,
+            message: 'Model Type is required',
+          });
+        }
+      }
+    },
+  );
 
 type FormSchemaType = z.infer<typeof formSchema>;
 
@@ -52,13 +95,20 @@ export const AddAgent = () => {
       apiKey: '',
       model: Models.OpenAI,
       modelType: '',
+      isCustomModel: false,
     },
   });
+
   const intl = useIntl();
   const currentModel = useWatch<FormSchemaType>({
     control: form.control,
     name: 'model',
   });
+  const isCustomModelMode = useWatch<FormSchemaType>({
+    control: form.control,
+    name: 'isCustomModel',
+  });
+
   const { mutateAsync: createAgent, isPending } = useCreateAgent({
     onSuccess: () => {
       history.replace(
@@ -78,6 +128,10 @@ export const AddAgent = () => {
     },
   ];
   const getModelObject = (model: Models, modelType: string) => {
+    if (isCustomModelMode) {
+      return { GenericAPI: { model_type: modelType } };
+    }
+
     switch (model) {
       case Models.OpenAI:
         return { OpenAI: { model_type: modelType } };
@@ -117,6 +171,10 @@ export const AddAgent = () => {
     { label: string; value: string }[]
   >([]);
   useEffect(() => {
+    if (isCustomModelMode) {
+      form.setValue('externalUrl', '');
+      return;
+    }
     const modelConfig = modelsConfig[currentModel as Models];
     form.setValue('externalUrl', modelConfig.apiUrl);
     setModelTypeOptions(
@@ -178,73 +236,114 @@ export const AddAgent = () => {
 
             <FormField
               control={form.control}
-              name="model"
+              name="isCustomModel"
               render={({ field }) => (
-                <FormItem>
-                  <Select
-                    data-testid="patata1"
-                    defaultValue={field.value as unknown as string}
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  >
+                <FormItem className="mt-10 mt-4 flex flex-row items-center space-x-3  py-3">
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      id={'custom-model'}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <label htmlFor="custom-model">Add a custom model</label>
+                  </div>
+                </FormItem>
+              )}
+            />
+            {!isCustomModelMode && (
+              <FormField
+                control={form.control}
+                name="model"
+                render={({ field }) => (
+                  <FormItem>
+                    <Select
+                      defaultValue={field.value as unknown as string}
+                      disabled={!!isCustomModelMode}
+                      onValueChange={field.onChange}
+                      value={field.value}
+                    >
+                      <FormLabel>
+                        <FormattedMessage id="model.one" />
+                      </FormLabel>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Models place" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {modelOptions.map((model) => (
+                          <SelectItem
+                            key={model.value}
+                            value={model.value.toString()}
+                          >
+                            {model.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+            {!isCustomModelMode && (
+              <FormField
+                control={form.control}
+                name="modelType"
+                render={({ field }) => (
+                  <FormItem>
                     <FormLabel>
-                      <FormattedMessage id="model.one" />
+                      <FormattedMessage id="model.other" />
                     </FormLabel>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Models place" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent data-testid="patata2">
-                      {modelOptions.map((model) => (
-                        <SelectItem
-                          key={model.value}
-                          value={model.value.toString()}
-                        >
-                          {model.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    <Select
+                      defaultValue={field.value as unknown as string}
+                      disabled={!!isCustomModelMode}
+                      onValueChange={field.onChange}
+                      value={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="max-h-[150px] overflow-y-auto text-xs">
+                        {modelTypeOptions.map((modelType) => (
+                          <SelectItem
+                            key={modelType.value}
+                            value={modelType.value}
+                          >
+                            {modelType.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="modelType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    <FormattedMessage id="model.other" />
-                  </FormLabel>
-                  <Select
-                    defaultValue={field.value as unknown as string}
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="max-h-[150px] overflow-y-auto text-xs">
-                      {modelTypeOptions.map((modelType) => (
-                        <SelectItem
-                          key={modelType.value}
-                          value={modelType.value}
-                        >
-                          {modelType.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {isCustomModelMode && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="modelCustom"
+                  render={({ field }) => (
+                    <TextField field={field} label={'Model Name'} />
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="modelTypeCustom"
+                  render={({ field }) => (
+                    <TextField field={field} label={'Model ID'} />
+                  )}
+                />
+              </>
+            )}
           </div>
           <Button
             className="w-full"
