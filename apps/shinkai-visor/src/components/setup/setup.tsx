@@ -9,6 +9,7 @@ import { IntlProvider } from 'react-intl';
 import { MemoryRouter as Router } from 'react-router-dom';
 
 import visorLogo from '../../assets/icons/visor.svg';
+import coverImage from '../../assets/images/setup-cover.png';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
 import { langMessages, locale } from '../../lang/intl';
 import { sendMessage } from '../../service-worker/communication/internal';
@@ -110,7 +111,7 @@ const SetupStepTwo = () => {
           <img
             alt={''}
             className="w-full object-cover"
-            src="https://www.shinkai.com/assets/images/website-type.webp"
+            src={srcUrlResolver(coverImage)}
           />
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform" />
         </div>
