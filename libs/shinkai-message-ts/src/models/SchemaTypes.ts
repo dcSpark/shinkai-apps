@@ -77,6 +77,11 @@ export interface SerializedAgent {
 export interface AgentAPIModel {
   OpenAI?: OpenAI;
   GenericAPI?: GenericAPI;
+  Ollama?: Ollama;
+}
+
+export interface Ollama {
+  model_type: string;
 }
 
 export interface OpenAI {
