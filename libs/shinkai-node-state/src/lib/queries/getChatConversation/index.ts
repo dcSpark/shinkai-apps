@@ -47,7 +47,7 @@ export const getChatConversation = async ({
       const isLocal = isLocalMessage(shinkaiMessage, shinkaiIdentity, profile);
       const message: ChatConversationMessage = {
         hash:
-          shinkaiMessage?.external_metadata?.node_api_data.node_message_hash ??
+          shinkaiMessage?.external_metadata?.node_api_data?.node_message_hash ??
           '',
         inboxId,
         content,
@@ -58,7 +58,7 @@ export const getChatConversation = async ({
         },
         isLocal,
         scheduledTime:
-          shinkaiMessage.external_metadata?.node_api_data.node_timestamp,
+          shinkaiMessage.external_metadata?.node_api_data?.node_timestamp,
       };
       if (filesInbox) {
         const fileNames = await getFileNames(
