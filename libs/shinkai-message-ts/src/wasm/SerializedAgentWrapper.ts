@@ -32,6 +32,8 @@ export class SerializedAgentWrapper {
       agent.model.GenericAPI.model_type
     ) {
       modelStr = 'genericapi:' + agent.model.GenericAPI.model_type;
+    } else if (agent?.model?.Ollama) {
+      modelStr = 'ollama:' + agent.model.Ollama.model_type;
     } else {
       throw new Error('Invalid model: ' + JSON.stringify(agent.model));
     }

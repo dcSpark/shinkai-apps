@@ -107,5 +107,6 @@
   "shortcut-key": "Tecla de acceso rápido",
   "shortcut-key-description": "Presiona la tecla de acceso rápido para abrir Shinkai Visor",
   "limit-reached": "Límite alcanzado",
-  "limit-reached-description": "Has utilizado todas tus consultas para el mes en este modelo/agente. Por favor, inicia un nuevo chat con otro agente."
+  "limit-reached-description": "Has utilizado todas tus consultas para el mes en este modelo/agente. Por favor, inicia un nuevo chat con otro agente.",
+  "ollama": "Ollama"
 }

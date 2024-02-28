@@ -36,7 +36,7 @@ const formSchema = z
         'It just accepts alphanumeric characters and underscores',
       ),
     externalUrl: z.string().url(),
-    apiKey: z.string().min(4),
+    apiKey: z.string(),
     model: z.nativeEnum(Models),
     modelType: z.string(),
     isCustomModel: z.boolean().default(false).optional(),
@@ -45,7 +45,7 @@ const formSchema = z
   })
   .superRefine(
     (
-      { isCustomModel, model, modelType, modelCustom, modelTypeCustom },
+      { isCustomModel, model, modelType, modelCustom, modelTypeCustom, apiKey },
       ctx,
     ) => {
       if (isCustomModel) {
@@ -76,6 +76,13 @@ const formSchema = z
             path: ['modelType'],
             code: z.ZodIssueCode.custom,
             message: 'Model Type is required',
+          });
+        }
+        if (!apiKey && model !== Models.Ollama) {
+          ctx.addIssue({
+            path: ['apiKey'],
+            code: z.ZodIssueCode.custom,
+            message: 'Api Key is required',
           });
         }
       }
@@ -126,6 +133,10 @@ export const AddAgent = () => {
       value: Models.TogetherComputer,
       label: intl.formatMessage({ id: 'togethercomputer' }),
     },
+    {
+      value: Models.Ollama,
+      label: intl.formatMessage({ id: 'ollama' }),
+    },
   ];
   const getModelObject = (model: Models, modelType: string) => {
     if (isCustomModelMode) {
@@ -137,6 +148,8 @@ export const AddAgent = () => {
         return { OpenAI: { model_type: modelType } };
       case Models.TogetherComputer:
         return { GenericAPI: { model_type: modelType } };
+      case Models.Ollama:
+        return { Ollama: { model_type: modelType } };
       default:
         throw new Error('unknown model');
     }
