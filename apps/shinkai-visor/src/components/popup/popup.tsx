@@ -27,6 +27,7 @@ import { CreateRegistrationCode } from '../create-registration-code/create-regis
 import { ExportConnection } from '../export-connection/export-connection';
 import { Inbox } from '../inbox/inbox';
 import { Inboxes } from '../inboxes/inboxes';
+import NodeFiles from '../node-files/node-files';
 import { Settings } from '../settings/settings';
 import { SplashScreen } from '../splash-screen/splash-screen';
 import Welcome from '../welcome/welcome';
@@ -101,6 +102,13 @@ export const Popup = () => {
                     </Route>
                     <Route path="/">
                       <Inboxes />
+                    </Route>
+                  </Switch>
+                </Route>
+                <Route path="/node-files">
+                  <Switch>
+                    <Route path="/">
+                      <NodeFiles />
                     </Route>
                   </Switch>
                 </Route>
