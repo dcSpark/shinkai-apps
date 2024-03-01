@@ -58,18 +58,20 @@ export const test = base.extend<{
     await use(page);
   },
   popup: async ({ context, page, worker, extensionId }, use) => {
-    // Hack: This code let use control the sidel panel open/close
-    const manifestPage = await context.newPage();
-    await manifestPage.goto(`chrome-extension://${extensionId}/manifest.json`);
-    await manifestPage.evaluate(async () => {
-      await chrome.runtime.sendMessage({
-        type: 'open-side-panel',
-      });
-    });
-
     await page.bringToFront();
     // eslint-disable-next-line playwright/no-networkidle
     await page.waitForLoadState('networkidle');
+
+    await waitFor(
+      async () => {
+        await expect(page.getByTestId('action-button')).toBeVisible();
+      },
+      500,
+      5000,
+    );
+    await page.getByTestId('action-button').click();
+
+
     let popupPage: Page | undefined = undefined;
     await waitFor(
       async () => {
@@ -85,7 +87,7 @@ export const test = base.extend<{
         await expect(popupPage).toBeDefined();
       },
       500,
-      1000,
+      5000,
     );
     // eslint-disable-next-line playwright/no-networkidle
     await popupPage.waitForLoadState('networkidle');
