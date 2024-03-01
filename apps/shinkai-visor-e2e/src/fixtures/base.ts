@@ -7,7 +7,7 @@ import {
 } from '@playwright/test';
 import * as path from 'path';
 
-import { waitFor, waitMs } from '../utils/test-utils';
+import { waitFor } from '../utils/test-utils';
 
 /*
   This ENV variable is really important to allow Playwirght to get access to the popup page running in a Chrome side panel
