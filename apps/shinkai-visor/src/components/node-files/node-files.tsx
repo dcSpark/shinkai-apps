@@ -15,7 +15,7 @@ import {
   FileTypeIcon,
   ScrollArea,
 } from '@shinkai_network/shinkai-ui';
-import { ChevronLeft, ChevronRight, LockIcon } from 'lucide-react';
+import { ChevronLeft, ChevronRight, LockIcon, XIcon } from 'lucide-react';
 import React from 'react';
 
 import { Header } from '../header/header';
@@ -124,6 +124,9 @@ export default function NodeFiles() {
         open={!!activeFile}
       >
         <DrawerContent className="my-6">
+          <DrawerClose className="absolute right-4 top-5">
+            <XIcon className="text-gray-80" />
+          </DrawerClose>
           <DrawerHeader>
             <DrawerTitle className={'sr-only'}>Information</DrawerTitle>
             <DrawerDescription>
@@ -190,6 +193,7 @@ export default function NodeFiles() {
               </div>
             </DrawerDescription>
           </DrawerHeader>
+
           <DrawerFooter>
             <Button>Download Source File</Button>
             <Button variant="outline">Download Vector Resource</Button>
