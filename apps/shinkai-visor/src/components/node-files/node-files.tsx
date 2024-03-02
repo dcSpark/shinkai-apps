@@ -11,7 +11,6 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
   FileTypeIcon,
   ScrollArea,
 } from '@shinkai_network/shinkai-ui';
