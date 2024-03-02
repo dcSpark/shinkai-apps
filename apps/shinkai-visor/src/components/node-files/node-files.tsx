@@ -33,18 +33,26 @@ export default function NodeFiles() {
 
   return (
     <div className="flex h-full flex-col space-y-3 overflow-hidden">
-      <Header title={'Node Files'} />
-      {prevActiveFileBranch.current.length > 0 && (
-        <Button
-          onClick={() => {
-            setActiveFileBranch(prevActiveFileBranch.current.pop() || []);
-          }}
-          size={'icon'}
-          variant="ghost"
-        >
-          <ChevronLeft />
+      <div className="relative flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          {prevActiveFileBranch.current.length > 0 && (
+            <Button
+              onClick={() => {
+                setActiveFileBranch(prevActiveFileBranch.current.pop() || []);
+              }}
+              size={'icon'}
+              variant="ghost"
+            >
+              <ChevronLeft />
+            </Button>
+          )}
+        </div>
+        <Button size={'icon'} variant="ghost">
+          <ChevronRight />
         </Button>
-      )}
+      </div>
+      <Header title={'Node Files'} />
+
       <ScrollArea>
         <div className="flex flex-1 flex-col divide-y divide-gray-400">
           {activeFileBranch.map((file, index: number) => {
