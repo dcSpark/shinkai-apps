@@ -11,7 +11,6 @@ export const WithNav = (props: PropsWithChildren) => {
   const location = useLocation();
   const auth = useAuth((state) => state.auth);
   const isInboxPage = location.pathname.includes('/inboxes/');
-  const isNodeFilesPage = location.pathname.includes('/node-files');
 
   const { nodeInfo, isSuccess, isFetching } = useGetHealth(
     { node_address: auth?.node_address ?? '' },
@@ -40,7 +39,7 @@ export const WithNav = (props: PropsWithChildren) => {
         isInboxPage && 'space-y-4',
       )}
     >
-      {!isNodeFilesPage && <NavBar />}
+      <NavBar />
       <div
         className="grow overflow-auto"
         /* eslint-disable-next-line react/no-unknown-property */
