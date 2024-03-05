@@ -5,6 +5,7 @@ export interface InternalMetadata {
   recipient_subidentity: string;
   inbox: string;
   encryption: keyof typeof TSEncryptionMethod;
+  node_api_data: NodeApiData;
 }
 
 export type NodeApiData = {
@@ -19,7 +20,6 @@ export interface ExternalMetadata {
   scheduled_time: string;
   signature: string;
   other: string;
-  node_api_data: NodeApiData;
 }
 
 export interface EncryptedShinkaiData {
