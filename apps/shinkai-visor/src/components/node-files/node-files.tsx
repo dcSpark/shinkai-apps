@@ -24,7 +24,6 @@ import {
   ChevronLeft,
   ChevronRight,
   LockIcon,
-  Plus,
   PlusIcon,
   SearchIcon,
   X,
