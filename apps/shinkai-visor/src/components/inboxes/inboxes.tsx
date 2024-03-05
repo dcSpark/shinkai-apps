@@ -123,14 +123,14 @@ export const Inboxes = () => {
                     value="actives"
                   >
                     <ActiveIcon className="h-4 w-4" />
-                    Actives
+                    Active
                   </TabsTrigger>
                   <TabsTrigger
                     className="flex items-center gap-1.5"
                     value="archives"
                   >
                     <ArchiveIcon className="h-4 w-4" />
-                    Archives
+                    Archived
                   </TabsTrigger>
                 </TabsList>
                 <TabsContent value="actives">
