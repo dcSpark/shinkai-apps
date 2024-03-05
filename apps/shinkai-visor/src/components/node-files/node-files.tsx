@@ -3,6 +3,7 @@ import { useGetNodeFiles } from '@shinkai_network/shinkai-node-state/lib/queries
 import {
   Badge,
   Button,
+  Checkbox,
   DirectoryTypeIcon,
   Drawer,
   DrawerClose,
@@ -23,6 +24,7 @@ import {
   ChevronLeft,
   ChevronRight,
   LockIcon,
+  Plus,
   PlusIcon,
   SearchIcon,
   X,
@@ -41,6 +43,8 @@ export default function NodeFiles() {
   const [activeFile, setActiveFile] = React.useState<NodeFile | null>(null);
 
   const [querySearch, setQuerySearch] = React.useState('');
+  const [selectionMode, setSelectionMode] = React.useState(false);
+
   React.useEffect(() => {
     setActiveFileBranch(nodeFiles ?? []);
   }, [nodeFiles]);
@@ -181,6 +185,7 @@ export default function NodeFiles() {
                     setActiveFile(file);
                   }
                 }}
+                selectionMode={selectionMode}
               />
             );
           })}
@@ -272,6 +277,31 @@ export default function NodeFiles() {
           </DrawerFooter>
         </DrawerContent>
       </Drawer>
+
+      <Button
+        className="fixed bottom-4 right-4 h-[60px] w-[60px]"
+        onClick={() => setSelectionMode(true)}
+        size="icon"
+      >
+        <span className="sr-only">Create AI DM</span>
+        <svg fill="none" height="30" viewBox="0 0 30 30" width="30">
+          <path
+            d="M21.875 1.25C18.0781 1.25 15 4.32812 15 8.125C15 11.9219 18.0781 15 21.875 15C25.6719 15 28.75 11.9219 28.75 8.125C28.75 4.32812 25.6719 1.25 21.875 1.25ZM21.875 3.125C22.22 3.125 22.5 3.405 22.5 3.75V7.5H26.25C26.595 7.5 26.875 7.78 26.875 8.125C26.875 8.47 26.595 8.75 26.25 8.75H22.5V12.5C22.5 12.845 22.22 13.125 21.875 13.125C21.53 13.125 21.25 12.845 21.25 12.5V8.75H17.5C17.155 8.75 16.875 8.47 16.875 8.125C16.875 7.78 17.155 7.5 17.5 7.5H21.25V3.75C21.25 3.405 21.53 3.125 21.875 3.125ZM6.5625 4.375C4.325 4.375 2.5 6.2 2.5 8.4375V19.0625C2.5 21.3 4.325 23.125 6.5625 23.125H7.5V26.5625C7.5 27.1562 7.83179 27.6939 8.36304 27.9626C8.58804 28.0689 8.825 28.125 9.0625 28.125C9.39375 28.125 9.725 28.0187 10 27.8125L16.25 23.125H23.4375C25.675 23.125 27.5 21.3 27.5 19.0625V13.9807C26.9438 14.5182 26.3125 14.9746 25.625 15.3308V19.0625C25.625 20.2687 24.6437 21.25 23.4375 21.25H15.9375C15.7375 21.25 15.5373 21.3192 15.3748 21.438L9.375 25.9375V22.1875C9.375 21.6688 8.95625 21.25 8.4375 21.25H6.5625C5.35625 21.25 4.375 20.2687 4.375 19.0625V8.4375C4.375 7.23125 5.35625 6.25 6.5625 6.25H13.9685C14.1248 5.5875 14.3629 4.9625 14.6692 4.375H6.5625Z"
+            fill="white"
+          />
+        </svg>
+      </Button>
+      {selectionMode && (
+        <Button
+          className="fixed bottom-14 right-14 h-[24px] w-[24px] bg-white text-gray-500"
+          onClick={() => setSelectionMode(false)}
+          size="icon"
+          variant="outline"
+        >
+          <span className="sr-only">Unselect All</span>
+          <XIcon />
+        </Button>
+      )}
     </div>
   );
 }
@@ -279,10 +309,61 @@ export default function NodeFiles() {
 const NodeFileItem = ({
   file,
   onClick,
+  selectionMode,
 }: {
   file: NodeFile;
   onClick: () => void;
+  selectionMode: boolean;
 }) => {
+  if (selectionMode) {
+    return (
+      <div className="flex items-center gap-3 py-3">
+        <Checkbox id={`item-${file.name}`} />
+        <label
+          className="flex items-center gap-3"
+          htmlFor={`item-${file.name}`}
+        >
+          <div>
+            {file.type === 'folder' ? <DirectoryTypeIcon /> : <FileTypeIcon />}
+          </div>
+          <div className="flex-1 text-left">
+            <div className="text-base font-medium">
+              {file.name}
+              {file.type === 'file' && (
+                <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
+                  {file.file_extension?.split('.').pop()}
+                </Badge>
+              )}
+            </div>
+            {file.type === 'file' ? (
+              <p className="text-sm text-gray-100">
+                <span>
+                  {new Date(file.creation_date).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })}
+                </span>{' '}
+                - <span>{file.size}</span>
+              </p>
+            ) : (
+              <p className="text-sm text-gray-100">
+                <span>
+                  {new Date(file.creation_date).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })}
+                </span>{' '}
+                - <span>{file?.items?.length} files</span>
+              </p>
+            )}
+          </div>
+        </label>
+      </div>
+    );
+  }
+
   return (
     <button
       className="flex items-center justify-between gap-2 py-3 hover:bg-gray-400"
