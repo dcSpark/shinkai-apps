@@ -3,6 +3,7 @@ import '../../theme/styles.css';
 import { queryClient } from '@shinkai_network/shinkai-node-state/lib/constants';
 import { Toaster } from '@shinkai_network/shinkai-ui';
 import { QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { AnimatePresence, motion } from 'framer-motion';
 import * as React from 'react';
 import { useEffect } from 'react';
@@ -152,6 +153,7 @@ root.render(
         </div>
         <Toaster />
       </IntlProvider>
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   </React.StrictMode>,
 );

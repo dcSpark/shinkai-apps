@@ -109,7 +109,7 @@ export const extractErrorPropertyOrContent = (
       return parsedContent[property];
     }
   } catch (error) {
-    console.log('extractErrorPropertyOrContent: ', error);
+    /* ignore */
   }
   return String(content);
 };
