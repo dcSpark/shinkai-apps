@@ -13,6 +13,7 @@ export enum ServiceWorkerExternalMessageType {
   QuickConnectionIntent = 'quick-connection-intent',
   GetProfileAgents = 'get-profile-agents',
   GetProfileInboxes = 'get-profile-inboxes',
+  ExportConnectionIntent = 'export-connection-intent',
 }
 
 export type BaseServiceWorkerExternalMessage = {
@@ -72,6 +73,8 @@ export interface ServiceWorkerExternalMessageIsConnected {
 export type ServiceWorkerExternalMessageIsConnectedResponse = {
   isNodeConnected: boolean,
 };
+
+export type ServiceWorkerExternalMessageExportConnectionIntentResponse = void;
 
 export type ServiceWorkerExternalMessage = BaseServiceWorkerExternalMessage;
 

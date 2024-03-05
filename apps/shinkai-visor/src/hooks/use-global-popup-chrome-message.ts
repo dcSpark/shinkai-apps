@@ -68,6 +68,12 @@ export const useGlobalPopupChromeMessage = () => {
         useAuth.persist.rehydrate();
         useSettings.persist.rehydrate();
         break;
+      case ServiceWorkerInternalMessageType.ExportConnectionIntent: {
+        history.push({
+          pathname: '/settings/export-connection',
+        });
+        break;
+      }
       default:
         break;
     }

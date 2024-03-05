@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import {
+  exportConnectionIntentResolver,
   getProfileAgentsResolver,
   getProfileInboxes,
   isInstalledResolver,
@@ -57,5 +58,11 @@ export const ACTIONS_MAP: ServiceWorkerExternalMessageActionsMap = {
       throw new Error('NYI');
     },
     validator: z.undefined().or(z.object({})),
+  },
+  [ServiceWorkerExternalMessageType.ExportConnectionIntent]: {
+    permission: 'export-connection-intent',
+    resolver: exportConnectionIntentResolver,
+    validator: z.void(),
+    openSidePanel: true,
   },
 };

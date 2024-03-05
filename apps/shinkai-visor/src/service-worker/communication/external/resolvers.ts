@@ -8,6 +8,7 @@ import { useAuth } from '../../../store/auth/auth';
 import { sendMessage } from '../internal';
 import { ServiceWorkerInternalMessageType } from '../internal/types';
 import {
+  ServiceWorkerExternalMessageExportConnectionIntentResponse,
   ServiceWorkerExternalMessageGetProfileAgentsResponse,
   ServiceWorkerExternalMessageGetProfileInboxesResponse,
   ServiceWorkerExternalMessageIsConnected,
@@ -107,4 +108,11 @@ export const getProfileInboxes =
     return {
       inboxes,
     };
+  };
+
+export const exportConnectionIntentResolver =
+  async (): Promise<ServiceWorkerExternalMessageExportConnectionIntentResponse> => {
+    return sendMessage({
+      type: ServiceWorkerInternalMessageType.ExportConnectionIntent,
+    });
   };
