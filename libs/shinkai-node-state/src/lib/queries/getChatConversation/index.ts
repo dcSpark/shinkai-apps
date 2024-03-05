@@ -47,8 +47,10 @@ export const getChatConversation = async ({
       const isLocal = isLocalMessage(shinkaiMessage, shinkaiIdentity, profile);
       const message: ChatConversationMessage = {
         hash:
-          shinkaiMessage?.external_metadata?.node_api_data?.node_message_hash ??
-          '',
+          shinkaiMessage.body && 'unencrypted' in shinkaiMessage.body
+            ? shinkaiMessage.body.unencrypted.internal_metadata?.node_api_data
+                ?.node_message_hash
+            : '',
         inboxId,
         content,
         sender: {
@@ -57,7 +59,11 @@ export const getChatConversation = async ({
             : 'https://ui-avatars.com/api/?name=S&background=FF7E7F&color=ffffff',
         },
         isLocal,
-        scheduledTime: shinkaiMessage.external_metadata?.scheduled_time,
+        scheduledTime:
+          shinkaiMessage.body && 'unencrypted' in shinkaiMessage.body
+            ? shinkaiMessage.body.unencrypted.internal_metadata?.node_api_data
+                ?.node_timestamp
+            : '',
       };
       if (filesInbox) {
         const fileNames = await getFileNames(
