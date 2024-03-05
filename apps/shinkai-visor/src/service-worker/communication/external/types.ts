@@ -6,11 +6,14 @@ import { ZodSchema } from 'zod';
 
 import { ACTIONS_MAP } from './actions';
 export enum ServiceWorkerExternalMessageType {
+  IsInstalled = 'is-installed',
   InstallToolkit = 'install-toolkit',
   IsNodePristine = 'is-node-pristine',
+  IsNodeConnected = 'is-node-connected',
   QuickConnectionIntent = 'quick-connection-intent',
   GetProfileAgents = 'get-profile-agents',
   GetProfileInboxes = 'get-profile-inboxes',
+  ExportConnectionIntent = 'export-connection-intent',
 }
 
 export type BaseServiceWorkerExternalMessage = {
@@ -58,6 +61,20 @@ export interface ServiceWorkerExternalMessageQuickConnectionIntent {
   tabId: number;
 }
 export type ServiceWorkerExternalMessageQuickConnectionIntentResponse = void;
+
+export type ServiceWorkerExternalMessageIsInstalledResponse = {
+  isInstalled: true,
+  version: string,
+};
+
+export interface ServiceWorkerExternalMessageIsConnected {
+  nodeAddress: string;
+}
+export type ServiceWorkerExternalMessageIsConnectedResponse = {
+  isNodeConnected: boolean,
+};
+
+export type ServiceWorkerExternalMessageExportConnectionIntentResponse = void;
 
 export type ServiceWorkerExternalMessage = BaseServiceWorkerExternalMessage;
 

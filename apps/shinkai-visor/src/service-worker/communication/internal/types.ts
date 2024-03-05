@@ -12,6 +12,7 @@ export enum ServiceWorkerInternalMessageType {
   OpenSidePanel = 'open-side-panel',
   CloseSidePanel = 'close-side-panel',
   IsSidePanelOpen = 'is-side-panel-open',
+  ExportConnectionIntent = 'export-connection-intent',
 }
 
 export enum ContentScriptBridgeMessageType {
@@ -79,4 +80,8 @@ export type ServiceWorkerInternalMessage =
   | {
       type: ServiceWorkerInternalMessageType.QuickConnectionIntent;
       data: { nodeAddress: string };
+    }
+  | {
+      type: ServiceWorkerInternalMessageType.ExportConnectionIntent;
+      data?: never;
     };

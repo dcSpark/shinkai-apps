@@ -172,4 +172,43 @@ export const extenralCommunicationTests = () => {
     await expect(response.payload.inboxes).toHaveLength(1);
     await nodeManager.stopNode();
   });
+
+  test('is-installed', async ({
+    page,
+    extensionId,
+  }) => {
+    const response = await page.evaluate(
+      async ({ extensionId }) => {
+        return chrome.runtime.sendMessage(extensionId, {
+          type: 'is-installed',
+          payload: undefined,
+        });
+      },
+      { extensionId },
+    );
+    console.log('response', response);
+    await expect(response.status).toBe('success');
+    await expect(response.payload.isInstalled).toBe(true);
+    await expect(response.payload.version).toMatch(/.*\..*\..*\..*/);
+  });
+
+  test('is-node-connected', async ({
+    page,
+    extensionId,
+  }) => {
+    const response = await page.evaluate(
+      async ({ extensionId }) => {
+        return chrome.runtime.sendMessage(extensionId, {
+          type: 'is-node-connected',
+          payload: {
+            nodeAddress: 'http://localhost:9550',
+          },
+        });
+      },
+      { extensionId },
+    );
+    console.log('response', response);
+    await expect(response.status).toBe('success');
+    await expect(response.payload.isNodeConnected).toBe(false);
+  });
 };
