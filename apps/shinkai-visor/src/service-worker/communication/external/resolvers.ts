@@ -10,11 +10,30 @@ import { ServiceWorkerInternalMessageType } from '../internal/types';
 import {
   ServiceWorkerExternalMessageGetProfileAgentsResponse,
   ServiceWorkerExternalMessageGetProfileInboxesResponse,
+  ServiceWorkerExternalMessageIsConnected,
+  ServiceWorkerExternalMessageIsConnectedResponse,
+  ServiceWorkerExternalMessageIsInstalledResponse,
   ServiceWorkerExternalMessageIsNodePristine,
   ServiceWorkerExternalMessageIsNodePristineResponse,
   ServiceWorkerExternalMessageQuickConnectionIntent,
   ServiceWorkerExternalMessageQuickConnectionIntentResponse,
 } from './types';
+
+export const isInstalledResolver =
+  async (): Promise<ServiceWorkerExternalMessageIsInstalledResponse> => {
+    return {
+      isInstalled: true,
+      version: chrome.runtime.getManifest().version,
+    };
+  };
+
+export const isNodeConnectedResolver = async ({
+  nodeAddress,
+}: ServiceWorkerExternalMessageIsConnected): Promise<ServiceWorkerExternalMessageIsConnectedResponse> => {
+  return {
+    isNodeConnected: useAuth.getState().auth?.node_address === nodeAddress,
+  };
+};
 
 export const isNodePristineResolver = async ({
   nodeAddress,

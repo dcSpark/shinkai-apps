@@ -3,6 +3,8 @@ import { z } from 'zod';
 import {
   getProfileAgentsResolver,
   getProfileInboxes,
+  isInstalledResolver,
+  isNodeConnectedResolver,
   isNodePristineResolver,
   quickConnectionIntent,
 } from './resolvers';
@@ -12,9 +14,21 @@ import {
 } from './types';
 
 export const ACTIONS_MAP: ServiceWorkerExternalMessageActionsMap = {
+  [ServiceWorkerExternalMessageType.IsInstalled]: {
+    permission: '',
+    resolver: isInstalledResolver,
+    validator: z.void(),
+  },
   [ServiceWorkerExternalMessageType.IsNodePristine]: {
     permission: 'node-is-pristine',
     resolver: isNodePristineResolver,
+    validator: z.object({
+      nodeAddress: z.string().url(),
+    }),
+  },
+  [ServiceWorkerExternalMessageType.IsNodeConnected]: {
+    permission: 'node-is-connected',
+    resolver: isNodeConnectedResolver,
     validator: z.object({
       nodeAddress: z.string().url(),
     }),
