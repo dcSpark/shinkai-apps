@@ -57,8 +57,7 @@ export const getChatConversation = async ({
             : 'https://ui-avatars.com/api/?name=S&background=FF7E7F&color=ffffff',
         },
         isLocal,
-        scheduledTime:
-          shinkaiMessage.external_metadata?.node_api_data?.node_timestamp,
+        scheduledTime: shinkaiMessage.external_metadata?.scheduled_time,
       };
       if (filesInbox) {
         const fileNames = await getFileNames(
