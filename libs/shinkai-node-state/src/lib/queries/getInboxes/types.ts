@@ -1,6 +1,8 @@
 import type { CredentialsPayload } from '@shinkai_network/shinkai-message-ts/models';
 import { SmartInbox } from '@shinkai_network/shinkai-message-ts/models';
-import { UndefinedInitialDataOptions } from '@tanstack/react-query/src/queryOptions';
+import { QueryObserverOptions } from '@tanstack/react-query';
+
+import { FunctionKey } from '../../constants';
 
 export type GetInboxesInput = CredentialsPayload & {
   nodeAddress: string;
@@ -10,5 +12,12 @@ export type GetInboxesInput = CredentialsPayload & {
   targetShinkaiNameProfile: string;
 };
 export type GetInboxesOutput = SmartInbox[];
+export type UseGetInboxes = [FunctionKey.GET_INBOXES, GetInboxesInput];
 
-export type Options = UndefinedInitialDataOptions<GetInboxesOutput>;
+export type Options = QueryObserverOptions<
+  GetInboxesOutput,
+  Error,
+  GetInboxesOutput,
+  GetInboxesOutput,
+  UseGetInboxes
+>;
