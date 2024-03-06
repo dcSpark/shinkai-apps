@@ -22,8 +22,8 @@ export const areShortcutKeysEqual = (
 ) => {
   return (
     firstShortcutKey.key === secondShortcutKey.key &&
-    (firstShortcutKey.metaKey === secondShortcutKey.metaKey ||
-      firstShortcutKey.ctrlKey === secondShortcutKey.ctrlKey) &&
+    firstShortcutKey.metaKey === secondShortcutKey.metaKey &&
+    firstShortcutKey.ctrlKey === secondShortcutKey.ctrlKey &&
     firstShortcutKey.keyCode === secondShortcutKey.keyCode &&
     firstShortcutKey.altKey === secondShortcutKey.altKey &&
     firstShortcutKey.shiftKey === secondShortcutKey.shiftKey
@@ -90,6 +90,12 @@ const useKeyboardShortcut = (shortcut: ShorcutKey, action: () => void) => {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const actualShortcut = getShortcutKeys(event);
+      console.log(
+        'keeeys',
+        areShortcutKeysEqual(shortcut, actualShortcut),
+        shortcut,
+        actualShortcut,
+      );
       if (areShortcutKeysEqual(shortcut, actualShortcut)) {
         event.preventDefault();
         action();
