@@ -32,7 +32,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { ArrowLeft, Menu, Settings, X } from 'lucide-react';
 import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import visorLogo from '../../assets/icons/visor.svg';
@@ -161,7 +161,11 @@ export default function NavBar() {
     useState(false);
 
   const goBack = () => {
-    history.goBack();
+    if (!isInboxPage) {
+      history.goBack();
+      return;
+    }
+    history.push('/inboxes');
   };
   const logout = (): void => {
     setAuth(null);
