@@ -32,7 +32,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { ArrowLeft, Menu, Settings, X } from 'lucide-react';
 import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import visorLogo from '../../assets/icons/visor.svg';
