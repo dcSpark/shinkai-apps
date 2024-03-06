@@ -196,7 +196,7 @@ const ActionButton = () => {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button
-                          className="hover:bg-brand flex h-8 w-8 items-center justify-center rounded-full bg-gray-500 p-2 text-white shadow-2xl transition-colors duration-75"
+                          className="hover:bg-brand flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-gray-500 p-2 text-white shadow-2xl transition-colors duration-75"
                           onClick={item?.onClick}
                         >
                           {item?.icon}

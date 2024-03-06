@@ -161,7 +161,11 @@ export default function NavBar() {
     useState(false);
 
   const goBack = () => {
-    history.goBack();
+    if (!isInboxPage) {
+      history.goBack();
+      return;
+    }
+    history.push('/inboxes');
   };
   const logout = (): void => {
     setAuth(null);
