@@ -159,15 +159,16 @@ export const Settings = () => {
 
   useEffect(() => {
     setDisplayActionButton(currentDisplayActionButton);
+  }, [currentDisplayActionButton]);
+  useEffect(() => {
     setDefaultAgentId(currentDefaultAgentId);
+  }, [currentDefaultAgentId]);
+  useEffect(() => {
     setDisplaySummaryActionButton(currentDisplaySummaryAction);
+  }, [currentDisplaySummaryAction]);
+  useEffect(() => {
     setDisplayImageCaptureActionButton(currentDisplayImageCaptureActionButton);
-  }, [
-    currentDefaultAgentId,
-    currentDisplayActionButton,
-    currentDisplaySummaryAction,
-    currentDisplayImageCaptureActionButton,
-  ]);
+  }, [currentDisplayImageCaptureActionButton]);
 
   return (
     <div className="flex flex-col space-y-8 pr-2.5">
