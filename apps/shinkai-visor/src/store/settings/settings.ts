@@ -10,6 +10,10 @@ import { ChromeStorage } from '../persistor/chrome-storage';
 type SettingsStore = {
   displayActionButton: boolean;
   setDisplayActionButton: (displayButton: boolean) => void;
+  displayImageCaptureActionButton: boolean;
+  setDisplayImageCaptureActionButton: (displayButton: boolean) => void;
+  displaySummaryActionButton: boolean;
+  setDisplaySummaryActionButton: (displayButton: boolean) => void;
   sideButtonOffset: Coordinates;
   setSideButtonOffset: (fn: (prev: Coordinates) => Coordinates) => void;
   defaultAgentId: string;
@@ -25,6 +29,22 @@ export const useSettings = create<SettingsStore>()(
         displayActionButton: true,
         setDisplayActionButton: (displayActionButton) => {
           set({ displayActionButton });
+          sendMessage({
+            type: ServiceWorkerInternalMessageType.RehydrateStore,
+          });
+        },
+        displayImageCaptureActionButton: true,
+        setDisplayImageCaptureActionButton: (
+          displayImageCaptureActionButton,
+        ) => {
+          set({ displayImageCaptureActionButton });
+          sendMessage({
+            type: ServiceWorkerInternalMessageType.RehydrateStore,
+          });
+        },
+        displaySummaryActionButton: false,
+        setDisplaySummaryActionButton: (displaySummaryActionButton) => {
+          set({ displaySummaryActionButton });
           sendMessage({
             type: ServiceWorkerInternalMessageType.RehydrateStore,
           });
