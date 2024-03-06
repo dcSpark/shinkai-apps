@@ -6,7 +6,11 @@ import {
   ServiceWorkerInternalMessageType,
 } from './types';
 import ContextType = chrome.runtime.ContextType;
-import { sendCaptureToAgent, sendPageToAgent } from '../../action';
+import {
+  sendCaptureToAgent,
+  sendPageToAgent,
+  summarizePage,
+} from '../../action';
 
 export const sendContentScriptMessage = (
   message: ContentScriptBridgeMessage,
@@ -89,6 +93,15 @@ export const listen = (): void => {
           }
           (async () => {
             await sendPageToAgent(undefined, sender.tab);
+          })();
+          return true;
+        }
+        case ServiceWorkerInternalMessageType.SummarizePage: {
+          if (!sender?.tab?.id) {
+            return;
+          }
+          (async () => {
+            await summarizePage(undefined, sender.tab);
           })();
           return true;
         }
