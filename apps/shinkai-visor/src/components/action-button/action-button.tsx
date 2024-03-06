@@ -19,7 +19,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
-import { Focus, PanelTopIcon } from 'lucide-react';
+import { Focus, NotebookPenIcon, PanelTopIcon } from 'lucide-react';
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
 import { IntlProvider } from 'react-intl';
@@ -68,6 +68,15 @@ const sendPage = async () => {
     type: ServiceWorkerInternalMessageType.SendPageToAgent,
   });
 };
+const summarizePage = async () => {
+  await chrome.runtime.sendMessage({
+    type: ServiceWorkerInternalMessageType.OpenSidePanel,
+  });
+  await delay(OPEN_SIDEPANEL_DELAY_MS);
+  await chrome.runtime.sendMessage({
+    type: ServiceWorkerInternalMessageType.SummarizePage,
+  });
+};
 
 const sendCapture = async () => {
   await chrome.runtime.sendMessage({
@@ -78,10 +87,25 @@ const sendCapture = async () => {
   });
 };
 
+const createAction = (
+  displayAction: boolean,
+  label: string,
+  onClick: () => void,
+  icon: React.ReactNode,
+) => {
+  return displayAction ? { label, onClick, icon } : null;
+};
+
 const ActionButton = () => {
   useGlobalActionButtonChromeMessage();
   const displayActionButton = useSettings(
     (settingsStore) => settingsStore.displayActionButton,
+  );
+  const displaySummaryActionButton = useSettings(
+    (settingsStore) => settingsStore.displaySummaryActionButton,
+  );
+  const displayImageCaptureActionButton = useSettings(
+    (settingsStore) => settingsStore.displayImageCaptureActionButton,
   );
   const sideButtonOffset = useSettings(
     (settingsStore) => settingsStore.sideButtonOffset,
@@ -147,37 +171,43 @@ const ActionButton = () => {
               </motion.button>
             </HoverCardTrigger>
             <HoverCardContent>
-              {/*<kbd className="pointer-events-none flex w-full select-none  items-center rounded-md bg-gray-800 px-2 py-1 font-mono text-xs font-medium tracking-widest text-gray-500 text-white">*/}
-              {/*  {formatShortcutKey(sidebarShortcut)}*/}
-              {/*</kbd>*/}
               {[
+                createAction(
+                  displaySummaryActionButton,
+                  'Summarize Webpage',
+                  summarizePage,
+                  <NotebookPenIcon className="h-full w-full" />,
+                ),
                 {
-                  label: 'Send Capture',
-                  onClick: sendCapture,
-                  icon: <Focus className="h-full w-full" />,
-                },
-                {
-                  label: 'Send Page',
+                  label: 'Webpage Q/A',
                   onClick: sendPage,
                   icon: <PanelTopIcon className="h-full w-full" />,
                 },
-              ].map((item) => (
-                <TooltipProvider key={item.label}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        className="hover:bg-brand flex h-8 w-8 items-center justify-center rounded-full bg-gray-500 p-2 text-white shadow-2xl transition-colors duration-75"
-                        onClick={item.onClick}
-                      >
-                        {item.icon}
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent align="center" side="left" sideOffset={3}>
-                      <p className="font-inter">{item.label}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              ))}
+                createAction(
+                  displayImageCaptureActionButton,
+                  'Image Capture',
+                  sendCapture,
+                  <Focus className="h-full w-full" />,
+                ),
+              ]
+                .filter(Boolean)
+                .map((item) => (
+                  <TooltipProvider key={item?.label}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          className="hover:bg-brand flex h-8 w-8 items-center justify-center rounded-full bg-gray-500 p-2 text-white shadow-2xl transition-colors duration-75"
+                          onClick={item?.onClick}
+                        >
+                          {item?.icon}
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent align="center" side="left" sideOffset={3}>
+                        <p className="font-inter">{item?.label}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                ))}
             </HoverCardContent>
           </HoverCard>
         </DraggableItem>

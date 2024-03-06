@@ -39,6 +39,8 @@ import { Header } from '../header/header';
 const formSchema = z.object({
   defaultAgentId: z.string(),
   displayActionButton: z.boolean(),
+  displaySummaryActionButton: z.boolean(),
+  displayImageCaptureActionButton: z.boolean(),
   nodeAddress: z.string(),
   shinkaiIdentity: z.string(),
   nodeVersion: z.string(),
@@ -60,9 +62,24 @@ export const Settings = () => {
   const displayActionButton = useSettings(
     (settingsStore) => settingsStore.displayActionButton,
   );
+  const displaySummaryActionButton = useSettings(
+    (settingsStore) => settingsStore.displaySummaryActionButton,
+  );
+  const displayImageCaptureActionButton = useSettings(
+    (settingsStore) => settingsStore.displayImageCaptureActionButton,
+  );
   const setDisplayActionButton = useSettings(
     (settingsStore) => settingsStore.setDisplayActionButton,
   );
+
+  const setDisplaySummaryActionButton = useSettings(
+    (settingsStore) => settingsStore.setDisplaySummaryActionButton,
+  );
+
+  const setDisplayImageCaptureActionButton = useSettings(
+    (settingsStore) => settingsStore.setDisplayImageCaptureActionButton,
+  );
+
   const defaultAgentId = useSettings(
     (settingsStore) => settingsStore.defaultAgentId,
   );
@@ -87,12 +104,22 @@ export const Settings = () => {
       displayActionButton: displayActionButton,
       nodeAddress: auth?.node_address,
       shortcutSidebar: sidebarShortcut,
+      displaySummaryActionButton: displaySummaryActionButton,
+      displayImageCaptureActionButton: displayImageCaptureActionButton,
     },
   });
 
   const currentDisplayActionButton = useWatch({
     control: form.control,
     name: 'displayActionButton',
+  });
+  const currentDisplaySummaryAction = useWatch({
+    control: form.control,
+    name: 'displaySummaryActionButton',
+  });
+  const currentDisplayImageCaptureActionButton = useWatch({
+    control: form.control,
+    name: 'displayImageCaptureActionButton',
   });
   const currentDefaultAgentId = useWatch({
     control: form.control,
@@ -132,8 +159,16 @@ export const Settings = () => {
 
   useEffect(() => {
     setDisplayActionButton(currentDisplayActionButton);
+  }, [currentDisplayActionButton]);
+  useEffect(() => {
     setDefaultAgentId(currentDefaultAgentId);
-  }, [currentDefaultAgentId, currentDisplayActionButton]);
+  }, [currentDefaultAgentId]);
+  useEffect(() => {
+    setDisplaySummaryActionButton(currentDisplaySummaryAction);
+  }, [currentDisplaySummaryAction]);
+  useEffect(() => {
+    setDisplayImageCaptureActionButton(currentDisplayImageCaptureActionButton);
+  }, [currentDisplayImageCaptureActionButton]);
 
   return (
     <div className="flex flex-col space-y-8 pr-2.5">
@@ -141,6 +176,7 @@ export const Settings = () => {
       <div className="flex flex-col space-y-8">
         <Form {...form}>
           <form className="flex grow flex-col justify-between space-y-6 overflow-hidden">
+            <h2 className="text-lg font-medium">General</h2>
             <FormItem>
               <Select
                 defaultValue={defaultAgentId}
@@ -203,12 +239,40 @@ export const Settings = () => {
                 />
               )}
             />
+            <h2 className="pt-4 text-lg font-medium">Sidebar</h2>
             <FormField
               control={form.control}
               name="displayActionButton"
               render={({ field }) => (
                 <FormItem className="flex gap-2.5">
-                  <FormControl id={'hide-action'}>
+                  <FormControl>
+                    <Switch
+                      aria-readonly
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel
+                      className="static space-y-1.5 text-sm text-white"
+                      htmlFor="displayActionButton"
+                    >
+                      <FormattedMessage id="show-action-button-label" />
+                    </FormLabel>
+                    <FormDescription>
+                      <FormattedMessage id="show-action-button-description" />
+                    </FormDescription>
+                  </div>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="displaySummaryActionButton"
+              render={({ field }) => (
+                <FormItem className="flex gap-2.5">
+                  <FormControl>
                     <Switch
                       aria-readonly
                       checked={field.value}
@@ -217,10 +281,34 @@ export const Settings = () => {
                   </FormControl>
                   <div className="space-y-1 leading-none">
                     <FormLabel className="static space-y-1.5 text-sm text-white">
-                      <FormattedMessage id="show-action-button-label" />
+                      Include 1-Click Summary Option
                     </FormLabel>
                     <FormDescription>
-                      <FormattedMessage id="show-action-button-description" />
+                      Adds a Summary Button to the Quick Access hover menu.
+                    </FormDescription>
+                  </div>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="displayImageCaptureActionButton"
+              render={({ field }) => (
+                <FormItem className="flex gap-2.5">
+                  <FormControl>
+                    <Switch
+                      aria-readonly
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel className="static space-y-1.5 text-sm text-white">
+                      Include 1-Click Image Capture Option
+                    </FormLabel>
+                    <FormDescription>
+                      Adds an Image Capture Button to the Quick Access hover
+                      menu.
                     </FormDescription>
                   </div>
                 </FormItem>
