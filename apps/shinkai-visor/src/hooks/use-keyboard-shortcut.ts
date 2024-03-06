@@ -113,6 +113,7 @@ const useKeyboardShortcut = (shortcut: ShorcutKey, action: () => void) => {
     shortcut.metaKey,
     shortcut.shiftKey,
     action,
+    shortcut,
   ]);
 };
 
