@@ -53,7 +53,7 @@ export const useSettings = create<SettingsStore>()(
         setDefaultAgentId: (defaultAgentId) => {
           set({ defaultAgentId });
         },
-        sideButtonOffset: { x: 0, y: 10 },
+        sideButtonOffset: { x: 0, y: 300 },
         setSideButtonOffset: (fn: (prev: Coordinates) => Coordinates) => {
           set((state) => ({ sideButtonOffset: fn(state.sideButtonOffset) }));
           sendMessage({
