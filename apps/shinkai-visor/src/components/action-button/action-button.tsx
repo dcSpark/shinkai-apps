@@ -169,7 +169,7 @@ const ActionButton = () => {
     >
       <div
         className={cn(
-          'z-max fixed h-0 transition-transform duration-300 ease-in-out',
+          'z-max group fixed h-0 transition-transform duration-300 ease-in-out',
           displayActionButton
             ? 'translate-z-0 right-1 top-1'
             : isLeft // adding extra 10% to hide the button
@@ -188,7 +188,9 @@ const ActionButton = () => {
               >
                 <img
                   alt="shinkai-app-logo select-none"
-                  className={'h-full w-full select-none group-hover:rotate-45'}
+                  className={
+                    'h-full w-full select-none group-hover:rotate-6 group-hover:transform'
+                  }
                   src={srcUrlResolver(shinkaiLogo)}
                 />
               </motion.button>
