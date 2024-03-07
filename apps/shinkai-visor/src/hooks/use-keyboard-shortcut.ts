@@ -90,12 +90,6 @@ const useKeyboardShortcut = (shortcut: ShorcutKey, action: () => void) => {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const actualShortcut = getShortcutKeys(event);
-      console.log(
-        'keeeys',
-        areShortcutKeysEqual(shortcut, actualShortcut),
-        shortcut,
-        actualShortcut,
-      );
       if (areShortcutKeysEqual(shortcut, actualShortcut)) {
         event.preventDefault();
         action();
