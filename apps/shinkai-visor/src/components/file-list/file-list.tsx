@@ -52,7 +52,6 @@ export const FileList = ({ files, actions, className }: FileListProps) => {
     return file?.type?.includes('image/');
   };
   const getFilePreview = (file: File): ReactNode | undefined => {
-    console.log('type', file.type);
     if (file?.type?.includes('image/')) {
       return (
         <FileImagePreview
@@ -66,7 +65,7 @@ export const FileList = ({ files, actions, className }: FileListProps) => {
     <ul
       className={cn(
         'divide-y divide-gray-100 rounded-md border border-gray-100',
-        className || '',
+        className,
       )}
     >
       <AnimatePresence>
@@ -82,10 +81,20 @@ export const FileList = ({ files, actions, className }: FileListProps) => {
               )}
               <div className="flex min-w-0 flex-1 flex-row items-center justify-between gap-2">
                 <PaperClipIcon className="h-4 w-4 text-gray-100" />
-
-                <span className="text-gray-80 grow truncate font-medium">
-                  {getFileName(decodeURIComponent(file.name))}
-                </span>
+                {getFileExt(decodeURIComponent(file.name)) === 'html' ? (
+                  <a
+                    className="text-gray-80 grow truncate font-medium underline transition-colors hover:text-gray-50"
+                    href={decodeURIComponent(file.name)}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    {getFileName(decodeURIComponent(file.name))}
+                  </a>
+                ) : (
+                  <span className="text-gray-80 grow truncate font-medium">
+                    {getFileName(decodeURIComponent(file.name))}
+                  </span>
+                )}
                 <div className="flex shrink-0 flex-row space-x-1 overflow-hidden">
                   <span className="text-gray-80 w-[40px] rounded-md bg-gray-200 px-1 text-center text-[10px] font-medium uppercase">
                     {getFileExt(decodeURIComponent(file.name))}
