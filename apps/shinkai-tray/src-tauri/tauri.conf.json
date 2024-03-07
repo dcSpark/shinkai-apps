@@ -21,7 +21,11 @@
       },
       "shell": {
         "all": false,
-        "open": true
+        "open": true,
+        "sidecar": true,
+        "scope": [
+          { "name": "bin/shinkai-node-v0.5.1", "sidecar": true }
+        ]
       },
       "window": {
         "startDragging": true,
@@ -58,7 +62,10 @@
       ],
       "macOS": {
         "minimumSystemVersion": "10.13"
-      }
+      },
+      "externalBin": [
+        "bin/shinkai-node-v0.5.1"
+      ]
     },
     "security": {
       "csp": null
