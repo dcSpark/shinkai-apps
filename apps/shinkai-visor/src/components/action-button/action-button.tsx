@@ -21,6 +21,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
 import { Focus, NotebookPenIcon, PanelTopIcon } from 'lucide-react';
 import * as React from 'react';
+import { useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import { IntlProvider } from 'react-intl';
 
@@ -98,8 +99,14 @@ const createAction = (
 
 const ActionButton = () => {
   useGlobalActionButtonChromeMessage();
+
   const displayActionButton = useSettings(
     (settingsStore) => settingsStore.displayActionButton,
+  );
+  const prevDisplayActionButton = useRef<boolean>(displayActionButton);
+
+  const setDisplayActionButton = useSettings(
+    (settingsStore) => settingsStore.setDisplayActionButton,
   );
   const displaySummaryActionButton = useSettings(
     (settingsStore) => settingsStore.displaySummaryActionButton,
@@ -133,6 +140,22 @@ const ActionButton = () => {
   const sensors = useSensors(mouseSensor, touchSensor, keyboardSensor);
 
   const isLeft = Math.abs(sideButtonOffset.x) >= window.innerWidth / 2;
+
+  useEffect(() => {
+    const listenFullscreenChange = () => {
+      if (document.fullscreenElement && prevDisplayActionButton.current) {
+        setDisplayActionButton(false);
+      }
+      if (!document.fullscreenElement && prevDisplayActionButton.current) {
+        setDisplayActionButton(true);
+      }
+    };
+    document.addEventListener('fullscreenchange', listenFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', listenFullscreenChange);
+    };
+  }, []);
+
   return (
     <DndContext
       modifiers={[restrictToWindowEdges]}
