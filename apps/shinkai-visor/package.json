@@ -1,7 +1,6 @@
 {
   "name": "shinkai-visor",
   "private": true,
-  "version": "0.4.5",
   "type": "module",
   "description": "Shinkai Visor",
   "main": "./src/service-worker/service-worker.ts"

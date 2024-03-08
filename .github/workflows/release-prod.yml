@@ -28,6 +28,17 @@ jobs:
           cache: 'npm'
           cache-dependency-path: package-lock.json
 
+      - name: get-npm-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@v1.3.1
+
+      - name: Check version match
+        if: ${{ github.ref_name != steps.package-version.outputs.current-version }}
+        uses: actions/github-script@v3
+        with:
+          script: |
+              core.setFailed('Version mismatch')
+
       - name: Install dependencies
         run: |
           npm cache verify
@@ -36,7 +47,7 @@ jobs:
       - name: Run NX build on shinkai-visor
         run: npx nx build shinkai-visor --skip-nx-cache
         env:
-          VERSION: ${{ github.ref_name }}.${{github.run_number}}
+          VERSION: ${{ steps.package-version.outputs.current-version }}.${{github.run_number}}
           NAME_PREFIX: ''
           DESCRIPTION_PREFIX: ''
           PUBLIC_KEY: ${{ secrets.CHROME_EXTENSION_PUBLIC_KEY }}
