@@ -1,35 +1,22 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::collections::HashMap;
-use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
-use cpal::BackendSpecificError;
 use db::db::TrayDB;
-use models::setup_data::SetupData;
-use shinkai_node::shinkai_node_manager;
 use std::sync::{Arc, Mutex};
-use std::thread;
-use tauri::{AppHandle, CustomMenuItem, GlobalShortcutManager, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMenu, Wry};
+use tauri::{CustomMenuItem, GlobalShortcutManager, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMenu};
 use tauri::{Manager, SystemTrayMenuItem};
-use tauri::api::process::{Command, CommandEvent};
-use whisper_rs::{FullParams, SamplingStrategy, WhisperContext};
 
 mod audio;
 mod db;
 mod models;
 mod shinkai;
 
-mod shinkai_node;
+mod local_shinkai_node;
 
-use audio::transcribe::run;
 use shinkai::registration::process_onboarding_data;
 
 use crate::shinkai::registration::validate_setup_data;
-use crate::shinkai_node::shinkai_node_manager::ShinkaiNodeManager;
-
-enum EmitableEvents {
-    CreateJobSection,
-}
+use crate::local_shinkai_node::shinkai_node_manager::ShinkaiNodeManager;
 
 fn main() {
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
@@ -57,9 +44,10 @@ fn main() {
     let db = TrayDB::new("db/tauri").unwrap();
 
     // Example usage
-    let shinkai_node_manager = Arc::new(Mutex::new(ShinkaiNodeManager::new()));
+    let shinkai_node_manager = Arc::new(Mutex::new(ShinkaiNodeManager::new(None)));
 
     let shinkai_node_manager_clone = Arc::clone(&shinkai_node_manager);
+    static SHINKAI_NODE_MANAGER_CLONE_B: Arc<Mutex<ShinkaiNodeManager>> = Arc::clone(&shinkai_node_manager);
 
     tauri::Builder::default()
         .manage(db)
@@ -87,6 +75,15 @@ fn main() {
                 .unwrap_or_else(|e| {
                     println!("Failed to register shortcut: {}", e);
                 });
+            
+            let id = app.listen_global("start-shinkai-node", |event| {
+                println!("got event-name with payload {:?}", event.id());
+                let shinkai_node_manager = SHINKAI_NODE_MANAGER_CLONE_B.lock().unwrap();
+                if !shinkai_node_manager.is_running() {
+                    shinkai_node_manager.spawn_shinkai_node();
+                    // let _ = app.tray_handle().get_item("toggle_shinkai_node").set_title("Start Shinkai Node");
+                }
+            });
             Ok(())
         })
         .system_tray(system_tray)
@@ -141,12 +138,17 @@ fn main() {
                     window.emit("settings", ()).unwrap();
                 }
                 "toggle_shinkai_node" => {
-                    let shinkai_node_manager = shinkai_node_manager.lock().unwrap();
+                    let shinkai_node_manager = shinkai_node_manager_clone.lock().unwrap();
                     if shinkai_node_manager.is_running() {
                         shinkai_node_manager.kill_shinkai_node();
                         let _ = app.tray_handle().get_item("toggle_shinkai_node").set_title("Start Shinkai Node");
                     } else {
-                        shinkai_node_manager.spawn_shinkai_node();
+                        let _ = match shinkai_node_manager.spawn_shinkai_node() {
+                            Ok(..) => println!("shinkai-node spawned"),
+                            Err(error) => {
+                                println!("shinkai-node spawn failed error: {:?}", error);
+                            },
+                        };
                         let _ = app.tray_handle().get_item("toggle_shinkai_node").set_title("Stop Shinkai Node");
                     }
                 }

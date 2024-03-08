@@ -1,3 +1,4 @@
+import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import React from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
@@ -13,6 +14,7 @@ import MainLayout from '../pages/layout/main-layout';
 import OnboardingPage from '../pages/onboarding';
 import RestoreConnectionPage from '../pages/restore-connection';
 import SettingsPage from '../pages/settings';
+import UnavailableShinkaiNode from '../pages/unavailable-shinkai-node';
 import WelcomePage from '../pages/welcome';
 import { useAuth } from '../store/auth';
 import {
@@ -27,17 +29,34 @@ import {
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const auth = useAuth((state) => state.auth);
-
+  // const { isSuccess: isGetShinkaiNodeHealthSuccess } = useGetHealth(
+  //   {
+  //     node_address: auth?.node_address ?? '',
+  //   },
+  //   { refetchInterval: 5000, enabled: !!auth },
+  // );
   if (!auth) {
+    console.log('navigating to welcome');
     return <Navigate replace to={'/welcome'} />;
   }
+  // } else if (!isGetShinkaiNodeHealthSuccess) {
+  //   console.log('navigating to unavailable shinkai-node');
+  //   return <Navigate replace to={'/unavailable-shinkai-node'} />;
+  // }
   return children;
 };
 
 const AppRoutes = () => {
+  
   return (
     <Routes>
       <Route element={<MainLayout />}>
+        <Route
+          element={
+            <UnavailableShinkaiNode />
+          }
+          path={'/unavailable-shinkai-node'}
+        />
         <Route element={<WelcomePage />} path={'/welcome'} />
         <Route element={<OnboardingPage />} path={ONBOARDING_PATH} />
         <Route element={<RestoreConnectionPage />} path={'/restore'} />
