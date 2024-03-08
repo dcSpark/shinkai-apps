@@ -2,10 +2,9 @@ name: Release dev
 
 on:
   workflow_dispatch:
+
   schedule:
-    - cron: "0 0 * * *" 
-  # push:
-  #   branches: [main]
+    - cron: "0 0 * * 2,4" 
 
 defaults:
   run:
