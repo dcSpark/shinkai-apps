@@ -19,8 +19,9 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
-import { Focus, NotebookPenIcon, PanelTopIcon } from 'lucide-react';
+import { Focus, NotebookPenIcon, PanelTopIcon, XIcon } from 'lucide-react';
 import * as React from 'react';
+import { useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import { IntlProvider } from 'react-intl';
 
@@ -98,8 +99,20 @@ const createAction = (
 
 const ActionButton = () => {
   useGlobalActionButtonChromeMessage();
+
   const displayActionButton = useSettings(
     (settingsStore) => settingsStore.displayActionButton,
+  );
+  const prevDisplayActionButton = useRef<boolean>(displayActionButton);
+
+  const setDisplayActionButton = useSettings(
+    (settingsStore) => settingsStore.setDisplayActionButton,
+  );
+  const disabledHosts = useSettings(
+    (settingsStore) => settingsStore.disabledHosts,
+  );
+  const setDisabledHosts = useSettings(
+    (settingsStore) => settingsStore.setDisabledHosts,
   );
   const displaySummaryActionButton = useSettings(
     (settingsStore) => settingsStore.displaySummaryActionButton,
@@ -133,7 +146,23 @@ const ActionButton = () => {
   const sensors = useSensors(mouseSensor, touchSensor, keyboardSensor);
 
   const isLeft = Math.abs(sideButtonOffset.x) >= window.innerWidth / 2;
-  return (
+
+  useEffect(() => {
+    const listenFullscreenChange = () => {
+      if (document.fullscreenElement && prevDisplayActionButton.current) {
+        setDisplayActionButton(false);
+      }
+      if (!document.fullscreenElement && prevDisplayActionButton.current) {
+        setDisplayActionButton(true);
+      }
+    };
+    document.addEventListener('fullscreenchange', listenFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', listenFullscreenChange);
+    };
+  }, []);
+
+  return disabledHosts[window.location.host] ? null : (
     <DndContext
       modifiers={[restrictToWindowEdges]}
       onDragEnd={({ delta }) => {
@@ -146,7 +175,7 @@ const ActionButton = () => {
     >
       <div
         className={cn(
-          'z-max fixed h-0 transition-transform duration-300 ease-in-out',
+          'z-max group fixed h-0 transition-transform duration-300 ease-in-out',
           displayActionButton
             ? 'translate-z-0 right-1 top-1'
             : isLeft // adding extra 10% to hide the button
@@ -165,12 +194,28 @@ const ActionButton = () => {
               >
                 <img
                   alt="shinkai-app-logo select-none"
-                  className={'h-full w-full select-none group-hover:rotate-45'}
+                  className={'h-full w-full select-none'}
                   src={srcUrlResolver(shinkaiLogo)}
                 />
               </motion.button>
             </HoverCardTrigger>
-            <HoverCardContent>
+            <HoverCardContent className="relative">
+              <button
+                className={cn(
+                  'absolute top-[-60px] flex h-[20px] w-[20px] items-center justify-center rounded-full bg-[#797e87] p-1 text-white',
+                  isLeft ? 'right-[-16px]' : 'left-[-16px]',
+                )}
+                onClick={() => {
+                  const currentHost = window.location.host;
+                  const prevDisabledHosts = {
+                    ...disabledHosts,
+                    [currentHost]: true,
+                  };
+                  setDisabledHosts(prevDisabledHosts);
+                }}
+              >
+                <XIcon />
+              </button>
               {[
                 createAction(
                   displaySummaryActionButton,

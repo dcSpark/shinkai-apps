@@ -20,6 +20,8 @@ type SettingsStore = {
   setDefaultAgentId: (defaultAgentId: string) => void;
   sidebarShortcut: ShorcutKey;
   setSidebarShortcut: (sidebarShortcut: ShorcutKey) => void;
+  disabledHosts: Record<string, boolean>;
+  setDisabledHosts: (disabledHosts: Record<string, boolean>) => void;
 };
 
 export const useSettings = create<SettingsStore>()(
@@ -71,6 +73,13 @@ export const useSettings = create<SettingsStore>()(
         },
         setSidebarShortcut: (sidebarShortcut) => {
           set({ sidebarShortcut });
+          sendMessage({
+            type: ServiceWorkerInternalMessageType.RehydrateStore,
+          });
+        },
+        disabledHosts: {},
+        setDisabledHosts: (disabledHosts) => {
+          set({ disabledHosts });
           sendMessage({
             type: ServiceWorkerInternalMessageType.RehydrateStore,
           });
