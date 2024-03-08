@@ -19,7 +19,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
-import { Focus, NotebookPenIcon, PanelTopIcon } from 'lucide-react';
+import { Focus, NotebookPenIcon, PanelTopIcon, XIcon } from 'lucide-react';
 import * as React from 'react';
 import { useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -108,6 +108,12 @@ const ActionButton = () => {
   const setDisplayActionButton = useSettings(
     (settingsStore) => settingsStore.setDisplayActionButton,
   );
+  const disabledHosts = useSettings(
+    (settingsStore) => settingsStore.disabledHosts,
+  );
+  const setDisabledHosts = useSettings(
+    (settingsStore) => settingsStore.setDisabledHosts,
+  );
   const displaySummaryActionButton = useSettings(
     (settingsStore) => settingsStore.displaySummaryActionButton,
   );
@@ -156,7 +162,7 @@ const ActionButton = () => {
     };
   }, []);
 
-  return (
+  return disabledHosts[window.location.host] ? null : (
     <DndContext
       modifiers={[restrictToWindowEdges]}
       onDragEnd={({ delta }) => {
@@ -188,14 +194,28 @@ const ActionButton = () => {
               >
                 <img
                   alt="shinkai-app-logo select-none"
-                  className={
-                    'h-full w-full select-none group-hover:rotate-6 group-hover:transform'
-                  }
+                  className={'h-full w-full select-none'}
                   src={srcUrlResolver(shinkaiLogo)}
                 />
               </motion.button>
             </HoverCardTrigger>
-            <HoverCardContent>
+            <HoverCardContent className="relative">
+              <button
+                className={cn(
+                  'absolute top-[-60px] flex h-[20px] w-[20px] items-center justify-center rounded-full bg-[#797e87] p-1 text-white',
+                  isLeft ? 'right-[-16px]' : 'left-[-16px]',
+                )}
+                onClick={() => {
+                  const currentHost = window.location.host;
+                  const prevDisabledHosts = {
+                    ...disabledHosts,
+                    [currentHost]: true,
+                  };
+                  setDisabledHosts(prevDisabledHosts);
+                }}
+              >
+                <XIcon />
+              </button>
               {[
                 createAction(
                   displaySummaryActionButton,
