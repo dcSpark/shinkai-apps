@@ -175,7 +175,7 @@ const ActionButton = () => {
     >
       <div
         className={cn(
-          'z-max group fixed h-0 transition-transform duration-300 ease-in-out',
+          'z-max group fixed h-0 transition-transform duration-300 ease-in-out print:hidden',
           displayActionButton
             ? 'translate-z-0 right-1 top-1'
             : isLeft // adding extra 10% to hide the button
