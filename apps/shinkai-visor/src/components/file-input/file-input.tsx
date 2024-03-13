@@ -140,7 +140,7 @@ export const FileInput = ({
         </label>
       </div>
 
-      {!!files?.current.length && (
+      {!!files?.current?.length && (
         <FileList
           actions={[
             {

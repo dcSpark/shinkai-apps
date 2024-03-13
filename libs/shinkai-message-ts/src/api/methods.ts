@@ -18,6 +18,7 @@ import { InboxNameWrapper } from '../pkg/shinkai_message_wasm';
 import { calculateMessageHash } from '../utils';
 import { urlJoin } from '../utils/url-join';
 import { FileUploader } from '../wasm/FileUploaderUsingSymmetricKeyManager';
+import { FileUploaderVR } from '../wasm/FileUploaderVRUsingSymmetricKeyManager';
 import { SerializedAgentWrapper } from '../wasm/SerializedAgentWrapper';
 import { ShinkaiMessageBuilderWrapper } from '../wasm/ShinkaiMessageBuilderWrapper';
 import { ShinkaiNameWrapper } from '../wasm/ShinkaiNameWrapper';
@@ -745,7 +746,7 @@ export const archiveJob = async (
     throw error;
   }
 };
-export const createNewFolder = async (
+export const createVRFolder = async (
   nodeAddress: string,
   sender: string,
   sender_subidentity: string,
@@ -784,6 +785,100 @@ export const createNewFolder = async (
     return data;
   } catch (error) {
     console.error('Error closing job:', error);
+    throw error;
+  }
+};
+export const retrieveVRPathSimplified = async (
+  nodeAddress: string,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  path: string = '/',
+  setupDetailsState: CredentialsPayload,
+): Promise<{ data: any; status: string }> => {
+  try {
+    const messageStr = ShinkaiMessageBuilderWrapper.retrievePathSimplified(
+      setupDetailsState.profile_encryption_sk,
+      setupDetailsState.profile_identity_sk,
+      setupDetailsState.node_encryption_pk,
+      path,
+      sender,
+      sender_subidentity,
+      receiver,
+      receiver_subidentity,
+    );
+
+    const message = JSON.parse(messageStr);
+
+    const response = await fetch(
+      urlJoin(nodeAddress, '/v1/vec_fs/retrieve_path_simplified_json'),
+      {
+        method: 'POST',
+        body: JSON.stringify(message),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+
+    await handleHttpError(response);
+    const data = await response.json();
+    return { data: JSON.parse(data.data), status: data.status };
+  } catch (error) {
+    console.error('Error closing job:', error);
+    throw error;
+  }
+};
+
+export const uploadFilesToVR = async (
+  nodeAddress: string,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  destinationPath: string,
+  files: File[],
+  setupDetailsState: CredentialsPayload,
+): Promise<{ data: any; status: string }> => {
+  try {
+    const fileUploader = new FileUploaderVR(
+      nodeAddress,
+      setupDetailsState.profile_encryption_sk,
+      setupDetailsState.profile_identity_sk,
+      setupDetailsState.node_encryption_pk,
+      sender,
+      sender_subidentity,
+      receiver,
+    );
+
+    const folderPathId = await fileUploader.createFolder();
+    for (const fileToUpload of files) {
+      await fileUploader.uploadEncryptedFile(fileToUpload);
+    }
+
+    const message = ShinkaiMessageBuilderWrapper.createItems(
+      setupDetailsState.profile_encryption_sk,
+      setupDetailsState.profile_identity_sk,
+      setupDetailsState.node_encryption_pk,
+      destinationPath,
+      folderPathId,
+      sender,
+      sender_subidentity,
+      receiver,
+      '',
+    );
+    const response = await fetch(
+      urlJoin(nodeAddress, '/v1/vec_fs/convert_files_and_save_to_folder'),
+      {
+        method: 'POST',
+        body: JSON.stringify(message),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+
+    await handleHttpError(response);
+    const data = await response.json();
+    return { data: JSON.parse(data.data), status: data.status };
+  } catch (error) {
+    console.error('Error sending text message with file:', error);
     throw error;
   }
 };

@@ -1,7 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { HomeIcon } from '@radix-ui/react-icons';
+import { useCreateVRFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/createVRFolder/useCreateVRFolder';
+import { useUploadVRFiles } from '@shinkai_network/shinkai-node-state/lib/mutations/uploadVRFiles/useUploadVRFiles';
 import { NodeFile } from '@shinkai_network/shinkai-node-state/lib/queries/getNodeFiles/types';
 import { useGetNodeFiles } from '@shinkai_network/shinkai-node-state/lib/queries/getNodeFiles/useGetNodeFiles';
+import { getVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/index';
 import {
   AddNewFolderIcon,
   Badge,
@@ -28,7 +31,11 @@ import {
   DropdownMenuTrigger,
   FileTypeIcon,
   Form,
+  FormControl,
   FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
   GenerateDocIcon,
   GenerateFromWebIcon,
   Input,
@@ -48,10 +55,14 @@ import {
   X,
   XIcon,
 } from 'lucide-react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { FormattedMessage } from 'react-intl';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
+import { useAuth } from '../../store/auth/auth';
+import { FileInput } from '../file-input/file-input';
 import { Header } from '../header/header';
 
 const filterNodeFilesByCondition = (
@@ -226,9 +237,7 @@ export default function NodeFiles() {
                 {
                   [NodeFilesDrawerOptions.NewFolder]: <AddNewFolderDrawer />,
                   [NodeFilesDrawerOptions.UploadVectorResource]: (
-                    <DrawerDescription>
-                      Upload Vector Resource
-                    </DrawerDescription>
+                    <UploadVRFilesDrawer />
                   ),
                   [NodeFilesDrawerOptions.GenerateFromDocument]: (
                     <DrawerDescription>
@@ -585,13 +594,59 @@ const createFolderSchema = z.object({
   name: z.string(),
 });
 const AddNewFolderDrawer = () => {
+  const auth = useAuth((state) => state.auth);
+
   const createFolderForm = useForm<z.infer<typeof createFolderSchema>>({
     resolver: zodResolver(createFolderSchema),
   });
 
-  const onSubmit = () => {
-    console.log('add new');
+  const {
+    isPending,
+    mutateAsync: createVRFolder,
+    isSuccess,
+  } = useCreateVRFolder();
+
+  const onSubmit = async (values: z.infer<typeof createFolderSchema>) => {
+    if (!auth) return;
+
+    await createVRFolder({
+      nodeAddress: auth?.node_address ?? '',
+      profile: auth?.profile ?? '',
+      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      folderName: values.name,
+      path: '/',
+      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+      my_device_identity_sk: auth?.profile_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+    });
   };
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success('Folder created successfully');
+      createFolderForm.reset();
+    }
+  }, [createFolderForm, isSuccess]);
+
+  useEffect(() => {
+    const load = async () => {
+      const data = await getVRPathSimplified({
+        nodeAddress: auth?.node_address ?? '',
+        profile: auth?.profile ?? '',
+        shinkaiIdentity: auth?.shinkai_identity ?? '',
+        path: '/',
+        my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+        my_device_identity_sk: auth?.profile_identity_sk ?? '',
+        node_encryption_pk: auth?.node_encryption_pk ?? '',
+        profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+        profile_identity_sk: auth?.profile_identity_sk ?? '',
+      });
+      console.log(data, 'fromretriveve');
+    };
+    load();
+  });
   return (
     <>
       <DrawerHeader>
@@ -600,7 +655,6 @@ const AddNewFolderDrawer = () => {
           Add Folder
         </DrawerTitle>
       </DrawerHeader>
-
       <Form {...createFolderForm}>
         <form
           className="space-y-8"
@@ -615,11 +669,98 @@ const AddNewFolderDrawer = () => {
           />
           <Button
             className="w-full"
-            // disabled={isPending}
-            // isLoading={isPending}
+            disabled={isPending}
+            isLoading={isPending}
             type="submit"
           >
             Create Folder
+          </Button>
+        </form>
+      </Form>
+    </>
+  );
+};
+const uploadVRFilesSchema = z.object({
+  files: z.array(z.any()).max(3),
+});
+const UploadVRFilesDrawer = () => {
+  const auth = useAuth((state) => state.auth);
+
+  const createFolderForm = useForm<z.infer<typeof uploadVRFilesSchema>>({
+    resolver: zodResolver(uploadVRFilesSchema),
+  });
+
+  const {
+    isPending,
+    mutateAsync: uploadVRFiles,
+    isSuccess,
+  } = useUploadVRFiles();
+
+  const onSubmit = async (values: z.infer<typeof uploadVRFilesSchema>) => {
+    if (!auth) return;
+
+    await uploadVRFiles({
+      nodeAddress: auth?.node_address ?? '',
+      sender: auth?.profile ?? '',
+      senderSubidentity: auth?.profile ?? '',
+      receiver: auth?.profile ?? '',
+      destinationPath: '/',
+      files: values.files,
+      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+      my_device_identity_sk: auth?.profile_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+    });
+  };
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success('Folder created successfully');
+      createFolderForm.reset();
+    }
+  }, [createFolderForm, isSuccess]);
+
+  return (
+    <>
+      <DrawerHeader>
+        <DrawerTitle className="flex flex-col items-start gap-1">
+          <DirectoryTypeIcon className="h-10 w-10" />
+          Add Folder
+        </DrawerTitle>
+      </DrawerHeader>
+      <Form {...createFolderForm}>
+        <form
+          className="space-y-8"
+          onSubmit={createFolderForm.handleSubmit(onSubmit)}
+        >
+          <FormField
+            control={createFolderForm.control}
+            name="files"
+            render={({ field }) => (
+              <FormItem className="mt-3">
+                <FormLabel className="sr-only">
+                  <FormattedMessage id="file.one" />
+                </FormLabel>
+                <FormControl>
+                  <FileInput
+                    extensions={['.pdf']}
+                    multiple
+                    onValueChange={field.onChange}
+                    value={field.value}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button
+            className="w-full"
+            disabled={isPending}
+            isLoading={isPending}
+            type="submit"
+          >
+            Upload VR Files
           </Button>
         </form>
       </Form>
