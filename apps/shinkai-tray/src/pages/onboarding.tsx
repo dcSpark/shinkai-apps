@@ -8,6 +8,7 @@ import {
   FormField,
   TextField,
 } from '@shinkai_network/shinkai-ui';
+import { WebviewWindow } from '@tauri-apps/api/window';
 import { QrCode } from 'lucide-react';
 import React from 'react';
 import { useForm } from 'react-hook-form';
@@ -142,6 +143,32 @@ const OnboardingPage = () => {
           </Button>
         </form>
       </Form>
+
+      <div className="text-gray-80 mt-2 text-center text-sm flex flex-row space-x-2 items-center">
+        <p>
+          {'Don\'t you have a Shinkai Node? '}
+        </p>
+        <Button
+            className="font-semibold text-white underline text-sm p-0"
+            onClick={(e) => {
+              const webview = new WebviewWindow('shinkai-node-manager', {
+                url: 'src/windows/shinkai-node-manager/index.html',
+                title: 'Shinkai Node Manager',
+                resizable: false,
+              });
+              webview.once('tauri://created', function () {
+                console.log(`window started`);
+              });
+              webview.once('tauri://error', function (e) {
+                console.log(`window error: ${JSON.stringify(e)}`);
+              });
+            }}
+            variant={'link'}
+          >
+            Run it locally
+          </Button>
+      </div>
+
       <div className="mt-8 flex gap-4">
         <ConnectionOptionButton
           description={'Use the QR code to connect'}

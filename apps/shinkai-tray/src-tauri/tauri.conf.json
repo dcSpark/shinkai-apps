@@ -24,12 +24,13 @@
         "open": true,
         "sidecar": true,
         "scope": [
-          { "name": "bin/shinkai-node-v0.5.1", "sidecar": true }
+          { "name": "bin/shinkai-node-v0.5.3", "sidecar": true }
         ]
       },
       "window": {
         "startDragging": true,
-        "close": true
+        "close": true,
+        "create": true
       },
       "notification": {
         "all": true
@@ -47,6 +48,13 @@
       },
       "path": {
         "all": true
+      },
+      "http": {
+        "all": false,
+        "request": true,
+        "scope": [
+          "http://localhost"
+        ]
       }
     },
     "bundle": {
@@ -64,7 +72,7 @@
         "minimumSystemVersion": "10.13"
       },
       "externalBin": [
-        "bin/shinkai-node-v0.5.1"
+        "bin/shinkai-node-v0.5.3"
       ]
     },
     "security": {
