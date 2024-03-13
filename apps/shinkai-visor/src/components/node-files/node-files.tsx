@@ -32,9 +32,12 @@ import {
   ScrollArea,
   UploadVectorResourceIcon,
 } from '@shinkai_network/shinkai-ui';
+import { partial } from 'filesize';
 import {
   ChevronLeft,
   ChevronRight,
+  DatabaseIcon,
+  FileIcon,
   LockIcon,
   PlusIcon,
   SearchIcon,
@@ -45,7 +48,7 @@ import React from 'react';
 
 import { Header } from '../header/header';
 
-const filterFilesByCondition = (
+const filterNodeFilesByCondition = (
   files: NodeFile[],
   condition: (file: NodeFile) => boolean,
   path: string = '',
@@ -55,7 +58,7 @@ const filterFilesByCondition = (
     const newPath = path + '/' + file.name;
     if (file.type === 'folder') {
       result = result.concat(
-        filterFilesByCondition(file.items ?? [], condition, newPath),
+        filterNodeFilesByCondition(file.items ?? [], condition, newPath),
       );
     }
     if (condition(file)) {
@@ -67,6 +70,8 @@ const filterFilesByCondition = (
 };
 
 export default function NodeFiles() {
+  const size = partial({ standard: 'jedec' });
+
   const {
     isLoading: isNodeFilesLoading,
     isSuccess: isNodeFilesSuccess,
@@ -91,6 +96,15 @@ export default function NodeFiles() {
     return currentFolder;
   };
 
+  const totalStorage = filterNodeFilesByCondition(
+    nodeFiles,
+    (file) => file.type === 'file',
+  ).reduce((acc, file) => acc + (file?.size ?? 0), 0);
+  const totalFiles = filterNodeFilesByCondition(
+    nodeFiles,
+    (file) => file.type === 'file',
+  ).length;
+
   return (
     <div className="flex h-full flex-col gap-4">
       <Header title={'Node Files'} />
@@ -105,7 +119,7 @@ export default function NodeFiles() {
           <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2 bg-gray-300" />
           {searchQuery && (
             <Button
-              className="absolute right-1 h-8 w-8 p-2"
+              className="absolute right-1 h-8 w-8 bg-gray-200 p-2"
               onClick={() => {
                 setSearchQuery('');
               }}
@@ -169,69 +183,71 @@ export default function NodeFiles() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="mt-4 flex items-center gap-3">
-        {currentPath.length > 0 && (
-          <Button
-            onClick={() => {
-              setCurrentPath(currentPath.slice(0, -1));
-            }}
-            size={'icon'}
-            variant="ghost"
-          >
-            <ChevronLeft />
-          </Button>
-        )}
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <button
-                  className="flex items-center gap-2 py-2"
-                  onClick={() => {
-                    setCurrentPath([]);
-                  }}
-                >
-                  <HomeIcon />
-                  Root
-                </button>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            {currentPath.length > 0 &&
-              currentPath.map((item, idx) => (
-                <React.Fragment key={idx}>
-                  <BreadcrumbSeparator>
-                    <ChevronRight />
-                  </BreadcrumbSeparator>
-                  {currentPath.length - 1 === idx ? (
-                    <BreadcrumbPage>
-                      <button
-                        className="flex items-center gap-1"
-                        onClick={() => {
-                          setCurrentPath(currentPath.slice(0, idx + 1));
-                        }}
-                      >
-                        <DirectoryTypeIcon />
-                        {item}
-                      </button>
-                    </BreadcrumbPage>
-                  ) : (
-                    <BreadcrumbLink asChild>
-                      <button
-                        className="flex items-center gap-1"
-                        onClick={() => {
-                          setCurrentPath(currentPath.slice(0, idx + 1));
-                        }}
-                      >
-                        <DirectoryTypeIcon />
-                        {item}
-                      </button>
-                    </BreadcrumbLink>
-                  )}
-                </React.Fragment>
-              ))}
-          </BreadcrumbList>
-        </Breadcrumb>
-      </div>
+      {!searchQuery && (
+        <div className="mt-4 flex items-center gap-3">
+          {currentPath.length > 0 && (
+            <Button
+              onClick={() => {
+                setCurrentPath(currentPath.slice(0, -1));
+              }}
+              size={'icon'}
+              variant="ghost"
+            >
+              <ChevronLeft />
+            </Button>
+          )}
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <button
+                    className="flex items-center gap-2 py-2"
+                    onClick={() => {
+                      setCurrentPath([]);
+                    }}
+                  >
+                    <HomeIcon />
+                    Root
+                  </button>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              {currentPath.length > 0 &&
+                currentPath.map((item, idx) => (
+                  <React.Fragment key={idx}>
+                    <BreadcrumbSeparator>
+                      <ChevronRight />
+                    </BreadcrumbSeparator>
+                    {currentPath.length - 1 === idx ? (
+                      <BreadcrumbPage>
+                        <button
+                          className="flex items-center gap-1"
+                          onClick={() => {
+                            setCurrentPath(currentPath.slice(0, idx + 1));
+                          }}
+                        >
+                          <DirectoryTypeIcon />
+                          {item}
+                        </button>
+                      </BreadcrumbPage>
+                    ) : (
+                      <BreadcrumbLink asChild>
+                        <button
+                          className="flex items-center gap-1"
+                          onClick={() => {
+                            setCurrentPath(currentPath.slice(0, idx + 1));
+                          }}
+                        >
+                          <DirectoryTypeIcon />
+                          {item}
+                        </button>
+                      </BreadcrumbLink>
+                    )}
+                  </React.Fragment>
+                ))}
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
+      )}
       <ScrollArea>
         <div className="flex flex-1 flex-col divide-y divide-gray-400">
           {isNodeFilesLoading &&
@@ -242,7 +258,7 @@ export default function NodeFiles() {
               />
             ))}
           {searchQuery
-            ? filterFilesByCondition(nodeFiles, (file) =>
+            ? filterNodeFilesByCondition(nodeFiles, (file) =>
                 file.name.toLowerCase().includes(searchQuery.toLowerCase()),
               ).map((file, index: number) => {
                 return (
@@ -281,9 +297,20 @@ export default function NodeFiles() {
               })}
         </div>
       </ScrollArea>
-
+      {isNodeFilesSuccess && (
+        <div className="fixed bottom-0 left-0 right-0 flex items-center justify-between rounded-t-md bg-gray-300 py-3">
+          <span className="flex flex-1 items-center justify-center gap-1">
+            <FileIcon className="h-4 w-4" />
+            <span className="font-medium">{totalFiles} items</span>
+          </span>
+          <span className="flex flex-1 items-center justify-center gap-1">
+            <DatabaseIcon className="h-4 w-4" />
+            <span className="font-medium">{size(totalStorage)}</span>
+          </span>
+        </div>
+      )}
       <Button
-        className="fixed bottom-4 right-4 h-[60px] w-[60px]"
+        className="fixed bottom-12 right-4 h-[60px] w-[60px]"
         onClick={() => setSelectionMode(true)}
         size="icon"
       >
@@ -400,6 +427,8 @@ const NodeFileItem = ({
   onClick: () => void;
   selectionMode: boolean;
 }) => {
+  const size = partial({ standard: 'jedec' });
+
   if (selectionMode) {
     return (
       <div className="flex items-center gap-3 py-3">
@@ -429,7 +458,7 @@ const NodeFileItem = ({
                     day: 'numeric',
                   })}
                 </span>{' '}
-                - <span>{file.size}</span>
+                - <span>{size(file.size ?? 0)}</span>
               </p>
             ) : (
               <p className="text-sm text-gray-100">
@@ -475,7 +504,7 @@ const NodeFileItem = ({
                 day: 'numeric',
               })}
             </span>{' '}
-            - <span>{file.size}</span>
+            - <span>{size(file.size ?? 0)}</span>
           </p>
         ) : (
           <p className="text-sm text-gray-100">
