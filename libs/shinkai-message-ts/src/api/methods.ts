@@ -745,3 +745,45 @@ export const archiveJob = async (
     throw error;
   }
 };
+export const createNewFolder = async (
+  nodeAddress: string,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  folderName: string,
+  path: string = '/',
+  setupDetailsState: CredentialsPayload,
+): Promise<{ status: string }> => {
+  try {
+    const messageStr = ShinkaiMessageBuilderWrapper.createFolder(
+      setupDetailsState.profile_encryption_sk,
+      setupDetailsState.profile_identity_sk,
+      setupDetailsState.node_encryption_pk,
+      folderName,
+      path,
+      sender,
+      sender_subidentity,
+      receiver,
+      receiver_subidentity,
+    );
+
+    const message = JSON.parse(messageStr);
+
+    const response = await fetch(
+      urlJoin(nodeAddress, '/v1/vec_fs/create_folder'),
+      {
+        method: 'POST',
+        body: JSON.stringify(message),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+
+    await handleHttpError(response);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error closing job:', error);
+    throw error;
+  }
+};
