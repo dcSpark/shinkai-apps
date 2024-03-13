@@ -4,15 +4,16 @@ use std::sync::{Arc, Mutex};
 use tauri::api::process::{Command, CommandChild, CommandEvent};
 
 /// It should match ENV variables names from ShinkaiNode
-#[derive(Serialize)]
+#[derive(Serialize, Clone)]
 pub struct ShinkaiNodeOptions {
-    unstructured_server_url: String,
-    embeddings_server_url: String,
-    first_device_needs_registration_code: String,
-    initial_agent_names: String,
-    initial_agent_urls: String,
-    initial_agent_models: String,
-    initial_agent_api_keys: String,
+    port: Option<u32>,
+    unstructured_server_url: Option<String>,
+    embeddings_server_url: Option<String>,
+    first_device_needs_registration_code: Option<String>,
+    initial_agent_names: Option<String>,
+    initial_agent_urls: Option<String>,
+    initial_agent_models: Option<String>,
+    initial_agent_api_keys: Option<String>,
 }
 
 pub struct ShinkaiNodeManager {
@@ -28,44 +29,14 @@ impl ShinkaiNodeManager {
         let default_options = Self::default_options();
         let merged_options = match options {
             Some(opts) => ShinkaiNodeOptions {
-                unstructured_server_url: if opts.unstructured_server_url.is_empty() {
-                    default_options.unstructured_server_url
-                } else {
-                    opts.unstructured_server_url
-                },
-                embeddings_server_url: if opts.embeddings_server_url.is_empty() {
-                    default_options.embeddings_server_url
-                } else {
-                    opts.embeddings_server_url
-                },
-                first_device_needs_registration_code: if opts
-                    .first_device_needs_registration_code
-                    .is_empty()
-                {
-                    default_options.first_device_needs_registration_code
-                } else {
-                    opts.first_device_needs_registration_code
-                },
-                initial_agent_names: if opts.initial_agent_names.is_empty() {
-                    default_options.initial_agent_names
-                } else {
-                    opts.initial_agent_names
-                },
-                initial_agent_urls: if opts.initial_agent_urls.is_empty() {
-                    default_options.initial_agent_urls
-                } else {
-                    opts.initial_agent_urls
-                },
-                initial_agent_models: if opts.initial_agent_models.is_empty() {
-                    default_options.initial_agent_models
-                } else {
-                    opts.initial_agent_models
-                },
-                initial_agent_api_keys: if opts.initial_agent_api_keys.is_empty() {
-                    default_options.initial_agent_api_keys
-                } else {
-                    opts.initial_agent_api_keys
-                },
+                port: Some(opts.port.unwrap_or_else(|| default_options.port.unwrap())),
+                unstructured_server_url: Some(opts.unstructured_server_url.unwrap_or_else(|| default_options.unstructured_server_url.unwrap())),
+                embeddings_server_url: Some(opts.embeddings_server_url.unwrap_or_else(|| default_options.embeddings_server_url.unwrap())),
+                first_device_needs_registration_code: Some(opts.first_device_needs_registration_code.unwrap_or_else(|| default_options.first_device_needs_registration_code.unwrap())),
+                initial_agent_names: Some(opts.initial_agent_names.unwrap_or_else(|| default_options.initial_agent_names.unwrap())),
+                initial_agent_urls: Some(opts.initial_agent_urls.unwrap_or_else(|| default_options.initial_agent_urls.unwrap())),
+                initial_agent_models: Some(opts.initial_agent_models.unwrap_or_else(|| default_options.initial_agent_models.unwrap())),
+                initial_agent_api_keys: Some(opts.initial_agent_api_keys.unwrap_or_else(|| default_options.initial_agent_api_keys.unwrap())),
             },
             None => default_options,
         };
@@ -78,13 +49,14 @@ impl ShinkaiNodeManager {
 
     fn default_options() -> ShinkaiNodeOptions {
         ShinkaiNodeOptions {
-            unstructured_server_url: "https://public.shinkai.com/x-un".to_string(),
-            embeddings_server_url: "https://public.shinkai.com/x-em".to_string(),
-            first_device_needs_registration_code: "false".to_string(),
-            initial_agent_names: "ollama_mistral".to_string(),
-            initial_agent_urls: "http://localhost:11434".to_string(),
-            initial_agent_models: "ollama:mistral".to_string(),
-            initial_agent_api_keys: "".to_string(),
+            port: Some(9550),
+            unstructured_server_url: Some("https://public.shinkai.com/x-un".to_string()),
+            embeddings_server_url: Some("https://public.shinkai.com/x-em".to_string()),
+            first_device_needs_registration_code: Some("false".to_string()),
+            initial_agent_names: Some("ollama_mixtral".to_string()),
+            initial_agent_urls: Some("http://localhost:11434".to_string()),
+            initial_agent_models: Some("ollama:mixtral".to_string()),
+            initial_agent_api_keys: Some("".to_string()),
         }
     }
 
@@ -98,6 +70,15 @@ impl ShinkaiNodeManager {
             env.insert(env_key, env_value);
         }
         env
+    }
+
+    fn add_log(&self, log_entry: String) {
+        let mut logs = self.logs.lock().unwrap();
+        if logs.len() == ShinkaiNodeManager::MAX_LOGS_LENGTH {
+            logs.remove(0); // Remove the oldest log entry to make space
+        }
+        logs.push(log_entry.clone()); // Add the new log entry
+        println!("{:?}", log_entry);
     }
 
     /// Retrieves the last `n` logs.
@@ -116,13 +97,8 @@ impl ShinkaiNodeManager {
             .collect()
     }
 
-    fn add_log(&self, log_entry: String) {
-        let mut logs = self.logs.lock().unwrap();
-        if logs.len() == ShinkaiNodeManager::MAX_LOGS_LENGTH {
-            logs.remove(0); // Remove the oldest log entry to make space
-        }
-        logs.push(log_entry.clone()); // Add the new log entry
-        println!("{:?}", log_entry);
+    pub fn get_options(&self) -> ShinkaiNodeOptions {
+        self.options.clone()
     }
 
     /// Checks if the shinkai node process is running.

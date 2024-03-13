@@ -2,6 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use db::db::TrayDB;
+use local_shinkai_node::shinkai_node_manager::ShinkaiNodeOptions;
 use std::sync::{Arc, Mutex};
 use tauri::{CustomMenuItem, GlobalShortcutManager, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMenu};
 use tauri::{Manager, SystemTrayMenuItem};
@@ -37,8 +38,14 @@ fn shinkai_node_get_last_n_logs(length: usize) -> Result<Vec<String>, String> {
 }
 
 #[tauri::command]
+fn shinkai_node_get_options() -> Result<ShinkaiNodeOptions, String> {
+    let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER.get().unwrap().lock().unwrap();
+    let options = shinkai_node_manager_guard.get_options();
+    Ok(options)
+}
+
+#[tauri::command]
 fn shinkai_node_spawn() -> Result<String, String> {
-    println!("command:shinkai_node_spawn");
     let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER.get().unwrap().lock().unwrap();
     match shinkai_node_manager_guard.spawn_shinkai_node() {
         Ok(_) => {
@@ -52,7 +59,6 @@ fn shinkai_node_spawn() -> Result<String, String> {
 
 #[tauri::command]
 fn shinkai_node_kill() -> Result<String, String> {
-    println!("command:shinkai_node_kill");
     let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER.get().unwrap().lock().unwrap();
     shinkai_node_manager_guard.kill_shinkai_node();
     Ok("Shinkai Node killed successfully.".into())
@@ -64,33 +70,21 @@ fn main() {
     });
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
     let hide_show = CustomMenuItem::new("hide_show".to_string(), "Hide");
-    let activate_deactivate = CustomMenuItem::new("activate_deactivate".to_string(), "Activate");
-    let create_task = CustomMenuItem::new("create_task".to_string(), "Create Task");
-    let settings = CustomMenuItem::new("settings".to_string(), "Settings");
-    let open_shinkai_node_manager_window = CustomMenuItem::new("open_shinkai_node_manager_window".to_string(), "Open Shinkai Node Manager");
-    let toggle_shinkai_node = CustomMenuItem::new("toggle_shinkai_node".to_string(), "Start Shinkai Node");
+    let shinkai_node_manager_section_title = CustomMenuItem::new("shinkai_node_manager_section_title".to_string(), "Shinkai Node Manager").disabled();
+    let open_shinkai_node_manager_window = CustomMenuItem::new("open_shinkai_node_manager_window".to_string(), "Open");
+
     let tray_menu = SystemTrayMenu::new()
         .add_item(hide_show)
         .add_native_item(SystemTrayMenuItem::Separator)
-        .add_item(activate_deactivate.clone())
-        .add_item(create_task)
-        .add_item(settings)
-        .add_native_item(SystemTrayMenuItem::Separator)
-        .add_native_item(SystemTrayMenuItem::Separator)
+        .add_item(shinkai_node_manager_section_title)
         .add_item(open_shinkai_node_manager_window)
-        .add_item(toggle_shinkai_node)
         .add_native_item(SystemTrayMenuItem::Separator)
         .add_item(quit);
 
     let system_tray = SystemTray::new()
         .with_menu(tray_menu);
 
-    let is_activated = Arc::new(Mutex::new(false)); // change to true
-
     let db = TrayDB::new("db/tauri").unwrap();
-
-    // Example usage
-    // let SHINKAI_NODE_MANAGER = Arc::new(Mutex::new(ShinkaiNodeManager::new(None)));
 
     tauri::Builder::default()
         .manage(db)
@@ -99,6 +93,7 @@ fn main() {
             validate_setup_data,
             shinkai_node_is_running,
             shinkai_node_get_last_n_logs,
+            shinkai_node_get_options,
             shinkai_node_spawn,
             shinkai_node_kill,
         ])
@@ -156,27 +151,6 @@ fn main() {
                         let _ = menu_item.set_title("Hide");
                     }
                 }
-                "activate_deactivate" => {
-                    let mut is_activated = is_activated.lock().unwrap();
-                    let menu_item = app.tray_handle().get_item("activate_deactivate");
-                    if *is_activated {
-                        *is_activated = false;
-                        let _ = menu_item.set_title("Activate");
-                        println!("Feature is now deactivated");
-                    } else {
-                        *is_activated = true;
-                        let _ = menu_item.set_title("Deactivate");
-                        println!("Feature is now activated");
-                    }
-                }
-                "create_task" => {
-                    let window = app.get_window("main").unwrap();
-                    window.emit("create_task", ()).unwrap();
-                }
-                "settings" => {
-                    let window = app.get_window("main").unwrap();
-                    window.emit("settings", ()).unwrap();
-                }
                 "open_shinkai_node_manager_window" => {
                     let existing_window = app.get_window("shinkai-node-manager");
                     if existing_window.is_some() {
@@ -191,21 +165,6 @@ fn main() {
                     let _ = new_window.set_title("Shinkai Node Manager");
                     let _ = new_window.set_resizable(false);
 
-                }
-                "toggle_shinkai_node" => {
-                    let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER.get().unwrap().lock().unwrap();
-                    if shinkai_node_manager_guard.is_running() {
-                        shinkai_node_manager_guard.kill_shinkai_node();
-                        let _ = app.tray_handle().get_item("toggle_shinkai_node").set_title("Start Shinkai Node");
-                    } else {
-                        let _ = match shinkai_node_manager_guard.spawn_shinkai_node() {
-                            Ok(..) => println!("shinkai-node spawned"),
-                            Err(error) => {
-                                println!("shinkai-node spawn failed error: {:?}", error);
-                            },
-                        };
-                        let _ = app.tray_handle().get_item("toggle_shinkai_node").set_title("Stop Shinkai Node");
-                    }
                 }
                 "quit" => {
                     std::process::exit(0);

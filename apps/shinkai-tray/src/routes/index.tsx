@@ -1,6 +1,6 @@
-import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import ChatConversation from '../pages/chat/chat-conversation';
 import EmptyMessage from '../pages/chat/empty-message';
@@ -18,6 +18,10 @@ import UnavailableShinkaiNode from '../pages/unavailable-shinkai-node';
 import WelcomePage from '../pages/welcome';
 import { useAuth } from '../store/auth';
 import {
+  useShinkaiNodeIsRunningQuery,
+  useShinkaiNodeSpawnMutation,
+} from '../windows/shinkai-node-manager/shinkai-node-process-client';
+import {
   ADD_AGENT_PATH,
   CREATE_CHAT_PATH,
   CREATE_JOB_PATH,
@@ -29,32 +33,58 @@ import {
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const auth = useAuth((state) => state.auth);
-  // const { isSuccess: isGetShinkaiNodeHealthSuccess } = useGetHealth(
-  //   {
-  //     node_address: auth?.node_address ?? '',
-  //   },
-  //   { refetchInterval: 5000, enabled: !!auth },
-  // );
+  const autoStartTried = useRef<boolean>(false);
+  const autoStartToastId = useRef<string | number>();
+  const { data: shinkaiNodeIsRunning } = useShinkaiNodeIsRunningQuery({
+    refetchInterval: 1000,
+  });
+  const { mutateAsync: shinkaiNodeSpawn } = useShinkaiNodeSpawnMutation({
+    onMutate: () => {
+      autoStartToastId.current = toast.loading(
+        'Starting your local Shinkai Node automatically',
+      );
+    },
+    onError: () => {
+      toast.error(
+        'Error starting your local Shinkai Node, see logs for more information',
+        { id: autoStartToastId.current },
+      );
+    },
+    onSuccess: () => {
+      toast.success('Your local Shinkai Node is running', {
+        id: autoStartToastId.current,
+      });
+    },
+  });
+
+  useEffect(() => {
+    const isLocalShinkaiNode =
+      auth?.node_address.includes('localhost') ||
+      auth?.node_address.includes('127.0.0.1');
+    if (
+      !autoStartTried.current &&
+      isLocalShinkaiNode &&
+      !shinkaiNodeIsRunning
+    ) {
+      autoStartTried.current = true;
+      shinkaiNodeSpawn();
+    }
+  }, [auth, shinkaiNodeSpawn, autoStartTried, shinkaiNodeIsRunning]);
+
   if (!auth) {
     console.log('navigating to welcome');
     return <Navigate replace to={'/welcome'} />;
   }
-  // } else if (!isGetShinkaiNodeHealthSuccess) {
-  //   console.log('navigating to unavailable shinkai-node');
-  //   return <Navigate replace to={'/unavailable-shinkai-node'} />;
-  // }
+
   return children;
 };
 
 const AppRoutes = () => {
-  
   return (
     <Routes>
       <Route element={<MainLayout />}>
         <Route
-          element={
-            <UnavailableShinkaiNode />
-          }
+          element={<UnavailableShinkaiNode />}
           path={'/unavailable-shinkai-node'}
         />
         <Route element={<WelcomePage />} path={'/welcome'} />

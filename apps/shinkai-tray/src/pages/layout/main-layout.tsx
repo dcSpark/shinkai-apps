@@ -160,7 +160,7 @@ export function Footer() {
             onKeyDown={handleCommandCardKeyDown}
           >
             <CommandList className="bg-gray-400 p-0 pt-2">
-              <ScrollArea className="h-[280px]">
+              <ScrollArea className="h-[350px]">
                 <CommandGroup heading="Actions">
                   <CommandItem onSelect={goToCreateJob}>
                     <JobBubbleIcon className="mr-2" />

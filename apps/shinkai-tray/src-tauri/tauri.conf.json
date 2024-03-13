@@ -7,8 +7,8 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "shinkai-tray",
-    "version": "0.0.0"
+    "productName": "Shinkai Tray",
+    "version": "0.5.0"
   },
   "tauri": {
     "allowlist": {
