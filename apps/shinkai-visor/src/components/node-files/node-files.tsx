@@ -154,7 +154,7 @@ export default function NodeFiles() {
               <BreadcrumbLink asChild>
                 <button className="flex items-center gap-2 py-2">
                   <HomeIcon />
-                  Node Files
+                  Root
                 </button>
               </BreadcrumbLink>
             </BreadcrumbItem>
