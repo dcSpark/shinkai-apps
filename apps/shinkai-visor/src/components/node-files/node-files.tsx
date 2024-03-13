@@ -45,6 +45,23 @@ import React from 'react';
 
 import { Header } from '../header/header';
 
+const filterFilesByCondition = (
+  files: NodeFile[],
+  condition: (file: NodeFile) => boolean,
+): NodeFile[] => {
+  let result: NodeFile[] = [];
+  files.forEach((file) => {
+    if (file.type === 'folder') {
+      result = result.concat(
+        filterFilesByCondition(file.items ?? [], condition),
+      );
+    }
+    if (condition(file)) {
+      result.push(file);
+    }
+  });
+  return result;
+};
 export default function NodeFiles() {
   const { nodeFiles } = useGetNodeFiles();
   const [prevActiveFileBranch, setPrevActiveFileBranch] = React.useState<
@@ -63,10 +80,10 @@ export default function NodeFiles() {
   }, [nodeFiles]);
 
   const filteredFiles = querySearch
-    ? nodeFiles.filter((file) =>
+    ? filterFilesByCondition(nodeFiles, (file) =>
         file.name.toLowerCase().includes(querySearch.toLowerCase()),
       )
-    : nodeFiles;
+    : [];
 
   const [isMenuOpened, setMenuOpened] = React.useState(false);
 
@@ -186,32 +203,59 @@ export default function NodeFiles() {
       </div>
       <ScrollArea>
         <div className="flex flex-1 flex-col divide-y divide-gray-400">
-          {activeFileBranch.map((file, index: number) => {
-            return (
-              <NodeFileItem
-                file={file}
-                key={index}
-                onClick={() => {
-                  if (file.type === 'folder') {
-                    const newActiveFileBranch = [...activeFileBranch];
-                    const index = newActiveFileBranch.indexOf(file);
-                    newActiveFileBranch[index] = {
-                      ...file,
-                      selected: true,
-                    };
-                    setPrevActiveFileBranch((prev) => [
-                      ...prev,
-                      newActiveFileBranch,
-                    ]);
-                    setActiveFileBranch(file.items || []);
-                  } else {
-                    setActiveFile(file);
-                  }
-                }}
-                selectionMode={selectionMode}
-              />
-            );
-          })}
+          {filteredFiles.length > 0
+            ? filteredFiles.map((file, index: number) => {
+                return (
+                  <NodeFileItem
+                    file={file}
+                    key={index}
+                    onClick={() => {
+                      if (file.type === 'folder') {
+                        const newActiveFileBranch = [...activeFileBranch];
+                        const index = newActiveFileBranch.indexOf(file);
+                        newActiveFileBranch[index] = {
+                          ...file,
+                          selected: true,
+                        };
+                        setPrevActiveFileBranch((prev) => [
+                          ...prev,
+                          newActiveFileBranch,
+                        ]);
+                        setActiveFileBranch(file.items || []);
+                      } else {
+                        setActiveFile(file);
+                      }
+                    }}
+                    selectionMode={selectionMode}
+                  />
+                );
+              })
+            : activeFileBranch.map((file, index: number) => {
+                return (
+                  <NodeFileItem
+                    file={file}
+                    key={index}
+                    onClick={() => {
+                      if (file.type === 'folder') {
+                        const newActiveFileBranch = [...activeFileBranch];
+                        const index = newActiveFileBranch.indexOf(file);
+                        newActiveFileBranch[index] = {
+                          ...file,
+                          selected: true,
+                        };
+                        setPrevActiveFileBranch((prev) => [
+                          ...prev,
+                          newActiveFileBranch,
+                        ]);
+                        setActiveFileBranch(file.items || []);
+                      } else {
+                        setActiveFile(file);
+                      }
+                    }}
+                    selectionMode={selectionMode}
+                  />
+                );
+              })}
         </div>
       </ScrollArea>
 
