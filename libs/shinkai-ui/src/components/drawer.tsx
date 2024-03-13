@@ -4,7 +4,7 @@ import { Drawer as DrawerPrimitive } from 'vaul';
 import { cn } from '../utils';
 
 const Drawer = ({
-  shouldScaleBackground = true,
+  shouldScaleBackground = false,
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Root>) => (
   <DrawerPrimitive.Root
@@ -40,7 +40,7 @@ const DrawerContent = React.forwardRef<
     <DrawerOverlay />
     <DrawerPrimitive.Content
       className={cn(
-        'fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border bg-gray-400',
+        'fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border bg-gray-500 px-6 pb-6',
         className,
       )}
       ref={ref}
@@ -57,10 +57,7 @@ const DrawerHeader = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cn('grid gap-1.5 p-4 text-center sm:text-left', className)}
-    {...props}
-  />
+  <div className={cn('pb-0 pt-5', className)} {...props} />
 );
 DrawerHeader.displayName = 'DrawerHeader';
 

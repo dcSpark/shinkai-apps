@@ -1,3 +1,4 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { HomeIcon } from '@radix-ui/react-icons';
 import { NodeFile } from '@shinkai_network/shinkai-node-state/lib/queries/getNodeFiles/types';
 import { useGetNodeFiles } from '@shinkai_network/shinkai-node-state/lib/queries/getNodeFiles/useGetNodeFiles';
@@ -26,10 +27,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   FileTypeIcon,
+  Form,
+  FormField,
   GenerateDocIcon,
   GenerateFromWebIcon,
   Input,
   ScrollArea,
+  TextField,
   UploadVectorResourceIcon,
 } from '@shinkai_network/shinkai-ui';
 import { partial } from 'filesize';
@@ -45,6 +49,8 @@ import {
   XIcon,
 } from 'lucide-react';
 import React from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 import { Header } from '../header/header';
 
@@ -69,8 +75,16 @@ const filterNodeFilesByCondition = (
   return result;
 };
 
+enum NodeFilesDrawerOptions {
+  NewFolder = 'new-folder',
+  UploadVectorResource = 'upload-vector-resource',
+  GenerateFromDocument = 'generate-from-document',
+  GenerateFromWeb = 'generate-from-web',
+}
 export default function NodeFiles() {
   const size = partial({ standard: 'jedec' });
+  const [selectedDrawerOption, setSelectedDrawerOption] =
+    React.useState<NodeFilesDrawerOptions | null>(null);
 
   const {
     isLoading: isNodeFilesLoading,
@@ -132,7 +146,6 @@ export default function NodeFiles() {
             </Button>
           )}
         </div>
-
         <DropdownMenu
           modal={false}
           onOpenChange={(value) => setMenuOpened(value)}
@@ -157,22 +170,36 @@ export default function NodeFiles() {
               {
                 name: 'Add new folder',
                 icon: <AddNewFolderIcon className="mr-2 h-4 w-4" />,
-                onClick: () => {},
+                onClick: () => {
+                  setSelectedDrawerOption(NodeFilesDrawerOptions.NewFolder);
+                },
               },
               {
                 name: 'Upload vector resource',
                 icon: <UploadVectorResourceIcon className="mr-2 h-4 w-4" />,
-                onClick: () => {},
+                onClick: () => {
+                  setSelectedDrawerOption(
+                    NodeFilesDrawerOptions.UploadVectorResource,
+                  );
+                },
               },
               {
                 name: 'Generate from document',
                 icon: <GenerateDocIcon className="mr-2 h-4 w-4" />,
-                onClick: () => {},
+                onClick: () => {
+                  setSelectedDrawerOption(
+                    NodeFilesDrawerOptions.GenerateFromDocument,
+                  );
+                },
               },
               {
                 name: 'Generate from Web',
                 icon: <GenerateFromWebIcon className="mr-2 h-4 w-4" />,
-                onClick: () => {},
+                onClick: () => {
+                  setSelectedDrawerOption(
+                    NodeFilesDrawerOptions.GenerateFromWeb,
+                  );
+                },
               },
             ].map((item, index) => (
               <DropdownMenuItem key={index} onClick={item.onClick}>
@@ -182,6 +209,39 @@ export default function NodeFiles() {
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
+        <Drawer
+          onOpenChange={(open) => {
+            if (!open) {
+              setSelectedDrawerOption(null);
+            }
+          }}
+          open={!!selectedDrawerOption}
+        >
+          <DrawerContent>
+            <DrawerClose className="absolute right-4 top-5">
+              <XIcon className="text-gray-80" />
+            </DrawerClose>
+            <div className="space-y-8">
+              {selectedDrawerOption &&
+                {
+                  [NodeFilesDrawerOptions.NewFolder]: <AddNewFolderDrawer />,
+                  [NodeFilesDrawerOptions.UploadVectorResource]: (
+                    <DrawerDescription>
+                      Upload Vector Resource
+                    </DrawerDescription>
+                  ),
+                  [NodeFilesDrawerOptions.GenerateFromDocument]: (
+                    <DrawerDescription>
+                      Generate from Document
+                    </DrawerDescription>
+                  ),
+                  [NodeFilesDrawerOptions.GenerateFromWeb]: (
+                    <DrawerDescription>Generate from Web</DrawerDescription>
+                  ),
+                }[selectedDrawerOption]}
+            </div>
+          </DrawerContent>
+        </Drawer>
       </div>
       {!searchQuery && (
         <div className="mt-4 flex items-center gap-3">
@@ -335,78 +395,75 @@ export default function NodeFiles() {
           }
         }}
         open={!!activeFile}
-        shouldScaleBackground={false}
       >
-        <DrawerContent className="my-6">
+        <DrawerContent>
           <DrawerClose className="absolute right-4 top-5">
             <XIcon className="text-gray-80" />
           </DrawerClose>
           <DrawerHeader>
             <DrawerTitle className={'sr-only'}>Information</DrawerTitle>
-            <DrawerDescription>
-              <div className="space-y-2 text-left">
-                <div>
-                  <FileTypeIcon className="h-10 w-10" />
-                </div>
-                <p className="text-lg font-medium text-white">
-                  {activeFile?.name}
-                  <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
-                    {activeFile?.file_extension?.split('.').pop()}
-                  </Badge>
-                </p>
-                <p className="text-sm text-gray-100">
-                  <span>
-                    {new Date(
-                      activeFile?.creation_date ?? '',
-                    ).toLocaleDateString('en-US', {
+          </DrawerHeader>
+          <div>
+            <div className="space-y-2 text-left">
+              <div>
+                <FileTypeIcon className="h-10 w-10" />
+              </div>
+              <p className="text-lg font-medium text-white">
+                {activeFile?.name}
+                <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
+                  {activeFile?.file_extension?.split('.').pop()}
+                </Badge>
+              </p>
+              <p className="text-sm text-gray-100">
+                <span>
+                  {new Date(activeFile?.creation_date ?? '').toLocaleDateString(
+                    'en-US',
+                    {
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric',
-                    })}
-                  </span>{' '}
-                  - <span>{activeFile?.size}</span>
-                </p>
+                    },
+                  )}
+                </span>{' '}
+                - <span>{size(activeFile?.size ?? 0)}</span>
+              </p>
+            </div>
+            <div className="py-6">
+              <h2 className="mb-3 text-left text-lg font-medium  text-white">
+                Information
+              </h2>
+              <div className="divide-y divide-gray-300">
+                {[
+                  { label: 'Created', value: '2021-10-10' },
+                  { label: 'Modified', value: '2021-10-10' },
+                  { label: 'Last Opened', value: '2021-10-10' },
+                ].map((item) => (
+                  <div
+                    className="flex items-center justify-between py-2 font-medium"
+                    key={item.label}
+                  >
+                    <span className="text-gray-100">{item.label}</span>
+                    <span className="text-white">
+                      {new Date(item.value ?? '').toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })}
+                    </span>
+                  </div>
+                ))}
               </div>
-              <div className="py-6">
-                <h2 className="mb-3 text-left text-lg font-medium  text-white">
-                  Information
-                </h2>
-                <div className="divide-y divide-gray-300">
-                  {[
-                    { label: 'Created', value: '2021-10-10' },
-                    { label: 'Modified', value: '2021-10-10' },
-                    { label: 'Last Opened', value: '2021-10-10' },
-                  ].map((item) => (
-                    <div
-                      className="flex items-center justify-between py-2 font-medium"
-                      key={item.label}
-                    >
-                      <span className="text-gray-100">{item.label}</span>
-                      <span className="text-white">
-                        {new Date(item.value ?? '').toLocaleDateString(
-                          'en-US',
-                          {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                          },
-                        )}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="py-6 text-left">
-                <h2 className="mb-3 text-lg font-medium  text-white">
-                  Permissions
-                </h2>
-                <span>
-                  <LockIcon className="mr-2 inline-block h-4 w-4" />
-                  You can read and write
-                </span>
-              </div>
-            </DrawerDescription>
-          </DrawerHeader>
+            </div>
+            <div className="py-6 text-left">
+              <h2 className="mb-3 text-lg font-medium  text-white">
+                Permissions
+              </h2>
+              <span>
+                <LockIcon className="mr-2 inline-block h-4 w-4" />
+                You can read and write
+              </span>
+            </div>
+          </div>
 
           <DrawerFooter>
             <Button>Download Source File</Button>
@@ -521,5 +578,51 @@ const NodeFileItem = ({
       </div>
       <ChevronRight />
     </button>
+  );
+};
+
+const createFolderSchema = z.object({
+  name: z.string(),
+});
+const AddNewFolderDrawer = () => {
+  const createFolderForm = useForm<z.infer<typeof createFolderSchema>>({
+    resolver: zodResolver(createFolderSchema),
+  });
+
+  const onSubmit = () => {
+    console.log('add new');
+  };
+  return (
+    <>
+      <DrawerHeader>
+        <DrawerTitle className="flex flex-col items-start gap-1">
+          <DirectoryTypeIcon className="h-10 w-10" />
+          Add Folder
+        </DrawerTitle>
+      </DrawerHeader>
+
+      <Form {...createFolderForm}>
+        <form
+          className="space-y-8"
+          onSubmit={createFolderForm.handleSubmit(onSubmit)}
+        >
+          <FormField
+            control={createFolderForm.control}
+            name="name"
+            render={({ field }) => (
+              <TextField field={field} label="Folder Name" />
+            )}
+          />
+          <Button
+            className="w-full"
+            // disabled={isPending}
+            // isLoading={isPending}
+            type="submit"
+          >
+            Create Folder
+          </Button>
+        </form>
+      </Form>
+    </>
   );
 };
