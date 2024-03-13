@@ -8,6 +8,7 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
+  BreadcrumbPage,
   BreadcrumbSeparator,
   Button,
   Checkbox,
@@ -163,12 +164,21 @@ export default function NodeFiles() {
                   <BreadcrumbSeparator>
                     <ChevronRight />
                   </BreadcrumbSeparator>
-                  <BreadcrumbLink asChild>
-                    <button className="flex items-center gap-1">
-                      <DirectoryTypeIcon />
-                      {item.find((file) => file.selected)?.name}
-                    </button>
-                  </BreadcrumbLink>
+                  {prevActiveFileBranch.length - 1 === idx ? (
+                    <BreadcrumbPage>
+                      <button className="flex items-center gap-1">
+                        <DirectoryTypeIcon />
+                        {item.find((file) => file.selected)?.name}
+                      </button>
+                    </BreadcrumbPage>
+                  ) : (
+                    <BreadcrumbLink asChild>
+                      <button className="flex items-center gap-1">
+                        <DirectoryTypeIcon />
+                        {item.find((file) => file.selected)?.name}
+                      </button>
+                    </BreadcrumbLink>
+                  )}
                 </React.Fragment>
               ))}
           </BreadcrumbList>

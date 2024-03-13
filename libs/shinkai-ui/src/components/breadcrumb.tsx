@@ -18,7 +18,7 @@ const BreadcrumbList = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <ol
     className={cn(
-      'flex flex-wrap items-center gap-1.5 break-words text-sm text-white sm:gap-2.5',
+      'text-gray-80 flex flex-wrap items-center gap-1.5 break-words text-sm sm:gap-2.5',
       className,
     )}
     ref={ref}
@@ -49,7 +49,7 @@ const BreadcrumbLink = React.forwardRef<
 
   return (
     <Comp
-      className={cn('hover:text-gray-80 transition-colors', className)}
+      className={cn('transition-colors hover:text-white', className)}
       ref={ref}
       {...props}
     />
@@ -64,7 +64,7 @@ const BreadcrumbPage = React.forwardRef<
   <span
     aria-current="page"
     aria-disabled="true"
-    className={cn('text-gray-80 font-normal', className)}
+    className={cn('font-normal text-white', className)}
     ref={ref}
     role="link"
     {...props}
