@@ -4,6 +4,6 @@ export type NodeFile = {
   creation_date: string;
   size?: number;
   file_extension?: string;
-  selected?: boolean;
+  path?: string;
   items?: NodeFile[];
 };

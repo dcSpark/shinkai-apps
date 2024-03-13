@@ -48,44 +48,44 @@ import { Header } from '../header/header';
 const filterFilesByCondition = (
   files: NodeFile[],
   condition: (file: NodeFile) => boolean,
+  path: string = '',
 ): NodeFile[] => {
   let result: NodeFile[] = [];
   files.forEach((file) => {
+    const newPath = path + '/' + file.name;
     if (file.type === 'folder') {
       result = result.concat(
-        filterFilesByCondition(file.items ?? [], condition),
+        filterFilesByCondition(file.items ?? [], condition, newPath),
       );
     }
     if (condition(file)) {
+      file.path = newPath;
       result.push(file);
     }
   });
   return result;
 };
+
 export default function NodeFiles() {
   const { nodeFiles } = useGetNodeFiles();
-  const [prevActiveFileBranch, setPrevActiveFileBranch] = React.useState<
-    NodeFile[][]
-  >([]);
-  const [activeFileBranch, setActiveFileBranch] = React.useState<NodeFile[]>(
-    [],
-  );
+  const [currentPath, setCurrentPath] = React.useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = React.useState('');
   const [activeFile, setActiveFile] = React.useState<NodeFile | null>(null);
-
-  const [querySearch, setQuerySearch] = React.useState('');
   const [selectionMode, setSelectionMode] = React.useState(false);
 
-  React.useEffect(() => {
-    setActiveFileBranch(nodeFiles ?? []);
-  }, [nodeFiles]);
-
-  const filteredFiles = querySearch
-    ? filterFilesByCondition(nodeFiles, (file) =>
-        file.name.toLowerCase().includes(querySearch.toLowerCase()),
-      )
-    : [];
-
   const [isMenuOpened, setMenuOpened] = React.useState(false);
+
+  const getCurrentFolder = () => {
+    let currentFolder = [...nodeFiles];
+    for (const folderName of currentPath) {
+      const current = currentFolder.find(
+        (item) => item.type === 'folder' && item.name === folderName,
+      );
+      if (!current) return [];
+      currentFolder = current.items ?? [];
+    }
+    return currentFolder;
+  };
 
   return (
     <div className="flex h-full flex-col gap-4">
@@ -94,10 +94,25 @@ export default function NodeFiles() {
         <div className="relative flex h-10 w-full flex-1 items-center">
           <Input
             className="placeholder-gray-80 !h-full bg-gray-200 py-2 pl-10"
-            onChange={(e) => setQuerySearch(e.target.value)}
+            onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search..."
+            value={searchQuery}
           />
           <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2 bg-gray-300" />
+          {searchQuery && (
+            <Button
+              className="absolute right-1 h-8 w-8 p-2"
+              onClick={() => {
+                setSearchQuery('');
+              }}
+              size="auto"
+              type="button"
+              variant="ghost"
+            >
+              <XIcon />
+              <span className="sr-only">Clear Search</span>
+            </Button>
+          )}
         </div>
 
         <DropdownMenu
@@ -151,13 +166,10 @@ export default function NodeFiles() {
         </DropdownMenu>
       </div>
       <div className="mt-4 flex items-center gap-3">
-        {prevActiveFileBranch.length > 0 && (
+        {currentPath.length > 0 && (
           <Button
             onClick={() => {
-              setPrevActiveFileBranch((prev) => prev.slice(0, -1));
-              setActiveFileBranch(
-                prevActiveFileBranch[prevActiveFileBranch.length - 1] ?? [],
-              );
+              setCurrentPath(currentPath.slice(0, -1));
             }}
             size={'icon'}
             variant="ghost"
@@ -169,30 +181,45 @@ export default function NodeFiles() {
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <button className="flex items-center gap-2 py-2">
+                <button
+                  className="flex items-center gap-2 py-2"
+                  onClick={() => {
+                    setCurrentPath([]);
+                  }}
+                >
                   <HomeIcon />
                   Root
                 </button>
               </BreadcrumbLink>
             </BreadcrumbItem>
-            {prevActiveFileBranch.length > 0 &&
-              prevActiveFileBranch.map((item, idx) => (
+            {currentPath.length > 0 &&
+              currentPath.map((item, idx) => (
                 <React.Fragment key={idx}>
                   <BreadcrumbSeparator>
                     <ChevronRight />
                   </BreadcrumbSeparator>
-                  {prevActiveFileBranch.length - 1 === idx ? (
+                  {currentPath.length - 1 === idx ? (
                     <BreadcrumbPage>
-                      <button className="flex items-center gap-1">
+                      <button
+                        className="flex items-center gap-1"
+                        onClick={() => {
+                          setCurrentPath(currentPath.slice(0, idx + 1));
+                        }}
+                      >
                         <DirectoryTypeIcon />
-                        {item.find((file) => file.selected)?.name}
+                        {item}
                       </button>
                     </BreadcrumbPage>
                   ) : (
                     <BreadcrumbLink asChild>
-                      <button className="flex items-center gap-1">
+                      <button
+                        className="flex items-center gap-1"
+                        onClick={() => {
+                          setCurrentPath(currentPath.slice(0, idx + 1));
+                        }}
+                      >
                         <DirectoryTypeIcon />
-                        {item.find((file) => file.selected)?.name}
+                        {item}
                       </button>
                     </BreadcrumbLink>
                   )}
@@ -203,25 +230,22 @@ export default function NodeFiles() {
       </div>
       <ScrollArea>
         <div className="flex flex-1 flex-col divide-y divide-gray-400">
-          {filteredFiles.length > 0
-            ? filteredFiles.map((file, index: number) => {
+          {searchQuery
+            ? filterFilesByCondition(nodeFiles, (file) =>
+                file.name.toLowerCase().includes(searchQuery.toLowerCase()),
+              ).map((file, index: number) => {
                 return (
                   <NodeFileItem
                     file={file}
                     key={index}
                     onClick={() => {
                       if (file.type === 'folder') {
-                        const newActiveFileBranch = [...activeFileBranch];
-                        const index = newActiveFileBranch.indexOf(file);
-                        newActiveFileBranch[index] = {
-                          ...file,
-                          selected: true,
-                        };
-                        setPrevActiveFileBranch((prev) => [
-                          ...prev,
-                          newActiveFileBranch,
-                        ]);
-                        setActiveFileBranch(file.items || []);
+                        setCurrentPath(
+                          (file.path ?? '')
+                            ?.split('/')
+                            .filter((item: string) => item !== ''),
+                        );
+                        setSearchQuery('');
                       } else {
                         setActiveFile(file);
                       }
@@ -230,24 +254,25 @@ export default function NodeFiles() {
                   />
                 );
               })
-            : activeFileBranch.map((file, index: number) => {
+            : getCurrentFolder().map((file, index: number) => {
                 return (
                   <NodeFileItem
                     file={file}
                     key={index}
                     onClick={() => {
                       if (file.type === 'folder') {
-                        const newActiveFileBranch = [...activeFileBranch];
-                        const index = newActiveFileBranch.indexOf(file);
-                        newActiveFileBranch[index] = {
-                          ...file,
-                          selected: true,
-                        };
-                        setPrevActiveFileBranch((prev) => [
-                          ...prev,
-                          newActiveFileBranch,
-                        ]);
-                        setActiveFileBranch(file.items || []);
+                        // const newActiveFileBranch = [...activeFileBranch];
+                        // const index = newActiveFileBranch.indexOf(file);
+                        // newActiveFileBranch[index] = {
+                        //   ...file,
+                        //   selected: true,
+                        // };
+                        // setPrevActiveFileBranch((prev) => [
+                        //   ...prev,
+                        //   newActiveFileBranch,
+                        // ]);
+                        // setActiveFileBranch(file.items || []);
+                        setCurrentPath((prev) => [...prev, file.name]);
                       } else {
                         setActiveFile(file);
                       }
