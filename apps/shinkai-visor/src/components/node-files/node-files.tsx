@@ -67,7 +67,11 @@ const filterFilesByCondition = (
 };
 
 export default function NodeFiles() {
-  const { nodeFiles } = useGetNodeFiles();
+  const {
+    isLoading: isNodeFilesLoading,
+    isSuccess: isNodeFilesSuccess,
+    nodeFiles,
+  } = useGetNodeFiles();
   const [currentPath, setCurrentPath] = React.useState<string[]>([]);
   const [searchQuery, setSearchQuery] = React.useState('');
   const [activeFile, setActiveFile] = React.useState<NodeFile | null>(null);
@@ -230,6 +234,13 @@ export default function NodeFiles() {
       </div>
       <ScrollArea>
         <div className="flex flex-1 flex-col divide-y divide-gray-400">
+          {isNodeFilesLoading &&
+            Array.from({ length: 4 }).map((_, idx) => (
+              <div
+                className="mb-1 flex h-[69px] items-center justify-between gap-2 bg-gray-400 py-3"
+                key={idx}
+              />
+            ))}
           {searchQuery
             ? filterFilesByCondition(nodeFiles, (file) =>
                 file.name.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -241,9 +252,7 @@ export default function NodeFiles() {
                     onClick={() => {
                       if (file.type === 'folder') {
                         setCurrentPath(
-                          (file.path ?? '')
-                            ?.split('/')
-                            .filter((item: string) => item !== ''),
+                          (file.path ?? '')?.split('/').filter(Boolean),
                         );
                         setSearchQuery('');
                       } else {
@@ -261,17 +270,6 @@ export default function NodeFiles() {
                     key={index}
                     onClick={() => {
                       if (file.type === 'folder') {
-                        // const newActiveFileBranch = [...activeFileBranch];
-                        // const index = newActiveFileBranch.indexOf(file);
-                        // newActiveFileBranch[index] = {
-                        //   ...file,
-                        //   selected: true,
-                        // };
-                        // setPrevActiveFileBranch((prev) => [
-                        //   ...prev,
-                        //   newActiveFileBranch,
-                        // ]);
-                        // setActiveFileBranch(file.items || []);
                         setCurrentPath((prev) => [...prev, file.name]);
                       } else {
                         setActiveFile(file);
