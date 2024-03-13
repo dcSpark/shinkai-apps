@@ -154,6 +154,7 @@ export default function NavBar() {
     '/agents',
     '/settings',
     '/nodes/connect/method/quick-start',
+    '/node-files',
   ].includes(location.pathname);
 
   const isInboxPage = location.pathname.includes('/inboxes');
