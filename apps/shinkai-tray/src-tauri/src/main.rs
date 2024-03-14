@@ -173,6 +173,11 @@ fn main() {
 
                 }
                 "quit" => {
+                    // For some reason process::exit doesn't fire RunEvent::ExitRequested event in tauri
+                    let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.lock().unwrap();
+                    if shinkai_node_manager_guard.is_running() {
+                        shinkai_node_manager_guard.kill_shinkai_node();
+                    }
                     std::process::exit(0);
                 }
                 _ => {}
