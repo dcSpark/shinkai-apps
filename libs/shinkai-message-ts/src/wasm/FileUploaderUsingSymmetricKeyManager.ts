@@ -204,4 +204,40 @@ export class FileUploader {
       throw error;
     }
   }
+  async finalizeAndAddItemsToDb(
+    destinationPath: string = '/',
+  ): Promise<{ status: string }> {
+    try {
+      const messageStr = ShinkaiMessageBuilderWrapper.createItems(
+        this.my_encryption_secret_key,
+        this.my_signature_secret_key,
+        this.receiver_public_key,
+        destinationPath,
+        this.folder_id || '',
+        this.sender,
+        this.sender_subidentity,
+        this.receiver,
+      );
+
+      const message = JSON.parse(messageStr);
+
+      const response = await fetch(
+        urlJoin(this.base_url, '/v1/vec_fs/convert_files_and_save_to_folder'),
+        {
+          method: 'POST',
+          body: JSON.stringify(message),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error finalizing and adding items to DB:', error);
+      throw error;
+    }
+  }
 }

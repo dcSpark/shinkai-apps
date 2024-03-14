@@ -809,6 +809,7 @@ export const retrieveVRPathSimplified = async (
     );
 
     const message = JSON.parse(messageStr);
+    console.log(message, 'message');
 
     const response = await fetch(
       urlJoin(nodeAddress, '/v1/vec_fs/retrieve_path_simplified_json'),
@@ -836,7 +837,7 @@ export const uploadFilesToVR = async (
   destinationPath: string,
   files: File[],
   setupDetailsState: CredentialsPayload,
-): Promise<{ data: any; status: string }> => {
+): Promise<{ status: string }> => {
   try {
     const fileUploader = new FileUploader(
       nodeAddress,
@@ -849,37 +850,17 @@ export const uploadFilesToVR = async (
       receiver,
     );
 
-    const folderPathId = await fileUploader.createFolder();
-    console.log(folderPathId, 'folderPathId');
+    await fileUploader.createFolder();
     for (const fileToUpload of files) {
       await fileUploader.uploadEncryptedFile(fileToUpload);
     }
+    const response =
+      await fileUploader.finalizeAndAddItemsToDb(destinationPath);
 
-    const message = ShinkaiMessageBuilderWrapper.createItems(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      destinationPath,
-      folderPathId,
-      sender,
-      sender_subidentity,
-      receiver,
-    );
-    console.log(message, 'message');
-    const response = await fetch(
-      urlJoin(nodeAddress, '/v1/vec_fs/convert_files_and_save_to_folder'),
-      {
-        method: 'POST',
-        body: JSON.stringify(message),
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
-
-    await handleHttpError(response);
-    const data = await response.json();
-    return { data: JSON.parse(data.data), status: data.status };
+    // await handleHttpE?esponse.json();
+    return response;
   } catch (error) {
-    console.error('Error sending text message with file:', error);
+    console.error('Error uploading knowledge files:', error);
     throw error;
   }
 };

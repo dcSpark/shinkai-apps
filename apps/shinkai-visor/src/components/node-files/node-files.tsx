@@ -709,7 +709,7 @@ const UploadVRFilesDrawer = () => {
       sender: auth?.shinkai_identity ?? '',
       senderSubidentity: auth?.profile ?? '',
       receiver: auth?.shinkai_identity ?? '',
-      destinationPath: '/',
+      destinationPath: '/paulclindo',
       files: values.files,
       my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
       my_device_identity_sk: auth?.profile_identity_sk ?? '',
