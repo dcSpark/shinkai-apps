@@ -816,7 +816,6 @@ export class ShinkaiMessageBuilderWrapper {
     sender: string,
     sender_subidentity: string,
     receiver: string,
-    receiver_subidentity: string,
   ): string {
     const createItemsInfo = { path: destination_path, file_inbox };
     const body = JSON.stringify(createItemsInfo);

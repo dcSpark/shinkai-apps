@@ -864,7 +864,6 @@ export const uploadFilesToVR = async (
       sender,
       sender_subidentity,
       receiver,
-      '',
     );
     console.log(message, 'message');
     const response = await fetch(
