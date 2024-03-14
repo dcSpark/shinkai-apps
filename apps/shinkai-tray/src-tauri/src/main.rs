@@ -101,6 +101,7 @@ fn main() {
                 initial_agent_urls: None,
                 initial_agent_models: None,
                 initial_agent_api_keys: None,
+                starting_num_qr_devices: None,
             }));
 
             app.global_shortcut_manager()
@@ -156,14 +157,15 @@ fn main() {
                     }
                 }
                 "open_shinkai_node_manager_window" => {
-                    let existing_window = app.get_window("shinkai-node-manager");
+                    let shinkai_node_manager_window = "shinkai-node-manager-window".to_string();
+                    let existing_window = app.get_window(&shinkai_node_manager_window);
                     if existing_window.is_some() {
                         let _ = existing_window.unwrap().set_focus();
                         return;
                     }
                     let new_window = tauri::WindowBuilder::new(
                         app,
-                        "shinkai-node-manager",
+                        shinkai_node_manager_window,
                         tauri::WindowUrl::App("src/windows/shinkai-node-manager/index.html".into()),
                       ).build().unwrap();
                     let _ = new_window.set_title("Shinkai Node Manager");

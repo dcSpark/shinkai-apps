@@ -9,15 +9,16 @@ import {
 import { invoke } from '@tauri-apps/api';
 
 export type ShinkaiNodeOptions = {
-  port: number,
-  unstructured_server_url: string,
-  embeddings_server_url: string,
-  first_device_needs_registration_code: string,
-  initial_agent_names: string,
-  initial_agent_urls: string,
-  initial_agent_models: string,
-  initial_agent_api_keys: string,
-}
+  port: number;
+  unstructured_server_url: string;
+  embeddings_server_url: string;
+  first_device_needs_registration_code: string;
+  initial_agent_names: string;
+  initial_agent_urls: string;
+  initial_agent_models: string;
+  initial_agent_api_keys: string;
+  starting_num_qr_devices: number;
+};
 
 // Client
 export const queryClient = new QueryClient();
@@ -39,7 +40,8 @@ export const useShinkaiNodeGetLastNLogsQuery = (
 ): UseQueryResult<string[], Error> => {
   const query = useQuery({
     queryKey: ['shinkai_node_get_last_n_logs'],
-    queryFn: (): Promise<string[]> => invoke('shinkai_node_get_last_n_logs', { length: input.length }),
+    queryFn: (): Promise<string[]> =>
+      invoke('shinkai_node_get_last_n_logs', { length: input.length }),
     ...options,
   });
   return { ...query } as UseQueryResult<string[], Error>;
@@ -49,7 +51,8 @@ export const useShinkaiNodeGetOptionsQuery = (
 ): UseQueryResult<ShinkaiNodeOptions, Error> => {
   const query = useQuery({
     queryKey: ['shinkai_node_get_options'],
-    queryFn: (): Promise<ShinkaiNodeOptions> => invoke('shinkai_node_get_options'),
+    queryFn: (): Promise<ShinkaiNodeOptions> =>
+      invoke('shinkai_node_get_options'),
     ...options,
   });
   return { ...query } as UseQueryResult<ShinkaiNodeOptions, Error>;

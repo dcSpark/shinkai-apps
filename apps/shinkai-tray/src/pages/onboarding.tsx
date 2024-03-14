@@ -8,7 +8,6 @@ import {
   FormField,
   TextField,
 } from '@shinkai_network/shinkai-ui';
-import { WebviewWindow } from '@tauri-apps/api/window';
 import { QrCode } from 'lucide-react';
 import React from 'react';
 import { useForm } from 'react-hook-form';
@@ -17,6 +16,7 @@ import { z } from 'zod';
 
 import { HOME_PATH } from '../routes/name';
 import { useAuth } from '../store/auth';
+import { openShinkaiNodeManagerWindow } from '../windows/utils';
 import OnboardingLayout from './layout/onboarding-layout';
 
 const formSchema = z.object({
@@ -144,29 +144,17 @@ const OnboardingPage = () => {
         </form>
       </Form>
 
-      <div className="text-gray-80 mt-2 text-center text-sm flex flex-row space-x-2 items-center">
-        <p>
-          {'Don\'t you have a Shinkai Node? '}
-        </p>
+      <div className="text-gray-80 mt-2 flex flex-row items-center space-x-2 text-center text-sm">
+        <p>{"Don't you have a Shinkai Node? "}</p>
         <Button
-            className="font-semibold text-white underline text-sm p-0"
-            onClick={(e) => {
-              const webview = new WebviewWindow('shinkai-node-manager', {
-                url: 'src/windows/shinkai-node-manager/index.html',
-                title: 'Shinkai Node Manager',
-                resizable: false,
-              });
-              webview.once('tauri://created', function () {
-                console.log(`window started`);
-              });
-              webview.once('tauri://error', function (e) {
-                console.log(`window error: ${JSON.stringify(e)}`);
-              });
-            }}
-            variant={'link'}
-          >
-            Run it locally
-          </Button>
+          className="p-0 text-sm font-semibold text-white underline"
+          onClick={(e) => {
+            openShinkaiNodeManagerWindow();
+          }}
+          variant={'link'}
+        >
+          Run it locally
+        </Button>
       </div>
 
       <div className="mt-8 flex gap-4">

@@ -32,6 +32,7 @@ impl ShinkaiNodeManager {
             initial_agent_urls: Some("http://localhost:11434".to_string()),
             initial_agent_models: Some("ollama:mixtral".to_string()),
             initial_agent_api_keys: Some("".to_string()),
+            starting_num_qr_devices: Some("0".to_string()),
         }
     }
 
@@ -69,6 +70,7 @@ impl ShinkaiNodeManager {
                 initial_agent_urls: Some(opts.initial_agent_urls.unwrap_or_else(|| base_options.initial_agent_urls.unwrap())),
                 initial_agent_models: Some(opts.initial_agent_models.unwrap_or_else(|| base_options.initial_agent_models.unwrap())),
                 initial_agent_api_keys: Some(opts.initial_agent_api_keys.unwrap_or_else(|| base_options.initial_agent_api_keys.unwrap())),
+                starting_num_qr_devices: Some(opts.starting_num_qr_devices.unwrap_or_else(|| base_options.starting_num_qr_devices.unwrap())),
             },
             None => base_options,
         };
