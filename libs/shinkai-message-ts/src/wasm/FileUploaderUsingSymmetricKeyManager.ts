@@ -11,7 +11,7 @@ export class FileUploader {
   private sender: string;
   private sender_subidentity: string;
   private receiver: string;
-  private job_id: string;
+  private job_id: string | undefined;
   private job_inbox: string;
   private symmetric_key: CryptoKey | null;
   private folder_id: string | null;
@@ -30,8 +30,10 @@ export class FileUploader {
     this.my_encryption_secret_key = my_encryption_secret_key;
     this.my_signature_secret_key = my_signature_secret_key;
     this.receiver_public_key = receiver_public_key;
-    const inbox = new InboxNameWrapper(job_inbox);
-    this.job_id = inbox.get_unique_id;
+    if (job_inbox) {
+      const inbox = new InboxNameWrapper(job_inbox);
+      this.job_id = inbox.get_unique_id;
+    }
     this.job_inbox = job_inbox;
     this.sender = sender;
     this.sender_subidentity = sender_subidentity;
@@ -106,7 +108,9 @@ export class FileUploader {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       this.folder_id = await this.calculateHashFromSymmetricKey();
-      return response.text();
+      // return response.text();
+
+      return this.folder_id;
     } catch (error) {
       console.error('Error creating folder:', error);
       throw error;
@@ -166,6 +170,9 @@ export class FileUploader {
     parent: string | null,
   ): Promise<string> {
     try {
+      if (!this.job_id) {
+        throw new Error(`finalizeAndSend: job_id not found`);
+      }
       const messageStr = ShinkaiMessageBuilderWrapper.job_message(
         this.job_id,
         content,

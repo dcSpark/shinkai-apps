@@ -18,7 +18,6 @@ import { InboxNameWrapper } from '../pkg/shinkai_message_wasm';
 import { calculateMessageHash } from '../utils';
 import { urlJoin } from '../utils/url-join';
 import { FileUploader } from '../wasm/FileUploaderUsingSymmetricKeyManager';
-import { FileUploaderVR } from '../wasm/FileUploaderVRUsingSymmetricKeyManager';
 import { SerializedAgentWrapper } from '../wasm/SerializedAgentWrapper';
 import { ShinkaiMessageBuilderWrapper } from '../wasm/ShinkaiMessageBuilderWrapper';
 import { ShinkaiNameWrapper } from '../wasm/ShinkaiNameWrapper';
@@ -839,17 +838,19 @@ export const uploadFilesToVR = async (
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
   try {
-    const fileUploader = new FileUploaderVR(
+    const fileUploader = new FileUploader(
       nodeAddress,
       setupDetailsState.profile_encryption_sk,
       setupDetailsState.profile_identity_sk,
       setupDetailsState.node_encryption_pk,
+      '',
       sender,
       sender_subidentity,
       receiver,
     );
 
     const folderPathId = await fileUploader.createFolder();
+    console.log(folderPathId, 'folderPathId');
     for (const fileToUpload of files) {
       await fileUploader.uploadEncryptedFile(fileToUpload);
     }
@@ -865,6 +866,7 @@ export const uploadFilesToVR = async (
       receiver,
       '',
     );
+    console.log(message, 'message');
     const response = await fetch(
       urlJoin(nodeAddress, '/v1/vec_fs/convert_files_and_save_to_folder'),
       {

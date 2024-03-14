@@ -7,9 +7,9 @@ export const useUploadVRFiles = () => {
   return useMutation({
     mutationFn: uploadVRFiles,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: [FunctionKey.GET_CHAT_CONVERSATION_PAGINATION],
-      });
+      // queryClient.invalidateQueries({
+      //   queryKey: [FunctionKey.GET],
+      // });
     },
   });
 };

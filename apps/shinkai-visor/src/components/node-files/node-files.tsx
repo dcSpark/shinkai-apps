@@ -39,6 +39,7 @@ import {
   GenerateDocIcon,
   GenerateFromWebIcon,
   Input,
+  PaperClipIcon,
   ScrollArea,
   TextField,
   UploadVectorResourceIcon,
@@ -52,17 +53,19 @@ import {
   LockIcon,
   PlusIcon,
   SearchIcon,
+  Trash,
+  Upload,
   X,
   XIcon,
 } from 'lucide-react';
 import React, { useEffect } from 'react';
+import { Accept, useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
-import { FileInput } from '../file-input/file-input';
 import { Header } from '../header/header';
 
 const filterNodeFilesByCondition = (
@@ -699,11 +702,13 @@ const UploadVRFilesDrawer = () => {
   const onSubmit = async (values: z.infer<typeof uploadVRFilesSchema>) => {
     if (!auth) return;
 
+    console.log(values, 'values');
+
     await uploadVRFiles({
       nodeAddress: auth?.node_address ?? '',
-      sender: auth?.profile ?? '',
+      sender: auth?.shinkai_identity ?? '',
       senderSubidentity: auth?.profile ?? '',
-      receiver: auth?.profile ?? '',
+      receiver: auth?.shinkai_identity ?? '',
       destinationPath: '/',
       files: values.files,
       my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
@@ -743,12 +748,26 @@ const UploadVRFilesDrawer = () => {
                   <FormattedMessage id="file.one" />
                 </FormLabel>
                 <FormControl>
-                  <FileInput
-                    extensions={['.pdf']}
-                    multiple
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  />
+                  <div className="flex flex-col space-y-1">
+                    <div className="flex items-center justify-center">
+                      <FileInput
+                        // accept={{
+                        //   'application/x-iwork-keynote-sffkey': ['.key'],
+                        // }}
+                        maxFiles={1}
+                        onChange={(acceptedFiles) => {
+                          // onConnectionFileSelected(acceptedFiles);
+                          field.onChange(acceptedFiles);
+                        }}
+                        value={field.value}
+                      />
+                    </div>
+                    {/*{!!encryptedConnectionFileValue?.length && (*/}
+                    {/*  <div className="truncate rounded-lg bg-gray-400 px-2 py-2">*/}
+                    {/*    {encryptedConnectionFileValue[0].encryptedConnection}*/}
+                    {/*  </div>*/}
+                    {/*)}*/}
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -765,5 +784,79 @@ const UploadVRFilesDrawer = () => {
         </form>
       </Form>
     </>
+  );
+};
+
+const FileInput = ({
+  value,
+  onChange,
+  maxFiles,
+  accept,
+  multiple,
+}: {
+  value: File[];
+  onChange: (files: File[]) => void;
+  maxFiles?: number;
+  accept?: Accept;
+  multiple?: boolean;
+}) => {
+  const { getRootProps: getRootFileProps, getInputProps: getInputFileProps } =
+    useDropzone({
+      multiple: multiple,
+      maxFiles: maxFiles ?? 5,
+      accept,
+      onDrop: (acceptedFiles) => {
+        onChange(acceptedFiles);
+      },
+    });
+
+  return (
+    <div className="flex w-full flex-col gap-2">
+      <div
+        {...getRootFileProps({
+          className:
+            'dropzone py-4 bg-gray-400 group relative mt-3 flex cursor-pointer items-center justify-center overflow-hidden rounded-lg border border-dashed border-gray-100 transition-colors hover:border-white',
+        })}
+      >
+        <div className="flex flex-col items-center justify-center space-y-1">
+          <div>
+            <Upload className="h-4 w-4" />
+          </div>
+          <p className="text-sm text-white">
+            <FormattedMessage id="click-to-upload" />
+          </p>
+          <p className="text-gray-80 text-xs">Eg: shinkai.key</p>
+        </div>
+
+        <input {...getInputFileProps({})} />
+      </div>
+      {!!value?.length && (
+        <div className="flex flex-col gap-2">
+          {value?.map((file, idx) => (
+            <div
+              className="relative flex items-center gap-2 rounded-lg border border-gray-100 px-3 py-1.5"
+              key={idx}
+            >
+              <PaperClipIcon className="text-gray-100" />
+              <span className="text-gray-80 flex-1 truncate text-sm">
+                {file.name}
+              </span>
+              <Button
+                onClick={() => {
+                  const newFiles = [...value];
+                  newFiles.splice(newFiles.indexOf(file), 1);
+                  onChange(newFiles);
+                }}
+                size="icon"
+                type="button"
+                variant="ghost"
+              >
+                <Trash className="h-4 w-4 text-gray-100" />
+              </Button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
