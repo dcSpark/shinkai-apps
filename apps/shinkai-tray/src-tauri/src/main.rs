@@ -1,52 +1,42 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use db::db::TrayDB;
-use local_shinkai_node::shinkai_node_manager::ShinkaiNodeOptions;
-use std::sync::{Arc, Mutex};
+use std::fmt::format;
 use tauri::{CustomMenuItem, GlobalShortcutManager, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMenu};
 use tauri::{Manager, SystemTrayMenuItem};
-use std::sync::OnceLock;
 
 mod audio;
-mod db;
-mod models;
-mod shinkai;
 
 mod local_shinkai_node;
 
-use shinkai::registration::process_onboarding_data;
+use crate::local_shinkai_node::shinkai_node_manager_instance::SHINKAI_NODE_MANAGER_INSTANCE;
+use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
 
-use crate::shinkai::registration::validate_setup_data;
-use crate::local_shinkai_node::shinkai_node_manager::ShinkaiNodeManager;
-
-
-static SHINKAI_NODE_MANAGER: OnceLock<Arc<Mutex<ShinkaiNodeManager>>> = OnceLock::new();
 
 #[tauri::command]
 fn shinkai_node_is_running() -> Result<bool, String> {
-    let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER.get().unwrap().lock().unwrap();
+    let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.lock().unwrap();
     let is_running = shinkai_node_manager_guard.is_running();
     Ok(is_running)
 }
 
 #[tauri::command]
 fn shinkai_node_get_last_n_logs(length: usize) -> Result<Vec<String>, String> {
-    let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER.get().unwrap().lock().unwrap();
+    let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.lock().unwrap();
     let logs = shinkai_node_manager_guard.get_last_n_logs(length);
     Ok(logs)
 }
 
 #[tauri::command]
 fn shinkai_node_get_options() -> Result<ShinkaiNodeOptions, String> {
-    let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER.get().unwrap().lock().unwrap();
+    let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.lock().unwrap();
     let options = shinkai_node_manager_guard.get_options();
     Ok(options)
 }
 
 #[tauri::command]
 fn shinkai_node_spawn() -> Result<String, String> {
-    let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER.get().unwrap().lock().unwrap();
+    let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.lock().unwrap();
     match shinkai_node_manager_guard.spawn_shinkai_node() {
         Ok(_) => {
             return Ok("Shinkai Node spawned successfully.".into());
@@ -59,15 +49,12 @@ fn shinkai_node_spawn() -> Result<String, String> {
 
 #[tauri::command]
 fn shinkai_node_kill() -> Result<String, String> {
-    let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER.get().unwrap().lock().unwrap();
+    let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.lock().unwrap();
     shinkai_node_manager_guard.kill_shinkai_node();
     Ok("Shinkai Node killed successfully.".into())
 }
 
 fn main() {
-    SHINKAI_NODE_MANAGER.get_or_init(|| {
-        Arc::new(Mutex::new(ShinkaiNodeManager::new(None)))
-    });
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
     let hide_show = CustomMenuItem::new("hide_show".to_string(), "Hide");
     let shinkai_node_manager_section_title = CustomMenuItem::new("shinkai_node_manager_section_title".to_string(), "Shinkai Node Manager").disabled();
@@ -84,13 +71,9 @@ fn main() {
     let system_tray = SystemTray::new()
         .with_menu(tray_menu);
 
-    let db = TrayDB::new("db/tauri").unwrap();
-
     tauri::Builder::default()
-        .manage(db)
+        // .manage(db)
         .invoke_handler(tauri::generate_handler![
-            process_onboarding_data,
-            validate_setup_data,
             shinkai_node_is_running,
             shinkai_node_get_last_n_logs,
             shinkai_node_get_options,
@@ -99,6 +82,27 @@ fn main() {
         ])
         .setup(|app| {
             let app_clone = app.app_handle();
+
+            let path = tauri::api::path::resolve_path(
+                &app.config(),
+                app.package_info(),
+                &app.env(),
+                "node_storage",
+                Some(tauri::api::path::BaseDirectory::AppData)
+              )?;
+            let mut shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.lock().unwrap();
+            shinkai_node_manager_guard.set_options(Some(ShinkaiNodeOptions {
+                port: None,
+                node_storage_path: Some(path.to_str().unwrap().to_string()),
+                unstructured_server_url: None,
+                embeddings_server_url: None,
+                first_device_needs_registration_code: None,
+                initial_agent_names: None,
+                initial_agent_urls: None,
+                initial_agent_models: None,
+                initial_agent_api_keys: None,
+            }));
+
             app.global_shortcut_manager()
                 .register("CmdOrCtrl+y", move || {
                     match app_clone.get_window("main") {
@@ -177,7 +181,7 @@ fn main() {
         .expect("error while running tauri application")
         .run(move |app_handle, event| match event {
             RunEvent::ExitRequested { api, .. } => {
-                let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER.get().unwrap().lock().unwrap();
+                let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.lock().unwrap();
                 if shinkai_node_manager_guard.is_running() {
                     shinkai_node_manager_guard.kill_shinkai_node();
                 }
@@ -185,4 +189,3 @@ fn main() {
             _ => {}
         });
 }
-

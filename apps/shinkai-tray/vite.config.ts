@@ -1,5 +1,6 @@
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import react from '@vitejs/plugin-react';
+import { resolve } from 'path'
 import { defineConfig } from 'vite';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
@@ -42,4 +43,13 @@ export default defineConfig(() => ({
     'TAURI_PLATFORM_TYPE',
     'TAURI_DEBUG',
   ],
+
+  build: {
+    rollupOptions: {
+      input: {
+        index: resolve(__dirname, 'index.html'),
+        shinkai_node_manager: resolve(__dirname, 'src/windows/shinkai-node-manager/index.html'),
+      },
+    },
+  },
 }));

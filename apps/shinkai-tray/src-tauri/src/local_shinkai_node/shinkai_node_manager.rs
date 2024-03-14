@@ -1,20 +1,7 @@
-use serde::Serialize;
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use tauri::api::process::{Command, CommandChild, CommandEvent};
-
-/// It should match ENV variables names from ShinkaiNode
-#[derive(Serialize, Clone)]
-pub struct ShinkaiNodeOptions {
-    port: Option<u32>,
-    unstructured_server_url: Option<String>,
-    embeddings_server_url: Option<String>,
-    first_device_needs_registration_code: Option<String>,
-    initial_agent_names: Option<String>,
-    initial_agent_urls: Option<String>,
-    initial_agent_models: Option<String>,
-    initial_agent_api_keys: Option<String>,
-}
+use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
 
 pub struct ShinkaiNodeManager {
     process: Arc<Mutex<Option<CommandChild>>>,
@@ -25,24 +12,11 @@ pub struct ShinkaiNodeManager {
 impl ShinkaiNodeManager {
     const MAX_LOGS_LENGTH: usize = 500;
     /// Initializes a new ShinkaiNodeManager with default or provided options
-    pub(crate) fn new(options: Option<ShinkaiNodeOptions>) -> Self {
+    pub(crate) fn new() -> Self {
         let default_options = Self::default_options();
-        let merged_options = match options {
-            Some(opts) => ShinkaiNodeOptions {
-                port: Some(opts.port.unwrap_or_else(|| default_options.port.unwrap())),
-                unstructured_server_url: Some(opts.unstructured_server_url.unwrap_or_else(|| default_options.unstructured_server_url.unwrap())),
-                embeddings_server_url: Some(opts.embeddings_server_url.unwrap_or_else(|| default_options.embeddings_server_url.unwrap())),
-                first_device_needs_registration_code: Some(opts.first_device_needs_registration_code.unwrap_or_else(|| default_options.first_device_needs_registration_code.unwrap())),
-                initial_agent_names: Some(opts.initial_agent_names.unwrap_or_else(|| default_options.initial_agent_names.unwrap())),
-                initial_agent_urls: Some(opts.initial_agent_urls.unwrap_or_else(|| default_options.initial_agent_urls.unwrap())),
-                initial_agent_models: Some(opts.initial_agent_models.unwrap_or_else(|| default_options.initial_agent_models.unwrap())),
-                initial_agent_api_keys: Some(opts.initial_agent_api_keys.unwrap_or_else(|| default_options.initial_agent_api_keys.unwrap())),
-            },
-            None => default_options,
-        };
         ShinkaiNodeManager {
             process: Arc::new(Mutex::new(None)),
-            options: merged_options,
+            options: default_options,
             logs: Arc::new(Mutex::new(vec![String::new(); Self::MAX_LOGS_LENGTH])),
         }
     }
@@ -50,6 +24,7 @@ impl ShinkaiNodeManager {
     fn default_options() -> ShinkaiNodeOptions {
         ShinkaiNodeOptions {
             port: Some(9550),
+            node_storage_path: Some("node_storage".to_string()),
             unstructured_server_url: Some("https://public.shinkai.com/x-un".to_string()),
             embeddings_server_url: Some("https://public.shinkai.com/x-em".to_string()),
             first_device_needs_registration_code: Some("false".to_string()),
@@ -79,6 +54,25 @@ impl ShinkaiNodeManager {
         }
         logs.push(log_entry.clone()); // Add the new log entry
         println!("{:?}", log_entry);
+    }
+
+    pub fn set_options(&mut self, options: Option<ShinkaiNodeOptions>) {
+        let base_options = self.options.clone();
+        let merged_options = match options {
+            Some(opts) => ShinkaiNodeOptions {
+                port: Some(opts.port.unwrap_or_else(|| base_options.port.unwrap())),
+                node_storage_path: Some(opts.node_storage_path.unwrap_or_else(|| base_options.node_storage_path.unwrap())),
+                unstructured_server_url: Some(opts.unstructured_server_url.unwrap_or_else(|| base_options.unstructured_server_url.unwrap())),
+                embeddings_server_url: Some(opts.embeddings_server_url.unwrap_or_else(|| base_options.embeddings_server_url.unwrap())),
+                first_device_needs_registration_code: Some(opts.first_device_needs_registration_code.unwrap_or_else(|| base_options.first_device_needs_registration_code.unwrap())),
+                initial_agent_names: Some(opts.initial_agent_names.unwrap_or_else(|| base_options.initial_agent_names.unwrap())),
+                initial_agent_urls: Some(opts.initial_agent_urls.unwrap_or_else(|| base_options.initial_agent_urls.unwrap())),
+                initial_agent_models: Some(opts.initial_agent_models.unwrap_or_else(|| base_options.initial_agent_models.unwrap())),
+                initial_agent_api_keys: Some(opts.initial_agent_api_keys.unwrap_or_else(|| base_options.initial_agent_api_keys.unwrap())),
+            },
+            None => base_options,
+        };
+        self.options = merged_options;
     }
 
     /// Retrieves the last `n` logs.
@@ -159,7 +153,7 @@ impl ShinkaiNodeManager {
                         }
                         _ => todo!(),
                     }
-                    if (!line.is_empty()) {
+                    if !line.is_empty() {
                         let mut logs = logs_mutex.lock().unwrap();
                         if logs.len() == ShinkaiNodeManager::MAX_LOGS_LENGTH {
                             logs.remove(0); // Remove the oldest log entry to make space

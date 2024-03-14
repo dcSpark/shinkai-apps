@@ -3553,6 +3553,7 @@ version = "0.5.0"
 dependencies = [
  "cpal",
  "hound",
+ "lazy_static",
  "reqwest",
  "rocksdb",
  "serde",
