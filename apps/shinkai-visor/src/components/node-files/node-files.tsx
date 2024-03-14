@@ -607,7 +607,15 @@ const AddNewFolderDrawer = () => {
     isPending,
     mutateAsync: createVRFolder,
     isSuccess,
-  } = useCreateVRFolder();
+  } = useCreateVRFolder({
+    onSuccess: () => {
+      toast.success('Folder created successfully');
+      createFolderForm.reset();
+    },
+    onError: () => {
+      toast.error('Error creating folder');
+    },
+  });
 
   const onSubmit = async (values: z.infer<typeof createFolderSchema>) => {
     if (!auth) return;
@@ -693,11 +701,15 @@ const UploadVRFilesDrawer = () => {
     resolver: zodResolver(uploadVRFilesSchema),
   });
 
-  const {
-    isPending,
-    mutateAsync: uploadVRFiles,
-    isSuccess,
-  } = useUploadVRFiles();
+  const { isPending, mutateAsync: uploadVRFiles } = useUploadVRFiles({
+    onSuccess: () => {
+      toast.success('Files uploaded successfully');
+      createFolderForm.reset();
+    },
+    onError: () => {
+      toast.error('Error uploading files');
+    },
+  });
 
   const onSubmit = async (values: z.infer<typeof uploadVRFilesSchema>) => {
     if (!auth) return;
@@ -718,13 +730,6 @@ const UploadVRFilesDrawer = () => {
       profile_identity_sk: auth?.profile_identity_sk ?? '',
     });
   };
-
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success('Folder created successfully');
-      createFolderForm.reset();
-    }
-  }, [createFolderForm, isSuccess]);
 
   return (
     <>
