@@ -26,14 +26,15 @@ impl DirectoryVisitor for FilesystemSynchronizer {
             for entry in fs::read_dir(dir)? {
                 let entry = entry?;
                 let path = entry.path();
+
                 if path.is_dir() {
                     println!("Directory: {:?}", path);
-
                     // check if directory already exists in specific place on the Node
                     // if it does, proceed
                     // if it doesn't create it
 
                     // TODO: edge case to be handled differently: if the folder on the disk was moved or deleted, but it is found in specific place on the node vector_fs, remove the whole directory on the vector_fs
+
                     self.visit_dirs(&path)?;
                 } else {
                     // check all the files inside the directory - one by one
@@ -44,10 +45,10 @@ impl DirectoryVisitor for FilesystemSynchronizer {
                     // if it is not up to date, save the new one (it will be overwritten)
 
                     // because we're doing recursive search, we just need to exit at this point in here
-                    return Ok(());
                 }
             }
         }
+
         Ok(())
     }
 }
@@ -120,12 +121,7 @@ impl FilesystemSynchronizer {
     {
         let major_directory_path = Path::new(major_directory_path);
 
-        println!("Attempting to visit: {:?}", major_directory_path); // Add this line
-        println!("Path exists: {}", major_directory_path.exists()); // And this line
-        println!("Is directory: {}", major_directory_path.is_dir()); // And this one
-
         if major_directory_path.is_dir() {
-            println!("Visiting path");
             match visitor.visit_dirs(major_directory_path) {
                 Ok(_) => println!("Traversal complete."),
                 Err(e) => println!("Error during traversal: {}", e),

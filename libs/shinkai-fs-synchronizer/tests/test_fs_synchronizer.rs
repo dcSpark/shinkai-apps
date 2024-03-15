@@ -7,18 +7,37 @@ mod tests {
     use super::*;
     use std::{
         collections::HashMap,
+        fs,
         path::{Path, PathBuf},
         sync::{Arc, Mutex},
     };
 
+    // custom directory visitor to be able to verify what we need
     struct MockDirectoryVisitor {
         visited_files: Arc<Mutex<Vec<PathBuf>>>,
     }
 
     impl DirectoryVisitor for MockDirectoryVisitor {
+        // TODO: identify what's better wayt to reue visit_dirs function
         fn visit_dirs(&self, dir: &Path) -> std::io::Result<()> {
-            let mut visited = self.visited_files.lock().unwrap();
-            visited.push(dir.to_path_buf());
+            if dir.is_dir() {
+                for entry in fs::read_dir(dir)? {
+                    let entry = entry?;
+                    let path = entry.path();
+
+                    if path.is_dir() {
+                        println!("Directory: {:?}", path);
+
+                        // Recursively visit subdirectories
+                        self.visit_dirs(&path)?;
+                    } else {
+                        // After handling the file, add it to the visited list
+                        let mut visited = self.visited_files.lock().unwrap();
+                        visited.push(path);
+                    }
+                }
+            }
+
             Ok(())
         }
     }
@@ -45,17 +64,15 @@ mod tests {
 
         // Use a shared variable to track visited files
         let visited_files = Arc::new(Mutex::new(Vec::<PathBuf>::new()));
-
-        // Act - call the method under test with the mock
         let mock_visitor = MockDirectoryVisitor {
-            visited_files: Arc::clone(&visited_files),
+            visited_files: visited_files.clone(),
         };
-
+        // Act - call the method under test with the mock
+        // Specifying the type parameter explicitly due to type inference issue
         synchronizer.traverse_and_synchronize::<(), MockDirectoryVisitor>(
             knowledge_dir.to_str().unwrap(),
             &mock_visitor,
         );
-
         // Assert - check if all files were visited
         // Note: The actual number of visited files will depend on the current state of the directory
         // For the purpose of this test, we're assuming the directory structure and files are pre-set and known
@@ -63,7 +80,8 @@ mod tests {
 
         dbg!(visited.len());
         // The expected count should be adjusted based on the actual directory structure
-        // assert_eq!(visited.len(), <expected_number_of_files>);
+        assert_eq!(visited.len(), 7);
+        dbg!(visited);
         // assert!(visited.contains(&knowledge_dir.join("file1.txt")));
         // assert!(visited.contains(&knowledge_dir.join("test_1/file2.txt")));
     }
