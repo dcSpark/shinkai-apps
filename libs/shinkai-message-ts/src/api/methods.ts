@@ -812,7 +812,52 @@ export const retrieveVRPathSimplified = async (
     console.log(message, 'message');
 
     const response = await fetch(
-      urlJoin(nodeAddress, '/v1/vec_fs/retrieve_path_simplified_json'), // using this for listing files
+      urlJoin(nodeAddress, '/v1/vec_fs/retrieve_path_simplified_json'),
+      {
+        method: 'POST',
+        body: JSON.stringify(message),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+
+    await handleHttpError(response);
+    const data = await response.json();
+    return { data: JSON.parse(data.data), status: data.status };
+  } catch (error) {
+    console.error('Error closing job:', error);
+    throw error;
+  }
+};
+export const retrieveVectorSearchSimplified = async (
+  nodeAddress: string,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  path: string = '/',
+  setupDetailsState: CredentialsPayload,
+): Promise<{ data: any; status: string }> => {
+  try {
+    const messageStr =
+      ShinkaiMessageBuilderWrapper.retrieveVectorSearchSimplified(
+        setupDetailsState.profile_encryption_sk,
+        setupDetailsState.profile_identity_sk,
+        setupDetailsState.node_encryption_pk,
+        'algorithm', //search
+        path,
+        null,
+        null,
+        sender,
+        sender_subidentity,
+        receiver,
+        receiver_subidentity,
+      );
+
+    const message = JSON.parse(messageStr);
+    console.log(message, 'message');
+
+    const response = await fetch(
+      urlJoin(nodeAddress, '/v1/vec_fs/retrieve_vector_search_simplified_json'),
       {
         method: 'POST',
         body: JSON.stringify(message),
