@@ -37,7 +37,7 @@ import {
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const auth = useAuth((state) => state.auth);
   const shinkaiNodeOptions = useShinkaiNodeManager(state => state.shinkaiNodeOptions);
-  const autoStartTried = useRef<boolean>(false);
+  const autoStartShinkaiNodeTried = useRef<boolean>(false);
   const { data: shinkaiNodeIsRunning } = useShinkaiNodeIsRunningQuery({
     refetchInterval: 1000,
   });
@@ -63,16 +63,20 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     },
   });
 
+  /*
+    All this auto start code is a workaround while we implement a way to synchronize the app state between browser and tauri
+    Node auto start process probably should be in rust side
+  */
   useEffect(() => {
     const isLocalShinkaiNode =
       auth?.node_address.includes('localhost') ||
       auth?.node_address.includes('127.0.0.1');
     if (
-      !autoStartTried.current &&
+      !autoStartShinkaiNodeTried.current &&
       isLocalShinkaiNode &&
       !shinkaiNodeIsRunning
     ) {
-      autoStartTried.current = true;
+      autoStartShinkaiNodeTried.current = true;
       Promise.resolve().then(async () => {
         if (shinkaiNodeOptions) {
           await shinkaiNodeSetOptions(shinkaiNodeOptions)
@@ -80,7 +84,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         await shinkaiNodeSpawn();
       });
     }
-  }, [auth, shinkaiNodeSpawn, autoStartTried, shinkaiNodeIsRunning, shinkaiNodeOptions, shinkaiNodeSetOptions]);
+  }, [auth, shinkaiNodeSpawn, autoStartShinkaiNodeTried, shinkaiNodeIsRunning, shinkaiNodeOptions, shinkaiNodeSetOptions]);
 
   if (!auth) {
     console.log('navigating to welcome');
