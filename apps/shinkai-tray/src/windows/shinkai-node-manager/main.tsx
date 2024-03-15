@@ -15,10 +15,10 @@ import {
   Toaster,
 } from '@shinkai_network/shinkai-ui';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { Loader, PlayCircle, StopCircle } from 'lucide-react';
+import {Loader, PlayCircle, StopCircle, Trash} from 'lucide-react';
 import React, { useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom/client';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -29,7 +29,7 @@ import {
   useShinkaiNodeGetLastNLogsQuery,
   useShinkaiNodeGetOptionsQuery,
   useShinkaiNodeIsRunningQuery,
-  useShinkaiNodeKillMutation,
+  useShinkaiNodeKillMutation, useShinkaiNodeRemoveStorageMutation, useShinkaiNodeSetOptionsMutation,
   useShinkaiNodeSpawnMutation,
 } from './shinkai-node-process-client';
 
@@ -77,10 +77,24 @@ const App = () => {
         );
       },
     });
-
+  const { isPending: shinkaiNodeRemoveStorageIsPending, mutateAsync: shinkaiNodeRemoveStorage } =
+      useShinkaiNodeRemoveStorageMutation({
+        onSuccess: () => {
+          toast.success('Your local Shinkai Node storage was removed', { id: SHINKAI_NODE_MANAGER_TOAST_ID });
+        },
+        onError: () => {
+          toast.error(
+              'Error removing your local Shinkai Node storage, see logs for more information',
+              { id: SHINKAI_NODE_MANAGER_TOAST_ID },
+          );
+        },
+      });
+  const { mutateAsync: shinkaiNodeSetOptions } =
+      useShinkaiNodeSetOptionsMutation();
   const shinkaiNodeOptionsForm = useForm<ShinkaiNodeOptions>({
     resolver: zodResolver(z.any()),
   });
+  const shinkaiNodeOptionsFormWatch = useWatch({ control: shinkaiNodeOptionsForm.control });
 
   useEffect(() => {
     logsScrollRef.current?.scrollIntoView({
@@ -88,6 +102,10 @@ const App = () => {
       block: 'end',
     });
   }, [lastNLogs]);
+
+  useEffect(() => {
+    shinkaiNodeSetOptions(shinkaiNodeOptionsFormWatch as ShinkaiNodeOptions)
+  }, [shinkaiNodeOptionsFormWatch, shinkaiNodeSetOptions]);
 
   return (
     <div className="h-full w-full overflow-hidden p-8">
@@ -129,6 +147,19 @@ const App = () => {
               <StopCircle className="" />
             )}
           </Button>
+
+          <Button
+              disabled={shinkaiNodeIsRunning}
+              onClick={() => shinkaiNodeRemoveStorage()}
+              variant={'default'}
+          >
+            {shinkaiNodeRemoveStorageIsPending ? (
+                <Loader className="" />
+            ) : (
+                <Trash className="" />
+            )}
+          </Button>
+
         </div>
       </div>
 
@@ -167,7 +198,7 @@ const App = () => {
                         <FormField
                           control={shinkaiNodeOptionsForm.control}
                           defaultValue={value}
-                          disabled={true}
+                          disabled={shinkaiNodeIsRunning}
                           key={key}
                           name={key as keyof ShinkaiNodeOptions}
                           render={({ field }) => (

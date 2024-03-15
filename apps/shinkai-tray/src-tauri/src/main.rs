@@ -4,6 +4,7 @@
 use std::fmt::format;
 use tauri::{CustomMenuItem, GlobalShortcutManager, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMenu};
 use tauri::{Manager, SystemTrayMenuItem};
+use tauri::api::dialog::message;
 
 mod audio;
 
@@ -28,6 +29,13 @@ fn shinkai_node_get_last_n_logs(length: usize) -> Result<Vec<String>, String> {
 }
 
 #[tauri::command]
+fn shinkai_node_set_options(options: ShinkaiNodeOptions) -> Result<ShinkaiNodeOptions, String> {
+    let mut shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.lock().unwrap();
+    let options = shinkai_node_manager_guard.set_options(options);
+    Ok(options)
+}
+
+#[tauri::command]
 fn shinkai_node_get_options() -> Result<ShinkaiNodeOptions, String> {
     let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.lock().unwrap();
     let options = shinkai_node_manager_guard.get_options();
@@ -35,14 +43,14 @@ fn shinkai_node_get_options() -> Result<ShinkaiNodeOptions, String> {
 }
 
 #[tauri::command]
-fn shinkai_node_spawn() -> Result<String, String> {
+fn shinkai_node_spawn() -> Result<(), String> {
     let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.lock().unwrap();
     match shinkai_node_manager_guard.spawn_shinkai_node() {
         Ok(_) => {
-            return Ok("Shinkai Node spawned successfully.".into());
+            return Ok(());
         }
         Err(message) => {
-            return Err(format!("Failed to spawn Shinkai Node error:{:?}", message).into());
+            return Err(message);
         }
     }
 }
@@ -52,6 +60,19 @@ fn shinkai_node_kill() -> Result<String, String> {
     let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.lock().unwrap();
     shinkai_node_manager_guard.kill_shinkai_node();
     Ok("Shinkai Node killed successfully.".into())
+}
+
+#[tauri::command]
+fn shinkai_node_remove_storage() -> Result<(), String> {
+    let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.lock().unwrap();
+    return match shinkai_node_manager_guard.remove_storage() {
+        Ok(_) => {
+            Ok(())
+        }
+        Err(message) => {
+            Ok(())
+        }
+    }
 }
 
 fn main() {
@@ -77,8 +98,10 @@ fn main() {
             shinkai_node_is_running,
             shinkai_node_get_last_n_logs,
             shinkai_node_get_options,
+            shinkai_node_set_options,
             shinkai_node_spawn,
             shinkai_node_kill,
+            shinkai_node_remove_storage,
         ])
         .setup(|app| {
             let app_clone = app.app_handle();
@@ -91,7 +114,7 @@ fn main() {
                 Some(tauri::api::path::BaseDirectory::AppData)
               )?;
             let mut shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.lock().unwrap();
-            shinkai_node_manager_guard.set_options(Some(ShinkaiNodeOptions {
+            shinkai_node_manager_guard.set_options(ShinkaiNodeOptions {
                 port: None,
                 node_storage_path: Some(path.to_str().unwrap().to_string()),
                 unstructured_server_url: None,
@@ -102,7 +125,7 @@ fn main() {
                 initial_agent_models: None,
                 initial_agent_api_keys: None,
                 starting_num_qr_devices: None,
-            }));
+            });
 
             app.global_shortcut_manager()
                 .register("CmdOrCtrl+y", move || {

@@ -4,9 +4,9 @@ export const SHINKAI_NODE_MANAGER_WINDOW = 'shinkai-node-manager-window';
 export const openShinkaiNodeManagerWindow = () => {
   const currentWindow = WebviewWindow.getByLabel(SHINKAI_NODE_MANAGER_WINDOW);
   if (currentWindow) {
-    currentWindow.setFocus();
+    currentWindow.setFocus().catch(e => e);
   } else {
-    const webview = new WebviewWindow('shinkai-node-manager', {
+    const webview = new WebviewWindow(SHINKAI_NODE_MANAGER_WINDOW, {
       url: 'src/windows/shinkai-node-manager/index.html',
       title: 'Shinkai Node Manager',
       resizable: false,

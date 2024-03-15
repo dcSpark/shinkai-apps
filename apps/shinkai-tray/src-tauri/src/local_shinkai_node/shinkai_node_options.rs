@@ -1,7 +1,7 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 /// It matches ENV variables names from ShinkaiNode
-#[derive(Serialize, Clone)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct ShinkaiNodeOptions {
     pub port: Option<u32>,
     pub node_storage_path: Option<String>,

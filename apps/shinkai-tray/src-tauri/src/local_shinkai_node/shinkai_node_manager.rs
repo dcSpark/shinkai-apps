@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::fs;
 use std::sync::{Arc, Mutex};
 use tauri::api::process::{Command, CommandChild, CommandEvent};
 use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
@@ -28,9 +29,9 @@ impl ShinkaiNodeManager {
             unstructured_server_url: Some("https://public.shinkai.com/x-un".to_string()),
             embeddings_server_url: Some("https://public.shinkai.com/x-em".to_string()),
             first_device_needs_registration_code: Some("false".to_string()),
-            initial_agent_names: Some("ollama_mixtral".to_string()),
+            initial_agent_names: Some("ollama_mistral".to_string()),
             initial_agent_urls: Some("http://localhost:11434".to_string()),
-            initial_agent_models: Some("ollama:mixtral".to_string()),
+            initial_agent_models: Some("ollama:mistral".to_string()),
             initial_agent_api_keys: Some("".to_string()),
             starting_num_qr_devices: Some("0".to_string()),
         }
@@ -57,24 +58,22 @@ impl ShinkaiNodeManager {
         println!("{:?}", log_entry);
     }
 
-    pub fn set_options(&mut self, options: Option<ShinkaiNodeOptions>) {
+    pub fn set_options(&mut self, options: ShinkaiNodeOptions) -> ShinkaiNodeOptions {
         let base_options = self.options.clone();
-        let merged_options = match options {
-            Some(opts) => ShinkaiNodeOptions {
-                port: Some(opts.port.unwrap_or_else(|| base_options.port.unwrap())),
-                node_storage_path: Some(opts.node_storage_path.unwrap_or_else(|| base_options.node_storage_path.unwrap())),
-                unstructured_server_url: Some(opts.unstructured_server_url.unwrap_or_else(|| base_options.unstructured_server_url.unwrap())),
-                embeddings_server_url: Some(opts.embeddings_server_url.unwrap_or_else(|| base_options.embeddings_server_url.unwrap())),
-                first_device_needs_registration_code: Some(opts.first_device_needs_registration_code.unwrap_or_else(|| base_options.first_device_needs_registration_code.unwrap())),
-                initial_agent_names: Some(opts.initial_agent_names.unwrap_or_else(|| base_options.initial_agent_names.unwrap())),
-                initial_agent_urls: Some(opts.initial_agent_urls.unwrap_or_else(|| base_options.initial_agent_urls.unwrap())),
-                initial_agent_models: Some(opts.initial_agent_models.unwrap_or_else(|| base_options.initial_agent_models.unwrap())),
-                initial_agent_api_keys: Some(opts.initial_agent_api_keys.unwrap_or_else(|| base_options.initial_agent_api_keys.unwrap())),
-                starting_num_qr_devices: Some(opts.starting_num_qr_devices.unwrap_or_else(|| base_options.starting_num_qr_devices.unwrap())),
-            },
-            None => base_options,
+        let merged_options = ShinkaiNodeOptions {
+            port: Some(options.port.unwrap_or_else(|| base_options.port.unwrap())),
+            node_storage_path: Some(options.node_storage_path.unwrap_or_else(|| base_options.node_storage_path.unwrap())),
+            unstructured_server_url: Some(options.unstructured_server_url.unwrap_or_else(|| base_options.unstructured_server_url.unwrap())),
+            embeddings_server_url: Some(options.embeddings_server_url.unwrap_or_else(|| base_options.embeddings_server_url.unwrap())),
+            first_device_needs_registration_code: Some(options.first_device_needs_registration_code.unwrap_or_else(|| base_options.first_device_needs_registration_code.unwrap())),
+            initial_agent_names: Some(options.initial_agent_names.unwrap_or_else(|| base_options.initial_agent_names.unwrap())),
+            initial_agent_urls: Some(options.initial_agent_urls.unwrap_or_else(|| base_options.initial_agent_urls.unwrap())),
+            initial_agent_models: Some(options.initial_agent_models.unwrap_or_else(|| base_options.initial_agent_models.unwrap())),
+            initial_agent_api_keys: Some(options.initial_agent_api_keys.unwrap_or_else(|| base_options.initial_agent_api_keys.unwrap())),
+            starting_num_qr_devices: Some(options.starting_num_qr_devices.unwrap_or_else(|| base_options.starting_num_qr_devices.unwrap())),
         };
         self.options = merged_options;
+        self.options.clone()
     }
 
     /// Retrieves the last `n` logs.
@@ -183,7 +182,22 @@ impl ShinkaiNodeManager {
             }
             *process = None;
         } else {
-            println!("No shinkai-node process is running");
+            println!("no shinkai-node process is running");
+        }
+    }
+
+    pub fn remove_storage(&self) -> Result<(), String> {
+        if self.is_running() {
+            return Err("can't remove node storage while it's running".to_string());
+        }
+        let options = self.options.clone();
+        match fs::remove_dir_all(options.node_storage_path.unwrap()) {
+            Ok(_) => {
+                Ok(())
+            }
+            Err(message) => {
+                Err(format!("failed to remove Shinkai Node storage error:{:?}", message).into())
+            }
         }
     }
 }

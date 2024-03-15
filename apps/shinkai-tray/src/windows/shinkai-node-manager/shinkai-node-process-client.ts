@@ -1,8 +1,8 @@
 import {
-  MutationObserverOptions,
   QueryClient,
   QueryObserverOptions,
   useMutation,
+  UseMutationOptions,
   useQuery,
   UseQueryResult,
 } from '@tanstack/react-query';
@@ -60,11 +60,19 @@ export const useShinkaiNodeGetOptionsQuery = (
 
 // Mutations
 export const useShinkaiNodeSpawnMutation = (
-  options?: MutationObserverOptions,
+  options?: UseMutationOptions,
 ) => {
   const response = useMutation({
     mutationFn: () => {
       return invoke('shinkai_node_spawn');
+    },
+    onSuccess: (...onSuccessParameters) => {
+      queryClient.invalidateQueries({
+        queryKey: ['shinkai_node_is_running'],
+      });
+      if (options?.onSuccess) {
+        options.onSuccess(...onSuccessParameters);
+      }
     },
     ...options,
   });
@@ -72,11 +80,51 @@ export const useShinkaiNodeSpawnMutation = (
 };
 
 export const useShinkaiNodeKillMutation = (
-  options?: MutationObserverOptions,
+  options?: UseMutationOptions,
 ) => {
   const response = useMutation({
     mutationFn: () => {
       return invoke('shinkai_node_kill');
+    },
+    onSuccess: (...onSuccessParameters) => {
+      queryClient.invalidateQueries({
+        queryKey: ['shinkai_node_is_running'],
+      });
+      if (options?.onSuccess) {
+        options.onSuccess(...onSuccessParameters);
+      }
+    },
+    ...options,
+  });
+  return { ...response };
+};
+
+export const useShinkaiNodeRemoveStorageMutation = (
+    options?: UseMutationOptions,
+) => {
+  const response = useMutation({
+    mutationFn: () => {
+      return invoke('shinkai_node_remove_storage');
+    },
+    ...options,
+  });
+  return { ...response };
+};
+
+export const useShinkaiNodeSetOptionsMutation = (
+    options?: UseMutationOptions<Partial<ShinkaiNodeOptions>, Error, ShinkaiNodeOptions>,
+) => {
+  const response = useMutation({
+    mutationFn: (shinkaiNodeOptions: Partial<ShinkaiNodeOptions>): Promise<ShinkaiNodeOptions> => {
+      return invoke('shinkai_node_set_options', { options: shinkaiNodeOptions });
+    },
+    onSuccess: (...onSuccessParameters) => {
+      queryClient.invalidateQueries({
+        queryKey: ['shinkai_node_get_options'],
+      });
+      if (options?.onSuccess) {
+        options.onSuccess(...onSuccessParameters);
+      }
     },
     ...options,
   });

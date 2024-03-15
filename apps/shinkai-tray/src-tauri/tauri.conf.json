@@ -30,7 +30,8 @@
       "window": {
         "startDragging": true,
         "close": true,
-        "create": true
+        "create": true,
+        "setFocus": true
       },
       "notification": {
         "all": true
@@ -81,11 +82,10 @@
     "windows": [
       {
         "transparent": true,
-        "title": "Shinkai",
-        "minWidth": 1000,
-        "minHeight": 200,
+        "title": "Shinkai Tray",
+        "width": 1000,
+        "height": 750,
         "fullscreen": false,
-        "decorations": false,
         "resizable": false
       }
     ],
