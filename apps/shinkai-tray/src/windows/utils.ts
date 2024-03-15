@@ -1,5 +1,6 @@
 import { WebviewWindow } from '@tauri-apps/api/window';
 
+export const SHINKAI_NODE_MANAGER_TOAST_ID = 'shinkai-node-manager-toast-id'
 export const SHINKAI_NODE_MANAGER_WINDOW = 'shinkai-node-manager-window';
 export const openShinkaiNodeManagerWindow = () => {
   const currentWindow = WebviewWindow.getByLabel(SHINKAI_NODE_MANAGER_WINDOW);

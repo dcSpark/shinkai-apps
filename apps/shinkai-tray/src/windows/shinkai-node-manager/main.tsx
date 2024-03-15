@@ -2,6 +2,14 @@ import './globals.css';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
   Button,
   Form,
   FormField,
@@ -15,27 +23,37 @@ import {
   Toaster,
 } from '@shinkai_network/shinkai-ui';
 import { QueryClientProvider } from '@tanstack/react-query';
-import {Loader, PlayCircle, StopCircle, Trash} from 'lucide-react';
-import React, { useEffect, useRef } from 'react';
+import { Loader, PlayCircle, StopCircle, Trash } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
 import logo from '../../../src-tauri/icons/128x128@2x.png';
+import { useAuth } from '../../store/auth';
+import { useShinkaiNodeManager } from '../../store/shinkai-node-manager';
+import { initSyncStorage } from '../../store/sync-utils';
+import { SHINKAI_NODE_MANAGER_TOAST_ID } from '../utils';
 import {
   queryClient,
   ShinkaiNodeOptions,
   useShinkaiNodeGetLastNLogsQuery,
   useShinkaiNodeGetOptionsQuery,
   useShinkaiNodeIsRunningQuery,
-  useShinkaiNodeKillMutation, useShinkaiNodeRemoveStorageMutation, useShinkaiNodeSetOptionsMutation,
+  useShinkaiNodeKillMutation,
+  useShinkaiNodeRemoveStorageMutation,
+  useShinkaiNodeSetOptionsMutation,
   useShinkaiNodeSpawnMutation,
 } from './shinkai-node-process-client';
 
+initSyncStorage();
+
 const App = () => {
-  const SHINKAI_NODE_MANAGER_TOAST_ID = 'shinkai-node-manager-toast-id'
+  const setLogout = useAuth(auth => auth.setLogout);
+  const { setShinkaiNodeOptions } = useShinkaiNodeManager();
   const logsScrollRef = useRef<HTMLDivElement | null>(null);
+  const [isConfirmResetDialogOpened, setIsConfirmResetDialogOpened] = useState<boolean>(false);
   const { data: shinkaiNodeIsRunning } = useShinkaiNodeIsRunningQuery({
     refetchInterval: 1000,
   });
@@ -53,10 +71,14 @@ const App = () => {
     mutateAsync: shinkaiNodeSpawn,
   } = useShinkaiNodeSpawnMutation({
     onMutate: () => {
-      toast.loading('Starting you local Shinkai Node', { id: SHINKAI_NODE_MANAGER_TOAST_ID });
+      toast.loading('Starting you local Shinkai Node', {
+        id: SHINKAI_NODE_MANAGER_TOAST_ID,
+      });
     },
     onSuccess: () => {
-      toast.success('Your local Shinkai Node is running', { id: SHINKAI_NODE_MANAGER_TOAST_ID });
+      toast.success('Your local Shinkai Node is running', {
+        id: SHINKAI_NODE_MANAGER_TOAST_ID,
+      });
     },
     onError: () => {
       toast.error(
@@ -68,7 +90,9 @@ const App = () => {
   const { isPending: shinkaiNodeKillIsPending, mutateAsync: shinkaiNodeKill } =
     useShinkaiNodeKillMutation({
       onSuccess: () => {
-        toast.success('Your local Shinkai Node was stopped', { id: SHINKAI_NODE_MANAGER_TOAST_ID });
+        toast.success('Your local Shinkai Node was stopped', {
+          id: SHINKAI_NODE_MANAGER_TOAST_ID,
+        });
       },
       onError: () => {
         toast.error(
@@ -77,24 +101,35 @@ const App = () => {
         );
       },
     });
-  const { isPending: shinkaiNodeRemoveStorageIsPending, mutateAsync: shinkaiNodeRemoveStorage } =
-      useShinkaiNodeRemoveStorageMutation({
-        onSuccess: () => {
-          toast.success('Your local Shinkai Node storage was removed', { id: SHINKAI_NODE_MANAGER_TOAST_ID });
-        },
-        onError: () => {
-          toast.error(
-              'Error removing your local Shinkai Node storage, see logs for more information',
-              { id: SHINKAI_NODE_MANAGER_TOAST_ID },
-          );
-        },
+  const {
+    isPending: shinkaiNodeRemoveStorageIsPending,
+    mutateAsync: shinkaiNodeRemoveStorage,
+  } = useShinkaiNodeRemoveStorageMutation({
+    onSuccess: () => {
+      toast.success('Your local Shinkai Node storage was removed', {
+        id: SHINKAI_NODE_MANAGER_TOAST_ID,
       });
+      setLogout();
+    },
+    onError: () => {
+      toast.error(
+        'Error removing your local Shinkai Node storage, see logs for more information',
+        { id: SHINKAI_NODE_MANAGER_TOAST_ID },
+      );
+    },
+  });
   const { mutateAsync: shinkaiNodeSetOptions } =
-      useShinkaiNodeSetOptionsMutation();
+    useShinkaiNodeSetOptionsMutation({
+      onSuccess: (options) => {
+        setShinkaiNodeOptions(options);
+      },
+    });
   const shinkaiNodeOptionsForm = useForm<ShinkaiNodeOptions>({
     resolver: zodResolver(z.any()),
   });
-  const shinkaiNodeOptionsFormWatch = useWatch({ control: shinkaiNodeOptionsForm.control });
+  const shinkaiNodeOptionsFormWatch = useWatch({
+    control: shinkaiNodeOptionsForm.control,
+  });
 
   useEffect(() => {
     logsScrollRef.current?.scrollIntoView({
@@ -104,8 +139,13 @@ const App = () => {
   }, [lastNLogs]);
 
   useEffect(() => {
-    shinkaiNodeSetOptions(shinkaiNodeOptionsFormWatch as ShinkaiNodeOptions)
+    shinkaiNodeSetOptions(shinkaiNodeOptionsFormWatch as ShinkaiNodeOptions);
   }, [shinkaiNodeOptionsFormWatch, shinkaiNodeSetOptions]);
+
+  const handleReset = (): void => {
+    setIsConfirmResetDialogOpened(false);
+    shinkaiNodeRemoveStorage();
+  }
 
   return (
     <div className="h-full w-full overflow-hidden p-8">
@@ -149,17 +189,16 @@ const App = () => {
           </Button>
 
           <Button
-              disabled={shinkaiNodeIsRunning}
-              onClick={() => shinkaiNodeRemoveStorage()}
-              variant={'default'}
+            disabled={shinkaiNodeIsRunning}
+            onClick={() => setIsConfirmResetDialogOpened(true)}
+            variant={'default'}
           >
             {shinkaiNodeRemoveStorageIsPending ? (
-                <Loader className="" />
+              <Loader className="" />
             ) : (
-                <Trash className="" />
+              <Trash className="" />
             )}
           </Button>
-
         </div>
       </div>
 
@@ -188,9 +227,8 @@ const App = () => {
         </TabsContent>
         <TabsContent className="h-full" value="options">
           <ScrollArea className="h-full [&>div>div]:!block">
-
-          <Form {...shinkaiNodeOptionsForm}>
-            <form className="space-y-2 pr-4">
+            <Form {...shinkaiNodeOptionsForm}>
+              <form className="space-y-2 pr-4">
                 {shinkaiNodeOptions &&
                   Array.from(Object.entries(shinkaiNodeOptions)).map(
                     ([key, value]) => {
@@ -211,12 +249,45 @@ const App = () => {
                       );
                     },
                   )}
-            </form>
-          </Form>
+              </form>
+            </Form>
           </ScrollArea>
-
         </TabsContent>
       </Tabs>
+
+      <AlertDialog
+        onOpenChange={setIsConfirmResetDialogOpened}
+        open={isConfirmResetDialogOpened}
+      >
+        <AlertDialogContent className="w-[75%]">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reset your Shinkai Node</AlertDialogTitle>
+            <AlertDialogDescription>
+              <div className="flex flex-col space-y-3 text-left text-white/70">
+                <div className="flex flex-col space-y-1 ">
+                  <span className="text-sm">
+                    Are you sure you want to reset your Shinkai Node? This will permanently
+                    delete all your data.
+                  </span>
+                </div>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="mt-4 flex gap-1">
+            <AlertDialogCancel
+              className="mt-0 flex-1"
+              onClick={() => {
+                setIsConfirmResetDialogOpened(false);
+              }}
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction className="flex-1" onClick={() => handleReset()}>
+              Reset
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

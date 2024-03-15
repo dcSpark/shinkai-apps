@@ -17,10 +17,13 @@ import SettingsPage from '../pages/settings';
 import UnavailableShinkaiNode from '../pages/unavailable-shinkai-node';
 import WelcomePage from '../pages/welcome';
 import { useAuth } from '../store/auth';
+import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
 import {
   useShinkaiNodeIsRunningQuery,
+  useShinkaiNodeSetOptionsMutation,
   useShinkaiNodeSpawnMutation,
 } from '../windows/shinkai-node-manager/shinkai-node-process-client';
+import { SHINKAI_NODE_MANAGER_TOAST_ID } from '../windows/utils';
 import {
   ADD_AGENT_PATH,
   CREATE_CHAT_PATH,
@@ -33,26 +36,29 @@ import {
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const auth = useAuth((state) => state.auth);
+  const shinkaiNodeOptions = useShinkaiNodeManager(state => state.shinkaiNodeOptions);
   const autoStartTried = useRef<boolean>(false);
-  const autoStartToastId = useRef<string | number>();
   const { data: shinkaiNodeIsRunning } = useShinkaiNodeIsRunningQuery({
     refetchInterval: 1000,
   });
+  const { mutateAsync: shinkaiNodeSetOptions } = useShinkaiNodeSetOptionsMutation();
   const { mutateAsync: shinkaiNodeSpawn } = useShinkaiNodeSpawnMutation({
     onMutate: () => {
-      autoStartToastId.current = toast.loading(
-        'Starting your local Shinkai Node automatically',
-      );
+      toast.loading('Starting your local Shinkai Node automatically', {
+        id: SHINKAI_NODE_MANAGER_TOAST_ID,
+      });
     },
     onError: () => {
       toast.error(
         'Error starting your local Shinkai Node, see logs for more information',
-        { id: autoStartToastId.current },
+        {
+          id: SHINKAI_NODE_MANAGER_TOAST_ID,
+        },
       );
     },
     onSuccess: () => {
       toast.success('Your local Shinkai Node is running', {
-        id: autoStartToastId.current,
+        id: SHINKAI_NODE_MANAGER_TOAST_ID,
       });
     },
   });
@@ -67,9 +73,14 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
       !shinkaiNodeIsRunning
     ) {
       autoStartTried.current = true;
-      shinkaiNodeSpawn();
+      Promise.resolve().then(async () => {
+        if (shinkaiNodeOptions) {
+          await shinkaiNodeSetOptions(shinkaiNodeOptions)
+        }
+        await shinkaiNodeSpawn();
+      });
     }
-  }, [auth, shinkaiNodeSpawn, autoStartTried, shinkaiNodeIsRunning]);
+  }, [auth, shinkaiNodeSpawn, autoStartTried, shinkaiNodeIsRunning, shinkaiNodeOptions, shinkaiNodeSetOptions]);
 
   if (!auth) {
     console.log('navigating to welcome');

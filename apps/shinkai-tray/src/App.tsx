@@ -5,7 +5,9 @@ import { BrowserRouter as Router } from 'react-router-dom';
 
 // import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import AppRoutes from './routes';
+import { initSyncStorage } from './store/sync-utils';
 
+initSyncStorage();
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
