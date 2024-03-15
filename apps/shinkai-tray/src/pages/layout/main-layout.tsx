@@ -21,7 +21,6 @@ import {
   PopoverContent,
   PopoverTrigger,
   ScrollArea,
-  Separator,
 } from '@shinkai_network/shinkai-ui';
 import { listen } from '@tauri-apps/api/event';
 import { BotIcon } from 'lucide-react';
@@ -280,13 +279,6 @@ const MainLayout = () => {
 
   return (
     <div className="relative flex h-full flex-col bg-gray-500 text-white">
-      <div
-        className="flex h-9 shrink-0 cursor-default select-none items-center justify-center text-xs"
-        data-tauri-drag-region={true}
-      >
-        {/*Shinkai AI*/}
-      </div>
-      <Separator />
       <div className="flex-auto overflow-auto">
         <Outlet />
       </div>

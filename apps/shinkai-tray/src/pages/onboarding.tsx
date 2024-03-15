@@ -3,11 +3,13 @@ import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state
 import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/lib/queries/getEncryptionKeys/useGetEncryptionKeys';
 import {
   Button,
+  ButtonProps,
   ErrorMessage,
   Form,
   FormField,
   TextField,
 } from '@shinkai_network/shinkai-ui';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { QrCode } from 'lucide-react';
 import React from 'react';
 import { useForm } from 'react-hook-form';
@@ -33,23 +35,27 @@ const formSchema = z.object({
     .nullish(),
 });
 
-const ConnectionOptionButton = ({
-  onClick,
-  description,
-  icon,
-  title,
-}: {
-  onClick: () => void;
+export interface ConnectionOptionButtonProps extends ButtonProps {
   title: string;
   description: string;
   icon: React.ReactNode;
-}) => {
+}
+const ConnectionOptionButton = ({
+  description,
+  icon,
+  title,
+  className,
+  ...props
+}: ConnectionOptionButtonProps) => {
   return (
     <Button
-      className="flex flex-1 cursor-pointer flex-col items-start gap-1 rounded-lg p-4 text-left"
-      onClick={() => onClick()}
+      className={cn(
+        'flex flex-1 cursor-pointer flex-col items-start gap-1 rounded-lg p-4 text-left',
+        className,
+      )}
       size="auto"
       variant="ghost"
+      {...props}
     >
       <div className="">{icon}</div>
       <p className="text-[15px] font-medium leading-none">{title}</p>
@@ -114,71 +120,99 @@ const OnboardingPage = () => {
 
   return (
     <OnboardingLayout>
-      <h1 className="mb-4 text-left text-2xl font-semibold">
-        Quick Connection <span aria-hidden>⚡</span>
-      </h1>
-      <Form {...setupDataForm}>
-        <form
-          className="space-y-6"
-          onSubmit={setupDataForm.handleSubmit(onSubmit)}
-        >
-          <div className="space-y-4">
-            <FormField
-              control={setupDataForm.control}
-              name="node_address"
-              render={({ field }) => (
-                <TextField field={field} label={'Node Address'} />
-              )}
-            />
-            {isError && <ErrorMessage message={error.message} />}
-          </div>
-          <Button
-            className="w-full"
-            disabled={isPending}
-            isLoading={isPending}
-            type="submit"
-            variant="default"
+      <div className="h-full flex flex-col justify-between">
+
+        <div className='flex flex-col'>
+        <h1 className="mb-4 text-left text-2xl font-semibold">
+          Quick Connection <span aria-hidden>⚡</span>
+        </h1>
+        <Form {...setupDataForm}>
+          <form
+            className="space-y-6"
+            onSubmit={setupDataForm.handleSubmit(onSubmit)}
           >
-            Connect
-          </Button>
-        </form>
-      </Form>
+            <div className="space-y-4">
+              <FormField
+                control={setupDataForm.control}
+                name="node_address"
+                render={({ field }) => (
+                  <TextField field={field} label={'Node Address'} />
+                )}
+              />
+              {isError && <ErrorMessage message={error.message} />}
+            </div>
+            <Button
+              className="w-full"
+              disabled={isPending}
+              isLoading={isPending}
+              type="submit"
+              variant="default"
+            >
+              Connect
+            </Button>
+          </form>
+        </Form>
 
-      <div className="text-gray-80 mt-2 flex flex-row items-center space-x-2 text-center text-sm">
-        <p>{"Don't you have a Shinkai Node? "}</p>
-        <Button
-          className="p-0 text-sm font-semibold text-white underline"
-          onClick={(e) => {
-            openShinkaiNodeManagerWindow();
-          }}
-          variant={'link'}
-        >
-          Run it locally
-        </Button>
-      </div>
+        <div className="text-gray-80 mt-8 flex flex-row items-center space-x-2 text-center text-sm">
+          <p>{'Don’t have an account? '}</p>
+          <a
+            className="font-semibold text-white underline"
+            href="https://www.shinkai.com/sign-up"
+            rel="noreferrer"
+            target={'_blank'}
+          >
+            Sign up
+          </a>
+        </div>
+        <div className="text-gray-80 mt-2 flex flex-row items-center space-x-2 text-center text-sm">
+          <p>{'Already have an account? '}</p>
+          <a
+            className="font-semibold text-white underline"
+            href="https://www.shinkai.com/user"
+            rel="noreferrer"
+            target={'_blank'}
+          >
+            Click here to connect
+          </a>
+        </div>
+        <div className="text-gray-80 mt-2 flex flex-row items-center space-x-2 text-center text-sm">
+          <p>{'Do you want to start locally? '}</p>
+          <span
+            className="cursor-pointer p-0 text-sm font-semibold text-white underline"
+            onClick={(e) => {
+              openShinkaiNodeManagerWindow();
+            }}
+          >
+            Start with a local Shinkai Node
+          </span>
+        </div>
+        </div>
+        <div className="flex flex-row justify-between gap-4">
+          <ConnectionOptionButton
+            className="h-32"
+            description={'Use the QR code to connect'}
+            disabled={true}
+            icon={<QrCode className="text-gray-100" />}
+            onClick={() => {
+              navigate('/');
+            }}
+            title={'QR Code'}
+          />
 
-      <div className="mt-8 flex gap-4">
-        <ConnectionOptionButton
-          description={'Use the QR code to connect'}
-          icon={<QrCode className="text-gray-100" />}
-          onClick={() => {
-            navigate('/');
-          }}
-          title={'QR Code'}
-        />
-
-        <ConnectionOptionButton
-          description={'Use a connection file and passphrase'}
-          icon={
-            <span aria-hidden className="text-base">
-              🔑
-            </span>
-          }
-          onClick={() => {
-            navigate('/restore');
-          }}
-          title={'Restore'}
-        />
+          <ConnectionOptionButton
+            className="h-32"
+            description={'Use a connection file and passphrase'}
+            icon={
+              <span aria-hidden className="text-base">
+                🔑
+              </span>
+            }
+            onClick={() => {
+              navigate('/restore');
+            }}
+            title={'Restore'}
+          />
+        </div>
       </div>
     </OnboardingLayout>
   );
