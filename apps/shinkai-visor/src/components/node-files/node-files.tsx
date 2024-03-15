@@ -35,6 +35,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  FileEmptyStateIcon,
   FileTypeIcon,
   Form,
   FormControl,
@@ -340,6 +341,18 @@ export default function NodeFiles() {
               />
             );
           })}
+          {(VRFiles?.child_folders || [])?.length === 0 &&
+            currentPath === '/' && (
+              <div className="text-gray-80 mt-4 flex flex-col items-center justify-center gap-4 text-center text-base">
+                <FileEmptyStateIcon className="h-20 w-20" />
+                <div>
+                  <h2 className="font-medium text-white">
+                    This will be the home for all your files.
+                  </h2>
+                  <span>Use the "+" button to start uploading files.</span>
+                </div>
+              </div>
+            )}
           {(VRFiles?.child_items?.length ?? 0) > 0
             ? VRFiles?.child_items.map((file, index: number) => {
                 return (
