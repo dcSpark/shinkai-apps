@@ -812,7 +812,7 @@ export const retrieveVRPathSimplified = async (
     console.log(message, 'message');
 
     const response = await fetch(
-      urlJoin(nodeAddress, '/v1/vec_fs/retrieve_path_simplified_json'),
+      urlJoin(nodeAddress, '/v1/vec_fs/retrieve_path_simplified_json'), // using this for listing files
       {
         method: 'POST',
         body: JSON.stringify(message),

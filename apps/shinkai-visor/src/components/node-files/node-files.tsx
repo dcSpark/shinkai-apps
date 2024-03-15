@@ -2,9 +2,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { HomeIcon } from '@radix-ui/react-icons';
 import { useCreateVRFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/createVRFolder/useCreateVRFolder';
 import { useUploadVRFiles } from '@shinkai_network/shinkai-node-state/lib/mutations/uploadVRFiles/useUploadVRFiles';
-import { NodeFile } from '@shinkai_network/shinkai-node-state/lib/queries/getNodeFiles/types';
-import { useGetNodeFiles } from '@shinkai_network/shinkai-node-state/lib/queries/getNodeFiles/useGetNodeFiles';
 import { getVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/index';
+import {
+  VRFolder,
+  VRItem,
+} from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
+import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
 import {
   AddNewFolderIcon,
   Badge,
@@ -15,7 +18,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
   Button,
-  Checkbox,
+  // Checkbox,
   CreateAIIcon,
   DirectoryTypeIcon,
   Drawer,
@@ -48,8 +51,8 @@ import { partial } from 'filesize';
 import {
   ChevronLeft,
   ChevronRight,
-  DatabaseIcon,
-  FileIcon,
+  // DatabaseIcon,
+  // FileIcon,
   LockIcon,
   PlusIcon,
   SearchIcon,
@@ -68,26 +71,26 @@ import { z } from 'zod';
 import { useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
 
-const filterNodeFilesByCondition = (
-  files: NodeFile[],
-  condition: (file: NodeFile) => boolean,
-  path: string = '',
-): NodeFile[] => {
-  let result: NodeFile[] = [];
-  files.forEach((file) => {
-    const newPath = path + '/' + file.name;
-    if (file.type === 'folder') {
-      result = result.concat(
-        filterNodeFilesByCondition(file.items ?? [], condition, newPath),
-      );
-    }
-    if (condition(file)) {
-      file.path = newPath;
-      result.push(file);
-    }
-  });
-  return result;
-};
+// const filterNodeFilesByCondition = (
+//   files: NodeFile[],
+//   condition: (file: NodeFile) => boolean,
+//   path: string = '',
+// ): NodeFile[] => {
+//   let result: NodeFile[] = [];
+//   files.forEach((file) => {
+//     const newPath = path + '/' + file.name;
+//     if (file.type === 'folder') {
+//       result = result.concat(
+//         filterNodeFilesByCondition(file.items ?? [], condition, newPath),
+//       );
+//     }
+//     if (condition(file)) {
+//       file.path = newPath;
+//       result.push(file);
+//     }
+//   });
+//   return result;
+// };
 
 enum NodeFilesDrawerOptions {
   NewFolder = 'new-folder',
@@ -99,39 +102,49 @@ export default function NodeFiles() {
   const size = partial({ standard: 'jedec' });
   const [selectedDrawerOption, setSelectedDrawerOption] =
     React.useState<NodeFilesDrawerOptions | null>(null);
+  const auth = useAuth((state) => state.auth);
+  const [currentPath, setCurrentPath] = React.useState<string>('/');
 
-  const {
-    isLoading: isNodeFilesLoading,
-    isSuccess: isNodeFilesSuccess,
-    nodeFiles,
-  } = useGetNodeFiles();
-  const [currentPath, setCurrentPath] = React.useState<string[]>([]);
+  const { isPending: isVRFilesPending, data: VRFiles } = useGetVRPathSimplified(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      profile: auth?.profile ?? '',
+      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      path: currentPath,
+      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+      my_device_identity_sk: auth?.profile_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+    },
+  );
+  console.log(VRFiles, 'VRFiles');
   const [searchQuery, setSearchQuery] = React.useState('');
-  const [activeFile, setActiveFile] = React.useState<NodeFile | null>(null);
+  const [activeFile, setActiveFile] = React.useState<VRItem | null>(null);
   const [selectionMode, setSelectionMode] = React.useState(false);
 
   const [isMenuOpened, setMenuOpened] = React.useState(false);
 
-  const getCurrentFolder = () => {
-    let currentFolder = [...nodeFiles];
-    for (const folderName of currentPath) {
-      const current = currentFolder.find(
-        (item) => item.type === 'folder' && item.name === folderName,
-      );
-      if (!current) return [];
-      currentFolder = current.items ?? [];
-    }
-    return currentFolder;
-  };
+  // const getCurrentFolder = () => {
+  //   let currentFolder = [...nodeFiles];
+  //   for (const folderName of currentPath) {
+  //     const current = currentFolder.find(
+  //       (item) => item.type === 'folder' && item.name === folderName,
+  //     );
+  //     if (!current) return [];
+  //     currentFolder = current.items ?? [];
+  //   }
+  //   return currentFolder;
+  // };
 
-  const totalStorage = filterNodeFilesByCondition(
-    nodeFiles,
-    (file) => file.type === 'file',
-  ).reduce((acc, file) => acc + (file?.size ?? 0), 0);
-  const totalFiles = filterNodeFilesByCondition(
-    nodeFiles,
-    (file) => file.type === 'file',
-  ).length;
+  // const totalStorage = filterNodeFilesByCondition(
+  //   nodeFiles,
+  //   (file) => file.type === 'file',
+  // ).reduce((acc, file) => acc + (file?.size ?? 0), 0);
+  // const totalFiles = filterNodeFilesByCondition(
+  //   nodeFiles,
+  //   (file) => file.type === 'file',
+  // ).length;
 
   return (
     <div className="flex h-full flex-col gap-4">
@@ -257,10 +270,13 @@ export default function NodeFiles() {
       </div>
       {!searchQuery && (
         <div className="mt-4 flex items-center gap-3">
-          {currentPath.length > 0 && (
+          {(VRFiles?.path.split('/').filter(Boolean) || []).length > 0 && (
             <Button
               onClick={() => {
-                setCurrentPath(currentPath.slice(0, -1));
+                const prevPath = VRFiles?.path.split('/').filter(Boolean) || [];
+                setCurrentPath(
+                  '/' + prevPath.slice(0, prevPath.length - 1).join('/'),
+                );
               }}
               size={'icon'}
               variant="ghost"
@@ -275,7 +291,7 @@ export default function NodeFiles() {
                   <button
                     className="flex items-center gap-2 py-2"
                     onClick={() => {
-                      setCurrentPath([]);
+                      setCurrentPath('/');
                     }}
                   >
                     <HomeIcon />
@@ -283,22 +299,24 @@ export default function NodeFiles() {
                   </button>
                 </BreadcrumbLink>
               </BreadcrumbItem>
-              {currentPath.length > 0 &&
-                currentPath.map((item, idx) => (
+              {VRFiles?.path
+                ?.split('/')
+                .filter(Boolean)
+                .map((path, idx) => (
                   <React.Fragment key={idx}>
                     <BreadcrumbSeparator>
                       <ChevronRight />
                     </BreadcrumbSeparator>
-                    {currentPath.length - 1 === idx ? (
+                    {VRFiles?.path?.split('/').length - 1 === idx ? (
                       <BreadcrumbPage>
                         <button
                           className="flex items-center gap-1"
                           onClick={() => {
-                            setCurrentPath(currentPath.slice(0, idx + 1));
+                            setCurrentPath('/' + path);
                           }}
                         >
                           <DirectoryTypeIcon />
-                          {item}
+                          {path}
                         </button>
                       </BreadcrumbPage>
                     ) : (
@@ -306,11 +324,11 @@ export default function NodeFiles() {
                         <button
                           className="flex items-center gap-1"
                           onClick={() => {
-                            setCurrentPath(currentPath.slice(0, idx + 1));
+                            setCurrentPath('/' + path);
                           }}
                         >
                           <DirectoryTypeIcon />
-                          {item}
+                          {path}
                         </button>
                       </BreadcrumbLink>
                     )}
@@ -322,65 +340,52 @@ export default function NodeFiles() {
       )}
       <ScrollArea>
         <div className="flex flex-1 flex-col divide-y divide-gray-400">
-          {isNodeFilesLoading &&
+          {isVRFilesPending &&
             Array.from({ length: 4 }).map((_, idx) => (
               <div
                 className="mb-1 flex h-[69px] items-center justify-between gap-2 bg-gray-400 py-3"
                 key={idx}
               />
             ))}
-          {searchQuery
-            ? filterNodeFilesByCondition(nodeFiles, (file) =>
-                file.name.toLowerCase().includes(searchQuery.toLowerCase()),
-              ).map((file, index: number) => {
-                return (
-                  <NodeFileItem
-                    file={file}
-                    key={index}
-                    onClick={() => {
-                      if (file.type === 'folder') {
-                        setCurrentPath(
-                          (file.path ?? '')?.split('/').filter(Boolean),
-                        );
-                        setSearchQuery('');
-                      } else {
-                        setActiveFile(file);
-                      }
-                    }}
-                    selectionMode={selectionMode}
-                  />
-                );
-              })
-            : getCurrentFolder().map((file, index: number) => {
-                return (
-                  <NodeFileItem
-                    file={file}
-                    key={index}
-                    onClick={() => {
-                      if (file.type === 'folder') {
-                        setCurrentPath((prev) => [...prev, file.name]);
-                      } else {
-                        setActiveFile(file);
-                      }
-                    }}
-                    selectionMode={selectionMode}
-                  />
-                );
-              })}
+          {VRFiles?.child_folders.map((folder, index: number) => {
+            return (
+              <FolderVRItem
+                folder={folder}
+                key={index}
+                onClick={() => {
+                  setCurrentPath(folder.path);
+                }}
+                // selectionMode={selectionMode}
+              />
+            );
+          })}
+          {(VRFiles?.child_items?.length ?? 0) > 0 &&
+            VRFiles?.child_items.map((file, index: number) => {
+              return (
+                <FileVRItem
+                  file={file}
+                  key={index}
+                  onClick={() => {
+                    setActiveFile(file);
+                  }}
+                  // selectionMode={selectionMode}
+                />
+              );
+            })}
         </div>
       </ScrollArea>
-      {isNodeFilesSuccess && (
-        <div className="fixed bottom-0 left-0 right-0 flex items-center justify-between rounded-t-md bg-gray-300 py-3">
-          <span className="flex flex-1 items-center justify-center gap-1">
-            <FileIcon className="h-4 w-4" />
-            <span className="font-medium">{totalFiles} items</span>
-          </span>
-          <span className="flex flex-1 items-center justify-center gap-1">
-            <DatabaseIcon className="h-4 w-4" />
-            <span className="font-medium">{size(totalStorage)}</span>
-          </span>
-        </div>
-      )}
+      {/*{isNodeFilesSuccess && (*/}
+      {/*  <div className="fixed bottom-0 left-0 right-0 flex items-center justify-between rounded-t-md bg-gray-300 py-3">*/}
+      {/*    <span className="flex flex-1 items-center justify-center gap-1">*/}
+      {/*      <FileIcon className="h-4 w-4" />*/}
+      {/*      <span className="font-medium">{totalFiles} items</span>*/}
+      {/*    </span>*/}
+      {/*    <span className="flex flex-1 items-center justify-center gap-1">*/}
+      {/*      <DatabaseIcon className="h-4 w-4" />*/}
+      {/*      <span className="font-medium">{size(totalStorage)}</span>*/}
+      {/*    </span>*/}
+      {/*  </div>*/}
+      {/*)}*/}
       <Button
         className="fixed bottom-12 right-4 h-[60px] w-[60px]"
         onClick={() => setSelectionMode(true)}
@@ -423,21 +428,21 @@ export default function NodeFiles() {
               <p className="text-lg font-medium text-white">
                 {activeFile?.name}
                 <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
-                  {activeFile?.file_extension?.split('.').pop()}
+                  {activeFile?.vr_header?.resource_source?.Reference?.FileRef
+                    ?.file_type?.Document ?? '-'}
                 </Badge>
               </p>
               <p className="text-sm text-gray-100">
                 <span>
-                  {new Date(activeFile?.creation_date ?? '').toLocaleDateString(
-                    'en-US',
-                    {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    },
-                  )}
+                  {new Date(
+                    activeFile?.created_datetime ?? '',
+                  ).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })}
                 </span>{' '}
-                - <span>{size(activeFile?.size ?? 0)}</span>
+                - <span>{size(activeFile?.vr_size ?? 0)}</span>
               </p>
             </div>
             <div className="py-6">
@@ -446,9 +451,15 @@ export default function NodeFiles() {
               </h2>
               <div className="divide-y divide-gray-300">
                 {[
-                  { label: 'Created', value: '2021-10-10' },
-                  { label: 'Modified', value: '2021-10-10' },
-                  { label: 'Last Opened', value: '2021-10-10' },
+                  { label: 'Created', value: activeFile?.created_datetime },
+                  {
+                    label: 'Modified',
+                    value: activeFile?.last_written_datetime,
+                  },
+                  {
+                    label: 'Last Opened',
+                    value: activeFile?.last_read_datetime,
+                  },
                 ].map((item) => (
                   <div
                     className="flex items-center justify-between py-2 font-medium"
@@ -487,111 +498,189 @@ export default function NodeFiles() {
   );
 }
 
-const NodeFileItem = ({
-  file,
+const FolderVRItem = ({
   onClick,
-  selectionMode,
+  folder,
 }: {
-  file: NodeFile;
   onClick: () => void;
-  selectionMode: boolean;
+  folder: VRFolder;
+}) => {
+  const totalItem =
+    (folder.child_folders?.length ?? 0) + (folder.child_items?.length ?? 0);
+  return (
+    <button
+      className="flex items-center justify-between gap-2 py-3 hover:bg-gray-400"
+      onClick={onClick}
+    >
+      <DirectoryTypeIcon />
+      <div className="flex-1 text-left">
+        <div className="text-base font-medium">{folder.name}</div>
+        <p className="text-sm text-gray-100">
+          <span>
+            {new Date(folder.created_datetime).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
+          </span>{' '}
+          - <span>{totalItem} items</span>
+        </p>
+      </div>
+      <ChevronRight />
+    </button>
+  );
+};
+const FileVRItem = ({
+  onClick,
+  file,
+}: {
+  onClick: () => void;
+  file: VRItem;
 }) => {
   const size = partial({ standard: 'jedec' });
-
-  if (selectionMode) {
-    return (
-      <div className="flex items-center gap-3 py-3">
-        <Checkbox id={`item-${file.name}`} />
-        <label
-          className="flex items-center gap-3"
-          htmlFor={`item-${file.name}`}
-        >
-          <div>
-            {file.type === 'folder' ? <DirectoryTypeIcon /> : <FileTypeIcon />}
-          </div>
-          <div className="flex-1 text-left">
-            <div className="text-base font-medium">
-              {file.name}
-              {file.type === 'file' && (
-                <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
-                  {file.file_extension?.split('.').pop()}
-                </Badge>
-              )}
-            </div>
-            {file.type === 'file' ? (
-              <p className="text-sm text-gray-100">
-                <span>
-                  {new Date(file.creation_date).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
-                </span>{' '}
-                - <span>{size(file.size ?? 0)}</span>
-              </p>
-            ) : (
-              <p className="text-sm text-gray-100">
-                <span>
-                  {new Date(file.creation_date).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
-                </span>{' '}
-                - <span>{file?.items?.length} files</span>
-              </p>
-            )}
-          </div>
-        </label>
-      </div>
-    );
-  }
 
   return (
     <button
       className="flex items-center justify-between gap-2 py-3 hover:bg-gray-400"
       onClick={onClick}
     >
-      <div>
-        {file.type === 'folder' ? <DirectoryTypeIcon /> : <FileTypeIcon />}
-      </div>
+      <FileTypeIcon />
       <div className="flex-1 text-left">
         <div className="text-base font-medium">
           {file.name}
-          {file.type === 'file' && (
-            <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
-              {file.file_extension?.split('.').pop()}
-            </Badge>
-          )}
+          <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
+            {file?.vr_header?.resource_source?.Reference?.FileRef?.file_type
+              ?.Document ?? '-'}
+          </Badge>
         </div>
-        {file.type === 'file' ? (
-          <p className="text-sm text-gray-100">
-            <span>
-              {new Date(file.creation_date).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })}
-            </span>{' '}
-            - <span>{size(file.size ?? 0)}</span>
-          </p>
-        ) : (
-          <p className="text-sm text-gray-100">
-            <span>
-              {new Date(file.creation_date).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })}
-            </span>{' '}
-            - <span>{file?.items?.length} files</span>
-          </p>
-        )}
+        <p className="text-sm text-gray-100">
+          <span>
+            {new Date(file.created_datetime).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
+          </span>{' '}
+          - <span>{size(file.vr_size)}</span>
+        </p>
       </div>
       <ChevronRight />
     </button>
   );
 };
+// const NodeFileItem = ({
+//   folder,
+//   onClick,
+//   selectionMode,
+// }: {
+//   folder: VRFolder;
+//   onClick: () => void;
+//   selectionMode: boolean;
+// }) => {
+//   const size = partial({ standard: 'jedec' });
+//
+//   const isFolderItem = 'child_folders' in folder;
+//
+//   if (selectionMode) {
+//     return (
+//       <div className="flex items-center gap-3 py-3">
+//         <Checkbox id={`item-${folder.name}`} />
+//         <label
+//           className="flex items-center gap-3"
+//           htmlFor={`item-${folder.name}`}
+//         >
+//           <div>{isFolderItem ? <DirectoryTypeIcon /> : <FileTypeIcon />}</div>
+//           <div className="flex-1 text-left">
+//             <div className="text-base font-medium">
+//               {folder.name}
+//               {/*{isFolderItem && (*/}
+//               {/*  <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">*/}
+//               {/*    {folder.file_extension?.split('.').pop()}*/}
+//               {/*  </Badge>*/}
+//               {/*)}*/}
+//             </div>
+//             {isFolderItem ? (
+//               <p className="text-sm text-gray-100">
+//                 <span>
+//                   {new Date(folder.created_datetime).toLocaleDateString(
+//                     'en-US',
+//                     {
+//                       year: 'numeric',
+//                       month: 'long',
+//                       day: 'numeric',
+//                     },
+//                   )}
+//                 </span>{' '}
+//                 {/*- <span>{size(folder.size ?? 0)}</span>*/}
+//               </p>
+//             ) : (
+//               <p className="text-sm text-gray-100">
+//                 <span>
+//                   {new Date(folder.created_datetime).toLocaleDateString(
+//                     'en-US',
+//                     {
+//                       year: 'numeric',
+//                       month: 'long',
+//                       day: 'numeric',
+//                     },
+//                   )}
+//                 </span>{' '}
+//                 -{' '}
+//                 <span>
+//                   {folder?.child_items?.length + folder?.child_folders?.length}{' '}
+//                   files
+//                 </span>
+//               </p>
+//             )}
+//           </div>
+//         </label>
+//       </div>
+//     );
+//   }
+//
+//   return (
+//     <button
+//       className="flex items-center justify-between gap-2 py-3 hover:bg-gray-400"
+//       onClick={onClick}
+//     >
+//       <div>{isFolderItem ? <DirectoryTypeIcon /> : <FileTypeIcon />}</div>
+//       <div className="flex-1 text-left">
+//         <div className="text-base font-medium">
+//           {folder.name}
+//           {/*{isFolderItem && (*/}
+//           {/*  <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">*/}
+//           {/*    {folder.file_extension?.split('.').pop()}*/}
+//           {/*  </Badge>*/}
+//           {/*)}*/}
+//         </div>
+//         {isFolderItem ? (
+//           <p className="text-sm text-gray-100">
+//             <span>
+//               {new Date(folder.created_datetime).toLocaleDateString('en-US', {
+//                 year: 'numeric',
+//                 month: 'long',
+//                 day: 'numeric',
+//               })}
+//             </span>{' '}
+//             {/*- <span>{size(folder. ?? 0)}</span>*/}
+//           </p>
+//         ) : (
+//           <p className="text-sm text-gray-100">
+//             <span>
+//               {new Date(folder.created_datetime).toLocaleDateString('en-US', {
+//                 year: 'numeric',
+//                 month: 'long',
+//                 day: 'numeric',
+//               })}
+//             </span>{' '}
+//             - <span>{folder?.child_items?.length} files</span>
+//           </p>
+//         )}
+//       </div>
+//       <ChevronRight />
+//     </button>
+//   );
+// };
 
 const createFolderSchema = z.object({
   name: z.string(),
@@ -625,7 +714,7 @@ const AddNewFolderDrawer = () => {
       profile: auth?.profile ?? '',
       shinkaiIdentity: auth?.shinkai_identity ?? '',
       folderName: values.name,
-      path: '/',
+      path: '/paulclindo',
       my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
       my_device_identity_sk: auth?.profile_identity_sk ?? '',
       node_encryption_pk: auth?.node_encryption_pk ?? '',
