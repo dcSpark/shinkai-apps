@@ -17,7 +17,7 @@ export const useCreateVRFolder = (options?: Options) => {
     ...options,
     onSuccess: (response, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: [FunctionKey.GET_NODE_FILES],
+        queryKey: [FunctionKey.GET_VR_FILES],
       });
 
       if (options?.onSuccess) {

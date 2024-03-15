@@ -2,7 +2,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { HomeIcon } from '@radix-ui/react-icons';
 import { useCreateVRFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/createVRFolder/useCreateVRFolder';
 import { useUploadVRFiles } from '@shinkai_network/shinkai-node-state/lib/mutations/uploadVRFiles/useUploadVRFiles';
-import { getVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/index';
 import {
   VRFolder,
   VRItem,
@@ -24,7 +23,6 @@ import {
   Drawer,
   DrawerClose,
   DrawerContent,
-  DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
@@ -40,12 +38,12 @@ import {
   FormLabel,
   FormMessage,
   GenerateDocIcon,
-  GenerateFromWebIcon,
+  // GenerateDocIcon,
+  // GenerateFromWebIcon,
   Input,
   PaperClipIcon,
   ScrollArea,
   TextField,
-  UploadVectorResourceIcon,
 } from '@shinkai_network/shinkai-ui';
 import { partial } from 'filesize';
 import {
@@ -94,9 +92,9 @@ import { Header } from '../header/header';
 
 enum NodeFilesDrawerOptions {
   NewFolder = 'new-folder',
-  UploadVectorResource = 'upload-vector-resource',
+  // UploadVectorResource = 'upload-vector-resource',
   GenerateFromDocument = 'generate-from-document',
-  GenerateFromWeb = 'generate-from-web',
+  // GenerateFromWeb = 'generate-from-web',
 }
 export default function NodeFiles() {
   const size = partial({ standard: 'jedec' });
@@ -190,7 +188,7 @@ export default function NodeFiles() {
           <DropdownMenuContent
             align="end"
             alignOffset={-10}
-            className="w-[260px] space-y-2.5 rounded-br-none rounded-tr-none"
+            className="w-[250px] space-y-2.5"
             sideOffset={10}
           >
             {[
@@ -202,34 +200,39 @@ export default function NodeFiles() {
                 },
               },
               {
-                name: 'Upload vector resource',
-                icon: <UploadVectorResourceIcon className="mr-2 h-4 w-4" />,
-                onClick: () => {
-                  setSelectedDrawerOption(
-                    NodeFilesDrawerOptions.UploadVectorResource,
-                  );
-                },
-              },
-              {
                 name: 'Generate from document',
                 icon: <GenerateDocIcon className="mr-2 h-4 w-4" />,
+                disabled: currentPath === '/',
                 onClick: () => {
                   setSelectedDrawerOption(
                     NodeFilesDrawerOptions.GenerateFromDocument,
                   );
                 },
               },
-              {
-                name: 'Generate from Web',
-                icon: <GenerateFromWebIcon className="mr-2 h-4 w-4" />,
-                onClick: () => {
-                  setSelectedDrawerOption(
-                    NodeFilesDrawerOptions.GenerateFromWeb,
-                  );
-                },
-              },
+              // {
+              //   name: 'Generate from document',
+              //   icon: <GenerateDocIcon className="mr-2 h-4 w-4" />,
+              //   onClick: () => {
+              //     setSelectedDrawerOption(
+              //       NodeFilesDrawerOptions.GenerateFromDocument,
+              //     );
+              //   },
+              // },
+              // {
+              //   name: 'Generate from Web',
+              //   icon: <GenerateFromWebIcon className="mr-2 h-4 w-4" />,
+              //   onClick: () => {
+              //     setSelectedDrawerOption(
+              //       NodeFilesDrawerOptions.GenerateFromWeb,
+              //     );
+              //   },
+              // },
             ].map((item, index) => (
-              <DropdownMenuItem key={index} onClick={item.onClick}>
+              <DropdownMenuItem
+                disabled={item.disabled}
+                key={index}
+                onClick={item.onClick}
+              >
                 {item.icon}
                 <span>{item.name}</span>
               </DropdownMenuItem>
@@ -251,18 +254,30 @@ export default function NodeFiles() {
             <div className="space-y-8">
               {selectedDrawerOption &&
                 {
-                  [NodeFilesDrawerOptions.NewFolder]: <AddNewFolderDrawer />,
-                  [NodeFilesDrawerOptions.UploadVectorResource]: (
-                    <UploadVRFilesDrawer />
+                  [NodeFilesDrawerOptions.NewFolder]: (
+                    <AddNewFolderDrawer
+                      closeDrawer={() => {
+                        setSelectedDrawerOption(null);
+                      }}
+                      currentPath={currentPath}
+                    />
                   ),
                   [NodeFilesDrawerOptions.GenerateFromDocument]: (
-                    <DrawerDescription>
-                      Generate from Document
-                    </DrawerDescription>
+                    <UploadVRFilesDrawer
+                      closeDrawer={() => {
+                        setSelectedDrawerOption(null);
+                      }}
+                      currentPath={currentPath}
+                    />
                   ),
-                  [NodeFilesDrawerOptions.GenerateFromWeb]: (
-                    <DrawerDescription>Generate from Web</DrawerDescription>
-                  ),
+                  // [NodeFilesDrawerOptions.GenerateFromDocument]: (
+                  //   <DrawerDescription>
+                  //     Generate from Document
+                  //   </DrawerDescription>
+                  // ),
+                  // [NodeFilesDrawerOptions.GenerateFromWeb]: (
+                  //   <DrawerDescription>Generate from Web</DrawerDescription>
+                  // ),
                 }[selectedDrawerOption]}
             </div>
           </DrawerContent>
@@ -359,19 +374,25 @@ export default function NodeFiles() {
               />
             );
           })}
-          {(VRFiles?.child_items?.length ?? 0) > 0 &&
-            VRFiles?.child_items.map((file, index: number) => {
-              return (
-                <FileVRItem
-                  file={file}
-                  key={index}
-                  onClick={() => {
-                    setActiveFile(file);
-                  }}
-                  // selectionMode={selectionMode}
-                />
-              );
-            })}
+          {(VRFiles?.child_items?.length ?? 0) > 0
+            ? VRFiles?.child_items.map((file, index: number) => {
+                return (
+                  <FileVRItem
+                    file={file}
+                    key={index}
+                    onClick={() => {
+                      setActiveFile(file);
+                    }}
+                    // selectionMode={selectionMode}
+                  />
+                );
+              })
+            : VRFiles?.child_items?.length === 0 &&
+              VRFiles.child_folders?.length === 0 && (
+                <div className="flex h-20 items-center justify-center text-gray-100">
+                  No files found
+                </div>
+              )}
         </div>
       </ScrollArea>
       {/*{isNodeFilesSuccess && (*/}
@@ -685,7 +706,13 @@ const FileVRItem = ({
 const createFolderSchema = z.object({
   name: z.string(),
 });
-const AddNewFolderDrawer = () => {
+const AddNewFolderDrawer = ({
+  currentPath,
+  closeDrawer,
+}: {
+  currentPath: string;
+  closeDrawer: () => void;
+}) => {
   const auth = useAuth((state) => state.auth);
 
   const createFolderForm = useForm<z.infer<typeof createFolderSchema>>({
@@ -700,6 +727,7 @@ const AddNewFolderDrawer = () => {
     onSuccess: () => {
       toast.success('Folder created successfully');
       createFolderForm.reset();
+      closeDrawer();
     },
     onError: () => {
       toast.error('Error creating folder');
@@ -714,7 +742,7 @@ const AddNewFolderDrawer = () => {
       profile: auth?.profile ?? '',
       shinkaiIdentity: auth?.shinkai_identity ?? '',
       folderName: values.name,
-      path: '/paulclindo',
+      path: currentPath,
       my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
       my_device_identity_sk: auth?.profile_identity_sk ?? '',
       node_encryption_pk: auth?.node_encryption_pk ?? '',
@@ -730,29 +758,12 @@ const AddNewFolderDrawer = () => {
     }
   }, [createFolderForm, isSuccess]);
 
-  useEffect(() => {
-    const load = async () => {
-      const data = await getVRPathSimplified({
-        nodeAddress: auth?.node_address ?? '',
-        profile: auth?.profile ?? '',
-        shinkaiIdentity: auth?.shinkai_identity ?? '',
-        path: '/',
-        my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-        my_device_identity_sk: auth?.profile_identity_sk ?? '',
-        node_encryption_pk: auth?.node_encryption_pk ?? '',
-        profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-        profile_identity_sk: auth?.profile_identity_sk ?? '',
-      });
-      console.log(data, 'fromretriveve');
-    };
-    load();
-  });
   return (
     <>
       <DrawerHeader>
         <DrawerTitle className="flex flex-col items-start gap-1">
           <DirectoryTypeIcon className="h-10 w-10" />
-          Add Folder
+          Add New Folder
         </DrawerTitle>
       </DrawerHeader>
       <Form {...createFolderForm}>
@@ -783,7 +794,13 @@ const AddNewFolderDrawer = () => {
 const uploadVRFilesSchema = z.object({
   files: z.array(z.any()).max(3),
 });
-const UploadVRFilesDrawer = () => {
+const UploadVRFilesDrawer = ({
+  currentPath,
+  closeDrawer,
+}: {
+  currentPath: string;
+  closeDrawer: () => void;
+}) => {
   const auth = useAuth((state) => state.auth);
 
   const createFolderForm = useForm<z.infer<typeof uploadVRFilesSchema>>({
@@ -792,25 +809,37 @@ const UploadVRFilesDrawer = () => {
 
   const { isPending, mutateAsync: uploadVRFiles } = useUploadVRFiles({
     onSuccess: () => {
-      toast.success('Files uploaded successfully');
+      toast.success('Files uploaded successfully', {
+        id: 'uploading-VR-files',
+        description: '',
+      });
       createFolderForm.reset();
     },
     onError: () => {
-      toast.error('Error uploading files');
+      toast.error('Error uploading files', {
+        id: 'uploading-VR-files',
+        description: '',
+      });
     },
   });
 
   const onSubmit = async (values: z.infer<typeof uploadVRFilesSchema>) => {
     if (!auth) return;
-
-    console.log(values, 'values');
-
+    toast.loading('Uploading files', {
+      id: 'uploading-VR-files',
+      description: 'This process might take from 1-2 minutes',
+      position: 'bottom-left',
+      cancelButtonStyle: {
+        display: 'none',
+      },
+    });
+    closeDrawer();
     await uploadVRFiles({
       nodeAddress: auth?.node_address ?? '',
       sender: auth?.shinkai_identity ?? '',
       senderSubidentity: auth?.profile ?? '',
       receiver: auth?.shinkai_identity ?? '',
-      destinationPath: '/paulclindo',
+      destinationPath: currentPath,
       files: values.files,
       my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
       my_device_identity_sk: auth?.profile_identity_sk ?? '',
@@ -824,8 +853,8 @@ const UploadVRFilesDrawer = () => {
     <>
       <DrawerHeader>
         <DrawerTitle className="flex flex-col items-start gap-1">
-          <DirectoryTypeIcon className="h-10 w-10" />
-          Add Folder
+          <FileTypeIcon className="h-10 w-10" />
+          Generate from Document
         </DrawerTitle>
       </DrawerHeader>
       <Form {...createFolderForm}>
@@ -848,32 +877,28 @@ const UploadVRFilesDrawer = () => {
                         // accept={{
                         //   'application/x-iwork-keynote-sffkey': ['.key'],
                         // }}
+                        description="Supports pdf, md, txt "
                         maxFiles={1}
                         onChange={(acceptedFiles) => {
-                          // onConnectionFileSelected(acceptedFiles);
                           field.onChange(acceptedFiles);
                         }}
                         value={field.value}
                       />
                     </div>
-                    {/*{!!encryptedConnectionFileValue?.length && (*/}
-                    {/*  <div className="truncate rounded-lg bg-gray-400 px-2 py-2">*/}
-                    {/*    {encryptedConnectionFileValue[0].encryptedConnection}*/}
-                    {/*  </div>*/}
-                    {/*)}*/}
                   </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+
           <Button
             className="w-full"
             disabled={isPending}
             isLoading={isPending}
             type="submit"
           >
-            Upload VR Files
+            Upload
           </Button>
         </form>
       </Form>
@@ -887,12 +912,14 @@ const FileInput = ({
   maxFiles,
   accept,
   multiple,
+  description,
 }: {
   value: File[];
   onChange: (files: File[]) => void;
   maxFiles?: number;
   accept?: Accept;
   multiple?: boolean;
+  description?: string;
 }) => {
   const { getRootProps: getRootFileProps, getInputProps: getInputFileProps } =
     useDropzone({
@@ -919,7 +946,9 @@ const FileInput = ({
           <p className="text-sm text-white">
             <FormattedMessage id="click-to-upload" />
           </p>
-          <p className="text-gray-80 text-xs">Eg: shinkai.key</p>
+          <p className="text-gray-80 text-xs">
+            {description ?? 'Eg: shinkai.key'}
+          </p>
         </div>
 
         <input {...getInputFileProps({})} />
