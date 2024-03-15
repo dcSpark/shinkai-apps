@@ -3,7 +3,6 @@
 
 use tauri::{CustomMenuItem, GlobalShortcutManager, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMenu};
 use tauri::{Manager, SystemTrayMenuItem};
-use tauri::api::dialog::message;
 
 mod audio;
 
@@ -68,7 +67,7 @@ fn shinkai_node_remove_storage() -> Result<(), String> {
         Ok(_) => {
             Ok(())
         }
-        Err(message) => {
+        Err(_) => {
             Ok(())
         }
     }
