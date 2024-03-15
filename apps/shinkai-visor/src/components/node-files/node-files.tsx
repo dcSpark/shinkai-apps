@@ -72,20 +72,13 @@ import React, { useEffect } from 'react';
 import { Accept, useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
+import { useHistory } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import { formatDateToLocaleString } from '../../helpers/date';
 import { useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
-
-const formatDate = (date: Date | undefined) => {
-  if (!date) return '-';
-  return new Date(date).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'numeric',
-    day: 'numeric',
-  });
-};
 
 enum NodeFilesDrawerOptions {
   NewFolder = 'new-folder',
@@ -99,6 +92,7 @@ export default function NodeFiles() {
     React.useState<NodeFilesDrawerOptions | null>(null);
   const auth = useAuth((state) => state.auth);
   const [currentPath, setCurrentPath] = React.useState<string>('/');
+  const history = useHistory();
 
   const { isPending: isVRFilesPending, data: VRFiles } = useGetVRPathSimplified(
     {
@@ -117,8 +111,29 @@ export default function NodeFiles() {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [activeFile, setActiveFile] = React.useState<VRItem | null>(null);
   const [selectionMode, setSelectionMode] = React.useState(false);
-
+  const [selectedFiles, setSelectedFiles] = React.useState<VRItem[]>([]);
+  const [selectedFolders, setSelectedFolders] = React.useState<VRFolder[]>([]);
   const [isMenuOpened, setMenuOpened] = React.useState(false);
+
+  const handleSelectFiles = (file: VRItem) => {
+    if (selectedFiles.some((selectedFile) => selectedFile.path === file.path)) {
+      setSelectedFiles(selectedFiles.filter((item) => item !== file));
+    } else {
+      setSelectedFiles([...selectedFiles, file]);
+    }
+  };
+
+  const handleSelectFolders = (folder: VRFolder) => {
+    if (
+      selectedFolders.some(
+        (selectedFolder) => selectedFolder.path === folder.path,
+      )
+    ) {
+      setSelectedFolders(selectedFolders.filter((item) => item !== folder));
+    } else {
+      setSelectedFolders([...selectedFolders, folder]);
+    }
+  };
 
   const actionList = [
     {
@@ -313,6 +328,10 @@ export default function NodeFiles() {
             return (
               <FolderVRItem
                 folder={folder}
+                handleSelectFolders={handleSelectFolders}
+                isSelectedFolder={selectedFolders.some(
+                  (selectedFolder) => selectedFolder.path === folder.path,
+                )}
                 key={index}
                 onClick={() => {
                   setCurrentPath(folder.path);
@@ -326,6 +345,10 @@ export default function NodeFiles() {
                 return (
                   <FileVRItem
                     file={file}
+                    handleSelectFiles={handleSelectFiles}
+                    isSelectedFile={selectedFiles.some(
+                      (selectedFile) => selectedFile.path === file.path,
+                    )}
                     key={index}
                     onClick={() => {
                       setActiveFile(file);
@@ -375,7 +398,19 @@ export default function NodeFiles() {
           'transtion-all fixed bottom-16 right-4 flex items-center gap-2 px-4',
           !selectionMode && 'h-[60px] w-[60px] px-0',
         )}
-        onClick={() => setSelectionMode(true)}
+        onClick={() => {
+          if (!selectionMode) {
+            setSelectionMode(true);
+          } else {
+            history.push({
+              pathname: '/inboxes/create-job',
+              state: {
+                selectedVRFiles: selectedFiles,
+                selectedVRFolders: selectedFolders,
+              },
+            });
+          }
+        }}
         size={selectionMode ? 'lg' : 'icon'}
       >
         <span className={cn('sr-only', selectionMode && 'not-sr-only')}>
@@ -422,8 +457,10 @@ export default function NodeFiles() {
                 </Badge>
               </p>
               <p className="text-sm text-gray-100">
-                <span>{formatDate(activeFile?.created_datetime)}</span> -{' '}
-                <span>{size(activeFile?.vr_size ?? 0)}</span>
+                <span>
+                  {formatDateToLocaleString(activeFile?.created_datetime)}
+                </span>{' '}
+                - <span>{size(activeFile?.vr_size ?? 0)}</span>
               </p>
             </div>
             <div className="py-6">
@@ -447,7 +484,9 @@ export default function NodeFiles() {
                     key={item.label}
                   >
                     <span className="text-gray-100">{item.label}</span>
-                    <span className="text-white">{formatDate(item.value)}</span>
+                    <span className="text-white">
+                      {formatDateToLocaleString(item.value)}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -477,13 +516,51 @@ const FolderVRItem = ({
   onClick,
   folder,
   selectionMode,
+  handleSelectFolders,
+  isSelectedFolder,
 }: {
   onClick: () => void;
   folder: VRFolder;
   selectionMode: boolean;
+  handleSelectFolders: (folder: VRFolder) => void;
+  isSelectedFolder: boolean;
 }) => {
   const totalItem =
     (folder.child_folders?.length ?? 0) + (folder.child_items?.length ?? 0);
+  if (selectionMode) {
+    return (
+      <div className="flex items-center justify-between gap-3 py-3.5 hover:bg-gray-400">
+        <Checkbox
+          checked={isSelectedFolder}
+          id={`item-${folder.name}`}
+          onCheckedChange={() => {
+            handleSelectFolders(folder);
+          }}
+        />
+        <label
+          className="flex flex-1 items-center gap-3"
+          htmlFor={`item-${folder.name}`}
+        >
+          <DirectoryTypeIcon />
+          <div className="flex-1 text-left">
+            <div className="text-base font-medium">{folder.name}</div>
+            <p className="text-xs font-medium text-gray-100">
+              <span>{formatDateToLocaleString(folder.created_datetime)}</span> -{' '}
+              <span>{totalItem} items</span>
+            </p>
+          </div>
+        </label>
+        <Button
+          className="border border-gray-200 bg-gray-500 p-2"
+          onClick={onClick}
+          size="auto"
+          variant="ghost"
+        >
+          <ChevronRight className="text-gray-100" />
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <button
@@ -494,7 +571,7 @@ const FolderVRItem = ({
       <div className="flex-1 text-left">
         <div className="text-base font-medium">{folder.name}</div>
         <p className="text-xs font-medium text-gray-100">
-          <span>{formatDate(folder.created_datetime)}</span> -{' '}
+          <span>{formatDateToLocaleString(folder.created_datetime)}</span> -{' '}
           <span>{totalItem} items</span>
         </p>
       </div>
@@ -506,17 +583,27 @@ const FileVRItem = ({
   onClick,
   file,
   selectionMode,
+  handleSelectFiles,
+  isSelectedFile,
 }: {
   onClick: () => void;
   file: VRItem;
   selectionMode: boolean;
+  handleSelectFiles: (file: VRItem) => void;
+  isSelectedFile: boolean;
 }) => {
   const size = partial({ standard: 'jedec' });
 
   if (selectionMode) {
     return (
       <div className="flex items-center justify-between gap-3 py-3.5 hover:bg-gray-400">
-        <Checkbox id={`item-${file.name}`} />
+        <Checkbox
+          checked={isSelectedFile}
+          id={`item-${file.name}`}
+          onCheckedChange={() => {
+            handleSelectFiles(file);
+          }}
+        />
         <label
           className="flex flex-1 items-center gap-3"
           htmlFor={`item-${file.name}`}
@@ -531,7 +618,7 @@ const FileVRItem = ({
               </Badge>
             </div>
             <p className="text-xs font-medium text-gray-100">
-              <span>{formatDate(file.created_datetime)}</span> -{' '}
+              <span>{formatDateToLocaleString(file.created_datetime)}</span> -{' '}
               <span>{size(file.vr_size)}</span>
             </p>
           </div>
@@ -555,7 +642,7 @@ const FileVRItem = ({
           </Badge>
         </div>
         <p className="text-xs font-medium text-gray-100">
-          <span>{formatDate(file.created_datetime)}</span> -{' '}
+          <span>{formatDateToLocaleString(file.created_datetime)}</span> -{' '}
           <span>{size(file.vr_size)}</span>
         </p>
       </div>
