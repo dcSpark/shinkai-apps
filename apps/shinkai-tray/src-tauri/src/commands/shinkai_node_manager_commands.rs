@@ -35,10 +35,10 @@ pub async fn shinkai_node_spawn() -> Result<(), String> {
 
     match shinkai_node_manager_guard.spawn_shinkai_node().await {
         Ok(_) => {
-            return Ok(());
+            Ok(())
         }
         Err(message) => {
-            return Err(message);
+            Err(message)
         }
     }
 }
@@ -53,7 +53,7 @@ pub async fn shinkai_node_kill() -> Result<(), String> {
 #[tauri::command]
 pub async fn shinkai_node_remove_storage() -> Result<(), String> {
     let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.lock().await;
-    return match shinkai_node_manager_guard.remove_storage().await {
+    match shinkai_node_manager_guard.remove_storage().await {
         Ok(_) => {
             Ok(())
         }

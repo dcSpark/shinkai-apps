@@ -1,5 +1,4 @@
 use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
-use std::fmt::format;
 use std::fs;
 use std::{collections::HashMap, sync::Arc};
 use tauri::api::process::{Command, CommandChild, CommandEvent};
@@ -13,6 +12,8 @@ pub struct ShinkaiNodeManager {
 
 impl ShinkaiNodeManager {
     const MAX_LOGS_LENGTH: usize = 500;
+    const HEALTH_TIMEOUT_MS: u64 = 5000;
+
     /// Initializes a new ShinkaiNodeManager with default or provided options
     pub(crate) fn new() -> Self {
         let default_options = Self::default_options();
@@ -68,7 +69,7 @@ impl ShinkaiNodeManager {
         let start_time = std::time::Instant::now();
         let mut success = false;
         while std::time::Instant::now().duration_since(start_time)
-            < std::time::Duration::from_secs(10)
+            < std::time::Duration::from_millis(Self::HEALTH_TIMEOUT_MS)
         {
             match client.get(&node_address).send().await {
                 Ok(response) if response.status() == reqwest::StatusCode::OK => {
@@ -144,12 +145,11 @@ impl ShinkaiNodeManager {
     /// If `n` is greater than the available logs, it returns all logs.
     pub async fn get_last_n_logs(&self, n: usize) -> Vec<String> {
         let logs = self.logs.lock().await;
-        let parsed_logs: Vec<String>;
-        if n >= logs.len() {
-            parsed_logs = logs.clone();
+        let parsed_logs: Vec<String> = if n >= logs.len() {
+            logs.clone()
         } else {
-            parsed_logs = logs.as_slice()[logs.len() - n..].to_vec();
-        }
+            logs.as_slice()[logs.len() - n..].to_vec()
+        };
         parsed_logs
             .into_iter()
             .filter(|value| !value.is_empty())
@@ -193,8 +193,8 @@ impl ShinkaiNodeManager {
                 self.add_log(log.clone());
                 log
             })?;
+        *process = Some(child);
 
-        // let self_clone = self.clone();
         let logs_mutex = Arc::clone(&self.logs);
         let process_mutex = Arc::clone(&self.process);
 
@@ -223,25 +223,25 @@ impl ShinkaiNodeManager {
                 }
                 if !line.is_empty() {
                     let mut logs = logs_mutex.lock().await;
-                    if logs.len() == ShinkaiNodeManager::MAX_LOGS_LENGTH {
-                        logs.remove(0); // Remove the oldest log entry to make space
+                    if logs.len() == Self::MAX_LOGS_LENGTH {
+                        logs.remove(0);
                     }
-                    logs.push(line.clone()); // Add the new log entry
+                    logs.push(line.clone());
                     println!("{:?}", line);
                 }
             }
         });
-        *process = Some(child);
+
         match self.check_node_start().await {
             Ok(_) => {
                 print!("shinkai-node spawn success");
-                return Ok(());
+                Ok(())
             },
             Err(_) => {
                 print!("shinkai-node spawn error timeout");
-                return Err("shinkai-node spawn timeout".to_string());
+                Err("shinkai-node spawn timeout".to_string())
             }
-        };
+        }
     }
 
     /// Kill the spawned shinkai-node process
@@ -266,7 +266,7 @@ impl ShinkaiNodeManager {
         match fs::remove_dir_all(options.node_storage_path.unwrap()) {
             Ok(_) => Ok(()),
             Err(message) => {
-                Err(format!("failed to remove Shinkai Node storage error:{:?}", message).into())
+                Err(format!("failed to remove Shinkai Node storage error:{:?}", message))
             }
         }
     }
