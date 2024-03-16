@@ -35,7 +35,7 @@ import {
   AlertCircle,
   FileCheck2,
   ImagePlusIcon,
-  Loader,
+  Loader2,
   X,
 } from 'lucide-react';
 import {
@@ -286,7 +286,7 @@ const ChatConversation = () => {
         {isChatConversationSuccess && (
           <div className="py-2 text-center text-xs">
             {isFetchingPreviousPage ? (
-              <Loader className="flex animate-spin justify-center text-white" />
+              <Loader2 className="flex animate-spin justify-center text-white" />
             ) : (
               'All messages has been loaded ✅'
             )}

@@ -23,7 +23,7 @@ import {
   Toaster,
 } from '@shinkai_network/shinkai-ui';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { Loader, PlayCircle, StopCircle, Trash } from 'lucide-react';
+import { Loader2, PlayCircle, StopCircle, Trash } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { useForm, useWatch } from 'react-hook-form';
@@ -166,7 +166,7 @@ const App = () => {
             variant={'default'}
           >
             {shinkaiNodeSpawnIsPending || shinkaiNodeKillIsPending ? (
-              <Loader className="" />
+              <Loader2 className="animate-spin" />
             ) : (
               <PlayCircle className="" />
             )}
@@ -182,7 +182,7 @@ const App = () => {
             variant={'default'}
           >
             {shinkaiNodeSpawnIsPending || shinkaiNodeKillIsPending ? (
-              <Loader className="" />
+              <Loader2 className="animate-spin" />
             ) : (
               <StopCircle className="" />
             )}
@@ -194,7 +194,7 @@ const App = () => {
             variant={'default'}
           >
             {shinkaiNodeRemoveStorageIsPending ? (
-              <Loader className="" />
+              <Loader2 className="animate-spin" />
             ) : (
               <Trash className="" />
             )}
