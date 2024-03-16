@@ -1,8 +1,9 @@
-use std::collections::HashMap;
-use std::fs;
-use std::sync::{Arc, Mutex};
-use tauri::api::process::{Command, CommandChild, CommandEvent};
 use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
+use std::fmt::format;
+use std::fs;
+use std::{collections::HashMap, sync::Arc};
+use tauri::api::process::{Command, CommandChild, CommandEvent};
+use tokio::sync::Mutex;
 
 pub struct ShinkaiNodeManager {
     process: Arc<Mutex<Option<CommandChild>>>,
@@ -49,8 +50,8 @@ impl ShinkaiNodeManager {
         env
     }
 
-    fn add_log(&self, log_entry: String) {
-        let mut logs = self.logs.lock().unwrap();
+    async fn add_log(&self, log_entry: String) {
+        let mut logs = self.logs.lock().await;
         if logs.len() == ShinkaiNodeManager::MAX_LOGS_LENGTH {
             logs.remove(0); // Remove the oldest log entry to make space
         }
@@ -58,19 +59,82 @@ impl ShinkaiNodeManager {
         println!("{:?}", log_entry);
     }
 
+    async fn check_node_start(&self) -> Result<(), String> {
+        let node_address = format!(
+            "http://localhost:{:?}/v1/shinkai_health",
+            self.options.port.unwrap()
+        );
+        let client = reqwest::Client::new();
+        let start_time = std::time::Instant::now();
+        let mut success = false;
+        while std::time::Instant::now().duration_since(start_time)
+            < std::time::Duration::from_secs(10)
+        {
+            match client.get(&node_address).send().await {
+                Ok(response) if response.status() == reqwest::StatusCode::OK => {
+                    success = true;
+                    break;
+                }
+                _ => {
+                    std::thread::sleep(std::time::Duration::from_secs(1));
+                }
+            }
+        }
+        if !success {
+            return Err("shinkai-node sapwn failed".to_string());
+        }
+        Ok(())
+    }
+
     pub fn set_options(&mut self, options: ShinkaiNodeOptions) -> ShinkaiNodeOptions {
         let base_options = self.options.clone();
         let merged_options = ShinkaiNodeOptions {
             port: Some(options.port.unwrap_or_else(|| base_options.port.unwrap())),
-            node_storage_path: Some(options.node_storage_path.unwrap_or_else(|| base_options.node_storage_path.unwrap())),
-            unstructured_server_url: Some(options.unstructured_server_url.unwrap_or_else(|| base_options.unstructured_server_url.unwrap())),
-            embeddings_server_url: Some(options.embeddings_server_url.unwrap_or_else(|| base_options.embeddings_server_url.unwrap())),
-            first_device_needs_registration_code: Some(options.first_device_needs_registration_code.unwrap_or_else(|| base_options.first_device_needs_registration_code.unwrap())),
-            initial_agent_names: Some(options.initial_agent_names.unwrap_or_else(|| base_options.initial_agent_names.unwrap())),
-            initial_agent_urls: Some(options.initial_agent_urls.unwrap_or_else(|| base_options.initial_agent_urls.unwrap())),
-            initial_agent_models: Some(options.initial_agent_models.unwrap_or_else(|| base_options.initial_agent_models.unwrap())),
-            initial_agent_api_keys: Some(options.initial_agent_api_keys.unwrap_or_else(|| base_options.initial_agent_api_keys.unwrap())),
-            starting_num_qr_devices: Some(options.starting_num_qr_devices.unwrap_or_else(|| base_options.starting_num_qr_devices.unwrap())),
+            node_storage_path: Some(
+                options
+                    .node_storage_path
+                    .unwrap_or_else(|| base_options.node_storage_path.unwrap()),
+            ),
+            unstructured_server_url: Some(
+                options
+                    .unstructured_server_url
+                    .unwrap_or_else(|| base_options.unstructured_server_url.unwrap()),
+            ),
+            embeddings_server_url: Some(
+                options
+                    .embeddings_server_url
+                    .unwrap_or_else(|| base_options.embeddings_server_url.unwrap()),
+            ),
+            first_device_needs_registration_code: Some(
+                options
+                    .first_device_needs_registration_code
+                    .unwrap_or_else(|| base_options.first_device_needs_registration_code.unwrap()),
+            ),
+            initial_agent_names: Some(
+                options
+                    .initial_agent_names
+                    .unwrap_or_else(|| base_options.initial_agent_names.unwrap()),
+            ),
+            initial_agent_urls: Some(
+                options
+                    .initial_agent_urls
+                    .unwrap_or_else(|| base_options.initial_agent_urls.unwrap()),
+            ),
+            initial_agent_models: Some(
+                options
+                    .initial_agent_models
+                    .unwrap_or_else(|| base_options.initial_agent_models.unwrap()),
+            ),
+            initial_agent_api_keys: Some(
+                options
+                    .initial_agent_api_keys
+                    .unwrap_or_else(|| base_options.initial_agent_api_keys.unwrap()),
+            ),
+            starting_num_qr_devices: Some(
+                options
+                    .starting_num_qr_devices
+                    .unwrap_or_else(|| base_options.starting_num_qr_devices.unwrap()),
+            ),
         };
         self.options = merged_options;
         self.options.clone()
@@ -78,8 +142,8 @@ impl ShinkaiNodeManager {
 
     /// Retrieves the last `n` logs.
     /// If `n` is greater than the available logs, it returns all logs.
-    pub fn get_last_n_logs(&self, n: usize) -> Vec<String> {
-        let logs = self.logs.lock().unwrap();
+    pub async fn get_last_n_logs(&self, n: usize) -> Vec<String> {
+        let logs = self.logs.lock().await;
         let parsed_logs: Vec<String>;
         if n >= logs.len() {
             parsed_logs = logs.clone();
@@ -97,84 +161,92 @@ impl ShinkaiNodeManager {
     }
 
     /// Checks if the shinkai node process is running.
-    pub fn is_running(&self) -> bool {
-        let process = self.process.lock().unwrap();
+    pub async fn is_running(&self) -> bool {
+        let process = self.process.lock().await;
         process.is_some()
     }
 
     /// Spawns the shinkai-node process
-    pub fn spawn_shinkai_node(&self) -> Result<(), String> {
-        let mut process = self.process.lock().map_err(|e| e.to_string())?;
-        if process.is_none() {
-            let env = Self::options_to_env(&self.options);
-            let (mut rx, mut child) = Command::new_sidecar("shinkai-node-v0.5.3")
-                .map_err(|error| {
-                    let log = format!(
-                        "failed to spawn shinkai-node error: {:?}",
-                        error.to_string()
-                    );
-                    self.add_log(log.clone());
-                    log
-                })?
-                .envs(env)
-                .spawn()
-                .map_err(|error| {
-                    let log = format!(
-                        "failed to spawn shinkai-node error: {:?}",
-                        error.to_string()
-                    );
-                    self.add_log(log.clone());
-                    log
-                })?;
-
-            // let self_clone = self.clone();
-            let logs_mutex = Arc::clone(&self.logs);
-            let process_mutex = Arc::clone(&self.process);
-
-            tauri::async_runtime::spawn(async move {
-                while let Some(event) = rx.recv().await {
-                    let mut line: String = "".to_string();
-                    match event {
-                        CommandEvent::Stdout(message) => {
-                            line = message;
-                        }
-                        CommandEvent::Stderr(message) => {
-                            line = message;
-                        }
-                        CommandEvent::Error(message) => {
-                            line = message;
-                        }
-                        CommandEvent::Terminated(payload) => {
-                            line = format!(
-                                "Shinkai Node process terminated with code:{:?} and signal:{:?}",
-                                payload.code, payload.signal
-                            );
-                            let mut process = process_mutex.lock().unwrap();
-                            *process = None;
-                        }
-                        _ => todo!(),
-                    }
-                    if !line.is_empty() {
-                        let mut logs = logs_mutex.lock().unwrap();
-                        if logs.len() == ShinkaiNodeManager::MAX_LOGS_LENGTH {
-                            logs.remove(0); // Remove the oldest log entry to make space
-                        }
-                        logs.push(line.clone()); // Add the new log entry
-                        println!("{:?}", line);
-                    }
-                }
-            });
-            *process = Some(child);
-            println!("shinkai-node process spawned");
-        } else {
+    pub async fn spawn_shinkai_node(&self) -> Result<(), String> {
+        let mut process = self.process.lock().await;
+        if process.is_some() {
             println!("shinkai-node process is already running");
+            return Ok(());
         }
-        Ok(())
+        let env = Self::options_to_env(&self.options);
+        let (mut rx, child) = Command::new_sidecar("shinkai-node-v0.5.3")
+            .map_err(|error| {
+                let log = format!(
+                    "failed to spawn shinkai-node error: {:?}",
+                    error.to_string()
+                );
+                self.add_log(log.clone());
+                log
+            })?
+            .envs(env)
+            .spawn()
+            .map_err(|error| {
+                let log = format!(
+                    "failed to spawn shinkai-node error: {:?}",
+                    error.to_string()
+                );
+                self.add_log(log.clone());
+                log
+            })?;
+
+        // let self_clone = self.clone();
+        let logs_mutex = Arc::clone(&self.logs);
+        let process_mutex = Arc::clone(&self.process);
+
+        tauri::async_runtime::spawn(async move {
+            while let Some(event) = rx.recv().await {
+                let mut line: String = "".to_string();
+                match event {
+                    CommandEvent::Stdout(message) => {
+                        line = message;
+                    }
+                    CommandEvent::Stderr(message) => {
+                        line = message;
+                    }
+                    CommandEvent::Error(message) => {
+                        line = message;
+                    }
+                    CommandEvent::Terminated(payload) => {
+                        line = format!(
+                            "Shinkai Node process terminated with code:{:?} and signal:{:?}",
+                            payload.code, payload.signal
+                        );
+                        let mut process = process_mutex.lock().await;
+                        *process = None;
+                    }
+                    _ => todo!(),
+                }
+                if !line.is_empty() {
+                    let mut logs = logs_mutex.lock().await;
+                    if logs.len() == ShinkaiNodeManager::MAX_LOGS_LENGTH {
+                        logs.remove(0); // Remove the oldest log entry to make space
+                    }
+                    logs.push(line.clone()); // Add the new log entry
+                    println!("{:?}", line);
+                }
+            }
+        });
+        *process = Some(child);
+        match self.check_node_start().await {
+            Ok(_) => {
+                print!("shinkai-node spawn success");
+                return Ok(());
+            },
+            Err(_) => {
+                print!("shinkai-node spawn error timeout");
+                return Err("shinkai-node spawn timeout".to_string());
+            }
+        };
     }
 
     /// Kill the spawned shinkai-node process
-    pub fn kill_shinkai_node(&self) {
-        let mut process = self.process.lock().unwrap();
+    pub async fn kill_shinkai_node(&self) {
+        let mut process = self.process.lock().await;
         if let Some(child) = process.take() {
             match child.kill() {
                 Ok(_) => println!("shinkai-node process killed"),
@@ -186,15 +258,13 @@ impl ShinkaiNodeManager {
         }
     }
 
-    pub fn remove_storage(&self) -> Result<(), String> {
-        if self.is_running() {
+    pub async fn remove_storage(&self) -> Result<(), String> {
+        if self.is_running().await {
             return Err("can't remove node storage while it's running".to_string());
         }
         let options = self.options.clone();
         match fs::remove_dir_all(options.node_storage_path.unwrap()) {
-            Ok(_) => {
-                Ok(())
-            }
+            Ok(_) => Ok(()),
             Err(message) => {
                 Err(format!("failed to remove Shinkai Node storage error:{:?}", message).into())
             }
