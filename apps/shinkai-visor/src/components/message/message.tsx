@@ -12,19 +12,28 @@ import React from 'react';
 
 import shinkaiMiniLogo from '../../assets/icons/shinkai-min.svg';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
-import { sendMessage } from '../../service-worker/communication/internal';
-import { ServiceWorkerInternalMessageType } from '../../service-worker/communication/internal/types';
 import { FileList } from '../file-list/file-list';
 
 type MessageProps = {
   message: ChatConversationMessage;
 };
-const copyToClipboard = (content: string) => {
-  sendMessage({
-    type: ServiceWorkerInternalMessageType.CopyToClipboard,
-    data: { content: content },
-  });
-};
+async function copyToClipboard(text: string) {
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch (error) {
+    // Fallback for browsers where the Clipboard API is not supported
+    const textarea = document.createElement('textarea');
+    textarea.style.position = 'fixed';
+    textarea.style.top = '-9999px';
+    textarea.style.left = '-9999px';
+    textarea.innerText = text;
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    document.execCommand('copy');
+    textarea.remove();
+  }
+}
 
 export const Message = ({ message }: MessageProps) => {
   return (
@@ -55,11 +64,11 @@ export const Message = ({ message }: MessageProps) => {
         {message.isLocal ? null : (
           <CopyToClipboardIcon
             className="duration-30 absolute right-2 top-2 bg-gray-300 opacity-0 group-hover:opacity-100 group-hover:transition-opacity"
-            onCopyClipboard={() =>
+            onCopyClipboard={() => {
               copyToClipboard(
                 extractErrorPropertyOrContent(message.content, 'error_message'),
-              )
-            }
+              );
+            }}
             string={extractErrorPropertyOrContent(
               message.content,
               'error_message',
