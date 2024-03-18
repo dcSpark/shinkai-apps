@@ -65,10 +65,6 @@ export type ServiceWorkerInternalMessage =
     }
   | { type: ServiceWorkerInternalMessageType.RehydrateStore; data?: never }
   | {
-      type: ServiceWorkerInternalMessageType.CopyToClipboard;
-      data: { content: string };
-    }
-  | {
       type: ServiceWorkerInternalMessageType.CaptureImage;
       data: { image: string };
     }

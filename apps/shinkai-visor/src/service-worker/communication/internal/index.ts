@@ -126,18 +126,6 @@ export const listen = (): void => {
           useAuth.persist.rehydrate();
           useSettings.persist.rehydrate();
           break;
-        case ServiceWorkerInternalMessageType.CopyToClipboard:
-          if (!sender?.tab?.id) {
-            return;
-          }
-          chrome.scripting.executeScript({
-            target: { tabId: sender?.tab?.id },
-            func: (text: string) => {
-              navigator.clipboard.writeText(text);
-            },
-            args: [message.data.content],
-          });
-          break;
         case ServiceWorkerInternalMessageType.OpenLink:
           chrome.tabs.create({ url: message.data.url });
           break;

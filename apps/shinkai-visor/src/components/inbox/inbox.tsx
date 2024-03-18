@@ -191,7 +191,7 @@ export const Inbox = () => {
   }, [data?.pages]);
 
   return (
-    <div className="flex h-full flex-col justify-between space-y-3">
+    <div className="flex h-full flex-col justify-between gap-3">
       <ScrollArea
         className="h-full pr-4 [&>div>div]:!block"
         ref={chatContainerRef}

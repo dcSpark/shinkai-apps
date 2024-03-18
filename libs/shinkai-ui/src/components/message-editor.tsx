@@ -34,7 +34,8 @@ export const MessageEditor = ({
     {
       editorProps: {
         attributes: {
-          class: 'prose prose-invert prose-sm mx-auto focus:outline-none',
+          class:
+            'prose prose-invert prose-sm mx-auto focus:outline-none break-words',
         },
       },
       extensions: [
