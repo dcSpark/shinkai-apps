@@ -53,7 +53,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { partial } from 'filesize';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   ChevronLeft,
   ChevronRight,
@@ -65,7 +65,6 @@ import {
   PlusIcon,
   SearchIcon,
   X,
-  XCircleIcon,
   XIcon,
 } from 'lucide-react';
 import React, { useEffect } from 'react';
