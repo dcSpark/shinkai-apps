@@ -349,7 +349,9 @@ export default function NodeFiles() {
                   <h2 className="font-medium text-white">
                     This will be the home for all your files.
                   </h2>
-                  <span>Use the "+" button to start uploading files.</span>
+                  <span>
+                    Use the &quot;+&quot; button to start uploading files.
+                  </span>
                 </div>
               </div>
             )}

@@ -31,7 +31,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useLocation } from 'react-router-dom';
 import { z } from 'zod';
 
-import { formatDateToLocaleString } from '../../helpers/date';
 import { useQuery } from '../../hooks/use-query';
 import { useAuth } from '../../store/auth/auth';
 import { useSettings } from '../../store/settings/settings';
@@ -148,6 +147,7 @@ export const CreateJob = () => {
     if (query.get('initialText')) {
       form.handleSubmit(submit)();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const submit = (values: FormSchemaType) => {
     if (!auth) return;
