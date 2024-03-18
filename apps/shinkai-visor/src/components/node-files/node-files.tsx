@@ -57,8 +57,8 @@ import { motion } from 'framer-motion';
 import {
   ChevronLeft,
   ChevronRight,
-  DatabaseIcon,
-  FileIcon,
+  // DatabaseIcon,
+  // FileIcon,
   // DatabaseIcon,
   // FileIcon,
   LockIcon,
@@ -403,16 +403,16 @@ export default function NodeFiles() {
         </ContextMenuContent>
       </ContextMenu>
 
-      <div className="fixed bottom-0 left-0 right-0 flex items-center justify-between rounded-t-md bg-gray-300 py-3">
-        <span className="flex flex-1 items-center justify-center gap-1">
-          <FileIcon className="h-4 w-4" />
-          <span className="font-medium">TODO items</span>
-        </span>
-        <span className="flex flex-1 items-center justify-center gap-1">
-          <DatabaseIcon className="h-4 w-4" />
-          <span className="font-medium">TODO</span>
-        </span>
-      </div>
+      {/*<div className="fixed bottom-0 left-0 right-0 flex items-center justify-between rounded-t-md bg-gray-300 py-3">*/}
+      {/*  <span className="flex flex-1 items-center justify-center gap-1">*/}
+      {/*    <FileIcon className="h-4 w-4" />*/}
+      {/*    <span className="font-medium">TODO items</span>*/}
+      {/*  </span>*/}
+      {/*  <span className="flex flex-1 items-center justify-center gap-1">*/}
+      {/*    <DatabaseIcon className="h-4 w-4" />*/}
+      {/*    <span className="font-medium">TODO</span>*/}
+      {/*  </span>*/}
+      {/*</div>*/}
 
       <MotionButton
         className={cn(
