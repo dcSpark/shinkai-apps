@@ -37,6 +37,7 @@ import {
   DropdownMenuTrigger,
   FileEmptyStateIcon,
   FileTypeIcon,
+  FileUploader,
   Form,
   FormControl,
   FormField,
@@ -47,7 +48,6 @@ import {
   // GenerateDocIcon,
   // GenerateFromWebIcon,
   Input,
-  PaperClipIcon,
   ScrollArea,
   TextField,
 } from '@shinkai_network/shinkai-ui';
@@ -63,14 +63,11 @@ import {
   LockIcon,
   PlusIcon,
   SearchIcon,
-  Trash,
-  Upload,
   X,
   XCircleIcon,
   XIcon,
 } from 'lucide-react';
 import React, { useEffect } from 'react';
-import { Accept, useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
@@ -792,9 +789,6 @@ const UploadVRFilesDrawer = ({
       id: 'uploading-VR-files',
       description: 'This process might take from 1-2 minutes',
       position: 'bottom-left',
-      cancelButtonStyle: {
-        display: 'none',
-      },
     });
     closeDrawer();
     await uploadVRFiles({
@@ -836,12 +830,8 @@ const UploadVRFilesDrawer = ({
                 <FormControl>
                   <div className="flex flex-col space-y-1">
                     <div className="flex items-center justify-center">
-                      <FileInput
-                        // accept={{
-                        //   'application/x-iwork-keynote-sffkey': ['.key'],
-                        // }}
-                        description="Supports pdf, md, txt "
-                        maxFiles={1}
+                      <FileUploader
+                        descriptionText="Supports pdf, md, txt"
                         onChange={(acceptedFiles) => {
                           field.onChange(acceptedFiles);
                         }}
@@ -865,83 +855,5 @@ const UploadVRFilesDrawer = ({
         </form>
       </Form>
     </>
-  );
-};
-
-const FileInput = ({
-  value,
-  onChange,
-  maxFiles,
-  accept,
-  multiple,
-  description,
-}: {
-  value: File[];
-  onChange: (files: File[]) => void;
-  maxFiles?: number;
-  accept?: Accept;
-  multiple?: boolean;
-  description?: string;
-}) => {
-  const { getRootProps: getRootFileProps, getInputProps: getInputFileProps } =
-    useDropzone({
-      multiple: multiple,
-      maxFiles: maxFiles ?? 5,
-      accept,
-      onDrop: (acceptedFiles) => {
-        onChange(acceptedFiles);
-      },
-    });
-
-  return (
-    <div className="flex w-full flex-col gap-2">
-      <div
-        {...getRootFileProps({
-          className:
-            'dropzone py-4 bg-gray-400 group relative mt-3 flex cursor-pointer items-center justify-center overflow-hidden rounded-lg border border-dashed border-gray-100 transition-colors hover:border-white',
-        })}
-      >
-        <div className="flex flex-col items-center justify-center space-y-1">
-          <div>
-            <Upload className="h-4 w-4" />
-          </div>
-          <p className="text-sm text-white">
-            <FormattedMessage id="click-to-upload" />
-          </p>
-          <p className="text-gray-80 text-xs">
-            {description ?? 'Eg: shinkai.key'}
-          </p>
-        </div>
-
-        <input {...getInputFileProps({})} />
-      </div>
-      {!!value?.length && (
-        <div className="flex flex-col gap-2">
-          {value?.map((file, idx) => (
-            <div
-              className="relative flex items-center gap-2 rounded-lg border border-gray-100 px-3 py-1.5"
-              key={idx}
-            >
-              <PaperClipIcon className="text-gray-100" />
-              <span className="text-gray-80 flex-1 truncate text-sm">
-                {file.name}
-              </span>
-              <Button
-                onClick={() => {
-                  const newFiles = [...value];
-                  newFiles.splice(newFiles.indexOf(file), 1);
-                  onChange(newFiles);
-                }}
-                size="icon"
-                type="button"
-                variant="ghost"
-              >
-                <Trash className="h-4 w-4 text-gray-100" />
-              </Button>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
   );
 };
