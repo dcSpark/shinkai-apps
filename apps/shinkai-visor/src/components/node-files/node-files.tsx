@@ -862,6 +862,7 @@ const UploadVRFilesDrawer = ({
                   <div className="flex flex-col space-y-1">
                     <div className="flex items-center justify-center">
                       <FileUploader
+                        allowMultiple
                         descriptionText="Supports pdf, md, txt"
                         onChange={(acceptedFiles) => {
                           field.onChange(acceptedFiles);
