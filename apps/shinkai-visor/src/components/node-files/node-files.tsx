@@ -53,6 +53,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { partial } from 'filesize';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   ChevronLeft,
   ChevronRight,
@@ -84,6 +85,9 @@ enum NodeFilesDrawerOptions {
   GenerateFromDocument = 'generate-from-document',
   // GenerateFromWeb = 'generate-from-web',
 }
+
+const MotionButton = motion(Button);
+const CreateAIIconMotion = motion(CreateAIIcon);
 export default function NodeFiles() {
   const size = partial({ standard: 'jedec' });
   const [selectedDrawerOption, setSelectedDrawerOption] =
@@ -92,19 +96,21 @@ export default function NodeFiles() {
   const [currentPath, setCurrentPath] = React.useState<string>('/');
   const history = useHistory();
 
-  const { isPending: isVRFilesPending, data: VRFiles } = useGetVRPathSimplified(
-    {
-      nodeAddress: auth?.node_address ?? '',
-      profile: auth?.profile ?? '',
-      shinkaiIdentity: auth?.shinkai_identity ?? '',
-      path: currentPath,
-      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-      my_device_identity_sk: auth?.profile_identity_sk ?? '',
-      node_encryption_pk: auth?.node_encryption_pk ?? '',
-      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-      profile_identity_sk: auth?.profile_identity_sk ?? '',
-    },
-  );
+  const {
+    isPending: isVRFilesPending,
+    data: VRFiles,
+    isSuccess: isVRFilesSuccess,
+  } = useGetVRPathSimplified({
+    nodeAddress: auth?.node_address ?? '',
+    profile: auth?.profile ?? '',
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    path: currentPath,
+    my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+    my_device_identity_sk: auth?.profile_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+  });
 
   const [searchQuery, setSearchQuery] = React.useState('');
   const [activeFile, setActiveFile] = React.useState<VRItem | null>(null);
@@ -338,7 +344,8 @@ export default function NodeFiles() {
               />
             );
           })}
-          {(VRFiles?.child_folders || [])?.length === 0 &&
+          {isVRFilesSuccess &&
+            (VRFiles?.child_folders || [])?.length === 0 &&
             currentPath === '/' && (
               <div className="text-gray-80 mt-4 flex flex-col items-center justify-center gap-4 text-center text-base">
                 <FileEmptyStateIcon className="h-20 w-20" />
@@ -352,29 +359,31 @@ export default function NodeFiles() {
                 </div>
               </div>
             )}
-          {(VRFiles?.child_items?.length ?? 0) > 0
-            ? VRFiles?.child_items.map((file, index: number) => {
-                return (
-                  <FileVRItem
-                    file={file}
-                    handleSelectFiles={handleSelectFiles}
-                    isSelectedFile={selectedFiles.some(
-                      (selectedFile) => selectedFile.path === file.path,
-                    )}
-                    key={index}
-                    onClick={() => {
-                      setActiveFile(file);
-                    }}
-                    selectionMode={selectionMode}
-                  />
-                );
-              })
-            : VRFiles?.child_items?.length === 0 &&
-              VRFiles.child_folders?.length === 0 && (
-                <div className="flex h-20 items-center justify-center text-gray-100">
-                  No files found
-                </div>
-              )}
+          {isVRFilesSuccess &&
+            VRFiles?.child_items?.length > 0 &&
+            VRFiles?.child_items.map((file, index: number) => {
+              return (
+                <FileVRItem
+                  file={file}
+                  handleSelectFiles={handleSelectFiles}
+                  isSelectedFile={selectedFiles.some(
+                    (selectedFile) => selectedFile.path === file.path,
+                  )}
+                  key={index}
+                  onClick={() => {
+                    setActiveFile(file);
+                  }}
+                  selectionMode={selectionMode}
+                />
+              );
+            })}
+          {isVRFilesSuccess &&
+            VRFiles?.child_items?.length === 0 &&
+            VRFiles.child_folders?.length === 0 && (
+              <div className="flex h-20 items-center justify-center text-gray-100">
+                No files found
+              </div>
+            )}
         </div>
       </ScrollArea>
       <ContextMenu>
@@ -405,11 +414,13 @@ export default function NodeFiles() {
           <span className="font-medium">TODO</span>
         </span>
       </div>
-      <Button
+
+      <MotionButton
         className={cn(
-          'transtion-all fixed bottom-16 right-4 flex items-center gap-2 px-4',
-          !selectionMode && 'h-[60px] w-[60px] px-0',
+          'fixed bottom-16 right-4 h-[60px] w-[60px]',
+          selectionMode && 'w-[210px]',
         )}
+        layout
         onClick={() => {
           if (!selectionMode) {
             setSelectionMode(true);
@@ -424,23 +435,44 @@ export default function NodeFiles() {
           }
         }}
         size={selectionMode ? 'lg' : 'icon'}
+        transition={{
+          // delayChildren: 1,
+          duration: 0.2,
+        }}
       >
-        <span className={cn('sr-only', selectionMode && 'not-sr-only')}>
-          Create AI Chat
-        </span>
-        <CreateAIIcon />
-      </Button>
+        {!selectionMode && <CreateAIIconMotion layout />}
+        <motion.div
+          className={cn(
+            'sr-only flex flex-col',
+            selectionMode && 'not-sr-only',
+          )}
+          layout
+        >
+          <span>Create AI Chat</span>
+          {selectionMode && (
+            <span className="text-sm text-neutral-200">
+              {selectedFiles.length + selectedFolders.length} selected
+            </span>
+          )}
+        </motion.div>
+      </MotionButton>
       {selectionMode && (
-        <Button
-          className="fixed bottom-20 right-[200px] h-[24px] w-[24px] bg-gray-500 text-gray-50"
+        <MotionButton
+          animate={{ opacity: 1 }}
+          className="fixed bottom-20 right-[230px] h-[24px] w-[24px] border border-gray-100 bg-gray-300 p-1 text-gray-50 hover:bg-gray-500 hover:text-white"
+          initial={{ opacity: 0 }}
           onClick={() => setSelectionMode(false)}
           size="icon"
+          transition={{
+            duration: 0.4,
+          }}
           variant="outline"
         >
           <span className="sr-only">Unselect All</span>
-          <XCircleIcon />
-        </Button>
+          <XIcon />
+        </MotionButton>
       )}
+
       <Drawer
         onOpenChange={(open) => {
           if (!open) {
