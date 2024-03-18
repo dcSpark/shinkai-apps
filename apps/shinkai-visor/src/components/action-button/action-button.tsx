@@ -160,6 +160,8 @@ const ActionButton = () => {
     return () => {
       document.removeEventListener('fullscreenchange', listenFullscreenChange);
     };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return disabledHosts[window.location.host] ? null : (

@@ -19,6 +19,17 @@ export enum MessageSchemaType {
   SymmetricKeyExchange = 'SymmetricKeyExchange',
   APIFinishJob = 'APIFinishJob',
   Empty = '',
+  VecFsRetrievePathSimplifiedJson = 'VecFsRetrievePathSimplifiedJson',
+  VecFsRetrieveVectorResource = 'VecFsRetrieveVectorResource',
+  VecFsRetrieveVectorSearchSimplifiedJson = 'VecFsRetrieveVectorSearchSimplifiedJson',
+  VecFsCreateFolder = 'VecFsCreateFolder',
+  VecFsDeleteFolder = 'VecFsDeleteFolder',
+  VecFsMoveFolder = 'VecFsMoveFolder',
+  VecFsCopyFolder = 'VecFsCopyFolder',
+  VecFsCreateItem = 'VecFsCreateItem',
+  VecFsMoveItem = 'VecFsMoveItem',
+  VecFsCopyItem = 'VecFsCopyItem',
+  ConvertFilesAndSaveToFolder = 'ConvertFilesAndSaveToFolder',
 }
 
 export interface JobScope {

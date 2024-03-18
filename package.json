@@ -124,6 +124,7 @@
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-avatar": "^1.0.4",
     "@radix-ui/react-checkbox": "^1.0.4",
+    "@radix-ui/react-context-menu": "^2.1.5",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
     "@radix-ui/react-hover-card": "^1.0.7",
@@ -181,6 +182,7 @@
     "tslib": "^2.3.0",
     "urbit-ob": "^5.0.1",
     "uuid": "^9.0.0",
+    "vaul": "^0.9.0",
     "vite-plugin-wasm": "^3.2.2",
     "zod": "^3.22.2",
     "zustand": "^4.4.2"

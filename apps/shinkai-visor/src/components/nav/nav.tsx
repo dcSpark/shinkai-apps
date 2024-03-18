@@ -20,6 +20,7 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
+  FilesIcon,
   InboxIcon,
   JobBubbleIcon,
   Tooltip,
@@ -47,6 +48,7 @@ enum MenuOption {
   Agents = 'agents',
   AddAgent = 'add-agent',
   CreateJob = 'create-job',
+  NodeFiles = 'node-files',
   Settings = 'settings',
   Logout = 'logout',
 }
@@ -152,6 +154,7 @@ export default function NavBar() {
     '/agents',
     '/settings',
     '/nodes/connect/method/quick-start',
+    '/node-files',
   ].includes(location.pathname);
 
   const isInboxPage = location.pathname.includes('/inboxes');
@@ -181,6 +184,9 @@ export default function NavBar() {
         break;
       case MenuOption.CreateJob:
         history.push('/inboxes/create-job');
+        break;
+      case MenuOption.NodeFiles:
+        history.push('/node-files');
         break;
       case MenuOption.Agents:
         history.push('/agents');
@@ -311,6 +317,13 @@ export default function NavBar() {
                   </span>
                 </DropdownMenuItem>
               )}
+
+              <DropdownMenuItem
+                onClick={() => onClickMenuOption(MenuOption.NodeFiles)}
+              >
+                <FilesIcon className="mr-2 h-4 w-4" />
+                <span>Node Files</span>
+              </DropdownMenuItem>
 
               <DropdownMenuLabel>
                 <FormattedMessage id="agent.other" />

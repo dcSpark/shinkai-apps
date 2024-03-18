@@ -633,4 +633,319 @@ export class ShinkaiMessageBuilderWrapper {
     const message = builder.build_to_string();
     return message;
   }
+  static createFolder(
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    folder_name: string,
+    path: string,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+    receiver_subidentity: string,
+  ): string {
+    const folderCreationInfo = { folder_name, path };
+    const body = JSON.stringify(folderCreationInfo);
+
+    const builder = new ShinkaiMessageBuilderWrapper(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key,
+    );
+
+    builder.message_raw_content(body);
+    builder.message_schema_type(MessageSchemaType.VecFsCreateFolder.toString());
+    builder.internal_metadata(
+      sender_subidentity,
+      receiver_subidentity,
+      '',
+      'None',
+    );
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
+
+    const message = builder.build_to_string();
+    return message;
+  }
+
+  static moveFolder(
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    origin_path: string,
+    destination_path: string,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+    receiver_subidentity: string,
+  ): string {
+    const folderMoveInfo = { origin_path, destination_path };
+    const body = JSON.stringify(folderMoveInfo);
+
+    const builder = new ShinkaiMessageBuilderWrapper(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key,
+    );
+
+    builder.message_raw_content(body);
+    builder.message_schema_type(MessageSchemaType.VecFsMoveFolder.toString());
+    builder.internal_metadata(
+      sender_subidentity,
+      receiver_subidentity,
+      '',
+      'None',
+    );
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
+
+    const message = builder.build_to_string();
+    return message;
+  }
+  static copyFolder(
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    origin_path: string,
+    destination_path: string,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+    receiver_subidentity: string,
+  ): string {
+    const folderCopyInfo = { origin_path, destination_path };
+    const body = JSON.stringify(folderCopyInfo);
+
+    const builder = new ShinkaiMessageBuilderWrapper(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key,
+    );
+
+    builder.message_raw_content(body);
+    builder.message_schema_type(MessageSchemaType.VecFsCopyFolder.toString());
+    builder.internal_metadata(
+      sender_subidentity,
+      receiver_subidentity,
+      '',
+      'None',
+    );
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
+
+    const message = builder.build_to_string();
+    return message;
+  }
+
+  static moveItem(
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    origin_path: string,
+    destination_path: string,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+    receiver_subidentity: string,
+  ): string {
+    const itemMoveInfo = { origin_path, destination_path };
+    const body = JSON.stringify(itemMoveInfo);
+
+    const builder = new ShinkaiMessageBuilderWrapper(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key,
+    );
+
+    builder.message_raw_content(body);
+    builder.message_schema_type(MessageSchemaType.VecFsMoveItem.toString());
+    builder.internal_metadata(
+      sender_subidentity,
+      receiver_subidentity,
+      '',
+      'None',
+    );
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
+
+    const message = builder.build_to_string();
+    return message;
+  }
+
+  static copyItem(
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    origin_path: string,
+    destination_path: string,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+    receiver_subidentity: string,
+  ): string {
+    const itemCopyInfo = { origin_path, destination_path };
+    const body = JSON.stringify(itemCopyInfo);
+
+    const builder = new ShinkaiMessageBuilderWrapper(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key,
+    );
+
+    builder.message_raw_content(body);
+    builder.message_schema_type(MessageSchemaType.VecFsCopyItem.toString());
+    builder.internal_metadata(
+      sender_subidentity,
+      receiver_subidentity,
+      '',
+      'None',
+    );
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
+
+    const message = builder.build_to_string();
+    return message;
+  }
+
+  static createItems(
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    destination_path: string,
+    file_inbox: string,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+  ): string {
+    const createItemsInfo = { path: destination_path, file_inbox };
+    const body = JSON.stringify(createItemsInfo);
+
+    const builder = new ShinkaiMessageBuilderWrapper(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key,
+    );
+
+    builder.message_raw_content(body);
+    builder.message_schema_type(
+      MessageSchemaType.ConvertFilesAndSaveToFolder.toString(),
+    );
+    builder.internal_metadata(sender_subidentity, '', '', 'None');
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
+
+    const message = builder.build_to_string();
+    return message;
+  }
+
+  static retrieveResource(
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    path: string,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+    receiver_subidentity: string,
+  ): string {
+    const retrieveResourceInfo = { path };
+    const body = JSON.stringify(retrieveResourceInfo);
+
+    const builder = new ShinkaiMessageBuilderWrapper(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key,
+    );
+
+    builder.message_raw_content(body);
+    builder.message_schema_type(
+      MessageSchemaType.VecFsRetrieveVectorResource.toString(),
+    );
+    builder.internal_metadata(
+      sender_subidentity,
+      receiver_subidentity,
+      '',
+      'None',
+    );
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
+
+    const message = builder.build_to_string();
+    return message;
+  }
+
+  static retrievePathSimplified(
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    path: string,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+    receiver_subidentity: string,
+  ): string {
+    const retrievePathInfo = { path };
+    const body = JSON.stringify(retrievePathInfo);
+
+    const builder = new ShinkaiMessageBuilderWrapper(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key,
+    );
+
+    builder.message_raw_content(body);
+    builder.message_schema_type(
+      MessageSchemaType.VecFsRetrievePathSimplifiedJson.toString(),
+    );
+    builder.internal_metadata(
+      sender_subidentity,
+      receiver_subidentity,
+      '',
+      'None',
+    );
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
+
+    const message = builder.build_to_string();
+    return message;
+  }
+
+  static retrieveVectorSearchSimplified(
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    search: string,
+    path: string | null,
+    max_results: number | null,
+    max_files_to_scan: number | null,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+    receiver_subidentity: string,
+  ): string {
+    const searchInfo = { search, path, max_results, max_files_to_scan };
+    const body = JSON.stringify(searchInfo);
+
+    const builder = new ShinkaiMessageBuilderWrapper(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key,
+    );
+
+    builder.message_raw_content(body);
+    builder.message_schema_type(
+      MessageSchemaType.VecFsRetrieveVectorSearchSimplifiedJson.toString(),
+    );
+    builder.internal_metadata(
+      sender_subidentity,
+      receiver_subidentity,
+      '',
+      'None',
+    );
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
+
+    const message = builder.build_to_string();
+    return message;
+  }
 }
