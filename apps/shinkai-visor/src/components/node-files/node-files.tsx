@@ -51,7 +51,6 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { partial } from 'filesize';
 import { motion } from 'framer-motion';
 import {
-  ChevronLeft,
   ChevronRight,
   // DatabaseIcon,
   // FileIcon,
@@ -234,6 +233,10 @@ export default function NodeFiles() {
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
+
+        <Button>
+          <span>Sort by</span>
+        </Button>
         <Drawer
           onOpenChange={(open) => {
             if (!open) {
