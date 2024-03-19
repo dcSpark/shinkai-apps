@@ -1,8 +1,33 @@
+import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { VRItem } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
-import { Badge, Checkbox, FileTypeIcon } from '@shinkai_network/shinkai-ui';
+import {
+  Badge,
+  Button,
+  Checkbox,
+  DirectoryTypeIcon,
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  FileTypeIcon,
+} from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { partial } from 'filesize';
-import { ChevronRight } from 'lucide-react';
+import {
+  ChevronRight,
+  FolderInputIcon,
+  PencilLine,
+  Share2Icon,
+  TrashIcon,
+  XIcon,
+} from 'lucide-react';
 import React from 'react';
 
 import { formatDateToLocaleString } from '../../helpers/date';
@@ -39,6 +64,13 @@ const VectorFsItemInfo = ({
   );
 };
 
+enum VectorFsItemAction {
+  Rename = 'Rename',
+  Move = 'Move',
+  Share = 'Share',
+  Delete = 'Delete',
+}
+
 const VectorFsItem = ({
   onClick,
   file,
@@ -54,6 +86,9 @@ const VectorFsItem = ({
   isSelectedFile: boolean;
   layout: Layout;
 }) => {
+  const [selectedOption, setSelectedOption] =
+    React.useState<VectorFsItemAction | null>(null);
+
   const size = partial({ standard: 'jedec' });
 
   const wrapperClassname = cn(
@@ -90,16 +125,179 @@ const VectorFsItem = ({
     );
   }
 
+  const renderDrawerContent = (selectedOption: VectorFsItemAction | null) => {
+    switch (selectedOption) {
+      case VectorFsItemAction.Rename:
+        return (
+          <React.Fragment>
+            <DrawerHeader>
+              <DrawerTitle className="flex flex-col items-start gap-1">
+                <FileTypeIcon className="h-10 w-10" />
+                Rename File
+              </DrawerTitle>
+            </DrawerHeader>
+            <input
+              className="w-full rounded-md border-0 bg-gray-500/30 p-2"
+              placeholder="Folder name"
+              type="text"
+            />
+            <DrawerFooter>
+              <Button className="mt-4">Rename</Button>
+            </DrawerFooter>
+          </React.Fragment>
+        );
+      case VectorFsItemAction.Move:
+        return (
+          <React.Fragment>
+            <DrawerHeader>
+              <DrawerTitle className="flex flex-col items-start gap-1">
+                <FileTypeIcon className="h-10 w-10" />
+                Move File
+              </DrawerTitle>
+            </DrawerHeader>
+            <p className="text-gray-100">
+              Select the destination folder to move the folder to.
+            </p>
+            <DrawerFooter>
+              <Button className="mt-4">Move</Button>
+            </DrawerFooter>
+          </React.Fragment>
+        );
+      case VectorFsItemAction.Share:
+        return (
+          <React.Fragment>
+            <DrawerHeader>
+              <DrawerTitle className="flex flex-col items-start gap-1">
+                <FileTypeIcon className="h-10 w-10" />
+                Share File
+              </DrawerTitle>
+            </DrawerHeader>
+            <p className="text-gray-100">
+              Share this folder with other users or groups.
+            </p>
+            <DrawerFooter>
+              <Button className="mt-4">Share</Button>
+            </DrawerFooter>
+          </React.Fragment>
+        );
+      case VectorFsItemAction.Delete:
+        return (
+          <React.Fragment>
+            <DrawerHeader>
+              <DrawerTitle className="flex flex-col items-start gap-1">
+                <FileTypeIcon className="h-10 w-10" />
+                Delete File
+              </DrawerTitle>
+            </DrawerHeader>
+            <p className="text-gray-100">
+              Are you sure you want to delete this folder? This action cannot be
+              undone.
+            </p>
+            <DrawerFooter>
+              <Button className="mt-4">Delete</Button>
+            </DrawerFooter>
+          </React.Fragment>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
-    <button className={wrapperClassname} onClick={onClick}>
-      <FileTypeIcon />
-      <VectorFsItemInfo
-        createdDatetime={createdDatetime}
-        file={file}
-        fileSize={fileSize}
-        layout={layout}
-      />
-    </button>
+    <React.Fragment>
+      <button className={wrapperClassname} onClick={onClick}>
+        <FileTypeIcon />
+        <VectorFsItemInfo
+          createdDatetime={createdDatetime}
+          file={file}
+          fileSize={fileSize}
+          layout={layout}
+        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              className="border-0 hover:bg-gray-500/40"
+              onClick={(event) => {
+                event.stopPropagation();
+                console.log('click');
+              }}
+              size="icon"
+              variant="tertiary"
+            >
+              <span className="sr-only">More options</span>
+              <DotsVerticalIcon className="text-gray-100" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="end"
+            className="w-[160px] border bg-gray-500 px-2.5 py-2"
+          >
+            {[
+              {
+                name: 'Rename',
+                icon: <PencilLine className="mr-3 h-4 w-4" />,
+                onClick: () => {
+                  setSelectedOption(VectorFsItemAction.Rename);
+                },
+              },
+              {
+                name: 'Move',
+                icon: <FolderInputIcon className="mr-3 h-4 w-4" />,
+                onClick: () => {
+                  setSelectedOption(VectorFsItemAction.Move);
+                },
+              },
+              {
+                name: 'Share',
+                icon: <Share2Icon className="mr-3 h-4 w-4" />,
+                onClick: () => {
+                  setSelectedOption(VectorFsItemAction.Share);
+                },
+              },
+              {
+                name: 'Delete',
+                icon: <TrashIcon className="mr-3 h-4 w-4" />,
+                onClick: () => {
+                  setSelectedOption(VectorFsItemAction.Delete);
+                },
+              },
+            ].map((option) => (
+              <React.Fragment key={option.name}>
+                {option.name === 'Delete' && (
+                  <DropdownMenuSeparator className="bg-gray-300" />
+                )}
+                <DropdownMenuItem
+                  key={option.name}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    option.onClick();
+                  }}
+                >
+                  {option.icon}
+                  {option.name}
+                </DropdownMenuItem>
+              </React.Fragment>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </button>
+      <Drawer
+        onOpenChange={(open) => {
+          if (!open) {
+            setSelectedOption(null);
+          }
+        }}
+        open={!!selectedOption}
+      >
+        <DrawerContent>
+          <DrawerClose className="absolute right-4 top-5">
+            <XIcon className="text-gray-80" />
+          </DrawerClose>
+
+          {renderDrawerContent(selectedOption)}
+        </DrawerContent>
+      </Drawer>
+    </React.Fragment>
   );
 };
 export default VectorFsItem;

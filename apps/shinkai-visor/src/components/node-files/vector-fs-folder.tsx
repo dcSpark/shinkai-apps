@@ -4,6 +4,12 @@ import {
   Button,
   Checkbox,
   DirectoryTypeIcon,
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -16,6 +22,7 @@ import {
   PencilLine,
   Share2Icon,
   TrashIcon,
+  XIcon,
 } from 'lucide-react';
 import React from 'react';
 
@@ -43,6 +50,13 @@ const VectorFsFolderInfo = ({
     </div>
   );
 };
+
+enum VectorFsFolderAction {
+  Rename = 'Rename',
+  Move = 'Move',
+  Share = 'Share',
+  Delete = 'Delete',
+}
 const VectorFsFolder = ({
   onClick,
   folder,
@@ -58,6 +72,9 @@ const VectorFsFolder = ({
   isSelectedFolder: boolean;
   layout: Layout;
 }) => {
+  const [selectedOption, setSelectedOption] =
+    React.useState<VectorFsFolderAction | null>(null);
+
   const totalItem =
     (folder.child_folders?.length ?? 0) + (folder.child_items?.length ?? 0);
 
@@ -91,80 +108,184 @@ const VectorFsFolder = ({
     );
   }
 
+  const renderDrawerContent = (selectedOption: VectorFsFolderAction | null) => {
+    switch (selectedOption) {
+      case VectorFsFolderAction.Rename:
+        return (
+          <React.Fragment>
+            <DrawerHeader>
+              <DrawerTitle className="flex flex-col items-start gap-1">
+                <DirectoryTypeIcon className="h-10 w-10" />
+                Rename Folder
+              </DrawerTitle>
+            </DrawerHeader>
+            <input
+              className="w-full rounded-md border-0 bg-gray-500/30 p-2"
+              placeholder="Folder name"
+              type="text"
+            />
+            <DrawerFooter>
+              <Button className="mt-4">Rename</Button>
+            </DrawerFooter>
+          </React.Fragment>
+        );
+      case VectorFsFolderAction.Move:
+        return (
+          <React.Fragment>
+            <DrawerHeader>
+              <DrawerTitle className="flex flex-col items-start gap-1">
+                <DirectoryTypeIcon className="h-10 w-10" />
+                Move Folder
+              </DrawerTitle>
+            </DrawerHeader>
+            <p className="text-gray-100">
+              Select the destination folder to move the folder to.
+            </p>
+            <DrawerFooter>
+              <Button className="mt-4">Move</Button>
+            </DrawerFooter>
+          </React.Fragment>
+        );
+      case VectorFsFolderAction.Share:
+        return (
+          <React.Fragment>
+            <DrawerHeader>
+              <DrawerTitle className="flex flex-col items-start gap-1">
+                <DirectoryTypeIcon className="h-10 w-10" />
+                Share Folder
+              </DrawerTitle>
+            </DrawerHeader>
+            <p className="text-gray-100">
+              Share this folder with other users or groups.
+            </p>
+            <DrawerFooter>
+              <Button className="mt-4">Share</Button>
+            </DrawerFooter>
+          </React.Fragment>
+        );
+      case VectorFsFolderAction.Delete:
+        return (
+          <React.Fragment>
+            <DrawerHeader>
+              <DrawerTitle className="flex flex-col items-start gap-1">
+                <DirectoryTypeIcon className="h-10 w-10" />
+                Delete Folder
+              </DrawerTitle>
+            </DrawerHeader>
+            <p className="text-gray-100">
+              Are you sure you want to delete this folder? This action cannot be
+              undone.
+            </p>
+            <DrawerFooter>
+              <Button className="mt-4">Delete</Button>
+            </DrawerFooter>
+          </React.Fragment>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
-    <button
-      className={cn(
-        'flex items-center justify-between gap-2 py-3.5 hover:bg-gray-400',
-        layout === Layout.Grid && 'rounded-lg bg-gray-400/30 p-2',
-      )}
-      onClick={onClick}
-    >
-      <DirectoryTypeIcon />
-      <VectorFsFolderInfo
-        folder={folder}
-        layout={layout}
-        totalItem={totalItem}
-      />
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            className="border-0 hover:bg-gray-500/40"
-            onClick={(event) => {
-              event.stopPropagation();
-              console.log('click');
-            }}
-            size="icon"
-            variant="tertiary"
+    <React.Fragment>
+      <button
+        className={cn(
+          'flex items-center justify-between gap-2 py-3.5 hover:bg-gray-400',
+          layout === Layout.Grid && 'rounded-lg bg-gray-400/30 p-2',
+        )}
+        onClick={onClick}
+      >
+        <DirectoryTypeIcon />
+        <VectorFsFolderInfo
+          folder={folder}
+          layout={layout}
+          totalItem={totalItem}
+        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              className="border-0 hover:bg-gray-500/40"
+              onClick={(event) => {
+                event.stopPropagation();
+                console.log('click');
+              }}
+              size="icon"
+              variant="tertiary"
+            >
+              <span className="sr-only">More options</span>
+              <DotsVerticalIcon className="text-gray-100" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="end"
+            className="w-[160px] border bg-gray-500 px-2.5 py-2"
           >
-            <span className="sr-only">More options</span>
-            <DotsVerticalIcon className="text-gray-100" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
-          align="end"
-          className="w-[160px] border bg-gray-500 px-2.5 py-2"
-        >
-          {[
-            {
-              name: 'Rename',
-              icon: <PencilLine className="mr-3 h-4 w-4" />,
-              onClick: () => {},
-            },
-            {
-              name: 'Move',
-              icon: <FolderInputIcon className="mr-3 h-4 w-4" />,
-              onClick: () => {},
-            },
-            {
-              name: 'Share',
-              icon: <Share2Icon className="mr-3 h-4 w-4" />,
-              onClick: () => {},
-            },
-            {
-              name: 'Delete',
-              icon: <TrashIcon className="mr-3 h-4 w-4" />,
-              onClick: () => {},
-            },
-          ].map((option) => (
-            <React.Fragment key={option.name}>
-              {option.name === 'Delete' && (
-                <DropdownMenuSeparator className="bg-gray-300" />
-              )}
-              <DropdownMenuItem
-                key={option.name}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  option.onClick();
-                }}
-              >
-                {option.icon}
-                {option.name}
-              </DropdownMenuItem>
-            </React.Fragment>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </button>
+            {[
+              {
+                name: 'Rename',
+                icon: <PencilLine className="mr-3 h-4 w-4" />,
+                onClick: () => {
+                  setSelectedOption(VectorFsFolderAction.Rename);
+                },
+              },
+              {
+                name: 'Move',
+                icon: <FolderInputIcon className="mr-3 h-4 w-4" />,
+                onClick: () => {
+                  setSelectedOption(VectorFsFolderAction.Move);
+                },
+              },
+              {
+                name: 'Share',
+                icon: <Share2Icon className="mr-3 h-4 w-4" />,
+                onClick: () => {
+                  setSelectedOption(VectorFsFolderAction.Share);
+                },
+              },
+              {
+                name: 'Delete',
+                icon: <TrashIcon className="mr-3 h-4 w-4" />,
+                onClick: () => {
+                  setSelectedOption(VectorFsFolderAction.Delete);
+                },
+              },
+            ].map((option) => (
+              <React.Fragment key={option.name}>
+                {option.name === 'Delete' && (
+                  <DropdownMenuSeparator className="bg-gray-300" />
+                )}
+                <DropdownMenuItem
+                  key={option.name}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    option.onClick();
+                  }}
+                >
+                  {option.icon}
+                  {option.name}
+                </DropdownMenuItem>
+              </React.Fragment>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </button>
+      <Drawer
+        onOpenChange={(open) => {
+          if (!open) {
+            setSelectedOption(null);
+          }
+        }}
+        open={!!selectedOption}
+      >
+        <DrawerContent>
+          <DrawerClose className="absolute right-4 top-5">
+            <XIcon className="text-gray-80" />
+          </DrawerClose>
+
+          {renderDrawerContent(selectedOption)}
+        </DrawerContent>
+      </Drawer>
+    </React.Fragment>
   );
 };
 
