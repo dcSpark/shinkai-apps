@@ -1,10 +1,43 @@
 import { VRItem } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import { Badge, Checkbox, FileTypeIcon } from '@shinkai_network/shinkai-ui';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { partial } from 'filesize';
 import { ChevronRight } from 'lucide-react';
 import React from 'react';
 
 import { formatDateToLocaleString } from '../../helpers/date';
+import { Layout } from './node-files';
+
+const VectorFsItemInfo = ({
+  file,
+  layout,
+  createdDatetime,
+  fileSize,
+}: {
+  file: VRItem;
+  layout: Layout;
+  createdDatetime: string;
+  fileSize: string;
+}) => {
+  return (
+    <div className="flex-1 text-left">
+      <div className="text-sm font-medium">
+        {file.name}
+        {layout === Layout.List && (
+          <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
+            {file?.vr_header?.resource_source?.Reference?.FileRef?.file_type
+              ?.Document ?? '-'}
+          </Badge>
+        )}
+      </div>
+      {layout === Layout.List && (
+        <p className="text-xs font-medium text-gray-100">
+          <span>{createdDatetime}</span> - <span>{fileSize}</span>
+        </p>
+      )}
+    </div>
+  );
+};
 
 const VectorFsItem = ({
   onClick,
@@ -12,18 +45,28 @@ const VectorFsItem = ({
   selectionMode,
   handleSelectFiles,
   isSelectedFile,
+  layout,
 }: {
   onClick: () => void;
   file: VRItem;
   selectionMode: boolean;
   handleSelectFiles: (file: VRItem) => void;
   isSelectedFile: boolean;
+  layout: Layout;
 }) => {
   const size = partial({ standard: 'jedec' });
 
+  const wrapperClassname = cn(
+    'flex items-center justify-between gap-3 rounded-md py-3.5 hover:bg-gray-400',
+    layout === Layout.Grid && 'rounded-lg bg-gray-400/30 p-2',
+  );
+
+  const createdDatetime = formatDateToLocaleString(file.created_datetime);
+  const fileSize = size(file.vr_size);
+
   if (selectionMode) {
     return (
-      <div className="flex items-center justify-between gap-3 rounded-md py-3.5 hover:bg-gray-400/30">
+      <div className={wrapperClassname}>
         <Checkbox
           checked={isSelectedFile}
           id={`item-${file.name}`}
@@ -36,44 +79,26 @@ const VectorFsItem = ({
           htmlFor={`item-${file.name}`}
         >
           <FileTypeIcon />
-          <div className="flex-1 text-left">
-            <div className="text-base font-medium">
-              {file.name}
-              <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
-                {file?.vr_header?.resource_source?.Reference?.FileRef?.file_type
-                  ?.Document ?? '-'}
-              </Badge>
-            </div>
-            <p className="text-xs font-medium text-gray-100">
-              <span>{formatDateToLocaleString(file.created_datetime)}</span> -{' '}
-              <span>{size(file.vr_size)}</span>
-            </p>
-          </div>
+          <VectorFsItemInfo
+            createdDatetime={createdDatetime}
+            file={file}
+            fileSize={fileSize}
+            layout={layout}
+          />
         </label>
       </div>
     );
   }
 
   return (
-    <button
-      className="flex items-center justify-between gap-2 py-3.5 hover:bg-gray-400"
-      onClick={onClick}
-    >
+    <button className={wrapperClassname} onClick={onClick}>
       <FileTypeIcon />
-      <div className="flex-1 text-left">
-        <div className="text-base font-medium">
-          {file.name}
-          <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
-            {file?.vr_header?.resource_source?.Reference?.FileRef?.file_type
-              ?.Document ?? '-'}
-          </Badge>
-        </div>
-        <p className="text-xs font-medium text-gray-100">
-          <span>{formatDateToLocaleString(file.created_datetime)}</span> -{' '}
-          <span>{size(file.vr_size)}</span>
-        </p>
-      </div>
-      <ChevronRight className="text-gray-100" />
+      <VectorFsItemInfo
+        createdDatetime={createdDatetime}
+        file={file}
+        fileSize={fileSize}
+        layout={layout}
+      />
     </button>
   );
 };

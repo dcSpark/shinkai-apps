@@ -10,8 +10,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@shinkai_network/shinkai-ui';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
-  ChevronRight,
   FolderInputIcon,
   PencilLine,
   Share2Icon,
@@ -20,25 +20,55 @@ import {
 import React from 'react';
 
 import { formatDateToLocaleString } from '../../helpers/date';
+import { Layout } from './node-files';
 
+const VectorFsFolderInfo = ({
+  folder,
+  layout,
+  totalItem,
+}: {
+  folder: VRFolder;
+  layout: Layout;
+  totalItem: number;
+}) => {
+  return (
+    <div className="flex-1 text-left">
+      <div className="truncate text-sm font-medium">{folder.name}</div>
+      {layout === Layout.List && (
+        <p className="text-xs font-medium text-gray-100">
+          <span>{formatDateToLocaleString(folder.created_datetime)}</span> -{' '}
+          <span>{totalItem} items</span>
+        </p>
+      )}
+    </div>
+  );
+};
 const VectorFsFolder = ({
   onClick,
   folder,
   selectionMode,
   handleSelectFolders,
   isSelectedFolder,
+  layout,
 }: {
   onClick: () => void;
   folder: VRFolder;
   selectionMode: boolean;
   handleSelectFolders: (folder: VRFolder) => void;
   isSelectedFolder: boolean;
+  layout: Layout;
 }) => {
   const totalItem =
     (folder.child_folders?.length ?? 0) + (folder.child_items?.length ?? 0);
+
   if (selectionMode) {
     return (
-      <div className="flex items-center justify-between gap-3 py-3.5 hover:bg-gray-400">
+      <div
+        className={cn(
+          'flex items-center justify-between gap-3 rounded-md py-3.5 hover:bg-gray-400',
+          layout === Layout.Grid && 'rounded-lg bg-gray-400/30 p-2',
+        )}
+      >
         <Checkbox
           checked={isSelectedFolder}
           id={`item-${folder.name}`}
@@ -51,39 +81,30 @@ const VectorFsFolder = ({
           htmlFor={`item-${folder.name}`}
         >
           <DirectoryTypeIcon />
-          <div className="flex-1 text-left">
-            <div className="text-base font-medium">{folder.name}</div>
-            <p className="text-xs font-medium text-gray-100">
-              <span>{formatDateToLocaleString(folder.created_datetime)}</span> -{' '}
-              <span>{totalItem} items</span>
-            </p>
-          </div>
+          <VectorFsFolderInfo
+            folder={folder}
+            layout={layout}
+            totalItem={totalItem}
+          />
         </label>
-        <Button
-          className="border border-gray-200 bg-gray-500 p-2"
-          onClick={onClick}
-          size="auto"
-          variant="ghost"
-        >
-          <ChevronRight className="text-gray-100" />
-        </Button>
       </div>
     );
   }
 
   return (
     <button
-      className="flex w-full items-center justify-between gap-2 rounded-md py-3.5 hover:bg-gray-400/30"
+      className={cn(
+        'flex items-center justify-between gap-2 py-3.5 hover:bg-gray-400',
+        layout === Layout.Grid && 'rounded-lg bg-gray-400/30 p-2',
+      )}
       onClick={onClick}
     >
       <DirectoryTypeIcon />
-      <div className="flex-1 text-left">
-        <div className="text-base font-medium">{folder.name}</div>
-        <p className="text-xs font-medium text-gray-100">
-          <span>{formatDateToLocaleString(folder.created_datetime)}</span> -{' '}
-          <span>{totalItem} items</span>
-        </p>
-      </div>
+      <VectorFsFolderInfo
+        folder={folder}
+        layout={layout}
+        totalItem={totalItem}
+      />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button

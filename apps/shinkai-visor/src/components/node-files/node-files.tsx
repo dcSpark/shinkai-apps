@@ -46,12 +46,16 @@ import {
   Input,
   ScrollArea,
   TextField,
+  ToggleGroup,
+  ToggleGroupItem,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { partial } from 'filesize';
 import { motion } from 'framer-motion';
 import {
   ChevronRight,
+  LayoutGrid,
+  List,
   // DatabaseIcon,
   // FileIcon,
   // DatabaseIcon,
@@ -80,6 +84,11 @@ enum NodeFilesDrawerOptions {
   // UploadVectorResource = 'upload-vector-resource',
   GenerateFromDocument = 'generate-from-document',
   // GenerateFromWeb = 'generate-from-web',
+}
+
+export enum Layout {
+  Grid = 'grid',
+  List = 'list',
 }
 
 const MotionButton = motion(Button);
@@ -114,6 +123,8 @@ export default function NodeFiles() {
   const [selectedFiles, setSelectedFiles] = React.useState<VRItem[]>([]);
   const [selectedFolders, setSelectedFolders] = React.useState<VRFolder[]>([]);
   const [isMenuOpened, setMenuOpened] = React.useState(false);
+
+  const [layout, setLayout] = React.useState<Layout>(Layout.List);
 
   const handleSelectFiles = (file: VRItem) => {
     if (selectedFiles.some((selectedFile) => selectedFile.path === file.path)) {
@@ -234,9 +245,27 @@ export default function NodeFiles() {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <Button>
-          <span>Sort by</span>
-        </Button>
+        <ToggleGroup type="single" value={layout}>
+          <ToggleGroupItem
+            aria-label="Toggle layout grid"
+            onClick={() => {
+              setLayout(Layout.Grid);
+            }}
+            value="grid"
+          >
+            <LayoutGrid className="h-4 w-4" />
+          </ToggleGroupItem>
+          <ToggleGroupItem
+            aria-label="Toggle layout list"
+            onClick={() => {
+              setLayout(Layout.List);
+            }}
+            value="list"
+          >
+            <List className="h-4 w-4" />
+          </ToggleGroupItem>
+        </ToggleGroup>
+
         <Drawer
           onOpenChange={(open) => {
             if (!open) {
@@ -304,7 +333,14 @@ export default function NodeFiles() {
         </div>
       )}
       <ScrollArea>
-        <div className="flex flex-1 flex-col divide-y divide-gray-400">
+        <div
+          className={cn(
+            'grid flex-1',
+            layout === Layout.Grid &&
+              'grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5',
+            layout === Layout.List && 'grid-cols-1 divide-y divide-gray-400',
+          )}
+        >
           {isVRFilesPending &&
             Array.from({ length: 4 }).map((_, idx) => (
               <div
@@ -321,6 +357,7 @@ export default function NodeFiles() {
                   (selectedFolder) => selectedFolder.path === folder.path,
                 )}
                 key={index}
+                layout={layout}
                 onClick={() => {
                   setCurrentPath(folder.path);
                 }}
@@ -354,6 +391,7 @@ export default function NodeFiles() {
                     (selectedFile) => selectedFile.path === file.path,
                   )}
                   key={index}
+                  layout={layout}
                   onClick={() => {
                     setActiveFile(file);
                   }}
