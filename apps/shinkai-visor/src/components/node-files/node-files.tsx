@@ -17,12 +17,10 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
   Button,
-  Checkbox,
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
-  // Checkbox,
   CreateAIIcon,
   DirectoryTypeIcon,
   Drawer,
@@ -45,8 +43,6 @@ import {
   FormLabel,
   FormMessage,
   GenerateDocIcon,
-  // GenerateDocIcon,
-  // GenerateFromWebIcon,
   Input,
   ScrollArea,
   TextField,
@@ -77,6 +73,8 @@ import { z } from 'zod';
 import { formatDateToLocaleString } from '../../helpers/date';
 import { useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
+import VectorFsFolder from './vector-fs-folder';
+import VectorFsItem from './vector-fs-item';
 
 enum NodeFilesDrawerOptions {
   NewFolder = 'new-folder',
@@ -256,32 +254,18 @@ export default function NodeFiles() {
         </Drawer>
       </div>
       {!searchQuery && (
-        <div className="mt-4 flex items-center gap-3">
-          {(VRFiles?.path.split('/').filter(Boolean) || []).length > 0 && (
-            <Button
-              onClick={() => {
-                const prevPath = VRFiles?.path.split('/').filter(Boolean) || [];
-                setCurrentPath(
-                  '/' + prevPath.slice(0, prevPath.length - 1).join('/'),
-                );
-              }}
-              size={'icon'}
-              variant="ghost"
-            >
-              <ChevronLeft />
-            </Button>
-          )}
+        <div className="mt-4">
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
                   <button
-                    className="flex items-center gap-2 py-2"
+                    className="flex items-center gap-2 rounded-full p-2 hover:bg-gray-400"
                     onClick={() => {
                       setCurrentPath('/');
                     }}
                   >
-                    <HomeIcon />
+                    <HomeIcon className="h-3.5 w-3.5" />
                     Home
                   </button>
                 </BreadcrumbLink>
@@ -292,14 +276,13 @@ export default function NodeFiles() {
                     <ChevronRight />
                   </BreadcrumbSeparator>
                   {splitCurrentPath.length - 1 === idx ? (
-                    <BreadcrumbPage className="flex items-center gap-1 font-medium">
-                      <DirectoryTypeIcon />
+                    <BreadcrumbPage className="flex items-center gap-1 p-2 font-medium">
                       {path}
                     </BreadcrumbPage>
                   ) : (
                     <BreadcrumbLink asChild>
                       <button
-                        className="flex items-center gap-1"
+                        className="flex items-center gap-1 rounded-full bg-transparent p-2 hover:bg-gray-400"
                         onClick={() => {
                           const buildPath = splitCurrentPath
                             .slice(0, idx + 1)
@@ -307,7 +290,6 @@ export default function NodeFiles() {
                           setCurrentPath('/' + buildPath);
                         }}
                       >
-                        <DirectoryTypeIcon />
                         {path}
                       </button>
                     </BreadcrumbLink>
@@ -329,7 +311,7 @@ export default function NodeFiles() {
             ))}
           {VRFiles?.child_folders.map((folder, index: number) => {
             return (
-              <FolderVRItem
+              <VectorFsFolder
                 folder={folder}
                 handleSelectFolders={handleSelectFolders}
                 isSelectedFolder={selectedFolders.some(
@@ -362,7 +344,7 @@ export default function NodeFiles() {
             VRFiles?.child_items?.length > 0 &&
             VRFiles?.child_items.map((file, index: number) => {
               return (
-                <FileVRItem
+                <VectorFsItem
                   file={file}
                   handleSelectFiles={handleSelectFiles}
                   isSelectedFile={selectedFiles.some(
@@ -554,145 +536,6 @@ export default function NodeFiles() {
     </div>
   );
 }
-
-const FolderVRItem = ({
-  onClick,
-  folder,
-  selectionMode,
-  handleSelectFolders,
-  isSelectedFolder,
-}: {
-  onClick: () => void;
-  folder: VRFolder;
-  selectionMode: boolean;
-  handleSelectFolders: (folder: VRFolder) => void;
-  isSelectedFolder: boolean;
-}) => {
-  const totalItem =
-    (folder.child_folders?.length ?? 0) + (folder.child_items?.length ?? 0);
-  if (selectionMode) {
-    return (
-      <div className="flex items-center justify-between gap-3 py-3.5 hover:bg-gray-400">
-        <Checkbox
-          checked={isSelectedFolder}
-          id={`item-${folder.name}`}
-          onCheckedChange={() => {
-            handleSelectFolders(folder);
-          }}
-        />
-        <label
-          className="flex flex-1 items-center gap-3"
-          htmlFor={`item-${folder.name}`}
-        >
-          <DirectoryTypeIcon />
-          <div className="flex-1 text-left">
-            <div className="text-base font-medium">{folder.name}</div>
-            <p className="text-xs font-medium text-gray-100">
-              <span>{formatDateToLocaleString(folder.created_datetime)}</span> -{' '}
-              <span>{totalItem} items</span>
-            </p>
-          </div>
-        </label>
-        <Button
-          className="border border-gray-200 bg-gray-500 p-2"
-          onClick={onClick}
-          size="auto"
-          variant="ghost"
-        >
-          <ChevronRight className="text-gray-100" />
-        </Button>
-      </div>
-    );
-  }
-
-  return (
-    <button
-      className="flex items-center justify-between gap-2 py-3.5 hover:bg-gray-400"
-      onClick={onClick}
-    >
-      <DirectoryTypeIcon />
-      <div className="flex-1 text-left">
-        <div className="text-base font-medium">{folder.name}</div>
-        <p className="text-xs font-medium text-gray-100">
-          <span>{formatDateToLocaleString(folder.created_datetime)}</span> -{' '}
-          <span>{totalItem} items</span>
-        </p>
-      </div>
-      <ChevronRight className="text-gray-100" />
-    </button>
-  );
-};
-const FileVRItem = ({
-  onClick,
-  file,
-  selectionMode,
-  handleSelectFiles,
-  isSelectedFile,
-}: {
-  onClick: () => void;
-  file: VRItem;
-  selectionMode: boolean;
-  handleSelectFiles: (file: VRItem) => void;
-  isSelectedFile: boolean;
-}) => {
-  const size = partial({ standard: 'jedec' });
-
-  if (selectionMode) {
-    return (
-      <div className="flex items-center justify-between gap-3 py-3.5 hover:bg-gray-400">
-        <Checkbox
-          checked={isSelectedFile}
-          id={`item-${file.name}`}
-          onCheckedChange={() => {
-            handleSelectFiles(file);
-          }}
-        />
-        <label
-          className="flex flex-1 items-center gap-3"
-          htmlFor={`item-${file.name}`}
-        >
-          <FileTypeIcon />
-          <div className="flex-1 text-left">
-            <div className="text-base font-medium">
-              {file.name}
-              <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
-                {file?.vr_header?.resource_source?.Reference?.FileRef?.file_type
-                  ?.Document ?? '-'}
-              </Badge>
-            </div>
-            <p className="text-xs font-medium text-gray-100">
-              <span>{formatDateToLocaleString(file.created_datetime)}</span> -{' '}
-              <span>{size(file.vr_size)}</span>
-            </p>
-          </div>
-        </label>
-      </div>
-    );
-  }
-
-  return (
-    <button
-      className="flex items-center justify-between gap-2 py-3.5 hover:bg-gray-400"
-      onClick={onClick}
-    >
-      <FileTypeIcon />
-      <div className="flex-1 text-left">
-        <div className="text-base font-medium">
-          {file.name}
-          <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
-            {file?.vr_header?.resource_source?.Reference?.FileRef?.file_type
-              ?.Document ?? '-'}
-          </Badge>
-        </div>
-        <p className="text-xs font-medium text-gray-100">
-          <span>{formatDateToLocaleString(file.created_datetime)}</span> -{' '}
-          <span>{size(file.vr_size)}</span>
-        </p>
-      </div>
-      <ChevronRight className="text-gray-100" />
-    </button>
-  );
-};
 
 const createFolderSchema = z.object({
   name: z.string(),
