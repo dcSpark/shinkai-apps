@@ -108,7 +108,7 @@ const VectorFsFolder = ({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
-            className="border-0"
+            className="border-0 hover:bg-gray-500/40"
             onClick={(event) => {
               event.stopPropagation();
               console.log('click');
