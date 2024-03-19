@@ -4,7 +4,6 @@ import {
   Badge,
   Button,
   Checkbox,
-  DirectoryTypeIcon,
   Drawer,
   DrawerClose,
   DrawerContent,
@@ -21,7 +20,6 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { partial } from 'filesize';
 import {
-  ChevronRight,
   FolderInputIcon,
   PencilLine,
   Share2Icon,
