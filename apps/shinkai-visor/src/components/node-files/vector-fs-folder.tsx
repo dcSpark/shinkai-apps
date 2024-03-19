@@ -135,7 +135,7 @@ const VectorFsFolder = ({
               <Button
                 className="mt-4"
                 onClick={async () => {
-                  const response = await moveFolderVR(
+                  await moveFolderVR(
                     auth?.node_address ?? '',
                     auth?.shinkai_identity ?? '',
                     auth?.profile ?? '',

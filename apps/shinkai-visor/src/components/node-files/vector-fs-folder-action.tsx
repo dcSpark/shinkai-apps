@@ -14,7 +14,6 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  FileEmptyStateIcon,
   ScrollArea,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
@@ -54,21 +53,19 @@ export const VectorFsFolderMoveAction = ({
       },
     });
 
-  const {
-    isPending: isVRFilesPending,
-    data: VRFiles,
-    isSuccess: isVRFilesSuccess,
-  } = useGetVRPathSimplified({
-    nodeAddress: auth?.node_address ?? '',
-    profile: auth?.profile ?? '',
-    shinkaiIdentity: auth?.shinkai_identity ?? '',
-    path: currentFolderPath,
-    my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-    my_device_identity_sk: auth?.profile_identity_sk ?? '',
-    node_encryption_pk: auth?.node_encryption_pk ?? '',
-    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-    profile_identity_sk: auth?.profile_identity_sk ?? '',
-  });
+  const { isPending: isVRFilesPending, data: VRFiles } = useGetVRPathSimplified(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      profile: auth?.profile ?? '',
+      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      path: currentFolderPath,
+      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+      my_device_identity_sk: auth?.profile_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+    },
+  );
 
   const splitCurrentPath = VRFiles?.path?.split('/').filter(Boolean) ?? [];
 
@@ -158,6 +155,7 @@ export const VectorFsFolderMoveAction = ({
                     'rounded-lg bg-gray-400/30 p-2',
                     destinationFolder?.path === folder.path && 'bg-gray-400',
                   )}
+                  key={folder.path}
                   onClick={() => {
                     if (folder.child_folders?.length > 0) {
                       setCurrentFolderPath(folder.path);
