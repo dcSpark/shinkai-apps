@@ -191,7 +191,7 @@ export const Inbox = () => {
   }, [data?.pages]);
 
   return (
-    <div className="flex h-full flex-col justify-between space-y-3">
+    <div className="flex h-full flex-col justify-between gap-3">
       <ScrollArea
         className="h-full pr-4 [&>div>div]:!block"
         ref={chatContainerRef}
@@ -244,11 +244,11 @@ export const Inbox = () => {
                       <div key={date}>
                         <div
                           className={cn(
-                            'relative z-10 m-auto flex h-[30px] w-[150px] items-center justify-center rounded-xl bg-gray-400',
+                            'relative z-10 m-auto flex h-[26px] w-fit min-w-[100px] items-center justify-center rounded-xl bg-gray-400 px-2.5',
                             true && 'sticky top-5',
                           )}
                         >
-                          <span className="text-sm font-medium text-gray-100">
+                          <span className="text-gray-80 text-xs font-medium">
                             {intl.formatMessage({
                               id: getRelativeDateLabel(
                                 new Date(messages[0].scheduledTime || ''),

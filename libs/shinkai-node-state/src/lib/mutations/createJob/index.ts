@@ -20,6 +20,8 @@ export const createJob = async ({
   files_inbox,
   files,
   is_hidden,
+  selectedVRFiles = [],
+  selectedVRFolders = [],
   my_device_encryption_sk,
   my_device_identity_sk,
   node_encryption_pk,
@@ -30,14 +32,32 @@ export const createJob = async ({
   const receiver_subidentity = `${profile}/agent/${agentId}`;
 
   const job_creation = JobCreationWrapper.empty().get_scope;
-  const scope = new JobScopeWrapper(
-    job_creation.buckets,
-    job_creation.documents,
-  );
+  let scope = new JobScopeWrapper(job_creation.buckets, job_creation.documents);
+  if (selectedVRFiles.length > 0 || selectedVRFolders.length > 0) {
+    scope = JobCreationWrapper.from_jsvalue({
+      is_hidden: false,
+      scope: {
+        local: [],
+        vector_fs_items: selectedVRFiles.map((vfFile) => ({
+          path: vfFile.path,
+          name: vfFile.vr_header.resource_name,
+          source: vfFile.vr_header.resource_source,
+        })),
+        vector_fs_folders: selectedVRFolders.map((vfFolder) => ({
+          path: vfFolder.path,
+          name: vfFolder.name,
+        })),
 
+        network_folders: [],
+      },
+    }).get_scope;
+  }
+
+  const hasVRFiles = selectedVRFiles.length > 0 || selectedVRFolders.length > 0;
+  console.log(hasVRFiles, 'hasVRFiles');
   const jobId = await createJobApi(
     nodeAddress,
-    scope.to_jsvalue(),
+    hasVRFiles ? scope : scope.to_jsvalue(),
     is_hidden == null ? false : is_hidden,
     shinkaiIdentity,
     profile,

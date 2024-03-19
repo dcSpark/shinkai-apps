@@ -40,7 +40,13 @@ export const WithNav = (props: PropsWithChildren) => {
       )}
     >
       <NavBar />
-      <div className="grow overflow-auto">{props.children}</div>
+      <div
+        className="grow overflow-auto"
+        /* eslint-disable-next-line react/no-unknown-property */
+        vaul-drawer-wrapper="" // Container for drawer animation
+      >
+        {props.children}
+      </div>
     </div>
   );
 };

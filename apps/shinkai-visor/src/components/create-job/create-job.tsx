@@ -3,7 +3,14 @@ import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import {
+  VRFolder,
+  VRItem,
+} from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
+import {
+  Badge,
   Button,
+  DirectoryTypeIcon,
+  FileTypeIcon,
   Form,
   FormControl,
   FormField,
@@ -18,7 +25,7 @@ import {
   SelectValue,
   Textarea,
 } from '@shinkai_network/shinkai-ui';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -34,6 +41,8 @@ const formSchema = z.object({
   agent: z.string().min(1),
   content: z.string().min(1),
   files: z.array(z.any()).max(3),
+  selectedVRFiles: z.array(z.any()).optional(),
+  selectedVRFolders: z.array(z.any()).optional(),
 });
 
 type FormSchemaType = z.infer<typeof formSchema>;
@@ -41,7 +50,12 @@ type FormSchemaType = z.infer<typeof formSchema>;
 export const CreateJob = () => {
   const history = useHistory();
   const intl = useIntl();
-  const location = useLocation<{ files: File[]; agentName: string }>();
+  const location = useLocation<{
+    files: File[];
+    agentName: string;
+    selectedVRFiles: VRItem[];
+    selectedVRFolders: VRFolder[];
+  }>();
   const query = useQuery();
   const auth = useAuth((state) => state.auth);
   // const settings = useSettings((state) => state.settings);
@@ -98,7 +112,13 @@ export const CreateJob = () => {
   ];
   useEffect(() => {
     form.setValue('files', location?.state?.files || []);
+    form.setValue('selectedVRFiles', location?.state?.selectedVRFiles || []);
+    form.setValue(
+      'selectedVRFolders',
+      location?.state?.selectedVRFolders || [],
+    );
   }, [location, form]);
+
   useEffect(() => {
     if (!location?.state?.agentName) {
       return;
@@ -127,9 +147,11 @@ export const CreateJob = () => {
     if (query.get('initialText')) {
       form.handleSubmit(submit)();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const submit = (values: FormSchemaType) => {
     if (!auth) return;
+    console.log('values', values);
     let content = values.content;
     if (query.has('context')) {
       content = `${values.content} - \`\`\`${query.get('context')}\`\`\``;
@@ -143,6 +165,8 @@ export const CreateJob = () => {
       files_inbox: '',
       files: values.files,
       is_hidden: false,
+      selectedVRFiles: values.selectedVRFiles,
+      selectedVRFolders: values.selectedVRFolders,
       my_device_encryption_sk: auth.my_device_encryption_sk,
       my_device_identity_sk: auth.my_device_identity_sk,
       node_encryption_pk: auth.node_encryption_pk,
@@ -254,6 +278,48 @@ export const CreateJob = () => {
                 </FormItem>
               )}
             />
+            {(location?.state?.selectedVRFolders?.length > 0 ||
+              location?.state?.selectedVRFiles?.length > 0) && (
+              <div className="py-4 pt-8">
+                <h2 className="text-base font-medium">
+                  Selected Knowledge Files:
+                </h2>
+                {location?.state?.selectedVRFolders?.length > 0 && (
+                  <ul className="mt-2 space-y-2">
+                    {location.state.selectedVRFolders.map((file) => (
+                      <li
+                        className="relative flex items-center gap-2 px-3 py-1.5"
+                        key={file.path}
+                      >
+                        <DirectoryTypeIcon />
+                        <span className="text-gray-80 text-sm">
+                          {file.path}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {location?.state?.selectedVRFiles?.length > 0 && (
+                  <ul className="mt-2 space-y-2">
+                    {location.state.selectedVRFiles.map((file) => (
+                      <li
+                        className="relative flex items-center gap-2 px-3 py-1.5"
+                        key={file.path}
+                      >
+                        <FileTypeIcon />
+                        <span className="text-gray-80 text-sm">
+                          {file.name}
+                        </span>
+                        <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
+                          {file?.vr_header?.resource_source?.Reference?.FileRef
+                            ?.file_type?.Document ?? '-'}
+                        </Badge>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
           </ScrollArea>
 
           <Button

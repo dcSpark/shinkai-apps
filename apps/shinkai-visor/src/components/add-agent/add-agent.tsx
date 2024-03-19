@@ -196,7 +196,7 @@ export const AddAgent = () => {
         value: modelType.value,
       })),
     );
-  }, [currentModel, form]);
+  }, [currentModel, form, isCustomModelMode]);
   useEffect(() => {
     if (!modelTypeOptions?.length) {
       return;
