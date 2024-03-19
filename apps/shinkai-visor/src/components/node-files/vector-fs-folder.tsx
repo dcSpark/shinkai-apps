@@ -1,4 +1,5 @@
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
+import { moveFolderVR } from '@shinkai_network/shinkai-message-ts/api';
 import { VRFolder } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import {
   Button,
@@ -27,21 +28,25 @@ import {
 import React from 'react';
 
 import { formatDateToLocaleString } from '../../helpers/date';
+import { useAuth } from '../../store/auth/auth';
 import { Layout } from './node-files';
+import { VectorFsFolderMoveAction } from './vector-fs-folder-action';
 
-const VectorFsFolderInfo = ({
+export const VectorFsFolderInfo = ({
   folder,
   layout,
   totalItem,
+  allowFolderNameOnly,
 }: {
   folder: VRFolder;
   layout: Layout;
-  totalItem: number;
+  totalItem?: number;
+  allowFolderNameOnly?: boolean;
 }) => {
   return (
     <div className="flex-1 text-left">
       <div className="truncate text-sm font-medium">{folder.name}</div>
-      {layout === Layout.List && (
+      {layout === Layout.List && !allowFolderNameOnly && (
         <p className="text-xs font-medium text-gray-100">
           <span>{formatDateToLocaleString(folder.created_datetime)}</span> -{' '}
           <span>{totalItem} items</span>
@@ -64,6 +69,7 @@ const VectorFsFolder = ({
   handleSelectFolders,
   isSelectedFolder,
   layout,
+  setCurrentGlobalPath,
 }: {
   onClick: () => void;
   folder: VRFolder;
@@ -71,10 +77,11 @@ const VectorFsFolder = ({
   handleSelectFolders: (folder: VRFolder) => void;
   isSelectedFolder: boolean;
   layout: Layout;
+  setCurrentGlobalPath: (path: string) => void;
 }) => {
   const [selectedOption, setSelectedOption] =
     React.useState<VectorFsFolderAction | null>(null);
-
+  const auth = useAuth((state) => state.auth);
   const totalItem =
     (folder.child_folders?.length ?? 0) + (folder.child_items?.length ?? 0);
 
@@ -125,26 +132,43 @@ const VectorFsFolder = ({
               type="text"
             />
             <DrawerFooter>
-              <Button className="mt-4">Rename</Button>
+              <Button
+                className="mt-4"
+                onClick={async () => {
+                  const response = await moveFolderVR(
+                    auth?.node_address ?? '',
+                    auth?.shinkai_identity ?? '',
+                    auth?.profile ?? '',
+                    auth?.shinkai_identity ?? '',
+                    auth?.profile ?? '',
+                    '/personal/finances',
+                    '/',
+                    {
+                      my_device_encryption_sk:
+                        auth?.my_device_encryption_sk ?? '',
+                      my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+                      node_encryption_pk: auth?.node_encryption_pk ?? '',
+                      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+                      profile_identity_sk: auth?.profile_identity_sk ?? '',
+                    },
+                  );
+                }}
+              >
+                Rename
+              </Button>
             </DrawerFooter>
           </React.Fragment>
         );
       case VectorFsFolderAction.Move:
         return (
-          <React.Fragment>
-            <DrawerHeader>
-              <DrawerTitle className="flex flex-col items-start gap-1">
-                <DirectoryTypeIcon className="h-10 w-10" />
-                Move Folder
-              </DrawerTitle>
-            </DrawerHeader>
-            <p className="text-gray-100">
-              Select the destination folder to move the folder to.
-            </p>
-            <DrawerFooter>
-              <Button className="mt-4">Move</Button>
-            </DrawerFooter>
-          </React.Fragment>
+          <VectorFsFolderMoveAction
+            closeDrawer={() => {
+              setSelectedOption(null);
+            }}
+            name={folder.name}
+            path={folder.path}
+            setCurrentGlobalPath={setCurrentGlobalPath}
+          />
         );
       case VectorFsFolderAction.Share:
         return (

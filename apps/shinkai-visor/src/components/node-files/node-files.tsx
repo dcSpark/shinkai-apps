@@ -98,7 +98,7 @@ export default function NodeFiles() {
   const [selectedDrawerOption, setSelectedDrawerOption] =
     React.useState<NodeFilesDrawerOptions | null>(null);
   const auth = useAuth((state) => state.auth);
-  const [currentPath, setCurrentPath] = React.useState<string>('/');
+  const [currentGlobalPath, setCurrentGlobalPath] = React.useState<string>('/');
   const history = useHistory();
 
   const {
@@ -109,7 +109,7 @@ export default function NodeFiles() {
     nodeAddress: auth?.node_address ?? '',
     profile: auth?.profile ?? '',
     shinkaiIdentity: auth?.shinkai_identity ?? '',
-    path: currentPath,
+    path: currentGlobalPath,
     my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
     my_device_identity_sk: auth?.profile_identity_sk ?? '',
     node_encryption_pk: auth?.node_encryption_pk ?? '',
@@ -157,7 +157,7 @@ export default function NodeFiles() {
     {
       name: 'File Upload',
       icon: <GenerateDocIcon className="mr-2 h-4 w-4" />,
-      disabled: currentPath === '/',
+      disabled: currentGlobalPath === '/',
       onClick: () => {
         setSelectedDrawerOption(NodeFilesDrawerOptions.GenerateFromDocument);
       },
@@ -170,7 +170,7 @@ export default function NodeFiles() {
         closeDrawer={() => {
           setSelectedDrawerOption(null);
         }}
-        currentPath={currentPath}
+        currentPath={currentGlobalPath}
       />
     ),
     [NodeFilesDrawerOptions.GenerateFromDocument]: (
@@ -178,7 +178,7 @@ export default function NodeFiles() {
         closeDrawer={() => {
           setSelectedDrawerOption(null);
         }}
-        currentPath={currentPath}
+        currentPath={currentGlobalPath}
       />
     ),
   };
@@ -292,9 +292,12 @@ export default function NodeFiles() {
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
                   <button
-                    className="flex items-center gap-2 rounded-full p-2 hover:bg-gray-400"
+                    className={cn(
+                      'flex items-center gap-2 rounded-full p-2 hover:bg-gray-400',
+                      currentGlobalPath === '/' && 'text-white',
+                    )}
                     onClick={() => {
-                      setCurrentPath('/');
+                      setCurrentGlobalPath('/');
                     }}
                   >
                     <HomeIcon className="h-3.5 w-3.5" />
@@ -319,7 +322,7 @@ export default function NodeFiles() {
                           const buildPath = splitCurrentPath
                             .slice(0, idx + 1)
                             .join('/');
-                          setCurrentPath('/' + buildPath);
+                          setCurrentGlobalPath('/' + buildPath);
                         }}
                       >
                         {path}
@@ -359,15 +362,16 @@ export default function NodeFiles() {
                 key={index}
                 layout={layout}
                 onClick={() => {
-                  setCurrentPath(folder.path);
+                  setCurrentGlobalPath(folder.path);
                 }}
                 selectionMode={selectionMode}
+                setCurrentGlobalPath={setCurrentGlobalPath}
               />
             );
           })}
           {isVRFilesSuccess &&
             (VRFiles?.child_folders || [])?.length === 0 &&
-            currentPath === '/' && (
+            currentGlobalPath === '/' && (
               <div className="text-gray-80 mt-4 flex flex-col items-center justify-center gap-4 text-center text-base">
                 <FileEmptyStateIcon className="h-20 w-20" />
                 <div>

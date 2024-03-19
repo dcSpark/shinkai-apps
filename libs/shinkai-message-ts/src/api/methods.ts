@@ -809,7 +809,6 @@ export const retrieveVRPathSimplified = async (
     );
 
     const message = JSON.parse(messageStr);
-    console.log(message, 'message');
 
     const response = await fetch(
       urlJoin(nodeAddress, '/v1/vec_fs/retrieve_path_simplified_json'),
@@ -854,7 +853,6 @@ export const retrieveVectorSearchSimplified = async (
       );
 
     const message = JSON.parse(messageStr);
-    console.log(message, 'message');
 
     const response = await fetch(
       urlJoin(nodeAddress, '/v1/vec_fs/retrieve_vector_search_simplified_json'),
@@ -902,10 +900,93 @@ export const uploadFilesToVR = async (
     const response =
       await fileUploader.finalizeAndAddItemsToDb(destinationPath);
 
-    // await handleHttpE?esponse.json();
     return response;
   } catch (error) {
     console.error('Error uploading knowledge files:', error);
+    throw error;
+  }
+};
+
+// fetch details of vr file
+export const retrieveVectorResource = async (
+  nodeAddress: string,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  path: string = '/',
+  setupDetailsState: CredentialsPayload,
+): Promise<{ data: any; status: string }> => {
+  try {
+    const messageStr = ShinkaiMessageBuilderWrapper.retrieveResource(
+      setupDetailsState.profile_encryption_sk,
+      setupDetailsState.profile_identity_sk,
+      setupDetailsState.node_encryption_pk,
+      path,
+      sender,
+      sender_subidentity,
+      receiver,
+      receiver_subidentity,
+    );
+
+    const message = JSON.parse(messageStr);
+
+    const response = await fetch(
+      urlJoin(nodeAddress, '/v1/vec_fs/retrieve_vector_resource'),
+      {
+        method: 'POST',
+        body: JSON.stringify(message),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+
+    await handleHttpError(response);
+    const data = await response.json();
+    return { data: JSON.parse(data.data), status: data.status };
+  } catch (error) {
+    console.error('Error closing job:', error);
+    throw error;
+  }
+};
+export const moveFolderVR = async (
+  nodeAddress: string,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  originPath: string,
+  destionationPath: string,
+  setupDetailsState: CredentialsPayload,
+): Promise<{ data: any; status: string }> => {
+  try {
+    const messageStr = ShinkaiMessageBuilderWrapper.moveFolder(
+      setupDetailsState.profile_encryption_sk,
+      setupDetailsState.profile_identity_sk,
+      setupDetailsState.node_encryption_pk,
+      originPath,
+      destionationPath,
+      sender,
+      sender_subidentity,
+      receiver,
+      receiver_subidentity,
+    );
+
+    const message = JSON.parse(messageStr);
+
+    const response = await fetch(
+      urlJoin(nodeAddress, '/v1/vec_fs/move_folder'),
+      {
+        method: 'POST',
+        body: JSON.stringify(message),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+
+    await handleHttpError(response);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error closing job:', error);
     throw error;
   }
 };

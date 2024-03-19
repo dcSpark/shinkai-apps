@@ -33,7 +33,7 @@ import React from 'react';
 import { formatDateToLocaleString } from '../../helpers/date';
 import { Layout } from './node-files';
 
-const VectorFsItemInfo = ({
+export const VectorFsItemInfo = ({
   file,
   layout,
   createdDatetime,
