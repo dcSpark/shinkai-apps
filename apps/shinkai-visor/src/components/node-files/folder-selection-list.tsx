@@ -1,8 +1,5 @@
 import { HomeIcon } from '@radix-ui/react-icons';
-import {
-  VRFolder,
-  VRItem,
-} from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
+import { VRFolder } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
 import {
   Breadcrumb,
