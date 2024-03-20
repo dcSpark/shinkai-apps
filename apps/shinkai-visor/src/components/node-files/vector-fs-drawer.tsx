@@ -14,6 +14,7 @@ import {
   VectorFileDetails,
 } from './node-files';
 import {
+  VectorFsFolderCopyAction,
   VectorFsFolderDeleteAction,
   VectorFsFolderMoveAction,
 } from './vector-fs-folder-options';
@@ -60,8 +61,9 @@ export enum VectorFsGlobalAction {
 }
 
 export enum VectorFsFolderAction {
-  Rename = 'Rename',
+  // Rename = 'Rename',
   Move = 'Move',
+  Copy = 'Copy',
   Share = 'Share',
   Delete = 'Delete',
 }
@@ -83,8 +85,8 @@ const VectorFSDrawerContent = ({
     //folder actions
     case VectorFsFolderAction.Move:
       return <VectorFsFolderMoveAction />;
-    case VectorFsFolderAction.Rename:
-      return 'Rename';
+    case VectorFsFolderAction.Copy:
+      return <VectorFsFolderCopyAction />;
     case VectorFsFolderAction.Share:
       return 'Share';
     case VectorFsFolderAction.Delete:

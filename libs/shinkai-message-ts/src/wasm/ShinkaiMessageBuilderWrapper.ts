@@ -746,8 +746,8 @@ export class ShinkaiMessageBuilderWrapper {
     receiver: string,
     receiver_subidentity: string,
   ): string {
-    const folderCopyInfo = { origin_path, destination_path };
-    const body = JSON.stringify(folderCopyInfo);
+    const payload = { origin_path, destination_path };
+    const body = JSON.stringify(payload);
 
     const builder = new ShinkaiMessageBuilderWrapper(
       my_encryption_secret_key,
