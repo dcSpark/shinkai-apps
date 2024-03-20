@@ -113,6 +113,13 @@ export default function NodeFiles() {
   const layout = useVectorFsStore((state) => state.layout);
   const setLayout = useVectorFsStore((state) => state.setLayout);
 
+  const isVRSelectionActive = useVectorFsStore(
+    (state) => state.isVRSelectionActive,
+  );
+  const setVRSelectionActive = useVectorFsStore(
+    (state) => state.setVRSelectionActive,
+  );
+
   const {
     isPending: isVRFilesPending,
     data: VRFiles,
@@ -131,7 +138,6 @@ export default function NodeFiles() {
 
   const [searchQuery, setSearchQuery] = React.useState('');
   const [activeFile, setActiveFile] = React.useState<VRItem | null>(null);
-  const [selectionMode, setSelectionMode] = React.useState(false);
   const [selectedFiles, setSelectedFiles] = React.useState<VRItem[]>([]);
   const [selectedFolders, setSelectedFolders] = React.useState<VRFolder[]>([]);
   const [isMenuOpened, setMenuOpened] = React.useState(false);
@@ -362,7 +368,6 @@ export default function NodeFiles() {
                 onClick={() => {
                   setCurrentGlobalPath(folder.path);
                 }}
-                selectionMode={selectionMode}
                 setCurrentGlobalPath={setCurrentGlobalPath}
               />
             );
@@ -396,7 +401,6 @@ export default function NodeFiles() {
                   onClick={() => {
                     setActiveFile(file);
                   }}
-                  selectionMode={selectionMode}
                 />
               );
             })}
@@ -441,12 +445,12 @@ export default function NodeFiles() {
       <MotionButton
         className={cn(
           'fixed bottom-16 right-4 h-[60px] w-[60px]',
-          selectionMode && 'w-[210px]',
+          isVRSelectionActive && 'w-[210px]',
         )}
         layout
         onClick={() => {
-          if (!selectionMode) {
-            setSelectionMode(true);
+          if (!isVRSelectionActive) {
+            setVRSelectionActive(true);
           } else {
             history.push({
               pathname: '/inboxes/create-job',
@@ -457,34 +461,31 @@ export default function NodeFiles() {
             });
           }
         }}
-        size={selectionMode ? 'lg' : 'icon'}
-        transition={{
-          // delayChildren: 1,
-          duration: 0.2,
-        }}
+        size={isVRSelectionActive ? 'lg' : 'icon'}
+        transition={{ duration: 0.2 }}
       >
-        {!selectionMode && <CreateAIIconMotion layout />}
+        {!isVRSelectionActive && <CreateAIIconMotion layout />}
         <motion.div
           className={cn(
             'sr-only flex flex-col',
-            selectionMode && 'not-sr-only',
+            isVRSelectionActive && 'not-sr-only',
           )}
           layout
         >
           <span>Create AI Chat</span>
-          {selectionMode && (
+          {isVRSelectionActive && (
             <span className="text-sm text-neutral-200">
               {selectedFiles.length + selectedFolders.length} selected
             </span>
           )}
         </motion.div>
       </MotionButton>
-      {selectionMode && (
+      {isVRSelectionActive && (
         <MotionButton
           animate={{ opacity: 1 }}
           className="fixed bottom-20 right-[230px] h-[24px] w-[24px] border border-gray-100 bg-gray-300 p-1 text-gray-50 hover:bg-gray-500 hover:text-white"
           initial={{ opacity: 0 }}
-          onClick={() => setSelectionMode(false)}
+          onClick={() => setVRSelectionActive(false)}
           size="icon"
           transition={{
             duration: 0.4,

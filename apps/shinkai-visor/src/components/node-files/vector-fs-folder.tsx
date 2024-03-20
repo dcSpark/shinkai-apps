@@ -66,14 +66,12 @@ enum VectorFsFolderAction {
 const VectorFsFolder = ({
   onClick,
   folder,
-  selectionMode,
   handleSelectFolders,
   isSelectedFolder,
   setCurrentGlobalPath,
 }: {
   onClick: () => void;
   folder: VRFolder;
-  selectionMode: boolean;
   handleSelectFolders: (folder: VRFolder) => void;
   isSelectedFolder: boolean;
   setCurrentGlobalPath: (path: string) => void;
@@ -82,10 +80,13 @@ const VectorFsFolder = ({
     React.useState<VectorFsFolderAction | null>(null);
   const auth = useAuth((state) => state.auth);
   const layout = useVectorFsStore((state) => state.layout);
+  const isVRSelectionActive = useVectorFsStore(
+    (state) => state.isVRSelectionActive,
+  );
   const totalItem =
     (folder.child_folders?.length ?? 0) + (folder.child_items?.length ?? 0);
 
-  if (selectionMode) {
+  if (isVRSelectionActive) {
     return (
       <div
         className={cn(

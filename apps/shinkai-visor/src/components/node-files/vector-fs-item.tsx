@@ -72,18 +72,18 @@ enum VectorFsItemAction {
 const VectorFsItem = ({
   onClick,
   file,
-  selectionMode,
   handleSelectFiles,
   isSelectedFile,
 }: {
   onClick: () => void;
   file: VRItem;
-  selectionMode: boolean;
   handleSelectFiles: (file: VRItem) => void;
   isSelectedFile: boolean;
 }) => {
   const layout = useVectorFsStore((state) => state.layout);
-
+  const isVRSelectionActive = useVectorFsStore(
+    (state) => state.isVRSelectionActive,
+  );
   const [selectedOption, setSelectedOption] =
     React.useState<VectorFsItemAction | null>(null);
 
@@ -97,7 +97,7 @@ const VectorFsItem = ({
   const createdDatetime = formatDateToLocaleString(file.created_datetime);
   const fileSize = size(file.vr_size);
 
-  if (selectionMode) {
+  if (isVRSelectionActive) {
     return (
       <div className={wrapperClassname}>
         <Checkbox

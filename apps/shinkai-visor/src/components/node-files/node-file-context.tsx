@@ -23,6 +23,8 @@ type VectorFsStore = {
   closeDrawerMenu: () => void;
   layout: VectorFSLayout;
   setLayout: (layout: VectorFSLayout) => void;
+  isVRSelectionActive: boolean;
+  setVRSelectionActive: (isVRSelectionActive: boolean) => void;
 };
 
 const createVectorFsStore = () =>
@@ -43,6 +45,11 @@ const createVectorFsStore = () =>
     layout: VectorFSLayout.List,
     setLayout: (layout) => {
       set({ layout });
+    },
+
+    isVRSelectionActive: false,
+    setVRSelectionActive: (isVRSelectionActive) => {
+      set({ isVRSelectionActive });
     },
   }));
 
