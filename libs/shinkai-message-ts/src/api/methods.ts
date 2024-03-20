@@ -1028,7 +1028,7 @@ export const copyFolderVR = async (
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Error closing job:', error);
+    console.error('Error copyFolderVR:', error);
     throw error;
   }
 };
@@ -1068,7 +1068,7 @@ export const deleteFolderVR = async (
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Error closing job:', error);
+    console.error('Error deleteFolderVR:', error);
     throw error;
   }
 };
@@ -1107,7 +1107,7 @@ export const moveItemVR = async (
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Error closing job:', error);
+    console.error('Error moveItemVR:', error);
     throw error;
   }
 };
@@ -1146,7 +1146,7 @@ export const copyItemVR = async (
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Error closing job:', error);
+    console.error('Error copyItemVR:', error);
     throw error;
   }
 };
@@ -1156,7 +1156,7 @@ export const deleteItemVR = async (
   sender_subidentity: string,
   receiver: string,
   receiver_subidentity: string,
-  folderPath: string,
+  itemPath: string,
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
   try {
@@ -1164,7 +1164,7 @@ export const deleteItemVR = async (
       setupDetailsState.profile_encryption_sk,
       setupDetailsState.profile_identity_sk,
       setupDetailsState.node_encryption_pk,
-      folderPath,
+      itemPath,
       sender,
       sender_subidentity,
       receiver,
@@ -1186,7 +1186,7 @@ export const deleteItemVR = async (
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Error closing job:', error);
+    console.error('Error deleteItemVR:', error);
     throw error;
   }
 };

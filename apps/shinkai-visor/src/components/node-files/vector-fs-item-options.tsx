@@ -1,5 +1,5 @@
 import { useCopyVrFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/copyVRFolder/useCopyVrFolder';
-import { useDeleteVrFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/deleteVRFolder/useDeleteVRFolder';
+import { useDeleteVRItem } from '@shinkai_network/shinkai-node-state/lib/mutations/deleteVRItem/useDeleteVRItem';
 import { useMoveVRItem } from '@shinkai_network/shinkai-node-state/lib/mutations/moveVRItem/useMoveVRItem';
 import {
   Button,
@@ -81,13 +81,13 @@ export const VectorFsItemDeleteAction = () => {
   const auth = useAuth((state) => state.auth);
   const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
 
-  const { mutateAsync: deleteVrFolder, isPending } = useDeleteVrFolder({
+  const { mutateAsync: deleteVrItem, isPending } = useDeleteVRItem({
     onSuccess: () => {
       closeDrawerMenu();
-      toast.success('Folder has been deleted');
+      toast.success('Item has been deleted');
     },
     onError: () => {
-      toast.error('Failed to delete folder');
+      toast.error('Failed to delete item');
     },
   });
 
@@ -100,19 +100,18 @@ export const VectorFsItemDeleteAction = () => {
         </DrawerTitle>
       </DrawerHeader>
       <p className="text-gray-80 my-3 text-base">
-        Are you sure you want to delete this folder? This action cannot be
-        undone.
+        Are you sure you want to delete this item? This action cannot be undone.
       </p>
       <DrawerFooter>
         <Button
           className="mt-4"
           isLoading={isPending}
           onClick={async () => {
-            await deleteVrFolder({
+            await deleteVrItem({
               nodeAddress: auth?.node_address ?? '',
               shinkaiIdentity: auth?.shinkai_identity ?? '',
               profile: auth?.profile ?? '',
-              folderPath: selectedFile?.path ?? '',
+              itemPath: selectedFile?.path ?? '',
               my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
               my_device_identity_sk: auth?.profile_identity_sk ?? '',
               node_encryption_pk: auth?.node_encryption_pk ?? '',
