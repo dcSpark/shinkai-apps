@@ -52,13 +52,11 @@ const VectorFsFolder = ({
   folder,
   handleSelectFolders,
   isSelectedFolder,
-  setCurrentGlobalPath,
 }: {
   onClick: () => void;
   folder: VRFolder;
   handleSelectFolders: (folder: VRFolder) => void;
   isSelectedFolder: boolean;
-  setCurrentGlobalPath: (path: string) => void;
 }) => {
   const setActiveDrawerMenuOption = useVectorFsStore(
     (state) => state.setActiveDrawerMenuOption,
@@ -101,102 +99,76 @@ const VectorFsFolder = ({
   }
 
   return (
-    <React.Fragment>
-      <button
-        className={cn(
-          'flex items-center justify-between gap-2 py-3.5 hover:bg-gray-400',
-          layout === VectorFSLayout.Grid && 'rounded-lg bg-gray-400/30 p-2',
-        )}
-        onClick={onClick}
-      >
-        <DirectoryTypeIcon />
-        <VectorFsFolderInfo folder={folder} totalItem={totalItem} />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              className="border-0 hover:bg-gray-500/40"
-              onClick={(event) => {
-                event.stopPropagation();
-              }}
-              size="icon"
-              variant="tertiary"
-            >
-              <span className="sr-only">More options</span>
-              <DotsVerticalIcon className="text-gray-100" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="end"
-            className="w-[160px] border bg-gray-500 px-2.5 py-2"
+    <button
+      className={cn(
+        'flex items-center justify-between gap-2 py-3.5 hover:bg-gray-400',
+        layout === VectorFSLayout.Grid && 'rounded-lg bg-gray-400/30 p-2',
+      )}
+      onClick={onClick}
+    >
+      <DirectoryTypeIcon />
+      <VectorFsFolderInfo folder={folder} totalItem={totalItem} />
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            className="border-0 hover:bg-gray-500/40"
+            onClick={(event) => {
+              event.stopPropagation();
+            }}
+            size="icon"
+            variant="tertiary"
           >
-            {[
-              {
-                name: 'Move',
-                icon: <FolderInputIcon className="mr-3 h-4 w-4" />,
-                onClick: () => {
-                  setActiveDrawerMenuOption(VectorFsFolderAction.Move);
-                },
+            <span className="sr-only">More options</span>
+            <DotsVerticalIcon className="text-gray-100" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align="end"
+          className="w-[160px] border bg-gray-500 px-2.5 py-2"
+        >
+          {[
+            {
+              name: 'Move',
+              icon: <FolderInputIcon className="mr-3 h-4 w-4" />,
+              onClick: () => {
+                setActiveDrawerMenuOption(VectorFsFolderAction.Move);
               },
-              {
-                name: 'Copy',
-                icon: <CopyIcon className="mr-3 h-4 w-4" />,
-                onClick: () => {
-                  setActiveDrawerMenuOption(VectorFsFolderAction.Copy);
-                },
+            },
+            {
+              name: 'Copy',
+              icon: <CopyIcon className="mr-3 h-4 w-4" />,
+              onClick: () => {
+                setActiveDrawerMenuOption(VectorFsFolderAction.Copy);
               },
-              // {
-              //   name: 'Share',
-              //   icon: <Share2Icon className="mr-3 h-4 w-4" />,
-              //   onClick: () => {
-              //     setActiveDrawerMenuOption(VectorFsFolderAction.Share);
-              //   },
-              // },
-              {
-                name: 'Delete',
-                icon: <TrashIcon className="mr-3 h-4 w-4" />,
-                onClick: () => {
-                  setActiveDrawerMenuOption(VectorFsFolderAction.Delete);
-                },
+            },
+            {
+              name: 'Delete',
+              icon: <TrashIcon className="mr-3 h-4 w-4" />,
+              onClick: () => {
+                setActiveDrawerMenuOption(VectorFsFolderAction.Delete);
               },
-            ].map((option) => (
-              <React.Fragment key={option.name}>
-                {option.name === 'Delete' && (
-                  <DropdownMenuSeparator className="bg-gray-300" />
-                )}
-                <DropdownMenuItem
-                  key={option.name}
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    option.onClick();
-                    setSelectedFolder(folder);
-                  }}
-                >
-                  {option.icon}
-                  {option.name}
-                </DropdownMenuItem>
-              </React.Fragment>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </button>
-      {/*<Drawer*/}
-      {/*  onOpenChange={(open) => {*/}
-      {/*    if (!open) {*/}
-      {/*      setSelectedOption(null);*/}
-      {/*    }*/}
-      {/*  }}*/}
-      {/*  open={!!selectedOption}*/}
-      {/*>*/}
-      {/*  <DrawerContent>*/}
-      {/*    <DrawerClose className="absolute right-4 top-5">*/}
-      {/*      <XIcon className="text-gray-80" />*/}
-      {/*    </DrawerClose>*/}
-      {/*    <VectorFolderSelectionProvider>*/}
-      {/*      {renderDrawerContent(selectedOption)}*/}
-      {/*    </VectorFolderSelectionProvider>*/}
-      {/*  </DrawerContent>*/}
-      {/*</Drawer>*/}
-    </React.Fragment>
+            },
+          ].map((option) => (
+            <React.Fragment key={option.name}>
+              {option.name === 'Delete' && (
+                <DropdownMenuSeparator className="bg-gray-300" />
+              )}
+              <DropdownMenuItem
+                key={option.name}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  option.onClick();
+                  setSelectedFolder(folder);
+                }}
+              >
+                {option.icon}
+                {option.name}
+              </DropdownMenuItem>
+            </React.Fragment>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </button>
   );
 };
 

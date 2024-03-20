@@ -18,6 +18,11 @@ import {
   VectorFsFolderDeleteAction,
   VectorFsFolderMoveAction,
 } from './vector-fs-folder-options';
+import {
+  VectorFsItemCopyAction,
+  VectorFsItemDeleteAction,
+  VectorFsItemMoveAction,
+} from './vector-fs-item-options';
 
 const VectorFSDrawer = () => {
   const activeDrawerMenuOption = useVectorFsStore(
@@ -62,13 +67,21 @@ export enum VectorFsGlobalAction {
 
 export enum VectorFsFolderAction {
   // Rename = 'Rename',
-  Move = 'Move',
-  Copy = 'Copy',
-  Share = 'Share',
-  Delete = 'Delete',
+  Move = 'move-folder',
+  Copy = 'copy-folder',
+  Delete = 'delete-folder',
 }
 
-export type VectorFsActions = VectorFsGlobalAction | VectorFsFolderAction;
+export enum VectorFsItemAction {
+  Move = 'move-item',
+  Copy = 'copy-item',
+  Delete = 'delete-item',
+}
+
+export type VectorFsActions =
+  | VectorFsGlobalAction
+  | VectorFsFolderAction
+  | VectorFsItemAction;
 
 const VectorFSDrawerContent = ({
   selectedOption,
@@ -82,15 +95,21 @@ const VectorFSDrawerContent = ({
       return <AddNewFolderDrawer />;
     case VectorFsGlobalAction.GenerateFromDocument:
       return <UploadVRFilesDrawer />;
-    //folder actions
+    // folder actions
     case VectorFsFolderAction.Move:
       return <VectorFsFolderMoveAction />;
     case VectorFsFolderAction.Copy:
       return <VectorFsFolderCopyAction />;
-    case VectorFsFolderAction.Share:
-      return 'Share';
     case VectorFsFolderAction.Delete:
       return <VectorFsFolderDeleteAction />;
+
+    // item actions
+    case VectorFsItemAction.Move:
+      return <VectorFsItemMoveAction />;
+    case VectorFsItemAction.Copy:
+      return <VectorFsItemCopyAction />;
+    case VectorFsItemAction.Delete:
+      return <VectorFsItemDeleteAction />;
 
     default:
       return null;

@@ -326,7 +326,6 @@ export default function NodeFiles() {
                 onClick={() => {
                   setCurrentGlobalPath(folder.path);
                 }}
-                setCurrentGlobalPath={setCurrentGlobalPath}
               />
             );
           })}
