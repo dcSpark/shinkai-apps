@@ -13,7 +13,10 @@ import {
   UploadVRFilesDrawer,
   VectorFileDetails,
 } from './node-files';
-import { VectorFsFolderMoveAction } from './vector-fs-folder-options';
+import {
+  VectorFsFolderDeleteAction,
+  VectorFsFolderMoveAction,
+} from './vector-fs-folder-options';
 
 const VectorFSDrawer = () => {
   const activeDrawerMenuOption = useVectorFsStore(
@@ -85,7 +88,7 @@ const VectorFSDrawerContent = ({
     case VectorFsFolderAction.Share:
       return 'Share';
     case VectorFsFolderAction.Delete:
-      return 'Delete';
+      return <VectorFsFolderDeleteAction />;
 
     default:
       return null;
