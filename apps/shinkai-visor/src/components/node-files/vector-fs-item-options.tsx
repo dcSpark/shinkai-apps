@@ -7,7 +7,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@shinkai_network/shinkai-ui';
-import { FileInputIcon, FolderInputIcon } from 'lucide-react';
+import { FileInputIcon } from 'lucide-react';
 import React from 'react';
 import { toast } from 'sonner';
 
@@ -95,7 +95,7 @@ export const VectorFsItemDeleteAction = () => {
     <React.Fragment>
       <DrawerHeader>
         <DrawerTitle className="flex flex-col items-start gap-1">
-          <FolderInputIcon className="h-10 w-10" />
+          <FileInputIcon className="h-10 w-10" />
           Delete {selectedFile?.name}
         </DrawerTitle>
       </DrawerHeader>
@@ -154,7 +154,7 @@ export const VectorFsItemCopyAction = () => {
     <React.Fragment>
       <DrawerHeader>
         <DrawerTitle className="flex flex-col items-start gap-1">
-          <FolderInputIcon className="h-10 w-10" />
+          <FileInputIcon className="h-10 w-10" />
           Copy {selectedFile?.name} to ...
         </DrawerTitle>
       </DrawerHeader>
