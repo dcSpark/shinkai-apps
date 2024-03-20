@@ -29,31 +29,31 @@ import {
 import React from 'react';
 
 import { formatDateToLocaleString } from '../../helpers/date';
-import { Layout } from './node-files';
+import { useVectorFsStore, VectorFSLayout } from './node-file-context';
 
 export const VectorFsItemInfo = ({
   file,
-  layout,
   createdDatetime,
   fileSize,
 }: {
   file: VRItem;
-  layout: Layout;
   createdDatetime: string;
   fileSize: string;
 }) => {
+  const layout = useVectorFsStore((state) => state.layout);
+
   return (
     <div className="flex-1 text-left">
       <div className="text-sm font-medium">
         {file.name}
-        {layout === Layout.List && (
+        {layout === VectorFSLayout.List && (
           <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
             {file?.vr_header?.resource_source?.Reference?.FileRef?.file_type
               ?.Document ?? '-'}
           </Badge>
         )}
       </div>
-      {layout === Layout.List && (
+      {layout === VectorFSLayout.List && (
         <p className="text-xs font-medium text-gray-100">
           <span>{createdDatetime}</span> - <span>{fileSize}</span>
         </p>
@@ -75,15 +75,15 @@ const VectorFsItem = ({
   selectionMode,
   handleSelectFiles,
   isSelectedFile,
-  layout,
 }: {
   onClick: () => void;
   file: VRItem;
   selectionMode: boolean;
   handleSelectFiles: (file: VRItem) => void;
   isSelectedFile: boolean;
-  layout: Layout;
 }) => {
+  const layout = useVectorFsStore((state) => state.layout);
+
   const [selectedOption, setSelectedOption] =
     React.useState<VectorFsItemAction | null>(null);
 
@@ -91,7 +91,7 @@ const VectorFsItem = ({
 
   const wrapperClassname = cn(
     'flex items-center justify-between gap-3 rounded-md py-3.5 hover:bg-gray-400',
-    layout === Layout.Grid && 'rounded-lg bg-gray-400/30 p-2',
+    layout === VectorFSLayout.Grid && 'rounded-lg bg-gray-400/30 p-2',
   );
 
   const createdDatetime = formatDateToLocaleString(file.created_datetime);
@@ -116,7 +116,6 @@ const VectorFsItem = ({
             createdDatetime={createdDatetime}
             file={file}
             fileSize={fileSize}
-            layout={layout}
           />
         </label>
       </div>
@@ -209,7 +208,6 @@ const VectorFsItem = ({
           createdDatetime={createdDatetime}
           file={file}
           fileSize={fileSize}
-          layout={layout}
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

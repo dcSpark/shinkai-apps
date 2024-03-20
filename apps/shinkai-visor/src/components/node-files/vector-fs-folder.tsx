@@ -29,24 +29,25 @@ import React from 'react';
 
 import { formatDateToLocaleString } from '../../helpers/date';
 import { useAuth } from '../../store/auth/auth';
-import { Layout } from './node-files';
+import { useVectorFsStore, VectorFSLayout } from './node-file-context';
 import { VectorFsFolderMoveAction } from './vector-fs-folder-action';
 
 export const VectorFsFolderInfo = ({
   folder,
-  layout,
+
   totalItem,
   allowFolderNameOnly,
 }: {
   folder: VRFolder;
-  layout: Layout;
   totalItem?: number;
   allowFolderNameOnly?: boolean;
 }) => {
+  const layout = useVectorFsStore((state) => state.layout);
+
   return (
     <div className="flex-1 text-left">
       <div className="truncate text-sm font-medium">{folder.name}</div>
-      {layout === Layout.List && !allowFolderNameOnly && (
+      {layout === VectorFSLayout.List && !allowFolderNameOnly && (
         <p className="text-xs font-medium text-gray-100">
           <span>{formatDateToLocaleString(folder.created_datetime)}</span> -{' '}
           <span>{totalItem} items</span>
@@ -68,7 +69,6 @@ const VectorFsFolder = ({
   selectionMode,
   handleSelectFolders,
   isSelectedFolder,
-  layout,
   setCurrentGlobalPath,
 }: {
   onClick: () => void;
@@ -76,12 +76,12 @@ const VectorFsFolder = ({
   selectionMode: boolean;
   handleSelectFolders: (folder: VRFolder) => void;
   isSelectedFolder: boolean;
-  layout: Layout;
   setCurrentGlobalPath: (path: string) => void;
 }) => {
   const [selectedOption, setSelectedOption] =
     React.useState<VectorFsFolderAction | null>(null);
   const auth = useAuth((state) => state.auth);
+  const layout = useVectorFsStore((state) => state.layout);
   const totalItem =
     (folder.child_folders?.length ?? 0) + (folder.child_items?.length ?? 0);
 
@@ -90,7 +90,7 @@ const VectorFsFolder = ({
       <div
         className={cn(
           'flex items-center justify-between gap-3 rounded-md py-3.5 hover:bg-gray-400',
-          layout === Layout.Grid && 'rounded-lg bg-gray-400/30 p-2',
+          layout === VectorFSLayout.Grid && 'rounded-lg bg-gray-400/30 p-2',
         )}
       >
         <Checkbox
@@ -105,11 +105,7 @@ const VectorFsFolder = ({
           htmlFor={`item-${folder.name}`}
         >
           <DirectoryTypeIcon />
-          <VectorFsFolderInfo
-            folder={folder}
-            layout={layout}
-            totalItem={totalItem}
-          />
+          <VectorFsFolderInfo folder={folder} totalItem={totalItem} />
         </label>
       </div>
     );
@@ -215,16 +211,12 @@ const VectorFsFolder = ({
       <button
         className={cn(
           'flex items-center justify-between gap-2 py-3.5 hover:bg-gray-400',
-          layout === Layout.Grid && 'rounded-lg bg-gray-400/30 p-2',
+          layout === VectorFSLayout.Grid && 'rounded-lg bg-gray-400/30 p-2',
         )}
         onClick={onClick}
       >
         <DirectoryTypeIcon />
-        <VectorFsFolderInfo
-          folder={folder}
-          layout={layout}
-          totalItem={totalItem}
-        />
+        <VectorFsFolderInfo folder={folder} totalItem={totalItem} />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button

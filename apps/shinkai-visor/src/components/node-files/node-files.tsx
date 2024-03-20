@@ -76,6 +76,11 @@ import { z } from 'zod';
 import { formatDateToLocaleString } from '../../helpers/date';
 import { useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
+import {
+  useVectorFsStore,
+  VectorFsDrawerMenuOption,
+  VectorFSLayout,
+} from './node-file-context';
 import VectorFsFolder from './vector-fs-folder';
 import VectorFsItem from './vector-fs-item';
 
@@ -86,20 +91,27 @@ enum NodeFilesDrawerOptions {
   // GenerateFromWeb = 'generate-from-web',
 }
 
-export enum Layout {
-  Grid = 'grid',
-  List = 'list',
-}
-
 const MotionButton = motion(Button);
 const CreateAIIconMotion = motion(CreateAIIcon);
 export default function NodeFiles() {
   const size = partial({ standard: 'jedec' });
-  const [selectedDrawerOption, setSelectedDrawerOption] =
-    React.useState<NodeFilesDrawerOptions | null>(null);
   const auth = useAuth((state) => state.auth);
-  const [currentGlobalPath, setCurrentGlobalPath] = React.useState<string>('/');
   const history = useHistory();
+
+  const currentGlobalPath = useVectorFsStore(
+    (state) => state.currentGlobalPath,
+  );
+  const setCurrentGlobalPath = useVectorFsStore(
+    (state) => state.setCurrentGlobalPath,
+  );
+  const activeDrawerMenuOption = useVectorFsStore(
+    (state) => state.activeDrawerMenuOption,
+  );
+  const setActiveDrawerMenuOption = useVectorFsStore(
+    (state) => state.setActiveDrawerMenuOption,
+  );
+  const layout = useVectorFsStore((state) => state.layout);
+  const setLayout = useVectorFsStore((state) => state.setLayout);
 
   const {
     isPending: isVRFilesPending,
@@ -123,8 +135,6 @@ export default function NodeFiles() {
   const [selectedFiles, setSelectedFiles] = React.useState<VRItem[]>([]);
   const [selectedFolders, setSelectedFolders] = React.useState<VRFolder[]>([]);
   const [isMenuOpened, setMenuOpened] = React.useState(false);
-
-  const [layout, setLayout] = React.useState<Layout>(Layout.List);
 
   const handleSelectFiles = (file: VRItem) => {
     if (selectedFiles.some((selectedFile) => selectedFile.path === file.path)) {
@@ -151,7 +161,7 @@ export default function NodeFiles() {
       name: 'Add new folder',
       icon: <AddNewFolderIcon className="mr-2 h-4 w-4" />,
       onClick: () => {
-        setSelectedDrawerOption(NodeFilesDrawerOptions.NewFolder);
+        setActiveDrawerMenuOption(VectorFsDrawerMenuOption.NewFolder);
       },
     },
     {
@@ -159,28 +169,16 @@ export default function NodeFiles() {
       icon: <GenerateDocIcon className="mr-2 h-4 w-4" />,
       disabled: currentGlobalPath === '/',
       onClick: () => {
-        setSelectedDrawerOption(NodeFilesDrawerOptions.GenerateFromDocument);
+        setActiveDrawerMenuOption(
+          VectorFsDrawerMenuOption.GenerateFromDocument,
+        );
       },
     },
   ];
 
   const renderDrawerOptionMap = {
-    [NodeFilesDrawerOptions.NewFolder]: (
-      <AddNewFolderDrawer
-        closeDrawer={() => {
-          setSelectedDrawerOption(null);
-        }}
-        currentPath={currentGlobalPath}
-      />
-    ),
-    [NodeFilesDrawerOptions.GenerateFromDocument]: (
-      <UploadVRFilesDrawer
-        closeDrawer={() => {
-          setSelectedDrawerOption(null);
-        }}
-        currentPath={currentGlobalPath}
-      />
-    ),
+    [NodeFilesDrawerOptions.NewFolder]: <AddNewFolderDrawer />,
+    [NodeFilesDrawerOptions.GenerateFromDocument]: <UploadVRFilesDrawer />,
   };
 
   const splitCurrentPath = VRFiles?.path?.split('/').filter(Boolean) ?? [];
@@ -249,7 +247,7 @@ export default function NodeFiles() {
           <ToggleGroupItem
             aria-label="Toggle layout grid"
             onClick={() => {
-              setLayout(Layout.Grid);
+              setLayout(VectorFSLayout.Grid);
             }}
             value="grid"
           >
@@ -258,7 +256,7 @@ export default function NodeFiles() {
           <ToggleGroupItem
             aria-label="Toggle layout list"
             onClick={() => {
-              setLayout(Layout.List);
+              setLayout(VectorFSLayout.List);
             }}
             value="list"
           >
@@ -269,18 +267,18 @@ export default function NodeFiles() {
         <Drawer
           onOpenChange={(open) => {
             if (!open) {
-              setSelectedDrawerOption(null);
+              setActiveDrawerMenuOption(null);
             }
           }}
-          open={!!selectedDrawerOption}
+          open={!!activeDrawerMenuOption}
         >
           <DrawerContent>
             <DrawerClose className="absolute right-4 top-5">
               <XIcon className="text-gray-80" />
             </DrawerClose>
             <div className="space-y-8">
-              {selectedDrawerOption &&
-                renderDrawerOptionMap[selectedDrawerOption]}
+              {activeDrawerMenuOption &&
+                renderDrawerOptionMap[activeDrawerMenuOption]}
             </div>
           </DrawerContent>
         </Drawer>
@@ -339,9 +337,10 @@ export default function NodeFiles() {
         <div
           className={cn(
             'grid flex-1',
-            layout === Layout.Grid &&
+            layout === VectorFSLayout.Grid &&
               'grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5',
-            layout === Layout.List && 'grid-cols-1 divide-y divide-gray-400',
+            layout === VectorFSLayout.List &&
+              'grid-cols-1 divide-y divide-gray-400',
           )}
         >
           {isVRFilesPending &&
@@ -360,7 +359,6 @@ export default function NodeFiles() {
                   (selectedFolder) => selectedFolder.path === folder.path,
                 )}
                 key={index}
-                layout={layout}
                 onClick={() => {
                   setCurrentGlobalPath(folder.path);
                 }}
@@ -395,7 +393,6 @@ export default function NodeFiles() {
                     (selectedFile) => selectedFile.path === file.path,
                   )}
                   key={index}
-                  layout={layout}
                   onClick={() => {
                     setActiveFile(file);
                   }}
@@ -585,15 +582,12 @@ export default function NodeFiles() {
 const createFolderSchema = z.object({
   name: z.string(),
 });
-const AddNewFolderDrawer = ({
-  currentPath,
-  closeDrawer,
-}: {
-  currentPath: string;
-  closeDrawer: () => void;
-}) => {
+const AddNewFolderDrawer = () => {
   const auth = useAuth((state) => state.auth);
-
+  const currentGlobalPath = useVectorFsStore(
+    (state) => state.currentGlobalPath,
+  );
+  const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
   const createFolderForm = useForm<z.infer<typeof createFolderSchema>>({
     resolver: zodResolver(createFolderSchema),
   });
@@ -606,7 +600,7 @@ const AddNewFolderDrawer = ({
     onSuccess: () => {
       toast.success('Folder created successfully');
       createFolderForm.reset();
-      closeDrawer();
+      closeDrawerMenu();
     },
     onError: () => {
       toast.error('Error creating folder');
@@ -621,7 +615,7 @@ const AddNewFolderDrawer = ({
       profile: auth?.profile ?? '',
       shinkaiIdentity: auth?.shinkai_identity ?? '',
       folderName: values.name,
-      path: currentPath,
+      path: currentGlobalPath,
       my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
       my_device_identity_sk: auth?.profile_identity_sk ?? '',
       node_encryption_pk: auth?.node_encryption_pk ?? '',
@@ -673,15 +667,12 @@ const AddNewFolderDrawer = ({
 const uploadVRFilesSchema = z.object({
   files: z.array(z.any()).max(3),
 });
-const UploadVRFilesDrawer = ({
-  currentPath,
-  closeDrawer,
-}: {
-  currentPath: string;
-  closeDrawer: () => void;
-}) => {
+const UploadVRFilesDrawer = () => {
   const auth = useAuth((state) => state.auth);
-
+  const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
+  const currentGlobalPath = useVectorFsStore(
+    (state) => state.currentGlobalPath,
+  );
   const createFolderForm = useForm<z.infer<typeof uploadVRFilesSchema>>({
     resolver: zodResolver(uploadVRFilesSchema),
   });
@@ -709,13 +700,13 @@ const UploadVRFilesDrawer = ({
       description: 'This process might take from 1-2 minutes',
       position: 'bottom-left',
     });
-    closeDrawer();
+    closeDrawerMenu();
     await uploadVRFiles({
       nodeAddress: auth?.node_address ?? '',
       sender: auth?.shinkai_identity ?? '',
       senderSubidentity: auth?.profile ?? '',
       receiver: auth?.shinkai_identity ?? '',
-      destinationPath: currentPath,
+      destinationPath: currentGlobalPath,
       files: values.files,
       my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
       my_device_identity_sk: auth?.profile_identity_sk ?? '',
