@@ -1,5 +1,4 @@
 import { HomeIcon } from '@radix-ui/react-icons';
-import { VRFolder } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
 import {
   Breadcrumb,
@@ -20,17 +19,17 @@ import { useAuth } from '../../store/auth/auth';
 import { VectorFsFolderInfo } from './vector-fs-folder';
 
 type VectorFolderSelectionList = {
-  destinationFolder: VRFolder | null;
-  setDestinationFolder: (folder: VRFolder | null) => void;
+  destinationFolderPath: string | null;
+  setDestinationFolderPath: (folder: string | null) => void;
   currentSelectedFolderPath: string;
   setCurrentSelectedFolderPath: (path: string) => void;
 };
 
 const createVectorFsStore = () =>
   createStore<VectorFolderSelectionList>((set) => ({
-    destinationFolder: null,
-    setDestinationFolder: (destinationFolder) => {
-      set({ destinationFolder });
+    destinationFolderPath: null,
+    setDestinationFolderPath: (destinationFolderPath) => {
+      set({ destinationFolderPath });
     },
     currentSelectedFolderPath: '/',
     setCurrentSelectedFolderPath: (currentSelectedFolderPath) => {
@@ -71,11 +70,11 @@ export function useVectorFolderSelectionStore<T>(
 
 export const FolderSelectionList = () => {
   const auth = useAuth((state) => state.auth);
-  const destinationFolder = useVectorFolderSelectionStore(
-    (state) => state.destinationFolder,
+  const destinationFolderPath = useVectorFolderSelectionStore(
+    (state) => state.destinationFolderPath,
   );
-  const setDestinationFolder = useVectorFolderSelectionStore(
-    (state) => state.setDestinationFolder,
+  const setDestinationFolderPath = useVectorFolderSelectionStore(
+    (state) => state.setDestinationFolderPath,
   );
   const currentSelectedFolderPath = useVectorFolderSelectionStore(
     (state) => state.currentSelectedFolderPath,
@@ -98,7 +97,9 @@ export const FolderSelectionList = () => {
     },
   );
 
-  const splitCurrentPath = VRFiles?.path?.split('/').filter(Boolean) ?? [];
+  const splitCurrentPath =
+    destinationFolderPath?.split('/').filter(Boolean) ?? [];
+
   return (
     <div className="space-y-2 py-6">
       <Breadcrumb>
@@ -112,7 +113,7 @@ export const FolderSelectionList = () => {
                 )}
                 onClick={() => {
                   setCurrentSelectedFolderPath('/');
-                  setDestinationFolder(null);
+                  setDestinationFolderPath('/');
                 }}
               >
                 <HomeIcon className="h-3.5 w-3.5" />
@@ -125,9 +126,9 @@ export const FolderSelectionList = () => {
               <BreadcrumbSeparator>
                 <ChevronRight />
               </BreadcrumbSeparator>
-              {splitCurrentPath.length - 1 === idx && !destinationFolder ? (
+              {idx === splitCurrentPath.length - 1 ? (
                 <BreadcrumbPage className="flex items-center gap-1 p-2 font-medium">
-                  {path}
+                  {destinationFolderPath?.split('/')?.at(-1)}
                 </BreadcrumbPage>
               ) : (
                 <BreadcrumbLink asChild>
@@ -138,7 +139,7 @@ export const FolderSelectionList = () => {
                         .slice(0, idx + 1)
                         .join('/');
                       setCurrentSelectedFolderPath('/' + buildPath);
-                      setDestinationFolder(null);
+                      setDestinationFolderPath(buildPath);
                     }}
                   >
                     {path}
@@ -147,16 +148,6 @@ export const FolderSelectionList = () => {
               )}
             </React.Fragment>
           ))}
-          {destinationFolder && (
-            <React.Fragment>
-              <BreadcrumbSeparator>
-                <ChevronRight />
-              </BreadcrumbSeparator>
-              <BreadcrumbPage className="flex items-center gap-1 p-2 font-medium">
-                {destinationFolder.name}
-              </BreadcrumbPage>
-            </React.Fragment>
-          )}
         </BreadcrumbList>
       </Breadcrumb>
       <ScrollArea className="min-h-[300px]">
@@ -174,14 +165,15 @@ export const FolderSelectionList = () => {
                 className={cn(
                   'flex items-center justify-between gap-2 py-3.5 hover:bg-gray-400',
                   'rounded-lg bg-gray-400/30 p-2',
-                  destinationFolder?.path === folder.path && 'bg-gray-400',
+                  destinationFolderPath === folder.path && 'bg-gray-400',
                 )}
                 key={folder.path}
                 onClick={() => {
                   if (folder.child_folders?.length > 0) {
                     setCurrentSelectedFolderPath(folder.path);
+                    setDestinationFolderPath(folder.path);
                   } else {
-                    setDestinationFolder(folder);
+                    setDestinationFolderPath(folder.path);
                   }
                 }}
               >

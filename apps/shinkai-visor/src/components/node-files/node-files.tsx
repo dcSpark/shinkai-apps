@@ -90,6 +90,7 @@ export default function NodeFiles() {
   const setCurrentGlobalPath = useVectorFsStore(
     (state) => state.setCurrentGlobalPath,
   );
+
   const setActiveDrawerMenuOption = useVectorFsStore(
     (state) => state.setActiveDrawerMenuOption,
   );

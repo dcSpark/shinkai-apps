@@ -13,6 +13,7 @@ import {
   UploadVRFilesDrawer,
   VectorFileDetails,
 } from './node-files';
+import { VectorFsFolderMoveAction } from './vector-fs-folder-options';
 
 const VectorFSDrawer = () => {
   const activeDrawerMenuOption = useVectorFsStore(
@@ -21,11 +22,17 @@ const VectorFSDrawer = () => {
   const setActiveDrawerMenuOption = useVectorFsStore(
     (state) => state.setActiveDrawerMenuOption,
   );
+  const setSelectedFolder = useVectorFsStore(
+    (state) => state.setSelectedFolder,
+  );
+  const setSelectedFile = useVectorFsStore((state) => state.setSelectedFile);
   return (
     <Drawer
       onOpenChange={(open) => {
         if (!open) {
           setActiveDrawerMenuOption(null);
+          setSelectedFolder(null);
+          setSelectedFile(null);
         }
       }}
       open={!!activeDrawerMenuOption}
@@ -56,10 +63,12 @@ export enum VectorFsFolderAction {
   Delete = 'Delete',
 }
 
+export type VectorFsActions = VectorFsGlobalAction | VectorFsFolderAction;
+
 const VectorFSDrawerContent = ({
   selectedOption,
 }: {
-  selectedOption: VectorFsGlobalAction | VectorFsFolderAction | null;
+  selectedOption: VectorFsActions | null;
 }) => {
   switch (selectedOption) {
     case VectorFsGlobalAction.VectorFileDetails:
@@ -68,6 +77,16 @@ const VectorFSDrawerContent = ({
       return <AddNewFolderDrawer />;
     case VectorFsGlobalAction.GenerateFromDocument:
       return <UploadVRFilesDrawer />;
+    //folder actions
+    case VectorFsFolderAction.Move:
+      return <VectorFsFolderMoveAction />;
+    case VectorFsFolderAction.Rename:
+      return 'Rename';
+    case VectorFsFolderAction.Share:
+      return 'Share';
+    case VectorFsFolderAction.Delete:
+      return 'Delete';
+
     default:
       return null;
   }

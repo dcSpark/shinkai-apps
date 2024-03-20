@@ -1,16 +1,9 @@
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
-import { moveFolderVR } from '@shinkai_network/shinkai-message-ts/api';
 import { VRFolder } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import {
   Button,
   Checkbox,
   DirectoryTypeIcon,
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -23,20 +16,15 @@ import {
   PencilLine,
   Share2Icon,
   TrashIcon,
-  XIcon,
 } from 'lucide-react';
 import React from 'react';
 
 import { formatDateToLocaleString } from '../../helpers/date';
-import { useAuth } from '../../store/auth/auth';
-import { VectorFolderSelectionProvider } from './folder-selection-list';
 import { useVectorFsStore, VectorFSLayout } from './node-file-context';
 import { VectorFsFolderAction } from './vector-fs-drawer';
-import { VectorFsFolderMoveAction } from './vector-fs-folder-options';
 
 export const VectorFsFolderInfo = ({
   folder,
-
   totalItem,
   allowFolderNameOnly,
 }: {
@@ -72,9 +60,13 @@ const VectorFsFolder = ({
   isSelectedFolder: boolean;
   setCurrentGlobalPath: (path: string) => void;
 }) => {
-  const [selectedOption, setSelectedOption] =
-    React.useState<VectorFsFolderAction | null>(null);
-  const auth = useAuth((state) => state.auth);
+  const setActiveDrawerMenuOption = useVectorFsStore(
+    (state) => state.setActiveDrawerMenuOption,
+  );
+  const setSelectedFolder = useVectorFsStore(
+    (state) => state.setSelectedFolder,
+  );
+
   const layout = useVectorFsStore((state) => state.layout);
   const isVRSelectionActive = useVectorFsStore(
     (state) => state.isVRSelectionActive,
@@ -108,99 +100,99 @@ const VectorFsFolder = ({
     );
   }
 
-  const renderDrawerContent = (selectedOption: VectorFsFolderAction | null) => {
-    switch (selectedOption) {
-      case VectorFsFolderAction.Rename:
-        return (
-          <React.Fragment>
-            <DrawerHeader>
-              <DrawerTitle className="flex flex-col items-start gap-1">
-                <DirectoryTypeIcon className="h-10 w-10" />
-                Rename Folder
-              </DrawerTitle>
-            </DrawerHeader>
-            <input
-              className="w-full rounded-md border-0 bg-gray-500/30 p-2"
-              placeholder="Folder name"
-              type="text"
-            />
-            <DrawerFooter>
-              <Button
-                className="mt-4"
-                onClick={async () => {
-                  await moveFolderVR(
-                    auth?.node_address ?? '',
-                    auth?.shinkai_identity ?? '',
-                    auth?.profile ?? '',
-                    auth?.shinkai_identity ?? '',
-                    auth?.profile ?? '',
-                    '/personal/finances',
-                    '/',
-                    {
-                      my_device_encryption_sk:
-                        auth?.my_device_encryption_sk ?? '',
-                      my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-                      node_encryption_pk: auth?.node_encryption_pk ?? '',
-                      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-                      profile_identity_sk: auth?.profile_identity_sk ?? '',
-                    },
-                  );
-                }}
-              >
-                Rename
-              </Button>
-            </DrawerFooter>
-          </React.Fragment>
-        );
-      case VectorFsFolderAction.Move:
-        return (
-          <VectorFsFolderMoveAction
-            closeDrawer={() => {
-              setSelectedOption(null);
-            }}
-            name={folder.name}
-            path={folder.path}
-          />
-        );
-      case VectorFsFolderAction.Share:
-        return (
-          <React.Fragment>
-            <DrawerHeader>
-              <DrawerTitle className="flex flex-col items-start gap-1">
-                <DirectoryTypeIcon className="h-10 w-10" />
-                Share Folder
-              </DrawerTitle>
-            </DrawerHeader>
-            <p className="text-gray-100">
-              Share this folder with other users or groups.
-            </p>
-            <DrawerFooter>
-              <Button className="mt-4">Share</Button>
-            </DrawerFooter>
-          </React.Fragment>
-        );
-      case VectorFsFolderAction.Delete:
-        return (
-          <React.Fragment>
-            <DrawerHeader>
-              <DrawerTitle className="flex flex-col items-start gap-1">
-                <DirectoryTypeIcon className="h-10 w-10" />
-                Delete Folder
-              </DrawerTitle>
-            </DrawerHeader>
-            <p className="text-gray-100">
-              Are you sure you want to delete this folder? This action cannot be
-              undone.
-            </p>
-            <DrawerFooter>
-              <Button className="mt-4">Delete</Button>
-            </DrawerFooter>
-          </React.Fragment>
-        );
-      default:
-        return null;
-    }
-  };
+  // const renderDrawerContent = (selectedOption: VectorFsFolderAction | null) => {
+  //   switch (selectedOption) {
+  //     case VectorFsFolderAction.Rename:
+  //       return (
+  //         <React.Fragment>
+  //           <DrawerHeader>
+  //             <DrawerTitle className="flex flex-col items-start gap-1">
+  //               <DirectoryTypeIcon className="h-10 w-10" />
+  //               Rename Folder
+  //             </DrawerTitle>
+  //           </DrawerHeader>
+  //           <input
+  //             className="w-full rounded-md border-0 bg-gray-500/30 p-2"
+  //             placeholder="Folder name"
+  //             type="text"
+  //           />
+  //           <DrawerFooter>
+  //             <Button
+  //               className="mt-4"
+  //               onClick={async () => {
+  //                 await moveFolderVR(
+  //                   auth?.node_address ?? '',
+  //                   auth?.shinkai_identity ?? '',
+  //                   auth?.profile ?? '',
+  //                   auth?.shinkai_identity ?? '',
+  //                   auth?.profile ?? '',
+  //                   '/personal/finances',
+  //                   '/',
+  //                   {
+  //                     my_device_encryption_sk:
+  //                       auth?.my_device_encryption_sk ?? '',
+  //                     my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+  //                     node_encryption_pk: auth?.node_encryption_pk ?? '',
+  //                     profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+  //                     profile_identity_sk: auth?.profile_identity_sk ?? '',
+  //                   },
+  //                 );
+  //               }}
+  //             >
+  //               Rename
+  //             </Button>
+  //           </DrawerFooter>
+  //         </React.Fragment>
+  //       );
+  //     case VectorFsFolderAction.Move:
+  //       return (
+  //         <VectorFsFolderMoveAction
+  //           closeDrawer={() => {
+  //             setSelectedOption(null);
+  //           }}
+  //           name={folder.name}
+  //           path={folder.path}
+  //         />
+  //       );
+  //     case VectorFsFolderAction.Share:
+  //       return (
+  //         <React.Fragment>
+  //           <DrawerHeader>
+  //             <DrawerTitle className="flex flex-col items-start gap-1">
+  //               <DirectoryTypeIcon className="h-10 w-10" />
+  //               Share Folder
+  //             </DrawerTitle>
+  //           </DrawerHeader>
+  //           <p className="text-gray-100">
+  //             Share this folder with other users or groups.
+  //           </p>
+  //           <DrawerFooter>
+  //             <Button className="mt-4">Share</Button>
+  //           </DrawerFooter>
+  //         </React.Fragment>
+  //       );
+  //     case VectorFsFolderAction.Delete:
+  //       return (
+  //         <React.Fragment>
+  //           <DrawerHeader>
+  //             <DrawerTitle className="flex flex-col items-start gap-1">
+  //               <DirectoryTypeIcon className="h-10 w-10" />
+  //               Delete Folder
+  //             </DrawerTitle>
+  //           </DrawerHeader>
+  //           <p className="text-gray-100">
+  //             Are you sure you want to delete this folder? This action cannot be
+  //             undone.
+  //           </p>
+  //           <DrawerFooter>
+  //             <Button className="mt-4">Delete</Button>
+  //           </DrawerFooter>
+  //         </React.Fragment>
+  //       );
+  //     default:
+  //       return null;
+  //   }
+  // };
 
   return (
     <React.Fragment>
@@ -219,7 +211,6 @@ const VectorFsFolder = ({
               className="border-0 hover:bg-gray-500/40"
               onClick={(event) => {
                 event.stopPropagation();
-                console.log('click');
               }}
               size="icon"
               variant="tertiary"
@@ -237,28 +228,28 @@ const VectorFsFolder = ({
                 name: 'Rename',
                 icon: <PencilLine className="mr-3 h-4 w-4" />,
                 onClick: () => {
-                  setSelectedOption(VectorFsFolderAction.Rename);
+                  setActiveDrawerMenuOption(VectorFsFolderAction.Rename);
                 },
               },
               {
                 name: 'Move',
                 icon: <FolderInputIcon className="mr-3 h-4 w-4" />,
                 onClick: () => {
-                  setSelectedOption(VectorFsFolderAction.Move);
+                  setActiveDrawerMenuOption(VectorFsFolderAction.Move);
                 },
               },
               {
                 name: 'Share',
                 icon: <Share2Icon className="mr-3 h-4 w-4" />,
                 onClick: () => {
-                  setSelectedOption(VectorFsFolderAction.Share);
+                  setActiveDrawerMenuOption(VectorFsFolderAction.Share);
                 },
               },
               {
                 name: 'Delete',
                 icon: <TrashIcon className="mr-3 h-4 w-4" />,
                 onClick: () => {
-                  setSelectedOption(VectorFsFolderAction.Delete);
+                  setActiveDrawerMenuOption(VectorFsFolderAction.Delete);
                 },
               },
             ].map((option) => (
@@ -271,6 +262,7 @@ const VectorFsFolder = ({
                   onClick={(event) => {
                     event.stopPropagation();
                     option.onClick();
+                    setSelectedFolder(folder);
                   }}
                 >
                   {option.icon}
@@ -281,23 +273,23 @@ const VectorFsFolder = ({
           </DropdownMenuContent>
         </DropdownMenu>
       </button>
-      <Drawer
-        onOpenChange={(open) => {
-          if (!open) {
-            setSelectedOption(null);
-          }
-        }}
-        open={!!selectedOption}
-      >
-        <DrawerContent>
-          <DrawerClose className="absolute right-4 top-5">
-            <XIcon className="text-gray-80" />
-          </DrawerClose>
-          <VectorFolderSelectionProvider>
-            {renderDrawerContent(selectedOption)}
-          </VectorFolderSelectionProvider>
-        </DrawerContent>
-      </Drawer>
+      {/*<Drawer*/}
+      {/*  onOpenChange={(open) => {*/}
+      {/*    if (!open) {*/}
+      {/*      setSelectedOption(null);*/}
+      {/*    }*/}
+      {/*  }}*/}
+      {/*  open={!!selectedOption}*/}
+      {/*>*/}
+      {/*  <DrawerContent>*/}
+      {/*    <DrawerClose className="absolute right-4 top-5">*/}
+      {/*      <XIcon className="text-gray-80" />*/}
+      {/*    </DrawerClose>*/}
+      {/*    <VectorFolderSelectionProvider>*/}
+      {/*      {renderDrawerContent(selectedOption)}*/}
+      {/*    </VectorFolderSelectionProvider>*/}
+      {/*  </DrawerContent>*/}
+      {/*</Drawer>*/}
     </React.Fragment>
   );
 };
