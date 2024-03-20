@@ -1,12 +1,8 @@
+import { VRItem } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import React, { createContext, useContext, useRef } from 'react';
 import { createStore, useStore } from 'zustand';
 
-export enum VectorFsDrawerMenuOption {
-  NewFolder = 'new-folder',
-  // UploadVectorResource = 'upload-vector-resource',
-  GenerateFromDocument = 'generate-from-document',
-  // GenerateFromWeb = 'generate-from-web',
-}
+import { VectorFsGlobalAction } from './vector-fs-drawer';
 
 export enum VectorFSLayout {
   Grid = 'grid',
@@ -16,15 +12,17 @@ export enum VectorFSLayout {
 type VectorFsStore = {
   currentGlobalPath: string;
   setCurrentGlobalPath: (path: string) => void;
-  activeDrawerMenuOption: VectorFsDrawerMenuOption | null;
+  activeDrawerMenuOption: VectorFsGlobalAction | null;
   setActiveDrawerMenuOption: (
-    drawerMenuOption: VectorFsDrawerMenuOption | null,
+    drawerMenuOption: VectorFsGlobalAction | null,
   ) => void;
   closeDrawerMenu: () => void;
   layout: VectorFSLayout;
   setLayout: (layout: VectorFSLayout) => void;
   isVRSelectionActive: boolean;
   setVRSelectionActive: (isVRSelectionActive: boolean) => void;
+  selectedFile: VRItem | null;
+  setSelectedFile: (selectedFile: VRItem | null) => void;
 };
 
 const createVectorFsStore = () =>
@@ -50,6 +48,11 @@ const createVectorFsStore = () =>
     isVRSelectionActive: false,
     setVRSelectionActive: (isVRSelectionActive) => {
       set({ isVRSelectionActive });
+    },
+
+    selectedFile: null,
+    setSelectedFile: (selectedFile) => {
+      set({ selectedFile });
     },
   }));
 

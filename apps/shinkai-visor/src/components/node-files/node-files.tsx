@@ -23,9 +23,6 @@ import {
   ContextMenuTrigger,
   CreateAIIcon,
   DirectoryTypeIcon,
-  Drawer,
-  DrawerClose,
-  DrawerContent,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
@@ -76,25 +73,14 @@ import { z } from 'zod';
 import { formatDateToLocaleString } from '../../helpers/date';
 import { useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
-import {
-  useVectorFsStore,
-  VectorFsDrawerMenuOption,
-  VectorFSLayout,
-} from './node-file-context';
+import { useVectorFsStore, VectorFSLayout } from './node-file-context';
+import VectorFSDrawer, { VectorFsGlobalAction } from './vector-fs-drawer';
 import VectorFsFolder from './vector-fs-folder';
 import VectorFsItem from './vector-fs-item';
-
-enum NodeFilesDrawerOptions {
-  NewFolder = 'new-folder',
-  // UploadVectorResource = 'upload-vector-resource',
-  GenerateFromDocument = 'generate-from-document',
-  // GenerateFromWeb = 'generate-from-web',
-}
 
 const MotionButton = motion(Button);
 const CreateAIIconMotion = motion(CreateAIIcon);
 export default function NodeFiles() {
-  const size = partial({ standard: 'jedec' });
   const auth = useAuth((state) => state.auth);
   const history = useHistory();
 
@@ -103,9 +89,6 @@ export default function NodeFiles() {
   );
   const setCurrentGlobalPath = useVectorFsStore(
     (state) => state.setCurrentGlobalPath,
-  );
-  const activeDrawerMenuOption = useVectorFsStore(
-    (state) => state.activeDrawerMenuOption,
   );
   const setActiveDrawerMenuOption = useVectorFsStore(
     (state) => state.setActiveDrawerMenuOption,
@@ -137,7 +120,7 @@ export default function NodeFiles() {
   });
 
   const [searchQuery, setSearchQuery] = React.useState('');
-  const [activeFile, setActiveFile] = React.useState<VRItem | null>(null);
+  const setSelectedFile = useVectorFsStore((state) => state.setSelectedFile);
   const [selectedFiles, setSelectedFiles] = React.useState<VRItem[]>([]);
   const [selectedFolders, setSelectedFolders] = React.useState<VRFolder[]>([]);
   const [isMenuOpened, setMenuOpened] = React.useState(false);
@@ -167,7 +150,7 @@ export default function NodeFiles() {
       name: 'Add new folder',
       icon: <AddNewFolderIcon className="mr-2 h-4 w-4" />,
       onClick: () => {
-        setActiveDrawerMenuOption(VectorFsDrawerMenuOption.NewFolder);
+        setActiveDrawerMenuOption(VectorFsGlobalAction.NewFolder);
       },
     },
     {
@@ -175,17 +158,10 @@ export default function NodeFiles() {
       icon: <GenerateDocIcon className="mr-2 h-4 w-4" />,
       disabled: currentGlobalPath === '/',
       onClick: () => {
-        setActiveDrawerMenuOption(
-          VectorFsDrawerMenuOption.GenerateFromDocument,
-        );
+        setActiveDrawerMenuOption(VectorFsGlobalAction.GenerateFromDocument);
       },
     },
   ];
-
-  const renderDrawerOptionMap = {
-    [NodeFilesDrawerOptions.NewFolder]: <AddNewFolderDrawer />,
-    [NodeFilesDrawerOptions.GenerateFromDocument]: <UploadVRFilesDrawer />,
-  };
 
   const splitCurrentPath = VRFiles?.path?.split('/').filter(Boolean) ?? [];
 
@@ -269,25 +245,6 @@ export default function NodeFiles() {
             <List className="h-4 w-4" />
           </ToggleGroupItem>
         </ToggleGroup>
-
-        <Drawer
-          onOpenChange={(open) => {
-            if (!open) {
-              setActiveDrawerMenuOption(null);
-            }
-          }}
-          open={!!activeDrawerMenuOption}
-        >
-          <DrawerContent>
-            <DrawerClose className="absolute right-4 top-5">
-              <XIcon className="text-gray-80" />
-            </DrawerClose>
-            <div className="space-y-8">
-              {activeDrawerMenuOption &&
-                renderDrawerOptionMap[activeDrawerMenuOption]}
-            </div>
-          </DrawerContent>
-        </Drawer>
       </div>
       {!searchQuery && (
         <div className="mt-4">
@@ -399,7 +356,10 @@ export default function NodeFiles() {
                   )}
                   key={index}
                   onClick={() => {
-                    setActiveFile(file);
+                    setSelectedFile(file);
+                    setActiveDrawerMenuOption(
+                      VectorFsGlobalAction.VectorFileDetails,
+                    );
                   }}
                 />
               );
@@ -496,94 +456,88 @@ export default function NodeFiles() {
           <XIcon />
         </MotionButton>
       )}
-
-      <Drawer
-        onOpenChange={(open) => {
-          if (!open) {
-            setActiveFile(null);
-          }
-        }}
-        open={!!activeFile}
-      >
-        <DrawerContent>
-          <DrawerClose className="absolute right-4 top-5">
-            <XIcon className="text-gray-80" />
-          </DrawerClose>
-          <DrawerHeader>
-            <DrawerTitle className={'sr-only'}>Information</DrawerTitle>
-          </DrawerHeader>
-          <div>
-            <div className="space-y-2 text-left">
-              <div>
-                <FileTypeIcon className="h-10 w-10" />
-              </div>
-              <p className="text-lg font-medium text-white">
-                {activeFile?.name}
-                <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
-                  {activeFile?.vr_header?.resource_source?.Reference?.FileRef
-                    ?.file_type?.Document ?? '-'}
-                </Badge>
-              </p>
-              <p className="text-sm text-gray-100">
-                <span>
-                  {formatDateToLocaleString(activeFile?.created_datetime)}
-                </span>{' '}
-                - <span>{size(activeFile?.vr_size ?? 0)}</span>
-              </p>
-            </div>
-            <div className="py-6">
-              <h2 className="mb-3 text-left text-lg font-medium  text-white">
-                Information
-              </h2>
-              <div className="divide-y divide-gray-300">
-                {[
-                  { label: 'Created', value: activeFile?.created_datetime },
-                  {
-                    label: 'Modified',
-                    value: activeFile?.last_written_datetime,
-                  },
-                  {
-                    label: 'Last Opened',
-                    value: activeFile?.last_read_datetime,
-                  },
-                ].map((item) => (
-                  <div
-                    className="flex items-center justify-between py-2 font-medium"
-                    key={item.label}
-                  >
-                    <span className="text-gray-100">{item.label}</span>
-                    <span className="text-white">
-                      {formatDateToLocaleString(item.value)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="py-6 text-left">
-              <h2 className="mb-3 text-lg font-medium  text-white">
-                Permissions
-              </h2>
-              <span>
-                <LockIcon className="mr-2 inline-block h-4 w-4" />
-                You can read and write
-              </span>
-            </div>
-          </div>
-
-          <DrawerFooter>
-            <Button>Download Source File</Button>
-            <Button variant="outline">Download Vector Resource</Button>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
+      <VectorFSDrawer />
     </div>
   );
 }
 
+export const VectorFileDetails = () => {
+  const selectedFile = useVectorFsStore((state) => state.selectedFile);
+  const size = partial({ standard: 'jedec' });
+
+  return (
+    <React.Fragment>
+      <DrawerHeader>
+        <DrawerTitle className={'sr-only'}>Information</DrawerTitle>
+      </DrawerHeader>
+      <div>
+        <div className="space-y-2 text-left">
+          <div>
+            <FileTypeIcon className="h-10 w-10" />
+          </div>
+          <p className="text-lg font-medium text-white">
+            {selectedFile?.name}
+            <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
+              {selectedFile?.vr_header?.resource_source?.Reference?.FileRef
+                ?.file_type?.Document ?? '-'}
+            </Badge>
+          </p>
+          <p className="text-sm text-gray-100">
+            <span>
+              {formatDateToLocaleString(selectedFile?.created_datetime)}
+            </span>{' '}
+            - <span>{size(selectedFile?.vr_size ?? 0)}</span>
+          </p>
+        </div>
+        <div className="py-6">
+          <h2 className="mb-3 text-left text-lg font-medium  text-white">
+            Information
+          </h2>
+          <div className="divide-y divide-gray-300">
+            {[
+              { label: 'Created', value: selectedFile?.created_datetime },
+              {
+                label: 'Modified',
+                value: selectedFile?.last_written_datetime,
+              },
+              {
+                label: 'Last Opened',
+                value: selectedFile?.last_read_datetime,
+              },
+            ].map((item) => (
+              <div
+                className="flex items-center justify-between py-2 font-medium"
+                key={item.label}
+              >
+                <span className="text-gray-100">{item.label}</span>
+                <span className="text-white">
+                  {formatDateToLocaleString(item.value)}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="py-6 text-left">
+          <h2 className="mb-3 text-lg font-medium  text-white">Permissions</h2>
+          <span>
+            <LockIcon className="mr-2 inline-block h-4 w-4" />
+            You can read and write
+          </span>
+        </div>
+      </div>
+
+      <DrawerFooter>
+        <Button>Download Source File</Button>
+        <Button variant="outline">Download Vector Resource</Button>
+      </DrawerFooter>
+    </React.Fragment>
+  );
+};
+
 const createFolderSchema = z.object({
   name: z.string(),
 });
-const AddNewFolderDrawer = () => {
+export const AddNewFolderDrawer = () => {
   const auth = useAuth((state) => state.auth);
   const currentGlobalPath = useVectorFsStore(
     (state) => state.currentGlobalPath,
@@ -642,7 +596,7 @@ const AddNewFolderDrawer = () => {
       </DrawerHeader>
       <Form {...createFolderForm}>
         <form
-          className="space-y-8"
+          className="space-y-8 pt-4"
           onSubmit={createFolderForm.handleSubmit(onSubmit)}
         >
           <FormField
@@ -668,7 +622,7 @@ const AddNewFolderDrawer = () => {
 const uploadVRFilesSchema = z.object({
   files: z.array(z.any()).max(3),
 });
-const UploadVRFilesDrawer = () => {
+export const UploadVRFilesDrawer = () => {
   const auth = useAuth((state) => state.auth);
   const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
   const currentGlobalPath = useVectorFsStore(

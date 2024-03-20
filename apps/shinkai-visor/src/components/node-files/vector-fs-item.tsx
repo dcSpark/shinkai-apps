@@ -215,7 +215,6 @@ const VectorFsItem = ({
               className="border-0 hover:bg-gray-500/40"
               onClick={(event) => {
                 event.stopPropagation();
-                console.log('click');
               }}
               size="icon"
               variant="tertiary"

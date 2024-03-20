@@ -29,8 +29,10 @@ import React from 'react';
 
 import { formatDateToLocaleString } from '../../helpers/date';
 import { useAuth } from '../../store/auth/auth';
+import { VectorFolderSelectionProvider } from './folder-selection-list';
 import { useVectorFsStore, VectorFSLayout } from './node-file-context';
-import { VectorFsFolderMoveAction } from './vector-fs-folder-action';
+import { VectorFsFolderAction } from './vector-fs-drawer';
+import { VectorFsFolderMoveAction } from './vector-fs-folder-options';
 
 export const VectorFsFolderInfo = ({
   folder,
@@ -57,12 +59,6 @@ export const VectorFsFolderInfo = ({
   );
 };
 
-enum VectorFsFolderAction {
-  Rename = 'Rename',
-  Move = 'Move',
-  Share = 'Share',
-  Delete = 'Delete',
-}
 const VectorFsFolder = ({
   onClick,
   folder,
@@ -164,7 +160,6 @@ const VectorFsFolder = ({
             }}
             name={folder.name}
             path={folder.path}
-            setCurrentGlobalPath={setCurrentGlobalPath}
           />
         );
       case VectorFsFolderAction.Share:
@@ -298,8 +293,9 @@ const VectorFsFolder = ({
           <DrawerClose className="absolute right-4 top-5">
             <XIcon className="text-gray-80" />
           </DrawerClose>
-
-          {renderDrawerContent(selectedOption)}
+          <VectorFolderSelectionProvider>
+            {renderDrawerContent(selectedOption)}
+          </VectorFolderSelectionProvider>
         </DrawerContent>
       </Drawer>
     </React.Fragment>
