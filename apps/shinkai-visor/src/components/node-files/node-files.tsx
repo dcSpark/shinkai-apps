@@ -17,17 +17,12 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
   Button,
-  Checkbox,
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
-  // Checkbox,
   CreateAIIcon,
   DirectoryTypeIcon,
-  Drawer,
-  DrawerClose,
-  DrawerContent,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
@@ -45,18 +40,19 @@ import {
   FormLabel,
   FormMessage,
   GenerateDocIcon,
-  // GenerateDocIcon,
-  // GenerateFromWebIcon,
   Input,
   ScrollArea,
   TextField,
+  ToggleGroup,
+  ToggleGroupItem,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { partial } from 'filesize';
 import { motion } from 'framer-motion';
 import {
-  ChevronLeft,
   ChevronRight,
+  LayoutGrid,
+  List,
   // DatabaseIcon,
   // FileIcon,
   // DatabaseIcon,
@@ -77,23 +73,36 @@ import { z } from 'zod';
 import { formatDateToLocaleString } from '../../helpers/date';
 import { useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
-
-enum NodeFilesDrawerOptions {
-  NewFolder = 'new-folder',
-  // UploadVectorResource = 'upload-vector-resource',
-  GenerateFromDocument = 'generate-from-document',
-  // GenerateFromWeb = 'generate-from-web',
-}
+import { useVectorFsStore, VectorFSLayout } from './node-file-context';
+import VectorFSDrawer, { VectorFsGlobalAction } from './vector-fs-drawer';
+import VectorFsFolder from './vector-fs-folder';
+import VectorFsItem from './vector-fs-item';
 
 const MotionButton = motion(Button);
 const CreateAIIconMotion = motion(CreateAIIcon);
 export default function NodeFiles() {
-  const size = partial({ standard: 'jedec' });
-  const [selectedDrawerOption, setSelectedDrawerOption] =
-    React.useState<NodeFilesDrawerOptions | null>(null);
   const auth = useAuth((state) => state.auth);
-  const [currentPath, setCurrentPath] = React.useState<string>('/');
   const history = useHistory();
+
+  const currentGlobalPath = useVectorFsStore(
+    (state) => state.currentGlobalPath,
+  );
+  const setCurrentGlobalPath = useVectorFsStore(
+    (state) => state.setCurrentGlobalPath,
+  );
+
+  const setActiveDrawerMenuOption = useVectorFsStore(
+    (state) => state.setActiveDrawerMenuOption,
+  );
+  const layout = useVectorFsStore((state) => state.layout);
+  const setLayout = useVectorFsStore((state) => state.setLayout);
+
+  const isVRSelectionActive = useVectorFsStore(
+    (state) => state.isVRSelectionActive,
+  );
+  const setVRSelectionActive = useVectorFsStore(
+    (state) => state.setVRSelectionActive,
+  );
 
   const {
     isPending: isVRFilesPending,
@@ -103,7 +112,7 @@ export default function NodeFiles() {
     nodeAddress: auth?.node_address ?? '',
     profile: auth?.profile ?? '',
     shinkaiIdentity: auth?.shinkai_identity ?? '',
-    path: currentPath,
+    path: currentGlobalPath,
     my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
     my_device_identity_sk: auth?.profile_identity_sk ?? '',
     node_encryption_pk: auth?.node_encryption_pk ?? '',
@@ -112,8 +121,7 @@ export default function NodeFiles() {
   });
 
   const [searchQuery, setSearchQuery] = React.useState('');
-  const [activeFile, setActiveFile] = React.useState<VRItem | null>(null);
-  const [selectionMode, setSelectionMode] = React.useState(false);
+  const setSelectedFile = useVectorFsStore((state) => state.setSelectedFile);
   const [selectedFiles, setSelectedFiles] = React.useState<VRItem[]>([]);
   const [selectedFolders, setSelectedFolders] = React.useState<VRFolder[]>([]);
   const [isMenuOpened, setMenuOpened] = React.useState(false);
@@ -143,37 +151,18 @@ export default function NodeFiles() {
       name: 'Add new folder',
       icon: <AddNewFolderIcon className="mr-2 h-4 w-4" />,
       onClick: () => {
-        setSelectedDrawerOption(NodeFilesDrawerOptions.NewFolder);
+        setActiveDrawerMenuOption(VectorFsGlobalAction.NewFolder);
       },
     },
     {
       name: 'File Upload',
       icon: <GenerateDocIcon className="mr-2 h-4 w-4" />,
-      disabled: currentPath === '/',
+      disabled: currentGlobalPath === '/',
       onClick: () => {
-        setSelectedDrawerOption(NodeFilesDrawerOptions.GenerateFromDocument);
+        setActiveDrawerMenuOption(VectorFsGlobalAction.GenerateFromDocument);
       },
     },
   ];
-
-  const renderDrawerOptionMap = {
-    [NodeFilesDrawerOptions.NewFolder]: (
-      <AddNewFolderDrawer
-        closeDrawer={() => {
-          setSelectedDrawerOption(null);
-        }}
-        currentPath={currentPath}
-      />
-    ),
-    [NodeFilesDrawerOptions.GenerateFromDocument]: (
-      <UploadVRFilesDrawer
-        closeDrawer={() => {
-          setSelectedDrawerOption(null);
-        }}
-        currentPath={currentPath}
-      />
-    ),
-  };
 
   const splitCurrentPath = VRFiles?.path?.split('/').filter(Boolean) ?? [];
 
@@ -236,52 +225,44 @@ export default function NodeFiles() {
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
-        <Drawer
-          onOpenChange={(open) => {
-            if (!open) {
-              setSelectedDrawerOption(null);
-            }
-          }}
-          open={!!selectedDrawerOption}
-        >
-          <DrawerContent>
-            <DrawerClose className="absolute right-4 top-5">
-              <XIcon className="text-gray-80" />
-            </DrawerClose>
-            <div className="space-y-8">
-              {selectedDrawerOption &&
-                renderDrawerOptionMap[selectedDrawerOption]}
-            </div>
-          </DrawerContent>
-        </Drawer>
+
+        <ToggleGroup type="single" value={layout}>
+          <ToggleGroupItem
+            aria-label="Toggle layout grid"
+            onClick={() => {
+              setLayout(VectorFSLayout.Grid);
+            }}
+            value="grid"
+          >
+            <LayoutGrid className="h-4 w-4" />
+          </ToggleGroupItem>
+          <ToggleGroupItem
+            aria-label="Toggle layout list"
+            onClick={() => {
+              setLayout(VectorFSLayout.List);
+            }}
+            value="list"
+          >
+            <List className="h-4 w-4" />
+          </ToggleGroupItem>
+        </ToggleGroup>
       </div>
       {!searchQuery && (
-        <div className="mt-4 flex items-center gap-3">
-          {(VRFiles?.path.split('/').filter(Boolean) || []).length > 0 && (
-            <Button
-              onClick={() => {
-                const prevPath = VRFiles?.path.split('/').filter(Boolean) || [];
-                setCurrentPath(
-                  '/' + prevPath.slice(0, prevPath.length - 1).join('/'),
-                );
-              }}
-              size={'icon'}
-              variant="ghost"
-            >
-              <ChevronLeft />
-            </Button>
-          )}
+        <div className="mt-4">
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
                   <button
-                    className="flex items-center gap-2 py-2"
+                    className={cn(
+                      'flex items-center gap-2 rounded-full p-2 hover:bg-gray-400',
+                      currentGlobalPath === '/' && 'text-white',
+                    )}
                     onClick={() => {
-                      setCurrentPath('/');
+                      setCurrentGlobalPath('/');
                     }}
                   >
-                    <HomeIcon />
+                    <HomeIcon className="h-3.5 w-3.5" />
                     Home
                   </button>
                 </BreadcrumbLink>
@@ -292,22 +273,20 @@ export default function NodeFiles() {
                     <ChevronRight />
                   </BreadcrumbSeparator>
                   {splitCurrentPath.length - 1 === idx ? (
-                    <BreadcrumbPage className="flex items-center gap-1 font-medium">
-                      <DirectoryTypeIcon />
+                    <BreadcrumbPage className="flex items-center gap-1 p-2 font-medium">
                       {path}
                     </BreadcrumbPage>
                   ) : (
                     <BreadcrumbLink asChild>
                       <button
-                        className="flex items-center gap-1"
+                        className="flex items-center gap-1 rounded-full bg-transparent p-2 hover:bg-gray-400"
                         onClick={() => {
                           const buildPath = splitCurrentPath
                             .slice(0, idx + 1)
                             .join('/');
-                          setCurrentPath('/' + buildPath);
+                          setCurrentGlobalPath('/' + buildPath);
                         }}
                       >
-                        <DirectoryTypeIcon />
                         {path}
                       </button>
                     </BreadcrumbLink>
@@ -319,7 +298,15 @@ export default function NodeFiles() {
         </div>
       )}
       <ScrollArea>
-        <div className="flex flex-1 flex-col divide-y divide-gray-400">
+        <div
+          className={cn(
+            'grid flex-1',
+            layout === VectorFSLayout.Grid &&
+              'grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5',
+            layout === VectorFSLayout.List &&
+              'grid-cols-1 divide-y divide-gray-400',
+          )}
+        >
           {isVRFilesPending &&
             Array.from({ length: 4 }).map((_, idx) => (
               <div
@@ -329,7 +316,7 @@ export default function NodeFiles() {
             ))}
           {VRFiles?.child_folders.map((folder, index: number) => {
             return (
-              <FolderVRItem
+              <VectorFsFolder
                 folder={folder}
                 handleSelectFolders={handleSelectFolders}
                 isSelectedFolder={selectedFolders.some(
@@ -337,15 +324,14 @@ export default function NodeFiles() {
                 )}
                 key={index}
                 onClick={() => {
-                  setCurrentPath(folder.path);
+                  setCurrentGlobalPath(folder.path);
                 }}
-                selectionMode={selectionMode}
               />
             );
           })}
           {isVRFilesSuccess &&
             (VRFiles?.child_folders || [])?.length === 0 &&
-            currentPath === '/' && (
+            currentGlobalPath === '/' && (
               <div className="text-gray-80 mt-4 flex flex-col items-center justify-center gap-4 text-center text-base">
                 <FileEmptyStateIcon className="h-20 w-20" />
                 <div>
@@ -362,7 +348,7 @@ export default function NodeFiles() {
             VRFiles?.child_items?.length > 0 &&
             VRFiles?.child_items.map((file, index: number) => {
               return (
-                <FileVRItem
+                <VectorFsItem
                   file={file}
                   handleSelectFiles={handleSelectFiles}
                   isSelectedFile={selectedFiles.some(
@@ -370,9 +356,11 @@ export default function NodeFiles() {
                   )}
                   key={index}
                   onClick={() => {
-                    setActiveFile(file);
+                    setSelectedFile(file);
+                    setActiveDrawerMenuOption(
+                      VectorFsGlobalAction.VectorFileDetails,
+                    );
                   }}
-                  selectionMode={selectionMode}
                 />
               );
             })}
@@ -417,12 +405,12 @@ export default function NodeFiles() {
       <MotionButton
         className={cn(
           'fixed bottom-16 right-4 h-[60px] w-[60px]',
-          selectionMode && 'w-[210px]',
+          isVRSelectionActive && 'w-[210px]',
         )}
         layout
         onClick={() => {
-          if (!selectionMode) {
-            setSelectionMode(true);
+          if (!isVRSelectionActive) {
+            setVRSelectionActive(true);
           } else {
             history.push({
               pathname: '/inboxes/create-job',
@@ -433,34 +421,31 @@ export default function NodeFiles() {
             });
           }
         }}
-        size={selectionMode ? 'lg' : 'icon'}
-        transition={{
-          // delayChildren: 1,
-          duration: 0.2,
-        }}
+        size={isVRSelectionActive ? 'lg' : 'icon'}
+        transition={{ duration: 0.2 }}
       >
-        {!selectionMode && <CreateAIIconMotion layout />}
+        {!isVRSelectionActive && <CreateAIIconMotion layout />}
         <motion.div
           className={cn(
             'sr-only flex flex-col',
-            selectionMode && 'not-sr-only',
+            isVRSelectionActive && 'not-sr-only',
           )}
           layout
         >
           <span>Create AI Chat</span>
-          {selectionMode && (
+          {isVRSelectionActive && (
             <span className="text-sm text-neutral-200">
               {selectedFiles.length + selectedFolders.length} selected
             </span>
           )}
         </motion.div>
       </MotionButton>
-      {selectionMode && (
+      {isVRSelectionActive && (
         <MotionButton
           animate={{ opacity: 1 }}
           className="fixed bottom-20 right-[230px] h-[24px] w-[24px] border border-gray-100 bg-gray-300 p-1 text-gray-50 hover:bg-gray-500 hover:text-white"
           initial={{ opacity: 0 }}
-          onClick={() => setSelectionMode(false)}
+          onClick={() => setVRSelectionActive(false)}
           size="icon"
           transition={{
             duration: 0.4,
@@ -471,241 +456,93 @@ export default function NodeFiles() {
           <XIcon />
         </MotionButton>
       )}
-
-      <Drawer
-        onOpenChange={(open) => {
-          if (!open) {
-            setActiveFile(null);
-          }
-        }}
-        open={!!activeFile}
-      >
-        <DrawerContent>
-          <DrawerClose className="absolute right-4 top-5">
-            <XIcon className="text-gray-80" />
-          </DrawerClose>
-          <DrawerHeader>
-            <DrawerTitle className={'sr-only'}>Information</DrawerTitle>
-          </DrawerHeader>
-          <div>
-            <div className="space-y-2 text-left">
-              <div>
-                <FileTypeIcon className="h-10 w-10" />
-              </div>
-              <p className="text-lg font-medium text-white">
-                {activeFile?.name}
-                <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
-                  {activeFile?.vr_header?.resource_source?.Reference?.FileRef
-                    ?.file_type?.Document ?? '-'}
-                </Badge>
-              </p>
-              <p className="text-sm text-gray-100">
-                <span>
-                  {formatDateToLocaleString(activeFile?.created_datetime)}
-                </span>{' '}
-                - <span>{size(activeFile?.vr_size ?? 0)}</span>
-              </p>
-            </div>
-            <div className="py-6">
-              <h2 className="mb-3 text-left text-lg font-medium  text-white">
-                Information
-              </h2>
-              <div className="divide-y divide-gray-300">
-                {[
-                  { label: 'Created', value: activeFile?.created_datetime },
-                  {
-                    label: 'Modified',
-                    value: activeFile?.last_written_datetime,
-                  },
-                  {
-                    label: 'Last Opened',
-                    value: activeFile?.last_read_datetime,
-                  },
-                ].map((item) => (
-                  <div
-                    className="flex items-center justify-between py-2 font-medium"
-                    key={item.label}
-                  >
-                    <span className="text-gray-100">{item.label}</span>
-                    <span className="text-white">
-                      {formatDateToLocaleString(item.value)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="py-6 text-left">
-              <h2 className="mb-3 text-lg font-medium  text-white">
-                Permissions
-              </h2>
-              <span>
-                <LockIcon className="mr-2 inline-block h-4 w-4" />
-                You can read and write
-              </span>
-            </div>
-          </div>
-
-          <DrawerFooter>
-            <Button>Download Source File</Button>
-            <Button variant="outline">Download Vector Resource</Button>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
+      <VectorFSDrawer />
     </div>
   );
 }
 
-const FolderVRItem = ({
-  onClick,
-  folder,
-  selectionMode,
-  handleSelectFolders,
-  isSelectedFolder,
-}: {
-  onClick: () => void;
-  folder: VRFolder;
-  selectionMode: boolean;
-  handleSelectFolders: (folder: VRFolder) => void;
-  isSelectedFolder: boolean;
-}) => {
-  const totalItem =
-    (folder.child_folders?.length ?? 0) + (folder.child_items?.length ?? 0);
-  if (selectionMode) {
-    return (
-      <div className="flex items-center justify-between gap-3 py-3.5 hover:bg-gray-400">
-        <Checkbox
-          checked={isSelectedFolder}
-          id={`item-${folder.name}`}
-          onCheckedChange={() => {
-            handleSelectFolders(folder);
-          }}
-        />
-        <label
-          className="flex flex-1 items-center gap-3"
-          htmlFor={`item-${folder.name}`}
-        >
-          <DirectoryTypeIcon />
-          <div className="flex-1 text-left">
-            <div className="text-base font-medium">{folder.name}</div>
-            <p className="text-xs font-medium text-gray-100">
-              <span>{formatDateToLocaleString(folder.created_datetime)}</span> -{' '}
-              <span>{totalItem} items</span>
-            </p>
-          </div>
-        </label>
-        <Button
-          className="border border-gray-200 bg-gray-500 p-2"
-          onClick={onClick}
-          size="auto"
-          variant="ghost"
-        >
-          <ChevronRight className="text-gray-100" />
-        </Button>
-      </div>
-    );
-  }
-
-  return (
-    <button
-      className="flex items-center justify-between gap-2 py-3.5 hover:bg-gray-400"
-      onClick={onClick}
-    >
-      <DirectoryTypeIcon />
-      <div className="flex-1 text-left">
-        <div className="text-base font-medium">{folder.name}</div>
-        <p className="text-xs font-medium text-gray-100">
-          <span>{formatDateToLocaleString(folder.created_datetime)}</span> -{' '}
-          <span>{totalItem} items</span>
-        </p>
-      </div>
-      <ChevronRight className="text-gray-100" />
-    </button>
-  );
-};
-const FileVRItem = ({
-  onClick,
-  file,
-  selectionMode,
-  handleSelectFiles,
-  isSelectedFile,
-}: {
-  onClick: () => void;
-  file: VRItem;
-  selectionMode: boolean;
-  handleSelectFiles: (file: VRItem) => void;
-  isSelectedFile: boolean;
-}) => {
+export const VectorFileDetails = () => {
+  const selectedFile = useVectorFsStore((state) => state.selectedFile);
   const size = partial({ standard: 'jedec' });
 
-  if (selectionMode) {
-    return (
-      <div className="flex items-center justify-between gap-3 py-3.5 hover:bg-gray-400">
-        <Checkbox
-          checked={isSelectedFile}
-          id={`item-${file.name}`}
-          onCheckedChange={() => {
-            handleSelectFiles(file);
-          }}
-        />
-        <label
-          className="flex flex-1 items-center gap-3"
-          htmlFor={`item-${file.name}`}
-        >
-          <FileTypeIcon />
-          <div className="flex-1 text-left">
-            <div className="text-base font-medium">
-              {file.name}
-              <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
-                {file?.vr_header?.resource_source?.Reference?.FileRef?.file_type
-                  ?.Document ?? '-'}
-              </Badge>
-            </div>
-            <p className="text-xs font-medium text-gray-100">
-              <span>{formatDateToLocaleString(file.created_datetime)}</span> -{' '}
-              <span>{size(file.vr_size)}</span>
-            </p>
-          </div>
-        </label>
-      </div>
-    );
-  }
-
   return (
-    <button
-      className="flex items-center justify-between gap-2 py-3.5 hover:bg-gray-400"
-      onClick={onClick}
-    >
-      <FileTypeIcon />
-      <div className="flex-1 text-left">
-        <div className="text-base font-medium">
-          {file.name}
-          <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
-            {file?.vr_header?.resource_source?.Reference?.FileRef?.file_type
-              ?.Document ?? '-'}
-          </Badge>
+    <React.Fragment>
+      <DrawerHeader>
+        <DrawerTitle className={'sr-only'}>Information</DrawerTitle>
+      </DrawerHeader>
+      <div>
+        <div className="space-y-2 text-left">
+          <div>
+            <FileTypeIcon className="h-10 w-10" />
+          </div>
+          <p className="text-lg font-medium text-white">
+            {selectedFile?.name}
+            <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
+              {selectedFile?.vr_header?.resource_source?.Reference?.FileRef
+                ?.file_type?.Document ?? '-'}
+            </Badge>
+          </p>
+          <p className="text-sm text-gray-100">
+            <span>
+              {formatDateToLocaleString(selectedFile?.created_datetime)}
+            </span>{' '}
+            - <span>{size(selectedFile?.vr_size ?? 0)}</span>
+          </p>
         </div>
-        <p className="text-xs font-medium text-gray-100">
-          <span>{formatDateToLocaleString(file.created_datetime)}</span> -{' '}
-          <span>{size(file.vr_size)}</span>
-        </p>
+        <div className="py-6">
+          <h2 className="mb-3 text-left text-lg font-medium  text-white">
+            Information
+          </h2>
+          <div className="divide-y divide-gray-300">
+            {[
+              { label: 'Created', value: selectedFile?.created_datetime },
+              {
+                label: 'Modified',
+                value: selectedFile?.last_written_datetime,
+              },
+              {
+                label: 'Last Opened',
+                value: selectedFile?.last_read_datetime,
+              },
+            ].map((item) => (
+              <div
+                className="flex items-center justify-between py-2 font-medium"
+                key={item.label}
+              >
+                <span className="text-gray-100">{item.label}</span>
+                <span className="text-white">
+                  {formatDateToLocaleString(item.value)}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="py-6 text-left">
+          <h2 className="mb-3 text-lg font-medium  text-white">Permissions</h2>
+          <span>
+            <LockIcon className="mr-2 inline-block h-4 w-4" />
+            You can read and write
+          </span>
+        </div>
       </div>
-      <ChevronRight className="text-gray-100" />
-    </button>
+
+      <DrawerFooter>
+        <Button>Download Source File</Button>
+        <Button variant="outline">Download Vector Resource</Button>
+      </DrawerFooter>
+    </React.Fragment>
   );
 };
 
 const createFolderSchema = z.object({
   name: z.string(),
 });
-const AddNewFolderDrawer = ({
-  currentPath,
-  closeDrawer,
-}: {
-  currentPath: string;
-  closeDrawer: () => void;
-}) => {
+export const AddNewFolderDrawer = () => {
   const auth = useAuth((state) => state.auth);
-
+  const currentGlobalPath = useVectorFsStore(
+    (state) => state.currentGlobalPath,
+  );
+  const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
   const createFolderForm = useForm<z.infer<typeof createFolderSchema>>({
     resolver: zodResolver(createFolderSchema),
   });
@@ -718,7 +555,7 @@ const AddNewFolderDrawer = ({
     onSuccess: () => {
       toast.success('Folder created successfully');
       createFolderForm.reset();
-      closeDrawer();
+      closeDrawerMenu();
     },
     onError: () => {
       toast.error('Error creating folder');
@@ -733,7 +570,7 @@ const AddNewFolderDrawer = ({
       profile: auth?.profile ?? '',
       shinkaiIdentity: auth?.shinkai_identity ?? '',
       folderName: values.name,
-      path: currentPath,
+      path: currentGlobalPath,
       my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
       my_device_identity_sk: auth?.profile_identity_sk ?? '',
       node_encryption_pk: auth?.node_encryption_pk ?? '',
@@ -759,7 +596,7 @@ const AddNewFolderDrawer = ({
       </DrawerHeader>
       <Form {...createFolderForm}>
         <form
-          className="space-y-8"
+          className="space-y-8 pt-4"
           onSubmit={createFolderForm.handleSubmit(onSubmit)}
         >
           <FormField
@@ -785,15 +622,12 @@ const AddNewFolderDrawer = ({
 const uploadVRFilesSchema = z.object({
   files: z.array(z.any()).max(3),
 });
-const UploadVRFilesDrawer = ({
-  currentPath,
-  closeDrawer,
-}: {
-  currentPath: string;
-  closeDrawer: () => void;
-}) => {
+export const UploadVRFilesDrawer = () => {
   const auth = useAuth((state) => state.auth);
-
+  const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
+  const currentGlobalPath = useVectorFsStore(
+    (state) => state.currentGlobalPath,
+  );
   const createFolderForm = useForm<z.infer<typeof uploadVRFilesSchema>>({
     resolver: zodResolver(uploadVRFilesSchema),
   });
@@ -821,13 +655,13 @@ const UploadVRFilesDrawer = ({
       description: 'This process might take from 1-2 minutes',
       position: 'bottom-left',
     });
-    closeDrawer();
+    closeDrawerMenu();
     await uploadVRFiles({
       nodeAddress: auth?.node_address ?? '',
       sender: auth?.shinkai_identity ?? '',
       senderSubidentity: auth?.profile ?? '',
       receiver: auth?.shinkai_identity ?? '',
-      destinationPath: currentPath,
+      destinationPath: currentGlobalPath,
       files: values.files,
       my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
       my_device_identity_sk: auth?.profile_identity_sk ?? '',
