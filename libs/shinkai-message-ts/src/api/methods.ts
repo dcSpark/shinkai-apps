@@ -741,7 +741,7 @@ export const archiveJob = async (
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Error closing job:', error);
+    console.error('Error archiving job:', error);
     throw error;
   }
 };
@@ -783,7 +783,7 @@ export const createVRFolder = async (
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Error closing job:', error);
+    console.error('Error createVRFolder:', error);
     throw error;
   }
 };
@@ -823,7 +823,7 @@ export const retrieveVRPathSimplified = async (
     const data = await response.json();
     return { data: JSON.parse(data.data), status: data.status };
   } catch (error) {
-    console.error('Error closing job:', error);
+    console.error('Error retrieveVRPathSimplified:', error);
     throw error;
   }
 };
@@ -867,7 +867,7 @@ export const retrieveVectorSearchSimplified = async (
     const data = await response.json();
     return { data: JSON.parse(data.data), status: data.status };
   } catch (error) {
-    console.error('Error closing job:', error);
+    console.error('Error retrieveVectorSearchSimplified:', error);
     throw error;
   }
 };
@@ -902,7 +902,7 @@ export const uploadFilesToVR = async (
 
     return response;
   } catch (error) {
-    console.error('Error uploading knowledge files:', error);
+    console.error('Error uploadFilesToVR:', error);
     throw error;
   }
 };
@@ -944,7 +944,7 @@ export const retrieveVectorResource = async (
     const data = await response.json();
     return { data: JSON.parse(data.data), status: data.status };
   } catch (error) {
-    console.error('Error closing job:', error);
+    console.error('Error retrieveVectorResource:', error);
     throw error;
   }
 };
@@ -986,7 +986,7 @@ export const moveFolderVR = async (
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Error closing job:', error);
+    console.error('Error moveFolderVR:', error);
     throw error;
   }
 };

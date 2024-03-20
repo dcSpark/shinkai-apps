@@ -1,4 +1,5 @@
 import { useCopyVrFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/copyVRFolder/useCopyVrFolder';
+import { useCopyVrItem } from '@shinkai_network/shinkai-node-state/lib/mutations/copyVRItem/useCopyVrItem';
 import { useDeleteVRItem } from '@shinkai_network/shinkai-node-state/lib/mutations/deleteVRItem/useDeleteVRItem';
 import { useMoveVRItem } from '@shinkai_network/shinkai-node-state/lib/mutations/moveVRItem/useMoveVRItem';
 import {
@@ -139,14 +140,14 @@ export const VectorFsItemCopyAction = () => {
     (state) => state.destinationFolderPath,
   );
 
-  const { mutateAsync: copyVrFolder, isPending } = useCopyVrFolder({
+  const { mutateAsync: copyVrFolder, isPending } = useCopyVrItem({
     onSuccess: () => {
       setCurrentGlobalPath(destinationFolderPath ?? '/');
       closeDrawerMenu();
-      toast.success('Folder copied successfully');
+      toast.success('Item copied successfully');
     },
     onError: () => {
-      toast.error('Failed to copy folder');
+      toast.error('Failed to copy item');
     },
   });
 
