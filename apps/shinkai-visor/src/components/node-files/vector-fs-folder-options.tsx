@@ -7,7 +7,6 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@shinkai_network/shinkai-ui';
-import { FolderInputIcon } from 'lucide-react';
 import React from 'react';
 import { toast } from 'sonner';
 
@@ -44,9 +43,13 @@ export const VectorFsFolderMoveAction = () => {
   return (
     <React.Fragment>
       <DrawerHeader>
-        <DrawerTitle className="flex flex-col items-start gap-1">
-          <FolderInputIcon className="h-10 w-10" />
-          Move {selectedFolder?.name} to ...
+        <DrawerTitle className="font-normal">
+          Move
+          <span className="font-medium">
+            {' '}
+            &quot;{selectedFolder?.name}&quot;
+          </span>{' '}
+          to ...
         </DrawerTitle>
       </DrawerHeader>
       <FolderSelectionList />
@@ -94,9 +97,12 @@ export const VectorFsFolderDeleteAction = () => {
   return (
     <React.Fragment>
       <DrawerHeader>
-        <DrawerTitle className="flex flex-col items-start gap-1">
-          <FolderInputIcon className="h-10 w-10" />
-          Delete {selectedFolder?.name}
+        <DrawerTitle className="font-normal">
+          Delete
+          <span className="font-medium">
+            {' '}
+            &quot;{selectedFolder?.name}&quot;
+          </span>{' '}
         </DrawerTitle>
       </DrawerHeader>
       <p className="text-gray-80 my-3 text-base">
@@ -154,9 +160,13 @@ export const VectorFsFolderCopyAction = () => {
   return (
     <React.Fragment>
       <DrawerHeader>
-        <DrawerTitle className="flex flex-col items-start gap-1">
-          <FolderInputIcon className="h-10 w-10" />
-          Copy {selectedFolder?.name} to ...
+        <DrawerTitle className="font-normal">
+          Copy
+          <span className="font-medium">
+            {' '}
+            &quot;{selectedFolder?.name}&quot;
+          </span>{' '}
+          to ...
         </DrawerTitle>
       </DrawerHeader>
       <FolderSelectionList />

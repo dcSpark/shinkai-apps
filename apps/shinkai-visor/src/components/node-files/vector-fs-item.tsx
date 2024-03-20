@@ -73,7 +73,7 @@ const VectorFsItem = ({
   const size = partial({ standard: 'jedec' });
 
   const wrapperClassname = cn(
-    'flex items-center justify-between gap-3 rounded-md py-3.5 hover:bg-gray-400',
+    'flex items-center justify-between gap-3 rounded-md px-2 py-3.5 hover:bg-gray-400',
     layout === VectorFSLayout.Grid && 'rounded-lg bg-gray-400/30 p-2',
   );
 

@@ -1,4 +1,3 @@
-import { useCopyVrFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/copyVRFolder/useCopyVrFolder';
 import { useCopyVrItem } from '@shinkai_network/shinkai-node-state/lib/mutations/copyVRItem/useCopyVrItem';
 import { useDeleteVRItem } from '@shinkai_network/shinkai-node-state/lib/mutations/deleteVRItem/useDeleteVRItem';
 import { useMoveVRItem } from '@shinkai_network/shinkai-node-state/lib/mutations/moveVRItem/useMoveVRItem';
@@ -8,7 +7,6 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@shinkai_network/shinkai-ui';
-import { FileInputIcon } from 'lucide-react';
 import React from 'react';
 import { toast } from 'sonner';
 
@@ -45,9 +43,13 @@ export const VectorFsItemMoveAction = () => {
   return (
     <React.Fragment>
       <DrawerHeader>
-        <DrawerTitle className="flex flex-col items-start gap-1">
-          <FileInputIcon className="h-10 w-10" />
-          Move {selectedFile?.name} to ...
+        <DrawerTitle className="font-normal">
+          Move
+          <span className="font-medium">
+            {' '}
+            &quot;{selectedFile?.name}&quot;
+          </span>{' '}
+          to ...
         </DrawerTitle>
       </DrawerHeader>
       <FolderSelectionList />
@@ -95,11 +97,15 @@ export const VectorFsItemDeleteAction = () => {
   return (
     <React.Fragment>
       <DrawerHeader>
-        <DrawerTitle className="flex flex-col items-start gap-1">
-          <FileInputIcon className="h-10 w-10" />
-          Delete {selectedFile?.name}
+        <DrawerTitle className="font-normal">
+          Delete
+          <span className="font-medium">
+            {' '}
+            &quot;{selectedFile?.name}&quot;
+          </span>{' '}
         </DrawerTitle>
       </DrawerHeader>
+
       <p className="text-gray-80 my-3 text-base">
         Are you sure you want to delete this item? This action cannot be undone.
       </p>
@@ -154,9 +160,13 @@ export const VectorFsItemCopyAction = () => {
   return (
     <React.Fragment>
       <DrawerHeader>
-        <DrawerTitle className="flex flex-col items-start gap-1">
-          <FileInputIcon className="h-10 w-10" />
-          Copy {selectedFile?.name} to ...
+        <DrawerTitle className="font-normal">
+          Copy
+          <span className="font-medium">
+            {' '}
+            &quot;{selectedFile?.name}&quot;
+          </span>{' '}
+          to ...
         </DrawerTitle>
       </DrawerHeader>
       <FolderSelectionList />

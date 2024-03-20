@@ -69,17 +69,16 @@ const VectorFsFolder = ({
   const isVRSelectionActive = useVectorFsStore(
     (state) => state.isVRSelectionActive,
   );
+  const wrapperClassName = cn(
+    'flex items-center justify-between gap-2 px-2 py-3.5 hover:bg-gray-400',
+    layout === VectorFSLayout.Grid && 'rounded-lg bg-gray-400/30 p-2',
+  );
   const totalItem =
     (folder.child_folders?.length ?? 0) + (folder.child_items?.length ?? 0);
 
   if (isVRSelectionActive) {
     return (
-      <div
-        className={cn(
-          'flex items-center justify-between gap-3 rounded-md py-3.5 hover:bg-gray-400',
-          layout === VectorFSLayout.Grid && 'rounded-lg bg-gray-400/30 p-2',
-        )}
-      >
+      <div className={wrapperClassName}>
         <Checkbox
           checked={isSelectedFolder}
           id={`item-${folder.name}`}
@@ -99,13 +98,7 @@ const VectorFsFolder = ({
   }
 
   return (
-    <button
-      className={cn(
-        'flex items-center justify-between gap-2 py-3.5 hover:bg-gray-400',
-        layout === VectorFSLayout.Grid && 'rounded-lg bg-gray-400/30 p-2',
-      )}
-      onClick={onClick}
-    >
+    <button className={wrapperClassName} onClick={onClick}>
       <DirectoryTypeIcon />
       <VectorFsFolderInfo folder={folder} totalItem={totalItem} />
       <DropdownMenu>
