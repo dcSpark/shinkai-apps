@@ -5,7 +5,7 @@ import {
 import React, { createContext, useContext, useRef } from 'react';
 import { createStore, useStore } from 'zustand';
 
-import { VectorFsActions, VectorFsGlobalAction } from './vector-fs-drawer';
+import { VectorFsActions } from './vector-fs-drawer';
 
 export enum VectorFSLayout {
   Grid = 'grid',
