@@ -29,6 +29,7 @@ export enum MessageSchemaType {
   VecFsCreateItem = 'VecFsCreateItem',
   VecFsMoveItem = 'VecFsMoveItem',
   VecFsCopyItem = 'VecFsCopyItem',
+  VecFsDeleteItem = 'VecFsDeleteItem',
   ConvertFilesAndSaveToFolder = 'ConvertFilesAndSaveToFolder',
 }
 

@@ -702,6 +702,39 @@ export class ShinkaiMessageBuilderWrapper {
     const message = builder.build_to_string();
     return message;
   }
+  static deleteFolder(
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    path: string,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+    receiver_subidentity: string,
+  ): string {
+    const payload = { path };
+    const body = JSON.stringify(payload);
+
+    const builder = new ShinkaiMessageBuilderWrapper(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key,
+    );
+
+    builder.message_raw_content(body);
+    builder.message_schema_type(MessageSchemaType.VecFsDeleteFolder.toString());
+    builder.internal_metadata(
+      sender_subidentity,
+      receiver_subidentity,
+      '',
+      'None',
+    );
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
+
+    const message = builder.build_to_string();
+    return message;
+  }
   static copyFolder(
     my_encryption_secret_key: string,
     my_signature_secret_key: string,
@@ -713,8 +746,8 @@ export class ShinkaiMessageBuilderWrapper {
     receiver: string,
     receiver_subidentity: string,
   ): string {
-    const folderCopyInfo = { origin_path, destination_path };
-    const body = JSON.stringify(folderCopyInfo);
+    const payload = { origin_path, destination_path };
+    const body = JSON.stringify(payload);
 
     const builder = new ShinkaiMessageBuilderWrapper(
       my_encryption_secret_key,
@@ -748,8 +781,8 @@ export class ShinkaiMessageBuilderWrapper {
     receiver: string,
     receiver_subidentity: string,
   ): string {
-    const itemMoveInfo = { origin_path, destination_path };
-    const body = JSON.stringify(itemMoveInfo);
+    const payload = { origin_path, destination_path };
+    const body = JSON.stringify(payload);
 
     const builder = new ShinkaiMessageBuilderWrapper(
       my_encryption_secret_key,
@@ -783,8 +816,8 @@ export class ShinkaiMessageBuilderWrapper {
     receiver: string,
     receiver_subidentity: string,
   ): string {
-    const itemCopyInfo = { origin_path, destination_path };
-    const body = JSON.stringify(itemCopyInfo);
+    const payload = { origin_path, destination_path };
+    const body = JSON.stringify(payload);
 
     const builder = new ShinkaiMessageBuilderWrapper(
       my_encryption_secret_key,
@@ -794,6 +827,39 @@ export class ShinkaiMessageBuilderWrapper {
 
     builder.message_raw_content(body);
     builder.message_schema_type(MessageSchemaType.VecFsCopyItem.toString());
+    builder.internal_metadata(
+      sender_subidentity,
+      receiver_subidentity,
+      '',
+      'None',
+    );
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
+
+    const message = builder.build_to_string();
+    return message;
+  }
+  static deleteItem(
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    path: string,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+    receiver_subidentity: string,
+  ): string {
+    const payload = { path };
+    const body = JSON.stringify(payload);
+
+    const builder = new ShinkaiMessageBuilderWrapper(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key,
+    );
+
+    builder.message_raw_content(body);
+    builder.message_schema_type(MessageSchemaType.VecFsDeleteItem.toString());
     builder.internal_metadata(
       sender_subidentity,
       receiver_subidentity,
@@ -817,8 +883,8 @@ export class ShinkaiMessageBuilderWrapper {
     sender_subidentity: string,
     receiver: string,
   ): string {
-    const createItemsInfo = { path: destination_path, file_inbox };
-    const body = JSON.stringify(createItemsInfo);
+    const payload = { path: destination_path, file_inbox };
+    const body = JSON.stringify(payload);
 
     const builder = new ShinkaiMessageBuilderWrapper(
       my_encryption_secret_key,
@@ -848,8 +914,8 @@ export class ShinkaiMessageBuilderWrapper {
     receiver: string,
     receiver_subidentity: string,
   ): string {
-    const retrieveResourceInfo = { path };
-    const body = JSON.stringify(retrieveResourceInfo);
+    const payload = { path };
+    const body = JSON.stringify(payload);
 
     const builder = new ShinkaiMessageBuilderWrapper(
       my_encryption_secret_key,
@@ -884,8 +950,8 @@ export class ShinkaiMessageBuilderWrapper {
     receiver: string,
     receiver_subidentity: string,
   ): string {
-    const retrievePathInfo = { path };
-    const body = JSON.stringify(retrievePathInfo);
+    const payload = { path };
+    const body = JSON.stringify(payload);
 
     const builder = new ShinkaiMessageBuilderWrapper(
       my_encryption_secret_key,
@@ -923,8 +989,8 @@ export class ShinkaiMessageBuilderWrapper {
     receiver: string,
     receiver_subidentity: string,
   ): string {
-    const searchInfo = { search, path, max_results, max_files_to_scan };
-    const body = JSON.stringify(searchInfo);
+    const payload = { search, path, max_results, max_files_to_scan };
+    const body = JSON.stringify(payload);
 
     const builder = new ShinkaiMessageBuilderWrapper(
       my_encryption_secret_key,

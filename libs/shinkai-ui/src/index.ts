@@ -35,4 +35,6 @@ export * from './components/tabs';
 export * from './components/textarea';
 export * from './components/textfield';
 export * from './components/toast';
+export * from './components/toggle';
+export * from './components/toggle-group';
 export * from './components/tooltip';

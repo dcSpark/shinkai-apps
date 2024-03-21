@@ -27,6 +27,7 @@ import { CreateRegistrationCode } from '../create-registration-code/create-regis
 import { ExportConnection } from '../export-connection/export-connection';
 import { Inbox } from '../inbox/inbox';
 import { Inboxes } from '../inboxes/inboxes';
+import { VectorFsProvider } from '../node-files/node-file-context';
 import NodeFiles from '../node-files/node-files';
 import { Settings } from '../settings/settings';
 import { SplashScreen } from '../splash-screen/splash-screen';
@@ -108,7 +109,9 @@ export const Popup = () => {
                 <Route path="/node-files">
                   <Switch>
                     <Route path="/">
-                      <NodeFiles />
+                      <VectorFsProvider>
+                        <NodeFiles />
+                      </VectorFsProvider>
                     </Route>
                   </Switch>
                 </Route>

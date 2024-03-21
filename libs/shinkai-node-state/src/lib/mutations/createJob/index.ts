@@ -54,7 +54,7 @@ export const createJob = async ({
   }
 
   const hasVRFiles = selectedVRFiles.length > 0 || selectedVRFolders.length > 0;
-  console.log(hasVRFiles, 'hasVRFiles');
+
   const jobId = await createJobApi(
     nodeAddress,
     hasVRFiles ? scope : scope.to_jsvalue(),
