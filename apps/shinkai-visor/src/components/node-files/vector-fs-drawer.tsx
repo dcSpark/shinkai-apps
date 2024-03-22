@@ -9,15 +9,15 @@ import React from 'react';
 import { VectorFolderSelectionProvider } from './folder-selection-list';
 import { useVectorFsStore } from './node-file-context';
 import {
-  AddNewFolderDrawer,
-  UploadVRFilesDrawer,
-  VectorFileDetails,
-} from './node-files';
-import {
   VectorFsFolderCopyAction,
   VectorFsFolderDeleteAction,
   VectorFsFolderMoveAction,
 } from './vector-fs-folder-options';
+import {
+  AddNewFolderAction,
+  UploadVRFilesAction,
+} from './vector-fs-general-options';
+import { VectorFileDetails } from './vector-fs-item-detail';
 import {
   VectorFsItemCopyAction,
   VectorFsItemDeleteAction,
@@ -89,12 +89,14 @@ const VectorFSDrawerContent = ({
   selectedOption: VectorFsActions | null;
 }) => {
   switch (selectedOption) {
+    // global actions
     case VectorFsGlobalAction.VectorFileDetails:
       return <VectorFileDetails />;
     case VectorFsGlobalAction.NewFolder:
-      return <AddNewFolderDrawer />;
+      return <AddNewFolderAction />;
     case VectorFsGlobalAction.GenerateFromDocument:
-      return <UploadVRFilesDrawer />;
+      return <UploadVRFilesAction />;
+
     // folder actions
     case VectorFsFolderAction.Move:
       return <VectorFsFolderMoveAction />;
