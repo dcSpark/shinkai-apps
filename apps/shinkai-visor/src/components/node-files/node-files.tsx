@@ -55,7 +55,6 @@ import VectorFsFolder from './vector-fs-folder';
 import VectorFsItem from './vector-fs-item';
 
 const MotionButton = motion(Button);
-const CreateAIIconMotion = motion(CreateAIIcon);
 export default function NodeFiles() {
   const auth = useAuth((state) => state.auth);
   const history = useHistory();
@@ -400,7 +399,7 @@ export default function NodeFiles() {
         size={isVRSelectionActive ? 'lg' : 'icon'}
         transition={{ duration: 0.2 }}
       >
-        {!isVRSelectionActive && <CreateAIIconMotion layout />}
+        {!isVRSelectionActive && <CreateAIIcon />}
         <motion.div
           className={cn(
             'sr-only flex flex-col',
