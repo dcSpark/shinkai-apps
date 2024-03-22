@@ -35,8 +35,23 @@ export enum MessageSchemaType {
 
 export interface JobScope {
   local: [];
-  vector_fs_items: [];
-  vector_fs_folders: [];
+  vector_fs_items: {
+    name: string;
+    path: string;
+    source: {
+      Reference: {
+        FileRef: {
+          file_name: string;
+          file_type: {
+            Document: string;
+          };
+          original_creation_datetime: null;
+          text_chunking_strategy: string;
+        };
+      };
+    };
+  }[];
+  vector_fs_folders: { name: string; path: string }[];
   network_folders: [];
 }
 
