@@ -15,6 +15,14 @@ import {
   Button,
   ChatBubbleIcon,
   DisconnectIcon,
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -30,7 +38,15 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { ArrowLeft, Menu, Settings, X } from 'lucide-react';
+import {
+  ArrowLeft,
+  FileInputIcon,
+  FolderInputIcon,
+  Menu,
+  Settings,
+  X,
+  XIcon,
+} from 'lucide-react';
 import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useHistory, useLocation } from 'react-router-dom';
@@ -59,18 +75,49 @@ const DisplayInboxName = () => {
     useState<boolean>(false);
 
   return (
-    <>
+    <div className="flex flex-col items-center">
       <Button
         className="relative inline-flex h-auto max-w-[250px] bg-transparent px-2.5 py-1.5"
+        onClick={() => setIsEditInboxNameDialogOpened(true)}
         variant="ghost"
       >
-        <span
-          className="line-clamp-1 text-base font-medium text-white"
-          onClick={() => setIsEditInboxNameDialogOpened(true)}
-        >
+        <span className="line-clamp-1 text-base font-medium text-white">
           {currentInbox?.custom_name || currentInbox?.inbox_id}
         </span>
       </Button>
+
+      <Drawer>
+        <DrawerTrigger asChild>
+          <Button
+            className="flex h-auto items-center gap-4 bg-transparent px-2.5 py-1.5"
+            variant="ghost"
+          >
+            {currentInbox?.job_scope?.vector_fs_folders && (
+              <span className="text-gray-80 flex items-center gap-1 text-xs font-medium">
+                <FolderInputIcon className="ml-1 h-4 w-4" />
+                {currentInbox?.job_scope.vector_fs_folders.length} folders
+              </span>
+            )}
+            {currentInbox?.job_scope?.vector_fs_items && (
+              <span className="text-gray-80 flex items-center gap-1 text-xs font-medium">
+                <FileInputIcon className="ml-1 h-4 w-4" />
+                {currentInbox?.job_scope.vector_fs_items.length} files
+              </span>
+            )}
+          </Button>
+        </DrawerTrigger>
+        <DrawerContent className="min-h-[500px]">
+          <DrawerClose className="relative right-4 top-5">
+            <XIcon className="text-gray-80" />
+          </DrawerClose>
+          <DrawerHeader>
+            <DrawerTitle>Conversation Context</DrawerTitle>
+            <DrawerDescription>
+              Local files and folders shared in this conversation .
+            </DrawerDescription>
+          </DrawerHeader>
+        </DrawerContent>
+      </Drawer>
       <EditInboxNameDialog
         inboxId={currentInbox?.inbox_id || ''}
         name={currentInbox?.custom_name || ''}
@@ -78,7 +125,7 @@ const DisplayInboxName = () => {
         onSaved={() => setIsEditInboxNameDialogOpened(false)}
         open={isEditInboxNameDialogOpened}
       />
-    </>
+    </div>
   );
 };
 
