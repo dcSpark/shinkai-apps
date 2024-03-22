@@ -2,12 +2,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useUpdateInboxName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateInboxName/useUpdateInboxName';
 import {
   Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
   DialogFooter,
-  DialogHeader,
-  DialogTitle,
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
   Form,
   FormField,
   TextField,
@@ -25,6 +24,7 @@ export type EditInboxNameDialogProps = {
   onSaved: (name: string) => void;
   inboxId: string;
   name: string;
+  onOpenChange: (open: boolean) => void;
 };
 
 const formSchema = z.object({
@@ -39,6 +39,7 @@ export const EditInboxNameDialog = ({
   onCancel,
   onSaved,
   inboxId,
+  onOpenChange,
 }: EditInboxNameDialogProps) => {
   const auth = useAuth((state) => state.auth);
   const form = useForm<FormSchemaType>({
@@ -74,20 +75,17 @@ export const EditInboxNameDialog = ({
     form.setValue('name', name);
   }, [name, form]);
   return (
-    <Dialog open={open}>
-      <DialogContent className="w-[75%]">
-        <DialogHeader className="overflow-x-hidden">
-          <DialogTitle>
+    <Drawer onOpenChange={onOpenChange} open={open}>
+      <DrawerContent>
+        <DrawerHeader className="mb-6">
+          <DrawerTitle>
             <FormattedMessage id="edit" />{' '}
             <span className="mr-1 capitalize">
               <FormattedMessage id="inbox.one" />
             </span>
             Name
-          </DialogTitle>
-          <DialogDescription className="truncate">
-            {name ?? inboxId}
-          </DialogDescription>
-        </DialogHeader>
+          </DrawerTitle>
+        </DrawerHeader>
 
         <Form {...form}>
           <form
@@ -100,6 +98,7 @@ export const EditInboxNameDialog = ({
                 name="name"
                 render={({ field }) => (
                   <TextField
+                    autoFocus
                     field={field}
                     label={<FormattedMessage id="name.one" />}
                   />
@@ -128,7 +127,7 @@ export const EditInboxNameDialog = ({
             </DialogFooter>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </DrawerContent>
+    </Drawer>
   );
 };

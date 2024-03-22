@@ -24,7 +24,7 @@ import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
 import { useAuth } from '../../store/auth/auth';
-import { EditInboxNameDialog } from '../edit-inbox-name-dialog/edit-inbox-name-dialog';
+// import { EditInboxNameDialog } from '../edit-inbox-name-dialog/edit-inbox-name-dialog';
 import { EmptyAgents } from '../empty-agents/empty-agents';
 import { EmptyInboxes } from '../empty-inboxes/empty-inboxes';
 import { Header } from '../header/header';
@@ -36,12 +36,12 @@ export const Inboxes = () => {
   const dialContainerRef = useRef<HTMLDivElement>(null);
   const [dialOpened, setDialOpened] = useState<boolean>(false);
   const sender = auth?.shinkai_identity ?? '';
-  const [isEditInboxNameDialogOpened, setIsEditInboxNameDialogOpened] =
-    useState<{ isOpened: boolean; inboxId: string; name: string }>({
-      isOpened: false,
-      inboxId: '',
-      name: '',
-    });
+  // const [isEditInboxNameDialogOpened, setIsEditInboxNameDialogOpened] =
+  //   useState<{ isOpened: boolean; inboxId: string; name: string }>({
+  //     isOpened: false,
+  //     inboxId: '',
+  //     name: '',
+  //   });
   const { inboxes } = useGetInboxes({
     nodeAddress: auth?.node_address ?? '',
     sender: auth?.shinkai_identity ?? '',
@@ -81,13 +81,13 @@ export const Inboxes = () => {
   //     name: name,
   //   });
   // };
-  const closeEditInboxNameDialog = () => {
-    setIsEditInboxNameDialogOpened({
-      isOpened: false,
-      inboxId: '',
-      name: '',
-    });
-  };
+  // const closeEditInboxNameDialog = () => {
+  //   setIsEditInboxNameDialogOpened({
+  //     isOpened: false,
+  //     inboxId: '',
+  //     name: '',
+  //   });
+  // };
   // const editInboxNameClick = (
   //   event: React.MouseEvent,
   //   inboxId: string,
@@ -202,13 +202,13 @@ export const Inboxes = () => {
               </DropdownMenu>
             )}
           </div>
-          <EditInboxNameDialog
-            inboxId={isEditInboxNameDialogOpened.inboxId || ''}
-            name={isEditInboxNameDialogOpened.name}
-            onCancel={() => closeEditInboxNameDialog()}
-            onSaved={() => closeEditInboxNameDialog()}
-            open={isEditInboxNameDialogOpened.isOpened}
-          />
+          {/*<EditInboxNameDialog*/}
+          {/*  inboxId={isEditInboxNameDialogOpened.inboxId || ''}*/}
+          {/*  name={isEditInboxNameDialogOpened.name}*/}
+          {/*  onCancel={() => closeEditInboxNameDialog()}*/}
+          {/*  onSaved={() => closeEditInboxNameDialog()}*/}
+          {/*  open={isEditInboxNameDialogOpened.isOpened}*/}
+          {/*/>*/}
         </>
       )}
     </div>

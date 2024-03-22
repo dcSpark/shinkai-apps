@@ -95,13 +95,19 @@ const DisplayInboxName = () => {
               {hasFolders && (
                 <span className="text-gray-80 flex items-center gap-1 text-xs font-medium">
                   <DirectoryTypeIcon className="ml-1 h-4 w-4" />
-                  {currentInbox?.job_scope.vector_fs_folders.length} folders
+                  {currentInbox?.job_scope.vector_fs_folders.length}{' '}
+                  {currentInbox?.job_scope.vector_fs_folders.length === 1
+                    ? 'folder'
+                    : 'folders'}
                 </span>
               )}
               {hasFiles && (
                 <span className="text-gray-80 flex items-center gap-1 text-xs font-medium">
                   <FileTypeIcon className="ml-1 h-4 w-4" />
-                  {currentInbox?.job_scope.vector_fs_items.length} files
+                  {currentInbox?.job_scope.vector_fs_items.length}{' '}
+                  {currentInbox?.job_scope.vector_fs_items.length === 1
+                    ? 'file'
+                    : 'files'}
                 </span>
               )}
             </Button>
@@ -167,6 +173,7 @@ const DisplayInboxName = () => {
         inboxId={currentInbox?.inbox_id || ''}
         name={currentInbox?.custom_name || ''}
         onCancel={() => setIsEditInboxNameDialogOpened(false)}
+        onOpenChange={setIsEditInboxNameDialogOpened}
         onSaved={() => setIsEditInboxNameDialogOpened(false)}
         open={isEditInboxNameDialogOpened}
       />
