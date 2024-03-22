@@ -2,7 +2,6 @@ import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { VRItem } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import {
   Badge,
-  Button,
   buttonVariants,
   Checkbox,
   DropdownMenu,

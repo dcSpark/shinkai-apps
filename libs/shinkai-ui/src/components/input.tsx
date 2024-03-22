@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useImperativeHandle, useLayoutEffect, useRef } from 'react';
+import { useEffect, useImperativeHandle, useRef } from 'react';
 
 import { cn } from '../utils';
 import { Badge } from './badge';

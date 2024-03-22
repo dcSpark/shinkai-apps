@@ -1,7 +1,6 @@
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { VRFolder } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import {
-  Button,
   buttonVariants,
   Checkbox,
   DirectoryTypeIcon,
