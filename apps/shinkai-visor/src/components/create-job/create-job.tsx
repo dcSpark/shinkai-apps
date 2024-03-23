@@ -285,7 +285,7 @@ export const CreateJob = () => {
                   Selected Knowledge Files:
                 </h2>
                 {location?.state?.selectedVRFolders?.length > 0 && (
-                  <ul className="mt-2 space-y-2">
+                  <ul className="mt-2">
                     {location.state.selectedVRFolders.map((file) => (
                       <li
                         className="relative flex items-center gap-2 px-3 py-1.5"
@@ -293,14 +293,14 @@ export const CreateJob = () => {
                       >
                         <DirectoryTypeIcon />
                         <span className="text-gray-80 text-sm">
-                          {file.path}
+                          {file.name}
                         </span>
                       </li>
                     ))}
                   </ul>
                 )}
                 {location?.state?.selectedVRFiles?.length > 0 && (
-                  <ul className="mt-2 space-y-2">
+                  <ul className="mt-2">
                     {location.state.selectedVRFiles.map((file) => (
                       <li
                         className="relative flex items-center gap-2 px-3 py-1.5"

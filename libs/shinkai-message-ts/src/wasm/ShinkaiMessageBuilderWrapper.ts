@@ -1014,4 +1014,40 @@ export class ShinkaiMessageBuilderWrapper {
     const message = builder.build_to_string();
     return message;
   }
+  static searchItems(
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    search: string,
+    path: string | null,
+    max_results: number | null,
+    max_files_to_scan: number | null,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+    receiver_subidentity: string,
+  ): string {
+    const payload = { search, path, max_results, max_files_to_scan };
+    const body = JSON.stringify(payload);
+
+    const builder = new ShinkaiMessageBuilderWrapper(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key,
+    );
+
+    builder.message_raw_content(body);
+    builder.message_schema_type(MessageSchemaType.VecFsSearchItems.toString());
+    builder.internal_metadata(
+      sender_subidentity,
+      receiver_subidentity,
+      '',
+      'None',
+    );
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
+
+    const message = builder.build_to_string();
+    return message;
+  }
 }

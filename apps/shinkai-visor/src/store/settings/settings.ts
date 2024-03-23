@@ -22,6 +22,8 @@ type SettingsStore = {
   setSidebarShortcut: (sidebarShortcut: ShorcutKey) => void;
   disabledHosts: Record<string, boolean>;
   setDisabledHosts: (disabledHosts: Record<string, boolean>) => void;
+  lastPage: string | null;
+  setLastPage: (lastPageOpen: string | null) => void;
 };
 
 export const useSettings = create<SettingsStore>()(
@@ -83,6 +85,10 @@ export const useSettings = create<SettingsStore>()(
           sendMessage({
             type: ServiceWorkerInternalMessageType.RehydrateStore,
           });
+        },
+        lastPage: null,
+        setLastPage: (lastPage) => {
+          set({ lastPage });
         },
       }),
       {

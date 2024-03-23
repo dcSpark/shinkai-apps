@@ -19,6 +19,7 @@ const TextField = ({
   helperMessage,
   startAdornment,
   endAdornment,
+  autoFocus,
 }: {
   classes?: {
     formItem?: string;
@@ -36,6 +37,7 @@ const TextField = ({
     ref?: React.ForwardedRef<HTMLInputElement>;
     placeholder?: string;
   };
+  autoFocus?: boolean;
   label: React.ReactNode;
   helperMessage?: React.ReactNode;
   type?: 'text' | 'password';
@@ -46,11 +48,12 @@ const TextField = ({
     <FormItem className={cn(classes?.formItem)}>
       <FormControl>
         <Input
-          {...field}
+          autoFocus={autoFocus}
           className={cn(classes?.input)}
           endAdornment={endAdornment}
           startAdornment={startAdornment}
           type={type}
+          {...field}
         />
       </FormControl>
       <FormLabel className={cn(classes?.label)}>{label}</FormLabel>

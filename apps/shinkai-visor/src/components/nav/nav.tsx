@@ -12,15 +12,25 @@ import {
   AlertDialogTitle,
   ArchivedIcon,
   ArchiveIcon,
+  Badge,
   Button,
   ChatBubbleIcon,
+  DirectoryTypeIcon,
   DisconnectIcon,
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
   FilesIcon,
+  FileTypeIcon,
   InboxIcon,
   JobBubbleIcon,
   Tooltip,
@@ -30,7 +40,7 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { ArrowLeft, Menu, Settings, X } from 'lucide-react';
+import { ArrowLeft, Menu, Settings, X, XIcon } from 'lucide-react';
 import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useHistory, useLocation } from 'react-router-dom';
@@ -40,6 +50,7 @@ import visorLogo from '../../assets/icons/visor.svg';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAuth } from '../../store/auth/auth';
+import { useSettings } from '../../store/settings/settings';
 import { EditInboxNameDialog } from '../edit-inbox-name-dialog/edit-inbox-name-dialog';
 
 enum MenuOption {
@@ -58,27 +69,116 @@ const DisplayInboxName = () => {
   const [isEditInboxNameDialogOpened, setIsEditInboxNameDialogOpened] =
     useState<boolean>(false);
 
+  const hasFolders = !!currentInbox?.job_scope?.vector_fs_folders?.length;
+  const hasFiles = !!currentInbox?.job_scope?.vector_fs_items?.length;
+
+  const hasConversationContext = hasFolders || hasFiles;
+
   return (
-    <>
+    <div className="flex flex-col items-center">
       <Button
         className="relative inline-flex h-auto max-w-[250px] bg-transparent px-2.5 py-1.5"
+        onClick={() => setIsEditInboxNameDialogOpened(true)}
         variant="ghost"
       >
-        <span
-          className="line-clamp-1 text-base font-medium text-white"
-          onClick={() => setIsEditInboxNameDialogOpened(true)}
-        >
+        <span className="line-clamp-1 text-base font-medium text-white">
           {currentInbox?.custom_name || currentInbox?.inbox_id}
         </span>
       </Button>
+
+      {hasConversationContext && (
+        <Drawer>
+          <DrawerTrigger asChild>
+            <Button
+              className="flex h-auto items-center gap-4 bg-transparent px-2.5 py-1.5"
+              variant="ghost"
+            >
+              {hasFolders && (
+                <span className="text-gray-80 flex items-center gap-1 text-xs font-medium">
+                  <DirectoryTypeIcon className="ml-1 h-4 w-4" />
+                  {currentInbox?.job_scope.vector_fs_folders.length}{' '}
+                  {currentInbox?.job_scope.vector_fs_folders.length === 1
+                    ? 'folder'
+                    : 'folders'}
+                </span>
+              )}
+              {hasFiles && (
+                <span className="text-gray-80 flex items-center gap-1 text-xs font-medium">
+                  <FileTypeIcon className="ml-1 h-4 w-4" />
+                  {currentInbox?.job_scope.vector_fs_items.length}{' '}
+                  {currentInbox?.job_scope.vector_fs_items.length === 1
+                    ? 'file'
+                    : 'files'}
+                </span>
+              )}
+            </Button>
+          </DrawerTrigger>
+          <DrawerContent className="min-h-[300px]">
+            <DrawerClose className="absolute right-4 top-5">
+              <XIcon className="text-gray-80" />
+            </DrawerClose>
+            <DrawerHeader>
+              <DrawerTitle>Conversation Context</DrawerTitle>
+              <DrawerDescription className="mb-4 mt-2">
+                List of folders and files used as context for this conversation
+              </DrawerDescription>
+              <div className="space-y-3 pt-4">
+                {hasFolders && (
+                  <div className="space-y-1">
+                    <span className="font-medium text-white">Folders</span>
+                    <ul>
+                      {currentInbox?.job_scope?.vector_fs_folders?.map(
+                        (folder) => (
+                          <li
+                            className="flex items-center gap-2 py-1.5"
+                            key={folder.path}
+                          >
+                            <DirectoryTypeIcon />
+                            <div className="text-gray-80 text-sm">
+                              {folder.name}
+                            </div>
+                          </li>
+                        ),
+                      )}
+                    </ul>
+                  </div>
+                )}
+                {hasFiles && (
+                  <div className="space-y-1">
+                    <span className="font-medium text-white">Files</span>
+                    <ul>
+                      {currentInbox?.job_scope?.vector_fs_items?.map((file) => (
+                        <li
+                          className="flex items-center gap-2 py-1.5"
+                          key={file.path}
+                        >
+                          <FileTypeIcon />
+                          <span className="text-gray-80 text-sm">
+                            {file.name}
+                          </span>
+                          <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
+                            {file?.source?.Reference?.FileRef?.file_type
+                              ?.Document ?? '-'}
+                          </Badge>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </DrawerHeader>
+          </DrawerContent>
+        </Drawer>
+      )}
       <EditInboxNameDialog
         inboxId={currentInbox?.inbox_id || ''}
         name={currentInbox?.custom_name || ''}
         onCancel={() => setIsEditInboxNameDialogOpened(false)}
+        onOpenChange={setIsEditInboxNameDialogOpened}
         onSaved={() => setIsEditInboxNameDialogOpened(false)}
         open={isEditInboxNameDialogOpened}
       />
-    </>
+    </div>
   );
 };
 
@@ -145,6 +245,7 @@ const ArchiveJobButton = () => {
 export default function NavBar() {
   const history = useHistory();
   const location = useLocation();
+  const setLastPage = useSettings((state) => state.setLastPage);
 
   const setAuth = useAuth((state) => state.setAuth);
   const auth = useAuth((state) => state.auth);
@@ -178,24 +279,31 @@ export default function NavBar() {
     switch (key) {
       case MenuOption.Inbox:
         history.push('/inboxes');
+        setLastPage('/inboxes');
         break;
       case MenuOption.CreateInbox:
         history.push('/inboxes/create-inbox');
+        setLastPage('/inboxes/create-inbox');
         break;
       case MenuOption.CreateJob:
         history.push('/inboxes/create-job');
+        setLastPage('/inboxes/create-job');
         break;
       case MenuOption.NodeFiles:
         history.push('/node-files');
+        setLastPage('/node-files');
         break;
       case MenuOption.Agents:
         history.push('/agents');
+        setLastPage('/agents');
         break;
       case MenuOption.AddAgent:
         history.push('/agents/add');
+        setLastPage('/agents/add');
         break;
       case MenuOption.Settings:
         history.push('/settings');
+        setLastPage('/settings');
         break;
       case MenuOption.Logout:
         setIsConfirmLogoutDialogOpened(true);
@@ -247,11 +355,7 @@ export default function NavBar() {
         </AlertDialogContent>
       </AlertDialog>
       <div className="relative flex items-center justify-between">
-        <div
-          className={`flex-none ${
-            isRootPage || history.length <= 1 ? 'invisible' : ''
-          }`}
-        >
+        <div className={`flex-none ${isRootPage ? 'invisible' : ''}`}>
           <Button onClick={() => goBack()} size="icon" variant="ghost">
             <ArrowLeft className="h-4 w-4" />
           </Button>

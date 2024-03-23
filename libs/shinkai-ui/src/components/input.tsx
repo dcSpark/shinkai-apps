@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useRef } from 'react';
+import { useEffect, useImperativeHandle, useRef } from 'react';
 
 import { cn } from '../utils';
 import { Badge } from './badge';
@@ -12,6 +12,7 @@ export interface InputProps
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, startAdornment, endAdornment, ...props }, ref) => {
+    const inputRef = useRef<HTMLInputElement>(null);
     const startAdornmentRef = useRef<HTMLDivElement>(null);
     const endAdornmentRef = useRef<HTMLDivElement>(null);
 
@@ -27,6 +28,16 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       }px`;
     }
 
+    useImperativeHandle(ref, () => inputRef.current!, []);
+
+    useEffect(() => {
+      if (props.autoFocus) {
+        setTimeout(() => {
+          // trick to wait the modal to be opened to focus
+          inputRef?.current?.focus();
+        }, 0);
+      }
+    }, [props.autoFocus]);
     return (
       <>
         <input
@@ -37,7 +48,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             className,
           )}
           placeholder=" "
-          ref={ref}
+          ref={inputRef}
           style={style}
           type={type}
           {...props}

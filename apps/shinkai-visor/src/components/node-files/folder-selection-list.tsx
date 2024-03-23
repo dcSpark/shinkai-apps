@@ -151,7 +151,11 @@ export const FolderSelectionList = () => {
         </BreadcrumbList>
       </Breadcrumb>
       <ScrollArea className="min-h-[300px]">
-        <div className={cn('grid flex-1 grid-cols-1 divide-y divide-gray-200')}>
+        <div
+          className={cn(
+            'grid flex-1 grid-cols-1 divide-y divide-gray-300 py-1',
+          )}
+        >
           {isVRFilesPending &&
             Array.from({ length: 4 }).map((_, idx) => (
               <div
@@ -164,7 +168,7 @@ export const FolderSelectionList = () => {
               <button
                 className={cn(
                   'flex items-center justify-between gap-2 py-3.5 hover:bg-gray-400',
-                  'rounded-lg bg-gray-400/30 p-2',
+                  'rounded-md p-2',
                   destinationFolderPath === folder.path && 'bg-gray-400',
                 )}
                 key={folder.path}
@@ -180,9 +184,7 @@ export const FolderSelectionList = () => {
                 <DirectoryTypeIcon />
                 <VectorFsFolderInfo allowFolderNameOnly folder={folder} />
                 {!!folder.child_folders?.length && (
-                  <button>
-                    <ChevronRight className="h-5 w-5" />
-                  </button>
+                  <ChevronRight className="text-gray-80 h-5 w-5" />
                 )}
               </button>
             );

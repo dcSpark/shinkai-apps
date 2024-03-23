@@ -2,7 +2,7 @@ import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { VRItem } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import {
   Badge,
-  Button,
+  buttonVariants,
   Checkbox,
   DropdownMenu,
   DropdownMenuContent,
@@ -115,17 +115,23 @@ const VectorFsItem = ({
       />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            className="border-0 hover:bg-gray-500/40"
+          <div
+            className={cn(
+              buttonVariants({
+                variant: 'tertiary',
+                size: 'icon',
+              }),
+              'border-0 hover:bg-gray-500/40',
+            )}
             onClick={(event) => {
               event.stopPropagation();
             }}
-            size="icon"
-            variant="tertiary"
+            role="button"
+            tabIndex={0}
           >
             <span className="sr-only">More options</span>
             <DotsVerticalIcon className="text-gray-100" />
-          </Button>
+          </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="end"

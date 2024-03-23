@@ -1,7 +1,5 @@
-import { zodResolver } from '@hookform/resolvers/zod';
 import { HomeIcon } from '@radix-ui/react-icons';
-import { useCreateVRFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/createVRFolder/useCreateVRFolder';
-import { useUploadVRFiles } from '@shinkai_network/shinkai-node-state/lib/mutations/uploadVRFiles/useUploadVRFiles';
+import { useGetSearchVRItems } from '@shinkai_network/shinkai-node-state/lib/queries/getSearchVRItems/useGetSearchVRItems';
 import {
   VRFolder,
   VRItem,
@@ -9,7 +7,6 @@ import {
 import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
 import {
   AddNewFolderIcon,
-  Badge,
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
@@ -22,32 +19,19 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
   CreateAIIcon,
-  DirectoryTypeIcon,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
   FileEmptyStateIcon,
   FileTypeIcon,
-  FileUploader,
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
   GenerateDocIcon,
   Input,
   ScrollArea,
-  TextField,
   ToggleGroup,
   ToggleGroupItem,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { partial } from 'filesize';
 import { motion } from 'framer-motion';
 import {
   ChevronRight,
@@ -57,20 +41,15 @@ import {
   // FileIcon,
   // DatabaseIcon,
   // FileIcon,
-  LockIcon,
   PlusIcon,
   SearchIcon,
   X,
   XIcon,
 } from 'lucide-react';
-import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { FormattedMessage } from 'react-intl';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { toast } from 'sonner';
-import { z } from 'zod';
 
-import { formatDateToLocaleString } from '../../helpers/date';
+import { useDebounce } from '../../hooks/use-debounce';
 import { useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
 import { useVectorFsStore, VectorFSLayout } from './node-file-context';
@@ -79,7 +58,6 @@ import VectorFsFolder from './vector-fs-folder';
 import VectorFsItem from './vector-fs-item';
 
 const MotionButton = motion(Button);
-const CreateAIIconMotion = motion(CreateAIIcon);
 export default function NodeFiles() {
   const auth = useAuth((state) => state.auth);
   const history = useHistory();
@@ -103,7 +81,8 @@ export default function NodeFiles() {
   const setVRSelectionActive = useVectorFsStore(
     (state) => state.setVRSelectionActive,
   );
-
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const debouncedSearchQuery = useDebounce(searchQuery, 600);
   const {
     isPending: isVRFilesPending,
     data: VRFiles,
@@ -120,7 +99,30 @@ export default function NodeFiles() {
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
 
-  const [searchQuery, setSearchQuery] = React.useState('');
+  const {
+    data: searchVRItems,
+    isSuccess: isSearchVRItemsSuccess,
+    isLoading: isSearchVRItemsLoading,
+  } = useGetSearchVRItems(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      profile: auth?.profile ?? '',
+      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      path: currentGlobalPath,
+      search: debouncedSearchQuery,
+      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+      my_device_identity_sk: auth?.profile_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+    },
+    {
+      enabled: !!debouncedSearchQuery,
+    },
+  );
+
+  const isTransitioningSearchValue = searchQuery !== debouncedSearchQuery;
+
   const setSelectedFile = useVectorFsStore((state) => state.setSelectedFile);
   const [selectedFiles, setSelectedFiles] = React.useState<VRItem[]>([]);
   const [selectedFolders, setSelectedFolders] = React.useState<VRFolder[]>([]);
@@ -173,7 +175,9 @@ export default function NodeFiles() {
         <div className="relative flex h-10 w-full flex-1 items-center">
           <Input
             className="placeholder-gray-80 !h-full bg-gray-200 py-2 pl-10"
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+            }}
             placeholder="Search..."
             value={searchQuery}
           />
@@ -307,30 +311,34 @@ export default function NodeFiles() {
               'grid-cols-1 divide-y divide-gray-400',
           )}
         >
-          {isVRFilesPending &&
+          {(isVRFilesPending ||
+            isSearchVRItemsLoading ||
+            (searchQuery && isTransitioningSearchValue)) &&
             Array.from({ length: 4 }).map((_, idx) => (
               <div
                 className="mb-1 flex h-[69px] items-center justify-between gap-2 bg-gray-400 py-3"
                 key={idx}
               />
             ))}
-          {VRFiles?.child_folders.map((folder, index: number) => {
-            return (
-              <VectorFsFolder
-                folder={folder}
-                handleSelectFolders={handleSelectFolders}
-                isSelectedFolder={selectedFolders.some(
-                  (selectedFolder) => selectedFolder.path === folder.path,
-                )}
-                key={index}
-                onClick={() => {
-                  setCurrentGlobalPath(folder.path);
-                }}
-              />
-            );
-          })}
-          {isVRFilesSuccess &&
-            (VRFiles?.child_folders || [])?.length === 0 &&
+          {!searchQuery &&
+            VRFiles?.child_folders.map((folder, index: number) => {
+              return (
+                <VectorFsFolder
+                  folder={folder}
+                  handleSelectFolders={handleSelectFolders}
+                  isSelectedFolder={selectedFolders.some(
+                    (selectedFolder) => selectedFolder.path === folder.path,
+                  )}
+                  key={index}
+                  onClick={() => {
+                    setCurrentGlobalPath(folder.path);
+                  }}
+                />
+              );
+            })}
+          {!searchQuery &&
+            isVRFilesSuccess &&
+            VRFiles?.child_folders?.length === 0 &&
             currentGlobalPath === '/' && (
               <div className="text-gray-80 mt-4 flex flex-col items-center justify-center gap-4 text-center text-base">
                 <FileEmptyStateIcon className="h-20 w-20" />
@@ -344,7 +352,8 @@ export default function NodeFiles() {
                 </div>
               </div>
             )}
-          {isVRFilesSuccess &&
+          {!searchQuery &&
+            isVRFilesSuccess &&
             VRFiles?.child_items?.length > 0 &&
             VRFiles?.child_items.map((file, index: number) => {
               return (
@@ -364,13 +373,46 @@ export default function NodeFiles() {
                 />
               );
             })}
-          {isVRFilesSuccess &&
+          {!searchQuery &&
+            isVRFilesSuccess &&
             VRFiles?.child_items?.length === 0 &&
             VRFiles.child_folders?.length === 0 && (
               <div className="flex h-20 items-center justify-center text-gray-100">
                 No files found
               </div>
             )}
+          {searchQuery &&
+            isSearchVRItemsSuccess &&
+            searchVRItems?.length === 0 && (
+              <div className="flex h-20 items-center justify-center text-gray-100">
+                No files found
+              </div>
+            )}
+          {searchQuery &&
+            isSearchVRItemsSuccess &&
+            searchVRItems?.map((item) => {
+              return (
+                <button
+                  className="relative flex items-center gap-2 px-3 py-1.5"
+                  key={item}
+                  onClick={() => {
+                    const selectedFile = VRFiles?.child_items.find(
+                      (file) => file.path === item,
+                    );
+                    if (!selectedFile) return;
+                    setSelectedFile(selectedFile);
+                    setActiveDrawerMenuOption(
+                      VectorFsGlobalAction.VectorFileDetails,
+                    );
+                  }}
+                >
+                  <FileTypeIcon />
+                  <span className="text-gray-80 text-sm">
+                    {item?.split('/').at(-1)?.replace(/_/g, ' ')}
+                  </span>
+                </button>
+              );
+            })}
         </div>
       </ScrollArea>
       <ContextMenu>
@@ -424,7 +466,7 @@ export default function NodeFiles() {
         size={isVRSelectionActive ? 'lg' : 'icon'}
         transition={{ duration: 0.2 }}
       >
-        {!isVRSelectionActive && <CreateAIIconMotion layout />}
+        {!isVRSelectionActive && <CreateAIIcon />}
         <motion.div
           className={cn(
             'sr-only flex flex-col',
@@ -460,266 +502,3 @@ export default function NodeFiles() {
     </div>
   );
 }
-
-export const VectorFileDetails = () => {
-  const selectedFile = useVectorFsStore((state) => state.selectedFile);
-  const size = partial({ standard: 'jedec' });
-
-  return (
-    <React.Fragment>
-      <DrawerHeader>
-        <DrawerTitle className={'sr-only'}>Information</DrawerTitle>
-      </DrawerHeader>
-      <div>
-        <div className="space-y-2 text-left">
-          <div>
-            <FileTypeIcon className="h-10 w-10" />
-          </div>
-          <p className="text-lg font-medium text-white">
-            {selectedFile?.name}
-            <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
-              {selectedFile?.vr_header?.resource_source?.Reference?.FileRef
-                ?.file_type?.Document ?? '-'}
-            </Badge>
-          </p>
-          <p className="text-sm text-gray-100">
-            <span>
-              {formatDateToLocaleString(selectedFile?.created_datetime)}
-            </span>{' '}
-            - <span>{size(selectedFile?.vr_size ?? 0)}</span>
-          </p>
-        </div>
-        <div className="py-6">
-          <h2 className="mb-3 text-left text-lg font-medium  text-white">
-            Information
-          </h2>
-          <div className="divide-y divide-gray-300">
-            {[
-              { label: 'Created', value: selectedFile?.created_datetime },
-              {
-                label: 'Modified',
-                value: selectedFile?.last_written_datetime,
-              },
-              {
-                label: 'Last Opened',
-                value: selectedFile?.last_read_datetime,
-              },
-            ].map((item) => (
-              <div
-                className="flex items-center justify-between py-2 font-medium"
-                key={item.label}
-              >
-                <span className="text-gray-100">{item.label}</span>
-                <span className="text-white">
-                  {formatDateToLocaleString(item.value)}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="py-6 text-left">
-          <h2 className="mb-3 text-lg font-medium  text-white">Permissions</h2>
-          <span>
-            <LockIcon className="mr-2 inline-block h-4 w-4" />
-            You can read and write
-          </span>
-        </div>
-      </div>
-
-      <DrawerFooter>
-        <Button>Download Source File</Button>
-        <Button variant="outline">Download Vector Resource</Button>
-      </DrawerFooter>
-    </React.Fragment>
-  );
-};
-
-const createFolderSchema = z.object({
-  name: z.string(),
-});
-export const AddNewFolderDrawer = () => {
-  const auth = useAuth((state) => state.auth);
-  const currentGlobalPath = useVectorFsStore(
-    (state) => state.currentGlobalPath,
-  );
-  const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
-  const createFolderForm = useForm<z.infer<typeof createFolderSchema>>({
-    resolver: zodResolver(createFolderSchema),
-  });
-
-  const {
-    isPending,
-    mutateAsync: createVRFolder,
-    isSuccess,
-  } = useCreateVRFolder({
-    onSuccess: () => {
-      toast.success('Folder created successfully');
-      createFolderForm.reset();
-      closeDrawerMenu();
-    },
-    onError: () => {
-      toast.error('Error creating folder');
-    },
-  });
-
-  const onSubmit = async (values: z.infer<typeof createFolderSchema>) => {
-    if (!auth) return;
-
-    await createVRFolder({
-      nodeAddress: auth?.node_address ?? '',
-      profile: auth?.profile ?? '',
-      shinkaiIdentity: auth?.shinkai_identity ?? '',
-      folderName: values.name,
-      path: currentGlobalPath,
-      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-      my_device_identity_sk: auth?.profile_identity_sk ?? '',
-      node_encryption_pk: auth?.node_encryption_pk ?? '',
-      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-      profile_identity_sk: auth?.profile_identity_sk ?? '',
-    });
-  };
-
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success('Folder created successfully');
-      createFolderForm.reset();
-    }
-  }, [createFolderForm, isSuccess]);
-
-  return (
-    <>
-      <DrawerHeader>
-        <DrawerTitle className="flex flex-col items-start gap-1">
-          <DirectoryTypeIcon className="h-10 w-10" />
-          Add New Folder
-        </DrawerTitle>
-      </DrawerHeader>
-      <Form {...createFolderForm}>
-        <form
-          className="space-y-8 pt-4"
-          onSubmit={createFolderForm.handleSubmit(onSubmit)}
-        >
-          <FormField
-            control={createFolderForm.control}
-            name="name"
-            render={({ field }) => (
-              <TextField field={field} label="Folder Name" />
-            )}
-          />
-          <Button
-            className="w-full"
-            disabled={isPending}
-            isLoading={isPending}
-            type="submit"
-          >
-            Create Folder
-          </Button>
-        </form>
-      </Form>
-    </>
-  );
-};
-const uploadVRFilesSchema = z.object({
-  files: z.array(z.any()).max(3),
-});
-export const UploadVRFilesDrawer = () => {
-  const auth = useAuth((state) => state.auth);
-  const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
-  const currentGlobalPath = useVectorFsStore(
-    (state) => state.currentGlobalPath,
-  );
-  const createFolderForm = useForm<z.infer<typeof uploadVRFilesSchema>>({
-    resolver: zodResolver(uploadVRFilesSchema),
-  });
-
-  const { isPending, mutateAsync: uploadVRFiles } = useUploadVRFiles({
-    onSuccess: () => {
-      toast.success('Files uploaded successfully', {
-        id: 'uploading-VR-files',
-        description: '',
-      });
-      createFolderForm.reset();
-    },
-    onError: () => {
-      toast.error('Error uploading files', {
-        id: 'uploading-VR-files',
-        description: '',
-      });
-    },
-  });
-
-  const onSubmit = async (values: z.infer<typeof uploadVRFilesSchema>) => {
-    if (!auth) return;
-    toast.loading('Uploading files', {
-      id: 'uploading-VR-files',
-      description: 'This process might take from 1-2 minutes',
-      position: 'bottom-left',
-    });
-    closeDrawerMenu();
-    await uploadVRFiles({
-      nodeAddress: auth?.node_address ?? '',
-      sender: auth?.shinkai_identity ?? '',
-      senderSubidentity: auth?.profile ?? '',
-      receiver: auth?.shinkai_identity ?? '',
-      destinationPath: currentGlobalPath,
-      files: values.files,
-      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-      my_device_identity_sk: auth?.profile_identity_sk ?? '',
-      node_encryption_pk: auth?.node_encryption_pk ?? '',
-      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-      profile_identity_sk: auth?.profile_identity_sk ?? '',
-    });
-  };
-
-  return (
-    <>
-      <DrawerHeader>
-        <DrawerTitle className="flex flex-col items-start gap-1">
-          <FileTypeIcon className="h-10 w-10" />
-          File Upload
-        </DrawerTitle>
-      </DrawerHeader>
-      <Form {...createFolderForm}>
-        <form
-          className="space-y-8"
-          onSubmit={createFolderForm.handleSubmit(onSubmit)}
-        >
-          <FormField
-            control={createFolderForm.control}
-            name="files"
-            render={({ field }) => (
-              <FormItem className="mt-3">
-                <FormLabel className="sr-only">
-                  <FormattedMessage id="file.one" />
-                </FormLabel>
-                <FormControl>
-                  <div className="flex flex-col space-y-1">
-                    <div className="flex items-center justify-center">
-                      <FileUploader
-                        allowMultiple
-                        descriptionText="Supports pdf, md, txt"
-                        onChange={(acceptedFiles) => {
-                          field.onChange(acceptedFiles);
-                        }}
-                        value={field.value}
-                      />
-                    </div>
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button
-            className="w-full"
-            disabled={isPending}
-            isLoading={isPending}
-            type="submit"
-          >
-            Upload
-          </Button>
-        </form>
-      </Form>
-    </>
-  );
-};
