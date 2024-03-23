@@ -7,13 +7,6 @@ import { sendMessage } from '../../service-worker/communication/internal';
 import { ServiceWorkerInternalMessageType } from '../../service-worker/communication/internal/types';
 import { ChromeStorage } from '../persistor/chrome-storage';
 
-export enum CommonPages {
-  Inboxes = '/inboxes',
-  NodeFiles = '/node-files',
-  Agents = '/agents',
-  Settings = '/settings',
-}
-
 type SettingsStore = {
   displayActionButton: boolean;
   setDisplayActionButton: (displayButton: boolean) => void;
@@ -29,8 +22,8 @@ type SettingsStore = {
   setSidebarShortcut: (sidebarShortcut: ShorcutKey) => void;
   disabledHosts: Record<string, boolean>;
   setDisabledHosts: (disabledHosts: Record<string, boolean>) => void;
-  lastPageOpen: CommonPages | null;
-  setLastPagOpen: (lastPageOpen: CommonPages | null) => void;
+  lastPage: string | null;
+  setLastPage: (lastPageOpen: string | null) => void;
 };
 
 export const useSettings = create<SettingsStore>()(
@@ -93,10 +86,9 @@ export const useSettings = create<SettingsStore>()(
             type: ServiceWorkerInternalMessageType.RehydrateStore,
           });
         },
-        // state fot keep track of last page open and reopen it
-        lastPageOpen: null,
-        setLastPagOpen: (lastPageOpen) => {
-          set({ lastPageOpen });
+        lastPage: null,
+        setLastPage: (lastPage) => {
+          set({ lastPage });
         },
       }),
       {

@@ -50,6 +50,7 @@ import visorLogo from '../../assets/icons/visor.svg';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAuth } from '../../store/auth/auth';
+import { useSettings } from '../../store/settings/settings';
 import { EditInboxNameDialog } from '../edit-inbox-name-dialog/edit-inbox-name-dialog';
 
 enum MenuOption {
@@ -244,6 +245,7 @@ const ArchiveJobButton = () => {
 export default function NavBar() {
   const history = useHistory();
   const location = useLocation();
+  const setLastPage = useSettings((state) => state.setLastPage);
 
   const setAuth = useAuth((state) => state.setAuth);
   const auth = useAuth((state) => state.auth);
@@ -277,24 +279,31 @@ export default function NavBar() {
     switch (key) {
       case MenuOption.Inbox:
         history.push('/inboxes');
+        setLastPage('/inboxes');
         break;
       case MenuOption.CreateInbox:
         history.push('/inboxes/create-inbox');
+        setLastPage('/inboxes/create-inbox');
         break;
       case MenuOption.CreateJob:
         history.push('/inboxes/create-job');
+        setLastPage('/inboxes/create-job');
         break;
       case MenuOption.NodeFiles:
         history.push('/node-files');
+        setLastPage('/node-files');
         break;
       case MenuOption.Agents:
         history.push('/agents');
+        setLastPage('/agents');
         break;
       case MenuOption.AddAgent:
         history.push('/agents/add');
+        setLastPage('/agents/add');
         break;
       case MenuOption.Settings:
         history.push('/settings');
+        setLastPage('/settings');
         break;
       case MenuOption.Logout:
         setIsConfirmLogoutDialogOpened(true);
