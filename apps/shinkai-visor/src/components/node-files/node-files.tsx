@@ -1,4 +1,5 @@
 import { HomeIcon } from '@radix-ui/react-icons';
+import { useGetSearchVRItems } from '@shinkai_network/shinkai-node-state/lib/queries/getSearchVRItems/useGetSearchVRItems';
 import {
   VRFolder,
   VRItem,
@@ -23,6 +24,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   FileEmptyStateIcon,
+  FileTypeIcon,
   GenerateDocIcon,
   Input,
   ScrollArea,
@@ -47,6 +49,7 @@ import {
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 
+import { useDebounce } from '../../hooks/use-debounce';
 import { useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
 import { useVectorFsStore, VectorFSLayout } from './node-file-context';
@@ -78,7 +81,8 @@ export default function NodeFiles() {
   const setVRSelectionActive = useVectorFsStore(
     (state) => state.setVRSelectionActive,
   );
-
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const debouncedSearchQuery = useDebounce(searchQuery, 600);
   const {
     isPending: isVRFilesPending,
     data: VRFiles,
@@ -95,7 +99,30 @@ export default function NodeFiles() {
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
 
-  const [searchQuery, setSearchQuery] = React.useState('');
+  const {
+    data: searchVRItems,
+    isSuccess: isSearchVRItemsSuccess,
+    isLoading: isSearchVRItemsLoading,
+  } = useGetSearchVRItems(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      profile: auth?.profile ?? '',
+      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      path: currentGlobalPath,
+      search: debouncedSearchQuery,
+      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+      my_device_identity_sk: auth?.profile_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+    },
+    {
+      enabled: !!debouncedSearchQuery,
+    },
+  );
+
+  const isTransitioningSearchValue = searchQuery !== debouncedSearchQuery;
+
   const setSelectedFile = useVectorFsStore((state) => state.setSelectedFile);
   const [selectedFiles, setSelectedFiles] = React.useState<VRItem[]>([]);
   const [selectedFolders, setSelectedFolders] = React.useState<VRFolder[]>([]);
@@ -148,7 +175,9 @@ export default function NodeFiles() {
         <div className="relative flex h-10 w-full flex-1 items-center">
           <Input
             className="placeholder-gray-80 !h-full bg-gray-200 py-2 pl-10"
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+            }}
             placeholder="Search..."
             value={searchQuery}
           />
@@ -282,30 +311,34 @@ export default function NodeFiles() {
               'grid-cols-1 divide-y divide-gray-400',
           )}
         >
-          {isVRFilesPending &&
+          {(isVRFilesPending ||
+            isSearchVRItemsLoading ||
+            (searchQuery && isTransitioningSearchValue)) &&
             Array.from({ length: 4 }).map((_, idx) => (
               <div
                 className="mb-1 flex h-[69px] items-center justify-between gap-2 bg-gray-400 py-3"
                 key={idx}
               />
             ))}
-          {VRFiles?.child_folders.map((folder, index: number) => {
-            return (
-              <VectorFsFolder
-                folder={folder}
-                handleSelectFolders={handleSelectFolders}
-                isSelectedFolder={selectedFolders.some(
-                  (selectedFolder) => selectedFolder.path === folder.path,
-                )}
-                key={index}
-                onClick={() => {
-                  setCurrentGlobalPath(folder.path);
-                }}
-              />
-            );
-          })}
-          {isVRFilesSuccess &&
-            (VRFiles?.child_folders || [])?.length === 0 &&
+          {!searchQuery &&
+            VRFiles?.child_folders.map((folder, index: number) => {
+              return (
+                <VectorFsFolder
+                  folder={folder}
+                  handleSelectFolders={handleSelectFolders}
+                  isSelectedFolder={selectedFolders.some(
+                    (selectedFolder) => selectedFolder.path === folder.path,
+                  )}
+                  key={index}
+                  onClick={() => {
+                    setCurrentGlobalPath(folder.path);
+                  }}
+                />
+              );
+            })}
+          {!searchQuery &&
+            isVRFilesSuccess &&
+            VRFiles?.child_folders?.length === 0 &&
             currentGlobalPath === '/' && (
               <div className="text-gray-80 mt-4 flex flex-col items-center justify-center gap-4 text-center text-base">
                 <FileEmptyStateIcon className="h-20 w-20" />
@@ -319,7 +352,8 @@ export default function NodeFiles() {
                 </div>
               </div>
             )}
-          {isVRFilesSuccess &&
+          {!searchQuery &&
+            isVRFilesSuccess &&
             VRFiles?.child_items?.length > 0 &&
             VRFiles?.child_items.map((file, index: number) => {
               return (
@@ -339,13 +373,46 @@ export default function NodeFiles() {
                 />
               );
             })}
-          {isVRFilesSuccess &&
+          {!searchQuery &&
+            isVRFilesSuccess &&
             VRFiles?.child_items?.length === 0 &&
             VRFiles.child_folders?.length === 0 && (
               <div className="flex h-20 items-center justify-center text-gray-100">
                 No files found
               </div>
             )}
+          {searchQuery &&
+            isSearchVRItemsSuccess &&
+            searchVRItems?.length === 0 && (
+              <div className="flex h-20 items-center justify-center text-gray-100">
+                No files found
+              </div>
+            )}
+          {searchQuery &&
+            isSearchVRItemsSuccess &&
+            searchVRItems?.map((item) => {
+              return (
+                <button
+                  className="relative flex items-center gap-2 px-3 py-1.5"
+                  key={item}
+                  onClick={() => {
+                    const selectedFile = VRFiles?.child_items.find(
+                      (file) => file.path === item,
+                    );
+                    if (!selectedFile) return;
+                    setSelectedFile(selectedFile);
+                    setActiveDrawerMenuOption(
+                      VectorFsGlobalAction.VectorFileDetails,
+                    );
+                  }}
+                >
+                  <FileTypeIcon />
+                  <span className="text-gray-80 text-sm">
+                    {item?.split('/').at(-1)?.replace(/_/g, ' ')}
+                  </span>
+                </button>
+              );
+            })}
         </div>
       </ScrollArea>
       <ContextMenu>

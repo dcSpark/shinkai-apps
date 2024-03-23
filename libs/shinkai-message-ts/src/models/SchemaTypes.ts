@@ -31,6 +31,7 @@ export enum MessageSchemaType {
   VecFsCopyItem = 'VecFsCopyItem',
   VecFsDeleteItem = 'VecFsDeleteItem',
   ConvertFilesAndSaveToFolder = 'ConvertFilesAndSaveToFolder',
+  VecFsSearchItems = 'VecFsSearchItems',
 }
 
 export interface JobScope {

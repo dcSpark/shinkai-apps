@@ -1190,3 +1190,47 @@ export const deleteItemVR = async (
     throw error;
   }
 };
+export const searchItemsVR = async (
+  nodeAddress: string,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  search: string,
+  path: string = '/',
+  setupDetailsState: CredentialsPayload,
+): Promise<{ data: any; status: string }> => {
+  try {
+    const messageStr = ShinkaiMessageBuilderWrapper.searchItems(
+      setupDetailsState.profile_encryption_sk,
+      setupDetailsState.profile_identity_sk,
+      setupDetailsState.node_encryption_pk,
+      search,
+      path,
+      null,
+      null,
+      sender,
+      sender_subidentity,
+      receiver,
+      receiver_subidentity,
+    );
+
+    const message = JSON.parse(messageStr);
+
+    const response = await fetch(
+      urlJoin(nodeAddress, '/v1/vec_fs/search_items'),
+      {
+        method: 'POST',
+        body: JSON.stringify(message),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+
+    await handleHttpError(response);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error retrieveVectorSearchSimplified:', error);
+    throw error;
+  }
+};
