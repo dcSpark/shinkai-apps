@@ -346,11 +346,7 @@ export default function NavBar() {
         </AlertDialogContent>
       </AlertDialog>
       <div className="relative flex items-center justify-between">
-        <div
-          className={`flex-none ${
-            isRootPage || history.length <= 1 ? 'invisible' : ''
-          }`}
-        >
+        <div className={`flex-none ${isRootPage ? 'invisible' : ''}`}>
           <Button onClick={() => goBack()} size="icon" variant="ghost">
             <ArrowLeft className="h-4 w-4" />
           </Button>

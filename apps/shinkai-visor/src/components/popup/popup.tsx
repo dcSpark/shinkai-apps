@@ -15,6 +15,7 @@ import { Route, Switch, useHistory, useLocation } from 'react-router-dom';
 import { useGlobalPopupChromeMessage } from '../../hooks/use-global-popup-chrome-message';
 import { langMessages, locale } from '../../lang/intl';
 import { useAuth } from '../../store/auth/auth';
+import { CommonPages, useSettings } from '../../store/settings/settings';
 import { AddAgent } from '../add-agent/add-agent';
 import { Agents } from '../agents/agents';
 import { AnimatedRoute } from '../animated-route/animated-routed';
@@ -38,18 +39,29 @@ export const Popup = () => {
   const auth = useAuth((state) => state.auth);
   const location = useLocation();
   useGlobalPopupChromeMessage();
+  const lastPageOpen = useSettings((state) => state.lastPageOpen);
+  const setLastPagOpen = useSettings((state) => state.setLastPagOpen);
+
   const isAuthenticated = !!auth;
 
   useEffect(() => {
-    if (isAuthenticated) {
-      history.replace('/inboxes');
-    } else {
+    if (!isAuthenticated) {
       history.replace('/welcome');
+      return;
     }
+    if (!lastPageOpen) {
+      history.replace('/inboxes');
+      return;
+    }
+    history.replace(lastPageOpen);
   }, [history, isAuthenticated]);
+
   useEffect(() => {
-    console.log('location', location.pathname);
+    if (Object.values(CommonPages).includes(location.pathname as CommonPages)) {
+      setLastPagOpen(location.pathname as CommonPages);
+    }
   }, [location]);
+
   return (
     <AnimatePresence>
       <motion.div
