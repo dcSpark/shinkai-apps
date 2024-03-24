@@ -9,7 +9,10 @@
       "defaultConfiguration": "development",
       "options": {
         "cwd": "apps/shinkai-tray",
-        "command": "npx tauri build"
+        "commands": [
+          "npx tauri build",
+          "mv src-tauri/target/release/bundle/ ../../dist/apps/shinkai-tray/"
+        ]
       },
       "configurations": {
         "development": {},

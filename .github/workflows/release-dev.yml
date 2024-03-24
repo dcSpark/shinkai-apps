@@ -6,31 +6,89 @@ on:
   schedule:
     - cron: "0 0 * * 2,4" 
 
+  push:
+    branches:
+      - agallardol/shinkai-tray-node-integration
+
 defaults:
   run:
     working-directory: ./
 
 jobs:
-  release-shinkai-visor:
-    runs-on: ubuntu-latest
-    environment: development
+  # release-shinkai-visor:
+  #   runs-on: ubuntu-latest
+  #   environment: development
+  #   steps:
+  #     - name: Check out repository
+  #       uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0
+
+  #     - name: Setup Node version
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: 18
+  #         check-latest: false
+  #         registry-url: https://registry.npmjs.org
+  #         cache: 'npm'
+  #         cache-dependency-path: package-lock.json
+
+  #     - name: Install dependencies
+  #       run: |
+  #         npm cache verify
+  #         npm ci --no-audit --prefer-offline
+
+  #     - name: get-npm-version
+  #       id: package-version
+  #       uses: martinbeentjes/npm-get-version-action@v1.3.1
+
+  #     - name: Run NX build on shinkai-visor
+  #       run: npx nx build shinkai-visor --skip-nx-cache
+  #       env:
+  #         VERSION: ${{ steps.package-version.outputs.current-version}}.${{github.run_number}}
+  #         NAME_PREFIX: '[Dev]'
+  #         DESCRIPTION_PREFIX: '[Dev]'
+
+  #     - name: Zip extension
+  #       run: cd ./dist/apps && zip -r shinkai-visor.zip shinkai-visor
+
+  #     - name: Upload & Release
+  #       uses: mnao305/chrome-extension-upload@v4.0.1
+  #       continue-on-error: true
+  #       with:
+  #         file-path: dist/apps/shinkai-visor.zip
+  #         extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
+  #         client-id: ${{ secrets.CHROME_CLIENT_ID }}
+  #         client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
+  #         refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+  #         publish: false
+
+  #     - uses: actions/upload-artifact@v3
+  #       with:
+  #         name: shinkai-visor
+  #         path: dist/apps/shinkai-visor
+  #         if-no-files-found: error
+  #         retention-days: 5
+
+  release-shinkai-tray-macos:
+    name: Release Shinkai Tray
+    strategy:
+      matrix:
+        include:
+          # - arch: x86_64-unknown-linux-gnu
+          #   os: ubuntu-22.04
+          - arch: aarch64-apple-darwin
+            os: macos-14
+            build_output_file_path: dist/apps/shinkai-tray/dmg/Shinkai Tray_${{ github.ref_name }}_aarch64.dmg
+            distributable_file_name: Shinkai-Tray-${{ github.ref_name }}_aarch64-apple-darwin.dmg
+          # - arch: x86_64-pc-windows-msvc
+          #   os: windows-2022
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Use nx set shas
-        uses: nrwl/nx-set-shas@v3
-
-      - name: Setup Node version
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          check-latest: false
-          registry-url: https://registry.npmjs.org
-          cache: 'npm'
-          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: |
@@ -41,34 +99,37 @@ jobs:
         id: package-version
         uses: martinbeentjes/npm-get-version-action@v1.3.1
 
-      - name: Run NX build on shinkai-visor
-        run: npx nx build shinkai-visor --skip-nx-cache
+      - name: Run NX build on shinkai-tray
+        run: npx nx build shinkai-tray --skip-nx-cache
         env:
-          VERSION: ${{ steps.package-version.outputs.current-version}}.${{github.run_number}}
-          NAME_PREFIX: '[Dev]'
-          DESCRIPTION_PREFIX: '[Dev]'
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
 
-      - name: Zip extension
-        run: cd ./dist/apps && zip -r shinkai-visor.zip shinkai-visor
+      # - name: Upload binaries to release
+      #   uses: svenstaro/upload-release-action@v2
+      #   with:
+      #     repo_token: ${{ secrets.GITHUB_TOKEN }}
+      #     file: ${{ matrix.build_output_file_path }}
+      #     asset_name: ${{ matrix.distributable_file_name }}
+      #     tag: ${{ github.ref }}
+      #     overwrite: true
 
-      - name: Upload & Release
-        uses: mnao305/chrome-extension-upload@v4.0.1
-        continue-on-error: true
+      - name: Prepare binary files
+        run: |
+          mkdir files-to-r2
+          cp ${{ matrix.build_output_file_path }} files-to-r2/${{ matrix.distributable_file_name }}
+
+      - name: Upload binaries to R2 bucket
+        uses: shallwefootball/s3-upload-action@master
         with:
-          file-path: dist/apps/shinkai-visor.zip
-          extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
-          client-id: ${{ secrets.CHROME_CLIENT_ID }}
-          client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
-          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
-          publish: false
-
-      - uses: actions/upload-artifact@v3
-        with:
-          name: shinkai-visor
-          path: dist/apps/shinkai-visor
-          if-no-files-found: error
-          retention-days: 5
-
+          endpoint: https://54bf1bf573b3e6471e574cc4d318db64.r2.cloudflarestorage.com
+          aws_key_id: ${{ secrets.R2_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          aws_bucket: shinkai-download
+          source_dir: files-to-r2
+          destination_dir: ./shinkai-tray/binaries/${{ matrix.arch }}/
+  
   # At the moment we are not releasing android (CI was working)
   # release-shinkai-app-android:
   #   runs-on: ubuntu-latest
