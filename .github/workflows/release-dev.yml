@@ -95,7 +95,12 @@ jobs:
           - arch: aarch64-apple-darwin
             os: macos-14
             build_output_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/dmg/Shinkai Tray_${{ needs.prebuild.outputs.version }}_aarch64.dmg
-            distributable_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}}_aarch64-apple-darwin.dmg
+            build_output_update_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/macos/Shinkai Tray.app.tar.gz
+            build_output_update_signature_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/macos/Shinkai Tray.app.tar.gz.sig
+            distributable_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_aarch64-apple-darwin.dmg
+            distributable_update_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_aarch64-apple-darwin.app.tar.gz
+            distributable_update_signature_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_aarch64-apple-darwin.app.tar.gz.sig
+
           # - arch: x86_64-pc-windows-msvc
           #   os: windows-2022
     runs-on: ${{ matrix.os }}
@@ -137,6 +142,7 @@ jobs:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE }}
           P12_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+
         run: |
           # create variables
           CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
@@ -161,6 +167,8 @@ jobs:
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
 
       # - name: Upload binaries to release
       #   uses: svenstaro/upload-release-action@v2
@@ -175,6 +183,8 @@ jobs:
         run: |
           mkdir files-to-r2
           cp "${{ matrix.build_output_file_path }}" files-to-r2/${{ matrix.distributable_file_name }}
+          cp "${{ matrix.build_output_update_file_path }}" files-to-r2/${{ matrix.distributable_update_file_name }}
+          cp "${{ matrix.build_output_update_signature_file_path }}" files-to-r2/${{ matrix.distributable_update_signature_file_name }}
 
       - name: Upload binaries to R2 bucket
         uses: shallwefootball/s3-upload-action@master
@@ -184,7 +194,7 @@ jobs:
           aws_secret_access_key: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           aws_bucket: shinkai-download
           source_dir: files-to-r2
-          destination_dir: ./shinkai-tray/binaries/${{ matrix.arch }}/
+          destination_dir: ./shinkai-tray/binaries/development/${{ matrix.arch }}/${{ needs.prebuild.outputs.version }}.${{ github.run_number }}/
   
   # At the moment we are not releasing android (CI was working)
   # release-shinkai-app-android:
