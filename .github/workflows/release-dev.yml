@@ -116,9 +116,9 @@ jobs:
           npm cache verify
           npm ci --no-audit --prefer-offline
 
-      - name: get-npm-version
+      - name: get npm version
         id: package-version
-        uses: martinbeentjes/npm-get-version-action@v1.3.1
+        uses: Saionaro/extract-package-version@v1.2.1
 
       - name: Run NX build on shinkai-tray
         run: npx nx build shinkai-tray --skip-nx-cache
