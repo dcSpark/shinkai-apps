@@ -94,8 +94,8 @@ jobs:
           #   os: ubuntu-22.04
           - arch: aarch64-apple-darwin
             os: macos-14
-            build_output_file_path: apps/shinkai-tray/target/release/bundle/dmg/Shinkai Tray-${{ needs.prebuild.outputs.version }}_aarch64.dmg
-            distributable_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}_aarch64-apple-darwin.dmg
+            build_output_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/dmg/Shinkai Tray_${{ needs.prebuild.outputs.version }}_aarch64.dmg
+            distributable_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}}_aarch64-apple-darwin.dmg
           # - arch: x86_64-pc-windows-msvc
           #   os: windows-2022
     runs-on: ${{ matrix.os }}
