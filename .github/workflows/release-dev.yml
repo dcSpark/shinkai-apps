@@ -17,6 +17,8 @@ defaults:
 jobs:
   get-version:
     runs-on: ubuntu-latest
+    outputs:
+      package-version: ${{ steps.package-version.outputs }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -172,7 +174,7 @@ jobs:
       - name: Prepare binary files
         run: |
           mkdir files-to-r2
-          cp ${{ matrix.build_output_file_path }} files-to-r2/${{ matrix.distributable_file_name }}
+          mv ${{ matrix.build_output_file_path }} files-to-r2/${{ matrix.distributable_file_name }}
 
       - name: Upload binaries to R2 bucket
         uses: shallwefootball/s3-upload-action@master
