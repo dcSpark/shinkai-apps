@@ -18,7 +18,7 @@ jobs:
   get-version:
     runs-on: ubuntu-latest
     outputs:
-      package-version: ${{ steps.package-version.outputs }}
+      version: ${{ steps.package-version.outputs }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -94,8 +94,8 @@ jobs:
           #   os: ubuntu-22.04
           - arch: aarch64-apple-darwin
             os: macos-14
-            build_output_file_path: apps/shinkai-tray/target/release/bundle/dmg/Shinkai Tray_${{ needs.get-version.outputs.package-version }}_aarch64.dmg
-            distributable_file_name: Shinkai-Tray-${{ needs.get-version.outputs.package-version }}_aarch64-apple-darwin.dmg
+            build_output_file_path: apps/shinkai-tray/target/release/bundle/dmg/Shinkai Tray_${{ needs.get-version.outputs.version }}_aarch64.dmg
+            distributable_file_name: Shinkai-Tray-${{ needs.get-version.outputs.version }}_aarch64-apple-darwin.dmg
           # - arch: x86_64-pc-windows-msvc
           #   os: windows-2022
     runs-on: ${{ matrix.os }}
