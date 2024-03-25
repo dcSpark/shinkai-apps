@@ -15,7 +15,7 @@ defaults:
     working-directory: ./
 
 jobs:
-  get-version:
+  prebuild:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.package-version.outputs.current-version }}
@@ -85,7 +85,7 @@ jobs:
   #         retention-days: 5
 
   release-shinkai-tray-macos:
-    needs: get-version
+    needs: prebuild
     name: Release Shinkai Tray
     strategy:
       matrix:
@@ -94,8 +94,8 @@ jobs:
           #   os: ubuntu-22.04
           - arch: aarch64-apple-darwin
             os: macos-14
-            build_output_file_path: apps/shinkai-tray/target/release/bundle/dmg/Shinkai Tray_${{ needs.get-version.outputs.version }}_aarch64.dmg
-            distributable_file_name: Shinkai-Tray-${{ needs.get-version.outputs.version }}_aarch64-apple-darwin.dmg
+            build_output_file_path: apps/shinkai-tray/target/release/bundle/dmg/Shinkai Tray_${{ needs.prebuild.outputs.version }}_aarch64.dmg
+            distributable_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}_aarch64-apple-darwin.dmg
           # - arch: x86_64-pc-windows-msvc
           #   os: windows-2022
     runs-on: ${{ matrix.os }}
