@@ -18,7 +18,7 @@ jobs:
   prebuild:
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.package-version.outputs.current-version }}
+      version: ${{ steps.package-version.outputs.version }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
