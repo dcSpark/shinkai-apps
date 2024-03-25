@@ -10,9 +10,7 @@
       "options": {
         "cwd": "apps/shinkai-tray",
         "commands": [
-          "npx tauri build",
-          "mkdir -p ../../dist/apps/shinkai-tray",
-          "cp -rf src-tauri/target/release/bundle/ ../../dist/apps/shinkai-tray/"
+          "npx tauri build"
         ]
       },
       "configurations": {

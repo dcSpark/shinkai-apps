@@ -15,6 +15,18 @@ defaults:
     working-directory: ./
 
 jobs:
+  get-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: get npm version
+        id: package-version
+        uses: Saionaro/extract-package-version@v1.2.1
+
   # release-shinkai-visor:
   #   runs-on: ubuntu-latest
   #   environment: development
@@ -71,6 +83,7 @@ jobs:
   #         retention-days: 5
 
   release-shinkai-tray-macos:
+    needs: get-version
     name: Release Shinkai Tray
     strategy:
       matrix:
@@ -79,8 +92,8 @@ jobs:
           #   os: ubuntu-22.04
           - arch: aarch64-apple-darwin
             os: macos-14
-            build_output_file_path: dist/apps/shinkai-tray/dmg/Shinkai Tray_${{ github.ref_name }}_aarch64.dmg
-            distributable_file_name: Shinkai-Tray-${{ github.ref_name }}_aarch64-apple-darwin.dmg
+            build_output_file_path: apps/shinkai-tray/target/release/bundle/dmg/Shinkai Tray_${{ needs.get-version.outputs.package-version }}_aarch64.dmg
+            distributable_file_name: Shinkai-Tray-${{ needs.get-version.outputs.package-version }}_aarch64-apple-darwin.dmg
           # - arch: x86_64-pc-windows-msvc
           #   os: windows-2022
     runs-on: ${{ matrix.os }}
@@ -116,10 +129,6 @@ jobs:
         run: |
           npm cache verify
           npm ci --no-audit --prefer-offline
-
-      - name: get npm version
-        id: package-version
-        uses: Saionaro/extract-package-version@v1.2.1
 
       - name: Install the Apple certificate and provisioning profile
         env:
