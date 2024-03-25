@@ -1,6 +1,6 @@
 [package]
 name = "shinkai-tray"
-version = "0.5.0"
+version = "0.5.2"
 description = "A Tray App for Desktop using Shinkai"
 authors = ["nico@dcspark.io"]
 license = ""
