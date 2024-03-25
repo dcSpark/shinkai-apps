@@ -84,6 +84,7 @@ jobs:
           # - arch: x86_64-pc-windows-msvc
           #   os: windows-2022
     runs-on: ${{ matrix.os }}
+    environment: development
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
