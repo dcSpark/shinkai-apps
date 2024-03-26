@@ -8,6 +8,31 @@ import {
 
 export const OPEN_SIDEPANEL_DELAY_MS = 600;
 
+export const sendVectorResourceFound = async (
+  info: chrome.contextMenus.OnClickData | undefined,
+  tab: chrome.tabs.Tab | undefined,
+  vectorResourceUrl: string,
+) => {
+  if (!tab?.id) {
+    return;
+  }
+  const response = await fetch(vectorResourceUrl);
+  const vectorResource = await response.text();
+  const vectorResourceName = vectorResourceUrl.split('/').pop()?.split('.')[0];
+
+  const fileType = '';
+  const message: ServiceWorkerInternalMessage = {
+    type: ServiceWorkerInternalMessageType.SendPageToAgent,
+    data: {
+      filename: `${encodeURIComponent(vectorResourceName || Date.now())}.vrkai`,
+      fileType: fileType,
+      fileDataUrl: `data:${fileType};base64,${Buffer.from(
+        vectorResource,
+      ).toString('base64')}`,
+    },
+  };
+  sendMessage(message);
+};
 export const sendPageToAgent = async (
   info: chrome.contextMenus.OnClickData | undefined,
   tab: chrome.tabs.Tab | undefined,

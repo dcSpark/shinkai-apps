@@ -57,6 +57,17 @@ export const useGlobalPopupChromeMessage = () => {
         });
         break;
       }
+      case ServiceWorkerInternalMessageType.SendVectorResource: {
+        const vrFile = dataUrlToFile(
+          message.data.imageDataUrl,
+          message.data.filename,
+        );
+        history.push({
+          pathname: '/inboxes/create-job',
+          state: { files: [vrFile] },
+        });
+        break;
+      }
       case ServiceWorkerInternalMessageType.QuickConnectionIntent: {
         history.push({
           pathname: '/nodes/connect/method/quick-start',

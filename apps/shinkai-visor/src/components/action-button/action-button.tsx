@@ -12,6 +12,7 @@ import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
+  Toaster,
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -24,6 +25,7 @@ import * as React from 'react';
 import { useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import { IntlProvider } from 'react-intl';
+import { toast } from 'sonner';
 
 import shinkaiLogo from '../../assets/icons/shinkai-min.svg';
 import { delay } from '../../helpers/misc';
@@ -35,6 +37,7 @@ import { OPEN_SIDEPANEL_DELAY_MS } from '../../service-worker/action';
 import { ServiceWorkerInternalMessageType } from '../../service-worker/communication/internal/types';
 import { useSettings } from '../../store/settings/settings';
 import themeStyle from '../../theme/styles.css?inline';
+import sonnerStyle from './sonner-styles.css?inline';
 export const SHINKAI_ACTION_ELEMENT_NAME = 'shinkai-action-button-root';
 
 const baseContainer = document.createElement(SHINKAI_ACTION_ELEMENT_NAME);
@@ -85,6 +88,17 @@ const sendCapture = async () => {
   });
   await chrome.runtime.sendMessage({
     type: ServiceWorkerInternalMessageType.SendCaptureToAgent,
+  });
+};
+
+const sendVectorResourceFound = async (vectorResourceUrl: string) => {
+  await chrome.runtime.sendMessage({
+    type: ServiceWorkerInternalMessageType.OpenSidePanel,
+  });
+  await delay(OPEN_SIDEPANEL_DELAY_MS);
+  await chrome.runtime.sendMessage({
+    type: ServiceWorkerInternalMessageType.VectorResourceFound,
+    data: { vectorResourceUrl },
   });
 };
 
@@ -162,6 +176,42 @@ const ActionButton = () => {
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const meta = document.querySelector(
+      'meta[name="shinkai-vector-resources"]',
+    );
+    if (!meta) return;
+    const vectorResources:
+      | {
+          'element-type': 'direct-vrkai' | 'direct-vrpack' | 'direct-vrkai';
+          content: string;
+          metadata: string;
+        }[]
+      | {
+          'element-type': 'network';
+          'network-path': string;
+          metadata: string;
+        }[]
+      | {
+          'element-type': 'http';
+          url: string;
+          metadata: string;
+        }[] = JSON.parse(meta.getAttribute('content') as string);
+
+    for (const vectorResource of vectorResources) {
+      if (vectorResource['element-type'] === 'http') {
+        toast.success('Shinkai', {
+          description: 'Vector Resource available for this page',
+          duration: 1000000,
+          action: {
+            label: 'Ask',
+            onClick: () => sendVectorResourceFound(vectorResource.url),
+          },
+        });
+      }
+    }
   }, []);
 
   return disabledHosts[window.location.host] ? null : (
@@ -267,6 +317,8 @@ const root = createRoot(container);
 root.render(
   <React.StrictMode>
     <style>{themeStyle}</style>
+    <style>{sonnerStyle}</style>
+    <Toaster closeButton position="top-right" theme="dark" />
     <IntlProvider locale={locale} messages={langMessages}>
       <ActionButton />
     </IntlProvider>

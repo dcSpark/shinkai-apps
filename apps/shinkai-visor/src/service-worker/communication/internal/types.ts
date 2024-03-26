@@ -13,6 +13,8 @@ export enum ServiceWorkerInternalMessageType {
   CloseSidePanel = 'close-side-panel',
   IsSidePanelOpen = 'is-side-panel-open',
   ExportConnectionIntent = 'export-connection-intent',
+  VectorResourceFound = 'vector-resource-found',
+  SendVectorResource = 'send-vector-resource',
 }
 
 export enum ContentScriptBridgeMessageType {
@@ -76,6 +78,14 @@ export type ServiceWorkerInternalMessage =
   | {
       type: ServiceWorkerInternalMessageType.QuickConnectionIntent;
       data: { nodeAddress: string };
+    }
+  | {
+      type: ServiceWorkerInternalMessageType.VectorResourceFound;
+      data: { vectorResourceUrl: string };
+    }
+  | {
+      type: ServiceWorkerInternalMessageType.SendVectorResource;
+      data: { imageDataUrl: string; filename: string };
     }
   | {
       type: ServiceWorkerInternalMessageType.ExportConnectionIntent;

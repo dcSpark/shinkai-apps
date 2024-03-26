@@ -47,7 +47,8 @@
       "js": [
         "src/components/image-capture/image-capture.tsx",
         "src/components/action-button/action-button.tsx"
-      ]
+      ],
+      "run_at": "document_end"
     }
   ],
   "externally_connectable": {
