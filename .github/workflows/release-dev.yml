@@ -52,14 +52,10 @@ jobs:
   #         npm cache verify
   #         npm ci --no-audit --prefer-offline
 
-  #     - name: get-npm-version
-  #       id: package-version
-  #       uses: martinbeentjes/npm-get-version-action@v1.3.1
-
   #     - name: Run NX build on shinkai-visor
   #       run: npx nx build shinkai-visor --skip-nx-cache
   #       env:
-  #         VERSION: ${{ steps.package-version.outputs.current-version}}.${{github.run_number}}
+  #         VERSION: ${{ needs.prebuild.outputs.version }}.${{github.run_number}}
   #         NAME_PREFIX: '[Dev]'
   #         DESCRIPTION_PREFIX: '[Dev]'
 
@@ -90,14 +86,14 @@ jobs:
     strategy:
       matrix:
         include:
-          - arch: x86_64-unknown-linux-gnu
-            os: ubuntu-22.04
-            build_output_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/appimage/shinkai-tray_${{ needs.prebuild.outputs.version }}_amd64.AppImage
-            build_output_update_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/appimage/shinkai-tray_${{ needs.prebuild.outputs.version }}_amd64.AppImage.tar.gz
-            build_output_update_signature_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/appimage/shinkai-tray_${{ needs.prebuild.outputs.version }}_amd64.AppImage.tar.gz.sig
-            distributable_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage
-            distributable_update_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage.tar.gz
-            distributable_update_signature_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage.tar.gz.sig
+          # - arch: x86_64-unknown-linux-gnu
+          #   os: ubuntu-22.04
+          #   build_output_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/appimage/shinkai-tray_${{ needs.prebuild.outputs.version }}_amd64.AppImage
+          #   build_output_update_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/appimage/shinkai-tray_${{ needs.prebuild.outputs.version }}_amd64.AppImage.tar.gz
+          #   build_output_update_signature_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/appimage/shinkai-tray_${{ needs.prebuild.outputs.version }}_amd64.AppImage.tar.gz.sig
+          #   distributable_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage
+          #   distributable_update_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage.tar.gz
+          #   distributable_update_signature_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage.tar.gz.sig
 
           # - arch: aarch64-apple-darwin
           #   os: macos-14
@@ -108,8 +104,14 @@ jobs:
           #   distributable_update_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_aarch64-apple-darwin.app.tar.gz
           #   distributable_update_signature_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_aarch64-apple-darwin.app.tar.gz.sig
 
-          # - arch: x86_64-pc-windows-msvc
-          #   os: windows-2022
+          - arch: x86_64-pc-windows-msvc
+            os: windows-2022
+            build_output_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/nsis/Shinkai Tray_${{ needs.prebuild.outputs.version }}_x64-setup.exe
+            build_output_update_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/nsis/Shinkai Tray_$${{ needs.prebuild.outputs.version }}_x64-setup.nsis.zip
+            build_output_update_signature_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/nsis/Shinkai Tray_$${{ needs.prebuild.outputs.version }}_x64-setup.nsis.zip.sig
+            distributable_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-pc-windows-msvc.exe
+            distributable_update_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-pc-windows-msvc.nsis.zip
+            distributable_update_signature_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-pc-windows-msvc.nsis.zip.sig
     runs-on: ${{ matrix.os }}
     environment: development
     steps:
