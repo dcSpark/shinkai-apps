@@ -90,16 +90,23 @@ jobs:
     strategy:
       matrix:
         include:
-          # - arch: x86_64-unknown-linux-gnu
-          #   os: ubuntu-22.04
-          - arch: aarch64-apple-darwin
-            os: macos-14
+          - arch: x86_64-unknown-linux-gnu
+            os: ubicloud # ubuntu-22.04
             build_output_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/dmg/Shinkai Tray_${{ needs.prebuild.outputs.version }}_aarch64.dmg
             build_output_update_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/macos/Shinkai Tray.app.tar.gz
             build_output_update_signature_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/macos/Shinkai Tray.app.tar.gz.sig
             distributable_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_aarch64-apple-darwin.dmg
             distributable_update_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_aarch64-apple-darwin.app.tar.gz
             distributable_update_signature_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_aarch64-apple-darwin.app.tar.gz.sig
+
+          # - arch: aarch64-apple-darwin
+          #   os: macos-14
+          #   build_output_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/dmg/Shinkai Tray_${{ needs.prebuild.outputs.version }}_aarch64.dmg
+          #   build_output_update_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/macos/Shinkai Tray.app.tar.gz
+          #   build_output_update_signature_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/macos/Shinkai Tray.app.tar.gz.sig
+          #   distributable_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_aarch64-apple-darwin.dmg
+          #   distributable_update_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_aarch64-apple-darwin.app.tar.gz
+          #   distributable_update_signature_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_aarch64-apple-darwin.app.tar.gz.sig
 
           # - arch: x86_64-pc-windows-msvc
           #   os: windows-2022
@@ -138,6 +145,7 @@ jobs:
           npm ci --no-audit --prefer-offline
 
       - name: Install the Apple certificate and provisioning profile
+        if: ${{ matrix.arch == 'aarch64-apple-darwin' }}
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE }}
           P12_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
