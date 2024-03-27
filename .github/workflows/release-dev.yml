@@ -107,8 +107,8 @@ jobs:
           - arch: x86_64-pc-windows-msvc
             os: windows-2022
             build_output_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/nsis/Shinkai Tray_${{ needs.prebuild.outputs.version }}_x64-setup.exe
-            build_output_update_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/nsis/Shinkai Tray_$${{ needs.prebuild.outputs.version }}_x64-setup.nsis.zip
-            build_output_update_signature_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/nsis/Shinkai Tray_$${{ needs.prebuild.outputs.version }}_x64-setup.nsis.zip.sig
+            build_output_update_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/nsis/Shinkai Tray_${{ needs.prebuild.outputs.version }}_x64-setup.nsis.zip
+            build_output_update_signature_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/nsis/Shinkai Tray_${{ needs.prebuild.outputs.version }}_x64-setup.nsis.zip.sig
             distributable_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-pc-windows-msvc.exe
             distributable_update_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-pc-windows-msvc.nsis.zip
             distributable_update_signature_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-pc-windows-msvc.nsis.zip.sig
