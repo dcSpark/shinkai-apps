@@ -43,7 +43,12 @@ import { OPEN_SIDEPANEL_DELAY_MS } from '../../service-worker/action';
 import { ServiceWorkerInternalMessageType } from '../../service-worker/communication/internal/types';
 import { useSettings } from '../../store/settings/settings';
 import themeStyle from '../../theme/styles.css?inline';
-import sonnerStyle from './sonner-styles.css?inline';
+import VrNotification, {
+  useVectorResourceMetatags,
+  VectorResourceMetatag,
+  VectorResourceType,
+} from './vr-notification';
+import notificationStyle from './vr-notification.css?inline';
 export const SHINKAI_ACTION_ELEMENT_NAME = 'shinkai-action-button-root';
 
 const baseContainer = document.createElement(SHINKAI_ACTION_ELEMENT_NAME);
@@ -97,17 +102,6 @@ const sendCapture = async () => {
   });
 };
 
-const sendVectorResourceFound = async (vectorResourceUrl: string) => {
-  await chrome.runtime.sendMessage({
-    type: ServiceWorkerInternalMessageType.OpenSidePanel,
-  });
-  await delay(OPEN_SIDEPANEL_DELAY_MS);
-  await chrome.runtime.sendMessage({
-    type: ServiceWorkerInternalMessageType.VectorResourceFound,
-    data: { vectorResourceUrl },
-  });
-};
-
 const createAction = (
   displayAction: boolean,
   label: string,
@@ -119,6 +113,7 @@ const createAction = (
 
 const ActionButton = () => {
   useGlobalActionButtonChromeMessage();
+  useVectorResourceMetatags();
 
   const displayActionButton = useSettings(
     (settingsStore) => settingsStore.displayActionButton,
@@ -182,79 +177,6 @@ const ActionButton = () => {
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    const meta = document.querySelector(
-      'meta[name="shinkai-vector-resources"]',
-    );
-    if (!meta) return;
-    const vectorResources:
-      | {
-          'element-type': 'direct-vrkai' | 'direct-vrpack' | 'direct-vrkai';
-          content: string;
-          metadata: string;
-        }[]
-      | {
-          'element-type': 'network';
-          'network-path': string;
-          metadata: string;
-        }[]
-      | {
-          'element-type': 'http';
-          url: string;
-          metadata: string;
-        }[] = JSON.parse(meta.getAttribute('content') as string);
-
-    for (const vectorResource of vectorResources) {
-      if (vectorResource['element-type'] === 'http') {
-        toast.custom(
-          (t) => (
-            <button
-              className="flex items-center gap-3"
-              onClick={() => {
-                sendVectorResourceFound(vectorResource.url);
-                toast.dismiss(t);
-              }}
-            >
-              <div className="flex items-center gap-1.5">
-                <img
-                  alt="shinkai-app-logo select-none"
-                  className={'h-[25px] w-[25px] select-none'}
-                  src={srcUrlResolver(shinkaiLogo)}
-                />
-                <div className="flex flex-col">
-                  <span className="font-medium text-white">
-                    Shinkai Instant Q/A Available
-                  </span>
-                  <span className="text-gray-80 font-regular text-xs">
-                    Webpage is AI-Ready. Ask questions with no extra processing
-                    time by clicking here.
-                  </span>
-                </div>
-              </div>
-              <div className="flex items-center gap-1">
-                <div
-                  className="h-[20px] w-[20px] rounded-full bg-neutral-700 p-1"
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    toast.dismiss(t);
-                  }}
-                  role="button"
-                  tabIndex={0}
-                >
-                  <XIcon className="h-full w-full" />
-                  <span className="sr-only">Dismiss</span>
-                </div>
-              </div>
-            </button>
-          ),
-          {
-            duration: 1000000,
-          },
-        );
-      }
-    }
   }, []);
 
   return disabledHosts[window.location.host] ? null : (
@@ -374,7 +296,7 @@ const root = createRoot(container);
 root.render(
   <React.StrictMode>
     <style>{themeStyle}</style>
-    <style>{sonnerStyle}</style>
+    <style>{notificationStyle}</style>
     <Toaster
       position="bottom-right"
       toastOptions={{
