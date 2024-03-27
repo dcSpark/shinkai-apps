@@ -146,7 +146,13 @@ jobs:
           npm cache verify
           npm ci --no-audit --prefer-offline
 
-      - name: (Linux) Install libgtk-3-dev
+      - name: (Windows) Install asiosdk}
+        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
+        run: |
+            curl -O asiosdk.zip https://www.steinberg.net/asiosdk
+            Expand-Archive .\asiosdk.zip -DestinationPath .\
+
+      - name: (Linux) Install build dependencies
         if: ${{ matrix.arch == 'x86_64-unknown-linux-gnu' }}
         run: |
           sudo apt-get install -y libwebkit2gtk-4.0-dev build-essential wget libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev libasound2-dev
@@ -184,7 +190,7 @@ jobs:
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
-
+          CPAL_ASIO_DIR: ./asiosdk_2.3.3_2019-06-14
       # - name: Upload binaries to release
       #   uses: svenstaro/upload-release-action@v2
       #   with:
