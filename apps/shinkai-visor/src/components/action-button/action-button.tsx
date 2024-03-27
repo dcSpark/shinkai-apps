@@ -228,8 +228,8 @@ const ActionButton = () => {
                     Shinkai Instant Q/A Available
                   </span>
                   <span className="text-gray-80 font-regular text-xs">
-                    Instantly ask questions with AI on this page using Shinkai
-                    Visor. Click to start.
+                    Webpage is AI-Ready. Ask questions with no extra processing
+                    time by clicking here.
                   </span>
                 </div>
               </div>
@@ -337,35 +337,15 @@ const ActionButton = () => {
               ]
                 .filter(Boolean)
                 .map((item) => {
-                  if (item?.label === 'VR Available') {
-                    return (
-                      <TooltipProvider key={item?.label}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <button
-                              className="bg-brand animate-pulse-focus flex h-8 w-8 cursor-pointer items-center justify-center rounded-full p-2 text-white shadow-2xl transition-colors duration-75"
-                              onClick={item?.onClick}
-                            >
-                              {item?.icon}
-                            </button>
-                          </TooltipTrigger>
-                          <TooltipContent
-                            align="center"
-                            side="right"
-                            sideOffset={3}
-                          >
-                            <p className="font-inter">{item?.label}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    );
-                  }
                   return (
                     <TooltipProvider key={item?.label}>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <button
-                            className="hover:bg-brand flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-gray-500 p-2 text-white shadow-2xl transition-colors duration-75"
+                            className={cn(
+                              'hover:bg-brand flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-gray-500 p-2 text-white shadow-2xl transition-colors duration-75',
+                              item?.label === 'VR Available' && 'bg-brand',
+                            )}
                             onClick={item?.onClick}
                           >
                             {item?.icon}
