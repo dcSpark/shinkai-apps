@@ -30,6 +30,7 @@ jobs:
         uses: Saionaro/extract-package-version@v1.2.1
 
   release-shinkai-visor:
+    needs: prebuild
     runs-on: ubuntu-latest
     environment: development
     steps:
@@ -186,7 +187,15 @@ jobs:
           npm cache verify
           npm ci --no-audit --prefer-offline
 
-      - name: Run NX build on shinkai-tray
+      - name: (Linux) Run NX build on shinkai-tray
+        if: ${{ matrix.arch == 'x86_64-unknown-linux-gnu' }}
+        run: npx nx build shinkai-tray --skip-nx-cache
+        env:
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+
+      - name: (Macos) Run NX build on shinkai-tray
+        if: ${{ matrix.arch == 'aarch64-apple-darwin' }}
         run: npx nx build shinkai-tray --skip-nx-cache
         env:
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
@@ -194,17 +203,16 @@ jobs:
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+
+      - name: (Windows) Run NX build on shinkai-tray
+        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
+        run: npx nx build shinkai-tray --skip-nx-cache
+        env:
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+          # Windows Only
           CPAL_ASIO_DIR: ${{ github.workspace }}/asiosdk_2.3.3_2019-06-14
           LIBCLANG_PATH: C:\Program Files\LLVM\bin
-
-      # - name: Upload binaries to release
-      #   uses: svenstaro/upload-release-action@v2
-      #   with:
-      #     repo_token: ${{ secrets.GITHUB_TOKEN }}
-      #     file: ${{ matrix.build_output_file_path }}
-      #     asset_name: ${{ matrix.distributable_file_name }}
-      #     tag: ${{ github.ref }}
-      #     overwrite: true
 
       - name: Prepare binary files
         run: |
