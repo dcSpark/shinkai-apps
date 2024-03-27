@@ -31,7 +31,6 @@ import * as React from 'react';
 import { useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import { IntlProvider } from 'react-intl';
-import { toast } from 'sonner';
 
 import shinkaiLogo from '../../assets/icons/shinkai-min.svg';
 import { delay } from '../../helpers/misc';
@@ -43,11 +42,7 @@ import { OPEN_SIDEPANEL_DELAY_MS } from '../../service-worker/action';
 import { ServiceWorkerInternalMessageType } from '../../service-worker/communication/internal/types';
 import { useSettings } from '../../store/settings/settings';
 import themeStyle from '../../theme/styles.css?inline';
-import VrNotification, {
-  useVectorResourceMetatags,
-  VectorResourceMetatag,
-  VectorResourceType,
-} from './vr-notification';
+import { useVectorResourceMetatags } from './vr-notification';
 import notificationStyle from './vr-notification.css?inline';
 export const SHINKAI_ACTION_ELEMENT_NAME = 'shinkai-action-button-root';
 
