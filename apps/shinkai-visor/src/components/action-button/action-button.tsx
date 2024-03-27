@@ -20,7 +20,13 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
-import { Focus, NotebookPenIcon, PanelTopIcon, XIcon } from 'lucide-react';
+import {
+  Focus,
+  NotebookPenIcon,
+  PanelTopIcon,
+  XIcon,
+  ZapIcon,
+} from 'lucide-react';
 import * as React from 'react';
 import { useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -202,14 +208,51 @@ const ActionButton = () => {
 
     for (const vectorResource of vectorResources) {
       if (vectorResource['element-type'] === 'http') {
-        toast.success('Shinkai', {
-          description: 'Vector Resource available for this page',
-          duration: 1000000,
-          action: {
-            label: 'Ask',
-            onClick: () => sendVectorResourceFound(vectorResource.url),
+        toast.custom(
+          (t) => (
+            <button
+              className="flex items-center gap-3"
+              onClick={() => {
+                sendVectorResourceFound(vectorResource.url);
+                toast.dismiss(t);
+              }}
+            >
+              <div className="flex items-center gap-1.5">
+                <img
+                  alt="shinkai-app-logo select-none"
+                  className={'h-[25px] w-[25px] select-none'}
+                  src={srcUrlResolver(shinkaiLogo)}
+                />
+                <div className="flex flex-col">
+                  <span className="font-medium text-white">
+                    Shinkai Instant Q/A Available
+                  </span>
+                  <span className="text-gray-80 font-regular text-xs">
+                    Instantly ask questions with AI on this page using Shinkai
+                    Visor. Click to start.
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-1">
+                <div
+                  className="h-[20px] w-[20px] rounded-full bg-neutral-700 p-1"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    toast.dismiss(t);
+                  }}
+                  role="button"
+                  tabIndex={0}
+                >
+                  <XIcon className="h-full w-full" />
+                  <span className="sr-only">Dismiss</span>
+                </div>
+              </div>
+            </button>
+          ),
+          {
+            duration: 1000000,
           },
-        });
+        );
       }
     }
   }, []);
@@ -269,6 +312,11 @@ const ActionButton = () => {
                 <XIcon />
               </button>
               {[
+                {
+                  label: 'Shinkai Instant Q/A Available',
+                  onClick: sendPage,
+                  icon: <ZapIcon className="h-full w-full" />,
+                },
                 createAction(
                   displaySummaryActionButton,
                   'Summarize Webpage',
@@ -288,23 +336,52 @@ const ActionButton = () => {
                 ),
               ]
                 .filter(Boolean)
-                .map((item) => (
-                  <TooltipProvider key={item?.label}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button
-                          className="hover:bg-brand flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-gray-500 p-2 text-white shadow-2xl transition-colors duration-75"
-                          onClick={item?.onClick}
+                .map((item) => {
+                  if (item?.label === 'VR Available') {
+                    return (
+                      <TooltipProvider key={item?.label}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              className="bg-brand animate-pulse-focus flex h-8 w-8 cursor-pointer items-center justify-center rounded-full p-2 text-white shadow-2xl transition-colors duration-75"
+                              onClick={item?.onClick}
+                            >
+                              {item?.icon}
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent
+                            align="center"
+                            side="right"
+                            sideOffset={3}
+                          >
+                            <p className="font-inter">{item?.label}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    );
+                  }
+                  return (
+                    <TooltipProvider key={item?.label}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            className="hover:bg-brand flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-gray-500 p-2 text-white shadow-2xl transition-colors duration-75"
+                            onClick={item?.onClick}
+                          >
+                            {item?.icon}
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent
+                          align="center"
+                          side="left"
+                          sideOffset={3}
                         >
-                          {item?.icon}
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent align="center" side="left" sideOffset={3}>
-                        <p className="font-inter">{item?.label}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                ))}
+                          <p className="font-inter">{item?.label}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  );
+                })}
             </HoverCardContent>
           </HoverCard>
         </DraggableItem>
@@ -318,7 +395,13 @@ root.render(
   <React.StrictMode>
     <style>{themeStyle}</style>
     <style>{sonnerStyle}</style>
-    <Toaster closeButton position="top-right" theme="dark" />
+    <Toaster
+      position="bottom-right"
+      toastOptions={{
+        unstyled: true,
+        className: 'bg-neutral-900 rounded-full text-sm font-medium px-3 py-2',
+      }}
+    />
     <IntlProvider locale={locale} messages={langMessages}>
       <ActionButton />
     </IntlProvider>
