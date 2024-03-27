@@ -149,14 +149,14 @@ export const CreateJob = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const submit = (values: FormSchemaType) => {
+  const submit = async (values: FormSchemaType) => {
     if (!auth) return;
     console.log('values', values);
     let content = values.content;
     if (query.has('context')) {
       content = `${values.content} - \`\`\`${query.get('context')}\`\`\``;
     }
-    createJob({
+    await createJob({
       nodeAddress: auth?.node_address ?? '',
       shinkaiIdentity: auth.shinkai_identity,
       profile: auth.profile,

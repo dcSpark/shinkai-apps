@@ -12,6 +12,7 @@ import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
+  Toaster,
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -19,7 +20,13 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
-import { Focus, NotebookPenIcon, PanelTopIcon, XIcon } from 'lucide-react';
+import {
+  Focus,
+  NotebookPenIcon,
+  PanelTopIcon,
+  XIcon,
+  ZapIcon,
+} from 'lucide-react';
 import * as React from 'react';
 import { useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -35,6 +42,8 @@ import { OPEN_SIDEPANEL_DELAY_MS } from '../../service-worker/action';
 import { ServiceWorkerInternalMessageType } from '../../service-worker/communication/internal/types';
 import { useSettings } from '../../store/settings/settings';
 import themeStyle from '../../theme/styles.css?inline';
+import { useVectorResourceMetatags } from './vr-notification';
+import notificationStyle from './vr-notification.css?inline';
 export const SHINKAI_ACTION_ELEMENT_NAME = 'shinkai-action-button-root';
 
 const baseContainer = document.createElement(SHINKAI_ACTION_ELEMENT_NAME);
@@ -99,6 +108,7 @@ const createAction = (
 
 const ActionButton = () => {
   useGlobalActionButtonChromeMessage();
+  useVectorResourceMetatags();
 
   const displayActionButton = useSettings(
     (settingsStore) => settingsStore.displayActionButton,
@@ -219,6 +229,11 @@ const ActionButton = () => {
                 <XIcon />
               </button>
               {[
+                {
+                  label: 'Shinkai Instant Q/A Available',
+                  onClick: sendPage,
+                  icon: <ZapIcon className="h-full w-full" />,
+                },
                 createAction(
                   displaySummaryActionButton,
                   'Summarize Webpage',
@@ -238,23 +253,32 @@ const ActionButton = () => {
                 ),
               ]
                 .filter(Boolean)
-                .map((item) => (
-                  <TooltipProvider key={item?.label}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button
-                          className="hover:bg-brand flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-gray-500 p-2 text-white shadow-2xl transition-colors duration-75"
-                          onClick={item?.onClick}
+                .map((item) => {
+                  return (
+                    <TooltipProvider key={item?.label}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            className={cn(
+                              'hover:bg-brand flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-gray-500 p-2 text-white shadow-2xl transition-colors duration-75',
+                              item?.label === 'VR Available' && 'bg-brand',
+                            )}
+                            onClick={item?.onClick}
+                          >
+                            {item?.icon}
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent
+                          align="center"
+                          side="left"
+                          sideOffset={3}
                         >
-                          {item?.icon}
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent align="center" side="left" sideOffset={3}>
-                        <p className="font-inter">{item?.label}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                ))}
+                          <p className="font-inter">{item?.label}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  );
+                })}
             </HoverCardContent>
           </HoverCard>
         </DraggableItem>
@@ -267,6 +291,14 @@ const root = createRoot(container);
 root.render(
   <React.StrictMode>
     <style>{themeStyle}</style>
+    <style>{notificationStyle}</style>
+    <Toaster
+      position="bottom-right"
+      toastOptions={{
+        unstyled: true,
+        className: 'bg-neutral-900 rounded-full text-sm font-medium px-3 py-2',
+      }}
+    />
     <IntlProvider locale={locale} messages={langMessages}>
       <ActionButton />
     </IntlProvider>
