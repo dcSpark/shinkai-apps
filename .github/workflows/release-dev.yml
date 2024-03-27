@@ -121,6 +121,8 @@ jobs:
         run: |
           curl https://www.steinberg.net/asiosdk -o asiosdk.zip
           Expand-Archive .\asiosdk.zip -DestinationPath .\
+          curl https://asio4all.org/downloads/ASIO4ALL_2_15_English.exe -o asio4all.exe
+          Start-Process '.\asio4all.exe' /S -Wait -PassThru
 
       - name: (Linux) Install build dependencies
         if: ${{ matrix.arch == 'x86_64-unknown-linux-gnu' }}
