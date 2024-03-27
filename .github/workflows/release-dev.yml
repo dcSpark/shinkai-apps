@@ -149,7 +149,7 @@ jobs:
       - name: (Windows) Install asiosdk}
         if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
         run: |
-            curl -O asiosdk.zip https://www.steinberg.net/asiosdk
+            curl https://www.steinberg.net/asiosdk -o asiosdk.zip
             Expand-Archive .\asiosdk.zip -DestinationPath .\
 
       - name: (Linux) Install build dependencies
