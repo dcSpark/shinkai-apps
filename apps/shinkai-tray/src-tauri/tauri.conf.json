@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "Shinkai Tray",
-    "version": "0.5.2"
+    "version": "../../../package.json"
   },
   "tauri": {
     "allowlist": {
@@ -97,7 +97,7 @@
     "updater": {
       "active": true,
       "endpoints": [
-        "https://download.shinkai.com/shinkai-tray/binaries/updates.json"
+        "https://download.shinkai.com/shinkai-tray/binaries/production/updates.json"
       ],
       "dialog": true,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDlCNzc1MjI1NEFEMzlFQjgKUldTNG50TktKVkozbSs0WXAzb1dOMy9oclJQdHZCcWNkcHRXeDcvMXNXeWRKM3g1SXR6eitJV0wK"

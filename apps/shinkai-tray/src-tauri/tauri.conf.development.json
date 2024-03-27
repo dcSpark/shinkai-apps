@@ -1,0 +1,9 @@
+{
+  "tauri": {
+    "updater": {
+      "endpoints": [
+        "https://download.shinkai.com/shinkai-tray/binaries/development/updates.json"
+      ]
+    }
+  }
+}
