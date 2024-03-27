@@ -17,7 +17,7 @@ tauri = { version = "1.4", features = [ "updater", "window-set-focus", "http-req
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 whisper-rs = "0.8.0"
-cpal = { version = "0.15.2", features = ["asio"] }
+cpal = { git = "https://github.com/RustAudio/cpal.git", features = ["asio"] }
 webrtc-vad = "0.2"
 hound = "3.4.0"
 # fix this dependency later on
