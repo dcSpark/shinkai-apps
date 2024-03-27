@@ -79,8 +79,7 @@ export const VectorFileDetails = () => {
       </div>
 
       <DrawerFooter>
-        <Button>Download Source File</Button>
-        <Button variant="outline">Download Vector Resource</Button>
+        <Button variant="default">Download Vector Resource</Button>
       </DrawerFooter>
     </React.Fragment>
   );
