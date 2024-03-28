@@ -6,10 +6,6 @@ on:
   schedule:
     - cron: "0 0 * * 2,4" 
 
-  push:
-    branches:
-      - agallardol/shinkai-tray-node-integration
-
 defaults:
   run:
     working-directory: ./
