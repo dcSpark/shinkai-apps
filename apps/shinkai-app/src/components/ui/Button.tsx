@@ -1,7 +1,7 @@
 import './Button.css';
 
 import { IonButton } from '@ionic/react';
-import { Loader } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import React from 'react';
 
 import { cn } from '../../theme/lib/utils';
@@ -35,7 +35,7 @@ export default function Button({
       shape={'round'}
       type={type}
     >
-      {isLoading ? <Loader className="h-4 w-4 animate-spin mr-2" /> : null}
+      {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
       {children}
     </IonButton>
   );

@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Newake';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/newake.otf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: optional;
+  src: url(/fonts/inter-var-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+    U+FEFF, U+FFFD;
+}
+
+html,
+body,
+#root {
+  @apply font-inter h-full overflow-hidden rounded-lg border-0 bg-gray-500 text-white shadow-2xl;
+}
+
+/* prose styling for chat editor */
+.prose :where(p):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  @apply my-2;
+}
+.prose-sm
+  :where(pre):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  @apply mt-2 border border-gray-700 bg-transparent;
+}
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  @apply pointer-events-none float-left h-0 text-gray-100;
+}
+.tiptap {
+  @apply min-h-[60px] max-w-full rounded-md border border-gray-200 bg-gray-400 px-3 py-2 text-sm shadow-sm placeholder:text-gray-80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:cursor-not-allowed disabled:opacity-50;
+}
+.tiptap[contenteditable='false'] {
+  @apply opacity-40;
+}
+.wmde-markdown pre {
+  @apply grid;
+}
+
+

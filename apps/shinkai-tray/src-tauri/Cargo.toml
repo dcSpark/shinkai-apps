@@ -1,6 +1,6 @@
 [package]
 name = "shinkai-tray"
-version = "0.0.1"
+version = "0.0.0"
 description = "A Tray App for Desktop using Shinkai"
 authors = ["nico@dcspark.io"]
 license = ""
@@ -13,20 +13,17 @@ edition = "2021"
 tauri-build = { version = "1.4", features = [] }
 
 [dependencies]
-tauri = { version = "1.4", features = [ "os-all", "notification-all", "path-all", "dialog-all", "window-close", "window-start-dragging", "macos-private-api", "fs-all", "global-shortcut-all", "system-tray", "shell-open"] }
+tauri = { version = "1.4", features = [ "updater", "window-set-focus", "http-request", "window-create", "shell-sidecar", "os-all", "notification-all", "path-all", "dialog-all", "window-close", "window-start-dragging", "macos-private-api", "fs-all", "global-shortcut-all", "system-tray", "shell-open", "process-command-api"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 whisper-rs = "0.8.0"
-cpal = { version = "0.15.2", features = ["asio"] }
+cpal = { git = "https://github.com/RustAudio/cpal.git", features = ["asio"] }
 webrtc-vad = "0.2"
 hound = "3.4.0"
 # fix this dependency later on
 reqwest = { version = "0.11", features = ["json"] }
-
-[dependencies.rocksdb]
-version = "0.21.0"
-default-features = false
-features = ["lz4"]
+lazy_static = "1.4.0"
+tokio = "1.36.0"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

@@ -7,8 +7,8 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "shinkai-tray",
-    "version": "0.0.0"
+    "productName": "Shinkai Tray",
+    "version": "../../../package.json"
   },
   "tauri": {
     "allowlist": {
@@ -21,11 +21,17 @@
       },
       "shell": {
         "all": false,
-        "open": true
+        "open": true,
+        "sidecar": true,
+        "scope": [
+          { "name": "bin/shinkai-node-v0.5.5", "sidecar": true }
+        ]
       },
       "window": {
         "startDragging": true,
-        "close": true
+        "close": true,
+        "create": true,
+        "setFocus": true
       },
       "notification": {
         "all": true
@@ -43,6 +49,13 @@
       },
       "path": {
         "all": true
+      },
+      "http": {
+        "all": false,
+        "request": true,
+        "scope": [
+          "http://localhost"
+        ]
       }
     },
     "bundle": {
@@ -58,7 +71,10 @@
       ],
       "macOS": {
         "minimumSystemVersion": "10.13"
-      }
+      },
+      "externalBin": [
+        "bin/shinkai-node-v0.5.5"
+      ]
     },
     "security": {
       "csp": null
@@ -66,11 +82,10 @@
     "windows": [
       {
         "transparent": true,
-        "title": "Shinkai",
-        "minWidth": 1000,
-        "minHeight": 200,
+        "title": "Shinkai Tray",
+        "width": 1000,
+        "height": 750,
         "fullscreen": false,
-        "decorations": false,
         "resizable": false
       }
     ],
@@ -78,6 +93,14 @@
     "systemTray": {
       "iconPath": "icons/icon.png",
       "iconAsTemplate": true
+    },
+    "updater": {
+      "active": true,
+      "endpoints": [
+        "https://download.shinkai.com/shinkai-tray/binaries/production/updates.json"
+      ],
+      "dialog": true,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDlCNzc1MjI1NEFEMzlFQjgKUldTNG50TktKVkozbSs0WXAzb1dOMy9oclJQdHZCcWNkcHRXeDcvMXNXeWRKM3g1SXR6eitJV0wK"
     }
   }
 }

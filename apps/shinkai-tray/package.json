@@ -1,7 +1,7 @@
 {
   "name": "shinkai-tray",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.5.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -28,7 +28,7 @@
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-switch": "^1.0.3",
     "@radix-ui/react-tooltip": "^1.0.6",
-    "@tauri-apps/api": "^1.5.1",
+    "@tauri-apps/api": "^1.5.3",
     "@tiptap/extension-placeholder": "^2.1.11",
     "@tiptap/pm": "^2.1.11",
     "@tiptap/react": "^2.1.11",
@@ -57,7 +57,7 @@
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.10",
     "@tanstack/react-query-devtools": "5.4.3",
-    "@tauri-apps/cli": "^1.5.6",
+    "@tauri-apps/cli": "^1.5.11",
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
     "@typescript-eslint/eslint-plugin": "^6.7.2",

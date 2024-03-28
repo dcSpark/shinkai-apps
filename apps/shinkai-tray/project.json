@@ -8,7 +8,10 @@
       "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "command": "cd apps/shinkai-tray && npm run build"
+        "cwd": "apps/shinkai-tray",
+        "commands": [
+          "npx tauri build"
+        ]
       },
       "configurations": {
         "development": {},
@@ -19,29 +22,8 @@
       "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "command": "cd apps/shinkai-tray && npm run dev"
-      },
-      "configurations": {
-        "development": {},
-        "production": {}
-      }
-    },
-    "serve:tauri": {
-      "executor": "nx:run-commands",
-      "defaultConfiguration": "development",
-      "options": {
-        "command": "cd apps/shinkai-tray && npm run tauri:dev"
-      },
-      "configurations": {
-        "development": {},
-        "production": {}
-      }
-    },
-    "preview": {
-      "executor": "nx:run-commands",
-      "defaultConfiguration": "development",
-      "options": {
-        "command": "cd apps/shinkai-tray && npm run preview"
+        "cwd": "apps/shinkai-tray",
+        "command": "npx tauri dev"
       },
       "configurations": {
         "development": {},
@@ -52,7 +34,8 @@
       "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "command": "cd apps/shinkai-tray && npm run lint"
+        "cwd": "apps/shinkai-tray/src-tauri",
+        "command": "cargo check"
       },
       "configurations": {
         "development": {},

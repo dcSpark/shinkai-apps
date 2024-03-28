@@ -3,19 +3,24 @@ import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state
 import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/lib/queries/getEncryptionKeys/useGetEncryptionKeys';
 import {
   Button,
+  ButtonProps,
   ErrorMessage,
   Form,
   FormField,
   TextField,
 } from '@shinkai_network/shinkai-ui';
-import { QrCode } from 'lucide-react';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { Loader2, QrCode } from 'lucide-react';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { HOME_PATH } from '../routes/name';
 import { useAuth } from '../store/auth';
+import { useShinkaiNodeSpawnMutation } from '../windows/shinkai-node-manager/shinkai-node-process-client';
+import { SHINKAI_NODE_MANAGER_TOAST_ID } from '../windows/utils';
 import OnboardingLayout from './layout/onboarding-layout';
 
 const formSchema = z.object({
@@ -32,23 +37,27 @@ const formSchema = z.object({
     .nullish(),
 });
 
-const ConnectionOptionButton = ({
-  onClick,
-  description,
-  icon,
-  title,
-}: {
-  onClick: () => void;
+export interface ConnectionOptionButtonProps extends ButtonProps {
   title: string;
   description: string;
   icon: React.ReactNode;
-}) => {
+}
+const ConnectionOptionButton = ({
+  description,
+  icon,
+  title,
+  className,
+  ...props
+}: ConnectionOptionButtonProps) => {
   return (
     <Button
-      className="flex flex-1 cursor-pointer flex-col items-start gap-1 rounded-lg p-4 text-left"
-      onClick={() => onClick()}
+      className={cn(
+        'flex flex-1 cursor-pointer flex-col items-start gap-1 rounded-lg p-4 text-left',
+        className,
+      )}
       size="auto"
       variant="ghost"
+      {...props}
     >
       <div className="">{icon}</div>
       <p className="text-[15px] font-medium leading-none">{title}</p>
@@ -95,6 +104,29 @@ const OnboardingPage = () => {
     },
   });
 
+  const {
+    isPending: shinkaiNodeSpawnIsPending,
+    mutateAsync: shinkaiNodeSpawn,
+  } = useShinkaiNodeSpawnMutation({
+    onMutate: () => {
+      toast.loading('Starting you local Shinkai Node', {
+        id: SHINKAI_NODE_MANAGER_TOAST_ID,
+      });
+    },
+    onSuccess: () => {
+      onSubmit(setupDataForm.getValues());
+      toast.success('Your local Shinkai Node is running', {
+        id: SHINKAI_NODE_MANAGER_TOAST_ID,
+      });
+    },
+    onError: () => {
+      toast.error(
+        'Error starting your local Shinkai Node, see logs for more information',
+        { id: SHINKAI_NODE_MANAGER_TOAST_ID },
+      );
+    },
+  });
+
   async function onSubmit(currentValues: z.infer<typeof formSchema>) {
     if (!encryptionKeys) return;
     await submitRegistration({
@@ -113,57 +145,112 @@ const OnboardingPage = () => {
 
   return (
     <OnboardingLayout>
-      <h1 className="mb-4 text-left text-2xl font-semibold">
-        Quick Connection <span aria-hidden>⚡</span>
-      </h1>
-      <Form {...setupDataForm}>
-        <form
-          className="space-y-6"
-          onSubmit={setupDataForm.handleSubmit(onSubmit)}
-        >
-          <div className="space-y-4">
-            <FormField
-              control={setupDataForm.control}
-              name="node_address"
-              render={({ field }) => (
-                <TextField field={field} label={'Node Address'} />
-              )}
-            />
-            {isError && <ErrorMessage message={error.message} />}
-          </div>
-          <Button
-            className="w-full"
-            disabled={isPending}
-            isLoading={isPending}
-            type="submit"
-            variant="default"
-          >
-            Connect
-          </Button>
-        </form>
-      </Form>
-      <div className="mt-8 flex gap-4">
-        <ConnectionOptionButton
-          description={'Use the QR code to connect'}
-          icon={<QrCode className="text-gray-100" />}
-          onClick={() => {
-            navigate('/');
-          }}
-          title={'QR Code'}
-        />
+      <div className="flex h-full flex-col justify-between">
+        <div className="flex flex-col">
+          <h1 className="mb-4 text-left text-2xl font-semibold">
+            Quick Connection <span aria-hidden>⚡</span>
+          </h1>
+          <Form {...setupDataForm}>
+            <form
+              className="space-y-6"
+              onSubmit={setupDataForm.handleSubmit(onSubmit)}
+            >
+              <div className="space-y-4">
+                <FormField
+                  control={setupDataForm.control}
+                  name="node_address"
+                  render={({ field }) => (
+                    <TextField field={field} label={'Node Address'} />
+                  )}
+                />
+                {isError && <ErrorMessage message={error.message} />}
+              </div>
+              <Button
+                className="w-full"
+                disabled={isPending}
+                isLoading={isPending}
+                type="submit"
+                variant="default"
+              >
+                Connect
+              </Button>
+            </form>
+          </Form>
 
-        <ConnectionOptionButton
-          description={'Use a connection file and passphrase'}
-          icon={
-            <span aria-hidden className="text-base">
-              🔑
-            </span>
-          }
-          onClick={() => {
-            navigate('/restore');
-          }}
-          title={'Restore'}
-        />
+          <div className="mt-8 flex flex-col">
+            <span className="text-md text-gray-50">Shinkai as a service</span>
+            <div className="text-gray-80 mt-2 flex flex-row items-center space-x-2 text-center text-sm">
+              <p>{'Don’t have an account? '}</p>
+              <a
+                className="font-semibold text-white underline"
+                href="https://www.shinkai.com/sign-up"
+                rel="noreferrer"
+                target={'_blank'}
+              >
+                Sign up
+              </a>
+            </div>
+            <div className="text-gray-80 mt-1 flex flex-row items-center space-x-2 text-center text-sm">
+              <p>{'Already have an account? '}</p>
+              <a
+                className="font-semibold text-white underline"
+                href="https://www.shinkai.com/user"
+                rel="noreferrer"
+                target={'_blank'}
+              >
+                Click here to connect
+              </a>
+            </div>
+          </div>
+
+          <div className="mt-8 flex flex-col">
+            <span className="text-md text-gray-50">Shinkai locally</span>
+            <div className="text-gray-80 mt-2 flex flex-row items-center space-x-2 text-center text-sm">
+              <p>{"Don't you have a node? "}</p>
+              {shinkaiNodeSpawnIsPending && (
+                <Loader2 className="ml-2 h-5 w-5 animate-spin" />
+              )}
+              <span
+                className="ml-2 cursor-pointer p-0 text-sm font-semibold text-white underline"
+                onClick={() => {
+                  if (shinkaiNodeSpawnIsPending) {
+                    return;
+                  }
+                  shinkaiNodeSpawn();
+                }}
+              >
+                Run it locally
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-row justify-between gap-4">
+          <ConnectionOptionButton
+            className="h-32"
+            description={'Use the QR code to connect'}
+            disabled={true}
+            icon={<QrCode className="text-gray-100" />}
+            onClick={() => {
+              navigate('/');
+            }}
+            title={'QR Code'}
+          />
+
+          <ConnectionOptionButton
+            className="h-32"
+            description={'Use a connection file and passphrase'}
+            icon={
+              <span aria-hidden className="text-base">
+                🔑
+              </span>
+            }
+            onClick={() => {
+              navigate('/restore');
+            }}
+            title={'Restore'}
+          />
+        </div>
       </div>
     </OnboardingLayout>
   );

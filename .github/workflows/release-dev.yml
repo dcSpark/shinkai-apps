@@ -11,7 +11,22 @@ defaults:
     working-directory: ./
 
 jobs:
+  prebuild:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.package-version.outputs.version }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: get npm version
+        id: package-version
+        uses: Saionaro/extract-package-version@v1.2.1
+
   release-shinkai-visor:
+    needs: prebuild
     runs-on: ubuntu-latest
     environment: development
     steps:
@@ -19,9 +34,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Use nx set shas
-        uses: nrwl/nx-set-shas@v3
 
       - name: Setup Node version
         uses: actions/setup-node@v3
@@ -37,14 +49,10 @@ jobs:
           npm cache verify
           npm ci --no-audit --prefer-offline
 
-      - name: get-npm-version
-        id: package-version
-        uses: martinbeentjes/npm-get-version-action@v1.3.1
-
       - name: Run NX build on shinkai-visor
         run: npx nx build shinkai-visor --skip-nx-cache
         env:
-          VERSION: ${{ steps.package-version.outputs.current-version}}.${{github.run_number}}
+          VERSION: ${{ needs.prebuild.outputs.version }}.${{github.run_number}}
           NAME_PREFIX: '[Dev]'
           DESCRIPTION_PREFIX: '[Dev]'
 
@@ -69,6 +77,156 @@ jobs:
           if-no-files-found: error
           retention-days: 5
 
+  release-shinkai-tray-macos:
+    needs: prebuild
+    name: Release Shinkai Tray
+    strategy:
+      matrix:
+        include:
+          - arch: x86_64-unknown-linux-gnu
+            os: ubuntu-22.04
+            build_output_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/appimage/shinkai-tray_${{ needs.prebuild.outputs.version }}_amd64.AppImage
+            build_output_update_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/appimage/shinkai-tray_${{ needs.prebuild.outputs.version }}_amd64.AppImage.tar.gz
+            build_output_update_signature_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/appimage/shinkai-tray_${{ needs.prebuild.outputs.version }}_amd64.AppImage.tar.gz.sig
+            distributable_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage
+            distributable_update_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage.tar.gz
+            distributable_update_signature_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage.tar.gz.sig
+
+          - arch: aarch64-apple-darwin
+            os: macos-14
+            build_output_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/dmg/Shinkai Tray_${{ needs.prebuild.outputs.version }}_aarch64.dmg
+            build_output_update_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/macos/Shinkai Tray.app.tar.gz
+            build_output_update_signature_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/macos/Shinkai Tray.app.tar.gz.sig
+            distributable_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_aarch64-apple-darwin.dmg
+            distributable_update_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_aarch64-apple-darwin.app.tar.gz
+            distributable_update_signature_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_aarch64-apple-darwin.app.tar.gz.sig
+
+          - arch: x86_64-pc-windows-msvc
+            os: windows-2022
+            build_output_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/nsis/Shinkai Tray_${{ needs.prebuild.outputs.version }}_x64-setup.exe
+            build_output_update_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/nsis/Shinkai Tray_${{ needs.prebuild.outputs.version }}_x64-setup.nsis.zip
+            build_output_update_signature_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/nsis/Shinkai Tray_${{ needs.prebuild.outputs.version }}_x64-setup.nsis.zip.sig
+            distributable_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-pc-windows-msvc.exe
+            distributable_update_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-pc-windows-msvc.nsis.zip
+            distributable_update_signature_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-pc-windows-msvc.nsis.zip.sig
+
+    runs-on: ${{ matrix.os }}
+    environment: development
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: (Windows) Install asiosdk}
+        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
+        shell: PowerShell
+        run: |
+          curl https://www.steinberg.net/asiosdk -o asiosdk.zip
+          Expand-Archive .\asiosdk.zip -DestinationPath .\
+          choco install asio4all
+          choco install llvm
+
+      - name: (Linux) Install build dependencies
+        if: ${{ matrix.arch == 'x86_64-unknown-linux-gnu' }}
+        run: |
+          sudo apt-get install -y libwebkit2gtk-4.0-dev build-essential wget libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev libasound2-dev
+
+      - name: (MACOS) Install the Apple certificate and provisioning profile
+        if: ${{ matrix.arch == 'aarch64-apple-darwin' }}
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE }}
+          P12_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+
+        run: |
+          # create variables
+          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+
+          # import certificate and provisioning profile from secrets
+          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+
+          # create temporary keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          # import certificate to keychain
+          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
+
+      - name: Cache cargo assets
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ matrix.arch }}-build-cargo-${{ hashFiles('**/Cargo.lock') }}
+  
+      - name: Setup Node version
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          check-latest: false
+          registry-url: https://registry.npmjs.org
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: |
+          npm cache verify
+          npm ci --no-audit --prefer-offline
+
+      - name: (Linux) Run NX build on shinkai-tray
+        if: ${{ matrix.arch == 'x86_64-unknown-linux-gnu' }}
+        run: npx nx build shinkai-tray --skip-nx-cache
+        env:
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+
+      - name: (Macos) Run NX build on shinkai-tray
+        if: ${{ matrix.arch == 'aarch64-apple-darwin' }}
+        run: npx nx build shinkai-tray --skip-nx-cache
+        env:
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+
+      - name: (Windows) Run NX build on shinkai-tray
+        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
+        run: npx nx build shinkai-tray --skip-nx-cache
+        env:
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+          # Windows Only
+          CPAL_ASIO_DIR: ${{ github.workspace }}/asiosdk_2.3.3_2019-06-14
+          LIBCLANG_PATH: C:\Program Files\LLVM\bin
+
+      - name: Prepare binary files
+        run: |
+          mkdir files-to-r2
+          cp "${{ matrix.build_output_file_path }}" files-to-r2/${{ matrix.distributable_file_name }}
+          cp "${{ matrix.build_output_update_file_path }}" files-to-r2/${{ matrix.distributable_update_file_name }}
+          cp "${{ matrix.build_output_update_signature_file_path }}" files-to-r2/${{ matrix.distributable_update_signature_file_name }}
+
+      - name: Upload binaries to R2 bucket
+        uses: shallwefootball/s3-upload-action@master
+        with:
+          endpoint: https://54bf1bf573b3e6471e574cc4d318db64.r2.cloudflarestorage.com
+          aws_key_id: ${{ secrets.R2_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          aws_bucket: shinkai-download
+          source_dir: files-to-r2
+          destination_dir: ./shinkai-tray/binaries/development/${{ matrix.arch }}/${{ needs.prebuild.outputs.version }}.${{ github.run_number }}/
+  
   # At the moment we are not releasing android (CI was working)
   # release-shinkai-app-android:
   #   runs-on: ubuntu-latest
