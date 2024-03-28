@@ -46,10 +46,11 @@ import {
   X,
   XIcon,
 } from 'lucide-react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { useDebounce } from '../../hooks/use-debounce';
+import { useQuery } from '../../hooks/use-query';
 import { useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
 import { useVectorFsStore, VectorFSLayout } from './node-file-context';
@@ -61,6 +62,8 @@ const MotionButton = motion(Button);
 export default function NodeFiles() {
   const auth = useAuth((state) => state.auth);
   const history = useHistory();
+
+  const query = useQuery();
 
   const currentGlobalPath = useVectorFsStore(
     (state) => state.currentGlobalPath,
@@ -128,6 +131,18 @@ export default function NodeFiles() {
   const [selectedFolders, setSelectedFolders] = React.useState<VRFolder[]>([]);
   const [isMenuOpened, setMenuOpened] = React.useState(false);
 
+  useEffect(() => {
+    const isFileDetailsActive = query.has('path');
+    if (isFileDetailsActive) {
+      const path = decodeURIComponent(query.get('path') ?? '');
+      const directoryMainPath = path.split('/').slice(0, -1);
+      setCurrentGlobalPath(
+        directoryMainPath.length > 1
+          ? directoryMainPath.join('/')
+          : '/' + directoryMainPath,
+      );
+    }
+  }, [query]);
   const handleSelectFiles = (file: VRItem) => {
     if (selectedFiles.some((selectedFile) => selectedFile.path === file.path)) {
       setSelectedFiles(selectedFiles.filter((item) => item !== file));

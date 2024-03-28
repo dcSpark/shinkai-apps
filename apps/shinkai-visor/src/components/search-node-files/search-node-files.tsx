@@ -11,6 +11,7 @@ import { motion } from 'framer-motion';
 import { SearchIcon, XIcon } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
+import { Link } from 'react-router-dom';
 import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
@@ -33,24 +34,23 @@ const SearchNodeFiles = () => {
     name: 'searchQuery',
   });
 
-  const { isLoading, isStale, isSuccess, data, refetch } =
-    useGetVRSeachSimplified(
-      {
-        nodeAddress: auth?.node_address ?? '',
-        search: searchVectorFSForm.getValues('searchQuery'),
-        shinkaiIdentity: auth?.shinkai_identity ?? '',
-        profile: auth?.profile ?? '',
-        my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-        my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-        node_encryption_pk: auth?.node_encryption_pk ?? '',
-        profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-        profile_identity_sk: auth?.profile_identity_sk ?? '',
-      },
-      {
-        enabled: isSearchEntered,
-        refetchOnWindowFocus: false,
-      },
-    );
+  const { isLoading, isSuccess, data, refetch } = useGetVRSeachSimplified(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      search: searchVectorFSForm.getValues('searchQuery'),
+      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      profile: auth?.profile ?? '',
+      my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+      my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+    },
+    {
+      enabled: isSearchEntered,
+      refetchOnWindowFocus: false,
+    },
+  );
 
   const onSubmit = async (data: z.infer<typeof searchVectorFSSchema>) => {
     setIsSearchEntered(true);
@@ -144,11 +144,25 @@ const SearchNodeFiles = () => {
             {data?.map(([content, pathList, score], idx) => (
               <div className="flex flex-col gap-1 px-2 py-3" key={idx}>
                 <p className="text-sm text-white">{content}</p>
-                <div className="text-gray-80 flex justify-between text-sm">
-                  <span>{pathList.join('/')}</span>
-                  {/*// get the percentage of 0.19896440207958221*/}
-
-                  <span>{parseFloat(score.toFixed(4)) * 100 + '%'}</span>
+                <div className="text-gray-80 flex justify-between text-xs">
+                  <div className="flex items-center gap-1">
+                    <span>Source:</span>
+                    <Link
+                      className={'underline'}
+                      to={{
+                        pathname: '/node-files',
+                        search: `?path=${encodeURIComponent(
+                          pathList.join('/'),
+                        )}`,
+                      }}
+                    >
+                      {pathList.join('/')}
+                    </Link>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span>Accuracy:</span>
+                    <span>{parseFloat(score.toFixed(2)) * 100 + '%'}</span>
+                  </div>
                 </div>
               </div>
             ))}
