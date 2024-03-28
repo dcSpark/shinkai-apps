@@ -5,20 +5,10 @@ import {
   FormField,
   Input,
   ScrollArea,
-  TextField,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
-import {
-  ArrowBigRight,
-  ArrowBigRightDashIcon,
-  ArrowRightToLineIcon,
-  ChevronRight,
-  LucideSend,
-  MoveRightIcon,
-  SearchIcon,
-  XIcon,
-} from 'lucide-react';
+import { SearchIcon, XIcon } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
