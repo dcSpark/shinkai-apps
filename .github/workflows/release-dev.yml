@@ -4,8 +4,7 @@ on:
   workflow_dispatch:
 
   schedule:
-    - cron: "0 0 * * 2,4" 
-
+    - cron: "0 0 * * 2,4"
 
 defaults:
   run:
@@ -86,16 +85,16 @@ jobs:
         include:
           - arch: x86_64-unknown-linux-gnu
             os: ubuntu-22.04
-            build_output_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/appimage/shinkai-desktop_${{ needs.prebuild.outputs.version }}_amd64.AppImage
-            build_output_update_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/appimage/shinkai-desktop_${{ needs.prebuild.outputs.version }}_amd64.AppImage.tar.gz
-            build_output_update_signature_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/appimage/shinkai-desktop_${{ needs.prebuild.outputs.version }}_amd64.AppImage.tar.gz.sig
+            build_output_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/appimage/shinkai-desktop_${{ needs.prebuild.outputs.version }}${{ github.run_number }}_amd64.AppImage
+            build_output_update_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/appimage/shinkai-desktop_${{ needs.prebuild.outputs.version }}${{ github.run_number }}_amd64.AppImage.tar.gz
+            build_output_update_signature_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/appimage/shinkai-desktop_${{ needs.prebuild.outputs.version }}${{ github.run_number }}_amd64.AppImage.tar.gz.sig
             distributable_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage
             distributable_update_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage.tar.gz
             distributable_update_signature_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage.tar.gz.sig
 
           - arch: aarch64-apple-darwin
             os: macos-14
-            build_output_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/dmg/Shinkai Desktop_${{ needs.prebuild.outputs.version }}_aarch64.dmg
+            build_output_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/dmg/Shinkai Desktop_${{ needs.prebuild.outputs.version }}${{ github.run_number }}_aarch64.dmg
             build_output_update_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/macos/Shinkai Desktop.app.tar.gz
             build_output_update_signature_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/macos/Shinkai Desktop.app.tar.gz.sig
             distributable_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_aarch64-apple-darwin.dmg
@@ -104,9 +103,9 @@ jobs:
 
           - arch: x86_64-pc-windows-msvc
             os: windows-2022
-            build_output_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/nsis/Shinkai Desktop_${{ needs.prebuild.outputs.version }}_x64-setup.exe
-            build_output_update_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/nsis/Shinkai Desktop_${{ needs.prebuild.outputs.version }}_x64-setup.nsis.zip
-            build_output_update_signature_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/nsis/Shinkai Desktop_${{ needs.prebuild.outputs.version }}_x64-setup.nsis.zip.sig
+            build_output_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/nsis/Shinkai Desktop_${{ needs.prebuild.outputs.version }}${{ github.run_number }}_x64-setup.exe
+            build_output_update_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/nsis/Shinkai Desktop_${{ needs.prebuild.outputs.version }}${{ github.run_number }}_x64-setup.nsis.zip
+            build_output_update_signature_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/nsis/Shinkai Desktop_${{ needs.prebuild.outputs.version }}${{ github.run_number }}_x64-setup.nsis.zip.sig
             distributable_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-pc-windows-msvc.exe
             distributable_update_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-pc-windows-msvc.nsis.zip
             distributable_update_signature_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-pc-windows-msvc.nsis.zip.sig
@@ -184,6 +183,10 @@ jobs:
         run: |
           npm cache verify
           npm ci --no-audit --prefer-offline
+
+      - name: Adapt package version
+        run: |
+          npm version ${{ needs.prebuild.outputs.version }}${{ github.run_number }} --git-tag-version false
 
       - name: (Linux) Run NX build on shinkai-desktop
         if: ${{ matrix.arch == 'x86_64-unknown-linux-gnu' }}
