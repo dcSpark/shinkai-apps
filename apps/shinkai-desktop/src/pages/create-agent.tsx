@@ -18,6 +18,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Switch,
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import { useEffect, useState } from 'react';
@@ -29,13 +30,62 @@ import { CREATE_JOB_PATH } from '../routes/name';
 import { useAuth } from '../store/auth';
 import SimpleLayout from './layout/simple-layout';
 
-const addAgentSchema = z.object({
-  agentName: z.string(),
-  externalUrl: z.string().url(),
-  apikey: z.string(),
-  model: z.nativeEnum(Models),
-  modelType: z.string(),
-});
+const addAgentSchema = z
+  .object({
+    agentName: z.string(),
+    externalUrl: z.string().url(),
+    apikey: z.string(),
+    model: z.nativeEnum(Models),
+    modelType: z.string(),
+    isCustomModel: z.boolean().default(false).optional(),
+    modelCustom: z.string().optional(),
+    modelTypeCustom: z.string().optional(),
+  })
+  .superRefine(
+    (
+      { isCustomModel, model, modelType, modelCustom, modelTypeCustom, apikey },
+      ctx,
+    ) => {
+      if (isCustomModel) {
+        if (!modelCustom) {
+          ctx.addIssue({
+            path: ['modelCustom'],
+            code: z.ZodIssueCode.custom,
+            message: 'Model Name is required',
+          });
+        }
+        if (!modelTypeCustom) {
+          ctx.addIssue({
+            path: ['modelTypeCustom'],
+            code: z.ZodIssueCode.custom,
+            message: 'Model ID is required',
+          });
+        }
+      } else {
+        if (!model) {
+          ctx.addIssue({
+            path: ['model'],
+            code: z.ZodIssueCode.custom,
+            message: 'Model is required',
+          });
+        }
+        if (!modelType) {
+          ctx.addIssue({
+            path: ['modelType'],
+            code: z.ZodIssueCode.custom,
+            message: 'Model Type is required',
+          });
+        }
+        if (!apikey && model !== Models.Ollama) {
+          ctx.addIssue({
+            path: ['apiKey'],
+            code: z.ZodIssueCode.custom,
+            message: 'Api Key is required',
+          });
+        }
+      }
+    },
+  );
 
 const modelOptions: { value: Models; label: string }[] = [
   {
@@ -58,6 +108,7 @@ const CreateAgentPage = () => {
       externalUrl: modelsConfig[Models.OpenAI].apiUrl,
       apikey: '',
       model: Models.OpenAI,
+      isCustomModel: false,
     },
   });
   const {
@@ -71,12 +122,17 @@ const CreateAgentPage = () => {
     },
   });
 
-  const { model: currentModel } = addAgentForm.watch();
+  const { model: currentModel, isCustomModel: isCustomModelMode } =
+    addAgentForm.watch();
 
   const [modelTypeOptions, setModelTypeOptions] = useState<
     { label: string; value: string }[]
   >([]);
   useEffect(() => {
+    if (isCustomModelMode) {
+      addAgentForm.setValue('externalUrl', '');
+      return;
+    }
     const modelConfig = modelsConfig[currentModel as Models];
     addAgentForm.setValue('externalUrl', modelConfig.apiUrl);
     setModelTypeOptions(
@@ -94,11 +150,16 @@ const CreateAgentPage = () => {
   }, [modelTypeOptions, addAgentForm]);
 
   const getModelObject = (model: Models, modelType: string) => {
+    if (isCustomModelMode) {
+      return { GenericAPI: { model_type: modelType } };
+    }
     switch (model) {
       case Models.OpenAI:
         return { OpenAI: { model_type: modelType } };
       case Models.TogetherComputer:
         return { GenericAPI: { model_type: modelType } };
+      case Models.Ollama:
+        return { Ollama: { model_type: modelType } };
       default:
         throw new Error('unknown model');
     }
@@ -163,35 +224,55 @@ const CreateAgentPage = () => {
 
             <FormField
               control={addAgentForm.control}
-              name="model"
+              name="isCustomModel"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Select your Model</FormLabel>
-                  <Select
-                    defaultValue={field.value}
-                    onValueChange={field.onChange}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder={' '} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {modelOptions.map((model) => (
-                        <SelectItem
-                          key={model.value}
-                          value={model.value.toString()}
-                        >
-                          {model.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                <FormItem className="mt-10 mt-4 flex flex-row items-center space-x-3  py-3">
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      id={'custom-model'}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <label htmlFor="custom-model">Add a custom model</label>
+                  </div>
                 </FormItem>
               )}
             />
+            {!isCustomModelMode && (
+              <FormField
+                control={addAgentForm.control}
+                name="model"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Select your Model</FormLabel>
+                    <Select
+                      defaultValue={field.value}
+                      onValueChange={field.onChange}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder={' '} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {modelOptions.map((model) => (
+                          <SelectItem
+                            key={model.value}
+                            value={model.value.toString()}
+                          >
+                            {model.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+            )}
 
-            {currentModel && (
+            {!isCustomModelMode && (
               <FormField
                 control={addAgentForm.control}
                 name="modelType"
@@ -223,6 +304,24 @@ const CreateAgentPage = () => {
                   </FormItem>
                 )}
               />
+            )}
+            {isCustomModelMode && (
+              <>
+                <FormField
+                  control={addAgentForm.control}
+                  name="modelCustom"
+                  render={({ field }) => (
+                    <TextField field={field} label={'Model Name'} />
+                  )}
+                />
+                <FormField
+                  control={addAgentForm.control}
+                  name="modelTypeCustom"
+                  render={({ field }) => (
+                    <TextField field={field} label={'Model ID'} />
+                  )}
+                />
+              </>
             )}
           </div>
 
