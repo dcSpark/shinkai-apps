@@ -6,6 +6,10 @@ on:
   schedule:
     - cron: "0 0 * * 2,4" 
 
+  push:
+    branches:
+      - agallardol/rename-shinkai-tray
+
 defaults:
   run:
     working-directory: ./
@@ -25,90 +29,90 @@ jobs:
         id: package-version
         uses: Saionaro/extract-package-version@v1.2.1
 
-  release-shinkai-visor:
+  # release-shinkai-visor:
+  #   needs: prebuild
+  #   runs-on: ubuntu-latest
+  #   environment: development
+  #   steps:
+  #     - name: Check out repository
+  #       uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0
+
+  #     - name: Setup Node version
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: 18
+  #         check-latest: false
+  #         registry-url: https://registry.npmjs.org
+  #         cache: 'npm'
+  #         cache-dependency-path: package-lock.json
+
+  #     - name: Install dependencies
+  #       run: |
+  #         npm cache verify
+  #         npm ci --no-audit --prefer-offline
+
+  #     - name: Run NX build on shinkai-visor
+  #       run: npx nx build shinkai-visor --skip-nx-cache
+  #       env:
+  #         VERSION: ${{ needs.prebuild.outputs.version }}.${{github.run_number}}
+  #         NAME_PREFIX: '[Dev]'
+  #         DESCRIPTION_PREFIX: '[Dev]'
+
+  #     - name: Zip extension
+  #       run: cd ./dist/apps && zip -r shinkai-visor.zip shinkai-visor
+
+  #     - name: Upload & Release
+  #       uses: mnao305/chrome-extension-upload@v4.0.1
+  #       continue-on-error: true
+  #       with:
+  #         file-path: dist/apps/shinkai-visor.zip
+  #         extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
+  #         client-id: ${{ secrets.CHROME_CLIENT_ID }}
+  #         client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
+  #         refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+  #         publish: false
+
+  #     - uses: actions/upload-artifact@v3
+  #       with:
+  #         name: shinkai-visor
+  #         path: dist/apps/shinkai-visor
+  #         if-no-files-found: error
+  #         retention-days: 5
+
+  release-shinkai-desktop:
     needs: prebuild
-    runs-on: ubuntu-latest
-    environment: development
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Node version
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          check-latest: false
-          registry-url: https://registry.npmjs.org
-          cache: 'npm'
-          cache-dependency-path: package-lock.json
-
-      - name: Install dependencies
-        run: |
-          npm cache verify
-          npm ci --no-audit --prefer-offline
-
-      - name: Run NX build on shinkai-visor
-        run: npx nx build shinkai-visor --skip-nx-cache
-        env:
-          VERSION: ${{ needs.prebuild.outputs.version }}.${{github.run_number}}
-          NAME_PREFIX: '[Dev]'
-          DESCRIPTION_PREFIX: '[Dev]'
-
-      - name: Zip extension
-        run: cd ./dist/apps && zip -r shinkai-visor.zip shinkai-visor
-
-      - name: Upload & Release
-        uses: mnao305/chrome-extension-upload@v4.0.1
-        continue-on-error: true
-        with:
-          file-path: dist/apps/shinkai-visor.zip
-          extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
-          client-id: ${{ secrets.CHROME_CLIENT_ID }}
-          client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
-          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
-          publish: false
-
-      - uses: actions/upload-artifact@v3
-        with:
-          name: shinkai-visor
-          path: dist/apps/shinkai-visor
-          if-no-files-found: error
-          retention-days: 5
-
-  release-shinkai-tray:
-    needs: prebuild
-    name: Release Shinkai Tray
+    name: Release Shinkai Desktop
     strategy:
       matrix:
         include:
           - arch: x86_64-unknown-linux-gnu
             os: ubuntu-22.04
-            build_output_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/appimage/shinkai-tray_${{ needs.prebuild.outputs.version }}_amd64.AppImage
-            build_output_update_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/appimage/shinkai-tray_${{ needs.prebuild.outputs.version }}_amd64.AppImage.tar.gz
-            build_output_update_signature_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/appimage/shinkai-tray_${{ needs.prebuild.outputs.version }}_amd64.AppImage.tar.gz.sig
-            distributable_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage
-            distributable_update_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage.tar.gz
-            distributable_update_signature_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage.tar.gz.sig
+            build_output_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/appimage/shinkai-desktop_${{ needs.prebuild.outputs.version }}_amd64.AppImage
+            build_output_update_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/appimage/shinkai-desktop_${{ needs.prebuild.outputs.version }}_amd64.AppImage.tar.gz
+            build_output_update_signature_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/appimage/shinkai-desktop_${{ needs.prebuild.outputs.version }}_amd64.AppImage.tar.gz.sig
+            distributable_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage
+            distributable_update_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage.tar.gz
+            distributable_update_signature_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage.tar.gz.sig
 
           - arch: aarch64-apple-darwin
             os: macos-14
-            build_output_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/dmg/Shinkai Tray_${{ needs.prebuild.outputs.version }}_aarch64.dmg
-            build_output_update_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/macos/Shinkai Tray.app.tar.gz
-            build_output_update_signature_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/macos/Shinkai Tray.app.tar.gz.sig
-            distributable_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_aarch64-apple-darwin.dmg
-            distributable_update_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_aarch64-apple-darwin.app.tar.gz
-            distributable_update_signature_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_aarch64-apple-darwin.app.tar.gz.sig
+            build_output_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/dmg/Shinkai Desktop_${{ needs.prebuild.outputs.version }}_aarch64.dmg
+            build_output_update_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/macos/Shinkai Desktop.app.tar.gz
+            build_output_update_signature_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/macos/Shinkai Desktop.app.tar.gz.sig
+            distributable_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_aarch64-apple-darwin.dmg
+            distributable_update_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_aarch64-apple-darwin.app.tar.gz
+            distributable_update_signature_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_aarch64-apple-darwin.app.tar.gz.sig
 
           - arch: x86_64-pc-windows-msvc
             os: windows-2022
-            build_output_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/nsis/Shinkai Tray_${{ needs.prebuild.outputs.version }}_x64-setup.exe
-            build_output_update_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/nsis/Shinkai Tray_${{ needs.prebuild.outputs.version }}_x64-setup.nsis.zip
-            build_output_update_signature_file_path: apps/shinkai-tray/src-tauri/target/release/bundle/nsis/Shinkai Tray_${{ needs.prebuild.outputs.version }}_x64-setup.nsis.zip.sig
-            distributable_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-pc-windows-msvc.exe
-            distributable_update_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-pc-windows-msvc.nsis.zip
-            distributable_update_signature_file_name: Shinkai-Tray-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-pc-windows-msvc.nsis.zip.sig
+            build_output_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/nsis/Shinkai Desktop_${{ needs.prebuild.outputs.version }}_x64-setup.exe
+            build_output_update_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/nsis/Shinkai Desktop_${{ needs.prebuild.outputs.version }}_x64-setup.nsis.zip
+            build_output_update_signature_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/nsis/Shinkai Desktop_${{ needs.prebuild.outputs.version }}_x64-setup.nsis.zip.sig
+            distributable_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-pc-windows-msvc.exe
+            distributable_update_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-pc-windows-msvc.nsis.zip
+            distributable_update_signature_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-pc-windows-msvc.nsis.zip.sig
 
     runs-on: ${{ matrix.os }}
     environment: development
@@ -184,16 +188,16 @@ jobs:
           npm cache verify
           npm ci --no-audit --prefer-offline
 
-      - name: (Linux) Run NX build on shinkai-tray
+      - name: (Linux) Run NX build on shinkai-desktop
         if: ${{ matrix.arch == 'x86_64-unknown-linux-gnu' }}
-        run: npx nx build shinkai-tray --config="./src-tauri/tauri.conf.development.json" --skip-nx-cache
+        run: npx nx build shinkai-desktop --config="./src-tauri/tauri.conf.development.json" --skip-nx-cache
         env:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
 
-      - name: (Macos) Run NX build on shinkai-tray
+      - name: (Macos) Run NX build on shinkai-desktop
         if: ${{ matrix.arch == 'aarch64-apple-darwin' }}
-        run: npx nx build shinkai-tray --config="./src-tauri/tauri.conf.development.json" --skip-nx-cache
+        run: npx nx build shinkai-desktop --config="./src-tauri/tauri.conf.development.json" --skip-nx-cache
         env:
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
@@ -201,9 +205,9 @@ jobs:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
 
-      - name: (Windows) Run NX build on shinkai-tray
+      - name: (Windows) Run NX build on shinkai-desktop
         if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
-        run: npx nx build shinkai-tray --config="./src-tauri/tauri.conf.development.json" --skip-nx-cache
+        run: npx nx build shinkai-desktop --config="./src-tauri/tauri.conf.development.json" --skip-nx-cache
         env:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
@@ -226,7 +230,7 @@ jobs:
           aws_secret_access_key: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           aws_bucket: shinkai-download
           source_dir: files-to-r2
-          destination_dir: ./shinkai-tray/binaries/development/${{ matrix.arch }}/${{ needs.prebuild.outputs.version }}.${{ github.run_number }}/
+          destination_dir: ./shinkai-desktop/binaries/development/${{ matrix.arch }}/${{ needs.prebuild.outputs.version }}.${{ github.run_number }}/
   
   # At the moment we are not releasing android (CI was working)
   # release-shinkai-app-android:

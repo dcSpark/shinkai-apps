@@ -1,4 +1,4 @@
-# Shinkai Tray
+# Shinkai Desktop
 
 Shinkai desktop app using Tauri, React and Typescript and Vite.
 

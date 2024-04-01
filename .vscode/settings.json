@@ -10,7 +10,7 @@
     }
   ],
   "rust-analyzer.linkedProjects": [
-    "apps/shinkai-tray/src-tauri/Cargo.toml"
+    "apps/shinkai-desktop/src-tauri/Cargo.toml"
   ],
   "rust-analyzer.check.command": "clippy"
 }

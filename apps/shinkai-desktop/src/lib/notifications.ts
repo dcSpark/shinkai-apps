@@ -31,7 +31,7 @@ export const handleSendNotification = async (title?: string, body?: string) => {
     const icon = getPlatformIcon(await platform());
 
     const options: notification.Options = {
-      title: title ?? 'Shinkay Tray',
+      title: title ?? 'Shinkai Desktop',
       body: body ?? '',
       icon: icon,
     };

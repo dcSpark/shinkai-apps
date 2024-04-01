@@ -48,7 +48,7 @@ export const ExportConnection = () => {
     setEncryptedSetupData('');
   }, [passphrase, confirmPassphrase, setEncryptedSetupData]);
   const exportConnection = async (values: FormSchemaType): Promise<void> => {
-    // TODO: Convert to a common format shared by visor, app and tray
+    // TODO: Convert to a common format shared by visor, app and desktop
     const parsedSetupData = JSON.stringify(auth);
     const encryptedSetupData = await encryptMessageWithPassphrase(
       parsedSetupData,

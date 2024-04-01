@@ -1,14 +1,14 @@
 {
-  "name": "shinkai-tray",
+  "name": "shinkai-desktop",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/shinkai-tray/src",
+  "sourceRoot": "apps/shinkai-desktop/src",
   "projectType": "application",
   "targets": {
     "build": {
       "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "cwd": "apps/shinkai-tray",
+        "cwd": "apps/shinkai-desktop",
         "commands": [
           "npx tauri build"
         ]
@@ -22,7 +22,7 @@
       "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "cwd": "apps/shinkai-tray",
+        "cwd": "apps/shinkai-desktop",
         "command": "npx tauri dev"
       },
       "configurations": {
@@ -34,7 +34,7 @@
       "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "cwd": "apps/shinkai-tray/src-tauri",
+        "cwd": "apps/shinkai-desktop/src-tauri",
         "command": "cargo check"
       },
       "configurations": {
