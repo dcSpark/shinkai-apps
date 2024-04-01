@@ -36,11 +36,11 @@ export class ShinkaiNameWrapper {
   }
 
   get get_node_name(): string {
-    return this.wasmWrapper.get_node_name;
+    return this.wasmWrapper.get_node_name_string;
   }
 
   get get_profile_name(): string {
-    return this.wasmWrapper.get_profile_name;
+    return this.wasmWrapper.get_profile_name_string;
   }
 
   get get_subidentity_name(): string {
