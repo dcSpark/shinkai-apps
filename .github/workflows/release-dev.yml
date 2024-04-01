@@ -77,7 +77,7 @@ jobs:
           if-no-files-found: error
           retention-days: 5
 
-  release-shinkai-tray-macos:
+  release-shinkai-tray:
     needs: prebuild
     name: Release Shinkai Tray
     strategy:
@@ -185,14 +185,14 @@ jobs:
 
       - name: (Linux) Run NX build on shinkai-tray
         if: ${{ matrix.arch == 'x86_64-unknown-linux-gnu' }}
-        run: npx nx build shinkai-tray --skip-nx-cache
+        run: npx nx build shinkai-tray --config="./src-tauri/tauri.conf.development.json" --skip-nx-cache
         env:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
 
       - name: (Macos) Run NX build on shinkai-tray
         if: ${{ matrix.arch == 'aarch64-apple-darwin' }}
-        run: npx nx build shinkai-tray --skip-nx-cache
+        run: npx nx build shinkai-tray --config="./src-tauri/tauri.conf.development.json" --skip-nx-cache
         env:
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
@@ -202,7 +202,7 @@ jobs:
 
       - name: (Windows) Run NX build on shinkai-tray
         if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
-        run: npx nx build shinkai-tray --skip-nx-cache
+        run: npx nx build shinkai-tray --config="./src-tauri/tauri.conf.development.json" --skip-nx-cache
         env:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
