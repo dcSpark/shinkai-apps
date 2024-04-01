@@ -7,7 +7,7 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "Shinkai Tray",
+    "productName": "Shinkai Desktop",
     "version": "../../../package.json"
   },
   "tauri": {
@@ -61,7 +61,7 @@
     "bundle": {
       "active": true,
       "targets": "all",
-      "identifier": "com.shinkai.tray",
+      "identifier": "com.shinkai.desktop",
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
@@ -82,7 +82,7 @@
     "windows": [
       {
         "transparent": true,
-        "title": "Shinkai Tray",
+        "title": "Shinkai Desktop",
         "width": 1000,
         "height": 750,
         "fullscreen": false,
@@ -97,7 +97,7 @@
     "updater": {
       "active": true,
       "endpoints": [
-        "https://download.shinkai.com/shinkai-tray/binaries/production/updates.json"
+        "https://download.shinkai.com/shinkai-desktop/binaries/production/updates.json"
       ],
       "dialog": true,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDY5RTREOUVBODQ0QUYwRDQKUldUVThFcUU2dG5rYVV1MjlvS2FGKzZSMVFnRnFVdUh1ZnVWc2pDSHFqWThaYUFneC9rUU1Gc2MK"

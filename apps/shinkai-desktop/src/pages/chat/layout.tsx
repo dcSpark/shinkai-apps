@@ -185,7 +185,7 @@ const MessageButton = ({
     ) {
       handleSendNotification(
         `${inboxName} response received`,
-        'Go to Shinkai Tray to see the response',
+        'Go to Shinkai Desktop to see the response',
       );
     }
   }, [

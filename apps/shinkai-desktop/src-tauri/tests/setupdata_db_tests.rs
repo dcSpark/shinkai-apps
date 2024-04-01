@@ -1,6 +1,6 @@
 use std::{fs, path::Path};
 
-use shinkai_tray::models::setup_data::SetupData;
+use shinkai_desktop::models::setup_data::SetupData;
 
 fn setup() {
     let path = Path::new("db_tests/");
@@ -11,7 +11,7 @@ fn setup() {
 mod tests {
     use super::*;
     use rocksdb::DB;
-    use shinkai_tray::{db::db::TrayDB, models::setup_data::SetupData};
+    use shinkai_desktop::{db::db::TrayDB, models::setup_data::SetupData};
 
     #[test]
     fn test_write_and_read_setup_data() {

@@ -14,7 +14,7 @@ const WelcomePage = () => {
     <OnboardingLayout>
       <div className="flex h-full flex-col justify-between">
         <p className="text-4xl font-semibold leading-[1.5] tracking-wide">
-          Transform your macOS experience using AI with Shinkai Tray{' '}
+          Transform your desktop experience using AI with Shinkai Desktop{' '}
           <span aria-hidden> 🔑</span>
         </p>
         <div className="">

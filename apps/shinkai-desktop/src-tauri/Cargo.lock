@@ -3606,7 +3606,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "shinkai-tray"
+name = "shinkai-desktop"
 version = "0.0.0"
 dependencies = [
  "cpal",

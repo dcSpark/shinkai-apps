@@ -6,7 +6,7 @@
     "postinstall": "npx patch-package"
   },
   "workspaces": [
-    "apps/shinkai-tray"
+    "apps/shinkai-desktop"
   ],
   "private": true,
   "devDependencies": {
