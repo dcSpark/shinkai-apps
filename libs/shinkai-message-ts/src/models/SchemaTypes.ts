@@ -35,7 +35,8 @@ export enum MessageSchemaType {
 }
 
 export interface JobScope {
-  local: [];
+  local_vrkai: [];
+  local_vrpack: [];
   vector_fs_items: {
     name: string;
     path: string;

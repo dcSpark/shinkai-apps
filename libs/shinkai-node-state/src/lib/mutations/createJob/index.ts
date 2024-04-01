@@ -37,7 +37,8 @@ export const createJob = async ({
     scope = JobCreationWrapper.from_jsvalue({
       is_hidden: false,
       scope: {
-        local: [],
+        local_vrkai: [],
+        local_vrpack: [],
         vector_fs_items: selectedVRFiles.map((vfFile) => ({
           path: vfFile.path,
           name: vfFile.vr_header.resource_name,
