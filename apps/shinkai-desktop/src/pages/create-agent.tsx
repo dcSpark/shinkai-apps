@@ -96,6 +96,10 @@ const modelOptions: { value: Models; label: string }[] = [
     value: Models.TogetherComputer,
     label: 'Together AI',
   },
+  {
+    value: Models.Ollama,
+    label: 'Ollama',
+  },
 ];
 
 const CreateAgentPage = () => {
