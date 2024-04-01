@@ -33,13 +33,42 @@ export enum MessageSchemaType {
   ConvertFilesAndSaveToFolder = 'ConvertFilesAndSaveToFolder',
   VecFsSearchItems = 'VecFsSearchItems',
 }
-
-export interface JobScope {
-  local_vrkai: [];
-  local_vrpack: [];
-  vector_fs_items: {
-    name: string;
-    path: string;
+export interface LocalScopeVRKaiEntry {
+  vrkai: {
+    resource: {
+      Map: {
+        created_datetime: string;
+        data_tag_index: Record<string, string>;
+        description?: null;
+        distribution_info: {
+          origin: null;
+          release_datetime: null;
+        };
+        embedding_model_used_string: string;
+        embeddings: Record<string, string>;
+        keywords: {
+          keyword_list?: string[];
+          keywords_embedding?: null;
+        };
+        last_written_datetime: string;
+        merkle_root: string;
+        metadata_index: {
+          index: Record<string, string>;
+        };
+        name: string;
+        node_count: number;
+        nodes: Record<string, string>;
+        resource_base_type: string;
+        resource_embedding: {
+          id: string;
+          vector?: number[];
+        };
+        resource_id: string;
+        source: string;
+      };
+    };
+    metadata: Record<string, string>;
+    resource_id: string;
     source: {
       Reference: {
         FileRef: {
@@ -47,13 +76,81 @@ export interface JobScope {
           file_type: {
             Document: string;
           };
-          original_creation_datetime: null;
+          original_creation_datetime?: string;
           text_chunking_strategy: string;
         };
       };
     };
-  }[];
-  vector_fs_folders: { name: string; path: string }[];
+  };
+}
+export interface LocalScopeVRPackEntry {
+  vrpack: {
+    embedding_models_used: Record<string, string>;
+    folder_count: number;
+    metadata: Record<string, string>;
+    name: string;
+    resource: {
+      Map: {
+        created_datetime: string;
+        data_tag_index: Record<string, string>;
+        description?: null;
+        distribution_info: {
+          origin: null;
+          release_datetime: null;
+        };
+        embedding_model_used_string: string;
+        embeddings: Record<string, string>;
+        keywords: {
+          keyword_list?: string[];
+          keywords_embedding?: null;
+        };
+        last_written_datetime: string;
+        merkle_root: string;
+        metadata_index: {
+          index: Record<string, string>;
+        };
+        name: string;
+        node_count: number;
+        nodes: Record<string, string>;
+        resource_base_type: string;
+        resource_embedding: {
+          id: string;
+          vector?: number[];
+        };
+        resource_id: string;
+        source: string;
+      };
+    };
+    version: string;
+    vrkai_count: number;
+  };
+}
+export interface VectorFSItemScopeEntry {
+  name: string;
+  path: string;
+  source: {
+    Reference: {
+      FileRef: {
+        file_name: string;
+        file_type: {
+          Document: string;
+        };
+        original_creation_datetime: null;
+        text_chunking_strategy: string;
+      };
+    };
+  };
+}
+export interface VectorFSFolderScopeEntry {
+  name: string;
+  path: string;
+}
+export interface NetworkFolderScopeEntry {}
+export interface JobScope {
+  local_vrkai: LocalScopeVRKaiEntry[];
+  local_vrpack: LocalScopeVRPackEntry[];
+  vector_fs_items: VectorFSItemScopeEntry[];
+  vector_fs_folders: VectorFSFolderScopeEntry[];
   network_folders: [];
 }
 
