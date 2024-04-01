@@ -4,8 +4,7 @@ on:
   push:
     tags:
       - '[0-9]+.[0-9]+.[0-9]+'
-    branches:
-      - agallardol/production-cicd
+
 defaults:
   run:
     working-directory: ./
@@ -25,12 +24,12 @@ jobs:
         id: package-version
         uses: Saionaro/extract-package-version@v1.2.1
 
-      # - name: Check version match
-      #   if: ${{ github.ref_name != steps.package-version.outputs.version }}
-      #   uses: actions/github-script@v3
-      #   with:
-      #     script: |
-      #       core.setFailed('Version mismatch')
+      - name: Check version match
+        if: ${{ github.ref_name != steps.package-version.outputs.version }}
+        uses: actions/github-script@v3
+        with:
+          script: |
+            core.setFailed('Version mismatch')
 
   release-shinkai-visor:
     needs: prebuild
@@ -67,15 +66,15 @@ jobs:
       - name: Zip extension
         run: cd ./dist/apps && zip -r shinkai-visor.zip shinkai-visor
 
-      # - name: Upload & Release
-      #   uses: mnao305/chrome-extension-upload@v4.0.1
-      #   with:
-      #     file-path: dist/apps/shinkai-visor.zip
-      #     extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
-      #     client-id: ${{ secrets.CHROME_CLIENT_ID }}
-      #     client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
-      #     refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
-      #     publish: false
+      - name: Upload & Release
+        uses: mnao305/chrome-extension-upload@v4.0.1
+        with:
+          file-path: dist/apps/shinkai-visor.zip
+          extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
+          client-id: ${{ secrets.CHROME_CLIENT_ID }}
+          client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+          publish: false
 
   release-shinkai-tray:
     needs: prebuild
@@ -217,12 +216,12 @@ jobs:
           cp "${{ matrix.build_output_update_file_path }}" files-to-r2/${{ matrix.distributable_update_file_name }}
           cp "${{ matrix.build_output_update_signature_file_path }}" files-to-r2/${{ matrix.distributable_update_signature_file_name }}
 
-      # - name: Upload binaries to R2 bucket
-      #   uses: shallwefootball/s3-upload-action@master
-      #   with:
-      #     endpoint: https://54bf1bf573b3e6471e574cc4d318db64.r2.cloudflarestorage.com
-      #     aws_key_id: ${{ secrets.R2_ACCESS_KEY_ID }}
-      #     aws_secret_access_key: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-      #     aws_bucket: shinkai-download
-      #     source_dir: files-to-r2
-      #     destination_dir: ./shinkai-tray/binaries/production/${{ matrix.arch }}/${{ needs.prebuild.outputs.version }}.${{ github.run_number }}/
+      - name: Upload binaries to R2 bucket
+        uses: shallwefootball/s3-upload-action@master
+        with:
+          endpoint: https://54bf1bf573b3e6471e574cc4d318db64.r2.cloudflarestorage.com
+          aws_key_id: ${{ secrets.R2_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          aws_bucket: shinkai-download
+          source_dir: files-to-r2
+          destination_dir: ./shinkai-tray/binaries/production/${{ matrix.arch }}/${{ needs.prebuild.outputs.version }}.${{ github.run_number }}/
