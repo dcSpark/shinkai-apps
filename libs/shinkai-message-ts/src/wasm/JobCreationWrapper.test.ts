@@ -5,7 +5,8 @@ import { JobCreationWrapper } from './JobCreationWrapper';
 const jobCreationJson = `{
     "is_hidden": false,
     "scope": {
-        "local": [],
+        "local_vrkai": [],
+        "local_vrpack": [],
         "vector_fs_items": [],
         "vector_fs_folders": [],
         "network_folders": []
@@ -43,7 +44,8 @@ describe('JobCreationWrapper', () => {
     expect(JSON.parse(jsonString)).toEqual({
       is_hidden: false,
       scope: {
-        local: [],
+        local_vrkai: [],
+        local_vrpack: [],
         vector_fs_items: [],
         vector_fs_folders: [],
         network_folders: [],

@@ -1,6 +1,7 @@
 export enum Models {
   OpenAI = 'open-ai',
   TogetherComputer = 'togethercomputer',
+  Ollama = 'ollama',
 }
 
 export const modelsConfig = {
@@ -39,6 +40,27 @@ export const modelsConfig = {
       {
         name: 'OpenOrca - OpenOrca Mistral (7B) 8K',
         value: 'Open-Orca/Mistral-7B-OpenOrca',
+      },
+    ],
+  },
+  [Models.Ollama]: {
+    apiUrl: 'http://localhost:11434',
+    modelTypes: [
+      {
+        name: 'Llama 2',
+        value: 'llama2',
+      },
+      {
+        name: 'Mistral',
+        value: 'mistral',
+      },
+      {
+        name: 'Mixtral',
+        value: 'mixtral',
+      },
+      {
+        name: 'LLaVA',
+        value: 'llava',
       },
     ],
   },

@@ -703,10 +703,10 @@ export class ShinkaiNameWrapper {
   readonly get_full_name: any;
 /**
 */
-  readonly get_node_name: any;
+  readonly get_node_name_string: any;
 /**
 */
-  readonly get_profile_name: any;
+  readonly get_profile_name_string: any;
 /**
 */
   readonly get_subidentity_name: any;

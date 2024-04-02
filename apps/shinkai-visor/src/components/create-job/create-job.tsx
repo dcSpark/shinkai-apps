@@ -109,6 +109,7 @@ export const CreateJob = () => {
     '.xlsx',
     '.jobkai',
     '.vrkai',
+    '.vrpack',
   ];
   useEffect(() => {
     form.setValue('files', location?.state?.files || []);
