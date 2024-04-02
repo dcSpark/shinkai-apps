@@ -427,17 +427,18 @@ export default function NavBar() {
                 </DropdownMenuItem>
               )}
 
+              <DropdownMenuLabel>Vector FS</DropdownMenuLabel>
               <DropdownMenuItem
                 onClick={() => onClickMenuOption(MenuOption.NodeFiles)}
               >
                 <FilesIcon className="mr-2 h-4 w-4" />
-                <span>Node Files</span>
+                <span>Vector File System</span>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => onClickMenuOption(MenuOption.SearchNodeFiles)}
               >
                 <SearchCode className="mr-2 h-4 w-4" />
-                <span>Global Search Vector FS</span>
+                <span>Knowledge Search</span>
               </DropdownMenuItem>
 
               <DropdownMenuLabel>

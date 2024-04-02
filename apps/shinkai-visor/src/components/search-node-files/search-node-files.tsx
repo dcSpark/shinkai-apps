@@ -72,7 +72,7 @@ const SearchNodeFiles = () => {
     >
       <motion.div
         animate={{
-          y: isSearchEntered ? '0%' : '35vh',
+          y: isSearchEntered ? '0%' : '30vh',
         }}
         transition={{
           type: 'spring',
@@ -81,8 +81,12 @@ const SearchNodeFiles = () => {
         }}
       >
         <h1 className="text-center text-2xl font-semibold text-white">
-          Shinkai FS Knowledge
+          VectorFS Knowledge Search
         </h1>
+        <p className="text-gray-80 mx-auto text-center text-sm">
+          Search to find content across all files in your Vector File System
+          easily
+        </p>
         <Form {...searchVectorFSForm}>
           <form
             className="flex shrink-0 flex-col items-center gap-2 pt-4"
@@ -118,7 +122,7 @@ const SearchNodeFiles = () => {
               )}
             />
             <Button
-              className="h-10 min-w-[100px] rounded-lg"
+              className="h-10 min-w-[240px] rounded-lg"
               size="lg"
               type="submit"
             >
