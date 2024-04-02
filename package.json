@@ -67,6 +67,7 @@
     "capacitor-set-version": "^2.2.0",
     "curve25519-js": "^0.0.4",
     "cypress": "^13.1.0",
+    "date-fns": "^3.6.0",
     "eslint": "^8.54.0",
     "eslint-config-prettier": "9.0.0",
     "eslint-plugin-cypress": "^2.13.4",
