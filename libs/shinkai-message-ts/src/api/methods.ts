@@ -833,7 +833,8 @@ export const retrieveVectorSearchSimplified = async (
   sender_subidentity: string,
   receiver: string,
   receiver_subidentity: string,
-  path: string = '/',
+  searchQuery: string,
+  path: string | null = null,
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
   try {
@@ -842,7 +843,7 @@ export const retrieveVectorSearchSimplified = async (
         setupDetailsState.profile_encryption_sk,
         setupDetailsState.profile_identity_sk,
         setupDetailsState.node_encryption_pk,
-        'algorithm', //search
+        searchQuery,
         path,
         null,
         null,
@@ -865,7 +866,7 @@ export const retrieveVectorSearchSimplified = async (
 
     await handleHttpError(response);
     const data = await response.json();
-    return { data: JSON.parse(data.data), status: data.status };
+    return data;
   } catch (error) {
     console.error('Error retrieveVectorSearchSimplified:', error);
     throw error;

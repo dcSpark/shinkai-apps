@@ -40,7 +40,7 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { ArrowLeft, Menu, Settings, X, XIcon } from 'lucide-react';
+import { ArrowLeft, Menu, SearchCode, Settings, X, XIcon } from 'lucide-react';
 import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useHistory, useLocation } from 'react-router-dom';
@@ -60,6 +60,7 @@ enum MenuOption {
   AddAgent = 'add-agent',
   CreateJob = 'create-job',
   NodeFiles = 'node-files',
+  SearchNodeFiles = 'search-node-files',
   Settings = 'settings',
   Logout = 'logout',
 }
@@ -293,6 +294,10 @@ export default function NavBar() {
         history.push('/node-files');
         setLastPage('/node-files');
         break;
+      case MenuOption.SearchNodeFiles:
+        history.push('/search-node-files');
+        setLastPage('/search-node-files');
+        break;
       case MenuOption.Agents:
         history.push('/agents');
         setLastPage('/agents');
@@ -422,11 +427,18 @@ export default function NavBar() {
                 </DropdownMenuItem>
               )}
 
+              <DropdownMenuLabel>Vector FS</DropdownMenuLabel>
               <DropdownMenuItem
                 onClick={() => onClickMenuOption(MenuOption.NodeFiles)}
               >
                 <FilesIcon className="mr-2 h-4 w-4" />
-                <span>Node Files</span>
+                <span>Vector File System</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onClickMenuOption(MenuOption.SearchNodeFiles)}
+              >
+                <SearchCode className="mr-2 h-4 w-4" />
+                <span>Knowledge Search</span>
               </DropdownMenuItem>
 
               <DropdownMenuLabel>

@@ -30,6 +30,7 @@ import { Inbox } from '../inbox/inbox';
 import { Inboxes } from '../inboxes/inboxes';
 import { VectorFsProvider } from '../node-files/node-file-context';
 import NodeFiles from '../node-files/node-files';
+import SearchNodeFiles from '../search-node-files/search-node-files';
 import { Settings } from '../settings/settings';
 import { SplashScreen } from '../splash-screen/splash-screen';
 import Welcome from '../welcome/welcome';
@@ -117,6 +118,13 @@ export const Popup = () => {
                       <VectorFsProvider>
                         <NodeFiles />
                       </VectorFsProvider>
+                    </Route>
+                  </Switch>
+                </Route>
+                <Route path="/search-node-files">
+                  <Switch>
+                    <Route path="/">
+                      <SearchNodeFiles />
                     </Route>
                   </Switch>
                 </Route>
