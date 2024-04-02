@@ -9,7 +9,7 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
 import { SearchIcon, XIcon } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { z } from 'zod';
@@ -26,6 +26,7 @@ const SearchNodeFiles = () => {
       searchQuery: '',
     },
   });
+  const [search, setSearch] = useState('');
 
   const [isSearchEntered, setIsSearchEntered] = useState(false);
 
@@ -34,34 +35,31 @@ const SearchNodeFiles = () => {
     name: 'searchQuery',
   });
 
-  const { isLoading, isSuccess, data, refetch } = useGetVRSeachSimplified(
-    {
-      nodeAddress: auth?.node_address ?? '',
-      search: searchVectorFSForm.getValues('searchQuery'),
-      shinkaiIdentity: auth?.shinkai_identity ?? '',
-      profile: auth?.profile ?? '',
-      my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-      my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-      node_encryption_pk: auth?.node_encryption_pk ?? '',
-      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-      profile_identity_sk: auth?.profile_identity_sk ?? '',
-    },
-    {
-      enabled: isSearchEntered,
-      refetchOnWindowFocus: false,
-    },
-  );
+  const { isPending, isLoading, isSuccess, data, refetch } =
+    useGetVRSeachSimplified(
+      {
+        nodeAddress: auth?.node_address ?? '',
+        search: search,
+        shinkaiIdentity: auth?.shinkai_identity ?? '',
+        profile: auth?.profile ?? '',
+        my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+        my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+        node_encryption_pk: auth?.node_encryption_pk ?? '',
+        profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+        profile_identity_sk: auth?.profile_identity_sk ?? '',
+      },
+      {
+        enabled: isSearchEntered || !!search,
+        refetchOnWindowFocus: false,
+      },
+    );
 
   const onSubmit = async (data: z.infer<typeof searchVectorFSSchema>) => {
+    if (!data.searchQuery) return;
     setIsSearchEntered(true);
+    setSearch(data.searchQuery);
     refetch();
   };
-
-  useEffect(() => {
-    if (!currentSearchQuery) {
-      setIsSearchEntered(false);
-    }
-  }, [currentSearchQuery]);
 
   return (
     <div
@@ -123,6 +121,8 @@ const SearchNodeFiles = () => {
             />
             <Button
               className="h-10 min-w-[240px] rounded-lg"
+              disabled={isPending && isLoading}
+              isLoading={isPending && isLoading}
               size="lg"
               type="submit"
             >

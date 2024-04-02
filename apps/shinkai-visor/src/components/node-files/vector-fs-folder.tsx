@@ -14,6 +14,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
   CopyIcon,
   FolderInputIcon,
+  SearchCode,
   // Share2Icon,
   TrashIcon,
 } from 'lucide-react';
@@ -123,7 +124,7 @@ const VectorFsFolder = ({
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="end"
-          className="w-[160px] border bg-gray-500 px-2.5 py-2"
+          className="min-w-[160px] border bg-gray-500 px-2.5 py-2"
         >
           {[
             {
@@ -141,6 +142,13 @@ const VectorFsFolder = ({
               },
             },
             {
+              name: 'Search within folder',
+              icon: <SearchCode className="mr-3 h-4 w-4" />,
+              onClick: () => {
+                setActiveDrawerMenuOption(VectorFsFolderAction.SearchKnowledge);
+              },
+            },
+            {
               name: 'Delete',
               icon: <TrashIcon className="mr-3 h-4 w-4" />,
               onClick: () => {
@@ -149,7 +157,8 @@ const VectorFsFolder = ({
             },
           ].map((option) => (
             <React.Fragment key={option.name}>
-              {option.name === 'Delete' && (
+              {(option.name === 'Delete' ||
+                option.name === 'Search within folder') && (
                 <DropdownMenuSeparator className="bg-gray-300" />
               )}
               <DropdownMenuItem

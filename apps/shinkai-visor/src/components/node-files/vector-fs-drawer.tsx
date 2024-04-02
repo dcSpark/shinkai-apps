@@ -12,6 +12,7 @@ import {
   VectorFsFolderCopyAction,
   VectorFsFolderDeleteAction,
   VectorFsFolderMoveAction,
+  VectorFsFolderSearchKnowledgeAction,
 } from './vector-fs-folder-options';
 import {
   AddNewFolderAction,
@@ -70,6 +71,7 @@ export enum VectorFsFolderAction {
   Move = 'move-folder',
   Copy = 'copy-folder',
   Delete = 'delete-folder',
+  SearchKnowledge = 'search-knowledge-folder',
 }
 
 export enum VectorFsItemAction {
@@ -104,6 +106,8 @@ const VectorFSDrawerContent = ({
       return <VectorFsFolderCopyAction />;
     case VectorFsFolderAction.Delete:
       return <VectorFsFolderDeleteAction />;
+    case VectorFsFolderAction.SearchKnowledge:
+      return <VectorFsFolderSearchKnowledgeAction />;
 
     // item actions
     case VectorFsItemAction.Move:
