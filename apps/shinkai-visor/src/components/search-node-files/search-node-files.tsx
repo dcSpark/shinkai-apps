@@ -120,7 +120,7 @@ const SearchNodeFiles = () => {
               )}
             />
             <Button
-              className="h-10 min-w-[240px] rounded-lg"
+              className="w-1/2 rounded-xl"
               disabled={isPending && isLoading}
               isLoading={isPending && isLoading}
               size="lg"
