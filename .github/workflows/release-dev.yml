@@ -244,6 +244,7 @@ jobs:
           destination_dir: ./shinkai-desktop/binaries/development/${{ matrix.arch }}/${{ needs.prebuild.outputs.version }}.${{ github.run_number }}/
   
   rollout-shinkai-desktop:
+    environment: development
     needs:
       - prebuild
       - release-shinkai-desktop
