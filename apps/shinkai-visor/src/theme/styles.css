@@ -1,15 +1,8 @@
-@layer tailwind-base, primereact, tailwind-utilities;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@layer tailwind-base {
-  @tailwind base;
-}
-
-@layer tailwind-utilities {
-  @tailwind components;
-  @tailwind utilities;
-}
-
-@layer tailwind-base {
+@layer base {
   @font-face {
     font-family: 'Inter';
     font-style: normal;
@@ -31,7 +24,7 @@
     }
   }
 }
-@layer tailwind-base {
+@layer base {
   :host,
   body {
     @apply bg-gray-500 text-white;

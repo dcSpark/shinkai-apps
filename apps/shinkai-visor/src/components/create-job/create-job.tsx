@@ -39,8 +39,13 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { SearchCode, XIcon } from 'lucide-react';
-import { Tree, TreePassThroughMethodOptions } from 'primereact/tree';
-import React, { useEffect, useState } from 'react';
+import {
+  Tree,
+  TreeCheckboxSelectionKeys,
+  TreePassThroughMethodOptions,
+} from 'primereact/tree';
+import { TreeNode } from 'primereact/treenode';
+import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -51,22 +56,7 @@ import { useAuth } from '../../store/auth/auth';
 import { useSettings } from '../../store/settings/settings';
 import { FileInput } from '../file-input/file-input';
 import { Header } from '../header/header';
-
-type SelectedTreeKeys = Record<
-  string,
-  {
-    checked: boolean;
-    partialChecked: boolean;
-  }
-> | null;
-
-type TreeNode = {
-  key: string;
-  label: string;
-  data: string;
-  icon: string;
-  children?: TreeNode[];
-};
+import { allowedFileExtensions, treeOptions } from './constants';
 
 function transformDataToTreeNodes(
   data: VRFolder,
@@ -78,7 +68,7 @@ function transformDataToTreeNodes(
     const folderNode: TreeNode = {
       key: folder.path,
       label: folder.name,
-      data: folder.path,
+      data: folder,
       icon: 'icon-folder',
       children: transformDataToTreeNodes(folder, folder.path),
     };
@@ -89,7 +79,7 @@ function transformDataToTreeNodes(
     const itemNode: TreeNode = {
       key: item.path,
       label: item.name,
-      data: item.path,
+      data: item,
       icon: 'icon-file',
     };
     result.push(itemNode);
@@ -97,6 +87,7 @@ function transformDataToTreeNodes(
 
   return result;
 }
+
 const formSchema = z.object({
   agent: z.string().min(1),
   content: z.string().min(1),
@@ -118,6 +109,9 @@ export const CreateJob = () => {
   }>();
   const query = useQuery();
   const auth = useAuth((state) => state.auth);
+
+  const selectedFileKeysRef = useRef<Map<string, VRItem>>(new Map());
+  const selectedFolderKeysRef = useRef<Map<string, VRFolder>>(new Map());
   // const settings = useSettings((state) => state.settings);
   const currentDefaultAgentId = useSettings((state) => state.defaultAgentId);
   const {
@@ -164,32 +158,6 @@ export const CreateJob = () => {
   const [isFolderSelectionOpen, setIsFolderSelectionOpen] =
     React.useState(false);
 
-  const extensions = [
-    '.eml',
-    '.html',
-    '.json',
-    '.md',
-    '.msg',
-    '.rst',
-    '.rtf',
-    '.txt',
-    '.xml',
-    '.jpeg',
-    '.png',
-    '.csv',
-    '.doc',
-    '.docx',
-    '.epub',
-    '.odt',
-    '.pdf',
-    '.ppt',
-    '.pptx',
-    '.tsv',
-    '.xlsx',
-    '.jobkai',
-    '.vrkai',
-    '.vrpack',
-  ];
   useEffect(() => {
     form.setValue('files', location?.state?.files || []);
     form.setValue('selectedVRFiles', location?.state?.selectedVRFiles || []);
@@ -231,11 +199,19 @@ export const CreateJob = () => {
   }, []);
   const submit = async (values: FormSchemaType) => {
     if (!auth) return;
-    console.log('values', values);
     let content = values.content;
     if (query.has('context')) {
       content = `${values.content} - \`\`\`${query.get('context')}\`\`\``;
     }
+    const selectedVRFiles =
+      selectedFileKeysRef.current.size > 0
+        ? Array.from(selectedFileKeysRef.current.values())
+        : values.selectedVRFiles;
+    const selectedVRFolders =
+      selectedFolderKeysRef.current.size > 0
+        ? Array.from(selectedFolderKeysRef.current.values())
+        : values.selectedVRFolders;
+
     await createJob({
       nodeAddress: auth?.node_address ?? '',
       shinkaiIdentity: auth.shinkai_identity,
@@ -245,8 +221,8 @@ export const CreateJob = () => {
       files_inbox: '',
       files: values.files,
       is_hidden: false,
-      selectedVRFiles: values.selectedVRFiles,
-      selectedVRFolders: values.selectedVRFolders,
+      selectedVRFiles,
+      selectedVRFolders,
       my_device_encryption_sk: auth.my_device_encryption_sk,
       my_device_identity_sk: auth.my_device_identity_sk,
       node_encryption_pk: auth.node_encryption_pk,
@@ -256,8 +232,8 @@ export const CreateJob = () => {
   };
 
   const [nodes, setNodes] = useState<TreeNode[]>([]);
-  const [selectedKeys, setSelectedKeys] = useState<SelectedTreeKeys>(null);
-  console.log(selectedKeys, 'selectedKeys');
+  const [selectedKeys, setSelectedKeys] =
+    useState<TreeCheckboxSelectionKeys | null>(null);
 
   useEffect(() => {
     if (isVRFilesSuccess) {
@@ -315,7 +291,7 @@ export const CreateJob = () => {
                   </FormLabel>
                   <FormControl>
                     <FileInput
-                      extensions={extensions}
+                      extensions={allowedFileExtensions}
                       multiple
                       onValueChange={field.onChange}
                       value={field.value}
@@ -375,7 +351,7 @@ export const CreateJob = () => {
               </h2>
               <div className="flex flex-col gap-1.5">
                 <Button
-                  className="flex items-center justify-between gap-2 rounded-lg p-2.5 text-left"
+                  className="flex h-[40px] items-center justify-between gap-2 rounded-lg p-2.5 text-left"
                   onClick={() => setIsFolderSelectionOpen(true)}
                   size="auto"
                   type="button"
@@ -420,10 +396,10 @@ export const CreateJob = () => {
                   <XIcon className="text-gray-80" />
                 </DrawerClose>
                 <DrawerHeader>
-                  <DrawerTitle className="mb-4 flex items-start gap-4">
+                  <DrawerTitle className="mb-4 flex h-[40px] items-center gap-4">
                     Set Context
                     {Object.keys(selectedKeys ?? {}).length > 0 && (
-                      <Badge className="bg-brand text-white">
+                      <Badge className="bg-brand text-sm text-white">
                         {Object.keys(selectedKeys ?? {}).length}
                       </Badge>
                     )}
@@ -452,58 +428,42 @@ export const CreateJob = () => {
                     </TabsTrigger>
                   </TabsList>
                   <TabsContent className="h-full" value="vector-fs">
+                    <p className="text-gray-80 px-2 pt-4 text-center text-sm">
+                      Add local files and folders to use as context for your
+                      conversation
+                    </p>
                     <ScrollArea className="h-[60vh]">
                       <Tree
-                        onSelectionChange={(e) =>
-                          setSelectedKeys(e.value as SelectedTreeKeys)
-                        }
-                        pt={{
-                          root: {
-                            className: cn(
-                              '',
-                              'my-3 w-full rounded-md border border-gray-400 bg-transparent p-0 text-white',
-                            ),
-                          },
-                          label: { className: 'text-white text-sm' },
-                          container: {
-                            className: 'm-0 p-0 list-none overflow-auto',
-                          },
-                          node: { className: 'p-0 outline-none' },
-                          content: ({
-                            context,
-                            props,
-                          }: TreePassThroughMethodOptions) => ({
-                            className: cn(
-                              'text-gray-80 mb-1 bg-transparent hover:bg-gray-400 hover:text-white',
-                              'rounded-lg p-1 transition-shadow duration-200',
-                              'focus:shadow-[0_0_0_0.1rem_rgba(254,96,98,1)] focus:outline-none focus:outline-offset-0',
-                              'cursor-pointer select-none',
-                            ),
-                          }),
-                          toggler: ({
-                            context,
-                            props,
-                            state,
-                          }: TreePassThroughMethodOptions) => ({
-                            className: cn(
-                              'relative inline-flex shrink-0 cursor-pointer select-none items-center justify-center overflow-hidden',
-                              'mr-2 h-8 w-8 rounded-full border-0 bg-transparent transition duration-200',
-                              'hover:border-transparent focus:shadow-[0_0_0_0.2rem_rgba(191,219,254,1)] focus:outline-none focus:outline-offset-0',
-                              context.selected
-                                ? 'text-blue-600 hover:bg-white/30'
-                                : 'hover:text-gray-80 text-white hover:bg-gray-400',
-                              // @ts-expect-error - TS doesn't know about the isLeaf property
-                              context.isLeaf && 'invisible',
-                            ),
-                          }),
-                          nodeIcon: { className: 'mr-2 text-gray-50' },
-                          subgroup: {
-                            className: cn(
-                              'm-0 list-none',
-                              'space-y-1 p-0 pl-4',
-                            ),
-                          },
+                        onSelect={(e) => {
+                          if (e.node.icon === 'icon-folder') {
+                            selectedFolderKeysRef.current.set(
+                              String(e.node.key),
+                              e.node.data,
+                            );
+                            return;
+                          }
+                          selectedFileKeysRef.current.set(
+                            String(e.node.key),
+                            e.node.data,
+                          );
                         }}
+                        onSelectionChange={(e) => {
+                          setSelectedKeys(e.value as TreeCheckboxSelectionKeys);
+                        }}
+                        onUnselect={(e) => {
+                          if (e.node.icon === 'icon-folder') {
+                            selectedFolderKeysRef.current.delete(
+                              String(e.node.key),
+                            );
+                            return;
+                          }
+                          selectedFileKeysRef.current.delete(
+                            String(e.node.key),
+                          );
+                        }}
+                        propagateSelectionDown={false}
+                        propagateSelectionUp={false}
+                        pt={treeOptions}
                         selectionKeys={selectedKeys}
                         selectionMode="checkbox"
                         value={nodes}
@@ -531,6 +491,10 @@ export const CreateJob = () => {
                     </DrawerFooter>
                   </TabsContent>
                   <TabsContent value="search">
+                    <p className="text-gray-80 px-2 pt-4 text-center text-sm">
+                      Search to find content across all files in your Vector
+                      File System easily
+                    </p>
                     <ScrollArea className="h-[60vh]">
                       <div className="flex h-full items-center justify-center">
                         <p className="text-gray-80 text-lg">Coming Soon</p>
@@ -541,6 +505,8 @@ export const CreateJob = () => {
                         isLoading={isPending}
                         onClick={() => {
                           setSelectedKeys(null);
+                          selectedFileKeysRef.current.clear();
+                          selectedFolderKeysRef.current.clear();
                         }}
                         variant="outline"
                       >
