@@ -394,23 +394,6 @@ export const CreateJob = () => {
               </div>
             </div>
 
-            <VectorFsScopeDrawer
-              isVectorFSOpen={isVectorFSOpen}
-              nodes={nodes}
-              onSelectedKeysChange={setSelectedKeys}
-              onVectorFSOpenChanges={setIsVectorFSOpen}
-              selectedFileKeysRef={selectedFileKeysRef}
-              selectedFolderKeysRef={selectedFolderKeysRef}
-              selectedKeys={selectedKeys}
-            />
-            <KnowledgeSearchDrawer
-              isKnowledgeSearchOpen={isKnowledgeSearchOpen}
-              onSelectedKeysChange={setSelectedKeys}
-              selectedFileKeysRef={selectedFileKeysRef}
-              selectedKeys={selectedKeys}
-              setIsKnowledgeSearchOpen={setIsKnowledgeSearchOpen}
-            />
-
             {(location?.state?.selectedVRFolders?.length > 0 ||
               location?.state?.selectedVRFiles?.length > 0) && (
               <div className="py-4 pt-8">
@@ -466,6 +449,22 @@ export const CreateJob = () => {
           </Button>
         </form>
       </Form>
+      <VectorFsScopeDrawer
+        isVectorFSOpen={isVectorFSOpen}
+        nodes={nodes}
+        onSelectedKeysChange={setSelectedKeys}
+        onVectorFSOpenChanges={setIsVectorFSOpen}
+        selectedFileKeysRef={selectedFileKeysRef}
+        selectedFolderKeysRef={selectedFolderKeysRef}
+        selectedKeys={selectedKeys}
+      />
+      <KnowledgeSearchDrawer
+        isKnowledgeSearchOpen={isKnowledgeSearchOpen}
+        onSelectedKeysChange={setSelectedKeys}
+        selectedFileKeysRef={selectedFileKeysRef}
+        selectedKeys={selectedKeys}
+        setIsKnowledgeSearchOpen={setIsKnowledgeSearchOpen}
+      />
     </div>
   );
 };

@@ -335,7 +335,10 @@ export const KnowledgeSearchDrawer = ({
                         }}
                         value={generatedFilePath}
                       />
-                      <label className="ml-2" htmlFor={generatedFilePath}>
+                      <label
+                        className="ml-2 flex-1"
+                        htmlFor={generatedFilePath}
+                      >
                         <div className="flex items-center gap-1">
                           <FileTypeIcon className="h-6 w-6" />
                           <span className="text-sm">
