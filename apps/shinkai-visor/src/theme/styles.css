@@ -50,6 +50,19 @@
     @apply bg-gray-100;
   }
 }
+/* react tree view */
+.p-checkbox.p-highlight .p-checkbox-box {
+  @apply bg-brand border-brand-500 text-white hover:border-brand-500 p-0.5;
+}
+.p-tree .p-tree-container .p-treenode .p-treenode-content.p-highlight{
+  @apply bg-brand/10 text-white;
+}
+.icon-folder {
+  content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' class='shrink-0 mr-2 h-4 w-4' fill='none' height='16' viewBox='0 0 24 24' width='16'%3E%3Cpath d='M4.25 4C3.01625 4 2 5.01625 2 6.25V17.75C2 18.9838 3.01625 20 4.25 20H19.75C20.9838 20 22 18.9838 22 17.75V8.75C22 7.51625 20.9838 6.5 19.75 6.5H12.0215L9.78613 4.6377C9.29203 4.22606 8.66958 4 8.02637 4H4.25ZM4.25 5.5H8.02637C8.31915 5.5 8.60128 5.60268 8.82617 5.79004L10.5781 7.25L8.82617 8.70996C8.60128 8.89732 8.31915 9 8.02637 9H3.5V6.25C3.5 5.82675 3.82675 5.5 4.25 5.5ZM12.0215 8H19.75C20.1733 8 20.5 8.32675 20.5 8.75V17.75C20.5 18.1733 20.1733 18.5 19.75 18.5H4.25C3.82675 18.5 3.5 18.1733 3.5 17.75V10.5H8.02637C8.66958 10.5 9.29203 10.2739 9.78613 9.86231L12.0215 8Z' fill='white'%3E%3C/path%3E%3C/svg%3E");
+}
+.icon-file {
+  content: url("data:image/svg+xml,%3Csvg data-v-88732935='' xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='lucide lucide-file-text lucide-icon customizable'%3E%3Cpath d='M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z'%3E%3C/path%3E%3Cpath d='M14 2v4a2 2 0 0 0 2 2h4'%3E%3C/path%3E%3Cpath d='M10 9H8'%3E%3C/path%3E%3Cpath d='M16 13H8'%3E%3C/path%3E%3Cpath d='M16 17H8'%3E%3C/path%3E%3C/svg%3E");
+}
 
 /* prose styling for chat editor */
 .prose :where(p):not(:where([class~='not-prose'], [class~='not-prose'] *)) {

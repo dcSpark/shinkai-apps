@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import React from 'react';
 
-import { formatDateToLocaleString } from '../../helpers/date';
+import { formatDateToUSLocaleString } from '../../helpers/date';
 import { useVectorFsStore, VectorFSLayout } from './node-file-context';
 import { VectorFsFolderAction } from './vector-fs-drawer';
 
@@ -40,7 +40,7 @@ export const VectorFsFolderInfo = ({
       <div className="truncate text-sm font-medium">{folder.name}</div>
       {layout === VectorFSLayout.List && !allowFolderNameOnly && (
         <p className="text-xs font-medium text-gray-100">
-          <span>{formatDateToLocaleString(folder.created_datetime)}</span> -{' '}
+          <span>{formatDateToUSLocaleString(folder.created_datetime)}</span> -{' '}
           <span>{totalItem} items</span>
         </p>
       )}

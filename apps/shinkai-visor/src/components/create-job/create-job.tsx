@@ -6,10 +6,12 @@ import {
   VRFolder,
   VRItem,
 } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
+import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
 import {
   Badge,
   Button,
   DirectoryTypeIcon,
+  FilesIcon,
   FileTypeIcon,
   Form,
   FormControl,
@@ -24,8 +26,16 @@ import {
   SelectTrigger,
   SelectValue,
   Textarea,
+  Tooltip,
+  TooltipContent,
+  TooltipPortal,
+  TooltipProvider,
+  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import React, { useEffect } from 'react';
+import { SearchCode } from 'lucide-react';
+import { TreeCheckboxSelectionKeys } from 'primereact/tree';
+import { TreeNode } from 'primereact/treenode';
+import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -36,6 +46,38 @@ import { useAuth } from '../../store/auth/auth';
 import { useSettings } from '../../store/settings/settings';
 import { FileInput } from '../file-input/file-input';
 import { Header } from '../header/header';
+import { allowedFileExtensions } from './constants';
+import { KnowledgeSearchDrawer, VectorFsScopeDrawer } from './vector-fs-scope';
+
+function transformDataToTreeNodes(
+  data: VRFolder,
+  parentPath: string = '/',
+): TreeNode[] {
+  const result: TreeNode[] = [];
+
+  for (const folder of data?.child_folders ?? []) {
+    const folderNode: TreeNode = {
+      key: folder.path,
+      label: folder.name,
+      data: folder,
+      icon: 'icon-folder',
+      children: transformDataToTreeNodes(folder, folder.path),
+    };
+    result.push(folderNode);
+  }
+
+  for (const item of data.child_items ?? []) {
+    const itemNode: TreeNode = {
+      key: item.path,
+      label: item.name,
+      data: item,
+      icon: 'icon-file',
+    };
+    result.push(itemNode);
+  }
+
+  return result;
+}
 
 const formSchema = z.object({
   agent: z.string().min(1),
@@ -58,8 +100,27 @@ export const CreateJob = () => {
   }>();
   const query = useQuery();
   const auth = useAuth((state) => state.auth);
+
+  const selectedFileKeysRef = useRef<Map<string, VRItem>>(new Map());
+  const selectedFolderKeysRef = useRef<Map<string, VRFolder>>(new Map());
   // const settings = useSettings((state) => state.settings);
   const currentDefaultAgentId = useSettings((state) => state.defaultAgentId);
+  const {
+    // isPending: isVRFilesPending,
+    data: VRFiles,
+    isSuccess: isVRFilesSuccess,
+  } = useGetVRPathSimplified({
+    nodeAddress: auth?.node_address ?? '',
+    profile: auth?.profile ?? '',
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    path: '/',
+    my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+    my_device_identity_sk: auth?.profile_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+  });
+
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -85,32 +146,14 @@ export const CreateJob = () => {
       history.replace(`/inboxes/${jobId}`);
     },
   });
-  const extensions = [
-    '.eml',
-    '.html',
-    '.json',
-    '.md',
-    '.msg',
-    '.rst',
-    '.rtf',
-    '.txt',
-    '.xml',
-    '.jpeg',
-    '.png',
-    '.csv',
-    '.doc',
-    '.docx',
-    '.epub',
-    '.odt',
-    '.pdf',
-    '.ppt',
-    '.pptx',
-    '.tsv',
-    '.xlsx',
-    '.jobkai',
-    '.vrkai',
-    '.vrpack',
-  ];
+  const [isVectorFSOpen, setIsVectorFSOpen] = React.useState(false);
+  const [isKnowledgeSearchOpen, setIsKnowledgeSearchOpen] =
+    React.useState(false);
+
+  const [nodes, setNodes] = useState<TreeNode[]>([]);
+  const [selectedKeys, setSelectedKeys] =
+    useState<TreeCheckboxSelectionKeys | null>(null);
+
   useEffect(() => {
     form.setValue('files', location?.state?.files || []);
     form.setValue('selectedVRFiles', location?.state?.selectedVRFiles || []);
@@ -152,11 +195,19 @@ export const CreateJob = () => {
   }, []);
   const submit = async (values: FormSchemaType) => {
     if (!auth) return;
-    console.log('values', values);
     let content = values.content;
     if (query.has('context')) {
       content = `${values.content} - \`\`\`${query.get('context')}\`\`\``;
     }
+    const selectedVRFiles =
+      selectedFileKeysRef.current.size > 0
+        ? Array.from(selectedFileKeysRef.current.values())
+        : values.selectedVRFiles;
+    const selectedVRFolders =
+      selectedFolderKeysRef.current.size > 0
+        ? Array.from(selectedFolderKeysRef.current.values())
+        : values.selectedVRFolders;
+
     await createJob({
       nodeAddress: auth?.node_address ?? '',
       shinkaiIdentity: auth.shinkai_identity,
@@ -166,8 +217,8 @@ export const CreateJob = () => {
       files_inbox: '',
       files: values.files,
       is_hidden: false,
-      selectedVRFiles: values.selectedVRFiles,
-      selectedVRFolders: values.selectedVRFolders,
+      selectedVRFiles,
+      selectedVRFolders,
       my_device_encryption_sk: auth.my_device_encryption_sk,
       my_device_identity_sk: auth.my_device_identity_sk,
       node_encryption_pk: auth.node_encryption_pk,
@@ -175,6 +226,13 @@ export const CreateJob = () => {
       profile_identity_sk: auth.profile_identity_sk,
     });
   };
+
+  useEffect(() => {
+    if (isVRFilesSuccess) {
+      setNodes(transformDataToTreeNodes(VRFiles));
+    }
+  }, [VRFiles, isVRFilesSuccess]);
+
   return (
     <div className="flex h-full flex-col space-y-3">
       <Header title={<FormattedMessage id="create-job" />} />
@@ -215,26 +273,7 @@ export const CreateJob = () => {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="files"
-              render={({ field }) => (
-                <FormItem className="mt-3">
-                  <FormLabel className="sr-only">
-                    <FormattedMessage id="file.one" />
-                  </FormLabel>
-                  <FormControl>
-                    <FileInput
-                      extensions={extensions}
-                      multiple
-                      onValueChange={field.onChange}
-                      value={field.value}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+
             {query.has('context') && (
               <div className="my-4">
                 <blockquote className="border-l-4 border-gray-200 bg-gray-300 py-2.5 pl-3 pr-3">
@@ -279,6 +318,82 @@ export const CreateJob = () => {
                 </FormItem>
               )}
             />
+            <div className="my-3 rounded-md bg-gray-400 px-3 py-4">
+              <div className="mb-5 flex items-start justify-between gap-4">
+                <div className="space-y-1">
+                  <h2 className="text-sm font-medium text-gray-100">
+                    Set Chat Context
+                  </h2>
+                  <p className="text-gray-80 text-xs">
+                    Add files or folders for your AI to use as context during
+                    your conversation.
+                  </p>
+                </div>
+                <TooltipProvider delayDuration={0}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        className="flex h-10 w-10 items-center justify-center gap-2 rounded-lg p-2.5 text-left hover:bg-gray-500"
+                        onClick={() => setIsKnowledgeSearchOpen(true)}
+                        size="icon"
+                        type="button"
+                        variant="ghost"
+                      >
+                        <SearchCode className="h-5 w-5" />
+                        <p className="sr-only text-xs text-white">
+                          Search Knowledge
+                        </p>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipPortal>
+                      <TooltipContent sideOffset={0}>
+                        Search Knowledge
+                      </TooltipContent>
+                    </TooltipPortal>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Button
+                  className="flex h-[40px] items-center justify-between gap-2 rounded-lg p-2.5 text-left hover:bg-gray-500"
+                  onClick={() => setIsVectorFSOpen(true)}
+                  size="auto"
+                  type="button"
+                  variant="outline"
+                >
+                  <div className="flex items-center gap-2">
+                    <FilesIcon className="h-4 w-4" />
+                    <p className="text-sm text-white">Local Vector Files</p>
+                  </div>
+                  {Object.keys(selectedKeys ?? {}).length > 0 && (
+                    <Badge className="bg-brand text-white">
+                      {Object.keys(selectedKeys ?? {}).length}
+                    </Badge>
+                  )}
+                </Button>
+                <FormField
+                  control={form.control}
+                  name="files"
+                  render={({ field }) => (
+                    <FormItem className="mt-3">
+                      <FormLabel className="sr-only">
+                        <FormattedMessage id="file.one" />
+                      </FormLabel>
+                      <FormControl>
+                        <FileInput
+                          extensions={allowedFileExtensions}
+                          multiple
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
             {(location?.state?.selectedVRFolders?.length > 0 ||
               location?.state?.selectedVRFiles?.length > 0) && (
               <div className="py-4 pt-8">
@@ -334,6 +449,22 @@ export const CreateJob = () => {
           </Button>
         </form>
       </Form>
+      <VectorFsScopeDrawer
+        isVectorFSOpen={isVectorFSOpen}
+        nodes={nodes}
+        onSelectedKeysChange={setSelectedKeys}
+        onVectorFSOpenChanges={setIsVectorFSOpen}
+        selectedFileKeysRef={selectedFileKeysRef}
+        selectedFolderKeysRef={selectedFolderKeysRef}
+        selectedKeys={selectedKeys}
+      />
+      <KnowledgeSearchDrawer
+        isKnowledgeSearchOpen={isKnowledgeSearchOpen}
+        onSelectedKeysChange={setSelectedKeys}
+        selectedFileKeysRef={selectedFileKeysRef}
+        selectedKeys={selectedKeys}
+        setIsKnowledgeSearchOpen={setIsKnowledgeSearchOpen}
+      />
     </div>
   );
 };

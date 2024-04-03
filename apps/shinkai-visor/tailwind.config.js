@@ -7,6 +7,7 @@ const sharedTailwindConfig = require('../../libs/shinkai-ui/src/shinkai-preset.j
 module.exports = {
   presets: [sharedTailwindConfig],
   content: [
+    './node_modules/primereact/**/*.{js,ts,jsx,tsx}',
     join(
       __dirname,
       '{src,pages,components,app}/**/*!(*.stories|*.spec).{ts,tsx,html,css}',
