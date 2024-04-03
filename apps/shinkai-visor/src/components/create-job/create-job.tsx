@@ -341,29 +341,27 @@ export const CreateJob = () => {
               <div className="mb-5 flex items-start justify-between gap-4">
                 <div className="space-y-1">
                   <h2 className="text-sm font-medium text-gray-100">
-                    Set Context
+                    Set Chat Context
                   </h2>
                   <p className="text-gray-80 text-xs">
-                    Add local files and folders to use as context for your
-                    conversation
+                    Add files or folders for your AI to use as context during
+                    your conversation.
                   </p>
                 </div>
                 <TooltipProvider delayDuration={0}>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
-                        className="flex items-center justify-between gap-2 rounded-lg p-2.5 text-left hover:bg-gray-500"
+                        className="flex h-10 w-10 items-center justify-center gap-2 rounded-lg p-2.5 text-left hover:bg-gray-500"
                         onClick={() => setIsKnowledgeSearchOpen(true)}
                         size="icon"
                         type="button"
                         variant="ghost"
                       >
-                        <div className="flex items-center gap-2">
-                          <SearchCode className="h-4 w-4" />
-                          <p className="sr-only text-xs text-white">
-                            Search Knowledge
-                          </p>
-                        </div>
+                        <SearchCode className="h-5 w-5" />
+                        <p className="sr-only text-xs text-white">
+                          Search Knowledge
+                        </p>
                       </Button>
                     </TooltipTrigger>
                     <TooltipPortal>
