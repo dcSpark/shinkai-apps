@@ -16,7 +16,7 @@ import { partial } from 'filesize';
 import { CopyIcon, FileInputIcon, TrashIcon } from 'lucide-react';
 import React from 'react';
 
-import { formatDateToLocaleString } from '../../helpers/date';
+import { formatDateToUSLocaleString } from '../../helpers/date';
 import { useVectorFsStore, VectorFSLayout } from './node-file-context';
 import { VectorFsItemAction } from './vector-fs-drawer';
 
@@ -77,7 +77,7 @@ const VectorFsItem = ({
     layout === VectorFSLayout.Grid && 'rounded-lg bg-gray-400/30 p-2',
   );
 
-  const createdDatetime = formatDateToLocaleString(file.created_datetime);
+  const createdDatetime = formatDateToUSLocaleString(file.created_datetime);
   const fileSize = size(file.vr_size);
 
   if (isVRSelectionActive) {

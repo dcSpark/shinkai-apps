@@ -111,7 +111,7 @@ export const AddNewFolderAction = () => {
   );
 };
 const uploadVRFilesSchema = z.object({
-  files: z.array(z.any()).max(3),
+  files: z.array(z.any()).min(1),
 });
 export const UploadVRFilesAction = () => {
   const auth = useAuth((state) => state.auth);
@@ -143,7 +143,7 @@ export const UploadVRFilesAction = () => {
     if (!auth) return;
     toast.loading('Uploading files', {
       id: 'uploading-VR-files',
-      description: 'This process might take from 1-2 minutes',
+      description: 'This process might take from 1-2 minutes per file.',
       position: 'bottom-left',
     });
     closeDrawerMenu();

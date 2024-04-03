@@ -10,7 +10,10 @@ import { partial } from 'filesize';
 import { LockIcon } from 'lucide-react';
 import React from 'react';
 
-import { formatDateToLocaleString } from '../../helpers/date';
+import {
+  formatDateToLocaleStringWithTime,
+  formatDateToUSLocaleString,
+} from '../../helpers/date';
 import { useVectorFsStore } from './node-file-context';
 
 export const VectorFileDetails = () => {
@@ -36,7 +39,7 @@ export const VectorFileDetails = () => {
           </p>
           <p className="text-sm text-gray-100">
             <span>
-              {formatDateToLocaleString(selectedFile?.created_datetime)}
+              {formatDateToUSLocaleString(selectedFile?.created_datetime)}
             </span>{' '}
             - <span>{size(selectedFile?.vr_size ?? 0)}</span>
           </p>
@@ -63,7 +66,7 @@ export const VectorFileDetails = () => {
               >
                 <span className="text-gray-100">{item.label}</span>
                 <span className="text-white">
-                  {formatDateToLocaleString(item.value)}
+                  {formatDateToLocaleStringWithTime(item.value)}
                 </span>
               </div>
             ))}
