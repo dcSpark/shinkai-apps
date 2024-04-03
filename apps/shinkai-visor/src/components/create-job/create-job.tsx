@@ -11,12 +11,6 @@ import {
   Badge,
   Button,
   DirectoryTypeIcon,
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
   FilesIcon,
   FileTypeIcon,
   Form,
@@ -31,14 +25,15 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
   Textarea,
+  Tooltip,
+  TooltipContent,
+  TooltipPortal,
+  TooltipProvider,
+  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { SearchCode, XIcon } from 'lucide-react';
-import { Tree, TreeCheckboxSelectionKeys } from 'primereact/tree';
+import { SearchCode } from 'lucide-react';
+import { TreeCheckboxSelectionKeys } from 'primereact/tree';
 import { TreeNode } from 'primereact/treenode';
 import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -51,7 +46,8 @@ import { useAuth } from '../../store/auth/auth';
 import { useSettings } from '../../store/settings/settings';
 import { FileInput } from '../file-input/file-input';
 import { Header } from '../header/header';
-import { allowedFileExtensions, treeOptions } from './constants';
+import { allowedFileExtensions } from './constants';
+import { KnowledgeSearchDrawer, VectorFsScopeDrawer } from './vector-fs-scope';
 
 function transformDataToTreeNodes(
   data: VRFolder,
@@ -150,8 +146,13 @@ export const CreateJob = () => {
       history.replace(`/inboxes/${jobId}`);
     },
   });
-  const [isFolderSelectionOpen, setIsFolderSelectionOpen] =
+  const [isVectorFSOpen, setIsVectorFSOpen] = React.useState(false);
+  const [isKnowledgeSearchOpen, setIsKnowledgeSearchOpen] =
     React.useState(false);
+
+  const [nodes, setNodes] = useState<TreeNode[]>([]);
+  const [selectedKeys, setSelectedKeys] =
+    useState<TreeCheckboxSelectionKeys | null>(null);
 
   useEffect(() => {
     form.setValue('files', location?.state?.files || []);
@@ -225,10 +226,6 @@ export const CreateJob = () => {
       profile_identity_sk: auth.profile_identity_sk,
     });
   };
-
-  const [nodes, setNodes] = useState<TreeNode[]>([]);
-  const [selectedKeys, setSelectedKeys] =
-    useState<TreeCheckboxSelectionKeys | null>(null);
 
   useEffect(() => {
     if (isVRFilesSuccess) {
@@ -340,14 +337,47 @@ export const CreateJob = () => {
                 </FormItem>
               )}
             />
-            <div className="my-3 bg-gray-400 px-3 py-3">
-              <h2 className="text-gray-80 mb-2 text-xs font-medium">
-                Set Context
-              </h2>
+            <div className="my-3 rounded-md bg-gray-400 px-3 py-4">
+              <div className="mb-5 flex items-start justify-between gap-4">
+                <div className="space-y-1">
+                  <h2 className="text-sm font-medium text-gray-100">
+                    Set Context
+                  </h2>
+                  <p className="text-gray-80 text-xs">
+                    Add local files and folders to use as context for your
+                    conversation
+                  </p>
+                </div>
+                <TooltipProvider delayDuration={0}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        className="flex items-center justify-between gap-2 rounded-lg p-2.5 text-left hover:bg-gray-500"
+                        onClick={() => setIsKnowledgeSearchOpen(true)}
+                        size="icon"
+                        type="button"
+                        variant="ghost"
+                      >
+                        <div className="flex items-center gap-2">
+                          <SearchCode className="h-4 w-4" />
+                          <p className="sr-only text-xs text-white">
+                            Search Knowledge
+                          </p>
+                        </div>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipPortal>
+                      <TooltipContent sideOffset={0}>
+                        Search Knowledge
+                      </TooltipContent>
+                    </TooltipPortal>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
               <div className="flex flex-col gap-1.5">
                 <Button
-                  className="flex h-[40px] items-center justify-between gap-2 rounded-lg p-2.5 text-left"
-                  onClick={() => setIsFolderSelectionOpen(true)}
+                  className="flex h-[40px] items-center justify-between gap-2 rounded-lg p-2.5 text-left hover:bg-gray-500"
+                  onClick={() => setIsVectorFSOpen(true)}
                   size="auto"
                   type="button"
                   variant="outline"
@@ -362,164 +392,25 @@ export const CreateJob = () => {
                     </Badge>
                   )}
                 </Button>
-                {/*<Button*/}
-                {/*  className="flex items-center justify-between gap-2 rounded-lg p-2.5 text-left"*/}
-                {/*  onClick={() => setIsFolderSelectionOpen(true)}*/}
-                {/*  size="auto"*/}
-                {/*  type="button"*/}
-                {/*  variant="outline"*/}
-                {/*>*/}
-                {/*  <div className="flex items-center gap-2">*/}
-                {/*    <SearchCode className="h-4 w-4" />*/}
-                {/*    <p className="text-sm text-white">Search Knowledge</p>*/}
-                {/*  </div>*/}
-                {/*  {Object.keys(selectedKeys ?? {}).length > 0 && (*/}
-                {/*    <Badge className="bg-brand text-white">*/}
-                {/*      {Object.keys(selectedKeys ?? {}).length}*/}
-                {/*    </Badge>*/}
-                {/*  )}*/}
-                {/*</Button>*/}
               </div>
             </div>
 
-            <Drawer
-              onOpenChange={setIsFolderSelectionOpen}
-              open={isFolderSelectionOpen}
-            >
-              <DrawerContent>
-                <DrawerClose className="absolute right-4 top-5">
-                  <XIcon className="text-gray-80" />
-                </DrawerClose>
-                <DrawerHeader>
-                  <DrawerTitle className="mb-4 flex h-[40px] items-center gap-4">
-                    Set Context
-                    {Object.keys(selectedKeys ?? {}).length > 0 && (
-                      <Badge className="bg-brand text-sm text-white">
-                        {Object.keys(selectedKeys ?? {}).length}
-                      </Badge>
-                    )}
-                  </DrawerTitle>
-                </DrawerHeader>
-                <Tabs
-                  defaultValue="vector-fs"
-                  onValueChange={() => {
-                    setSelectedKeys(null);
-                  }}
-                >
-                  <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger
-                      className="flex items-center gap-1.5"
-                      value="vector-fs"
-                    >
-                      <FilesIcon className="h-4 w-4" />
-                      Vector FS
-                    </TabsTrigger>
-                    <TabsTrigger
-                      className="flex items-center gap-1.5"
-                      value="search"
-                    >
-                      <SearchCode className="h-4 w-4" />
-                      Knowledge Search
-                    </TabsTrigger>
-                  </TabsList>
-                  <TabsContent className="h-full" value="vector-fs">
-                    <p className="text-gray-80 px-2 pt-4 text-center text-sm">
-                      Add local files and folders to use as context for your
-                      conversation
-                    </p>
-                    <ScrollArea className="h-[60vh]">
-                      <Tree
-                        onSelect={(e) => {
-                          if (e.node.icon === 'icon-folder') {
-                            selectedFolderKeysRef.current.set(
-                              String(e.node.key),
-                              e.node.data,
-                            );
-                            return;
-                          }
-                          selectedFileKeysRef.current.set(
-                            String(e.node.key),
-                            e.node.data,
-                          );
-                        }}
-                        onSelectionChange={(e) => {
-                          setSelectedKeys(e.value as TreeCheckboxSelectionKeys);
-                        }}
-                        onUnselect={(e) => {
-                          if (e.node.icon === 'icon-folder') {
-                            selectedFolderKeysRef.current.delete(
-                              String(e.node.key),
-                            );
-                            return;
-                          }
-                          selectedFileKeysRef.current.delete(
-                            String(e.node.key),
-                          );
-                        }}
-                        propagateSelectionDown={false}
-                        propagateSelectionUp={false}
-                        pt={treeOptions}
-                        selectionKeys={selectedKeys}
-                        selectionMode="checkbox"
-                        value={nodes}
-                      />
-                    </ScrollArea>
-
-                    <DrawerFooter>
-                      <Button
-                        isLoading={isPending}
-                        onClick={() => {
-                          setSelectedKeys(null);
-                        }}
-                        variant="outline"
-                      >
-                        Deselect All
-                      </Button>
-                      <Button
-                        isLoading={isPending}
-                        onClick={() => {
-                          setIsFolderSelectionOpen(false);
-                        }}
-                      >
-                        Done
-                      </Button>
-                    </DrawerFooter>
-                  </TabsContent>
-                  <TabsContent value="search">
-                    <p className="text-gray-80 px-2 pt-4 text-center text-sm">
-                      Search to find content across all files in your Vector
-                      File System easily
-                    </p>
-                    <ScrollArea className="h-[60vh]">
-                      <div className="flex h-full items-center justify-center">
-                        <p className="text-gray-80 text-lg">Coming Soon</p>
-                      </div>
-                    </ScrollArea>
-                    <DrawerFooter>
-                      <Button
-                        isLoading={isPending}
-                        onClick={() => {
-                          setSelectedKeys(null);
-                          selectedFileKeysRef.current.clear();
-                          selectedFolderKeysRef.current.clear();
-                        }}
-                        variant="outline"
-                      >
-                        Deselect All
-                      </Button>
-                      <Button
-                        isLoading={isPending}
-                        onClick={() => {
-                          setIsFolderSelectionOpen(false);
-                        }}
-                      >
-                        Done
-                      </Button>
-                    </DrawerFooter>
-                  </TabsContent>
-                </Tabs>
-              </DrawerContent>
-            </Drawer>
+            <VectorFsScopeDrawer
+              isVectorFSOpen={isVectorFSOpen}
+              nodes={nodes}
+              onSelectedKeysChange={setSelectedKeys}
+              onVectorFSOpenChanges={setIsVectorFSOpen}
+              selectedFileKeysRef={selectedFileKeysRef}
+              selectedFolderKeysRef={selectedFolderKeysRef}
+              selectedKeys={selectedKeys}
+            />
+            <KnowledgeSearchDrawer
+              isKnowledgeSearchOpen={isKnowledgeSearchOpen}
+              onSelectedKeysChange={setSelectedKeys}
+              selectedFileKeysRef={selectedFileKeysRef}
+              selectedKeys={selectedKeys}
+              setIsKnowledgeSearchOpen={setIsKnowledgeSearchOpen}
+            />
 
             {(location?.state?.selectedVRFolders?.length > 0 ||
               location?.state?.selectedVRFiles?.length > 0) && (
