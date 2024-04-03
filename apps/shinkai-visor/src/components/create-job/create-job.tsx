@@ -37,13 +37,8 @@ import {
   TabsTrigger,
   Textarea,
 } from '@shinkai_network/shinkai-ui';
-import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { SearchCode, XIcon } from 'lucide-react';
-import {
-  Tree,
-  TreeCheckboxSelectionKeys,
-  TreePassThroughMethodOptions,
-} from 'primereact/tree';
+import { Tree, TreeCheckboxSelectionKeys } from 'primereact/tree';
 import { TreeNode } from 'primereact/treenode';
 import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
