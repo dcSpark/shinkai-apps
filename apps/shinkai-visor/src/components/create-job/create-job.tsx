@@ -273,26 +273,7 @@ export const CreateJob = () => {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="files"
-              render={({ field }) => (
-                <FormItem className="mt-3">
-                  <FormLabel className="sr-only">
-                    <FormattedMessage id="file.one" />
-                  </FormLabel>
-                  <FormControl>
-                    <FileInput
-                      extensions={allowedFileExtensions}
-                      multiple
-                      onValueChange={field.onChange}
-                      value={field.value}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+
             {query.has('context') && (
               <div className="my-4">
                 <blockquote className="border-l-4 border-gray-200 bg-gray-300 py-2.5 pl-3 pr-3">
@@ -390,6 +371,26 @@ export const CreateJob = () => {
                     </Badge>
                   )}
                 </Button>
+                <FormField
+                  control={form.control}
+                  name="files"
+                  render={({ field }) => (
+                    <FormItem className="mt-3">
+                      <FormLabel className="sr-only">
+                        <FormattedMessage id="file.one" />
+                      </FormLabel>
+                      <FormControl>
+                        <FileInput
+                          extensions={allowedFileExtensions}
+                          multiple
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
             </div>
 
