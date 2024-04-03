@@ -234,7 +234,7 @@ export const CreateJob = () => {
     if (isVRFilesSuccess) {
       setNodes(transformDataToTreeNodes(VRFiles));
     }
-  }, [isVRFilesSuccess]);
+  }, [VRFiles, isVRFilesSuccess]);
 
   return (
     <div className="flex h-full flex-col space-y-3">
