@@ -6,10 +6,18 @@ import {
   VRFolder,
   VRItem,
 } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
+import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
 import {
   Badge,
   Button,
   DirectoryTypeIcon,
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  FilesIcon,
   FileTypeIcon,
   Form,
   FormControl,
@@ -23,9 +31,16 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
   Textarea,
 } from '@shinkai_network/shinkai-ui';
-import React, { useEffect } from 'react';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { SearchCode, XIcon } from 'lucide-react';
+import { Tree, TreePassThroughMethodOptions } from 'primereact/tree';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -37,6 +52,51 @@ import { useSettings } from '../../store/settings/settings';
 import { FileInput } from '../file-input/file-input';
 import { Header } from '../header/header';
 
+type SelectedTreeKeys = Record<
+  string,
+  {
+    checked: boolean;
+    partialChecked: boolean;
+  }
+> | null;
+
+type TreeNode = {
+  key: string;
+  label: string;
+  data: string;
+  icon: string;
+  children?: TreeNode[];
+};
+
+function transformDataToTreeNodes(
+  data: VRFolder,
+  parentPath: string = '/',
+): TreeNode[] {
+  const result: TreeNode[] = [];
+
+  for (const folder of data?.child_folders ?? []) {
+    const folderNode: TreeNode = {
+      key: folder.path,
+      label: folder.name,
+      data: folder.path,
+      icon: 'icon-folder',
+      children: transformDataToTreeNodes(folder, folder.path),
+    };
+    result.push(folderNode);
+  }
+
+  for (const item of data.child_items ?? []) {
+    const itemNode: TreeNode = {
+      key: item.path,
+      label: item.name,
+      data: item.path,
+      icon: 'icon-file',
+    };
+    result.push(itemNode);
+  }
+
+  return result;
+}
 const formSchema = z.object({
   agent: z.string().min(1),
   content: z.string().min(1),
@@ -60,6 +120,22 @@ export const CreateJob = () => {
   const auth = useAuth((state) => state.auth);
   // const settings = useSettings((state) => state.settings);
   const currentDefaultAgentId = useSettings((state) => state.defaultAgentId);
+  const {
+    // isPending: isVRFilesPending,
+    data: VRFiles,
+    isSuccess: isVRFilesSuccess,
+  } = useGetVRPathSimplified({
+    nodeAddress: auth?.node_address ?? '',
+    profile: auth?.profile ?? '',
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    path: '/',
+    my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+    my_device_identity_sk: auth?.profile_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+  });
+
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -85,6 +161,9 @@ export const CreateJob = () => {
       history.replace(`/inboxes/${jobId}`);
     },
   });
+  const [isFolderSelectionOpen, setIsFolderSelectionOpen] =
+    React.useState(false);
+
   const extensions = [
     '.eml',
     '.html',
@@ -175,6 +254,17 @@ export const CreateJob = () => {
       profile_identity_sk: auth.profile_identity_sk,
     });
   };
+
+  const [nodes, setNodes] = useState<TreeNode[]>([]);
+  const [selectedKeys, setSelectedKeys] = useState<SelectedTreeKeys>(null);
+  console.log(selectedKeys, 'selectedKeys');
+
+  useEffect(() => {
+    if (isVRFilesSuccess) {
+      setNodes(transformDataToTreeNodes(VRFiles));
+    }
+  }, [isVRFilesSuccess]);
+
   return (
     <div className="flex h-full flex-col space-y-3">
       <Header title={<FormattedMessage id="create-job" />} />
@@ -279,6 +369,197 @@ export const CreateJob = () => {
                 </FormItem>
               )}
             />
+            <div className="my-3 bg-gray-400 px-3 py-3">
+              <h2 className="text-gray-80 mb-2 text-xs font-medium">
+                Set Context
+              </h2>
+              <div className="flex flex-col gap-1.5">
+                <Button
+                  className="flex items-center justify-between gap-2 rounded-lg p-2.5 text-left"
+                  onClick={() => setIsFolderSelectionOpen(true)}
+                  size="auto"
+                  type="button"
+                  variant="outline"
+                >
+                  <div className="flex items-center gap-2">
+                    <FilesIcon className="h-4 w-4" />
+                    <p className="text-sm text-white">Local Vector Files</p>
+                  </div>
+                  {Object.keys(selectedKeys ?? {}).length > 0 && (
+                    <Badge className="bg-brand text-white">
+                      {Object.keys(selectedKeys ?? {}).length}
+                    </Badge>
+                  )}
+                </Button>
+                {/*<Button*/}
+                {/*  className="flex items-center justify-between gap-2 rounded-lg p-2.5 text-left"*/}
+                {/*  onClick={() => setIsFolderSelectionOpen(true)}*/}
+                {/*  size="auto"*/}
+                {/*  type="button"*/}
+                {/*  variant="outline"*/}
+                {/*>*/}
+                {/*  <div className="flex items-center gap-2">*/}
+                {/*    <SearchCode className="h-4 w-4" />*/}
+                {/*    <p className="text-sm text-white">Search Knowledge</p>*/}
+                {/*  </div>*/}
+                {/*  {Object.keys(selectedKeys ?? {}).length > 0 && (*/}
+                {/*    <Badge className="bg-brand text-white">*/}
+                {/*      {Object.keys(selectedKeys ?? {}).length}*/}
+                {/*    </Badge>*/}
+                {/*  )}*/}
+                {/*</Button>*/}
+              </div>
+            </div>
+
+            <Drawer
+              onOpenChange={setIsFolderSelectionOpen}
+              open={isFolderSelectionOpen}
+            >
+              <DrawerContent>
+                <DrawerClose className="absolute right-4 top-5">
+                  <XIcon className="text-gray-80" />
+                </DrawerClose>
+                <DrawerHeader>
+                  <DrawerTitle className="mb-4 flex items-start gap-4">
+                    Set Context
+                    {Object.keys(selectedKeys ?? {}).length > 0 && (
+                      <Badge className="bg-brand text-white">
+                        {Object.keys(selectedKeys ?? {}).length}
+                      </Badge>
+                    )}
+                  </DrawerTitle>
+                </DrawerHeader>
+                <Tabs
+                  defaultValue="vector-fs"
+                  onValueChange={() => {
+                    setSelectedKeys(null);
+                  }}
+                >
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger
+                      className="flex items-center gap-1.5"
+                      value="vector-fs"
+                    >
+                      <FilesIcon className="h-4 w-4" />
+                      Vector FS
+                    </TabsTrigger>
+                    <TabsTrigger
+                      className="flex items-center gap-1.5"
+                      value="search"
+                    >
+                      <SearchCode className="h-4 w-4" />
+                      Knowledge Search
+                    </TabsTrigger>
+                  </TabsList>
+                  <TabsContent className="h-full" value="vector-fs">
+                    <ScrollArea className="h-[60vh]">
+                      <Tree
+                        onSelectionChange={(e) =>
+                          setSelectedKeys(e.value as SelectedTreeKeys)
+                        }
+                        pt={{
+                          root: {
+                            className: cn(
+                              '',
+                              'my-3 w-full rounded-md border border-gray-400 bg-transparent p-0 text-white',
+                            ),
+                          },
+                          label: { className: 'text-white text-sm' },
+                          container: {
+                            className: 'm-0 p-0 list-none overflow-auto',
+                          },
+                          node: { className: 'p-0 outline-none' },
+                          content: ({
+                            context,
+                            props,
+                          }: TreePassThroughMethodOptions) => ({
+                            className: cn(
+                              'text-gray-80 mb-1 bg-transparent hover:bg-gray-400 hover:text-white',
+                              'rounded-lg p-1 transition-shadow duration-200',
+                              'focus:shadow-[0_0_0_0.1rem_rgba(254,96,98,1)] focus:outline-none focus:outline-offset-0',
+                              'cursor-pointer select-none',
+                            ),
+                          }),
+                          toggler: ({
+                            context,
+                            props,
+                            state,
+                          }: TreePassThroughMethodOptions) => ({
+                            className: cn(
+                              'relative inline-flex shrink-0 cursor-pointer select-none items-center justify-center overflow-hidden',
+                              'mr-2 h-8 w-8 rounded-full border-0 bg-transparent transition duration-200',
+                              'hover:border-transparent focus:shadow-[0_0_0_0.2rem_rgba(191,219,254,1)] focus:outline-none focus:outline-offset-0',
+                              context.selected
+                                ? 'text-blue-600 hover:bg-white/30'
+                                : 'hover:text-gray-80 text-white hover:bg-gray-400',
+                              // @ts-expect-error - TS doesn't know about the isLeaf property
+                              context.isLeaf && 'invisible',
+                            ),
+                          }),
+                          nodeIcon: { className: 'mr-2 text-gray-50' },
+                          subgroup: {
+                            className: cn(
+                              'm-0 list-none',
+                              'space-y-1 p-0 pl-4',
+                            ),
+                          },
+                        }}
+                        selectionKeys={selectedKeys}
+                        selectionMode="checkbox"
+                        value={nodes}
+                      />
+                    </ScrollArea>
+
+                    <DrawerFooter>
+                      <Button
+                        isLoading={isPending}
+                        onClick={() => {
+                          setSelectedKeys(null);
+                        }}
+                        variant="outline"
+                      >
+                        Deselect All
+                      </Button>
+                      <Button
+                        isLoading={isPending}
+                        onClick={() => {
+                          setIsFolderSelectionOpen(false);
+                        }}
+                      >
+                        Done
+                      </Button>
+                    </DrawerFooter>
+                  </TabsContent>
+                  <TabsContent value="search">
+                    <ScrollArea className="h-[60vh]">
+                      <div className="flex h-full items-center justify-center">
+                        <p className="text-gray-80 text-lg">Coming Soon</p>
+                      </div>
+                    </ScrollArea>
+                    <DrawerFooter>
+                      <Button
+                        isLoading={isPending}
+                        onClick={() => {
+                          setSelectedKeys(null);
+                        }}
+                        variant="outline"
+                      >
+                        Deselect All
+                      </Button>
+                      <Button
+                        isLoading={isPending}
+                        onClick={() => {
+                          setIsFolderSelectionOpen(false);
+                        }}
+                      >
+                        Done
+                      </Button>
+                    </DrawerFooter>
+                  </TabsContent>
+                </Tabs>
+              </DrawerContent>
+            </Drawer>
+
             {(location?.state?.selectedVRFolders?.length > 0 ||
               location?.state?.selectedVRFiles?.length > 0) && (
               <div className="py-4 pt-8">

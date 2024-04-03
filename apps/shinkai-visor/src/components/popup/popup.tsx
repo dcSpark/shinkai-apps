@@ -1,10 +1,12 @@
 import '../../theme/styles.css';
+import 'primereact/resources/themes/lara-light-blue/theme.css';
+import 'primereact/resources/primereact.min.css';
 
 import { queryClient } from '@shinkai_network/shinkai-node-state/lib/constants';
 import { Toaster } from '@shinkai_network/shinkai-ui';
 import { QueryClientProvider } from '@tanstack/react-query';
-// import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { AnimatePresence, motion } from 'framer-motion';
+import { PrimeReactProvider } from 'primereact/api';
 import * as React from 'react';
 import { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -35,6 +37,7 @@ import { Settings } from '../settings/settings';
 import { SplashScreen } from '../splash-screen/splash-screen';
 import Welcome from '../welcome/welcome';
 import { WithNav } from '../with-nav/with-nav';
+
 export const Popup = () => {
   const history = useHistory();
   const auth = useAuth((state) => state.auth);
@@ -166,18 +169,21 @@ if (!container) {
   throw new Error(`container with id ${CONTAINER_ID} not found`);
 }
 const root = createRoot(container);
+
 root.render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <IntlProvider locale={locale} messages={langMessages}>
-        <div className="font-inter h-full w-full">
-          <Router>
-            <Popup />
-          </Router>
-        </div>
-        <Toaster />
-      </IntlProvider>
-      {/*<ReactQueryDevtools initialIsOpen={false} />*/}
-    </QueryClientProvider>
+    <PrimeReactProvider>
+      <QueryClientProvider client={queryClient}>
+        <IntlProvider locale={locale} messages={langMessages}>
+          <div className="font-inter h-full w-full">
+            <Router>
+              <Popup />
+            </Router>
+          </div>
+          <Toaster />
+        </IntlProvider>
+        {/*<ReactQueryDevtools initialIsOpen={false} />*/}
+      </QueryClientProvider>
+    </PrimeReactProvider>
   </React.StrictMode>,
 );
