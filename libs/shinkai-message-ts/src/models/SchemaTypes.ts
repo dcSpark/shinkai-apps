@@ -70,7 +70,7 @@ export interface LocalScopeVRKaiEntry {
     metadata: Record<string, string>;
     resource_id: string;
     source: {
-      Reference: {
+      Standard: {
         FileRef: {
           file_name: string;
           file_type: {
@@ -129,7 +129,7 @@ export interface VectorFSItemScopeEntry {
   name: string;
   path: string;
   source: {
-    Reference: {
+    Standard: {
       FileRef: {
         file_name: string;
         file_type: {

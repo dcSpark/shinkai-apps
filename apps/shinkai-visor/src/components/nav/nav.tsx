@@ -158,7 +158,7 @@ const DisplayInboxName = () => {
                             {file.name}
                           </span>
                           <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
-                            {file?.source?.Reference?.FileRef?.file_type
+                            {file?.source?.Standard?.FileRef?.file_type
                               ?.Document ?? '-'}
                           </Badge>
                         </li>
