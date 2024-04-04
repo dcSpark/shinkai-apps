@@ -314,7 +314,7 @@ export const VectorFsFolderSearchKnowledgeAction = () => {
           </Button>
         </form>
       </Form>
-      <ScrollArea className="h-[600px] pr-4  [&>div>div]:!block">
+      <ScrollArea className="h-[60vh] pr-4  [&>div>div]:!block">
         {isSearchEntered &&
           isPending &&
           Array.from({ length: 4 }).map((_, idx) => (

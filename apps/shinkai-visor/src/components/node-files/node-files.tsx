@@ -185,7 +185,7 @@ export default function NodeFiles() {
 
   return (
     <div className="flex h-full flex-col gap-4">
-      <Header title={'Node Files'} />
+      <Header title={'Vector File System'} />
       <div className="flex items-center gap-3">
         <div className="relative flex h-10 w-full flex-1 items-center">
           <Input
@@ -408,7 +408,7 @@ export default function NodeFiles() {
             searchVRItems?.map((item) => {
               return (
                 <button
-                  className="relative flex items-center gap-2 px-3 py-1.5"
+                  className="relative flex items-center gap-2 text-ellipsis px-3 py-1.5"
                   key={item}
                   onClick={() => {
                     const selectedFile = VRFiles?.child_items.find(

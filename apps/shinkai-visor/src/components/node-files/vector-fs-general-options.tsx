@@ -94,7 +94,21 @@ export const AddNewFolderAction = () => {
             control={createFolderForm.control}
             name="name"
             render={({ field }) => (
-              <TextField autoFocus field={field} label="Folder Name" />
+              <TextField
+                autoFocus
+                field={{
+                  ...field,
+                  onKeyDown: (event) => {
+                    if (
+                      event.key === 'Enter' &&
+                      (event.metaKey || event.ctrlKey)
+                    ) {
+                      createFolderForm.handleSubmit(onSubmit)();
+                    }
+                  },
+                }}
+                label="Folder Name"
+              />
             )}
           />
           <Button

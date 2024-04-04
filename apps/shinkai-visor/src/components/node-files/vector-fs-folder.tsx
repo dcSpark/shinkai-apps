@@ -36,7 +36,7 @@ export const VectorFsFolderInfo = ({
   const layout = useVectorFsStore((state) => state.layout);
 
   return (
-    <div className="flex-1 text-left">
+    <div className="flex-1 truncate text-left">
       <div className="truncate text-sm font-medium">{folder.name}</div>
       {layout === VectorFSLayout.List && !allowFolderNameOnly && (
         <p className="text-xs font-medium text-gray-100">
@@ -71,7 +71,7 @@ const VectorFsFolder = ({
     (state) => state.isVRSelectionActive,
   );
   const wrapperClassName = cn(
-    'flex items-center justify-between gap-2 px-2 py-3.5 hover:bg-gray-400',
+    'flex items-center justify-between gap-2 truncate px-2 py-3.5 hover:bg-gray-400',
     layout === VectorFSLayout.Grid && 'rounded-lg bg-gray-400/30 p-2',
   );
   const totalItem =
