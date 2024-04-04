@@ -174,7 +174,7 @@ impl ShinkaiNodeManager {
             return Ok(());
         }
         let env = Self::options_to_env(&self.options);
-        let (mut rx, child) = Command::new_sidecar("shinkai-node-v0.5.5")
+        let (mut rx, child) = Command::new_sidecar("shinkai-node-v0.6.0")
             .map_err(|error| {
                 let log = format!(
                     "failed to spawn shinkai-node error: {:?}",
