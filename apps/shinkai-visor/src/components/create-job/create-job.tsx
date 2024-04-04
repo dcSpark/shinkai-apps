@@ -83,8 +83,6 @@ const formSchema = z.object({
   agent: z.string().min(1),
   content: z.string().min(1),
   files: z.array(z.any()).max(3),
-  selectedVRFiles: z.array(z.any()).optional(),
-  selectedVRFolders: z.array(z.any()).optional(),
 });
 
 type FormSchemaType = z.infer<typeof formSchema>;
@@ -156,11 +154,6 @@ export const CreateJob = () => {
 
   useEffect(() => {
     form.setValue('files', location?.state?.files || []);
-    form.setValue('selectedVRFiles', location?.state?.selectedVRFiles || []);
-    form.setValue(
-      'selectedVRFolders',
-      location?.state?.selectedVRFolders || [],
-    );
   }, [location, form]);
 
   useEffect(() => {
@@ -202,11 +195,11 @@ export const CreateJob = () => {
     const selectedVRFiles =
       selectedFileKeysRef.current.size > 0
         ? Array.from(selectedFileKeysRef.current.values())
-        : values.selectedVRFiles;
+        : [];
     const selectedVRFolders =
       selectedFolderKeysRef.current.size > 0
         ? Array.from(selectedFolderKeysRef.current.values())
-        : values.selectedVRFolders;
+        : [];
 
     await createJob({
       nodeAddress: auth?.node_address ?? '',
@@ -232,6 +225,41 @@ export const CreateJob = () => {
       setNodes(transformDataToTreeNodes(VRFiles));
     }
   }, [VRFiles, isVRFilesSuccess]);
+
+  useEffect(() => {
+    if (
+      location?.state?.selectedVRFiles?.length > 0 ||
+      location?.state?.selectedVRFolders?.length > 0
+    ) {
+      const selectedVRFilesPathMap = location?.state?.selectedVRFiles?.reduce(
+        (acc, file) => {
+          selectedFileKeysRef.current.set(file.path, file);
+          acc[file.path] = {
+            checked: true,
+          };
+          return acc;
+        },
+        {} as Record<string, { checked: boolean }>,
+      );
+
+      const selectedVRFoldersPathMap =
+        location?.state?.selectedVRFolders?.reduce(
+          (acc, folder) => {
+            selectedFolderKeysRef.current.set(folder.path, folder);
+            acc[folder.path] = {
+              checked: true,
+            };
+            return acc;
+          },
+          {} as Record<string, { checked: boolean }>,
+        );
+
+      setSelectedKeys({
+        ...selectedVRFilesPathMap,
+        ...selectedVRFoldersPathMap,
+      });
+    }
+  }, [location?.state?.selectedVRFiles, location?.state?.selectedVRFolders]);
 
   return (
     <div className="flex h-full flex-col space-y-3">
@@ -393,7 +421,6 @@ export const CreateJob = () => {
                 />
               </div>
             </div>
-
             {(location?.state?.selectedVRFolders?.length > 0 ||
               location?.state?.selectedVRFiles?.length > 0) && (
               <div className="py-4 pt-8">
