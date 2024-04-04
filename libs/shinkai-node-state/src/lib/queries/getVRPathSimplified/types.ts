@@ -8,7 +8,7 @@ export type GetVRPathSimplifiedInput = JobCredentialsPayload & {
 };
 
 type ResourceSource = {
-  Reference: {
+  Standard: {
     FileRef: {
       file_name: string;
       file_type: {

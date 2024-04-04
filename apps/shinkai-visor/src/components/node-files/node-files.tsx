@@ -185,7 +185,7 @@ export default function NodeFiles() {
 
   return (
     <div className="flex h-full flex-col gap-4">
-      <Header title={'Node Files'} />
+      <Header title={'Vector File System'} />
       <div className="flex items-center gap-3">
         <div className="relative flex h-10 w-full flex-1 items-center">
           <Input

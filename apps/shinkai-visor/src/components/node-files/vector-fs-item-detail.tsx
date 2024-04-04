@@ -1,7 +1,7 @@
 import {
   Badge,
-  Button,
-  DrawerFooter,
+  // Button,
+  // DrawerFooter,
   DrawerHeader,
   DrawerTitle,
   FileTypeIcon,
@@ -33,7 +33,7 @@ export const VectorFileDetails = () => {
           <p className="text-lg font-medium text-white">
             {selectedFile?.name}
             <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
-              {selectedFile?.vr_header?.resource_source?.Reference?.FileRef
+              {selectedFile?.vr_header?.resource_source?.Standard?.FileRef
                 ?.file_type?.Document ?? '-'}
             </Badge>
           </p>
@@ -73,7 +73,7 @@ export const VectorFileDetails = () => {
           </div>
         </div>
         <div className="py-6 text-left">
-          <h2 className="mb-3 text-lg font-medium  text-white">Permissions</h2>
+          <h2 className="mb-3 text-lg font-medium text-white">Permissions</h2>
           <span>
             <LockIcon className="mr-2 inline-block h-4 w-4" />
             You can read and write
@@ -81,9 +81,9 @@ export const VectorFileDetails = () => {
         </div>
       </div>
 
-      <DrawerFooter>
-        <Button variant="default">Download Vector Resource</Button>
-      </DrawerFooter>
+      {/*<DrawerFooter>*/}
+      {/*  <Button variant="default">Download Vector Resource</Button>*/}
+      {/*</DrawerFooter>*/}
     </React.Fragment>
   );
 };

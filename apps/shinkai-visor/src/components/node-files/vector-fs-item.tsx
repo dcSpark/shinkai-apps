@@ -37,7 +37,7 @@ export const VectorFsItemInfo = ({
         {file.name}
         {layout === VectorFSLayout.List && (
           <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
-            {file?.vr_header?.resource_source?.Reference?.FileRef?.file_type
+            {file?.vr_header?.resource_source?.Standard?.FileRef?.file_type
               ?.Document ?? '-'}
           </Badge>
         )}
