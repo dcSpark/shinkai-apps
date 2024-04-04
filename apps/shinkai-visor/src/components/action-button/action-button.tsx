@@ -25,7 +25,7 @@ import {
   NotebookPenIcon,
   PanelTopIcon,
   XIcon,
-  ZapIcon,
+  // ZapIcon,
 } from 'lucide-react';
 import * as React from 'react';
 import { useEffect, useRef } from 'react';
@@ -229,11 +229,11 @@ const ActionButton = () => {
                 <XIcon />
               </button>
               {[
-                {
-                  label: 'Shinkai Instant Q/A Available',
-                  onClick: sendPage,
-                  icon: <ZapIcon className="h-full w-full" />,
-                },
+                // {
+                //   label: 'Shinkai Instant Q/A Available',
+                //   onClick: sendPage,
+                //   icon: <ZapIcon className="h-full w-full" />,
+                // },
                 createAction(
                   displaySummaryActionButton,
                   'Summarize Webpage',
