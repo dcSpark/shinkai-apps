@@ -1,4 +1,5 @@
 use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
+use std::any::Any;
 use std::fs;
 use std::{collections::HashMap, sync::Arc};
 use tauri::api::process::{Command, CommandChild, CommandEvent};
@@ -13,6 +14,7 @@ pub struct ShinkaiNodeManager {
 impl ShinkaiNodeManager {
     const MAX_LOGS_LENGTH: usize = 500;
     const HEALTH_TIMEOUT_MS: u64 = 5000;
+    const MIN_MS_ALIVE: u64 = 3000;
 
     /// Initializes a new ShinkaiNodeManager with default or provided options
     pub(crate) fn new() -> Self {
@@ -60,7 +62,7 @@ impl ShinkaiNodeManager {
         println!("{:?}", log_entry);
     }
 
-    async fn check_node_start(&self) -> Result<(), String> {
+    async fn check_node_healthcheck(&self) -> Result<(), String> {
         let node_address = format!(
             "http://localhost:{:?}/v1/shinkai_health",
             self.options.port.unwrap()
@@ -72,9 +74,11 @@ impl ShinkaiNodeManager {
             < std::time::Duration::from_millis(Self::HEALTH_TIMEOUT_MS)
         {
             match client.get(&node_address).send().await {
-                Ok(response) if response.status() == reqwest::StatusCode::OK => {
-                    success = true;
-                    break;
+                Ok(response) => {
+                    if response.status() == reqwest::StatusCode::OK {
+                        success = true;
+                        break;
+                    }
                 }
                 _ => {
                     std::thread::sleep(std::time::Duration::from_secs(1));
@@ -82,9 +86,39 @@ impl ShinkaiNodeManager {
             }
         }
         if !success {
-            return Err("shinkai-node sapwn failed".to_string());
+            return Err("shinkai-node spawn failed".to_string());
         }
         Ok(())
+    }
+
+    async fn command_event_to_logs(logs_mutex: Arc<Mutex<Vec<String>>>, event: CommandEvent) {
+        let mut line: String = "".to_string();
+        match event {
+            CommandEvent::Stdout(message) => {
+                line = message;
+            }
+            CommandEvent::Stderr(message) => {
+                line = message;
+            }
+            CommandEvent::Error(message) => {
+                line = message;
+            }
+            CommandEvent::Terminated(payload) => {
+                line = format!(
+                    "Shinkai Node process terminated with code:{:?} and signal:{:?}",
+                    payload.code, payload.signal
+                );
+            }
+            _ => {},
+        }
+        if !line.is_empty() {
+            let mut logs = logs_mutex.lock().await;
+            if logs.len() == Self::MAX_LOGS_LENGTH {
+                logs.remove(0);
+            }
+            logs.push(line.clone());
+            println!("{:?}", line);
+        }
     }
 
     pub fn set_options(&mut self, options: ShinkaiNodeOptions) -> ShinkaiNodeOptions {
@@ -193,55 +227,33 @@ impl ShinkaiNodeManager {
                 self.add_log(log.clone());
                 log
             })?;
-        *process = Some(child);
 
         let logs_mutex = Arc::clone(&self.logs);
-        let process_mutex = Arc::clone(&self.process);
+        let start_time = std::time::Instant::now();
+        while std::time::Instant::now().duration_since(start_time) < std::time::Duration::from_millis(Self::MIN_MS_ALIVE) {
+            if let Some(event) = rx.recv().await {
+                Self::command_event_to_logs(logs_mutex.clone(), event.clone()).await;
+                if matches!(event, CommandEvent::Terminated{..}) {
+                    println!("failed to spawn shinkai-node, it crashed before min time alive");
+                    return Err("failed to spawn shinkai-node, it crashed before min time alive".to_string());
+                }
+            }
+        };
+        *process = Some(child);
 
+        self.check_node_healthcheck().await.expect("shinkai-node check_node_healthcheck error");
+
+        let process_mutex = Arc::clone(&self.process);
         tauri::async_runtime::spawn(async move {
             while let Some(event) = rx.recv().await {
-                let mut line: String = "".to_string();
-                match event {
-                    CommandEvent::Stdout(message) => {
-                        line = message;
-                    }
-                    CommandEvent::Stderr(message) => {
-                        line = message;
-                    }
-                    CommandEvent::Error(message) => {
-                        line = message;
-                    }
-                    CommandEvent::Terminated(payload) => {
-                        line = format!(
-                            "Shinkai Node process terminated with code:{:?} and signal:{:?}",
-                            payload.code, payload.signal
-                        );
-                        let mut process = process_mutex.lock().await;
-                        *process = None;
-                    }
-                    _ => todo!(),
-                }
-                if !line.is_empty() {
-                    let mut logs = logs_mutex.lock().await;
-                    if logs.len() == Self::MAX_LOGS_LENGTH {
-                        logs.remove(0);
-                    }
-                    logs.push(line.clone());
-                    println!("{:?}", line);
+                Self::command_event_to_logs(logs_mutex.clone(), event.clone()).await;
+                if matches!(event, CommandEvent::Terminated{..}) {
+                    let mut process = process_mutex.lock().await;
+                    *process = None;
                 }
             }
         });
-
-        match self.check_node_start().await {
-            Ok(_) => {
-                print!("shinkai-node spawn success");
-                Ok(())
-            },
-            Err(_) => {
-                print!("shinkai-node spawn error timeout");
-                Err("shinkai-node spawn timeout".to_string())
-            }
-        }
+        Ok(())
     }
 
     /// Kill the spawned shinkai-node process

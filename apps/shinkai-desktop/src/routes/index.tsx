@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { toast } from 'sonner';
 
 import ChatConversation from '../pages/chat/chat-conversation';
 import EmptyMessage from '../pages/chat/empty-message';
@@ -23,7 +22,7 @@ import {
   useShinkaiNodeSetOptionsMutation,
   useShinkaiNodeSpawnMutation,
 } from '../windows/shinkai-node-manager/shinkai-node-process-client';
-import { SHINKAI_NODE_MANAGER_TOAST_ID } from '../windows/utils';
+import { errorStartingShinkaiNodeToast, startingShinkaiNodeToast, successStartingShinkaiNodeToast } from '../windows/toasts-utils';
 import {
   ADD_AGENT_PATH,
   CREATE_CHAT_PATH,
@@ -36,30 +35,25 @@ import {
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const auth = useAuth((state) => state.auth);
-  const shinkaiNodeOptions = useShinkaiNodeManager(state => state.shinkaiNodeOptions);
+  const shinkaiNodeOptions = useShinkaiNodeManager(
+    (state) => state.shinkaiNodeOptions,
+  );
+  const isInUse = useShinkaiNodeManager((state) => state.isInUse);
   const autoStartShinkaiNodeTried = useRef<boolean>(false);
   const { data: shinkaiNodeIsRunning } = useShinkaiNodeIsRunningQuery({
     refetchInterval: 1000,
   });
-  const { mutateAsync: shinkaiNodeSetOptions } = useShinkaiNodeSetOptionsMutation();
+  const { mutateAsync: shinkaiNodeSetOptions } =
+    useShinkaiNodeSetOptionsMutation();
   const { mutateAsync: shinkaiNodeSpawn } = useShinkaiNodeSpawnMutation({
     onMutate: () => {
-      toast.loading('Starting your local Shinkai Node automatically', {
-        id: SHINKAI_NODE_MANAGER_TOAST_ID,
-      });
+      startingShinkaiNodeToast();
     },
     onError: () => {
-      toast.error(
-        'Error starting your local Shinkai Node, see logs for more information',
-        {
-          id: SHINKAI_NODE_MANAGER_TOAST_ID,
-        },
-      );
+      errorStartingShinkaiNodeToast();
     },
     onSuccess: () => {
-      toast.success('Your local Shinkai Node is running', {
-        id: SHINKAI_NODE_MANAGER_TOAST_ID,
-      });
+      successStartingShinkaiNodeToast();
     },
   });
 
@@ -68,23 +62,28 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     Node auto start process probably should be in rust side
   */
   useEffect(() => {
-    const isLocalShinkaiNode =
-      auth?.node_address.includes('localhost') ||
-      auth?.node_address.includes('127.0.0.1');
     if (
       !autoStartShinkaiNodeTried.current &&
-      isLocalShinkaiNode &&
+      isInUse &&
       !shinkaiNodeIsRunning
     ) {
       autoStartShinkaiNodeTried.current = true;
       Promise.resolve().then(async () => {
         if (shinkaiNodeOptions) {
-          await shinkaiNodeSetOptions(shinkaiNodeOptions)
+          await shinkaiNodeSetOptions(shinkaiNodeOptions);
         }
         await shinkaiNodeSpawn();
       });
     }
-  }, [auth, shinkaiNodeSpawn, autoStartShinkaiNodeTried, shinkaiNodeIsRunning, shinkaiNodeOptions, shinkaiNodeSetOptions]);
+  }, [
+    auth,
+    shinkaiNodeSpawn,
+    autoStartShinkaiNodeTried,
+    shinkaiNodeIsRunning,
+    shinkaiNodeOptions,
+    shinkaiNodeSetOptions,
+    isInUse,
+  ]);
 
   if (!auth) {
     console.log('navigating to welcome');

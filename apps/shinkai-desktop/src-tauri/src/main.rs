@@ -175,11 +175,11 @@ fn main() {
                     std::process::exit(0);
                 });
             }
-            RunEvent::Exit => println!("RunEvent::Exit"),
-            RunEvent::WindowEvent { label, event , .. } => println!("RunEvent::WindowEvent"),
-            RunEvent::Ready => println!("RunEvent::Ready"),
-            RunEvent::Resumed => println!("RunEvent::Resumed"),
-            RunEvent::MainEventsCleared => println!("RunEvent::MainEventsCleared"),
-            _ => println!("RunEvent::Default"),
+            RunEvent::Exit => {},
+            RunEvent::WindowEvent { label, event , .. } => {},
+            RunEvent::Ready => {},
+            RunEvent::Resumed => {},
+            RunEvent::MainEventsCleared => {},
+            _ => {},
         });
 }

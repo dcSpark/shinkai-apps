@@ -14,13 +14,16 @@ import { Loader2, QrCode } from 'lucide-react';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { HOME_PATH } from '../routes/name';
 import { useAuth } from '../store/auth';
 import { useShinkaiNodeSpawnMutation } from '../windows/shinkai-node-manager/shinkai-node-process-client';
-import { SHINKAI_NODE_MANAGER_TOAST_ID } from '../windows/utils';
+import {
+  errorStartingShinkaiNodeToast,
+  startingShinkaiNodeToast,
+  successStartingShinkaiNodeToast,
+} from '../windows/toasts-utils';
 import OnboardingLayout from './layout/onboarding-layout';
 
 const formSchema = z.object({
@@ -109,21 +112,14 @@ const OnboardingPage = () => {
     mutateAsync: shinkaiNodeSpawn,
   } = useShinkaiNodeSpawnMutation({
     onMutate: () => {
-      toast.loading('Starting your local Shinkai Node', {
-        id: SHINKAI_NODE_MANAGER_TOAST_ID,
-      });
+      startingShinkaiNodeToast();
     },
     onSuccess: () => {
       onSubmit(setupDataForm.getValues());
-      toast.success('Your local Shinkai Node is running', {
-        id: SHINKAI_NODE_MANAGER_TOAST_ID,
-      });
+      successStartingShinkaiNodeToast();
     },
     onError: () => {
-      toast.error(
-        'Error starting your local Shinkai Node, see logs for more information',
-        { id: SHINKAI_NODE_MANAGER_TOAST_ID },
-      );
+      errorStartingShinkaiNodeToast();
     },
   });
 

@@ -27,14 +27,21 @@ import { Loader2, PlayCircle, StopCircle, Trash } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { useForm, useWatch } from 'react-hook-form';
-import { toast } from 'sonner';
 import { z } from 'zod';
 
 import logo from '../../../src-tauri/icons/128x128@2x.png';
 import { useAuth } from '../../store/auth';
 import { useShinkaiNodeManager } from '../../store/shinkai-node-manager';
 import { initSyncStorage } from '../../store/sync-utils';
-import { SHINKAI_NODE_MANAGER_TOAST_ID } from '../utils';
+import {
+  errorRemovingShinkaiNodeStorageToast,
+  errorStartingShinkaiNodeToast,
+  errorStoppingShinkaiNodeToast,
+  startingShinkaiNodeToast,
+  successRemovingShinkaiNodeStorageToast,
+  successStartingShinkaiNodeToast,
+  successStoppingShinkaiNodeToast,
+} from '../toasts-utils';
 import {
   queryClient,
   ShinkaiNodeOptions,
@@ -50,10 +57,11 @@ import {
 initSyncStorage();
 
 const App = () => {
-  const setLogout = useAuth(auth => auth.setLogout);
+  const setLogout = useAuth((auth) => auth.setLogout);
   const { setShinkaiNodeOptions } = useShinkaiNodeManager();
   const logsScrollRef = useRef<HTMLDivElement | null>(null);
-  const [isConfirmResetDialogOpened, setIsConfirmResetDialogOpened] = useState<boolean>(false);
+  const [isConfirmResetDialogOpened, setIsConfirmResetDialogOpened] =
+    useState<boolean>(false);
   const { data: shinkaiNodeIsRunning } = useShinkaiNodeIsRunningQuery({
     refetchInterval: 1000,
   });
@@ -71,34 +79,22 @@ const App = () => {
     mutateAsync: shinkaiNodeSpawn,
   } = useShinkaiNodeSpawnMutation({
     onMutate: () => {
-      toast.loading('Starting you local Shinkai Node', {
-        id: SHINKAI_NODE_MANAGER_TOAST_ID,
-      });
+      startingShinkaiNodeToast();
     },
     onSuccess: () => {
-      toast.success('Your local Shinkai Node is running', {
-        id: SHINKAI_NODE_MANAGER_TOAST_ID,
-      });
+      successStartingShinkaiNodeToast();
     },
     onError: () => {
-      toast.error(
-        'Error starting your local Shinkai Node, see logs for more information',
-        { id: SHINKAI_NODE_MANAGER_TOAST_ID },
-      );
+      errorStartingShinkaiNodeToast();
     },
   });
   const { isPending: shinkaiNodeKillIsPending, mutateAsync: shinkaiNodeKill } =
     useShinkaiNodeKillMutation({
       onSuccess: () => {
-        toast.success('Your local Shinkai Node was stopped', {
-          id: SHINKAI_NODE_MANAGER_TOAST_ID,
-        });
+        successStoppingShinkaiNodeToast();
       },
       onError: () => {
-        toast.error(
-          'Error stopping your local Shinkai Node, see logs for more information',
-          { id: SHINKAI_NODE_MANAGER_TOAST_ID },
-        );
+        errorStoppingShinkaiNodeToast();
       },
     });
   const {
@@ -106,16 +102,11 @@ const App = () => {
     mutateAsync: shinkaiNodeRemoveStorage,
   } = useShinkaiNodeRemoveStorageMutation({
     onSuccess: () => {
-      toast.success('Your local Shinkai Node storage was removed', {
-        id: SHINKAI_NODE_MANAGER_TOAST_ID,
-      });
+      successRemovingShinkaiNodeStorageToast();
       setLogout();
     },
     onError: () => {
-      toast.error(
-        'Error removing your local Shinkai Node storage, see logs for more information',
-        { id: SHINKAI_NODE_MANAGER_TOAST_ID },
-      );
+      errorRemovingShinkaiNodeStorageToast();
     },
   });
   const { mutateAsync: shinkaiNodeSetOptions } =
@@ -145,7 +136,7 @@ const App = () => {
   const handleReset = (): void => {
     setIsConfirmResetDialogOpened(false);
     shinkaiNodeRemoveStorage();
-  }
+  };
 
   return (
     <div className="h-full w-full overflow-hidden p-8">
@@ -266,8 +257,8 @@ const App = () => {
               <div className="flex flex-col space-y-3 text-left text-white/70">
                 <div className="flex flex-col space-y-1 ">
                   <span className="text-sm">
-                    Are you sure you want to reset your Shinkai Node? This will permanently
-                    delete all your data.
+                    Are you sure you want to reset your Shinkai Node? This will
+                    permanently delete all your data.
                   </span>
                 </div>
               </div>

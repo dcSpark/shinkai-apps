@@ -1,11 +1,10 @@
 import { WebviewWindow } from '@tauri-apps/api/window';
 
-export const SHINKAI_NODE_MANAGER_TOAST_ID = 'shinkai-node-manager-toast-id'
 export const SHINKAI_NODE_MANAGER_WINDOW = 'shinkai-node-manager-window';
 export const openShinkaiNodeManagerWindow = () => {
   const currentWindow = WebviewWindow.getByLabel(SHINKAI_NODE_MANAGER_WINDOW);
   if (currentWindow) {
-    currentWindow.setFocus().catch(e => e);
+    currentWindow.setFocus().catch((e) => e);
   } else {
     const webview = new WebviewWindow(SHINKAI_NODE_MANAGER_WINDOW, {
       url: 'src/windows/shinkai-node-manager/index.html',
@@ -19,4 +18,10 @@ export const openShinkaiNodeManagerWindow = () => {
       console.log(`window error: ${JSON.stringify(e)}`);
     });
   }
+};
+
+export const isLocalShinkaiNode = (nodeAddress: string) => {
+  const isLocalShinkaiNode =
+    nodeAddress.includes('localhost') || nodeAddress.includes('127.0.0.1');
+  return isLocalShinkaiNode;
 };
