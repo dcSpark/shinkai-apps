@@ -23,7 +23,7 @@ import {
   ScrollArea,
 } from '@shinkai_network/shinkai-ui';
 import { listen } from '@tauri-apps/api/event';
-import { BotIcon } from 'lucide-react';
+import { BotIcon, Codesandbox } from 'lucide-react';
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
@@ -39,13 +39,17 @@ import {
   SETTINGS_PATH,
 } from '../../routes/name';
 import { useAuth } from '../../store/auth';
+import { useShinkaiNodeManager } from '../../store/shinkai-node-manager';
+import { openShinkaiNodeManagerWindow } from '../../windows/utils';
 
 export function Footer() {
   const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
   const logout = useAuth((state) => state.setLogout);
   const auth = useAuth((state) => state.auth);
-
+  const isLocalShinkaiNodeIsUse = useShinkaiNodeManager(
+    (state) => state.isInUse,
+  );
   const [isConfirmLogoutDialogOpened, setIsConfirmLogoutDialogOpened] =
     useState(false);
   const goToCreateJob = useCallback(() => {
@@ -159,7 +163,7 @@ export function Footer() {
             onKeyDown={handleCommandCardKeyDown}
           >
             <CommandList className="bg-gray-400 p-0 pt-2">
-              <ScrollArea className="h-[350px]">
+              <ScrollArea className="h-[400px]">
                 <CommandGroup heading="Actions">
                   <CommandItem onSelect={goToCreateJob}>
                     <JobBubbleIcon className="mr-2" />
@@ -189,6 +193,14 @@ export function Footer() {
                     <TokensIcon className="mr-2 h-4 w-4" />
                     <span>Generate Code</span>
                   </CommandItem>
+                  {isLocalShinkaiNodeIsUse && (
+                    <CommandItem
+                      onSelect={() => openShinkaiNodeManagerWindow()}
+                    >
+                      <Codesandbox className="mr-2 h-4 w-4" />
+                      <span>Shinai Node Manager</span>
+                    </CommandItem>
+                  )}
                   <CommandItem onSelect={goToSettings}>
                     <GearIcon className="mr-2 h-4 w-4" />
                     <span>Settings</span>
