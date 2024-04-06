@@ -109,7 +109,7 @@ const OnboardingPage = () => {
     mutateAsync: shinkaiNodeSpawn,
   } = useShinkaiNodeSpawnMutation({
     onMutate: () => {
-      toast.loading('Starting you local Shinkai Node', {
+      toast.loading('Starting your local Shinkai Node', {
         id: SHINKAI_NODE_MANAGER_TOAST_ID,
       });
     },
@@ -206,7 +206,7 @@ const OnboardingPage = () => {
           <div className="mt-8 flex flex-col">
             <span className="text-md text-gray-50">Shinkai locally</span>
             <div className="text-gray-80 mt-2 flex flex-row items-center space-x-2 text-center text-sm">
-              <p>{"Don't you have a node? "}</p>
+              <p>{"Don't have a node? "}</p>
               {shinkaiNodeSpawnIsPending && (
                 <Loader2 className="ml-2 h-5 w-5 animate-spin" />
               )}
