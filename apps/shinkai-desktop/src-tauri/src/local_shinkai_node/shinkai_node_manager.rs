@@ -1,6 +1,7 @@
 use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
 use std::any::Any;
 use std::fs;
+use std::ops::Deref;
 use std::{collections::HashMap, sync::Arc};
 use tauri::api::process::{Command, CommandChild, CommandEvent};
 use tokio::sync::Mutex;
@@ -73,17 +74,19 @@ impl ShinkaiNodeManager {
         while std::time::Instant::now().duration_since(start_time)
             < std::time::Duration::from_millis(Self::HEALTH_TIMEOUT_MS)
         {
-            match client.get(&node_address).send().await {
-                Ok(response) => {
-                    if response.status() == reqwest::StatusCode::OK {
-                        success = true;
-                        break;
-                    }
-                }
-                _ => {
-                    std::thread::sleep(std::time::Duration::from_secs(1));
+            if let Ok(response) = client
+                .get(&node_address)
+                .timeout(std::time::Duration::from_millis(400))
+                .send()
+                .await
+            {
+                println!("checking node health {}", response.status());
+                if response.status() == reqwest::StatusCode::OK {
+                    success = true;
+                    break;
                 }
             }
+            std::thread::sleep(std::time::Duration::from_millis(500));
         }
         if !success {
             return Err("shinkai-node spawn failed".to_string());
@@ -109,7 +112,7 @@ impl ShinkaiNodeManager {
                     payload.code, payload.signal
                 );
             }
-            _ => {},
+            _ => {}
         }
         if !line.is_empty() {
             let mut logs = logs_mutex.lock().await;
@@ -227,27 +230,36 @@ impl ShinkaiNodeManager {
                 self.add_log(log.clone());
                 log
             })?;
-
         let logs_mutex = Arc::clone(&self.logs);
         let start_time = std::time::Instant::now();
-        while std::time::Instant::now().duration_since(start_time) < std::time::Duration::from_millis(Self::MIN_MS_ALIVE) {
-            if let Some(event) = rx.recv().await {
+        while std::time::Instant::now().duration_since(start_time)
+            < std::time::Duration::from_millis(Self::MIN_MS_ALIVE)
+        {
+            if let Ok(event) = rx.try_recv() {
                 Self::command_event_to_logs(logs_mutex.clone(), event.clone()).await;
-                if matches!(event, CommandEvent::Terminated{..}) {
+                if matches!(event, CommandEvent::Terminated { .. }) {
                     println!("failed to spawn shinkai-node, it crashed before min time alive");
-                    return Err("failed to spawn shinkai-node, it crashed before min time alive".to_string());
+                    return Err(
+                        "failed to spawn shinkai-node, it crashed before min time alive"
+                            .to_string(),
+                    );
                 }
             }
-        };
-        *process = Some(child);
+            std::thread::sleep(std::time::Duration::from_millis(500));
+        }
 
-        self.check_node_healthcheck().await.expect("shinkai-node check_node_healthcheck error");
+        if let Err(e) = self.check_node_healthcheck().await {
+            let _ = child.kill();
+            return Err(e);
+        }
+
+        *process = Some(child);
 
         let process_mutex = Arc::clone(&self.process);
         tauri::async_runtime::spawn(async move {
             while let Some(event) = rx.recv().await {
                 Self::command_event_to_logs(logs_mutex.clone(), event.clone()).await;
-                if matches!(event, CommandEvent::Terminated{..}) {
+                if matches!(event, CommandEvent::Terminated { .. }) {
                     let mut process = process_mutex.lock().await;
                     *process = None;
                 }
@@ -277,9 +289,10 @@ impl ShinkaiNodeManager {
         let options = self.options.clone();
         match fs::remove_dir_all(options.node_storage_path.unwrap()) {
             Ok(_) => Ok(()),
-            Err(message) => {
-                Err(format!("failed to remove Shinkai Node storage error:{:?}", message))
-            }
+            Err(message) => Err(format!(
+                "failed to remove Shinkai Node storage error:{:?}",
+                message
+            )),
         }
     }
 }
