@@ -9,7 +9,7 @@ export const openShinkaiNodeManagerWindow = () => {
     const webview = new WebviewWindow(SHINKAI_NODE_MANAGER_WINDOW, {
       url: 'src/windows/shinkai-node-manager/index.html',
       title: 'Shinkai Node Manager',
-      resizable: false,
+      resizable: true,
     });
     webview.once('tauri://created', function () {
       console.log(`window started`);

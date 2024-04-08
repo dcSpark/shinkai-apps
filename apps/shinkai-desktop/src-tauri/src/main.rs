@@ -146,7 +146,7 @@ fn main() {
                     .build()
                     .unwrap();
                     let _ = new_window.set_title("Shinkai Node Manager");
-                    let _ = new_window.set_resizable(false);
+                    let _ = new_window.set_resizable(true);
                 }
                 "quit" => {
                     tauri::async_runtime::spawn(async {
