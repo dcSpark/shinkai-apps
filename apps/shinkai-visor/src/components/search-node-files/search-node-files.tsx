@@ -87,13 +87,14 @@ const SearchNodeFiles = () => {
   return (
     <div
       className={cn(
-        'flex h-full flex-col justify-start space-y-3',
+        'flex h-[calc(100vh_-_120px)] flex-col justify-start space-y-3',
         !isSearchEntered && 'overflow-hidden',
       )}
     >
       <motion.div
         animate={{
           y: isSearchEntered ? '0%' : '30vh',
+          from: '20vh',
         }}
         transition={{
           type: 'spring',
