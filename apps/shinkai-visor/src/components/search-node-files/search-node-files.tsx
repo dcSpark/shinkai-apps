@@ -4,7 +4,6 @@ import {
   Drawer,
   DrawerClose,
   DrawerContent,
-  DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
@@ -236,12 +235,12 @@ function SelectFolderButton() {
   );
 
   const selectedFolderLabel =
-    destinationFolderPath == null || destinationFolderPath == '/'
+    destinationFolderPath == null || destinationFolderPath === '/'
       ? 'Anywhere'
       : destinationFolderPath.split('/').at(-1);
 
   const selectedFolderPath =
-    destinationFolderPath == null || destinationFolderPath == '/'
+    destinationFolderPath == null || destinationFolderPath === '/'
       ? 'Anywhere in your Vector FS'
       : destinationFolderPath;
 
