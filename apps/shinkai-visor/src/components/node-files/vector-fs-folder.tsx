@@ -28,13 +28,13 @@ export const VectorFsFolderInfo = ({
   folder,
   totalItem,
   allowFolderNameOnly,
+  layout,
 }: {
   folder: VRFolder;
   totalItem?: number;
   allowFolderNameOnly?: boolean;
+  layout?: VectorFSLayout;
 }) => {
-  const layout = useVectorFsStore((state) => state.layout);
-
   return (
     <div className="flex-1 truncate text-left">
       <div className="truncate text-sm font-medium">{folder.name}</div>
@@ -92,7 +92,11 @@ const VectorFsFolder = ({
           htmlFor={`item-${folder.name}`}
         >
           <DirectoryTypeIcon />
-          <VectorFsFolderInfo folder={folder} totalItem={totalItem} />
+          <VectorFsFolderInfo
+            folder={folder}
+            layout={layout}
+            totalItem={totalItem}
+          />
         </label>
       </div>
     );
@@ -101,7 +105,11 @@ const VectorFsFolder = ({
   return (
     <button className={wrapperClassName} onClick={onClick}>
       <DirectoryTypeIcon />
-      <VectorFsFolderInfo folder={folder} totalItem={totalItem} />
+      <VectorFsFolderInfo
+        folder={folder}
+        layout={layout}
+        totalItem={totalItem}
+      />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <div

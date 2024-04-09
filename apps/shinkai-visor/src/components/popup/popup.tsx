@@ -30,6 +30,7 @@ import { CreateRegistrationCode } from '../create-registration-code/create-regis
 import { ExportConnection } from '../export-connection/export-connection';
 import { Inbox } from '../inbox/inbox';
 import { Inboxes } from '../inboxes/inboxes';
+import { VectorFolderSelectionProvider } from '../node-files/folder-selection-list';
 import { VectorFsProvider } from '../node-files/node-file-context';
 import NodeFiles from '../node-files/node-files';
 import SearchNodeFiles from '../search-node-files/search-node-files';
@@ -127,7 +128,9 @@ export const Popup = () => {
                 <Route path="/search-node-files">
                   <Switch>
                     <Route path="/">
-                      <SearchNodeFiles />
+                      <VectorFolderSelectionProvider>
+                        <SearchNodeFiles />
+                      </VectorFolderSelectionProvider>
                     </Route>
                   </Switch>
                 </Route>

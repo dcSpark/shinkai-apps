@@ -167,9 +167,9 @@ export const FolderSelectionList = () => {
             return (
               <button
                 className={cn(
-                  'flex items-center justify-between gap-2 py-3.5 hover:bg-gray-400',
+                  'flex items-center justify-between gap-2 py-3.5 hover:bg-gray-300',
                   'rounded-md p-2',
-                  destinationFolderPath === folder.path && 'bg-gray-400',
+                  destinationFolderPath === folder.path && 'bg-gray-300',
                 )}
                 key={folder.path}
                 onClick={() => {
