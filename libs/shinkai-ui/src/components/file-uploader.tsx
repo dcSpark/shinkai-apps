@@ -102,7 +102,7 @@ export const FileUploader = ({
                       type="button"
                     >
                       <span className="line-clamp-1 text-sm text-gray-50">
-                        {file.name}
+                        {decodeURIComponent(file.name)}
                       </span>
                     </button>
                     {file.size && (

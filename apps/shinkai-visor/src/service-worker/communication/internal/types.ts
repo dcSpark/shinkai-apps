@@ -15,6 +15,7 @@ export enum ServiceWorkerInternalMessageType {
   ExportConnectionIntent = 'export-connection-intent',
   VectorResourceFound = 'vector-resource-found',
   SendVectorResource = 'send-vector-resource',
+  UploadVectorResource = 'upload-vector-resource',
 }
 
 export enum ContentScriptBridgeMessageType {
@@ -81,6 +82,10 @@ export type ServiceWorkerInternalMessage =
     }
   | {
       type: ServiceWorkerInternalMessageType.VectorResourceFound;
+      data: { vectorResourceUrl: string };
+    }
+  | {
+      type: ServiceWorkerInternalMessageType.UploadVectorResource;
       data: { vectorResourceUrl: string };
     }
   | {

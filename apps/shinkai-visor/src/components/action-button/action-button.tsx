@@ -240,6 +240,13 @@ const ActionButton = () => {
                   () => sendVectorResourceFound(currentVectorResource),
                   <ZapIcon className="h-full w-full" />,
                 ),
+                // TODO: download vector resource
+                // createAction(
+                //   isVectorResourceFound,
+                //   'Save Webpage To VectorFS',
+                //   () => sendVectorResourceFound(currentVectorResource),
+                //   <FileDown className="h-full w-full" />,
+                // ),
                 createAction(
                   displaySummaryActionButton,
                   'Summarize Webpage',
