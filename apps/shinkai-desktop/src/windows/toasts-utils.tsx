@@ -79,3 +79,9 @@ export const errorRemovingShinkaiNodeStorageToast = () => {
     { id: SHINKAI_NODE_MANAGER_TOAST_ID },
   );
 };
+
+export const successShinkaiNodeSetDefaultOptionsToast = () => {
+  return toast.success('Options restored to default values', {
+    id: SHINKAI_NODE_MANAGER_TOAST_ID,
+  });
+};

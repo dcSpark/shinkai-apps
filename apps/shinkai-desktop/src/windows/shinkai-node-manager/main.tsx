@@ -23,7 +23,13 @@ import {
   Toaster,
 } from '@shinkai_network/shinkai-ui';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { Loader2, PlayCircle, StopCircle, Trash } from 'lucide-react';
+import {
+  ListRestart,
+  Loader2,
+  PlayCircle,
+  StopCircle,
+  Trash,
+} from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { useForm, useWatch } from 'react-hook-form';
@@ -39,6 +45,7 @@ import {
   errorStoppingShinkaiNodeToast,
   startingShinkaiNodeToast,
   successRemovingShinkaiNodeStorageToast,
+  successShinkaiNodeSetDefaultOptionsToast,
   successStartingShinkaiNodeToast,
   successStoppingShinkaiNodeToast,
 } from '../toasts-utils';
@@ -50,6 +57,7 @@ import {
   useShinkaiNodeIsRunningQuery,
   useShinkaiNodeKillMutation,
   useShinkaiNodeRemoveStorageMutation,
+  useShinkaiNodeSetDefaultOptionsMutation,
   useShinkaiNodeSetOptionsMutation,
   useShinkaiNodeSpawnMutation,
 } from './shinkai-node-process-client';
@@ -113,6 +121,13 @@ const App = () => {
     useShinkaiNodeSetOptionsMutation({
       onSuccess: (options) => {
         setShinkaiNodeOptions(options);
+      },
+    });
+  const { mutateAsync: shinkaiNodeSetDefaultOptions } =
+    useShinkaiNodeSetDefaultOptionsMutation({
+      onSuccess: (options) => {
+        shinkaiNodeOptionsForm.reset(options);
+        successShinkaiNodeSetDefaultOptionsToast();
       },
     });
   const shinkaiNodeOptionsForm = useForm<ShinkaiNodeOptions>({
@@ -194,9 +209,13 @@ const App = () => {
       </div>
 
       <Tabs className="mt-4 h-[400px] w-full" defaultValue="logs">
-        <TabsList>
-          <TabsTrigger value="logs">Logs</TabsTrigger>
-          <TabsTrigger value="options">Options</TabsTrigger>
+        <TabsList className="w-full">
+          <TabsTrigger className="grow" value="logs">
+            Logs
+          </TabsTrigger>
+          <TabsTrigger className="grow" value="options">
+            Options
+          </TabsTrigger>
         </TabsList>
         <TabsContent className="h-full" value="logs">
           <ScrollArea className="h-full [&>div>div]:!block">
@@ -217,7 +236,18 @@ const App = () => {
           </ScrollArea>
         </TabsContent>
         <TabsContent className="h-full" value="options">
-          <ScrollArea className="h-full [&>div>div]:!block">
+          <div className="flex flex-row justify-end pr-4">
+            <Button
+              className=""
+              disabled={shinkaiNodeIsRunning}
+              onClick={() => shinkaiNodeSetDefaultOptions()}
+              variant={'default'}
+            >
+              <ListRestart className="mr-2" />
+              Restore default
+            </Button>
+          </div>
+          <ScrollArea className="mt-2 h-full [&>div>div]:!block">
             <Form {...shinkaiNodeOptionsForm}>
               <form className="space-y-2 pr-4">
                 {shinkaiNodeOptions &&
