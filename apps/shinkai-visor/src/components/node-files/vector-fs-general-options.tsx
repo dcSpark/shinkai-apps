@@ -4,7 +4,6 @@ import { useUploadVRFiles } from '@shinkai_network/shinkai-node-state/lib/mutati
 import {
   Button,
   DirectoryTypeIcon,
-  DrawerDescription,
   DrawerHeader,
   DrawerTitle,
   FileItem,
