@@ -89,6 +89,16 @@ export const sendVectorResourceFound = async (vectorResourceUrl: string) => {
     data: { vectorResourceUrl },
   });
 };
+export const saveVectorResourceFound = async (vectorResourceUrl: string) => {
+  await chrome.runtime.sendMessage({
+    type: ServiceWorkerInternalMessageType.OpenSidePanel,
+  });
+  await delay(OPEN_SIDEPANEL_DELAY_MS);
+  await chrome.runtime.sendMessage({
+    type: ServiceWorkerInternalMessageType.UploadVectorResource,
+    data: { vectorResourceUrl },
+  });
+};
 
 const VrNotification = ({
   vectorResourceUrl,

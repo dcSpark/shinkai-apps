@@ -21,6 +21,7 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
 import {
+  FileDown,
   Focus,
   NotebookPenIcon,
   PanelTopIcon,
@@ -44,6 +45,7 @@ import { ServiceWorkerInternalMessageType } from '../../service-worker/communica
 import { useSettings } from '../../store/settings/settings';
 import themeStyle from '../../theme/styles.css?inline';
 import {
+  saveVectorResourceFound,
   sendVectorResourceFound,
   useVectorResourceMetatags,
 } from './vr-notification';
@@ -240,13 +242,12 @@ const ActionButton = () => {
                   () => sendVectorResourceFound(currentVectorResource),
                   <ZapIcon className="h-full w-full" />,
                 ),
-                // TODO: download vector resource
-                // createAction(
-                //   isVectorResourceFound,
-                //   'Save Webpage To VectorFS',
-                //   () => sendVectorResourceFound(currentVectorResource),
-                //   <FileDown className="h-full w-full" />,
-                // ),
+                createAction(
+                  isVectorResourceFound,
+                  'Save Webpage To VectorFS',
+                  () => saveVectorResourceFound(currentVectorResource),
+                  <FileDown className="h-full w-full" />,
+                ),
                 createAction(
                   displaySummaryActionButton,
                   'Summarize Webpage',

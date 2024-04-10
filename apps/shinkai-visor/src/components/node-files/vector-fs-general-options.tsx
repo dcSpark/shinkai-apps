@@ -4,8 +4,10 @@ import { useUploadVRFiles } from '@shinkai_network/shinkai-node-state/lib/mutati
 import {
   Button,
   DirectoryTypeIcon,
+  DrawerDescription,
   DrawerHeader,
   DrawerTitle,
+  FileItem,
   FileTypeIcon,
   FileUploader,
   Form,
@@ -19,10 +21,15 @@ import {
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
+import { useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
+import {
+  FolderSelectionList,
+  useVectorFolderSelectionStore,
+} from './folder-selection-list';
 import { useVectorFsStore } from './node-file-context';
 
 const createFolderSchema = z.object({
@@ -222,6 +229,137 @@ export const UploadVRFilesAction = () => {
             type="submit"
           >
             Upload
+          </Button>
+        </form>
+      </Form>
+    </>
+  );
+};
+const saveWebpageToVectorFsSchema = z.object({
+  files: z.array(z.any()).min(1),
+  destinationFolderPath: z.string().min(1),
+});
+export const SaveWebpageToVectorFsAction = () => {
+  const location = useLocation<{ files: File[] }>();
+  const auth = useAuth((state) => state.auth);
+  const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
+
+  const destinationFolderPath = useVectorFolderSelectionStore(
+    (state) => state.destinationFolderPath,
+  );
+  const setCurrentGlobalPath = useVectorFsStore(
+    (state) => state.setCurrentGlobalPath,
+  );
+  const saveWebpageToVectorFsForm = useForm<
+    z.infer<typeof saveWebpageToVectorFsSchema>
+  >({
+    resolver: zodResolver(saveWebpageToVectorFsSchema),
+    defaultValues: {
+      files: location?.state?.files || [],
+    },
+  });
+
+  const { isPending, mutateAsync: uploadVRFiles } = useUploadVRFiles({
+    onSuccess: () => {
+      toast.success('Webpage saved to Vector FS successfully', {
+        id: 'uploading-VR-files-include-folder',
+        description: '',
+      });
+      setCurrentGlobalPath(destinationFolderPath ?? '/');
+      saveWebpageToVectorFsForm.reset();
+    },
+    onError: () => {
+      toast.error('Error saving webpage to Vector FS', {
+        id: 'uploading-VR-files-include-folder',
+        description: '',
+      });
+    },
+  });
+
+  const onSubmit = async (
+    values: z.infer<typeof saveWebpageToVectorFsSchema>,
+  ) => {
+    if (destinationFolderPath === '/') {
+      toast.error(
+        "Please select another destination folder. You can't save files to the root folder.",
+      );
+      return;
+    }
+    if (!auth) return;
+    toast.loading('Uploading files', {
+      id: 'uploading-VR-files-include-folder',
+      description: 'This process might take from 1-2 minutes per file.',
+      position: 'bottom-left',
+    });
+    closeDrawerMenu();
+    await uploadVRFiles({
+      nodeAddress: auth?.node_address ?? '',
+      sender: auth?.shinkai_identity ?? '',
+      senderSubidentity: auth?.profile ?? '',
+      receiver: auth?.shinkai_identity ?? '',
+      destinationPath: values.destinationFolderPath,
+      files: values.files,
+      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+      my_device_identity_sk: auth?.profile_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+    });
+  };
+
+  useEffect(() => {
+    saveWebpageToVectorFsForm.setValue(
+      'destinationFolderPath',
+      destinationFolderPath ?? '/',
+    );
+  }, [destinationFolderPath, saveWebpageToVectorFsForm]);
+
+  return (
+    <>
+      <DrawerHeader>
+        <DrawerTitle className="flex flex-col items-start gap-1">
+          Save Webpage to VectorFS
+        </DrawerTitle>
+      </DrawerHeader>
+      <Form {...saveWebpageToVectorFsForm}>
+        <form
+          className="mt-6 space-y-8"
+          onSubmit={saveWebpageToVectorFsForm.handleSubmit(onSubmit)}
+        >
+          <FormField
+            control={saveWebpageToVectorFsForm.control}
+            name="files"
+            render={({ field }) => (
+              <div className="mt-3 space-y-2">
+                <span>Selected File</span>
+                <FormMessage />
+                <FormControl>
+                  <FileItem file={field.value?.[0]} />
+                </FormControl>
+              </div>
+            )}
+          />
+          <FormField
+            control={saveWebpageToVectorFsForm.control}
+            name="destinationFolderPath"
+            render={({ field }) => (
+              <div className="mt-3 space-y-2">
+                <span>Choose destination folder:</span>
+                <div className="-mt-4 rounded-lg px-2">
+                  <FolderSelectionList />
+                </div>
+                <FormMessage />
+              </div>
+            )}
+          />
+
+          <Button
+            className="w-full"
+            disabled={isPending}
+            isLoading={isPending}
+            type="submit"
+          >
+            Save
           </Button>
         </form>
       </Form>

@@ -12,6 +12,67 @@ const openFile = (file: File): void => {
   URL.revokeObjectURL(fileURL);
 };
 
+export const FileItem = ({
+  file,
+  actions,
+}: {
+  file: File;
+  actions?: {
+    label: string;
+    icon: React.ReactNode;
+    onClick: (file: File) => void;
+  }[];
+}) => {
+  const size = partial({ standard: 'jedec' });
+  const hasPreviewImage = file?.type?.includes('image/');
+
+  return (
+    <div className="relative flex items-center gap-2 rounded-xl bg-gray-300 px-3 py-1.5 pr-2">
+      <span className="flex w-[30px] items-center justify-center">
+        {hasPreviewImage ? (
+          <FileImagePreview
+            className="h-full rounded-md object-cover"
+            file={file}
+          />
+        ) : (
+          <PaperClipIcon className="text-gray-80 h-5 w-5" />
+        )}
+      </span>
+      <div className="line-clamp-1 flex flex-1 flex-col gap-1">
+        <button
+          className="text-left hover:underline"
+          onClick={() => openFile(file)}
+          type="button"
+        >
+          <span className="line-clamp-1 text-sm text-gray-50">
+            {decodeURIComponent(file.name)}
+          </span>
+        </button>
+        {file.size && (
+          <span className="shrink-0 text-gray-100">{size(file.size)}</span>
+        )}
+      </div>
+      {!!actions?.length && (
+        <div className="shrink-0">
+          {actions?.map((action) => (
+            <Button
+              className="h-8 w-8 bg-transparent"
+              key={action.label}
+              onClick={() => action.onClick(file)}
+              size="icon"
+              type="button"
+              variant="ghost"
+            >
+              <span className="sr-only">{action.label}</span>
+              {action.icon}
+            </Button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 export const FileUploader = ({
   value,
   onChange,
@@ -31,8 +92,6 @@ export const FileUploader = ({
   descriptionText?: string;
   shouldDisableScrolling?: boolean;
 }) => {
-  const size = partial({ standard: 'jedec' });
-
   const { getRootProps: getRootFileProps, getInputProps: getInputFileProps } =
     useDropzone({
       multiple: allowMultiple,
@@ -78,55 +137,23 @@ export const FileUploader = ({
           )}
         >
           <div className="flex flex-col gap-2">
-            {value?.map((file, idx) => {
-              const hasPreviewImage = file?.type?.includes('image/');
-              return (
-                <div
-                  className="relative flex items-center gap-2 rounded-xl bg-gray-300 px-3 py-1.5 pr-2"
-                  key={idx}
-                >
-                  <span className="flex w-[30px] items-center justify-center">
-                    {hasPreviewImage ? (
-                      <FileImagePreview
-                        className="h-full rounded-md object-cover"
-                        file={file}
-                      />
-                    ) : (
-                      <PaperClipIcon className="text-gray-80 h-5 w-5" />
-                    )}
-                  </span>
-                  <div className="flex flex-1 flex-col gap-1">
-                    <button
-                      className="text-left hover:underline"
-                      onClick={() => openFile(file)}
-                      type="button"
-                    >
-                      <span className="line-clamp-1 text-sm text-gray-50">
-                        {decodeURIComponent(file.name)}
-                      </span>
-                    </button>
-                    {file.size && (
-                      <span className="shrink-0 text-gray-100">
-                        {size(file.size)}
-                      </span>
-                    )}
-                  </div>
-                  <Button
-                    className="h-8 w-8 bg-transparent"
-                    onClick={() => {
+            {value?.map((file, idx) => (
+              <FileItem
+                actions={[
+                  {
+                    label: 'Delete',
+                    icon: <Trash className="text-gray-80 h-4 w-4" />,
+                    onClick: (file) => {
                       const newFiles = [...value];
                       newFiles.splice(newFiles.indexOf(file), 1);
                       onChange(newFiles);
-                    }}
-                    size="icon"
-                    type="button"
-                    variant="ghost"
-                  >
-                    <Trash className="text-gray-80 h-4 w-4" />
-                  </Button>
-                </div>
-              );
-            })}
+                    },
+                  },
+                ]}
+                file={file}
+                key={file.name + idx}
+              />
+            ))}
           </div>
         </ScrollArea>
       )}

@@ -115,6 +115,7 @@ export const FolderSelectionList = () => {
                   setCurrentSelectedFolderPath('/');
                   setDestinationFolderPath('/');
                 }}
+                type="button"
               >
                 <HomeIcon className="h-3.5 w-3.5" />
                 Home
@@ -141,6 +142,7 @@ export const FolderSelectionList = () => {
                       setCurrentSelectedFolderPath('/' + buildPath);
                       setDestinationFolderPath(buildPath);
                     }}
+                    type="button"
                   >
                     {path}
                   </button>
@@ -180,6 +182,7 @@ export const FolderSelectionList = () => {
                     setDestinationFolderPath(folder.path);
                   }
                 }}
+                type="button"
               >
                 <DirectoryTypeIcon />
                 <VectorFsFolderInfo allowFolderNameOnly folder={folder} />

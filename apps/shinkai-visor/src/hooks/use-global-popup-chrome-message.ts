@@ -31,6 +31,17 @@ export const useGlobalPopupChromeMessage = () => {
         });
         break;
       }
+      case ServiceWorkerInternalMessageType.SendPageToVectorFs: {
+        const file = dataUrlToFile(
+          message.data.fileDataUrl,
+          message.data.filename,
+        );
+        history.push({
+          pathname: '/node-files',
+          state: { files: [file] },
+        });
+        break;
+      }
       case ServiceWorkerInternalMessageType.SummarizePage: {
         const params = new URLSearchParams({
           initialText: 'Summarize this',
@@ -57,13 +68,24 @@ export const useGlobalPopupChromeMessage = () => {
         });
         break;
       }
-      case ServiceWorkerInternalMessageType.SendVectorResource: {
+      case ServiceWorkerInternalMessageType.SendVectorResourceToJobCreation: {
         const vrFile = dataUrlToFile(
           message.data.imageDataUrl,
           message.data.filename,
         );
         history.push({
           pathname: '/inboxes/create-job',
+          state: { files: [vrFile] },
+        });
+        break;
+      }
+      case ServiceWorkerInternalMessageType.SendVectorResourceToVectorFS: {
+        const vrFile = dataUrlToFile(
+          message.data.imageDataUrl,
+          message.data.filename,
+        );
+        history.push({
+          pathname: '/node-files',
           state: { files: [vrFile] },
         });
         break;

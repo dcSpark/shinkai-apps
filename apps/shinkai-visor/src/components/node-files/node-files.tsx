@@ -47,7 +47,7 @@ import {
   XIcon,
 } from 'lucide-react';
 import React, { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 
 import { useDebounce } from '../../hooks/use-debounce';
 import { useQuery } from '../../hooks/use-query';
@@ -62,7 +62,9 @@ const MotionButton = motion(Button);
 export default function NodeFiles() {
   const auth = useAuth((state) => state.auth);
   const history = useHistory();
-
+  const location = useLocation<{
+    files: File[];
+  }>();
   const query = useQuery();
 
   const currentGlobalPath = useVectorFsStore(
@@ -162,6 +164,14 @@ export default function NodeFiles() {
       setSelectedFolders([...selectedFolders, folder]);
     }
   };
+
+  useEffect(() => {
+    if (location.state?.files) {
+      setActiveDrawerMenuOption(
+        VectorFsGlobalAction.GenerateFromDocumentIncludeFolder,
+      );
+    }
+  }, [location.state?.files, setActiveDrawerMenuOption]);
 
   const actionList = [
     {
