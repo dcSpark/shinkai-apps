@@ -21,13 +21,12 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
 import {
-  FileDown,
   Focus,
+  FolderDown,
   NotebookPenIcon,
   PanelTopIcon,
   XIcon,
   ZapIcon,
-  // ZapIcon,
 } from 'lucide-react';
 import * as React from 'react';
 import { useEffect, useRef } from 'react';
@@ -235,6 +234,13 @@ const ActionButton = () => {
               >
                 <XIcon />
               </button>
+              {
+                void console.log(
+                  typeof currentVectorResource,
+                  'currentVectorResource111',
+                  currentVectorResource,
+                )
+              }
               {[
                 createAction(
                   isVectorResourceFound,
@@ -242,12 +248,11 @@ const ActionButton = () => {
                   () => sendVectorResourceFound(currentVectorResource),
                   <ZapIcon className="h-full w-full" />,
                 ),
-                createAction(
-                  isVectorResourceFound,
-                  'Save Webpage To VectorFS',
-                  () => saveVectorResourceFound(currentVectorResource),
-                  <FileDown className="h-full w-full" />,
-                ),
+                {
+                  label: 'Save Webpage To VectorFS',
+                  onClick: () => saveVectorResourceFound(currentVectorResource),
+                  icon: <FolderDown className="h-full w-full" />,
+                },
                 createAction(
                   displaySummaryActionButton,
                   'Summarize Webpage',

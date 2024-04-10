@@ -16,6 +16,28 @@ export const sendVectorResourceFoundToVectorFs = async (
   if (!tab?.id) {
     return;
   }
+  if (!vectorResourceUrl) {
+    const [htmlContent] = await chrome.scripting.executeScript({
+      target: { tabId: tab?.id },
+      func: () => {
+        return document.documentElement.outerHTML;
+      },
+      args: [],
+    });
+    const fileType = 'text/html';
+    const message: ServiceWorkerInternalMessage = {
+      type: ServiceWorkerInternalMessageType.SendPageToVectorFs,
+      data: {
+        filename: `${encodeURIComponent(tab.url || Date.now())}.html`,
+        fileType: fileType,
+        fileDataUrl: `data:${fileType};base64,${Buffer.from(
+          htmlContent.result,
+        ).toString('base64')}`,
+      },
+    };
+    sendMessage(message);
+    return;
+  }
   const response = await fetch(vectorResourceUrl);
   const vectorResource = await response.text();
   const vectorResourceName = vectorResourceUrl.split('/').pop()?.split('.')[0];
