@@ -106,9 +106,7 @@ export const ConnectMethodRestoreConnection = () => {
                     <div className="flex flex-col space-y-1">
                       <div className="flex items-center justify-center">
                         <FileUploader
-                          accept={{
-                            'application/x-iwork-keynote-sffkey': ['.key'],
-                          }}
+                          accept={['.key'].join(',')}
                           descriptionText="Eg: shinkai.key"
                           maxFiles={1}
                           onChange={(acceptedFiles) => {
