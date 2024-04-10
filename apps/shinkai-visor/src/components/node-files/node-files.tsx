@@ -138,7 +138,7 @@ export default function NodeFiles() {
       const directoryMainPath = path.split('/').slice(0, -1);
       setCurrentGlobalPath(
         directoryMainPath.length > 1
-          ? directoryMainPath.join('/')
+          ? '/' + directoryMainPath.join('/')
           : '/' + directoryMainPath,
       );
     }

@@ -10,9 +10,7 @@ import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/
 import {
   Badge,
   Button,
-  DirectoryTypeIcon,
   FilesIcon,
-  FileTypeIcon,
   Form,
   FormControl,
   FormField,
@@ -421,48 +419,6 @@ export const CreateJob = () => {
                 />
               </div>
             </div>
-            {(location?.state?.selectedVRFolders?.length > 0 ||
-              location?.state?.selectedVRFiles?.length > 0) && (
-              <div className="py-4 pt-8">
-                <h2 className="text-base font-medium">
-                  Selected Knowledge Files:
-                </h2>
-                {location?.state?.selectedVRFolders?.length > 0 && (
-                  <ul className="mt-2">
-                    {location.state.selectedVRFolders.map((file) => (
-                      <li
-                        className="relative flex items-center gap-2 px-3 py-1.5"
-                        key={file.path}
-                      >
-                        <DirectoryTypeIcon />
-                        <span className="text-gray-80 text-sm">
-                          {file.name}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-                {location?.state?.selectedVRFiles?.length > 0 && (
-                  <ul className="mt-2">
-                    {location.state.selectedVRFiles.map((file) => (
-                      <li
-                        className="relative flex items-center gap-2 px-3 py-1.5"
-                        key={file.path}
-                      >
-                        <FileTypeIcon />
-                        <span className="text-gray-80 text-sm">
-                          {file.name}
-                        </span>
-                        <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
-                          {file?.vr_header?.resource_source?.Standard?.FileRef
-                            ?.file_type?.Document ?? '-'}
-                        </Badge>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            )}
           </ScrollArea>
 
           <Button

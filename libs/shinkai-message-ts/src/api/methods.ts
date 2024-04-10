@@ -845,7 +845,7 @@ export const retrieveVectorSearchSimplified = async (
         setupDetailsState.node_encryption_pk,
         searchQuery,
         path,
-        5,
+        10,
         null,
         sender,
         sender_subidentity,
