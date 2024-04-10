@@ -1,7 +1,5 @@
 use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
-use std::any::Any;
 use std::fs;
-use std::ops::Deref;
 use std::{collections::HashMap, sync::Arc};
 use tauri::api::process::{Command, CommandChild, CommandEvent};
 use tokio::sync::Mutex;
@@ -34,9 +32,9 @@ impl ShinkaiNodeManager {
             unstructured_server_url: Some("https://public.shinkai.com/x-un".to_string()),
             embeddings_server_url: Some("https://public.shinkai.com/x-em".to_string()),
             first_device_needs_registration_code: Some("false".to_string()),
-            initial_agent_names: Some("ollama_mistral".to_string()),
-            initial_agent_urls: Some("http://localhost:11434".to_string()),
-            initial_agent_models: Some("ollama:mistral".to_string()),
+            initial_agent_names: Some("FREE_TEXT_INFERENCE".to_string()),
+            initial_agent_urls: Some("https://backend-hosting.shinkai.com".to_string()),
+            initial_agent_models: Some("shinkai-backend:FREE_TEXT_INFERENCE".to_string()),
             initial_agent_api_keys: Some("".to_string()),
             starting_num_qr_devices: Some("0".to_string()),
         }
