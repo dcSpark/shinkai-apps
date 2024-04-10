@@ -43,7 +43,10 @@ import { OPEN_SIDEPANEL_DELAY_MS } from '../../service-worker/action';
 import { ServiceWorkerInternalMessageType } from '../../service-worker/communication/internal/types';
 import { useSettings } from '../../store/settings/settings';
 import themeStyle from '../../theme/styles.css?inline';
-import { useVectorResourceMetatags } from './vr-notification';
+import {
+  sendVectorResourceFound,
+  useVectorResourceMetatags,
+} from './vr-notification';
 import notificationStyle from './vr-notification.css?inline';
 export const SHINKAI_ACTION_ELEMENT_NAME = 'shinkai-action-button-root';
 
@@ -109,7 +112,8 @@ const createAction = (
 
 const ActionButton = () => {
   useGlobalActionButtonChromeMessage();
-  useVectorResourceMetatags();
+  const { isVectorResourceFound, currentVectorResource } =
+    useVectorResourceMetatags();
 
   const displayActionButton = useSettings(
     (settingsStore) => settingsStore.displayActionButton,
@@ -230,11 +234,12 @@ const ActionButton = () => {
                 <XIcon />
               </button>
               {[
-                {
-                  label: 'Shinkai Instant Q/A Available',
-                  onClick: sendPage,
-                  icon: <ZapIcon className="h-full w-full" />,
-                },
+                createAction(
+                  isVectorResourceFound,
+                  'Shinkai Instant Q/A Available',
+                  () => sendVectorResourceFound(currentVectorResource),
+                  <ZapIcon className="h-full w-full" />,
+                ),
                 createAction(
                   displaySummaryActionButton,
                   'Summarize Webpage',
