@@ -9,7 +9,8 @@ import ContextType = chrome.runtime.ContextType;
 import {
   sendCaptureToAgent,
   sendPageToAgent,
-  sendVectorResourceFound,
+  sendVectorResourceFoundToAgent,
+  sendVectorResourceFoundToVectorFs,
   summarizePage,
 } from '../../action';
 
@@ -112,7 +113,20 @@ export const listen = (): void => {
             return;
           }
           (async () => {
-            await sendVectorResourceFound(
+            await sendVectorResourceFoundToAgent(
+              undefined,
+              sender.tab,
+              message.data.vectorResourceUrl,
+            );
+          })();
+          return true;
+        }
+        case ServiceWorkerInternalMessageType.UploadVectorResource: {
+          if (!sender?.tab?.id) {
+            return;
+          }
+          (async () => {
+            await sendVectorResourceFoundToVectorFs(
               undefined,
               sender.tab,
               message.data.vectorResourceUrl,

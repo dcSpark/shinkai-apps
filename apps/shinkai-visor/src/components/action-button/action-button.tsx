@@ -22,10 +22,11 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
 import {
   Focus,
+  FolderDown,
   NotebookPenIcon,
   PanelTopIcon,
   XIcon,
-  // ZapIcon,
+  ZapIcon,
 } from 'lucide-react';
 import * as React from 'react';
 import { useEffect, useRef } from 'react';
@@ -42,7 +43,11 @@ import { OPEN_SIDEPANEL_DELAY_MS } from '../../service-worker/action';
 import { ServiceWorkerInternalMessageType } from '../../service-worker/communication/internal/types';
 import { useSettings } from '../../store/settings/settings';
 import themeStyle from '../../theme/styles.css?inline';
-import { useVectorResourceMetatags } from './vr-notification';
+import {
+  saveVectorResourceFound,
+  sendVectorResourceFound,
+  useVectorResourceMetatags,
+} from './vr-notification';
 import notificationStyle from './vr-notification.css?inline';
 export const SHINKAI_ACTION_ELEMENT_NAME = 'shinkai-action-button-root';
 
@@ -108,7 +113,8 @@ const createAction = (
 
 const ActionButton = () => {
   useGlobalActionButtonChromeMessage();
-  useVectorResourceMetatags();
+  const { isVectorResourceFound, currentVectorResource } =
+    useVectorResourceMetatags();
 
   const displayActionButton = useSettings(
     (settingsStore) => settingsStore.displayActionButton,
@@ -228,12 +234,25 @@ const ActionButton = () => {
               >
                 <XIcon />
               </button>
+              {
+                void console.log(
+                  typeof currentVectorResource,
+                  'currentVectorResource111',
+                  currentVectorResource,
+                )
+              }
               {[
-                // {
-                //   label: 'Shinkai Instant Q/A Available',
-                //   onClick: sendPage,
-                //   icon: <ZapIcon className="h-full w-full" />,
-                // },
+                createAction(
+                  isVectorResourceFound,
+                  'Shinkai Instant Q/A Available',
+                  () => sendVectorResourceFound(currentVectorResource),
+                  <ZapIcon className="h-full w-full" />,
+                ),
+                {
+                  label: 'Save Webpage To VectorFS',
+                  onClick: () => saveVectorResourceFound(currentVectorResource),
+                  icon: <FolderDown className="h-full w-full" />,
+                },
                 createAction(
                   displaySummaryActionButton,
                   'Summarize Webpage',

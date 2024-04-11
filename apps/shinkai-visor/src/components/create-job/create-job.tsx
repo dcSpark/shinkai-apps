@@ -11,6 +11,7 @@ import {
   Badge,
   Button,
   FilesIcon,
+  FileUploader,
   Form,
   FormControl,
   FormField,
@@ -42,7 +43,6 @@ import { z } from 'zod';
 import { useQuery } from '../../hooks/use-query';
 import { useAuth } from '../../store/auth/auth';
 import { useSettings } from '../../store/settings/settings';
-import { FileInput } from '../file-input/file-input';
 import { Header } from '../header/header';
 import { allowedFileExtensions } from './constants';
 import { KnowledgeSearchDrawer, VectorFsScopeDrawer } from './vector-fs-scope';
@@ -401,15 +401,19 @@ export const CreateJob = () => {
                   control={form.control}
                   name="files"
                   render={({ field }) => (
-                    <FormItem className="mt-3">
+                    <FormItem>
                       <FormLabel className="sr-only">
                         <FormattedMessage id="file.one" />
                       </FormLabel>
                       <FormControl>
-                        <FileInput
-                          extensions={allowedFileExtensions}
-                          multiple
-                          onValueChange={field.onChange}
+                        <FileUploader
+                          accept={allowedFileExtensions.join(',')}
+                          allowMultiple
+                          descriptionText={allowedFileExtensions?.join(' | ')}
+                          onChange={(acceptedFiles) => {
+                            field.onChange(acceptedFiles);
+                          }}
+                          shouldDisableScrolling
                           value={field.value}
                         />
                       </FormControl>

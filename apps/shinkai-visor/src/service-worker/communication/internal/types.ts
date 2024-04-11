@@ -2,6 +2,7 @@ export enum ServiceWorkerInternalMessageType {
   ContentScriptBridge = 'content-script-bridge',
   SendToAgent = 'send-to-agent',
   SendPageToAgent = 'send-page-to-agent',
+  SendPageToVectorFs = 'send-page-to-vector-fs',
   SummarizePage = 'summarize-page',
   RehydrateStore = 'rehydrate-store',
   CopyToClipboard = 'copy-to-clipboard',
@@ -14,7 +15,9 @@ export enum ServiceWorkerInternalMessageType {
   IsSidePanelOpen = 'is-side-panel-open',
   ExportConnectionIntent = 'export-connection-intent',
   VectorResourceFound = 'vector-resource-found',
-  SendVectorResource = 'send-vector-resource',
+  SendVectorResourceToJobCreation = 'send-vector-resource-job-creation',
+  UploadVectorResource = 'upload-vector-resource',
+  SendVectorResourceToVectorFS = 'send-vector-resource-vector-fs',
 }
 
 export enum ContentScriptBridgeMessageType {
@@ -58,6 +61,14 @@ export type ServiceWorkerInternalMessage =
       };
     }
   | {
+      type: ServiceWorkerInternalMessageType.SendPageToVectorFs;
+      data: {
+        filename: string;
+        fileDataUrl: string;
+        fileType: string;
+      };
+    }
+  | {
       type: ServiceWorkerInternalMessageType.SummarizePage;
       data: {
         filename: string;
@@ -84,7 +95,15 @@ export type ServiceWorkerInternalMessage =
       data: { vectorResourceUrl: string };
     }
   | {
-      type: ServiceWorkerInternalMessageType.SendVectorResource;
+      type: ServiceWorkerInternalMessageType.UploadVectorResource;
+      data: { vectorResourceUrl: string };
+    }
+  | {
+      type: ServiceWorkerInternalMessageType.SendVectorResourceToJobCreation;
+      data: { imageDataUrl: string; filename: string };
+    }
+  | {
+      type: ServiceWorkerInternalMessageType.SendVectorResourceToVectorFS;
       data: { imageDataUrl: string; filename: string };
     }
   | {

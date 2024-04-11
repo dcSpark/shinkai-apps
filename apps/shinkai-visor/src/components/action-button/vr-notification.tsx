@@ -34,6 +34,10 @@ export type VectorResourceMetatag =
     };
 
 export const useVectorResourceMetatags = () => {
+  const [isVectorResourceFound, setIsVectorResourceFound] =
+    React.useState(false);
+  const [currentVectorResource, setCurrentVectorResource] = React.useState('');
+
   useEffect(() => {
     const meta = document.querySelector(
       'meta[name="shinkai-vector-resources"]',
@@ -42,22 +46,32 @@ export const useVectorResourceMetatags = () => {
     const vectorResources: VectorResourceMetatag[] = JSON.parse(
       meta.getAttribute('content') as string,
     );
-    for (const vectorResource of vectorResources) {
-      if (vectorResource['element-type'] === VectorResourceType.Http) {
-        setTimeout(() => {
-          toast.custom(
-            (t) => (
-              <VrNotification
-                toastId={t}
-                vectorResourceUrl={vectorResource.url}
-              />
-            ),
-            { duration: 4000 },
-          );
-        });
-      }
+    // for (const vectorResource of vectorResources) {
+    //   if (vectorResource['element-type'] === VectorResourceType.Http) {
+    const firstHttpVectorResource = vectorResources?.[0];
+    if (!firstHttpVectorResource) return;
+    if (firstHttpVectorResource['element-type'] === VectorResourceType.Http) {
+      setIsVectorResourceFound(true);
+      setCurrentVectorResource(firstHttpVectorResource.url);
+      setTimeout(() => {
+        toast.custom(
+          (t) => (
+            <VrNotification
+              toastId={t}
+              vectorResourceUrl={firstHttpVectorResource.url}
+            />
+          ),
+          { duration: 4000 },
+        );
+      });
     }
+    //   }
+    // }
   }, []);
+  return {
+    isVectorResourceFound,
+    currentVectorResource,
+  };
 };
 
 type VrNotificationProps = {
@@ -65,21 +79,31 @@ type VrNotificationProps = {
   toastId: string | number;
 };
 
+export const sendVectorResourceFound = async (vectorResourceUrl: string) => {
+  await chrome.runtime.sendMessage({
+    type: ServiceWorkerInternalMessageType.OpenSidePanel,
+  });
+  await delay(OPEN_SIDEPANEL_DELAY_MS);
+  await chrome.runtime.sendMessage({
+    type: ServiceWorkerInternalMessageType.VectorResourceFound,
+    data: { vectorResourceUrl },
+  });
+};
+export const saveVectorResourceFound = async (vectorResourceUrl: string) => {
+  await chrome.runtime.sendMessage({
+    type: ServiceWorkerInternalMessageType.OpenSidePanel,
+  });
+  await delay(OPEN_SIDEPANEL_DELAY_MS);
+  await chrome.runtime.sendMessage({
+    type: ServiceWorkerInternalMessageType.UploadVectorResource,
+    data: { vectorResourceUrl },
+  });
+};
+
 const VrNotification = ({
   vectorResourceUrl,
   toastId,
 }: VrNotificationProps) => {
-  const sendVectorResourceFound = async (vectorResourceUrl: string) => {
-    await chrome.runtime.sendMessage({
-      type: ServiceWorkerInternalMessageType.OpenSidePanel,
-    });
-    await delay(OPEN_SIDEPANEL_DELAY_MS);
-    await chrome.runtime.sendMessage({
-      type: ServiceWorkerInternalMessageType.VectorResourceFound,
-      data: { vectorResourceUrl },
-    });
-  };
-
   return (
     <button
       className="flex items-center gap-3"

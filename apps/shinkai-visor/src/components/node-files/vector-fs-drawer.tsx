@@ -16,6 +16,7 @@ import {
 } from './vector-fs-folder-options';
 import {
   AddNewFolderAction,
+  SaveWebpageToVectorFsAction,
   UploadVRFilesAction,
 } from './vector-fs-general-options';
 import { VectorFileDetails } from './vector-fs-item-detail';
@@ -64,6 +65,7 @@ export enum VectorFsGlobalAction {
   GenerateFromDocument = 'generate-from-document',
   // GenerateFromWeb = 'generate-from-web',
   VectorFileDetails = 'vector-file-details',
+  GenerateFromDocumentIncludeFolder = 'generate-from-document-include-folder',
 }
 
 export enum VectorFsFolderAction {
@@ -98,6 +100,8 @@ const VectorFSDrawerContent = ({
       return <AddNewFolderAction />;
     case VectorFsGlobalAction.GenerateFromDocument:
       return <UploadVRFilesAction />;
+    case VectorFsGlobalAction.GenerateFromDocumentIncludeFolder:
+      return <SaveWebpageToVectorFsAction />;
 
     // folder actions
     case VectorFsFolderAction.Move:
