@@ -15,6 +15,7 @@ import {
   CopyIcon,
   FolderInputIcon,
   SearchCode,
+  Share2,
   // Share2Icon,
   TrashIcon,
 } from 'lucide-react';
@@ -154,6 +155,13 @@ const VectorFsFolder = ({
               icon: <SearchCode className="mr-3 h-4 w-4" />,
               onClick: () => {
                 setActiveDrawerMenuOption(VectorFsFolderAction.SearchKnowledge);
+              },
+            },
+            {
+              name: 'Share',
+              icon: <Share2 className="mr-3 h-4 w-4" />,
+              onClick: () => {
+                setActiveDrawerMenuOption(VectorFsFolderAction.CreateShareable);
               },
             },
             {

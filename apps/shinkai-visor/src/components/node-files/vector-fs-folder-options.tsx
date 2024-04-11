@@ -1,9 +1,11 @@
 import { useCopyVrFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/copyVRFolder/useCopyVrFolder';
+import { useCreateShareableFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/createShareableFolder/useCreateShareableFolder';
 import { useDeleteVrFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/deleteVRFolder/useDeleteVRFolder';
 import { useMoveVrFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/moveVRFolder/useMoveVRFolder';
 import { useGetVRSeachSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRSearchSimplified/useGetSearchVRItems';
 import {
   Button,
+  DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
@@ -361,27 +363,65 @@ export const VectorFsFolderSearchKnowledgeAction = () => {
           </div>
         )}
       </ScrollArea>
+    </React.Fragment>
+  );
+};
+
+export const VectorFsFolderCreateShareableAction = () => {
+  const selectedFolder = useVectorFsStore((state) => state.selectedFolder);
+  const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
+  const auth = useAuth((state) => state.auth);
+  const destinationFolderPath = useVectorFolderSelectionStore(
+    (state) => state.destinationFolderPath,
+  );
+
+  const { mutateAsync: createShareableFolder, isPending } =
+    useCreateShareableFolder({
+      onSuccess: () => {
+        closeDrawerMenu();
+        toast.success('Folder shared successfully');
+      },
+      onError: () => {
+        toast.error('Failed to shared folder');
+      },
+    });
+
+  return (
+    <React.Fragment>
+      <DrawerHeader>
+        <DrawerTitle className="line-clamp-1 font-normal">
+          Share
+          <span className="font-medium">
+            {' '}
+            &quot;{selectedFolder?.name}&quot;
+          </span>{' '}
+        </DrawerTitle>
+        <DrawerDescription>
+          Share this folder with others publicly
+        </DrawerDescription>
+      </DrawerHeader>
+
       <DrawerFooter>
-        {/*<Button*/}
-        {/*  className="mt-4"*/}
-        {/*  isLoading={isPending}*/}
-        {/*  onClick={async () => {*/}
-        {/*    await deleteVrFolder({*/}
-        {/*      nodeAddress: auth?.node_address ?? '',*/}
-        {/*      shinkaiIdentity: auth?.shinkai_identity ?? '',*/}
-        {/*      profile: auth?.profile ?? '',*/}
-        {/*      folderPath: selectedFolder?.path ?? '',*/}
-        {/*      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',*/}
-        {/*      my_device_identity_sk: auth?.profile_identity_sk ?? '',*/}
-        {/*      node_encryption_pk: auth?.node_encryption_pk ?? '',*/}
-        {/*      profile_encryption_sk: auth?.profile_encryption_sk ?? '',*/}
-        {/*      profile_identity_sk: auth?.profile_identity_sk ?? '',*/}
-        {/*    });*/}
-        {/*  }}*/}
-        {/*  variant="destructive"*/}
-        {/*>*/}
-        {/*  Delete*/}
-        {/*</Button>*/}
+        <Button
+          className="mt-4"
+          disabled={destinationFolderPath === selectedFolder?.path}
+          isLoading={isPending}
+          onClick={async () => {
+            await createShareableFolder({
+              nodeAddress: auth?.node_address ?? '',
+              shinkaiIdentity: auth?.shinkai_identity ?? '',
+              profile: auth?.profile ?? '',
+              folderPath: selectedFolder?.path ?? '',
+              my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+              my_device_identity_sk: auth?.profile_identity_sk ?? '',
+              node_encryption_pk: auth?.node_encryption_pk ?? '',
+              profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+              profile_identity_sk: auth?.profile_identity_sk ?? '',
+            });
+          }}
+        >
+          Share
+        </Button>
       </DrawerFooter>
     </React.Fragment>
   );

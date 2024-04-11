@@ -35,6 +35,7 @@ export enum MessageSchemaType {
   VecFsSearchItems = 'VecFsSearchItems',
   // subscriptions
   AvailableSharedItems = 'AvailableSharedItems',
+  CreateShareableFolder = 'CreateShareableFolder',
 }
 export interface LocalScopeVRKaiEntry {
   vrkai: {
