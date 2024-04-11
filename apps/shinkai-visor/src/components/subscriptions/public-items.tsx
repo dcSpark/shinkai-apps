@@ -1,3 +1,4 @@
+import { useSubscribeToSharedFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/subscribeToSharedFolder/useSubscribeToSharedFolder';
 import { useGetAvailableSharedItems } from '@shinkai_network/shinkai-node-state/lib/queries/getAvailableSharedItems/useGetAvailableSharedItems';
 import { Button } from '@shinkai_network/shinkai-ui';
 import React from 'react';
@@ -19,6 +20,7 @@ const PublicItemsSubscription = () => {
     profile_identity_sk: auth?.profile_identity_sk,
   });
 
+  const { mutateAsync: subscribeSharedFolder } = useSubscribeToSharedFolder();
   return (
     <div>
       <Header title={'Shared Items'} />
@@ -46,7 +48,24 @@ const PublicItemsSubscription = () => {
                 </span>
               </div>
             </div>
-            <Button className="bg-gray-300 py-1.5 text-sm" size="auto">
+            <Button
+              className="bg-gray-300 py-1.5 text-sm"
+              onClick={async () => {
+                if (!auth) return;
+                await subscribeSharedFolder({
+                  nodeAddress: auth?.node_address,
+                  shinkaiIdentity: auth?.shinkai_identity,
+                  profile: auth?.profile,
+                  folderPath: folder.path,
+                  my_device_encryption_sk: auth?.my_device_encryption_sk,
+                  my_device_identity_sk: auth?.my_device_identity_sk,
+                  node_encryption_pk: auth?.node_encryption_pk,
+                  profile_encryption_sk: auth?.profile_encryption_sk,
+                  profile_identity_sk: auth?.profile_identity_sk,
+                });
+              }}
+              size="auto"
+            >
               Subscribe
             </Button>
           </div>
