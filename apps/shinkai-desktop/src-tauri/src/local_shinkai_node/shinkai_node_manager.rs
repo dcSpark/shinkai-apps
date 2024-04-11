@@ -27,7 +27,7 @@ impl ShinkaiNodeManager {
 
     fn default_options() -> ShinkaiNodeOptions {
         ShinkaiNodeOptions {
-            port: Some(9550),
+            port: Some("9550".to_string()),
             node_storage_path: Some("node_storage".to_string()),
             unstructured_server_url: Some("https://public.shinkai.com/x-un".to_string()),
             embeddings_server_url: Some("https://public.shinkai.com/x-em".to_string()),
@@ -63,8 +63,8 @@ impl ShinkaiNodeManager {
 
     async fn check_node_healthcheck(&self) -> Result<(), String> {
         let node_address = format!(
-            "http://localhost:{:?}/v1/shinkai_health",
-            self.options.port.unwrap()
+            "http://localhost:{}/v1/shinkai_health",
+            self.options.port.clone().unwrap()
         );
         let client = reqwest::Client::new();
         let start_time = std::time::Instant::now();
@@ -292,5 +292,10 @@ impl ShinkaiNodeManager {
                 message
             )),
         }
+    }
+
+    pub fn set_default_options(&mut self) -> ShinkaiNodeOptions {
+        self.options = Self::default_options();
+        self.options.clone()
     }
 }

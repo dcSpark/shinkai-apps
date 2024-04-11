@@ -59,9 +59,7 @@ export const useShinkaiNodeGetOptionsQuery = (
 };
 
 // Mutations
-export const useShinkaiNodeSpawnMutation = (
-  options?: UseMutationOptions,
-) => {
+export const useShinkaiNodeSpawnMutation = (options?: UseMutationOptions) => {
   const response = useMutation({
     mutationFn: () => {
       return invoke('shinkai_node_spawn');
@@ -79,9 +77,7 @@ export const useShinkaiNodeSpawnMutation = (
   return { ...response };
 };
 
-export const useShinkaiNodeKillMutation = (
-  options?: UseMutationOptions,
-) => {
+export const useShinkaiNodeKillMutation = (options?: UseMutationOptions) => {
   const response = useMutation({
     mutationFn: () => {
       return invoke('shinkai_node_kill');
@@ -100,7 +96,7 @@ export const useShinkaiNodeKillMutation = (
 };
 
 export const useShinkaiNodeRemoveStorageMutation = (
-    options?: UseMutationOptions,
+  options?: UseMutationOptions,
 ) => {
   const response = useMutation({
     mutationFn: () => {
@@ -112,15 +108,43 @@ export const useShinkaiNodeRemoveStorageMutation = (
 };
 
 export const useShinkaiNodeSetOptionsMutation = (
-    options?: UseMutationOptions<Partial<ShinkaiNodeOptions>, Error, ShinkaiNodeOptions>,
+  options?: UseMutationOptions<
+    Partial<ShinkaiNodeOptions>,
+    Error,
+    ShinkaiNodeOptions
+  >,
 ) => {
   const response = useMutation({
-    mutationFn: (shinkaiNodeOptions: Partial<ShinkaiNodeOptions>): Promise<ShinkaiNodeOptions> => {
-      return invoke('shinkai_node_set_options', { options: shinkaiNodeOptions });
+    mutationFn: (
+      shinkaiNodeOptions: Partial<ShinkaiNodeOptions>,
+    ): Promise<ShinkaiNodeOptions> => {
+      return invoke('shinkai_node_set_options', {
+        options: shinkaiNodeOptions,
+      });
     },
     onSuccess: (...onSuccessParameters) => {
       queryClient.invalidateQueries({
         queryKey: ['shinkai_node_get_options'],
+      });
+      if (options?.onSuccess) {
+        options.onSuccess(...onSuccessParameters);
+      }
+    },
+    ...options,
+  });
+  return { ...response };
+};
+
+export const useShinkaiNodeSetDefaultOptionsMutation = (
+  options?: UseMutationOptions<ShinkaiNodeOptions, Error, void>,
+) => {
+  const response = useMutation({
+    mutationFn: (): Promise<ShinkaiNodeOptions> => {
+      return invoke('shinkai_node_set_default_options', {});
+    },
+    onSuccess: (...onSuccessParameters) => {
+      queryClient.invalidateQueries({
+        queryKey: ['shinkai_node_set_default_options'],
       });
       if (options?.onSuccess) {
         options.onSuccess(...onSuccessParameters);

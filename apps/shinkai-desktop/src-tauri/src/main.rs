@@ -4,6 +4,7 @@
 use crate::commands::shinkai_node_manager_commands::{
     shinkai_node_get_last_n_logs, shinkai_node_get_options, shinkai_node_is_running,
     shinkai_node_kill, shinkai_node_remove_storage, shinkai_node_set_options, shinkai_node_spawn,
+    shinkai_node_set_default_options
 };
 use tauri::GlobalShortcutManager;
 use tauri::SystemTrayMenuItem;
@@ -48,6 +49,7 @@ fn main() {
             shinkai_node_spawn,
             shinkai_node_kill,
             shinkai_node_remove_storage,
+            shinkai_node_set_default_options,
         ])
         .setup(|app| {
             let app_clone = app.app_handle();

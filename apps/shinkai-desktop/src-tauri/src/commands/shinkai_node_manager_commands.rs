@@ -62,3 +62,10 @@ pub async fn shinkai_node_remove_storage() -> Result<(), String> {
         }
     }
 }
+
+#[tauri::command]
+pub async fn shinkai_node_set_default_options() -> Result<ShinkaiNodeOptions, String> {
+    let mut shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.lock().await;
+    let options = shinkai_node_manager_guard.set_default_options();
+    Ok(options)
+}
