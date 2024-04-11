@@ -40,7 +40,16 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { ArrowLeft, Menu, SearchCode, Settings, X, XIcon } from 'lucide-react';
+import {
+  ArrowLeft,
+  BookCopy,
+  LibraryBig,
+  Menu,
+  SearchCode,
+  Settings,
+  X,
+  XIcon,
+} from 'lucide-react';
 import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useHistory, useLocation } from 'react-router-dom';
@@ -61,6 +70,8 @@ enum MenuOption {
   CreateJob = 'create-job',
   NodeFiles = 'node-files',
   SearchNodeFiles = 'search-node-files',
+  MySubscriptions = 'my-subscriptions',
+  PublicItems = 'public-items',
   Settings = 'settings',
   Logout = 'logout',
 }
@@ -298,6 +309,14 @@ export default function NavBar() {
         history.push('/search-node-files');
         setLastPage('/search-node-files');
         break;
+      case MenuOption.MySubscriptions:
+        history.push('/subscriptions');
+        setLastPage('/subscriptions');
+        break;
+      case MenuOption.PublicItems:
+        history.push('/subscriptions/public');
+        setLastPage('/subscriptions/public');
+        break;
       case MenuOption.Agents:
         history.push('/agents');
         setLastPage('/agents');
@@ -439,6 +458,19 @@ export default function NavBar() {
               >
                 <SearchCode className="mr-2 h-4 w-4" />
                 <span>Knowledge Search</span>
+              </DropdownMenuItem>
+              <DropdownMenuLabel>Subscription</DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => onClickMenuOption(MenuOption.MySubscriptions)}
+              >
+                <LibraryBig className="mr-2 h-4 w-4" />
+                <span>My subscriptions</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onClickMenuOption(MenuOption.PublicItems)}
+              >
+                <BookCopy className="mr-2 h-4 w-4" />
+                <span>Public Items</span>
               </DropdownMenuItem>
 
               <DropdownMenuLabel>

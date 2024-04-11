@@ -43,7 +43,7 @@ const SearchNodeFiles = () => {
   const destinationFolderPath = useVectorFolderSelectionStore(
     (state) => state.destinationFolderPath,
   );
-  console.log(destinationFolderPath, 'destinationFolderPath');
+
   const searchVectorFSForm = useForm<z.infer<typeof searchVectorFSSchema>>({
     defaultValues: {
       searchQuery: '',
