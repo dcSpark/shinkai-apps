@@ -133,7 +133,6 @@ const ChatConversation = () => {
     node_encryption_pk: auth?.node_encryption_pk ?? '',
     profile_encryption_sk: auth?.profile_encryption_sk ?? '',
     profile_identity_sk: auth?.profile_identity_sk ?? '',
-    refetchInterval: 5000,
   });
 
   const {
