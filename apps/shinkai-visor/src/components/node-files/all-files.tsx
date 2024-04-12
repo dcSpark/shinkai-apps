@@ -78,17 +78,22 @@ const AllFiles = () => {
     isPending: isVRFilesPending,
     data: VRFiles,
     isSuccess: isVRFilesSuccess,
-  } = useGetVRPathSimplified({
-    nodeAddress: auth?.node_address ?? '',
-    profile: auth?.profile ?? '',
-    shinkaiIdentity: auth?.shinkai_identity ?? '',
-    path: currentGlobalPath,
-    my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-    my_device_identity_sk: auth?.profile_identity_sk ?? '',
-    node_encryption_pk: auth?.node_encryption_pk ?? '',
-    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-    profile_identity_sk: auth?.profile_identity_sk ?? '',
-  });
+  } = useGetVRPathSimplified(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      profile: auth?.profile ?? '',
+      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      path: currentGlobalPath,
+      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+      my_device_identity_sk: auth?.profile_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+    },
+    {
+      refetchInterval: 6000,
+    },
+  );
 
   const {
     data: searchVRItems,
@@ -180,7 +185,7 @@ const AllFiles = () => {
   const splitCurrentPath = VRFiles?.path?.split('/').filter(Boolean) ?? [];
 
   return (
-    <div className="flex flex-col">
+    <div className="flex h-full flex-col">
       <div className="flex items-center gap-3">
         <div className="relative flex h-10 w-full flex-1 items-center">
           <Input

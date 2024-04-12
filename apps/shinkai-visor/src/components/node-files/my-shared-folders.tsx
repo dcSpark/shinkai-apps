@@ -19,7 +19,11 @@ import { useVectorFsStore, VectorFSLayout } from './node-file-context';
 import { VectorFsFolderAction } from './vector-fs-drawer';
 import VectorFsToggleLayout from './vector-fs-toggle-layout';
 
-export default function MySharedFolders() {
+export default function MySharedFolders({
+  openSharedFolderLocation,
+}: {
+  openSharedFolderLocation: () => void;
+}) {
   const layout = useVectorFsStore((state) => state.layout);
   const auth = useAuth((state) => state.auth);
   const { data: sharedFolders, isSuccess } = useGetMySharedFolders({
@@ -61,6 +65,7 @@ export default function MySharedFolders() {
                   new Date(folder?.tree?.last_modified ?? ''),
                 )}
                 name={folder.path.replace(/\//g, '')}
+                openSharedFolderLocation={openSharedFolderLocation}
                 path={folder.path}
                 totalItems={Object.keys(folder.tree.children || {}).length}
               />
@@ -77,12 +82,17 @@ function SharedFolderItem({
   lastModified,
   totalItems,
   path,
+  openSharedFolderLocation,
 }: {
   name: string;
   lastModified: string;
   totalItems: number;
   path: string;
+  openSharedFolderLocation: () => void;
 }) {
+  const setCurrentGlobalPath = useVectorFsStore(
+    (state) => state.setCurrentGlobalPath,
+  );
   const layout = useVectorFsStore((state) => state.layout);
   const setActiveDrawerMenuOption = useVectorFsStore(
     (state) => state.setActiveDrawerMenuOption,
@@ -92,12 +102,17 @@ function SharedFolderItem({
   );
 
   return (
-    <div
+    <button
       className={cn(
         'flex items-center justify-between gap-2 truncate px-2 py-3.5 hover:bg-gray-400',
         layout === VectorFSLayout.Grid && 'rounded-lg bg-gray-400/30 p-2',
       )}
       key={path}
+      onClick={() => {
+        openSharedFolderLocation();
+        setCurrentGlobalPath(path);
+      }}
+      type="button"
     >
       <SharedFolderIcon />
       <div className="flex-1 truncate text-left">
@@ -168,6 +183,6 @@ function SharedFolderItem({
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
-    </div>
+    </button>
   );
 }

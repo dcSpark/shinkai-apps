@@ -1,7 +1,9 @@
 import { useSubscribeToSharedFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/subscribeToSharedFolder/useSubscribeToSharedFolder';
 import { useGetAvailableSharedItems } from '@shinkai_network/shinkai-node-state/lib/queries/getAvailableSharedItems/useGetAvailableSharedItems';
 import { Button } from '@shinkai_network/shinkai-ui';
+import { motion } from 'framer-motion';
 import React from 'react';
+import { toast } from 'sonner';
 
 import { useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
@@ -9,18 +11,21 @@ import { Header } from '../header/header';
 const PublicSharedFolderSubscription = () => {
   const auth = useAuth((state) => state.auth);
 
-  const { data: sharedItems, isSuccess } = useGetAvailableSharedItems({
-    nodeAddress: auth?.node_address ?? '',
-    shinkaiIdentity: auth?.shinkai_identity ?? '',
-    profile: auth?.profile ?? '',
-    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-    node_encryption_pk: auth?.node_encryption_pk ?? '',
-    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-    profile_identity_sk: auth?.profile_identity_sk ?? '',
-  });
-
-  const { mutateAsync: subscribeSharedFolder } = useSubscribeToSharedFolder();
+  const { data: sharedItems, isSuccess } = useGetAvailableSharedItems(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      profile: auth?.profile ?? '',
+      my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+      my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+    },
+    {
+      refetchInterval: 6000,
+    },
+  );
 
   return (
     <div className="flex h-full flex-col gap-4">
@@ -33,56 +38,12 @@ const PublicSharedFolderSubscription = () => {
       <div className="w-full divide-y divide-gray-300 py-4">
         {Object.entries(sharedItems?.response || {}).map(
           ([filename, fileDetails]) => (
-            <div
-              className="flex items-center justify-between gap-2 py-2.5"
-              key={fileDetails.path}
-            >
-              <div className="space-y-1">
-                <span className="line-clamp-1 text-base font-medium capitalize">
-                  {filename.replace(/\//g, '')}
-                </span>
-                <div className="text-gray-80 flex items-center gap-3 text-xs">
-                  <span>
-                    {fileDetails.subscription_requirement.is_free
-                      ? 'Free'
-                      : 'Paid'}{' '}
-                  </span>{' '}
-                  ⋅{' '}
-                  <span>
-                    {
-                      fileDetails.subscription_requirement
-                        .minimum_token_delegation
-                    }{' '}
-                    KAI
-                  </span>
-                  ⋅{' '}
-                  <span>
-                    {fileDetails.subscription_requirement.monthly_payment.USD}{' '}
-                    USD
-                  </span>
-                </div>
-              </div>
-              <Button
-                className="bg-gray-300 py-1.5 text-sm"
-                onClick={async () => {
-                  if (!auth) return;
-                  await subscribeSharedFolder({
-                    nodeAddress: auth?.node_address,
-                    shinkaiIdentity: auth?.shinkai_identity,
-                    profile: auth?.profile,
-                    folderPath: fileDetails.path,
-                    my_device_encryption_sk: auth?.my_device_encryption_sk,
-                    my_device_identity_sk: auth?.my_device_identity_sk,
-                    node_encryption_pk: auth?.node_encryption_pk,
-                    profile_encryption_sk: auth?.profile_encryption_sk,
-                    profile_identity_sk: auth?.profile_identity_sk,
-                  });
-                }}
-                size="auto"
-              >
-                Subscribe
-              </Button>
-            </div>
+            <SubscriptionItem
+              folderName={filename}
+              folderPath={fileDetails.path}
+              isFree={fileDetails.subscription_requirement.is_free}
+              nodeName={sharedItems?.node_name ?? '-'}
+            />
           ),
         )}
       </div>
@@ -91,3 +52,69 @@ const PublicSharedFolderSubscription = () => {
 };
 
 export default PublicSharedFolderSubscription;
+
+const MotionButton = motion(Button);
+
+export const SubscriptionItem = ({
+  folderName,
+  nodeName,
+  isFree,
+  folderPath,
+}: {
+  folderName: string;
+  folderPath: string;
+  nodeName: string;
+  isFree: boolean;
+}) => {
+  const auth = useAuth((state) => state.auth);
+  const { mutateAsync: subscribeSharedFolder, isPending } =
+    useSubscribeToSharedFolder({
+      onSuccess: () => {
+        toast.success('Subscription added');
+      },
+      onError: (error) => {
+        toast.error('Error adding subscription', {
+          description: error.message,
+        });
+      },
+    });
+
+  return (
+    <div
+      className="flex items-center justify-between gap-2 py-2.5"
+      key={folderPath}
+    >
+      <div className="space-y-1">
+        <span className="line-clamp-1 text-base font-medium capitalize">
+          {folderName.replace(/\//g, '')}
+        </span>
+        <div className="text-gray-80 flex items-center gap-3 text-xs">
+          <span>{nodeName} </span> ⋅ <span>{isFree ? 'Free' : 'Paid'} </span>{' '}
+        </div>
+      </div>
+      <MotionButton
+        className="py-1.5 text-sm"
+        disabled={isPending}
+        isLoading={isPending}
+        layout
+        onClick={async () => {
+          if (!auth) return;
+          await subscribeSharedFolder({
+            nodeAddress: auth?.node_address,
+            shinkaiIdentity: auth?.shinkai_identity,
+            profile: auth?.profile,
+            folderPath: folderPath,
+            my_device_encryption_sk: auth?.my_device_encryption_sk,
+            my_device_identity_sk: auth?.my_device_identity_sk,
+            node_encryption_pk: auth?.node_encryption_pk,
+            profile_encryption_sk: auth?.profile_encryption_sk,
+            profile_identity_sk: auth?.profile_identity_sk,
+          });
+        }}
+        size="auto"
+      >
+        Subscribe
+      </MotionButton>
+    </div>
+  );
+};

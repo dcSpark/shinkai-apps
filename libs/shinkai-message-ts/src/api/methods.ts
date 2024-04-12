@@ -1254,7 +1254,8 @@ export const getAvailableSharedItems = async (
       sender_subidentity,
       receiver,
       receiver_subidentity,
-      streamer_node_name,
+      //TODO: remove aftet implementing public shared folders endpoint
+      '@@_my_9752.sepolia-shinkai',
       streamer_profile_name,
     );
 
@@ -1398,6 +1399,50 @@ export const unshareFolder = async (
   }
 };
 export const subscribeToSharedFolder = async (
+  nodeAddress: string,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  path: string,
+  streamer_node_name: string,
+  streamer_profile_name: string,
+  setupDetailsState: CredentialsPayload,
+): Promise<{ data: any; status: string }> => {
+  try {
+    const messageStr = ShinkaiMessageBuilderWrapper.subscribeToSharedFolder(
+      setupDetailsState.profile_encryption_sk,
+      setupDetailsState.profile_identity_sk,
+      setupDetailsState.node_encryption_pk,
+      path,
+      sender,
+      sender_subidentity,
+      receiver,
+      receiver_subidentity,
+      streamer_node_name,
+      streamer_profile_name,
+    );
+
+    const message = JSON.parse(messageStr);
+
+    const response = await fetch(
+      urlJoin(nodeAddress, '/v1/subscribe_to_shared_folder'),
+      {
+        method: 'POST',
+        body: JSON.stringify(message),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+
+    await handleHttpError(response);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error createShareableFolder:', error);
+    throw error;
+  }
+};
+export const unsubscribeToSharedFolder = async (
   nodeAddress: string,
   sender: string,
   sender_subidentity: string,
