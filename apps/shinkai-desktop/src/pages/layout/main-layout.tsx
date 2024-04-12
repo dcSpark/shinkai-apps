@@ -198,7 +198,7 @@ export function Footer() {
                       onSelect={() => openShinkaiNodeManagerWindow()}
                     >
                       <Codesandbox className="mr-2 h-4 w-4" />
-                      <span>Shinai Node Manager</span>
+                      <span>Shinkai Node Manager</span>
                     </CommandItem>
                   )}
                   <CommandItem onSelect={goToSettings}>
