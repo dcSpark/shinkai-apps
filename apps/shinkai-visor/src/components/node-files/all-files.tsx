@@ -65,7 +65,6 @@ const AllFiles = () => {
     (state) => state.setActiveDrawerMenuOption,
   );
   const layout = useVectorFsStore((state) => state.layout);
-  const setLayout = useVectorFsStore((state) => state.setLayout);
 
   const isVRSelectionActive = useVectorFsStore(
     (state) => state.isVRSelectionActive,

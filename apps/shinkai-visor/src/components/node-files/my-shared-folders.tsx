@@ -19,7 +19,7 @@ import { useVectorFsStore, VectorFSLayout } from './node-file-context';
 import { VectorFsFolderAction } from './vector-fs-drawer';
 import VectorFsToggleLayout from './vector-fs-toggle-layout';
 
-export default function SharedFolders() {
+export default function MySharedFolders() {
   const layout = useVectorFsStore((state) => state.layout);
   const auth = useAuth((state) => state.auth);
   const { data: sharedFolders, isSuccess } = useGetMySharedFolders({

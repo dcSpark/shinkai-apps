@@ -6,10 +6,10 @@ import React from 'react';
 import { useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
 
-const SharedFolderSubscription = () => {
+const PublicSharedFolderSubscription = () => {
   const auth = useAuth((state) => state.auth);
 
-  const { data: sharedItems } = useGetAvailableSharedItems({
+  const { data: sharedItems, isSuccess } = useGetAvailableSharedItems({
     nodeAddress: auth?.node_address ?? '',
     shinkaiIdentity: auth?.shinkai_identity ?? '',
     profile: auth?.profile ?? '',
@@ -23,8 +23,13 @@ const SharedFolderSubscription = () => {
   const { mutateAsync: subscribeSharedFolder } = useSubscribeToSharedFolder();
 
   return (
-    <div>
-      <Header title={'Shared Folders'} />
+    <div className="flex h-full flex-col gap-4">
+      <Header title={'Browse Public Folders'} />
+      {isSuccess && !Object.entries(sharedItems?.response || {}).length && (
+        <p className="text-gray-80 text-left">
+          There are no public folders available to subscribe to right now.
+        </p>
+      )}
       <div className="w-full divide-y divide-gray-300 py-4">
         {Object.entries(sharedItems?.response || {}).map(
           ([filename, fileDetails]) => (
@@ -85,4 +90,4 @@ const SharedFolderSubscription = () => {
   );
 };
 
-export default SharedFolderSubscription;
+export default PublicSharedFolderSubscription;

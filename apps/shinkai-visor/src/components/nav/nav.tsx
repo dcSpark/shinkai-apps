@@ -42,7 +42,7 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
   ArrowLeft,
-  BookCopy,
+  Compass,
   LibraryBig,
   Menu,
   SearchCode,
@@ -268,11 +268,22 @@ export default function NavBar() {
     '/settings',
     '/nodes/connect/method/quick-start',
     '/node-files',
+    '/subscriptions',
+    '/subscriptions/public',
+    '/search-node-files',
   ].includes(location.pathname);
 
-  const isInboxPage =
-    location.pathname.includes('/inboxes') ||
-    location.pathname.includes('/node-files');
+  const pagesWithoutLogo = [
+    '/inboxes',
+    '/agents',
+    '/nodes/connect/method/quick-start',
+    '/node-files',
+    '/subscriptions',
+    '/subscriptions/public',
+    '/search-node-files',
+  ].includes(location.pathname);
+
+  const isInboxPage = location.pathname.includes('/inboxes');
   const isJobInbox = location.pathname.includes('/inboxes/job_inbox');
 
   const [isConfirmLogoutDialogOpened, setIsConfirmLogoutDialogOpened] =
@@ -339,6 +350,21 @@ export default function NavBar() {
     }
   };
 
+  const renderCenterContent = () => {
+    if (pagesWithoutLogo) return;
+    if (isInboxPage) {
+      return <DisplayInboxName />;
+    } else {
+      return (
+        <img
+          alt="shinkai-app-logo"
+          className="absolute left-0 right-0 ml-auto mr-auto w-[100px]"
+          src={srcUrlResolver(visorLogo)}
+        />
+      );
+    }
+  };
+
   return (
     <nav className="">
       <AlertDialog open={isConfirmLogoutDialogOpened}>
@@ -386,15 +412,7 @@ export default function NavBar() {
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </div>
-        {isInboxPage ? (
-          <DisplayInboxName />
-        ) : (
-          <img
-            alt="shinkai-app-logo"
-            className="absolute left-0 right-0 ml-auto mr-auto w-[100px]"
-            src={srcUrlResolver(visorLogo)}
-          />
-        )}
+        {renderCenterContent()}
         {auth && (
           <DropdownMenu
             modal={false}
@@ -463,16 +481,16 @@ export default function NavBar() {
               </DropdownMenuItem>
               <DropdownMenuLabel>Subscription</DropdownMenuLabel>
               <DropdownMenuItem
+                onClick={() => onClickMenuOption(MenuOption.PublicItems)}
+              >
+                <Compass className="mr-2 h-4 w-4" />
+                <span>Browse Public Folders</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
                 onClick={() => onClickMenuOption(MenuOption.MySubscriptions)}
               >
                 <LibraryBig className="mr-2 h-4 w-4" />
-                <span>My subscriptions</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => onClickMenuOption(MenuOption.PublicItems)}
-              >
-                <BookCopy className="mr-2 h-4 w-4" />
-                <span>Public Items</span>
+                <span>Subscriptions</span>
               </DropdownMenuItem>
 
               <DropdownMenuLabel>

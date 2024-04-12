@@ -8,7 +8,7 @@ import React from 'react';
 
 import { Header } from '../header/header';
 import AllFiles from './all-files';
-import SharedFolders from './shared-folders';
+import MySharedFolders from './my-shared-folders';
 import VectorFSDrawer from './vector-fs-drawer';
 
 export default function NodeFiles() {
@@ -31,7 +31,7 @@ export default function NodeFiles() {
           <AllFiles />
         </TabsContent>
         <TabsContent className="h-full" value="shared-folders">
-          <SharedFolders />
+          <MySharedFolders />
         </TabsContent>
       </Tabs>
       <VectorFSDrawer />
