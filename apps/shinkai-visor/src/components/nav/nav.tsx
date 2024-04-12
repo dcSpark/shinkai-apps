@@ -270,7 +270,9 @@ export default function NavBar() {
     '/node-files',
   ].includes(location.pathname);
 
-  const isInboxPage = location.pathname.includes('/inboxes');
+  const isInboxPage =
+    location.pathname.includes('/inboxes') ||
+    location.pathname.includes('/node-files');
   const isJobInbox = location.pathname.includes('/inboxes/job_inbox');
 
   const [isConfirmLogoutDialogOpened, setIsConfirmLogoutDialogOpened] =

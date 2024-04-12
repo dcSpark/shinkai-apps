@@ -18,11 +18,23 @@ type SubscriptionRequirement = {
   };
   is_free: boolean;
 };
-type SharedItem = {
+
+type SharedFolder = {
   path: string;
-  permission: 'Public' | 'Private'; // Assuming permissions are either 'Public' or 'Private'
+  permission: 'Public';
   tree: TreeNode;
   subscription_requirement: SubscriptionRequirement;
+};
+export type GetAvailableSharedItemsOutput = {
+  node_name: string;
+  last_ext_node_response: string;
+  last_request_to_ext_node: string;
+  last_updated: string;
+  state: 'ResponseAvailable';
+  response_last_updated: string;
+  response: {
+    [key: string]: SharedFolder;
+  };
 };
 
 export type GetAvailableSharedItemsInput = JobCredentialsPayload & {
@@ -34,8 +46,6 @@ export type UseGetAvailableSharedItems = [
   FunctionKey.GET_AVAILABLE_SHARED_ITEMS,
   GetAvailableSharedItemsInput,
 ];
-
-export type GetAvailableSharedItemsOutput = SharedItem[];
 
 export type Options = QueryObserverOptions<
   GetAvailableSharedItemsOutput,

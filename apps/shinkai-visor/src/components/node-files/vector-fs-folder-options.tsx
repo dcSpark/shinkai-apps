@@ -420,7 +420,7 @@ export const VectorFsFolderCreateShareableAction = () => {
             });
           }}
         >
-          Share
+          Share Folder
         </Button>
       </DrawerFooter>
     </React.Fragment>
