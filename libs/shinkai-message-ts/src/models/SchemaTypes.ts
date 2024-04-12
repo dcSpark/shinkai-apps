@@ -37,6 +37,7 @@ export enum MessageSchemaType {
   AvailableSharedItems = 'AvailableSharedItems',
   CreateShareableFolder = 'CreateShareableFolder',
   SubscribeToSharedFolder = 'SubscribeToSharedFolder',
+  MySubscriptions = 'MySubscriptions',
 }
 export interface LocalScopeVRKaiEntry {
   vrkai: {

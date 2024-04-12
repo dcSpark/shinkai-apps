@@ -1362,9 +1362,8 @@ export const subscribeToSharedFolder = async (
     throw error;
   }
 };
-export const updateNodeName = async (
+export const getMySubscriptions = async (
   nodeAddress: string,
-  newNodeName: string,
   sender: string,
   sender_subidentity: string,
   receiver: string,
@@ -1372,11 +1371,10 @@ export const updateNodeName = async (
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
   try {
-    const messageStr = ShinkaiMessageBuilderWrapper.updateNodeName(
+    const messageStr = ShinkaiMessageBuilderWrapper.getMySubscriptions(
       setupDetailsState.profile_encryption_sk,
       setupDetailsState.profile_identity_sk,
       setupDetailsState.node_encryption_pk,
-      newNodeName,
       sender,
       sender_subidentity,
       receiver,
@@ -1385,21 +1383,17 @@ export const updateNodeName = async (
 
     const message = JSON.parse(messageStr);
 
-    const response = await fetch(
-      urlJoin(nodeAddress, '/v1/change_nodes_name'),
-      {
-        method: 'POST',
-        body: JSON.stringify(message),
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
+    const response = await fetch(urlJoin(nodeAddress, '/v1/my_subscriptions'), {
+      method: 'POST',
+      body: JSON.stringify(message),
+      headers: { 'Content-Type': 'application/json' },
+    });
 
     await handleHttpError(response);
     const data = await response.json();
-    return data;
+    return { data: JSON.parse(data.data), status: data.status };
   } catch (error) {
-    console.error('Error changeNodeName:', error);
+    console.error('Error createShareableFolder:', error);
     throw error;
   }
 };
-

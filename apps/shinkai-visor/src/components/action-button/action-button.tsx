@@ -234,13 +234,7 @@ const ActionButton = () => {
               >
                 <XIcon />
               </button>
-              {
-                void console.log(
-                  typeof currentVectorResource,
-                  'currentVectorResource111',
-                  currentVectorResource,
-                )
-              }
+
               {[
                 createAction(
                   isVectorResourceFound,

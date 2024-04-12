@@ -1,4 +1,4 @@
-import type { JobCredentialsPayload } from '@shinkai_network/shinkai-message-ts/models/Payloads';
+import type { JobCredentialsPayload } from '@shinkai_network/shinkai-message-ts/models';
 import { QueryObserverOptions } from '@tanstack/react-query';
 
 import { FunctionKey } from '../../constants';
