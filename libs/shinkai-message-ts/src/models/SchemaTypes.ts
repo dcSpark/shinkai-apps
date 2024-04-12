@@ -36,6 +36,7 @@ export enum MessageSchemaType {
   // subscriptions
   AvailableSharedItems = 'AvailableSharedItems',
   CreateShareableFolder = 'CreateShareableFolder',
+  UnshareFolder = 'UnshareFolder',
   SubscribeToSharedFolder = 'SubscribeToSharedFolder',
   MySubscriptions = 'MySubscriptions',
 }

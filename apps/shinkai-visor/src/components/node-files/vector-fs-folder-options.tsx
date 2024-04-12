@@ -2,6 +2,7 @@ import { useCopyVrFolder } from '@shinkai_network/shinkai-node-state/lib/mutatio
 import { useCreateShareableFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/createShareableFolder/useCreateShareableFolder';
 import { useDeleteVrFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/deleteVRFolder/useDeleteVRFolder';
 import { useMoveVrFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/moveVRFolder/useMoveVRFolder';
+import { useUnshareFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/unshareFolder/useUnshareFolder';
 import { useGetVRSeachSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRSearchSimplified/useGetSearchVRItems';
 import {
   Button,
@@ -421,6 +422,67 @@ export const VectorFsFolderCreateShareableAction = () => {
           }}
         >
           Share Folder
+        </Button>
+      </DrawerFooter>
+    </React.Fragment>
+  );
+};
+export const VectorFsFolderUnshareAction = () => {
+  const selectedFolder = useVectorFsStore((state) => state.selectedFolder);
+  const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
+  const auth = useAuth((state) => state.auth);
+  const destinationFolderPath = useVectorFolderSelectionStore(
+    (state) => state.destinationFolderPath,
+  );
+
+  const { mutateAsync: unshareFolder, isPending } = useUnshareFolder({
+    onSuccess: () => {
+      closeDrawerMenu();
+      toast.success('Unshared folder successfully');
+    },
+    onError: () => {
+      toast.error('Failed to unshared folder');
+    },
+  });
+
+  return (
+    <React.Fragment>
+      <DrawerHeader>
+        <DrawerTitle className="line-clamp-1 font-normal">
+          Unshare
+          <span className="font-medium">
+            {' '}
+            &quot;{selectedFolder?.name}&quot;
+          </span>{' '}
+          ?
+        </DrawerTitle>
+        <DrawerDescription className="py-3">
+          Everyone will be removed from this folder. You’ll still keep a copy of
+          this folder in your Vector FS. <br />
+          Note: Removed members will keep a copy of this shared folder.
+        </DrawerDescription>
+      </DrawerHeader>
+
+      <DrawerFooter>
+        <Button
+          className="mt-4"
+          disabled={destinationFolderPath === selectedFolder?.path}
+          isLoading={isPending}
+          onClick={async () => {
+            await unshareFolder({
+              nodeAddress: auth?.node_address ?? '',
+              shinkaiIdentity: auth?.shinkai_identity ?? '',
+              profile: auth?.profile ?? '',
+              folderPath: selectedFolder?.path ?? '',
+              my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+              my_device_identity_sk: auth?.profile_identity_sk ?? '',
+              node_encryption_pk: auth?.node_encryption_pk ?? '',
+              profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+              profile_identity_sk: auth?.profile_identity_sk ?? '',
+            });
+          }}
+        >
+          Unshare Folder
         </Button>
       </DrawerFooter>
     </React.Fragment>

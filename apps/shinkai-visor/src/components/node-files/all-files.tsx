@@ -28,20 +28,10 @@ import {
   GenerateDocIcon,
   Input,
   ScrollArea,
-  ToggleGroup,
-  ToggleGroupItem,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
-import {
-  ChevronRight,
-  LayoutGrid,
-  List,
-  PlusIcon,
-  SearchIcon,
-  X,
-  XIcon,
-} from 'lucide-react';
+import { ChevronRight, PlusIcon, SearchIcon, X, XIcon } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 
@@ -49,9 +39,10 @@ import { useDebounce } from '../../hooks/use-debounce';
 import { useQuery } from '../../hooks/use-query';
 import { useAuth } from '../../store/auth/auth';
 import { useVectorFsStore, VectorFSLayout } from './node-file-context';
-import VectorFSDrawer, { VectorFsGlobalAction } from './vector-fs-drawer';
+import { VectorFsGlobalAction } from './vector-fs-drawer';
 import VectorFsFolder from './vector-fs-folder';
 import VectorFsItem from './vector-fs-item';
+import VectorFsToggleLayout from './vector-fs-toggle-layout';
 
 const MotionButton = motion(Button);
 
@@ -190,7 +181,7 @@ const AllFiles = () => {
   const splitCurrentPath = VRFiles?.path?.split('/').filter(Boolean) ?? [];
 
   return (
-    <React.Fragment>
+    <div className="flex flex-col">
       <div className="flex items-center gap-3">
         <div className="relative flex h-10 w-full flex-1 items-center">
           <Input
@@ -249,27 +240,7 @@ const AllFiles = () => {
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
-
-        <ToggleGroup type="single" value={layout}>
-          <ToggleGroupItem
-            aria-label="Toggle layout grid"
-            onClick={() => {
-              setLayout(VectorFSLayout.Grid);
-            }}
-            value="grid"
-          >
-            <LayoutGrid className="h-4 w-4" />
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            aria-label="Toggle layout list"
-            onClick={() => {
-              setLayout(VectorFSLayout.List);
-            }}
-            value="list"
-          >
-            <List className="h-4 w-4" />
-          </ToggleGroupItem>
-        </ToggleGroup>
+        <VectorFsToggleLayout />
       </div>
       {!searchQuery && (
         <div className="mt-4">
@@ -518,8 +489,7 @@ const AllFiles = () => {
           <XIcon />
         </MotionButton>
       )}
-      <VectorFSDrawer />
-    </React.Fragment>
+    </div>
   );
 };
 export default AllFiles;
