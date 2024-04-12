@@ -8,41 +8,41 @@ import React from 'react';
 import { useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
 
-type Response = {
-  node_name: string;
-  last_ext_node_response: string;
-  last_request_to_ext_node: string;
-  last_updated: string;
-  state: 'ResponseAvailable'; // This can be an enum if there are more states.
-  response_last_updated: string;
-  response: {
-    [key: string]: {
-      path: string;
-      permission: 'Public'; // This can be an enum if there are more permissions.
-      tree: {
-        name: string;
-        path: string;
-        last_modified: string;
-        children: {
-          [key: string]: {
-            name: string;
-            path: string;
-            last_modified: string;
-            children: {}; // Further detail can be added if children have a more complex structure.
-          };
-        };
-      };
-      subscription_requirement: {
-        minimum_token_delegation: number;
-        minimum_time_delegated_hours: number;
-        monthly_payment: {
-          USD: number;
-        };
-        is_free: boolean;
-      };
-    };
-  };
-};
+// type Response = {
+//   node_name: string;
+//   last_ext_node_response: string;
+//   last_request_to_ext_node: string;
+//   last_updated: string;
+//   state: 'ResponseAvailable'; // This can be an enum if there are more states.
+//   response_last_updated: string;
+//   response: {
+//     [key: string]: {
+//       path: string;
+//       permission: 'Public'; // This can be an enum if there are more permissions.
+//       tree: {
+//         name: string;
+//         path: string;
+//         last_modified: string;
+//         children: {
+//           [key: string]: {
+//             name: string;
+//             path: string;
+//             last_modified: string;
+//             children: any;
+//           };
+//         };
+//       };
+//       subscription_requirement: {
+//         minimum_token_delegation: number;
+//         minimum_time_delegated_hours: number;
+//         monthly_payment: {
+//           USD: number;
+//         };
+//         is_free: boolean;
+//       };
+//     };
+//   };
+// };
 
 const PublicItemsSubscription = () => {
   const auth = useAuth((state) => state.auth);
