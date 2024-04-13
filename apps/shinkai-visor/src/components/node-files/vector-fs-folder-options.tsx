@@ -375,12 +375,16 @@ export const VectorFsFolderCreateShareableAction = () => {
   const destinationFolderPath = useVectorFolderSelectionStore(
     (state) => state.destinationFolderPath,
   );
+  const setSelectedVectorFsTab = useVectorFsStore(
+    (state) => state.setSelectedVectorFsTab,
+  );
 
   const { mutateAsync: createShareableFolder, isPending } =
     useCreateShareableFolder({
       onSuccess: () => {
         closeDrawerMenu();
         toast.success('Folder shared successfully');
+        setSelectedVectorFsTab('shared-folders');
       },
       onError: () => {
         toast.error('Failed to shared folder');
@@ -398,7 +402,7 @@ export const VectorFsFolderCreateShareableAction = () => {
           </span>{' '}
         </DrawerTitle>
         <DrawerDescription>
-          Share this folder with others publicly
+          You can share folders that you store in Vector FS with anyone.
         </DrawerDescription>
       </DrawerHeader>
 

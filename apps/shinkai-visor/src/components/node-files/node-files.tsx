@@ -9,17 +9,25 @@ import React from 'react';
 import { Header } from '../header/header';
 import AllFiles from './all-files';
 import MySharedFolders from './my-shared-folders';
+import { useVectorFsStore } from './node-file-context';
 import VectorFSDrawer from './vector-fs-drawer';
 
 export default function NodeFiles() {
-  const [currentTab, setCurrentTab] = React.useState('all');
+  const selectedVectorFsTab = useVectorFsStore(
+    (state) => state.selectedVectorFsTab,
+  );
+  const setSelectedVectorFsTab = useVectorFsStore(
+    (state) => state.setSelectedVectorFsTab,
+  );
   return (
     <div className="flex h-full flex-col gap-4">
       <Header title={'Vector File System'} />
       <Tabs
         className="flex h-full w-full flex-col"
-        onValueChange={(value) => setCurrentTab(value)}
-        value={currentTab}
+        onValueChange={(value) =>
+          setSelectedVectorFsTab(value as 'all' | 'shared-folders')
+        }
+        value={selectedVectorFsTab}
       >
         <TabsList>
           <TabsTrigger className="flex flex-1 items-center gap-2" value="all">
@@ -36,11 +44,7 @@ export default function NodeFiles() {
           <AllFiles />
         </TabsContent>
         <TabsContent className="h-full" value="shared-folders">
-          <MySharedFolders
-            openSharedFolderLocation={() => {
-              setCurrentTab('all');
-            }}
-          />
+          <MySharedFolders />
         </TabsContent>
       </Tabs>
       <VectorFSDrawer />

@@ -19,11 +19,7 @@ import { useVectorFsStore, VectorFSLayout } from './node-file-context';
 import { VectorFsFolderAction } from './vector-fs-drawer';
 import VectorFsToggleLayout from './vector-fs-toggle-layout';
 
-export default function MySharedFolders({
-  openSharedFolderLocation,
-}: {
-  openSharedFolderLocation: () => void;
-}) {
+export default function MySharedFolders() {
   const layout = useVectorFsStore((state) => state.layout);
   const auth = useAuth((state) => state.auth);
   const { data: sharedFolders, isSuccess } = useGetMySharedFolders({
@@ -65,7 +61,6 @@ export default function MySharedFolders({
                   new Date(folder?.tree?.last_modified ?? ''),
                 )}
                 name={folder.path.replace(/\//g, '')}
-                openSharedFolderLocation={openSharedFolderLocation}
                 path={folder.path}
                 totalItems={Object.keys(folder.tree.children || {}).length}
               />
@@ -82,13 +77,11 @@ function SharedFolderItem({
   lastModified,
   totalItems,
   path,
-  openSharedFolderLocation,
 }: {
   name: string;
   lastModified: string;
   totalItems: number;
   path: string;
-  openSharedFolderLocation: () => void;
 }) {
   const setCurrentGlobalPath = useVectorFsStore(
     (state) => state.setCurrentGlobalPath,
@@ -100,6 +93,9 @@ function SharedFolderItem({
   const setSelectedFolder = useVectorFsStore(
     (state) => state.setSelectedFolder,
   );
+  const setSelectedVectorFsTab = useVectorFsStore(
+    (state) => state.setSelectedVectorFsTab,
+  );
 
   return (
     <button
@@ -109,7 +105,7 @@ function SharedFolderItem({
       )}
       key={path}
       onClick={() => {
-        openSharedFolderLocation();
+        setSelectedVectorFsTab('all');
         setCurrentGlobalPath(path);
       }}
       type="button"
