@@ -1,3 +1,4 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useCopyVrFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/copyVRFolder/useCopyVrFolder';
 import { useCreateShareableFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/createShareableFolder/useCreateShareableFolder';
 import { useDeleteVrFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/deleteVRFolder/useDeleteVRFolder';
@@ -14,6 +15,7 @@ import {
   FormField,
   Input,
   ScrollArea,
+  TextField,
 } from '@shinkai_network/shinkai-ui';
 import { SearchIcon, XIcon } from 'lucide-react';
 import React, { useState } from 'react';
@@ -368,10 +370,17 @@ export const VectorFsFolderSearchKnowledgeAction = () => {
   );
 };
 
+const shareFolderSchema = z.object({
+  folderDescription: z.string().min(1, 'Folder description is required'),
+});
+
 export const VectorFsFolderCreateShareableAction = () => {
   const selectedFolder = useVectorFsStore((state) => state.selectedFolder);
   const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
   const auth = useAuth((state) => state.auth);
+  const shareFolderForm = useForm<z.infer<typeof shareFolderSchema>>({
+    resolver: zodResolver(shareFolderSchema),
+  });
   const destinationFolderPath = useVectorFolderSelectionStore(
     (state) => state.destinationFolderPath,
   );
@@ -391,6 +400,21 @@ export const VectorFsFolderCreateShareableAction = () => {
       },
     });
 
+  const onSubmit = async (data: z.infer<typeof shareFolderSchema>) => {
+    await createShareableFolder({
+      nodeAddress: auth?.node_address ?? '',
+      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      profile: auth?.profile ?? '',
+      folderPath: selectedFolder?.path ?? '',
+      folderDescription: data.folderDescription ?? '',
+      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+      my_device_identity_sk: auth?.profile_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+    });
+  };
+
   return (
     <React.Fragment>
       <DrawerHeader>
@@ -405,29 +429,28 @@ export const VectorFsFolderCreateShareableAction = () => {
           You can share folders that you store in Vector FS with anyone.
         </DrawerDescription>
       </DrawerHeader>
-
-      <DrawerFooter>
-        <Button
-          className="mt-4"
-          disabled={destinationFolderPath === selectedFolder?.path}
-          isLoading={isPending}
-          onClick={async () => {
-            await createShareableFolder({
-              nodeAddress: auth?.node_address ?? '',
-              shinkaiIdentity: auth?.shinkai_identity ?? '',
-              profile: auth?.profile ?? '',
-              folderPath: selectedFolder?.path ?? '',
-              my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-              my_device_identity_sk: auth?.profile_identity_sk ?? '',
-              node_encryption_pk: auth?.node_encryption_pk ?? '',
-              profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-              profile_identity_sk: auth?.profile_identity_sk ?? '',
-            });
-          }}
+      <Form {...shareFolderForm}>
+        <form
+          className="mt-5 flex flex-col gap-3"
+          onSubmit={shareFolderForm.handleSubmit(onSubmit)}
         >
-          Share Folder
-        </Button>
-      </DrawerFooter>
+          <FormField
+            control={shareFolderForm.control}
+            name="folderDescription"
+            render={({ field }) => (
+              <TextField autoFocus field={field} label="Folder Description" />
+            )}
+          />
+          <Button
+            className="mt-4"
+            disabled={destinationFolderPath === selectedFolder?.path}
+            isLoading={isPending}
+            type="submit"
+          >
+            Share Folder
+          </Button>
+        </form>
+      </Form>
     </React.Fragment>
   );
 };

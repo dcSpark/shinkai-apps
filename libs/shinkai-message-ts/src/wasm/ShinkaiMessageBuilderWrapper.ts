@@ -1135,6 +1135,7 @@ export class ShinkaiMessageBuilderWrapper {
     my_signature_secret_key: string,
     receiver_public_key: string,
     path: string,
+    folder_description: string,
     sender: string,
     sender_subidentity: string,
     receiver: string,
@@ -1143,6 +1144,7 @@ export class ShinkaiMessageBuilderWrapper {
     const payload = {
       path,
       subscription_req: {
+        folder_description,
         minimum_token_delegation: 0,
         minimum_time_delegated_hours: 0,
         monthly_payment: {

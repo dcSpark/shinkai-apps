@@ -17,6 +17,7 @@ type SubscriptionRequirement = {
     USD: number;
   };
   is_free: boolean;
+  folder_description: string;
 };
 type SharedFolder = {
   path: string;

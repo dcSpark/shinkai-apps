@@ -9,4 +9,5 @@ export type CreateShareableFolderInput = CredentialsPayload & {
   shinkaiIdentity: string;
   profile: string;
   folderPath: string;
+  folderDescription: string;
 };

@@ -1328,6 +1328,7 @@ export const createShareableFolder = async (
   receiver: string,
   receiver_subidentity: string,
   folderPath: string,
+  folderDescription: string,
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
   try {
@@ -1336,6 +1337,7 @@ export const createShareableFolder = async (
       setupDetailsState.profile_identity_sk,
       setupDetailsState.node_encryption_pk,
       folderPath,
+      folderDescription,
       sender,
       sender_subidentity,
       receiver,

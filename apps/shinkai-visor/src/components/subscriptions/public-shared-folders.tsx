@@ -39,6 +39,9 @@ const PublicSharedFolderSubscription = () => {
         {Object.entries(sharedItems?.response || {}).map(
           ([filename, fileDetails]) => (
             <SubscriptionItem
+              folderDescription={
+                fileDetails?.subscription_requirement.folder_description
+              }
               folderName={filename}
               folderPath={fileDetails.path}
               isFree={fileDetails.subscription_requirement.is_free}
@@ -60,9 +63,11 @@ export const SubscriptionItem = ({
   nodeName,
   isFree,
   folderPath,
+  folderDescription,
 }: {
   folderName: string;
   folderPath: string;
+  folderDescription: string;
   nodeName: string;
   isFree: boolean;
 }) => {
@@ -88,6 +93,7 @@ export const SubscriptionItem = ({
         <span className="line-clamp-1 text-base font-medium capitalize">
           {folderName.replace(/\//g, '')}
         </span>
+        <span className="text-gray-80 capitalize">{folderDescription}</span>
         <div className="text-gray-80 flex items-center gap-3 text-xs">
           <span>{nodeName} </span> ⋅ <span>{isFree ? 'Free' : 'Paid'} </span>{' '}
         </div>

@@ -7,6 +7,7 @@ export const createShareableFolder = async ({
   shinkaiIdentity,
   profile,
   folderPath,
+  folderDescription,
   my_device_encryption_sk,
   my_device_identity_sk,
   node_encryption_pk,
@@ -20,6 +21,7 @@ export const createShareableFolder = async ({
     shinkaiIdentity,
     profile,
     folderPath,
+    folderDescription,
     {
       my_device_encryption_sk,
       my_device_identity_sk,

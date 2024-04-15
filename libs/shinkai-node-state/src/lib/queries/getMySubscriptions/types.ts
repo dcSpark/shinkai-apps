@@ -3,6 +3,14 @@ import { QueryObserverOptions } from '@tanstack/react-query';
 
 import { FunctionKey } from '../../constants';
 
+enum SubscriptionStatus {
+  SubscriptionRequested = 'SubscriptionRequested',
+  SubscriptionConfirmed = 'SubscriptionConfirmed',
+  UnsubscribeRequested = 'UnsubscribeRequested',
+  UnsubscribeConfirmed = 'UnsubscribeConfirmed',
+  UpdateSubscriptionRequested = 'UpdateSubscriptionRequested',
+  UpdateSubscriptionConfirmed = 'UpdateSubscriptionConfirmed',
+}
 type Subscription = {
   subscription_id: {
     unique_id: string;
@@ -15,7 +23,7 @@ type Subscription = {
   subscriber_node: string;
   subscriber_profile: string;
   payment: 'Free' | 'Paid';
-  state: 'SubscriptionConfirmed' | string;
+  state: SubscriptionStatus;
   date_created: string;
   last_modified: string;
   last_sync: string | null;
