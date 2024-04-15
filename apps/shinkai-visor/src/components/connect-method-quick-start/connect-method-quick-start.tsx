@@ -12,7 +12,7 @@ import {
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import { QrCode } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import { useHistory, useLocation } from 'react-router';
@@ -81,6 +81,9 @@ export const ConnectMethodQuickStart = () => {
     },
   });
 
+  useEffect(() => {
+    form.setValue('node_address', DEFAULT_NODE_ADDRESS);
+  }, [DEFAULT_NODE_ADDRESS, form]);
   const connect = async (values: FormType) => {
     let keys = encryptionKeys;
     if (!keys) {
