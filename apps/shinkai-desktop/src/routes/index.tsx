@@ -4,6 +4,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import ChatConversation from '../pages/chat/chat-conversation';
 import EmptyMessage from '../pages/chat/empty-message';
 import ChatLayout from '../pages/chat/layout';
+import { ConnectMethodQrCodePage } from '../pages/connect-method-qr-code';
 import CreateAgentPage from '../pages/create-agent';
 import CreateChatPage from '../pages/create-chat';
 import CreateJobPage from '../pages/create-job';
@@ -104,6 +105,7 @@ const AppRoutes = () => {
         <Route element={<WelcomePage />} path={'/welcome'} />
         <Route element={<OnboardingPage />} path={ONBOARDING_PATH} />
         <Route element={<RestoreConnectionPage />} path={'/restore'} />
+        <Route element={<ConnectMethodQrCodePage />} path={'/connect-qr'} />
         <Route
           element={
             <ProtectedRoute>

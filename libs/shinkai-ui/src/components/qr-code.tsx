@@ -12,26 +12,30 @@ export function QRCode({
   value,
   size,
   id,
+  ...props
 }: {
   value: IProps['value'];
   size: IProps['size'];
   id?: IProps['id'];
-}): React.ReactElement {
+} & React.HTMLAttributes<HTMLDivElement>): React.ReactElement {
   return (
-    <ReactQRCode
-      eyeColor="black"
-      eyeRadius={10}
-      fgColor="black"
-      id={id}
-      logoHeight={40}
-      logoImage={shinkaiLogo}
-      logoPaddingStyle="circle"
-      logoWidth={size ? size * 0.2 : undefined}
-      qrStyle="dots"
-      removeQrCodeBehindLogo
-      size={size ?? 300}
-      value={value}
-    />
+    <div {...props}>
+      <ReactQRCode
+        ecLevel={'M'}
+        eyeColor="black"
+        eyeRadius={10}
+        fgColor="black"
+        id={id}
+        logoHeight={size ? size * 0.2 : undefined}
+        logoImage={shinkaiLogo}
+        logoPaddingStyle="circle"
+        logoWidth={size ? size * 0.2 : undefined}
+        qrStyle="dots"
+        removeQrCodeBehindLogo
+        size={size ?? 300}
+        value={value}
+      />
+    </div>
   );
 }
 
@@ -79,7 +83,13 @@ export function QrCodeModal({
             {description}
           </p>
           <div className="mb-7 overflow-hidden rounded-lg shadow-2xl">
-            <QRCode id="registration-code-qr" size={190} value={value} />
+            <QRCode size={190} value={value} />
+            <QRCode
+              className="hidden"
+              id="registration-code-qr"
+              size={1024}
+              value={value}
+            />
           </div>
           <div className="flex flex-col gap-4">
             <Button className="flex gap-1" onClick={downloadCode}>
