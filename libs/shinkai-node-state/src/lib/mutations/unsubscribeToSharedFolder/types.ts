@@ -9,4 +9,6 @@ export type UnsubscribeToSharedFolderInput = CredentialsPayload & {
   shinkaiIdentity: string;
   profile: string;
   folderPath: string;
+  streamerNodeName: string;
+  streamerNodeProfile: string;
 };

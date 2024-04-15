@@ -45,6 +45,7 @@ const PublicSharedFolderSubscription = () => {
               folderName={filename}
               folderPath={fileDetails.path}
               isFree={fileDetails.subscription_requirement.is_free}
+              key={fileDetails.path}
               nodeName={sharedItems?.node_name ?? '-'}
             />
           ),
@@ -105,9 +106,12 @@ export const SubscriptionItem = ({
         layout
         onClick={async () => {
           if (!auth) return;
+          const [node, nodeProfile] = nodeName.split('/');
           await subscribeSharedFolder({
             nodeAddress: auth?.node_address,
             shinkaiIdentity: auth?.shinkai_identity,
+            streamerNodeName: node,
+            streamerNodeProfile: nodeProfile,
             profile: auth?.profile,
             folderPath: folderPath,
             my_device_encryption_sk: auth?.my_device_encryption_sk,

@@ -1456,7 +1456,7 @@ export const unsubscribeToSharedFolder = async (
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
   try {
-    const messageStr = ShinkaiMessageBuilderWrapper.subscribeToSharedFolder(
+    const messageStr = ShinkaiMessageBuilderWrapper.unsubscribeToSharedFolder(
       setupDetailsState.profile_encryption_sk,
       setupDetailsState.profile_identity_sk,
       setupDetailsState.node_encryption_pk,
@@ -1471,14 +1471,11 @@ export const unsubscribeToSharedFolder = async (
 
     const message = JSON.parse(messageStr);
 
-    const response = await fetch(
-      urlJoin(nodeAddress, '/v1/subscribe_to_shared_folder'),
-      {
-        method: 'POST',
-        body: JSON.stringify(message),
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
+    const response = await fetch(urlJoin(nodeAddress, '/v1/unsubscribe'), {
+      method: 'POST',
+      body: JSON.stringify(message),
+      headers: { 'Content-Type': 'application/json' },
+    });
 
     await handleHttpError(response);
     const data = await response.json();

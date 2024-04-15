@@ -38,6 +38,7 @@ export enum MessageSchemaType {
   CreateShareableFolder = 'CreateShareableFolder',
   UnshareFolder = 'UnshareFolder',
   SubscribeToSharedFolder = 'SubscribeToSharedFolder',
+  UnsubscribeToSharedFolder = 'UnsubscribeToSharedFolder',
   MySubscriptions = 'MySubscriptions',
 }
 export interface LocalScopeVRKaiEntry {

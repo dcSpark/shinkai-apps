@@ -1282,7 +1282,7 @@ export class ShinkaiMessageBuilderWrapper {
 
     builder.message_raw_content(body);
     builder.message_schema_type(
-      MessageSchemaType.SubscribeToSharedFolder.toString(),
+      MessageSchemaType.UnsubscribeToSharedFolder.toString(),
     );
     builder.internal_metadata(
       sender_subidentity,

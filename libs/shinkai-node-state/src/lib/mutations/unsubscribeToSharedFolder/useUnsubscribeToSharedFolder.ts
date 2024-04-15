@@ -19,7 +19,7 @@ export const useUnsubscribeToSharedFolder = (options?: Options) => {
     ...options,
     onSuccess: (response, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: [FunctionKey.GET_AVAILABLE_SHARED_ITEMS],
+        queryKey: [FunctionKey.GET_MY_SUBSCRIPTIONS],
       });
 
       if (options?.onSuccess) {
