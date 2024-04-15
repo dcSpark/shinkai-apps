@@ -1,17 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { DownloadIcon } from '@radix-ui/react-icons';
+import { QRSetupData } from '@shinkai_network/shinkai-message-ts/models';
 import { useCreateRegistrationCode } from '@shinkai_network/shinkai-node-state/lib/mutations/createRegistrationCode/useCreateRegistrationCode';
 import {
   Button,
-  Dialog,
-  DialogContent,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  QRCode,
+  QrCodeModal,
   Select,
   SelectContent,
   SelectItem,
@@ -21,22 +19,22 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { save } from '@tauri-apps/api/dialog';
 import { BaseDirectory, writeBinaryFile } from '@tauri-apps/api/fs';
-import { Check } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { SetupData, useAuth } from '../store/auth';
+import { useAuth } from '../store/auth';
 import SimpleLayout from './layout/simple-layout';
 
 const saveImage = async (dataUrl: string) => {
   const suggestedFilename = 'registration-code-shinkai.png';
-  await save({ defaultPath: BaseDirectory.Download + '/' + suggestedFilename });
-  await writeBinaryFile(
-    suggestedFilename,
-    await fetch(dataUrl).then((response) => response.arrayBuffer()),
-    { dir: BaseDirectory.Download },
-  );
+  const filePath = await save({
+    defaultPath: BaseDirectory.Download + '/' + suggestedFilename,
+  });
+  const buffer = await (await fetch(dataUrl)).arrayBuffer();
+  if (filePath) {
+    await writeBinaryFile(filePath, buffer);
+  }
 };
 
 enum IdentityType {
@@ -63,20 +61,17 @@ const permissionOptions = [
   PermissionType.None,
 ];
 
-type GeneratedSetupData = Partial<
-  SetupData & { registration_code: string; identity_type: string }
->;
 const GenerateCodePage = () => {
   const auth = useAuth((state) => state.auth);
   const [qrCodeModalOpen, setQrCodeModalOpen] = useState(false);
   const [generatedSetupData, setGeneratedSetupData] = useState<
-    GeneratedSetupData | undefined
+    QRSetupData | undefined
   >();
 
   const form = useForm<z.infer<typeof generateCodeSchema>>({
     resolver: zodResolver(generateCodeSchema),
     defaultValues: {
-      profile: '',
+      profile: auth?.profile,
       permissionType: PermissionType.Admin,
       identityType: IdentityType.Device,
     },
@@ -86,15 +81,15 @@ const GenerateCodePage = () => {
     useCreateRegistrationCode({
       onSuccess: (registrationCode) => {
         const formValues = form.getValues();
-        const setupData: GeneratedSetupData = {
+        const setupData: QRSetupData = {
           registration_code: registrationCode,
           permission_type: formValues.permissionType,
           identity_type: formValues.identityType,
           profile: formValues.profile,
-          node_address: auth?.node_address,
-          shinkai_identity: auth?.shinkai_identity,
-          node_encryption_pk: auth?.node_encryption_pk,
-          node_signature_pk: auth?.node_signature_pk,
+          node_address: auth?.node_address ?? '',
+          shinkai_identity: auth?.shinkai_identity ?? '',
+          node_encryption_pk: auth?.node_encryption_pk ?? '',
+          node_signature_pk: auth?.node_signature_pk ?? '',
           ...(formValues.identityType === IdentityType.Device &&
           formValues.profile === auth?.profile
             ? {
@@ -135,6 +130,12 @@ const GenerateCodePage = () => {
       profileName: data.profile,
     });
   };
+  useEffect(() => {
+    if (form.getValues().profile) {
+      return;
+    }
+    form.setValue('profile', auth?.profile ?? '');
+  }, [auth, form]);
   return (
     <SimpleLayout title="Generate Registration Code">
       <Form {...form}>
@@ -143,34 +144,38 @@ const GenerateCodePage = () => {
           onSubmit={form.handleSubmit(onSubmit)}
         >
           <div className="flex grow flex-col space-y-2">
-            <FormField
-              control={form.control}
-              name="identityType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Select Identity Type</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select your AI Agent" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {identityTypeOptions.map((option) => (
-                        <SelectItem key={option} value={option}>
-                          <span>{option} </span>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {/* TODO: Re enable identity type selector later, Profiles probably won't be relevant to any frontend experiences for the next 6+ months @Rob */}
+            {false && (
+              <FormField
+                control={form.control}
+                name="identityType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Select Identity Type</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select your AI Agent" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {identityTypeOptions.map((option) => (
+                          <SelectItem key={option} value={option}>
+                            <span>{option} </span>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             {identityType === IdentityType.Device && (
               <FormField
                 control={form.control}
+                disabled={true}
                 name="profile"
                 render={({ field }) => (
                   <TextField field={field} label="Profile" />
@@ -214,88 +219,16 @@ const GenerateCodePage = () => {
         </form>
       </Form>
       <QrCodeModal
-        generatedSetupData={generatedSetupData}
+        description="Scan the QR code with your Shinkai app or download it to register"
+        modalClassName={'w-[85%]'}
         onOpenChange={setQrCodeModalOpen}
+        onSave={(dataUrl) => saveImage(dataUrl)}
         open={qrCodeModalOpen}
+        title="Here's your QR Code"
+        value={JSON.stringify(generatedSetupData)}
       />
     </SimpleLayout>
   );
 };
 
 export default GenerateCodePage;
-
-function QrCodeModal({
-  open,
-  onOpenChange,
-  generatedSetupData,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  generatedSetupData: GeneratedSetupData | undefined;
-}) {
-  const [saved, setSaved] = useState(false);
-  const downloadCode = async () => {
-    const canvas = document.querySelector('#registration-code-qr');
-    if (canvas instanceof HTMLCanvasElement) {
-      /*
-       Tauri has this feature in the roadmap, but it's not available yet.
-       https://github.com/tauri-apps/tauri/issues/4633
-       const downloadLink = document.createElement("a");
-       downloadLink.href = pngUrl;
-       downloadLink.download = `registration-code-shinkai.png`;
-       document.body.append(downloadLink);
-       console.log(downloadLink);
-       downloadLink.click();
-       downloadLink.remove();
-     */
-      try {
-        const pngUrl = canvas.toDataURL();
-        await saveImage(pngUrl);
-        setSaved(true);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setTimeout(() => {
-          setSaved(false);
-        }, 3000);
-      }
-    }
-  };
-
-  return (
-    <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent>
-        <div className="flex flex-col items-center py-4">
-          {/* eslint-disable-next-line react/no-unescaped-entities */}
-          <h2 className="mb-1 text-lg font-semibold">Here's your QR Code</h2>
-          <p className="text-foreground mb-5 text-center text-xs">
-            Scan the QR code with your Shinkai app or download it to register
-            your device.
-          </p>
-          <div className="mb-7 overflow-hidden rounded-lg shadow-2xl">
-            <QRCode
-              id="registration-code-qr"
-              size={190}
-              value={JSON.stringify(generatedSetupData)}
-            />
-          </div>
-          <div className="flex gap-4">
-            <Button className="flex gap-1" onClick={downloadCode}>
-              {saved ? <Check /> : <DownloadIcon className="h-4 w-4" />}
-              {saved ? 'Saved' : 'Download'}
-            </Button>
-            <Button
-              className="flex gap-1"
-              onClick={() => {
-                onOpenChange(false);
-              }}
-              variant="ghost"
-            >
-              I saved it, close
-            </Button>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-}

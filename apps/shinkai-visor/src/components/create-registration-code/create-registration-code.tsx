@@ -49,7 +49,7 @@ export const CreateRegistrationCode = () => {
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      profile: '',
+      profile: auth?.profile,
       permissionType: PermissionType.Admin,
       identityType: IdentityType.Device,
     },
@@ -199,6 +199,7 @@ export const CreateRegistrationCode = () => {
               {identityType === IdentityType.Device && (
                 <FormField
                   control={form.control}
+                  disabled={true}
                   name="profile"
                   render={({ field }) => (
                     <TextField
