@@ -221,14 +221,13 @@ const OnboardingPage = () => {
           </div>
         </div>
 
-        <div className="flex flex-row justify-between gap-4">
+        <div className="mt-4 flex flex-row justify-between gap-4">
           <ConnectionOptionButton
             className="h-32"
             description={'Use the QR code to connect'}
-            disabled={true}
             icon={<QrCode className="text-gray-100" />}
             onClick={() => {
-              navigate('/');
+              navigate('/connect-qr');
             }}
             title={'QR Code'}
           />

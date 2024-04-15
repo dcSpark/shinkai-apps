@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { QRSetupData } from '@shinkai_network/shinkai-message-ts/models';
 import { useCreateRegistrationCode } from '@shinkai_network/shinkai-node-state/lib/mutations/createRegistrationCode/useCreateRegistrationCode';
 import {
   Button,
@@ -21,7 +22,7 @@ import { useForm, useWatch } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { z } from 'zod';
 
-import { SetupData, useAuth } from '../../store/auth/auth';
+import { useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
 
 enum IdentityType {
@@ -48,7 +49,7 @@ export const CreateRegistrationCode = () => {
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      profile: '',
+      profile: auth?.profile,
       permissionType: PermissionType.Admin,
       identityType: IdentityType.Device,
     },
@@ -58,8 +59,7 @@ export const CreateRegistrationCode = () => {
     control: form.control,
   });
   const [generatedSetupData, setGeneratedSetupData] = useState<
-    | Partial<SetupData & { registration_code: string; identity_type: string }>
-    | undefined
+    QRSetupData | undefined
   >();
   const [qrCodeModalOpen, setQrCodeModalOpen] = useState(false);
 
@@ -67,28 +67,22 @@ export const CreateRegistrationCode = () => {
     useCreateRegistrationCode({
       onSuccess: (registrationCode) => {
         const formValues = form.getValues();
-        const setupData: Partial<
-          SetupData & { registration_code: string; identity_type: string }
-        > = {
+        setGeneratedSetupData({
           registration_code: registrationCode,
-          permission_type: formValues.permissionType,
-          identity_type: formValues.identityType,
           profile: formValues.profile,
-          node_address: auth?.node_address,
-          shinkai_identity: auth?.shinkai_identity,
-          node_encryption_pk: auth?.node_encryption_pk,
-          node_signature_pk: auth?.node_signature_pk,
-          ...(formValues.identityType === IdentityType.Device &&
-          formValues.profile === auth?.profile
-            ? {
-                profile_encryption_pk: auth.profile_encryption_pk,
-                profile_encryption_sk: auth.profile_encryption_sk,
-                profile_identity_pk: auth.profile_identity_pk,
-                profile_identity_sk: auth.profile_identity_sk,
-              }
-            : {}),
-        };
-        setGeneratedSetupData(setupData);
+          identity_type: formValues.identityType,
+          permission_type: formValues.permissionType,
+          node_address: auth?.node_address ?? '',
+          shinkai_identity: auth?.shinkai_identity ?? '',
+          node_encryption_pk: auth?.node_encryption_pk ?? '',
+          node_signature_pk: auth?.node_signature_pk ?? '',
+          ...(formValues.identityType === IdentityType.Device && {
+            profile_encryption_sk: auth?.profile_encryption_sk,
+            profile_encryption_pk: auth?.profile_encryption_pk,
+            profile_identity_sk: auth?.profile_identity_sk,
+            profile_identity_pk: auth?.profile_identity_pk,
+          }),
+        } as QRSetupData);
         setQrCodeModalOpen(true);
       },
     });
@@ -205,6 +199,7 @@ export const CreateRegistrationCode = () => {
               {identityType === IdentityType.Device && (
                 <FormField
                   control={form.control}
+                  disabled={true}
                   name="profile"
                   render={({ field }) => (
                     <TextField

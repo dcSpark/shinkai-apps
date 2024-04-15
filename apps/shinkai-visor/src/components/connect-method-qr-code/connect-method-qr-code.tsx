@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { QRSetupData } from '@shinkai_network/shinkai-message-ts/models';
 import { useSubmitRegistration } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistration';
+import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/lib/queries/getEncryptionKeys/useGetEncryptionKeys';
 import {
   Button,
   ErrorMessage,
@@ -16,7 +17,6 @@ import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 import * as z from 'zod';
 
-import { generateMyEncryptionKeys } from '../../helpers/encryption-keys';
 import { SetupData, useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
 
@@ -54,6 +54,8 @@ type AddNodeDataFromQr = Pick<
 export const ConnectMethodQrCode = () => {
   const history = useHistory();
   const setAuth = useAuth((state) => state.setAuth);
+  const { encryptionKeys, isLoading: isLoadingEncryptionKeys } =
+    useGetEncryptionKeys();
   const form = useForm<FormType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -66,14 +68,7 @@ export const ConnectMethodQrCode = () => {
       shinkai_identity: '',
       node_encryption_pk: '',
       node_signature_pk: '',
-      profile_encryption_pk: '',
-      profile_encryption_sk: '',
-      my_device_encryption_pk: '',
-      my_device_encryption_sk: '',
-      profile_identity_pk: '',
-      profile_identity_sk: '',
-      my_device_identity_pk: '',
-      my_device_identity_sk: '',
+      ...encryptionKeys,
     },
   });
   const [qrImageFile, setQRImageFile] = useState<File | null>(null);
@@ -140,16 +135,6 @@ export const ConnectMethodQrCode = () => {
     setAuth(setupData);
     history.replace('/inboxes');
   };
-
-  useEffect(() => {
-    console.log('generate keys');
-    generateMyEncryptionKeys().then((encryptionKeys) => {
-      form.reset((prevInitialValues) => ({
-        ...prevInitialValues,
-        ...encryptionKeys,
-      }));
-    });
-  }, [form]);
 
   useEffect(() => {
     if (qrImageFile) {
@@ -277,7 +262,7 @@ export const ConnectMethodQrCode = () => {
           </div>
           <Button
             className="w-full"
-            disabled={isPending}
+            disabled={isPending || isLoadingEncryptionKeys}
             isLoading={isPending}
             type="submit"
           >

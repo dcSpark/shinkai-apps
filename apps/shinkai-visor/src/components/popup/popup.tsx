@@ -21,7 +21,7 @@ import { useSettings } from '../../store/settings/settings';
 import { AddAgent } from '../add-agent/add-agent';
 import { Agents } from '../agents/agents';
 import { AnimatedRoute } from '../animated-route/animated-routed';
-import { ConnectMethodQrCode } from '../connect-method-qr-code/connec-method-qr-code';
+import { ConnectMethodQrCode } from '../connect-method-qr-code/connect-method-qr-code';
 import { ConnectMethodQuickStart } from '../connect-method-quick-start/connect-method-quick-start';
 import { ConnectMethodRestoreConnection } from '../connect-method-restore-connection/connect-method-restore-connection';
 import { CreateInbox } from '../create-inbox/create-inbox';

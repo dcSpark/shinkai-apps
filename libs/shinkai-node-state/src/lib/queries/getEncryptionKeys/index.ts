@@ -1,7 +1,7 @@
 import {
   generateEncryptionKeys,
   generateSignatureKeys,
-} from '@shinkai_network/shinkai-message-ts/utils/wasm_helpers';
+} from '@shinkai_network/shinkai-message-ts/utils';
 
 import { Encryptionkeys } from './types';
 

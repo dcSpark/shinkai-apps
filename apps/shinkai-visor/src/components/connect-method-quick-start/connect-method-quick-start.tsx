@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
+import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/lib/queries/getEncryptionKeys/useGetEncryptionKeys';
 import {
   Accordion,
   AccordionContent,
@@ -12,16 +13,12 @@ import {
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import { QrCode } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import { useHistory, useLocation } from 'react-router';
 import { z } from 'zod';
 
-import {
-  Encryptionkeys,
-  generateMyEncryptionKeys,
-} from '../../helpers/encryption-keys';
 import { SetupData, useAuth } from '../../store/auth/auth';
 import { ConnectionMethodOption } from '../connection-method-option/connection-method-option';
 import { Header } from '../header/header';
@@ -46,9 +43,7 @@ export const ConnectMethodQuickStart = () => {
   const setAuth = useAuth((state) => state.setAuth);
   const DEFAULT_NODE_ADDRESS =
     location.state?.nodeAddress ?? 'http://127.0.0.1:9550';
-  const [encryptionKeys, setEncryptedKeys] = useState<Encryptionkeys | null>(
-    null,
-  );
+  const { encryptionKeys, isLoading: isLoadingEncryptionKeys } = useGetEncryptionKeys();
   const form = useForm<FormType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -84,11 +79,10 @@ export const ConnectMethodQuickStart = () => {
   useEffect(() => {
     form.setValue('node_address', DEFAULT_NODE_ADDRESS);
   }, [DEFAULT_NODE_ADDRESS, form]);
+
   const connect = async (values: FormType) => {
-    let keys = encryptionKeys;
-    if (!keys) {
-      keys = await generateMyEncryptionKeys();
-      setEncryptedKeys(keys);
+    if (!encryptionKeys) {
+      return;
     }
     await submitRegistration({
       profile: 'main',
@@ -99,8 +93,7 @@ export const ConnectMethodQuickStart = () => {
       node_encryption_pk: '',
       node_address: values.node_address,
       registration_name: values.registration_name,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      ...keys,
+      ...(encryptionKeys),
     });
   };
 
@@ -180,7 +173,7 @@ export const ConnectMethodQuickStart = () => {
             <Button
               className="w-full"
               data-testid="quick-connect-button"
-              disabled={isPending}
+              disabled={isPending || isLoadingEncryptionKeys}
               isLoading={isPending}
               type="submit"
             >
