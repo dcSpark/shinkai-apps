@@ -2,11 +2,13 @@ import { useSubscribeToSharedFolder } from '@shinkai_network/shinkai-node-state/
 import { useUnsubscribeToSharedFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/unsubscribeToSharedFolder/useUnsubscribeToSharedFolder';
 import { useGetMySubscriptions } from '@shinkai_network/shinkai-node-state/lib/queries/getMySubscriptions/useGetMySubscriptions';
 import { Button } from '@shinkai_network/shinkai-ui';
+import { motion } from 'framer-motion';
 import React from 'react';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../store/auth/auth';
-import { Header } from '../header/header';
+
+const MotionButton = motion(Button);
 
 const Subscription = () => {
   const auth = useAuth((state) => state.auth);
@@ -36,7 +38,6 @@ const Subscription = () => {
 
   return (
     <div className="flex h-full flex-col gap-4">
-      <Header title={'Subscriptions'} />
       {isSuccess && !subscriptions.length && (
         <p className="text-gray-80 text-left">
           You have no subscriptions. You can subscribe to shared folders from
@@ -59,9 +60,10 @@ const Subscription = () => {
                   <span>{subscription.payment} </span>
                 </div>
               </div>
-              <Button
+              <MotionButton
                 className="bg-gray-300 py-1.5 text-sm"
                 isLoading={isPending}
+                layout
                 onClick={async () => {
                   if (!auth) return;
                   await unsubscribeSharedFolder({
@@ -81,7 +83,7 @@ const Subscription = () => {
                 size="auto"
               >
                 Unsubscribe
-              </Button>
+              </MotionButton>
             </div>
           ))}
         </div>

@@ -40,7 +40,6 @@ import {
 } from '../../hooks/use-keyboard-shortcut';
 import { useAuth } from '../../store/auth/auth';
 import { useSettings } from '../../store/settings/settings';
-import { Header } from '../header/header';
 
 const formSchema = z.object({
   defaultAgentId: z.string(),
@@ -214,7 +213,6 @@ export const Settings = () => {
 
   return (
     <div className="flex flex-col space-y-8 pr-2.5">
-      <Header title={<FormattedMessage id="setting.other" />} />
       <div className="flex flex-col space-y-8">
         <Form {...form}>
           <form className="flex grow flex-col justify-between space-y-6 overflow-hidden">

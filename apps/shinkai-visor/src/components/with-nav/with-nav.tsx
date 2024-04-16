@@ -1,16 +1,13 @@
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { PropsWithChildren, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../store/auth/auth';
 import NavBar from '../nav/nav';
 
 export const WithNav = (props: PropsWithChildren) => {
-  const location = useLocation();
   const auth = useAuth((state) => state.auth);
-  const isInboxPage = location.pathname.includes('/inboxes/');
 
   const { nodeInfo, isSuccess, isFetching } = useGetHealth(
     { node_address: auth?.node_address ?? '' },
@@ -33,12 +30,7 @@ export const WithNav = (props: PropsWithChildren) => {
   }, [isSuccess, nodeInfo?.status, isFetching]);
 
   return (
-    <div
-      className={cn(
-        'flex h-full w-full flex-col space-y-3.5',
-        isInboxPage && 'space-y-4',
-      )}
-    >
+    <div className={cn('flex h-full w-full flex-col space-y-6')}>
       <NavBar />
       <div className="grow overflow-auto">{props.children}</div>
     </div>

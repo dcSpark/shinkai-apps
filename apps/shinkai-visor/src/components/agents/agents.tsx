@@ -3,12 +3,10 @@ import { Button } from '@shinkai_network/shinkai-ui';
 import { ScrollArea } from '@shinkai_network/shinkai-ui';
 import { Plus } from 'lucide-react';
 import { Fragment } from 'react';
-import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
 import { useAuth } from '../../store/auth/auth';
 import { EmptyAgents } from '../empty-agents/empty-agents';
-import { Header } from '../header/header';
 
 export const Agents = () => {
   const auth = useAuth((state) => state.auth);
@@ -29,7 +27,6 @@ export const Agents = () => {
   };
   return (
     <div className="flex h-full flex-col space-y-3">
-      <Header title={<FormattedMessage id="agent.other" />} />
       {!agents?.length ? (
         <div className="flex h-full flex-col justify-center">
           <EmptyAgents data-testid="empty-agents" />
@@ -40,7 +37,11 @@ export const Agents = () => {
             <div className="space-y-3">
               {agents?.map((agent) => (
                 <Fragment key={agent.id}>
-                  <Button className="w-full" data-testid={`${agent.id}-agent-button`} variant="ghost">
+                  <Button
+                    className="w-full"
+                    data-testid={`${agent.id}-agent-button`}
+                    variant="ghost"
+                  >
                     <span className="w-full truncate text-start">
                       {agent.id}
                     </span>

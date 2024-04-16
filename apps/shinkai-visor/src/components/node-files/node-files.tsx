@@ -6,7 +6,6 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import React from 'react';
 
-import { Header } from '../header/header';
 import AllFiles from './all-files';
 import MySharedFolders from './my-shared-folders';
 import { useVectorFsStore } from './node-file-context';
@@ -21,7 +20,6 @@ export default function NodeFiles() {
   );
   return (
     <div className="flex h-full flex-col gap-4">
-      <Header title={'Vector File System'} />
       <Tabs
         className="flex h-full w-full flex-col"
         onValueChange={(value) =>

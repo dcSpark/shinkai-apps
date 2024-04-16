@@ -50,8 +50,9 @@ import {
   X,
   XIcon,
 } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
+import { useParams, useRouteMatch } from 'react-router';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -61,9 +62,10 @@ import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAuth } from '../../store/auth/auth';
 import { useSettings } from '../../store/settings/settings';
 import { EditInboxNameDialog } from '../edit-inbox-name-dialog/edit-inbox-name-dialog';
+import { Header } from '../header/header';
 
 enum MenuOption {
-  Inbox = 'inbox',
+  Inboxes = 'inboxes',
   CreateInbox = 'create-inbox',
   Agents = 'agents',
   AddAgent = 'add-agent',
@@ -75,6 +77,70 @@ enum MenuOption {
   Settings = 'settings',
   Logout = 'logout',
 }
+
+const Routes = {
+  Welcome: '/welcome',
+  Inboxes: '/inboxes',
+  Inbox: '/inboxes/:inboxId',
+  VectorFs: '/node-files',
+  SearchNodeFiles: '/search-node-files',
+  Subscriptions: '/subscriptions',
+  PublicFolders: '/subscriptions/public',
+  Agents: '/agents',
+  Settings: '/settings',
+  ConnectQuickStart: '/nodes/connect/method/quick-start',
+  ConnectRestoreConnection: '/nodes/connect/method/restore-connection',
+  ConnectQrCode: '/nodes/connect/method/qr-code',
+  CreateInbox: '/inboxes/create-inbox',
+  CreateJob: '/inboxes/create-job',
+  AddAgent: '/agents/add',
+  ExportConnection: '/settings/export-connection',
+  CreateRegistrationCode: '/settings/create-registration-code',
+} as const;
+
+const RootPages = [
+  Routes.Welcome,
+  Routes.Inboxes,
+  Routes.VectorFs,
+  Routes.Subscriptions,
+  Routes.PublicFolders,
+  Routes.SearchNodeFiles,
+  Routes.Agents,
+  Routes.Settings,
+];
+
+const SubPages = [
+  Routes.ConnectRestoreConnection,
+  Routes.ConnectQrCode,
+  Routes.CreateInbox,
+  Routes.CreateJob,
+  Routes.Agents,
+  Routes.AddAgent,
+  Routes.Inbox,
+  Routes.ExportConnection,
+  Routes.CreateRegistrationCode,
+];
+const OnboardingPages = [
+  Routes.ConnectQuickStart,
+  // Routes.ConnectRestoreConnection,
+  // Routes.ConnectQrCode,
+  Routes.Welcome,
+];
+
+const RouteTitleDescriptionMapping: Record<
+  string,
+  { title: ReactNode; description?: ReactNode }
+> = {
+  [Routes.CreateJob]: { title: <FormattedMessage id="create-job" /> },
+  [Routes.CreateInbox]: { title: <FormattedMessage id="create-inbox" /> },
+  [Routes.Inboxes]: { title: <FormattedMessage id="inbox.other" /> },
+  [Routes.VectorFs]: { title: 'Vector File System' },
+  [Routes.Subscriptions]: { title: 'Subscriptions' },
+  [Routes.PublicFolders]: { title: 'Browse Public Folders' },
+  [Routes.Settings]: { title: <FormattedMessage id="setting.other" /> },
+  [Routes.Agents]: { title: <FormattedMessage id="agent.other" /> },
+  [Routes.AddAgent]: { title: <FormattedMessage id="add-agent" /> },
+};
 
 const DisplayInboxName = () => {
   const currentInbox = useGetCurrentInbox();
@@ -262,28 +328,24 @@ export default function NavBar() {
   const setAuth = useAuth((state) => state.setAuth);
   const auth = useAuth((state) => state.auth);
   const [isMenuOpened, setMenuOpened] = useState(false);
-  const isRootPage = [
-    '/inboxes',
-    '/agents',
-    '/settings',
-    '/nodes/connect/method/quick-start',
-    '/node-files',
-    '/subscriptions',
-    '/subscriptions/public',
-    '/search-node-files',
-  ].includes(location.pathname);
+  // const isInboxPage = location.pathname.includes('/inboxes/');
+  const isInboxPage =
+    location.pathname.includes('/inboxes/job_inbox') ||
+    location.pathname.includes('/inboxes/inbox');
 
-  const pagesWithoutLogo = [
-    '/inboxes',
-    '/agents',
-    '/nodes/connect/method/quick-start',
-    '/node-files',
-    '/subscriptions',
-    '/subscriptions/public',
-    '/search-node-files',
-  ].includes(location.pathname);
+  const isRootPage = useRouteMatch({
+    path: RootPages,
+    strict: true,
+  });
+  const isSubPage = useRouteMatch({
+    path: SubPages,
+    strict: true,
+  });
+  const isOnboardingPage = useRouteMatch({
+    path: OnboardingPages,
+    strict: true,
+  });
 
-  const isInboxPage = location.pathname.includes('/inboxes');
   const isJobInbox = location.pathname.includes('/inboxes/job_inbox');
 
   const [isConfirmLogoutDialogOpened, setIsConfirmLogoutDialogOpened] =
@@ -302,7 +364,7 @@ export default function NavBar() {
 
   const onClickMenuOption = (key: MenuOption) => {
     switch (key) {
-      case MenuOption.Inbox:
+      case MenuOption.Inboxes:
         history.push('/inboxes');
         setLastPage('/inboxes');
         break;
@@ -350,19 +412,67 @@ export default function NavBar() {
     }
   };
 
-  const renderCenterContent = () => {
-    if (pagesWithoutLogo) return;
-    if (isInboxPage) {
-      return <DisplayInboxName />;
-    } else {
+  const renderHeaderContent = () => {
+    console.log(location.pathname, 'location.pathname');
+
+    if (isOnboardingPage) {
       return (
         <img
           alt="shinkai-app-logo"
-          className="absolute left-0 right-0 ml-auto mr-auto w-[100px]"
+          className="mb-2 ml-auto mr-auto w-[100px]"
           src={srcUrlResolver(visorLogo)}
         />
       );
     }
+    if (isSubPage)
+      return (
+        <>
+          <div className="flex items-center gap-3">
+            <Button
+              className="flex-none"
+              onClick={goBack}
+              size="icon"
+              variant="ghost"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            {!isInboxPage &&
+              RouteTitleDescriptionMapping[location.pathname as MenuOption] && (
+                <Header
+                  description={
+                    RouteTitleDescriptionMapping[
+                      location.pathname as MenuOption
+                    ]?.description
+                  }
+                  title={
+                    RouteTitleDescriptionMapping[
+                      location.pathname as MenuOption
+                    ]?.title
+                  }
+                />
+              )}
+          </div>
+          {isInboxPage && <DisplayInboxName />}
+        </>
+      );
+
+    if (
+      isRootPage &&
+      RouteTitleDescriptionMapping[location.pathname as MenuOption]
+    ) {
+      return (
+        <Header
+          description={
+            RouteTitleDescriptionMapping[location.pathname as MenuOption]
+              ?.description
+          }
+          title={
+            RouteTitleDescriptionMapping[location.pathname as MenuOption]?.title
+          }
+        />
+      );
+    }
+    return null;
   };
 
   return (
@@ -406,137 +516,143 @@ export default function NavBar() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      <div className="relative flex items-center justify-between">
-        <div className={`flex-none ${isRootPage ? 'invisible' : ''}`}>
-          <Button onClick={() => goBack()} size="icon" variant="ghost">
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-        </div>
-        {renderCenterContent()}
+      <div
+        className={cn(
+          'flex items-center justify-between',
+          renderHeaderContent() == null && 'justify-end',
+        )}
+      >
+        {renderHeaderContent()}
         {auth && (
-          <DropdownMenu
-            modal={false}
-            onOpenChange={(value) => setMenuOpened(value)}
-            open={isMenuOpened}
-          >
-            <DropdownMenuTrigger asChild>
-              <Button data-testid="nav-menu-button" size="icon" variant="ghost">
-                {!isMenuOpened ? (
-                  <Menu className="h-4 w-4" />
-                ) : (
-                  <X className="h-4 w-4" />
-                )}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              alignOffset={-22}
-              className="w-[300px] space-y-2.5 rounded-br-none rounded-tr-none"
-              sideOffset={10}
+          <div className="relative">
+            {isJobInbox && <ArchiveJobButton />}
+            <DropdownMenu
+              modal={false}
+              onOpenChange={(value) => setMenuOpened(value)}
+              open={isMenuOpened}
             >
-              <DropdownMenuLabel>
-                <FormattedMessage id="inbox.other" />
-              </DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => onClickMenuOption(MenuOption.Inbox)}
-              >
-                <InboxIcon className="mr-2 h-4 w-4" />
-                <span>
-                  <FormattedMessage id="inbox.other" />
-                </span>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                data-testid="nav-menu-create-job-button"
-                onClick={() => onClickMenuOption(MenuOption.CreateJob)}
-              >
-                <JobBubbleIcon className="mr-2 h-4 w-4" />
-                <span>
-                  <FormattedMessage id="create-job" />
-                </span>
-              </DropdownMenuItem>
-
-              {auth?.shinkai_identity.includes('localhost') ? null : (
-                <DropdownMenuItem
-                  onClick={() => onClickMenuOption(MenuOption.CreateInbox)}
+              <DropdownMenuTrigger asChild>
+                <Button
+                  data-testid="nav-menu-button"
+                  size="icon"
+                  variant="ghost"
                 >
-                  <ChatBubbleIcon className="mr-2 h-4 w-4" />
+                  {!isMenuOpened ? (
+                    <Menu className="h-4 w-4" />
+                  ) : (
+                    <X className="h-4 w-4" />
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                alignOffset={-8}
+                className="w-[280px] space-y-2.5 rounded-br-none rounded-tr-none"
+                sideOffset={10}
+              >
+                <DropdownMenuLabel>
+                  <FormattedMessage id="inbox.other" />
+                </DropdownMenuLabel>
+                <DropdownMenuItem
+                  onClick={() => onClickMenuOption(MenuOption.Inboxes)}
+                >
+                  <InboxIcon className="mr-2 h-4 w-4" />
                   <span>
-                    <FormattedMessage id="create-inbox" />
+                    <FormattedMessage id="inbox.other" />
                   </span>
                 </DropdownMenuItem>
-              )}
+                <DropdownMenuItem
+                  data-testid="nav-menu-create-job-button"
+                  onClick={() => onClickMenuOption(MenuOption.CreateJob)}
+                >
+                  <JobBubbleIcon className="mr-2 h-4 w-4" />
+                  <span>
+                    <FormattedMessage id="create-job" />
+                  </span>
+                </DropdownMenuItem>
 
-              <DropdownMenuLabel>Vector FS</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => onClickMenuOption(MenuOption.NodeFiles)}
-              >
-                <FilesIcon className="mr-2 h-4 w-4" />
-                <span>Vector File System</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => onClickMenuOption(MenuOption.SearchNodeFiles)}
-              >
-                <SearchCode className="mr-2 h-4 w-4" />
-                <span>Knowledge Search</span>
-              </DropdownMenuItem>
-              <DropdownMenuLabel>Subscription</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => onClickMenuOption(MenuOption.PublicItems)}
-              >
-                <Compass className="mr-2 h-4 w-4" />
-                <span>Browse Public Folders</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => onClickMenuOption(MenuOption.MySubscriptions)}
-              >
-                <LibraryBig className="mr-2 h-4 w-4" />
-                <span>Subscriptions</span>
-              </DropdownMenuItem>
+                {auth?.shinkai_identity.includes('localhost') ? null : (
+                  <DropdownMenuItem
+                    onClick={() => onClickMenuOption(MenuOption.CreateInbox)}
+                  >
+                    <ChatBubbleIcon className="mr-2 h-4 w-4" />
+                    <span>
+                      <FormattedMessage id="create-inbox" />
+                    </span>
+                  </DropdownMenuItem>
+                )}
 
-              <DropdownMenuLabel>
-                <FormattedMessage id="agent.other" />
-              </DropdownMenuLabel>
-              <DropdownMenuItem
-                data-testid="nav-menu-agents-button"
-                onClick={() => onClickMenuOption(MenuOption.Agents)}
-              >
-                <AgentIcon className="mr-2 h-4 w-4" />
-                <span>
+                <DropdownMenuLabel>Vector FS</DropdownMenuLabel>
+                <DropdownMenuItem
+                  onClick={() => onClickMenuOption(MenuOption.NodeFiles)}
+                >
+                  <FilesIcon className="mr-2 h-4 w-4" />
+                  <span>Vector File System</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => onClickMenuOption(MenuOption.SearchNodeFiles)}
+                >
+                  <SearchCode className="mr-2 h-4 w-4" />
+                  <span>Knowledge Search</span>
+                </DropdownMenuItem>
+                <DropdownMenuLabel>Subscription</DropdownMenuLabel>
+                <DropdownMenuItem
+                  onClick={() => onClickMenuOption(MenuOption.PublicItems)}
+                >
+                  <Compass className="mr-2 h-4 w-4" />
+                  <span>Browse Public Folders</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => onClickMenuOption(MenuOption.MySubscriptions)}
+                >
+                  <LibraryBig className="mr-2 h-4 w-4" />
+                  <span>Subscriptions</span>
+                </DropdownMenuItem>
+
+                <DropdownMenuLabel>
                   <FormattedMessage id="agent.other" />
-                </span>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                data-testid="nav-menu-add-agent-button"
-                onClick={() => onClickMenuOption(MenuOption.AddAgent)}
-              >
-                <AddAgentIcon className="mr-2 h-4 w-4" />
-                <span>
-                  <FormattedMessage id="add-agent" />
-                </span>
-              </DropdownMenuItem>
-              <DropdownMenuLabel>
-                <FormattedMessage id="account.one" />
-              </DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => onClickMenuOption(MenuOption.Settings)}
-              >
-                <Settings className="mr-2 h-4 w-4" />
-                <span>
-                  <FormattedMessage id="setting.other" />
-                </span>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => onClickMenuOption(MenuOption.Logout)}
-              >
-                <DisconnectIcon className="mr-2 h-4 w-4" />
-                <span>
-                  <FormattedMessage id="disconnect" />
-                </span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                </DropdownMenuLabel>
+                <DropdownMenuItem
+                  data-testid="nav-menu-agents-button"
+                  onClick={() => onClickMenuOption(MenuOption.Agents)}
+                >
+                  <AgentIcon className="mr-2 h-4 w-4" />
+                  <span>
+                    <FormattedMessage id="agent.other" />
+                  </span>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  data-testid="nav-menu-add-agent-button"
+                  onClick={() => onClickMenuOption(MenuOption.AddAgent)}
+                >
+                  <AddAgentIcon className="mr-2 h-4 w-4" />
+                  <span>
+                    <FormattedMessage id="add-agent" />
+                  </span>
+                </DropdownMenuItem>
+                <DropdownMenuLabel>
+                  <FormattedMessage id="account.one" />
+                </DropdownMenuLabel>
+                <DropdownMenuItem
+                  onClick={() => onClickMenuOption(MenuOption.Settings)}
+                >
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>
+                    <FormattedMessage id="setting.other" />
+                  </span>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => onClickMenuOption(MenuOption.Logout)}
+                >
+                  <DisconnectIcon className="mr-2 h-4 w-4" />
+                  <span>
+                    <FormattedMessage id="disconnect" />
+                  </span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         )}
-        {isJobInbox && <ArchiveJobButton />}
       </div>
     </nav>
   );

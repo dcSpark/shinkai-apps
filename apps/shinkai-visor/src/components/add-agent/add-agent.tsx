@@ -23,7 +23,6 @@ import { useHistory } from 'react-router-dom';
 import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
-import { Header } from '../header/header';
 import { Models, modelsConfig } from './models';
 
 const formSchema = z
@@ -206,7 +205,6 @@ export const AddAgent = () => {
 
   return (
     <div className="flex h-full flex-col space-y-3">
-      <Header title={<FormattedMessage id="add-agent" />} />
       <Form {...form}>
         <form
           className="flex h-full flex-col justify-between space-y-3"

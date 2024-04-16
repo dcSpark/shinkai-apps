@@ -14,7 +14,7 @@ export default function Welcome() {
   return (
     <div className="flex h-full flex-col justify-between gap-3">
       <div>
-        <div className="grid place-content-center ">
+        <div className="mb-4 grid place-content-center">
           <img
             alt="shinkai logo"
             className="animate-spin-slow w-[100px]"

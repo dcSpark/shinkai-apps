@@ -17,7 +17,6 @@ import { useHistory } from 'react-router-dom';
 import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
-import { Header } from '../header/header';
 
 const formSchema = z.object({
   receiverIdentity: z.string().nonempty(),
@@ -70,7 +69,6 @@ export const CreateInbox = () => {
     : '';
   return (
     <div className="flex h-full flex-col space-y-8">
-      <Header title={<FormattedMessage id="create-inbox" />} />
       <Form {...form}>
         <form
           className="flex h-full flex-col justify-between space-y-2"

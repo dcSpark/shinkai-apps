@@ -173,7 +173,8 @@ const VectorFsFolder = ({
             },
           ].map((option) => (
             <React.Fragment key={option.name}>
-              {(option.name === 'Delete' ||
+              {(option.name === 'Share' ||
+                option.name === 'Delete' ||
                 option.name === 'Search within folder') && (
                 <DropdownMenuSeparator className="bg-gray-300" />
               )}

@@ -6,7 +6,6 @@ import React from 'react';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../store/auth/auth';
-import { Header } from '../header/header';
 
 const PublicSharedFolderSubscription = () => {
   const auth = useAuth((state) => state.auth);
@@ -29,7 +28,6 @@ const PublicSharedFolderSubscription = () => {
 
   return (
     <div className="flex h-full flex-col gap-4">
-      <Header title={'Browse Public Folders'} />
       {isSuccess && !Object.entries(sharedItems?.response || {}).length && (
         <p className="text-gray-80 text-left">
           There are no public folders available to subscribe to right now.
