@@ -37,7 +37,7 @@ import SearchNodeFiles from '../search-node-files/search-node-files';
 import { Settings } from '../settings/settings';
 import { SplashScreen } from '../splash-screen/splash-screen';
 import SharedFolderSubscription from '../subscriptions/public-shared-folders';
-import Subscription from '../subscriptions/subscriptions';
+import MySubscriptions from '../subscriptions/subscriptions';
 import Welcome from '../welcome/welcome';
 import { WithNav } from '../with-nav/with-nav';
 
@@ -142,7 +142,7 @@ export const Popup = () => {
                       <SharedFolderSubscription />
                     </Route>
                     <Route path="/">
-                      <Subscription />
+                      <MySubscriptions />
                     </Route>
                   </Switch>
                 </Route>

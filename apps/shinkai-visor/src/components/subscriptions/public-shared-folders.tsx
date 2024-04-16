@@ -1,6 +1,6 @@
 import { useSubscribeToSharedFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/subscribeToSharedFolder/useSubscribeToSharedFolder';
 import { useGetAvailableSharedItems } from '@shinkai_network/shinkai-node-state/lib/queries/getAvailableSharedItems/useGetAvailableSharedItems';
-import { Button } from '@shinkai_network/shinkai-ui';
+import { Button, SharedFolderIcon } from '@shinkai_network/shinkai-ui';
 import { motion } from 'framer-motion';
 import React from 'react';
 import { toast } from 'sonner';
@@ -10,7 +10,11 @@ import { useAuth } from '../../store/auth/auth';
 const PublicSharedFolderSubscription = () => {
   const auth = useAuth((state) => state.auth);
 
-  const { data: sharedItems, isSuccess } = useGetAvailableSharedItems(
+  const {
+    data: sharedItems,
+    isSuccess,
+    isPending,
+  } = useGetAvailableSharedItems(
     {
       nodeAddress: auth?.node_address ?? '',
       shinkaiIdentity: auth?.shinkai_identity ?? '',
@@ -33,22 +37,32 @@ const PublicSharedFolderSubscription = () => {
           There are no public folders available to subscribe to right now.
         </p>
       )}
-      <div className="w-full divide-y divide-gray-300">
-        {Object.entries(sharedItems?.response || {}).map(
-          ([filename, fileDetails]) => (
-            <SubscriptionItem
-              folderDescription={
-                fileDetails?.subscription_requirement.folder_description
-              }
-              folderName={filename}
-              folderPath={fileDetails.path}
-              isFree={fileDetails.subscription_requirement.is_free}
-              key={fileDetails.path}
-              nodeName={sharedItems?.node_name ?? '-'}
-            />
-          ),
-        )}
-      </div>
+      {isPending &&
+        Array.from({ length: 4 }).map((_, idx) => (
+          <div
+            className="flex h-[69px] items-center justify-between gap-2 rounded-md bg-gray-400 py-3"
+            key={idx}
+          />
+        ))}
+      {isSuccess && (
+        <div className="w-full">
+          {Object.entries(sharedItems?.response || {}).map(
+            ([filename, fileDetails]) => (
+              <PublicSharedFolder
+                folderDescription={
+                  fileDetails?.subscription_requirement?.folder_description ??
+                  ''
+                }
+                folderName={filename}
+                folderPath={fileDetails.path}
+                isFree={fileDetails?.subscription_requirement?.is_free ?? true}
+                key={fileDetails.path}
+                nodeName={sharedItems?.node_name ?? '-'}
+              />
+            ),
+          )}
+        </div>
+      )}
     </div>
   );
 };
@@ -57,7 +71,7 @@ export default PublicSharedFolderSubscription;
 
 const MotionButton = motion(Button);
 
-export const SubscriptionItem = ({
+export const PublicSharedFolder = ({
   folderName,
   nodeName,
   isFree,
@@ -85,24 +99,27 @@ export const SubscriptionItem = ({
 
   return (
     <div
-      className="flex items-center justify-between gap-2 py-2.5"
+      className="flex min-h-[92px] cursor-pointer items-center justify-between gap-2 rounded-lg py-3.5 pr-2.5 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400"
       key={folderPath}
+      onClick={() =>
+        window.open(`https://shinkai-contracts.pages.dev/`, '_blank')
+      }
+      role="button"
+      tabIndex={0}
     >
-      <div className="space-y-1">
-        <span className="line-clamp-1 text-base font-medium capitalize">
-          {folderName.replace(/\//g, '')}
-        </span>
-        <span className="text-gray-80 capitalize">{folderDescription}</span>
-        <div className="text-gray-80 flex items-center gap-3 text-xs">
-          <span>{nodeName} </span> ⋅ <span>{isFree ? 'Free' : 'Paid'} </span>{' '}
-        </div>
-      </div>
+      <SubscriptionInfo
+        folderDescription={folderDescription}
+        folderName={folderName.replace(/\//g, '')}
+        isFree={isFree}
+        nodeName={nodeName}
+      />
       <MotionButton
-        className="py-1.5 text-sm"
+        className="hover:border-brand py-1.5 text-sm hover:bg-transparent hover:text-white"
         disabled={isPending}
         isLoading={isPending}
         layout
-        onClick={async () => {
+        onClick={async (event) => {
+          event.stopPropagation();
           if (!auth) return;
           const [node, nodeProfile] = nodeName.split('/');
           await subscribeSharedFolder({
@@ -120,9 +137,59 @@ export const SubscriptionItem = ({
           });
         }}
         size="auto"
+        variant="outline"
       >
         Subscribe
       </MotionButton>
     </div>
   );
 };
+
+export const SubscriptionInfo = ({
+  folderName,
+  nodeName,
+  isFree,
+  folderDescription,
+}: {
+  folderName: string;
+  folderDescription: string;
+  nodeName: string;
+  isFree: boolean;
+}) => (
+  <div className="flex items-center gap-3">
+    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-300/50 ">
+      <SharedFolderIcon className="h-6 w-6" />
+    </div>
+    <div className="space-y-3">
+      <div className="space-y-1">
+        <a
+          className="transition-all hover:text-white hover:underline"
+          href="https://shinkai-contracts.pages.dev/"
+          onClick={(e) => e.stopPropagation()}
+          rel="noreferrer"
+          target="_blank"
+        >
+          <span className="line-clamp-1 text-sm font-medium capitalize">
+            {folderName.replace(/\//g, '')}
+          </span>
+        </a>
+
+        <span className="text-gray-80 text-sm capitalize">
+          {folderDescription}
+        </span>
+      </div>
+      <div className="text-gray-80 flex items-center gap-2 text-xs">
+        <a
+          className="transition-all hover:text-white hover:underline"
+          href="https://shinkai-contracts.pages.dev/identity/kao0112_9850.sepolia-shinkai"
+          onClick={(e) => e.stopPropagation()}
+          rel="noreferrer"
+          target="_blank"
+        >
+          <span>{nodeName} </span>
+        </a>
+        ⋅ <span>{isFree ? 'Free' : 'Paid'} </span>{' '}
+      </div>
+    </div>
+  </div>
+);

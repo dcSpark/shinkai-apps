@@ -91,7 +91,7 @@ const routeTitleDescriptionMapping: Record<
   [routes.CreateInbox]: { title: <FormattedMessage id="create-inbox" /> },
   [routes.Inboxes]: { title: <FormattedMessage id="inbox.other" /> },
   [routes.VectorFs]: { title: 'Vector File System' },
-  [routes.Subscriptions]: { title: 'Subscriptions' },
+  [routes.Subscriptions]: { title: 'My Subscriptions' },
   [routes.PublicFolders]: { title: 'Browse Public Folders' },
   [routes.Settings]: { title: <FormattedMessage id="setting.other" /> },
   [routes.Agents]: { title: <FormattedMessage id="agent.other" /> },
@@ -549,7 +549,7 @@ export default function NavBar() {
                   onClick={() => onClickMenuOption(MenuOption.MySubscriptions)}
                 >
                   <LibraryBig className="mr-2 h-4 w-4" />
-                  <span>Subscriptions</span>
+                  <span>My Subscriptions</span>
                 </DropdownMenuItem>
 
                 <DropdownMenuLabel>

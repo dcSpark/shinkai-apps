@@ -51,6 +51,12 @@
   }
 }
 /* react tree view */
+.p-checkbox {
+  @apply w-[18px] h-[18px];
+}
+.p-checkbox .p-checkbox-box {
+  @apply w-full h-full rounded-md;
+}
 .p-checkbox.p-highlight .p-checkbox-box {
   @apply bg-brand border-brand-500 text-white hover:border-brand-500 p-0.5;
 }
