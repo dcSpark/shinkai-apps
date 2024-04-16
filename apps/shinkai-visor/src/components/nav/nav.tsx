@@ -57,6 +57,12 @@ import { Link, useHistory, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import visorLogo from '../../assets/icons/visor.svg';
+import {
+  onboardingPages,
+  rootPages,
+  routes,
+  subPages,
+} from '../../constants/routing';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAuth } from '../../store/auth/auth';
@@ -77,69 +83,19 @@ enum MenuOption {
   Settings = 'settings',
   Logout = 'logout',
 }
-
-const Routes = {
-  Welcome: '/welcome',
-  Inboxes: '/inboxes',
-  Inbox: '/inboxes/:inboxId',
-  VectorFs: '/node-files',
-  SearchNodeFiles: '/search-node-files',
-  Subscriptions: '/subscriptions',
-  PublicFolders: '/subscriptions/public',
-  Agents: '/agents',
-  Settings: '/settings',
-  ConnectQuickStart: '/nodes/connect/method/quick-start',
-  ConnectRestoreConnection: '/nodes/connect/method/restore-connection',
-  ConnectQrCode: '/nodes/connect/method/qr-code',
-  CreateInbox: '/inboxes/create-inbox',
-  CreateJob: '/inboxes/create-job',
-  AddAgent: '/agents/add',
-  ExportConnection: '/settings/export-connection',
-  CreateRegistrationCode: '/settings/create-registration-code',
-} as const;
-
-const RootPages = [
-  Routes.Welcome,
-  Routes.Inboxes,
-  Routes.VectorFs,
-  Routes.Subscriptions,
-  Routes.PublicFolders,
-  Routes.SearchNodeFiles,
-  Routes.Agents,
-  Routes.Settings,
-];
-
-const SubPages = [
-  Routes.ConnectRestoreConnection,
-  Routes.ConnectQrCode,
-  Routes.CreateInbox,
-  Routes.CreateJob,
-  Routes.Agents,
-  Routes.AddAgent,
-  Routes.Inbox,
-  Routes.ExportConnection,
-  Routes.CreateRegistrationCode,
-];
-const OnboardingPages = [
-  Routes.ConnectQuickStart,
-  // Routes.ConnectRestoreConnection,
-  // Routes.ConnectQrCode,
-  Routes.Welcome,
-];
-
-const RouteTitleDescriptionMapping: Record<
+const routeTitleDescriptionMapping: Record<
   string,
   { title: ReactNode; description?: ReactNode }
 > = {
-  [Routes.CreateJob]: { title: <FormattedMessage id="create-job" /> },
-  [Routes.CreateInbox]: { title: <FormattedMessage id="create-inbox" /> },
-  [Routes.Inboxes]: { title: <FormattedMessage id="inbox.other" /> },
-  [Routes.VectorFs]: { title: 'Vector File System' },
-  [Routes.Subscriptions]: { title: 'Subscriptions' },
-  [Routes.PublicFolders]: { title: 'Browse Public Folders' },
-  [Routes.Settings]: { title: <FormattedMessage id="setting.other" /> },
-  [Routes.Agents]: { title: <FormattedMessage id="agent.other" /> },
-  [Routes.AddAgent]: { title: <FormattedMessage id="add-agent" /> },
+  [routes.CreateJob]: { title: <FormattedMessage id="create-job" /> },
+  [routes.CreateInbox]: { title: <FormattedMessage id="create-inbox" /> },
+  [routes.Inboxes]: { title: <FormattedMessage id="inbox.other" /> },
+  [routes.VectorFs]: { title: 'Vector File System' },
+  [routes.Subscriptions]: { title: 'Subscriptions' },
+  [routes.PublicFolders]: { title: 'Browse Public Folders' },
+  [routes.Settings]: { title: <FormattedMessage id="setting.other" /> },
+  [routes.Agents]: { title: <FormattedMessage id="agent.other" /> },
+  [routes.AddAgent]: { title: <FormattedMessage id="add-agent" /> },
 };
 
 const DisplayInboxName = () => {
@@ -328,21 +284,21 @@ export default function NavBar() {
   const setAuth = useAuth((state) => state.setAuth);
   const auth = useAuth((state) => state.auth);
   const [isMenuOpened, setMenuOpened] = useState(false);
-  // const isInboxPage = location.pathname.includes('/inboxes/');
+
   const isInboxPage =
     location.pathname.includes('/inboxes/job_inbox') ||
     location.pathname.includes('/inboxes/inbox');
 
   const isRootPage = useRouteMatch({
-    path: RootPages,
+    path: rootPages,
     strict: true,
   });
   const isSubPage = useRouteMatch({
-    path: SubPages,
+    path: subPages,
     strict: true,
   });
   const isOnboardingPage = useRouteMatch({
-    path: OnboardingPages,
+    path: onboardingPages,
     strict: true,
   });
 
@@ -365,44 +321,44 @@ export default function NavBar() {
   const onClickMenuOption = (key: MenuOption) => {
     switch (key) {
       case MenuOption.Inboxes:
-        history.push('/inboxes');
-        setLastPage('/inboxes');
+        history.push(routes.Inboxes);
+        setLastPage(routes.Inboxes);
         break;
       case MenuOption.CreateInbox:
-        history.push('/inboxes/create-inbox');
-        setLastPage('/inboxes/create-inbox');
+        history.push(routes.CreateInbox);
+        setLastPage(routes.CreateInbox);
         break;
       case MenuOption.CreateJob:
-        history.push('/inboxes/create-job');
-        setLastPage('/inboxes/create-job');
+        history.push(routes.CreateJob);
+        setLastPage(routes.CreateJob);
         break;
       case MenuOption.NodeFiles:
-        history.push('/node-files');
-        setLastPage('/node-files');
+        history.push(routes.VectorFs);
+        setLastPage(routes.VectorFs);
         break;
       case MenuOption.SearchNodeFiles:
-        history.push('/search-node-files');
-        setLastPage('/search-node-files');
+        history.push(routes.SearchNodeFiles);
+        setLastPage(routes.SearchNodeFiles);
         break;
       case MenuOption.MySubscriptions:
-        history.push('/subscriptions');
-        setLastPage('/subscriptions');
+        history.push(routes.Subscriptions);
+        setLastPage(routes.Subscriptions);
         break;
       case MenuOption.PublicItems:
-        history.push('/subscriptions/public');
-        setLastPage('/subscriptions/public');
+        history.push(routes.PublicFolders);
+        setLastPage(routes.PublicFolders);
         break;
       case MenuOption.Agents:
-        history.push('/agents');
-        setLastPage('/agents');
+        history.push(routes.Agents);
+        setLastPage(routes.Agents);
         break;
       case MenuOption.AddAgent:
-        history.push('/agents/add');
-        setLastPage('/agents/add');
+        history.push(routes.AddAgent);
+        setLastPage(routes.AddAgent);
         break;
       case MenuOption.Settings:
-        history.push('/settings');
-        setLastPage('/settings');
+        history.push(routes.Settings);
+        setLastPage(routes.Settings);
         break;
       case MenuOption.Logout:
         setIsConfirmLogoutDialogOpened(true);
@@ -413,7 +369,8 @@ export default function NavBar() {
   };
 
   const renderHeaderContent = () => {
-    console.log(location.pathname, 'location.pathname');
+    const routeTitleDescription =
+      routeTitleDescriptionMapping[location.pathname as MenuOption];
 
     if (isOnboardingPage) {
       return (
@@ -436,39 +393,22 @@ export default function NavBar() {
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
-            {!isInboxPage &&
-              RouteTitleDescriptionMapping[location.pathname as MenuOption] && (
-                <Header
-                  description={
-                    RouteTitleDescriptionMapping[
-                      location.pathname as MenuOption
-                    ]?.description
-                  }
-                  title={
-                    RouteTitleDescriptionMapping[
-                      location.pathname as MenuOption
-                    ]?.title
-                  }
-                />
-              )}
+            {!isInboxPage && routeTitleDescription && (
+              <Header
+                description={routeTitleDescription?.description}
+                title={routeTitleDescription?.title}
+              />
+            )}
           </div>
           {isInboxPage && <DisplayInboxName />}
         </>
       );
 
-    if (
-      isRootPage &&
-      RouteTitleDescriptionMapping[location.pathname as MenuOption]
-    ) {
+    if (isRootPage && routeTitleDescription) {
       return (
         <Header
-          description={
-            RouteTitleDescriptionMapping[location.pathname as MenuOption]
-              ?.description
-          }
-          title={
-            RouteTitleDescriptionMapping[location.pathname as MenuOption]?.title
-          }
+          description={routeTitleDescription?.description}
+          title={routeTitleDescription?.title}
         />
       );
     }
