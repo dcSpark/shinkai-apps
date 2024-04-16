@@ -33,7 +33,7 @@ const PublicSharedFolderSubscription = () => {
           There are no public folders available to subscribe to right now.
         </p>
       )}
-      <div className="w-full divide-y divide-gray-300 py-4">
+      <div className="w-full divide-y divide-gray-300">
         {Object.entries(sharedItems?.response || {}).map(
           ([filename, fileDetails]) => (
             <SubscriptionItem

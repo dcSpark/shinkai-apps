@@ -308,11 +308,14 @@ export default function NavBar() {
     useState(false);
 
   const goBack = () => {
-    if (!isInboxPage) {
-      history.goBack();
+    if (
+      location.pathname.includes('/inboxes/') ||
+      location.pathname.includes('/agents')
+    ) {
+      history.push('/inboxes');
       return;
     }
-    history.push('/inboxes');
+    history.goBack();
   };
   const logout = (): void => {
     setAuth(null);
