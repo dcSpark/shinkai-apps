@@ -30,20 +30,6 @@ const MySubscriptions = () => {
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
 
-  const {
-    mutateAsync: unsubscribeSharedFolder,
-    isPending: isUnsubscribingPending,
-  } = useUnsubscribeToSharedFolder({
-    onSuccess: () => {
-      toast.success('Subscription removed');
-    },
-    onError: (error) => {
-      toast.error('Error removing subscription', {
-        description: error.message,
-      });
-    },
-  });
-
   return (
     <div className="flex h-full flex-col gap-4">
       {isPending &&
