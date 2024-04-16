@@ -52,7 +52,7 @@ import {
 } from 'lucide-react';
 import React, { ReactNode, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useParams, useRouteMatch } from 'react-router';
+import { useRouteMatch } from 'react-router';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 

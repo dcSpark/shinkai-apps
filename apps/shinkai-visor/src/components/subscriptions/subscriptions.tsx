@@ -1,4 +1,3 @@
-import { useSubscribeToSharedFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/subscribeToSharedFolder/useSubscribeToSharedFolder';
 import { useUnsubscribeToSharedFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/unsubscribeToSharedFolder/useUnsubscribeToSharedFolder';
 import { useGetMySubscriptions } from '@shinkai_network/shinkai-node-state/lib/queries/getMySubscriptions/useGetMySubscriptions';
 import { Button } from '@shinkai_network/shinkai-ui';
