@@ -19,6 +19,7 @@ export enum MessageSchemaType {
   SymmetricKeyExchange = 'SymmetricKeyExchange',
   APIFinishJob = 'APIFinishJob',
   Empty = '',
+  ChangeNodesName = 'ChangeNodesName',
   VecFsRetrievePathSimplifiedJson = 'VecFsRetrievePathSimplifiedJson',
   VecFsRetrieveVectorResource = 'VecFsRetrieveVectorResource',
   VecFsRetrieveVectorSearchSimplifiedJson = 'VecFsRetrieveVectorSearchSimplifiedJson',

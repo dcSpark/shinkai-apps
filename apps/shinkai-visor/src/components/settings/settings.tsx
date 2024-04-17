@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useUpdateNodeName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateNodeName/useUpdateNodeName';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import {
@@ -22,11 +23,13 @@ import {
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { motion } from 'framer-motion';
 import { TrashIcon } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 import {
@@ -58,7 +61,7 @@ const formSchema = z.object({
 });
 
 type FormSchemaType = z.infer<typeof formSchema>;
-
+const MotionButton = motion(Button);
 export const Settings = () => {
   const history = useHistory();
   const auth = useAuth((authStore) => authStore.auth);
@@ -138,6 +141,10 @@ export const Settings = () => {
     control: form.control,
     name: 'shortcutSidebar',
   });
+  const currentShinkaiIdentity = useWatch({
+    control: form.control,
+    name: 'shinkaiIdentity',
+  });
 
   const { agents } = useAgents({
     nodeAddress: auth?.node_address ?? '',
@@ -150,6 +157,17 @@ export const Settings = () => {
     profile_encryption_sk: auth?.profile_encryption_sk ?? '',
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
+  const { mutateAsync: updateNodeName, isPending: isUpdateNodeNamePending } =
+    useUpdateNodeName({
+      onSuccess: () => {
+        toast.success('Node name updated successfully');
+      },
+      onError: (error) => {
+        form.setError('shinkaiIdentity', {
+          message: error.message,
+        });
+      },
+    });
   const exportConnection = () => {
     history.push('settings/export-connection');
   };
@@ -228,7 +246,6 @@ export const Settings = () => {
             />
             <FormField
               control={form.control}
-              disabled
               name="shinkaiIdentity"
               render={({ field }) => (
                 <TextField
@@ -237,6 +254,48 @@ export const Settings = () => {
                 />
               )}
             />
+            {currentShinkaiIdentity !== auth?.shinkai_identity && (
+              <div className="flex items-center gap-3">
+                <MotionButton
+                  className="h-10 min-w-[100px] rounded-lg text-sm"
+                  isLoading={isUpdateNodeNamePending}
+                  layout
+                  onClick={async () => {
+                    if (!auth) return;
+                    await updateNodeName({
+                      nodeAddress: auth?.node_address ?? '',
+                      shinkaiIdentity: auth?.shinkai_identity ?? '',
+                      profile: auth?.profile,
+                      newNodeName: form.getValues().shinkaiIdentity,
+                      my_device_encryption_sk:
+                        auth?.profile_encryption_sk ?? '',
+                      my_device_identity_sk: auth?.profile_identity_sk ?? '',
+                      node_encryption_pk: auth?.node_encryption_pk ?? '',
+                      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+                      profile_identity_sk: auth?.profile_identity_sk ?? '',
+                    });
+                  }}
+                  size="auto"
+                  type="button"
+                >
+                  <FormattedMessage id="save" />
+                </MotionButton>
+                <Button
+                  className="min-w-10 h-10 rounded-lg text-sm"
+                  onClick={() => {
+                    form.setValue(
+                      'shinkaiIdentity',
+                      auth?.shinkai_identity ?? '',
+                    );
+                    form.clearErrors('shinkaiIdentity');
+                  }}
+                  type="button"
+                  variant="outline"
+                >
+                  <FormattedMessage id="cancel" />
+                </Button>
+              </div>
+            )}
             <FormField
               control={form.control}
               disabled
