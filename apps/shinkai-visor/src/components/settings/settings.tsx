@@ -163,8 +163,8 @@ export const Settings = () => {
         toast.success('Node name updated successfully');
       },
       onError: (error) => {
-        form.setError('shinkaiIdentity', {
-          message: error.message,
+        toast.error('Failed to update node name', {
+          description: error.message,
         });
       },
     });
@@ -196,6 +196,21 @@ export const Settings = () => {
   useEffect(() => {
     setDisplayImageCaptureActionButton(currentDisplayImageCaptureActionButton);
   }, [currentDisplayImageCaptureActionButton]);
+
+  const handleUpdateNodeName = async () => {
+    if (!auth) return;
+    await updateNodeName({
+      nodeAddress: auth?.node_address ?? '',
+      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      profile: auth?.profile,
+      newNodeName: form.getValues().shinkaiIdentity,
+      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+      my_device_identity_sk: auth?.profile_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+    });
+  };
 
   return (
     <div className="flex flex-col space-y-8 pr-2.5">
@@ -249,7 +264,16 @@ export const Settings = () => {
               name="shinkaiIdentity"
               render={({ field }) => (
                 <TextField
-                  field={field}
+                  field={{
+                    ...field,
+                    onKeyDown: (event) => {
+                      if (currentShinkaiIdentity === auth?.shinkai_identity)
+                        return;
+                      if (event.key === 'Enter') {
+                        handleUpdateNodeName();
+                      }
+                    },
+                  }}
                   label={<FormattedMessage id="shinkai-identity" />}
                 />
               )}
@@ -260,21 +284,7 @@ export const Settings = () => {
                   className="h-10 min-w-[100px] rounded-lg text-sm"
                   isLoading={isUpdateNodeNamePending}
                   layout
-                  onClick={async () => {
-                    if (!auth) return;
-                    await updateNodeName({
-                      nodeAddress: auth?.node_address ?? '',
-                      shinkaiIdentity: auth?.shinkai_identity ?? '',
-                      profile: auth?.profile,
-                      newNodeName: form.getValues().shinkaiIdentity,
-                      my_device_encryption_sk:
-                        auth?.profile_encryption_sk ?? '',
-                      my_device_identity_sk: auth?.profile_identity_sk ?? '',
-                      node_encryption_pk: auth?.node_encryption_pk ?? '',
-                      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-                      profile_identity_sk: auth?.profile_identity_sk ?? '',
-                    });
-                  }}
+                  onClick={handleUpdateNodeName}
                   size="auto"
                   type="button"
                 >
@@ -287,7 +297,6 @@ export const Settings = () => {
                       'shinkaiIdentity',
                       auth?.shinkai_identity ?? '',
                     );
-                    form.clearErrors('shinkaiIdentity');
                   }}
                   type="button"
                   variant="outline"
@@ -370,6 +379,7 @@ export const Settings = () => {
                                   delete currentDisableHosts[host];
                                   setDisabledHosts(currentDisableHosts);
                                 }}
+                                type="button"
                               >
                                 <TrashIcon className="h-4 w-4" />
                               </button>
