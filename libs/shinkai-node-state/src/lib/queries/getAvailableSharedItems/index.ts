@@ -5,7 +5,7 @@ import {
   GetAvailableSharedItemsOutput,
 } from './types';
 
-type TreeNode = {
+export type TreeNode = {
   name: string;
   path: string;
   last_modified: string;

@@ -1,11 +1,27 @@
 import { useSubscribeToSharedFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/subscribeToSharedFolder/useSubscribeToSharedFolder';
+import { TreeNode } from '@shinkai_network/shinkai-node-state/lib/queries/getAvailableSharedItems/index';
 import { useGetAvailableSharedFolders } from '@shinkai_network/shinkai-node-state/lib/queries/getAvailableSharedItems/useGetAvailableSharedFolders';
-import { Button, SharedFolderIcon } from '@shinkai_network/shinkai-ui';
+import {
+  Button,
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+  ScrollArea,
+  SharedFolderIcon,
+} from '@shinkai_network/shinkai-ui';
 import { motion } from 'framer-motion';
+import { XIcon } from 'lucide-react';
+import { Tree } from 'primereact/tree';
+import { TreeNode as PrimeTreeNode } from 'primereact/treenode';
 import React from 'react';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../store/auth/auth';
+import { treeOptions } from '../create-job/constants';
 
 const PublicSharedFolderSubscription = () => {
   const {
@@ -34,10 +50,11 @@ const PublicSharedFolderSubscription = () => {
             <PublicSharedFolder
               folderDescription={
                 sharedFolder?.subscription_requirement?.folder_description ??
-                'missing short desccription'
+                'missing short description'
               }
               folderName={sharedFolder.path}
               folderPath={sharedFolder.path}
+              folderTree={sharedFolder.tree}
               isFree={sharedFolder?.subscription_requirement?.is_free ?? true}
               key={sharedFolder.path}
               nodeName={sharedFolder.identityRaw ?? '-'}
@@ -53,18 +70,40 @@ export default PublicSharedFolderSubscription;
 
 const MotionButton = motion(Button);
 
+function transformTreeNode(
+  node: TreeNode,
+  parentPath: string = '',
+): PrimeTreeNode {
+  const path = parentPath ? `${parentPath}/${node.name}` : node.name;
+  return {
+    id: path,
+    key: path,
+    label: node.path.replace(/\//g, ''),
+    icon: 'icon-folder',
+    data: {
+      path: node.path,
+      last_modified: node.last_modified,
+    },
+    children: Object.keys(node.children ?? {}).map((key) =>
+      transformTreeNode(node.children[key], path),
+    ),
+  };
+}
+
 export const PublicSharedFolder = ({
   folderName,
   nodeName,
   isFree,
   folderPath,
   folderDescription,
+  folderTree,
 }: {
   folderName: string;
   folderPath: string;
   folderDescription: string;
   nodeName: string;
   isFree: boolean;
+  folderTree: TreeNode;
 }) => {
   const auth = useAuth((state) => state.auth);
   const { mutateAsync: subscribeSharedFolder, isPending } =
@@ -80,50 +119,72 @@ export const PublicSharedFolder = ({
     });
 
   return (
-    <div
-      className="flex min-h-[92px] cursor-pointer items-center justify-between gap-2 rounded-lg py-3.5 pr-2.5 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400"
-      key={folderPath}
-      onClick={() =>
-        window.open(`https://shinkai-contracts.pages.dev/`, '_blank')
-      }
-      role="button"
-      tabIndex={0}
-    >
-      <SubscriptionInfo
-        folderDescription={folderDescription}
-        folderName={folderName.replace(/\//g, '')}
-        isFree={isFree}
-        nodeName={nodeName}
-      />
-      <MotionButton
-        className="hover:border-brand py-1.5 text-sm hover:bg-transparent hover:text-white"
-        disabled={isPending}
-        isLoading={isPending}
-        layout
-        onClick={async (event) => {
-          event.stopPropagation();
-          if (!auth) return;
-          const [node, nodeProfile] = nodeName.split('/');
-          await subscribeSharedFolder({
-            nodeAddress: auth?.node_address,
-            shinkaiIdentity: auth?.shinkai_identity,
-            streamerNodeName: node,
-            streamerNodeProfile: nodeProfile ?? '', // TODO: validate
-            profile: auth?.profile,
-            folderPath: folderPath,
-            my_device_encryption_sk: auth?.my_device_encryption_sk,
-            my_device_identity_sk: auth?.my_device_identity_sk,
-            node_encryption_pk: auth?.node_encryption_pk,
-            profile_encryption_sk: auth?.profile_encryption_sk,
-            profile_identity_sk: auth?.profile_identity_sk,
-          });
-        }}
-        size="auto"
-        variant="outline"
-      >
-        Subscribe
-      </MotionButton>
-    </div>
+    <Drawer>
+      <DrawerTrigger asChild>
+        <div
+          className="flex min-h-[92px] cursor-pointer items-center justify-between gap-2 rounded-lg py-3.5 pr-2.5 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400"
+          // key={folderPath}
+          // onClick={() =>
+          //   window.open(`https://shinkai-contracts.pages.dev/`, '_blank')
+          // }
+          // role="button"
+          // tabIndex={0}
+        >
+          <SubscriptionInfo
+            folderDescription={folderDescription}
+            folderName={folderName.replace(/\//g, '')}
+            isFree={isFree}
+            nodeName={nodeName}
+          />
+          <MotionButton
+            className="hover:border-brand py-1.5 text-sm hover:bg-transparent hover:text-white"
+            disabled={isPending}
+            isLoading={isPending}
+            layout
+            onClick={async (event) => {
+              event.stopPropagation();
+              if (!auth) return;
+              const [node, nodeProfile] = nodeName.split('/');
+              await subscribeSharedFolder({
+                nodeAddress: auth?.node_address,
+                shinkaiIdentity: auth?.shinkai_identity,
+                streamerNodeName: node,
+                streamerNodeProfile: nodeProfile ?? '', // TODO: validate
+                profile: auth?.profile,
+                folderPath: folderPath,
+                my_device_encryption_sk: auth?.my_device_encryption_sk,
+                my_device_identity_sk: auth?.my_device_identity_sk,
+                node_encryption_pk: auth?.node_encryption_pk,
+                profile_encryption_sk: auth?.profile_encryption_sk,
+                profile_identity_sk: auth?.profile_identity_sk,
+              });
+            }}
+            size="auto"
+            variant="outline"
+          >
+            Subscribe
+          </MotionButton>
+        </div>
+      </DrawerTrigger>
+      <DrawerContent className="min-h-[300px]">
+        <DrawerClose className="absolute right-4 top-5">
+          <XIcon className="text-gray-80" />
+        </DrawerClose>
+        <DrawerHeader>
+          <DrawerTitle>Shared Folder Details</DrawerTitle>
+          <DrawerDescription className="mb-4 mt-2">
+            List of folders and files shared with you
+          </DrawerDescription>
+          <ScrollArea className="h-[60vh]">
+            <Tree
+              pt={treeOptions}
+              value={[transformTreeNode(folderTree, '')]}
+              // selectionMode="checkbox" // value={transformToTreeNode(folder)}
+            />
+          </ScrollArea>
+        </DrawerHeader>
+      </DrawerContent>
+    </Drawer>
   );
 };
 
