@@ -14,7 +14,7 @@ export const MarkdownPreview = ({
   return (
     <ReactMarkdownPreview
       className={cn(
-        'wmde-markdown-var prose prose-gray prose-code:text-white prose-blockquote:text-gray-50 prose-blockquote:bg-gray-200 prose-strong:text-white prose-headings:text-white text-white',
+        'wmde-markdown-var prose prose-gray prose-code:text-white prose-blockquote:text-gray-50 prose-blockquote:bg-gray-200 prose-strong:text-white prose-headings:text-white prose-p:whitespace-pre-wrap text-white',
         className,
       )}
       components={components}
