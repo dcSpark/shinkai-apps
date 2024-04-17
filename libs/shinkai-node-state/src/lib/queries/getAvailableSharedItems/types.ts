@@ -20,28 +20,28 @@ type SubscriptionRequirement = {
   folder_description: string;
 };
 
-type SharedFolder = {
+export type SharedFolder = {
+  id: number;
+  createdAt: string;
+  updatedAt: string;
+  identityRaw: string;
+  identity: string;
+  addressOrProxyNodes: string[];
+  //
   path: string;
   permission: 'Public';
   tree: TreeNode;
   subscription_requirement: SubscriptionRequirement;
 };
 export type GetAvailableSharedItemsOutput = {
-  node_name: string;
-  last_ext_node_response: string;
-  last_request_to_ext_node: string;
-  last_updated: string;
-  state: 'ResponseAvailable';
-  response_last_updated: string;
-  response: {
-    [key: string]: SharedFolder;
-  };
+  values: SharedFolder[];
+  count: number;
+  pages: number;
 };
 
-export type GetAvailableSharedItemsInput = JobCredentialsPayload & {
-  nodeAddress: string;
-  shinkaiIdentity: string;
-  profile: string;
+export type GetAvailableSharedItemsInput = {
+  pageSize: number;
+  page: number;
 };
 export type UseGetAvailableSharedItems = [
   FunctionKey.GET_AVAILABLE_SHARED_ITEMS,

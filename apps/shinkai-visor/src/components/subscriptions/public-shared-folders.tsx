@@ -1,5 +1,5 @@
 import { useSubscribeToSharedFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/subscribeToSharedFolder/useSubscribeToSharedFolder';
-import { useGetAvailableSharedItems } from '@shinkai_network/shinkai-node-state/lib/queries/getAvailableSharedItems/useGetAvailableSharedItems';
+import { useGetAvailableSharedFolders } from '@shinkai_network/shinkai-node-state/lib/queries/getAvailableSharedItems/useGetAvailableSharedFolders';
 import { Button, SharedFolderIcon } from '@shinkai_network/shinkai-ui';
 import { motion } from 'framer-motion';
 import React from 'react';
@@ -8,31 +8,15 @@ import { toast } from 'sonner';
 import { useAuth } from '../../store/auth/auth';
 
 const PublicSharedFolderSubscription = () => {
-  const auth = useAuth((state) => state.auth);
-
   const {
-    data: sharedItems,
+    data: sharedFolders,
     isSuccess,
     isPending,
-  } = useGetAvailableSharedItems(
-    {
-      nodeAddress: auth?.node_address ?? '',
-      shinkaiIdentity: auth?.shinkai_identity ?? '',
-      profile: auth?.profile ?? '',
-      my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-      my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-      node_encryption_pk: auth?.node_encryption_pk ?? '',
-      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-      profile_identity_sk: auth?.profile_identity_sk ?? '',
-    },
-    {
-      refetchInterval: 6000,
-    },
-  );
-
+  } = useGetAvailableSharedFolders({ page: 0, pageSize: 10 });
+  console.log(sharedFolders, 'sharedFolders');
   return (
     <div className="flex h-full flex-col gap-4">
-      {isSuccess && !Object.entries(sharedItems?.response || {}).length && (
+      {isSuccess && !sharedFolders.values.length && (
         <p className="text-gray-80 text-left">
           There are no public folders available to subscribe to right now.
         </p>
@@ -46,21 +30,19 @@ const PublicSharedFolderSubscription = () => {
         ))}
       {isSuccess && (
         <div className="w-full">
-          {Object.entries(sharedItems?.response || {}).map(
-            ([filename, fileDetails]) => (
-              <PublicSharedFolder
-                folderDescription={
-                  fileDetails?.subscription_requirement?.folder_description ??
-                  ''
-                }
-                folderName={filename}
-                folderPath={fileDetails.path}
-                isFree={fileDetails?.subscription_requirement?.is_free ?? true}
-                key={fileDetails.path}
-                nodeName={sharedItems?.node_name ?? '-'}
-              />
-            ),
-          )}
+          {sharedFolders.values.map((sharedFolder) => (
+            <PublicSharedFolder
+              folderDescription={
+                sharedFolder?.subscription_requirement?.folder_description ??
+                'missing short desccription'
+              }
+              folderName={sharedFolder.path}
+              folderPath={sharedFolder.path}
+              isFree={sharedFolder?.subscription_requirement?.is_free ?? true}
+              key={sharedFolder.path}
+              nodeName={sharedFolder.identityRaw ?? '-'}
+            />
+          ))}
         </div>
       )}
     </div>
@@ -126,7 +108,7 @@ export const PublicSharedFolder = ({
             nodeAddress: auth?.node_address,
             shinkaiIdentity: auth?.shinkai_identity,
             streamerNodeName: node,
-            streamerNodeProfile: nodeProfile,
+            streamerNodeProfile: nodeProfile ?? '', // TODO: validate
             profile: auth?.profile,
             folderPath: folderPath,
             my_device_encryption_sk: auth?.my_device_encryption_sk,
@@ -181,7 +163,7 @@ export const SubscriptionInfo = ({
       <div className="text-gray-80 flex items-center gap-2 text-xs">
         <a
           className="transition-all hover:text-white hover:underline"
-          href="https://shinkai-contracts.pages.dev/identity/kao0112_9850.sepolia-shinkai"
+          href={`https://shinkai-contracts.pages.dev/identity/${nodeName}`}
           onClick={(e) => e.stopPropagation()}
           rel="noreferrer"
           target="_blank"
