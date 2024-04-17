@@ -13,7 +13,7 @@ const PublicSharedFolderSubscription = () => {
     isSuccess,
     isPending,
   } = useGetAvailableSharedFolders({ page: 0, pageSize: 10 });
-  console.log(sharedFolders, 'sharedFolders');
+
   return (
     <div className="flex h-full flex-col gap-4">
       {isSuccess && !sharedFolders.values.length && (
