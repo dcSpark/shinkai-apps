@@ -144,12 +144,11 @@ export const PublicSharedFolder = ({
             onClick={async (event) => {
               event.stopPropagation();
               if (!auth) return;
-              const [node, nodeProfile] = nodeName.split('/');
               await subscribeSharedFolder({
                 nodeAddress: auth?.node_address,
                 shinkaiIdentity: auth?.shinkai_identity,
-                streamerNodeName: node,
-                streamerNodeProfile: nodeProfile ?? '', // TODO: validate
+                streamerNodeName: '@@' + nodeName,
+                streamerNodeProfile: 'main', // TODO: validate
                 profile: auth?.profile,
                 folderPath: folderPath,
                 my_device_encryption_sk: auth?.my_device_encryption_sk,
@@ -179,7 +178,6 @@ export const PublicSharedFolder = ({
             <Tree
               pt={treeOptions}
               value={[transformTreeNode(folderTree, '')]}
-              // selectionMode="checkbox" // value={transformToTreeNode(folder)}
             />
           </ScrollArea>
         </DrawerHeader>
