@@ -1,5 +1,8 @@
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { TreePassThroughMethodOptions } from 'primereact/tree';
+import {
+  TreePassThroughMethodOptions,
+  TreePassThroughOptions,
+} from 'primereact/tree';
 
 export const allowedFileExtensions = [
   '.eml',
@@ -28,14 +31,14 @@ export const allowedFileExtensions = [
   '.vrpack',
 ];
 
-export const treeOptions = {
+export const treeOptions: TreePassThroughOptions = {
   root: {
     className: cn(
       '',
       'my-3 w-full rounded-md border border-gray-400 bg-transparent p-0 text-white',
     ),
   },
-  label: { className: 'text-white text-sm' },
+  label: { className: 'text-white text-sm line-clamp-1 break-all' },
   container: {
     className: 'm-0 p-0 list-none overflow-auto',
   },

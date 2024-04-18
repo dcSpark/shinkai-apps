@@ -1241,7 +1241,7 @@ export const getAvailableSharedFolders = async (
 ): Promise<any> => {
   try {
     const response = await fetch(
-      `https://sepolia-subscription-indexer.shinkai.com/api/v1/identities?pageSize=${pageSize}&page=${page}`,
+      `https://sepolia-subscription-indexer.shinkai.com/api/v1/shared-items?pageSize=${pageSize}&page=${page}`,
       {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
@@ -1492,9 +1492,52 @@ export const getMySubscriptions = async (
 
     await handleHttpError(response);
     const data = await response.json();
+    return {
+      data: JSON.parse(data.data),
+      status: data.status,
+    };
+  } catch (error) {
+    console.error('Error getMySubscriptions:', error);
+    throw error;
+  }
+};
+
+export const updateNodeName = async (
+  nodeAddress: string,
+  newNodeName: string,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  setupDetailsState: CredentialsPayload,
+): Promise<{ data: any; status: string }> => {
+  try {
+    const messageStr = ShinkaiMessageBuilderWrapper.updateNodeName(
+      setupDetailsState.profile_encryption_sk,
+      setupDetailsState.profile_identity_sk,
+      setupDetailsState.node_encryption_pk,
+      newNodeName,
+      sender,
+      sender_subidentity,
+      receiver,
+      receiver_subidentity,
+    );
+
+    const message = JSON.parse(messageStr);
+
+    const response = await fetch(
+      urlJoin(nodeAddress, '/v1/change_nodes_name'),
+      {
+        method: 'POST',
+        body: JSON.stringify(message),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+    await handleHttpError(response);
+    const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Error createShareableFolder:', error);
+    console.error('Error changeNodeName:', error);
     throw error;
   }
 };

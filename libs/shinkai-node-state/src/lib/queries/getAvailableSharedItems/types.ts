@@ -2,11 +2,11 @@ import { QueryObserverOptions } from '@tanstack/react-query';
 
 import { FunctionKey } from '../../constants';
 
-type TreeNode = {
+export type FolderTreeNode = {
   name: string;
   path: string;
   last_modified: string;
-  children: { [key: string]: TreeNode };
+  children: { [key: string]: FolderTreeNode };
 };
 
 type SubscriptionRequirement = {
@@ -19,21 +19,30 @@ type SubscriptionRequirement = {
   folder_description: string;
 };
 
-export type SharedFolder = {
+type SharedFolderItem = {
   id: number;
   createdAt: string;
   updatedAt: string;
-  identityRaw: string;
-  identity: string;
-  addressOrProxyNodes: string[];
-  //
+  raw: {
+    path: string;
+    tree: FolderTreeNode;
+    permission: 'Public';
+    subscription_requirement: SubscriptionRequirement;
+  };
   path: string;
-  permission: 'Public';
-  tree: TreeNode;
-  subscription_requirement: SubscriptionRequirement;
+  isFree: boolean;
+  folderDescription: string;
+  lastModified: string;
+  identity: {
+    id: number;
+    createdAt: string;
+    updatedAt: string;
+    identityRaw: string;
+    identity: string;
+  };
 };
 export type GetAvailableSharedItemsOutput = {
-  values: SharedFolder[];
+  values: SharedFolderItem[];
   count: number;
   pages: number;
 };
@@ -42,6 +51,7 @@ export type GetAvailableSharedItemsInput = {
   pageSize: number;
   page: number;
 };
+
 export type UseGetAvailableSharedItems = [
   FunctionKey.GET_AVAILABLE_SHARED_ITEMS,
   GetAvailableSharedItemsInput,

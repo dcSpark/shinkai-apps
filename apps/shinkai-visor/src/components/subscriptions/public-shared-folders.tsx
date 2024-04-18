@@ -1,5 +1,5 @@
 import { useSubscribeToSharedFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/subscribeToSharedFolder/useSubscribeToSharedFolder';
-import { TreeNode } from '@shinkai_network/shinkai-node-state/lib/queries/getAvailableSharedItems/index';
+import { FolderTreeNode } from '@shinkai_network/shinkai-node-state/lib/queries/getAvailableSharedItems/types';
 import { useGetAvailableSharedFolders } from '@shinkai_network/shinkai-node-state/lib/queries/getAvailableSharedItems/useGetAvailableSharedFolders';
 import {
   Button,
@@ -14,10 +14,10 @@ import {
   SharedFolderIcon,
 } from '@shinkai_network/shinkai-ui';
 import { motion } from 'framer-motion';
-import { XIcon } from 'lucide-react';
-import { Tree } from 'primereact/tree';
+import { Maximize2, Minimize2, XIcon } from 'lucide-react';
+import { Tree, TreeExpandedKeysType } from 'primereact/tree';
 import { TreeNode as PrimeTreeNode } from 'primereact/treenode';
-import React from 'react';
+import React, { useState } from 'react';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../store/auth/auth';
@@ -44,24 +44,25 @@ const PublicSharedFolderSubscription = () => {
             key={idx}
           />
         ))}
-      {isSuccess && (
-        <div className="w-full">
-          {sharedFolders.values.map((sharedFolder) => (
-            <PublicSharedFolder
-              folderDescription={
-                sharedFolder?.subscription_requirement?.folder_description ??
-                'missing short description'
-              }
-              folderName={sharedFolder.path}
-              folderPath={sharedFolder.path}
-              folderTree={sharedFolder.tree}
-              isFree={sharedFolder?.subscription_requirement?.is_free ?? true}
-              key={sharedFolder.path}
-              nodeName={sharedFolder.identityRaw ?? '-'}
-            />
-          ))}
-        </div>
-      )}
+      <ScrollArea className="pr-4 [&>div>div]:!block">
+        {isSuccess && (
+          <div className="w-full">
+            {sharedFolders.values.map((sharedFolder) => (
+              <PublicSharedFolder
+                folderDescription={
+                  sharedFolder?.folderDescription ?? 'no description found'
+                }
+                folderName={sharedFolder.path}
+                folderPath={sharedFolder.path}
+                folderTree={sharedFolder.raw.tree}
+                isFree={sharedFolder?.isFree}
+                key={`${sharedFolder?.identity?.identityRaw}::${sharedFolder.path}`}
+                nodeName={sharedFolder?.identity?.identityRaw ?? '-'}
+              />
+            ))}
+          </div>
+        )}
+      </ScrollArea>
     </div>
   );
 };
@@ -71,15 +72,15 @@ export default PublicSharedFolderSubscription;
 const MotionButton = motion(Button);
 
 function transformTreeNode(
-  node: TreeNode,
+  node: FolderTreeNode,
   parentPath: string = '',
 ): PrimeTreeNode {
-  const path = parentPath ? `${parentPath}/${node.name}` : node.name;
+  const path = parentPath ? `${parentPath}/${node.name}` : node.path;
   return {
     id: path,
     key: path,
     label: node.path.replace(/\//g, ''),
-    icon: 'icon-folder',
+    icon: Object.keys(node.children ?? {}).length ? 'icon-folder' : 'icon-file',
     data: {
       path: node.path,
       last_modified: node.last_modified,
@@ -103,7 +104,7 @@ export const PublicSharedFolder = ({
   folderDescription: string;
   nodeName: string;
   isFree: boolean;
-  folderTree: TreeNode;
+  folderTree: FolderTreeNode;
 }) => {
   const auth = useAuth((state) => state.auth);
   const { mutateAsync: subscribeSharedFolder, isPending } =
@@ -121,15 +122,7 @@ export const PublicSharedFolder = ({
   return (
     <Drawer>
       <DrawerTrigger asChild>
-        <div
-          className="flex min-h-[92px] cursor-pointer items-center justify-between gap-2 rounded-lg py-3.5 pr-2.5 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400"
-          // key={folderPath}
-          // onClick={() =>
-          //   window.open(`https://shinkai-contracts.pages.dev/`, '_blank')
-          // }
-          // role="button"
-          // tabIndex={0}
-        >
+        <div className="flex min-h-[92px] cursor-pointer items-center justify-between gap-2 rounded-lg py-3.5 pr-2.5 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400">
           <SubscriptionInfo
             folderDescription={folderDescription}
             folderName={folderName.replace(/\//g, '')}
@@ -165,24 +158,76 @@ export const PublicSharedFolder = ({
           </MotionButton>
         </div>
       </DrawerTrigger>
-      <DrawerContent className="min-h-[300px]">
-        <DrawerClose className="absolute right-4 top-5">
-          <XIcon className="text-gray-80" />
-        </DrawerClose>
-        <DrawerHeader>
-          <DrawerTitle>Shared Folder Details</DrawerTitle>
-          <DrawerDescription className="mb-4 mt-2">
-            List of folders and files shared with you
-          </DrawerDescription>
-          <ScrollArea className="h-[60vh]">
-            <Tree
-              pt={treeOptions}
-              value={[transformTreeNode(folderTree, '')]}
-            />
-          </ScrollArea>
-        </DrawerHeader>
-      </DrawerContent>
+      <FolderDetailsDrawerContent nodes={[transformTreeNode(folderTree, '')]} />
     </Drawer>
+  );
+};
+
+const FolderDetailsDrawerContent = ({ nodes }: { nodes: PrimeTreeNode[] }) => {
+  const [expandedKeys, setExpandedKeys] = useState<TreeExpandedKeysType>({
+    '0': true,
+    '0-0': true,
+  });
+
+  const expandNode = (
+    node: PrimeTreeNode,
+    _expandedKeys: TreeExpandedKeysType,
+  ) => {
+    if (node.children && node.children.length) {
+      _expandedKeys[node?.key ?? ''] = true;
+
+      for (const child of node.children) {
+        expandNode(child, _expandedKeys);
+      }
+    }
+  };
+
+  const expandAll = () => {
+    const _expandedKeys = {};
+
+    for (const node of nodes) {
+      expandNode(node, _expandedKeys);
+    }
+
+    setExpandedKeys(_expandedKeys);
+  };
+
+  const collapseAll = () => {
+    setExpandedKeys({});
+  };
+
+  return (
+    <DrawerContent>
+      <DrawerClose className="absolute right-4 top-5">
+        <XIcon className="text-gray-80" />
+      </DrawerClose>
+      <DrawerHeader>
+        <DrawerTitle className="mb-2">Shared Folder Details</DrawerTitle>
+        <DrawerDescription>
+          List of folders and files shared with you
+        </DrawerDescription>
+      </DrawerHeader>
+
+      <div className="flex flex-wrap justify-end gap-2">
+        <Button onClick={expandAll} size="icon" type="button" variant="ghost">
+          <Maximize2 className="h-4 w-4" />
+          <span className="sr-only">Expand All</span>
+        </Button>
+        <Button onClick={collapseAll} size="icon" type="button" variant="ghost">
+          <Minimize2 className="h-4 w-4" />
+          <span className="sr-only">Collapse All</span>
+        </Button>
+      </div>
+
+      <ScrollArea className="h-[70vh] [&>div>div]:!block">
+        <Tree
+          expandedKeys={expandedKeys}
+          onToggle={(e) => setExpandedKeys(e.value as TreeExpandedKeysType)}
+          pt={treeOptions}
+          value={nodes}
+        />
+      </ScrollArea>
+    </DrawerContent>
   );
 };
 
@@ -202,7 +247,7 @@ export const SubscriptionInfo = ({
       <SharedFolderIcon className="h-6 w-6" />
     </div>
     <div className="space-y-3">
-      <div className="space-y-1">
+      <div className="flex flex-col gap-1">
         <a
           className="transition-all hover:text-white hover:underline"
           href="https://shinkai-contracts.pages.dev/"
@@ -215,7 +260,7 @@ export const SubscriptionInfo = ({
           </span>
         </a>
 
-        <span className="text-gray-80 text-sm capitalize">
+        <span className="text-gray-80 text-sm first-letter:uppercase">
           {folderDescription}
         </span>
       </div>
