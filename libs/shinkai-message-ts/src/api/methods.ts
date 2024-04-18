@@ -1246,7 +1246,7 @@ export const searchItemsVR = async (
   }
 };
 export const getAvailableSharedFolders = async (
-  pageSize: number = 1,
+  pageSize: number = 10,
   page: number = 0,
 ): Promise<any> => {
   try {

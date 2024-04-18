@@ -28,7 +28,7 @@ const PublicSharedFolderSubscription = () => {
     data: sharedFolders,
     isSuccess,
     isPending,
-  } = useGetAvailableSharedFolders({ page: 0, pageSize: 10 });
+  } = useGetAvailableSharedFolders({ page: 0, pageSize: 100 });
 
   return (
     <div className="flex h-full flex-col gap-4">
@@ -44,8 +44,8 @@ const PublicSharedFolderSubscription = () => {
             key={idx}
           />
         ))}
-      <ScrollArea className="pr-4 [&>div>div]:!block">
-        {isSuccess && (
+      {isSuccess && (
+        <ScrollArea className="pr-4 [&>div>div]:!block">
           <div className="w-full">
             {sharedFolders.values.map((sharedFolder) => (
               <PublicSharedFolder
@@ -61,8 +61,8 @@ const PublicSharedFolderSubscription = () => {
               />
             ))}
           </div>
-        )}
-      </ScrollArea>
+        </ScrollArea>
+      )}
     </div>
   );
 };
