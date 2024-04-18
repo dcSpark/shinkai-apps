@@ -1268,7 +1268,7 @@ export class ShinkaiMessageBuilderWrapper {
   ): string {
     const payload = {
       path,
-      streamer_node_name: '@@_my_9752.sepolia-shinkai',
+      streamer_node_name,
       streamer_profile_name,
       payment: 'Free',
     };
