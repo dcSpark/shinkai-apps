@@ -821,7 +821,12 @@ export const retrieveVRPathSimplified = async (
 
     await handleHttpError(response);
     const data = await response.json();
-    return data;
+    return typeof data?.data === 'string'
+      ? {
+          data: JSON.parse(data.data),
+          status: data.status,
+        }
+      : data;
   } catch (error) {
     console.error('Error retrieveVRPathSimplified:', error);
     throw error;
@@ -943,7 +948,12 @@ export const retrieveVectorResource = async (
 
     await handleHttpError(response);
     const data = await response.json();
-    return data;
+    return typeof data?.data === 'string'
+      ? {
+          data: JSON.parse(data.data),
+          status: data.status,
+        }
+      : data;
   } catch (error) {
     console.error('Error retrieveVectorResource:', error);
     throw error;
@@ -1292,7 +1302,12 @@ export const getMySharedFolders = async (
 
     await handleHttpError(response);
     const data = await response.json();
-    return data;
+    return typeof data?.data === 'string'
+      ? {
+          data: JSON.parse(data.data),
+          status: data.status,
+        }
+      : data;
   } catch (error) {
     console.error('Error getMySharedFolders:', error);
     throw error;
@@ -1492,10 +1507,12 @@ export const getMySubscriptions = async (
 
     await handleHttpError(response);
     const data = await response.json();
-    return {
-      data: JSON.parse(data.data),
-      status: data.status,
-    };
+    return typeof data?.data === 'string'
+      ? {
+          data: JSON.parse(data.data),
+          status: data.status,
+        }
+      : data;
   } catch (error) {
     console.error('Error getMySubscriptions:', error);
     throw error;
