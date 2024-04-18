@@ -38,7 +38,7 @@ import {
   getKeyInfo,
   isValidKeyCombination,
 } from '../../hooks/use-keyboard-shortcut';
-import { useAuth } from '../../store/auth/auth';
+import { SetupData, useAuth } from '../../store/auth/auth';
 import { useSettings } from '../../store/settings/settings';
 
 const formSchema = z.object({
@@ -64,6 +64,7 @@ const MotionButton = motion(Button);
 export const Settings = () => {
   const history = useHistory();
   const auth = useAuth((authStore) => authStore.auth);
+  const setAuth = useAuth((authStore) => authStore.setAuth);
   const displayActionButton = useSettings(
     (settingsStore) => settingsStore.displayActionButton,
   );
@@ -160,6 +161,12 @@ export const Settings = () => {
     useUpdateNodeName({
       onSuccess: () => {
         toast.success('Node name updated successfully');
+        if (!auth) return;
+        const newAuth: SetupData = { ...auth };
+        setAuth({
+          ...newAuth,
+          shinkai_identity: currentShinkaiIdentity,
+        });
       },
       onError: (error) => {
         toast.error('Failed to update node name', {
