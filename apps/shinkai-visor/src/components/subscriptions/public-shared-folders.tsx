@@ -85,26 +85,26 @@ const PublicSharedFolderSubscription = () => {
         )}
       </div>
       <ToggleGroup
-        className="w-auto self-start rounded-full bg-gray-400 px-2 py-1"
+        className="w-auto self-start rounded-full bg-gray-400 p-1"
         onValueChange={(value) => setPaidFilter(value as PriceFilters)}
         type="single"
         value={paidFilter}
       >
         <ToggleGroupItem
-          className="min-w-[70px] rounded-full border-none"
+          className="h-8 min-w-[70px] rounded-full border-none text-sm"
           value="all"
           variant="outline"
         >
           All
         </ToggleGroupItem>
         <ToggleGroupItem
-          className="min-w-[70px] rounded-full border-none"
+          className="h-8 min-w-[70px] rounded-full border-none text-sm"
           value="free"
         >
           Free
         </ToggleGroupItem>
         <ToggleGroupItem
-          className="min-w-[70px] rounded-full border-none"
+          className="h-8 min-w-[70px] rounded-full border-none text-sm"
           value="paid"
           variant="outline"
         >
