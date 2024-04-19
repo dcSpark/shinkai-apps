@@ -1,6 +1,8 @@
-import { subscribeToSharedFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/subscribeToSharedFolder/index';
 import { useSubscribeToSharedFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/subscribeToSharedFolder/useSubscribeToSharedFolder';
-import { FolderTreeNode } from '@shinkai_network/shinkai-node-state/lib/queries/getAvailableSharedItems/types';
+import {
+  FolderTreeNode,
+  PriceFilters,
+} from '@shinkai_network/shinkai-node-state/lib/queries/getAvailableSharedItems/types';
 import { useGetAvailableSharedFoldersWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getAvailableSharedItems/useGetAvailableSharedFoldersWithPagination';
 import {
   Button,
@@ -12,20 +14,28 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
+  Input,
   ScrollArea,
   SharedFolderIcon,
+  ToggleGroup,
+  ToggleGroupItem,
 } from '@shinkai_network/shinkai-ui';
 import { motion, useInView } from 'framer-motion';
-import { Maximize2, Minimize2, XIcon } from 'lucide-react';
+import { Maximize2, Minimize2, SearchIcon, XIcon } from 'lucide-react';
 import { Tree, TreeExpandedKeysType } from 'primereact/tree';
 import { TreeNode as PrimeTreeNode } from 'primereact/treenode';
 import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
+import { useDebounce } from '../../hooks/use-debounce';
 import { useAuth } from '../../store/auth/auth';
 import { treeOptions } from '../create-job/constants';
 
 const PublicSharedFolderSubscription = () => {
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [paidFilter, setPaidFilter] = React.useState<PriceFilters>('all');
+  const debouncedSearchQuery = useDebounce(searchQuery, 600);
+
   const {
     data,
     fetchNextPage,
@@ -33,13 +43,15 @@ const PublicSharedFolderSubscription = () => {
     isPending,
     isFetchingNextPage,
     isSuccess,
-  } = useGetAvailableSharedFoldersWithPagination({ page: 0, pageSize: 2 });
+  } = useGetAvailableSharedFoldersWithPagination({
+    search: debouncedSearchQuery,
+    priceFilter: paidFilter,
+  });
 
   const loadMoreRef = useRef<HTMLButtonElement>(null);
   const isLoadMoreButtonInView = useInView(loadMoreRef);
 
   useEffect(() => {
-    console.log(isLoadMoreButtonInView, 'isLoadMoreButtonInView');
     if (isLoadMoreButtonInView && hasNextPage) {
       fetchNextPage();
     }
@@ -47,19 +59,76 @@ const PublicSharedFolderSubscription = () => {
 
   return (
     <div className="flex h-full flex-col gap-4">
-      {isSuccess && !data?.pages?.[0]?.values?.length && (
-        <p className="text-gray-80 text-left">
-          There are no public folders available to subscribe to right now.
-        </p>
-      )}
-      {isPending &&
-        Array.from({ length: 4 }).map((_, idx) => (
-          <div
-            className="flex h-[69px] items-center justify-between gap-2 rounded-md bg-gray-400 py-3"
-            key={idx}
-          />
-        ))}
-      {isSuccess && (
+      <div className="relative flex h-10 w-full items-center">
+        <Input
+          className="placeholder-gray-80 !h-full bg-transparent py-2 pl-10"
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+          }}
+          placeholder="Search..."
+          value={searchQuery}
+        />
+        <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2 bg-gray-300" />
+        {searchQuery && (
+          <Button
+            className="absolute right-1 h-8 w-8 bg-gray-200 p-2"
+            onClick={() => {
+              setSearchQuery('');
+            }}
+            size="auto"
+            type="button"
+            variant="ghost"
+          >
+            <XIcon />
+            <span className="sr-only">Clear Search</span>
+          </Button>
+        )}
+      </div>
+      <ToggleGroup
+        className="w-auto self-start rounded-full bg-gray-400 px-2 py-1"
+        onValueChange={(value) => setPaidFilter(value as PriceFilters)}
+        type="single"
+        value={paidFilter}
+      >
+        <ToggleGroupItem
+          className="min-w-[70px] rounded-full border-none"
+          value="all"
+          variant="outline"
+        >
+          All
+        </ToggleGroupItem>
+        <ToggleGroupItem
+          className="min-w-[70px] rounded-full border-none"
+          value="free"
+        >
+          Free
+        </ToggleGroupItem>
+        <ToggleGroupItem
+          className="min-w-[70px] rounded-full border-none"
+          value="paid"
+          variant="outline"
+        >
+          Paid
+        </ToggleGroupItem>
+      </ToggleGroup>
+      {isPending ||
+        (debouncedSearchQuery !== searchQuery &&
+          Array.from({ length: 4 }).map((_, idx) => (
+            <div
+              className="flex h-[69px] items-center justify-between gap-2 rounded-lg bg-gray-400 py-3"
+              key={idx}
+            />
+          )))}
+      {isSuccess &&
+        !data?.pages?.[0]?.values?.length &&
+        debouncedSearchQuery === searchQuery && (
+          <p className="text-gray-80 text-left">
+            {searchQuery || paidFilter
+              ? 'There are no public folders available that match your search criteria.'
+              : 'There are no public folders available to subscribe to right now.'}
+          </p>
+        )}
+      {isSuccess && debouncedSearchQuery === searchQuery && (
         <ScrollArea className="[&>div>div]:!block">
           <div className="w-full">
             {data?.pages.map((page, idx) => (

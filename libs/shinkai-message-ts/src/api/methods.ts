@@ -1246,12 +1246,21 @@ export const searchItemsVR = async (
   }
 };
 export const getAvailableSharedFolders = async (
-  pageSize: number,
-  page: number,
+  pageSize?: number,
+  page?: number,
+  priceFilter?: 'paid' | 'free' | 'all',
+  search?: string,
 ): Promise<any> => {
   try {
+    const queryParams = new URLSearchParams();
+    if (pageSize != null) queryParams.append('pageSize', pageSize.toString());
+    if (page != null) queryParams.append('page', page.toString());
+    if (priceFilter && priceFilter !== 'all')
+      queryParams.append('price', priceFilter);
+    if (search) queryParams.append('search', search);
+
     const response = await fetch(
-      `https://sepolia-subscription-indexer.shinkai.com/api/v1/shared-items?pageSize=${pageSize}&page=${page}`,
+      `https://sepolia-subscription-indexer.shinkai.com/api/v1/shared-items?${queryParams.toString()}`,
       {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },

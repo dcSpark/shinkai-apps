@@ -8,7 +8,14 @@ import {
 export const getAvailableSharedFolders = async ({
   pageSize,
   page,
+  priceFilter,
+  search,
 }: GetAvailableSharedItemsInput): Promise<GetAvailableSharedItemsOutput> => {
-  const response = await getAvailableSharedFoldersAPI(pageSize, page);
+  const response = await getAvailableSharedFoldersAPI(
+    pageSize,
+    page,
+    priceFilter,
+    search,
+  );
   return response;
 };

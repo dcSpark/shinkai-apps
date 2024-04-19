@@ -35,6 +35,7 @@ export const useGetAvailableSharedFoldersWithPagination = (
 
     getNextPageParam: (response, _, params) => {
       const currentPage = params?.page ?? 0;
+      if (response.count === 0) return;
       if (currentPage + 1 === response.pages) return;
       return { page: currentPage + 1 };
     },

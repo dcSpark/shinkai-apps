@@ -46,10 +46,12 @@ export type GetAvailableSharedItemsOutput = {
   count: number;
   pages: number;
 };
-
+export type PriceFilters = 'free' | 'paid' | 'all';
 export type GetAvailableSharedItemsInput = {
-  pageSize: number;
-  page: number;
+  pageSize?: number;
+  page?: number;
+  priceFilter?: PriceFilters;
+  search?: string;
 };
 
 export type UseGetAvailableSharedItems = [
