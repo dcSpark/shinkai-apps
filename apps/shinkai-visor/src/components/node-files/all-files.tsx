@@ -395,10 +395,14 @@ const AllFiles = () => {
                       (file) => file.path === item,
                     );
                     if (!selectedFile) return;
-                    setSelectedFile(selectedFile);
-                    setActiveDrawerMenuOption(
-                      VectorFsGlobalAction.VectorFileDetails,
+                    const directoryMainPath = item.split('/').slice(0, -1);
+                    setCurrentGlobalPath(
+                      directoryMainPath.length > 1
+                        ? '/' + directoryMainPath.join('/')
+                        : '/' + directoryMainPath,
                     );
+
+                    setSearchQuery('');
                   }}
                 >
                   <FileTypeIcon />
