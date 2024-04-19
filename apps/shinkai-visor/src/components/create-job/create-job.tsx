@@ -365,13 +365,13 @@ export const CreateJob = () => {
                       >
                         <SearchCode className="h-5 w-5" />
                         <p className="sr-only text-xs text-white">
-                          Search Knowledge
+                          AI Files Content Search
                         </p>
                       </Button>
                     </TooltipTrigger>
                     <TooltipPortal>
                       <TooltipContent sideOffset={0}>
-                        Search Knowledge
+                        Search AI Files Content
                       </TooltipContent>
                     </TooltipPortal>
                   </Tooltip>

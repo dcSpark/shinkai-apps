@@ -317,7 +317,7 @@ export const SaveWebpageToVectorFsAction = () => {
     <>
       <DrawerHeader>
         <DrawerTitle className="flex flex-col items-start gap-1">
-          Save Webpage to VectorFS
+          Save Webpage to AI Files
         </DrawerTitle>
       </DrawerHeader>
       <Form {...saveWebpageToVectorFsForm}>

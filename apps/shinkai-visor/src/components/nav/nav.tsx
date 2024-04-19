@@ -536,7 +536,7 @@ export default function NavBar() {
                   onClick={() => onClickMenuOption(MenuOption.SearchNodeFiles)}
                 >
                   <SearchCode className="mr-2 h-4 w-4" />
-                  <span>Knowledge Search</span>
+                  <span>AI Files Content Search</span>
                 </DropdownMenuItem>
                 <DropdownMenuLabel>Subscriptions</DropdownMenuLabel>
                 <DropdownMenuItem
