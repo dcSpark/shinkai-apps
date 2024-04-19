@@ -78,22 +78,7 @@ const SubscribedSharedFolder = ({
   streamerNodeName: string;
   streamerNodeProfile: string;
 }) => {
-  const auth = useAuth((state) => state.auth);
-  const [isHovered, setIsHovered] = useState(false);
   const history = useHistory();
-  const {
-    mutateAsync: unsubscribeSharedFolder,
-    isPending: isUnsubscribingPending,
-  } = useUnsubscribeToSharedFolder({
-    onSuccess: () => {
-      toast.success('Subscription removed');
-    },
-    onError: (error) => {
-      toast.error('Error removing subscription', {
-        description: error.message,
-      });
-    },
-  });
 
   return (
     <div
@@ -108,37 +93,72 @@ const SubscribedSharedFolder = ({
         isFree={true}
         nodeName={streamerNodeName}
       />
-      <MotionButton
-        className={cn(
-          'hover:border-brand hover:bg-brand/10 py-1.5 text-sm hover:text-white',
-        )}
-        disabled={isUnsubscribingPending}
-        isLoading={isUnsubscribingPending}
-        layout
-        onClick={async (event) => {
-          event.stopPropagation();
-          if (!auth) return;
-          await unsubscribeSharedFolder({
-            nodeAddress: auth?.node_address,
-            shinkaiIdentity: auth?.shinkai_identity,
-            streamerNodeName,
-            streamerNodeProfile,
-            profile: auth?.profile,
-            folderPath,
-            my_device_encryption_sk: auth?.my_device_encryption_sk,
-            my_device_identity_sk: auth?.my_device_identity_sk,
-            node_encryption_pk: auth?.node_encryption_pk,
-            profile_encryption_sk: auth?.profile_encryption_sk,
-            profile_identity_sk: auth?.profile_identity_sk,
-          });
-        }}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        size="auto"
-        variant="outline"
-      >
-        {isHovered ? 'Unsubscribe' : 'Subscribed'}
-      </MotionButton>
+      <UnsubscribeButton
+        folderPath={folderPath}
+        streamerNodeName={streamerNodeName}
+        streamerNodeProfile={streamerNodeProfile}
+      />
     </div>
+  );
+};
+
+export const UnsubscribeButton = ({
+  streamerNodeName,
+  streamerNodeProfile,
+  folderPath,
+}: {
+  streamerNodeName: string;
+  streamerNodeProfile: string;
+  folderPath: string;
+}) => {
+  const auth = useAuth((state) => state.auth);
+  const {
+    mutateAsync: unsubscribeSharedFolder,
+    isPending: isUnsubscribingPending,
+  } = useUnsubscribeToSharedFolder({
+    onSuccess: () => {
+      toast.success('Subscription removed');
+    },
+    onError: (error) => {
+      toast.error('Error removing subscription', {
+        description: error.message,
+      });
+    },
+  });
+
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <MotionButton
+      className={cn(
+        'hover:border-brand hover:bg-brand/10 py-1.5 text-sm hover:text-white',
+      )}
+      disabled={isUnsubscribingPending}
+      isLoading={isUnsubscribingPending}
+      layout
+      onClick={async (event) => {
+        event.stopPropagation();
+        if (!auth) return;
+        await unsubscribeSharedFolder({
+          nodeAddress: auth?.node_address,
+          shinkaiIdentity: auth?.shinkai_identity,
+          streamerNodeName,
+          streamerNodeProfile,
+          profile: auth?.profile,
+          folderPath,
+          my_device_encryption_sk: auth?.my_device_encryption_sk,
+          my_device_identity_sk: auth?.my_device_identity_sk,
+          node_encryption_pk: auth?.node_encryption_pk,
+          profile_encryption_sk: auth?.profile_encryption_sk,
+          profile_identity_sk: auth?.profile_identity_sk,
+        });
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      size="auto"
+      variant="outline"
+    >
+      {isHovered ? 'Unsubscribe' : 'Subscribed'}
+    </MotionButton>
   );
 };
