@@ -102,7 +102,7 @@ const SearchNodeFiles = () => {
         }}
       >
         <h1 className="text-center text-2xl font-semibold text-white">
-          AI Files Knowledge Search
+          AI Files Content Search
         </h1>
         <p className="text-gray-80 mx-auto text-center text-sm">
           Search to find content across all files in your AI Files easily

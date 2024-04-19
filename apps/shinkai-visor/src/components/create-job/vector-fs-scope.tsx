@@ -202,7 +202,7 @@ export const KnowledgeSearchDrawer = ({
         </DrawerClose>
         <DrawerHeader className="mb-3">
           <DrawerTitle className="flex h-[40px] items-center gap-4">
-            Search Knowledge
+            AI Files Content Search
             {/*{Object.keys(selectedKeys ?? {}).length > 0 && (*/}
             {/*  <Badge className="bg-brand text-sm text-white">*/}
             {/*    {Object.keys(selectedKeys ?? {}).length}*/}

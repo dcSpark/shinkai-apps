@@ -262,7 +262,7 @@ export const VectorFsFolderSearchKnowledgeAction = () => {
     <React.Fragment>
       <DrawerHeader>
         <DrawerTitle className="font-normal">
-          VectorFS Knowledge Search within
+          AI Files Content Search within
           <span className="font-medium">
             {' '}
             &quot;{selectedFolder?.name}&quot;
