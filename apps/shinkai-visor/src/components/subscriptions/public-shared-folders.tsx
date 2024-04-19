@@ -1,23 +1,25 @@
+import { subscribeToSharedFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/subscribeToSharedFolder/index';
 import { useSubscribeToSharedFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/subscribeToSharedFolder/useSubscribeToSharedFolder';
 import { FolderTreeNode } from '@shinkai_network/shinkai-node-state/lib/queries/getAvailableSharedItems/types';
-import { useGetAvailableSharedFolders } from '@shinkai_network/shinkai-node-state/lib/queries/getAvailableSharedItems/useGetAvailableSharedFolders';
+import { useGetAvailableSharedFoldersWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getAvailableSharedItems/useGetAvailableSharedFoldersWithPagination';
 import {
   Button,
   Drawer,
   DrawerClose,
   DrawerContent,
   DrawerDescription,
+  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
   ScrollArea,
   SharedFolderIcon,
 } from '@shinkai_network/shinkai-ui';
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import { Maximize2, Minimize2, XIcon } from 'lucide-react';
 import { Tree, TreeExpandedKeysType } from 'primereact/tree';
 import { TreeNode as PrimeTreeNode } from 'primereact/treenode';
-import React, { useState } from 'react';
+import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../store/auth/auth';
@@ -25,14 +27,27 @@ import { treeOptions } from '../create-job/constants';
 
 const PublicSharedFolderSubscription = () => {
   const {
-    data: sharedFolders,
-    isSuccess,
+    data,
+    fetchNextPage,
+    hasNextPage,
     isPending,
-  } = useGetAvailableSharedFolders({ page: 0, pageSize: 100 });
+    isFetchingNextPage,
+    isSuccess,
+  } = useGetAvailableSharedFoldersWithPagination({ page: 0, pageSize: 2 });
+
+  const loadMoreRef = useRef<HTMLButtonElement>(null);
+  const isLoadMoreButtonInView = useInView(loadMoreRef);
+
+  useEffect(() => {
+    console.log(isLoadMoreButtonInView, 'isLoadMoreButtonInView');
+    if (isLoadMoreButtonInView && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [fetchNextPage, hasNextPage, isLoadMoreButtonInView]);
 
   return (
     <div className="flex h-full flex-col gap-4">
-      {isSuccess && !sharedFolders.values.length && (
+      {isSuccess && !data?.pages?.[0]?.values?.length && (
         <p className="text-gray-80 text-left">
           There are no public folders available to subscribe to right now.
         </p>
@@ -45,21 +60,38 @@ const PublicSharedFolderSubscription = () => {
           />
         ))}
       {isSuccess && (
-        <ScrollArea className="pr-4 [&>div>div]:!block">
+        <ScrollArea className="[&>div>div]:!block">
           <div className="w-full">
-            {sharedFolders.values.map((sharedFolder) => (
-              <PublicSharedFolder
-                folderDescription={
-                  sharedFolder?.folderDescription ?? 'no description found'
-                }
-                folderName={sharedFolder.path}
-                folderPath={sharedFolder.path}
-                folderTree={sharedFolder.raw.tree}
-                isFree={sharedFolder?.isFree}
-                key={`${sharedFolder?.identity?.identityRaw}::${sharedFolder.path}`}
-                nodeName={sharedFolder?.identity?.identityRaw ?? '-'}
-              />
+            {data?.pages.map((page, idx) => (
+              <Fragment key={idx}>
+                {page.values.map((sharedFolder) => (
+                  <PublicSharedFolder
+                    folderDescription={
+                      sharedFolder?.folderDescription ?? 'no description found'
+                    }
+                    folderName={sharedFolder.path}
+                    folderPath={sharedFolder.path}
+                    folderTree={sharedFolder.raw.tree}
+                    isFree={sharedFolder?.isFree}
+                    key={`${sharedFolder?.identity?.identityRaw}::${sharedFolder.path}`}
+                    nodeName={sharedFolder?.identity?.identityRaw ?? '-'}
+                  />
+                ))}
+              </Fragment>
             ))}
+            {hasNextPage && (
+              <Button
+                className="w-full"
+                disabled={!hasNextPage}
+                isLoading={isFetchingNextPage}
+                onClick={() => fetchNextPage()}
+                ref={loadMoreRef}
+                size="auto"
+                variant="ghost"
+              >
+                Load More
+              </Button>
+            )}
           </div>
         </ScrollArea>
       )}
@@ -119,10 +151,27 @@ export const PublicSharedFolder = ({
       },
     });
 
+  const handleSubscription = async () => {
+    if (!auth) return;
+    await subscribeSharedFolder({
+      nodeAddress: auth?.node_address,
+      shinkaiIdentity: auth?.shinkai_identity,
+      streamerNodeName: '@@' + nodeName,
+      streamerNodeProfile: 'main', // TODO: missing from node endpoint
+      profile: auth?.profile,
+      folderPath: folderPath,
+      my_device_encryption_sk: auth?.my_device_encryption_sk,
+      my_device_identity_sk: auth?.my_device_identity_sk,
+      node_encryption_pk: auth?.node_encryption_pk,
+      profile_encryption_sk: auth?.profile_encryption_sk,
+      profile_identity_sk: auth?.profile_identity_sk,
+    });
+  };
+
   return (
     <Drawer>
       <DrawerTrigger asChild>
-        <div className="flex min-h-[92px] cursor-pointer items-center justify-between gap-2 rounded-lg py-3.5 pr-2.5 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400">
+        <div className="flex min-h-[92px] cursor-pointer items-center justify-between gap-1 rounded-lg py-3.5 pr-2.5 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400">
           <SubscriptionInfo
             folderDescription={folderDescription}
             folderName={folderName.replace(/\//g, '')}
@@ -137,19 +186,7 @@ export const PublicSharedFolder = ({
             onClick={async (event) => {
               event.stopPropagation();
               if (!auth) return;
-              await subscribeSharedFolder({
-                nodeAddress: auth?.node_address,
-                shinkaiIdentity: auth?.shinkai_identity,
-                streamerNodeName: '@@' + nodeName,
-                streamerNodeProfile: 'main', // TODO: validate
-                profile: auth?.profile,
-                folderPath: folderPath,
-                my_device_encryption_sk: auth?.my_device_encryption_sk,
-                my_device_identity_sk: auth?.my_device_identity_sk,
-                node_encryption_pk: auth?.node_encryption_pk,
-                profile_encryption_sk: auth?.profile_encryption_sk,
-                profile_identity_sk: auth?.profile_identity_sk,
-              });
+              await handleSubscription();
             }}
             size="auto"
             variant="outline"
@@ -158,12 +195,24 @@ export const PublicSharedFolder = ({
           </MotionButton>
         </div>
       </DrawerTrigger>
-      <FolderDetailsDrawerContent nodes={[transformTreeNode(folderTree, '')]} />
+      <FolderDetailsDrawerContent
+        handleSubscription={handleSubscription}
+        isSubscribing={isPending}
+        nodes={[transformTreeNode(folderTree, '')]}
+      />
     </Drawer>
   );
 };
 
-const FolderDetailsDrawerContent = ({ nodes }: { nodes: PrimeTreeNode[] }) => {
+const FolderDetailsDrawerContent = ({
+  nodes,
+  handleSubscription,
+  isSubscribing,
+}: {
+  nodes: PrimeTreeNode[];
+  handleSubscription: () => void;
+  isSubscribing: boolean;
+}) => {
   const [expandedKeys, setExpandedKeys] = useState<TreeExpandedKeysType>({
     '0': true,
     '0-0': true,
@@ -227,6 +276,19 @@ const FolderDetailsDrawerContent = ({ nodes }: { nodes: PrimeTreeNode[] }) => {
           value={nodes}
         />
       </ScrollArea>
+      <DrawerFooter>
+        <MotionButton
+          className="hover:border-brand w-full hover:bg-transparent hover:text-white"
+          isLoading={isSubscribing}
+          layout
+          onClick={handleSubscription}
+          size="auto"
+          type="button"
+          variant="outline"
+        >
+          Subscribe Now
+        </MotionButton>
+      </DrawerFooter>
     </DrawerContent>
   );
 };
@@ -248,17 +310,17 @@ export const SubscriptionInfo = ({
     </div>
     <div className="space-y-3">
       <div className="flex flex-col gap-1">
-        <a
-          className="transition-all hover:text-white hover:underline"
-          href="https://shinkai-contracts.pages.dev/"
-          onClick={(e) => e.stopPropagation()}
-          rel="noreferrer"
-          target="_blank"
-        >
-          <span className="line-clamp-1 text-sm font-medium capitalize">
-            {folderName.replace(/\//g, '')}
-          </span>
-        </a>
+        {/*<a*/}
+        {/*  className="transition-all hover:text-white hover:underline"*/}
+        {/*  href="https://shinkai-contracts.pages.dev/"*/}
+        {/*  onClick={(e) => e.stopPropagation()}*/}
+        {/*  rel="noreferrer"*/}
+        {/*  target="_blank"*/}
+        {/*>*/}
+        <span className="line-clamp-1 text-sm font-medium capitalize">
+          {folderName.replace(/\//g, '')}
+        </span>
+        {/*</a>*/}
 
         <span className="text-gray-80 text-sm first-letter:uppercase">
           {folderDescription}
