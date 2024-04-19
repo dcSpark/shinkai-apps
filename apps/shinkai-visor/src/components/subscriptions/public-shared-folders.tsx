@@ -4,6 +4,7 @@ import {
   PriceFilters,
 } from '@shinkai_network/shinkai-node-state/lib/queries/getAvailableSharedItems/types';
 import { useGetAvailableSharedFoldersWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getAvailableSharedItems/useGetAvailableSharedFoldersWithPagination';
+import { useGetMySubscriptions } from '@shinkai_network/shinkai-node-state/lib/queries/getMySubscriptions/useGetMySubscriptions';
 import {
   Button,
   Drawer,
@@ -30,11 +31,25 @@ import { toast } from 'sonner';
 import { useDebounce } from '../../hooks/use-debounce';
 import { useAuth } from '../../store/auth/auth';
 import { treeOptions } from '../create-job/constants';
+import { UnsubscribeButton } from './subscriptions';
 
 const PublicSharedFolderSubscription = () => {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [paidFilter, setPaidFilter] = React.useState<PriceFilters>('all');
   const debouncedSearchQuery = useDebounce(searchQuery, 600);
+
+  const auth = useAuth((state) => state.auth);
+
+  const { data: subscriptions } = useGetMySubscriptions({
+    nodeAddress: auth?.node_address ?? '',
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    profile: auth?.profile ?? '',
+    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+  });
 
   const {
     data,
@@ -111,14 +126,13 @@ const PublicSharedFolderSubscription = () => {
           Paid
         </ToggleGroupItem>
       </ToggleGroup>
-      {isPending ||
-        (debouncedSearchQuery !== searchQuery &&
-          Array.from({ length: 4 }).map((_, idx) => (
-            <div
-              className="flex h-[69px] items-center justify-between gap-2 rounded-lg bg-gray-400 py-3"
-              key={idx}
-            />
-          )))}
+      {(isPending || debouncedSearchQuery !== searchQuery) &&
+        Array.from({ length: 4 }).map((_, idx) => (
+          <div
+            className="flex h-[69px] items-center justify-between gap-2 rounded-lg bg-gray-400 py-3"
+            key={idx}
+          />
+        ))}
       {isSuccess &&
         !data?.pages?.[0]?.values?.length &&
         debouncedSearchQuery === searchQuery && (
@@ -141,6 +155,10 @@ const PublicSharedFolderSubscription = () => {
                     folderName={sharedFolder.path}
                     folderPath={sharedFolder.path}
                     folderTree={sharedFolder.raw.tree}
+                    isAlreadySubscribed={subscriptions?.some(
+                      (subscription) =>
+                        subscription.shared_folder === sharedFolder.path,
+                    )}
                     isFree={sharedFolder?.isFree}
                     key={`${sharedFolder?.identity?.identityRaw}::${sharedFolder.path}`}
                     nodeName={sharedFolder?.identity?.identityRaw ?? '-'}
@@ -199,6 +217,7 @@ export const PublicSharedFolder = ({
   folderPath,
   folderDescription,
   folderTree,
+  isAlreadySubscribed,
 }: {
   folderName: string;
   folderPath: string;
@@ -206,6 +225,7 @@ export const PublicSharedFolder = ({
   nodeName: string;
   isFree: boolean;
   folderTree: FolderTreeNode;
+  isAlreadySubscribed?: boolean;
 }) => {
   const auth = useAuth((state) => state.auth);
   const { mutateAsync: subscribeSharedFolder, isPending } =
@@ -219,13 +239,13 @@ export const PublicSharedFolder = ({
         });
       },
     });
-
+  const nodeNameWithPrefix = '@@' + nodeName;
   const handleSubscription = async () => {
     if (!auth) return;
     await subscribeSharedFolder({
       nodeAddress: auth?.node_address,
       shinkaiIdentity: auth?.shinkai_identity,
-      streamerNodeName: '@@' + nodeName,
+      streamerNodeName: nodeNameWithPrefix,
       streamerNodeProfile: 'main', // TODO: missing from node endpoint
       profile: auth?.profile,
       folderPath: folderPath,
@@ -245,23 +265,31 @@ export const PublicSharedFolder = ({
             folderDescription={folderDescription}
             folderName={folderName.replace(/\//g, '')}
             isFree={isFree}
-            nodeName={nodeName}
+            nodeName={nodeNameWithPrefix}
           />
-          <MotionButton
-            className="hover:border-brand py-1.5 text-sm hover:bg-transparent hover:text-white"
-            disabled={isPending}
-            isLoading={isPending}
-            layout
-            onClick={async (event) => {
-              event.stopPropagation();
-              if (!auth) return;
-              await handleSubscription();
-            }}
-            size="auto"
-            variant="outline"
-          >
-            Subscribe
-          </MotionButton>
+          {isAlreadySubscribed ? (
+            <UnsubscribeButton
+              folderPath={folderPath}
+              streamerNodeName={nodeNameWithPrefix}
+              streamerNodeProfile="main"
+            />
+          ) : (
+            <MotionButton
+              className="hover:border-brand py-1.5 text-sm hover:bg-transparent hover:text-white"
+              disabled={isPending}
+              isLoading={isPending}
+              layout
+              onClick={async (event) => {
+                event.stopPropagation();
+                if (!auth) return;
+                await handleSubscription();
+              }}
+              size="auto"
+              variant="outline"
+            >
+              Subscribe
+            </MotionButton>
+          )}
         </div>
       </DrawerTrigger>
       <FolderDetailsDrawerContent
