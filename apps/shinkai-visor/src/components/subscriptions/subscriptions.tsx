@@ -106,7 +106,7 @@ const SubscribedSharedFolder = ({
         folderDescription=""
         folderName={folderName}
         isFree={true}
-        nodeName={nodeName}
+        nodeName={streamerNodeName}
       />
       <MotionButton
         className={cn(
