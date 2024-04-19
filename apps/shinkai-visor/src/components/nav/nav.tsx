@@ -90,9 +90,9 @@ const routeTitleDescriptionMapping: Record<
   [routes.CreateJob]: { title: <FormattedMessage id="create-job" /> },
   [routes.CreateInbox]: { title: <FormattedMessage id="create-inbox" /> },
   [routes.Inboxes]: { title: <FormattedMessage id="inbox.other" /> },
-  [routes.VectorFs]: { title: 'Vector File System' },
+  [routes.VectorFs]: { title: 'My AI Files Explorer' },
   [routes.Subscriptions]: { title: 'My Subscriptions' },
-  [routes.PublicFolders]: { title: 'Browse Public Folders' },
+  [routes.PublicFolders]: { title: 'Browse Public Subscriptions' },
   [routes.Settings]: { title: <FormattedMessage id="setting.other" /> },
   [routes.Agents]: { title: <FormattedMessage id="agent.other" /> },
   [routes.AddAgent]: { title: <FormattedMessage id="add-agent" /> },
@@ -525,12 +525,12 @@ export default function NavBar() {
                   </DropdownMenuItem>
                 )}
 
-                <DropdownMenuLabel>Vector FS</DropdownMenuLabel>
+                <DropdownMenuLabel>AI Files</DropdownMenuLabel>
                 <DropdownMenuItem
                   onClick={() => onClickMenuOption(MenuOption.NodeFiles)}
                 >
                   <FilesIcon className="mr-2 h-4 w-4" />
-                  <span>Vector File System</span>
+                  <span>My AI Files Explorer</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => onClickMenuOption(MenuOption.SearchNodeFiles)}
@@ -538,12 +538,12 @@ export default function NavBar() {
                   <SearchCode className="mr-2 h-4 w-4" />
                   <span>Knowledge Search</span>
                 </DropdownMenuItem>
-                <DropdownMenuLabel>Subscription</DropdownMenuLabel>
+                <DropdownMenuLabel>Subscriptions</DropdownMenuLabel>
                 <DropdownMenuItem
                   onClick={() => onClickMenuOption(MenuOption.PublicItems)}
                 >
                   <Compass className="mr-2 h-4 w-4" />
-                  <span>Browse Public Folders</span>
+                  <span>Browse Public Subscriptions</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => onClickMenuOption(MenuOption.MySubscriptions)}

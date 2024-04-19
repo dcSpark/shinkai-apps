@@ -210,8 +210,7 @@ export const KnowledgeSearchDrawer = ({
             {/*)}*/}
           </DrawerTitle>
           <p className="text-gray-80 text-sm">
-            Search to find content across all files in your Vector File System
-            easily
+            Search to find content across all files in your AI Files easily
           </p>
         </DrawerHeader>
 

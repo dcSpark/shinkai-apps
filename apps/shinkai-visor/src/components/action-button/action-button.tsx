@@ -243,7 +243,7 @@ const ActionButton = () => {
                   <ZapIcon className="h-full w-full" />,
                 ),
                 {
-                  label: 'Save Webpage To VectorFS',
+                  label: 'Save Webpage To AI Files',
                   onClick: () => saveVectorResourceFound(currentVectorResource),
                   icon: <FolderDown className="h-full w-full" />,
                 },

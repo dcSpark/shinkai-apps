@@ -270,8 +270,7 @@ export const VectorFsFolderSearchKnowledgeAction = () => {
         </DrawerTitle>
       </DrawerHeader>
       <p className="text-gray-80 my-3 text-sm">
-        Search to find content across all files in your Vector File System
-        easily
+        Search to find content across all files in your AI Files easily
       </p>
       <Form {...searchVectorFSForm}>
         <form
@@ -426,7 +425,7 @@ export const VectorFsFolderCreateShareableAction = () => {
           </span>{' '}
         </DrawerTitle>
         <DrawerDescription>
-          You can share folders that you store in Vector FS with anyone.
+          You can share folders that you store in AI Files with anyone.
         </DrawerDescription>
       </DrawerHeader>
       <Form {...shareFolderForm}>
@@ -485,7 +484,7 @@ export const VectorFsFolderUnshareAction = () => {
         </DrawerTitle>
         <DrawerDescription className="py-3">
           Everyone will be removed from this folder. You’ll still keep a copy of
-          this folder in your Vector FS. <br />
+          this folder in your AI Files. <br />
           Note: Removed members will keep a copy of this shared folder.
         </DrawerDescription>
       </DrawerHeader>
