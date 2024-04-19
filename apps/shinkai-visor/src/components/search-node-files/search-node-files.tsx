@@ -43,7 +43,7 @@ const SearchNodeFiles = () => {
   const destinationFolderPath = useVectorFolderSelectionStore(
     (state) => state.destinationFolderPath,
   );
-  console.log(destinationFolderPath, 'destinationFolderPath');
+
   const searchVectorFSForm = useForm<z.infer<typeof searchVectorFSSchema>>({
     defaultValues: {
       searchQuery: '',
@@ -102,11 +102,10 @@ const SearchNodeFiles = () => {
         }}
       >
         <h1 className="text-center text-2xl font-semibold text-white">
-          VectorFS Knowledge Search
+          AI Files Knowledge Search
         </h1>
         <p className="text-gray-80 mx-auto text-center text-sm">
-          Search to find content across all files in your Vector File System
-          easily
+          Search to find content across all files in your AI Files easily
         </p>
         <Form {...searchVectorFSForm}>
           <form
@@ -241,7 +240,7 @@ function SelectFolderButton() {
 
   const selectedFolderPath =
     destinationFolderPath == null || destinationFolderPath === '/'
-      ? 'Anywhere in your Vector FS'
+      ? 'Anywhere in your AI Files'
       : destinationFolderPath;
 
   return (

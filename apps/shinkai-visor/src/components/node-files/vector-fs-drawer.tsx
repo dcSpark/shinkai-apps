@@ -10,9 +10,11 @@ import { VectorFolderSelectionProvider } from './folder-selection-list';
 import { useVectorFsStore } from './node-file-context';
 import {
   VectorFsFolderCopyAction,
+  VectorFsFolderCreateShareableAction,
   VectorFsFolderDeleteAction,
   VectorFsFolderMoveAction,
   VectorFsFolderSearchKnowledgeAction,
+  VectorFsFolderUnshareAction,
 } from './vector-fs-folder-options';
 import {
   AddNewFolderAction,
@@ -74,6 +76,8 @@ export enum VectorFsFolderAction {
   Copy = 'copy-folder',
   Delete = 'delete-folder',
   SearchKnowledge = 'search-knowledge-folder',
+  CreateShareable = 'create-shareable-folder',
+  Unshare = 'unshare-folder',
 }
 
 export enum VectorFsItemAction {
@@ -112,6 +116,10 @@ const VectorFSDrawerContent = ({
       return <VectorFsFolderDeleteAction />;
     case VectorFsFolderAction.SearchKnowledge:
       return <VectorFsFolderSearchKnowledgeAction />;
+    case VectorFsFolderAction.CreateShareable:
+      return <VectorFsFolderCreateShareableAction />;
+    case VectorFsFolderAction.Unshare:
+      return <VectorFsFolderUnshareAction />;
 
     // item actions
     case VectorFsItemAction.Move:

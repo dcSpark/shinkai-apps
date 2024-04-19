@@ -33,6 +33,13 @@ export enum MessageSchemaType {
   VecFsDeleteItem = 'VecFsDeleteItem',
   ConvertFilesAndSaveToFolder = 'ConvertFilesAndSaveToFolder',
   VecFsSearchItems = 'VecFsSearchItems',
+  // subscriptions
+  AvailableSharedItems = 'AvailableSharedItems',
+  CreateShareableFolder = 'CreateShareableFolder',
+  UnshareFolder = 'UnshareFolder',
+  SubscribeToSharedFolder = 'SubscribeToSharedFolder',
+  UnsubscribeToSharedFolder = 'UnsubscribeToSharedFolder',
+  MySubscriptions = 'MySubscriptions',
 }
 export interface LocalScopeVRKaiEntry {
   vrkai: {

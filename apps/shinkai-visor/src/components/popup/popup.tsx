@@ -36,6 +36,8 @@ import NodeFiles from '../node-files/node-files';
 import SearchNodeFiles from '../search-node-files/search-node-files';
 import { Settings } from '../settings/settings';
 import { SplashScreen } from '../splash-screen/splash-screen';
+import SharedFolderSubscription from '../subscriptions/public-shared-folders';
+import MySubscriptions from '../subscriptions/subscriptions';
 import Welcome from '../welcome/welcome';
 import { WithNav } from '../with-nav/with-nav';
 
@@ -131,6 +133,16 @@ export const Popup = () => {
                       <VectorFolderSelectionProvider>
                         <SearchNodeFiles />
                       </VectorFolderSelectionProvider>
+                    </Route>
+                  </Switch>
+                </Route>
+                <Route path="/subscriptions">
+                  <Switch>
+                    <Route path="/subscriptions/public">
+                      <SharedFolderSubscription />
+                    </Route>
+                    <Route path="/">
+                      <MySubscriptions />
                     </Route>
                   </Switch>
                 </Route>

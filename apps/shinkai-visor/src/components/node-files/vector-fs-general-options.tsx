@@ -260,7 +260,7 @@ export const SaveWebpageToVectorFsAction = () => {
 
   const { isPending, mutateAsync: uploadVRFiles } = useUploadVRFiles({
     onSuccess: () => {
-      toast.success('Webpage saved to Vector FS successfully', {
+      toast.success('Webpage saved to AI Files successfully', {
         id: 'uploading-VR-files-include-folder',
         description: '',
       });
@@ -268,7 +268,7 @@ export const SaveWebpageToVectorFsAction = () => {
       saveWebpageToVectorFsForm.reset();
     },
     onError: () => {
-      toast.error('Error saving webpage to Vector FS', {
+      toast.error('Error saving webpage to AI Files', {
         id: 'uploading-VR-files-include-folder',
         description: '',
       });

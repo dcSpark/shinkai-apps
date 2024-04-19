@@ -38,9 +38,8 @@ import {
   getKeyInfo,
   isValidKeyCombination,
 } from '../../hooks/use-keyboard-shortcut';
-import { useAuth } from '../../store/auth/auth';
+import { SetupData, useAuth } from '../../store/auth/auth';
 import { useSettings } from '../../store/settings/settings';
-import { Header } from '../header/header';
 
 const formSchema = z.object({
   defaultAgentId: z.string(),
@@ -65,6 +64,7 @@ const MotionButton = motion(Button);
 export const Settings = () => {
   const history = useHistory();
   const auth = useAuth((authStore) => authStore.auth);
+  const setAuth = useAuth((authStore) => authStore.setAuth);
   const displayActionButton = useSettings(
     (settingsStore) => settingsStore.displayActionButton,
   );
@@ -161,6 +161,12 @@ export const Settings = () => {
     useUpdateNodeName({
       onSuccess: () => {
         toast.success('Node name updated successfully');
+        if (!auth) return;
+        const newAuth: SetupData = { ...auth };
+        setAuth({
+          ...newAuth,
+          shinkai_identity: currentShinkaiIdentity,
+        });
       },
       onError: (error) => {
         toast.error('Failed to update node name', {
@@ -214,7 +220,6 @@ export const Settings = () => {
 
   return (
     <div className="flex flex-col space-y-8 pr-2.5">
-      <Header title={<FormattedMessage id="setting.other" />} />
       <div className="flex flex-col space-y-8">
         <Form {...form}>
           <form className="flex grow flex-col justify-between space-y-6 overflow-hidden">

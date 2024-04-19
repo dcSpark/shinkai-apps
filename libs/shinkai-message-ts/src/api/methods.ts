@@ -821,7 +821,12 @@ export const retrieveVRPathSimplified = async (
 
     await handleHttpError(response);
     const data = await response.json();
-    return { data: JSON.parse(data.data), status: data.status };
+    return typeof data?.data === 'string'
+      ? {
+          data: JSON.parse(data.data),
+          status: data.status,
+        }
+      : data;
   } catch (error) {
     console.error('Error retrieveVRPathSimplified:', error);
     throw error;
@@ -943,7 +948,12 @@ export const retrieveVectorResource = async (
 
     await handleHttpError(response);
     const data = await response.json();
-    return { data: JSON.parse(data.data), status: data.status };
+    return typeof data?.data === 'string'
+      ? {
+          data: JSON.parse(data.data),
+          status: data.status,
+        }
+      : data;
   } catch (error) {
     console.error('Error retrieveVectorResource:', error);
     throw error;
@@ -1235,6 +1245,289 @@ export const searchItemsVR = async (
     throw error;
   }
 };
+export const getAvailableSharedFolders = async (
+  pageSize?: number,
+  page?: number,
+  priceFilter?: 'paid' | 'free' | 'all',
+  search?: string,
+): Promise<any> => {
+  try {
+    const queryParams = new URLSearchParams();
+    if (pageSize != null) queryParams.append('pageSize', pageSize.toString());
+    if (page != null) queryParams.append('page', page.toString());
+    if (priceFilter && priceFilter !== 'all')
+      queryParams.append('price', priceFilter);
+    if (search) queryParams.append('search', search);
+
+    const response = await fetch(
+      `https://sepolia-subscription-indexer.shinkai.com/api/v1/shared-items?${queryParams.toString()}`,
+      {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+
+    await handleHttpError(response);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error getAvailableSharedFolders:', error);
+    throw error;
+  }
+};
+export const getMySharedFolders = async (
+  nodeAddress: string,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  streamer_node_name: string,
+  streamer_profile_name: string,
+  setupDetailsState: CredentialsPayload,
+): Promise<{ data: any; status: string }> => {
+  try {
+    const messageStr = ShinkaiMessageBuilderWrapper.getMySharedFolders(
+      setupDetailsState.profile_encryption_sk,
+      setupDetailsState.profile_identity_sk,
+      setupDetailsState.node_encryption_pk,
+      sender,
+      sender_subidentity,
+      receiver,
+      receiver_subidentity,
+      streamer_node_name,
+      streamer_profile_name,
+    );
+
+    const message = JSON.parse(messageStr);
+
+    const response = await fetch(
+      urlJoin(nodeAddress, '/v1/available_shared_items'),
+      {
+        method: 'POST',
+        body: JSON.stringify(message),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+
+    await handleHttpError(response);
+    const data = await response.json();
+    return typeof data?.data === 'string'
+      ? {
+          data: JSON.parse(data.data),
+          status: data.status,
+        }
+      : data;
+  } catch (error) {
+    console.error('Error getMySharedFolders:', error);
+    throw error;
+  }
+};
+
+export const createShareableFolder = async (
+  nodeAddress: string,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  folderPath: string,
+  folderDescription: string,
+  setupDetailsState: CredentialsPayload,
+): Promise<{ data: any; status: string }> => {
+  try {
+    const messageStr = ShinkaiMessageBuilderWrapper.createShareableFolder(
+      setupDetailsState.profile_encryption_sk,
+      setupDetailsState.profile_identity_sk,
+      setupDetailsState.node_encryption_pk,
+      folderPath,
+      folderDescription,
+      sender,
+      sender_subidentity,
+      receiver,
+      receiver_subidentity,
+    );
+
+    const message = JSON.parse(messageStr);
+
+    const response = await fetch(
+      urlJoin(nodeAddress, '/v1/create_shareable_folder'),
+      {
+        method: 'POST',
+        body: JSON.stringify(message),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+
+    await handleHttpError(response);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error createShareableFolder:', error);
+    throw error;
+  }
+};
+export const unshareFolder = async (
+  nodeAddress: string,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  folderPath: string,
+  setupDetailsState: CredentialsPayload,
+): Promise<{ data: any; status: string }> => {
+  try {
+    const messageStr = ShinkaiMessageBuilderWrapper.unshareFolder(
+      setupDetailsState.profile_encryption_sk,
+      setupDetailsState.profile_identity_sk,
+      setupDetailsState.node_encryption_pk,
+      folderPath,
+      sender,
+      sender_subidentity,
+      receiver,
+      receiver_subidentity,
+    );
+
+    const message = JSON.parse(messageStr);
+
+    const response = await fetch(urlJoin(nodeAddress, '/v1/unshare_folder'), {
+      method: 'POST',
+      body: JSON.stringify(message),
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    await handleHttpError(response);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error createShareableFolder:', error);
+    throw error;
+  }
+};
+export const subscribeToSharedFolder = async (
+  nodeAddress: string,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  path: string,
+  streamer_node_name: string,
+  streamer_profile_name: string,
+  setupDetailsState: CredentialsPayload,
+): Promise<{ data: any; status: string }> => {
+  try {
+    const messageStr = ShinkaiMessageBuilderWrapper.subscribeToSharedFolder(
+      setupDetailsState.profile_encryption_sk,
+      setupDetailsState.profile_identity_sk,
+      setupDetailsState.node_encryption_pk,
+      path,
+      sender,
+      sender_subidentity,
+      receiver,
+      receiver_subidentity,
+      streamer_node_name,
+      streamer_profile_name,
+    );
+
+    const message = JSON.parse(messageStr);
+
+    const response = await fetch(
+      urlJoin(nodeAddress, '/v1/subscribe_to_shared_folder'),
+      {
+        method: 'POST',
+        body: JSON.stringify(message),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+
+    await handleHttpError(response);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error createShareableFolder:', error);
+    throw error;
+  }
+};
+export const unsubscribeToSharedFolder = async (
+  nodeAddress: string,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  path: string,
+  streamer_node_name: string,
+  streamer_profile_name: string,
+  setupDetailsState: CredentialsPayload,
+): Promise<{ data: any; status: string }> => {
+  try {
+    const messageStr = ShinkaiMessageBuilderWrapper.unsubscribeToSharedFolder(
+      setupDetailsState.profile_encryption_sk,
+      setupDetailsState.profile_identity_sk,
+      setupDetailsState.node_encryption_pk,
+      path,
+      sender,
+      sender_subidentity,
+      receiver,
+      receiver_subidentity,
+      streamer_node_name,
+      streamer_profile_name,
+    );
+
+    const message = JSON.parse(messageStr);
+
+    const response = await fetch(urlJoin(nodeAddress, '/v1/unsubscribe'), {
+      method: 'POST',
+      body: JSON.stringify(message),
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    await handleHttpError(response);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error createShareableFolder:', error);
+    throw error;
+  }
+};
+export const getMySubscriptions = async (
+  nodeAddress: string,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  setupDetailsState: CredentialsPayload,
+): Promise<{ data: any; status: string }> => {
+  try {
+    const messageStr = ShinkaiMessageBuilderWrapper.getMySubscriptions(
+      setupDetailsState.profile_encryption_sk,
+      setupDetailsState.profile_identity_sk,
+      setupDetailsState.node_encryption_pk,
+      sender,
+      sender_subidentity,
+      receiver,
+      receiver_subidentity,
+    );
+
+    const message = JSON.parse(messageStr);
+
+    const response = await fetch(urlJoin(nodeAddress, '/v1/my_subscriptions'), {
+      method: 'POST',
+      body: JSON.stringify(message),
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    await handleHttpError(response);
+    const data = await response.json();
+    return typeof data?.data === 'string'
+      ? {
+          data: JSON.parse(data.data),
+          status: data.status,
+        }
+      : data;
+  } catch (error) {
+    console.error('Error getMySubscriptions:', error);
+    throw error;
+  }
+};
+
 export const updateNodeName = async (
   nodeAddress: string,
   newNodeName: string,
@@ -1266,7 +1559,6 @@ export const updateNodeName = async (
         headers: { 'Content-Type': 'application/json' },
       },
     );
-
     await handleHttpError(response);
     const data = await response.json();
     return data;

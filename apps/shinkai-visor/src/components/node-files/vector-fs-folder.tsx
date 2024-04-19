@@ -15,6 +15,7 @@ import {
   CopyIcon,
   FolderInputIcon,
   SearchCode,
+  Share2,
   // Share2Icon,
   TrashIcon,
 } from 'lucide-react';
@@ -157,6 +158,13 @@ const VectorFsFolder = ({
               },
             },
             {
+              name: 'Share',
+              icon: <Share2 className="mr-3 h-4 w-4" />,
+              onClick: () => {
+                setActiveDrawerMenuOption(VectorFsFolderAction.CreateShareable);
+              },
+            },
+            {
               name: 'Delete',
               icon: <TrashIcon className="mr-3 h-4 w-4" />,
               onClick: () => {
@@ -165,7 +173,8 @@ const VectorFsFolder = ({
             },
           ].map((option) => (
             <React.Fragment key={option.name}>
-              {(option.name === 'Delete' ||
+              {(option.name === 'Share' ||
+                option.name === 'Delete' ||
                 option.name === 'Search within folder') && (
                 <DropdownMenuSeparator className="bg-gray-300" />
               )}

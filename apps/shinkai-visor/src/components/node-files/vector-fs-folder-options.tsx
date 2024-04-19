@@ -1,9 +1,13 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useCopyVrFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/copyVRFolder/useCopyVrFolder';
+import { useCreateShareableFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/createShareableFolder/useCreateShareableFolder';
 import { useDeleteVrFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/deleteVRFolder/useDeleteVRFolder';
 import { useMoveVrFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/moveVRFolder/useMoveVRFolder';
+import { useUnshareFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/unshareFolder/useUnshareFolder';
 import { useGetVRSeachSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRSearchSimplified/useGetSearchVRItems';
 import {
   Button,
+  DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
@@ -11,6 +15,7 @@ import {
   FormField,
   Input,
   ScrollArea,
+  TextField,
 } from '@shinkai_network/shinkai-ui';
 import { SearchIcon, XIcon } from 'lucide-react';
 import React, { useState } from 'react';
@@ -265,8 +270,7 @@ export const VectorFsFolderSearchKnowledgeAction = () => {
         </DrawerTitle>
       </DrawerHeader>
       <p className="text-gray-80 my-3 text-sm">
-        Search to find content across all files in your Vector File System
-        easily
+        Search to find content across all files in your AI Files easily
       </p>
       <Form {...searchVectorFSForm}>
         <form
@@ -361,27 +365,151 @@ export const VectorFsFolderSearchKnowledgeAction = () => {
           </div>
         )}
       </ScrollArea>
+    </React.Fragment>
+  );
+};
+
+const shareFolderSchema = z.object({
+  folderDescription: z.string().min(1, 'Folder description is required'),
+});
+
+export const VectorFsFolderCreateShareableAction = () => {
+  const selectedFolder = useVectorFsStore((state) => state.selectedFolder);
+  const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
+  const auth = useAuth((state) => state.auth);
+  const shareFolderForm = useForm<z.infer<typeof shareFolderSchema>>({
+    resolver: zodResolver(shareFolderSchema),
+  });
+  const destinationFolderPath = useVectorFolderSelectionStore(
+    (state) => state.destinationFolderPath,
+  );
+  const setSelectedVectorFsTab = useVectorFsStore(
+    (state) => state.setSelectedVectorFsTab,
+  );
+
+  const { mutateAsync: createShareableFolder, isPending } =
+    useCreateShareableFolder({
+      onSuccess: () => {
+        closeDrawerMenu();
+        toast.success('Folder shared successfully');
+        setSelectedVectorFsTab('shared-folders');
+      },
+      onError: () => {
+        toast.error('Failed to shared folder');
+      },
+    });
+
+  const onSubmit = async (data: z.infer<typeof shareFolderSchema>) => {
+    await createShareableFolder({
+      nodeAddress: auth?.node_address ?? '',
+      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      profile: auth?.profile ?? '',
+      folderPath: selectedFolder?.path ?? '',
+      folderDescription: data.folderDescription ?? '',
+      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+      my_device_identity_sk: auth?.profile_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+    });
+  };
+
+  return (
+    <React.Fragment>
+      <DrawerHeader>
+        <DrawerTitle className="line-clamp-1 font-normal">
+          Share
+          <span className="font-medium">
+            {' '}
+            &quot;{selectedFolder?.name}&quot;
+          </span>{' '}
+        </DrawerTitle>
+        <DrawerDescription>
+          You can share folders that you store in AI Files with anyone.
+        </DrawerDescription>
+      </DrawerHeader>
+      <Form {...shareFolderForm}>
+        <form
+          className="mt-5 flex flex-col gap-3"
+          onSubmit={shareFolderForm.handleSubmit(onSubmit)}
+        >
+          <FormField
+            control={shareFolderForm.control}
+            name="folderDescription"
+            render={({ field }) => (
+              <TextField autoFocus field={field} label="Folder Description" />
+            )}
+          />
+          <Button
+            className="mt-4"
+            disabled={destinationFolderPath === selectedFolder?.path}
+            isLoading={isPending}
+            type="submit"
+          >
+            Share Folder
+          </Button>
+        </form>
+      </Form>
+    </React.Fragment>
+  );
+};
+export const VectorFsFolderUnshareAction = () => {
+  const selectedFolder = useVectorFsStore((state) => state.selectedFolder);
+  const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
+  const auth = useAuth((state) => state.auth);
+  const destinationFolderPath = useVectorFolderSelectionStore(
+    (state) => state.destinationFolderPath,
+  );
+
+  const { mutateAsync: unshareFolder, isPending } = useUnshareFolder({
+    onSuccess: () => {
+      closeDrawerMenu();
+      toast.success('Unshared folder successfully');
+    },
+    onError: () => {
+      toast.error('Failed to unshared folder');
+    },
+  });
+
+  return (
+    <React.Fragment>
+      <DrawerHeader>
+        <DrawerTitle className="line-clamp-1 font-normal">
+          Unshare
+          <span className="font-medium">
+            {' '}
+            &quot;{selectedFolder?.name}&quot;
+          </span>{' '}
+          ?
+        </DrawerTitle>
+        <DrawerDescription className="py-3">
+          Everyone will be removed from this folder. You’ll still keep a copy of
+          this folder in your AI Files. <br />
+          Note: Removed members will keep a copy of this shared folder.
+        </DrawerDescription>
+      </DrawerHeader>
+
       <DrawerFooter>
-        {/*<Button*/}
-        {/*  className="mt-4"*/}
-        {/*  isLoading={isPending}*/}
-        {/*  onClick={async () => {*/}
-        {/*    await deleteVrFolder({*/}
-        {/*      nodeAddress: auth?.node_address ?? '',*/}
-        {/*      shinkaiIdentity: auth?.shinkai_identity ?? '',*/}
-        {/*      profile: auth?.profile ?? '',*/}
-        {/*      folderPath: selectedFolder?.path ?? '',*/}
-        {/*      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',*/}
-        {/*      my_device_identity_sk: auth?.profile_identity_sk ?? '',*/}
-        {/*      node_encryption_pk: auth?.node_encryption_pk ?? '',*/}
-        {/*      profile_encryption_sk: auth?.profile_encryption_sk ?? '',*/}
-        {/*      profile_identity_sk: auth?.profile_identity_sk ?? '',*/}
-        {/*    });*/}
-        {/*  }}*/}
-        {/*  variant="destructive"*/}
-        {/*>*/}
-        {/*  Delete*/}
-        {/*</Button>*/}
+        <Button
+          className="mt-4"
+          disabled={destinationFolderPath === selectedFolder?.path}
+          isLoading={isPending}
+          onClick={async () => {
+            await unshareFolder({
+              nodeAddress: auth?.node_address ?? '',
+              shinkaiIdentity: auth?.shinkai_identity ?? '',
+              profile: auth?.profile ?? '',
+              folderPath: selectedFolder?.path ?? '',
+              my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+              my_device_identity_sk: auth?.profile_identity_sk ?? '',
+              node_encryption_pk: auth?.node_encryption_pk ?? '',
+              profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+              profile_identity_sk: auth?.profile_identity_sk ?? '',
+            });
+          }}
+        >
+          Unshare Folder
+        </Button>
       </DrawerFooter>
     </React.Fragment>
   );

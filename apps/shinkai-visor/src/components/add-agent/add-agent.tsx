@@ -23,7 +23,6 @@ import { useHistory } from 'react-router-dom';
 import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
-import { Header } from '../header/header';
 import { Models, modelsConfig } from './models';
 
 const formSchema = z
@@ -138,11 +137,7 @@ export const AddAgent = () => {
       label: intl.formatMessage({ id: 'ollama' }),
     },
   ];
-  const getModelObject = (model: Models, modelType: string) => {
-    if (isCustomModelMode) {
-      return { GenericAPI: { model_type: modelType } };
-    }
-
+  const getModelObject = (model: Models | string, modelType: string) => {
     switch (model) {
       case Models.OpenAI:
         return { OpenAI: { model_type: modelType } };
@@ -151,11 +146,15 @@ export const AddAgent = () => {
       case Models.Ollama:
         return { Ollama: { model_type: modelType } };
       default:
-        throw new Error('unknown model');
+        return { GenericAPI: { model_type: modelType } };
     }
   };
   const submit = (values: FormSchemaType) => {
     if (!auth) return;
+    let model = getModelObject(values.model, values.modelType);
+    if (isCustomModelMode && values.modelCustom && values.modelTypeCustom) {
+      model = getModelObject(values.modelCustom, values.modelTypeCustom);
+    }
     createAgent({
       nodeAddress: auth?.node_address ?? '',
       sender_subidentity: auth.profile,
@@ -169,7 +168,7 @@ export const AddAgent = () => {
         perform_locally: false,
         storage_bucket_permissions: [],
         toolkit_permissions: [],
-        model: getModelObject(values.model, values.modelType),
+        model,
       },
       setupDetailsState: {
         my_device_encryption_sk: auth.my_device_encryption_sk,
@@ -206,7 +205,6 @@ export const AddAgent = () => {
 
   return (
     <div className="flex h-full flex-col space-y-3">
-      <Header title={<FormattedMessage id="add-agent" />} />
       <Form {...form}>
         <form
           className="flex h-full flex-col justify-between space-y-3"

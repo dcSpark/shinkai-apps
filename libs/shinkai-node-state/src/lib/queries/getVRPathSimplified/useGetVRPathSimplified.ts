@@ -1,10 +1,8 @@
-import { UseMutationOptions, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 import { FunctionKey } from '../../constants';
 import { getVRPathSimplified } from './index';
-import { GetVRPathSimplifiedInput, VRFolder } from './types';
-
-type Options = UseMutationOptions<VRFolder, Error, GetVRPathSimplifiedInput>;
+import { GetVRPathSimplifiedInput, Options } from './types';
 
 export const useGetVRPathSimplified = (
   input: GetVRPathSimplifiedInput,

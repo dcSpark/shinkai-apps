@@ -43,7 +43,6 @@ import { z } from 'zod';
 import { useQuery } from '../../hooks/use-query';
 import { useAuth } from '../../store/auth/auth';
 import { useSettings } from '../../store/settings/settings';
-import { Header } from '../header/header';
 import { allowedFileExtensions } from './constants';
 import { KnowledgeSearchDrawer, VectorFsScopeDrawer } from './vector-fs-scope';
 
@@ -261,7 +260,6 @@ export const CreateJob = () => {
 
   return (
     <div className="flex h-full flex-col space-y-3">
-      <Header title={<FormattedMessage id="create-job" />} />
       <Form {...form}>
         <form
           className="flex grow flex-col justify-between space-y-2 overflow-hidden"

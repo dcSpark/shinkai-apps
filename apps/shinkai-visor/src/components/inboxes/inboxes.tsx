@@ -27,7 +27,6 @@ import { useAuth } from '../../store/auth/auth';
 // import { EditInboxNameDialog } from '../edit-inbox-name-dialog/edit-inbox-name-dialog';
 import { EmptyAgents } from '../empty-agents/empty-agents';
 import { EmptyInboxes } from '../empty-inboxes/empty-inboxes';
-import { Header } from '../header/header';
 import { ActiveInboxItem, ArchiveInboxItem } from './inbox-item';
 
 export const Inboxes = () => {
@@ -107,7 +106,6 @@ export const Inboxes = () => {
 
   return (
     <div className="flex h-full flex-col justify-between space-y-3 overflow-hidden">
-      <Header title={<FormattedMessage id="inbox.other" />} />
       {!agents?.length ? (
         <EmptyAgents data-testid="empty-agents" />
       ) : !inboxes?.length ? (

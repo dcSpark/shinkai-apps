@@ -26,6 +26,10 @@ type VectorFsStore = {
   setSelectedFile: (selectedFile: VRItem | null) => void;
   selectedFolder: VRFolder | null;
   setSelectedFolder: (selectedFolder: VRFolder | null) => void;
+  selectedVectorFsTab: 'all' | 'shared-folders';
+  setSelectedVectorFsTab: (
+    selectedVectorFsTab: 'all' | 'shared-folders',
+  ) => void;
 };
 
 const createVectorFsStore = () =>
@@ -61,6 +65,11 @@ const createVectorFsStore = () =>
     selectedFolder: null,
     setSelectedFolder: (selectedFolder) => {
       set({ selectedFolder });
+    },
+
+    selectedVectorFsTab: 'all',
+    setSelectedVectorFsTab: (selectedVectorFsTab) => {
+      set({ selectedVectorFsTab });
     },
   }));
 

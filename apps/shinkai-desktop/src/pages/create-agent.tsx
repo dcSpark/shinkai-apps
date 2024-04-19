@@ -153,10 +153,7 @@ const CreateAgentPage = () => {
     addAgentForm.setValue('modelType', modelTypeOptions[0].value);
   }, [modelTypeOptions, addAgentForm]);
 
-  const getModelObject = (model: Models, modelType: string) => {
-    if (isCustomModelMode) {
-      return { GenericAPI: { model_type: modelType } };
-    }
+  const getModelObject = (model: Models | string, modelType: string) => {
     switch (model) {
       case Models.OpenAI:
         return { OpenAI: { model_type: modelType } };
@@ -165,12 +162,16 @@ const CreateAgentPage = () => {
       case Models.Ollama:
         return { Ollama: { model_type: modelType } };
       default:
-        throw new Error('unknown model');
+        return { GenericAPI: { model_type: modelType } };
     }
   };
 
   const onSubmit = async (data: z.infer<typeof addAgentSchema>) => {
     if (!auth) return;
+    let model = getModelObject(data.model, data.modelType);
+    if (isCustomModelMode && data.modelCustom && data.modelTypeCustom) {
+      model = getModelObject(data.modelCustom, data.modelTypeCustom);
+    }
     await createAgent({
       nodeAddress: auth?.node_address ?? '',
       sender_subidentity: auth.profile,
@@ -184,7 +185,7 @@ const CreateAgentPage = () => {
         perform_locally: false,
         storage_bucket_permissions: [],
         toolkit_permissions: [],
-        model: getModelObject(data.model, data.modelType),
+        model,
       },
       setupDetailsState: {
         my_device_encryption_sk: auth.my_device_encryption_sk,

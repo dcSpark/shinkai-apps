@@ -1,11 +1,7 @@
 import type { JobCredentialsPayload } from '@shinkai_network/shinkai-message-ts/models';
+import { QueryObserverOptions } from '@tanstack/react-query';
 
-export type GetVRPathSimplifiedInput = JobCredentialsPayload & {
-  nodeAddress: string;
-  shinkaiIdentity: string;
-  profile: string;
-  path: string;
-};
+import { FunctionKey } from '../../constants';
 
 type ResourceSource = {
   Standard: {
@@ -69,3 +65,24 @@ export type VRFolder = {
   merkle_hash: string;
   name: string;
 };
+
+export type GetVRPathSimplifiedInput = JobCredentialsPayload & {
+  nodeAddress: string;
+  shinkaiIdentity: string;
+  profile: string;
+  path: string;
+};
+export type UseGetMySharedFolders = [
+  FunctionKey.GET_VR_FILES,
+  GetVRPathSimplifiedInput,
+];
+
+export type GetVRPathSimplifiedOutput = VRFolder;
+
+export type Options = QueryObserverOptions<
+  GetVRPathSimplifiedOutput,
+  Error,
+  GetVRPathSimplifiedOutput,
+  GetVRPathSimplifiedOutput,
+  UseGetMySharedFolders
+>;

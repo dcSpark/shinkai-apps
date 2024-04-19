@@ -8,14 +8,16 @@ import { useAuth } from '../../store/auth/auth';
 import NavBar from '../nav/nav';
 
 export const WithNav = (props: PropsWithChildren) => {
-  const location = useLocation();
   const auth = useAuth((state) => state.auth);
-  const isInboxPage = location.pathname.includes('/inboxes/');
+  const location = useLocation();
 
   const { nodeInfo, isSuccess, isFetching } = useGetHealth(
     { node_address: auth?.node_address ?? '' },
     { refetchInterval: 10000, enabled: !!auth },
   );
+  const isInboxPage =
+    location.pathname.includes('/inboxes/job_inbox') ||
+    location.pathname.includes('/inboxes/inbox');
 
   useEffect(() => {
     if (isSuccess && nodeInfo?.status !== 'ok') {
@@ -35,8 +37,8 @@ export const WithNav = (props: PropsWithChildren) => {
   return (
     <div
       className={cn(
-        'flex h-full w-full flex-col space-y-3.5',
-        isInboxPage && 'space-y-4',
+        'flex h-full w-full flex-col space-y-6',
+        isInboxPage && 'space-y-0',
       )}
     >
       <NavBar />
