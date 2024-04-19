@@ -106,10 +106,12 @@ export const UnsubscribeButton = ({
   streamerNodeName,
   streamerNodeProfile,
   folderPath,
+  fullWidth,
 }: {
   streamerNodeName: string;
   streamerNodeProfile: string;
   folderPath: string;
+  fullWidth?: boolean;
 }) => {
   const auth = useAuth((state) => state.auth);
   const {
@@ -155,7 +157,7 @@ export const UnsubscribeButton = ({
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      size="auto"
+      size={fullWidth ? 'lg' : 'auto'}
       variant="outline"
     >
       {isHovered ? 'Unsubscribe' : 'Subscribed'}

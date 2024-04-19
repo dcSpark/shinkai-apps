@@ -293,9 +293,13 @@ export const PublicSharedFolder = ({
         </div>
       </DrawerTrigger>
       <FolderDetailsDrawerContent
+        folderPath={folderPath}
         handleSubscription={handleSubscription}
+        isAlreadySubscribed={isAlreadySubscribed}
         isSubscribing={isPending}
         nodes={[transformTreeNode(folderTree, '')]}
+        streamerNodeName={nodeNameWithPrefix}
+        streamerNodeProfile="main"
       />
     </Drawer>
   );
@@ -305,10 +309,18 @@ const FolderDetailsDrawerContent = ({
   nodes,
   handleSubscription,
   isSubscribing,
+  isAlreadySubscribed,
+  folderPath,
+  streamerNodeName,
+  streamerNodeProfile,
 }: {
   nodes: PrimeTreeNode[];
   handleSubscription: () => void;
   isSubscribing: boolean;
+  isAlreadySubscribed?: boolean;
+  folderPath: string;
+  streamerNodeName?: string;
+  streamerNodeProfile?: string;
 }) => {
   const [expandedKeys, setExpandedKeys] = useState<TreeExpandedKeysType>({
     '0': true,
@@ -374,17 +386,26 @@ const FolderDetailsDrawerContent = ({
         />
       </ScrollArea>
       <DrawerFooter>
-        <MotionButton
-          className="hover:border-brand w-full hover:bg-transparent hover:text-white"
-          isLoading={isSubscribing}
-          layout
-          onClick={handleSubscription}
-          size="auto"
-          type="button"
-          variant="outline"
-        >
-          Subscribe Now
-        </MotionButton>
+        {isAlreadySubscribed ? (
+          <UnsubscribeButton
+            folderPath={folderPath}
+            fullWidth
+            streamerNodeName={streamerNodeName ?? ''}
+            streamerNodeProfile={streamerNodeProfile ?? 'main'}
+          />
+        ) : (
+          <MotionButton
+            className="hover:border-brand w-full hover:bg-transparent hover:text-white"
+            isLoading={isSubscribing}
+            layout
+            onClick={handleSubscription}
+            size="auto"
+            type="button"
+            variant="outline"
+          >
+            Subscribe Now
+          </MotionButton>
+        )}
       </DrawerFooter>
     </DrawerContent>
   );
