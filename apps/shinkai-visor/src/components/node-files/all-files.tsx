@@ -311,7 +311,7 @@ const AllFiles = () => {
             (searchQuery && isTransitioningSearchValue)) &&
             Array.from({ length: 4 }).map((_, idx) => (
               <div
-                className="mb-1 flex h-[69px] items-center justify-between gap-2 bg-gray-400 py-3"
+                className="mb-1 flex h-[69px] items-center justify-between gap-2 rounded-lg bg-gray-400 py-3"
                 key={idx}
               />
             ))}
