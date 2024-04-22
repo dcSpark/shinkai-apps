@@ -133,7 +133,7 @@ export const UnsubscribeButton = ({
   return (
     <MotionButton
       className={cn(
-        'hover:border-brand hover:bg-brand/10 py-1.5 text-sm hover:text-white',
+        'border-brand text-brand-500 py-1.5 text-sm hover:border-red-800 hover:bg-red-100 hover:text-red-900',
       )}
       disabled={isUnsubscribingPending}
       isLoading={isUnsubscribingPending}
