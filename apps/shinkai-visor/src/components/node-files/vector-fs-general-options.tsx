@@ -25,6 +25,7 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
+import { allowedFileExtensions } from '../create-job/constants';
 import {
   FolderSelectionList,
   useVectorFolderSelectionStore,
@@ -207,6 +208,7 @@ export const UploadVRFilesAction = () => {
                   <div className="flex flex-col space-y-1">
                     <div className="flex items-center justify-center">
                       <FileUploader
+                        accept={allowedFileExtensions.join(',')}
                         allowMultiple
                         descriptionText="Supports pdf, md, txt"
                         onChange={(acceptedFiles) => {
@@ -341,7 +343,7 @@ export const SaveWebpageToVectorFsAction = () => {
           <FormField
             control={saveWebpageToVectorFsForm.control}
             name="destinationFolderPath"
-            render={({ field }) => (
+            render={() => (
               <div className="mt-3 space-y-2">
                 <span>Choose destination folder:</span>
                 <div className="-mt-4 rounded-lg px-2">
