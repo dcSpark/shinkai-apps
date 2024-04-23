@@ -3,6 +3,8 @@ import {
   PriceFilters,
 } from '@shinkai_network/shinkai-node-state/lib/queries/getAvailableSharedItems/types';
 import { useGetAvailableSharedFoldersWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getAvailableSharedItems/useGetAvailableSharedFoldersWithPagination';
+import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
+import { useGetMySharedFolders } from '@shinkai_network/shinkai-node-state/lib/queries/getMySharedFolders/useGetMySharedFolders';
 import { useGetMySubscriptions } from '@shinkai_network/shinkai-node-state/lib/queries/getMySubscriptions/useGetMySubscriptions';
 import {
   Button,
@@ -52,6 +54,17 @@ const PublicSharedFolderSubscription = () => {
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
 
+  const { data: mySharedFolders } = useGetMySharedFolders({
+    nodeAddress: auth?.node_address ?? '',
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    profile: auth?.profile ?? '',
+    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+  });
+
   const {
     data,
     fetchNextPage,
@@ -63,6 +76,8 @@ const PublicSharedFolderSubscription = () => {
     search: debouncedSearchQuery,
     priceFilter: paidFilter,
   });
+
+  const { nodeInfo } = useGetHealth({ node_address: auth?.node_address ?? '' });
 
   const loadMoreRef = useRef<HTMLButtonElement>(null);
   const isLoadMoreButtonInView = useInView(loadMoreRef);
@@ -163,6 +178,13 @@ const PublicSharedFolderSubscription = () => {
                         subscription.shared_folder === sharedFolder.path,
                     )}
                     isFree={sharedFolder?.isFree}
+                    isMySharedFolder={
+                      nodeInfo?.node_name ===
+                        '@@' + sharedFolder?.identity?.identityRaw &&
+                      mySharedFolders?.some(
+                        (folder) => folder.path === sharedFolder.path,
+                      )
+                    }
                     key={`${sharedFolder?.identity?.identityRaw}::${sharedFolder.path}`}
                     nodeName={sharedFolder?.identity?.identityRaw ?? '-'}
                   />
@@ -219,6 +241,7 @@ export const PublicSharedFolder = ({
   folderDescription,
   folderTree,
   isAlreadySubscribed,
+  isMySharedFolder,
 }: {
   folderName: string;
   folderPath: string;
@@ -227,8 +250,10 @@ export const PublicSharedFolder = ({
   isFree: boolean;
   folderTree: FolderTreeNode;
   isAlreadySubscribed?: boolean;
+  isMySharedFolder?: boolean;
 }) => {
   const nodeNameWithPrefix = '@@' + nodeName;
+  if (isMySharedFolder) return <></>;
 
   return (
     <Drawer>
