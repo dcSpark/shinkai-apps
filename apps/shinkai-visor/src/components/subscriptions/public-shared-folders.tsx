@@ -1,9 +1,10 @@
-import { useSubscribeToSharedFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/subscribeToSharedFolder/useSubscribeToSharedFolder';
 import {
   FolderTreeNode,
   PriceFilters,
 } from '@shinkai_network/shinkai-node-state/lib/queries/getAvailableSharedItems/types';
 import { useGetAvailableSharedFoldersWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getAvailableSharedItems/useGetAvailableSharedFoldersWithPagination';
+import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
+import { useGetMySharedFolders } from '@shinkai_network/shinkai-node-state/lib/queries/getMySharedFolders/useGetMySharedFolders';
 import { useGetMySubscriptions } from '@shinkai_network/shinkai-node-state/lib/queries/getMySubscriptions/useGetMySubscriptions';
 import {
   Button,
@@ -21,17 +22,19 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from '@shinkai_network/shinkai-ui';
-import { motion, useInView } from 'framer-motion';
+import { useInView } from 'framer-motion';
 import { Maximize2, Minimize2, SearchIcon, XIcon } from 'lucide-react';
 import { Tree, TreeExpandedKeysType } from 'primereact/tree';
 import { TreeNode as PrimeTreeNode } from 'primereact/treenode';
 import React, { Fragment, useEffect, useRef, useState } from 'react';
-import { toast } from 'sonner';
 
 import { useDebounce } from '../../hooks/use-debounce';
 import { useAuth } from '../../store/auth/auth';
 import { treeOptions } from '../create-job/constants';
-import { UnsubscribeButton } from './subscriptions';
+import {
+  SubscribeButton,
+  UnsubscribeButton,
+} from './components/subscription-button';
 
 const PublicSharedFolderSubscription = () => {
   const [searchQuery, setSearchQuery] = React.useState('');
@@ -41,6 +44,17 @@ const PublicSharedFolderSubscription = () => {
   const auth = useAuth((state) => state.auth);
 
   const { data: subscriptions } = useGetMySubscriptions({
+    nodeAddress: auth?.node_address ?? '',
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    profile: auth?.profile ?? '',
+    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+  });
+
+  const { data: mySharedFolders } = useGetMySharedFolders({
     nodeAddress: auth?.node_address ?? '',
     shinkaiIdentity: auth?.shinkai_identity ?? '',
     profile: auth?.profile ?? '',
@@ -62,6 +76,8 @@ const PublicSharedFolderSubscription = () => {
     search: debouncedSearchQuery,
     priceFilter: paidFilter,
   });
+
+  const { nodeInfo } = useGetHealth({ node_address: auth?.node_address ?? '' });
 
   const loadMoreRef = useRef<HTMLButtonElement>(null);
   const isLoadMoreButtonInView = useInView(loadMoreRef);
@@ -101,7 +117,9 @@ const PublicSharedFolderSubscription = () => {
       </div>
       <ToggleGroup
         className="w-auto self-start rounded-full bg-gray-400 p-1"
-        onValueChange={(value) => setPaidFilter(value as PriceFilters)}
+        onValueChange={(value) => {
+          if (value) setPaidFilter(value as PriceFilters);
+        }}
         type="single"
         value={paidFilter}
       >
@@ -147,23 +165,35 @@ const PublicSharedFolderSubscription = () => {
           <div className="w-full">
             {data?.pages.map((page, idx) => (
               <Fragment key={idx}>
-                {page.values.map((sharedFolder) => (
-                  <PublicSharedFolder
-                    folderDescription={
-                      sharedFolder?.folderDescription ?? 'no description found'
-                    }
-                    folderName={sharedFolder.path}
-                    folderPath={sharedFolder.path}
-                    folderTree={sharedFolder.raw.tree}
-                    isAlreadySubscribed={subscriptions?.some(
-                      (subscription) =>
-                        subscription.shared_folder === sharedFolder.path,
-                    )}
-                    isFree={sharedFolder?.isFree}
-                    key={`${sharedFolder?.identity?.identityRaw}::${sharedFolder.path}`}
-                    nodeName={sharedFolder?.identity?.identityRaw ?? '-'}
-                  />
-                ))}
+                {page.values.map((sharedFolder) => {
+                  const isMySharedFolder =
+                    nodeInfo?.node_name ===
+                      '@@' + sharedFolder?.identity?.identityRaw &&
+                    mySharedFolders?.some(
+                      (folder) => folder.path === sharedFolder.path,
+                    );
+
+                  if (isMySharedFolder) return;
+
+                  return (
+                    <PublicSharedFolder
+                      folderDescription={
+                        sharedFolder?.folderDescription ??
+                        'no description found'
+                      }
+                      folderName={sharedFolder.path}
+                      folderPath={sharedFolder.path}
+                      folderTree={sharedFolder.raw.tree}
+                      isAlreadySubscribed={subscriptions?.some(
+                        (subscription) =>
+                          subscription.shared_folder === sharedFolder.path,
+                      )}
+                      isFree={sharedFolder?.isFree}
+                      key={`${sharedFolder?.identity?.identityRaw}::${sharedFolder.path}`}
+                      nodeName={sharedFolder?.identity?.identityRaw ?? '-'}
+                    />
+                  );
+                })}
               </Fragment>
             ))}
             {hasNextPage && (
@@ -187,8 +217,6 @@ const PublicSharedFolderSubscription = () => {
 };
 
 export default PublicSharedFolderSubscription;
-
-const MotionButton = motion(Button);
 
 function transformTreeNode(
   node: FolderTreeNode,
@@ -227,35 +255,7 @@ export const PublicSharedFolder = ({
   folderTree: FolderTreeNode;
   isAlreadySubscribed?: boolean;
 }) => {
-  const auth = useAuth((state) => state.auth);
-  const { mutateAsync: subscribeSharedFolder, isPending } =
-    useSubscribeToSharedFolder({
-      onSuccess: () => {
-        toast.success('Subscription added');
-      },
-      onError: (error) => {
-        toast.error('Error adding subscription', {
-          description: error.message,
-        });
-      },
-    });
   const nodeNameWithPrefix = '@@' + nodeName;
-  const handleSubscription = async () => {
-    if (!auth) return;
-    await subscribeSharedFolder({
-      nodeAddress: auth?.node_address,
-      shinkaiIdentity: auth?.shinkai_identity,
-      streamerNodeName: nodeNameWithPrefix,
-      streamerNodeProfile: 'main', // TODO: missing from node endpoint
-      profile: auth?.profile,
-      folderPath: folderPath,
-      my_device_encryption_sk: auth?.my_device_encryption_sk,
-      my_device_identity_sk: auth?.my_device_identity_sk,
-      node_encryption_pk: auth?.node_encryption_pk,
-      profile_encryption_sk: auth?.profile_encryption_sk,
-      profile_identity_sk: auth?.profile_identity_sk,
-    });
-  };
 
   return (
     <Drawer>
@@ -274,29 +274,16 @@ export const PublicSharedFolder = ({
               streamerNodeProfile="main"
             />
           ) : (
-            <MotionButton
-              className="hover:border-brand py-1.5 text-sm hover:bg-transparent hover:text-white"
-              disabled={isPending}
-              isLoading={isPending}
-              layout
-              onClick={async (event) => {
-                event.stopPropagation();
-                if (!auth) return;
-                await handleSubscription();
-              }}
-              size="auto"
-              variant="outline"
-            >
-              Subscribe
-            </MotionButton>
+            <SubscribeButton
+              folderPath={folderPath}
+              nodeName={nodeNameWithPrefix}
+            />
           )}
         </div>
       </DrawerTrigger>
       <FolderDetailsDrawerContent
         folderPath={folderPath}
-        handleSubscription={handleSubscription}
         isAlreadySubscribed={isAlreadySubscribed}
-        isSubscribing={isPending}
         nodes={[transformTreeNode(folderTree, '')]}
         streamerNodeName={nodeNameWithPrefix}
         streamerNodeProfile="main"
@@ -307,16 +294,12 @@ export const PublicSharedFolder = ({
 
 const FolderDetailsDrawerContent = ({
   nodes,
-  handleSubscription,
-  isSubscribing,
   isAlreadySubscribed,
   folderPath,
   streamerNodeName,
   streamerNodeProfile,
 }: {
   nodes: PrimeTreeNode[];
-  handleSubscription: () => void;
-  isSubscribing: boolean;
   isAlreadySubscribed?: boolean;
   folderPath: string;
   streamerNodeName?: string;
@@ -360,7 +343,7 @@ const FolderDetailsDrawerContent = ({
         <XIcon className="text-gray-80" />
       </DrawerClose>
       <DrawerHeader>
-        <DrawerTitle className="mb-2">Shared Folder Details</DrawerTitle>
+        <DrawerTitle className="mb-2">Public Subscription Details</DrawerTitle>
         <DrawerDescription>
           List of folders and files shared with you
         </DrawerDescription>
@@ -394,17 +377,11 @@ const FolderDetailsDrawerContent = ({
             streamerNodeProfile={streamerNodeProfile ?? 'main'}
           />
         ) : (
-          <MotionButton
-            className="hover:border-brand w-full hover:bg-transparent hover:text-white"
-            isLoading={isSubscribing}
-            layout
-            onClick={handleSubscription}
-            size="auto"
-            type="button"
-            variant="outline"
-          >
-            Subscribe Now
-          </MotionButton>
+          <SubscribeButton
+            folderPath={folderPath}
+            fullWidth
+            nodeName={streamerNodeName ?? ''}
+          />
         )}
       </DrawerFooter>
     </DrawerContent>
@@ -447,7 +424,9 @@ export const SubscriptionInfo = ({
       <div className="text-gray-80 flex items-center gap-2 text-xs">
         <a
           className="transition-all hover:text-white hover:underline"
-          href={`https://shinkai-contracts.pages.dev/identity/${nodeName}`}
+          href={`https://shinkai-contracts.pages.dev/identity/${nodeName.split(
+            '@@',
+          )?.[1]}`}
           onClick={(e) => e.stopPropagation()}
           rel="noreferrer"
           target="_blank"

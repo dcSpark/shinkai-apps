@@ -85,9 +85,7 @@ export const Message = ({ message }: MessageProps) => {
           source={extractErrorPropertyOrContent(
             message.content,
             'error_message',
-          )
-            .replace(/</g, '`<')
-            .replace(/>/g, '>`')}
+          )}
         />
         {!!message.fileInbox?.files?.length && (
           <FileList

@@ -28,7 +28,7 @@ export const sendVectorResourceFoundToVectorFs = async (
     const message: ServiceWorkerInternalMessage = {
       type: ServiceWorkerInternalMessageType.SendPageToVectorFs,
       data: {
-        filename: `${encodeURIComponent(tab.url || Date.now())}.html`,
+        filename: `${encodeURIComponent(tab.title || Date.now())}.html`,
         fileType: fileType,
         fileDataUrl: `data:${fileType};base64,${Buffer.from(
           htmlContent.result,

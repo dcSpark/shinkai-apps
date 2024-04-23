@@ -7,6 +7,7 @@ import {
 export const allowedFileExtensions = [
   '.eml',
   '.html',
+  '.mhtml',
   '.json',
   '.md',
   '.msg',

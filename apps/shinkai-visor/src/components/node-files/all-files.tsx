@@ -117,8 +117,6 @@ const AllFiles = () => {
     },
   );
 
-  const isTransitioningSearchValue = searchQuery !== debouncedSearchQuery;
-
   const setSelectedFile = useVectorFsStore((state) => state.setSelectedFile);
   const [selectedFiles, setSelectedFiles] = React.useState<VRItem[]>([]);
   const [selectedFolders, setSelectedFolders] = React.useState<VRFolder[]>([]);
@@ -196,7 +194,7 @@ const AllFiles = () => {
             placeholder="Search..."
             value={searchQuery}
           />
-          <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2 bg-gray-300" />
+          <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2" />
           {searchQuery && (
             <Button
               className="absolute right-1 h-8 w-8 bg-gray-200 p-2"
@@ -304,14 +302,15 @@ const AllFiles = () => {
               'grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5',
             layout === VectorFSLayout.List &&
               'grid-cols-1 divide-y divide-gray-400',
+            searchQuery && 'pt-4',
           )}
         >
           {(isVRFilesPending ||
             isSearchVRItemsLoading ||
-            (searchQuery && isTransitioningSearchValue)) &&
+            (searchQuery && searchQuery !== debouncedSearchQuery)) &&
             Array.from({ length: 4 }).map((_, idx) => (
               <div
-                className="mb-1 flex h-[69px] items-center justify-between gap-2 bg-gray-400 py-3"
+                className="mb-1 flex h-[69px] items-center justify-between gap-2 rounded-lg bg-gray-400 py-3"
                 key={idx}
               />
             ))}
@@ -385,23 +384,19 @@ const AllFiles = () => {
             )}
           {searchQuery &&
             isSearchVRItemsSuccess &&
+            searchQuery === debouncedSearchQuery &&
             searchVRItems?.map((item) => {
               return (
                 <button
-                  className="relative flex items-center gap-2 text-ellipsis px-3 py-1.5"
+                  className="relative flex items-center gap-2 text-ellipsis px-3 py-1.5 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400"
                   key={item}
                   onClick={() => {
-                    const selectedFile = VRFiles?.child_items.find(
-                      (file) => file.path === item,
-                    );
-                    if (!selectedFile) return;
                     const directoryMainPath = item.split('/').slice(0, -1);
                     setCurrentGlobalPath(
                       directoryMainPath.length > 1
                         ? '/' + directoryMainPath.join('/')
                         : '/' + directoryMainPath,
                     );
-
                     setSearchQuery('');
                   }}
                 >

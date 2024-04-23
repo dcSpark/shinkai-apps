@@ -100,7 +100,7 @@ function SharedFolderItem({
   return (
     <button
       className={cn(
-        'flex items-center justify-between gap-2 truncate px-2 py-3.5 hover:bg-gray-400',
+        'flex items-center justify-between gap-2 truncate rounded-lg py-3.5 pr-2 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400',
         layout === VectorFSLayout.Grid && 'rounded-lg bg-gray-400/30 p-2',
       )}
       key={path}
