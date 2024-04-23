@@ -165,30 +165,35 @@ const PublicSharedFolderSubscription = () => {
           <div className="w-full">
             {data?.pages.map((page, idx) => (
               <Fragment key={idx}>
-                {page.values.map((sharedFolder) => (
-                  <PublicSharedFolder
-                    folderDescription={
-                      sharedFolder?.folderDescription ?? 'no description found'
-                    }
-                    folderName={sharedFolder.path}
-                    folderPath={sharedFolder.path}
-                    folderTree={sharedFolder.raw.tree}
-                    isAlreadySubscribed={subscriptions?.some(
-                      (subscription) =>
-                        subscription.shared_folder === sharedFolder.path,
-                    )}
-                    isFree={sharedFolder?.isFree}
-                    isMySharedFolder={
-                      nodeInfo?.node_name ===
-                        '@@' + sharedFolder?.identity?.identityRaw &&
-                      mySharedFolders?.some(
-                        (folder) => folder.path === sharedFolder.path,
-                      )
-                    }
-                    key={`${sharedFolder?.identity?.identityRaw}::${sharedFolder.path}`}
-                    nodeName={sharedFolder?.identity?.identityRaw ?? '-'}
-                  />
-                ))}
+                {page.values.map((sharedFolder) => {
+                  const isMySharedFolder =
+                    nodeInfo?.node_name ===
+                      '@@' + sharedFolder?.identity?.identityRaw &&
+                    mySharedFolders?.some(
+                      (folder) => folder.path === sharedFolder.path,
+                    );
+
+                  if (isMySharedFolder) return;
+
+                  return (
+                    <PublicSharedFolder
+                      folderDescription={
+                        sharedFolder?.folderDescription ??
+                        'no description found'
+                      }
+                      folderName={sharedFolder.path}
+                      folderPath={sharedFolder.path}
+                      folderTree={sharedFolder.raw.tree}
+                      isAlreadySubscribed={subscriptions?.some(
+                        (subscription) =>
+                          subscription.shared_folder === sharedFolder.path,
+                      )}
+                      isFree={sharedFolder?.isFree}
+                      key={`${sharedFolder?.identity?.identityRaw}::${sharedFolder.path}`}
+                      nodeName={sharedFolder?.identity?.identityRaw ?? '-'}
+                    />
+                  );
+                })}
               </Fragment>
             ))}
             {hasNextPage && (
@@ -241,7 +246,6 @@ export const PublicSharedFolder = ({
   folderDescription,
   folderTree,
   isAlreadySubscribed,
-  isMySharedFolder,
 }: {
   folderName: string;
   folderPath: string;
@@ -250,10 +254,8 @@ export const PublicSharedFolder = ({
   isFree: boolean;
   folderTree: FolderTreeNode;
   isAlreadySubscribed?: boolean;
-  isMySharedFolder?: boolean;
 }) => {
   const nodeNameWithPrefix = '@@' + nodeName;
-  if (isMySharedFolder) return <></>;
 
   return (
     <Drawer>
