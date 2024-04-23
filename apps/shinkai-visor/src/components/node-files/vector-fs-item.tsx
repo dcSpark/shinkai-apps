@@ -73,8 +73,8 @@ const VectorFsItem = ({
   const size = partial({ standard: 'jedec' });
 
   const wrapperClassname = cn(
-    'flex items-center justify-between gap-3 truncate rounded-md px-2 py-3.5 hover:bg-gray-400',
-    layout === VectorFSLayout.Grid && 'rounded-lg bg-gray-400/30 p-2',
+    'flex items-center justify-between gap-3 truncate rounded-lg py-3.5 pr-2 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400',
+    layout === VectorFSLayout.Grid && 'bg-gray-400/30 p-2',
   );
 
   const createdDatetime = formatDateToUSLocaleString(file.created_datetime);
