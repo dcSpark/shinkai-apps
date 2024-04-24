@@ -1,6 +1,28 @@
 import ReactMarkdownPreview from '@uiw/react-markdown-preview';
+import type { RehypeRewriteOptions } from 'rehype-rewrite';
+import rehypeRewrite from 'rehype-rewrite';
+import { PluggableList } from 'unified';
 
 import { cn } from '../utils';
+
+const rehypePlugins: PluggableList = [
+  [
+    rehypeRewrite,
+    {
+      rewrite: (node, index, parent) => {
+        if (
+          node.type === 'element' &&
+          node.tagName === 'a' &&
+          parent &&
+          parent.type === 'element' &&
+          /^h(1|2|3|4|5|6)/.test(parent.tagName)
+        ) {
+          parent.children = [parent.children[1]];
+        }
+      },
+    } as RehypeRewriteOptions,
+  ],
+];
 
 export const MarkdownPreview = ({
   className,
@@ -14,10 +36,14 @@ export const MarkdownPreview = ({
   return (
     <ReactMarkdownPreview
       className={cn(
-        'wmde-markdown-var prose prose-gray prose-code:text-white prose-blockquote:text-gray-50 prose-blockquote:bg-gray-200 prose-strong:text-white prose-headings:text-white prose-p:whitespace-pre-wrap max-w-none text-white',
+        'wmde-markdown-var',
+        'max-w-none text-white',
+        'prose prose-gray prose-code:text-white prose-blockquote:text-gray-50 prose-blockquote:bg-gray-200 prose-strong:text-white prose-headings:text-white prose-p:whitespace-pre-wrap',
+        'prose-h1:!border-b-0 prose-h2:!border-b-0 prose-h3:!border-b-0 prose-h4:!border-b-0 prose-h5:!border-b-0 prose-h6:!border-b-0',
         className,
       )}
       components={components}
+      rehypePlugins={rehypePlugins}
       source={source}
       wrapperElement={{ 'data-color-mode': 'dark' }}
     />
