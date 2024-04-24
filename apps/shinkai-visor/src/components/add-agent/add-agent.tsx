@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { AgentAPIModel } from '@shinkai_network/shinkai-message-ts/models';
 import { useCreateAgent } from '@shinkai_network/shinkai-node-state/lib/mutations/createAgent/useCreateAgent';
 import {
   Button,
@@ -143,7 +144,10 @@ export const AddAgent = () => {
       label: intl.formatMessage({ id: 'ollama' }),
     },
   ];
-  const getModelObject = (model: Models | string, modelType: string) => {
+  const getModelObject = (
+    model: Models | string,
+    modelType: string,
+  ): AgentAPIModel => {
     switch (model) {
       case Models.OpenAI:
         return { OpenAI: { model_type: modelType } };

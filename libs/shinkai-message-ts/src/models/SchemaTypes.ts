@@ -215,7 +215,7 @@ export type AgentAPIModel = {
   GenericAPI?: GenericAPI;
   Ollama?: Ollama;
 } & {
-  [key: string]: ModelType;
+  [model: string]: ModelType;
 };
 
 export interface ModelType {

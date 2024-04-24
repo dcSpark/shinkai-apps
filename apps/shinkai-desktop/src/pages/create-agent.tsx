@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { AgentAPIModel } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
 import { useCreateAgent } from '@shinkai_network/shinkai-node-state/lib/mutations/createAgent/useCreateAgent';
 import {
   Models,
@@ -153,7 +154,10 @@ const CreateAgentPage = () => {
     addAgentForm.setValue('modelType', modelTypeOptions[0].value);
   }, [modelTypeOptions, addAgentForm]);
 
-  const getModelObject = (model: Models | string, modelType: string) => {
+  const getModelObject = (
+    model: Models | string,
+    modelType: string,
+  ): AgentAPIModel => {
     switch (model) {
       case Models.OpenAI:
         return { OpenAI: { model_type: modelType } };
@@ -162,7 +166,7 @@ const CreateAgentPage = () => {
       case Models.Ollama:
         return { Ollama: { model_type: modelType } };
       default:
-        return { GenericAPI: { model_type: modelType } };
+        return { [model]: { model_type: modelType } };
     }
   };
 
