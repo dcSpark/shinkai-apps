@@ -15,7 +15,7 @@ const rehypePlugins: PluggableList = [
           node.tagName === 'a' &&
           parent &&
           parent.type === 'element' &&
-          /^h(1|2|3|4|5|6)/.test(parent.tagName)
+          /^h([123456])/.test(parent.tagName)
         ) {
           parent.children = [parent.children[1]];
         }
