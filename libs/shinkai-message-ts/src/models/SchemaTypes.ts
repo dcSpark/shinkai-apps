@@ -210,12 +210,17 @@ export interface SerializedAgent {
   storage_bucket_permissions: string[];
   allowed_message_senders: string[];
 }
-export interface AgentAPIModel {
+export type AgentAPIModel = {
   OpenAI?: OpenAI;
   GenericAPI?: GenericAPI;
   Ollama?: Ollama;
-}
+} & {
+  [key: string]: ModelType;
+};
 
+export interface ModelType {
+  model_type: string;
+}
 export interface Ollama {
   model_type: string;
 }
