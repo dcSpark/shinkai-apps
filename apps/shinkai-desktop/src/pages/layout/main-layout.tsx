@@ -16,6 +16,7 @@ import {
   CommandList,
   CommandSeparator,
   CommandShortcut,
+  FilesIcon,
   JobBubbleIcon,
   Popover,
   PopoverContent,
@@ -23,7 +24,7 @@ import {
   ScrollArea,
 } from '@shinkai_network/shinkai-ui';
 import { listen } from '@tauri-apps/api/event';
-import { BotIcon, Codesandbox } from 'lucide-react';
+import { BotIcon, Codesandbox, SearchCode } from 'lucide-react';
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
@@ -85,6 +86,10 @@ export function Footer() {
 
   const goToConversations = () => {
     navigate(INBOXES);
+    setOpen(false);
+  };
+  const goToVectorFs = () => {
+    navigate('/vector-fs');
     setOpen(false);
   };
   const goToCreateAgent = () => {
@@ -184,7 +189,7 @@ export function Footer() {
                   </CommandItem>
                 </CommandGroup>
                 <CommandSeparator />
-                <CommandGroup heading="General">
+                <CommandGroup heading="Conversations">
                   <CommandItem onSelect={goToConversations}>
                     <JobBubbleIcon className="mr-2" />
                     <span>Conversations</span>
@@ -201,6 +206,20 @@ export function Footer() {
                       <span>Shinkai Node Manager</span>
                     </CommandItem>
                   )}
+                </CommandGroup>
+                <CommandSeparator />
+                <CommandGroup heading="AI Files">
+                  <CommandItem onSelect={goToVectorFs}>
+                    <FilesIcon className="mr-2 h-4 w-4" />
+                    <span>My AI Files Explorer</span>
+                  </CommandItem>
+                  <CommandItem onSelect={goToVectorFs}>
+                    <SearchCode className="h-5 w-5" />
+                    <span>AI Files Content Search</span>
+                  </CommandItem>
+                </CommandGroup>
+                <CommandSeparator />
+                <CommandGroup heading="Account">
                   <CommandItem onSelect={goToSettings}>
                     <GearIcon className="mr-2 h-4 w-4" />
                     <span>Settings</span>
@@ -208,8 +227,6 @@ export function Footer() {
                   <CommandItem onSelect={confirmDisconnect}>
                     <ExitIcon className="mr-2 h-4 w-4" />
                     <span>Disconnect</span>
-
-                    {/*<CommandShortcut>⌘6</CommandShortcut>*/}
                   </CommandItem>
                 </CommandGroup>
               </ScrollArea>
