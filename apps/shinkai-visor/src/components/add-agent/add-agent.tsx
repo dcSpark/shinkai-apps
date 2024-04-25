@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { AgentAPIModel } from '@shinkai_network/shinkai-message-ts/models';
 import { useCreateAgent } from '@shinkai_network/shinkai-node-state/lib/mutations/createAgent/useCreateAgent';
 import {
   Button,
@@ -20,6 +21,7 @@ import { useEffect, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
@@ -122,6 +124,11 @@ export const AddAgent = () => {
         { agentName: form.getValues().agentName },
       );
     },
+    onError: (error) => {
+      toast.error('Error adding agent', {
+        description: error instanceof Error ? error.message : error,
+      });
+    },
   });
   const modelOptions: { value: Models; label: string }[] = [
     {
@@ -137,7 +144,10 @@ export const AddAgent = () => {
       label: intl.formatMessage({ id: 'ollama' }),
     },
   ];
-  const getModelObject = (model: Models | string, modelType: string) => {
+  const getModelObject = (
+    model: Models | string,
+    modelType: string,
+  ): AgentAPIModel => {
     switch (model) {
       case Models.OpenAI:
         return { OpenAI: { model_type: modelType } };
@@ -146,16 +156,16 @@ export const AddAgent = () => {
       case Models.Ollama:
         return { Ollama: { model_type: modelType } };
       default:
-        return { GenericAPI: { model_type: modelType } };
+        return { [model]: { model_type: modelType } };
     }
   };
-  const submit = (values: FormSchemaType) => {
+  const submit = async (values: FormSchemaType) => {
     if (!auth) return;
     let model = getModelObject(values.model, values.modelType);
     if (isCustomModelMode && values.modelCustom && values.modelTypeCustom) {
       model = getModelObject(values.modelCustom, values.modelTypeCustom);
     }
-    createAgent({
+    await createAgent({
       nodeAddress: auth?.node_address ?? '',
       sender_subidentity: auth.profile,
       node_name: auth.shinkai_identity,
