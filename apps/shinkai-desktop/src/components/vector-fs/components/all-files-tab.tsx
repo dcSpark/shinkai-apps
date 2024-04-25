@@ -357,9 +357,9 @@ const AllFiles = () => {
                   key={index}
                   onClick={() => {
                     setSelectedFile(file);
-                    // setActiveDrawerMenuOption(
-                    //   VectorFsGlobalAction.VectorFileDetails,
-                    // );
+                    setActiveDrawerMenuOption(
+                      VectorFsGlobalAction.VectorFileDetails,
+                    );
                   }}
                 />
               );
