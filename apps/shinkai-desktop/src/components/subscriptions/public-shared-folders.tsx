@@ -30,6 +30,7 @@ import React, { Fragment, useEffect, useRef, useState } from 'react';
 
 import { useDebounce } from '../../hooks/use-debounce';
 import { treeOptions } from '../../lib/constants';
+import { SimpleLayout2 } from '../../pages/layout/simple-layout';
 import { useAuth } from '../../store/auth';
 import {
   SubscribeButton,
@@ -89,130 +90,132 @@ const PublicSharedFolderSubscription = () => {
   }, [fetchNextPage, hasNextPage, isLoadMoreButtonInView]);
 
   return (
-    <div className="flex h-full flex-col gap-4">
-      <div className="relative flex h-10 w-full items-center">
-        <Input
-          className="placeholder-gray-80 !h-full bg-transparent py-2 pl-10"
-          onChange={(e) => {
-            setSearchQuery(e.target.value);
-          }}
-          placeholder="Search..."
-          value={searchQuery}
-        />
-        <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2 bg-gray-300" />
-        {searchQuery && (
-          <Button
-            className="absolute right-1 h-8 w-8 bg-gray-200 p-2"
-            onClick={() => {
-              setSearchQuery('');
+    <SimpleLayout2 title="Browse Public Subscriptions">
+      <div className="flex h-full flex-col gap-4">
+        <div className="relative flex h-10 w-full items-center">
+          <Input
+            className="placeholder-gray-80 !h-full bg-transparent py-2 pl-10"
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
             }}
-            size="auto"
-            type="button"
-            variant="ghost"
+            placeholder="Search..."
+            value={searchQuery}
+          />
+          <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2 bg-gray-300" />
+          {searchQuery && (
+            <Button
+              className="absolute right-1 h-8 w-8 bg-gray-200 p-2"
+              onClick={() => {
+                setSearchQuery('');
+              }}
+              size="auto"
+              type="button"
+              variant="ghost"
+            >
+              <XIcon />
+              <span className="sr-only">Clear Search</span>
+            </Button>
+          )}
+        </div>
+        <ToggleGroup
+          className="w-auto self-start rounded-full bg-gray-400 p-1"
+          onValueChange={(value) => {
+            if (value) setPaidFilter(value as PriceFilters);
+          }}
+          type="single"
+          value={paidFilter}
+        >
+          <ToggleGroupItem
+            className="h-8 min-w-[70px] rounded-full border-none text-sm"
+            value="all"
+            variant="outline"
           >
-            <XIcon />
-            <span className="sr-only">Clear Search</span>
-          </Button>
+            All
+          </ToggleGroupItem>
+          <ToggleGroupItem
+            className="h-8 min-w-[70px] rounded-full border-none text-sm"
+            value="free"
+          >
+            Free
+          </ToggleGroupItem>
+          <ToggleGroupItem
+            className="h-8 min-w-[70px] rounded-full border-none text-sm"
+            value="paid"
+            variant="outline"
+          >
+            Paid
+          </ToggleGroupItem>
+        </ToggleGroup>
+        {(isPending || debouncedSearchQuery !== searchQuery) &&
+          Array.from({ length: 4 }).map((_, idx) => (
+            <div
+              className="flex h-[69px] items-center justify-between gap-2 rounded-lg bg-gray-400 py-3"
+              key={idx}
+            />
+          ))}
+        {isSuccess &&
+          !data?.pages?.[0]?.values?.length &&
+          debouncedSearchQuery === searchQuery && (
+            <p className="text-gray-80 text-left">
+              {searchQuery || paidFilter
+                ? 'There are no public folders available that match your search criteria.'
+                : 'There are no public folders available to subscribe to right now.'}
+            </p>
+          )}
+        {isSuccess && debouncedSearchQuery === searchQuery && (
+          <ScrollArea className="[&>div>div]:!block">
+            <div className="w-full">
+              {data?.pages.map((page, idx) => (
+                <Fragment key={idx}>
+                  {page.values.map((sharedFolder) => {
+                    const isMySharedFolder =
+                      nodeInfo?.node_name ===
+                        '@@' + sharedFolder?.identity?.identityRaw &&
+                      mySharedFolders?.some(
+                        (folder) => folder.path === sharedFolder.path,
+                      );
+
+                    if (isMySharedFolder) return;
+
+                    return (
+                      <PublicSharedFolder
+                        folderDescription={
+                          sharedFolder?.folderDescription ??
+                          'no description found'
+                        }
+                        folderName={sharedFolder.path}
+                        folderPath={sharedFolder.path}
+                        folderTree={sharedFolder.raw.tree}
+                        isAlreadySubscribed={subscriptions?.some(
+                          (subscription) =>
+                            subscription.shared_folder === sharedFolder.path,
+                        )}
+                        isFree={sharedFolder?.isFree}
+                        key={`${sharedFolder?.identity?.identityRaw}::${sharedFolder.path}`}
+                        nodeName={sharedFolder?.identity?.identityRaw ?? '-'}
+                      />
+                    );
+                  })}
+                </Fragment>
+              ))}
+              {hasNextPage && (
+                <Button
+                  className="w-full"
+                  disabled={!hasNextPage}
+                  isLoading={isFetchingNextPage}
+                  onClick={() => fetchNextPage()}
+                  ref={loadMoreRef}
+                  size="auto"
+                  variant="ghost"
+                >
+                  Load More
+                </Button>
+              )}
+            </div>
+          </ScrollArea>
         )}
       </div>
-      <ToggleGroup
-        className="w-auto self-start rounded-full bg-gray-400 p-1"
-        onValueChange={(value) => {
-          if (value) setPaidFilter(value as PriceFilters);
-        }}
-        type="single"
-        value={paidFilter}
-      >
-        <ToggleGroupItem
-          className="h-8 min-w-[70px] rounded-full border-none text-sm"
-          value="all"
-          variant="outline"
-        >
-          All
-        </ToggleGroupItem>
-        <ToggleGroupItem
-          className="h-8 min-w-[70px] rounded-full border-none text-sm"
-          value="free"
-        >
-          Free
-        </ToggleGroupItem>
-        <ToggleGroupItem
-          className="h-8 min-w-[70px] rounded-full border-none text-sm"
-          value="paid"
-          variant="outline"
-        >
-          Paid
-        </ToggleGroupItem>
-      </ToggleGroup>
-      {(isPending || debouncedSearchQuery !== searchQuery) &&
-        Array.from({ length: 4 }).map((_, idx) => (
-          <div
-            className="flex h-[69px] items-center justify-between gap-2 rounded-lg bg-gray-400 py-3"
-            key={idx}
-          />
-        ))}
-      {isSuccess &&
-        !data?.pages?.[0]?.values?.length &&
-        debouncedSearchQuery === searchQuery && (
-          <p className="text-gray-80 text-left">
-            {searchQuery || paidFilter
-              ? 'There are no public folders available that match your search criteria.'
-              : 'There are no public folders available to subscribe to right now.'}
-          </p>
-        )}
-      {isSuccess && debouncedSearchQuery === searchQuery && (
-        <ScrollArea className="[&>div>div]:!block">
-          <div className="w-full">
-            {data?.pages.map((page, idx) => (
-              <Fragment key={idx}>
-                {page.values.map((sharedFolder) => {
-                  const isMySharedFolder =
-                    nodeInfo?.node_name ===
-                      '@@' + sharedFolder?.identity?.identityRaw &&
-                    mySharedFolders?.some(
-                      (folder) => folder.path === sharedFolder.path,
-                    );
-
-                  if (isMySharedFolder) return;
-
-                  return (
-                    <PublicSharedFolder
-                      folderDescription={
-                        sharedFolder?.folderDescription ??
-                        'no description found'
-                      }
-                      folderName={sharedFolder.path}
-                      folderPath={sharedFolder.path}
-                      folderTree={sharedFolder.raw.tree}
-                      isAlreadySubscribed={subscriptions?.some(
-                        (subscription) =>
-                          subscription.shared_folder === sharedFolder.path,
-                      )}
-                      isFree={sharedFolder?.isFree}
-                      key={`${sharedFolder?.identity?.identityRaw}::${sharedFolder.path}`}
-                      nodeName={sharedFolder?.identity?.identityRaw ?? '-'}
-                    />
-                  );
-                })}
-              </Fragment>
-            ))}
-            {hasNextPage && (
-              <Button
-                className="w-full"
-                disabled={!hasNextPage}
-                isLoading={isFetchingNextPage}
-                onClick={() => fetchNextPage()}
-                ref={loadMoreRef}
-                size="auto"
-                variant="ghost"
-              >
-                Load More
-              </Button>
-            )}
-          </div>
-        </ScrollArea>
-      )}
-    </div>
+    </SimpleLayout2>
   );
 };
 

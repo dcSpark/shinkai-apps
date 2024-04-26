@@ -1,6 +1,7 @@
 import { useGetMySubscriptions } from '@shinkai_network/shinkai-node-state/lib/queries/getMySubscriptions/useGetMySubscriptions';
 import { useNavigate } from 'react-router-dom';
 
+import { SimpleLayout2 } from '../../pages/layout/simple-layout';
 import { useAuth } from '../../store/auth';
 import { UnsubscribeButton } from './components/subscription-button';
 import { SubscriptionInfo } from './public-shared-folders';
@@ -24,35 +25,36 @@ const MySubscriptions = () => {
   });
 
   return (
-    <div className="flex h-full flex-col gap-4">
-      {isPending &&
-        Array.from({ length: 4 }).map((_, idx) => (
-          <div
-            className="flex h-[69px] items-center justify-between gap-2 rounded-md bg-gray-400 py-3"
-            key={idx}
-          />
-        ))}
-      {isSuccess && !subscriptions.length && (
-        <p className="text-gray-80 text-left">
-          You have no subscriptions. You can subscribe to shared folders from
-          other nodes.
-        </p>
-      )}
-      {isSuccess && !!subscriptions.length && (
-        <div className="">
-          {subscriptions?.map((subscription) => (
-            <SubscribedSharedFolder
-              folderName={subscription.shared_folder.replace(/\//g, '')}
-              folderPath={subscription.shared_folder}
-              key={subscription.subscription_id.unique_id}
-              nodeName={subscription.subscriber_node}
-              streamerNodeName={subscription.streaming_node}
-              streamerNodeProfile={subscription.streaming_profile}
+    <SimpleLayout2 title="My Subscriptions">
+      <div className="flex h-full flex-col gap-4">
+        {isPending &&
+          Array.from({ length: 4 }).map((_, idx) => (
+            <div
+              className="flex h-[69px] items-center justify-between gap-2 rounded-md bg-gray-400 py-3"
+              key={idx}
             />
           ))}
-        </div>
-      )}
-    </div>
+        {isSuccess && !subscriptions.length && (
+          <p className="text-gray-80 text-left">
+            You have no subscriptions. You can subscribe to shared folders from
+            other nodes.
+          </p>
+        )}
+        {isSuccess && !!subscriptions.length && (
+          <div className="">
+            {subscriptions?.map((subscription) => (
+              <SubscribedSharedFolder
+                folderName={subscription.shared_folder.replace(/\//g, '')}
+                folderPath={subscription.shared_folder}
+                key={subscription.subscription_id.unique_id}
+                streamerNodeName={subscription.streaming_node}
+                streamerNodeProfile={subscription.streaming_profile}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </SimpleLayout2>
   );
 };
 
@@ -61,12 +63,10 @@ export default MySubscriptions;
 const SubscribedSharedFolder = ({
   folderName,
   folderPath,
-  nodeName,
   streamerNodeName,
   streamerNodeProfile,
 }: {
   folderName: string;
-  nodeName: string;
   folderPath: string;
   streamerNodeName: string;
   streamerNodeProfile: string;

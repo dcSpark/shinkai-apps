@@ -24,5 +24,21 @@ const SimpleLayout = ({
     </div>
   );
 };
+export const SimpleLayout2 = ({
+  title,
+  children,
+}: {
+  title?: React.ReactNode;
+  children: React.ReactNode;
+}) => {
+  return (
+    <div className="mx-auto flex h-full max-w-4xl flex-col gap-4 px-2 py-10">
+      {title ? (
+        <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
+      ) : null}
+      <div>{children}</div>
+    </div>
+  );
+};
 
 export default SimpleLayout;
