@@ -1,8 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
 
+import PublicSharedFolderSubscription from '../components/subscriptions/public-shared-folders';
+import MySubscriptions from '../components/subscriptions/subscriptions';
+import { VectorFolderSelectionProvider } from '../components/vector-fs/components/folder-selection-list';
 import { VectorFsProvider } from '../components/vector-fs/context/vector-fs-context';
 import VectorFs from '../components/vector-fs/vector-fs';
+import SearchNodeFiles from '../components/vector-search/search-node-files';
 import ChatConversation from '../pages/chat/chat-conversation';
 import EmptyMessage from '../pages/chat/empty-message';
 import ChatLayout from '../pages/chat/layout';
@@ -134,6 +138,27 @@ const AppRoutes = () => {
           path="vector-fs"
         >
           <Route element={<VectorFs />} index />
+          <Route
+            element={
+              <VectorFolderSelectionProvider>
+                <SearchNodeFiles />
+              </VectorFolderSelectionProvider>
+            }
+            path="search"
+          />
+        </Route>
+        <Route
+          element={
+            <ProtectedRoute>
+              <VectorFsProvider>
+                <Outlet />
+              </VectorFsProvider>
+            </ProtectedRoute>
+          }
+          path="subscriptions"
+        >
+          <Route element={<MySubscriptions />} index />
+          <Route element={<PublicSharedFolderSubscription />} path="public" />
         </Route>
         <Route
           element={

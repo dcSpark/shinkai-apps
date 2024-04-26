@@ -18,6 +18,7 @@ import React from 'react';
 
 import { formatDateToUSLocaleString } from '../../../helpers/date';
 import { useVectorFsStore, VectorFSLayout } from '../context/vector-fs-context';
+import { VectorFsItemAction } from './vector-fs-drawer';
 
 export const VectorFsItemInfo = ({
   file,
@@ -65,9 +66,9 @@ const VectorFsItem = ({
   const isVRSelectionActive = useVectorFsStore(
     (state) => state.isVRSelectionActive,
   );
-  // const setActiveDrawerMenuOption = useVectorFsStore(
-  //   (state) => state.setActiveDrawerMenuOption,
-  // );
+  const setActiveDrawerMenuOption = useVectorFsStore(
+    (state) => state.setActiveDrawerMenuOption,
+  );
   const setSelectedFile = useVectorFsStore((state) => state.setSelectedFile);
   const size = partial({ standard: 'jedec' });
 
@@ -112,7 +113,7 @@ const VectorFsItem = ({
         file={file}
         fileSize={fileSize}
       />
-      <DropdownMenu>
+      <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <div
             className={cn(
@@ -141,21 +142,21 @@ const VectorFsItem = ({
               name: 'Move',
               icon: <FileInputIcon className="mr-3 h-4 w-4" />,
               onClick: () => {
-                // setActiveDrawerMenuOption(VectorFsItemAction.Move);
+                setActiveDrawerMenuOption(VectorFsItemAction.Move);
               },
             },
             {
               name: 'Copy',
               icon: <CopyIcon className="mr-3 h-4 w-4" />,
               onClick: () => {
-                // setActiveDrawerMenuOption(VectorFsItemAction.Copy);
+                setActiveDrawerMenuOption(VectorFsItemAction.Copy);
               },
             },
             {
               name: 'Delete',
               icon: <TrashIcon className="mr-3 h-4 w-4" />,
               onClick: () => {
-                // setActiveDrawerMenuOption(VectorFsItemAction.Delete);
+                setActiveDrawerMenuOption(VectorFsItemAction.Delete);
               },
             },
           ].map((option) => (

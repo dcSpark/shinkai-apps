@@ -406,7 +406,7 @@ const AllFiles = () => {
             })}
         </div>
       </ScrollArea>
-      <ContextMenu>
+      <ContextMenu modal={false}>
         <ContextMenuTrigger className="flex-1">
           <span className="sr-only">See options</span>
         </ContextMenuTrigger>

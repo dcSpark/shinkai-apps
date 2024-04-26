@@ -24,7 +24,13 @@ import {
   ScrollArea,
 } from '@shinkai_network/shinkai-ui';
 import { listen } from '@tauri-apps/api/event';
-import { BotIcon, Codesandbox, SearchCode } from 'lucide-react';
+import {
+  BotIcon,
+  Codesandbox,
+  Compass,
+  LibraryBig,
+  SearchCode,
+} from 'lucide-react';
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
@@ -90,6 +96,18 @@ export function Footer() {
   };
   const goToVectorFs = () => {
     navigate('/vector-fs');
+    setOpen(false);
+  };
+  const goToVectorSearch = () => {
+    navigate('/vector-fs/search');
+    setOpen(false);
+  };
+  const goToSubscriptions = () => {
+    navigate('/subscriptions');
+    setOpen(false);
+  };
+  const goToPublicSharedFolder = () => {
+    navigate('/subscriptions/public');
     setOpen(false);
   };
   const goToCreateAgent = () => {
@@ -213,9 +231,20 @@ export function Footer() {
                     <FilesIcon className="mr-2 h-4 w-4" />
                     <span>My AI Files Explorer</span>
                   </CommandItem>
-                  <CommandItem onSelect={goToVectorFs}>
-                    <SearchCode className="h-5 w-5" />
+                  <CommandItem onSelect={goToVectorSearch}>
+                    <SearchCode className="mr-2 h-4 w-4" />
                     <span>AI Files Content Search</span>
+                  </CommandItem>
+                </CommandGroup>
+                <CommandSeparator />
+                <CommandGroup heading="Subscriptions">
+                  <CommandItem onSelect={goToPublicSharedFolder}>
+                    <Compass className="mr-2 h-4 w-4" />
+                    <span>Browse Public Subscriptions </span>
+                  </CommandItem>
+                  <CommandItem onSelect={goToSubscriptions}>
+                    <LibraryBig className="mr-2 h-4 w-4" />
+                    <span>My Subscriptions</span>
                   </CommandItem>
                 </CommandGroup>
                 <CommandSeparator />

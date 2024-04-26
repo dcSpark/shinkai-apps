@@ -111,7 +111,7 @@ const VectorFsFolder = ({
         layout={layout}
         totalItem={totalItem}
       />
-      <DropdownMenu>
+      <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <div
             className={cn(
