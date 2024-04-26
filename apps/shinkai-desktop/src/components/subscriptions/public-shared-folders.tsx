@@ -8,17 +8,16 @@ import { useGetMySharedFolders } from '@shinkai_network/shinkai-node-state/lib/q
 import { useGetMySubscriptions } from '@shinkai_network/shinkai-node-state/lib/queries/getMySubscriptions/useGetMySubscriptions';
 import {
   Button,
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
   Input,
   ScrollArea,
   SharedFolderIcon,
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
   ToggleGroup,
   ToggleGroupItem,
 } from '@shinkai_network/shinkai-ui';
@@ -261,8 +260,8 @@ export const PublicSharedFolder = ({
   const nodeNameWithPrefix = '@@' + nodeName;
 
   return (
-    <Drawer>
-      <DrawerTrigger asChild>
+    <Sheet>
+      <SheetTrigger asChild>
         <div className="flex min-h-[92px] cursor-pointer items-center justify-between gap-1 rounded-lg py-3.5 pr-2.5 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400">
           <SubscriptionInfo
             folderDescription={folderDescription}
@@ -283,7 +282,7 @@ export const PublicSharedFolder = ({
             />
           )}
         </div>
-      </DrawerTrigger>
+      </SheetTrigger>
       <FolderDetailsDrawerContent
         folderPath={folderPath}
         isAlreadySubscribed={isAlreadySubscribed}
@@ -291,7 +290,7 @@ export const PublicSharedFolder = ({
         streamerNodeName={nodeNameWithPrefix}
         streamerNodeProfile="main"
       />
-    </Drawer>
+    </Sheet>
   );
 };
 
@@ -341,16 +340,16 @@ const FolderDetailsDrawerContent = ({
   };
 
   return (
-    <DrawerContent>
-      <DrawerClose className="absolute right-4 top-5">
-        <XIcon className="text-gray-80" />
-      </DrawerClose>
-      <DrawerHeader>
-        <DrawerTitle className="mb-2">Public Subscription Details</DrawerTitle>
-        <DrawerDescription>
+    <SheetContent>
+      {/*<SheetClose className="absolute right-4 top-5">*/}
+      {/*  <XIcon className="text-gray-80" />*/}
+      {/*</SheetClose>*/}
+      <SheetHeader>
+        <SheetTitle className="mb-2">Public Subscription Details</SheetTitle>
+        <SheetDescription>
           List of folders and files shared with you
-        </DrawerDescription>
-      </DrawerHeader>
+        </SheetDescription>
+      </SheetHeader>
 
       <div className="flex flex-wrap justify-end gap-2">
         <Button onClick={expandAll} size="icon" type="button" variant="ghost">
@@ -371,7 +370,7 @@ const FolderDetailsDrawerContent = ({
           value={nodes}
         />
       </ScrollArea>
-      <DrawerFooter>
+      <SheetFooter>
         {isAlreadySubscribed ? (
           <UnsubscribeButton
             folderPath={folderPath}
@@ -386,8 +385,8 @@ const FolderDetailsDrawerContent = ({
             nodeName={streamerNodeName ?? ''}
           />
         )}
-      </DrawerFooter>
-    </DrawerContent>
+      </SheetFooter>
+    </SheetContent>
   );
 };
 
