@@ -1,8 +1,5 @@
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-} from '@shinkai_network/shinkai-ui';
+import { DialogClose } from '@radix-ui/react-dialog';
+import { Dialog, DialogContent } from '@shinkai_network/shinkai-ui';
 import { XIcon } from 'lucide-react';
 
 import { useVectorFsStore } from '../context/vector-fs-context';
@@ -39,7 +36,7 @@ const VectorFSDrawer = () => {
   );
   const setSelectedFile = useVectorFsStore((state) => state.setSelectedFile);
   return (
-    <Drawer
+    <Dialog
       onOpenChange={(open) => {
         if (!open) {
           setActiveDrawerMenuOption(null);
@@ -49,15 +46,15 @@ const VectorFSDrawer = () => {
       }}
       open={!!activeDrawerMenuOption}
     >
-      <DrawerContent>
-        <DrawerClose className="absolute right-4 top-5">
+      <DialogContent>
+        <DialogClose className="absolute right-4 top-5">
           <XIcon className="text-gray-80" />
-        </DrawerClose>
+        </DialogClose>
         <VectorFolderSelectionProvider>
           <VectorFSDrawerContent selectedOption={activeDrawerMenuOption} />
         </VectorFolderSelectionProvider>
-      </DrawerContent>
-    </Drawer>
+      </DialogContent>
+    </Dialog>
   );
 };
 export enum VectorFsGlobalAction {
