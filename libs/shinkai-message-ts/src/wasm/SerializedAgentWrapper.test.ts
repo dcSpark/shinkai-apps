@@ -134,3 +134,40 @@ test('SerializedAgentWrapper serialization to string', async () => {
     serializedAgent.allowed_message_senders,
   );
 });
+
+// Additional tests for a new model type not defined in the context
+test('SerializedAgentWrapper with Groq model type', async () => {
+  // Create a SerializedAgent with a Groq model type
+  const serializedAgent: SerializedAgent = {
+    id: 'groq_model_agent',
+    full_identity_name: '@@node.shinkai/main/agent/groq_model_agent',
+    perform_locally: true,
+    external_url: 'http://groqmodel.com',
+    api_key: 'abcdefg',
+    model: { groq: { model_type: 'groq-v1' } },
+    toolkit_permissions: ['groq_permission1', 'groq_permission2'],
+    storage_bucket_permissions: ['groq_bucket1', 'groq_bucket2'],
+    allowed_message_senders: ['groq_sender1', 'groq_sender2'],
+  };
+
+  // Convert the SerializedAgent to a SerializedAgentWrapper
+  const serializedAgentWrapper =
+    SerializedAgentWrapper.fromSerializedAgent(serializedAgent);
+
+  // Get the inner SerializedAgent
+  const agent = serializedAgentWrapper.inner;
+
+  // Check that the fields are correctly converted
+  expect(agent.id).toBe('groq_model_agent');
+  expect(agent.perform_locally).toBe(true);
+  expect(agent.external_url).toBe('http://groqmodel.com');
+  expect(agent.api_key).toBe('abcdefg');
+  if (serializedAgent.model && serializedAgent.model['groq']) {
+    expect(agent.model).toBe(
+      `groq:${serializedAgent.model['groq'].model_type}`,
+    );
+  }
+  expect(agent.toolkit_permissions).toEqual(['groq_permission1', 'groq_permission2']);
+  expect(agent.storage_bucket_permissions).toEqual(['groq_bucket1', 'groq_bucket2']);
+  expect(agent.allowed_message_senders).toEqual(['groq_sender1', 'groq_sender2']);
+});
