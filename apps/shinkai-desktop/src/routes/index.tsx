@@ -97,7 +97,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   ]);
 
   if (!auth) {
-    console.log('navigating to welcome');
     return <Navigate replace to={'/welcome'} />;
   }
 
