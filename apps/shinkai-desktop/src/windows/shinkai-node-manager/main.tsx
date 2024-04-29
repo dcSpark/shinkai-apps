@@ -187,7 +187,7 @@ const App = () => {
             onClick={() => shinkaiNodeKill()}
             variant={'default'}
           >
-            {shinkaiNodeSpawnIsPending || shinkaiNodeKillIsPending ? (
+            {shinkaiNodeKillIsPending ? (
               <Loader2 className="animate-spin" />
             ) : (
               <StopCircle className="" />
