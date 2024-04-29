@@ -11,6 +11,7 @@ import {
   AlertDialogTitle,
   ChatBubbleIcon,
   FilesIcon,
+  InboxIcon,
   JobBubbleIcon,
   Separator,
   Tooltip,
@@ -67,7 +68,7 @@ export function MainNav() {
     {
       title: 'Conversations',
       href: '/inboxes',
-      icon: <JobBubbleIcon className="h-6 w-6" />,
+      icon: <InboxIcon className="h-6 w-6" />,
     },
     {
       title: 'Create AI Chat',
@@ -124,7 +125,7 @@ export function MainNav() {
   ].filter(Boolean) as NavigationLink[];
 
   return (
-    <aside className="fixed inset-0 z-30 flex w-[80px] shrink-0 flex-col gap-2 overflow-y-auto border-r bg-gradient-to-b from-gray-400 to-gray-500 px-2 py-6 shadow-2xl">
+    <aside className="fixed inset-0 z-30 flex w-[80px] shrink-0 flex-col gap-2 overflow-y-auto border-r border-gray-400/30  bg-gradient-to-r from-gray-400 to-gray-500 px-2 py-6 shadow-xl">
       {navigationLinks.map((item) => {
         return (
           <React.Fragment key={item.title}>
@@ -141,8 +142,8 @@ export function MainNav() {
                       'flex flex-col items-center justify-center rounded-lg px-4 py-3 text-white',
                       // 'lg:flex-row lg:justify-start lg:gap-2',
                       location.pathname === item.href
-                        ? 'bg-gray-200 text-white shadow-lg'
-                        : 'opacity-70 hover:bg-gray-200 hover:opacity-100',
+                        ? 'bg-gray-300 text-white shadow-xl'
+                        : 'opacity-70 hover:bg-gray-300 hover:opacity-100',
                     )}
                     onClick={item.onClick}
                     rel={item.external ? 'noreferrer' : ''}

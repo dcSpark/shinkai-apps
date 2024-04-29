@@ -281,7 +281,7 @@ const ChatConversation = () => {
   }, [data?.pages]);
 
   return (
-    <div className="flex flex-1 flex-col pt-2">
+    <div className="flex max-h-screen flex-1 flex-col overflow-hidden pt-2">
       <ScrollArea className="h-full px-5" ref={chatContainerRef}>
         {isChatConversationSuccess && (
           <div className="py-2 text-center text-xs">

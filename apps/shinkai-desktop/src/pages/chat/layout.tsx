@@ -7,7 +7,6 @@ import {
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { useArchiveJob } from '@shinkai_network/shinkai-node-state/lib/mutations/archiveJob/useArchiveJob';
 import { useUpdateInboxName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateInboxName/useUpdateInboxName';
-import { GetInboxesOutput } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/types';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
 import {
   ActiveIcon,
@@ -33,7 +32,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { Query } from '@tanstack/react-query';
 import { Edit3 } from 'lucide-react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -317,7 +315,7 @@ const ChatLayout = () => {
     },
     {
       refetchIntervalInBackground: true,
-      refetchInterval: (query: Query<GetInboxesOutput>) => {
+      refetchInterval: (query) => {
         const allInboxesAreCompleted = query.state.data?.every((inbox) => {
           return (
             inbox.last_message &&
