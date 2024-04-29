@@ -124,7 +124,7 @@ export function MainNav() {
   ].filter(Boolean) as NavigationLink[];
 
   return (
-    <aside className="fixed top-14 z-30 w-full shrink-0 flex-col gap-2 overflow-y-auto border-r bg-gradient-to-b from-gray-400 to-gray-500 px-2 py-6 shadow-2xl md:sticky md:flex">
+    <aside className="fixed inset-0 z-30 flex w-[80px] shrink-0 flex-col gap-2 overflow-y-auto border-r bg-gradient-to-b from-gray-400 to-gray-500 px-2 py-6 shadow-2xl">
       {navigationLinks.map((item) => {
         return (
           <React.Fragment key={item.title}>
@@ -239,10 +239,12 @@ const MainLayout = () => {
   }, [isSuccess, nodeInfo?.status, isFetching]);
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-500 text-white">
-      <div className={cn('grid flex-1', !!auth && 'grid-cols-[80px_1fr]')}>
+    <div className="flex min-h-full flex-col bg-gray-500 text-white">
+      <div className={cn('flex flex-1', !!auth && '')}>
         {!!auth && <MainNav />}
-        <Outlet />
+        <div className="flex-1 pl-[80px]">
+          <Outlet />
+        </div>
       </div>
     </div>
   );
