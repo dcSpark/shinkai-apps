@@ -1,4 +1,5 @@
 use futures_util::StreamExt;
+use regex::Regex;
 use serde::Serialize;
 use tokio::sync::mpsc::Sender;
 
@@ -21,8 +22,11 @@ pub struct OllamaProcessHandler {
 impl OllamaProcessHandler {
     const HEALTH_TIMEOUT_MS: u64 = 500;
     const PROCESS_NAME: &'static str = "ollama-v0.1.33";
+    const READY_MATCHER: &'static str = "Listening on ";
+
     pub fn new(options: OllamaOptions, event_sender: Sender<ProcessHandlerEvent>) -> Self {
-        let process_handler = ProcessHandler::new(Self::PROCESS_NAME.to_string(), event_sender);
+        let ready_matcher = Regex::new(Self::READY_MATCHER).unwrap();
+        let process_handler = ProcessHandler::new(Self::PROCESS_NAME.to_string(), event_sender, ready_matcher);
         OllamaProcessHandler {
             process_handler,
             options,

@@ -1,4 +1,5 @@
 use futures_util::TryFutureExt;
+use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, sync::Arc};
 use tauri::{
@@ -23,6 +24,7 @@ pub enum ProcessHandlerEvent {
 
 pub struct ProcessHandler {
     process_name: String,
+    ready_matcher: Regex,
     process: Arc<Mutex<Option<CommandChild>>>,
     logger: Arc<Mutex<Logger>>,
     event_sender: Arc<Mutex<Sender<ProcessHandlerEvent>>>,
@@ -33,10 +35,11 @@ impl ProcessHandler {
     const MIN_MS_ALIVE: u64 = 3000;
 
     /// Initializes a new ShinkaiNodeManager with default or provided options
-    pub(crate) fn new(process_name: String, event_sender: Sender<ProcessHandlerEvent>) -> Self {
+    pub(crate) fn new(process_name: String, event_sender: Sender<ProcessHandlerEvent>, ready_matcher: Regex) -> Self {
         kill_process_by_name(process_name.as_str());
         ProcessHandler {
             process_name: process_name.clone(),
+            ready_matcher,
             event_sender: Arc::new(Mutex::new(event_sender)),
             process: Arc::new(Mutex::new(None)),
             logger: Arc::new(Mutex::new(Logger::new(
@@ -118,18 +121,25 @@ impl ProcessHandler {
         let process_mutex = Arc::clone(&self.process);
         let logger_mutex = Arc::clone(&self.logger);
         let event_sender_mutex = Arc::clone(&self.event_sender);
+        let is_ready_mutex = Arc::new(Mutex::new(false));
+        let is_ready_mutex_clone = is_ready_mutex.clone();
 
+        let ready_matcher = self.ready_matcher.clone();
         tauri::async_runtime::spawn(async move {
             while let Some(event) = rx.recv().await {
-                let log_entry = Self::command_event_to_message(event.clone());
+                let message = Self::command_event_to_message(event.clone());
                 let mut logger = logger_mutex.lock().await;
-                let log_entry = logger.add_log(log_entry);
+                let log_entry = logger.add_log(message.clone());
                 let event_sender = event_sender_mutex.lock().await;
                 let _ = event_sender.send(ProcessHandlerEvent::Log(log_entry)).await;
                 if matches!(event, CommandEvent::Terminated { .. }) {
                     let mut process = process_mutex.lock().await;
                     *process = None;
                     let _ = event_sender.send(ProcessHandlerEvent::Stopped).await;
+                }
+                if ready_matcher.is_match(&message) {
+                    let mut is_ready = is_ready_mutex.lock().await;
+                    *is_ready = true;
                 }
             }
         });
@@ -143,6 +153,7 @@ impl ProcessHandler {
                 < std::time::Duration::from_millis(Self::MIN_MS_ALIVE)
             {
                 let process = process_mutex.lock().await;
+                let is_ready = is_ready_mutex_clone.lock().await;
                 if process.is_none() {
                     let event_sender = event_sender_mutex.lock().await;
                     let mut logger = logger_mutex.lock().await;
@@ -151,6 +162,8 @@ impl ProcessHandler {
                     let log_entry = logger.add_log(message.clone());
                     let _ = event_sender.send(ProcessHandlerEvent::Log(log_entry)).await;
                     return Err(message.to_string());
+                } else if *is_ready {
+                    break;
                 }
                 std::thread::sleep(std::time::Duration::from_millis(500));
             }

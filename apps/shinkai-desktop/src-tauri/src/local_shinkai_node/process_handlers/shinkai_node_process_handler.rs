@@ -1,5 +1,6 @@
 use std::fs;
 
+use regex::Regex;
 use tokio::sync::mpsc::Sender;
 
 use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
@@ -16,10 +17,12 @@ pub struct ShinkaiNodeProcessHandler {
 impl ShinkaiNodeProcessHandler {
     const HEALTH_TIMEOUT_MS: u64 = 500;
     const PROCESS_NAME: &'static str = "shinkai-node-v0.6.4";
+    const READY_MATCHER: &'static str = "listening on ";
 
     pub fn new(event_sender: Sender<ProcessHandlerEvent>) -> Self {
+        let ready_matcher = Regex::new(Self::READY_MATCHER).unwrap();
         let options = Self::default_options();
-        let process_handler = ProcessHandler::new(Self::PROCESS_NAME.to_string(), event_sender);
+        let process_handler = ProcessHandler::new(Self::PROCESS_NAME.to_string(), event_sender, ready_matcher);
         ShinkaiNodeProcessHandler {
             process_handler,
             options,

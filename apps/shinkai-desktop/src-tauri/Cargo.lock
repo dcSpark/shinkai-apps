@@ -3616,6 +3616,7 @@ dependencies = [
  "futures-util",
  "hound",
  "lazy_static",
+ "regex",
  "reqwest",
  "serde",
  "serde_json",
