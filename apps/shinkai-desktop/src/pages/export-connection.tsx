@@ -15,7 +15,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { useAuth } from '../store/auth';
-import SimpleLayout from './layout/simple-layout';
+import { SubpageLayout } from './layout/simple-layout';
 
 export const ExportConnection = () => {
   const formSchema = z
@@ -85,7 +85,7 @@ export const ExportConnection = () => {
     }
   };
   return (
-    <SimpleLayout title="Export Connection">
+    <SubpageLayout title="Export Connection">
       <div className="flex grow flex-col space-y-2">
         <Form {...form}>
           <form
@@ -144,6 +144,6 @@ export const ExportConnection = () => {
           </div>
         )}
       </div>
-    </SimpleLayout>
+    </SubpageLayout>
   );
 };

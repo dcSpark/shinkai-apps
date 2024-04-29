@@ -1,7 +1,7 @@
 import { useGetMySubscriptions } from '@shinkai_network/shinkai-node-state/lib/queries/getMySubscriptions/useGetMySubscriptions';
 import { useNavigate } from 'react-router-dom';
 
-import { SimpleLayout2 } from '../../pages/layout/simple-layout';
+import { SimpleLayout } from '../../pages/layout/simple-layout';
 import { useAuth } from '../../store/auth';
 import { UnsubscribeButton } from './components/subscription-button';
 import { SubscriptionInfo } from './public-shared-folders';
@@ -25,7 +25,7 @@ const MySubscriptions = () => {
   });
 
   return (
-    <SimpleLayout2 title="My Subscriptions">
+    <SimpleLayout title="My Subscriptions">
       <div className="flex h-full flex-col gap-4">
         {isPending &&
           Array.from({ length: 4 }).map((_, idx) => (
@@ -54,7 +54,7 @@ const MySubscriptions = () => {
           </div>
         )}
       </div>
-    </SimpleLayout2>
+    </SimpleLayout>
   );
 };
 

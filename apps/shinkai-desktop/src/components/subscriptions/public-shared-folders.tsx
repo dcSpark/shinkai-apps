@@ -29,7 +29,7 @@ import React, { Fragment, useEffect, useRef, useState } from 'react';
 
 import { useDebounce } from '../../hooks/use-debounce';
 import { treeOptions } from '../../lib/constants';
-import { SimpleLayout2 } from '../../pages/layout/simple-layout';
+import { SimpleLayout } from '../../pages/layout/simple-layout';
 import { useAuth } from '../../store/auth';
 import {
   SubscribeButton,
@@ -89,7 +89,7 @@ const PublicSharedFolderSubscription = () => {
   }, [fetchNextPage, hasNextPage, isLoadMoreButtonInView]);
 
   return (
-    <SimpleLayout2 title="Browse Public Subscriptions">
+    <SimpleLayout title="Browse Public Subscriptions">
       <div className="flex h-full flex-col gap-4">
         <div className="relative flex h-10 w-full items-center">
           <Input
@@ -214,7 +214,7 @@ const PublicSharedFolderSubscription = () => {
           </ScrollArea>
         )}
       </div>
-    </SimpleLayout2>
+    </SimpleLayout>
   );
 };
 

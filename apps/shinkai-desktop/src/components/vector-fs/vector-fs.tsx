@@ -5,7 +5,7 @@ import {
   TabsTrigger,
 } from '@shinkai_network/shinkai-ui';
 
-import { SimpleLayout2 } from '../../pages/layout/simple-layout';
+import { SimpleLayout } from '../../pages/layout/simple-layout';
 import AllFilesTab from './components/all-files-tab';
 import MySharedFolders from './components/my-shared-folders';
 import VectorFSDrawer from './components/vector-fs-drawer';
@@ -19,7 +19,7 @@ export default function VectorFs() {
     (state) => state.setSelectedVectorFsTab,
   );
   return (
-    <SimpleLayout2 title="AI Files Explorer">
+    <SimpleLayout title="AI Files Explorer">
       <Tabs
         className="flex h-full flex-col"
         onValueChange={(value) =>
@@ -46,6 +46,6 @@ export default function VectorFs() {
         </TabsContent>
       </Tabs>
       <VectorFSDrawer />
-    </SimpleLayout2>
+    </SimpleLayout>
   );
 }

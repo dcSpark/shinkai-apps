@@ -26,7 +26,7 @@ import { useForm, useWatch } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { z } from 'zod';
 
-import { SimpleLayout2 } from '../../pages/layout/simple-layout';
+import { SimpleLayout } from '../../pages/layout/simple-layout';
 import { useAuth } from '../../store/auth';
 import {
   FolderSelectionList,
@@ -85,7 +85,7 @@ const SearchNodeFiles = () => {
   };
 
   return (
-    <SimpleLayout2>
+    <SimpleLayout>
       <div
         className={cn(
           'flex h-[calc(100vh_-_120px)] flex-col justify-start space-y-3',
@@ -222,7 +222,7 @@ const SearchNodeFiles = () => {
           </ScrollArea>
         )}
       </div>
-    </SimpleLayout2>
+    </SimpleLayout>
   );
 };
 

@@ -29,7 +29,7 @@ import { z } from 'zod';
 import { ADD_AGENT_PATH } from '../routes/name';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
-import SimpleLayout from './layout/simple-layout';
+import { SubpageLayout } from './layout/simple-layout';
 
 const createJobSchema = z.object({
   model: z.string(),
@@ -240,7 +240,7 @@ const CreateJobPage = () => {
   // }, []);
 
   return (
-    <SimpleLayout title="Create AI Chat">
+    <SubpageLayout title="Create AI Chat">
       <Form {...createJobForm}>
         <form
           className="space-y-8"
@@ -335,7 +335,7 @@ const CreateJobPage = () => {
           </Button>
         </form>
       </Form>
-    </SimpleLayout>
+    </SubpageLayout>
   );
 };
 export default CreateJobPage;
