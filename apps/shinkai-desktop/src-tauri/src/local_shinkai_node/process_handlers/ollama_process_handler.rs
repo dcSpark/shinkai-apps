@@ -21,7 +21,7 @@ pub struct OllamaProcessHandler {
 
 impl OllamaProcessHandler {
     const HEALTH_TIMEOUT_MS: u64 = 500;
-    const PROCESS_NAME: &'static str = "ollama-v0.1.32";
+    const PROCESS_NAME: &'static str = "ollama-v0.1.33";
     pub fn new(options: OllamaOptions, event_sender: Sender<ProcessHandlerEvent>) -> Self {
         let process_handler = ProcessHandler::new(Self::PROCESS_NAME.to_string(), event_sender);
         OllamaProcessHandler {
