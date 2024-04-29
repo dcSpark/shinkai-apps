@@ -26,6 +26,7 @@ lazy_static = "1.4.0"
 tokio = "1.36.0"
 chrono = "0.4.38"
 futures-util = "0.3"
+regex = "1.10.4"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
