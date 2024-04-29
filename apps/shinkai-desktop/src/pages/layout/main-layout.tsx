@@ -241,13 +241,12 @@ const MainLayout = () => {
 
   return (
     <div className="relative flex h-full flex-col bg-gray-500 text-white">
-      <div className="grid flex-1 grid-cols-[80px_1fr]">
+      <div className={cn('grid flex-1', !!auth && 'grid-cols-[80px_1fr]')}>
         {!!auth && <MainNav />}
         <ScrollArea className="[&>div>div]:!block [&>div>div]:!h-full">
           <Outlet />
         </ScrollArea>
       </div>
-      {/*{auth && <Footer />}*/}
     </div>
   );
 };
