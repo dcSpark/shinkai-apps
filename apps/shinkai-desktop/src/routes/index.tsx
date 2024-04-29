@@ -1,3 +1,6 @@
+import 'primereact/resources/themes/lara-light-blue/theme.css';
+import 'primereact/resources/primereact.min.css';
+
 import React, { useEffect, useRef } from 'react';
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
 

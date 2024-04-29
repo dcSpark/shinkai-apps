@@ -341,9 +341,6 @@ const FolderDetailsDrawerContent = ({
 
   return (
     <SheetContent>
-      {/*<SheetClose className="absolute right-4 top-5">*/}
-      {/*  <XIcon className="text-gray-80" />*/}
-      {/*</SheetClose>*/}
       <SheetHeader>
         <SheetTitle className="mb-2">Public Subscription Details</SheetTitle>
         <SheetDescription>
@@ -370,7 +367,7 @@ const FolderDetailsDrawerContent = ({
           value={nodes}
         />
       </ScrollArea>
-      <SheetFooter>
+      <SheetFooter className="w-full">
         {isAlreadySubscribed ? (
           <UnsubscribeButton
             folderPath={folderPath}
