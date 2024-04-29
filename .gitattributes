@@ -1,0 +1,1 @@
+apps/shinkai-desktop/src-tauri/bin/* filter=lfs diff=lfs merge=lfs -text

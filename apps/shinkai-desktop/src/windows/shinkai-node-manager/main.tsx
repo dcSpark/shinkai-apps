@@ -225,7 +225,8 @@ const App = () => {
                     return (
                       <>
                         <div className="text-gray-80 text-sm" key={index}>
-                          {'>'} {log}
+                          {'ℹ️'} {new Date(log.timestamp * 1000).toISOString()}{' '}
+                          | {log.process} | {log.message}
                         </div>
                         <Separator className="my-2" />
                       </>
