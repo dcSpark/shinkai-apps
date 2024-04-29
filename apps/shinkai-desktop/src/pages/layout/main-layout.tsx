@@ -12,7 +12,6 @@ import {
   ChatBubbleIcon,
   FilesIcon,
   JobBubbleIcon,
-  ScrollArea,
   Separator,
   Tooltip,
   TooltipContent,
@@ -240,12 +239,10 @@ const MainLayout = () => {
   }, [isSuccess, nodeInfo?.status, isFetching]);
 
   return (
-    <div className="relative flex h-full flex-col bg-gray-500 text-white">
+    <div className="flex min-h-screen flex-col bg-gray-500 text-white">
       <div className={cn('grid flex-1', !!auth && 'grid-cols-[80px_1fr]')}>
         {!!auth && <MainNav />}
-        <ScrollArea className="[&>div>div]:!block [&>div>div]:!h-full">
-          <Outlet />
-        </ScrollArea>
+        <Outlet />
       </div>
     </div>
   );
