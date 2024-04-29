@@ -5,8 +5,7 @@ use tokio::sync::mpsc::Sender;
 use crate::local_shinkai_node::ollama_api::ollama_api_client::OllamaApiClient;
 
 use super::{
-    process_handler::{LogEntry, ProcessHandler, ProcessHandlerEvent},
-    process_utils::options_to_env,
+    logger::LogEntry, process_handler::{ProcessHandler, ProcessHandlerEvent}, process_utils::options_to_env
 };
 
 #[derive(Serialize)]

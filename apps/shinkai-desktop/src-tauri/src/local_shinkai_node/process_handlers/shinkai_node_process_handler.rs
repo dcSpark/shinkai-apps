@@ -5,8 +5,7 @@ use tokio::sync::mpsc::Sender;
 use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
 
 use super::{
-    process_handler::{LogEntry, ProcessHandler, ProcessHandlerEvent},
-    process_utils::options_to_env,
+    logger::LogEntry, process_handler::{ProcessHandler, ProcessHandlerEvent}, process_utils::options_to_env
 };
 
 pub struct ShinkaiNodeProcessHandler {
