@@ -7,8 +7,9 @@ import {
   AvatarFallback,
   AvatarImage,
   CopyToClipboardIcon,
+  MarkdownPreview,
 } from '@shinkai_network/shinkai-ui';
-import MarkdownPreview from '@uiw/react-markdown-preview';
+
 import icon from '../../assets/icon.png';
 import { cn } from '../../lib/utils';
 import { FileList } from '../../pages/create-job';
@@ -68,12 +69,10 @@ const Message = ({ message }: { message: ChatConversationMessage }) => {
         )}
       >
         <MarkdownPreview
-          className="!text-foreground !bg-transparent !text-sm"
           source={extractErrorPropertyOrContent(
             message.content,
             'error_message',
           )}
-          wrapperElement={{ 'data-color-mode': 'dark' }}
         />
 
         {message.isLocal ? null : (

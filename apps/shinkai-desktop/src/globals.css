@@ -27,6 +27,16 @@ body,
   @apply font-inter h-full rounded-lg border-0 bg-gray-500 text-white;
 }
 
+:host,
+body {
+  .wmde-markdown-var[data-color-mode*='dark'] {
+    --color-canvas-default: transparent;
+    --color-border-default: theme('colors.gray.400');
+    --color-fg-default: theme('colors.white');
+    @apply text-[15px];
+  }
+}
+
 /* prose styling for chat editor */
 .prose :where(p):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
   @apply my-2;
@@ -40,7 +50,7 @@ body,
   @apply pointer-events-none float-left h-0 text-gray-100;
 }
 .tiptap {
-  @apply min-h-[60px] max-w-full rounded-md border border-gray-200 bg-gray-400 px-3 py-2 text-sm shadow-sm placeholder:text-gray-80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:cursor-not-allowed disabled:opacity-50;
+  @apply placeholder:text-gray-80 min-h-[60px] max-w-full rounded-md border border-gray-200 bg-gray-400 px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:cursor-not-allowed disabled:opacity-50;
 }
 .tiptap[contenteditable='false'] {
   @apply opacity-40;
@@ -49,18 +59,17 @@ body,
   @apply grid;
 }
 
-
 /* react tree view */
 .p-checkbox {
-  @apply w-[18px] h-[18px];
+  @apply h-[18px] w-[18px];
 }
 .p-checkbox .p-checkbox-box {
-  @apply w-full h-full rounded-md;
+  @apply h-full w-full rounded-md;
 }
 .p-checkbox.p-highlight .p-checkbox-box {
-  @apply bg-brand border-brand-500 text-white hover:border-brand-500 p-0.5;
+  @apply bg-brand border-brand-500 hover:border-brand-500 p-0.5 text-white;
 }
-.p-tree .p-tree-container .p-treenode .p-treenode-content.p-highlight{
+.p-tree .p-tree-container .p-treenode .p-treenode-content.p-highlight {
   @apply bg-brand/10 text-white;
 }
 .icon-folder {
@@ -69,6 +78,3 @@ body,
 .icon-file {
   content: url("data:image/svg+xml,%3Csvg data-v-88732935='' xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='lucide lucide-file-text lucide-icon customizable'%3E%3Cpath d='M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z'%3E%3C/path%3E%3Cpath d='M14 2v4a2 2 0 0 0 2 2h4'%3E%3C/path%3E%3Cpath d='M10 9H8'%3E%3C/path%3E%3Cpath d='M16 13H8'%3E%3C/path%3E%3Cpath d='M16 17H8'%3E%3C/path%3E%3C/svg%3E");
 }
-
-
-
