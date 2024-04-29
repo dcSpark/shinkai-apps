@@ -1,4 +1,4 @@
-use crate::local_shinkai_node::process_handlers::process_handler::LogEntry;
+use crate::local_shinkai_node::process_handlers::logger::LogEntry;
 use crate::local_shinkai_node::shinkai_node_manager_instance::SHINKAI_NODE_MANAGER_INSTANCE;
 use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
 
@@ -39,7 +39,6 @@ pub async fn shinkai_node_get_options() -> Result<ShinkaiNodeOptions, String> {
 #[tauri::command]
 pub async fn shinkai_node_spawn() -> Result<(), String> {
     let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.lock().await;
-
     match shinkai_node_manager_guard.spawn().await {
         Ok(_) => Ok(()),
         Err(message) => Err(message),

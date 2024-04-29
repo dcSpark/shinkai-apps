@@ -2,8 +2,8 @@ use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
+use super::process_handlers::logger::LogEntry;
 use super::process_handlers::ollama_process_handler::{OllamaOptions, OllamaProcessHandler};
-use super::process_handlers::process_handler::LogEntry;
 use super::process_handlers::shinkai_node_process_handler::ShinkaiNodeProcessHandler;
 use tokio::sync::mpsc::channel;
 
