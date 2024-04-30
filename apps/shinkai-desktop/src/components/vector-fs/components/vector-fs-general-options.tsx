@@ -4,8 +4,6 @@ import { useUploadVRFiles } from '@shinkai_network/shinkai-node-state/lib/mutati
 import {
   Button,
   DirectoryTypeIcon,
-  DrawerHeader,
-  DrawerTitle,
   FileItem,
   FileTypeIcon,
   FileUploader,
@@ -15,6 +13,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  SheetHeader,
+  SheetTitle,
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import { useEffect } from 'react';
@@ -85,12 +85,12 @@ export const AddNewFolderAction = () => {
 
   return (
     <>
-      <DrawerHeader>
-        <DrawerTitle className="flex flex-col items-start gap-1">
+      <SheetHeader>
+        <SheetTitle className="flex flex-col items-start gap-1">
           <DirectoryTypeIcon className="h-10 w-10" />
           Add New Folder
-        </DrawerTitle>
-      </DrawerHeader>
+        </SheetTitle>
+      </SheetHeader>
       <Form {...createFolderForm}>
         <form
           className="space-y-8 pt-4"
@@ -184,12 +184,12 @@ export const UploadVRFilesAction = () => {
 
   return (
     <>
-      <DrawerHeader>
-        <DrawerTitle className="flex flex-col items-start gap-1">
+      <SheetHeader>
+        <SheetTitle className="flex flex-col items-start gap-1">
           <FileTypeIcon className="h-10 w-10" />
           File Upload
-        </DrawerTitle>
-      </DrawerHeader>
+        </SheetTitle>
+      </SheetHeader>
       <Form {...createFolderForm}>
         <form
           className="space-y-8"
@@ -315,11 +315,11 @@ export const SaveWebpageToVectorFsAction = () => {
 
   return (
     <>
-      <DrawerHeader>
-        <DrawerTitle className="flex flex-col items-start gap-1">
+      <SheetHeader>
+        <SheetTitle className="flex flex-col items-start gap-1">
           Save Webpage to AI Files
-        </DrawerTitle>
-      </DrawerHeader>
+        </SheetTitle>
+      </SheetHeader>
       <Form {...saveWebpageToVectorFsForm}>
         <form
           className="mt-6 space-y-8"

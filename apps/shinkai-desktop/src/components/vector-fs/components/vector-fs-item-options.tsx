@@ -4,8 +4,8 @@ import { useMoveVRItem } from '@shinkai_network/shinkai-node-state/lib/mutations
 import {
   Button,
   DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
+  SheetHeader,
+  SheetTitle,
 } from '@shinkai_network/shinkai-ui';
 import React from 'react';
 import { toast } from 'sonner';
@@ -42,16 +42,16 @@ export const VectorFsItemMoveAction = () => {
 
   return (
     <React.Fragment>
-      <DrawerHeader>
-        <DrawerTitle className="font-normal">
+      <SheetHeader>
+        <SheetTitle className="font-normal">
           Move
           <span className="font-medium">
             {' '}
             &quot;{selectedFile?.name}&quot;
           </span>{' '}
           to ...
-        </DrawerTitle>
-      </DrawerHeader>
+        </SheetTitle>
+      </SheetHeader>
       <FolderSelectionList />
       <DrawerFooter>
         <Button
@@ -96,15 +96,15 @@ export const VectorFsItemDeleteAction = () => {
 
   return (
     <React.Fragment>
-      <DrawerHeader>
-        <DrawerTitle className="font-normal">
+      <SheetHeader>
+        <SheetTitle className="font-normal">
           Delete
           <span className="font-medium">
             {' '}
             &quot;{selectedFile?.name}&quot;
           </span>{' '}
-        </DrawerTitle>
-      </DrawerHeader>
+        </SheetTitle>
+      </SheetHeader>
 
       <p className="text-gray-80 my-3 text-base">
         Are you sure you want to delete this item? This action cannot be undone.
@@ -159,16 +159,16 @@ export const VectorFsItemCopyAction = () => {
 
   return (
     <React.Fragment>
-      <DrawerHeader>
-        <DrawerTitle className="font-normal">
+      <SheetHeader>
+        <SheetTitle className="font-normal">
           Copy
           <span className="font-medium">
             {' '}
             &quot;{selectedFile?.name}&quot;
           </span>{' '}
           to ...
-        </DrawerTitle>
-      </DrawerHeader>
+        </SheetTitle>
+      </SheetHeader>
       <FolderSelectionList />
       <DrawerFooter>
         <Button

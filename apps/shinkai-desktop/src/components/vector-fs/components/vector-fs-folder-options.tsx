@@ -7,14 +7,14 @@ import { useUnshareFolder } from '@shinkai_network/shinkai-node-state/lib/mutati
 import { useGetVRSeachSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRSearchSimplified/useGetSearchVRItems';
 import {
   Button,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
   Form,
   FormField,
   Input,
   ScrollArea,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import { SearchIcon, XIcon } from 'lucide-react';
@@ -56,18 +56,18 @@ export const VectorFsFolderMoveAction = () => {
 
   return (
     <React.Fragment>
-      <DrawerHeader>
-        <DrawerTitle className="font-normal">
+      <SheetHeader>
+        <SheetTitle className="font-normal">
           Move
           <span className="font-medium">
             {' '}
             &quot;{selectedFolder?.name}&quot;
           </span>{' '}
           to ...
-        </DrawerTitle>
-      </DrawerHeader>
+        </SheetTitle>
+      </SheetHeader>
       <FolderSelectionList />
-      <DrawerFooter>
+      <SheetFooter>
         <Button
           className="mt-4"
           disabled={destinationFolderPath === selectedFolder?.path}
@@ -89,7 +89,7 @@ export const VectorFsFolderMoveAction = () => {
         >
           Move
         </Button>
-      </DrawerFooter>
+      </SheetFooter>
     </React.Fragment>
   );
 };
@@ -110,20 +110,20 @@ export const VectorFsFolderDeleteAction = () => {
 
   return (
     <React.Fragment>
-      <DrawerHeader>
-        <DrawerTitle className="font-normal">
+      <SheetHeader>
+        <SheetTitle className="font-normal">
           Delete
           <span className="font-medium">
             {' '}
             &quot;{selectedFolder?.name}&quot;
           </span>{' '}
-        </DrawerTitle>
-      </DrawerHeader>
+        </SheetTitle>
+      </SheetHeader>
       <p className="text-gray-80 my-3 text-base">
         Are you sure you want to delete this folder? This action cannot be
         undone.
       </p>
-      <DrawerFooter>
+      <SheetFooter>
         <Button
           className="mt-4"
           isLoading={isPending}
@@ -144,7 +144,7 @@ export const VectorFsFolderDeleteAction = () => {
         >
           Delete
         </Button>
-      </DrawerFooter>
+      </SheetFooter>
     </React.Fragment>
   );
 };
@@ -173,18 +173,18 @@ export const VectorFsFolderCopyAction = () => {
 
   return (
     <React.Fragment>
-      <DrawerHeader>
-        <DrawerTitle className="font-normal">
+      <SheetHeader>
+        <SheetTitle className="font-normal">
           Copy
           <span className="font-medium">
             {' '}
             &quot;{selectedFolder?.name}&quot;
           </span>{' '}
           to ...
-        </DrawerTitle>
-      </DrawerHeader>
+        </SheetTitle>
+      </SheetHeader>
       <FolderSelectionList />
-      <DrawerFooter>
+      <SheetFooter>
         <Button
           className="mt-4"
           disabled={destinationFolderPath === selectedFolder?.path}
@@ -206,7 +206,7 @@ export const VectorFsFolderCopyAction = () => {
         >
           Copy
         </Button>
-      </DrawerFooter>
+      </SheetFooter>
     </React.Fragment>
   );
 };
@@ -260,15 +260,15 @@ export const VectorFsFolderSearchKnowledgeAction = () => {
 
   return (
     <React.Fragment>
-      <DrawerHeader>
-        <DrawerTitle className="font-normal">
+      <SheetHeader>
+        <SheetTitle className="font-normal">
           AI Files Content Search within
           <span className="font-medium">
             {' '}
             &quot;{selectedFolder?.name}&quot;
           </span>{' '}
-        </DrawerTitle>
-      </DrawerHeader>
+        </SheetTitle>
+      </SheetHeader>
       <p className="text-gray-80 my-3 text-sm">
         Search to find content across all files in your AI Files easily
       </p>
@@ -416,18 +416,18 @@ export const VectorFsFolderCreateShareableAction = () => {
 
   return (
     <React.Fragment>
-      <DrawerHeader>
-        <DrawerTitle className="line-clamp-1 font-normal">
+      <SheetHeader>
+        <SheetTitle className="line-clamp-1 font-normal">
           Share
           <span className="font-medium">
             {' '}
             &quot;{selectedFolder?.name}&quot;
           </span>{' '}
-        </DrawerTitle>
-        <DrawerDescription>
+        </SheetTitle>
+        <SheetDescription>
           You can share folders that you store in AI Files with anyone.
-        </DrawerDescription>
-      </DrawerHeader>
+        </SheetDescription>
+      </SheetHeader>
       <Form {...shareFolderForm}>
         <form
           className="mt-5 flex flex-col gap-3"
@@ -473,23 +473,23 @@ export const VectorFsFolderUnshareAction = () => {
 
   return (
     <React.Fragment>
-      <DrawerHeader>
-        <DrawerTitle className="line-clamp-1 font-normal">
+      <SheetHeader>
+        <SheetTitle className="line-clamp-1 font-normal">
           Unshare
           <span className="font-medium">
             {' '}
             &quot;{selectedFolder?.name}&quot;
           </span>{' '}
           ?
-        </DrawerTitle>
-        <DrawerDescription className="py-3">
+        </SheetTitle>
+        <SheetDescription className="py-3">
           Everyone will be removed from this folder. You’ll still keep a copy of
           this folder in your AI Files. <br />
           Note: Removed members will keep a copy of this shared folder.
-        </DrawerDescription>
-      </DrawerHeader>
+        </SheetDescription>
+      </SheetHeader>
 
-      <DrawerFooter>
+      <SheetFooter>
         <Button
           className="mt-4"
           disabled={destinationFolderPath === selectedFolder?.path}
@@ -510,7 +510,7 @@ export const VectorFsFolderUnshareAction = () => {
         >
           Unshare Folder
         </Button>
-      </DrawerFooter>
+      </SheetFooter>
     </React.Fragment>
   );
 };

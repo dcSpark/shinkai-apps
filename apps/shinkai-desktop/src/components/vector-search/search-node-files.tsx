@@ -5,13 +5,13 @@ import {
   DrawerClose,
   DrawerContent,
   DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
   DrawerTrigger,
   Form,
   FormField,
   Input,
   ScrollArea,
+  SheetHeader,
+  SheetTitle,
   Tooltip,
   TooltipContent,
   TooltipPortal,
@@ -274,9 +274,9 @@ function SelectFolderButton() {
         <DrawerClose className="absolute right-4 top-5">
           <XIcon className="text-gray-80" />
         </DrawerClose>
-        <DrawerHeader>
-          <DrawerTitle>Select a Folder</DrawerTitle>
-        </DrawerHeader>
+        <SheetHeader>
+          <SheetTitle>Select a Folder</SheetTitle>
+        </SheetHeader>
         <FolderSelectionList />
         <DrawerFooter>
           <DrawerClose asChild>
