@@ -23,9 +23,9 @@ import { useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import { allowedFileExtensions } from '../../../lib/constants';
 import { useAuth } from '../../../store/auth';
 import { useVectorFsStore } from '../context/vector-fs-context';
-// import { allowedFileExtensions } from '../create-job/constants';
 import {
   FolderSelectionList,
   useVectorFolderSelectionStore,
@@ -205,7 +205,7 @@ export const UploadVRFilesAction = () => {
                   <div className="flex flex-col space-y-1">
                     <div className="flex items-center justify-center">
                       <FileUploader
-                        // accept={allowedFileExtensions.join(',')}
+                        accept={allowedFileExtensions.join(',')}
                         allowMultiple
                         descriptionText="Supports pdf, md, txt"
                         onChange={(acceptedFiles) => {

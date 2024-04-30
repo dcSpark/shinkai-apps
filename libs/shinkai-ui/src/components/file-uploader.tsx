@@ -27,7 +27,7 @@ export const FileItem = ({
   const hasPreviewImage = file?.type?.includes('image/');
 
   return (
-    <div className="relative flex items-center gap-2 rounded-xl bg-gray-300 px-3 py-1.5 pr-2">
+    <div className="bg-gray-350 relative flex items-center gap-2 rounded-xl px-3 py-1.5 pr-2">
       <span className="flex w-[30px] items-center justify-center">
         {hasPreviewImage ? (
           <FileImagePreview
@@ -49,7 +49,9 @@ export const FileItem = ({
           </span>
         </button>
         {file.size && (
-          <span className="shrink-0 text-gray-100">{size(file.size)}</span>
+          <span className="shrink-0 text-xs text-gray-100">
+            {size(file.size)}
+          </span>
         )}
       </div>
       {!!actions?.length && (
@@ -107,11 +109,11 @@ export const FileUploader = ({
       <div
         {...getRootFileProps({
           className:
-            'dropzone py-4 bg-gray-400 group relative mt-3 flex cursor-pointer items-center justify-center overflow-hidden rounded-lg border border-dashed border-gray-100 transition-colors hover:border-white',
+            'dropzone py-4 bg-gray-400 group relative mt-3 flex cursor-pointer items-center justify-center overflow-hidden rounded-lg border border-dashed border-gray-200 transition-colors hover:border-gray-100',
         })}
       >
         <div className="flex flex-col items-center justify-center space-y-1 px-2">
-          <div className="rounded-full bg-gray-300 p-2 shadow-sm">
+          <div className="bg-gray-350 rounded-full p-2 shadow-sm">
             <Upload className="h-4 w-4" />
           </div>
           <p className="text-sm text-white">Click to upload or drag and drop</p>
