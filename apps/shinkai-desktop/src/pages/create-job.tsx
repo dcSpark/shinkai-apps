@@ -37,7 +37,7 @@ import { TreeCheckboxSelectionKeys } from 'primereact/tree';
 import { TreeNode } from 'primereact/treenode';
 import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
 import {
@@ -123,6 +123,14 @@ const CreateJobPage = () => {
   const auth = useAuth((state) => state.auth);
   const defaulAgentId = useSettings((state) => state.defaultAgentId);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const locationState = location.state as {
+    files: File[];
+    agentName: string;
+    selectedVRFiles: VRItem[];
+    selectedVRFolders: VRFolder[];
+  };
 
   const [isVectorFSOpen, setIsVectorFSOpen] = React.useState(false);
   const [isKnowledgeSearchOpen, setIsKnowledgeSearchOpen] =
@@ -184,6 +192,40 @@ const CreateJobPage = () => {
       );
     },
   });
+
+  useEffect(() => {
+    if (
+      locationState?.selectedVRFiles?.length > 0 ||
+      locationState?.selectedVRFolders?.length > 0
+    ) {
+      const selectedVRFilesPathMap = locationState?.selectedVRFiles?.reduce(
+        (acc, file) => {
+          selectedFileKeysRef.current.set(file.path, file);
+          acc[file.path] = {
+            checked: true,
+          };
+          return acc;
+        },
+        {} as Record<string, { checked: boolean }>,
+      );
+
+      const selectedVRFoldersPathMap = locationState?.selectedVRFolders?.reduce(
+        (acc, folder) => {
+          selectedFolderKeysRef.current.set(folder.path, folder);
+          acc[folder.path] = {
+            checked: true,
+          };
+          return acc;
+        },
+        {} as Record<string, { checked: boolean }>,
+      );
+
+      setSelectedKeys({
+        ...selectedVRFilesPathMap,
+        ...selectedVRFoldersPathMap,
+      });
+    }
+  }, [locationState?.selectedVRFiles, locationState?.selectedVRFolders]);
 
   const onSubmit = async (data: z.infer<typeof createJobSchema>) => {
     if (!auth) return;

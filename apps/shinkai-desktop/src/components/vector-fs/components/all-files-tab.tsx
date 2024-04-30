@@ -445,7 +445,7 @@ const AllFiles = () => {
           if (!isVRSelectionActive) {
             setVRSelectionActive(true);
           } else {
-            navigate('/inboxes/create-job', {
+            navigate('/create-job', {
               state: {
                 selectedVRFiles: selectedFiles,
                 selectedVRFolders: selectedFolders,
