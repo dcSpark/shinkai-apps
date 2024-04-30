@@ -29,7 +29,7 @@ import {
   SearchCode,
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Outlet, useMatch, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { ONBOARDING_PATH } from '../../routes/name';
@@ -44,9 +44,46 @@ type NavigationLink = {
   onClick?: () => void;
   external?: boolean;
 };
+
+const NavLink = ({
+  href,
+  external,
+  onClick,
+  icon,
+  title,
+}: {
+  href: string;
+  external?: boolean;
+  onClick?: () => void;
+  icon: React.ReactNode;
+  title: string;
+}) => {
+  const isMatch = useMatch({
+    path: href,
+    end: false,
+  });
+
+  return (
+    <Link
+      className={cn(
+        'flex flex-col items-center justify-center rounded-lg px-4 py-3 text-white',
+        isMatch
+          ? 'bg-gray-500 text-white shadow-xl'
+          : 'opacity-60 hover:bg-gray-500 hover:opacity-100',
+      )}
+      onClick={onClick}
+      rel={external ? 'noreferrer' : ''}
+      target={external ? '_blank' : ''}
+      to={href}
+    >
+      <span>{icon}</span>
+      <span className="sr-only">{title}</span>
+    </Link>
+  );
+};
+
 export function MainNav() {
   const navigate = useNavigate();
-  const location = useLocation();
   const logout = useAuth((state) => state.setLogout);
   const auth = useAuth((state) => state.auth);
   const isLocalShinkaiNodeIsUse = useShinkaiNodeManager(
@@ -92,17 +129,17 @@ export function MainNav() {
     },
     {
       title: 'AI Files Content Search',
-      href: '/vector-fs/search',
+      href: '/vector-search',
       icon: <SearchCode className="h-6 w-6" />,
     },
     {
       title: 'Browse Public Subscriptions',
-      href: '/subscriptions/public',
+      href: '/public-subscriptions',
       icon: <Compass className="h-6 w-6" />,
     },
     {
       title: 'My Subscriptions',
-      href: '/subscriptions',
+      href: '/my-subscriptions',
       icon: <LibraryBig className="h-6 w-6" />,
     },
     isLocalShinkaiNodeIsUse && {
@@ -125,7 +162,7 @@ export function MainNav() {
   ].filter(Boolean) as NavigationLink[];
 
   return (
-    <aside className="fixed inset-0 z-30 flex w-[80px] shrink-0 flex-col gap-2 overflow-y-auto border-r border-gray-400/30  bg-gradient-to-r from-gray-400 to-gray-500 px-2 py-6 shadow-xl">
+    <aside className="fixed inset-0 z-30 flex w-[80px] shrink-0 flex-col gap-2 overflow-y-auto border-r border-gray-400/30  bg-gradient-to-r from-gray-300 to-gray-400/70 px-2 py-6 shadow-xl">
       {navigationLinks.map((item) => {
         return (
           <React.Fragment key={item.title}>
@@ -137,24 +174,13 @@ export function MainNav() {
             <TooltipProvider delayDuration={0} key={item.title}>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Link
-                    className={cn(
-                      'flex flex-col items-center justify-center rounded-lg px-4 py-3 text-white',
-                      // 'lg:flex-row lg:justify-start lg:gap-2',
-                      location.pathname === item.href
-                        ? 'bg-gray-300 text-white shadow-xl'
-                        : 'opacity-70 hover:bg-gray-300 hover:opacity-100',
-                    )}
+                  <NavLink
+                    external={item.external}
+                    href={item.href}
+                    icon={item.icon}
                     onClick={item.onClick}
-                    rel={item.external ? 'noreferrer' : ''}
-                    target={item.external ? '_blank' : ''}
-                    to={item.href}
-                  >
-                    <span>{item.icon}</span>
-                    {/*<span className="hidden text-center text-xs lg:block lg:truncate">*/}
-                    {/*  {item.title}*/}
-                    {/*</span>*/}
-                  </Link>
+                    title={item.title}
+                  />
                 </TooltipTrigger>
                 <TooltipPortal>
                   <TooltipContent align="center" side="right">

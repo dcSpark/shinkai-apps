@@ -129,6 +129,7 @@ const AppRoutes = () => {
           <Route element={<EmptyMessage />} index />
           <Route element={<ChatConversation />} path=":inboxId" />
         </Route>
+
         <Route
           element={
             <ProtectedRoute>
@@ -137,16 +138,15 @@ const AppRoutes = () => {
               </VectorFsProvider>
             </ProtectedRoute>
           }
-          path="vector-fs"
         >
-          <Route element={<VectorFs />} index />
+          <Route element={<VectorFs />} path="vector-fs" />
           <Route
             element={
               <VectorFolderSelectionProvider>
                 <SearchNodeFiles />
               </VectorFolderSelectionProvider>
             }
-            path="search"
+            path="vector-search"
           />
         </Route>
         <Route
@@ -157,10 +157,12 @@ const AppRoutes = () => {
               </VectorFsProvider>
             </ProtectedRoute>
           }
-          path="subscriptions"
         >
-          <Route element={<MySubscriptions />} index />
-          <Route element={<PublicSharedFolderSubscription />} path="public" />
+          <Route element={<MySubscriptions />} path="my-subscriptions" />
+          <Route
+            element={<PublicSharedFolderSubscription />}
+            path="public-subscriptions"
+          />
         </Route>
         <Route
           element={
