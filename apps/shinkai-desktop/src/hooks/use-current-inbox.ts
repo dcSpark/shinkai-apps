@@ -8,24 +8,19 @@ export const useGetCurrentInbox = () => {
   const auth = useAuth((state) => state.auth);
   const location = useLocation();
 
-  const { inboxes } = useGetInboxes(
-    {
-      nodeAddress: auth?.node_address ?? '',
-      sender: auth?.shinkai_identity ?? '',
-      senderSubidentity: auth?.profile ?? '',
-      // Assuming receiver and target_shinkai_name_profile are the same as sender
-      receiver: auth?.shinkai_identity ?? '',
-      targetShinkaiNameProfile: `${auth?.shinkai_identity}/${auth?.profile}`,
-      my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-      my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-      node_encryption_pk: auth?.node_encryption_pk ?? '',
-      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-      profile_identity_sk: auth?.profile_identity_sk ?? '',
-    },
-    {
-      staleTime: Infinity,
-    },
-  );
+  const { inboxes } = useGetInboxes({
+    nodeAddress: auth?.node_address ?? '',
+    sender: auth?.shinkai_identity ?? '',
+    senderSubidentity: auth?.profile ?? '',
+    // Assuming receiver and target_shinkai_name_profile are the same as sender
+    receiver: auth?.shinkai_identity ?? '',
+    targetShinkaiNameProfile: `${auth?.shinkai_identity}/${auth?.profile}`,
+    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+  });
   const currentInbox = useMemo(() => {
     const inboxId = location.pathname.split('/')?.[2];
     const decodedInboxId = decodeURIComponent(inboxId);
