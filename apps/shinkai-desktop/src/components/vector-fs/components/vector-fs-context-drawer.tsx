@@ -258,11 +258,11 @@ export const KnowledgeSearchDrawer = ({
           {isSearchEntered && isSuccess && (
             <div>
               <div className="flex items-center justify-between gap-4 p-2">
-                <h2 className="text-gray-80 font-medium">
+                <h2 className="text-gray-80 text-sm font-medium">
                   Found {data?.length} results
                 </h2>
                 {selectedKeys && Object.keys(selectedKeys).length > 0 && (
-                  <span className="text-brand font-medium">
+                  <span className="text-brand text-sm font-medium">
                     Selected {Object.keys(selectedKeys).length} files
                   </span>
                 )}

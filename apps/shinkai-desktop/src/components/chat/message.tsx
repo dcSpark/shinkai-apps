@@ -62,7 +62,7 @@ const Message = ({ message }: { message: ChatConversationMessage }) => {
       </Avatar>
       <div
         className={cn(
-          'group relative mt-1 flex flex-col overflow-hidden rounded-lg bg-transparent px-2.5 py-3 text-sm text-white',
+          'group relative mt-1 flex flex-col overflow-hidden rounded-lg bg-transparent px-2.5 py-3 !text-sm text-white',
           message.isLocal
             ? 'rounded-tr-none bg-gray-300'
             : 'rounded-bl-none border-none bg-gray-200',
