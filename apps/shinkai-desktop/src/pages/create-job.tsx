@@ -52,7 +52,8 @@ import { SubpageLayout } from './layout/simple-layout';
 
 function transformDataToTreeNodes(
   data: VRFolder,
-  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   parentPath: string = '/',
 ): TreeNode[] {
   const result: TreeNode[] = [];
