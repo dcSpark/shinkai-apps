@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+// import { PlusCircledIcon } from '@radix-ui/react-icons';
 import { SmartInbox } from '@shinkai_network/shinkai-message-ts/models/ShinkaiMessage';
 import {
   getMessageContent,
@@ -7,7 +8,6 @@ import {
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { useArchiveJob } from '@shinkai_network/shinkai-node-state/lib/mutations/archiveJob/useArchiveJob';
 import { useUpdateInboxName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateInboxName/useUpdateInboxName';
-import { GetInboxesOutput } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/types';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
 import {
   ActiveIcon,
@@ -33,7 +33,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { Query } from '@tanstack/react-query';
 import { Edit3 } from 'lucide-react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -317,7 +316,7 @@ const ChatLayout = () => {
     },
     {
       refetchIntervalInBackground: true,
-      refetchInterval: (query: Query<GetInboxesOutput>) => {
+      refetchInterval: (query) => {
         const allInboxesAreCompleted = query.state.data?.every((inbox) => {
           return (
             inbox.last_message &&
@@ -346,7 +345,13 @@ const ChatLayout = () => {
       {inboxes.length > 0 ? (
         <>
           <div className="flex max-w-[280px] flex-[280px] shrink-0 flex-col px-2 py-4">
-            <h2 className="mb-4 px-2">Conversations</h2>
+            <div className="mb-4 flex items-center justify-between gap-2 px-2">
+              <h2>Conversations</h2>
+              {/*<Button size="icon" variant="ghost">*/}
+              {/*  <PlusIcon className="h-4 w-4" />*/}
+              {/*  <span className="sr-only">Create AI Chat</span>*/}
+              {/*</Button>*/}
+            </div>
             <ScrollArea>
               <Tabs defaultValue="actives">
                 <TabsList className="grid w-full grid-cols-2 bg-transparent">

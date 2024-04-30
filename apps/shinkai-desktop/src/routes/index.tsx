@@ -1,6 +1,15 @@
-import React, { useEffect, useRef } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import 'primereact/resources/themes/lara-light-blue/theme.css';
+import 'primereact/resources/primereact.min.css';
 
+import React, { useEffect, useRef } from 'react';
+import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
+
+import PublicSharedFolderSubscription from '../components/subscriptions/public-shared-folders';
+import MySubscriptions from '../components/subscriptions/subscriptions';
+import { VectorFolderSelectionProvider } from '../components/vector-fs/components/folder-selection-list';
+import { VectorFsProvider } from '../components/vector-fs/context/vector-fs-context';
+import VectorFs from '../components/vector-fs/vector-fs';
+import SearchNodeFiles from '../components/vector-search/search-node-files';
 import ChatConversation from '../pages/chat/chat-conversation';
 import EmptyMessage from '../pages/chat/empty-message';
 import ChatLayout from '../pages/chat/layout';
@@ -23,7 +32,11 @@ import {
   useShinkaiNodeSetOptionsMutation,
   useShinkaiNodeSpawnMutation,
 } from '../windows/shinkai-node-manager/shinkai-node-process-client';
-import { errorStartingShinkaiNodeToast, startingShinkaiNodeToast, successStartingShinkaiNodeToast } from '../windows/toasts-utils';
+import {
+  errorStartingShinkaiNodeToast,
+  startingShinkaiNodeToast,
+  successStartingShinkaiNodeToast,
+} from '../windows/toasts-utils';
 import {
   ADD_AGENT_PATH,
   CREATE_CHAT_PATH,
@@ -87,7 +100,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   ]);
 
   if (!auth) {
-    console.log('navigating to welcome');
     return <Navigate replace to={'/welcome'} />;
   }
 
@@ -116,6 +128,41 @@ const AppRoutes = () => {
         >
           <Route element={<EmptyMessage />} index />
           <Route element={<ChatConversation />} path=":inboxId" />
+        </Route>
+
+        <Route
+          element={
+            <ProtectedRoute>
+              <VectorFsProvider>
+                <Outlet />
+              </VectorFsProvider>
+            </ProtectedRoute>
+          }
+        >
+          <Route element={<VectorFs />} path="vector-fs" />
+          <Route
+            element={
+              <VectorFolderSelectionProvider>
+                <SearchNodeFiles />
+              </VectorFolderSelectionProvider>
+            }
+            path="vector-search"
+          />
+        </Route>
+        <Route
+          element={
+            <ProtectedRoute>
+              <VectorFsProvider>
+                <Outlet />
+              </VectorFsProvider>
+            </ProtectedRoute>
+          }
+        >
+          <Route element={<MySubscriptions />} path="my-subscriptions" />
+          <Route
+            element={<PublicSharedFolderSubscription />}
+            path="public-subscriptions"
+          />
         </Route>
         <Route
           element={

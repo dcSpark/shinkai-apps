@@ -3,7 +3,15 @@ import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import {
+  VRFolder,
+  VRItem,
+} from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
+import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
+import {
+  Badge,
   Button,
+  FilesIcon,
+  FileUploader,
   Form,
   FormControl,
   FormField,
@@ -17,19 +25,62 @@ import {
   SelectTrigger,
   SelectValue,
   Textarea,
+  Tooltip,
+  TooltipContent,
+  TooltipPortal,
+  TooltipProvider,
+  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { ImagePlusIcon, PlusIcon, X } from 'lucide-react';
-import { useEffect } from 'react';
-import { Accept, useDropzone } from 'react-dropzone';
+import { PlusIcon, SearchCode } from 'lucide-react';
+import { TreeCheckboxSelectionKeys } from 'primereact/tree';
+import { TreeNode } from 'primereact/treenode';
+import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
+import {
+  KnowledgeSearchDrawer,
+  VectorFsScopeDrawer,
+} from '../components/vector-fs/components/vector-fs-context-drawer';
+import { allowedFileExtensions } from '../lib/constants';
 import { ADD_AGENT_PATH } from '../routes/name';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
-import SimpleLayout from './layout/simple-layout';
+import { SubpageLayout } from './layout/simple-layout';
+
+function transformDataToTreeNodes(
+  data: VRFolder,
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
+  parentPath: string = '/',
+): TreeNode[] {
+  const result: TreeNode[] = [];
+
+  for (const folder of data?.child_folders ?? []) {
+    const folderNode: TreeNode = {
+      key: folder.path,
+      label: folder.name,
+      data: folder,
+      icon: 'icon-folder',
+      children: transformDataToTreeNodes(folder, folder.path),
+    };
+    result.push(folderNode);
+  }
+
+  for (const item of data.child_items ?? []) {
+    const itemNode: TreeNode = {
+      key: item.path,
+      label: item.name,
+      data: item,
+      icon: 'icon-file',
+    };
+    result.push(itemNode);
+  }
+
+  return result;
+}
 
 const createJobSchema = z.object({
   model: z.string(),
@@ -62,111 +113,6 @@ export const FileList = ({
   );
 };
 
-const FileInput = ({
-  value,
-  onChange,
-  maxFiles,
-  accept,
-}: {
-  value: File[];
-  onChange: (files: File[]) => void;
-  maxFiles?: number;
-  accept?: Accept;
-}) => {
-  const { getRootProps: getRootFileProps, getInputProps: getInputFileProps } =
-    useDropzone({
-      multiple: true,
-      maxFiles: maxFiles ?? 5,
-      accept,
-      onDrop: (acceptedFiles) => {
-        onChange(acceptedFiles);
-      },
-    });
-
-  return (
-    <>
-      <div className="flex gap-5">
-        <div
-          {...getRootFileProps({
-            className:
-              'dropzone group relative mt-3 flex h-[6.375rem] w-[9.5rem] cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-dashed border-gray-100 transition-colors hover:border-white',
-          })}
-        >
-          <div className="flex flex-col items-center gap-2 p-4 text-xs">
-            <ImagePlusIcon className="stroke-gray-100 transition-colors group-hover:stroke-white" />
-            <span className="text-center font-semibold text-gray-100">
-              Drag & drop your documents here
-            </span>
-          </div>
-          <input {...getInputFileProps({})} />
-        </div>
-        <span className="text-gray-80 pt-4 text-xs font-bold">
-          Supported formats
-          <p className="mt-2">
-            Plain Text
-            <span className="block font-normal">
-              {' '}
-              {[
-                'eml',
-                'html',
-                'json',
-                'md',
-                'msg',
-                'rst',
-                'rtf',
-                'txt',
-                'xml',
-              ].join(' • ')}
-            </span>
-          </p>
-          <p className="text-gray-80 mt-1 font-bold">
-            Documents
-            <span className="block font-normal">
-              {[
-                'csv',
-                'doc',
-                'epub',
-                'odt',
-                'pdf',
-                'ppt',
-                'pptx',
-                'tsv',
-                'xlsx',
-              ].join(' • ')}
-            </span>
-          </p>
-        </span>
-      </div>
-      {!!value?.length && (
-        <div className="flex flex-col gap-2 pt-8">
-          {value?.map((file, idx) => (
-            <div
-              className="relative flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-3"
-              key={idx}
-            >
-              <PaperClipIcon className="text-gray-100" />
-              <span className="text-gray-80 flex-1 truncate text-sm">
-                {file.name}
-              </span>
-              <button
-                className="h-6 w-6 cursor-pointer rounded-full bg-gray-400 p-1 transition-colors hover:bg-gray-300"
-                onClick={() => {
-                  const newFiles = [...value];
-                  newFiles.splice(newFiles.indexOf(file), 1);
-                  onChange(newFiles);
-                }}
-                type={'button'}
-              >
-                <X className="h-full w-full text-gray-100" />
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-    </>
-  );
-};
-
 export function isImageOrPdf(file: File): boolean {
   if (!file) return false;
   return (
@@ -177,6 +123,47 @@ const CreateJobPage = () => {
   const auth = useAuth((state) => state.auth);
   const defaulAgentId = useSettings((state) => state.defaultAgentId);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const locationState = location.state as {
+    files: File[];
+    agentName: string;
+    selectedVRFiles: VRItem[];
+    selectedVRFolders: VRFolder[];
+  };
+
+  const [isVectorFSOpen, setIsVectorFSOpen] = React.useState(false);
+  const [isKnowledgeSearchOpen, setIsKnowledgeSearchOpen] =
+    React.useState(false);
+
+  const [nodes, setNodes] = useState<TreeNode[]>([]);
+  const [selectedKeys, setSelectedKeys] =
+    useState<TreeCheckboxSelectionKeys | null>(null);
+
+  const selectedFileKeysRef = useRef<Map<string, VRItem>>(new Map());
+  const selectedFolderKeysRef = useRef<Map<string, VRFolder>>(new Map());
+
+  const {
+    // isPending: isVRFilesPending,
+    data: VRFiles,
+    isSuccess: isVRFilesSuccess,
+  } = useGetVRPathSimplified({
+    nodeAddress: auth?.node_address ?? '',
+    profile: auth?.profile ?? '',
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    path: '/',
+    my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+    my_device_identity_sk: auth?.profile_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+  });
+
+  useEffect(() => {
+    if (isVRFilesSuccess) {
+      setNodes(transformDataToTreeNodes(VRFiles));
+    }
+  }, [VRFiles, isVRFilesSuccess]);
 
   const createJobForm = useForm<z.infer<typeof createJobSchema>>({
     resolver: zodResolver(createJobSchema),
@@ -206,8 +193,51 @@ const CreateJobPage = () => {
     },
   });
 
+  useEffect(() => {
+    if (
+      locationState?.selectedVRFiles?.length > 0 ||
+      locationState?.selectedVRFolders?.length > 0
+    ) {
+      const selectedVRFilesPathMap = locationState?.selectedVRFiles?.reduce(
+        (acc, file) => {
+          selectedFileKeysRef.current.set(file.path, file);
+          acc[file.path] = {
+            checked: true,
+          };
+          return acc;
+        },
+        {} as Record<string, { checked: boolean }>,
+      );
+
+      const selectedVRFoldersPathMap = locationState?.selectedVRFolders?.reduce(
+        (acc, folder) => {
+          selectedFolderKeysRef.current.set(folder.path, folder);
+          acc[folder.path] = {
+            checked: true,
+          };
+          return acc;
+        },
+        {} as Record<string, { checked: boolean }>,
+      );
+
+      setSelectedKeys({
+        ...selectedVRFilesPathMap,
+        ...selectedVRFoldersPathMap,
+      });
+    }
+  }, [locationState?.selectedVRFiles, locationState?.selectedVRFolders]);
+
   const onSubmit = async (data: z.infer<typeof createJobSchema>) => {
     if (!auth) return;
+    const selectedVRFiles =
+      selectedFileKeysRef.current.size > 0
+        ? Array.from(selectedFileKeysRef.current.values())
+        : [];
+    const selectedVRFolders =
+      selectedFolderKeysRef.current.size > 0
+        ? Array.from(selectedFolderKeysRef.current.values())
+        : [];
+
     await createJob({
       nodeAddress: auth?.node_address ?? '',
       shinkaiIdentity: auth.shinkai_identity,
@@ -217,6 +247,8 @@ const CreateJobPage = () => {
       files_inbox: '',
       files: data.files,
       is_hidden: false,
+      selectedVRFiles,
+      selectedVRFolders,
       my_device_encryption_sk: auth.my_device_encryption_sk,
       my_device_identity_sk: auth.my_device_identity_sk,
       node_encryption_pk: auth.node_encryption_pk,
@@ -240,7 +272,7 @@ const CreateJobPage = () => {
   // }, []);
 
   return (
-    <SimpleLayout title="Create AI Chat">
+    <SubpageLayout title="Create AI Chat">
       <Form {...createJobForm}>
         <form
           className="space-y-8"
@@ -309,21 +341,83 @@ const CreateJobPage = () => {
                 </FormItem>
               )}
             />
-            <FormField
-              control={createJobForm.control}
-              name="files"
-              render={({ field }) => (
-                <FormItem className="mt-3">
-                  <FormLabel className="sr-only">
-                    Upload a file (optional)
-                  </FormLabel>
-                  <FormControl>
-                    <FileInput onChange={field.onChange} value={field.value} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="my-3 rounded-md bg-gray-400 px-3 py-4">
+              <div className="mb-5 flex items-start justify-between gap-4">
+                <div className="space-y-1">
+                  <h2 className="text-sm font-medium text-gray-100">
+                    Set Chat Context
+                  </h2>
+                  <p className="text-gray-80 text-xs">
+                    Add files or folders for your AI to use as context during
+                    your conversation.
+                  </p>
+                </div>
+                <TooltipProvider delayDuration={0}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        className="flex h-10 w-10 items-center justify-center gap-2 rounded-lg p-2.5 text-left hover:bg-gray-500"
+                        onClick={() => setIsKnowledgeSearchOpen(true)}
+                        size="icon"
+                        type="button"
+                        variant="ghost"
+                      >
+                        <SearchCode className="h-5 w-5" />
+                        <p className="sr-only text-xs text-white">
+                          AI Files Content Search
+                        </p>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipPortal>
+                      <TooltipContent sideOffset={0}>
+                        Search AI Files Content
+                      </TooltipContent>
+                    </TooltipPortal>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Button
+                  className="hover:bg-gray-350 flex h-[40px] items-center justify-between gap-2 rounded-lg p-2.5 text-left"
+                  onClick={() => setIsVectorFSOpen(true)}
+                  size="auto"
+                  type="button"
+                  variant="outline"
+                >
+                  <div className="flex items-center gap-2">
+                    <FilesIcon className="h-4 w-4" />
+                    <p className="text-sm text-white">Local AI Files</p>
+                  </div>
+                  {Object.keys(selectedKeys ?? {}).length > 0 && (
+                    <Badge className="bg-brand text-white">
+                      {Object.keys(selectedKeys ?? {}).length}
+                    </Badge>
+                  )}
+                </Button>
+                <FormField
+                  control={createJobForm.control}
+                  name="files"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="sr-only">Upload a file</FormLabel>
+                      <FormControl>
+                        <FileUploader
+                          accept={allowedFileExtensions.join(',')}
+                          allowMultiple
+                          descriptionText={allowedFileExtensions?.join(' | ')}
+                          onChange={(acceptedFiles) => {
+                            field.onChange(acceptedFiles);
+                          }}
+                          shouldDisableScrolling
+                          value={field.value}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
           </div>
           <Button
             className="w-full"
@@ -335,7 +429,23 @@ const CreateJobPage = () => {
           </Button>
         </form>
       </Form>
-    </SimpleLayout>
+      <VectorFsScopeDrawer
+        isVectorFSOpen={isVectorFSOpen}
+        nodes={nodes}
+        onSelectedKeysChange={setSelectedKeys}
+        onVectorFSOpenChanges={setIsVectorFSOpen}
+        selectedFileKeysRef={selectedFileKeysRef}
+        selectedFolderKeysRef={selectedFolderKeysRef}
+        selectedKeys={selectedKeys}
+      />
+      <KnowledgeSearchDrawer
+        isKnowledgeSearchOpen={isKnowledgeSearchOpen}
+        onSelectedKeysChange={setSelectedKeys}
+        selectedFileKeysRef={selectedFileKeysRef}
+        selectedKeys={selectedKeys}
+        setIsKnowledgeSearchOpen={setIsKnowledgeSearchOpen}
+      />
+    </SubpageLayout>
   );
 };
 export default CreateJobPage;

@@ -29,7 +29,7 @@ import { z } from 'zod';
 
 import { CREATE_JOB_PATH } from '../routes/name';
 import { useAuth } from '../store/auth';
-import SimpleLayout from './layout/simple-layout';
+import { SubpageLayout } from './layout/simple-layout';
 
 const addAgentSchema = z
   .object({
@@ -202,7 +202,7 @@ const CreateAgentPage = () => {
   };
 
   return (
-    <SimpleLayout title="Add Agent AI">
+    <SubpageLayout title="Add Agent AI">
       <Form {...addAgentForm}>
         <form
           className="space-y-10"
@@ -346,7 +346,7 @@ const CreateAgentPage = () => {
           </Button>
         </form>
       </Form>
-    </SimpleLayout>
+    </SubpageLayout>
   );
 };
 export default CreateAgentPage;

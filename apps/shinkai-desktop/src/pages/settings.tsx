@@ -26,7 +26,7 @@ import { z } from 'zod';
 import { GENERATE_CODE_PATH } from '../routes/name';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
-import SimpleLayout from './layout/simple-layout';
+import { SimpleLayout } from './layout/simple-layout';
 
 const formSchema = z.object({
   defaultAgentId: z.string(),
@@ -92,7 +92,7 @@ const SettingsPage = () => {
   }, [currentDefaultAgentId]);
 
   return (
-    <SimpleLayout title="Settings">
+    <SimpleLayout classname="max-w-lg" title="Settings">
       <p className="mb-3">Manage your account settings preferences.</p>
 
       <div className="flex flex-col space-y-8 pr-2.5">

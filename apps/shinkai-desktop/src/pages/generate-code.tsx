@@ -24,7 +24,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { useAuth } from '../store/auth';
-import SimpleLayout from './layout/simple-layout';
+import { SubpageLayout } from './layout/simple-layout';
 
 const saveImage = async (dataUrl: string) => {
   const suggestedFilename = 'registration-code-shinkai.png';
@@ -137,7 +137,7 @@ const GenerateCodePage = () => {
     form.setValue('profile', auth?.profile ?? '');
   }, [auth, form]);
   return (
-    <SimpleLayout title="Generate Registration Code">
+    <SubpageLayout title="Generate Registration Code">
       <Form {...form}>
         <form
           className="flex flex-col justify-between space-y-5"
@@ -227,7 +227,7 @@ const GenerateCodePage = () => {
         title="Here's your QR Code"
         value={JSON.stringify(generatedSetupData)}
       />
-    </SimpleLayout>
+    </SubpageLayout>
   );
 };
 

@@ -16,7 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
 import { useAuth } from '../store/auth';
-import SimpleLayout from './layout/simple-layout';
+import { SubpageLayout } from './layout/simple-layout';
 
 const createChatSchema = z.object({
   receiver: z.string(),
@@ -57,7 +57,7 @@ const CreateChatPage = () => {
     });
   };
   return (
-    <SimpleLayout title="Create DM Chat">
+    <SubpageLayout title="Create DM Chat">
       <Form {...createChatForm}>
         <form
           className="space-y-10"
@@ -108,7 +108,7 @@ const CreateChatPage = () => {
           </Button>
         </form>
       </Form>
-    </SimpleLayout>
+    </SubpageLayout>
   );
 };
 export default CreateChatPage;
