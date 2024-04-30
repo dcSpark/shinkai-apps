@@ -3,6 +3,12 @@ import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import {
+  VRFolder,
+  VRItem,
+} from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
+import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
+import {
+  Badge,
   Button,
   FilesIcon,
   FileUploader,
@@ -27,16 +33,53 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { PlusIcon, SearchCode } from 'lucide-react';
-import { useEffect } from 'react';
+import { TreeCheckboxSelectionKeys } from 'primereact/tree';
+import { TreeNode } from 'primereact/treenode';
+import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
+import {
+  KnowledgeSearchDrawer,
+  VectorFsScopeDrawer,
+} from '../components/vector-fs/components/vector-fs-context-drawer';
 import { allowedFileExtensions } from '../lib/constants';
 import { ADD_AGENT_PATH } from '../routes/name';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { SubpageLayout } from './layout/simple-layout';
+
+function transformDataToTreeNodes(
+  data: VRFolder,
+  // @ts-ignore
+  parentPath: string = '/',
+): TreeNode[] {
+  const result: TreeNode[] = [];
+
+  for (const folder of data?.child_folders ?? []) {
+    const folderNode: TreeNode = {
+      key: folder.path,
+      label: folder.name,
+      data: folder,
+      icon: 'icon-folder',
+      children: transformDataToTreeNodes(folder, folder.path),
+    };
+    result.push(folderNode);
+  }
+
+  for (const item of data.child_items ?? []) {
+    const itemNode: TreeNode = {
+      key: item.path,
+      label: item.name,
+      data: item,
+      icon: 'icon-file',
+    };
+    result.push(itemNode);
+  }
+
+  return result;
+}
 
 const createJobSchema = z.object({
   model: z.string(),
@@ -79,6 +122,39 @@ const CreateJobPage = () => {
   const auth = useAuth((state) => state.auth);
   const defaulAgentId = useSettings((state) => state.defaultAgentId);
   const navigate = useNavigate();
+
+  const [isVectorFSOpen, setIsVectorFSOpen] = React.useState(false);
+  const [isKnowledgeSearchOpen, setIsKnowledgeSearchOpen] =
+    React.useState(false);
+
+  const [nodes, setNodes] = useState<TreeNode[]>([]);
+  const [selectedKeys, setSelectedKeys] =
+    useState<TreeCheckboxSelectionKeys | null>(null);
+
+  const selectedFileKeysRef = useRef<Map<string, VRItem>>(new Map());
+  const selectedFolderKeysRef = useRef<Map<string, VRFolder>>(new Map());
+
+  const {
+    // isPending: isVRFilesPending,
+    data: VRFiles,
+    isSuccess: isVRFilesSuccess,
+  } = useGetVRPathSimplified({
+    nodeAddress: auth?.node_address ?? '',
+    profile: auth?.profile ?? '',
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    path: '/',
+    my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+    my_device_identity_sk: auth?.profile_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+  });
+
+  useEffect(() => {
+    if (isVRFilesSuccess) {
+      setNodes(transformDataToTreeNodes(VRFiles));
+    }
+  }, [VRFiles, isVRFilesSuccess]);
 
   const createJobForm = useForm<z.infer<typeof createJobSchema>>({
     resolver: zodResolver(createJobSchema),
@@ -242,7 +318,7 @@ const CreateJobPage = () => {
                     <TooltipTrigger asChild>
                       <Button
                         className="flex h-10 w-10 items-center justify-center gap-2 rounded-lg p-2.5 text-left hover:bg-gray-500"
-                        // onClick={() => setIsKnowledgeSearchOpen(true)}
+                        onClick={() => setIsKnowledgeSearchOpen(true)}
                         size="icon"
                         type="button"
                         variant="ghost"
@@ -264,7 +340,7 @@ const CreateJobPage = () => {
               <div className="flex flex-col gap-1.5">
                 <Button
                   className="flex h-[40px] items-center justify-between gap-2 rounded-lg p-2.5 text-left hover:bg-gray-500"
-                  // onClick={() => setIsVectorFSOpen(true)}
+                  onClick={() => setIsVectorFSOpen(true)}
                   size="auto"
                   type="button"
                   variant="outline"
@@ -273,11 +349,11 @@ const CreateJobPage = () => {
                     <FilesIcon className="h-4 w-4" />
                     <p className="text-sm text-white">Local Vector Files</p>
                   </div>
-                  {/*{Object.keys(selectedKeys ?? {}).length > 0 && (*/}
-                  {/*  <Badge className="bg-brand text-white">*/}
-                  {/*    {Object.keys(selectedKeys ?? {}).length}*/}
-                  {/*  </Badge>*/}
-                  {/*)}*/}
+                  {Object.keys(selectedKeys ?? {}).length > 0 && (
+                    <Badge className="bg-brand text-white">
+                      {Object.keys(selectedKeys ?? {}).length}
+                    </Badge>
+                  )}
                 </Button>
                 <FormField
                   control={createJobForm.control}
@@ -314,6 +390,22 @@ const CreateJobPage = () => {
           </Button>
         </form>
       </Form>
+      <VectorFsScopeDrawer
+        isVectorFSOpen={isVectorFSOpen}
+        nodes={nodes}
+        onSelectedKeysChange={setSelectedKeys}
+        onVectorFSOpenChanges={setIsVectorFSOpen}
+        selectedFileKeysRef={selectedFileKeysRef}
+        selectedFolderKeysRef={selectedFolderKeysRef}
+        selectedKeys={selectedKeys}
+      />
+      <KnowledgeSearchDrawer
+        isKnowledgeSearchOpen={isKnowledgeSearchOpen}
+        onSelectedKeysChange={setSelectedKeys}
+        selectedFileKeysRef={selectedFileKeysRef}
+        selectedKeys={selectedKeys}
+        setIsKnowledgeSearchOpen={setIsKnowledgeSearchOpen}
+      />
     </SubpageLayout>
   );
 };

@@ -90,7 +90,7 @@ const SheetFooter = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn('mt-3 flex flex-col', className)} {...props} />
+  <div className={cn('mt-3 flex flex-col gap-2', className)} {...props} />
 );
 SheetFooter.displayName = 'SheetFooter';
 
