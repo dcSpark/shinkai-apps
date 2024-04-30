@@ -36,9 +36,9 @@ impl ShinkaiNodeProcessHandler {
             unstructured_server_url: Some("https://public.shinkai.com/x-un".to_string()),
             embeddings_server_url: Some("https://public.shinkai.com/x-em".to_string()),
             first_device_needs_registration_code: Some("false".to_string()),
-            initial_agent_names: Some("OLLAMA_LLAMA_3".to_string()),
             initial_agent_urls: Some("http://127.0.0.1:11435".to_string()),
-            initial_agent_models: Some("ollama:llama3:8b-instruct-q4_K_M".to_string()),
+            initial_agent_names: Some(if cfg!(windows) { "OLLAMA__DEFAULT_MISTRAL" } else { "OLLAMA_EFAULT_LLAMA_3" }.to_string()),
+            initial_agent_models: Some(if cfg!(windows) { "mistral:7b-instruct-v0.2-q4_0" } else { "ollama:llama3:8b-instruct-q4_K_M" }.to_string()),
             initial_agent_api_keys: Some("".to_string()),
             starting_num_qr_devices: Some("0".to_string()),
         }
