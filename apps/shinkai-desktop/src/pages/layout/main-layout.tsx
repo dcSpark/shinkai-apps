@@ -66,7 +66,7 @@ const NavLink = ({
   return (
     <Link
       className={cn(
-        'flex flex-col items-center justify-center rounded-lg px-4 py-3 text-white',
+        'flex flex-col items-center justify-center rounded-lg px-4 py-3 text-white transition-colors',
         isMatch
           ? 'bg-gray-500 text-white shadow-xl'
           : 'opacity-60 hover:bg-gray-500 hover:opacity-100',
@@ -162,7 +162,7 @@ export function MainNav() {
   ].filter(Boolean) as NavigationLink[];
 
   return (
-    <aside className="fixed inset-0 z-30 flex w-[80px] shrink-0 flex-col gap-2 overflow-y-auto border-r border-gray-400/30  bg-gradient-to-r from-gray-300 to-gray-400/70 px-2 py-6 shadow-xl">
+    <aside className="fixed inset-0 z-30 flex w-[80px] shrink-0 flex-col gap-2 overflow-y-auto border-r border-gray-400/30  bg-gradient-to-b from-gray-300 to-gray-400/70 px-2 py-6 shadow-xl">
       {navigationLinks.map((item) => {
         return (
           <React.Fragment key={item.title}>
