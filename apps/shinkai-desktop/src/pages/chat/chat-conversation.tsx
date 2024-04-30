@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { DialogClose } from '@radix-ui/react-dialog';
 import { PaperPlaneIcon } from '@radix-ui/react-icons';
 import {
   extractErrorPropertyOrContent,
@@ -18,8 +19,17 @@ import {
   Alert,
   AlertDescription,
   AlertTitle,
+  Badge,
   Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DirectoryTypeIcon,
   DotsLoader,
+  FileTypeIcon,
   Form,
   FormControl,
   FormField,
@@ -37,6 +47,7 @@ import {
   ImagePlusIcon,
   Loader2,
   X,
+  XIcon,
 } from 'lucide-react';
 import {
   Fragment,
@@ -55,6 +66,7 @@ import { Markdown } from 'tiptap-markdown';
 import { z } from 'zod';
 
 import Message from '../../components/chat/message';
+import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { cn } from '../../lib/utils';
 import { useAuth } from '../../store/auth';
 import { isImageOrPdf } from '../create-job';
@@ -282,6 +294,7 @@ const ChatConversation = () => {
 
   return (
     <div className="flex max-h-screen flex-1 flex-col overflow-hidden pt-2">
+      <DisplayConversationContext />
       <ScrollArea className="h-full px-5" ref={chatContainerRef}>
         {isChatConversationSuccess && (
           <div className="py-2 text-center text-xs">
@@ -521,4 +534,105 @@ const MessageEditor = ({
   }, [value, editor]);
 
   return <EditorContent editor={editor} />;
+};
+
+export const DisplayConversationContext = () => {
+  const currentInbox = useGetCurrentInbox();
+
+  const hasFolders = !!currentInbox?.job_scope?.vector_fs_folders?.length;
+  const hasFiles = !!currentInbox?.job_scope?.vector_fs_items?.length;
+
+  const hasConversationContext = hasFolders || hasFiles;
+
+  return (
+    <div className="flex h-[48px] items-center justify-between border-b border-gray-400 px-4 py-2">
+      <span className="line-clamp-1 text-base font-medium capitalize text-white">
+        {currentInbox?.custom_name || currentInbox?.inbox_id}
+      </span>
+      {hasConversationContext && (
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button
+              className="flex h-auto items-center gap-4 bg-transparent px-2.5 py-1.5"
+              variant="ghost"
+            >
+              {hasFolders && (
+                <span className="text-gray-80 flex items-center gap-1 text-xs font-medium">
+                  <DirectoryTypeIcon className="ml-1 h-4 w-4" />
+                  {currentInbox?.job_scope.vector_fs_folders.length}{' '}
+                  {currentInbox?.job_scope.vector_fs_folders.length === 1
+                    ? 'folder'
+                    : 'folders'}
+                </span>
+              )}
+              {hasFiles && (
+                <span className="text-gray-80 flex items-center gap-1 text-xs font-medium">
+                  <FileTypeIcon className="ml-1 h-4 w-4" />
+                  {currentInbox?.job_scope.vector_fs_items.length}{' '}
+                  {currentInbox?.job_scope.vector_fs_items.length === 1
+                    ? 'file'
+                    : 'files'}
+                </span>
+              )}
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="min-h-[300px]">
+            <DialogClose className="absolute right-4 top-5">
+              <XIcon className="text-gray-80" />
+            </DialogClose>
+            <DialogHeader>
+              <DialogTitle>Conversation Context</DialogTitle>
+              <DialogDescription className="mb-4 mt-2">
+                List of folders and files used as context for this conversation
+              </DialogDescription>
+              <div className="space-y-3 pt-4">
+                {hasFolders && (
+                  <div className="space-y-1">
+                    <span className="font-medium text-white">Folders</span>
+                    <ul>
+                      {currentInbox?.job_scope?.vector_fs_folders?.map(
+                        (folder) => (
+                          <li
+                            className="flex items-center gap-2 py-1.5"
+                            key={folder.path}
+                          >
+                            <DirectoryTypeIcon />
+                            <div className="text-gray-80 text-sm">
+                              {folder.name}
+                            </div>
+                          </li>
+                        ),
+                      )}
+                    </ul>
+                  </div>
+                )}
+                {hasFiles && (
+                  <div className="space-y-1">
+                    <span className="font-medium text-white">Files</span>
+                    <ul>
+                      {currentInbox?.job_scope?.vector_fs_items?.map((file) => (
+                        <li
+                          className="flex items-center gap-2 py-1.5"
+                          key={file.path}
+                        >
+                          <FileTypeIcon />
+                          <span className="text-gray-80 text-sm">
+                            {file.name}
+                          </span>
+                          <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
+                            {file?.source?.Standard?.FileRef?.file_type
+                              ?.Document ?? '-'}
+                          </Badge>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
+      )}
+    </div>
+  );
 };
