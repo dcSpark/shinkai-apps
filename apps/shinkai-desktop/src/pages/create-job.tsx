@@ -187,6 +187,15 @@ const CreateJobPage = () => {
 
   const onSubmit = async (data: z.infer<typeof createJobSchema>) => {
     if (!auth) return;
+    const selectedVRFiles =
+      selectedFileKeysRef.current.size > 0
+        ? Array.from(selectedFileKeysRef.current.values())
+        : [];
+    const selectedVRFolders =
+      selectedFolderKeysRef.current.size > 0
+        ? Array.from(selectedFolderKeysRef.current.values())
+        : [];
+
     await createJob({
       nodeAddress: auth?.node_address ?? '',
       shinkaiIdentity: auth.shinkai_identity,
@@ -196,6 +205,8 @@ const CreateJobPage = () => {
       files_inbox: '',
       files: data.files,
       is_hidden: false,
+      selectedVRFiles,
+      selectedVRFolders,
       my_device_encryption_sk: auth.my_device_encryption_sk,
       my_device_identity_sk: auth.my_device_identity_sk,
       node_encryption_pk: auth.node_encryption_pk,
@@ -288,21 +299,6 @@ const CreateJobPage = () => {
                 </FormItem>
               )}
             />
-            {/*<FormField*/}
-            {/*  control={createJobForm.control}*/}
-            {/*  name="files"*/}
-            {/*  render={({ field }) => (*/}
-            {/*    <FormItem className="mt-3">*/}
-            {/*      <FormLabel className="sr-only">*/}
-            {/*        Upload a file (optional)*/}
-            {/*      </FormLabel>*/}
-            {/*      <FormControl>*/}
-            {/*        <FileInput onChange={field.onChange} value={field.value} />*/}
-            {/*      </FormControl>*/}
-            {/*      <FormMessage />*/}
-            {/*    </FormItem>*/}
-            {/*  )}*/}
-            {/*/>*/}
             <div className="my-3 rounded-md bg-gray-400 px-3 py-4">
               <div className="mb-5 flex items-start justify-between gap-4">
                 <div className="space-y-1">
