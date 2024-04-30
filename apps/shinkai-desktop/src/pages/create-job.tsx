@@ -336,7 +336,7 @@ const CreateJobPage = () => {
               </div>
               <div className="flex flex-col gap-1.5">
                 <Button
-                  className="flex h-[40px] items-center justify-between gap-2 rounded-lg p-2.5 text-left hover:bg-gray-500"
+                  className="hover:bg-gray-350 flex h-[40px] items-center justify-between gap-2 rounded-lg p-2.5 text-left"
                   onClick={() => setIsVectorFSOpen(true)}
                   size="auto"
                   type="button"
@@ -344,7 +344,7 @@ const CreateJobPage = () => {
                 >
                   <div className="flex items-center gap-2">
                     <FilesIcon className="h-4 w-4" />
-                    <p className="text-sm text-white">Local Vector Files</p>
+                    <p className="text-sm text-white">Local AI Files</p>
                   </div>
                   {Object.keys(selectedKeys ?? {}).length > 0 && (
                     <Badge className="bg-brand text-white">

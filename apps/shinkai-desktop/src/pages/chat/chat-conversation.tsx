@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { DialogClose } from '@radix-ui/react-dialog';
 import { PaperPlaneIcon } from '@radix-ui/react-icons';
 import {
   extractErrorPropertyOrContent,
@@ -21,12 +20,6 @@ import {
   AlertTitle,
   Badge,
   Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
   DirectoryTypeIcon,
   DotsLoader,
   FileTypeIcon,
@@ -36,6 +29,12 @@ import {
   FormItem,
   FormLabel,
   ScrollArea,
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
   Skeleton,
 } from '@shinkai_network/shinkai-ui';
 import { Placeholder } from '@tiptap/extension-placeholder';
@@ -47,7 +46,6 @@ import {
   ImagePlusIcon,
   Loader2,
   X,
-  XIcon,
 } from 'lucide-react';
 import {
   Fragment,
@@ -294,7 +292,7 @@ const ChatConversation = () => {
 
   return (
     <div className="flex max-h-screen flex-1 flex-col overflow-hidden pt-2">
-      <DisplayConversationContext />
+      <ConversationHeader />
       <ScrollArea className="h-full px-5" ref={chatContainerRef}>
         {isChatConversationSuccess && (
           <div className="py-2 text-center text-xs">
@@ -536,7 +534,7 @@ const MessageEditor = ({
   return <EditorContent editor={editor} />;
 };
 
-export const DisplayConversationContext = () => {
+export const ConversationHeader = () => {
   const currentInbox = useGetCurrentInbox();
 
   const hasFolders = !!currentInbox?.job_scope?.vector_fs_folders?.length;
@@ -550,8 +548,8 @@ export const DisplayConversationContext = () => {
         {currentInbox?.custom_name || currentInbox?.inbox_id}
       </span>
       {hasConversationContext && (
-        <Dialog>
-          <DialogTrigger asChild>
+        <Sheet>
+          <SheetTrigger asChild>
             <Button
               className="flex h-auto items-center gap-4 bg-transparent px-2.5 py-1.5"
               variant="ghost"
@@ -575,16 +573,13 @@ export const DisplayConversationContext = () => {
                 </span>
               )}
             </Button>
-          </DialogTrigger>
-          <DialogContent className="min-h-[300px]">
-            <DialogClose className="absolute right-4 top-5">
-              <XIcon className="text-gray-80" />
-            </DialogClose>
-            <DialogHeader>
-              <DialogTitle>Conversation Context</DialogTitle>
-              <DialogDescription className="mb-4 mt-2">
+          </SheetTrigger>
+          <SheetContent className="max-w-md">
+            <SheetHeader>
+              <SheetTitle>Conversation Context</SheetTitle>
+              <SheetDescription className="mb-4 mt-2">
                 List of folders and files used as context for this conversation
-              </DialogDescription>
+              </SheetDescription>
               <div className="space-y-3 pt-4">
                 {hasFolders && (
                   <div className="space-y-1">
@@ -629,9 +624,9 @@ export const DisplayConversationContext = () => {
                   </div>
                 )}
               </div>
-            </DialogHeader>
-          </DialogContent>
-        </Dialog>
+            </SheetHeader>
+          </SheetContent>
+        </Sheet>
       )}
     </div>
   );
