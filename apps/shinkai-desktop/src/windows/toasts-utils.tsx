@@ -89,3 +89,15 @@ export const successShinkaiNodeSetDefaultOptionsToast = () => {
     ...defaultToastOptions,
   });
 };
+
+export const successOllamaModelsSyncToast = () => {
+  return toast.success('Local Ollama models synchronized with your Shinkai Node', {
+    ...defaultToastOptions,
+  });
+};
+
+export const errorOllamaModelsSyncToast = () => {
+  return toast.success('Error synchronizing your local Ollama models with your Shinkai Node', {
+    ...defaultToastOptions,
+  });
+};

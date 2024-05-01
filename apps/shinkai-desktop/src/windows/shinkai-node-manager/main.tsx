@@ -46,10 +46,12 @@ import { useAuth } from '../../store/auth';
 import { useShinkaiNodeManager } from '../../store/shinkai-node-manager';
 import { initSyncStorage } from '../../store/sync-utils';
 import {
+  errorOllamaModelsSyncToast,
   errorRemovingShinkaiNodeStorageToast,
   errorStartingShinkaiNodeToast,
   errorStoppingShinkaiNodeToast,
   startingShinkaiNodeToast,
+  successOllamaModelsSyncToast,
   successRemovingShinkaiNodeStorageToast,
   successShinkaiNodeSetDefaultOptionsToast,
   successStartingShinkaiNodeToast,
@@ -146,7 +148,14 @@ const App = () => {
   const {
     mutateAsync: syncOllamaModels,
     isPending: syncOllamaModelsIsPending,
-  } = useSyncOllamaModels({});
+  } = useSyncOllamaModels({
+    onSuccess: () => {
+      successOllamaModelsSyncToast();
+    },
+    onError: () => {
+      errorOllamaModelsSyncToast();
+    },
+  });
 
   useEffect(() => {
     logsScrollRef.current?.scrollIntoView({
