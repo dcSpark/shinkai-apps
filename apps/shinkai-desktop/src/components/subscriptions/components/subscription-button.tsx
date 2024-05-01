@@ -3,10 +3,10 @@ import { useUnsubscribeToSharedFolder } from '@shinkai_network/shinkai-node-stat
 import { Button } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
-import { useAuth } from '../../../store/auth/auth';
+import { useAuth } from '../../../store/auth';
 
 const MotionButton = motion(Button);
 

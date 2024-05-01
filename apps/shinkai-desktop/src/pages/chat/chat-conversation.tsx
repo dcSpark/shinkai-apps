@@ -18,14 +18,23 @@ import {
   Alert,
   AlertDescription,
   AlertTitle,
+  Badge,
   Button,
+  DirectoryTypeIcon,
   DotsLoader,
+  FileTypeIcon,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   ScrollArea,
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
   Skeleton,
 } from '@shinkai_network/shinkai-ui';
 import { Placeholder } from '@tiptap/extension-placeholder';
@@ -55,6 +64,7 @@ import { Markdown } from 'tiptap-markdown';
 import { z } from 'zod';
 
 import Message from '../../components/chat/message';
+import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { cn } from '../../lib/utils';
 import { useAuth } from '../../store/auth';
 import { isImageOrPdf } from '../create-job';
@@ -281,7 +291,8 @@ const ChatConversation = () => {
   }, [data?.pages]);
 
   return (
-    <div className="flex flex-1 flex-col pt-2">
+    <div className="flex max-h-screen flex-1 flex-col overflow-hidden pt-2">
+      <ConversationHeader />
       <ScrollArea className="h-full px-5" ref={chatContainerRef}>
         {isChatConversationSuccess && (
           <div className="py-2 text-center text-xs">
@@ -521,4 +532,102 @@ const MessageEditor = ({
   }, [value, editor]);
 
   return <EditorContent editor={editor} />;
+};
+
+export const ConversationHeader = () => {
+  const currentInbox = useGetCurrentInbox();
+
+  const hasFolders = !!currentInbox?.job_scope?.vector_fs_folders?.length;
+  const hasFiles = !!currentInbox?.job_scope?.vector_fs_items?.length;
+
+  const hasConversationContext = hasFolders || hasFiles;
+
+  return (
+    <div className="flex h-[48px] items-center justify-between border-b border-gray-400 px-4 py-2">
+      <span className="line-clamp-1 text-base font-medium capitalize text-white">
+        {currentInbox?.custom_name || currentInbox?.inbox_id}
+      </span>
+      {hasConversationContext && (
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button
+              className="flex h-auto items-center gap-4 bg-transparent px-2.5 py-1.5"
+              variant="ghost"
+            >
+              {hasFolders && (
+                <span className="text-gray-80 flex items-center gap-1 text-xs font-medium">
+                  <DirectoryTypeIcon className="ml-1 h-4 w-4" />
+                  {currentInbox?.job_scope.vector_fs_folders.length}{' '}
+                  {currentInbox?.job_scope.vector_fs_folders.length === 1
+                    ? 'folder'
+                    : 'folders'}
+                </span>
+              )}
+              {hasFiles && (
+                <span className="text-gray-80 flex items-center gap-1 text-xs font-medium">
+                  <FileTypeIcon className="ml-1 h-4 w-4" />
+                  {currentInbox?.job_scope.vector_fs_items.length}{' '}
+                  {currentInbox?.job_scope.vector_fs_items.length === 1
+                    ? 'file'
+                    : 'files'}
+                </span>
+              )}
+            </Button>
+          </SheetTrigger>
+          <SheetContent className="max-w-md">
+            <SheetHeader>
+              <SheetTitle>Conversation Context</SheetTitle>
+              <SheetDescription className="mb-4 mt-2">
+                List of folders and files used as context for this conversation
+              </SheetDescription>
+              <div className="space-y-3 pt-4">
+                {hasFolders && (
+                  <div className="space-y-1">
+                    <span className="font-medium text-white">Folders</span>
+                    <ul>
+                      {currentInbox?.job_scope?.vector_fs_folders?.map(
+                        (folder) => (
+                          <li
+                            className="flex items-center gap-2 py-1.5"
+                            key={folder.path}
+                          >
+                            <DirectoryTypeIcon />
+                            <div className="text-gray-80 text-sm">
+                              {folder.name}
+                            </div>
+                          </li>
+                        ),
+                      )}
+                    </ul>
+                  </div>
+                )}
+                {hasFiles && (
+                  <div className="space-y-1">
+                    <span className="font-medium text-white">Files</span>
+                    <ul>
+                      {currentInbox?.job_scope?.vector_fs_items?.map((file) => (
+                        <li
+                          className="flex items-center gap-2 py-1.5"
+                          key={file.path}
+                        >
+                          <FileTypeIcon />
+                          <span className="text-gray-80 text-sm">
+                            {file.name}
+                          </span>
+                          <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
+                            {file?.source?.Standard?.FileRef?.file_type
+                              ?.Document ?? '-'}
+                          </Badge>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </SheetHeader>
+          </SheetContent>
+        </Sheet>
+      )}
+    </div>
+  );
 };

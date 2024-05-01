@@ -52,7 +52,7 @@
 }
 /* react tree view */
 .p-checkbox {
-  @apply w-[18px] h-[18px];
+  @apply w-[18px] h-[18px] shrink-0;
 }
 .p-checkbox .p-checkbox-box {
   @apply w-full h-full rounded-md;

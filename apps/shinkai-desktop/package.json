@@ -41,7 +41,7 @@
     "crypto-js": "^4.1.1",
     "curve25519-js": "^0.0.4",
     "framer-motion": "^10.16.4",
-    "lucide-react": "^0.279.0",
+    "lucide-react": "^0.323.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",
