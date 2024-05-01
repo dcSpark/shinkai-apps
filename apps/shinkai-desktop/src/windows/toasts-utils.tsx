@@ -1,4 +1,4 @@
-import { ExternalToast, toast } from 'sonner';
+import { toast } from 'sonner';
 
 import { cn } from '../lib/utils';
 import { openShinkaiNodeManagerWindow } from './utils';
@@ -9,7 +9,7 @@ const ShinkaiNodeLogsLabel = ({
 }: React.HTMLAttributes<HTMLSpanElement>) => {
   return (
     <span
-      className={cn('cursor-pointer text-white', className)}
+      className={cn('text-white cursor-pointer', className)}
       onClick={() => {
         openShinkaiNodeManagerWindow();
       }}
@@ -21,14 +21,10 @@ const ShinkaiNodeLogsLabel = ({
 };
 
 export const SHINKAI_NODE_MANAGER_TOAST_ID = 'shinkai-node-manager-toast-id';
-const defaultToastOptions: ExternalToast = {
-  id: SHINKAI_NODE_MANAGER_TOAST_ID,
-  position: 'bottom-center',
-};
 
 export const startingShinkaiNodeToast = () => {
-  return toast.loading('Starting your local Shinkai Node', {
-    ...defaultToastOptions,
+  return toast.loading('Starting your local Shinkai Node automatically', {
+    id: SHINKAI_NODE_MANAGER_TOAST_ID,
   });
 };
 
@@ -39,14 +35,14 @@ export const errorStartingShinkaiNodeToast = () => {
       more information
     </div>,
     {
-      ...defaultToastOptions,
+      id: SHINKAI_NODE_MANAGER_TOAST_ID,
     },
   );
 };
 
 export const successStartingShinkaiNodeToast = () => {
   return toast.success('Your local Shinkai Node is running', {
-    ...defaultToastOptions,
+    id: SHINKAI_NODE_MANAGER_TOAST_ID,
   });
 };
 
@@ -57,20 +53,20 @@ export const errorStoppingShinkaiNodeToast = () => {
       logs for more information
     </div>,
     {
-      ...defaultToastOptions,
+      id: SHINKAI_NODE_MANAGER_TOAST_ID,
     },
   );
 };
 
 export const successStoppingShinkaiNodeToast = () => {
   return toast.success('Your local Shinkai Node was stopped', {
-    ...defaultToastOptions,
+    id: SHINKAI_NODE_MANAGER_TOAST_ID,
   });
 };
 
 export const successRemovingShinkaiNodeStorageToast = () => {
   return toast.success('Your local Shinkai Node storage was removed', {
-    ...defaultToastOptions,
+    id: SHINKAI_NODE_MANAGER_TOAST_ID,
   });
 };
 
@@ -80,12 +76,12 @@ export const errorRemovingShinkaiNodeStorageToast = () => {
       Error removing your local Shinkai Node storage, see{' '}
       <ShinkaiNodeLogsLabel /> logs for more information
     </div>,
-    { ...defaultToastOptions },
+    { id: SHINKAI_NODE_MANAGER_TOAST_ID },
   );
 };
 
 export const successShinkaiNodeSetDefaultOptionsToast = () => {
   return toast.success('Options restored to default values', {
-    ...defaultToastOptions,
+    id: SHINKAI_NODE_MANAGER_TOAST_ID,
   });
 };

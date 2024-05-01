@@ -40,9 +40,6 @@ export enum MessageSchemaType {
   SubscribeToSharedFolder = 'SubscribeToSharedFolder',
   UnsubscribeToSharedFolder = 'UnsubscribeToSharedFolder',
   MySubscriptions = 'MySubscriptions',
-  // ollama
-  APIScanOllamaModels = 'APIScanOllamaModels',
-  APIAddOllamaModels = 'APIAddOllamaModels'
 }
 export interface LocalScopeVRKaiEntry {
   vrkai: {
