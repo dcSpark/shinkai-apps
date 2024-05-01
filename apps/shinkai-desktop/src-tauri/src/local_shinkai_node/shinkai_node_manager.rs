@@ -60,8 +60,10 @@ impl ShinkaiNodeManager {
     pub async fn spawn(&self) -> Result<(), String> {
         let shinkai_node_guard = self.shinkai_node_process.lock().await;
         let ollama_guard = self.ollama_process.lock().await;
+        let mut default_model = ShinkaiNodeProcessHandler::default_options().initial_agent_models.unwrap();
+        default_model = default_model.replace("ollama:", "");
         shinkai_node_guard.spawn().await?;
-        if let Err(e) = ollama_guard.spawn(Some("llama3:8b-instruct-q4_K_M")).await {
+        if let Err(e) = ollama_guard.spawn(Some(default_model.as_str())).await {
             shinkai_node_guard.kill().await;
             return Err(e);
         }
