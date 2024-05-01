@@ -33,7 +33,7 @@ impl OllamaProcessHandler {
         }
     }
 
-    fn get_ollama_api_base_url(&self) -> String {
+    pub fn get_ollama_api_base_url(&self) -> String {
         let base_url: String = format!("http://{}", self.options.ollama_host);
         base_url
     }
@@ -67,16 +67,12 @@ impl OllamaProcessHandler {
         }
         let ollama_api = OllamaApiClient::new(self.get_ollama_api_base_url());
         if let Some(model) = ensure_model {
-            match ollama_api.pull_stream(model).await {
-                Ok(mut stream) => {
-                    while let Some(stream_value) = stream.next().await {
-                        println!("{:?}", stream_value);
-                    }
-                }
+            match ollama_api.pull(model).await {
                 Err(e) => {
                     self.process_handler.kill().await;
                     return Err(e.to_string());
                 }
+                _ => {}
             }
         }
         Ok(())
