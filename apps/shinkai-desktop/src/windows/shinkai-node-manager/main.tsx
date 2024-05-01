@@ -1,9 +1,7 @@
 import './globals.css';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-useSyncOllamaModels
-} from '@shinkai_network/shinkai-node-state/lib/mutations/syncOllamaModels/useSyncOllamaModels';
+import { useSyncOllamaModels } from '@shinkai_network/shinkai-node-state/lib/mutations/syncOllamaModels/useSyncOllamaModels';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,6 +22,10 @@ import {
   TabsTrigger,
   TextField,
   Toaster,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { QueryClientProvider } from '@tanstack/react-query';
 import {
@@ -69,7 +71,7 @@ import {
 initSyncStorage();
 
 const App = () => {
-  const auth = useAuth(auth => auth.auth);
+  const auth = useAuth((auth) => auth.auth);
   const setLogout = useAuth((auth) => auth.setLogout);
   const { setShinkaiNodeOptions } = useShinkaiNodeManager();
   const logsScrollRef = useRef<HTMLDivElement | null>(null);
@@ -141,8 +143,10 @@ const App = () => {
   const shinkaiNodeOptionsFormWatch = useWatch({
     control: shinkaiNodeOptionsForm.control,
   });
-  const { mutateAsync: syncOllamaModels, isPending: syncOllamaModelsIsPending } =
-    useSyncOllamaModels({});
+  const {
+    mutateAsync: syncOllamaModels,
+    isPending: syncOllamaModelsIsPending,
+  } = useSyncOllamaModels({});
 
   useEffect(() => {
     logsScrollRef.current?.scrollIntoView({
@@ -171,8 +175,8 @@ const App = () => {
       node_encryption_pk: auth?.node_encryption_pk ?? '',
       profile_encryption_sk: auth?.profile_encryption_sk ?? '',
       profile_identity_sk: auth?.profile_identity_sk ?? '',
-     });
-  }
+    });
+  };
   return (
     <div className="h-full w-full overflow-hidden p-8">
       <div className="flex flex-row items-center">
@@ -182,61 +186,97 @@ const App = () => {
           <span className="text-gray-80 text-sm">{`http://localhost:${shinkaiNodeOptions?.port}`}</span>
         </div>
         <div className="flex grow flex-row items-center justify-end space-x-4">
-          <Button
-            disabled={
-              shinkaiNodeSpawnIsPending ||
-              shinkaiNodeKillIsPending ||
-              shinkaiNodeIsRunning
-            }
-            onClick={() => shinkaiNodeSpawn()}
-            variant={'default'}
-          >
-            {shinkaiNodeSpawnIsPending || shinkaiNodeKillIsPending ? (
-              <Loader2 className="animate-spin" />
-            ) : (
-              <PlayCircle className="" />
-            )}
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <Button
+                  disabled={
+                    shinkaiNodeSpawnIsPending ||
+                    shinkaiNodeKillIsPending ||
+                    shinkaiNodeIsRunning
+                  }
+                  onClick={() => shinkaiNodeSpawn()}
+                  variant={'default'}
+                >
+                  {shinkaiNodeSpawnIsPending || shinkaiNodeKillIsPending ? (
+                    <Loader2 className="animate-spin" />
+                  ) : (
+                    <PlayCircle className="" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side='bottom'>
+                <p>Start Shinkai Node</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
-          <Button
-            disabled={
-              shinkaiNodeSpawnIsPending ||
-              shinkaiNodeKillIsPending ||
-              !shinkaiNodeIsRunning
-            }
-            onClick={() => shinkaiNodeKill()}
-            variant={'default'}
-          >
-            {shinkaiNodeKillIsPending ? (
-              <Loader2 className="animate-spin" />
-            ) : (
-              <StopCircle className="" />
-            )}
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <Button
+                  disabled={
+                    shinkaiNodeSpawnIsPending ||
+                    shinkaiNodeKillIsPending ||
+                    !shinkaiNodeIsRunning
+                  }
+                  onClick={() => shinkaiNodeKill()}
+                  variant={'default'}
+                >
+                  {shinkaiNodeKillIsPending ? (
+                    <Loader2 className="animate-spin" />
+                  ) : (
+                    <StopCircle className="" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side='bottom'>
+                <p>Stop Shinkai Node</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
-          <Button
-            disabled={shinkaiNodeIsRunning}
-            onClick={() => setIsConfirmResetDialogOpened(true)}
-            variant={'default'}
-          >
-            {shinkaiNodeRemoveStorageIsPending ? (
-              <Loader2 className="animate-spin" />
-            ) : (
-              <Trash className="" />
-            )}
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <Button
+                  disabled={shinkaiNodeIsRunning}
+                  onClick={() => setIsConfirmResetDialogOpened(true)}
+                  variant={'default'}
+                >
+                  {shinkaiNodeRemoveStorageIsPending ? (
+                    <Loader2 className="animate-spin" />
+                  ) : (
+                    <Trash className="" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side='bottom'>
+                <p>Reset Shinkai Node</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
-          <Button
-            disabled={!shinkaiNodeIsRunning}
-            onClick={() => startSyncOllamaModels()}
-            variant={'default'}
-          >
-            {syncOllamaModelsIsPending ? (
-              <Loader2 className="animate-spin" />
-            ) : (
-              <Bot className="" />
-            )}
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <Button
+                  disabled={!shinkaiNodeIsRunning}
+                  onClick={() => startSyncOllamaModels()}
+                  variant={'default'}
+                >
+                  {syncOllamaModelsIsPending ? (
+                    <Loader2 className="animate-spin" />
+                  ) : (
+                    <Bot className="" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side='bottom'>
+                <p>Sync Ollama Models</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
 
