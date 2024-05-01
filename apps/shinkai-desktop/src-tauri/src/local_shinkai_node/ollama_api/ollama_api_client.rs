@@ -35,6 +35,23 @@ impl OllamaApiClient {
         Ok(response)
     }
 
+    pub async fn pull(
+        &self,
+        model_name: &str,
+    ) -> Result<(), String> {
+        match self.pull_stream(model_name).await {
+            Ok(mut stream) => {
+                while let Some(stream_value) = stream.next().await {
+                    println!("{:?}", stream_value);
+                }
+            }
+            Err(e) => {
+                return Err(e.to_string());
+            }
+        }
+        Ok(())
+    }
+
     pub async fn pull_stream(
         &self,
         model_name: &str,

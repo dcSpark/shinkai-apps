@@ -2,6 +2,7 @@ use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
+use super::ollama_api::ollama_api_client::OllamaApiClient;
 use super::process_handlers::logger::LogEntry;
 use super::process_handlers::ollama_process_handler::{OllamaOptions, OllamaProcessHandler};
 use super::process_handlers::shinkai_node_process_handler::ShinkaiNodeProcessHandler;
@@ -60,12 +61,21 @@ impl ShinkaiNodeManager {
     pub async fn spawn(&self) -> Result<(), String> {
         let shinkai_node_guard = self.shinkai_node_process.lock().await;
         let ollama_guard = self.ollama_process.lock().await;
-        let mut default_model = ShinkaiNodeProcessHandler::default_options().initial_agent_models.unwrap();
-        default_model = default_model.replace("ollama:", "");
+
         shinkai_node_guard.spawn().await?;
-        if let Err(e) = ollama_guard.spawn(Some(default_model.as_str())).await {
+        if let Err(e) = ollama_guard.spawn(None).await {
             shinkai_node_guard.kill().await;
             return Err(e);
+        }
+        let mut default_model = ShinkaiNodeProcessHandler::default_options().initial_agent_models.unwrap();
+        default_model = default_model.replace("ollama:", "");
+        let ollama_api = OllamaApiClient::new(ollama_guard.get_ollama_api_base_url());
+        let ensure_default_model = ollama_api.pull(default_model.as_str()).await;
+        let ensure_default_embeddings_model = ollama_api.pull("snowflake-arctic-embed:xs").await;
+        if ensure_default_model.is_err() || ensure_default_embeddings_model.is_err() {
+            shinkai_node_guard.kill().await;
+            ollama_guard.kill().await;
+            return Err("unable to install initial models".to_string());
         }
         Ok(())
     }
