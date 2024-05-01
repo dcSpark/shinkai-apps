@@ -63,7 +63,7 @@ fn main() {
             )?;
             tauri::async_runtime::spawn(async move {
                 let mut shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.lock().await;
-                shinkai_node_manager_guard.set_shinkai_node_options(ShinkaiNodeOptions {
+                shinkai_node_manager_guard.set_options(ShinkaiNodeOptions {
                     port: None,
                     node_storage_path: Some(path.to_str().unwrap().to_string()),
                     unstructured_server_url: None,
@@ -74,7 +74,7 @@ fn main() {
                     initial_agent_models: None,
                     initial_agent_api_keys: None,
                     starting_num_qr_devices: None,
-                }).await;
+                });
             });
 
             app.global_shortcut_manager()
@@ -136,8 +136,8 @@ fn main() {
                 "open_shinkai_node_manager_window" => {
                     let shinkai_node_manager_window = "shinkai-node-manager-window".to_string();
                     let existing_window = app.get_window(&shinkai_node_manager_window);
-                    if let Some(window) = existing_window {
-                        window.set_focus();
+                    if existing_window.is_some() {
+                        let _ = existing_window.unwrap().set_focus();
                         return;
                     }
                     let new_window = tauri::WindowBuilder::new(
@@ -155,7 +155,7 @@ fn main() {
                         // For some reason process::exit doesn't fire RunEvent::ExitRequested event in tauri
                         let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.lock().await;
                         if shinkai_node_manager_guard.is_running().await {
-                            shinkai_node_manager_guard.kill().await;
+                            shinkai_node_manager_guard.kill_shinkai_node().await;
                         }
                         std::process::exit(0);
                     });
@@ -172,7 +172,7 @@ fn main() {
                     // For some reason process::exit doesn't fire RunEvent::ExitRequested event in tauri
                     let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.lock().await;
                     if shinkai_node_manager_guard.is_running().await {
-                        shinkai_node_manager_guard.kill().await;
+                        shinkai_node_manager_guard.kill_shinkai_node().await;
                     }
                     std::process::exit(0);
                 });
