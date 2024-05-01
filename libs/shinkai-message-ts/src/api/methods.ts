@@ -1567,3 +1567,77 @@ export const updateNodeName = async (
     throw error;
   }
 };
+
+export const scanOllamaModels = async (
+  nodeAddress: string,
+  sender_subidentity: string,
+  node_name: string,
+  setupDetailsState: CredentialsPayload,
+): Promise<{ model: string }[]> => {
+  try {
+    const messageStr = ShinkaiMessageBuilderWrapper.scanOllamaModels(
+      setupDetailsState.profile_encryption_sk,
+      setupDetailsState.profile_identity_sk,
+      setupDetailsState.node_encryption_pk,
+      node_name,
+      sender_subidentity,
+      node_name,
+      '',
+    );
+
+    const message = JSON.parse(messageStr);
+
+    const response = await fetch(
+      urlJoin(nodeAddress, '/v1/scan_ollama_models'),
+      {
+        method: 'POST',
+        body: JSON.stringify(message),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+    await handleHttpError(response);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error sending message to add agent:', error);
+    throw error;
+  }
+};
+
+export const addOllamaModels = async (
+  nodeAddress: string,
+  senderSubidentity: string,
+  nodeName: string,
+  setupDetailsState: CredentialsPayload,
+  payload: { models: string[] },
+) => {
+  try {
+    const messageStr = ShinkaiMessageBuilderWrapper.addOllamaModels(
+      setupDetailsState.profile_encryption_sk,
+      setupDetailsState.profile_identity_sk,
+      setupDetailsState.node_encryption_pk,
+      nodeName,
+      senderSubidentity,
+      nodeName,
+      senderSubidentity,
+      payload,
+    );
+
+    const message = JSON.parse(messageStr);
+
+    const response = await fetch(
+      urlJoin(nodeAddress, '/v1/add_ollama_models'),
+      {
+        method: 'POST',
+        body: JSON.stringify(message),
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+    await handleHttpError(response);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error sending message to add agent:', error);
+    throw error;
+  }
+};

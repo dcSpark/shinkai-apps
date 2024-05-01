@@ -20,6 +20,12 @@ export type ShinkaiNodeOptions = {
   starting_num_qr_devices?: number;
 };
 
+export type LogEntry = {
+  timestamp: number;
+  process: string;
+  message: string;
+};
+
 // Client
 export const queryClient = new QueryClient();
 
@@ -37,14 +43,14 @@ export const useShinkaiNodeIsRunningQuery = (
 export const useShinkaiNodeGetLastNLogsQuery = (
   input: { length: number },
   options?: QueryObserverOptions,
-): UseQueryResult<string[], Error> => {
+): UseQueryResult<LogEntry[], Error> => {
   const query = useQuery({
     queryKey: ['shinkai_node_get_last_n_logs'],
-    queryFn: (): Promise<string[]> =>
+    queryFn: (): Promise<LogEntry[]> =>
       invoke('shinkai_node_get_last_n_logs', { length: input.length }),
     ...options,
   });
-  return { ...query } as UseQueryResult<string[], Error>;
+  return { ...query } as UseQueryResult<LogEntry[], Error>;
 };
 export const useShinkaiNodeGetOptionsQuery = (
   options?: QueryObserverOptions,
