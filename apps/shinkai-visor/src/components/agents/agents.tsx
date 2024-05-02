@@ -36,17 +36,7 @@ export const Agents = () => {
           <ScrollArea className="flex h-full flex-col justify-between [&>div>div]:!block">
             <div className="space-y-3">
               {agents?.map((agent) => (
-                <Fragment key={agent.id}>
-                  <Button
-                    className="w-full"
-                    data-testid={`${agent.id}-agent-button`}
-                    variant="ghost"
-                  >
-                    <span className="w-full truncate text-start">
-                      {agent.id}
-                    </span>
-                  </Button>
-                </Fragment>
+                <AgentCard key={agent.id} name={agent.id} />
               ))}
             </div>
           </ScrollArea>
@@ -65,3 +55,16 @@ export const Agents = () => {
     </div>
   );
 };
+
+function AgentCard({ name }: { name: string }) {
+  return (
+    <div className="flex items-center justify-between gap-3 truncate rounded-lg py-3.5 pr-2 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400">
+      <span
+        className="w-full truncate text-start"
+        data-testid={`${name}-agent-button`}
+      >
+        {name}
+      </span>
+    </div>
+  );
+}
