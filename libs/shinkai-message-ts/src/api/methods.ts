@@ -1563,7 +1563,61 @@ export const updateNodeName = async (
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Error changeNodeName:', error);
+    console.error('Error updateNodeName:', error);
+    throw error;
+  }
+};
+export const downloadVectorResource = async (
+  nodeAddress: string,
+  path: string,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  setupDetailsState: CredentialsPayload,
+): Promise<{ data: any; status: string }> => {
+  try {
+    const messageStr = ShinkaiMessageBuilderWrapper.downloadVectorResource(
+      setupDetailsState.profile_encryption_sk,
+      setupDetailsState.profile_identity_sk,
+      setupDetailsState.node_encryption_pk,
+      path,
+      sender,
+      sender_subidentity,
+      receiver,
+      receiver_subidentity,
+    );
+
+    const message = JSON.parse(messageStr);
+
+    const response = await fetch(urlJoin(nodeAddress, '/v1/retrieve_vrkai'), {
+      method: 'POST',
+      body: JSON.stringify(message),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    await handleHttpError(response);
+    const data = await response.json();
+    const sourceFile = data?.data?.sfm?.map?.['/'].Standard;
+    const sourceFileBinary = new Uint8Array(sourceFile?.file_content);
+    const blob = new Blob([sourceFileBinary], { type: 'application/pdf' });
+
+    const reader = new FileReader();
+    reader.onloadend = function () {
+      const base64String = reader.result as string;
+      const base64Encoded = base64String.split(',')[1];
+      // TODO: fix this
+      const link = document.createElement('a');
+      link.href = `data:application/pdf;base64,${base64Encoded}`;
+      link.download = sourceFile?.file_name ?? 'file.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+    reader.readAsDataURL(blob);
+
+    return data;
+  } catch (error) {
+    console.error('Error downloadVectorResource:', error);
     throw error;
   }
 };

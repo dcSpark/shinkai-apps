@@ -33,6 +33,7 @@ export enum MessageSchemaType {
   VecFsDeleteItem = 'VecFsDeleteItem',
   ConvertFilesAndSaveToFolder = 'ConvertFilesAndSaveToFolder',
   VecFsSearchItems = 'VecFsSearchItems',
+  VecFsRetrieveVRPack = 'VecFsRetrieveVRPack',
   // subscriptions
   AvailableSharedItems = 'AvailableSharedItems',
   CreateShareableFolder = 'CreateShareableFolder',
@@ -42,7 +43,7 @@ export enum MessageSchemaType {
   MySubscriptions = 'MySubscriptions',
   // ollama
   APIScanOllamaModels = 'APIScanOllamaModels',
-  APIAddOllamaModels = 'APIAddOllamaModels'
+  APIAddOllamaModels = 'APIAddOllamaModels',
 }
 export interface LocalScopeVRKaiEntry {
   vrkai: {
