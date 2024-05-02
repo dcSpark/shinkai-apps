@@ -514,16 +514,16 @@ export default function NavBar() {
                   </span>
                 </DropdownMenuItem>
 
-                {auth?.shinkai_identity.includes('localhost') ? null : (
-                  <DropdownMenuItem
-                    onClick={() => onClickMenuOption(MenuOption.CreateInbox)}
-                  >
-                    <ChatBubbleIcon className="mr-2 h-4 w-4" />
-                    <span>
-                      <FormattedMessage id="create-inbox" />
-                    </span>
-                  </DropdownMenuItem>
-                )}
+                {/*{auth?.shinkai_identity.includes('localhost') ? null : (*/}
+                {/*  <DropdownMenuItem*/}
+                {/*    onClick={() => onClickMenuOption(MenuOption.CreateInbox)}*/}
+                {/*  >*/}
+                {/*    <ChatBubbleIcon className="mr-2 h-4 w-4" />*/}
+                {/*    <span>*/}
+                {/*      <FormattedMessage id="create-inbox" />*/}
+                {/*    </span>*/}
+                {/*  </DropdownMenuItem>*/}
+                {/*)}*/}
 
                 <DropdownMenuLabel>AI Files</DropdownMenuLabel>
                 <DropdownMenuItem
