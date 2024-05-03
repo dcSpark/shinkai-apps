@@ -1597,24 +1597,6 @@ export const downloadVectorResource = async (
     });
     await handleHttpError(response);
     const data = await response.json();
-    const sourceFile = data?.data?.sfm?.map?.['/'].Standard;
-    const sourceFileBinary = new Uint8Array(sourceFile?.file_content);
-    const blob = new Blob([sourceFileBinary], { type: 'application/pdf' });
-
-    const reader = new FileReader();
-    reader.onloadend = function () {
-      const base64String = reader.result as string;
-      const base64Encoded = base64String.split(',')[1];
-      // TODO: fix this
-      const link = document.createElement('a');
-      link.href = `data:application/pdf;base64,${base64Encoded}`;
-      link.download = sourceFile?.file_name ?? 'file.pdf';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    };
-    reader.readAsDataURL(blob);
-
     return data;
   } catch (error) {
     console.error('Error downloadVectorResource:', error);
