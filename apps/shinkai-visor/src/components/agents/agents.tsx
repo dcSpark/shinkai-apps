@@ -112,7 +112,8 @@ function AgentCard({
     <div
       className="flex cursor-pointer items-center justify-between gap-1 rounded-lg py-3.5 pr-2.5 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400"
       data-testid={`${agentId}-agent-button`}
-      onClick={() => {
+      onClick={(event) => {
+        event.stopPropagation();
         history.replace(
           { pathname: '/inboxes/create-job' },
           { agentName: agentId },
