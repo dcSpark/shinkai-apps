@@ -1,7 +1,7 @@
 use super::ollama_api::ollama_api_client::OllamaApiClient;
 use super::ollama_api::ollama_api_types::OllamaApiPullResponse;
 use super::process_handlers::logger::LogEntry;
-use super::process_handlers::ollama_process_handler::{OllamaOptions, OllamaProcessHandler};
+use super::process_handlers::ollama_process_handler::OllamaProcessHandler;
 use super::process_handlers::shinkai_node_process_handler::ShinkaiNodeProcessHandler;
 use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
 use futures_util::StreamExt;
@@ -47,9 +47,7 @@ impl ShinkaiNodeManager {
 
         ShinkaiNodeManager {
             ollama_process: OllamaProcessHandler::new(
-                OllamaOptions {
-                    ollama_host: "127.0.0.1:11435".to_string(),
-                },
+                None,
                 ollama_sender,
             ),
             shinkai_node_process: ShinkaiNodeProcessHandler::new(shinkai_node_sender),

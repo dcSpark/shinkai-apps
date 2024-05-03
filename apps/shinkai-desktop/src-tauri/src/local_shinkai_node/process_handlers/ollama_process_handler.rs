@@ -8,9 +8,11 @@ use super::{
     logger::LogEntry, process_handler::{ProcessHandler, ProcessHandlerEvent}, process_utils::options_to_env
 };
 
-#[derive(Serialize)]
+#[derive(Serialize, Clone)]
 pub struct OllamaOptions {
     pub ollama_host: String,
+    pub ollama_num_parallel: u32,
+    pub ollama_max_loaded_models: u32,
 }
 
 pub struct OllamaProcessHandler {
@@ -23,13 +25,25 @@ impl OllamaProcessHandler {
     const PROCESS_NAME: &'static str = "ollama-v0.1.33";
     const READY_MATCHER: &'static str = "Listening on ";
 
-    pub fn new(options: OllamaOptions, event_sender: Sender<ProcessHandlerEvent>) -> Self {
+    pub fn new(options: Option<OllamaOptions>, event_sender: Sender<ProcessHandlerEvent>) -> Self {
         let ready_matcher = Regex::new(Self::READY_MATCHER).unwrap();
         let process_handler = ProcessHandler::new(Self::PROCESS_NAME.to_string(), event_sender, ready_matcher);
         OllamaProcessHandler {
             process_handler,
-            options,
+            options: options.unwrap_or(Self::default_options()),
         }
+    }
+
+    pub fn default_options() -> OllamaOptions {
+        OllamaOptions {
+            ollama_host: "127.0.0.1:11435".to_string(),
+            ollama_num_parallel: 4,
+            ollama_max_loaded_models: 3,
+        }
+    }
+
+    pub fn get_options(&self) -> OllamaOptions {
+        self.options.clone()
     }
 
     pub fn get_ollama_api_base_url(&self) -> String {
