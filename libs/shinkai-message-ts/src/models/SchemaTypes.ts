@@ -15,6 +15,7 @@ export enum MessageSchemaType {
   APIGetMessagesFromInboxRequest = 'APIGetMessagesFromInboxRequest',
   APIReadUpToTimeRequest = 'APIReadUpToTimeRequest',
   APIAddAgentRequest = 'APIAddAgentRequest',
+  APIModifyAgentRequest = 'APIModifyAgentRequest',
   TextContent = 'TextContent',
   SymmetricKeyExchange = 'SymmetricKeyExchange',
   APIFinishJob = 'APIFinishJob',

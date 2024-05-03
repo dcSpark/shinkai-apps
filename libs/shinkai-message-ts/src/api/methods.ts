@@ -1603,6 +1603,44 @@ export const downloadVectorResource = async (
     throw error;
   }
 };
+export const updateAgent = async (
+  nodeAddress: string,
+  agent: SerializedAgent,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  setupDetailsState: CredentialsPayload,
+): Promise<{ data: any; status: string }> => {
+  try {
+    const agent_wrapped = SerializedAgentWrapper.fromSerializedAgent(agent);
+
+    const messageStr = ShinkaiMessageBuilderWrapper.modifyAgent(
+      setupDetailsState.profile_encryption_sk,
+      setupDetailsState.profile_identity_sk,
+      setupDetailsState.node_encryption_pk,
+      agent_wrapped,
+      sender,
+      sender_subidentity,
+      receiver,
+      receiver_subidentity,
+    );
+
+    const message = JSON.parse(messageStr);
+
+    const response = await fetch(urlJoin(nodeAddress, '/v1/modify_agent'), {
+      method: 'POST',
+      body: JSON.stringify(message),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    await handleHttpError(response);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error modifyAgent:', error);
+    throw error;
+  }
+};
 
 export const scanOllamaModels = async (
   nodeAddress: string,
