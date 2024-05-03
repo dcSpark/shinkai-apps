@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
+  Agent,
   AgentCredentialsPayload,
   CreateChatInboxResponse,
   CredentialsPayload,
@@ -595,7 +596,7 @@ export const getProfileAgents = async (
   sender_subidentity: string,
   receiver: string,
   setupDetailsState: CredentialsPayload,
-): Promise<SerializedAgent[]> => {
+): Promise<Agent[]> => {
   try {
     const messageStr = ShinkaiMessageBuilderWrapper.get_profile_agents(
       setupDetailsState.profile_encryption_sk,
@@ -1629,6 +1630,42 @@ export const updateAgent = async (
     const message = JSON.parse(messageStr);
 
     const response = await fetch(urlJoin(nodeAddress, '/v1/modify_agent'), {
+      method: 'POST',
+      body: JSON.stringify(message),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    await handleHttpError(response);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error modifyAgent:', error);
+    throw error;
+  }
+};
+export const deleteAgent = async (
+  nodeAddress: string,
+  agentId: string,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  setupDetailsState: CredentialsPayload,
+): Promise<{ data: any; status: string }> => {
+  try {
+    const messageStr = ShinkaiMessageBuilderWrapper.deleteAgent(
+      setupDetailsState.profile_encryption_sk,
+      setupDetailsState.profile_identity_sk,
+      setupDetailsState.node_encryption_pk,
+      agentId,
+      sender,
+      sender_subidentity,
+      receiver,
+      receiver_subidentity,
+    );
+
+    const message = JSON.parse(messageStr);
+
+    const response = await fetch(urlJoin(nodeAddress, '/v1/remove_agent'), {
       method: 'POST',
       body: JSON.stringify(message),
       headers: { 'Content-Type': 'application/json' },

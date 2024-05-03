@@ -92,6 +92,22 @@ const formSchema = z
 
 type FormSchemaType = z.infer<typeof formSchema>;
 
+export const getModelObject = (
+  model: Models | string,
+  modelType: string,
+): AgentAPIModel => {
+  switch (model) {
+    case Models.OpenAI:
+      return { OpenAI: { model_type: modelType } };
+    case Models.TogetherComputer:
+      return { GenericAPI: { model_type: modelType } };
+    case Models.Ollama:
+      return { Ollama: { model_type: modelType } };
+    default:
+      return { [model]: { model_type: modelType } };
+  }
+};
+
 export const AddAgent = () => {
   const history = useHistory();
   const auth = useAuth((state) => state.auth);
@@ -144,21 +160,6 @@ export const AddAgent = () => {
       label: intl.formatMessage({ id: 'ollama' }),
     },
   ];
-  const getModelObject = (
-    model: Models | string,
-    modelType: string,
-  ): AgentAPIModel => {
-    switch (model) {
-      case Models.OpenAI:
-        return { OpenAI: { model_type: modelType } };
-      case Models.TogetherComputer:
-        return { GenericAPI: { model_type: modelType } };
-      case Models.Ollama:
-        return { Ollama: { model_type: modelType } };
-      default:
-        return { [model]: { model_type: modelType } };
-    }
-  };
   const submit = async (values: FormSchemaType) => {
     if (!auth) return;
     let model = getModelObject(values.model, values.modelType);
