@@ -33,8 +33,8 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
-import { getModelObject } from '../add-agent/add-agent';
 import { EmptyAgents } from '../empty-agents/empty-agents';
+import { getModelObject } from './add-agent';
 
 export const Agents = () => {
   const auth = useAuth((state) => state.auth);

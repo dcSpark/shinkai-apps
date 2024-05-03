@@ -18,7 +18,7 @@ import { useGlobalPopupChromeMessage } from '../../hooks/use-global-popup-chrome
 import { langMessages, locale } from '../../lang/intl';
 import { useAuth } from '../../store/auth/auth';
 import { useSettings } from '../../store/settings/settings';
-import { AddAgent } from '../add-agent/add-agent';
+import { AddAgent } from '../agents/add-agent';
 import { Agents } from '../agents/agents';
 import { AnimatedRoute } from '../animated-route/animated-routed';
 import { ConnectMethodQrCode } from '../connect-method-qr-code/connect-method-qr-code';
