@@ -2,7 +2,7 @@ import { invoke } from '@tauri-apps/api';
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 
-import { ShinkaiNodeOptions } from '../windows/shinkai-node-manager/shinkai-node-process-client';
+import { ShinkaiNodeOptions } from '../windows/shinkai-node-manager/shinkai-node-process-client-types';
 import { isLocalShinkaiNode } from '../windows/utils';
 import { useAuth } from './auth';
 

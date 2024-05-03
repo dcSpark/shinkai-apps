@@ -8,23 +8,7 @@ import {
 } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api';
 
-export type ShinkaiNodeOptions = {
-  port?: number;
-  unstructured_server_url?: string;
-  embeddings_server_url?: string;
-  first_device_needs_registration_code?: string;
-  initial_agent_names?: string;
-  initial_agent_urls?: string;
-  initial_agent_models?: string;
-  initial_agent_api_keys?: string;
-  starting_num_qr_devices?: number;
-};
-
-export type LogEntry = {
-  timestamp: number;
-  process: string;
-  message: string;
-};
+import { LogEntry, ShinkaiNodeOptions } from './shinkai-node-process-client-types';
 
 // Client
 export const queryClient = new QueryClient();

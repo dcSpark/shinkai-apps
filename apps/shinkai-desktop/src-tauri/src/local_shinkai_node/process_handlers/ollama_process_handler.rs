@@ -1,4 +1,3 @@
-use futures_util::StreamExt;
 use regex::Regex;
 use serde::Serialize;
 use tokio::sync::mpsc::Sender;
@@ -67,12 +66,9 @@ impl OllamaProcessHandler {
         }
         let ollama_api = OllamaApiClient::new(self.get_ollama_api_base_url());
         if let Some(model) = ensure_model {
-            match ollama_api.pull(model).await {
-                Err(e) => {
-                    self.process_handler.kill().await;
-                    return Err(e.to_string());
-                }
-                _ => {}
+            if let Err(e) = ollama_api.pull(model).await {
+                self.process_handler.kill().await;
+                return Err(e.to_string());
             }
         }
         Ok(())
