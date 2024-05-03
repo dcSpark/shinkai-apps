@@ -27,7 +27,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Edit, Plus, TrashIcon } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -106,10 +106,19 @@ function AgentCard({
   const [isEditAgentDrawerOpen, setIsEditAgentDrawerOpen] =
     React.useState(false);
 
+  const history = useHistory();
+
   return (
     <div
       className="flex cursor-pointer items-center justify-between gap-1 rounded-lg py-3.5 pr-2.5 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400"
       data-testid={`${agentId}-agent-button`}
+      onClick={() => {
+        history.replace(
+          { pathname: '/inboxes/create-job' },
+          { agentName: agentId },
+        );
+      }}
+      role="button"
     >
       <div className="flex items-center gap-3">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg ">
@@ -263,22 +272,6 @@ const EditAgentDrawer = ({
     if (!auth) return;
     const model = getModelObject(values.modelCustom, values.modelTypeCustom);
 
-    console.log('model', {
-      nodeAddress: auth?.node_address ?? '',
-      shinkaiIdentity: auth?.shinkai_identity ?? '',
-      profile: auth?.profile ?? '',
-      agent: {
-        allowed_message_senders: [],
-        api_key: values.apiKey,
-        external_url: values.externalUrl,
-        full_identity_name: `${auth.shinkai_identity}/${auth.profile}/agent/${agentId}`,
-        id: agentId,
-        perform_locally: false,
-        storage_bucket_permissions: [],
-        toolkit_permissions: [],
-        model,
-      },
-    });
     await updateAgent({
       nodeAddress: auth?.node_address ?? '',
       shinkaiIdentity: auth?.shinkai_identity ?? '',
