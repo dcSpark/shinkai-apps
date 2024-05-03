@@ -109,87 +109,90 @@ function AgentCard({
   const history = useHistory();
 
   return (
-    <div
-      className="flex cursor-pointer items-center justify-between gap-1 rounded-lg py-3.5 pr-2.5 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400"
-      data-testid={`${agentId}-agent-button`}
-      onClick={(event) => {
-        event.stopPropagation();
-        history.replace(
-          { pathname: '/inboxes/create-job' },
-          { agentName: agentId },
-        );
-      }}
-      role="button"
-    >
-      <div className="flex items-center gap-3">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg ">
-          <AgentIcon className="h-6 w-6" />
-        </div>
-        <div className="flex flex-col items-baseline gap-2">
-          <span className="w-full truncate text-start text-sm">{agentId}</span>
-          <Badge className="text-gray-80 truncate bg-gray-400 text-start text-xs font-normal shadow-none">
-            {model}
-          </Badge>
-        </div>
-      </div>
-      <DropdownMenu modal={false}>
-        <DropdownMenuTrigger asChild>
-          <div
-            className={cn(
-              buttonVariants({
-                variant: 'tertiary',
-                size: 'icon',
-              }),
-              'border-0 hover:bg-gray-500/40',
-            )}
-            onClick={(event) => {
-              event.stopPropagation();
-            }}
-            role="button"
-            tabIndex={0}
-          >
-            <span className="sr-only">More options</span>
-            <DotsVerticalIcon className="text-gray-100" />
+    <React.Fragment>
+      <div
+        className="flex cursor-pointer items-center justify-between gap-1 rounded-lg py-3.5 pr-2.5 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400"
+        data-testid={`${agentId}-agent-button`}
+        onClick={() => {
+          history.replace(
+            { pathname: '/inboxes/create-job' },
+            { agentName: agentId },
+          );
+        }}
+        role="button"
+      >
+        <div className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg ">
+            <AgentIcon className="h-6 w-6" />
           </div>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
-          align="end"
-          className="w-[160px] border bg-gray-500 px-2.5 py-2"
-        >
-          {[
-            {
-              name: 'Edit',
-              icon: <Edit className="mr-3 h-4 w-4" />,
-              onClick: () => {
-                setIsEditAgentDrawerOpen(true);
-              },
-            },
-            {
-              name: 'Delete',
-              icon: <TrashIcon className="mr-3 h-4 w-4" />,
-              onClick: () => {
-                setIsDeleteAgentDrawerOpen(true);
-              },
-            },
-          ].map((option) => (
-            <React.Fragment key={option.name}>
-              {option.name === 'Delete' && (
-                <DropdownMenuSeparator className="bg-gray-300" />
+          <div className="flex flex-col items-baseline gap-2">
+            <span className="w-full truncate text-start text-sm">
+              {agentId}
+            </span>
+            <Badge className="text-gray-80 truncate bg-gray-400 text-start text-xs font-normal shadow-none">
+              {model}
+            </Badge>
+          </div>
+        </div>
+        <DropdownMenu modal={false}>
+          <DropdownMenuTrigger asChild>
+            <div
+              className={cn(
+                buttonVariants({
+                  variant: 'tertiary',
+                  size: 'icon',
+                }),
+                'border-0 hover:bg-gray-500/40',
               )}
-              <DropdownMenuItem
-                key={option.name}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  option.onClick();
-                }}
-              >
-                {option.icon}
-                {option.name}
-              </DropdownMenuItem>
-            </React.Fragment>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+              onClick={(event) => {
+                event.stopPropagation();
+              }}
+              role="button"
+              tabIndex={0}
+            >
+              <span className="sr-only">More options</span>
+              <DotsVerticalIcon className="text-gray-100" />
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="end"
+            className="w-[160px] border bg-gray-500 px-2.5 py-2"
+          >
+            {[
+              {
+                name: 'Edit',
+                icon: <Edit className="mr-3 h-4 w-4" />,
+                onClick: () => {
+                  setIsEditAgentDrawerOpen(true);
+                },
+              },
+              {
+                name: 'Delete',
+                icon: <TrashIcon className="mr-3 h-4 w-4" />,
+                onClick: () => {
+                  setIsDeleteAgentDrawerOpen(true);
+                },
+              },
+            ].map((option) => (
+              <React.Fragment key={option.name}>
+                {option.name === 'Delete' && (
+                  <DropdownMenuSeparator className="bg-gray-300" />
+                )}
+                <DropdownMenuItem
+                  key={option.name}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    option.onClick();
+                  }}
+                >
+                  {option.icon}
+                  {option.name}
+                </DropdownMenuItem>
+              </React.Fragment>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
       <EditAgentDrawer
         agentApiKey={agentApiKey}
         agentExternalUrl={externalUrl}
@@ -204,7 +207,7 @@ function AgentCard({
         onOpenChange={setIsDeleteAgentDrawerOpen}
         open={isDeleteAgentDrawerOpen}
       />
-    </div>
+    </React.Fragment>
   );
 }
 
