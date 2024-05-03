@@ -184,6 +184,24 @@ const CreateJobPage = () => {
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
 
+  useEffect(() => {
+    if (isSuccess && agents?.length && !defaulAgentId) {
+      createJobForm.setValue('model', agents[0].id);
+    } else {
+      createJobForm.setValue('model', defaulAgentId);
+    }
+  }, [agents, createJobForm, defaulAgentId, isSuccess]);
+
+  useEffect(() => {
+    if (!locationState?.agentName) {
+      return;
+    }
+    const agent = agents.find((agent) => agent.id === locationState.agentName);
+    if (agent) {
+      createJobForm.setValue('model', agent.id);
+    }
+  }, [createJobForm, locationState, agents]);
+
   const { isPending, mutateAsync: createJob } = useCreateJob({
     onSuccess: (data) => {
       // TODO: job_inbox, false is hardcoded
@@ -257,13 +275,6 @@ const CreateJobPage = () => {
     });
   };
 
-  useEffect(() => {
-    if (isSuccess && agents?.length && !defaulAgentId) {
-      createJobForm.setValue('model', agents[0].id);
-    } else {
-      createJobForm.setValue('model', defaulAgentId);
-    }
-  }, [agents, createJobForm, defaulAgentId, isSuccess]);
   // useEffect(() => {
   //   return () => {
   //     file && URL.revokeObjectURL(file.preview);

@@ -128,7 +128,7 @@ function AgentCard({
         className="flex cursor-pointer items-center justify-between gap-1 rounded-lg py-3.5 pr-2.5 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400"
         data-testid={`${agentId}-agent-button`}
         onClick={() => {
-          navigate(`/inboxes/${agentId}`, { state: { agentName: agentId } });
+          navigate(`/create-job`, { state: { agentName: agentId } });
         }}
         role="button"
       >
