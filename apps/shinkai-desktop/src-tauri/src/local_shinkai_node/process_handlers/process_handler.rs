@@ -1,11 +1,7 @@
-use futures_util::TryFutureExt;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, sync::Arc};
-use tauri::{
-    api::process::{Command, CommandChild, CommandEvent},
-    async_runtime::Receiver,
-};
+use tauri::api::process::{Command, CommandChild, CommandEvent};
 use tokio::sync::mpsc::Sender;
 use tokio::sync::Mutex;
 

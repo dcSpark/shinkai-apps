@@ -14,7 +14,6 @@ mod audio;
 
 mod commands;
 mod local_shinkai_node;
-mod state;
 
 use crate::local_shinkai_node::shinkai_node_manager_instance::SHINKAI_NODE_MANAGER_INSTANCE;
 use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
@@ -77,6 +76,18 @@ fn main() {
                 }).await;
             });
 
+            let app_handle = app.app_handle();
+            tauri::async_runtime::spawn(async move {
+                let mut shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.lock().await;
+                let mut receiver = shinkai_node_manager_guard.subscribe_to_events();
+                drop(shinkai_node_manager_guard);
+                while let Ok(state_change) = receiver.recv().await {
+                    app_handle.emit_all("shinkai-node-state-change", state_change).unwrap_or_else(|e| {
+                        println!("Failed to emit global event for state change: {}", e);
+                    });
+                }
+            });
+
             app.global_shortcut_manager()
                 .register("CmdOrCtrl+y", move || match app_clone.get_window("main") {
                     Some(window) => {
@@ -137,7 +148,7 @@ fn main() {
                     let shinkai_node_manager_window = "shinkai-node-manager-window".to_string();
                     let existing_window = app.get_window(&shinkai_node_manager_window);
                     if let Some(window) = existing_window {
-                        window.set_focus();
+                        let _ = window.set_focus();
                         return;
                     }
                     let new_window = tauri::WindowBuilder::new(
@@ -153,7 +164,7 @@ fn main() {
                 "quit" => {
                     tauri::async_runtime::spawn(async {
                         // For some reason process::exit doesn't fire RunEvent::ExitRequested event in tauri
-                        let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.lock().await;
+                        let mut shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.lock().await;
                         if shinkai_node_manager_guard.is_running().await {
                             shinkai_node_manager_guard.kill().await;
                         }
@@ -166,11 +177,11 @@ fn main() {
         })
         .build(tauri::generate_context!())
         .expect("error while running tauri application")
-        .run(move |app_handle, event| match event {
+        .run(move |_app_handle, event| match event {
             RunEvent::ExitRequested {  .. } => {
                 tauri::async_runtime::spawn(async {
                     // For some reason process::exit doesn't fire RunEvent::ExitRequested event in tauri
-                    let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.lock().await;
+                    let mut shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.lock().await;
                     if shinkai_node_manager_guard.is_running().await {
                         shinkai_node_manager_guard.kill().await;
                     }
@@ -178,7 +189,7 @@ fn main() {
                 });
             }
             RunEvent::Exit => {},
-            RunEvent::WindowEvent { label, event , .. } => {},
+            RunEvent::WindowEvent { label: _, event: _, .. } => {},
             RunEvent::Ready => {},
             RunEvent::Resumed => {},
             RunEvent::MainEventsCleared => {},

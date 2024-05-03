@@ -27,16 +27,12 @@ import UnavailableShinkaiNode from '../pages/unavailable-shinkai-node';
 import WelcomePage from '../pages/welcome';
 import { useAuth } from '../store/auth';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
+import { useShinkaiNodeEventsToast } from '../windows/shinkai-node-manager/shinkai-node-manager-hooks';
 import {
   useShinkaiNodeIsRunningQuery,
   useShinkaiNodeSetOptionsMutation,
   useShinkaiNodeSpawnMutation,
 } from '../windows/shinkai-node-manager/shinkai-node-process-client';
-import {
-  errorStartingShinkaiNodeToast,
-  startingShinkaiNodeToast,
-  successStartingShinkaiNodeToast,
-} from '../windows/toasts-utils';
 import {
   ADD_AGENT_PATH,
   CREATE_CHAT_PATH,
@@ -52,6 +48,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const shinkaiNodeOptions = useShinkaiNodeManager(
     (state) => state.shinkaiNodeOptions,
   );
+  useShinkaiNodeEventsToast();
   const isInUse = useShinkaiNodeManager((state) => state.isInUse);
   const autoStartShinkaiNodeTried = useRef<boolean>(false);
   const { data: shinkaiNodeIsRunning } = useShinkaiNodeIsRunningQuery({
@@ -59,17 +56,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   });
   const { mutateAsync: shinkaiNodeSetOptions } =
     useShinkaiNodeSetOptionsMutation();
-  const { mutateAsync: shinkaiNodeSpawn } = useShinkaiNodeSpawnMutation({
-    onMutate: () => {
-      startingShinkaiNodeToast();
-    },
-    onError: () => {
-      errorStartingShinkaiNodeToast();
-    },
-    onSuccess: () => {
-      successStartingShinkaiNodeToast();
-    },
-  });
+  const { mutateAsync: shinkaiNodeSpawn } = useShinkaiNodeSpawnMutation({});
 
   /*
     All this auto start code is a workaround while we implement a way to synchronize the app state between browser and tauri

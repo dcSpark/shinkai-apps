@@ -1,44 +1,65 @@
-use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
-use std::sync::Arc;
-use tokio::sync::Mutex;
-
 use super::ollama_api::ollama_api_client::OllamaApiClient;
+use super::ollama_api::ollama_api_types::OllamaApiPullResponse;
 use super::process_handlers::logger::LogEntry;
 use super::process_handlers::ollama_process_handler::{OllamaOptions, OllamaProcessHandler};
 use super::process_handlers::shinkai_node_process_handler::ShinkaiNodeProcessHandler;
+use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
+use futures_util::StreamExt;
+use serde::{Deserialize, Serialize};
+use tokio::sync::broadcast;
 use tokio::sync::mpsc::channel;
 
+#[derive(Serialize, Deserialize, Clone)]
+pub enum ShinkaiNodeManagerEvent {
+    StartingShinkaiNode,
+    ShinkaiNodeStarted,
+    ShinkaiNodeStartError { error: String },
+
+    StartingOllama,
+    OllamaStarted,
+    OllamaStartError { error: String },
+
+    PullingModelStart { model: String },
+    PullingModelProgress { model: String, progress: u32 },
+    PullingModelDone { model: String },
+    PullingModelError { model: String, error: String },
+
+    StoppingShinkaiNode,
+    ShinkaiNodeStopped,
+    ShinkaiNodeStopError { error: String },
+
+    StoppingOllama,
+    OllamaStopped,
+    OllamaStopError { error: String },
+}
+
 pub struct ShinkaiNodeManager {
-    ollama_process: Arc<Mutex<OllamaProcessHandler>>,
-    shinkai_node_process: Arc<Mutex<ShinkaiNodeProcessHandler>>,
-    // ollama_process_event_handler: Arc<Mutex<Option<ShinkaiNodeProcessHandler>>>,
-    // shinkai_node_process_event_handler: Arc<Mutex<Option<ShinkaiNodeProcessHandler>>>,
+    ollama_process: OllamaProcessHandler,
+    shinkai_node_process: ShinkaiNodeProcessHandler,
+    event_broadcaster: broadcast::Sender<ShinkaiNodeManagerEvent>,
 }
 
 impl ShinkaiNodeManager {
-    /// Initializes a new ShinkaiNodeManager with default or provided options
     pub(crate) fn new() -> Self {
-        let (ollama_sender, ollama_receiver) = channel(100);
-        let (shinkai_node_sender, shinkai_node_receiver) = channel(100);
+        let (ollama_sender, _ollama_receiver) = channel(100);
+        let (shinkai_node_sender, _shinkai_node_receiver) = channel(100);
+        let (event_broadcaster, _) = broadcast::channel(10);
 
         ShinkaiNodeManager {
-            ollama_process: Arc::new(Mutex::new(OllamaProcessHandler::new(
+            ollama_process: OllamaProcessHandler::new(
                 OllamaOptions {
                     ollama_host: "127.0.0.1:11435".to_string(),
                 },
                 ollama_sender,
-            ))),
-            shinkai_node_process: Arc::new(Mutex::new(ShinkaiNodeProcessHandler::new(
-                shinkai_node_sender,
-            ))),
+            ),
+            shinkai_node_process: ShinkaiNodeProcessHandler::new(shinkai_node_sender),
+            event_broadcaster,
         }
     }
 
     pub async fn get_last_n_shinkai_node_logs(&self, n: usize) -> Vec<LogEntry> {
-        let shinkai_node_guard = self.shinkai_node_process.lock().await;
-        let ollama_guard = self.ollama_process.lock().await;
-        let shinkai_logs = shinkai_node_guard.get_last_n_logs(n).await;
-        let ollama_logs = ollama_guard.get_last_n_logs(n).await;
+        let shinkai_logs = self.shinkai_node_process.get_last_n_logs(n).await;
+        let ollama_logs = self.ollama_process.get_last_n_logs(n).await;
 
         let mut merged_logs = shinkai_logs;
         merged_logs.extend(ollama_logs.into_iter());
@@ -47,61 +68,172 @@ impl ShinkaiNodeManager {
     }
 
     pub async fn get_shinkai_node_options(&self) -> ShinkaiNodeOptions {
-        let shinkai_node_process_guard = self.shinkai_node_process.lock().await;
-        let options = shinkai_node_process_guard.get_options();
+        let options = self.shinkai_node_process.get_options();
         options.clone()
     }
 
     pub async fn is_running(&self) -> bool {
-        let shinkai_node_guard = self.shinkai_node_process.lock().await;
-        let ollama_guard = self.ollama_process.lock().await;
-        shinkai_node_guard.is_running().await && ollama_guard.is_running().await
+        self.shinkai_node_process.is_running().await && self.ollama_process.is_running().await
     }
 
-    pub async fn spawn(&self) -> Result<(), String> {
-        let shinkai_node_guard = self.shinkai_node_process.lock().await;
-        let ollama_guard = self.ollama_process.lock().await;
-
-        shinkai_node_guard.spawn().await?;
-        if let Err(e) = ollama_guard.spawn(None).await {
-            shinkai_node_guard.kill().await;
-            return Err(e);
+    pub async fn spawn(&mut self) -> Result<(), String> {
+        self.emit_event(ShinkaiNodeManagerEvent::StartingOllama);
+        match self.ollama_process.spawn(None).await {
+            Ok(_) => {
+                self.emit_event(ShinkaiNodeManagerEvent::OllamaStarted);
+            }
+            Err(e) => {
+                self.kill().await;
+                self.emit_event(ShinkaiNodeManagerEvent::OllamaStartError { error: e.clone() });
+                return Err(e);
+            }
         }
-        let mut default_model = ShinkaiNodeProcessHandler::default_options().initial_agent_models.unwrap();
+
+        let ollama_api_url = self.ollama_process.get_ollama_api_base_url();
+        let ollama_api = OllamaApiClient::new(ollama_api_url);
+
+        let default_embeddings_model = "snowflake-arctic-embed:xs";
+        self.emit_event(ShinkaiNodeManagerEvent::PullingModelStart {
+            model: default_embeddings_model.to_string(),
+        });
+        match ollama_api.pull_stream(default_embeddings_model).await {
+            Ok(mut stream) => {
+                while let Some(stream_value) = stream.next().await {
+                    match stream_value {
+                        Ok(value) => {
+                            if let OllamaApiPullResponse::Downloading {
+                                status: _,
+                                digest: _,
+                                total,
+                                completed,
+                            } = value
+                            {
+                                self.emit_event(ShinkaiNodeManagerEvent::PullingModelProgress {
+                                    model: default_embeddings_model.to_string(),
+                                    progress: (completed as f32 / total as f32 * 100.0) as u32,
+                                });
+                            }
+                        },
+                        Err(e) => {
+                            self.kill().await;
+                            self.emit_event(ShinkaiNodeManagerEvent::PullingModelError {
+                                model: default_embeddings_model.to_string(),
+                                error: e.to_string(),
+                            });
+                            return Err(e.to_string())
+                        },
+                    }
+                }
+            }
+            Err(e) => {
+                self.kill().await;
+                self.emit_event(ShinkaiNodeManagerEvent::PullingModelError {
+                    model: default_embeddings_model.to_string(),
+                    error: e.to_string(),
+                });
+                return Err(e.to_string());
+            }
+        }
+        self.emit_event(ShinkaiNodeManagerEvent::PullingModelDone {
+            model: default_embeddings_model.to_string(),
+        });
+
+        let mut default_model = ShinkaiNodeProcessHandler::default_options()
+            .initial_agent_models
+            .unwrap();
         default_model = default_model.replace("ollama:", "");
-        let ollama_api = OllamaApiClient::new(ollama_guard.get_ollama_api_base_url());
-        let ensure_default_model = ollama_api.pull(default_model.as_str()).await;
-        let ensure_default_embeddings_model = ollama_api.pull("snowflake-arctic-embed:xs").await;
-        if ensure_default_model.is_err() || ensure_default_embeddings_model.is_err() {
-            shinkai_node_guard.kill().await;
-            ollama_guard.kill().await;
-            return Err("unable to install initial models".to_string());
+        self.emit_event(ShinkaiNodeManagerEvent::PullingModelStart {
+            model: default_model.to_string(),
+        });
+        match ollama_api.pull_stream(&default_model).await {
+            Ok(mut stream) => {
+                while let Some(stream_value) = stream.next().await {
+                    match stream_value {
+                        Ok(value) => {
+                            if let OllamaApiPullResponse::Downloading {
+                                status: _,
+                                digest: _,
+                                total,
+                                completed,
+                            } = value
+                            {
+                                self.emit_event(ShinkaiNodeManagerEvent::PullingModelProgress {
+                                    model: default_model.to_string(),
+                                    progress: (completed as f32 / total as f32 * 100.0) as u32,
+                                });
+                            }
+                        },
+                        Err(e) => {
+                            self.kill().await;
+                            self.emit_event(ShinkaiNodeManagerEvent::PullingModelError {
+                                model: default_model.to_string(),
+                                error: e.to_string(),
+                            });
+                            return Err(e.to_string())
+                        },
+                    }
+                }
+            }
+            Err(e) => {
+                self.kill().await;
+                self.emit_event(ShinkaiNodeManagerEvent::PullingModelError {
+                    model: default_model.to_string(),
+                    error: e.to_string(),
+                });
+                return Err(e.to_string());
+            }
+        }
+        self.emit_event(ShinkaiNodeManagerEvent::PullingModelDone {
+            model: default_model.to_string(),
+        });
+
+        self.emit_event(ShinkaiNodeManagerEvent::StartingShinkaiNode);
+        match self.shinkai_node_process.spawn().await {
+            Ok(_) => {
+                self.emit_event(ShinkaiNodeManagerEvent::ShinkaiNodeStarted);
+            }
+            Err(e) => {
+                self.kill().await;
+                self.emit_event(ShinkaiNodeManagerEvent::ShinkaiNodeStartError {
+                    error: e.clone(),
+                });
+                return Err(e);
+            }
         }
         Ok(())
     }
 
-    pub async fn kill(&self) {
-        let shinkai_node_guard = self.shinkai_node_process.lock().await;
-        let ollama_guard = self.ollama_process.lock().await;
-        shinkai_node_guard.kill().await;
-        ollama_guard.kill().await;
+    pub async fn kill(&mut self) {
+        self.emit_event(ShinkaiNodeManagerEvent::StoppingShinkaiNode);
+        self.shinkai_node_process.kill().await;
+        self.emit_event(ShinkaiNodeManagerEvent::ShinkaiNodeStopped);
+        self.emit_event(ShinkaiNodeManagerEvent::StoppingOllama);
+        self.ollama_process.kill().await;
+        self.emit_event(ShinkaiNodeManagerEvent::OllamaStopped);
     }
 
     pub async fn remove_storage(&self) -> Result<(), String> {
-        let guard = self.shinkai_node_process.lock().await;
-        guard.remove_storage().await
+        self.shinkai_node_process.remove_storage().await
     }
 
     pub async fn set_default_shinkai_node_options(&mut self) -> ShinkaiNodeOptions {
-        let mut guard = self.shinkai_node_process.lock().await;
-        guard.set_default_options()
+        self.shinkai_node_process.set_default_options()
     }
 
     pub async fn set_shinkai_node_options(
         &mut self,
         options: ShinkaiNodeOptions,
     ) -> ShinkaiNodeOptions {
-        let mut guard = self.shinkai_node_process.lock().await;
-        guard.set_options(options)
+        self.shinkai_node_process.set_options(options)
+    }
+
+    fn emit_event(&mut self, new_event: ShinkaiNodeManagerEvent) {
+        let _ = self.event_broadcaster.send(new_event);
+    }
+
+    pub fn subscribe_to_events(
+        &mut self,
+    ) -> tokio::sync::broadcast::Receiver<ShinkaiNodeManagerEvent> {
+        self.event_broadcaster.subscribe()
     }
 }

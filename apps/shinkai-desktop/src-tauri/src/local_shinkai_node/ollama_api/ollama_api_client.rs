@@ -1,8 +1,9 @@
-use crate::local_shinkai_node::ollama_api::ollama_api_types::{
-    OllamaApiPullRequest, OllamaApiPullResponse, OllamaApiTagsResponse,
-};
+use std::error::Error;
+
 use futures_util::{Stream, StreamExt};
 use reqwest;
+
+use super::ollama_api_types::{OllamaApiPullRequest, OllamaApiPullResponse, OllamaApiTagsResponse};
 
 pub struct OllamaApiClient {
     base_url: String,
@@ -35,10 +36,7 @@ impl OllamaApiClient {
         Ok(response)
     }
 
-    pub async fn pull(
-        &self,
-        model_name: &str,
-    ) -> Result<(), String> {
+    pub async fn pull(&self, model_name: &str) -> Result<(), String> {
         match self.pull_stream(model_name).await {
             Ok(mut stream) => {
                 while let Some(stream_value) = stream.next().await {
@@ -55,32 +53,35 @@ impl OllamaApiClient {
     pub async fn pull_stream(
         &self,
         model_name: &str,
-    ) -> Result<Box<dyn Stream<Item = OllamaApiPullResponse> + Send + Unpin>, reqwest::Error> {
+    ) -> Result<Box<dyn Stream<Item = Result<OllamaApiPullResponse, String>> + Send + Unpin>, String> {
         let url = format!("{}/api/pull", self.base_url);
         let client = reqwest::Client::new();
         let body: OllamaApiPullRequest = OllamaApiPullRequest {
             stream: true,
             model: model_name.to_string(),
         };
-        let response = client.post(&url).json(&body).send().await?;
+        let response = client.post(&url).json(&body).send().await.map_err(|e| e.to_string())?;
         let stream = response.bytes_stream();
-        let stream = stream.map(|message_buffer| {
+        let mapped_stream = stream.map(|message_buffer| {
             if message_buffer.is_err() {
-                return OllamaApiPullResponse::PullingManifest {
-                    status: "pulling manifest".to_string(),
-                };
+                return Err(message_buffer.unwrap_err().to_string());
             }
             let message_str = String::from_utf8_lossy(&message_buffer.unwrap()).to_string();
-            let json_message: serde_json::Value = serde_json::from_str(&message_str).unwrap();
+            let json_message_result = serde_json::from_str(&message_str);
+            if json_message_result.is_err() {
+                return Err(json_message_result.unwrap_err().to_string());
+            }
+            let json_message: serde_json::Value = json_message_result.unwrap();
+            if json_message["error"].is_string() {
+                return Err(json_message["error"].as_str().unwrap_or("error").to_string());
+            }
             let status = json_message["status"]
                 .as_str()
                 .unwrap_or("Unknown")
                 .to_string();
-            println!("{}", message_str);
-            let value: OllamaApiPullResponse = match status.clone() {
-                s if s.contains("pulling manifest") => {
-                    OllamaApiPullResponse::PullingManifest { status }
-                }
+            let value = match status.clone() {
+                s if s.contains("pulling manifest") =>
+                    OllamaApiPullResponse::PullingManifest { status },
                 s if s.contains("pulling") => OllamaApiPullResponse::Downloading {
                     status,
                     digest: json_message["digest"]
@@ -101,11 +102,13 @@ impl OllamaApiClient {
                 s if s.contains("removing any unused layers") => {
                     OllamaApiPullResponse::RemovingUnusedLayers { status }
                 }
+
                 s if s.contains("success") => OllamaApiPullResponse::Success { status },
                 _ => OllamaApiPullResponse::PullingManifest { status },
             };
-            value
+            Ok(value)
         });
-        Ok(Box::new(stream))
+        let result = Box::new(mapped_stream) as Box<dyn Stream<Item = Result<OllamaApiPullResponse, String>> + Send + Unpin>; 
+        Ok(result)
     }
 }

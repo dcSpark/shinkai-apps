@@ -18,12 +18,8 @@ import { z } from 'zod';
 
 import { HOME_PATH } from '../routes/name';
 import { useAuth } from '../store/auth';
+import { useShinkaiNodeEventsToast } from '../windows/shinkai-node-manager/shinkai-node-manager-hooks';
 import { useShinkaiNodeSpawnMutation } from '../windows/shinkai-node-manager/shinkai-node-process-client';
-import {
-  errorStartingShinkaiNodeToast,
-  startingShinkaiNodeToast,
-  successStartingShinkaiNodeToast,
-} from '../windows/toasts-utils';
 import OnboardingLayout from './layout/onboarding-layout';
 
 const formSchema = z.object({
@@ -72,6 +68,7 @@ const ConnectionOptionButton = ({
 const OnboardingPage = () => {
   const navigate = useNavigate();
   const setAuth = useAuth((state) => state.setAuth);
+  useShinkaiNodeEventsToast();
   const { encryptionKeys } = useGetEncryptionKeys();
 
   const setupDataForm = useForm<z.infer<typeof formSchema>>({
@@ -111,15 +108,8 @@ const OnboardingPage = () => {
     isPending: shinkaiNodeSpawnIsPending,
     mutateAsync: shinkaiNodeSpawn,
   } = useShinkaiNodeSpawnMutation({
-    onMutate: () => {
-      startingShinkaiNodeToast();
-    },
     onSuccess: () => {
       onSubmit(setupDataForm.getValues());
-      successStartingShinkaiNodeToast();
-    },
-    onError: () => {
-      errorStartingShinkaiNodeToast();
     },
   });
 
