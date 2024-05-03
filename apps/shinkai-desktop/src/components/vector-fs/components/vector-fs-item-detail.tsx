@@ -1,8 +1,9 @@
+import { useDownloadVRFile } from '@shinkai_network/shinkai-node-state/lib/mutations/downloadVRFile/useDownloadVRFile';
 import {
   Badge,
+  Button,
   FileTypeIcon,
-  // Button,
-  // DrawerFooter,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
 } from '@shinkai_network/shinkai-ui';
@@ -14,11 +15,14 @@ import {
   formatDateToLocaleStringWithTime,
   formatDateToUSLocaleString,
 } from '../../../helpers/date';
+import { useAuth } from '../../../store/auth';
 import { useVectorFsStore } from '../context/vector-fs-context';
 
 export const VectorFileDetails = () => {
   const selectedFile = useVectorFsStore((state) => state.selectedFile);
   const size = partial({ standard: 'jedec' });
+  const auth = useAuth((state) => state.auth);
+  const { mutateAsync: downloadVRFile } = useDownloadVRFile();
 
   return (
     <React.Fragment>
@@ -81,9 +85,27 @@ export const VectorFileDetails = () => {
           </span>
         </div>
       </div>
-      {/*<DrawerFooter>*/}
-      {/*  <Button variant="default">Download Vector Resource</Button>*/}
-      {/*</DrawerFooter>*/}
+      <SheetFooter>
+        <Button
+          onClick={async () => {
+            if (!selectedFile || !auth) return;
+            await downloadVRFile({
+              nodeAddress: auth.node_address,
+              shinkaiIdentity: auth?.shinkai_identity,
+              profile: auth.profile,
+              path: selectedFile.path,
+              my_device_encryption_sk: auth.profile_encryption_sk,
+              my_device_identity_sk: auth.profile_identity_sk,
+              node_encryption_pk: auth.node_encryption_pk,
+              profile_encryption_sk: auth.profile_encryption_sk,
+              profile_identity_sk: auth.profile_identity_sk,
+            });
+          }}
+          variant="default"
+        >
+          Download Vector Resource
+        </Button>
+      </SheetFooter>
     </React.Fragment>
   );
 };
