@@ -1,5 +1,4 @@
 import { getProfileAgents } from '@shinkai_network/shinkai-message-ts/api';
-import { Agent } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
 
 import type { GetAgentsInput } from './types';
 

@@ -14,7 +14,6 @@ import {
   ArchiveIcon,
   Badge,
   Button,
-  ChatBubbleIcon,
   DirectoryTypeIcon,
   DisconnectIcon,
   Drawer,
