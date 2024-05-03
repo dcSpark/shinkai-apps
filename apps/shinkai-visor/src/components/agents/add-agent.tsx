@@ -2,6 +2,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { AgentAPIModel } from '@shinkai_network/shinkai-message-ts/models';
 import { useCreateAgent } from '@shinkai_network/shinkai-node-state/lib/mutations/createAgent/useCreateAgent';
 import {
+  Models,
+  modelsConfig,
+} from '@shinkai_network/shinkai-node-state/lib/utils/models';
+import {
   Button,
   Form,
   FormControl,
@@ -25,7 +29,6 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
-import { Models, modelsConfig } from './models';
 
 const formSchema = z
   .object({

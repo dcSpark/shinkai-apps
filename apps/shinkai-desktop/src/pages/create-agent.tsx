@@ -103,6 +103,22 @@ const modelOptions: { value: Models; label: string }[] = [
   },
 ];
 
+export const getModelObject = (
+  model: Models | string,
+  modelType: string,
+): AgentAPIModel => {
+  switch (model) {
+    case Models.OpenAI:
+      return { OpenAI: { model_type: modelType } };
+    case Models.TogetherComputer:
+      return { GenericAPI: { model_type: modelType } };
+    case Models.Ollama:
+      return { Ollama: { model_type: modelType } };
+    default:
+      return { [model]: { model_type: modelType } };
+  }
+};
+
 const CreateAgentPage = () => {
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
@@ -153,22 +169,6 @@ const CreateAgentPage = () => {
     }
     addAgentForm.setValue('modelType', modelTypeOptions[0].value);
   }, [modelTypeOptions, addAgentForm]);
-
-  const getModelObject = (
-    model: Models | string,
-    modelType: string,
-  ): AgentAPIModel => {
-    switch (model) {
-      case Models.OpenAI:
-        return { OpenAI: { model_type: modelType } };
-      case Models.TogetherComputer:
-        return { GenericAPI: { model_type: modelType } };
-      case Models.Ollama:
-        return { Ollama: { model_type: modelType } };
-      default:
-        return { [model]: { model_type: modelType } };
-    }
-  };
 
   const onSubmit = async (data: z.infer<typeof addAgentSchema>) => {
     if (!auth) return;

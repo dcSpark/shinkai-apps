@@ -10,6 +10,7 @@ import { VectorFolderSelectionProvider } from '../components/vector-fs/component
 import { VectorFsProvider } from '../components/vector-fs/context/vector-fs-context';
 import VectorFs from '../components/vector-fs/vector-fs';
 import SearchNodeFiles from '../components/vector-search/search-node-files';
+import AgentsPage from '../pages/agents';
 import ChatConversation from '../pages/chat/chat-conversation';
 import EmptyMessage from '../pages/chat/empty-message';
 import ChatLayout from '../pages/chat/layout';
@@ -38,7 +39,6 @@ import {
   successStartingShinkaiNodeToast,
 } from '../windows/toasts-utils';
 import {
-  ADD_AGENT_PATH,
   CREATE_CHAT_PATH,
   CREATE_JOB_PATH,
   EXPORT_CONNECTION,
@@ -164,14 +164,17 @@ const AppRoutes = () => {
             path="public-subscriptions"
           />
         </Route>
+
         <Route
           element={
             <ProtectedRoute>
-              <CreateAgentPage />
+              <Outlet />
             </ProtectedRoute>
           }
-          path={ADD_AGENT_PATH}
-        />
+        >
+          <Route element={<CreateAgentPage />} path="add-agent" />
+          <Route element={<AgentsPage />} index path="agents" />
+        </Route>
         <Route
           element={
             <ProtectedRoute>
