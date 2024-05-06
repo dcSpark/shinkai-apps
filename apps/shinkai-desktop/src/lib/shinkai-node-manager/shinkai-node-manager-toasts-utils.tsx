@@ -1,7 +1,7 @@
 import { ExternalToast, toast } from 'sonner';
 
-import { cn } from '../lib/utils';
-import { openShinkaiNodeManagerWindow } from './utils';
+import { cn } from '../utils';
+import { openShinkaiNodeManagerWindow } from './shinkai-node-manager-windows-utils';
 
 const ShinkaiNodeLogsLabel = ({
   className,

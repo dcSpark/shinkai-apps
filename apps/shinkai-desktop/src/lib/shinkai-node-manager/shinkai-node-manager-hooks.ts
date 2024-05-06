@@ -2,6 +2,10 @@ import { Event, EventCallback, listen } from '@tauri-apps/api/event';
 import { useEffect } from 'react';
 
 import {
+  ShinkaiNodeManagerEvent,
+  ShinkaiNodeManagerEventMap,
+} from './shinkai-node-manager-client-types';
+import {
   ollamaStartedToast,
   ollamaStartErrorToast,
   ollamaStopErrorToast,
@@ -18,11 +22,7 @@ import {
   startingShinkaiNodeToast,
   stoppingOllamaToast,
   stoppingShinkaiNodeToast,
-} from '../toasts-utils';
-import {
-  ShinkaiNodeManagerEvent,
-  ShinkaiNodeManagerEventMap,
-} from './shinkai-node-process-client-types';
+} from './shinkai-node-manager-toasts-utils';
 
 /**
  * Custom React hook to subscribe to Tauri events.

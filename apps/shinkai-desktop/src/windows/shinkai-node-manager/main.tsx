@@ -42,9 +42,20 @@ import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 
 import logo from '../../../src-tauri/icons/128x128@2x.png';
-import { useAuth } from '../../store/auth';
-import { useShinkaiNodeManager } from '../../store/shinkai-node-manager';
-import { initSyncStorage } from '../../store/sync-utils';
+import { OllamaModels } from '../../components/shinkai-node-manager/ollama-models';
+import {
+  queryClient,
+  useShinkaiNodeGetLastNLogsQuery,
+  useShinkaiNodeGetOptionsQuery,
+  useShinkaiNodeIsRunningQuery,
+  useShinkaiNodeKillMutation,
+  useShinkaiNodeRemoveStorageMutation,
+  useShinkaiNodeSetDefaultOptionsMutation,
+  useShinkaiNodeSetOptionsMutation,
+  useShinkaiNodeSpawnMutation,
+} from '../../lib/shinkai-node-manager/shinkai-node-manager-client';
+import { ShinkaiNodeOptions } from '../../lib/shinkai-node-manager/shinkai-node-manager-client-types';
+import { useShinkaiNodeEventsToast } from '../../lib/shinkai-node-manager/shinkai-node-manager-hooks';
 import {
   errorOllamaModelsSyncToast,
   errorRemovingShinkaiNodeStorageToast,
@@ -57,20 +68,10 @@ import {
   successOllamaModelsSyncToast,
   successRemovingShinkaiNodeStorageToast,
   successShinkaiNodeSetDefaultOptionsToast,
-} from '../toasts-utils';
-import { useShinkaiNodeEventsToast } from './shinkai-node-manager-hooks';
-import {
-  queryClient,
-  useShinkaiNodeGetLastNLogsQuery,
-  useShinkaiNodeGetOptionsQuery,
-  useShinkaiNodeIsRunningQuery,
-  useShinkaiNodeKillMutation,
-  useShinkaiNodeRemoveStorageMutation,
-  useShinkaiNodeSetDefaultOptionsMutation,
-  useShinkaiNodeSetOptionsMutation,
-  useShinkaiNodeSpawnMutation,
-} from './shinkai-node-process-client';
-import { ShinkaiNodeOptions } from './shinkai-node-process-client-types';
+} from '../../lib/shinkai-node-manager/shinkai-node-manager-toasts-utils';
+import { useAuth } from '../../store/auth';
+import { useShinkaiNodeManager } from '../../store/shinkai-node-manager';
+import { initSyncStorage } from '../../store/sync-utils';
 
 initSyncStorage();
 
@@ -105,7 +106,7 @@ const App = () => {
     },
     onError: () => {
       shinkaiNodeStartErrorToast();
-    }
+    },
   });
   const { isPending: shinkaiNodeKillIsPending, mutateAsync: shinkaiNodeKill } =
     useShinkaiNodeKillMutation({
@@ -117,7 +118,7 @@ const App = () => {
       },
       onError: () => {
         shinkaiNodeStopErrorToast();
-      }
+      },
     });
   const {
     isPending: shinkaiNodeRemoveStorageIsPending,
@@ -306,6 +307,9 @@ const App = () => {
           <TabsTrigger className="grow" value="options">
             Options
           </TabsTrigger>
+          <TabsTrigger className="grow" value="models">
+            Models
+          </TabsTrigger>
         </TabsList>
         <TabsContent className="h-full" value="logs">
           <ScrollArea className="h-full [&>div>div]:!block">
@@ -364,6 +368,10 @@ const App = () => {
               </form>
             </Form>
           </ScrollArea>
+        </TabsContent>
+
+        <TabsContent className="h-full" value="models">
+          <OllamaModels />
         </TabsContent>
       </Tabs>
 

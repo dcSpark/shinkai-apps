@@ -8,7 +8,7 @@ import {
 } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api';
 
-import { LogEntry, ShinkaiNodeOptions } from './shinkai-node-process-client-types';
+import { LogEntry, ShinkaiNodeOptions } from './shinkai-node-manager-client-types';
 
 // Client
 export const queryClient = new QueryClient();

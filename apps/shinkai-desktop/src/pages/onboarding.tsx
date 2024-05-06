@@ -18,8 +18,8 @@ import { z } from 'zod';
 
 import { HOME_PATH } from '../routes/name';
 import { useAuth } from '../store/auth';
-import { useShinkaiNodeEventsToast } from '../windows/shinkai-node-manager/shinkai-node-manager-hooks';
-import { useShinkaiNodeSpawnMutation } from '../windows/shinkai-node-manager/shinkai-node-process-client';
+import { useShinkaiNodeEventsToast } from '../lib/shinkai-node-manager/shinkai-node-manager-hooks';
+import { useShinkaiNodeSpawnMutation } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 import OnboardingLayout from './layout/onboarding-layout';
 
 const formSchema = z.object({

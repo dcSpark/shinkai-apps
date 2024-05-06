@@ -10,6 +10,7 @@ import { VectorFolderSelectionProvider } from '../components/vector-fs/component
 import { VectorFsProvider } from '../components/vector-fs/context/vector-fs-context';
 import VectorFs from '../components/vector-fs/vector-fs';
 import SearchNodeFiles from '../components/vector-search/search-node-files';
+import { useShinkaiNodeEventsToast } from '../lib/shinkai-node-manager/shinkai-node-manager-hooks';
 import ChatConversation from '../pages/chat/chat-conversation';
 import EmptyMessage from '../pages/chat/empty-message';
 import ChatLayout from '../pages/chat/layout';
@@ -27,12 +28,11 @@ import UnavailableShinkaiNode from '../pages/unavailable-shinkai-node';
 import WelcomePage from '../pages/welcome';
 import { useAuth } from '../store/auth';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
-import { useShinkaiNodeEventsToast } from '../windows/shinkai-node-manager/shinkai-node-manager-hooks';
 import {
   useShinkaiNodeIsRunningQuery,
   useShinkaiNodeSetOptionsMutation,
   useShinkaiNodeSpawnMutation,
-} from '../windows/shinkai-node-manager/shinkai-node-process-client';
+} from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 import {
   ADD_AGENT_PATH,
   CREATE_CHAT_PATH,
