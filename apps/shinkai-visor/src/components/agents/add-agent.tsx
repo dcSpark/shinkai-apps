@@ -239,6 +239,8 @@ export const AddAgent = () => {
       return;
     }
     if (currentModel === Models.Ollama) {
+      form.setValue('externalUrl', modelsConfig[Models.Ollama].apiUrl);
+
       setModelTypeOptions(
         (ollamaModels ?? []).map((model) => ({
           label: model.model,

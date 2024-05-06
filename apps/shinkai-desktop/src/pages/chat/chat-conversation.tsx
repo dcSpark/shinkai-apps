@@ -36,6 +36,11 @@ import {
   SheetTitle,
   SheetTrigger,
   Skeleton,
+  Tooltip,
+  TooltipContent,
+  TooltipPortal,
+  TooltipProvider,
+  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { Placeholder } from '@tiptap/extension-placeholder';
 import { EditorContent, Extension, useEditor } from '@tiptap/react';
@@ -548,9 +553,24 @@ export const ConversationHeader = () => {
         <span className="line-clamp-1 inline text-sm font-medium capitalize text-white">
           {currentInbox?.custom_name || currentInbox?.inbox_id}
         </span>
-        <Badge className="text-gray-80 inline truncate bg-gray-400 text-start text-xs font-normal shadow-none">
-          {currentInbox?.agent?.id}
-        </Badge>
+        <TooltipProvider delayDuration={0}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Badge className="text-gray-80 inline cursor-pointer truncate bg-gray-400 text-start text-xs font-normal shadow-none">
+                {currentInbox?.agent?.id}
+              </Badge>
+            </TooltipTrigger>
+            <TooltipPortal>
+              <TooltipContent
+                className="flex items-center gap-2"
+                sideOffset={5}
+              >
+                <span className="text-gray-80">Model: </span>
+                {currentInbox?.agent?.model}
+              </TooltipContent>
+            </TooltipPortal>
+          </Tooltip>
+        </TooltipProvider>
       </div>
       {hasConversationContext && (
         <Sheet>
