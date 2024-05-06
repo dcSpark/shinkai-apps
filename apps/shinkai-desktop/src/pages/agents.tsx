@@ -53,7 +53,17 @@ const AgentsPage = () => {
     navigate('/add-agent');
   };
   return (
-    <SimpleLayout title="Agents">
+    <SimpleLayout classname="relative" title="Agents">
+      <div className="absolute right-0 top-[36px]">
+        <Button
+          className="h-[40px] gap-2"
+          onClick={onAddAgentClick}
+          size="auto"
+        >
+          <Plus className="h-4 w-4" />
+          <span>Add Agent</span>
+        </Button>
+      </div>
       <div className="flex h-full flex-col space-y-3">
         {!agents?.length ? (
           <div className="flex grow flex-col items-center justify-center">
@@ -71,31 +81,19 @@ const AgentsPage = () => {
             <Button onClick={onAddAgentClick}>Add Agent</Button>
           </div>
         ) : (
-          <>
-            <ScrollArea className="flex h-full flex-col justify-between [&>div>div]:!block">
-              <div className="divide-y divide-gray-400">
-                {agents?.map((agent) => (
-                  <AgentCard
-                    agentApiKey={agent.api_key ?? ''}
-                    agentId={agent.id}
-                    externalUrl={agent.external_url ?? ''}
-                    key={agent.id}
-                    model={agent.model}
-                  />
-                ))}
-              </div>
-            </ScrollArea>
-            <div className="fixed bottom-4 right-4">
-              <Button
-                className="h-[60px] w-[60px]"
-                data-testid="add-agent-button"
-                onClick={onAddAgentClick}
-                size="icon"
-              >
-                <Plus className="h-7 w-7" />
-              </Button>
+          <ScrollArea className="flex h-full flex-col justify-between [&>div>div]:!block">
+            <div className="divide-y divide-gray-400">
+              {agents?.map((agent) => (
+                <AgentCard
+                  agentApiKey={agent.api_key ?? ''}
+                  agentId={agent.id}
+                  externalUrl={agent.external_url ?? ''}
+                  key={agent.id}
+                  model={agent.model}
+                />
+              ))}
             </div>
-          </>
+          </ScrollArea>
         )}
       </div>
     </SimpleLayout>
