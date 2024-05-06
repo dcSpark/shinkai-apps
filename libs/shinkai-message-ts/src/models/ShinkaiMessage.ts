@@ -62,12 +62,19 @@ export interface RegistrationCode {
   permissionType: string;
 }
 
+export type AgentInbox = {
+  full_identity_name: string;
+  id: string;
+  model: string;
+};
+
 export type SmartInbox = {
   custom_name: string;
   inbox_id: string;
   last_message?: ShinkaiMessage;
   is_finished: boolean;
   job_scope: JobScope;
+  agent: AgentInbox;
 };
 
 export type CreateChatInboxResponse = {

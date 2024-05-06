@@ -1,23 +1,25 @@
-import { getProfileAgents } from '@shinkai_network/shinkai-message-ts/api';
+import { deleteAgent as deleteAgentAPI } from '@shinkai_network/shinkai-message-ts/api';
 
-import type { GetAgentsInput } from './types';
+import { DeleteAgentInput } from './types';
 
-export const getAgents = async ({
+export const deleteAgent = async ({
   nodeAddress,
-  sender,
-  senderSubidentity,
   shinkaiIdentity,
+  profile,
+  agentId,
   my_device_encryption_sk,
   my_device_identity_sk,
   node_encryption_pk,
   profile_encryption_sk,
   profile_identity_sk,
-}: GetAgentsInput) => {
-  const result = await getProfileAgents(
+}: DeleteAgentInput) => {
+  return await deleteAgentAPI(
     nodeAddress,
-    sender,
-    senderSubidentity,
+    agentId,
     shinkaiIdentity,
+    profile,
+    shinkaiIdentity,
+    profile,
     {
       my_device_encryption_sk,
       my_device_identity_sk,
@@ -26,5 +28,4 @@ export const getAgents = async ({
       profile_identity_sk,
     },
   );
-  return result;
 };

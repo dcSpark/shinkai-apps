@@ -8,11 +8,6 @@ import {
   Badge,
   Button,
   buttonVariants,
-  Drawer,
-  DrawerContent,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -20,6 +15,11 @@ import {
   DropdownMenuTrigger,
   Form,
   FormField,
+  Sheet,
+  SheetContent,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import { ScrollArea } from '@shinkai_network/shinkai-ui';
@@ -27,18 +27,17 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Edit, Plus, TrashIcon } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { FormattedMessage } from 'react-intl';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-import { useAuth } from '../../store/auth/auth';
-import { EmptyAgents } from '../empty-agents/empty-agents';
-import { getModelObject } from './add-agent';
+import { useAuth } from '../store/auth';
+import { getModelObject } from './create-agent';
+import { SimpleLayout } from './layout/simple-layout';
 
-export const Agents = () => {
+const AgentsPage = () => {
   const auth = useAuth((state) => state.auth);
-  const history = useHistory();
+  const navigate = useNavigate();
   const { agents } = useAgents({
     nodeAddress: auth?.node_address ?? '',
     sender: auth?.shinkai_identity ?? '',
@@ -51,16 +50,37 @@ export const Agents = () => {
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
   const onAddAgentClick = () => {
-    history.push('/agents/add');
+    navigate('/add-agent');
   };
   return (
-    <div className="flex h-full flex-col space-y-3">
-      {!agents?.length ? (
-        <div className="flex h-full flex-col justify-center">
-          <EmptyAgents data-testid="empty-agents" />
-        </div>
-      ) : (
-        <>
+    <SimpleLayout classname="relative" title="Agents">
+      <div className="absolute right-3 top-[36px]">
+        <Button
+          className="h-[40px] gap-2"
+          onClick={onAddAgentClick}
+          size="auto"
+        >
+          <Plus className="h-4 w-4" />
+          <span>Add Agent</span>
+        </Button>
+      </div>
+      <div className="flex h-full flex-col space-y-3">
+        {!agents?.length ? (
+          <div className="flex grow flex-col items-center justify-center">
+            <div className="mb-8 space-y-3 text-center">
+              <span aria-hidden className="text-5xl">
+                🤖
+              </span>
+              <p className="text-2xl font-semibold">No available agents</p>
+              <p className="text-center text-sm font-medium text-gray-100">
+                Connect your first agent to start asking Shinkai AI. Try
+                connecting OpenAI
+              </p>
+            </div>
+
+            <Button onClick={onAddAgentClick}>Add Agent</Button>
+          </div>
+        ) : (
           <ScrollArea className="flex h-full flex-col justify-between [&>div>div]:!block">
             <div className="divide-y divide-gray-400">
               {agents?.map((agent) => (
@@ -74,21 +94,13 @@ export const Agents = () => {
               ))}
             </div>
           </ScrollArea>
-          <div className="fixed bottom-4 right-4">
-            <Button
-              className="h-[60px] w-[60px]"
-              data-testid="add-agent-button"
-              onClick={onAddAgentClick}
-              size="icon"
-            >
-              <Plus className="h-7 w-7" />
-            </Button>
-          </div>
-        </>
-      )}
-    </div>
+        )}
+      </div>
+    </SimpleLayout>
   );
 };
+
+export default AgentsPage;
 
 function AgentCard({
   agentId,
@@ -106,7 +118,7 @@ function AgentCard({
   const [isEditAgentDrawerOpen, setIsEditAgentDrawerOpen] =
     React.useState(false);
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   return (
     <React.Fragment>
@@ -114,10 +126,7 @@ function AgentCard({
         className="flex cursor-pointer items-center justify-between gap-1 rounded-lg py-3.5 pr-2.5 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400"
         data-testid={`${agentId}-agent-button`}
         onClick={() => {
-          history.replace(
-            { pathname: '/inboxes/create-job' },
-            { agentName: agentId },
-          );
+          navigate(`/create-job`, { state: { agentName: agentId } });
         }}
         role="button"
       >
@@ -300,16 +309,16 @@ const EditAgentDrawer = ({
   };
 
   return (
-    <Drawer onOpenChange={onOpenChange} open={open}>
-      <DrawerContent>
-        <DrawerHeader className="mb-6">
-          <DrawerTitle className="font-normal">
+    <Sheet onOpenChange={onOpenChange} open={open}>
+      <SheetContent>
+        <SheetHeader className="mb-6">
+          <SheetTitle className="font-normal">
             Update <span className="font-medium">{agentId}</span>{' '}
-          </DrawerTitle>
-        </DrawerHeader>
+          </SheetTitle>
+        </SheetHeader>
         <Form {...form}>
           <form
-            className="flex h-full flex-col justify-between space-y-6"
+            className="flex flex-col justify-between space-y-6"
             onSubmit={form.handleSubmit(submit)}
           >
             <div className="flex grow flex-col space-y-3">
@@ -318,10 +327,7 @@ const EditAgentDrawer = ({
                 disabled
                 name="agentName"
                 render={({ field }) => (
-                  <TextField
-                    field={field}
-                    label={<FormattedMessage id="agent-name" />}
-                  />
+                  <TextField field={field} label="Agent Name" />
                 )}
               />
 
@@ -329,10 +335,7 @@ const EditAgentDrawer = ({
                 control={form.control}
                 name="externalUrl"
                 render={({ field }) => (
-                  <TextField
-                    field={field}
-                    label={<FormattedMessage id="external-url" />}
-                  />
+                  <TextField field={field} label="External URL" />
                 )}
               />
 
@@ -340,10 +343,7 @@ const EditAgentDrawer = ({
                 control={form.control}
                 name="apiKey"
                 render={({ field }) => (
-                  <TextField
-                    field={field}
-                    label={<FormattedMessage id="api-key" />}
-                  />
+                  <TextField field={field} label="API Key" />
                 )}
               />
 
@@ -372,8 +372,8 @@ const EditAgentDrawer = ({
             </Button>
           </form>
         </Form>
-      </DrawerContent>
-    </Drawer>
+      </SheetContent>
+    </Sheet>
   );
 };
 const RemoveAgentDrawer = ({
@@ -399,19 +399,19 @@ const RemoveAgentDrawer = ({
   });
 
   return (
-    <Drawer onOpenChange={onOpenChange} open={open}>
-      <DrawerContent>
-        <DrawerHeader>
-          <DrawerTitle className="font-normal">
+    <Sheet onOpenChange={onOpenChange} open={open}>
+      <SheetContent>
+        <SheetHeader>
+          <SheetTitle className="font-normal">
             Delete Agent
             <span className="font-medium">{agentId}</span>{' '}
-          </DrawerTitle>
-        </DrawerHeader>
+          </SheetTitle>
+        </SheetHeader>
         <p className="text-gray-80 my-3 text-base">
           Are you sure you want to delete this agent? This action cannot be
           undone.
         </p>
-        <DrawerFooter>
+        <SheetFooter>
           <Button
             className="mt-4"
             isLoading={isPending}
@@ -433,8 +433,8 @@ const RemoveAgentDrawer = ({
           >
             Delete
           </Button>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
   );
 };

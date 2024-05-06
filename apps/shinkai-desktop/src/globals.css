@@ -21,6 +21,7 @@
     U+FEFF, U+FFFD;
 }
 
+
 html,
 body,
 #root {
@@ -37,6 +38,28 @@ body {
   }
 }
 
+
+@layer base {
+  ::-webkit-scrollbar {
+    @apply h-4 w-2;
+  }
+
+  ::-webkit-scrollbar:horizontal {
+    @apply h-2 w-4;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply rounded-full bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full border-[1px] border-white bg-gray-100/40;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-100;
+  }
+}
 /* prose styling for chat editor */
 .prose :where(p):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
   @apply my-2;

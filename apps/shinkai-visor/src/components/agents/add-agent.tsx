@@ -1,6 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AgentAPIModel } from '@shinkai_network/shinkai-message-ts/models';
 import { useCreateAgent } from '@shinkai_network/shinkai-node-state/lib/mutations/createAgent/useCreateAgent';
+import { useScanOllamaModels } from '@shinkai_network/shinkai-node-state/lib/queries/scanOllamaModels/useScanOllamaModels';
+import {
+  Models,
+  modelsConfig,
+} from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import {
   Button,
   Form,
@@ -25,7 +30,6 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
-import { Models, modelsConfig } from './models';
 
 const formSchema = z
   .object({
@@ -92,6 +96,22 @@ const formSchema = z
 
 type FormSchemaType = z.infer<typeof formSchema>;
 
+export const getModelObject = (
+  model: Models | string,
+  modelType: string,
+): AgentAPIModel => {
+  switch (model) {
+    case Models.OpenAI:
+      return { OpenAI: { model_type: modelType } };
+    case Models.TogetherComputer:
+      return { GenericAPI: { model_type: modelType } };
+    case Models.Ollama:
+      return { Ollama: { model_type: modelType } };
+    default:
+      return { [model]: { model_type: modelType } };
+  }
+};
+
 export const AddAgent = () => {
   const history = useHistory();
   const auth = useAuth((state) => state.auth);
@@ -116,6 +136,41 @@ export const AddAgent = () => {
     control: form.control,
     name: 'isCustomModel',
   });
+
+  const {
+    data: ollamaModels,
+    isError: isOllamaModelsError,
+    error: ollamaModelsError,
+  } = useScanOllamaModels(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      sender: auth?.shinkai_identity ?? '',
+      senderSubidentity: auth?.profile ?? '',
+      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+      my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+    },
+    {
+      enabled: !isCustomModelMode && currentModel === Models.Ollama,
+      refetchOnWindowFocus: true,
+      retry: 1,
+      staleTime: 0,
+    },
+  );
+
+  useEffect(() => {
+    if (isOllamaModelsError) {
+      toast.error(
+        'Failed to fetch local Ollama models. Please ensure Ollama is running correctly.',
+        {
+          description: ollamaModelsError?.message,
+        },
+      );
+    }
+  }, [isOllamaModelsError, ollamaModelsError?.message]);
 
   const { mutateAsync: createAgent, isPending } = useCreateAgent({
     onSuccess: () => {
@@ -144,21 +199,6 @@ export const AddAgent = () => {
       label: intl.formatMessage({ id: 'ollama' }),
     },
   ];
-  const getModelObject = (
-    model: Models | string,
-    modelType: string,
-  ): AgentAPIModel => {
-    switch (model) {
-      case Models.OpenAI:
-        return { OpenAI: { model_type: modelType } };
-      case Models.TogetherComputer:
-        return { GenericAPI: { model_type: modelType } };
-      case Models.Ollama:
-        return { Ollama: { model_type: modelType } };
-      default:
-        return { [model]: { model_type: modelType } };
-    }
-  };
   const submit = async (values: FormSchemaType) => {
     if (!auth) return;
     let model = getModelObject(values.model, values.modelType);
@@ -192,9 +232,21 @@ export const AddAgent = () => {
   const [modelTypeOptions, setModelTypeOptions] = useState<
     { label: string; value: string }[]
   >([]);
+
   useEffect(() => {
     if (isCustomModelMode) {
       form.setValue('externalUrl', '');
+      return;
+    }
+    if (currentModel === Models.Ollama) {
+      form.setValue('externalUrl', modelsConfig[Models.Ollama].apiUrl);
+
+      setModelTypeOptions(
+        (ollamaModels ?? []).map((model) => ({
+          label: model.model,
+          value: model.model,
+        })),
+      );
       return;
     }
     const modelConfig = modelsConfig[currentModel as Models];
@@ -205,7 +257,7 @@ export const AddAgent = () => {
         value: modelType.value,
       })),
     );
-  }, [currentModel, form, isCustomModelMode]);
+  }, [currentModel, form, isCustomModelMode, ollamaModels]);
   useEffect(() => {
     if (!modelTypeOptions?.length) {
       return;

@@ -1,23 +1,25 @@
-import { getProfileAgents } from '@shinkai_network/shinkai-message-ts/api';
+import { updateAgent as updateAgentAPI } from '@shinkai_network/shinkai-message-ts/api';
 
-import type { GetAgentsInput } from './types';
+import { UpdateAgentInput } from './types';
 
-export const getAgents = async ({
+export const updateAgent = async ({
   nodeAddress,
-  sender,
-  senderSubidentity,
   shinkaiIdentity,
+  profile,
+  agent,
   my_device_encryption_sk,
   my_device_identity_sk,
   node_encryption_pk,
   profile_encryption_sk,
   profile_identity_sk,
-}: GetAgentsInput) => {
-  const result = await getProfileAgents(
+}: UpdateAgentInput) => {
+  return await updateAgentAPI(
     nodeAddress,
-    sender,
-    senderSubidentity,
+    agent,
     shinkaiIdentity,
+    profile,
+    shinkaiIdentity,
+    profile,
     {
       my_device_encryption_sk,
       my_device_identity_sk,
@@ -26,5 +28,4 @@ export const getAgents = async ({
       profile_identity_sk,
     },
   );
-  return result;
 };

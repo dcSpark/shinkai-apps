@@ -36,6 +36,11 @@ import {
   SheetTitle,
   SheetTrigger,
   Skeleton,
+  Tooltip,
+  TooltipContent,
+  TooltipPortal,
+  TooltipProvider,
+  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { Placeholder } from '@tiptap/extension-placeholder';
 import { EditorContent, Extension, useEditor } from '@tiptap/react';
@@ -498,6 +503,10 @@ const MessageEditor = ({
                 onSubmitRef?.current?.();
                 return this.editor.commands.clearContent();
               },
+              'Mod-Enter': () => {
+                onSubmitRef?.current?.();
+                return this.editor.commands.clearContent();
+              },
               'Shift-Enter': ({ editor }) =>
                 editor.commands.first(({ commands }) => [
                   () => commands.newlineInCode(),
@@ -543,10 +552,30 @@ export const ConversationHeader = () => {
   const hasConversationContext = hasFolders || hasFiles;
 
   return (
-    <div className="flex h-[48px] items-center justify-between border-b border-gray-400 px-4 py-2">
-      <span className="line-clamp-1 text-base font-medium capitalize text-white">
-        {currentInbox?.custom_name || currentInbox?.inbox_id}
-      </span>
+    <div className="flex h-[58px] items-center justify-between border-b border-gray-400 px-4 py-2">
+      <div className="space-x-2.5">
+        <span className="line-clamp-1 inline text-sm font-medium capitalize text-white">
+          {currentInbox?.custom_name || currentInbox?.inbox_id}
+        </span>
+        <TooltipProvider delayDuration={0}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Badge className="text-gray-80 inline cursor-pointer truncate bg-gray-400 text-start text-xs font-normal shadow-none">
+                {currentInbox?.agent?.id}
+              </Badge>
+            </TooltipTrigger>
+            <TooltipPortal>
+              <TooltipContent
+                className="flex items-center gap-2"
+                sideOffset={5}
+              >
+                <span className="text-gray-80">Model: </span>
+                {currentInbox?.agent?.model}
+              </TooltipContent>
+            </TooltipPortal>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
       {hasConversationContext && (
         <Sheet>
           <SheetTrigger asChild>
@@ -563,7 +592,7 @@ export const ConversationHeader = () => {
                     : 'folders'}
                 </span>
               )}
-              {hasFiles && (
+              {!hasFiles && (
                 <span className="text-gray-80 flex items-center gap-1 text-xs font-medium">
                   <FileTypeIcon className="ml-1 h-4 w-4" />
                   {currentInbox?.job_scope.vector_fs_items.length}{' '}

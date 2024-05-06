@@ -1,7 +1,4 @@
-import {
-  SerializedAgent,
-  SmartInbox,
-} from '@shinkai_network/shinkai-message-ts/models';
+import { Agent, SmartInbox } from '@shinkai_network/shinkai-message-ts/models';
 import { ZodSchema } from 'zod';
 
 import { ACTIONS_MAP } from './actions';
@@ -48,7 +45,7 @@ export interface ServiceWorkerExternalMessageIsNodePristineResponse {
 
 export type ServiceWorkerExternalMessageGetProfileAgents = never;
 export interface ServiceWorkerExternalMessageGetProfileAgentsResponse {
-  agents: SerializedAgent[];
+  agents: Agent[];
 }
 
 export type ServiceWorkerExternalMessageGetProfileInboxes = never;
@@ -63,15 +60,15 @@ export interface ServiceWorkerExternalMessageQuickConnectionIntent {
 export type ServiceWorkerExternalMessageQuickConnectionIntentResponse = void;
 
 export type ServiceWorkerExternalMessageIsInstalledResponse = {
-  isInstalled: true,
-  version: string,
+  isInstalled: true;
+  version: string;
 };
 
 export interface ServiceWorkerExternalMessageIsConnected {
   nodeAddress: string;
 }
 export type ServiceWorkerExternalMessageIsConnectedResponse = {
-  isNodeConnected: boolean,
+  isNodeConnected: boolean;
 };
 
 export type ServiceWorkerExternalMessageExportConnectionIntentResponse = void;

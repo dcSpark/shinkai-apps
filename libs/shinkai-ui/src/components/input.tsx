@@ -62,7 +62,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {startAdornment}
           </Badge>
         ) : null}
-        {endAdornment ? (
+        {endAdornment && typeof endAdornment === 'string' ? (
           <Badge
             className="peer/adornment adornment absolute right-4 top-[30px]"
             ref={endAdornmentRef}
@@ -71,10 +71,18 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {endAdornment}
           </Badge>
         ) : null}
+        {endAdornment &&
+        typeof endAdornment !== 'string' &&
+        React.isValidElement(endAdornment)
+          ? React.cloneElement(endAdornment as React.ReactElement, {
+              ref: endAdornmentRef,
+            })
+          : null}
       </>
     );
   },
 );
+
 Input.displayName = 'Input';
 
 export { Input };

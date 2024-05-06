@@ -4,23 +4,23 @@ import {
   ActiveIcon,
   ArchiveIcon,
   Button,
-  ChatBubbleIcon,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuPortal,
-  DropdownMenuTrigger,
-  JobBubbleIcon,
+  // ChatBubbleIcon,
+  // DropdownMenu,
+  // DropdownMenuContent,
+  // DropdownMenuItem,
+  // DropdownMenuPortal,
+  // DropdownMenuTrigger,
+  // JobBubbleIcon,
   ScrollArea,
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { cn } from '@shinkai_network/shinkai-ui/utils';
+// import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Plus } from 'lucide-react';
-import React, { useMemo, useRef, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
+import React, { useMemo, useRef } from 'react';
+// import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
 import { useAuth } from '../../store/auth/auth';
@@ -33,7 +33,7 @@ export const Inboxes = () => {
   const history = useHistory();
   const auth = useAuth((state) => state.auth);
   const dialContainerRef = useRef<HTMLDivElement>(null);
-  const [dialOpened, setDialOpened] = useState<boolean>(false);
+  // const [dialOpened, setDialOpened] = useState<boolean>(false);
   const sender = auth?.shinkai_identity ?? '';
   // const [isEditInboxNameDialogOpened, setIsEditInboxNameDialogOpened] =
   //   useState<{ isOpened: boolean; inboxId: string; name: string }>({
@@ -73,9 +73,9 @@ export const Inboxes = () => {
   const onCreateJobClick = () => {
     history.push('/inboxes/create-job');
   };
-  const onCreateInboxClick = () => {
-    history.push('/inboxes/create-inbox');
-  };
+  // const onCreateInboxClick = () => {
+  //   history.push('/inboxes/create-inbox');
+  // };
 
   // const openEditInboxNameDialog = (inboxId: string, name: string) => {
   //   setIsEditInboxNameDialogOpened({
@@ -182,44 +182,44 @@ export const Inboxes = () => {
         </div>
       )}
       <div className="fixed bottom-4 right-4" ref={dialContainerRef}>
-        {auth?.shinkai_identity.includes('localhost') ? (
-          <Button
-            className="h-[60px] w-[60px]"
-            onClick={() => onCreateJobClick()}
-            size="icon"
-          >
-            <Plus />
-          </Button>
-        ) : (
-          <DropdownMenu onOpenChange={(isOpen) => setDialOpened(isOpen)}>
-            <DropdownMenuTrigger asChild>
-              <Button className="h-[60px] w-[60px]" size="icon">
-                <Plus
-                  className={cn(
-                    'h-7 w-7 transition-transform',
-                    dialOpened && 'rotate-45',
-                  )}
-                />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuPortal container={dialContainerRef.current}>
-              <DropdownMenuContent align="end" className="px-2.5 py-2">
-                <DropdownMenuItem onClick={() => onCreateJobClick()}>
-                  <JobBubbleIcon className="mr-2 h-4 w-4" />
-                  <span>
-                    <FormattedMessage id="create-job" />
-                  </span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onCreateInboxClick()}>
-                  <ChatBubbleIcon className="mr-2 h-4 w-4" />
-                  <span>
-                    <FormattedMessage id="create-inbox" />
-                  </span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenuPortal>
-          </DropdownMenu>
-        )}
+        {/* auth?.shinkai_identity.includes('localhost') ? (*/}
+        <Button
+          className="h-[60px] w-[60px]"
+          onClick={() => onCreateJobClick()}
+          size="icon"
+        >
+          <Plus />
+        </Button>
+        {/*) : (*/}
+        {/*  <DropdownMenu onOpenChange={(isOpen) => setDialOpened(isOpen)}>*/}
+        {/*    <DropdownMenuTrigger asChild>*/}
+        {/*      <Button className="h-[60px] w-[60px]" size="icon">*/}
+        {/*        <Plus*/}
+        {/*          className={cn(*/}
+        {/*            'h-7 w-7 transition-transform',*/}
+        {/*            dialOpened && 'rotate-45',*/}
+        {/*          )}*/}
+        {/*        />*/}
+        {/*      </Button>*/}
+        {/*    </DropdownMenuTrigger>*/}
+        {/*    <DropdownMenuPortal container={dialContainerRef.current}>*/}
+        {/*      <DropdownMenuContent align="end" className="px-2.5 py-2">*/}
+        {/*        <DropdownMenuItem onClick={() => onCreateJobClick()}>*/}
+        {/*          <JobBubbleIcon className="mr-2 h-4 w-4" />*/}
+        {/*          <span>*/}
+        {/*            <FormattedMessage id="create-job" />*/}
+        {/*          </span>*/}
+        {/*        </DropdownMenuItem>*/}
+        {/*        <DropdownMenuItem onClick={() => onCreateInboxClick()}>*/}
+        {/*          <ChatBubbleIcon className="mr-2 h-4 w-4" />*/}
+        {/*          <span>*/}
+        {/*            <FormattedMessage id="create-inbox" />*/}
+        {/*          </span>*/}
+        {/*        </DropdownMenuItem>*/}
+        {/*      </DropdownMenuContent>*/}
+        {/*    </DropdownMenuPortal>*/}
+        {/*  </DropdownMenu>*/}
+        {/*)}*/}
       </div>
       {/*<EditInboxNameDialog*/}
       {/*  inboxId={isEditInboxNameDialogOpened.inboxId || ''}*/}

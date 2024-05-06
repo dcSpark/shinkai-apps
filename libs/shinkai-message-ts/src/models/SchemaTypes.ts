@@ -15,6 +15,8 @@ export enum MessageSchemaType {
   APIGetMessagesFromInboxRequest = 'APIGetMessagesFromInboxRequest',
   APIReadUpToTimeRequest = 'APIReadUpToTimeRequest',
   APIAddAgentRequest = 'APIAddAgentRequest',
+  APIModifyAgentRequest = 'APIModifyAgentRequest',
+  APIRemoveAgentRequest = 'APIRemoveAgentRequest',
   TextContent = 'TextContent',
   SymmetricKeyExchange = 'SymmetricKeyExchange',
   APIFinishJob = 'APIFinishJob',
@@ -33,6 +35,7 @@ export enum MessageSchemaType {
   VecFsDeleteItem = 'VecFsDeleteItem',
   ConvertFilesAndSaveToFolder = 'ConvertFilesAndSaveToFolder',
   VecFsSearchItems = 'VecFsSearchItems',
+  VecFsRetrieveVRPack = 'VecFsRetrieveVRPack',
   // subscriptions
   AvailableSharedItems = 'AvailableSharedItems',
   CreateShareableFolder = 'CreateShareableFolder',
@@ -42,7 +45,7 @@ export enum MessageSchemaType {
   MySubscriptions = 'MySubscriptions',
   // ollama
   APIScanOllamaModels = 'APIScanOllamaModels',
-  APIAddOllamaModels = 'APIAddOllamaModels'
+  APIAddOllamaModels = 'APIAddOllamaModels',
 }
 export interface LocalScopeVRKaiEntry {
   vrkai: {
@@ -213,6 +216,17 @@ export interface SerializedAgent {
   storage_bucket_permissions: string[];
   allowed_message_senders: string[];
 }
+export type Agent = {
+  id: string;
+  full_identity_name: string; // ShinkaiName
+  perform_locally: boolean;
+  external_url?: string;
+  api_key?: string;
+  model: string;
+  toolkit_permissions: string[];
+  storage_bucket_permissions: string[];
+  allowed_message_senders: string[];
+};
 export type AgentAPIModel = {
   OpenAI?: OpenAI;
   GenericAPI?: GenericAPI;
