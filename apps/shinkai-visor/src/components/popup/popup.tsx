@@ -33,6 +33,7 @@ import { Inboxes } from '../inboxes/inboxes';
 import { VectorFolderSelectionProvider } from '../node-files/folder-selection-list';
 import { VectorFsProvider } from '../node-files/node-file-context';
 import NodeFiles from '../node-files/node-files';
+import { PublicKeys } from '../public-keys/public-keys';
 import SearchNodeFiles from '../search-node-files/search-node-files';
 import { Settings } from '../settings/settings';
 import { SplashScreen } from '../splash-screen/splash-screen';
@@ -160,6 +161,9 @@ export const Popup = () => {
                   <Switch>
                     <Route path="/settings/export-connection">
                       <ExportConnection />
+                    </Route>
+                    <Route path="/settings/public-keys">
+                      <PublicKeys />
                     </Route>
                     <Route path="/settings/create-registration-code">
                       <CreateRegistrationCode />
