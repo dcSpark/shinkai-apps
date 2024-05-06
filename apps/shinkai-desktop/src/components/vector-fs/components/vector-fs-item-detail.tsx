@@ -7,6 +7,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@shinkai_network/shinkai-ui';
+import { dialog, fs } from '@tauri-apps/api';
+import { BaseDirectory } from '@tauri-apps/api/fs';
 import { partial } from 'filesize';
 import { LockIcon } from 'lucide-react';
 import React from 'react';
@@ -22,7 +24,34 @@ export const VectorFileDetails = () => {
   const selectedFile = useVectorFsStore((state) => state.selectedFile);
   const size = partial({ standard: 'jedec' });
   const auth = useAuth((state) => state.auth);
-  const { mutateAsync: downloadVRFile } = useDownloadVRFile();
+  const { mutateAsync: downloadVRFile } = useDownloadVRFile({
+    onSuccess: async (response, variables) => {
+      const file = new Blob([response.data], {
+        type: 'application/octet-stream',
+      });
+      const dataUrl = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.readAsDataURL(file);
+      });
+
+      const path = await dialog.save({
+        defaultPath: variables.path.split('/').at(-1) + '.vrkai',
+      });
+      if (!path) return;
+      await fs.writeBinaryFile(
+        {
+          path,
+          contents: await fetch(dataUrl).then((response) =>
+            response.arrayBuffer(),
+          ),
+        },
+        {
+          dir: BaseDirectory.Download,
+        },
+      );
+    },
+  });
 
   return (
     <React.Fragment>

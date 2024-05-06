@@ -357,6 +357,7 @@ const ChatLayout = () => {
                         navigate('/create-job');
                       }}
                       size="icon"
+                      variant="ghost"
                     >
                       <PlusIcon className="h-4 w-4" />
                       <span className="sr-only">Create AI Chat</span>
