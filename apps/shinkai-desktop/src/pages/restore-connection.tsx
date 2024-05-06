@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { decryptMessageWithPassphrase } from '@shinkai_network/shinkai-message-ts/cryptography/shinkai-encryption';
 import {
   Button,
+  buttonVariants,
   ErrorMessage,
   Form,
   FormControl,
@@ -11,10 +12,11 @@ import {
   FormMessage,
   TextField,
 } from '@shinkai_network/shinkai-ui';
-import { Trash, Upload } from 'lucide-react';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { ArrowLeft, Trash, Upload } from 'lucide-react';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { Link, To, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
 import { useAuth } from '../store/auth';
@@ -86,9 +88,22 @@ const RestoreConnectionPage = () => {
   return (
     <OnboardingLayout>
       <div className="flex h-full flex-col space-y-3">
-        <h1 className="mb-4 text-left text-2xl font-semibold">
-          Restore connection <span aria-hidden>🔑</span>
-        </h1>
+        <div className="mb-4 flex items-center gap-2">
+          <Link
+            className={cn(
+              buttonVariants({
+                size: 'icon',
+                variant: 'ghost',
+              }),
+            )}
+            to={-1 as To}
+          >
+            <ArrowLeft className="h-6 w-6" />
+          </Link>
+          <h1 className="text-left text-2xl font-semibold">
+            Restore connection <span aria-hidden>🔑</span>
+          </h1>
+        </div>
         <p>Use a connection file and passphrase</p>
 
         <Form {...form}>
