@@ -22,6 +22,7 @@ import { ExportConnection } from '../pages/export-connection';
 import GenerateCodePage from '../pages/generate-code';
 import MainLayout from '../pages/layout/main-layout';
 import OnboardingPage from '../pages/onboarding';
+import { PublicKeys } from '../pages/public-keys';
 import RestoreConnectionPage from '../pages/restore-connection';
 import SettingsPage from '../pages/settings';
 import UnavailableShinkaiNode from '../pages/unavailable-shinkai-node';
@@ -200,6 +201,14 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
           path={EXPORT_CONNECTION}
+        />
+        <Route
+          element={
+            <ProtectedRoute>
+              <PublicKeys />
+            </ProtectedRoute>
+          }
+          path={'public-keys'}
         />
       </Route>
       <Route element={<Navigate replace to={'inboxes/'} />} path="/" />
