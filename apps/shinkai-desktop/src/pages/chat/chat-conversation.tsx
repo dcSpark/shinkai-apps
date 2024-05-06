@@ -543,10 +543,15 @@ export const ConversationHeader = () => {
   const hasConversationContext = hasFolders || hasFiles;
 
   return (
-    <div className="flex h-[48px] items-center justify-between border-b border-gray-400 px-4 py-2">
-      <span className="line-clamp-1 text-base font-medium capitalize text-white">
-        {currentInbox?.custom_name || currentInbox?.inbox_id}
-      </span>
+    <div className="flex h-[58px] items-center justify-between border-b border-gray-400 px-4 py-2">
+      <div className="space-x-2.5">
+        <span className="line-clamp-1 inline text-sm font-medium capitalize text-white">
+          {currentInbox?.custom_name || currentInbox?.inbox_id}
+        </span>
+        <Badge className="text-gray-80 inline truncate bg-gray-400 text-start text-xs font-normal shadow-none">
+          {currentInbox?.agent?.id}
+        </Badge>
+      </div>
       {hasConversationContext && (
         <Sheet>
           <SheetTrigger asChild>
@@ -563,7 +568,7 @@ export const ConversationHeader = () => {
                     : 'folders'}
                 </span>
               )}
-              {hasFiles && (
+              {!hasFiles && (
                 <span className="text-gray-80 flex items-center gap-1 text-xs font-medium">
                   <FileTypeIcon className="ml-1 h-4 w-4" />
                   {currentInbox?.job_scope.vector_fs_items.length}{' '}
