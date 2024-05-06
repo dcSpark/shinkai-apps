@@ -54,7 +54,7 @@ const AgentsPage = () => {
   };
   return (
     <SimpleLayout classname="relative" title="Agents">
-      <div className="absolute right-0 top-[36px]">
+      <div className="absolute right-3 top-[36px]">
         <Button
           className="h-[40px] gap-2"
           onClick={onAddAgentClick}
