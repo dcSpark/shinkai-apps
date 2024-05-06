@@ -12,7 +12,7 @@ import {
   FormField,
   TextField,
 } from '@shinkai_network/shinkai-ui';
-import { QrCode } from 'lucide-react';
+// import { QrCode } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
@@ -43,7 +43,8 @@ export const ConnectMethodQuickStart = () => {
   const setAuth = useAuth((state) => state.setAuth);
   const DEFAULT_NODE_ADDRESS =
     location.state?.nodeAddress ?? 'http://127.0.0.1:9550';
-  const { encryptionKeys, isLoading: isLoadingEncryptionKeys } = useGetEncryptionKeys();
+  const { encryptionKeys, isLoading: isLoadingEncryptionKeys } =
+    useGetEncryptionKeys();
   const form = useForm<FormType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -93,13 +94,13 @@ export const ConnectMethodQuickStart = () => {
       node_encryption_pk: '',
       node_address: values.node_address,
       registration_name: values.registration_name,
-      ...(encryptionKeys),
+      ...encryptionKeys,
     });
   };
 
-  const selectQRCodeMethod = () => {
-    history.push('/nodes/connect/method/qr-code');
-  };
+  // const selectQRCodeMethod = () => {
+  //   history.push('/nodes/connect/method/qr-code');
+  // };
   const selectRestoreMethod = () => {
     history.push('/nodes/connect/method/restore-connection');
   };
@@ -208,16 +209,16 @@ export const ConnectMethodQuickStart = () => {
       </div>
 
       <div className="flex gap-4">
-        <ConnectionMethodOption
-          description={
-            <FormattedMessage id="qr-code-connection-connection-method-description" />
-          }
-          icon={<QrCode className="text-gray-100" />}
-          onClick={() => selectQRCodeMethod()}
-          title={
-            <FormattedMessage id="qr-code-connection-connection-method-title" />
-          }
-        />
+        {/*<ConnectionMethodOption*/}
+        {/*  description={*/}
+        {/*    <FormattedMessage id="qr-code-connection-connection-method-description" />*/}
+        {/*  }*/}
+        {/*  icon={<QrCode className="text-gray-100" />}*/}
+        {/*  onClick={() => selectQRCodeMethod()}*/}
+        {/*  title={*/}
+        {/*    <FormattedMessage id="qr-code-connection-connection-method-title" />*/}
+        {/*  }*/}
+        {/*/>*/}
 
         <ConnectionMethodOption
           description={

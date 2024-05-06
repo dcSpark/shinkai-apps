@@ -10,6 +10,7 @@ import { VectorFolderSelectionProvider } from '../components/vector-fs/component
 import { VectorFsProvider } from '../components/vector-fs/context/vector-fs-context';
 import VectorFs from '../components/vector-fs/vector-fs';
 import SearchNodeFiles from '../components/vector-search/search-node-files';
+import AgentsPage from '../pages/agents';
 import ChatConversation from '../pages/chat/chat-conversation';
 import EmptyMessage from '../pages/chat/empty-message';
 import ChatLayout from '../pages/chat/layout';
@@ -21,6 +22,7 @@ import { ExportConnection } from '../pages/export-connection';
 import GenerateCodePage from '../pages/generate-code';
 import MainLayout from '../pages/layout/main-layout';
 import OnboardingPage from '../pages/onboarding';
+import { PublicKeys } from '../pages/public-keys';
 import RestoreConnectionPage from '../pages/restore-connection';
 import SettingsPage from '../pages/settings';
 import UnavailableShinkaiNode from '../pages/unavailable-shinkai-node';
@@ -34,7 +36,6 @@ import {
   useShinkaiNodeSpawnMutation,
 } from '../windows/shinkai-node-manager/shinkai-node-process-client';
 import {
-  ADD_AGENT_PATH,
   CREATE_CHAT_PATH,
   CREATE_JOB_PATH,
   EXPORT_CONNECTION,
@@ -154,11 +155,13 @@ const AppRoutes = () => {
         <Route
           element={
             <ProtectedRoute>
-              <CreateAgentPage />
+              <Outlet />
             </ProtectedRoute>
           }
-          path={ADD_AGENT_PATH}
-        />
+        >
+          <Route element={<CreateAgentPage />} path="add-agent" />
+          <Route element={<AgentsPage />} index path="agents" />
+        </Route>
         <Route
           element={
             <ProtectedRoute>
@@ -198,6 +201,14 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
           path={EXPORT_CONNECTION}
+        />
+        <Route
+          element={
+            <ProtectedRoute>
+              <PublicKeys />
+            </ProtectedRoute>
+          }
+          path={'public-keys'}
         />
       </Route>
       <Route element={<Navigate replace to={'inboxes/'} />} path="/" />

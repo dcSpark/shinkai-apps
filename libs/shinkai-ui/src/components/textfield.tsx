@@ -36,6 +36,7 @@ const TextField = ({
     name?: string;
     ref?: React.ForwardedRef<HTMLInputElement>;
     placeholder?: string;
+    readOnly?: boolean;
   };
   autoFocus?: boolean;
   label: React.ReactNode;

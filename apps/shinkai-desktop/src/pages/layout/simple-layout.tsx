@@ -1,9 +1,7 @@
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { LucideArrowLeft } from 'lucide-react';
 import React from 'react';
-import { Link } from 'react-router-dom';
-
-import { HOME_PATH } from '../../routes/name';
+import { Link, To } from 'react-router-dom';
 
 export const SubpageLayout = ({
   title,
@@ -14,7 +12,7 @@ export const SubpageLayout = ({
 }) => {
   return (
     <div className="relative mx-auto max-w-lg py-10">
-      <Link className="absolute left-0" to={HOME_PATH}>
+      <Link className="absolute left-0" to={-1 as To}>
         <LucideArrowLeft />
         <span className="sr-only">Back</span>
       </Link>

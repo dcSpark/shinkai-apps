@@ -33,10 +33,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { Edit3 } from 'lucide-react';
+import { Edit3, PlusIcon } from 'lucide-react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, Outlet, useMatch } from 'react-router-dom';
+import { Link, Outlet, useMatch, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -299,7 +299,7 @@ const MessageButton = ({
 
 const ChatLayout = () => {
   const auth = useAuth((state) => state.auth);
-
+  const navigate = useNavigate();
   const { inboxes } = useGetInboxes(
     {
       nodeAddress: auth?.node_address ?? '',
@@ -341,16 +341,34 @@ const ChatLayout = () => {
   }, [inboxes]);
 
   return (
-    <div className="flex h-full">
+    <div className="flex h-screen overflow-hidden">
       {inboxes.length > 0 ? (
         <>
-          <div className="flex max-w-[280px] flex-[280px] shrink-0 flex-col px-2 py-4">
+          <div className="flex h-full max-w-[280px] flex-[280px] shrink-0 flex-col px-2 py-4">
             <div className="mb-4 flex items-center justify-between gap-2 px-2">
               <h2>Conversations</h2>
-              {/*<Button size="icon" variant="ghost">*/}
-              {/*  <PlusIcon className="h-4 w-4" />*/}
-              {/*  <span className="sr-only">Create AI Chat</span>*/}
-              {/*</Button>*/}
+              <TooltipProvider delayDuration={0}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      className="h-8 w-8"
+                      onClick={() => {
+                        navigate('/create-job');
+                      }}
+                      size="icon"
+                      variant="ghost"
+                    >
+                      <PlusIcon className="h-4 w-4" />
+                      <span className="sr-only">Create AI Chat</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipPortal>
+                    <TooltipContent>
+                      <p>Create AI Chat</p>
+                    </TooltipContent>
+                  </TooltipPortal>
+                </Tooltip>
+              </TooltipProvider>
             </div>
             <ScrollArea>
               <Tabs defaultValue="actives">

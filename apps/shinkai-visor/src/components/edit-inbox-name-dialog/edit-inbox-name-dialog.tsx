@@ -1,6 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { AgentInbox } from '@shinkai_network/shinkai-message-ts/models';
 import { useUpdateInboxName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateInboxName/useUpdateInboxName';
 import {
+  Badge,
   Button,
   DialogFooter,
   Drawer,
@@ -25,6 +27,7 @@ export type EditInboxNameDialogProps = {
   inboxId: string;
   name: string;
   onOpenChange: (open: boolean) => void;
+  currentAgent?: AgentInbox;
 };
 
 const formSchema = z.object({
@@ -40,6 +43,7 @@ export const EditInboxNameDialog = ({
   onSaved,
   inboxId,
   onOpenChange,
+  currentAgent,
 }: EditInboxNameDialogProps) => {
   const auth = useAuth((state) => state.auth);
   const form = useForm<FormSchemaType>({
@@ -86,7 +90,15 @@ export const EditInboxNameDialog = ({
             Name
           </DrawerTitle>
         </DrawerHeader>
-
+        <div className="mb-4 flex justify-between text-sm">
+          <span className="text-gray-80 flex">Current AI Agent</span>
+          <div className="space-x-2.5">
+            <span className="font-medium">{currentAgent?.id}</span>
+            <Badge className="text-gray-80 truncate bg-gray-400 text-start text-xs font-normal shadow-none">
+              {currentAgent?.model}
+            </Badge>
+          </div>
+        </div>
         <Form {...form}>
           <form
             className="flex h-full flex-col justify-between space-y-3"

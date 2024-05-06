@@ -10,7 +10,7 @@ import {
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { Loader2, QrCode } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -212,18 +212,17 @@ const OnboardingPage = () => {
         </div>
 
         <div className="mt-4 flex flex-row justify-between gap-4">
-          <ConnectionOptionButton
-            className="h-32"
-            description={'Use the QR code to connect'}
-            icon={<QrCode className="text-gray-100" />}
-            onClick={() => {
-              navigate('/connect-qr');
-            }}
-            title={'QR Code'}
-          />
+          {/*<ConnectionOptionButton*/}
+          {/*  className="h-32"*/}
+          {/*  description={'Use the QR code to connect'}*/}
+          {/*  icon={<QrCode className="text-gray-100" />}*/}
+          {/*  onClick={() => {*/}
+          {/*    navigate('/connect-qr');*/}
+          {/*  }}*/}
+          {/*  title={'QR Code'}*/}
+          {/*/>*/}
 
           <ConnectionOptionButton
-            className="h-32"
             description={'Use a connection file and passphrase'}
             icon={
               <span aria-hidden className="text-base">

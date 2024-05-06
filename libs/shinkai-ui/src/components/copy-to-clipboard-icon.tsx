@@ -44,6 +44,7 @@ const CopyToClipboardIcon = ({
       disabled={!string}
       onClick={onCopy}
       size={'icon'}
+      type="button"
       variant="ghost"
     >
       <ClipboardIcon

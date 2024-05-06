@@ -9,7 +9,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  ChatBubbleIcon,
+  // ChatBubbleIcon,
   FilesIcon,
   InboxIcon,
   JobBubbleIcon,
@@ -85,7 +85,7 @@ const NavLink = ({
 export function MainNav() {
   const navigate = useNavigate();
   const logout = useAuth((state) => state.setLogout);
-  const auth = useAuth((state) => state.auth);
+  // const auth = useAuth((state) => state.auth);
   const isLocalShinkaiNodeIsUse = useShinkaiNodeManager(
     (state) => state.isInUse,
   );
@@ -112,14 +112,14 @@ export function MainNav() {
       href: '/create-job',
       icon: <JobBubbleIcon className="h-6 w-6" />,
     },
-    auth?.shinkai_identity.includes('localhost') && {
-      title: 'Create DM Chat',
-      href: '/create-chat',
-      icon: <ChatBubbleIcon className="h-6 w-6" />,
-    },
+    // auth?.shinkai_identity.includes('localhost') && {
+    //   title: 'Create DM Chat',
+    //   href: '/create-chat',
+    //   icon: <ChatBubbleIcon className="h-6 w-6" />,
+    // },
     {
-      title: 'Add Agent',
-      href: '/add-agent',
+      title: 'Agents',
+      href: '/agents',
       icon: <BotIcon className="h-6 w-6" />,
     },
     {
