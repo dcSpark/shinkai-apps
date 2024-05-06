@@ -1,8 +1,6 @@
-use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
-use cpal::BackendSpecificError;
+use cpal::traits::{DeviceTrait, StreamTrait};
 use std::convert::TryInto;
 use std::sync::{Arc, Mutex};
-use std::thread;
 use std::time::{Duration, Instant};
 use webrtc_vad::Vad;
 use whisper_rs::{FullParams, SamplingStrategy, WhisperContext};

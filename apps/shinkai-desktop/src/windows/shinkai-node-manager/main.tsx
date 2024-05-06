@@ -48,18 +48,19 @@ import { initSyncStorage } from '../../store/sync-utils';
 import {
   errorOllamaModelsSyncToast,
   errorRemovingShinkaiNodeStorageToast,
-  errorStartingShinkaiNodeToast,
-  errorStoppingShinkaiNodeToast,
+  shinkaiNodeStartedToast,
+  shinkaiNodeStartErrorToast,
+  shinkaiNodeStopErrorToast,
+  shinkaiNodeStoppedToast,
   startingShinkaiNodeToast,
+  stoppingShinkaiNodeToast,
   successOllamaModelsSyncToast,
   successRemovingShinkaiNodeStorageToast,
   successShinkaiNodeSetDefaultOptionsToast,
-  successStartingShinkaiNodeToast,
-  successStoppingShinkaiNodeToast,
 } from '../toasts-utils';
+import { useShinkaiNodeEventsToast } from './shinkai-node-manager-hooks';
 import {
   queryClient,
-  ShinkaiNodeOptions,
   useShinkaiNodeGetLastNLogsQuery,
   useShinkaiNodeGetOptionsQuery,
   useShinkaiNodeIsRunningQuery,
@@ -69,6 +70,7 @@ import {
   useShinkaiNodeSetOptionsMutation,
   useShinkaiNodeSpawnMutation,
 } from './shinkai-node-process-client';
+import { ShinkaiNodeOptions } from './shinkai-node-process-client-types';
 
 initSyncStorage();
 
@@ -99,20 +101,23 @@ const App = () => {
       startingShinkaiNodeToast();
     },
     onSuccess: () => {
-      successStartingShinkaiNodeToast();
+      shinkaiNodeStartedToast();
     },
     onError: () => {
-      errorStartingShinkaiNodeToast();
-    },
+      shinkaiNodeStartErrorToast();
+    }
   });
   const { isPending: shinkaiNodeKillIsPending, mutateAsync: shinkaiNodeKill } =
     useShinkaiNodeKillMutation({
+      onMutate: () => {
+        stoppingShinkaiNodeToast();
+      },
       onSuccess: () => {
-        successStoppingShinkaiNodeToast();
+        shinkaiNodeStoppedToast();
       },
       onError: () => {
-        errorStoppingShinkaiNodeToast();
-      },
+        shinkaiNodeStopErrorToast();
+      }
     });
   const {
     isPending: shinkaiNodeRemoveStorageIsPending,
@@ -157,6 +162,7 @@ const App = () => {
     },
   });
 
+  useShinkaiNodeEventsToast();
   useEffect(() => {
     logsScrollRef.current?.scrollIntoView({
       behavior: 'smooth',
@@ -204,7 +210,10 @@ const App = () => {
                     shinkaiNodeKillIsPending ||
                     shinkaiNodeIsRunning
                   }
-                  onClick={() => shinkaiNodeSpawn()}
+                  onClick={() => {
+                    console.log('SPAWNING');
+                    shinkaiNodeSpawn();
+                  }}
                   variant={'default'}
                 >
                   {shinkaiNodeSpawnIsPending || shinkaiNodeKillIsPending ? (
@@ -214,7 +223,7 @@ const App = () => {
                   )}
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side='bottom'>
+              <TooltipContent side="bottom">
                 <p>Start Shinkai Node</p>
               </TooltipContent>
             </Tooltip>
@@ -239,7 +248,7 @@ const App = () => {
                   )}
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side='bottom'>
+              <TooltipContent side="bottom">
                 <p>Stop Shinkai Node</p>
               </TooltipContent>
             </Tooltip>
@@ -260,7 +269,7 @@ const App = () => {
                   )}
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side='bottom'>
+              <TooltipContent side="bottom">
                 <p>Reset Shinkai Node</p>
               </TooltipContent>
             </Tooltip>
@@ -281,7 +290,7 @@ const App = () => {
                   )}
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side='bottom'>
+              <TooltipContent side="bottom">
                 <p>Sync Ollama Models</p>
               </TooltipContent>
             </Tooltip>

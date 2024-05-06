@@ -38,7 +38,7 @@ pub async fn shinkai_node_get_options() -> Result<ShinkaiNodeOptions, String> {
 
 #[tauri::command]
 pub async fn shinkai_node_spawn() -> Result<(), String> {
-    let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.lock().await;
+    let mut shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.lock().await;
     match shinkai_node_manager_guard.spawn().await {
         Ok(_) => Ok(()),
         Err(message) => Err(message),
@@ -47,7 +47,7 @@ pub async fn shinkai_node_spawn() -> Result<(), String> {
 
 #[tauri::command]
 pub async fn shinkai_node_kill() -> Result<(), String> {
-    let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.lock().await;
+    let mut shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.lock().await;
     shinkai_node_manager_guard.kill().await;
     Ok(())
 }
@@ -69,3 +69,4 @@ pub async fn shinkai_node_set_default_options() -> Result<ShinkaiNodeOptions, St
         .await;
     Ok(options)
 }
+
