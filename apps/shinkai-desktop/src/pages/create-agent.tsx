@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AgentAPIModel } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
 import { useCreateAgent } from '@shinkai_network/shinkai-node-state/lib/mutations/createAgent/useCreateAgent';
+import { useScanOllamaModels } from '@shinkai_network/shinkai-node-state/lib/queries/scanOllamaModels/useScanOllamaModels';
 import {
   Models,
   modelsConfig,
@@ -25,6 +26,7 @@ import {
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { CREATE_JOB_PATH } from '../routes/name';
@@ -146,12 +148,55 @@ const CreateAgentPage = () => {
   const { model: currentModel, isCustomModel: isCustomModelMode } =
     addAgentForm.watch();
 
+  const {
+    data: ollamaModels,
+    isError: isOllamaModelsError,
+    error: ollamaModelsError,
+  } = useScanOllamaModels(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      sender: auth?.shinkai_identity ?? '',
+      senderSubidentity: auth?.profile ?? '',
+      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+      my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+    },
+    {
+      enabled: !isCustomModelMode && currentModel === Models.Ollama,
+      retry: 1,
+      staleTime: 0,
+    },
+  );
+
+  useEffect(() => {
+    if (isOllamaModelsError) {
+      toast.error(
+        'Failed to fetch local Ollama models. Please ensure Ollama is running correctly.',
+        {
+          description: ollamaModelsError?.message,
+        },
+      );
+    }
+  }, [isOllamaModelsError, ollamaModelsError?.message]);
+
   const [modelTypeOptions, setModelTypeOptions] = useState<
     { label: string; value: string }[]
   >([]);
   useEffect(() => {
     if (isCustomModelMode) {
       addAgentForm.setValue('externalUrl', '');
+      return;
+    }
+    if (currentModel === Models.Ollama) {
+      setModelTypeOptions(
+        (ollamaModels ?? []).map((model) => ({
+          label: model.model,
+          value: model.model,
+        })),
+      );
       return;
     }
     const modelConfig = modelsConfig[currentModel as Models];
@@ -162,7 +207,7 @@ const CreateAgentPage = () => {
         value: modelType.value,
       })),
     );
-  }, [currentModel, addAgentForm]);
+  }, [currentModel, addAgentForm, isCustomModelMode, ollamaModels]);
   useEffect(() => {
     if (!modelTypeOptions?.length) {
       return;

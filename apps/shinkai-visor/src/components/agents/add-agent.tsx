@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AgentAPIModel } from '@shinkai_network/shinkai-message-ts/models';
 import { useCreateAgent } from '@shinkai_network/shinkai-node-state/lib/mutations/createAgent/useCreateAgent';
+import { useScanOllamaModels } from '@shinkai_network/shinkai-node-state/lib/queries/scanOllamaModels/useScanOllamaModels';
 import {
   Models,
   modelsConfig,
@@ -136,6 +137,41 @@ export const AddAgent = () => {
     name: 'isCustomModel',
   });
 
+  const {
+    data: ollamaModels,
+    isError: isOllamaModelsError,
+    error: ollamaModelsError,
+  } = useScanOllamaModels(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      sender: auth?.shinkai_identity ?? '',
+      senderSubidentity: auth?.profile ?? '',
+      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+      my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+    },
+    {
+      enabled: !isCustomModelMode && currentModel === Models.Ollama,
+      refetchOnWindowFocus: true,
+      retry: 1,
+      staleTime: 0,
+    },
+  );
+
+  useEffect(() => {
+    if (isOllamaModelsError) {
+      toast.error(
+        'Failed to fetch local Ollama models. Please ensure Ollama is running correctly.',
+        {
+          description: ollamaModelsError?.message,
+        },
+      );
+    }
+  }, [isOllamaModelsError, ollamaModelsError?.message]);
+
   const { mutateAsync: createAgent, isPending } = useCreateAgent({
     onSuccess: () => {
       history.replace(
@@ -196,9 +232,19 @@ export const AddAgent = () => {
   const [modelTypeOptions, setModelTypeOptions] = useState<
     { label: string; value: string }[]
   >([]);
+
   useEffect(() => {
     if (isCustomModelMode) {
       form.setValue('externalUrl', '');
+      return;
+    }
+    if (currentModel === Models.Ollama) {
+      setModelTypeOptions(
+        (ollamaModels ?? []).map((model) => ({
+          label: model.model,
+          value: model.model,
+        })),
+      );
       return;
     }
     const modelConfig = modelsConfig[currentModel as Models];
@@ -209,7 +255,7 @@ export const AddAgent = () => {
         value: modelType.value,
       })),
     );
-  }, [currentModel, form, isCustomModelMode]);
+  }, [currentModel, form, isCustomModelMode, ollamaModels]);
   useEffect(() => {
     if (!modelTypeOptions?.length) {
       return;
