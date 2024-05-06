@@ -1,5 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, FormField, TextField } from '@shinkai_network/shinkai-ui';
+import {
+  CopyToClipboardIcon,
+  Form,
+  FormField,
+  TextField,
+} from '@shinkai_network/shinkai-ui';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -35,66 +40,151 @@ export const PublicKeys = () => {
         <Form {...form}>
           <form className="flex flex-col justify-between space-y-8">
             <div className="flex grow flex-col space-y-5">
-              <FormField
-                control={form.control}
-                name="node_encryption_pk"
-                render={({ field }) => (
-                  <TextField
-                    field={{ ...field, readOnly: true }}
-                    label="Node Encryption Public Key"
+              <div>
+                <h2 className="text-gray-80 mb-2 text-sm">Node Public Keys</h2>
+                <div className="space-y-3">
+                  <FormField
+                    control={form.control}
+                    name="node_encryption_pk"
+                    render={({ field }) => (
+                      <TextField
+                        classes={{
+                          input: 'font-mono',
+                        }}
+                        endAdornment={
+                          <div className="w-8">
+                            <CopyToClipboardIcon
+                              className="peer/adornment adornment absolute right-1 top-4 rounded-md border border-gray-200 bg-gray-300 px-2"
+                              string={field.value}
+                            />
+                          </div>
+                        }
+                        field={{ ...field, readOnly: true }}
+                        label="Node Encryption"
+                      />
+                    )}
                   />
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="node_signature_pk"
-                render={({ field }) => (
-                  <TextField
-                    field={{ ...field, readOnly: true }}
-                    label="Node Signature Public Key"
+                  <FormField
+                    control={form.control}
+                    name="node_signature_pk"
+                    render={({ field }) => (
+                      <TextField
+                        classes={{
+                          input: 'font-mono',
+                        }}
+                        endAdornment={
+                          <div className="w-8">
+                            <CopyToClipboardIcon
+                              className="peer/adornment adornment absolute right-1 top-4 rounded-md border border-gray-200 bg-gray-300 px-2"
+                              string={field.value}
+                            />
+                          </div>
+                        }
+                        field={{ ...field, readOnly: true }}
+                        label="Node Signature"
+                      />
+                    )}
                   />
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="profile_encryption_pk"
-                render={({ field }) => (
-                  <TextField
-                    field={{ ...field, readOnly: true }}
-                    label="Profile Encryption Public Key"
+                </div>
+              </div>
+              <div>
+                <h2 className="text-gray-80 mb-2 text-sm">
+                  Profile Public Keys
+                </h2>
+                <div className="space-y-3">
+                  <FormField
+                    control={form.control}
+                    name="profile_encryption_pk"
+                    render={({ field }) => (
+                      <TextField
+                        classes={{
+                          input: 'font-mono',
+                        }}
+                        endAdornment={
+                          <div className="w-8">
+                            <CopyToClipboardIcon
+                              className="peer/adornment adornment absolute right-1 top-4 rounded-md border border-gray-200 bg-gray-300 px-2"
+                              string={field.value}
+                            />
+                          </div>
+                        }
+                        field={{ ...field, readOnly: true }}
+                        label="Profile Encryption"
+                      />
+                    )}
                   />
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="profile_identity_pk"
-                render={({ field }) => (
-                  <TextField
-                    field={{ ...field, readOnly: true }}
-                    label="Profile Identity Public Key"
+                  <FormField
+                    control={form.control}
+                    name="profile_identity_pk"
+                    render={({ field }) => (
+                      <TextField
+                        classes={{
+                          input: 'font-mono',
+                        }}
+                        endAdornment={
+                          <div className="w-8">
+                            <CopyToClipboardIcon
+                              className="peer/adornment adornment absolute right-1 top-4 rounded-md border border-gray-200 bg-gray-300 px-2"
+                              string={field.value}
+                            />
+                          </div>
+                        }
+                        field={{ ...field, readOnly: true }}
+                        label="Profile Identity"
+                      />
+                    )}
                   />
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="my_device_encryption_pk"
-                render={({ field }) => (
-                  <TextField
-                    field={{ ...field, readOnly: true }}
-                    label="My Device Encryption Public Key"
+                </div>
+              </div>
+              <div>
+                <h2 className="text-gray-80 mb-2 text-sm">
+                  My Device Public Keys
+                </h2>
+                <div className="space-y-3">
+                  <FormField
+                    control={form.control}
+                    name="my_device_encryption_pk"
+                    render={({ field }) => (
+                      <TextField
+                        classes={{
+                          input: 'font-mono',
+                        }}
+                        endAdornment={
+                          <div className="w-8">
+                            <CopyToClipboardIcon
+                              className="peer/adornment adornment absolute right-1 top-4 rounded-md border border-gray-200 bg-gray-300 px-2"
+                              string={field.value}
+                            />
+                          </div>
+                        }
+                        field={{ ...field, readOnly: true }}
+                        label="My Device Encryption"
+                      />
+                    )}
                   />
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="my_device_identity_pk"
-                render={({ field }) => (
-                  <TextField
-                    field={{ ...field, readOnly: true }}
-                    label="My Device Identity Public Key"
+                  <FormField
+                    control={form.control}
+                    name="my_device_identity_pk"
+                    render={({ field }) => (
+                      <TextField
+                        classes={{
+                          input: 'font-mono',
+                        }}
+                        endAdornment={
+                          <div className="w-8">
+                            <CopyToClipboardIcon
+                              className="peer/adornment adornment absolute right-1 top-4 rounded-md border border-gray-200 bg-gray-300 px-2"
+                              string={field.value}
+                            />
+                          </div>
+                        }
+                        field={{ ...field, readOnly: true }}
+                        label="My Device Identity"
+                      />
+                    )}
                   />
-                )}
-              />
+                </div>
+              </div>
             </div>
           </form>
         </Form>
