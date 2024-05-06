@@ -151,7 +151,7 @@ const DisplayInboxName = () => {
               <XIcon className="text-gray-80" />
             </DrawerClose>
             <DrawerHeader>
-              <DrawerTitle>Conversation Context</DrawerTitle>
+              <DrawerTitle>Chat Context</DrawerTitle>
               <DrawerDescription className="mb-4 mt-2">
                 List of folders and files used as context for this conversation
               </DrawerDescription>
@@ -204,6 +204,7 @@ const DisplayInboxName = () => {
         </Drawer>
       )}
       <EditInboxNameDialog
+        currentAgent={currentInbox?.agent}
         inboxId={currentInbox?.inbox_id || ''}
         name={currentInbox?.custom_name || ''}
         onCancel={() => setIsEditInboxNameDialogOpened(false)}
