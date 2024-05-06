@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useUpdateNodeName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateNodeName/useUpdateNodeName';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import {
@@ -18,13 +19,15 @@ import {
   SelectValue,
   TextField,
 } from '@shinkai_network/shinkai-ui';
+import { motion } from 'framer-motion';
 import { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { GENERATE_CODE_PATH } from '../routes/name';
-import { useAuth } from '../store/auth';
+import { SetupData, useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { SimpleLayout } from './layout/simple-layout';
 
@@ -38,9 +41,12 @@ const formSchema = z.object({
 
 type FormSchemaType = z.infer<typeof formSchema>;
 
+const MotionButton = motion(Button);
+
 const SettingsPage = () => {
   const navigate = useNavigate();
   const auth = useAuth((authStore) => authStore.auth);
+  const setAuth = useAuth((authStore) => authStore.setAuth);
 
   const defaultAgentId = useSettings(
     (settingsStore) => settingsStore.defaultAgentId,
@@ -77,6 +83,24 @@ const SettingsPage = () => {
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
 
+  const { mutateAsync: updateNodeName, isPending: isUpdateNodeNamePending } =
+    useUpdateNodeName({
+      onSuccess: () => {
+        toast.success('Node name updated successfully');
+        if (!auth) return;
+        const newAuth: SetupData = { ...auth };
+        setAuth({
+          ...newAuth,
+          shinkai_identity: currentShinkaiIdentity,
+        });
+      },
+      onError: (error) => {
+        toast.error('Failed to update node name', {
+          description: error.message,
+        });
+      },
+    });
+
   useEffect(() => {
     if (isNodeInfoSuccess) {
       form.reset({
@@ -86,6 +110,25 @@ const SettingsPage = () => {
       });
     }
   }, [form, isNodeInfoSuccess, nodeInfo?.node_name, nodeInfo?.version]);
+
+  const currentShinkaiIdentity = useWatch({
+    control: form.control,
+    name: 'shinkaiIdentity',
+  });
+  const handleUpdateNodeName = async () => {
+    if (!auth) return;
+    await updateNodeName({
+      nodeAddress: auth?.node_address ?? '',
+      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      profile: auth?.profile,
+      newNodeName: form.getValues().shinkaiIdentity,
+      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+      my_device_identity_sk: auth?.profile_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+    });
+  };
 
   useEffect(() => {
     setDefaultAgentId(currentDefaultAgentId);
@@ -138,12 +181,50 @@ const SettingsPage = () => {
               />
               <FormField
                 control={form.control}
-                disabled
                 name="shinkaiIdentity"
                 render={({ field }) => (
-                  <TextField field={field} label="Shinkai Identity" />
+                  <TextField
+                    field={{
+                      ...field,
+                      onKeyDown: (event) => {
+                        if (currentShinkaiIdentity === auth?.shinkai_identity)
+                          return;
+                        if (event.key === 'Enter') {
+                          handleUpdateNodeName();
+                        }
+                      },
+                    }}
+                    label="Shinkai Identity"
+                  />
                 )}
               />
+              {currentShinkaiIdentity !== auth?.shinkai_identity && (
+                <div className="flex items-center gap-3">
+                  <MotionButton
+                    className="h-10 min-w-[100px] rounded-lg text-sm"
+                    isLoading={isUpdateNodeNamePending}
+                    layout
+                    onClick={handleUpdateNodeName}
+                    size="auto"
+                    type="button"
+                  >
+                    Save
+                  </MotionButton>
+                  <Button
+                    className="min-w-10 h-10 rounded-lg text-sm"
+                    onClick={() => {
+                      form.setValue(
+                        'shinkaiIdentity',
+                        auth?.shinkai_identity ?? '',
+                      );
+                    }}
+                    type="button"
+                    variant="outline"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              )}
               <FormField
                 control={form.control}
                 disabled
