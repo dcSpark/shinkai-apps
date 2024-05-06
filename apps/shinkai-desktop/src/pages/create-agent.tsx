@@ -140,8 +140,12 @@ const CreateAgentPage = () => {
     isError,
     error,
   } = useCreateAgent({
-    onSuccess: () => {
-      navigate(CREATE_JOB_PATH);
+    onSuccess: (_, variables) => {
+      navigate(CREATE_JOB_PATH, {
+        state: {
+          agentName: variables.agent.id,
+        },
+      });
     },
   });
 
