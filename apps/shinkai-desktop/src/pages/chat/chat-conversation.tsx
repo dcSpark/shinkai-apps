@@ -503,6 +503,10 @@ const MessageEditor = ({
                 onSubmitRef?.current?.();
                 return this.editor.commands.clearContent();
               },
+              'Mod-Enter': () => {
+                onSubmitRef?.current?.();
+                return this.editor.commands.clearContent();
+              },
               'Shift-Enter': ({ editor }) =>
                 editor.commands.first(({ commands }) => [
                   () => commands.newlineInCode(),
