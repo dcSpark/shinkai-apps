@@ -1,0 +1,9 @@
+{
+  "tauri": {
+    "bundle": {
+      "resources": {
+        "bin/ollama-windows-resources/*": ""
+      }
+    }
+  }
+}
