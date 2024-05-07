@@ -524,7 +524,7 @@ export const Settings = () => {
           </Button>
           <Button
             className="flex flex-1 cursor-pointer flex-col items-start gap-2 rounded-lg p-4 pr-8 text-left"
-            onClick={() => history.push('/public-keys')}
+            onClick={() => history.push('settings/public-keys')}
             size="auto"
             variant="ghost"
           >
