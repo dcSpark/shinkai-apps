@@ -13,7 +13,7 @@ export enum OllamaModelSpeed {
 }
 
 export interface OllamaModel {
-  model: string,
+  model: 'llama3-gradient',
   tag: string,
   name: string,
   description: string,

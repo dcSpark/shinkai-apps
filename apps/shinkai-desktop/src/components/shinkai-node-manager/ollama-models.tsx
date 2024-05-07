@@ -10,6 +10,9 @@ import {
   TableRow,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { Loader2 } from 'lucide-react';
+import { ModelResponse } from 'ollama';
+import { useEffect, useRef } from 'react';
 
 import {
   OLLAMA_MODELS,
@@ -17,6 +20,7 @@ import {
   OllamaModelQuality,
   OllamaModelSpeed,
 } from '../../lib/shinkai-node-manager/ollama_models';
+import { useOllamaListQuery } from '../../lib/shinkai-node-manager/ollama-client';
 import { useAuth } from '../../store/auth';
 
 export const ModelQuailityTag = ({
@@ -64,11 +68,25 @@ export const OllamaModels = () => {
     //   errorOllamaModelsSyncToast();
     // },
   });
+  const { isLoading: isOllamaListLoading, data: installedOllamaModels } =
+    useOllamaListQuery({ host: 'http://127.0.0.1:11435' }, {});
 
   const fullName = (model: OllamaModel): string => {
     return `${model.model}:${model.tag}`;
   };
 
+  const installedOllamaModelsMap = useRef(new Map<string, ModelResponse>());
+
+  useEffect(() => {
+    installedOllamaModelsMap.current = new Map(
+      installedOllamaModels?.models.map((modelResponse) => [
+        modelResponse.name,
+        modelResponse,
+      ]) || [],
+    );
+  }, [installedOllamaModelsMap, installedOllamaModels]);
+
+  console.log('installedOllamaModelsMap', installedOllamaModelsMap);
   return (
     <div>
       <Table>
@@ -110,12 +128,23 @@ export const OllamaModels = () => {
                 <TableCell>{model.size} GB</TableCell>
                 <TableCell>{model.requiredRAM} GB</TableCell>
                 <TableCell>
-                  <Button
-                    className="hover:border-brand py-1.5 text-sm hover:bg-transparent hover:text-white"
-                    variant={'secondary'}
-                  >
-                    Pull
-                  </Button>
+                  {isOllamaListLoading ? (
+                    <Loader2 className="animate-spin" />
+                  ) : installedOllamaModelsMap.current.has(fullName(model)) ? (
+                    <Button
+                      className="hover:border-brand py-1.5 text-sm hover:bg-transparent hover:text-white"
+                      variant={'secondary'}
+                    >
+                      Delete
+                    </Button>
+                  ) : (
+                    <Button
+                      className="hover:border-brand py-1.5 text-sm hover:bg-transparent hover:text-white"
+                      variant={'secondary'}
+                    >
+                      Pull
+                    </Button>
+                  )}
                 </TableCell>
               </TableRow>
             );

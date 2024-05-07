@@ -13,6 +13,7 @@ pub struct OllamaOptions {
     pub ollama_host: String,
     pub ollama_num_parallel: u32,
     pub ollama_max_loaded_models: u32,
+    pub ollama_origins: Vec<String>,
 }
 
 pub struct OllamaProcessHandler {
@@ -39,6 +40,7 @@ impl OllamaProcessHandler {
             ollama_host: "127.0.0.1:11435".to_string(),
             ollama_num_parallel: 4,
             ollama_max_loaded_models: 3,
+            ollama_origins: ["*".to_string()].to_vec(),
         }
     }
 
