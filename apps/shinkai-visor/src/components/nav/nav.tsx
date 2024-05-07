@@ -95,6 +95,7 @@ const routeTitleDescriptionMapping: Record<
   [routes.Settings]: { title: <FormattedMessage id="setting.other" /> },
   [routes.Agents]: { title: <FormattedMessage id="agent.other" /> },
   [routes.AddAgent]: { title: <FormattedMessage id="add-agent" /> },
+  [routes.PublicKeys]: { title: 'Public Keys' },
 };
 
 const DisplayInboxName = () => {

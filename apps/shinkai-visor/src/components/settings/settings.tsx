@@ -24,7 +24,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
-import { TrashIcon } from 'lucide-react';
+import { ExternalLinkIcon, TrashIcon } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
@@ -118,6 +118,7 @@ export const Settings = () => {
       shortcutSidebar: sidebarShortcut,
       displaySummaryActionButton: displaySummaryActionButton,
       displayImageCaptureActionButton: displayImageCaptureActionButton,
+      shinkaiIdentity: auth?.shinkai_identity,
     },
   });
 
@@ -279,6 +280,45 @@ export const Settings = () => {
                       }
                     },
                   }}
+                  helperMessage={
+                    <span className="text-gray-80 inline-flex items-center gap-1 px-1 py-2.5 hover:text-white">
+                      {auth?.shinkai_identity.includes('localhost.shinkai') ? (
+                        <a
+                          className={cn(
+                            buttonVariants({
+                              size: 'auto',
+                              variant: 'link',
+                            }),
+                            'rounded-lg p-0 text-xs text-inherit underline',
+                          )}
+                          href={`https://shinkai-contracts.pages.dev?encryption_pk=${auth?.node_encryption_pk}&signature_pk=${auth?.node_signature_pk}`}
+                          rel="noreferrer"
+                          target="_blank"
+                        >
+                          Register your Shinkai Identity
+                        </a>
+                      ) : (
+                        <a
+                          className={cn(
+                            buttonVariants({
+                              size: 'auto',
+                              variant: 'link',
+                            }),
+                            'rounded-lg p-0 text-xs text-inherit underline',
+                          )}
+                          href={`https://shinkai-contracts.pages.dev/identity/${auth?.shinkai_identity?.replace(
+                            '@@',
+                            '',
+                          )}`}
+                          rel="noreferrer"
+                          target="_blank"
+                        >
+                          Go to My Shinkai Identity
+                        </a>
+                      )}
+                      <ExternalLinkIcon className="h-4 w-4" />
+                    </span>
+                  }
                   label={<FormattedMessage id="shinkai-identity" />}
                 />
               )}
@@ -524,7 +564,7 @@ export const Settings = () => {
           </Button>
           <Button
             className="flex flex-1 cursor-pointer flex-col items-start gap-2 rounded-lg p-4 pr-8 text-left"
-            onClick={() => history.push('/public-keys')}
+            onClick={() => history.push('settings/public-keys')}
             size="auto"
             variant="ghost"
           >
