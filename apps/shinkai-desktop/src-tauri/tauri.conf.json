@@ -24,7 +24,7 @@
         "open": true,
         "sidecar": true,
         "scope": [
-          { "name": "bin/shinkai-node-v0.7.1", "sidecar": true },
+          { "name": "bin/shinkai-node-v0.7.2", "sidecar": true },
           { "name": "bin/ollama-v0.1.33", "sidecar": true }
         ]
       },
@@ -74,7 +74,7 @@
         "minimumSystemVersion": "10.13"
       },
       "externalBin": [
-        "bin/shinkai-node-v0.7.1",
+        "bin/shinkai-node-v0.7.2",
         "bin/ollama-v0.1.33"
       ]
     },
