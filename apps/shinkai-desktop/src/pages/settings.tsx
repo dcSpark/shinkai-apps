@@ -4,6 +4,7 @@ import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAg
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import {
   Button,
+  buttonVariants,
   ExportIcon,
   Form,
   FormControl,
@@ -19,7 +20,9 @@ import {
   SelectValue,
   TextField,
 } from '@shinkai_network/shinkai-ui';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
+import { ExternalLinkIcon } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -63,6 +66,7 @@ const SettingsPage = () => {
     defaultValues: {
       defaultAgentId: defaultAgentId,
       nodeAddress: auth?.node_address,
+      shinkaiIdentity: auth?.shinkai_identity,
     },
   });
 
@@ -194,6 +198,47 @@ const SettingsPage = () => {
                         }
                       },
                     }}
+                    helperMessage={
+                      <span className="text-gray-80 inline-flex items-center gap-1 px-1 py-2.5 hover:text-white">
+                        {auth?.shinkai_identity.includes(
+                          'localhost.shinkai',
+                        ) ? (
+                          <a
+                            className={cn(
+                              buttonVariants({
+                                size: 'auto',
+                                variant: 'link',
+                              }),
+                              'rounded-lg p-0 text-xs text-inherit underline',
+                            )}
+                            href={`https://shinkai-contracts.pages.dev?encryption_pk=${auth?.node_encryption_pk}&signature_pk=${auth?.node_signature_pk}`}
+                            rel="noreferrer"
+                            target="_blank"
+                          >
+                            Register your Shinkai Identity
+                          </a>
+                        ) : (
+                          <a
+                            className={cn(
+                              buttonVariants({
+                                size: 'auto',
+                                variant: 'link',
+                              }),
+                              'rounded-lg p-0 text-xs text-inherit underline',
+                            )}
+                            href={`https://shinkai-contracts.pages.dev/identity/${auth?.shinkai_identity?.replace(
+                              '@@',
+                              '',
+                            )}`}
+                            rel="noreferrer"
+                            target="_blank"
+                          >
+                            Go to My Shinkai Identity
+                          </a>
+                        )}
+                        <ExternalLinkIcon className="h-4 w-4" />
+                      </span>
+                    }
                     label="Shinkai Identity"
                   />
                 )}
