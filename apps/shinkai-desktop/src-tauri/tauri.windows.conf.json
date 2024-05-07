@@ -2,7 +2,9 @@
   "tauri": {
     "bundle": {
       "resources": {
-        "bin/ollama-windows-resources/*": ""
+        "bin/ollama-windows-resources/ollama_runners": "ollama_runners",
+        "bin/ollama-windows-resources/rocm": "rocm",
+        "bin/ollama-windows-resources/*.dll": ""
       }
     }
   }
