@@ -11,8 +11,8 @@ use super::{
 #[derive(Serialize, Clone)]
 pub struct OllamaOptions {
     pub ollama_host: String,
-    pub ollama_num_parallel: u32,
-    pub ollama_max_loaded_models: u32,
+    pub ollama_num_parallel: String,
+    pub ollama_max_loaded_models: String,
 }
 
 pub struct OllamaProcessHandler {
@@ -37,8 +37,8 @@ impl OllamaProcessHandler {
     pub fn default_options() -> OllamaOptions {
         OllamaOptions {
             ollama_host: "127.0.0.1:11435".to_string(),
-            ollama_num_parallel: 4,
-            ollama_max_loaded_models: 3,
+            ollama_num_parallel: "10".to_string(),
+            ollama_max_loaded_models: "3".to_string(),
         }
     }
 
