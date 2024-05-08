@@ -20,13 +20,14 @@ import CreateChatPage from '../pages/create-chat';
 import CreateJobPage from '../pages/create-job';
 import { ExportConnection } from '../pages/export-connection';
 import GenerateCodePage from '../pages/generate-code';
+import GetStartedPage from '../pages/get-started';
 import MainLayout from '../pages/layout/main-layout';
 import OnboardingPage from '../pages/onboarding';
 import { PublicKeys } from '../pages/public-keys';
 import RestoreConnectionPage from '../pages/restore-connection';
 import SettingsPage from '../pages/settings';
 import UnavailableShinkaiNode from '../pages/unavailable-shinkai-node';
-import WelcomePage from '../pages/welcome';
+import TermsAndConditionsPage from '../pages/welcome';
 import { useAuth } from '../store/auth';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
 import { useShinkaiNodeEventsToast } from '../windows/shinkai-node-manager/shinkai-node-manager-hooks';
@@ -102,7 +103,8 @@ const AppRoutes = () => {
           element={<UnavailableShinkaiNode />}
           path={'/unavailable-shinkai-node'}
         />
-        <Route element={<WelcomePage />} path={'/welcome'} />
+        <Route element={<TermsAndConditionsPage />} path={'/welcome'} />
+        <Route element={<GetStartedPage />} path={'/welcome-selection'} />
         <Route element={<OnboardingPage />} path={ONBOARDING_PATH} />
         <Route element={<RestoreConnectionPage />} path={'/restore'} />
         <Route element={<ConnectMethodQrCodePage />} path={'/connect-qr'} />

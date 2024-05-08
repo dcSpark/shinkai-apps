@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 import OnboardingLayout from './layout/onboarding-layout';
 
-const WelcomePage = () => {
+const TermsAndConditionsPage = () => {
   const [acceptedTermsAndContidions, setAcceptedTermsAndContidions] = useState<
     boolean | 'indeterminate'
   >(false);
@@ -13,7 +13,7 @@ const WelcomePage = () => {
   return (
     <OnboardingLayout>
       <div className="flex h-full flex-col justify-between">
-        <p className="text-4xl font-semibold leading-[1.5] tracking-wide">
+        <p className="text-center text-3xl font-medium leading-[1.5] tracking-wide ">
           Transform your desktop experience using AI with Shinkai Desktop{' '}
           <span aria-hidden> 🔑</span>
         </p>
@@ -59,7 +59,7 @@ const WelcomePage = () => {
                 !acceptedTermsAndContidions &&
                   'pointer-events-none bg-gray-300 opacity-60',
               )}
-              to={'/onboarding'}
+              to={'/welcome-selection'}
             >
               Get Started
             </Link>
@@ -70,4 +70,4 @@ const WelcomePage = () => {
   );
 };
 
-export default WelcomePage;
+export default TermsAndConditionsPage;
