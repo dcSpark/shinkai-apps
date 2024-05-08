@@ -117,7 +117,7 @@ const GetStartedPage = () => {
               rel="noreferrer"
               target="_blank"
             >
-              Log In for SaaS
+              Log In To Shinkai Hosting
             </a>
             <a
               className={cn(
@@ -131,7 +131,7 @@ const GetStartedPage = () => {
               rel="noreferrer"
               target="_blank"
             >
-              Sign up for SaaS
+              Sign up For Shinkai Hosting
             </a>
             <div className="text-gray-80 items-center space-x-2 text-center text-base">
               <span>Already have an Node?</span>
@@ -139,7 +139,7 @@ const GetStartedPage = () => {
                 className="font-semibold text-white underline"
                 to="/onboarding"
               >
-                Quick Connection
+                Quick Connect
               </Link>
             </div>
           </div>

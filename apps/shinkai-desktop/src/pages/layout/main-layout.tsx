@@ -269,7 +269,7 @@ const MainLayout = () => {
     <div className="flex min-h-full flex-col bg-gray-500 text-white">
       <div className={cn('flex flex-1', !!auth && '')}>
         {!!auth && <MainNav />}
-        <div className="flex-1 pl-[80px]">
+        <div className={cn('flex-1', !!auth && 'pl-[80px]')}>
           <Outlet />
         </div>
       </div>
