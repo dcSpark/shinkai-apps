@@ -104,7 +104,7 @@ const AppRoutes = () => {
           path={'/unavailable-shinkai-node'}
         />
         <Route element={<TermsAndConditionsPage />} path={'/welcome'} />
-        <Route element={<GetStartedPage />} path={'/welcome-selection'} />
+        <Route element={<GetStartedPage />} path={'/get-started'} />
         <Route element={<OnboardingPage />} path={ONBOARDING_PATH} />
         <Route element={<RestoreConnectionPage />} path={'/restore'} />
         <Route element={<ConnectMethodQrCodePage />} path={'/connect-qr'} />

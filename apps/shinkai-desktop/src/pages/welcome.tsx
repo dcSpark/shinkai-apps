@@ -59,7 +59,7 @@ const TermsAndConditionsPage = () => {
                 !acceptedTermsAndContidions &&
                   'pointer-events-none bg-gray-300 opacity-60',
               )}
-              to={'/welcome-selection'}
+              to={'/get-started'}
             >
               Get Started
             </Link>
