@@ -73,6 +73,7 @@ fn main() {
                     initial_agent_models: None,
                     initial_agent_api_keys: None,
                     starting_num_qr_devices: None,
+                    log_all: None,
                 }).await;
             });
 
