@@ -16,7 +16,7 @@ pub struct ShinkaiNodeProcessHandler {
 
 impl ShinkaiNodeProcessHandler {
     const HEALTH_TIMEOUT_MS: u64 = 500;
-    const PROCESS_NAME: &'static str = "shinkai-node-v0.7.1";
+    const PROCESS_NAME: &'static str = "shinkai-node-v0.7.4";
     const READY_MATCHER: &'static str = "listening on ";
 
     pub fn new(event_sender: Sender<ProcessHandlerEvent>) -> Self {
@@ -37,8 +37,8 @@ impl ShinkaiNodeProcessHandler {
             embeddings_server_url: Some("http://127.0.0.1:11435".to_string()),
             first_device_needs_registration_code: Some("false".to_string()),
             initial_agent_urls: Some("http://127.0.0.1:11435".to_string()),
-            initial_agent_names: Some(if cfg!(windows) { "o_mistral_7b_instruct_q3_K_M" } else { "o_llama3_8b_instruct_q4_1" }.to_string()),
-            initial_agent_models: Some(if cfg!(windows) { "ollama:mistral:7b-instruct-q3_K_M" } else { "ollama:llama3:8b-instruct-q4_1" }.to_string()),
+            initial_agent_names: Some("o_llama3_8b_instruct_q4_1".to_string()),
+            initial_agent_models: Some("ollama:llama3:8b-instruct-q4_1".to_string()),
             initial_agent_api_keys: Some("".to_string()),
             starting_num_qr_devices: Some("0".to_string()),
         }

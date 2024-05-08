@@ -10,7 +10,7 @@
       "options": {
         "cwd": "apps/shinkai-desktop",
         "commands": [
-          "npx tauri build"
+          "npx tauri build --verbose"
         ]
       },
       "configurations": {

@@ -16,6 +16,7 @@ export const routes = {
   Settings: '/settings',
   ExportConnection: '/settings/export-connection',
   CreateRegistrationCode: '/settings/create-registration-code',
+  PublicKeys: '/settings/public-keys',
 } as const;
 
 export const rootPages = [
@@ -39,5 +40,6 @@ export const subPages = [
   routes.Inbox,
   routes.ExportConnection,
   routes.CreateRegistrationCode,
+  routes.PublicKeys,
 ];
 export const onboardingPages = [routes.ConnectQuickStart, routes.Welcome];
