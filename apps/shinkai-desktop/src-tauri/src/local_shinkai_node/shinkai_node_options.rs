@@ -13,4 +13,5 @@ pub struct ShinkaiNodeOptions {
     pub initial_agent_models: Option<String>,
     pub initial_agent_api_keys: Option<String>,
     pub starting_num_qr_devices: Option<String>,
+    pub log_all: Option<String>,
 }
