@@ -28,7 +28,7 @@ pub struct ProcessHandler {
 
 impl ProcessHandler {
     const MAX_LOGS_LENGTH: usize = 500;
-    const MIN_MS_ALIVE: u64 = 3000;
+    const MIN_MS_ALIVE: u64 = 5000;
 
     /// Initializes a new ShinkaiNodeManager with default or provided options
     pub(crate) fn new(process_name: String, event_sender: Sender<ProcessHandlerEvent>, ready_matcher: Regex) -> Self {
