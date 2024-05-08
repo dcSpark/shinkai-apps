@@ -22,7 +22,7 @@ pub fn kill_process_by_name(process_name: &str) {
             .output()
     } else {
         // Unix-like systems: Use pkill command
-        Command::new("pkill").args(["-f", process_name]).output()
+        Command::new("pkill").args(["-15", process_name]).output()
     };
     if let Ok(output) = output {
         if output.status.success() {
