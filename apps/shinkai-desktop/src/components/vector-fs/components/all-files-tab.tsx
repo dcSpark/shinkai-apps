@@ -1,4 +1,5 @@
 import { HomeIcon } from '@radix-ui/react-icons';
+import { useGetMySharedFolders } from '@shinkai_network/shinkai-node-state/lib/queries/getMySharedFolders/useGetMySharedFolders';
 import { useGetSearchVRItems } from '@shinkai_network/shinkai-node-state/lib/queries/getSearchVRItems/useGetSearchVRItems';
 import {
   VRFolder,
@@ -113,6 +114,17 @@ const AllFiles = () => {
       enabled: !!debouncedSearchQuery,
     },
   );
+
+  const { data: sharedFolders } = useGetMySharedFolders({
+    nodeAddress: auth?.node_address ?? '',
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    profile: auth?.profile ?? '',
+    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+  });
 
   const setSelectedFile = useVectorFsStore((state) => state.setSelectedFile);
   const [selectedFiles, setSelectedFiles] = React.useState<VRItem[]>([]);
@@ -319,6 +331,9 @@ const AllFiles = () => {
                   handleSelectFolders={handleSelectFolders}
                   isSelectedFolder={selectedFolders.some(
                     (selectedFolder) => selectedFolder.path === folder.path,
+                  )}
+                  isSharedFolder={sharedFolders?.some(
+                    (sharedFolder) => sharedFolder.path === folder.path,
                   )}
                   key={index}
                   onClick={() => {
