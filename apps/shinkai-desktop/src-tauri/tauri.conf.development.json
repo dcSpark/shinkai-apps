@@ -1,7 +1,6 @@
 {
   "package": {
-    "productName": "Shinkai Desktop Dev",
-    "version": "../../../package.json"
+    "productName": "Shinkai Desktop Dev"
   },
   "tauri": {
     "updater": {
