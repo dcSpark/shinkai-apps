@@ -516,7 +516,7 @@ const AllFiles = () => {
       {isVRSelectionActive && (
         <MotionButton
           animate={{ opacity: 1 }}
-          className="fixed bottom-20 right-[230px] h-[24px] w-[24px] border border-gray-100 bg-gray-300 p-1 text-gray-50 hover:bg-gray-500 hover:text-white"
+          className="fixed bottom-7 right-[230px] h-[24px] w-[24px] border border-gray-100 bg-gray-300 p-1 text-gray-50 hover:bg-gray-500 hover:text-white"
           initial={{ opacity: 0 }}
           onClick={() => setVRSelectionActive(false)}
           size="icon"
