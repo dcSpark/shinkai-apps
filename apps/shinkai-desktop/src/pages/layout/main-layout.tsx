@@ -144,7 +144,7 @@ export function MainNav() {
     },
     isLocalShinkaiNodeIsUse && {
       title: 'Shinkai Node Manager',
-      href: '',
+      href: '#',
       icon: <CodesandboxIcon className="h-6 w-6" />,
       onClick: () => openShinkaiNodeManagerWindow(),
     },
