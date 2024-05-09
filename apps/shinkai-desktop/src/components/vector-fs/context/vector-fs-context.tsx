@@ -12,11 +12,6 @@ export enum VectorFSLayout {
   List = 'list',
 }
 
-export enum VectorFsSortName {
-  Asc = 'asc',
-  Desc = 'desc',
-}
-
 type VectorFsStore = {
   currentGlobalPath: string;
   setCurrentGlobalPath: (path: string) => void;

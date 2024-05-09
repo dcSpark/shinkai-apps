@@ -478,7 +478,7 @@ const AllFiles = () => {
 
       <MotionButton
         className={cn(
-          'fixed bottom-16 right-4 h-[60px] w-[60px]',
+          'fixed bottom-3 right-4 h-[60px] w-[60px]',
           isVRSelectionActive && 'w-[210px]',
         )}
         layout
