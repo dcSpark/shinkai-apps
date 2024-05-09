@@ -37,8 +37,8 @@ impl OllamaProcessHandler {
     pub fn default_options() -> OllamaOptions {
         OllamaOptions {
             ollama_host: "127.0.0.1:11435".to_string(),
-            ollama_num_parallel: "10".to_string(),
-            ollama_max_loaded_models: "3".to_string(),
+            ollama_num_parallel: "2".to_string(),
+            ollama_max_loaded_models: "2".to_string(),
         }
     }
 
