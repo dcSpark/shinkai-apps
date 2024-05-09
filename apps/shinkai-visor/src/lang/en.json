@@ -110,5 +110,7 @@
   "shortcut-key-description": "Modify the shortcut key to launch sidebar",
   "limit-reached": "Limit Reached",
   "limit-reached-description": "You've used all of your queries for this agent. Please start a new chat with another agent.",
-  "ollama": "Ollama"
+  "ollama": "Ollama",
+  "shinkai-identity-updated-successfully": "Shinkai Identity updated successfully.",
+  "restart-your-shinkai-node": "Please restart your Shinkai Node."
 }

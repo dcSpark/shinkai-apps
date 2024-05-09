@@ -144,3 +144,22 @@ export const useShinkaiNodeSetDefaultOptionsMutation = (
   });
   return { ...response };
 };
+
+export const useShinkaiNodeRespawnMutation = (options?: UseMutationOptions) => {
+  const response = useMutation({
+    mutationFn: async () => {
+        await invoke('shinkai_node_kill');
+        await invoke('shinkai_node_spawn');
+    },
+    onSuccess: (...onSuccessParameters) => {
+      queryClient.invalidateQueries({
+        queryKey: ['shinkai_node_is_running'],
+      });
+      if (options?.onSuccess) {
+        options.onSuccess(...onSuccessParameters);
+      }
+    },
+    ...options,
+  });
+  return { ...response };
+};

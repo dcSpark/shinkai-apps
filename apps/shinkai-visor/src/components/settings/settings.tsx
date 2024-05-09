@@ -27,7 +27,7 @@ import { motion } from 'framer-motion';
 import { ExternalLinkIcon, TrashIcon } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -62,6 +62,7 @@ const formSchema = z.object({
 type FormSchemaType = z.infer<typeof formSchema>;
 const MotionButton = motion(Button);
 export const Settings = () => {
+  const intl = useIntl();
   const history = useHistory();
   const auth = useAuth((authStore) => authStore.auth);
   const setAuth = useAuth((authStore) => authStore.setAuth);
@@ -161,8 +162,12 @@ export const Settings = () => {
   const { mutateAsync: updateNodeName, isPending: isUpdateNodeNamePending } =
     useUpdateNodeName({
       onSuccess: () => {
-        toast.success('Node name updated successfully');
+        toast.success(intl.formatMessage({ id: 'shinkai-identity-updated-successfully'}));
         if (!auth) return;
+        const isHostingShinkaiNode = auth?.node_address.includes('hosting.shinkai.com');
+        if (!isHostingShinkaiNode) {
+          toast.info(intl.formatMessage({ id: 'restart-your-shinkai-node'}));
+        }
         const newAuth: SetupData = { ...auth };
         setAuth({
           ...newAuth,
@@ -193,16 +198,16 @@ export const Settings = () => {
 
   useEffect(() => {
     setDisplayActionButton(currentDisplayActionButton);
-  }, [currentDisplayActionButton]);
+  }, [currentDisplayActionButton, setDisplayActionButton]);
   useEffect(() => {
     setDefaultAgentId(currentDefaultAgentId);
-  }, [currentDefaultAgentId]);
+  }, [currentDefaultAgentId, setDefaultAgentId]);
   useEffect(() => {
     setDisplaySummaryActionButton(currentDisplaySummaryAction);
-  }, [currentDisplaySummaryAction]);
+  }, [currentDisplaySummaryAction, setDisplaySummaryActionButton]);
   useEffect(() => {
     setDisplayImageCaptureActionButton(currentDisplayImageCaptureActionButton);
-  }, [currentDisplayImageCaptureActionButton]);
+  }, [currentDisplayImageCaptureActionButton, setDisplayImageCaptureActionButton]);
 
   const handleUpdateNodeName = async () => {
     if (!auth) return;
