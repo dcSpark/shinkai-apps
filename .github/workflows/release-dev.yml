@@ -314,13 +314,13 @@ jobs:
           channel-id: 'C072VJ6E7GC'
           payload: |
             {
-              "text": "GitHub Action build result: ${{ steps.job-url.outputs.job_summary_url }}",
+              "text": "🚀 New release",
               "blocks": [
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "🚀 *Shinkai Desktop Dev v${{ needs.prebuild.outputs.version }}.${{ github.run_number }}*"
+                    "text": "*Shinkai Desktop Dev v${{ needs.prebuild.outputs.version }}.${{ github.run_number }}*"
                   }
                 },
                 {
@@ -328,6 +328,13 @@ jobs:
                   "text": {
                     "type": "mrkdwn",
                     "text": "Download it from:\n* <${{ needs.release-shinkai-desktop.outputs.app-url-aarch64-apple-darwin }}|Macos>\n* <${{ needs.release-shinkai-desktop.outputs.app-url-x86_64-pc-windows-msvc }}|Windows>\n* <${{ needs.release-shinkai-desktop.outputs.app-url-x86_64-unknown-linux-gnu }}|Linux>"
+                  }
+                }
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "_<${{ steps.job-url.outputs.job_summary_url }}|Built on Github CI>_"
                   }
                 }
               ]
