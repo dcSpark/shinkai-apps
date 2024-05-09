@@ -34,6 +34,7 @@ import { SetupData, useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
 import { useShinkaiNodeRespawnMutation } from '../windows/shinkai-node-manager/shinkai-node-process-client';
+import { isHostingShinkaiNode } from '../windows/utils';
 import { SimpleLayout } from './layout/simple-layout';
 
 const formSchema = z.object({
@@ -103,6 +104,8 @@ const SettingsPage = () => {
         });
         if (isLocalShinkaiNodeInUse) {
           respawnShinkaiNode();
+        } else if (!isHostingShinkaiNode(auth.node_address)) {
+          toast.info('Please restart your Shinkai Node');
         }
       },
       onError: (error) => {
