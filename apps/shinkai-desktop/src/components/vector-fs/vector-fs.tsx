@@ -21,7 +21,7 @@ export default function VectorFs() {
   return (
     <SimpleLayout title="AI Files Explorer">
       <Tabs
-        className="flex h-full flex-col"
+        className="relative flex h-full flex-col"
         onValueChange={(value) =>
           setSelectedVectorFsTab(value as 'all' | 'shared-folders')
         }
