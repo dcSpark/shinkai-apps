@@ -1,4 +1,5 @@
 import { HomeIcon } from '@radix-ui/react-icons';
+import { useGetMySharedFolders } from '@shinkai_network/shinkai-node-state/lib/queries/getMySharedFolders/useGetMySharedFolders';
 import { useGetSearchVRItems } from '@shinkai_network/shinkai-node-state/lib/queries/getSearchVRItems/useGetSearchVRItems';
 import {
   VRFolder,
@@ -28,6 +29,7 @@ import {
   GenerateDocIcon,
   Input,
   ScrollArea,
+  Separator,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
@@ -43,6 +45,7 @@ import { VectorFsGlobalAction } from './vector-fs-drawer';
 import VectorFsFolder from './vector-fs-folder';
 import VectorFsItem from './vector-fs-item';
 import VectorFsToggleLayout from './vector-fs-toggle-layout';
+import VectorFsToggleSortName from './vector-fs-toggle-sort-name';
 
 const MotionButton = motion(Button);
 
@@ -65,6 +68,7 @@ const AllFiles = () => {
     (state) => state.setActiveDrawerMenuOption,
   );
   const layout = useVectorFsStore((state) => state.layout);
+  const isSortByName = useVectorFsStore((state) => state.isSortByName);
 
   const isVRSelectionActive = useVectorFsStore(
     (state) => state.isVRSelectionActive,
@@ -116,6 +120,17 @@ const AllFiles = () => {
       enabled: !!debouncedSearchQuery,
     },
   );
+
+  const { data: sharedFolders } = useGetMySharedFolders({
+    nodeAddress: auth?.node_address ?? '',
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    profile: auth?.profile ?? '',
+    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+  });
 
   const setSelectedFile = useVectorFsStore((state) => state.setSelectedFile);
   const [selectedFiles, setSelectedFiles] = React.useState<VRItem[]>([]);
@@ -182,9 +197,25 @@ const AllFiles = () => {
 
   const splitCurrentPath = VRFiles?.path?.split('/').filter(Boolean) ?? [];
 
+  const folderList = React.useMemo(() => {
+    return isSortByName
+      ? [...(VRFiles?.child_folders ?? [])].sort((a, b) =>
+          a.name.localeCompare(b.name),
+        )
+      : VRFiles?.child_folders;
+  }, [VRFiles?.child_folders, isSortByName]);
+
+  const itemList = React.useMemo(() => {
+    return isSortByName
+      ? [...(VRFiles?.child_items ?? [])].sort((a, b) =>
+          a.name.localeCompare(b.name),
+        )
+      : VRFiles?.child_items;
+  }, [VRFiles?.child_items, isSortByName]);
+
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center gap-3">
+      <div className="flex gap-3">
         <div className="relative flex h-10 w-full flex-1 items-center">
           <Input
             className="placeholder-gray-80 !h-full bg-transparent py-2 pl-10"
@@ -242,7 +273,15 @@ const AllFiles = () => {
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
-        <VectorFsToggleLayout />
+        <div className="flex gap-1">
+          <VectorFsToggleSortName />
+          <Separator
+            className="bg-gray-300"
+            decorative
+            orientation="vertical"
+          />
+          <VectorFsToggleLayout />
+        </div>
       </div>
       {!searchQuery && (
         <div className="mt-4">
@@ -315,7 +354,7 @@ const AllFiles = () => {
               />
             ))}
           {!searchQuery &&
-            VRFiles?.child_folders.map((folder, index: number) => {
+            folderList?.map((folder, index: number) => {
               return (
                 <VectorFsFolder
                   folder={folder}
@@ -323,9 +362,32 @@ const AllFiles = () => {
                   isSelectedFolder={selectedFolders.some(
                     (selectedFolder) => selectedFolder.path === folder.path,
                   )}
+                  isSharedFolder={sharedFolders?.some(
+                    (sharedFolder) => sharedFolder.path === folder.path,
+                  )}
                   key={index}
                   onClick={() => {
                     setCurrentGlobalPath(folder.path);
+                  }}
+                />
+              );
+            })}
+          {!searchQuery &&
+            isVRFilesSuccess &&
+            itemList?.map((file, index: number) => {
+              return (
+                <VectorFsItem
+                  file={file}
+                  handleSelectFiles={handleSelectFiles}
+                  isSelectedFile={selectedFiles.some(
+                    (selectedFile) => selectedFile.path === file.path,
+                  )}
+                  key={index}
+                  onClick={() => {
+                    setSelectedFile(file);
+                    setActiveDrawerMenuOption(
+                      VectorFsGlobalAction.VectorFileDetails,
+                    );
                   }}
                 />
               );
@@ -346,27 +408,6 @@ const AllFiles = () => {
                 </div>
               </div>
             )}
-          {!searchQuery &&
-            isVRFilesSuccess &&
-            VRFiles?.child_items?.length > 0 &&
-            VRFiles?.child_items.map((file, index: number) => {
-              return (
-                <VectorFsItem
-                  file={file}
-                  handleSelectFiles={handleSelectFiles}
-                  isSelectedFile={selectedFiles.some(
-                    (selectedFile) => selectedFile.path === file.path,
-                  )}
-                  key={index}
-                  onClick={() => {
-                    setSelectedFile(file);
-                    setActiveDrawerMenuOption(
-                      VectorFsGlobalAction.VectorFileDetails,
-                    );
-                  }}
-                />
-              );
-            })}
           {!searchQuery &&
             isVRFilesSuccess &&
             VRFiles?.child_items?.length === 0 &&

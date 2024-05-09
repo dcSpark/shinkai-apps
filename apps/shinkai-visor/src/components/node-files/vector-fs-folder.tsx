@@ -9,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  SharedFolderIcon,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
@@ -54,11 +55,13 @@ const VectorFsFolder = ({
   folder,
   handleSelectFolders,
   isSelectedFolder,
+  isSharedFolder,
 }: {
   onClick: () => void;
   folder: VRFolder;
   handleSelectFolders: (folder: VRFolder) => void;
   isSelectedFolder: boolean;
+  isSharedFolder?: boolean;
 }) => {
   const setActiveDrawerMenuOption = useVectorFsStore(
     (state) => state.setActiveDrawerMenuOption,
@@ -78,6 +81,8 @@ const VectorFsFolder = ({
   const totalItem =
     (folder.child_folders?.length ?? 0) + (folder.child_items?.length ?? 0);
 
+  const FolderIcon = isSharedFolder ? SharedFolderIcon : DirectoryTypeIcon;
+
   if (isVRSelectionActive) {
     return (
       <div className={wrapperClassName}>
@@ -92,7 +97,7 @@ const VectorFsFolder = ({
           className="flex flex-1 items-center gap-3"
           htmlFor={`item-${folder.name}`}
         >
-          <DirectoryTypeIcon />
+          <FolderIcon />
           <VectorFsFolderInfo
             folder={folder}
             layout={layout}
@@ -105,7 +110,7 @@ const VectorFsFolder = ({
 
   return (
     <button className={wrapperClassName} onClick={onClick}>
-      <DirectoryTypeIcon />
+      <FolderIcon />
       <VectorFsFolderInfo
         folder={folder}
         layout={layout}

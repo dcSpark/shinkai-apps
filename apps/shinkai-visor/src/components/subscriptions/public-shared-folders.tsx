@@ -227,7 +227,11 @@ function transformTreeNode(
     id: path,
     key: path,
     label: node.path.replace(/\//g, ''),
-    icon: Object.keys(node.children ?? {}).length ? 'icon-folder' : 'icon-file',
+    icon: Object.keys(node.children ?? {}).length
+      ? 'icon-folder'
+      : node.name === '/'
+        ? 'icon-folder'
+        : 'icon-file',
     data: {
       path: node.path,
       last_modified: node.last_modified,
