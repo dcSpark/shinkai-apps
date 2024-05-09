@@ -1,4 +1,8 @@
 {
+  "package": {
+    "productName": "Shinkai Desktop Dev",
+    "version": "../../../package.json"
+  },
   "tauri": {
     "updater": {
       "endpoints": [
