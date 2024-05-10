@@ -224,6 +224,8 @@ jobs:
           LIBCLANG_PATH: C:\Program Files\LLVM\bin
 
       - name: Prepare binary files
+        id: prepare-files
+        shell: bash
         run: |
           mkdir files-to-r2
           cp "${{ matrix.build_output_file_path }}" files-to-r2/${{ matrix.distributable_file_name }}
@@ -277,7 +279,7 @@ jobs:
         id: generate-updates-next-json
         env:
           JSON_PATH: files-to-r2/updates-next.json
-          VERSION: ${{ needs.prebuild.outputs.version }}.${{ github.run_number }}
+          VERSION: ${{ needs.prebuild.outputs.version }}${{ github.run_number }}
           NOTES: Automatic update to ${{ needs.prebuild.outputs.version }}${{ github.run_number }}
           LINUX_x86_64_SIGNATURE: ${{ needs.release-shinkai-desktop.outputs.signature-x86_64-unknown-linux-gnu }}
           LINUX_x86_64_URL: ${{ needs.release-shinkai-desktop.outputs.update-url-x86_64-unknown-linux-gnu }}
