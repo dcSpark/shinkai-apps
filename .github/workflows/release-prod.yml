@@ -224,6 +224,8 @@ jobs:
           LIBCLANG_PATH: C:\Program Files\LLVM\bin
 
       - name: Prepare binary files
+        id: prepare-files
+        shell: bash
         run: |
           mkdir files-to-r2
           cp "${{ matrix.build_output_file_path }}" files-to-r2/${{ matrix.distributable_file_name }}
