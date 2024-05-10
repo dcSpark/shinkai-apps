@@ -312,6 +312,8 @@ jobs:
       - name: Post Shinkai Desktop to a Slack channel
         id: slack
         uses: slackapi/slack-github-action@v1.26.0
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
         with:
           channel-id: 'C072VJ6E7GC'
           payload: |
@@ -358,6 +360,8 @@ jobs:
             }
       - name: Post Shinkai Visor to a Slack channel
         uses: slackapi/slack-github-action@v1.26.0
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
         with:
           channel-id: 'C072VJ6E7GC'
           payload: |
@@ -403,5 +407,3 @@ jobs:
 
               ]
             }
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
