@@ -1,35 +1,32 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
 
 import { FunctionKey, queryClient } from '../../constants';
 import { sendMessageToJob } from '.';
+import { SendMessageToJobInput, SendMessageToJobOutput } from './types';
 
-type CreateJobResponse = {
-  data: {
-    inbox: string;
-    message_id: string;
-    parent_message_id: string;
-    scheduled_time: string;
-  };
-  message: string;
-  status: string;
-};
+type Options = UseMutationOptions<
+  SendMessageToJobOutput,
+  Error,
+  SendMessageToJobInput
+>;
 
-export const useSendMessageToJob = () => {
+export const useSendMessageToJob = (options?: Options) => {
   return useMutation({
     mutationFn: sendMessageToJob,
-    onSuccess: (response) => {
-      const parsedResponse: CreateJobResponse = JSON.parse(response);
+    ...options,
+    onSuccess: (response, variables, context) => {
       queryClient.invalidateQueries({
         queryKey: [
           FunctionKey.GET_CHAT_CONVERSATION_PAGINATION,
-          {
-            inboxId: parsedResponse.data.inbox,
-          },
+          { inboxId: response.inbox },
         ],
       });
       queryClient.invalidateQueries({
         queryKey: [FunctionKey.GET_INBOXES],
       });
+      if (options?.onSuccess) {
+        options.onSuccess(response, variables, context);
+      }
     },
   });
 };
