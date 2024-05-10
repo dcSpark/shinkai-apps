@@ -546,8 +546,9 @@ const MessageEditor = ({
 export const ConversationHeader = () => {
   const currentInbox = useGetCurrentInbox();
 
-  const hasFolders = !!currentInbox?.job_scope?.vector_fs_folders?.length;
-  const hasFiles = !!currentInbox?.job_scope?.vector_fs_items?.length;
+  const hasFolders =
+    (currentInbox?.job_scope?.vector_fs_folders ?? [])?.length > 0;
+  const hasFiles = (currentInbox?.job_scope?.vector_fs_items ?? [])?.length > 0;
 
   const hasConversationContext = hasFolders || hasFiles;
 
@@ -592,8 +593,8 @@ export const ConversationHeader = () => {
                     : 'folders'}
                 </span>
               )}
-              {!hasFiles && (
-                <span className="text-gray-80 flex items-center gap-1 text-xs font-medium">
+              {hasFiles && (
+                <span className="text-gray-80 flex items-center gap-1 truncate text-xs font-medium">
                   <FileTypeIcon className="ml-1 h-4 w-4" />
                   {currentInbox?.job_scope.vector_fs_items.length}{' '}
                   {currentInbox?.job_scope.vector_fs_items.length === 1

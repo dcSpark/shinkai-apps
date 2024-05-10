@@ -229,7 +229,11 @@ function transformTreeNode(
     id: path,
     key: path,
     label: node.path.replace(/\//g, ''),
-    icon: Object.keys(node.children ?? {}).length ? 'icon-folder' : 'icon-file',
+    icon: Object.keys(node.children ?? {}).length
+      ? 'icon-folder'
+      : node.name === '/'
+        ? 'icon-folder'
+        : 'icon-file',
     data: {
       path: node.path,
       last_modified: node.last_modified,
@@ -407,7 +411,7 @@ export const SubscriptionInfo = ({
         {/*<a*/}
         {/*  className="transition-all hover:text-white hover:underline"*/}
         {/*  href="https://shinkai-contracts.pages.dev/"*/}
-        {/*  onClick={(e) => e.stopPropagation()}*/}
+        {/*  onClick={(e) => e.preventDefault()}*/}
         {/*  rel="noreferrer"*/}
         {/*  target="_blank"*/}
         {/*>*/}
@@ -426,7 +430,9 @@ export const SubscriptionInfo = ({
           href={`https://shinkai-contracts.pages.dev/identity/${nodeName.split(
             '@@',
           )?.[1]}`}
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.preventDefault();
+          }}
           rel="noreferrer"
           target="_blank"
         >

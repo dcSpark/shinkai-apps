@@ -32,6 +32,9 @@ import { z } from 'zod';
 import { GENERATE_CODE_PATH } from '../routes/name';
 import { SetupData, useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
+import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
+import { useShinkaiNodeRespawnMutation } from '../windows/shinkai-node-manager/shinkai-node-process-client';
+import { isHostingShinkaiNode } from '../windows/utils';
 import { SimpleLayout } from './layout/simple-layout';
 
 const formSchema = z.object({
@@ -49,6 +52,7 @@ const MotionButton = motion(Button);
 const SettingsPage = () => {
   const navigate = useNavigate();
   const auth = useAuth((authStore) => authStore.auth);
+  const isLocalShinkaiNodeInUse = useShinkaiNodeManager((state) => state.isInUse);
   const setAuth = useAuth((authStore) => authStore.setAuth);
 
   const defaultAgentId = useSettings(
@@ -87,6 +91,7 @@ const SettingsPage = () => {
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
 
+  const { mutateAsync: respawnShinkaiNode } = useShinkaiNodeRespawnMutation();
   const { mutateAsync: updateNodeName, isPending: isUpdateNodeNamePending } =
     useUpdateNodeName({
       onSuccess: () => {
@@ -97,6 +102,11 @@ const SettingsPage = () => {
           ...newAuth,
           shinkai_identity: currentShinkaiIdentity,
         });
+        if (isLocalShinkaiNodeInUse) {
+          respawnShinkaiNode();
+        } else if (!isHostingShinkaiNode(auth.node_address)) {
+          toast.info('Please restart your Shinkai Node');
+        }
       },
       onError: (error) => {
         toast.error('Failed to update node name', {
@@ -136,7 +146,7 @@ const SettingsPage = () => {
 
   useEffect(() => {
     setDefaultAgentId(currentDefaultAgentId);
-  }, [currentDefaultAgentId]);
+  }, [currentDefaultAgentId, setDefaultAgentId]);
 
   return (
     <SimpleLayout classname="max-w-lg" title="Settings">

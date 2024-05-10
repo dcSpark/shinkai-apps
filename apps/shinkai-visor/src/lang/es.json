@@ -108,5 +108,7 @@
   "shortcut-key-description": "Presiona la tecla de acceso rápido para abrir Shinkai Visor",
   "limit-reached": "Límite alcanzado",
   "limit-reached-description": "Has utilizado todas tus consultas para el mes en este modelo/agente. Por favor, inicia un nuevo chat con otro agente.",
-  "ollama": "Ollama"
+  "ollama": "Ollama",
+  "shinkai-identity-updated-successfully": "Shinkai Identity actualizada correctamente.",
+  "restart-your-shinkai-node": "Por favor reinicia tu Shinkai Node."
 }

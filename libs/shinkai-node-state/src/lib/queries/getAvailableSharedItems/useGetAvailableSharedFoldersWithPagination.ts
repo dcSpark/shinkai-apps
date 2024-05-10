@@ -12,8 +12,8 @@ import {
   Options,
 } from './types';
 
-export const SHARED_FOLDERS_PAGINATION_LIMIT = 10;
-export const SHARED_FOLDERS_PAGINATION_REFETCH = 6000;
+export const SHARED_FOLDERS_PAGINATION_LIMIT = 8;
+export const SHARED_FOLDERS_PAGINATION_REFETCH = 10000;
 
 export const useGetAvailableSharedFoldersWithPagination = (
   input: GetAvailableSharedItemsInput,

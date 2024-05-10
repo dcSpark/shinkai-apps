@@ -41,6 +41,7 @@ impl ShinkaiNodeProcessHandler {
             initial_agent_models: Some("ollama:llama3:8b-instruct-q4_1".to_string()),
             initial_agent_api_keys: Some("".to_string()),
             starting_num_qr_devices: Some("0".to_string()),
+            log_all: Some("1".to_string()),
         }
     }
 
@@ -132,6 +133,11 @@ impl ShinkaiNodeProcessHandler {
                 options
                     .starting_num_qr_devices
                     .unwrap_or_else(|| base_options.starting_num_qr_devices.unwrap()),
+            ),
+            log_all: Some(
+                options
+                    .log_all
+                    .unwrap_or_else(|| base_options.log_all.unwrap()),
             ),
         };
         self.options = merged_options;

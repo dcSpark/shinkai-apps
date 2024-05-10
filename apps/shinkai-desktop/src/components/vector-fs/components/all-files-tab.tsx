@@ -1,4 +1,5 @@
 import { HomeIcon } from '@radix-ui/react-icons';
+import { useGetMySharedFolders } from '@shinkai_network/shinkai-node-state/lib/queries/getMySharedFolders/useGetMySharedFolders';
 import { useGetSearchVRItems } from '@shinkai_network/shinkai-node-state/lib/queries/getSearchVRItems/useGetSearchVRItems';
 import {
   VRFolder,
@@ -28,10 +29,11 @@ import {
   GenerateDocIcon,
   Input,
   ScrollArea,
+  Separator,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
-import { ChevronRight, PlusIcon, SearchIcon, X, XIcon } from 'lucide-react';
+import { ChevronRight, PlusIcon, SearchIcon, XIcon } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -43,6 +45,7 @@ import { VectorFsGlobalAction } from './vector-fs-drawer';
 import VectorFsFolder from './vector-fs-folder';
 import VectorFsItem from './vector-fs-item';
 import VectorFsToggleLayout from './vector-fs-toggle-layout';
+import VectorFsToggleSortName from './vector-fs-toggle-sort-name';
 
 const MotionButton = motion(Button);
 
@@ -62,6 +65,7 @@ const AllFiles = () => {
     (state) => state.setActiveDrawerMenuOption,
   );
   const layout = useVectorFsStore((state) => state.layout);
+  const isSortByName = useVectorFsStore((state) => state.isSortByName);
 
   const isVRSelectionActive = useVectorFsStore(
     (state) => state.isVRSelectionActive,
@@ -113,6 +117,17 @@ const AllFiles = () => {
       enabled: !!debouncedSearchQuery,
     },
   );
+
+  const { data: sharedFolders } = useGetMySharedFolders({
+    nodeAddress: auth?.node_address ?? '',
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    profile: auth?.profile ?? '',
+    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+  });
 
   const setSelectedFile = useVectorFsStore((state) => state.setSelectedFile);
   const [selectedFiles, setSelectedFiles] = React.useState<VRItem[]>([]);
@@ -179,10 +194,58 @@ const AllFiles = () => {
 
   const splitCurrentPath = VRFiles?.path?.split('/').filter(Boolean) ?? [];
 
+  const folderList = React.useMemo(() => {
+    return isSortByName
+      ? [...(VRFiles?.child_folders ?? [])].sort((a, b) =>
+          a.name.localeCompare(b.name),
+        )
+      : VRFiles?.child_folders;
+  }, [VRFiles?.child_folders, isSortByName]);
+
+  const itemList = React.useMemo(() => {
+    return isSortByName
+      ? [...(VRFiles?.child_items ?? [])].sort((a, b) =>
+          a.name.localeCompare(b.name),
+        )
+      : VRFiles?.child_items;
+  }, [VRFiles?.child_items, isSortByName]);
+
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center gap-3">
-        <div className="relative flex h-10 w-full flex-1 items-center">
+      <DropdownMenu
+        modal={false}
+        onOpenChange={(value) => setMenuOpened(value)}
+        open={isMenuOpened}
+      >
+        <DropdownMenuTrigger asChild>
+          <Button
+            className="absolute left-auto right-0 top-0 flex gap-2 self-end px-6"
+            size="sm"
+            // variant=""
+          >
+            <PlusIcon className="h-4 w-4" /> Upload
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align="end"
+          alignOffset={-10}
+          className="w-[200px] px-2 py-2"
+          sideOffset={10}
+        >
+          {actionList.map((item, index) => (
+            <DropdownMenuItem
+              disabled={item.disabled}
+              key={index}
+              onClick={item.onClick}
+            >
+              {item.icon}
+              <span>{item.name}</span>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <div className="mt-2 flex justify-between gap-3">
+        <div className="relative flex h-10 w-full max-w-[500px]  items-center">
           <Input
             className="placeholder-gray-80 !h-full bg-transparent py-2 pl-10"
             onChange={(e) => {
@@ -207,39 +270,15 @@ const AllFiles = () => {
             </Button>
           )}
         </div>
-        <DropdownMenu
-          modal={false}
-          onOpenChange={(value) => setMenuOpened(value)}
-          open={isMenuOpened}
-        >
-          <DropdownMenuTrigger asChild>
-            <Button size="icon" variant="ghost">
-              {!isMenuOpened ? (
-                <PlusIcon className="h-4 w-4" />
-              ) : (
-                <X className="h-4 w-4" />
-              )}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="end"
-            alignOffset={-10}
-            className="w-[200px] px-2 py-2"
-            sideOffset={10}
-          >
-            {actionList.map((item, index) => (
-              <DropdownMenuItem
-                disabled={item.disabled}
-                key={index}
-                onClick={item.onClick}
-              >
-                {item.icon}
-                <span>{item.name}</span>
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <VectorFsToggleLayout />
+        <div className="flex gap-3">
+          <VectorFsToggleSortName />
+          <Separator
+            className="bg-gray-300"
+            decorative
+            orientation="vertical"
+          />
+          <VectorFsToggleLayout />
+        </div>
       </div>
       {!searchQuery && (
         <div className="mt-4">
@@ -312,7 +351,7 @@ const AllFiles = () => {
               />
             ))}
           {!searchQuery &&
-            VRFiles?.child_folders.map((folder, index: number) => {
+            folderList?.map((folder, index: number) => {
               return (
                 <VectorFsFolder
                   folder={folder}
@@ -320,9 +359,32 @@ const AllFiles = () => {
                   isSelectedFolder={selectedFolders.some(
                     (selectedFolder) => selectedFolder.path === folder.path,
                   )}
+                  isSharedFolder={sharedFolders?.some(
+                    (sharedFolder) => sharedFolder.path === folder.path,
+                  )}
                   key={index}
                   onClick={() => {
                     setCurrentGlobalPath(folder.path);
+                  }}
+                />
+              );
+            })}
+          {!searchQuery &&
+            isVRFilesSuccess &&
+            itemList?.map((file, index: number) => {
+              return (
+                <VectorFsItem
+                  file={file}
+                  handleSelectFiles={handleSelectFiles}
+                  isSelectedFile={selectedFiles.some(
+                    (selectedFile) => selectedFile.path === file.path,
+                  )}
+                  key={index}
+                  onClick={() => {
+                    setSelectedFile(file);
+                    setActiveDrawerMenuOption(
+                      VectorFsGlobalAction.VectorFileDetails,
+                    );
                   }}
                 />
               );
@@ -343,27 +405,6 @@ const AllFiles = () => {
                 </div>
               </div>
             )}
-          {!searchQuery &&
-            isVRFilesSuccess &&
-            VRFiles?.child_items?.length > 0 &&
-            VRFiles?.child_items.map((file, index: number) => {
-              return (
-                <VectorFsItem
-                  file={file}
-                  handleSelectFiles={handleSelectFiles}
-                  isSelectedFile={selectedFiles.some(
-                    (selectedFile) => selectedFile.path === file.path,
-                  )}
-                  key={index}
-                  onClick={() => {
-                    setSelectedFile(file);
-                    setActiveDrawerMenuOption(
-                      VectorFsGlobalAction.VectorFileDetails,
-                    );
-                  }}
-                />
-              );
-            })}
           {!searchQuery &&
             isVRFilesSuccess &&
             VRFiles?.child_items?.length === 0 &&
@@ -437,7 +478,7 @@ const AllFiles = () => {
 
       <MotionButton
         className={cn(
-          'fixed bottom-16 right-4 h-[60px] w-[60px]',
+          'fixed bottom-3 right-4 h-[60px] w-[60px]',
           isVRSelectionActive && 'w-[210px]',
         )}
         layout
@@ -475,7 +516,7 @@ const AllFiles = () => {
       {isVRSelectionActive && (
         <MotionButton
           animate={{ opacity: 1 }}
-          className="fixed bottom-20 right-[230px] h-[24px] w-[24px] border border-gray-100 bg-gray-300 p-1 text-gray-50 hover:bg-gray-500 hover:text-white"
+          className="fixed bottom-7 right-[230px] h-[24px] w-[24px] border border-gray-100 bg-gray-300 p-1 text-gray-50 hover:bg-gray-500 hover:text-white"
           initial={{ opacity: 0 }}
           onClick={() => setVRSelectionActive(false)}
           size="icon"

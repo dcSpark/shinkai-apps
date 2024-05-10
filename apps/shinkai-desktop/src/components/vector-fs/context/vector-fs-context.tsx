@@ -20,6 +20,8 @@ type VectorFsStore = {
   closeDrawerMenu: () => void;
   layout: VectorFSLayout;
   setLayout: (layout: VectorFSLayout) => void;
+  isSortByName: boolean;
+  setSortByName: (sortByName: boolean) => void;
   isVRSelectionActive: boolean;
   setVRSelectionActive: (isVRSelectionActive: boolean) => void;
   selectedFile: VRItem | null;
@@ -50,6 +52,11 @@ const createVectorFsStore = () =>
     layout: VectorFSLayout.List,
     setLayout: (layout) => {
       set({ layout });
+    },
+
+    isSortByName: false,
+    setSortByName: (isSortByName) => {
+      set({ isSortByName });
     },
 
     isVRSelectionActive: false,

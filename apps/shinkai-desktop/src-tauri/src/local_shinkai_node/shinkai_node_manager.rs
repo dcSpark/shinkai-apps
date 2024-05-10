@@ -90,100 +90,113 @@ impl ShinkaiNodeManager {
         let ollama_api_url = self.ollama_process.get_ollama_api_base_url();
         let ollama_api = OllamaApiClient::new(ollama_api_url);
 
+        let installed_models_response = ollama_api.tags().await;
+        if let Err(e) = installed_models_response {
+            self.kill().await;
+            self.emit_event(ShinkaiNodeManagerEvent::OllamaStartError { error: "unable to list installed models".to_string() });
+            return Err(e.to_string());
+        }
+        let installed_models: Vec<String> = installed_models_response.unwrap().models.iter().map(|m| m.model.clone()).collect();
         let default_embeddings_model = "snowflake-arctic-embed:xs";
-        self.emit_event(ShinkaiNodeManagerEvent::PullingModelStart {
-            model: default_embeddings_model.to_string(),
-        });
-        match ollama_api.pull_stream(default_embeddings_model).await {
-            Ok(mut stream) => {
-                while let Some(stream_value) = stream.next().await {
-                    match stream_value {
-                        Ok(value) => {
-                            if let OllamaApiPullResponse::Downloading {
-                                status: _,
-                                digest: _,
-                                total,
-                                completed,
-                            } = value
-                            {
-                                self.emit_event(ShinkaiNodeManagerEvent::PullingModelProgress {
+        if !installed_models.contains(&default_embeddings_model.to_string()) {
+            self.emit_event(ShinkaiNodeManagerEvent::PullingModelStart {
+                model: default_embeddings_model.to_string(),
+            });
+            match ollama_api.pull_stream(default_embeddings_model).await {
+                Ok(mut stream) => {
+                    while let Some(stream_value) = stream.next().await {
+                        match stream_value {
+                            Ok(value) => {
+                                if let OllamaApiPullResponse::Downloading {
+                                    status: _,
+                                    digest: _,
+                                    total,
+                                    completed,
+                                } = value
+                                {
+                                    self.emit_event(ShinkaiNodeManagerEvent::PullingModelProgress {
+                                        model: default_embeddings_model.to_string(),
+                                        progress: (completed as f32 / total as f32 * 100.0) as u32,
+                                    });
+                                }
+                            },
+                            Err(e) => {
+                                self.kill().await;
+                                self.emit_event(ShinkaiNodeManagerEvent::PullingModelError {
                                     model: default_embeddings_model.to_string(),
-                                    progress: (completed as f32 / total as f32 * 100.0) as u32,
+                                    error: e.to_string(),
                                 });
-                            }
-                        },
-                        Err(e) => {
-                            self.kill().await;
-                            self.emit_event(ShinkaiNodeManagerEvent::PullingModelError {
-                                model: default_embeddings_model.to_string(),
-                                error: e.to_string(),
-                            });
-                            return Err(e.to_string())
-                        },
+                                return Err(e.to_string())
+                            },
+                        }
                     }
                 }
+                Err(e) => {
+                    self.kill().await;
+                    self.emit_event(ShinkaiNodeManagerEvent::PullingModelError {
+                        model: default_embeddings_model.to_string(),
+                        error: e.to_string(),
+                    });
+                    return Err(e.to_string());
+                }
             }
-            Err(e) => {
-                self.kill().await;
-                self.emit_event(ShinkaiNodeManagerEvent::PullingModelError {
-                    model: default_embeddings_model.to_string(),
-                    error: e.to_string(),
-                });
-                return Err(e.to_string());
-            }
+            self.emit_event(ShinkaiNodeManagerEvent::PullingModelDone {
+                model: default_embeddings_model.to_string(),
+            });
         }
-        self.emit_event(ShinkaiNodeManagerEvent::PullingModelDone {
-            model: default_embeddings_model.to_string(),
-        });
+        
 
         let mut default_model = ShinkaiNodeProcessHandler::default_options()
             .initial_agent_models
             .unwrap();
         default_model = default_model.replace("ollama:", "");
-        self.emit_event(ShinkaiNodeManagerEvent::PullingModelStart {
-            model: default_model.to_string(),
-        });
-        match ollama_api.pull_stream(&default_model).await {
-            Ok(mut stream) => {
-                while let Some(stream_value) = stream.next().await {
-                    match stream_value {
-                        Ok(value) => {
-                            if let OllamaApiPullResponse::Downloading {
-                                status: _,
-                                digest: _,
-                                total,
-                                completed,
-                            } = value
-                            {
-                                self.emit_event(ShinkaiNodeManagerEvent::PullingModelProgress {
+
+        if !installed_models.contains(&default_model.to_string()) {
+            self.emit_event(ShinkaiNodeManagerEvent::PullingModelStart {
+                model: default_model.to_string(),
+            });
+            match ollama_api.pull_stream(&default_model).await {
+                Ok(mut stream) => {
+                    while let Some(stream_value) = stream.next().await {
+                        match stream_value {
+                            Ok(value) => {
+                                if let OllamaApiPullResponse::Downloading {
+                                    status: _,
+                                    digest: _,
+                                    total,
+                                    completed,
+                                } = value
+                                {
+                                    self.emit_event(ShinkaiNodeManagerEvent::PullingModelProgress {
+                                        model: default_model.to_string(),
+                                        progress: (completed as f32 / total as f32 * 100.0) as u32,
+                                    });
+                                }
+                            },
+                            Err(e) => {
+                                self.kill().await;
+                                self.emit_event(ShinkaiNodeManagerEvent::PullingModelError {
                                     model: default_model.to_string(),
-                                    progress: (completed as f32 / total as f32 * 100.0) as u32,
+                                    error: e.to_string(),
                                 });
-                            }
-                        },
-                        Err(e) => {
-                            self.kill().await;
-                            self.emit_event(ShinkaiNodeManagerEvent::PullingModelError {
-                                model: default_model.to_string(),
-                                error: e.to_string(),
-                            });
-                            return Err(e.to_string())
-                        },
+                                return Err(e.to_string())
+                            },
+                        }
                     }
                 }
+                Err(e) => {
+                    self.kill().await;
+                    self.emit_event(ShinkaiNodeManagerEvent::PullingModelError {
+                        model: default_model.to_string(),
+                        error: e.to_string(),
+                    });
+                    return Err(e.to_string());
+                }
             }
-            Err(e) => {
-                self.kill().await;
-                self.emit_event(ShinkaiNodeManagerEvent::PullingModelError {
-                    model: default_model.to_string(),
-                    error: e.to_string(),
-                });
-                return Err(e.to_string());
-            }
+            self.emit_event(ShinkaiNodeManagerEvent::PullingModelDone {
+                model: default_model.to_string(),
+            });
         }
-        self.emit_event(ShinkaiNodeManagerEvent::PullingModelDone {
-            model: default_model.to_string(),
-        });
 
         self.emit_event(ShinkaiNodeManagerEvent::StartingShinkaiNode);
         match self.shinkai_node_process.spawn().await {

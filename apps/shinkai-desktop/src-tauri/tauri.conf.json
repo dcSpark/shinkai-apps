@@ -87,7 +87,8 @@
         "title": "Shinkai Desktop",
         "width": 1000,
         "height": 750,
-        "resizable": true
+        "resizable": true,
+        "fileDropEnabled": false
       }
     ],
     "macOSPrivateApi": true,

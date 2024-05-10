@@ -169,11 +169,11 @@ export function MainNav() {
             {(item.title === 'My AI Files Explorer' ||
               item.title === 'Settings' ||
               item.title === 'Browse Public Subscriptions') && (
-              <Separator className="w-full bg-gray-200" />
+              <Separator className="my-2 w-full bg-gray-200" />
             )}
             <TooltipProvider delayDuration={0} key={item.title}>
               <Tooltip>
-                <TooltipTrigger asChild>
+                <TooltipTrigger>
                   <NavLink
                     external={item.external}
                     href={item.href}
