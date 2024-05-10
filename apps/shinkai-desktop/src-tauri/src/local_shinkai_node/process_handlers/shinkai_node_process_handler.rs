@@ -16,7 +16,7 @@ pub struct ShinkaiNodeProcessHandler {
 
 impl ShinkaiNodeProcessHandler {
     const HEALTH_TIMEOUT_MS: u64 = 500;
-    const PROCESS_NAME: &'static str = "shinkai-node-v0.7.4";
+    const PROCESS_NAME: &'static str = "shinkai-node-v0.7.5";
     const READY_MATCHER: &'static str = "listening on ";
 
     pub fn new(event_sender: Sender<ProcessHandlerEvent>) -> Self {
