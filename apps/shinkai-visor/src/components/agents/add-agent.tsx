@@ -33,7 +33,6 @@ import { useAuth } from '../../store/auth/auth';
 
 const formSchema = z
   .object({
-    // TODO: Translate this error message
     agentName: z
       .string()
       .regex(

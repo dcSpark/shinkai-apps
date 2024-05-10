@@ -35,7 +35,12 @@ import { SubpageLayout } from './layout/simple-layout';
 
 const addAgentSchema = z
   .object({
-    agentName: z.string(),
+    agentName: z
+      .string()
+      .regex(
+        /^[a-zA-Z0-9]+(_[a-zA-Z0-9]+)*$/,
+        'It just accepts alphanumeric characters and underscores',
+      ),
     externalUrl: z.string().url(),
     apikey: z.string(),
     model: z.nativeEnum(Models),
