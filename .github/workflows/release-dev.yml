@@ -283,7 +283,7 @@ jobs:
       - name: Generate updates.json
         env:
           JSON_PATH: files-to-r2/updates.json
-          VERSION: ${{ needs.prebuild.outputs.version }}.${{ github.run_number }}
+          VERSION: ${{ needs.prebuild.outputs.version }}${{ github.run_number }}
           NOTES: Automatic update to ${{ needs.prebuild.outputs.version }}${{ github.run_number }}
           LINUX_x86_64_SIGNATURE: ${{ needs.release-shinkai-desktop.outputs.signature-x86_64-unknown-linux-gnu }}
           LINUX_x86_64_URL: ${{ needs.release-shinkai-desktop.outputs.update-url-x86_64-unknown-linux-gnu }}
