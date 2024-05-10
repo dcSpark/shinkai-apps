@@ -323,19 +323,12 @@ jobs:
                   "type": "header",
                   "text": {
                     "type": "plain_text",
-                    "text": "🚀 New build",
+                    "text": "📦 New build: Shinkai Desktop v${{ needs.prebuild.outputs.version }}.${{ github.run_number }}",
                     "emoji": true
                   }
                 },
                 {
                   "type": "divider"
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*📦 Shinkai Desktop v${{ needs.prebuild.outputs.version }}.${{ github.run_number }}*"
-                  }
                 },
                 {
                   "type": "section",
@@ -371,19 +364,12 @@ jobs:
                   "type": "header",
                   "text": {
                     "type": "plain_text",
-                    "text": "🚀 New build",
+                    "text": "📦 New build: Shinkai Visor v${{ needs.prebuild.outputs.version }}.${{ github.run_number }}",
                     "emoji": true
                   }
                 },
                 {
                   "type": "divider"
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*📦 Shinkai Visor v${{ needs.prebuild.outputs.version }}.${{ github.run_number }}*"
-                  }
                 },
                 {
                   "type": "section",
