@@ -81,6 +81,7 @@ jobs:
   release-shinkai-desktop:
     needs: prebuild
     name: Release Shinkai Desktop
+    environment: development
     strategy:
       matrix:
         include:
@@ -112,7 +113,6 @@ jobs:
             distributable_update_signature_file_name: Shinkai-Desktop-Dev-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-pc-windows-msvc.nsis.zip.sig
 
     runs-on: ${{ matrix.os }}
-    environment: development
     outputs:
       signature-x86_64-unknown-linux-gnu: ${{ steps.prepare-files.outputs.signature-x86_64-unknown-linux-gnu }}
       update-url-x86_64-unknown-linux-gnu: ${{ steps.prepare-files.outputs.update-url-x86_64-unknown-linux-gnu }}
@@ -283,7 +283,7 @@ jobs:
       - name: Generate updates.json
         env:
           JSON_PATH: files-to-r2/updates.json
-          VERSION: ${{ needs.prebuild.outputs.version }}${{ github.run_number }}
+          VERSION: ${{ needs.prebuild.outputs.version }}.${{ github.run_number }}
           NOTES: Automatic update to ${{ needs.prebuild.outputs.version }}${{ github.run_number }}
           LINUX_x86_64_SIGNATURE: ${{ needs.release-shinkai-desktop.outputs.signature-x86_64-unknown-linux-gnu }}
           LINUX_x86_64_URL: ${{ needs.release-shinkai-desktop.outputs.update-url-x86_64-unknown-linux-gnu }}
@@ -310,11 +310,11 @@ jobs:
     needs:
       - prebuild
       - release-shinkai-desktop
+      - rollout-shinkai-desktop
     name: Notify Slack
     runs-on: ubuntu-22.04
     steps:
       - name: Post Shinkai Desktop to a Slack channel
-        id: slack
         uses: slackapi/slack-github-action@v1.26.0
         with:
           channel-id: 'C072VJ6E7GC'
@@ -323,10 +323,21 @@ jobs:
               "text": "🚀 New release",
               "blocks": [
                 {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "🚀 New build",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "divider"
+                },
+                {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Shinkai Desktop Dev v${{ needs.prebuild.outputs.version }}.${{ github.run_number }}*"
+                    "text": "*📦 Shinkai Desktop Dev v${{ needs.prebuild.outputs.version }}.${{ github.run_number }}*"
                   }
                 },
                 {
@@ -335,6 +346,64 @@ jobs:
                     "type": "mrkdwn",
                     "text": "Download it from:\n* <${{ needs.release-shinkai-desktop.outputs.app-url-aarch64-apple-darwin }}|Macos>\n* <${{ needs.release-shinkai-desktop.outputs.app-url-x86_64-pc-windows-msvc }}|Windows>\n* <${{ needs.release-shinkai-desktop.outputs.app-url-x86_64-unknown-linux-gnu }}|Linux>"
                   }
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "type": "context",
+                  "elements": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "_✅ Automatically rolled out through the app updater_"
+                    }
+                  ]
+                }
+              ]
+            }
+      - name: Post Shinkai Visor to a Slack channel
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          channel-id: 'C072VJ6E7GC'
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "🚀 New build",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*📦 Shinkai Visor Dev v${{ needs.prebuild.outputs.version }}.${{ github.run_number }}*"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Found it at <https://chromewebstore.google.com/detail/shinkai-visor-supercharge/${{ secrets.CHROME_EXTENSION_ID }}|Chrome Web Store>"
+                  }
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "type": "context",
+                  "elements": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "_💡 Send it for review and publish on <https://chrome.google.com/u/4/webstore/devconsole/f35b7411-6fce-4a2b-8865-c310ce95c89f/${{ secrets.CHROME_EXTENSION_ID }}/edit|Chrome Web Store Developer> to start the rollout_"
+                    }
+                  ]
                 }
               ]
             }
