@@ -35,7 +35,7 @@ export const SimpleLayout = ({
   return (
     <div
       className={cn(
-        'mx-auto flex h-full max-w-4xl flex-col gap-4 px-2 py-10',
+        'mx-auto flex h-full max-w-4xl flex-col gap-4 px-5 py-10',
         classname,
       )}
     >

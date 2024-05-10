@@ -9,7 +9,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  // ChatBubbleIcon,
+  Button,
   FilesIcon,
   InboxIcon,
   JobBubbleIcon,
@@ -21,7 +21,10 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { AnimatePresence, motion, TargetAndTransition } from 'framer-motion';
 import {
+  ArrowLeftToLine,
+  ArrowRightToLine,
   BotIcon,
   CodesandboxIcon,
   Compass,
@@ -34,6 +37,7 @@ import { toast } from 'sonner';
 
 import { ONBOARDING_PATH } from '../../routes/name';
 import { useAuth } from '../../store/auth';
+import { useSettings } from '../../store/settings';
 import { useShinkaiNodeManager } from '../../store/shinkai-node-manager';
 import { openShinkaiNodeManagerWindow } from '../../windows/utils';
 
@@ -45,6 +49,11 @@ type NavigationLink = {
   external?: boolean;
 };
 
+const sidebarTransition: TargetAndTransition['transition'] = {
+  duration: 0.4,
+  type: 'spring',
+  damping: 16,
+};
 const NavLink = ({
   href,
   external,
@@ -58,15 +67,34 @@ const NavLink = ({
   icon: React.ReactNode;
   title: string;
 }) => {
+  const sidebarExpanded = useSettings((state) => state.sidebarExpanded);
+
   const isMatch = useMatch({
     path: href,
     end: false,
   });
 
+  const showAnimation = {
+    hidden: {
+      width: 0,
+      opacity: 0,
+      transition: {
+        duration: 0.3,
+      },
+    },
+    show: {
+      opacity: 1,
+      width: 'auto',
+      transition: {
+        duration: 0.3,
+      },
+    },
+  };
+
   return (
     <Link
       className={cn(
-        'flex flex-col items-center justify-center rounded-lg px-4 py-3 text-white transition-colors',
+        'flex w-full items-center gap-2 rounded-lg px-4 py-3 text-white transition-colors',
         isMatch
           ? 'bg-gray-500 text-white shadow-xl'
           : 'opacity-60 hover:bg-gray-500 hover:opacity-100',
@@ -77,10 +105,25 @@ const NavLink = ({
       to={href}
     >
       <span>{icon}</span>
-      <span className="sr-only">{title}</span>
+      {sidebarExpanded && <span className="sr-only">{title}</span>}
+      <AnimatePresence>
+        {sidebarExpanded && (
+          <motion.div
+            animate="show"
+            className="whitespace-nowrap text-xs"
+            exit="hidden"
+            initial="hidden"
+            variants={showAnimation}
+          >
+            {title}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </Link>
   );
 };
+
+const MotionButton = motion(Button);
 
 export function MainNav() {
   const navigate = useNavigate();
@@ -91,6 +134,9 @@ export function MainNav() {
   );
   const [isConfirmLogoutDialogOpened, setIsConfirmLogoutDialogOpened] =
     useState(false);
+
+  const sidebarExpanded = useSettings((state) => state.sidebarExpanded);
+  const toggleSidebar = useSettings((state) => state.toggleSidebar);
 
   const confirmDisconnect = () => {
     setIsConfirmLogoutDialogOpened(true);
@@ -105,93 +151,178 @@ export function MainNav() {
     {
       title: 'Conversations',
       href: '/inboxes',
-      icon: <InboxIcon className="h-6 w-6" />,
+      icon: <InboxIcon className="h-5 w-5" />,
     },
     {
       title: 'Create AI Chat',
       href: '/create-job',
-      icon: <JobBubbleIcon className="h-6 w-6" />,
+      icon: <JobBubbleIcon className="h-5 w-5" />,
     },
     // auth?.shinkai_identity.includes('localhost') && {
     //   title: 'Create DM Chat',
     //   href: '/create-chat',
-    //   icon: <ChatBubbleIcon className="h-6 w-6" />,
+    //   icon: <ChatBubbleIcon className="h-5 w-5" />,
     // },
     {
       title: 'Agents',
       href: '/agents',
-      icon: <BotIcon className="h-6 w-6" />,
+      icon: <BotIcon className="h-5 w-5" />,
     },
     {
       title: 'My AI Files Explorer',
       href: '/vector-fs',
-      icon: <FilesIcon className="h-6 w-6" />,
+      icon: <FilesIcon className="h-5 w-5" />,
     },
     {
       title: 'AI Files Content Search',
       href: '/vector-search',
-      icon: <SearchCode className="h-6 w-6" />,
+      icon: <SearchCode className="h-5 w-5" />,
     },
     {
       title: 'Browse Public Subscriptions',
       href: '/public-subscriptions',
-      icon: <Compass className="h-6 w-6" />,
+      icon: <Compass className="h-5 w-5" />,
     },
     {
       title: 'My Subscriptions',
       href: '/my-subscriptions',
-      icon: <LibraryBig className="h-6 w-6" />,
+      icon: <LibraryBig className="h-5 w-5" />,
     },
     isLocalShinkaiNodeIsUse && {
       title: 'Shinkai Node Manager',
       href: '#',
-      icon: <CodesandboxIcon className="h-6 w-6" />,
+      icon: <CodesandboxIcon className="h-5 w-5" />,
       onClick: () => openShinkaiNodeManagerWindow(),
     },
+  ].filter(Boolean) as NavigationLink[];
+
+  const footerNavigationLinks = [
     {
       title: 'Settings',
       href: '/settings',
-      icon: <GearIcon className="h-6 w-6" />,
+      icon: <GearIcon className="h-5 w-5" />,
     },
     {
       title: 'Disconnect',
       href: '#',
-      icon: <ExitIcon className="h-6 w-6" />,
+      icon: <ExitIcon className="h-5 w-5" />,
       onClick: () => confirmDisconnect(),
     },
-  ].filter(Boolean) as NavigationLink[];
+  ] as NavigationLink[];
 
   return (
-    <aside className="fixed inset-0 z-30 flex w-[80px] shrink-0 flex-col gap-2 overflow-y-auto border-r border-gray-400/30  bg-gradient-to-b from-gray-300 to-gray-400/70 px-2 py-6 shadow-xl">
-      {navigationLinks.map((item) => {
-        return (
-          <React.Fragment key={item.title}>
-            {(item.title === 'My AI Files Explorer' ||
-              item.title === 'Settings' ||
-              item.title === 'Browse Public Subscriptions') && (
-              <Separator className="my-2 w-full bg-gray-200" />
-            )}
-            <TooltipProvider delayDuration={0} key={item.title}>
-              <Tooltip>
-                <TooltipTrigger>
-                  <NavLink
-                    external={item.external}
-                    href={item.href}
-                    icon={item.icon}
-                    onClick={item.onClick}
-                    title={item.title}
-                  />
-                </TooltipTrigger>
-                <TooltipPortal>
-                  <TooltipContent align="center" side="right">
-                    <p>{item.title}</p>
-                  </TooltipContent>
-                </TooltipPortal>
-              </Tooltip>
-            </TooltipProvider>
-          </React.Fragment>
-        );
-      })}
+    <motion.aside
+      animate={{
+        width: sidebarExpanded ? '230px' : '70px',
+        transition: sidebarTransition,
+      }}
+      className="fixed inset-0 z-30 flex w-auto shrink-0 flex-col gap-2 overflow-y-auto overflow-x-hidden  border-r border-gray-400/30  bg-gradient-to-b from-gray-300 to-gray-400/70 px-2 py-6 shadow-xl"
+      initial={{
+        width: sidebarExpanded ? '230px' : '70px',
+      }}
+    >
+      <TooltipProvider delayDuration={0}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <MotionButton
+              animate={{
+                alignSelf: sidebarExpanded ? 'flex-end' : 'center',
+                transition: sidebarTransition,
+              }}
+              className={cn(
+                'border-gray-350 flex h-6 w-6 items-center justify-center rounded-lg border bg-gray-400 p-0',
+              )}
+              onClick={toggleSidebar}
+              size="auto"
+              type="button"
+              variant="ghost"
+            >
+              {sidebarExpanded ? (
+                <ArrowLeftToLine className="h-3 w-3" />
+              ) : (
+                <ArrowRightToLine className="h-3 w-3" />
+              )}
+            </MotionButton>
+          </TooltipTrigger>
+          <TooltipPortal>
+            <TooltipContent align="center" arrowPadding={2} side="right">
+              Toggle Sidebar
+            </TooltipContent>
+          </TooltipPortal>
+        </Tooltip>
+      </TooltipProvider>
+      <div className="flex flex-1 flex-col justify-between">
+        <div className="flex flex-col gap-1">
+          {navigationLinks.map((item) => {
+            return (
+              <React.Fragment key={item.title}>
+                {(item.title === 'My AI Files Explorer' ||
+                  item.title === 'Browse Public Subscriptions') && (
+                  <Separator className="bg-gray-350 my-1 w-full" />
+                )}
+                <TooltipProvider
+                  delayDuration={!sidebarExpanded ? 0 : 10000}
+                  key={item.title}
+                >
+                  <Tooltip>
+                    <TooltipTrigger className="flex items-center gap-1">
+                      <NavLink
+                        external={item.external}
+                        href={item.href}
+                        icon={item.icon}
+                        onClick={item.onClick}
+                        title={item.title}
+                      />
+                    </TooltipTrigger>
+                    <TooltipPortal>
+                      <TooltipContent
+                        align="center"
+                        arrowPadding={2}
+                        side="right"
+                      >
+                        <p>{item.title}</p>
+                      </TooltipContent>
+                    </TooltipPortal>
+                  </Tooltip>
+                </TooltipProvider>
+              </React.Fragment>
+            );
+          })}
+        </div>
+        <div className="flex flex-col gap-1">
+          {footerNavigationLinks.map((item) => {
+            return (
+              <React.Fragment key={item.title}>
+                <TooltipProvider
+                  delayDuration={!sidebarExpanded ? 0 : 10000}
+                  key={item.title}
+                >
+                  <Tooltip>
+                    <TooltipTrigger className="flex items-center gap-1">
+                      <NavLink
+                        external={item.external}
+                        href={item.href}
+                        icon={item.icon}
+                        onClick={item.onClick}
+                        title={item.title}
+                      />
+                    </TooltipTrigger>
+                    <TooltipPortal>
+                      <TooltipContent
+                        align="center"
+                        arrowPadding={2}
+                        side="right"
+                      >
+                        <p>{item.title}</p>
+                      </TooltipContent>
+                    </TooltipPortal>
+                  </Tooltip>
+                </TooltipProvider>
+              </React.Fragment>
+            );
+          })}
+        </div>
+      </div>
 
       <AlertDialog
         onOpenChange={setIsConfirmLogoutDialogOpened}
@@ -239,12 +370,14 @@ export function MainNav() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </aside>
+    </motion.aside>
   );
 }
 
 const MainLayout = () => {
   const auth = useAuth((state) => state.auth);
+  const sidebarExpanded = useSettings((state) => state.sidebarExpanded);
+
   const { nodeInfo, isSuccess, isFetching } = useGetHealth(
     { node_address: auth?.node_address ?? '' },
     { refetchInterval: 10000, enabled: !!auth },
@@ -269,9 +402,15 @@ const MainLayout = () => {
     <div className="flex min-h-full flex-col bg-gray-500 text-white">
       <div className={cn('flex flex-1', !!auth && '')}>
         {!!auth && <MainNav />}
-        <div className={cn('flex-1', !!auth && 'pl-[80px]')}>
+        <motion.div
+          animate={{
+            paddingLeft: sidebarExpanded ? '230px' : '70px',
+            transition: sidebarTransition,
+          }}
+          className={cn('flex-1', !auth && 'pl-0')}
+        >
           <Outlet />
-        </div>
+        </motion.div>
       </div>
     </div>
   );
