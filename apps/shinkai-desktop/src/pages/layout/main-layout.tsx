@@ -404,10 +404,10 @@ const MainLayout = () => {
         {!!auth && <MainNav />}
         <motion.div
           animate={{
-            paddingLeft: sidebarExpanded ? '230px' : '70px',
+            paddingLeft: !auth ? '0px' : sidebarExpanded ? '230px' : '70px',
             transition: sidebarTransition,
           }}
-          className={cn('flex-1', !auth && 'pl-0')}
+          className={cn('flex-1')}
         >
           <Outlet />
         </motion.div>

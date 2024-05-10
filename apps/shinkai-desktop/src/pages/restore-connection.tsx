@@ -127,7 +127,7 @@ const RestoreConnectionPage = () => {
                           {encryptedConnectionFile ? (
                             <div className="flex h-[100px] w-full flex-row items-center justify-center space-x-4 rounded-lg border border-dashed">
                               <div className="flex flex-row items-center">
-                                <span className="text-gray-80 font-medium uppercase">
+                                <span className="text-gray-80 line-clamp-1 text-sm font-medium">
                                   {encryptedConnectionFile.name}
                                 </span>
                               </div>
@@ -171,7 +171,7 @@ const RestoreConnectionPage = () => {
                           )}
                         </div>
                         {encryptedConnectionFile && (
-                          <div className="truncate rounded-lg bg-gray-400 px-2 py-2">
+                          <div className="truncate rounded-lg bg-gray-400 px-2 py-2 font-mono text-sm">
                             {field.value}
                           </div>
                         )}
