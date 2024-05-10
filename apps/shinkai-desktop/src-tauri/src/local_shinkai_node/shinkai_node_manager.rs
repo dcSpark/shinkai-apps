@@ -34,23 +34,25 @@ pub enum ShinkaiNodeManagerEvent {
 }
 
 pub struct ShinkaiNodeManager {
+    default_node_storage_path: String,
     ollama_process: OllamaProcessHandler,
     shinkai_node_process: ShinkaiNodeProcessHandler,
     event_broadcaster: broadcast::Sender<ShinkaiNodeManagerEvent>,
 }
 
 impl ShinkaiNodeManager {
-    pub(crate) fn new() -> Self {
+    pub(crate) fn new(default_node_storage_path: String) -> Self {
         let (ollama_sender, _ollama_receiver) = channel(100);
         let (shinkai_node_sender, _shinkai_node_receiver) = channel(100);
         let (event_broadcaster, _) = broadcast::channel(10);
 
         ShinkaiNodeManager {
+            default_node_storage_path: default_node_storage_path.clone(),
             ollama_process: OllamaProcessHandler::new(
                 None,
                 ollama_sender,
             ),
-            shinkai_node_process: ShinkaiNodeProcessHandler::new(shinkai_node_sender),
+            shinkai_node_process: ShinkaiNodeProcessHandler::new(shinkai_node_sender, default_node_storage_path),
             event_broadcaster,
         }
     }
@@ -146,7 +148,7 @@ impl ShinkaiNodeManager {
         }
         
 
-        let mut default_model = ShinkaiNodeProcessHandler::default_options()
+        let mut default_model = ShinkaiNodeProcessHandler::default_options(self.default_node_storage_path.clone())
             .initial_agent_models
             .unwrap();
         default_model = default_model.replace("ollama:", "");

@@ -1,5 +1,3 @@
-use std::error::Error;
-
 use futures_util::{Stream, StreamExt};
 use reqwest;
 

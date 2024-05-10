@@ -10,6 +10,7 @@ use super::{
 };
 
 pub struct ShinkaiNodeProcessHandler {
+    default_node_storage_path: String,
     process_handler: ProcessHandler,
     options: ShinkaiNodeOptions,
 }
@@ -19,20 +20,21 @@ impl ShinkaiNodeProcessHandler {
     const PROCESS_NAME: &'static str = "shinkai-node-v0.7.5";
     const READY_MATCHER: &'static str = "listening on ";
 
-    pub fn new(event_sender: Sender<ProcessHandlerEvent>) -> Self {
+    pub fn new(event_sender: Sender<ProcessHandlerEvent>, default_node_storage_path: String) -> Self {
         let ready_matcher = Regex::new(Self::READY_MATCHER).unwrap();
-        let options = Self::default_options();
+        let options = Self::default_options(default_node_storage_path.clone());
         let process_handler = ProcessHandler::new(Self::PROCESS_NAME.to_string(), event_sender, ready_matcher);
         ShinkaiNodeProcessHandler {
+            default_node_storage_path: default_node_storage_path.clone(),
             process_handler,
             options,
         }
     }
 
-    pub fn default_options() -> ShinkaiNodeOptions {
+    pub fn default_options(default_node_storage_path: String) -> ShinkaiNodeOptions {
         ShinkaiNodeOptions {
             port: Some("9550".to_string()),
-            node_storage_path: Some("node_storage".to_string()),
+            node_storage_path: Some(default_node_storage_path),
             unstructured_server_url: Some("https://public.shinkai.com/x-un".to_string()),
             embeddings_server_url: Some("http://127.0.0.1:11435".to_string()),
             first_device_needs_registration_code: Some("false".to_string()),
@@ -173,7 +175,7 @@ impl ShinkaiNodeProcessHandler {
     }
 
     pub fn set_default_options(&mut self) -> ShinkaiNodeOptions {
-        self.options = Self::default_options();
+        self.options = Self::default_options(self.default_node_storage_path.clone());
         self.options.clone()
     }
 
