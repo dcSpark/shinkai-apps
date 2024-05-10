@@ -304,10 +304,16 @@ jobs:
           aws_bucket: shinkai-download
           source_dir: files-to-r2
           destination_dir: ./shinkai-desktop/binaries/development/
-
-      - id: job-url
-        uses: pl-strflt/job-summary-url-action@v1
-      - name: Post to a Slack channel
+  
+  notify-slack:
+    environment: development
+    needs:
+      - prebuild
+      - release-shinkai-desktop
+    name: Notify Slack
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Post Shinkai Desktop to a Slack channel
         id: slack
         uses: slackapi/slack-github-action@v1.26.0
         with:
@@ -328,13 +334,6 @@ jobs:
                   "text": {
                     "type": "mrkdwn",
                     "text": "Download it from:\n* <${{ needs.release-shinkai-desktop.outputs.app-url-aarch64-apple-darwin }}|Macos>\n* <${{ needs.release-shinkai-desktop.outputs.app-url-x86_64-pc-windows-msvc }}|Windows>\n* <${{ needs.release-shinkai-desktop.outputs.app-url-x86_64-unknown-linux-gnu }}|Linux>"
-                  }
-                }
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "_<${{ steps.job-url.outputs.job_summary_url }}|Built on Github CI>_"
                   }
                 }
               ]
