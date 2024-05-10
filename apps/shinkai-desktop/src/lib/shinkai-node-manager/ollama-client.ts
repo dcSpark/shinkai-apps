@@ -18,6 +18,12 @@ import {
 
 import { OLLAMA_MODELS } from './ollama_models';
 
+const removeForbiddenHeadersInOllamaCors = async (input: RequestInfo | URL, init?: RequestInit | undefined): Promise<Response> => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  delete (init?.headers as any)?.['User-Agent'];
+  return fetch(input, init)
+};
+
 // Client
 export const queryClient = new QueryClient();
 
@@ -29,7 +35,7 @@ export const useOllamaListQuery = (
   const query = useQuery({
     queryKey: ['ollama_list'],
     queryFn: async (): Promise<ListResponse> => {
-      const ollamaClient = new Ollama(ollamaConfig);
+      const ollamaClient = new Ollama({fetch: removeForbiddenHeadersInOllamaCors, ...ollamaConfig });
       const response = await ollamaClient.list();
       return response;
     },

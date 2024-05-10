@@ -29,12 +29,12 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import { useShinkaiNodeRespawnMutation } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
+import { isHostingShinkaiNode } from '../lib/shinkai-node-manager/shinkai-node-manager-windows-utils';
 import { GENERATE_CODE_PATH } from '../routes/name';
 import { SetupData, useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
-import { useShinkaiNodeRespawnMutation } from '../windows/shinkai-node-manager/shinkai-node-process-client';
-import { isHostingShinkaiNode } from '../windows/utils';
 import { SimpleLayout } from './layout/simple-layout';
 
 const formSchema = z.object({
