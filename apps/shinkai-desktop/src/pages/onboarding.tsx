@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
 import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/lib/queries/getEncryptionKeys/useGetEncryptionKeys';
+import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import {
   Button,
   ButtonProps,
@@ -12,9 +13,10 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { ArrowLeft } from 'lucide-react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, To, useNavigate } from 'react-router-dom';
+import { Link, To, useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { HOME_PATH } from '../routes/name';
@@ -64,18 +66,27 @@ const ConnectionOptionButton = ({
     </Button>
   );
 };
+const LOCAL_NODE_ADDRESS = 'http://127.0.0.1:9850';
 
 const OnboardingPage = () => {
   const navigate = useNavigate();
   const setAuth = useAuth((state) => state.setAuth);
   useShinkaiNodeEventsToast();
   const { encryptionKeys } = useGetEncryptionKeys();
+  const locationState = useLocation().state;
+  const isShinkaiPrivate = locationState?.connectionType === 'local';
+  const { nodeInfo, isSuccess: isNodeInfoSuccess } = useGetHealth(
+    { node_address: LOCAL_NODE_ADDRESS },
+    { enabled: isShinkaiPrivate },
+  );
 
   const setupDataForm = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       registration_name: 'main_device',
-      node_address: 'http://127.0.0.1:9550',
+      node_address: isShinkaiPrivate
+        ? LOCAL_NODE_ADDRESS
+        : 'http://127.0.0.1:9550',
     },
   });
 
@@ -97,6 +108,11 @@ const OnboardingPage = () => {
           node_encryption_pk: response.data?.encryption_public_key ?? '',
         };
         setAuth(updatedSetupData);
+        if (isShinkaiPrivate) {
+          navigate('/connect-ai');
+          toast.dismiss('auto-connect-shinkai-private');
+          return;
+        }
         navigate(HOME_PATH);
       } else {
         throw new Error('Failed to submit registration');
@@ -119,6 +135,15 @@ const OnboardingPage = () => {
       ...encryptionKeys,
     });
   }
+
+  useEffect(() => {
+    if (isNodeInfoSuccess && isShinkaiPrivate && nodeInfo?.is_pristine) {
+      toast.loading('Connecting yo your local Shinkai Node', {
+        id: 'auto-connect-shinkai-private',
+      });
+      setupDataForm.handleSubmit(onSubmit)();
+    }
+  }, [isNodeInfoSuccess, isShinkaiPrivate, nodeInfo, setupDataForm]);
 
   return (
     <OnboardingLayout>

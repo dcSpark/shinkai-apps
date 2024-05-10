@@ -32,7 +32,13 @@ import {
   SearchCode,
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import { Link, Outlet, useMatch, useNavigate } from 'react-router-dom';
+import {
+  Link,
+  Outlet,
+  useLocation,
+  useMatch,
+  useNavigate,
+} from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { ONBOARDING_PATH } from '../../routes/name';
@@ -50,7 +56,7 @@ type NavigationLink = {
 };
 
 const sidebarTransition: TargetAndTransition['transition'] = {
-  duration: 0.4,
+  duration: 0.3,
   type: 'spring',
   damping: 16,
 };
@@ -122,8 +128,6 @@ const NavLink = ({
     </Link>
   );
 };
-
-const MotionButton = motion(Button);
 
 export function MainNav() {
   const navigate = useNavigate();
@@ -224,13 +228,9 @@ export function MainNav() {
       <TooltipProvider delayDuration={0}>
         <Tooltip>
           <TooltipTrigger asChild>
-            <MotionButton
-              animate={{
-                alignSelf: sidebarExpanded ? 'flex-end' : 'center',
-                transition: sidebarTransition,
-              }}
+            <Button
               className={cn(
-                'border-gray-350 flex h-6 w-6 items-center justify-center rounded-lg border bg-gray-400 p-0',
+                'border-gray-350 flex h-6 w-6 items-center justify-center self-center rounded-lg border bg-gray-400 p-0',
               )}
               onClick={toggleSidebar}
               size="auto"
@@ -242,7 +242,7 @@ export function MainNav() {
               ) : (
                 <ArrowRightToLine className="h-3 w-3" />
               )}
-            </MotionButton>
+            </Button>
           </TooltipTrigger>
           <TooltipPortal>
             <TooltipContent align="center" arrowPadding={2} side="right">
@@ -375,6 +375,7 @@ export function MainNav() {
 }
 
 const MainLayout = () => {
+  const location = useLocation();
   const auth = useAuth((state) => state.auth);
   const sidebarExpanded = useSettings((state) => state.sidebarExpanded);
 
@@ -398,16 +399,36 @@ const MainLayout = () => {
     }
   }, [isSuccess, nodeInfo?.status, isFetching]);
 
+  const disabledSidebarRoutes = [
+    '/connect-ai',
+    '/free-subscriptions',
+    '/ai-model-installation',
+  ];
+
+  const displaySidebar =
+    !!auth && !disabledSidebarRoutes.includes(location.pathname);
+
   return (
     <div className="flex min-h-full flex-col bg-gray-500 text-white">
       <div className={cn('flex flex-1', !!auth && '')}>
-        {!!auth && <MainNav />}
+        {displaySidebar && <MainNav />}
         <motion.div
           animate={{
-            paddingLeft: !auth ? '0px' : sidebarExpanded ? '230px' : '70px',
+            paddingLeft: !displaySidebar
+              ? '0px'
+              : sidebarExpanded
+                ? '230px'
+                : '70px',
             transition: sidebarTransition,
           }}
           className={cn('flex-1')}
+          initial={{
+            paddingLeft: !displaySidebar
+              ? '0px'
+              : sidebarExpanded
+                ? '230px'
+                : '70px',
+          }}
         >
           <Outlet />
         </motion.div>
