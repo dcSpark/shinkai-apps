@@ -81,45 +81,48 @@ jobs:
   release-shinkai-desktop:
     needs: prebuild
     name: Release Shinkai Desktop
+    environment: development
     strategy:
       matrix:
         include:
           - arch: x86_64-unknown-linux-gnu
             os: ubuntu-22.04
-            build_output_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/appimage/shinkai-desktop_${{ needs.prebuild.outputs.version }}${{ github.run_number }}_amd64.AppImage
-            build_output_update_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/appimage/shinkai-desktop_${{ needs.prebuild.outputs.version }}${{ github.run_number }}_amd64.AppImage.tar.gz
-            build_output_update_signature_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/appimage/shinkai-desktop_${{ needs.prebuild.outputs.version }}${{ github.run_number }}_amd64.AppImage.tar.gz.sig
-            distributable_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage
-            distributable_update_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage.tar.gz
-            distributable_update_signature_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage.tar.gz.sig
+            build_output_file_path: apps/shinkai-desktop/src-tauri/target/debug/bundle/appimage/shinkai-desktop-dev_${{ needs.prebuild.outputs.version }}${{ github.run_number }}_amd64.AppImage
+            build_output_update_file_path: apps/shinkai-desktop/src-tauri/target/debug/bundle/appimage/shinkai-desktop-dev_${{ needs.prebuild.outputs.version }}${{ github.run_number }}_amd64.AppImage.tar.gz
+            build_output_update_signature_file_path: apps/shinkai-desktop/src-tauri/target/debug/bundle/appimage/shinkai-desktop-dev_${{ needs.prebuild.outputs.version }}${{ github.run_number }}_amd64.AppImage.tar.gz.sig
+            distributable_file_name: Shinkai-Desktop-Dev-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage
+            distributable_update_file_name: Shinkai-Desktop-Dev-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage.tar.gz
+            distributable_update_signature_file_name: Shinkai-Desktop-Dev-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage.tar.gz.sig
 
           - arch: aarch64-apple-darwin
             os: macos-14
-            build_output_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/dmg/Shinkai Desktop_${{ needs.prebuild.outputs.version }}${{ github.run_number }}_aarch64.dmg
-            build_output_update_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/macos/Shinkai Desktop.app.tar.gz
-            build_output_update_signature_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/macos/Shinkai Desktop.app.tar.gz.sig
-            distributable_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_aarch64-apple-darwin.dmg
-            distributable_update_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_aarch64-apple-darwin.app.tar.gz
-            distributable_update_signature_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_aarch64-apple-darwin.app.tar.gz.sig
+            build_output_file_path: apps/shinkai-desktop/src-tauri/target/debug/bundle/dmg/Shinkai Desktop Dev_${{ needs.prebuild.outputs.version }}${{ github.run_number }}_aarch64.dmg
+            build_output_update_file_path: apps/shinkai-desktop/src-tauri/target/debug/bundle/macos/Shinkai Desktop Dev.app.tar.gz
+            build_output_update_signature_file_path: apps/shinkai-desktop/src-tauri/target/debug/bundle/macos/Shinkai Desktop Dev.app.tar.gz.sig
+            distributable_file_name: Shinkai-Desktop-Dev-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_aarch64-apple-darwin.dmg
+            distributable_update_file_name: Shinkai-Desktop-Dev-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_aarch64-apple-darwin.app.tar.gz
+            distributable_update_signature_file_name: Shinkai-Desktop-Dev-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_aarch64-apple-darwin.app.tar.gz.sig
 
           - arch: x86_64-pc-windows-msvc
             os: windows-2022
-            build_output_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/nsis/Shinkai Desktop_${{ needs.prebuild.outputs.version }}${{ github.run_number }}_x64-setup.exe
-            build_output_update_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/nsis/Shinkai Desktop_${{ needs.prebuild.outputs.version }}${{ github.run_number }}_x64-setup.nsis.zip
-            build_output_update_signature_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/nsis/Shinkai Desktop_${{ needs.prebuild.outputs.version }}${{ github.run_number }}_x64-setup.nsis.zip.sig
-            distributable_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-pc-windows-msvc.exe
-            distributable_update_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-pc-windows-msvc.nsis.zip
-            distributable_update_signature_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-pc-windows-msvc.nsis.zip.sig
+            build_output_file_path: apps/shinkai-desktop/src-tauri/target/debug/bundle/nsis/Shinkai Desktop Dev_${{ needs.prebuild.outputs.version }}${{ github.run_number }}_x64-setup.exe
+            build_output_update_file_path: apps/shinkai-desktop/src-tauri/target/debug/bundle/nsis/Shinkai Desktop Dev_${{ needs.prebuild.outputs.version }}${{ github.run_number }}_x64-setup.nsis.zip
+            build_output_update_signature_file_path: apps/shinkai-desktop/src-tauri/target/debug/bundle/nsis/Shinkai Desktop Dev_${{ needs.prebuild.outputs.version }}${{ github.run_number }}_x64-setup.nsis.zip.sig
+            distributable_file_name: Shinkai-Desktop-Dev-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-pc-windows-msvc.exe
+            distributable_update_file_name: Shinkai-Desktop-Dev-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-pc-windows-msvc.nsis.zip
+            distributable_update_signature_file_name: Shinkai-Desktop-Dev-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-pc-windows-msvc.nsis.zip.sig
 
     runs-on: ${{ matrix.os }}
-    environment: development
     outputs:
       signature-x86_64-unknown-linux-gnu: ${{ steps.prepare-files.outputs.signature-x86_64-unknown-linux-gnu }}
       update-url-x86_64-unknown-linux-gnu: ${{ steps.prepare-files.outputs.update-url-x86_64-unknown-linux-gnu }}
+      app-url-x86_64-unknown-linux-gnu: ${{ steps.prepare-files.outputs.app-url-x86_64-unknown-linux-gnu }}
       signature-aarch64-apple-darwin: ${{ steps.prepare-files.outputs.signature-aarch64-apple-darwin }}
       update-url-aarch64-apple-darwin: ${{ steps.prepare-files.outputs.update-url-aarch64-apple-darwin }}
+      app-url-aarch64-apple-darwin: ${{ steps.prepare-files.outputs.app-url-aarch64-apple-darwin }}
       signature-x86_64-pc-windows-msvc: ${{ steps.prepare-files.outputs.signature-x86_64-pc-windows-msvc }}
       update-url-x86_64-pc-windows-msvc: ${{ steps.prepare-files.outputs.update-url-x86_64-pc-windows-msvc }}
+      app-url-x86_64-pc-windows-msvc: ${{ steps.prepare-files.outputs.app-url-x86_64-pc-windows-msvc }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -199,14 +202,14 @@ jobs:
 
       - name: (Linux) Run NX build on shinkai-desktop
         if: ${{ matrix.arch == 'x86_64-unknown-linux-gnu' }}
-        run: npx nx build shinkai-desktop --config="./src-tauri/tauri.conf.development.json" --skip-nx-cache
+        run: npx nx build shinkai-desktop --config="./src-tauri/tauri.conf.development.json" --skip-nx-cache --debug
         env:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
 
       - name: (Macos) Run NX build on shinkai-desktop
         if: ${{ matrix.arch == 'aarch64-apple-darwin' }}
-        run: npx nx build shinkai-desktop --config="./src-tauri/tauri.conf.development.json" --skip-nx-cache
+        run: npx nx build shinkai-desktop --config="./src-tauri/tauri.conf.development.json" --skip-nx-cache  --debug
         env:
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
@@ -219,7 +222,7 @@ jobs:
 
       - name: (Windows) Run NX build on shinkai-desktop
         if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
-        run: npx nx build shinkai-desktop --config="./src-tauri/tauri.conf.development.json" --skip-nx-cache
+        run: npx nx build shinkai-desktop --config="./src-tauri/tauri.conf.development.json" --skip-nx-cache  --debug
         env:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
@@ -236,7 +239,8 @@ jobs:
           cp "${{ matrix.build_output_update_file_path }}" files-to-r2/${{ matrix.distributable_update_file_name }}
           cp "${{ matrix.build_output_update_signature_file_path }}" files-to-r2/${{ matrix.distributable_update_signature_file_name }}
           echo "signature-${{ matrix.arch }}=$(cat files-to-r2/${{ matrix.distributable_update_signature_file_name }})" >> "$GITHUB_OUTPUT"
-          echo "update-url-${{ matrix.arch }}=https://download.shinkai.com/shinkai-desktop/binaries/development/${{ matrix.arch }}/${{ needs.prebuild.outputs.version }}.${{ github.run_number }}/${{ matrix.distributable_update_file_name }}" >> "$GITHUB_OUTPUT"
+          echo "update-url-${{ matrix.arch }}=https://download.shinkai.com/shinkai-desktop/binaries/development/${{ matrix.arch }}/${{ needs.prebuild.outputs.version }}.${{ github.run_number }}/${{ matrix.distributable_file_name }}" >> "$GITHUB_OUTPUT"
+          echo "app-url-${{ matrix.arch }}=https://download.shinkai.com/shinkai-desktop/binaries/development/${{ matrix.arch }}/${{ needs.prebuild.outputs.version }}.${{ github.run_number }}/${{ matrix.distributable_update_file_name }}" >> "$GITHUB_OUTPUT"
 
       - name: Upload binaries to R2 bucket
         uses: shallwefootball/s3-upload-action@master
@@ -279,7 +283,7 @@ jobs:
       - name: Generate updates.json
         env:
           JSON_PATH: files-to-r2/updates.json
-          VERSION: ${{ needs.prebuild.outputs.version }}${{ github.run_number }}
+          VERSION: ${{ needs.prebuild.outputs.version }}.${{ github.run_number }}
           NOTES: Automatic update to ${{ needs.prebuild.outputs.version }}${{ github.run_number }}
           LINUX_x86_64_SIGNATURE: ${{ needs.release-shinkai-desktop.outputs.signature-x86_64-unknown-linux-gnu }}
           LINUX_x86_64_URL: ${{ needs.release-shinkai-desktop.outputs.update-url-x86_64-unknown-linux-gnu }}
@@ -300,6 +304,99 @@ jobs:
           aws_bucket: shinkai-download
           source_dir: files-to-r2
           destination_dir: ./shinkai-desktop/binaries/development/
+  
+  notify-slack:
+    environment: development
+    needs:
+      - prebuild
+      - release-shinkai-desktop
+      - rollout-shinkai-desktop
+    name: Notify Slack
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Post Shinkai Desktop to a Slack channel
+        uses: slackapi/slack-github-action@v1.26.0
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        with:
+          channel-id: 'C072VJ6E7GC'
+          payload: |
+            {
+              "text": "🚀 New release",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "📦 New build: Shinkai Desktop Dev v${{ needs.prebuild.outputs.version }}.${{ github.run_number }}",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Download it from:\n* <${{ needs.release-shinkai-desktop.outputs.app-url-aarch64-apple-darwin }}|Macos>\n* <${{ needs.release-shinkai-desktop.outputs.app-url-x86_64-pc-windows-msvc }}|Windows>\n* <${{ needs.release-shinkai-desktop.outputs.app-url-x86_64-unknown-linux-gnu }}|Linux>"
+                  }
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "type": "context",
+                  "elements": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "_✅ Automatically rolled out through the app updater_"
+                    }
+                  ]
+                }
+              ]
+            }
+      - name: Post Shinkai Visor to a Slack channel
+        uses: slackapi/slack-github-action@v1.26.0
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        with:
+          channel-id: 'C072VJ6E7GC'
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "📦 New build: Shinkai Visor Dev v${{ needs.prebuild.outputs.version }}.${{ github.run_number }}",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Found it at <https://chromewebstore.google.com/detail/shinkai-visor-supercharge/${{ secrets.CHROME_EXTENSION_ID }}|Chrome Web Store>"
+                  }
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "type": "context",
+                  "elements": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "_💡 Send it for review and publish on <https://chrome.google.com/u/4/webstore/devconsole/f35b7411-6fce-4a2b-8865-c310ce95c89f/${{ secrets.CHROME_EXTENSION_ID }}/edit|Chrome Web Store Developer> to start the rollout_"
+                    }
+                  ]
+                }
+              ]
+            }
 
   # At the moment we are not releasing android (CI was working)
   # release-shinkai-app-android:
