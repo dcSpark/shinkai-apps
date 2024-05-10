@@ -1,0 +1,10 @@
+{
+  "package": {
+    "productName": "Shinkai Desktop Local"
+  },
+  "tauri": {
+    "bundle": {
+      "identifier": "com.shinkai.desktop.local"
+    }
+  }
+}
