@@ -202,7 +202,7 @@ const SearchNodeFiles = () => {
                       <Link
                         className={'underline'}
                         to={{
-                          pathname: '/node-files',
+                          pathname: '/vector-fs',
                           search: `?path=${encodeURIComponent(
                             pathList.join('/'),
                           )}`,
