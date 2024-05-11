@@ -272,12 +272,12 @@ export const AddAgent = () => {
           className="flex h-full flex-col justify-between space-y-3"
           onSubmit={form.handleSubmit(submit)}
         >
-          <div className="flex grow flex-col space-y-2">
+          <div className="flex grow flex-col space-y-3">
             <FormField
               control={form.control}
               name="isCustomModel"
               render={({ field }) => (
-                <FormItem className="mt-4 flex flex-row items-center space-x-3  py-1">
+                <FormItem className="flex flex-row items-center space-x-3  py-2">
                   <FormControl>
                     <Switch
                       checked={field.value}
