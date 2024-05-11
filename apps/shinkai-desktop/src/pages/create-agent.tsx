@@ -23,6 +23,7 @@ import {
   Switch,
   TextField,
 } from '@shinkai_network/shinkai-ui';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -266,31 +267,9 @@ const CreateAgentPage = () => {
           <div className="space-y-6">
             <FormField
               control={addAgentForm.control}
-              name="agentName"
-              render={({ field }) => (
-                <TextField field={field} label="Agent Name" />
-              )}
-            />
-            <FormField
-              control={addAgentForm.control}
-              name="externalUrl"
-              render={({ field }) => (
-                <TextField field={field} label="External URL" />
-              )}
-            />
-            <FormField
-              control={addAgentForm.control}
-              name="apikey"
-              render={({ field }) => (
-                <TextField field={field} label="Api Key" />
-              )}
-            />
-
-            <FormField
-              control={addAgentForm.control}
               name="isCustomModel"
               render={({ field }) => (
-                <FormItem className="mt-10 mt-4 flex flex-row items-center space-x-3  py-3">
+                <FormItem className="mt-4 flex flex-row items-center justify-center space-x-3 py-1">
                   <FormControl>
                     <Switch
                       checked={field.value}
@@ -298,7 +277,12 @@ const CreateAgentPage = () => {
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
-                  <div className="space-y-1 leading-none">
+                  <div
+                    className={cn(
+                      'text-gray-80 space-y-1 text-sm leading-none',
+                      field.value && 'text-white',
+                    )}
+                  >
                     <label htmlFor="custom-model">Add a custom model</label>
                   </div>
                 </FormItem>
@@ -387,6 +371,28 @@ const CreateAgentPage = () => {
                 />
               </>
             )}
+
+            <FormField
+              control={addAgentForm.control}
+              name="agentName"
+              render={({ field }) => (
+                <TextField autoFocus field={field} label="Agent Name" />
+              )}
+            />
+            <FormField
+              control={addAgentForm.control}
+              name="externalUrl"
+              render={({ field }) => (
+                <TextField field={field} label="External URL" />
+              )}
+            />
+            <FormField
+              control={addAgentForm.control}
+              name="apikey"
+              render={({ field }) => (
+                <TextField field={field} label="Api Key" />
+              )}
+            />
           </div>
 
           {isError && <ErrorMessage message={error.message} />}
