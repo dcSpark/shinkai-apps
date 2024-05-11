@@ -1,4 +1,4 @@
-import { ExitIcon, GearIcon } from '@radix-ui/react-icons';
+import { ExitIcon, GearIcon, PlusCircledIcon } from '@radix-ui/react-icons';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import {
   AlertDialog,
@@ -13,7 +13,9 @@ import {
   FilesIcon,
   InboxIcon,
   JobBubbleIcon,
-  Separator,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
   Tooltip,
   TooltipContent,
   TooltipPortal,
@@ -60,6 +62,22 @@ const sidebarTransition: TargetAndTransition['transition'] = {
   type: 'spring',
   damping: 16,
 };
+const showAnimation = {
+  hidden: {
+    width: 0,
+    opacity: 0,
+    transition: {
+      duration: 0.3,
+    },
+  },
+  show: {
+    opacity: 1,
+    width: 'auto',
+    transition: {
+      duration: 0.3,
+    },
+  },
+};
 const NavLink = ({
   href,
   external,
@@ -79,23 +97,6 @@ const NavLink = ({
     path: href,
     end: false,
   });
-
-  const showAnimation = {
-    hidden: {
-      width: 0,
-      opacity: 0,
-      transition: {
-        duration: 0.3,
-      },
-    },
-    show: {
-      opacity: 1,
-      width: 'auto',
-      transition: {
-        duration: 0.3,
-      },
-    },
-  };
 
   return (
     <Link
@@ -142,6 +143,8 @@ export function MainNav() {
   const sidebarExpanded = useSettings((state) => state.sidebarExpanded);
   const toggleSidebar = useSettings((state) => state.toggleSidebar);
 
+  const [showCreateNewActions, setShowCreateNewActions] = useState(false);
+
   const confirmDisconnect = () => {
     setIsConfirmLogoutDialogOpened(true);
   };
@@ -157,11 +160,7 @@ export function MainNav() {
       href: '/inboxes',
       icon: <InboxIcon className="h-5 w-5" />,
     },
-    {
-      title: 'Create AI Chat',
-      href: '/create-job',
-      icon: <JobBubbleIcon className="h-5 w-5" />,
-    },
+
     // auth?.shinkai_identity.includes('localhost') && {
     //   title: 'Create DM Chat',
     //   href: '/create-chat',
@@ -220,7 +219,7 @@ export function MainNav() {
         width: sidebarExpanded ? '230px' : '70px',
         transition: sidebarTransition,
       }}
-      className="fixed inset-0 z-30 flex w-auto shrink-0 flex-col gap-2 overflow-y-auto overflow-x-hidden  border-r border-gray-400/30  bg-gradient-to-b from-gray-300 to-gray-400/70 px-2 py-6 shadow-xl"
+      className="fixed inset-0 z-30 flex w-auto shrink-0 flex-col gap-2 overflow-y-auto overflow-x-hidden border-r border-gray-400/30  bg-gradient-to-b from-gray-300 to-gray-400/70 px-2 py-6 shadow-xl"
       initial={{
         width: sidebarExpanded ? '230px' : '70px',
       }}
@@ -231,6 +230,7 @@ export function MainNav() {
             <Button
               className={cn(
                 'border-gray-350 flex h-6 w-6 items-center justify-center self-center rounded-lg border bg-gray-400 p-0',
+                sidebarExpanded ? 'self-end' : 'self-center',
               )}
               onClick={toggleSidebar}
               size="auto"
@@ -245,51 +245,93 @@ export function MainNav() {
             </Button>
           </TooltipTrigger>
           <TooltipPortal>
-            <TooltipContent align="center" arrowPadding={2} side="right">
+            <TooltipContent align="center" side="right">
               Toggle Sidebar
             </TooltipContent>
           </TooltipPortal>
         </Tooltip>
       </TooltipProvider>
       <div className="flex flex-1 flex-col justify-between">
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1.5">
           {navigationLinks.map((item) => {
             return (
-              <React.Fragment key={item.title}>
-                {(item.title === 'My AI Files Explorer' ||
-                  item.title === 'Browse Public Subscriptions') && (
-                  <Separator className="bg-gray-350 my-1 w-full" />
-                )}
-                <TooltipProvider
-                  delayDuration={!sidebarExpanded ? 0 : 10000}
-                  key={item.title}
-                >
-                  <Tooltip>
-                    <TooltipTrigger className="flex items-center gap-1">
-                      <NavLink
-                        external={item.external}
-                        href={item.href}
-                        icon={item.icon}
-                        onClick={item.onClick}
-                        title={item.title}
-                      />
-                    </TooltipTrigger>
-                    <TooltipPortal>
-                      <TooltipContent
-                        align="center"
-                        arrowPadding={2}
-                        side="right"
-                      >
-                        <p>{item.title}</p>
-                      </TooltipContent>
-                    </TooltipPortal>
-                  </Tooltip>
-                </TooltipProvider>
-              </React.Fragment>
+              <TooltipProvider
+                delayDuration={!sidebarExpanded ? 0 : 10000}
+                key={item.title}
+              >
+                <Tooltip>
+                  <TooltipTrigger className="flex items-center gap-1">
+                    <NavLink
+                      external={item.external}
+                      href={item.href}
+                      icon={item.icon}
+                      onClick={item.onClick}
+                      title={item.title}
+                    />
+                  </TooltipTrigger>
+                  <TooltipPortal>
+                    <TooltipContent
+                      align="center"
+                      arrowPadding={2}
+                      side="right"
+                    >
+                      <p>{item.title}</p>
+                    </TooltipContent>
+                  </TooltipPortal>
+                </Tooltip>
+              </TooltipProvider>
             );
           })}
         </div>
         <div className="flex flex-col gap-1">
+          <Popover>
+            <PopoverTrigger asChild>
+              <motion.button
+                className="text-brand flex w-full items-center gap-2 rounded-lg px-4 py-3 transition-colors hover:bg-gray-500"
+                onClick={() => setShowCreateNewActions(!showCreateNewActions)}
+              >
+                <PlusCircledIcon className="h-5 w-5 shrink-0" />
+                <AnimatePresence>
+                  {sidebarExpanded && (
+                    <motion.span
+                      animate="show"
+                      className="whitespace-nowrap text-xs"
+                      exit="hidden"
+                      initial="hidden"
+                      variants={showAnimation}
+                    >
+                      Create New
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </motion.button>
+            </PopoverTrigger>
+            <PopoverContent
+              align="start"
+              className={cn(
+                ' bg-gray-500 p-2',
+                sidebarExpanded ? 'w-[213px]' : 'w-[180px]',
+              )}
+              side="top"
+            >
+              <div className="flex flex-col gap-1">
+                <Link
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs text-gray-50 transition-colors hover:bg-gray-400"
+                  to="/create-job"
+                >
+                  <JobBubbleIcon className="h-5 w-5" />
+                  Create AI Chat
+                </Link>
+                <Link
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs text-gray-50 transition-colors hover:bg-gray-400"
+                  to="add-agent"
+                >
+                  <JobBubbleIcon className="h-5 w-5" />
+                  Create Agent
+                </Link>
+              </div>
+            </PopoverContent>
+          </Popover>
           {footerNavigationLinks.map((item) => {
             return (
               <React.Fragment key={item.title}>
