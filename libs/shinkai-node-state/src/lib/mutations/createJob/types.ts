@@ -18,10 +18,4 @@ export type CreateJobInput = JobCredentialsPayload & {
 
 export type CreateJobOutput = {
   jobId: string;
-  response:
-    | string
-    | {
-        inboxId: string;
-        message: ShinkaiMessage;
-      };
 };
