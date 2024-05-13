@@ -44,7 +44,6 @@ import {
 } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { ONBOARDING_PATH } from '../../routes/name';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
 import { useShinkaiNodeManager } from '../../store/shinkai-node-manager';
@@ -152,7 +151,7 @@ export function MainNav() {
 
   const handleDisconnect = () => {
     logout();
-    navigate(ONBOARDING_PATH);
+    navigate('/get-started');
   };
 
   const navigationLinks = [
@@ -403,7 +402,7 @@ export function MainNav() {
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="mt-4 flex gap-1">
+          <AlertDialogFooter className="mt-4 flex gap-2">
             <AlertDialogCancel
               className="mt-0 flex-1"
               onClick={() => {
