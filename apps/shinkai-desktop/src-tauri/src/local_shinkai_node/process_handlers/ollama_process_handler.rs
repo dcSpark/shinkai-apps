@@ -97,8 +97,8 @@ impl OllamaProcessHandler {
         self.process_handler.is_running().await
     }
 
-    pub async fn kill_llama_process() {
-        kill_process_by_name("ollama_");
+    pub fn kill_llama_process() {
+        kill_process_by_name("ollama_llama");
     }
     pub async fn kill(&self) {
         Self::kill_llama_process();
