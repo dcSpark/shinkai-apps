@@ -1,4 +1,4 @@
-import { ExitIcon, GearIcon, PlusCircledIcon } from '@radix-ui/react-icons';
+import { ExitIcon, GearIcon } from '@radix-ui/react-icons';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import {
   AlertDialog,
@@ -31,6 +31,7 @@ import {
   CodesandboxIcon,
   Compass,
   LibraryBig,
+  PlusIcon,
   SearchCode,
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
@@ -229,7 +230,7 @@ export function MainNav() {
           <TooltipTrigger asChild>
             <Button
               className={cn(
-                'border-gray-350 flex h-6 w-6 items-center justify-center self-center rounded-lg border bg-gray-400 p-0',
+                'border-gray-350 text-gray-80 flex h-6 w-6 items-center justify-center self-center rounded-lg border bg-black/20 p-0 hover:bg-black/20 hover:text-white',
                 sidebarExpanded ? 'self-end' : 'self-center',
               )}
               onClick={toggleSidebar}
@@ -287,10 +288,15 @@ export function MainNav() {
           <Popover>
             <PopoverTrigger asChild>
               <motion.button
-                className="text-brand flex w-full items-center gap-2 rounded-lg px-4 py-3 transition-colors hover:bg-gray-500"
+                className={cn(
+                  'text-gray-80 mb-2 flex h-8 w-8 items-center justify-center gap-2 self-center rounded-full bg-white/10 hover:bg-white/10 hover:text-white',
+                  sidebarExpanded &&
+                    'w-full justify-start rounded-lg px-4 py-3',
+                )}
                 onClick={() => setShowCreateNewActions(!showCreateNewActions)}
+                whileHover={{ scale: !sidebarExpanded ? 1.05 : 1 }}
               >
-                <PlusCircledIcon className="h-5 w-5 shrink-0" />
+                <PlusIcon className="h-5 w-5 shrink-0" />
                 <AnimatePresence>
                   {sidebarExpanded && (
                     <motion.span
