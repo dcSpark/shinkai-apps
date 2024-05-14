@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 import { calculate_blake3_hash } from '../pkg/shinkai_message_wasm';
 import { urlJoin } from '../utils/url-join';
 import { InboxNameWrapper } from './InboxNameWrapper';
@@ -221,20 +223,16 @@ export class FileUploader {
 
       const message = JSON.parse(messageStr);
 
-      const response = await fetch(
+      const response = await axios.post(
         urlJoin(this.base_url, '/v1/vec_fs/convert_files_and_save_to_folder'),
+        message,
         {
-          method: 'POST',
-          body: JSON.stringify(message),
+          timeout: Number.MAX_SAFE_INTEGER,
           headers: { 'Content-Type': 'application/json' },
         },
       );
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      return data;
+      return response.data;
     } catch (error) {
       console.error('Error finalizing and adding items to DB:', error);
       throw error;

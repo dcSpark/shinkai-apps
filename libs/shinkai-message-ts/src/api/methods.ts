@@ -546,7 +546,6 @@ export const createJob = async (
     throw error;
   }
 };
-
 export const sendMessageToJob = async (
   nodeAddress: string,
   jobId: string,
@@ -558,7 +557,12 @@ export const sendMessageToJob = async (
   receiver: string,
   receiver_subidentity: string,
   setupDetailsState: JobCredentialsPayload,
-): Promise<string> => {
+): Promise<{
+  message_id: string;
+  parent_message_id: string;
+  inbox: string;
+  scheduled_time: string;
+}> => {
   try {
     const messageStr = ShinkaiMessageBuilderWrapper.job_message(
       jobId,
@@ -582,8 +586,8 @@ export const sendMessageToJob = async (
       headers: { 'Content-Type': 'application/json' },
     });
     await handleHttpError(response);
-    // TODO: response to create message job just contain an string replying "Job message processed successfully"
-    return response.text();
+    const data = await response.json();
+    return data.data;
   } catch (error) {
     console.error('Error sending message to job:', error);
     throw error;

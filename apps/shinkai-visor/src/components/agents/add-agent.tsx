@@ -22,6 +22,7 @@ import {
   Switch,
   TextField,
 } from '@shinkai_network/shinkai-ui';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useEffect, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -33,7 +34,6 @@ import { useAuth } from '../../store/auth/auth';
 
 const formSchema = z
   .object({
-    // TODO: Translate this error message
     agentName: z
       .string()
       .regex(
@@ -272,46 +272,12 @@ export const AddAgent = () => {
           className="flex h-full flex-col justify-between space-y-3"
           onSubmit={form.handleSubmit(submit)}
         >
-          <div className="flex grow flex-col space-y-2">
-            <FormField
-              control={form.control}
-              name="agentName"
-              render={({ field }) => (
-                <TextField
-                  data-testid="agent-name-input"
-                  field={field}
-                  label={<FormattedMessage id="agent-name" />}
-                />
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="externalUrl"
-              render={({ field }) => (
-                <TextField
-                  field={field}
-                  label={<FormattedMessage id="external-url" />}
-                />
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="apiKey"
-              render={({ field }) => (
-                <TextField
-                  field={field}
-                  label={<FormattedMessage id="api-key" />}
-                />
-              )}
-            />
-
+          <div className="flex grow flex-col space-y-3">
             <FormField
               control={form.control}
               name="isCustomModel"
               render={({ field }) => (
-                <FormItem className="mt-10 mt-4 flex flex-row items-center space-x-3  py-3">
+                <FormItem className="flex flex-row items-center space-x-3  py-2">
                   <FormControl>
                     <Switch
                       checked={field.value}
@@ -319,7 +285,12 @@ export const AddAgent = () => {
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
-                  <div className="space-y-1 leading-none">
+                  <div
+                    className={cn(
+                      'text-gray-80 space-y-1 text-sm leading-none',
+                      field.value && 'text-white',
+                    )}
+                  >
                     <label htmlFor="custom-model">Add a custom model</label>
                   </div>
                 </FormItem>
@@ -417,6 +388,41 @@ export const AddAgent = () => {
                 />
               </>
             )}
+
+            <FormField
+              control={form.control}
+              name="agentName"
+              render={({ field }) => (
+                <TextField
+                  autoFocus
+                  data-testid="agent-name-input"
+                  field={field}
+                  label={<FormattedMessage id="agent-name" />}
+                />
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="externalUrl"
+              render={({ field }) => (
+                <TextField
+                  field={field}
+                  label={<FormattedMessage id="external-url" />}
+                />
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="apiKey"
+              render={({ field }) => (
+                <TextField
+                  field={field}
+                  label={<FormattedMessage id="api-key" />}
+                />
+              )}
+            />
           </div>
           <Button
             className="w-full"

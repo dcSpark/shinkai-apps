@@ -6,12 +6,14 @@ import { Link, To } from 'react-router-dom';
 export const SubpageLayout = ({
   title,
   children,
+  className,
 }: {
   title: React.ReactNode;
   children: React.ReactNode;
+  className?: string;
 }) => {
   return (
-    <div className="relative mx-auto max-w-lg py-10">
+    <div className={cn('relative mx-auto max-w-lg py-10', className)}>
       <Link className="absolute left-0" to={-1 as To}>
         <LucideArrowLeft />
         <span className="sr-only">Back</span>
@@ -35,7 +37,7 @@ export const SimpleLayout = ({
   return (
     <div
       className={cn(
-        'mx-auto flex h-full max-w-4xl flex-col gap-4 px-2 py-10',
+        'mx-auto flex h-full max-w-4xl flex-col gap-4 px-5 py-10',
         classname,
       )}
     >

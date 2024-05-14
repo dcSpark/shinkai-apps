@@ -84,7 +84,7 @@ export const FileList = ({ files, actions, className }: FileListProps) => {
                 {getFileExt(decodeURIComponent(file.name)) === 'html' ? (
                   <a
                     className="text-gray-80 grow truncate font-medium underline transition-colors hover:text-gray-50"
-                    href={decodeURIComponent(file.name)}
+                    href={decodeURIComponent(file.name).split('.html')[0]}
                     rel="noreferrer"
                     target="_blank"
                   >

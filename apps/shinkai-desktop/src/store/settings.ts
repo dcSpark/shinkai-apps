@@ -4,6 +4,8 @@ import { devtools, persist } from 'zustand/middleware';
 type SettingsStore = {
   defaultAgentId: string;
   setDefaultAgentId: (defaultAgentId: string) => void;
+  sidebarExpanded: boolean;
+  toggleSidebar: () => void;
 };
 
 export const useSettings = create<SettingsStore>()(
@@ -13,6 +15,11 @@ export const useSettings = create<SettingsStore>()(
         defaultAgentId: '',
         setDefaultAgentId: (defaultAgentId) => {
           set({ defaultAgentId });
+        },
+
+        sidebarExpanded: false,
+        toggleSidebar: () => {
+          set((state) => ({ sidebarExpanded: !state.sidebarExpanded }));
         },
       }),
       {
