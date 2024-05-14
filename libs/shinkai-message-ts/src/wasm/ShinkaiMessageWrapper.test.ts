@@ -31,7 +31,6 @@ const messageJson = `{
     "version": "V1_0"
   }`;
 
-
 describe('ShinkaiMessageWrapper', () => {
   it('should correctly convert from and to JSON string', () => {
     const wrapper = ShinkaiMessageWrapper.from_json_str(messageJson);

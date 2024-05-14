@@ -164,9 +164,18 @@ test('SerializedAgentWrapper with Groq model type', async () => {
       `groq:${serializedAgent.model['groq'].model_type}`,
     );
   }
-  expect(agent.toolkit_permissions).toEqual(['groq_permission1', 'groq_permission2']);
-  expect(agent.storage_bucket_permissions).toEqual(['groq_bucket1', 'groq_bucket2']);
-  expect(agent.allowed_message_senders).toEqual(['groq_sender1', 'groq_sender2']);
+  expect(agent.toolkit_permissions).toEqual([
+    'groq_permission1',
+    'groq_permission2',
+  ]);
+  expect(agent.storage_bucket_permissions).toEqual([
+    'groq_bucket1',
+    'groq_bucket2',
+  ]);
+  expect(agent.allowed_message_senders).toEqual([
+    'groq_sender1',
+    'groq_sender2',
+  ]);
 });
 
 test('SerializedAgentWrapper serialization to string for Groq model', async () => {
@@ -184,7 +193,8 @@ test('SerializedAgentWrapper serialization to string for Groq model', async () =
   };
 
   // Convert the SerializedAgent to a SerializedAgentWrapper
-  const serializedAgentWrapper = SerializedAgentWrapper.fromSerializedAgent(serializedAgent);
+  const serializedAgentWrapper =
+    SerializedAgentWrapper.fromSerializedAgent(serializedAgent);
 
   // Serialize the SerializedAgentWrapper to a string
   const serializedString = serializedAgentWrapper.to_json_str();
@@ -194,14 +204,24 @@ test('SerializedAgentWrapper serialization to string for Groq model', async () =
 
   // Check that the common fields are correctly serialized
   expect(parsedObject.id).toBe(serializedAgent.id);
-  expect(parsedObject.full_identity_name).toBe(serializedAgent.full_identity_name);
+  expect(parsedObject.full_identity_name).toBe(
+    serializedAgent.full_identity_name,
+  );
   expect(parsedObject.perform_locally).toBe(serializedAgent.perform_locally);
   expect(parsedObject.external_url).toBe(serializedAgent.external_url);
   expect(parsedObject.api_key).toBe(serializedAgent.api_key);
   if (serializedAgent.model && serializedAgent.model['groq']) {
-    expect(parsedObject.model).toBe(`groq:${serializedAgent.model['groq'].model_type}`);
+    expect(parsedObject.model).toBe(
+      `groq:${serializedAgent.model['groq'].model_type}`,
+    );
   }
-  expect(parsedObject.toolkit_permissions).toEqual(serializedAgent.toolkit_permissions);
-  expect(parsedObject.storage_bucket_permissions).toEqual(serializedAgent.storage_bucket_permissions);
-  expect(parsedObject.allowed_message_senders).toEqual(serializedAgent.allowed_message_senders);
+  expect(parsedObject.toolkit_permissions).toEqual(
+    serializedAgent.toolkit_permissions,
+  );
+  expect(parsedObject.storage_bucket_permissions).toEqual(
+    serializedAgent.storage_bucket_permissions,
+  );
+  expect(parsedObject.allowed_message_senders).toEqual(
+    serializedAgent.allowed_message_senders,
+  );
 });

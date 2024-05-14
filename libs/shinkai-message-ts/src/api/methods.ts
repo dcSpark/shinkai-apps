@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { httpClient } from '../http-client';
 import {
   Agent,
   AgentCredentialsPayload,
@@ -23,31 +24,13 @@ import { SerializedAgentWrapper } from '../wasm/SerializedAgentWrapper';
 import { ShinkaiMessageBuilderWrapper } from '../wasm/ShinkaiMessageBuilderWrapper';
 import { ShinkaiNameWrapper } from '../wasm/ShinkaiNameWrapper';
 
-// Helper function to handle HTTP errors
-export const handleHttpError = async (response: Response): Promise<void> => {
-  if (response.status < 200 || response.status >= 300) {
-    let error: { code: string; error: string; message: string } | undefined;
-    try {
-      error = await response.json();
-    } catch (e) {
-      console.error(`Error parsing http error response ${response.body}`);
-      error = undefined;
-    }
-    throw new Error(
-      `HTTP error: ${response.status} ${error?.code}, ${error?.error}, ${error?.message}`,
-    );
-  }
-};
-
 export const fetchPublicKey =
   (nodeAddress: string) => async (): Promise<any> => {
-    try {
-      const response = await fetch(urlJoin(nodeAddress, '/get_public_key'));
-      return response.json();
-    } catch (error) {
-      console.error('Error fetching public key:', error);
-      throw error;
-    }
+    const response = await httpClient.get(
+      urlJoin(nodeAddress, '/get_public_key'),
+    );
+    const data = await response.data;
+    return data;
   };
 
 export const createChatWithMessage = async (
@@ -77,39 +60,35 @@ export const createChatWithMessage = async (
     true,
   );
 
-  try {
-    const messageStr = ShinkaiMessageBuilderWrapper.create_chat_with_message(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      sender,
-      sender_subidentity,
-      receiver,
-      receiver_subidentity,
-      text_message,
-      inbox.get_value,
-    );
+  const messageStr = ShinkaiMessageBuilderWrapper.create_chat_with_message(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+    text_message,
+    inbox.get_value,
+  );
 
-    const message: ShinkaiMessage = JSON.parse(messageStr);
+  const message: ShinkaiMessage = JSON.parse(messageStr);
 
-    const response = await fetch(urlJoin(nodeAddress, '/v1/send'), {
-      method: 'POST',
-      body: JSON.stringify(message),
-      headers: { 'Content-Type': 'application/json' },
-    });
-    const data: CreateChatInboxResponse = await response.json();
+  const response = await httpClient.post<CreateChatInboxResponse>(
+    urlJoin(nodeAddress, '/v1/send'),
+    message,
 
-    await handleHttpError(response);
+    {
+      responseType: 'json',
+    },
+  );
+  const data = response.data;
 
-    if (message.body && 'unencrypted' in message.body) {
-      const inboxId = message.body.unencrypted.internal_metadata.inbox;
-      return { inboxId };
-    } else {
-      return { inboxId: data.data.inbox };
-    }
-  } catch (error) {
-    console.error('Error sending text message:', error);
-    throw error;
+  if (message.body && 'unencrypted' in message.body) {
+    const inboxId = message.body.unencrypted.internal_metadata.inbox;
+    return { inboxId };
+  } else {
+    return { inboxId: data.data.inbox };
   }
 };
 
@@ -122,46 +101,41 @@ export const sendTextMessageWithInbox = async (
   inbox_name: string,
   setupDetailsState: CredentialsPayload,
 ): Promise<{ inboxId: string }> => {
-  try {
-    // Note(Nico): we are forcing to send messages from profiles by removing device related stuff
-    const senderShinkaiName = new ShinkaiNameWrapper(
-      sender + '/' + sender_subidentity,
-    );
-    const senderProfile = senderShinkaiName.get_profile_name;
+  // Note(Nico): we are forcing to send messages from profiles by removing device related stuff
+  const senderShinkaiName = new ShinkaiNameWrapper(
+    sender + '/' + sender_subidentity,
+  );
+  const senderProfile = senderShinkaiName.get_profile_name;
 
-    const messageStr =
-      ShinkaiMessageBuilderWrapper.send_text_message_with_inbox(
-        setupDetailsState.profile_encryption_sk,
-        setupDetailsState.profile_identity_sk,
-        setupDetailsState.node_encryption_pk,
-        sender,
-        senderProfile,
-        receiver,
-        '',
-        inbox_name,
-        text_message,
-      );
+  const messageStr = ShinkaiMessageBuilderWrapper.send_text_message_with_inbox(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    sender,
+    senderProfile,
+    receiver,
+    '',
+    inbox_name,
+    text_message,
+  );
 
-    const message: ShinkaiMessage = JSON.parse(messageStr);
+  const message: ShinkaiMessage = JSON.parse(messageStr);
 
-    const response = await fetch(urlJoin(nodeAddress, '/v1/send'), {
-      method: 'POST',
-      body: JSON.stringify(message),
-      headers: { 'Content-Type': 'application/json' },
-    });
-    const data: CreateChatInboxResponse = await response.json();
+  const response = await httpClient.post<CreateChatInboxResponse>(
+    urlJoin(nodeAddress, '/v1/send'),
+    message,
 
-    await handleHttpError(response);
+    {
+      responseType: 'json',
+    },
+  );
+  const data: CreateChatInboxResponse = response.data;
 
-    if (message.body && 'unencrypted' in message.body) {
-      const inboxId = message.body.unencrypted.internal_metadata.inbox;
-      return { inboxId };
-    } else {
-      return { inboxId: data.data.inbox };
-    }
-  } catch (error) {
-    console.error('Error sending text message:', error);
-    throw error;
+  if (message.body && 'unencrypted' in message.body) {
+    const inboxId = message.body.unencrypted.internal_metadata.inbox;
+    return { inboxId };
+  } else {
+    return { inboxId: data.data.inbox };
   }
 };
 
@@ -175,36 +149,30 @@ export const sendTextMessageWithFilesForInbox = async (
   files: File[],
   setupDetailsState: CredentialsPayload,
 ): Promise<{ inboxId: string; message: ShinkaiMessage }> => {
-  try {
-    const fileUploader = new FileUploader(
-      nodeAddress,
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      job_inbox,
-      sender,
-      sender_subidentity,
-      receiver,
-    );
+  const fileUploader = new FileUploader(
+    nodeAddress,
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    job_inbox,
+    sender,
+    sender_subidentity,
+    receiver,
+  );
 
-    await fileUploader.createFolder();
-    for (const fileToUpload of files) {
-      await fileUploader.uploadEncryptedFile(fileToUpload);
-    }
-    const responseText = await fileUploader.finalizeAndSend(text_message, null);
-    const message: ShinkaiMessage = JSON.parse(responseText);
+  await fileUploader.createFolder();
+  for (const fileToUpload of files) {
+    await fileUploader.uploadEncryptedFile(fileToUpload);
+  }
+  const message = await fileUploader.finalizeAndSend(text_message, null);
 
-    if (message.body && 'unencrypted' in message.body) {
-      const inboxId = message.body.unencrypted.internal_metadata.inbox;
-      return { inboxId, message };
-    } else {
-      console.warn('message body is null or encrypted');
-      // TODO: workaround to skip error reading encrypted message
-      return { inboxId: job_inbox, message };
-    }
-  } catch (error) {
-    console.error('Error sending text message with file:', error);
-    throw error;
+  if (message.body && 'unencrypted' in message.body) {
+    const inboxId = message.body.unencrypted.internal_metadata.inbox;
+    return { inboxId, message };
+  } else {
+    console.warn('message body is null or encrypted');
+    // TODO: workaround to skip error reading encrypted message
+    return { inboxId: job_inbox, message };
   }
 };
 
@@ -216,35 +184,29 @@ export const getAllInboxesForProfile = async (
   target_shinkai_name_profile: string,
   setupDetailsState: CredentialsPayload,
 ): Promise<SmartInbox[]> => {
-  try {
-    const messageString =
-      ShinkaiMessageBuilderWrapper.get_all_inboxes_for_profile(
-        setupDetailsState.profile_encryption_sk,
-        setupDetailsState.profile_identity_sk,
-        setupDetailsState.node_encryption_pk,
-        sender,
-        sender_subidentity,
-        receiver,
-        target_shinkai_name_profile,
-      );
-
-    const message = JSON.parse(messageString);
-
-    const response = await fetch(
-      urlJoin(nodeAddress, '/v1/get_all_smart_inboxes_for_profile'),
-      {
-        method: 'POST',
-        body: JSON.stringify(message),
-        headers: { 'Content-Type': 'application/json' },
-      },
+  const messageString =
+    ShinkaiMessageBuilderWrapper.get_all_inboxes_for_profile(
+      setupDetailsState.profile_encryption_sk,
+      setupDetailsState.profile_identity_sk,
+      setupDetailsState.node_encryption_pk,
+      sender,
+      sender_subidentity,
+      receiver,
+      target_shinkai_name_profile,
     );
-    const data = await response.json();
-    await handleHttpError(response);
-    return data.data;
-  } catch (error) {
-    console.error('Error getting all inboxes for profile:', error);
-    throw error;
-  }
+
+  const message = JSON.parse(messageString);
+
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/get_all_smart_inboxes_for_profile'),
+    message,
+
+    {
+      responseType: 'json',
+    },
+  );
+  const data = response.data;
+  return data.data;
 };
 
 export const updateInboxName = async (
@@ -256,37 +218,28 @@ export const updateInboxName = async (
   inboxName: string,
   inboxId: string,
 ): Promise<{ success: string; data: null }> => {
-  try {
-    const messageString =
-      ShinkaiMessageBuilderWrapper.update_shinkai_inbox_name(
-        setupDetailsState.profile_encryption_sk,
-        setupDetailsState.profile_identity_sk,
-        setupDetailsState.node_encryption_pk,
-        sender,
-        sender_subidentity,
-        receiver,
-        '',
-        inboxId,
-        inboxName,
-      );
+  const messageString = ShinkaiMessageBuilderWrapper.update_shinkai_inbox_name(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    sender,
+    sender_subidentity,
+    receiver,
+    '',
+    inboxId,
+    inboxName,
+  );
 
-    const message = JSON.parse(messageString);
+  const message = JSON.parse(messageString);
 
-    const response = await fetch(
-      urlJoin(nodeAddress, '/v1/update_smart_inbox_name'),
-      {
-        method: 'POST',
-        body: JSON.stringify(message),
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
-    const data = await response.json();
-    await handleHttpError(response);
-    return data;
-  } catch (error) {
-    console.error('Error updating inbox name:', error);
-    throw error;
-  }
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/update_smart_inbox_name'),
+    message,
+
+    { responseType: 'json' },
+  );
+  const data = response.data;
+  return data;
 };
 
 export const getLastMessagesFromInbox = async (
@@ -296,37 +249,30 @@ export const getLastMessagesFromInbox = async (
   lastKey: string | undefined,
   setupDetailsState: LastMessagesFromInboxCredentialsPayload,
 ): Promise<ShinkaiMessage[]> => {
-  try {
-    const messageStr =
-      ShinkaiMessageBuilderWrapper.get_last_messages_from_inbox(
-        setupDetailsState.profile_encryption_sk,
-        setupDetailsState.profile_identity_sk,
-        setupDetailsState.node_encryption_pk,
-        inbox,
-        count,
-        lastKey,
-        setupDetailsState.shinkai_identity,
-        setupDetailsState.profile,
-        setupDetailsState.shinkai_identity,
-      );
+  const messageStr = ShinkaiMessageBuilderWrapper.get_last_messages_from_inbox(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    inbox,
+    count,
+    lastKey,
+    setupDetailsState.shinkai_identity,
+    setupDetailsState.profile,
+    setupDetailsState.shinkai_identity,
+  );
 
-    const message = JSON.parse(messageStr);
+  const message = JSON.parse(messageStr);
 
-    const response = await fetch(
-      urlJoin(nodeAddress, '/v1/last_messages_from_inbox'),
-      {
-        method: 'POST',
-        body: JSON.stringify(message),
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
-    await handleHttpError(response);
-    const data = await response.json();
-    return data.data;
-  } catch (error) {
-    console.error('Error getting last messages from inbox:', error);
-    throw error;
-  }
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/last_messages_from_inbox'),
+    message,
+
+    {
+      responseType: 'json',
+    },
+  );
+  const data = response.data;
+  return data.data;
 };
 
 export const submitRequestRegistrationCode = async (
@@ -335,42 +281,36 @@ export const submitRequestRegistrationCode = async (
   code_type = 'profile',
   setupDetailsState: SetupPayload,
 ): Promise<string> => {
-  try {
-    // TODO: refactor the profile name to be a constant
-    // maybe we should add ShinkaiName and InboxName to the wasm library (just ADDED them this needs refactor)
-    const sender_profile_name =
-      setupDetailsState.profile +
-      '/device/' +
-      setupDetailsState.registration_name;
+  // TODO: refactor the profile name to be a constant
+  // maybe we should add ShinkaiName and InboxName to the wasm library (just ADDED them this needs refactor)
+  const sender_profile_name =
+    setupDetailsState.profile +
+    '/device/' +
+    setupDetailsState.registration_name;
 
-    const messageStr = ShinkaiMessageBuilderWrapper.request_code_registration(
-      setupDetailsState.my_device_encryption_sk,
-      setupDetailsState.my_device_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      identity_permissions,
-      code_type,
-      sender_profile_name,
-      setupDetailsState.shinkai_identity,
-    );
+  const messageStr = ShinkaiMessageBuilderWrapper.request_code_registration(
+    setupDetailsState.my_device_encryption_sk,
+    setupDetailsState.my_device_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    identity_permissions,
+    code_type,
+    sender_profile_name,
+    setupDetailsState.shinkai_identity,
+  );
 
-    const message = JSON.parse(messageStr);
+  const message = JSON.parse(messageStr);
 
-    const response = await fetch(
-      urlJoin(nodeAddress, '/v1/create_registration_code'),
-      {
-        method: 'POST',
-        body: JSON.stringify(message),
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/create_registration_code'),
+    message,
 
-    await handleHttpError(response);
-    const data = await response.json();
-    return data.code;
-  } catch (error) {
-    console.error('Error creating registration code:', error);
-    throw error;
-  }
+    {
+      responseType: 'json',
+    },
+  );
+
+  const data = response.data;
+  return data.code;
 };
 
 export const submitRegistrationCode = async (
@@ -397,20 +337,16 @@ export const submitRegistrationCode = async (
     const message = JSON.parse(messageStr);
 
     // Use node_address from setupData for API endpoint
-    const response = await fetch(
+    const response = await httpClient.post(
       urlJoin(setupData.node_address, '/v1/use_registration_code'),
+      message,
       {
-        method: 'POST',
-        body: JSON.stringify(message),
-        headers: { 'Content-Type': 'application/json' },
+        responseType: 'json',
       },
     );
-
-    await handleHttpError(response);
-
     // Update the API_ENDPOINT after successful registration
     setupData.node_address;
-    return response.json();
+    return response.data;
   } catch (error) {
     console.error('Error using registration code:', error);
     return undefined;
@@ -425,15 +361,13 @@ export const health = async (payload: {
   is_pristine: boolean;
   version: string;
 }> => {
-  const healthResponse = await fetch(
+  const healthResponse = await httpClient.get(
     urlJoin(payload.node_address, '/v1/shinkai_health'),
     {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
+      responseType: 'json',
     },
   );
-  await handleHttpError(healthResponse);
-  const responseData = await healthResponse.json();
+  const responseData = healthResponse.data;
   return responseData;
 };
 
@@ -445,15 +379,11 @@ export const submitInitialRegistrationNoCode = async (
 }> => {
   try {
     // Used to fetch the shinkai identity
-    const healthResponse = await fetch(
+    const healthResponse = await httpClient.get(
       urlJoin(payload.node_address, '/v1/shinkai_health'),
-      {
-        method: 'GET',
-      },
     );
-    await handleHttpError(healthResponse);
     const { status, node_name }: { status: 'ok'; node_name: string } =
-      await healthResponse.json();
+      healthResponse.data;
     if (status !== 'ok') {
       throw new Error(
         `Node status error, can't fetch shinkai identity from health ${status} ${node_name}`,
@@ -474,19 +404,15 @@ export const submitInitialRegistrationNoCode = async (
     const message = JSON.parse(messageStr);
 
     // Use node_address from setupData for API endpoint
-    const response = await fetch(
+    const response = await httpClient.post(
       urlJoin(payload.node_address, '/v1/use_registration_code'),
+      message,
       {
-        method: 'POST',
-        body: JSON.stringify(message),
-        headers: { 'Content-Type': 'application/json' },
+        responseType: 'json',
       },
     );
-
-    await handleHttpError(response);
-
     // Update the API_ENDPOINT after successful registration
-    const data = await response.json();
+    const data = response.data;
     return { success: true, data };
   } catch (error) {
     console.error('Error in initial registration:', error);
@@ -495,17 +421,9 @@ export const submitInitialRegistrationNoCode = async (
 };
 
 export const pingAllNodes = async (nodeAddress: string): Promise<string> => {
-  try {
-    const response = await fetch(urlJoin(nodeAddress, '/ping_all'), {
-      method: 'POST',
-    });
-    await handleHttpError(response);
-    const data = await response.json();
-    return data.result;
-  } catch (error) {
-    console.error('Error pinging all nodes:', error);
-    throw error;
-  }
+  const response = await httpClient.post(urlJoin(nodeAddress, '/ping_all'));
+  const data = response.data;
+  return data.result;
 };
 
 export const createJob = async (
@@ -518,33 +436,30 @@ export const createJob = async (
   receiver_subidentity: string,
   setupDetailsState: JobCredentialsPayload,
 ): Promise<string> => {
-  try {
-    const messageStr = ShinkaiMessageBuilderWrapper.job_creation(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      scope,
-      is_hidden,
-      sender,
-      sender_subidentity,
-      receiver,
-      receiver_subidentity,
-    );
+  const messageStr = ShinkaiMessageBuilderWrapper.job_creation(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    scope,
+    is_hidden,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
 
-    const message = JSON.parse(messageStr);
+  const message = JSON.parse(messageStr);
 
-    const response = await fetch(urlJoin(nodeAddress, '/v1/create_job'), {
-      method: 'POST',
-      body: JSON.stringify(message),
-      headers: { 'Content-Type': 'application/json' },
-    });
-    await handleHttpError(response);
-    const data = await response.json();
-    return data.data;
-  } catch (error) {
-    console.error('Error creating job:', error);
-    throw error;
-  }
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/create_job'),
+    message,
+
+    {
+      responseType: 'json',
+    },
+  );
+  const data = response.data;
+  return data.data;
 };
 export const sendMessageToJob = async (
   nodeAddress: string,
@@ -563,35 +478,32 @@ export const sendMessageToJob = async (
   inbox: string;
   scheduled_time: string;
 }> => {
-  try {
-    const messageStr = ShinkaiMessageBuilderWrapper.job_message(
-      jobId,
-      content,
-      files_inbox,
-      parent || '',
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      sender,
-      sender_subidentity,
-      receiver,
-      receiver_subidentity,
-    );
+  const messageStr = ShinkaiMessageBuilderWrapper.job_message(
+    jobId,
+    content,
+    files_inbox,
+    parent || '',
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
 
-    const message = JSON.parse(messageStr);
+  const message = JSON.parse(messageStr);
 
-    const response = await fetch(urlJoin(nodeAddress, '/v1/job_message'), {
-      method: 'POST',
-      body: JSON.stringify(message),
-      headers: { 'Content-Type': 'application/json' },
-    });
-    await handleHttpError(response);
-    const data = await response.json();
-    return data.data;
-  } catch (error) {
-    console.error('Error sending message to job:', error);
-    throw error;
-  }
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/job_message'),
+    message,
+
+    {
+      responseType: 'json',
+    },
+  );
+  const data = response.data;
+  return data.data;
 };
 
 export const getProfileAgents = async (
@@ -601,33 +513,29 @@ export const getProfileAgents = async (
   receiver: string,
   setupDetailsState: CredentialsPayload,
 ): Promise<Agent[]> => {
-  try {
-    const messageStr = ShinkaiMessageBuilderWrapper.get_profile_agents(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      sender,
-      sender_subidentity,
-      receiver,
-    );
+  const messageStr = ShinkaiMessageBuilderWrapper.get_profile_agents(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    sender,
+    sender_subidentity,
+    receiver,
+  );
 
-    const message = JSON.parse(messageStr);
-    console.log('Get Profile Agents Message:', message);
-    const messageHash = calculateMessageHash(message);
-    console.log('Get Profile Agents Message Hash:', messageHash);
+  const message = JSON.parse(messageStr);
+  console.log('Get Profile Agents Message:', message);
+  const messageHash = calculateMessageHash(message);
+  console.log('Get Profile Agents Message Hash:', messageHash);
 
-    const response = await fetch(urlJoin(nodeAddress, '/v1/available_agents'), {
-      method: 'POST',
-      body: JSON.stringify(message),
-      headers: { 'Content-Type': 'application/json' },
-    });
-    await handleHttpError(response);
-    const data = await response.json();
-    return data.data;
-  } catch (error) {
-    console.error('Error sending message to job:', error);
-    throw error;
-  }
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/available_agents'),
+    message,
+    {
+      responseType: 'json',
+    },
+  );
+  const data = response.data;
+  return data.data;
 };
 
 export const addAgent = async (
@@ -637,32 +545,29 @@ export const addAgent = async (
   agent: SerializedAgent,
   setupDetailsState: AgentCredentialsPayload,
 ) => {
-  try {
-    const agent_wrapped = SerializedAgentWrapper.fromSerializedAgent(agent);
-    const messageStr = ShinkaiMessageBuilderWrapper.request_add_agent(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      node_name,
-      sender_subidentity,
-      node_name,
-      agent_wrapped,
-    );
+  const agent_wrapped = SerializedAgentWrapper.fromSerializedAgent(agent);
+  const messageStr = ShinkaiMessageBuilderWrapper.request_add_agent(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    node_name,
+    sender_subidentity,
+    node_name,
+    agent_wrapped,
+  );
 
-    const message = JSON.parse(messageStr);
+  const message = JSON.parse(messageStr);
 
-    const response = await fetch(urlJoin(nodeAddress, '/v1/add_agent'), {
-      method: 'POST',
-      body: JSON.stringify(message),
-      headers: { 'Content-Type': 'application/json' },
-    });
-    await handleHttpError(response);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error sending message to add agent:', error);
-    throw error;
-  }
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/add_agent'),
+    message,
+
+    {
+      responseType: 'json',
+    },
+  );
+  const data = response.data;
+  return data;
 };
 
 export const getFileNames = async (
@@ -678,37 +583,31 @@ export const getFileNames = async (
   inboxId: string,
   fileInbox: string,
 ): Promise<{ success: string; data: string[] }> => {
-  try {
-    const messageString =
-      ShinkaiMessageBuilderWrapper.get_filenames_for_file_inbox(
-        setupDetailsState.profile_encryption_sk,
-        setupDetailsState.profile_identity_sk,
-        setupDetailsState.node_encryption_pk,
-        sender,
-        sender_subidentity,
-        receiver,
-        '',
-        inboxId,
-        fileInbox,
-      );
-
-    const message = JSON.parse(messageString);
-
-    const response = await fetch(
-      urlJoin(nodeAddress, '/v1/get_filenames_for_file_inbox'),
-      {
-        method: 'POST',
-        body: JSON.stringify(message),
-        headers: { 'Content-Type': 'application/json' },
-      },
+  const messageString =
+    ShinkaiMessageBuilderWrapper.get_filenames_for_file_inbox(
+      setupDetailsState.profile_encryption_sk,
+      setupDetailsState.profile_identity_sk,
+      setupDetailsState.node_encryption_pk,
+      sender,
+      sender_subidentity,
+      receiver,
+      '',
+      inboxId,
+      fileInbox,
     );
-    const data = await response.json();
-    await handleHttpError(response);
-    return data;
-  } catch (error) {
-    console.error('Error updating inbox name:', error);
-    throw error;
-  }
+
+  const message = JSON.parse(messageString);
+
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/get_filenames_for_file_inbox'),
+    message,
+
+    {
+      responseType: 'json',
+    },
+  );
+  const data = response.data;
+  return data;
 };
 export const archiveJob = async (
   nodeAddress: string,
@@ -719,36 +618,30 @@ export const archiveJob = async (
   inbox: string,
   setupDetailsState: CredentialsPayload,
 ): Promise<{ status: string }> => {
-  try {
-    const messageStr = ShinkaiMessageBuilderWrapper.archive_job(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      sender,
-      sender_subidentity,
-      receiver,
-      receiver_subidentity,
-      inbox,
-    );
+  const messageStr = ShinkaiMessageBuilderWrapper.archive_job(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+    inbox,
+  );
 
-    const message = JSON.parse(messageStr);
+  const message = JSON.parse(messageStr);
 
-    const response = await fetch(
-      urlJoin(nodeAddress, '/v1/update_job_to_finished'),
-      {
-        method: 'POST',
-        body: JSON.stringify(message),
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/update_job_to_finished'),
+    message,
 
-    await handleHttpError(response);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error archiving job:', error);
-    throw error;
-  }
+    {
+      responseType: 'json',
+    },
+  );
+
+  const data = response.data;
+  return data;
 };
 export const createVRFolder = async (
   nodeAddress: string,
@@ -760,37 +653,31 @@ export const createVRFolder = async (
   path: string = '/',
   setupDetailsState: CredentialsPayload,
 ): Promise<{ status: string }> => {
-  try {
-    const messageStr = ShinkaiMessageBuilderWrapper.createFolder(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      folderName,
-      path,
-      sender,
-      sender_subidentity,
-      receiver,
-      receiver_subidentity,
-    );
+  const messageStr = ShinkaiMessageBuilderWrapper.createFolder(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    folderName,
+    path,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
 
-    const message = JSON.parse(messageStr);
+  const message = JSON.parse(messageStr);
 
-    const response = await fetch(
-      urlJoin(nodeAddress, '/v1/vec_fs/create_folder'),
-      {
-        method: 'POST',
-        body: JSON.stringify(message),
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/vec_fs/create_folder'),
+    message,
 
-    await handleHttpError(response);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error createVRFolder:', error);
-    throw error;
-  }
+    {
+      responseType: 'json',
+    },
+  );
+
+  const data = response.data;
+  return data;
 };
 export const retrieveVRPathSimplified = async (
   nodeAddress: string,
@@ -801,41 +688,35 @@ export const retrieveVRPathSimplified = async (
   path: string = '/',
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
-  try {
-    const messageStr = ShinkaiMessageBuilderWrapper.retrievePathSimplified(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      path,
-      sender,
-      sender_subidentity,
-      receiver,
-      receiver_subidentity,
-    );
+  const messageStr = ShinkaiMessageBuilderWrapper.retrievePathSimplified(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    path,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
 
-    const message = JSON.parse(messageStr);
+  const message = JSON.parse(messageStr);
 
-    const response = await fetch(
-      urlJoin(nodeAddress, '/v1/vec_fs/retrieve_path_simplified_json'),
-      {
-        method: 'POST',
-        body: JSON.stringify(message),
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/vec_fs/retrieve_path_simplified_json'),
+    message,
 
-    await handleHttpError(response);
-    const data = await response.json();
-    return typeof data?.data === 'string'
-      ? {
-          data: JSON.parse(data.data),
-          status: data.status,
-        }
-      : data;
-  } catch (error) {
-    console.error('Error retrieveVRPathSimplified:', error);
-    throw error;
-  }
+    {
+      responseType: 'json',
+    },
+  );
+
+  const data = response.data;
+  return typeof data?.data === 'string'
+    ? {
+        data: JSON.parse(data.data),
+        status: data.status,
+      }
+    : data;
 };
 export const retrieveVectorSearchSimplified = async (
   nodeAddress: string,
@@ -847,40 +728,34 @@ export const retrieveVectorSearchSimplified = async (
   path: string | null = null,
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
-  try {
-    const messageStr =
-      ShinkaiMessageBuilderWrapper.retrieveVectorSearchSimplified(
-        setupDetailsState.profile_encryption_sk,
-        setupDetailsState.profile_identity_sk,
-        setupDetailsState.node_encryption_pk,
-        searchQuery,
-        path,
-        10,
-        null,
-        sender,
-        sender_subidentity,
-        receiver,
-        receiver_subidentity,
-      );
-
-    const message = JSON.parse(messageStr);
-
-    const response = await fetch(
-      urlJoin(nodeAddress, '/v1/vec_fs/retrieve_vector_search_simplified_json'),
-      {
-        method: 'POST',
-        body: JSON.stringify(message),
-        headers: { 'Content-Type': 'application/json' },
-      },
+  const messageStr =
+    ShinkaiMessageBuilderWrapper.retrieveVectorSearchSimplified(
+      setupDetailsState.profile_encryption_sk,
+      setupDetailsState.profile_identity_sk,
+      setupDetailsState.node_encryption_pk,
+      searchQuery,
+      path,
+      10,
+      null,
+      sender,
+      sender_subidentity,
+      receiver,
+      receiver_subidentity,
     );
 
-    await handleHttpError(response);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error retrieveVectorSearchSimplified:', error);
-    throw error;
-  }
+  const message = JSON.parse(messageStr);
+
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/vec_fs/retrieve_vector_search_simplified_json'),
+    message,
+
+    {
+      responseType: 'json',
+    },
+  );
+
+  const data = response.data;
+  return data;
 };
 
 export const uploadFilesToVR = async (
@@ -928,41 +803,36 @@ export const retrieveVectorResource = async (
   path: string = '/',
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
-  try {
-    const messageStr = ShinkaiMessageBuilderWrapper.retrieveResource(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      path,
-      sender,
-      sender_subidentity,
-      receiver,
-      receiver_subidentity,
-    );
+  const messageStr = ShinkaiMessageBuilderWrapper.retrieveResource(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    path,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
 
-    const message = JSON.parse(messageStr);
+  const message = JSON.parse(messageStr);
 
-    const response = await fetch(
-      urlJoin(nodeAddress, '/v1/vec_fs/retrieve_vector_resource'),
-      {
-        method: 'POST',
-        body: JSON.stringify(message),
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/vec_fs/retrieve_vector_resource'),
 
-    await handleHttpError(response);
-    const data = await response.json();
-    return typeof data?.data === 'string'
-      ? {
-          data: JSON.parse(data.data),
-          status: data.status,
-        }
-      : data;
-  } catch (error) {
-    console.error('Error retrieveVectorResource:', error);
-    throw error;
-  }
+    message,
+
+    {
+      responseType: 'json',
+    },
+  );
+
+  const data = response.data;
+  return typeof data?.data === 'string'
+    ? {
+        data: JSON.parse(data.data),
+        status: data.status,
+      }
+    : data;
 };
 export const moveFolderVR = async (
   nodeAddress: string,
@@ -974,37 +844,31 @@ export const moveFolderVR = async (
   destionationPath: string,
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
-  try {
-    const messageStr = ShinkaiMessageBuilderWrapper.moveFolder(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      originPath,
-      destionationPath,
-      sender,
-      sender_subidentity,
-      receiver,
-      receiver_subidentity,
-    );
+  const messageStr = ShinkaiMessageBuilderWrapper.moveFolder(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    originPath,
+    destionationPath,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
 
-    const message = JSON.parse(messageStr);
+  const message = JSON.parse(messageStr);
 
-    const response = await fetch(
-      urlJoin(nodeAddress, '/v1/vec_fs/move_folder'),
-      {
-        method: 'POST',
-        body: JSON.stringify(message),
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/vec_fs/move_folder'),
+    message,
 
-    await handleHttpError(response);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error moveFolderVR:', error);
-    throw error;
-  }
+    {
+      responseType: 'json',
+    },
+  );
+
+  const data = response.data;
+  return data;
 };
 export const copyFolderVR = async (
   nodeAddress: string,
@@ -1016,37 +880,31 @@ export const copyFolderVR = async (
   destionationPath: string,
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
-  try {
-    const messageStr = ShinkaiMessageBuilderWrapper.copyFolder(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      originPath,
-      destionationPath,
-      sender,
-      sender_subidentity,
-      receiver,
-      receiver_subidentity,
-    );
+  const messageStr = ShinkaiMessageBuilderWrapper.copyFolder(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    originPath,
+    destionationPath,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
 
-    const message = JSON.parse(messageStr);
+  const message = JSON.parse(messageStr);
 
-    const response = await fetch(
-      urlJoin(nodeAddress, '/v1/vec_fs/copy_folder'),
-      {
-        method: 'POST',
-        body: JSON.stringify(message),
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/vec_fs/copy_folder'),
+    message,
 
-    await handleHttpError(response);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error copyFolderVR:', error);
-    throw error;
-  }
+    {
+      responseType: 'json',
+    },
+  );
+
+  const data = response.data;
+  return data;
 };
 export const deleteFolderVR = async (
   nodeAddress: string,
@@ -1057,36 +915,30 @@ export const deleteFolderVR = async (
   folderPath: string,
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
-  try {
-    const messageStr = ShinkaiMessageBuilderWrapper.deleteFolder(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      folderPath,
-      sender,
-      sender_subidentity,
-      receiver,
-      receiver_subidentity,
-    );
+  const messageStr = ShinkaiMessageBuilderWrapper.deleteFolder(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    folderPath,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
 
-    const message = JSON.parse(messageStr);
+  const message = JSON.parse(messageStr);
 
-    const response = await fetch(
-      urlJoin(nodeAddress, '/v1/vec_fs/remove_folder'),
-      {
-        method: 'POST',
-        body: JSON.stringify(message),
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/vec_fs/remove_folder'),
+    message,
 
-    await handleHttpError(response);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error deleteFolderVR:', error);
-    throw error;
-  }
+    {
+      responseType: 'json',
+    },
+  );
+
+  const data = response.data;
+  return data;
 };
 export const moveItemVR = async (
   nodeAddress: string,
@@ -1098,34 +950,31 @@ export const moveItemVR = async (
   destionationPath: string,
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
-  try {
-    const messageStr = ShinkaiMessageBuilderWrapper.moveItem(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      originPath,
-      destionationPath,
-      sender,
-      sender_subidentity,
-      receiver,
-      receiver_subidentity,
-    );
+  const messageStr = ShinkaiMessageBuilderWrapper.moveItem(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    originPath,
+    destionationPath,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
 
-    const message = JSON.parse(messageStr);
+  const message = JSON.parse(messageStr);
 
-    const response = await fetch(urlJoin(nodeAddress, '/v1/vec_fs/move_item'), {
-      method: 'POST',
-      body: JSON.stringify(message),
-      headers: { 'Content-Type': 'application/json' },
-    });
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/vec_fs/move_item'),
+    message,
 
-    await handleHttpError(response);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error moveItemVR:', error);
-    throw error;
-  }
+    {
+      responseType: 'json',
+    },
+  );
+
+  const data = response.data;
+  return data;
 };
 export const copyItemVR = async (
   nodeAddress: string,
@@ -1137,34 +986,31 @@ export const copyItemVR = async (
   destionationPath: string,
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
-  try {
-    const messageStr = ShinkaiMessageBuilderWrapper.copyItem(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      originPath,
-      destionationPath,
-      sender,
-      sender_subidentity,
-      receiver,
-      receiver_subidentity,
-    );
+  const messageStr = ShinkaiMessageBuilderWrapper.copyItem(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    originPath,
+    destionationPath,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
 
-    const message = JSON.parse(messageStr);
+  const message = JSON.parse(messageStr);
 
-    const response = await fetch(urlJoin(nodeAddress, '/v1/vec_fs/copy_item'), {
-      method: 'POST',
-      body: JSON.stringify(message),
-      headers: { 'Content-Type': 'application/json' },
-    });
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/vec_fs/copy_item'),
+    message,
 
-    await handleHttpError(response);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error copyItemVR:', error);
-    throw error;
-  }
+    {
+      responseType: 'json',
+    },
+  );
+
+  const data = response.data;
+  return data;
 };
 export const deleteItemVR = async (
   nodeAddress: string,
@@ -1175,36 +1021,30 @@ export const deleteItemVR = async (
   itemPath: string,
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
-  try {
-    const messageStr = ShinkaiMessageBuilderWrapper.deleteItem(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      itemPath,
-      sender,
-      sender_subidentity,
-      receiver,
-      receiver_subidentity,
-    );
+  const messageStr = ShinkaiMessageBuilderWrapper.deleteItem(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    itemPath,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
 
-    const message = JSON.parse(messageStr);
+  const message = JSON.parse(messageStr);
 
-    const response = await fetch(
-      urlJoin(nodeAddress, '/v1/vec_fs/remove_item'),
-      {
-        method: 'POST',
-        body: JSON.stringify(message),
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/vec_fs/remove_item'),
+    message,
 
-    await handleHttpError(response);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error deleteItemVR:', error);
-    throw error;
-  }
+    {
+      responseType: 'json',
+    },
+  );
+
+  const data = response.data;
+  return data;
 };
 export const searchItemsVR = async (
   nodeAddress: string,
@@ -1216,39 +1056,33 @@ export const searchItemsVR = async (
   path: string = '/',
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
-  try {
-    const messageStr = ShinkaiMessageBuilderWrapper.searchItems(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      search,
-      path,
-      null,
-      null,
-      sender,
-      sender_subidentity,
-      receiver,
-      receiver_subidentity,
-    );
+  const messageStr = ShinkaiMessageBuilderWrapper.searchItems(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    search,
+    path,
+    null,
+    null,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
 
-    const message = JSON.parse(messageStr);
+  const message = JSON.parse(messageStr);
 
-    const response = await fetch(
-      urlJoin(nodeAddress, '/v1/vec_fs/search_items'),
-      {
-        method: 'POST',
-        body: JSON.stringify(message),
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/vec_fs/search_items'),
+    message,
 
-    await handleHttpError(response);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error retrieveVectorSearchSimplified:', error);
-    throw error;
-  }
+    {
+      responseType: 'json',
+    },
+  );
+
+  const data = response.data;
+  return data;
 };
 export const getAvailableSharedFolders = async (
   pageSize?: number,
@@ -1256,29 +1090,22 @@ export const getAvailableSharedFolders = async (
   priceFilter?: 'paid' | 'free' | 'all',
   search?: string,
 ): Promise<any> => {
-  try {
-    const queryParams = new URLSearchParams();
-    if (pageSize != null) queryParams.append('pageSize', pageSize.toString());
-    if (page != null) queryParams.append('page', page.toString());
-    if (priceFilter && priceFilter !== 'all')
-      queryParams.append('price', priceFilter);
-    if (search) queryParams.append('search', search);
+  const queryParams = new URLSearchParams();
+  if (pageSize != null) queryParams.append('pageSize', pageSize.toString());
+  if (page != null) queryParams.append('page', page.toString());
+  if (priceFilter && priceFilter !== 'all')
+    queryParams.append('price', priceFilter);
+  if (search) queryParams.append('search', search);
 
-    const response = await fetch(
-      `https://sepolia-subscription-indexer.shinkai.com/api/v1/shared-items?${queryParams.toString()}`,
-      {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
+  const response = await httpClient.get(
+    `https://sepolia-subscription-indexer.shinkai.com/api/v1/shared-items?${queryParams.toString()}`,
+    {
+      responseType: 'json',
+    },
+  );
 
-    await handleHttpError(response);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error getAvailableSharedFolders:', error);
-    throw error;
-  }
+  const data = response.data;
+  return data;
 };
 export const getMySharedFolders = async (
   nodeAddress: string,
@@ -1290,42 +1117,36 @@ export const getMySharedFolders = async (
   streamer_profile_name: string,
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
-  try {
-    const messageStr = ShinkaiMessageBuilderWrapper.getMySharedFolders(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      sender,
-      sender_subidentity,
-      receiver,
-      receiver_subidentity,
-      streamer_node_name,
-      streamer_profile_name,
-    );
+  const messageStr = ShinkaiMessageBuilderWrapper.getMySharedFolders(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+    streamer_node_name,
+    streamer_profile_name,
+  );
 
-    const message = JSON.parse(messageStr);
+  const message = JSON.parse(messageStr);
 
-    const response = await fetch(
-      urlJoin(nodeAddress, '/v1/available_shared_items'),
-      {
-        method: 'POST',
-        body: JSON.stringify(message),
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/available_shared_items'),
+    message,
 
-    await handleHttpError(response);
-    const data = await response.json();
-    return typeof data?.data === 'string'
-      ? {
-          data: JSON.parse(data.data),
-          status: data.status,
-        }
-      : data;
-  } catch (error) {
-    console.error('Error getMySharedFolders:', error);
-    throw error;
-  }
+    {
+      responseType: 'json',
+    },
+  );
+
+  const data = response.data;
+  return typeof data?.data === 'string'
+    ? {
+        data: JSON.parse(data.data),
+        status: data.status,
+      }
+    : data;
 };
 
 export const createShareableFolder = async (
@@ -1338,37 +1159,31 @@ export const createShareableFolder = async (
   folderDescription: string,
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
-  try {
-    const messageStr = ShinkaiMessageBuilderWrapper.createShareableFolder(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      folderPath,
-      folderDescription,
-      sender,
-      sender_subidentity,
-      receiver,
-      receiver_subidentity,
-    );
+  const messageStr = ShinkaiMessageBuilderWrapper.createShareableFolder(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    folderPath,
+    folderDescription,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
 
-    const message = JSON.parse(messageStr);
+  const message = JSON.parse(messageStr);
 
-    const response = await fetch(
-      urlJoin(nodeAddress, '/v1/create_shareable_folder'),
-      {
-        method: 'POST',
-        body: JSON.stringify(message),
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/create_shareable_folder'),
+    message,
 
-    await handleHttpError(response);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error createShareableFolder:', error);
-    throw error;
-  }
+    {
+      responseType: 'json',
+    },
+  );
+
+  const data = response.data;
+  return data;
 };
 export const unshareFolder = async (
   nodeAddress: string,
@@ -1379,33 +1194,30 @@ export const unshareFolder = async (
   folderPath: string,
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
-  try {
-    const messageStr = ShinkaiMessageBuilderWrapper.unshareFolder(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      folderPath,
-      sender,
-      sender_subidentity,
-      receiver,
-      receiver_subidentity,
-    );
+  const messageStr = ShinkaiMessageBuilderWrapper.unshareFolder(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    folderPath,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
 
-    const message = JSON.parse(messageStr);
+  const message = JSON.parse(messageStr);
 
-    const response = await fetch(urlJoin(nodeAddress, '/v1/unshare_folder'), {
-      method: 'POST',
-      body: JSON.stringify(message),
-      headers: { 'Content-Type': 'application/json' },
-    });
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/unshare_folder'),
+    message,
 
-    await handleHttpError(response);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error createShareableFolder:', error);
-    throw error;
-  }
+    {
+      responseType: 'json',
+    },
+  );
+
+  const data = response.data;
+  return data;
 };
 export const subscribeToSharedFolder = async (
   nodeAddress: string,
@@ -1418,38 +1230,32 @@ export const subscribeToSharedFolder = async (
   streamer_profile_name: string,
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
-  try {
-    const messageStr = ShinkaiMessageBuilderWrapper.subscribeToSharedFolder(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      path,
-      sender,
-      sender_subidentity,
-      receiver,
-      receiver_subidentity,
-      streamer_node_name,
-      streamer_profile_name,
-    );
+  const messageStr = ShinkaiMessageBuilderWrapper.subscribeToSharedFolder(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    path,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+    streamer_node_name,
+    streamer_profile_name,
+  );
 
-    const message = JSON.parse(messageStr);
+  const message = JSON.parse(messageStr);
 
-    const response = await fetch(
-      urlJoin(nodeAddress, '/v1/subscribe_to_shared_folder'),
-      {
-        method: 'POST',
-        body: JSON.stringify(message),
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/subscribe_to_shared_folder'),
+    message,
 
-    await handleHttpError(response);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error createShareableFolder:', error);
-    throw error;
-  }
+    {
+      responseType: 'json',
+    },
+  );
+
+  const data = response.data;
+  return data;
 };
 export const unsubscribeToSharedFolder = async (
   nodeAddress: string,
@@ -1462,35 +1268,32 @@ export const unsubscribeToSharedFolder = async (
   streamer_profile_name: string,
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
-  try {
-    const messageStr = ShinkaiMessageBuilderWrapper.unsubscribeToSharedFolder(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      path,
-      sender,
-      sender_subidentity,
-      receiver,
-      receiver_subidentity,
-      streamer_node_name,
-      streamer_profile_name,
-    );
+  const messageStr = ShinkaiMessageBuilderWrapper.unsubscribeToSharedFolder(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    path,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+    streamer_node_name,
+    streamer_profile_name,
+  );
 
-    const message = JSON.parse(messageStr);
+  const message = JSON.parse(messageStr);
 
-    const response = await fetch(urlJoin(nodeAddress, '/v1/unsubscribe'), {
-      method: 'POST',
-      body: JSON.stringify(message),
-      headers: { 'Content-Type': 'application/json' },
-    });
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/unsubscribe'),
+    message,
 
-    await handleHttpError(response);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error createShareableFolder:', error);
-    throw error;
-  }
+    {
+      responseType: 'json',
+    },
+  );
+
+  const data = response.data;
+  return data;
 };
 export const getMySubscriptions = async (
   nodeAddress: string,
@@ -1500,37 +1303,34 @@ export const getMySubscriptions = async (
   receiver_subidentity: string,
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
-  try {
-    const messageStr = ShinkaiMessageBuilderWrapper.getMySubscriptions(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      sender,
-      sender_subidentity,
-      receiver,
-      receiver_subidentity,
-    );
+  const messageStr = ShinkaiMessageBuilderWrapper.getMySubscriptions(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
 
-    const message = JSON.parse(messageStr);
+  const message = JSON.parse(messageStr);
 
-    const response = await fetch(urlJoin(nodeAddress, '/v1/my_subscriptions'), {
-      method: 'POST',
-      body: JSON.stringify(message),
-      headers: { 'Content-Type': 'application/json' },
-    });
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/my_subscriptions'),
+    message,
 
-    await handleHttpError(response);
-    const data = await response.json();
-    return typeof data?.data === 'string'
-      ? {
-          data: JSON.parse(data.data),
-          status: data.status,
-        }
-      : data;
-  } catch (error) {
-    console.error('Error getMySubscriptions:', error);
-    throw error;
-  }
+    {
+      responseType: 'json',
+    },
+  );
+
+  const data = response.data;
+  return typeof data?.data === 'string'
+    ? {
+        data: JSON.parse(data.data),
+        status: data.status,
+      }
+    : data;
 };
 
 export const updateNodeName = async (
@@ -1542,35 +1342,29 @@ export const updateNodeName = async (
   receiver_subidentity: string,
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
-  try {
-    const messageStr = ShinkaiMessageBuilderWrapper.updateNodeName(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      newNodeName,
-      sender,
-      sender_subidentity,
-      receiver,
-      receiver_subidentity,
-    );
+  const messageStr = ShinkaiMessageBuilderWrapper.updateNodeName(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    newNodeName,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
 
-    const message = JSON.parse(messageStr);
+  const message = JSON.parse(messageStr);
 
-    const response = await fetch(
-      urlJoin(nodeAddress, '/v1/change_nodes_name'),
-      {
-        method: 'POST',
-        body: JSON.stringify(message),
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
-    await handleHttpError(response);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error updateNodeName:', error);
-    throw error;
-  }
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/change_nodes_name'),
+    message,
+
+    {
+      responseType: 'json',
+    },
+  );
+  const data = response.data;
+  return data;
 };
 export const downloadVectorResource = async (
   nodeAddress: string,
@@ -1581,32 +1375,29 @@ export const downloadVectorResource = async (
   receiver_subidentity: string,
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
-  try {
-    const messageStr = ShinkaiMessageBuilderWrapper.downloadVectorResource(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      path,
-      sender,
-      sender_subidentity,
-      receiver,
-      receiver_subidentity,
-    );
+  const messageStr = ShinkaiMessageBuilderWrapper.downloadVectorResource(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    path,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
 
-    const message = JSON.parse(messageStr);
+  const message = JSON.parse(messageStr);
 
-    const response = await fetch(urlJoin(nodeAddress, '/v1/retrieve_vrkai'), {
-      method: 'POST',
-      body: JSON.stringify(message),
-      headers: { 'Content-Type': 'application/json' },
-    });
-    await handleHttpError(response);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error downloadVectorResource:', error);
-    throw error;
-  }
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/retrieve_vrkai'),
+    message,
+
+    {
+      responseType: 'json',
+    },
+  );
+  const data = response.data;
+  return data;
 };
 export const updateAgent = async (
   nodeAddress: string,
@@ -1617,34 +1408,31 @@ export const updateAgent = async (
   receiver_subidentity: string,
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
-  try {
-    const agent_wrapped = SerializedAgentWrapper.fromSerializedAgent(agent);
+  const agent_wrapped = SerializedAgentWrapper.fromSerializedAgent(agent);
 
-    const messageStr = ShinkaiMessageBuilderWrapper.modifyAgent(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      agent_wrapped,
-      sender,
-      sender_subidentity,
-      receiver,
-      receiver_subidentity,
-    );
+  const messageStr = ShinkaiMessageBuilderWrapper.modifyAgent(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    agent_wrapped,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
 
-    const message = JSON.parse(messageStr);
+  const message = JSON.parse(messageStr);
 
-    const response = await fetch(urlJoin(nodeAddress, '/v1/modify_agent'), {
-      method: 'POST',
-      body: JSON.stringify(message),
-      headers: { 'Content-Type': 'application/json' },
-    });
-    await handleHttpError(response);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error modifyAgent:', error);
-    throw error;
-  }
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/modify_agent'),
+    message,
+
+    {
+      responseType: 'json',
+    },
+  );
+  const data = response.data;
+  return data;
 };
 export const deleteAgent = async (
   nodeAddress: string,
@@ -1655,32 +1443,29 @@ export const deleteAgent = async (
   receiver_subidentity: string,
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
-  try {
-    const messageStr = ShinkaiMessageBuilderWrapper.deleteAgent(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      agentId,
-      sender,
-      sender_subidentity,
-      receiver,
-      receiver_subidentity,
-    );
+  const messageStr = ShinkaiMessageBuilderWrapper.deleteAgent(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    agentId,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
 
-    const message = JSON.parse(messageStr);
+  const message = JSON.parse(messageStr);
 
-    const response = await fetch(urlJoin(nodeAddress, '/v1/remove_agent'), {
-      method: 'POST',
-      body: JSON.stringify(message),
-      headers: { 'Content-Type': 'application/json' },
-    });
-    await handleHttpError(response);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error modifyAgent:', error);
-    throw error;
-  }
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/remove_agent'),
+    message,
+
+    {
+      responseType: 'json',
+    },
+  );
+  const data = response.data;
+  return data;
 };
 
 export const scanOllamaModels = async (
@@ -1689,34 +1474,28 @@ export const scanOllamaModels = async (
   node_name: string,
   setupDetailsState: CredentialsPayload,
 ): Promise<{ model: string }[]> => {
-  try {
-    const messageStr = ShinkaiMessageBuilderWrapper.scanOllamaModels(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      node_name,
-      sender_subidentity,
-      node_name,
-      '',
-    );
+  const messageStr = ShinkaiMessageBuilderWrapper.scanOllamaModels(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    node_name,
+    sender_subidentity,
+    node_name,
+    '',
+  );
 
-    const message = JSON.parse(messageStr);
+  const message = JSON.parse(messageStr);
 
-    const response = await fetch(
-      urlJoin(nodeAddress, '/v1/scan_ollama_models'),
-      {
-        method: 'POST',
-        body: JSON.stringify(message),
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
-    await handleHttpError(response);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error sending message to add agent:', error);
-    throw error;
-  }
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/scan_ollama_models'),
+    message,
+
+    {
+      responseType: 'json',
+    },
+  );
+  const data = response.data;
+  return data;
 };
 
 export const addOllamaModels = async (
@@ -1726,33 +1505,27 @@ export const addOllamaModels = async (
   setupDetailsState: CredentialsPayload,
   payload: { models: string[] },
 ) => {
-  try {
-    const messageStr = ShinkaiMessageBuilderWrapper.addOllamaModels(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      nodeName,
-      senderSubidentity,
-      nodeName,
-      senderSubidentity,
-      payload,
-    );
+  const messageStr = ShinkaiMessageBuilderWrapper.addOllamaModels(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    nodeName,
+    senderSubidentity,
+    nodeName,
+    senderSubidentity,
+    payload,
+  );
 
-    const message = JSON.parse(messageStr);
+  const message = JSON.parse(messageStr);
 
-    const response = await fetch(
-      urlJoin(nodeAddress, '/v1/add_ollama_models'),
-      {
-        method: 'POST',
-        body: JSON.stringify(message),
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
-    await handleHttpError(response);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error sending message to add agent:', error);
-    throw error;
-  }
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/add_ollama_models'),
+    message,
+
+    {
+      responseType: 'json',
+    },
+  );
+  const data = response.data;
+  return data;
 };
