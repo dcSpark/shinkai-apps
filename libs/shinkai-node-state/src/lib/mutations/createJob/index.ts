@@ -73,7 +73,7 @@ export const createJob = async ({
     },
   );
 
-  const response = files?.length
+  files?.length
     ? await sendTextMessageWithFilesForInbox(
         nodeAddress,
         shinkaiIdentity,
@@ -108,5 +108,5 @@ export const createJob = async ({
           profile_identity_sk,
         },
       );
-  return { jobId, response };
+  return { jobId };
 };

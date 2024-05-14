@@ -1,25 +1,25 @@
-import { test } from "vitest";
+import { test } from 'vitest';
 
-import { ShinkaiNameWrapper } from "./ShinkaiNameWrapper";
+import { ShinkaiNameWrapper } from './ShinkaiNameWrapper';
 
-test("ShinkaiNameWrapper", () => {
+test('ShinkaiNameWrapper', () => {
   const validNames = [
-    "@@alice.shinkai",
-    "@@alice.shinkai/profileName",
-    "@@alice.shinkai/profileName/agent/myChatGPTAgent",
-    "@@alice.shinkai/profileName/device/myPhone",
-    "@@alice.sepolia-shinkai",
-    "@@alice.sepolia-shinkai/profileName",
-    "@@alice.sepolia-shinkai/profileName/agent/myChatGPTAgent",
-    "@@alice.sepolia-shinkai/profileName/device/myPhone",
+    '@@alice.shinkai',
+    '@@alice.shinkai/profileName',
+    '@@alice.shinkai/profileName/agent/myChatGPTAgent',
+    '@@alice.shinkai/profileName/device/myPhone',
+    '@@alice.sepolia-shinkai',
+    '@@alice.sepolia-shinkai/profileName',
+    '@@alice.sepolia-shinkai/profileName/agent/myChatGPTAgent',
+    '@@alice.sepolia-shinkai/profileName/device/myPhone',
   ];
 
   const invalidNames = [
-    "@@alice.shinkai/profileName/myPhone",
-    "@@al!ce.shinkai",
-    "@@alice.shinkai//",
-    "@@node1.shinkai/profile_1.shinkai",
-    "@@alice.sepolia--shinkai",
+    '@@alice.shinkai/profileName/myPhone',
+    '@@al!ce.shinkai',
+    '@@alice.shinkai//',
+    '@@node1.shinkai/profile_1.shinkai',
+    '@@alice.sepolia--shinkai',
   ];
 
   for (const name of validNames) {
@@ -32,19 +32,19 @@ test("ShinkaiNameWrapper", () => {
   }
 });
 
-test("ShinkaiNameWrapper get_profile_name", () => {
+test('ShinkaiNameWrapper get_profile_name', () => {
   const namesWithProfiles = [
     {
-      name: "@@alice.shinkai/profileName",
-      profile: "@@alice.shinkai/profileName",
+      name: '@@alice.shinkai/profileName',
+      profile: '@@alice.shinkai/profileName',
     },
     {
-      name: "@@alice.shinkai/profileName/agent/myChatGPTAgent",
-      profile: "@@alice.shinkai/profileName",
+      name: '@@alice.shinkai/profileName/agent/myChatGPTAgent',
+      profile: '@@alice.shinkai/profileName',
     },
     {
-      name: "@@alice.shinkai/profileName/device/myPhone",
-      profile: "@@alice.shinkai/profileName",
+      name: '@@alice.shinkai/profileName/device/myPhone',
+      profile: '@@alice.shinkai/profileName',
     },
   ];
 
@@ -54,7 +54,7 @@ test("ShinkaiNameWrapper get_profile_name", () => {
   }
 });
 
-test("ShinkaiNameWrapper from_shinkai_message_sender", () => {
+test('ShinkaiNameWrapper from_shinkai_message_sender', () => {
   it('should fail when message is first level encrypted', () => {
     const encryptedMessage = `{
       "body": {
@@ -73,7 +73,9 @@ test("ShinkaiNameWrapper from_shinkai_message_sender", () => {
       "version": "V1_0"
     }`;
     const message = JSON.parse(encryptedMessage);
-    expect(ShinkaiNameWrapper.from_shinkai_message_sender(message)).toThrowError();
+    expect(
+      ShinkaiNameWrapper.from_shinkai_message_sender(message),
+    ).toThrowError();
   });
 
   it('should parse node_name, full_name, subidentity_name and subidentity_type when message is unepcrypted', () => {
@@ -106,10 +108,15 @@ test("ShinkaiNameWrapper from_shinkai_message_sender", () => {
       "version": "V1_0"
     }`;
     const message = JSON.parse(messageJson);
-    const messageNameWrapper = ShinkaiNameWrapper.from_shinkai_message_sender(message);
+    const messageNameWrapper =
+      ShinkaiNameWrapper.from_shinkai_message_sender(message);
     expect(messageNameWrapper.get_node_name).toBe('@@node1.shinkai');
-    expect(messageNameWrapper.get_full_name).toBe('@@node1.shinkai/main/device/main_device');
-    expect(messageNameWrapper.get_subidentity_name).toBe('main/device/main_device');
+    expect(messageNameWrapper.get_full_name).toBe(
+      '@@node1.shinkai/main/device/main_device',
+    );
+    expect(messageNameWrapper.get_subidentity_name).toBe(
+      'main/device/main_device',
+    );
     expect(messageNameWrapper.get_subidentity_type).toBe('device');
   });
 });

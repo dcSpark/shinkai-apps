@@ -1,5 +1,4 @@
 import type { JobCredentialsPayload } from '@shinkai_network/shinkai-message-ts/models';
-import { ShinkaiMessage } from '@shinkai_network/shinkai-message-ts/models';
 
 import { VRFolder, VRItem } from '../../queries/getVRPathSimplified/types';
 
@@ -18,10 +17,4 @@ export type CreateJobInput = JobCredentialsPayload & {
 
 export type CreateJobOutput = {
   jobId: string;
-  response:
-    | string
-    | {
-        inboxId: string;
-        message: ShinkaiMessage;
-      };
 };

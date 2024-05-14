@@ -1,8 +1,8 @@
-import * as sodium from "libsodium-wrappers-sumo";
+import * as sodium from 'libsodium-wrappers-sumo';
 
 export async function encryptMessageWithPassphrase(
   message: string,
-  passphrase: string
+  passphrase: string,
 ): Promise<string> {
   await sodium.ready;
 
@@ -13,18 +13,18 @@ export async function encryptMessageWithPassphrase(
     salt,
     sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
     sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE,
-    sodium.crypto_pwhash_ALG_DEFAULT
+    sodium.crypto_pwhash_ALG_DEFAULT,
   );
 
   const nonce = sodium.randombytes_buf(
-    sodium.crypto_aead_chacha20poly1305_IETF_NPUBBYTES
+    sodium.crypto_aead_chacha20poly1305_IETF_NPUBBYTES,
   );
   const ciphertext = sodium.crypto_aead_chacha20poly1305_ietf_encrypt(
     message,
     null,
     null,
     nonce,
-    key
+    key,
   );
 
   const encrypted_body =
@@ -34,13 +34,13 @@ export async function encryptMessageWithPassphrase(
 
 export async function decryptMessageWithPassphrase(
   encryptedBody: string,
-  passphrase: string
+  passphrase: string,
 ): Promise<string | null> {
   await sodium.ready;
 
-  const parts: string[] = encryptedBody.split(":");
-  if (parts[0] !== "encrypted") {
-    throw new Error("Unexpected variant");
+  const parts: string[] = encryptedBody.split(':');
+  if (parts[0] !== 'encrypted') {
+    throw new Error('Unexpected variant');
   }
 
   const content = parts[1];
@@ -51,7 +51,7 @@ export async function decryptMessageWithPassphrase(
     salt,
     sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
     sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE,
-    sodium.crypto_pwhash_ALG_DEFAULT
+    sodium.crypto_pwhash_ALG_DEFAULT,
   );
 
   const nonce = sodium.from_hex(content.slice(32, 56));
@@ -63,16 +63,16 @@ export async function decryptMessageWithPassphrase(
       ciphertext,
       null,
       nonce,
-      key
+      key,
     );
     const decrypted_body = sodium.to_string(plaintext_bytes);
     return decrypted_body;
   } catch (e) {
     if (e instanceof Error) {
       console.error(e.message);
-      throw new Error("Decryption failure!: " + e.message);
+      throw new Error('Decryption failure!: ' + e.message);
     } else {
-      throw new Error("Decryption failure!");
+      throw new Error('Decryption failure!');
     }
   }
 }

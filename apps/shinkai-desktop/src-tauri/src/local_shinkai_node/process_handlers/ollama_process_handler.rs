@@ -5,7 +5,7 @@ use tokio::sync::mpsc::Sender;
 use crate::local_shinkai_node::ollama_api::ollama_api_client::OllamaApiClient;
 
 use super::{
-    logger::LogEntry, process_handler::{ProcessHandler, ProcessHandlerEvent}, process_utils::options_to_env
+    logger::LogEntry, process_handler::{ProcessHandler, ProcessHandlerEvent}, process_utils::{kill_process_by_name, options_to_env}
 };
 
 #[derive(Serialize, Clone)]
@@ -23,11 +23,12 @@ pub struct OllamaProcessHandler {
 
 impl OllamaProcessHandler {
     const HEALTH_TIMEOUT_MS: u64 = 500;
-    const PROCESS_NAME: &'static str = "ollama-v0.1.34";
+    const PROCESS_NAME: &'static str = "ollama";
     const READY_MATCHER: &'static str = "Listening on ";
 
     pub fn new(options: Option<OllamaOptions>, event_sender: Sender<ProcessHandlerEvent>) -> Self {
         let ready_matcher = Regex::new(Self::READY_MATCHER).unwrap();
+        Self::kill_llama_process();
         let process_handler = ProcessHandler::new(Self::PROCESS_NAME.to_string(), event_sender, ready_matcher);
         OllamaProcessHandler {
             process_handler,
@@ -98,7 +99,11 @@ impl OllamaProcessHandler {
         self.process_handler.is_running().await
     }
 
+    pub fn kill_llama_process() {
+        kill_process_by_name("ollama_llama");
+    }
     pub async fn kill(&self) {
+        Self::kill_llama_process();
         self.process_handler.kill().await;
     }
 }

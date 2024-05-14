@@ -10,6 +10,7 @@ const Tooltip = TooltipPrimitive.Root;
 const TooltipTrigger = TooltipPrimitive.Trigger;
 
 const TooltipPortal = TooltipPrimitive.Portal;
+const TooltipArrow = TooltipPrimitive.TooltipArrow;
 
 const TooltipContent = React.forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Content>,
@@ -33,4 +34,5 @@ export {
   TooltipContent,
   TooltipProvider,
   TooltipPortal,
+  TooltipArrow,
 };

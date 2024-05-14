@@ -26,7 +26,7 @@ const OnboardingLayout = ({
       <div className="flex flex-col justify-between">
         <img
           alt="shinkai logo"
-          className="mx-auto w-24 py-10"
+          className="mx-auto w-28 py-10"
           data-cy="shinkai-logo"
           src={'./visor.svg'}
         />

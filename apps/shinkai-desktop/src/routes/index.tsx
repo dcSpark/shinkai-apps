@@ -12,6 +12,7 @@ import VectorFs from '../components/vector-fs/vector-fs';
 import SearchNodeFiles from '../components/vector-search/search-node-files';
 import AgentsPage from '../pages/agents';
 import { useShinkaiNodeEventsToast } from '../lib/shinkai-node-manager/shinkai-node-manager-hooks';
+import AIModelInstallation from '../pages/ai-model-installation';
 import ChatConversation from '../pages/chat/chat-conversation';
 import EmptyMessage from '../pages/chat/empty-message';
 import ChatLayout from '../pages/chat/layout';
@@ -20,14 +21,17 @@ import CreateAgentPage from '../pages/create-agent';
 import CreateChatPage from '../pages/create-chat';
 import CreateJobPage from '../pages/create-job';
 import { ExportConnection } from '../pages/export-connection';
+import FreeSubscriptionsPage from '../pages/free-subscription';
 import GenerateCodePage from '../pages/generate-code';
+import GetStartedPage from '../pages/get-started';
 import MainLayout from '../pages/layout/main-layout';
 import OnboardingPage from '../pages/onboarding';
 import { PublicKeys } from '../pages/public-keys';
 import RestoreConnectionPage from '../pages/restore-connection';
 import SettingsPage from '../pages/settings';
+import ShinkaiPrivatePage from '../pages/shinkai-private';
 import UnavailableShinkaiNode from '../pages/unavailable-shinkai-node';
-import WelcomePage from '../pages/welcome';
+import TermsAndConditionsPage from '../pages/welcome';
 import { useAuth } from '../store/auth';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
 import {
@@ -102,7 +106,17 @@ const AppRoutes = () => {
           element={<UnavailableShinkaiNode />}
           path={'/unavailable-shinkai-node'}
         />
-        <Route element={<WelcomePage />} path={'/welcome'} />
+        <Route element={<TermsAndConditionsPage />} path={'/welcome'} />
+        <Route element={<GetStartedPage />} path={'/get-started'} />
+        <Route element={<ShinkaiPrivatePage />} path={'/connect-ai'} />
+        <Route
+          element={<FreeSubscriptionsPage />}
+          path={'/free-subscriptions'}
+        />
+        <Route
+          element={<AIModelInstallation />}
+          path={'/ai-model-installation'}
+        />
         <Route element={<OnboardingPage />} path={ONBOARDING_PATH} />
         <Route element={<RestoreConnectionPage />} path={'/restore'} />
         <Route element={<ConnectMethodQrCodePage />} path={'/connect-qr'} />

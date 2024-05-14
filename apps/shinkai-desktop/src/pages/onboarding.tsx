@@ -1,19 +1,22 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
 import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/lib/queries/getEncryptionKeys/useGetEncryptionKeys';
+import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import {
   Button,
   ButtonProps,
+  buttonVariants,
   ErrorMessage,
   Form,
   FormField,
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { Loader2 } from 'lucide-react';
-import React from 'react';
+import { ArrowLeft } from 'lucide-react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { Link, To, useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { HOME_PATH } from '../routes/name';
@@ -64,18 +67,27 @@ const ConnectionOptionButton = ({
     </Button>
   );
 };
+const LOCAL_NODE_ADDRESS = 'http://127.0.0.1:9850';
 
 const OnboardingPage = () => {
   const navigate = useNavigate();
   const setAuth = useAuth((state) => state.setAuth);
   useShinkaiNodeEventsToast();
   const { encryptionKeys } = useGetEncryptionKeys();
+  const locationState = useLocation().state;
+  const isShinkaiPrivate = locationState?.connectionType === 'local';
+  const { nodeInfo, isSuccess: isNodeInfoSuccess } = useGetHealth(
+    { node_address: LOCAL_NODE_ADDRESS },
+    { enabled: isShinkaiPrivate },
+  );
 
   const setupDataForm = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       registration_name: 'main_device',
-      node_address: 'http://127.0.0.1:9550',
+      node_address: isShinkaiPrivate
+        ? LOCAL_NODE_ADDRESS
+        : 'http://127.0.0.1:9550',
     },
   });
 
@@ -97,19 +109,15 @@ const OnboardingPage = () => {
           node_encryption_pk: response.data?.encryption_public_key ?? '',
         };
         setAuth(updatedSetupData);
+        if (isShinkaiPrivate) {
+          navigate('/connect-ai');
+          toast.dismiss('auto-connect-shinkai-private');
+          return;
+        }
         navigate(HOME_PATH);
       } else {
         throw new Error('Failed to submit registration');
       }
-    },
-  });
-
-  const {
-    isPending: shinkaiNodeSpawnIsPending,
-    mutateAsync: shinkaiNodeSpawn,
-  } = useShinkaiNodeSpawnMutation({
-    onSuccess: () => {
-      onSubmit(setupDataForm.getValues());
     },
   });
 
@@ -129,13 +137,35 @@ const OnboardingPage = () => {
     });
   }
 
+  useEffect(() => {
+    if (isNodeInfoSuccess && isShinkaiPrivate && nodeInfo?.is_pristine) {
+      toast.loading('Connecting yo your local Shinkai Node', {
+        id: 'auto-connect-shinkai-private',
+      });
+      setupDataForm.handleSubmit(onSubmit)();
+    }
+  }, [isNodeInfoSuccess, isShinkaiPrivate, nodeInfo, setupDataForm]);
+
   return (
     <OnboardingLayout>
       <div className="flex h-full flex-col justify-between">
         <div className="flex flex-col">
-          <h1 className="mb-4 text-left text-2xl font-semibold">
-            Quick Connection <span aria-hidden>⚡</span>
-          </h1>
+          <div className="mb-4 flex items-center gap-2">
+            <Link
+              className={cn(
+                buttonVariants({
+                  size: 'icon',
+                  variant: 'ghost',
+                }),
+              )}
+              to={-1 as To}
+            >
+              <ArrowLeft className="h-6 w-6" />
+            </Link>
+            <h1 className="text-left text-2xl font-semibold">
+              Quick Connection <span aria-hidden>⚡</span>
+            </h1>
+          </div>
           <Form {...setupDataForm}>
             <form
               className="space-y-6"
@@ -162,53 +192,6 @@ const OnboardingPage = () => {
               </Button>
             </form>
           </Form>
-
-          <div className="mt-8 flex flex-col">
-            <span className="text-md text-gray-50">Shinkai as a service</span>
-            <div className="text-gray-80 mt-2 flex flex-row items-center space-x-2 text-center text-sm">
-              <p>{'Don’t have an account? '}</p>
-              <a
-                className="font-semibold text-white underline"
-                href="https://www.shinkai.com/sign-up"
-                rel="noreferrer"
-                target={'_blank'}
-              >
-                Sign up
-              </a>
-            </div>
-            <div className="text-gray-80 mt-1 flex flex-row items-center space-x-2 text-center text-sm">
-              <p>{'Already have an account? '}</p>
-              <a
-                className="font-semibold text-white underline"
-                href="https://www.shinkai.com/user"
-                rel="noreferrer"
-                target={'_blank'}
-              >
-                Click here to connect
-              </a>
-            </div>
-          </div>
-
-          <div className="mt-8 flex flex-col">
-            <span className="text-md text-gray-50">Shinkai locally</span>
-            <div className="text-gray-80 mt-2 flex flex-row items-center space-x-2 text-center text-sm">
-              <p>{"Don't have a node? "}</p>
-              {shinkaiNodeSpawnIsPending && (
-                <Loader2 className="ml-2 h-5 w-5 animate-spin" />
-              )}
-              <span
-                className="ml-2 cursor-pointer p-0 text-sm font-semibold text-white underline"
-                onClick={() => {
-                  if (shinkaiNodeSpawnIsPending) {
-                    return;
-                  }
-                  shinkaiNodeSpawn();
-                }}
-              >
-                Run it locally
-              </span>
-            </div>
-          </div>
         </div>
 
         <div className="mt-4 flex flex-row justify-between gap-4">

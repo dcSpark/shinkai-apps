@@ -1,8 +1,12 @@
 import * as ed from '@noble/ed25519';
 import { sha512 } from '@noble/hashes/sha512';
-import { Crypto } from "@peculiar/webcrypto";
+import { Crypto } from '@peculiar/webcrypto';
 
-import { generateEncryptionKeys, generateSignatureKeys, test_util_generateKeys } from './wasm_helpers';
+import {
+  generateEncryptionKeys,
+  generateSignatureKeys,
+  test_util_generateKeys,
+} from './wasm_helpers';
 
 // Enable synchronous methods
 ed.etc.sha512Sync = (...m) => sha512(ed.etc.concatBytes(...m));
@@ -11,7 +15,6 @@ const crypto = new Crypto();
 globalThis.crypto = crypto;
 
 describe('Key generation functions', () => {
-
   test('should generate valid encryption keys', async () => {
     const seed = new Uint8Array(32);
     const keys = await generateEncryptionKeys(seed);
@@ -48,5 +51,4 @@ describe('Key generation functions', () => {
     expect(typeof keys.my_identity_sk_string).toBe('string');
     expect(typeof keys.my_identity_pk_string).toBe('string');
   });
-
 });
