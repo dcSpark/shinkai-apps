@@ -30,10 +30,10 @@ import {
 } from 'lucide-react';
 import * as React from 'react';
 import { useEffect, useRef } from 'react';
-import { createRoot } from 'react-dom/client';
 import { IntlProvider } from 'react-intl';
 
 import shinkaiLogo from '../../assets/icons/shinkai-min.svg';
+import createShadowRoot from '../../helpers/create-shadow-root';
 import { delay } from '../../helpers/misc';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
 import { useGlobalActionButtonChromeMessage } from '../../hooks/use-global-action-button-chrome-message';
@@ -50,14 +50,6 @@ import {
 } from './vr-notification';
 import notificationStyle from './vr-notification.css?inline';
 export const SHINKAI_ACTION_ELEMENT_NAME = 'shinkai-action-button-root';
-
-const baseContainer = document.createElement(SHINKAI_ACTION_ELEMENT_NAME);
-const shadow = baseContainer.attachShadow({ mode: 'open' });
-const container = document.createElement('div');
-container.id = 'root';
-shadow.appendChild(container);
-const htmlRoot = document.getElementsByTagName('html')[0];
-htmlRoot.prepend(baseContainer);
 
 const toggleSidePanel = async () => {
   const isOpen = await chrome.runtime.sendMessage({
@@ -300,11 +292,14 @@ const ActionButton = () => {
   );
 };
 
-const root = createRoot(container);
+const root = createShadowRoot(
+  SHINKAI_ACTION_ELEMENT_NAME,
+  `${themeStyle}
+  ${notificationStyle}
+`,
+);
 root.render(
   <React.StrictMode>
-    <style>{themeStyle}</style>
-    <style>{notificationStyle}</style>
     <Toaster
       position="bottom-right"
       toastOptions={{
