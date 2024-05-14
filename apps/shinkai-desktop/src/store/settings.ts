@@ -17,7 +17,7 @@ export const useSettings = create<SettingsStore>()(
           set({ defaultAgentId });
         },
 
-        sidebarExpanded: true,
+        sidebarExpanded: false,
         toggleSidebar: () => {
           set((state) => ({ sidebarExpanded: !state.sidebarExpanded }));
         },

@@ -1,6 +1,7 @@
 import { ExitIcon, GearIcon } from '@radix-ui/react-icons';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import {
+  AddAgentIcon,
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -290,7 +291,7 @@ export function MainNav() {
                 className={cn(
                   'text-gray-80 mb-2 flex h-8 w-8 items-center justify-center gap-2 self-center rounded-full bg-white/10 hover:bg-white/10 hover:text-white',
                   sidebarExpanded &&
-                    'w-full justify-start rounded-lg px-4 py-3',
+                    'w-full justify-start rounded-lg bg-transparent px-4 py-3 hover:bg-gray-500',
                 )}
                 onClick={() => setShowCreateNewActions(!showCreateNewActions)}
                 whileHover={{ scale: !sidebarExpanded ? 1.05 : 1 }}
@@ -331,7 +332,7 @@ export function MainNav() {
                   className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs text-gray-50 transition-colors hover:bg-gray-400"
                   to="add-agent"
                 >
-                  <JobBubbleIcon className="h-5 w-5" />
+                  <AddAgentIcon className="h-5 w-5" />
                   Create Agent
                 </Link>
               </div>

@@ -87,7 +87,7 @@ const addAgentSchema = z
         }
         if (!apikey && model !== Models.Ollama) {
           ctx.addIssue({
-            path: ['apiKey'],
+            path: ['apikey'],
             code: z.ZodIssueCode.custom,
             message: 'Api Key is required',
           });
@@ -151,6 +151,11 @@ const CreateAgentPage = () => {
         state: {
           agentName: variables.agent.id,
         },
+      });
+    },
+    onError: (error) => {
+      toast.error('Error adding agent', {
+        description: error instanceof Error ? error.message : error,
       });
     },
   });
