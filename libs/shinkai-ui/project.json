@@ -24,6 +24,7 @@
         "rollupConfig": "@nx/react/plugins/bundle-rollup",
         "compiler": "babel",
         "assets": [
+          "libs/shinkai-ui/src/assets/fonts",
           {
             "glob": "libs/shinkai-ui/README.md",
             "input": ".",

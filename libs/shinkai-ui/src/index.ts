@@ -1,1 +1,1 @@
-export * from './components';
+import './styles/styles.css';

@@ -4,8 +4,9 @@ import React, { useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 
 import { PaperClipIcon } from '../assets';
-import { Button, ScrollArea } from '../index';
 import { cn } from '../utils';
+import { Button } from './button';
+import { ScrollArea } from './scroll-area';
 
 const openFile = (file: File): void => {
   const fileURL = window.URL.createObjectURL(file);
