@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AgentAPIModel } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
+import { AgentAPIModel } from '@shinkai_network/shinkai-message-ts/models';
 import { useCreateAgent } from '@shinkai_network/shinkai-node-state/lib/mutations/createAgent/useCreateAgent';
 import { useScanOllamaModels } from '@shinkai_network/shinkai-node-state/lib/queries/scanOllamaModels/useScanOllamaModels';
 import {

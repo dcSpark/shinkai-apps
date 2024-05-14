@@ -1,10 +1,9 @@
 import './Button.css';
 
 import { IonButton } from '@ionic/react';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Loader2 } from 'lucide-react';
 import React from 'react';
-
-import { cn } from '../../theme/lib/utils';
 
 export default function Button({
   onClick,
@@ -28,14 +27,14 @@ export default function Button({
       className={cn(
         'ion-button-custom w-full',
         'variant-' + variant,
-        className
+        className,
       )}
       disabled={disabled || isLoading}
       onClick={onClick}
       shape={'round'}
       type={type}
     >
-      {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+      {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
       {children}
     </IonButton>
   );

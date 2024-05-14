@@ -25,6 +25,7 @@ import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mut
 import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageWithFilesToInbox/useSendMessageWithFilesToInbox';
 import { ChatConversationMessage } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 import MarkdownPreview from '@uiw/react-markdown-preview';
 import { send } from 'ionicons/icons';
 import { cameraOutline } from 'ionicons/icons';
@@ -39,7 +40,6 @@ import {
   IonHeaderCustom,
 } from '../components/ui/Layout';
 import { useAuth } from '../store/auth';
-import { cn } from '../theme/lib/utils';
 
 const groupMessagesByDate = (messages: ChatConversationMessage[]) => {
   const groupedMessages: Record<string, ChatConversationMessage[]> = {};

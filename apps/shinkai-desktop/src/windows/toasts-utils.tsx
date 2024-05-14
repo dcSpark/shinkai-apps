@@ -1,6 +1,6 @@
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { ExternalToast, toast } from 'sonner';
 
-import { cn } from '../lib/utils';
 import { openShinkaiNodeManagerWindow } from './utils';
 
 const ShinkaiNodeLogsLabel = ({
@@ -78,8 +78,8 @@ export const stoppingShinkaiNodeToast = () => {
 export const shinkaiNodeStopErrorToast = () => {
   toast.error(
     <div>
-      Error stopping your local Shinkai Node, see <ShinkaiNodeLogsLabel />
-      {' '} for more information
+      Error stopping your local Shinkai Node, see <ShinkaiNodeLogsLabel /> for
+      more information
     </div>,
     {
       ...defaultToastOptions,
@@ -100,8 +100,8 @@ export const stoppingOllamaToast = () => {
 export const ollamaStopErrorToast = () => {
   toast.error(
     <div>
-      Error stopping your local Ollama, see <ShinkaiNodeLogsLabel />
-      {' '} for more information
+      Error stopping your local Ollama, see <ShinkaiNodeLogsLabel /> for more
+      information
     </div>,
     {
       ...defaultToastOptions,
@@ -124,7 +124,7 @@ export const errorRemovingShinkaiNodeStorageToast = () => {
   return toast.error(
     <div>
       Error removing your local Shinkai Node storage, see{' '}
-      <ShinkaiNodeLogsLabel /> {' '} for more information
+      <ShinkaiNodeLogsLabel /> for more information
     </div>,
     { ...defaultToastOptions },
   );
@@ -173,8 +173,8 @@ export const pullingModelDoneToast = (model: string) => {
 export const pullingModelErrorToast = (model: string) => {
   return toast.error(
     <div>
-      Error downloading AI model {model}, see <ShinkaiNodeLogsLabel />
-      {' '} for more information
+      Error downloading AI model {model}, see <ShinkaiNodeLogsLabel /> for more
+      information
     </div>,
     {
       ...defaultToastOptions,

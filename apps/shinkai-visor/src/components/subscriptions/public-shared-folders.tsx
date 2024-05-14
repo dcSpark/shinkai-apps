@@ -22,13 +22,13 @@ import {
   ToggleGroupItem,
 } from '@shinkai_network/shinkai-ui';
 import { SharedFolderIcon } from '@shinkai_network/shinkai-ui/assets';
+import { useDebounce } from '@shinkai_network/shinkai-ui/hooks';
 import { useInView } from 'framer-motion';
 import { Maximize2, Minimize2, SearchIcon, XIcon } from 'lucide-react';
 import { Tree, TreeExpandedKeysType } from 'primereact/tree';
 import { TreeNode as PrimeTreeNode } from 'primereact/treenode';
 import React, { Fragment, useEffect, useRef, useState } from 'react';
 
-import { useDebounce } from '../../hooks/use-debounce';
 import { useAuth } from '../../store/auth/auth';
 import { treeOptions } from '../create-job/constants';
 import {
