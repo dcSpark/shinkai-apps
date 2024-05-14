@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@noble/ed25519": "^2.0.0",
+    "axios": "^1.6.8",
     "curve25519-js": "^0.0.4",
     "libsodium-wrappers-sumo": "^0.7.13"
   },
