@@ -7,9 +7,9 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-  DirectoryTypeIcon,
   ScrollArea,
 } from '@shinkai_network/shinkai-ui';
+import { DirectoryTypeIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { ChevronRight } from 'lucide-react';
 import React, { createContext, useContext, useRef } from 'react';
@@ -165,7 +165,7 @@ export const FolderSelectionList = () => {
                 key={idx}
               />
             ))}
-          {VRFiles?.child_folders.map((folder, index: number) => {
+          {VRFiles?.child_folders.map((folder) => {
             return (
               <button
                 className={cn(

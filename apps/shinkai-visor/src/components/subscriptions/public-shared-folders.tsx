@@ -18,10 +18,10 @@ import {
   DrawerTrigger,
   Input,
   ScrollArea,
-  SharedFolderIcon,
   ToggleGroup,
   ToggleGroupItem,
 } from '@shinkai_network/shinkai-ui';
+import { SharedFolderIcon } from '@shinkai_network/shinkai-ui/assets';
 import { useInView } from 'framer-motion';
 import { Maximize2, Minimize2, SearchIcon, XIcon } from 'lucide-react';
 import { Tree, TreeExpandedKeysType } from 'primereact/tree';

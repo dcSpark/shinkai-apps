@@ -1,4 +1,4 @@
-import { PaperClipIcon } from '@shinkai_network/shinkai-ui';
+import { PaperClipIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { partial } from 'filesize';
 import { AnimatePresence, motion } from 'framer-motion';

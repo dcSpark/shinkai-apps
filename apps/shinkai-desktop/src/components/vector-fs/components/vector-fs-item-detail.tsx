@@ -2,11 +2,11 @@ import { useDownloadVRFile } from '@shinkai_network/shinkai-node-state/lib/mutat
 import {
   Badge,
   Button,
-  FileTypeIcon,
   SheetFooter,
   SheetHeader,
   SheetTitle,
 } from '@shinkai_network/shinkai-ui';
+import { FileTypeIcon } from '@shinkai_network/shinkai-ui/assets';
 import { dialog, fs } from '@tauri-apps/api';
 import { BaseDirectory } from '@tauri-apps/api/fs';
 import { partial } from 'filesize';

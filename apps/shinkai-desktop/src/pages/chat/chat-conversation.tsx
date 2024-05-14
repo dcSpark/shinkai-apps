@@ -20,9 +20,7 @@ import {
   AlertTitle,
   Badge,
   Button,
-  DirectoryTypeIcon,
   DotsLoader,
-  FileTypeIcon,
   Form,
   FormControl,
   FormField,
@@ -42,6 +40,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
+import {
+  DirectoryTypeIcon,
+  FileTypeIcon,
+} from '@shinkai_network/shinkai-ui/assets';
 import { Placeholder } from '@tiptap/extension-placeholder';
 import { EditorContent, Extension, useEditor } from '@tiptap/react';
 import { StarterKit } from '@tiptap/starter-kit';

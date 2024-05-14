@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import type { IProps } from 'react-qrcode-logo';
 import { QRCode as ReactQRCode } from 'react-qrcode-logo';
 
-import shinkaiLogo from '../assets/app-icon.png';
+import shinkaiLogo from '../assets/images/app-icon.png';
 import { Button } from './button';
 import { Dialog, DialogContent } from './dialog';
 

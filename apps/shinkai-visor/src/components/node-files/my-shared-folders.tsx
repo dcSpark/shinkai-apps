@@ -7,8 +7,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   ScrollArea,
-  SharedFolderIcon,
 } from '@shinkai_network/shinkai-ui';
+import { SharedFolderIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Link2Off } from 'lucide-react';
 import React from 'react';

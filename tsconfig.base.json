@@ -21,8 +21,16 @@
       "@shinkai_network/shinkai-node-state/*": [
         "libs/shinkai-node-state/src/*.ts"
       ],
-      "@shinkai_network/shinkai-ui": ["libs/shinkai-ui/src/index.ts"],
-      "@shinkai_network/shinkai-ui/utils": ["libs/shinkai-ui/src/utils.ts"]
+      "@shinkai_network/shinkai-ui": [
+        "libs/shinkai-ui/src/components/index.ts"
+      ],
+      "@shinkai_network/shinkai-ui/hooks": [
+        "libs/shinkai-ui/src/hooks/index.ts"
+      ],
+      "@shinkai_network/shinkai-ui/utils": ["libs/shinkai-ui/src/utils.ts"],
+      "@shinkai_network/shinkai-ui/assets": [
+        "libs/shinkai-ui/src/assets/index.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]

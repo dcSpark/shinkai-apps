@@ -10,17 +10,13 @@ import { useArchiveJob } from '@shinkai_network/shinkai-node-state/lib/mutations
 import { useUpdateInboxName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateInboxName/useUpdateInboxName';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
 import {
-  ActiveIcon,
-  ArchiveIcon,
   Button,
-  ChatBubbleIcon,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   Input,
-  JobBubbleIcon,
   ScrollArea,
   Separator,
   Tabs,
@@ -33,6 +29,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
+import {
+  ActiveIcon,
+  ArchiveIcon,
+  ChatBubbleIcon,
+  JobBubbleIcon,
+} from '@shinkai_network/shinkai-ui/assets';
 import { Edit3, PlusIcon } from 'lucide-react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';

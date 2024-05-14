@@ -7,8 +7,8 @@ import {
   // DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  FileTypeIcon,
 } from '@shinkai_network/shinkai-ui';
+import { FileTypeIcon } from '@shinkai_network/shinkai-ui/assets';
 import { partial } from 'filesize';
 import { LockIcon } from 'lucide-react';
 import React from 'react';

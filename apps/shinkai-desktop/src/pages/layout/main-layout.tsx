@@ -1,7 +1,6 @@
 import { ExitIcon, GearIcon } from '@radix-ui/react-icons';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import {
-  AddAgentIcon,
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -11,9 +10,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   Button,
-  FilesIcon,
-  InboxIcon,
-  JobBubbleIcon,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -23,6 +19,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
+import {
+  AddAgentIcon,
+  FilesIcon,
+  InboxIcon,
+  JobBubbleIcon,
+} from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion, TargetAndTransition } from 'framer-motion';
 import {

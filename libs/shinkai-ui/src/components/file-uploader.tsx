@@ -3,7 +3,8 @@ import { Loader2, Trash, Upload } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 
-import { Button, PaperClipIcon, ScrollArea } from '../index';
+import { PaperClipIcon } from '../assets';
+import { Button, ScrollArea } from '../index';
 import { cn } from '../utils';
 
 const openFile = (file: File): void => {

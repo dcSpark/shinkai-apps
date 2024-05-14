@@ -1,7 +1,5 @@
 import { useArchiveJob } from '@shinkai_network/shinkai-node-state/lib/mutations/archiveJob/useArchiveJob';
 import {
-  AddAgentIcon,
-  AgentIcon,
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -10,12 +8,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  ArchivedIcon,
-  ArchiveIcon,
   Badge,
   Button,
-  DirectoryTypeIcon,
-  DisconnectIcon,
   Drawer,
   DrawerClose,
   DrawerContent,
@@ -28,16 +22,24 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-  FilesIcon,
-  FileTypeIcon,
-  InboxIcon,
-  JobBubbleIcon,
   Tooltip,
   TooltipContent,
   TooltipPortal,
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
+import {
+  AddAgentIcon,
+  AgentIcon,
+  ArchivedIcon,
+  ArchiveIcon,
+  DirectoryTypeIcon,
+  DisconnectIcon,
+  FilesIcon,
+  FileTypeIcon,
+  InboxIcon,
+  JobBubbleIcon,
+} from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
   ArrowLeft,

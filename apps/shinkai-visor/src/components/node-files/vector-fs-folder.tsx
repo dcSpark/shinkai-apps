@@ -3,14 +3,16 @@ import { VRFolder } from '@shinkai_network/shinkai-node-state/lib/queries/getVRP
 import {
   buttonVariants,
   Checkbox,
-  DirectoryTypeIcon,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  SharedFolderIcon,
 } from '@shinkai_network/shinkai-ui';
+import {
+  DirectoryTypeIcon,
+  SharedFolderIcon,
+} from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
   CopyIcon,
