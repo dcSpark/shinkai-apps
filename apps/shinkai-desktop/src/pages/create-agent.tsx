@@ -263,7 +263,7 @@ const CreateAgentPage = () => {
   };
 
   return (
-    <SubpageLayout title="Add Agent AI">
+    <SubpageLayout title="Create Agent">
       <Form {...addAgentForm}>
         <form
           className="space-y-10"
