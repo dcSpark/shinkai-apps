@@ -24,7 +24,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useEffect, useState } from 'react';
-import { useForm, useWatch } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -128,14 +128,12 @@ export const AddAgent = () => {
   });
 
   const intl = useIntl();
-  const currentModel = useWatch<FormSchemaType>({
-    control: form.control,
-    name: 'model',
-  });
-  const isCustomModelMode = useWatch<FormSchemaType>({
-    control: form.control,
-    name: 'isCustomModel',
-  });
+
+  const {
+    model: currentModel,
+    isCustomModel: isCustomModelMode,
+    modelType: currentModelType,
+  } = form.watch();
 
   const {
     data: ollamaModels,
@@ -264,7 +262,12 @@ export const AddAgent = () => {
     }
     form.setValue('modelType', modelTypeOptions[0].value);
   }, [modelTypeOptions, form]);
-
+  useEffect(() => {
+    if (!modelTypeOptions?.length) {
+      return;
+    }
+    form.setValue('agentName', currentModelType);
+  }, [form, currentModelType, modelTypeOptions?.length]);
   return (
     <div className="flex h-full flex-col space-y-3">
       <Form {...form}>

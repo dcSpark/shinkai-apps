@@ -1,23 +1,18 @@
+import {
+  blobToBase64,
+  canvasPreview,
+  canvasToBlob,
+  createShadowRoot,
+} from '@shinkai_network/shinkai-ui/helpers';
 import * as React from 'react';
 import { useRef, useState } from 'react';
-import { createRoot } from 'react-dom/client';
 import ReactCrop, { Crop, PixelCrop } from 'react-image-crop';
 import reactCropStyle from 'react-image-crop/dist/ReactCrop.css?inline';
 import { IntlProvider } from 'react-intl';
 
-import { blobToBase64 } from '../../helpers/blob-utils';
-import { canvasPreview, canvasToBlob } from '../../helpers/canvas-utils';
 import { useGlobalImageCaptureChromeMessage } from '../../hooks/use-global-image-capture-message';
 import { langMessages, locale } from '../../lang/intl';
 import themeStyle from '../../theme/styles.css?inline';
-
-const baseContainer = document.createElement('shinkai-image-capture-root');
-const shadow = baseContainer.attachShadow({ mode: 'open' });
-const container = document.createElement('div');
-container.id = 'root';
-shadow.appendChild(container);
-const htmlRoot = document.getElementsByTagName('html')[0];
-htmlRoot.prepend(baseContainer);
 
 export const ImageCapture = () => {
   const [baseImage, setBaseImage] = useState<string | undefined>(undefined);
@@ -90,11 +85,14 @@ export const ImageCapture = () => {
     )
   );
 };
-const root = createRoot(container);
+
+const root = createShadowRoot(
+  'shinkai-image-capture-root',
+  `${themeStyle} ${reactCropStyle}
+`,
+);
 root.render(
   <React.StrictMode>
-    <style>{themeStyle}</style>
-    <style>{reactCropStyle}</style>
     <IntlProvider locale={locale} messages={langMessages}>
       <div className="z-max pointer-events-none fixed h-full w-full overflow-hidden">
         <ImageCapture />

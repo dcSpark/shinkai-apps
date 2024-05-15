@@ -3,8 +3,10 @@ import { Loader2, Trash, Upload } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 
-import { Button, PaperClipIcon, ScrollArea } from '../index';
+import { PaperClipIcon } from '../assets';
 import { cn } from '../utils';
+import { Button } from './button';
+import { ScrollArea } from './scroll-area';
 
 const openFile = (file: File): void => {
   const fileURL = window.URL.createObjectURL(file);

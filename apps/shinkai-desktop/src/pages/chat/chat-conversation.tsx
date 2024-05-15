@@ -20,9 +20,7 @@ import {
   AlertTitle,
   Badge,
   Button,
-  DirectoryTypeIcon,
   DotsLoader,
-  FileTypeIcon,
   Form,
   FormControl,
   FormField,
@@ -42,6 +40,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
+import {
+  DirectoryTypeIcon,
+  FileTypeIcon,
+} from '@shinkai_network/shinkai-ui/assets';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Placeholder } from '@tiptap/extension-placeholder';
 import { EditorContent, Extension, useEditor } from '@tiptap/react';
 import { StarterKit } from '@tiptap/starter-kit';
@@ -70,10 +73,8 @@ import { z } from 'zod';
 
 import Message from '../../components/chat/message';
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
-import { cn } from '../../lib/utils';
 import { useAuth } from '../../store/auth';
 import { isImageOrPdf } from '../create-job';
-
 const chatSchema = z.object({
   message: z.string(),
   file: z.any().optional(),

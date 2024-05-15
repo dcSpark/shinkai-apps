@@ -10,7 +10,6 @@ import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/
 import {
   Badge,
   Button,
-  FilesIcon,
   FileUploader,
   Form,
   FormControl,
@@ -31,6 +30,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
+import { FilesIcon } from '@shinkai_network/shinkai-ui/assets';
 import { SearchCode } from 'lucide-react';
 import { TreeCheckboxSelectionKeys } from 'primereact/tree';
 import { TreeNode } from 'primereact/treenode';

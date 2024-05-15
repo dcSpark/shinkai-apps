@@ -1,11 +1,10 @@
-import { PaperClipIcon } from '@shinkai_network/shinkai-ui';
+import { PaperClipIcon } from '@shinkai_network/shinkai-ui/assets';
+import { getFileExt, getFileName } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { partial } from 'filesize';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
 import { ReactNode, useEffect, useState } from 'react';
-
-import { getFileExt, getFileName } from '../../helpers/file-name-utils';
 
 export type FileListProps = {
   files: ({ name: string; size?: number } | File)[];

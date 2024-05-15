@@ -3,14 +3,17 @@ import { VRFolder } from '@shinkai_network/shinkai-node-state/lib/queries/getVRP
 import {
   buttonVariants,
   Checkbox,
-  DirectoryTypeIcon,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  SharedFolderIcon,
 } from '@shinkai_network/shinkai-ui';
+import {
+  DirectoryTypeIcon,
+  SharedFolderIcon,
+} from '@shinkai_network/shinkai-ui/assets';
+import { formatDateToUSLocaleString } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
   CopyIcon,
@@ -22,7 +25,6 @@ import {
 } from 'lucide-react';
 import React from 'react';
 
-import { formatDateToUSLocaleString } from '../../helpers/date';
 import { useVectorFsStore, VectorFSLayout } from './node-file-context';
 import { VectorFsFolderAction } from './vector-fs-drawer';
 

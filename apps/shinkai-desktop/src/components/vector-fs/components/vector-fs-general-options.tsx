@@ -3,9 +3,7 @@ import { useCreateVRFolder } from '@shinkai_network/shinkai-node-state/lib/mutat
 import { useUploadVRFiles } from '@shinkai_network/shinkai-node-state/lib/mutations/uploadVRFiles/useUploadVRFiles';
 import {
   Button,
-  DirectoryTypeIcon,
   FileItem,
-  FileTypeIcon,
   FileUploader,
   Form,
   FormControl,
@@ -17,6 +15,10 @@ import {
   SheetTitle,
   TextField,
 } from '@shinkai_network/shinkai-ui';
+import {
+  DirectoryTypeIcon,
+  FileTypeIcon,
+} from '@shinkai_network/shinkai-ui/assets';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useLocation } from 'react-router-dom';

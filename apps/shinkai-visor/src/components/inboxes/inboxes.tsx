@@ -1,8 +1,6 @@
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
 import {
-  ActiveIcon,
-  ArchiveIcon,
   Button,
   // ChatBubbleIcon,
   // DropdownMenu,
@@ -17,6 +15,7 @@ import {
   TabsList,
   TabsTrigger,
 } from '@shinkai_network/shinkai-ui';
+import { ActiveIcon, ArchiveIcon } from '@shinkai_network/shinkai-ui/assets';
 // import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Plus } from 'lucide-react';
 import React, { useMemo, useRef } from 'react';

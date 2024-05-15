@@ -5,14 +5,12 @@ import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/ge
 import {
   Button,
   buttonVariants,
-  ExportIcon,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  QrIcon,
   Select,
   SelectContent,
   SelectItem,
@@ -20,6 +18,7 @@ import {
   SelectValue,
   TextField,
 } from '@shinkai_network/shinkai-ui';
+import { ExportIcon, QrIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
 import { ExternalLinkIcon } from 'lucide-react';
@@ -52,7 +51,9 @@ const MotionButton = motion(Button);
 const SettingsPage = () => {
   const navigate = useNavigate();
   const auth = useAuth((authStore) => authStore.auth);
-  const isLocalShinkaiNodeInUse = useShinkaiNodeManager((state) => state.isInUse);
+  const isLocalShinkaiNodeInUse = useShinkaiNodeManager(
+    (state) => state.isInUse,
+  );
   const setAuth = useAuth((authStore) => authStore.setAuth);
 
   const defaultAgentId = useSettings(

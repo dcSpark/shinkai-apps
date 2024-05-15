@@ -19,6 +19,7 @@ import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-st
 import { ChatConversationMessage } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
 import { groupMessagesByDate } from '@shinkai_network/shinkai-node-state/lib/utils/date';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 import MarkdownPreview from '@uiw/react-markdown-preview';
 import { cameraOutline } from 'ionicons/icons';
 import { send } from 'ionicons/icons';
@@ -34,7 +35,6 @@ import {
   IonHeaderCustom,
 } from '../components/ui/Layout';
 import { useAuth } from '../store/auth';
-import { cn } from '../theme/lib/utils';
 import {
   extractReceiverShinkaiName,
   getOtherPersonIdentity,

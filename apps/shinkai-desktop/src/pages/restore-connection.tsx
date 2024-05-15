@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { decryptMessageWithPassphrase } from '@shinkai_network/shinkai-message-ts/cryptography/shinkai-encryption';
+import { decryptMessageWithPassphrase } from '@shinkai_network/shinkai-message-ts/cryptography';
 import {
   Button,
   buttonVariants,
