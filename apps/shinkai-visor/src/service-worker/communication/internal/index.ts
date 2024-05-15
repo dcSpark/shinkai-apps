@@ -1,5 +1,4 @@
-import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
-
+import { useAuth } from '../../../store/auth/auth';
 import { useSettings } from '../../../store/settings/settings';
 import {
   ContentScriptBridgeMessage,

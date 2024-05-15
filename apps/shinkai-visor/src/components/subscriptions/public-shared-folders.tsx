@@ -6,7 +6,6 @@ import { useGetAvailableSharedFoldersWithPagination } from '@shinkai_network/shi
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import { useGetMySharedFolders } from '@shinkai_network/shinkai-node-state/lib/queries/getMySharedFolders/useGetMySharedFolders';
 import { useGetMySubscriptions } from '@shinkai_network/shinkai-node-state/lib/queries/getMySubscriptions/useGetMySubscriptions';
-import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import {
   Button,
   Drawer,
@@ -30,6 +29,7 @@ import { Tree, TreeExpandedKeysType } from 'primereact/tree';
 import { TreeNode as PrimeTreeNode } from 'primereact/treenode';
 import React, { Fragment, useEffect, useRef, useState } from 'react';
 
+import { useAuth } from '../../store/auth/auth';
 import { treeOptions } from '../create-job/constants';
 import {
   SubscribeButton,

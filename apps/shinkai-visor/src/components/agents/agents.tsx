@@ -3,7 +3,6 @@ import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { useDeleteAgent } from '@shinkai_network/shinkai-node-state/lib/mutations/deleteAgent/useDeleteAgent';
 import { useUpdateAgent } from '@shinkai_network/shinkai-node-state/lib/mutations/updateAgent/useUpdateAgent';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
-import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import {
   Badge,
   Button,
@@ -33,6 +32,7 @@ import { useHistory } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import { useAuth } from '../../store/auth/auth';
 import { EmptyAgents } from '../empty-agents/empty-agents';
 import { getModelObject } from './add-agent';
 

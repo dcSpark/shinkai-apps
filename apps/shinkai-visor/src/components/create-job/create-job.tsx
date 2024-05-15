@@ -7,7 +7,6 @@ import {
   VRItem,
 } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
-import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import {
   Badge,
   Button,
@@ -42,6 +41,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { z } from 'zod';
 
 import { useQuery } from '../../hooks/use-query';
+import { useAuth } from '../../store/auth/auth';
 import { useSettings } from '../../store/settings/settings';
 import { allowedFileExtensions } from './constants';
 import { KnowledgeSearchDrawer, VectorFsScopeDrawer } from './vector-fs-scope';

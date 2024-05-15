@@ -1,5 +1,4 @@
 import { useArchiveJob } from '@shinkai_network/shinkai-node-state/lib/mutations/archiveJob/useArchiveJob';
-import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -67,6 +66,7 @@ import {
 } from '../../constants/routing';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
+import { useAuth } from '../../store/auth/auth';
 import { useSettings } from '../../store/settings/settings';
 import { EditInboxNameDialog } from '../edit-inbox-name-dialog/edit-inbox-name-dialog';
 import { Header } from '../header/header';

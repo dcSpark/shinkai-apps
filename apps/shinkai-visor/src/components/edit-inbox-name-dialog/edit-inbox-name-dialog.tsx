@@ -1,7 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AgentInbox } from '@shinkai_network/shinkai-message-ts/models';
 import { useUpdateInboxName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateInboxName/useUpdateInboxName';
-import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import {
   Badge,
   Button,
@@ -18,6 +17,8 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import { z } from 'zod';
+
+import { useAuth } from '../../store/auth/auth';
 
 export type EditInboxNameDialogProps = {
   open: boolean;

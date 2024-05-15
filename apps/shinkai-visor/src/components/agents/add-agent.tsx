@@ -6,7 +6,6 @@ import {
   Models,
   modelsConfig,
 } from '@shinkai_network/shinkai-node-state/lib/utils/models';
-import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import {
   Button,
   Form,
@@ -30,6 +29,8 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
+
+import { useAuth } from '../../store/auth/auth';
 
 const formSchema = z
   .object({

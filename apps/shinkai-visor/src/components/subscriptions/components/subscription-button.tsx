@@ -1,11 +1,12 @@
 import { useSubscribeToSharedFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/subscribeToSharedFolder/useSubscribeToSharedFolder';
 import { useUnsubscribeToSharedFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/unsubscribeToSharedFolder/useUnsubscribeToSharedFolder';
-import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import { Button } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
+
+import { useAuth } from '../../../store/auth/auth';
 
 const MotionButton = motion(Button);
 

@@ -1,7 +1,8 @@
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
-import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
+
+import { useAuth } from '../store/auth/auth';
 
 export const useGetCurrentInbox = () => {
   const auth = useAuth((state) => state.auth);

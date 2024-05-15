@@ -1,6 +1,5 @@
 import { HomeIcon } from '@radix-ui/react-icons';
 import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
-import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -16,6 +15,7 @@ import { ChevronRight } from 'lucide-react';
 import React, { createContext, useContext, useRef } from 'react';
 import { createStore, useStore } from 'zustand';
 
+import { useAuth } from '../../store/auth/auth';
 import { VectorFsFolderInfo } from './vector-fs-folder';
 
 type VectorFolderSelectionList = {

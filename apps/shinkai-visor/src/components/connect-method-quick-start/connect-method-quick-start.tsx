@@ -2,10 +2,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
 import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/lib/queries/getEncryptionKeys/useGetEncryptionKeys';
 import {
-  SetupData,
-  useAuth,
-} from '@shinkai_network/shinkai-node-state/store/auth';
-import {
   Accordion,
   AccordionContent,
   AccordionItem,
@@ -23,6 +19,7 @@ import { FormattedMessage } from 'react-intl';
 import { useHistory, useLocation } from 'react-router';
 import { z } from 'zod';
 
+import { SetupData, useAuth } from '../../store/auth/auth';
 import { ConnectionMethodOption } from '../connection-method-option/connection-method-option';
 import { Header } from '../header/header';
 
