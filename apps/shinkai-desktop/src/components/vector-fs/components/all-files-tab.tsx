@@ -6,6 +6,7 @@ import {
   VRItem,
 } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
+import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -41,7 +42,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import { useDebounce } from '../../../hooks/use-debounce';
 import { useURLQueryParams } from '../../../hooks/use-url-query-params';
-import { useAuth } from '../../../store/auth';
 import { useVectorFsStore, VectorFSLayout } from '../context/vector-fs-context';
 import { VectorFsGlobalAction } from './vector-fs-drawer';
 import VectorFsFolder from './vector-fs-folder';

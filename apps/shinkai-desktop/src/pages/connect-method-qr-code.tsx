@@ -4,6 +4,10 @@ import { useSubmitRegistration } from '@shinkai_network/shinkai-node-state/lib/m
 import { generateMyEncryptionKeys } from '@shinkai_network/shinkai-node-state/lib/queries/getEncryptionKeys/index';
 import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/lib/queries/getEncryptionKeys/useGetEncryptionKeys';
 import {
+  SetupData,
+  useAuth,
+} from '@shinkai_network/shinkai-node-state/store/auth';
+import {
   Button,
   ErrorMessage,
   Form,
@@ -17,7 +21,6 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
-import { SetupData, useAuth } from '../store/auth';
 import OnboardingLayout from './layout/onboarding-layout';
 
 const formSchema = z.object({

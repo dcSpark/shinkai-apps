@@ -7,6 +7,7 @@ import {
   VRItem,
 } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
+import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import {
   Badge,
   Button,
@@ -45,7 +46,6 @@ import {
 } from '../components/vector-fs/components/vector-fs-context-drawer';
 import { allowedFileExtensions } from '../lib/constants';
 import { ADD_AGENT_PATH } from '../routes/name';
-import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { SubpageLayout } from './layout/simple-layout';
 

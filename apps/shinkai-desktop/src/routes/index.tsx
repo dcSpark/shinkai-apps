@@ -1,3 +1,4 @@
+import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import React, { useEffect, useRef } from 'react';
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
 
@@ -28,7 +29,6 @@ import SettingsPage from '../pages/settings';
 import ShinkaiPrivatePage from '../pages/shinkai-private';
 import UnavailableShinkaiNode from '../pages/unavailable-shinkai-node';
 import TermsAndConditionsPage from '../pages/welcome';
-import { useAuth } from '../store/auth';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
 import { useShinkaiNodeEventsToast } from '../windows/shinkai-node-manager/shinkai-node-manager-hooks';
 import {

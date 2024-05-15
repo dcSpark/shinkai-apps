@@ -1,6 +1,6 @@
+import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import { emit, listen } from '@tauri-apps/api/event';
 
-import { useAuth } from './auth';
 import { useSettings } from './settings';
 import { useShinkaiNodeManager } from './shinkai-node-manager';
 

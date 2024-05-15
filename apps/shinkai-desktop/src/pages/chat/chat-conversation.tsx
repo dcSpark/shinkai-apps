@@ -14,6 +14,7 @@ import {
   getRelativeDateLabel,
   groupMessagesByDate,
 } from '@shinkai_network/shinkai-node-state/lib/utils/date';
+import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import {
   Alert,
   AlertDescription,
@@ -73,7 +74,6 @@ import { z } from 'zod';
 
 import Message from '../../components/chat/message';
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
-import { useAuth } from '../../store/auth';
 import { isImageOrPdf } from '../create-job';
 const chatSchema = z.object({
   message: z.string(),

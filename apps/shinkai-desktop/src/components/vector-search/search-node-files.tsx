@@ -1,4 +1,5 @@
 import { useGetVRSeachSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRSearchSimplified/useGetSearchVRItems';
+import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import {
   Button,
   Drawer,
@@ -27,7 +28,6 @@ import { Link } from 'react-router-dom';
 import { z } from 'zod';
 
 import { SimpleLayout } from '../../pages/layout/simple-layout';
-import { useAuth } from '../../store/auth';
 import {
   FolderSelectionList,
   useVectorFolderSelectionStore,

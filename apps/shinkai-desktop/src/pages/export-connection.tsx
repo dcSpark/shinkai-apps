@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { encryptMessageWithPassphrase } from '@shinkai_network/shinkai-message-ts/cryptography';
+import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import {
   Button,
   Form,
@@ -14,7 +15,6 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { useAuth } from '../store/auth';
 import { SubpageLayout } from './layout/simple-layout';
 
 export const ExportConnection = () => {

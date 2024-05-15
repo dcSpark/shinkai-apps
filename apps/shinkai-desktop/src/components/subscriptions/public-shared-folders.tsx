@@ -6,6 +6,7 @@ import { useGetAvailableSharedFoldersWithPagination } from '@shinkai_network/shi
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import { useGetMySharedFolders } from '@shinkai_network/shinkai-node-state/lib/queries/getMySharedFolders/useGetMySharedFolders';
 import { useGetMySubscriptions } from '@shinkai_network/shinkai-node-state/lib/queries/getMySubscriptions/useGetMySubscriptions';
+import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import {
   Button,
   Input,
@@ -30,7 +31,6 @@ import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { useDebounce } from '../../hooks/use-debounce';
 import { treeOptions } from '../../lib/constants';
 import { SimpleLayout } from '../../pages/layout/simple-layout';
-import { useAuth } from '../../store/auth';
 import {
   SubscribeButton,
   UnsubscribeButton,

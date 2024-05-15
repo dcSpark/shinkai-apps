@@ -3,6 +3,10 @@ import { useUpdateNodeName } from '@shinkai_network/shinkai-node-state/lib/mutat
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import {
+  SetupData,
+  useAuth,
+} from '@shinkai_network/shinkai-node-state/store/auth';
+import {
   Button,
   buttonVariants,
   Form,
@@ -29,7 +33,6 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { GENERATE_CODE_PATH } from '../routes/name';
-import { SetupData, useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
 import { useShinkaiNodeRespawnMutation } from '../windows/shinkai-node-manager/shinkai-node-process-client';

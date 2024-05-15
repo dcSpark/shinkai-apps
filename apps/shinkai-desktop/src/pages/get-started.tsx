@@ -1,13 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
 import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/lib/queries/getEncryptionKeys/useGetEncryptionKeys';
+import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import { Button, buttonVariants, Separator } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
-import { useAuth } from '../store/auth';
 import { useShinkaiNodeEventsToast } from '../windows/shinkai-node-manager/shinkai-node-manager-hooks';
 import { useShinkaiNodeSpawnMutation } from '../windows/shinkai-node-manager/shinkai-node-process-client';
 import OnboardingLayout from './layout/onboarding-layout';
