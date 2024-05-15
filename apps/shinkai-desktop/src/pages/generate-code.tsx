@@ -1,7 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { QRSetupData } from '@shinkai_network/shinkai-message-ts/models';
 import { useCreateRegistrationCode } from '@shinkai_network/shinkai-node-state/lib/mutations/createRegistrationCode/useCreateRegistrationCode';
-import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import {
   Button,
   Form,
@@ -24,6 +23,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import { useAuth } from '../store/auth';
 import { SubpageLayout } from './layout/simple-layout';
 
 const saveImage = async (dataUrl: string) => {

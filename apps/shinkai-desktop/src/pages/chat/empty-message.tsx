@@ -1,9 +1,9 @@
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
-import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import { buttonVariants } from '@shinkai_network/shinkai-ui';
 import { Link } from 'react-router-dom';
 
 import { ADD_AGENT_PATH, CREATE_JOB_PATH } from '../../routes/name';
+import { useAuth } from '../../store/auth';
 
 const EmptyMessage = () => {
   const auth = useAuth((state) => state.auth);

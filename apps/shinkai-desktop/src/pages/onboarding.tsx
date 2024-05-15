@@ -2,7 +2,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
 import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/lib/queries/getEncryptionKeys/useGetEncryptionKeys';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
-import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import {
   Button,
   ButtonProps,
@@ -21,6 +20,7 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { HOME_PATH } from '../routes/name';
+import { useAuth } from '../store/auth';
 import { useShinkaiNodeEventsToast } from '../windows/shinkai-node-manager/shinkai-node-manager-hooks';
 import OnboardingLayout from './layout/onboarding-layout';
 

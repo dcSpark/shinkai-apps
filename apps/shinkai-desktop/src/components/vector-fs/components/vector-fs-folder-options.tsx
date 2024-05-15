@@ -5,7 +5,6 @@ import { useDeleteVrFolder } from '@shinkai_network/shinkai-node-state/lib/mutat
 import { useMoveVrFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/moveVRFolder/useMoveVRFolder';
 import { useUnshareFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/unshareFolder/useUnshareFolder';
 import { useGetVRSeachSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRSearchSimplified/useGetSearchVRItems';
-import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import {
   Button,
   Form,
@@ -25,6 +24,7 @@ import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import { useAuth } from '../../../store/auth';
 import { useVectorFsStore } from '../context/vector-fs-context';
 import {
   FolderSelectionList,

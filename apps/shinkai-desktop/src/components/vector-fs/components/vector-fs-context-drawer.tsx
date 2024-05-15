@@ -4,7 +4,6 @@ import {
   VRItem,
 } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import { useGetVRSeachSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRSearchSimplified/useGetSearchVRItems';
-import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import {
   Badge,
   Button,
@@ -28,6 +27,7 @@ import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 
 import { treeOptions } from '../../../lib/constants';
+import { useAuth } from '../../../store/auth';
 
 export const VectorFsScopeDrawer = ({
   isVectorFSOpen,

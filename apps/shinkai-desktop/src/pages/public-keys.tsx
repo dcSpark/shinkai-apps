@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import {
   CopyToClipboardIcon,
   Form,
@@ -9,6 +8,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import { useAuth } from '../store/auth';
 import { SubpageLayout } from './layout/simple-layout';
 
 export const PublicKeys = () => {

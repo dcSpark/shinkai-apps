@@ -1,6 +1,5 @@
 import { ExitIcon, GearIcon } from '@radix-ui/react-icons';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
-import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -48,6 +47,7 @@ import {
 } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
 import { useShinkaiNodeManager } from '../../store/shinkai-node-manager';
 import { openShinkaiNodeManagerWindow } from '../../windows/utils';

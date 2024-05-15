@@ -1,6 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { decryptMessageWithPassphrase } from '@shinkai_network/shinkai-message-ts/cryptography';
-import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import {
   Button,
   buttonVariants,
@@ -20,6 +19,7 @@ import { useForm } from 'react-hook-form';
 import { Link, To, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
+import { useAuth } from '../store/auth';
 import OnboardingLayout from './layout/onboarding-layout';
 
 const formSchema = z.object({

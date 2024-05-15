@@ -9,7 +9,6 @@ import {
 import { useArchiveJob } from '@shinkai_network/shinkai-node-state/lib/mutations/archiveJob/useArchiveJob';
 import { useUpdateInboxName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateInboxName/useUpdateInboxName';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
-import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import {
   Button,
   Form,
@@ -45,6 +44,7 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { handleSendNotification } from '../../lib/notifications';
+import { useAuth } from '../../store/auth';
 
 const updateInboxNameSchema = z.object({
   inboxName: z.string(),

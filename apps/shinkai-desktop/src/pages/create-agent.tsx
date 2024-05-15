@@ -6,7 +6,6 @@ import {
   Models,
   modelsConfig,
 } from '@shinkai_network/shinkai-node-state/lib/utils/models';
-import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import {
   Button,
   ErrorMessage,
@@ -32,6 +31,7 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { CREATE_JOB_PATH } from '../routes/name';
+import { useAuth } from '../store/auth';
 import { SubpageLayout } from './layout/simple-layout';
 
 const addAgentSchema = z

@@ -1,7 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateVRFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/createVRFolder/useCreateVRFolder';
 import { useUploadVRFiles } from '@shinkai_network/shinkai-node-state/lib/mutations/uploadVRFiles/useUploadVRFiles';
-import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import {
   Button,
   FileItem,
@@ -27,6 +26,7 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { allowedFileExtensions } from '../../../lib/constants';
+import { useAuth } from '../../../store/auth';
 import { useVectorFsStore } from '../context/vector-fs-context';
 import {
   FolderSelectionList,

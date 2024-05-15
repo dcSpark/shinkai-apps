@@ -2,7 +2,6 @@ import './globals.css';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSyncOllamaModels } from '@shinkai_network/shinkai-node-state/lib/mutations/syncOllamaModels/useSyncOllamaModels';
-import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -43,6 +42,7 @@ import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 
 import logo from '../../../src-tauri/icons/128x128@2x.png';
+import { useAuth } from '../../store/auth';
 import { useShinkaiNodeManager } from '../../store/shinkai-node-manager';
 import { initSyncStorage } from '../../store/sync-utils';
 import {
@@ -105,7 +105,7 @@ const App = () => {
     },
     onError: () => {
       shinkaiNodeStartErrorToast();
-    },
+    }
   });
   const { isPending: shinkaiNodeKillIsPending, mutateAsync: shinkaiNodeKill } =
     useShinkaiNodeKillMutation({
@@ -117,7 +117,7 @@ const App = () => {
       },
       onError: () => {
         shinkaiNodeStopErrorToast();
-      },
+      }
     });
   const {
     isPending: shinkaiNodeRemoveStorageIsPending,
