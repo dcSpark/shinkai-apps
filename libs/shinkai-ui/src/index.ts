@@ -40,3 +40,4 @@ export * from './components/toggle';
 export * from './components/toggle-group';
 export * from './components/tooltip';
 export * from './components/table';
+export * from './components/progress';

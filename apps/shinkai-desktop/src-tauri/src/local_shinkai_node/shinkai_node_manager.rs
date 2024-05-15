@@ -249,4 +249,10 @@ impl ShinkaiNodeManager {
     ) -> tokio::sync::broadcast::Receiver<ShinkaiNodeManagerEvent> {
         self.event_broadcaster.subscribe()
     }
+
+    pub fn get_ollama_api_url(
+        &self,
+    ) -> String {
+        self.ollama_process.get_ollama_api_base_url()
+    }
 }

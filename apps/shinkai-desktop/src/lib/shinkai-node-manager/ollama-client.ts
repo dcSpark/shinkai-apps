@@ -1,7 +1,5 @@
-import { queryClient as shinkaiNodeStateQueryClient } from '@shinkai_network/shinkai-node-state/lib/constants';
 import { FunctionKey } from '@shinkai_network/shinkai-node-state/lib/constants';
 import {
-  QueryClient,
   QueryObserverOptions,
   useMutation,
   UseMutationOptions,
@@ -16,16 +14,18 @@ import {
   StatusResponse,
 } from 'ollama';
 
-import { OLLAMA_MODELS } from './ollama_models';
+import {
+  queryClient,
+} from '../../lib/shinkai-node-manager/shinkai-node-manager-client';
 
-const removeForbiddenHeadersInOllamaCors = async (input: RequestInfo | URL, init?: RequestInit | undefined): Promise<Response> => {
+const removeForbiddenHeadersInOllamaCors = async (
+  input: RequestInfo | URL,
+  init?: RequestInit | undefined,
+): Promise<Response> => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   delete (init?.headers as any)?.['User-Agent'];
-  return fetch(input, init)
+  return fetch(input, init);
 };
-
-// Client
-export const queryClient = new QueryClient();
 
 // Queries
 export const useOllamaListQuery = (
@@ -33,40 +33,57 @@ export const useOllamaListQuery = (
   options?: QueryObserverOptions,
 ): UseQueryResult<ListResponse, Error> => {
   const query = useQuery({
+    ...options,
     queryKey: ['ollama_list'],
     queryFn: async (): Promise<ListResponse> => {
-      const ollamaClient = new Ollama({fetch: removeForbiddenHeadersInOllamaCors, ...ollamaConfig });
+      const ollamaClient = new Ollama({
+        fetch: removeForbiddenHeadersInOllamaCors,
+        ...ollamaConfig,
+      });
       const response = await ollamaClient.list();
       return response;
     },
-    ...options,
   });
   return { ...query } as UseQueryResult<ListResponse, Error>;
 };
 
 // Mutations
 export const useOllamaPullMutation = (
-  input: { model: (typeof OLLAMA_MODELS)[0]['model'] },
   ollamaConfig: OllamaConfig,
   options?: UseMutationOptions<
     AsyncGenerator<ProgressResponse, unknown, unknown>,
     Error,
-    void
+    { model: string }
   >,
 ) => {
   const response = useMutation({
-    mutationFn: async (): Promise<
-      AsyncGenerator<ProgressResponse, unknown, unknown>
-    > => {
+    mutationFn: async (
+      input,
+    ): Promise<AsyncGenerator<ProgressResponse, unknown, unknown>> => {
       const ollamaClient = new Ollama(ollamaConfig);
       const response = await ollamaClient.pull({
         model: input.model,
         stream: true,
       });
-      return response;
+      const pipeGenerator = async function* transformGenerator(generator: typeof response) {
+        for await (const progress of generator) {
+          console.log('status', progress.status);
+          if (progress.status === 'success') {
+            console.log(
+              `completed invalidating`,
+            );
+            queryClient.invalidateQueries({
+              queryKey: ['ollama_list'],
+            });
+          }
+          yield progress;
+        }
+      }
+      return pipeGenerator(response);
     },
+    ...options,
     onSuccess: (...onSuccessParameters) => {
-      shinkaiNodeStateQueryClient.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: [FunctionKey.SCAN_OLLAMA_MODELS],
       });
       queryClient.invalidateQueries({
@@ -76,36 +93,34 @@ export const useOllamaPullMutation = (
         options.onSuccess(...onSuccessParameters);
       }
     },
-    ...options,
   });
   return { ...response };
 };
 
 export const useOllamaRemoveMutation = (
-  input: { model: (typeof OLLAMA_MODELS)[0]['model'] },
   ollamaConfig: OllamaConfig,
-  options?: UseMutationOptions<StatusResponse, Error, void>,
+  options?: UseMutationOptions<StatusResponse, Error, { model: string }>,
 ) => {
   const response = useMutation({
-    mutationFn: async (): Promise<StatusResponse> => {
+    mutationFn: async (input): Promise<StatusResponse> => {
       const ollamaClient = new Ollama(ollamaConfig);
       const response = await ollamaClient.delete({
         model: input.model,
       });
       return response;
     },
+    ...options,
     onSuccess: (...onSuccessParameters) => {
       queryClient.invalidateQueries({
         queryKey: ['ollama_list'],
       });
-      shinkaiNodeStateQueryClient.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: [FunctionKey.SCAN_OLLAMA_MODELS],
       });
       if (options?.onSuccess) {
         options.onSuccess(...onSuccessParameters);
       }
     },
-    ...options,
   });
   return { ...response };
 };

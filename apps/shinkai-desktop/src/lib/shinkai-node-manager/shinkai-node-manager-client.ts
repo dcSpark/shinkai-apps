@@ -47,6 +47,17 @@ export const useShinkaiNodeGetOptionsQuery = (
   });
   return { ...query } as UseQueryResult<ShinkaiNodeOptions, Error>;
 };
+export const useShinkaiNodeGetOllamaApiUrlQuery = (
+  options?: QueryObserverOptions,
+): UseQueryResult<string, Error> => {
+  const query = useQuery({
+    queryKey: ['shinkai_node_get_ollama_api_url'],
+    queryFn: (): Promise<string> =>
+      invoke('shinkai_node_get_ollama_api_url'),
+    ...options,
+  });
+  return { ...query } as UseQueryResult<string, Error>;
+};
 
 // Mutations
 export const useShinkaiNodeSpawnMutation = (options?: UseMutationOptions) => {
