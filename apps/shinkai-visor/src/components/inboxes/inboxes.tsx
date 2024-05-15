@@ -1,5 +1,6 @@
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
+import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import {
   Button,
   // ChatBubbleIcon,
@@ -22,7 +23,6 @@ import React, { useMemo, useRef } from 'react';
 // import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
-import { useAuth } from '../../store/auth/auth';
 // import { EditInboxNameDialog } from '../edit-inbox-name-dialog/edit-inbox-name-dialog';
 import { EmptyAgents } from '../empty-agents/empty-agents';
 import { EmptyInboxes } from '../empty-inboxes/empty-inboxes';

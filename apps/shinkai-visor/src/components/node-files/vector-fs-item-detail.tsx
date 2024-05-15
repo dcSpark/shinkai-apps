@@ -1,4 +1,5 @@
 import { useDownloadVRFile } from '@shinkai_network/shinkai-node-state/lib/mutations/downloadVRFile/useDownloadVRFile';
+import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import {
   Badge,
   Button,
@@ -17,7 +18,6 @@ import { partial } from 'filesize';
 import { LockIcon } from 'lucide-react';
 import React from 'react';
 
-import { useAuth } from '../../store/auth/auth';
 import { useVectorFsStore } from './node-file-context';
 
 export const VectorFileDetails = () => {

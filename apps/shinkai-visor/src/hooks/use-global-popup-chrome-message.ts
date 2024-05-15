@@ -1,8 +1,8 @@
+import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import { dataUrlToFile } from '@shinkai_network/shinkai-ui/helpers';
 import { useHistory } from 'react-router-dom';
 
 import { ServiceWorkerInternalMessageType } from '../service-worker/communication/internal/types';
-import { useAuth } from '../store/auth/auth';
 import { useSettings } from '../store/settings/settings';
 import { useChromeMessage } from './use-chrome-message';
 

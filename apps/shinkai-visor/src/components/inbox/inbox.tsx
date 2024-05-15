@@ -11,6 +11,7 @@ import {
   getRelativeDateLabel,
   groupMessagesByDate,
 } from '@shinkai_network/shinkai-node-state/lib/utils/date';
+import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import {
   Alert,
   AlertDescription,
@@ -31,7 +32,6 @@ import {
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
-import { useAuth } from '../../store/auth/auth';
 import { InboxInput } from '../inbox-input/inbox-input';
 import { Message } from '../message/message';
 

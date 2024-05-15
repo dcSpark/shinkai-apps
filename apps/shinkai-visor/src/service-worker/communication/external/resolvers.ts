@@ -3,8 +3,8 @@ import {
   getProfileAgents,
   health,
 } from '@shinkai_network/shinkai-message-ts/api';
+import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 
-import { useAuth } from '../../../store/auth/auth';
 import { sendMessage } from '../internal';
 import { ServiceWorkerInternalMessageType } from '../internal/types';
 import {

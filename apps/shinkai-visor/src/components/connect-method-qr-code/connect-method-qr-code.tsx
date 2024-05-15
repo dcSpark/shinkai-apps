@@ -3,6 +3,10 @@ import { QRSetupData } from '@shinkai_network/shinkai-message-ts/models';
 import { useSubmitRegistration } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistration';
 import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/lib/queries/getEncryptionKeys/useGetEncryptionKeys';
 import {
+  SetupData,
+  useAuth,
+} from '@shinkai_network/shinkai-node-state/store/auth';
+import {
   Button,
   ErrorMessage,
   Form,
@@ -17,7 +21,6 @@ import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 import * as z from 'zod';
 
-import { SetupData, useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
 
 const formSchema = z.object({

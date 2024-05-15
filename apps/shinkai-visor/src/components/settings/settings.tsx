@@ -3,6 +3,10 @@ import { useUpdateNodeName } from '@shinkai_network/shinkai-node-state/lib/mutat
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import {
+  SetupData,
+  useAuth,
+} from '@shinkai_network/shinkai-node-state/store/auth';
+import {
   Button,
   buttonVariants,
   Form,
@@ -37,7 +41,6 @@ import {
   getKeyInfo,
   isValidKeyCombination,
 } from '../../hooks/use-keyboard-shortcut';
-import { SetupData, useAuth } from '../../store/auth/auth';
 import { useSettings } from '../../store/settings/settings';
 
 const formSchema = z.object({

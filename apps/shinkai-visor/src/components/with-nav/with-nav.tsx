@@ -1,10 +1,10 @@
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
+import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { PropsWithChildren, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { useAuth } from '../../store/auth/auth';
 import NavBar from '../nav/nav';
 
 export const WithNav = (props: PropsWithChildren) => {

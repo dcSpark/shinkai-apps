@@ -9,6 +9,7 @@ import {
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { useArchiveJob } from '@shinkai_network/shinkai-node-state/lib/mutations/archiveJob/useArchiveJob';
 import { formatDateToMonthAndDay } from '@shinkai_network/shinkai-node-state/lib/utils/date';
+import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import {
   Button,
   Tooltip,
@@ -25,8 +26,6 @@ import {
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'sonner';
-
-import { useAuth } from '../../store/auth/auth';
 
 const InboxItem = ({
   inbox,

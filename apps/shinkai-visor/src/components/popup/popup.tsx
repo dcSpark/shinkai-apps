@@ -1,6 +1,7 @@
 import '../../theme/styles.css';
 
 import { queryClient } from '@shinkai_network/shinkai-node-state/lib/constants';
+import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import { Toaster } from '@shinkai_network/shinkai-ui';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -14,7 +15,6 @@ import { Route, Switch, useHistory, useLocation } from 'react-router-dom';
 
 import { useGlobalPopupChromeMessage } from '../../hooks/use-global-popup-chrome-message';
 import { langMessages, locale } from '../../lang/intl';
-import { useAuth } from '../../store/auth/auth';
 import { useSettings } from '../../store/settings/settings';
 import { AddAgent } from '../agents/add-agent';
 import { Agents } from '../agents/agents';

@@ -1,8 +1,8 @@
 import { useGetMySubscriptions } from '@shinkai_network/shinkai-node-state/lib/queries/getMySubscriptions/useGetMySubscriptions';
+import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { useAuth } from '../../store/auth/auth';
 import { UnsubscribeButton } from './components/subscription-button';
 import { SubscriptionInfo } from './public-shared-folders';
 

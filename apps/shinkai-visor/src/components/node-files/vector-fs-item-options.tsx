@@ -1,6 +1,7 @@
 import { useCopyVrItem } from '@shinkai_network/shinkai-node-state/lib/mutations/copyVRItem/useCopyVrItem';
 import { useDeleteVRItem } from '@shinkai_network/shinkai-node-state/lib/mutations/deleteVRItem/useDeleteVRItem';
 import { useMoveVRItem } from '@shinkai_network/shinkai-node-state/lib/mutations/moveVRItem/useMoveVRItem';
+import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import {
   Button,
   DrawerFooter,
@@ -10,7 +11,6 @@ import {
 import React from 'react';
 import { toast } from 'sonner';
 
-import { useAuth } from '../../store/auth/auth';
 import {
   FolderSelectionList,
   useVectorFolderSelectionStore,

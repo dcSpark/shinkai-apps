@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { QRSetupData } from '@shinkai_network/shinkai-message-ts/models';
 import { useCreateRegistrationCode } from '@shinkai_network/shinkai-node-state/lib/mutations/createRegistrationCode/useCreateRegistrationCode';
+import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
 import {
   Button,
   Form,
@@ -22,7 +23,6 @@ import { useForm, useWatch } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { z } from 'zod';
 
-import { useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
 
 enum IdentityType {

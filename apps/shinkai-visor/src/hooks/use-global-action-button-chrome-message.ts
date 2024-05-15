@@ -1,5 +1,6 @@
+import { useAuth } from '@shinkai_network/shinkai-node-state/store/auth';
+
 import { ServiceWorkerInternalMessageType } from '../service-worker/communication/internal/types';
-import { useAuth } from '../store/auth/auth';
 import { useSettings } from '../store/settings/settings';
 import { useChromeMessage } from './use-chrome-message';
 
