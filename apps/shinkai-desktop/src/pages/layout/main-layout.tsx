@@ -262,7 +262,7 @@ export function MainNav() {
             <PopoverTrigger asChild>
               <motion.button
                 className={cn(
-                  'text-gray-80 my-1 flex h-8 w-8 items-center justify-center gap-2 self-center rounded-full bg-white/10 hover:bg-white/10 hover:text-white',
+                  'text-gray-80 mb-3 mt-4 flex h-8 w-8 items-center justify-center gap-2 self-center rounded-full bg-white/10 hover:bg-white/10 hover:text-white',
                   sidebarExpanded &&
                     'w-full justify-start rounded-lg bg-transparent px-4 py-3 hover:bg-gray-500',
                 )}
