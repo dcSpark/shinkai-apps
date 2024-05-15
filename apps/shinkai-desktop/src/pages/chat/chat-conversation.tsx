@@ -26,6 +26,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  Message,
   ScrollArea,
   Sheet,
   SheetContent,
@@ -44,6 +45,7 @@ import {
   DirectoryTypeIcon,
   FileTypeIcon,
 } from '@shinkai_network/shinkai-ui/assets';
+import { isFileTypeImageOrPdf } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Placeholder } from '@tiptap/extension-placeholder';
 import { EditorContent, Extension, useEditor } from '@tiptap/react';
@@ -71,10 +73,9 @@ import { useParams } from 'react-router-dom';
 import { Markdown } from 'tiptap-markdown';
 import { z } from 'zod';
 
-import Message from '../../components/chat/message';
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAuth } from '../../store/auth';
-import { isImageOrPdf } from '../create-job';
+
 const chatSchema = z.object({
   message: z.string(),
   file: z.any().optional(),
@@ -105,7 +106,7 @@ const ChatConversation = () => {
       onDrop: (acceptedFiles) => {
         const file = acceptedFiles[0];
         const reader = new FileReader();
-        if (isImageOrPdf(file)) {
+        if (isFileTypeImageOrPdf(file)) {
           reader.addEventListener('abort', () =>
             console.log('file reading was aborted'),
           );
@@ -393,14 +394,14 @@ const ChatConversation = () => {
                 />
                 {file && (
                   <>
-                    {isImageOrPdf(file) && (
+                    {isFileTypeImageOrPdf(file) && (
                       <img
                         alt=""
                         className="absolute inset-0 h-full w-full rounded-lg bg-white object-cover"
                         src={file.preview}
                       />
                     )}
-                    {!isImageOrPdf(file) && (
+                    {!isFileTypeImageOrPdf(file) && (
                       <div className="flex flex-col items-center gap-2">
                         <FileCheck2 className="text-gray-80 h-4 w-4 " />
                         <span className="line-clamp-2 break-all px-2 text-center text-xs ">

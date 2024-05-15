@@ -15,6 +15,7 @@ import {
   Alert,
   AlertDescription,
   AlertTitle,
+  Message,
   ScrollArea,
   Skeleton,
 } from '@shinkai_network/shinkai-ui';
@@ -33,7 +34,6 @@ import { useParams } from 'react-router-dom';
 
 import { useAuth } from '../../store/auth/auth';
 import { InboxInput } from '../inbox-input/inbox-input';
-import { Message } from '../message/message';
 
 enum ErrorCodes {
   VectorResource = 'VectorResource',

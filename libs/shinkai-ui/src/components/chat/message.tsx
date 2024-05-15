@@ -1,39 +1,18 @@
-import { extractErrorPropertyOrContent } from '@shinkai_network/shinkai-message-ts/utils';
+import { extractErrorPropertyOrContent } from '@shinkai_network/shinkai-message-ts/utils/shinkai_message_handler';
 import { ChatConversationMessage } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-  CopyToClipboardIcon,
-  MarkdownPreview,
-} from '@shinkai_network/shinkai-ui';
-import { cn } from '@shinkai_network/shinkai-ui/utils';
 import React from 'react';
 
-import shinkaiMiniLogo from '../../assets/icons/shinkai-min.svg';
-import { srcUrlResolver } from '../../helpers/src-url-resolver';
-import { FileList } from '../file-list/file-list';
+import { appIcon } from '../../assets';
+import { copyToClipboard } from '../../helpers/copy-to-clipboard';
+import { cn } from '../../utils';
+import { Avatar, AvatarFallback, AvatarImage } from '../avatar';
+import { CopyToClipboardIcon } from '../copy-to-clipboard-icon';
+import { MarkdownPreview } from '../markdown-preview';
+import { FileList } from './files-preview';
 
 type MessageProps = {
   message: ChatConversationMessage;
 };
-async function copyToClipboard(text: string) {
-  try {
-    await navigator.clipboard.writeText(text);
-  } catch (error) {
-    // Fallback for browsers where the Clipboard API is not supported
-    const textarea = document.createElement('textarea');
-    textarea.style.position = 'fixed';
-    textarea.style.top = '-9999px';
-    textarea.style.left = '-9999px';
-    textarea.innerText = text;
-    document.body.appendChild(textarea);
-    textarea.focus();
-    textarea.select();
-    document.execCommand('copy');
-    textarea.remove();
-  }
-}
 
 export const Message = ({ message }: MessageProps) => {
   return (
@@ -49,7 +28,7 @@ export const Message = ({ message }: MessageProps) => {
         {message.isLocal ? (
           <AvatarImage alt={''} src={message.sender.avatar} />
         ) : (
-          <img alt="Shinkai AI" src={srcUrlResolver(shinkaiMiniLogo)} />
+          <img alt="Shinkai AI" src={appIcon} />
         )}
         <AvatarFallback className="h-8 w-8" />
       </Avatar>

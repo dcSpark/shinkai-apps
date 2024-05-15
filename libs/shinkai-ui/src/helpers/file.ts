@@ -6,3 +6,10 @@ export const getFileExt = (fileName: string): string => {
   const nameParts = fileName.split('.');
   return nameParts.pop() || '';
 };
+
+export const isFileTypeImageOrPdf = (file: File): boolean => {
+  if (!file) return false;
+  return (
+    file?.type.startsWith('image/') || file?.type.startsWith('application/pdf')
+  );
+};

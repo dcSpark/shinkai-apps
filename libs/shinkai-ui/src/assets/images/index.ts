@@ -1,2 +1,2 @@
-import * as appIcon from './app-icon.png';
+import appIcon from './app-icon.png';
 export { appIcon };
