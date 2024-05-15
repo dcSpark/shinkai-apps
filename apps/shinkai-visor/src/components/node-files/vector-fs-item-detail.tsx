@@ -9,14 +9,14 @@ import {
   DrawerTitle,
 } from '@shinkai_network/shinkai-ui';
 import { FileTypeIcon } from '@shinkai_network/shinkai-ui/assets';
+import {
+  formatDateToLocaleStringWithTime,
+  formatDateToUSLocaleString,
+} from '@shinkai_network/shinkai-ui/helpers';
 import { partial } from 'filesize';
 import { LockIcon } from 'lucide-react';
 import React from 'react';
 
-import {
-  formatDateToLocaleStringWithTime,
-  formatDateToUSLocaleString,
-} from '../../helpers/date';
 import { useAuth } from '../../store/auth/auth';
 import { useVectorFsStore } from './node-file-context';
 

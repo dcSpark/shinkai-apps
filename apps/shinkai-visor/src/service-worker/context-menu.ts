@@ -1,4 +1,5 @@
-import { delay } from '../helpers/misc';
+import { delay } from '@shinkai_network/shinkai-ui/helpers';
+
 import {
   OPEN_SIDEPANEL_DELAY_MS,
   sendCaptureToAgent,

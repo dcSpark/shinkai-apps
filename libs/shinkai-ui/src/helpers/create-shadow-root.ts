@@ -7,7 +7,7 @@ import { createRoot } from 'react-dom/client';
  * @returns {ReactRoot} - React root rendered inside the shadow root.
  */
 
-export default function createShadowRoot(tagName: string, styles: string) {
+export function createShadowRoot(tagName: string, styles: string) {
   const container = document.createElement('div');
   const shadow = container.attachShadow({ mode: 'open' });
 

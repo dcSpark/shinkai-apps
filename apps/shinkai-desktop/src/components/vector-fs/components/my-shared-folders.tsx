@@ -9,11 +9,11 @@ import {
   ScrollArea,
 } from '@shinkai_network/shinkai-ui';
 import { SharedFolderIcon } from '@shinkai_network/shinkai-ui/assets';
+import { formatDateToUSLocaleString } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Link2Off } from 'lucide-react';
 import React from 'react';
 
-import { formatDateToUSLocaleString } from '../../../helpers/date';
 import { useAuth } from '../../../store/auth';
 import { useVectorFsStore, VectorFSLayout } from '../context/vector-fs-context';
 import { VectorFsFolderAction } from './vector-fs-drawer';

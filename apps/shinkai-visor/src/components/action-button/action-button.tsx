@@ -18,6 +18,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
+import { createShadowRoot, delay } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
 import {
@@ -33,8 +34,6 @@ import { useEffect, useRef } from 'react';
 import { IntlProvider } from 'react-intl';
 
 import shinkaiLogo from '../../assets/icons/shinkai-min.svg';
-import createShadowRoot from '../../helpers/create-shadow-root';
-import { delay } from '../../helpers/misc';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
 import { useGlobalActionButtonChromeMessage } from '../../hooks/use-global-action-button-chrome-message';
 import useKeyboardShortcut from '../../hooks/use-keyboard-shortcut';
@@ -49,6 +48,7 @@ import {
   useVectorResourceMetatags,
 } from './vr-notification';
 import notificationStyle from './vr-notification.css?inline';
+
 export const SHINKAI_ACTION_ELEMENT_NAME = 'shinkai-action-button-root';
 
 const toggleSidePanel = async () => {

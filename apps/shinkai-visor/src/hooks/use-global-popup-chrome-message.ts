@@ -1,6 +1,6 @@
+import { dataUrlToFile } from '@shinkai_network/shinkai-ui/helpers';
 import { useHistory } from 'react-router-dom';
 
-import { dataUrlToFile } from '../helpers/blob-utils';
 import { ServiceWorkerInternalMessageType } from '../service-worker/communication/internal/types';
 import { useAuth } from '../store/auth/auth';
 import { useSettings } from '../store/settings/settings';
