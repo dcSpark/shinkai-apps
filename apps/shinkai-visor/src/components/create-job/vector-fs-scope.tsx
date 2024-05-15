@@ -13,12 +13,12 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  FileTypeIcon,
   Form,
   FormField,
   Input,
   ScrollArea,
 } from '@shinkai_network/shinkai-ui';
+import { FileTypeIcon } from '@shinkai_network/shinkai-ui/assets';
 import { SearchIcon, XIcon } from 'lucide-react';
 import { Checkbox } from 'primereact/checkbox';
 import { Tree, TreeCheckboxSelectionKeys } from 'primereact/tree';

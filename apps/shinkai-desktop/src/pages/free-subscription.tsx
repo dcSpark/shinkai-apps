@@ -3,8 +3,8 @@ import {
   Button,
   buttonVariants,
   ScrollArea,
-  SharedFolderIcon,
 } from '@shinkai_network/shinkai-ui';
+import { SharedFolderIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useInView } from 'framer-motion';
 import { Fragment, useEffect, useRef } from 'react';

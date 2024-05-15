@@ -7,7 +7,6 @@ import { useGetVRSeachSimplified } from '@shinkai_network/shinkai-node-state/lib
 import {
   Badge,
   Button,
-  FileTypeIcon,
   Form,
   FormField,
   Input,
@@ -18,6 +17,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@shinkai_network/shinkai-ui';
+import { FileTypeIcon } from '@shinkai_network/shinkai-ui/assets';
 import { SearchIcon, XIcon } from 'lucide-react';
 import { Checkbox } from 'primereact/checkbox';
 import { Tree, TreeCheckboxSelectionKeys } from 'primereact/tree';

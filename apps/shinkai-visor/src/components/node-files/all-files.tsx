@@ -7,7 +7,6 @@ import {
 } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
 import {
-  AddNewFolderIcon,
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
@@ -19,25 +18,28 @@ import {
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
-  CreateAIIcon,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  FileEmptyStateIcon,
-  FileTypeIcon,
-  GenerateDocIcon,
   Input,
   ScrollArea,
   Separator,
 } from '@shinkai_network/shinkai-ui';
+import {
+  AddNewFolderIcon,
+  CreateAIIcon,
+  FileEmptyStateIcon,
+  FileTypeIcon,
+  GenerateDocIcon,
+} from '@shinkai_network/shinkai-ui/assets';
+import { useDebounce } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
 import { ChevronRight, PlusIcon, SearchIcon, X, XIcon } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 
-import { useDebounce } from '../../hooks/use-debounce';
 import { useQuery } from '../../hooks/use-query';
 import { useAuth } from '../../store/auth/auth';
 import { useVectorFsStore, VectorFSLayout } from './node-file-context';

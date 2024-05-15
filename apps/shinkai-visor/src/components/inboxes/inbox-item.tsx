@@ -10,16 +10,18 @@ import {
 import { useArchiveJob } from '@shinkai_network/shinkai-node-state/lib/mutations/archiveJob/useArchiveJob';
 import { formatDateToMonthAndDay } from '@shinkai_network/shinkai-node-state/lib/utils/date';
 import {
-  ArchiveIcon,
   Button,
-  ChatBubbleIcon,
-  JobBubbleIcon,
   Tooltip,
   TooltipContent,
   TooltipPortal,
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
+import {
+  ArchiveIcon,
+  ChatBubbleIcon,
+  JobBubbleIcon,
+} from '@shinkai_network/shinkai-ui/assets';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'sonner';

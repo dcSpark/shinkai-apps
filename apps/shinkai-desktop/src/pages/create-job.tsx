@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
+import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import {
@@ -10,7 +10,6 @@ import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/
 import {
   Badge,
   Button,
-  FilesIcon,
   FileUploader,
   Form,
   FormControl,
@@ -18,7 +17,6 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  PaperClipIcon,
   Select,
   SelectContent,
   SelectItem,
@@ -31,6 +29,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
+import { FilesIcon, PaperClipIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { PlusIcon, SearchCode } from 'lucide-react';
 import { TreeCheckboxSelectionKeys } from 'primereact/tree';

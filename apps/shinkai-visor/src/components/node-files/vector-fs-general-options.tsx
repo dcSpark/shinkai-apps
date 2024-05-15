@@ -3,11 +3,9 @@ import { useCreateVRFolder } from '@shinkai_network/shinkai-node-state/lib/mutat
 import { useUploadVRFiles } from '@shinkai_network/shinkai-node-state/lib/mutations/uploadVRFiles/useUploadVRFiles';
 import {
   Button,
-  DirectoryTypeIcon,
   DrawerHeader,
   DrawerTitle,
   FileItem,
-  FileTypeIcon,
   FileUploader,
   Form,
   FormControl,
@@ -17,6 +15,10 @@ import {
   FormMessage,
   TextField,
 } from '@shinkai_network/shinkai-ui';
+import {
+  DirectoryTypeIcon,
+  FileTypeIcon,
+} from '@shinkai_network/shinkai-ui/assets';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';

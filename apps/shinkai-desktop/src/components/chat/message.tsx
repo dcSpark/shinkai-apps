@@ -1,6 +1,6 @@
 import type { ShinkaiMessage } from '@shinkai_network/shinkai-message-ts/models';
 import { MessageSchemaType } from '@shinkai_network/shinkai-message-ts/models';
-import { extractErrorPropertyOrContent } from '@shinkai_network/shinkai-message-ts/utils/shinkai_message_handler';
+import { extractErrorPropertyOrContent } from '@shinkai_network/shinkai-message-ts/utils';
 import { ChatConversationMessage } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
 import {
   Avatar,
@@ -9,9 +9,9 @@ import {
   CopyToClipboardIcon,
   MarkdownPreview,
 } from '@shinkai_network/shinkai-ui';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 
 import icon from '../../assets/icon.png';
-import { cn } from '../../lib/utils';
 import { FileList } from '../../pages/create-job';
 
 export const getMessageFilesInbox = (

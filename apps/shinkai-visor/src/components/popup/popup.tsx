@@ -1,6 +1,4 @@
 import '../../theme/styles.css';
-import 'primereact/resources/themes/lara-light-blue/theme.css';
-import 'primereact/resources/primereact.min.css';
 
 import { queryClient } from '@shinkai_network/shinkai-node-state/lib/constants';
 import { Toaster } from '@shinkai_network/shinkai-ui';

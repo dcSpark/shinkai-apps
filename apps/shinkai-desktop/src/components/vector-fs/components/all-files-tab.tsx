@@ -7,7 +7,6 @@ import {
 } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
 import {
-  AddNewFolderIcon,
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
@@ -19,18 +18,21 @@ import {
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
-  CreateAIIcon,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  FileEmptyStateIcon,
-  FileTypeIcon,
-  GenerateDocIcon,
   Input,
   ScrollArea,
   Separator,
 } from '@shinkai_network/shinkai-ui';
+import {
+  AddNewFolderIcon,
+  CreateAIIcon,
+  FileEmptyStateIcon,
+  FileTypeIcon,
+  GenerateDocIcon,
+} from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
 import { ChevronRight, PlusIcon, SearchIcon, XIcon } from 'lucide-react';

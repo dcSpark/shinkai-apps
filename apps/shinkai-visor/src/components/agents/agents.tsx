@@ -4,7 +4,6 @@ import { useDeleteAgent } from '@shinkai_network/shinkai-node-state/lib/mutation
 import { useUpdateAgent } from '@shinkai_network/shinkai-node-state/lib/mutations/updateAgent/useUpdateAgent';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import {
-  AgentIcon,
   Badge,
   Button,
   buttonVariants,
@@ -23,6 +22,7 @@ import {
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import { ScrollArea } from '@shinkai_network/shinkai-ui';
+import { AgentIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Edit, Plus, TrashIcon } from 'lucide-react';
 import React, { useEffect } from 'react';

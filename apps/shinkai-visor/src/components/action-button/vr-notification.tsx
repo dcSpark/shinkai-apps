@@ -1,9 +1,9 @@
+import { delay } from '@shinkai_network/shinkai-ui/helpers';
 import { XIcon } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { toast } from 'sonner';
 
 import shinkaiLogo from '../../assets/icons/shinkai-min.svg';
-import { delay } from '../../helpers/misc';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
 import { OPEN_SIDEPANEL_DELAY_MS } from '../../service-worker/action';
 import { ServiceWorkerInternalMessageType } from '../../service-worker/communication/internal/types';

@@ -7,9 +7,9 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-  DirectoryTypeIcon,
   ScrollArea,
 } from '@shinkai_network/shinkai-ui';
+import { DirectoryTypeIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { ChevronRight } from 'lucide-react';
 import React, { createContext, useContext, useRef } from 'react';

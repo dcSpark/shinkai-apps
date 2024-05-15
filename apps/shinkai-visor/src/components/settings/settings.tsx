@@ -5,7 +5,6 @@ import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/ge
 import {
   Button,
   buttonVariants,
-  ExportIcon,
   Form,
   FormControl,
   FormDescription,
@@ -13,7 +12,6 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  QrIcon,
   Select,
   SelectContent,
   SelectItem,
@@ -22,6 +20,7 @@ import {
   Switch,
   TextField,
 } from '@shinkai_network/shinkai-ui';
+import { ExportIcon, QrIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
 import { ExternalLinkIcon, TrashIcon } from 'lucide-react';
@@ -162,11 +161,15 @@ export const Settings = () => {
   const { mutateAsync: updateNodeName, isPending: isUpdateNodeNamePending } =
     useUpdateNodeName({
       onSuccess: () => {
-        toast.success(intl.formatMessage({ id: 'shinkai-identity-updated-successfully'}));
+        toast.success(
+          intl.formatMessage({ id: 'shinkai-identity-updated-successfully' }),
+        );
         if (!auth) return;
-        const isHostingShinkaiNode = auth?.node_address.includes('hosting.shinkai.com');
+        const isHostingShinkaiNode = auth?.node_address.includes(
+          'hosting.shinkai.com',
+        );
         if (!isHostingShinkaiNode) {
-          toast.info(intl.formatMessage({ id: 'restart-your-shinkai-node'}));
+          toast.info(intl.formatMessage({ id: 'restart-your-shinkai-node' }));
         }
         const newAuth: SetupData = { ...auth };
         setAuth({
@@ -207,7 +210,10 @@ export const Settings = () => {
   }, [currentDisplaySummaryAction, setDisplaySummaryActionButton]);
   useEffect(() => {
     setDisplayImageCaptureActionButton(currentDisplayImageCaptureActionButton);
-  }, [currentDisplayImageCaptureActionButton, setDisplayImageCaptureActionButton]);
+  }, [
+    currentDisplayImageCaptureActionButton,
+    setDisplayImageCaptureActionButton,
+  ]);
 
   const handleUpdateNodeName = async () => {
     if (!auth) return;

@@ -2,21 +2,21 @@ import { useDownloadVRFile } from '@shinkai_network/shinkai-node-state/lib/mutat
 import {
   Badge,
   Button,
-  FileTypeIcon,
   SheetFooter,
   SheetHeader,
   SheetTitle,
 } from '@shinkai_network/shinkai-ui';
+import { FileTypeIcon } from '@shinkai_network/shinkai-ui/assets';
+import {
+  formatDateToLocaleStringWithTime,
+  formatDateToUSLocaleString,
+} from '@shinkai_network/shinkai-ui/helpers';
 import { dialog, fs } from '@tauri-apps/api';
 import { BaseDirectory } from '@tauri-apps/api/fs';
 import { partial } from 'filesize';
 import { LockIcon } from 'lucide-react';
 import React from 'react';
 
-import {
-  formatDateToLocaleStringWithTime,
-  formatDateToUSLocaleString,
-} from '../../../helpers/date';
 import { useAuth } from '../../../store/auth';
 import { useVectorFsStore } from '../context/vector-fs-context';
 

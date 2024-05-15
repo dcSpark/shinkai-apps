@@ -9,14 +9,14 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  FileTypeIcon,
 } from '@shinkai_network/shinkai-ui';
+import { FileTypeIcon } from '@shinkai_network/shinkai-ui/assets';
+import { formatDateToUSLocaleString } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { partial } from 'filesize';
 import { CopyIcon, FileInputIcon, TrashIcon } from 'lucide-react';
 import React from 'react';
 
-import { formatDateToUSLocaleString } from '../../helpers/date';
 import { useVectorFsStore, VectorFSLayout } from './node-file-context';
 import { VectorFsItemAction } from './vector-fs-drawer';
 
