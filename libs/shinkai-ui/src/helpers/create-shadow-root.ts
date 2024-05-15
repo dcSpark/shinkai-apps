@@ -16,6 +16,7 @@ export function createShadowRoot(tagName: string, styles: string) {
   globalStyleSheet.replaceSync(styles);
   shadow.adoptedStyleSheets = [globalStyleSheet];
 
-  document.body.appendChild(container);
+  const html = document.querySelector('html') as HTMLHtmlElement;
+  html.prepend(container);
   return createRoot(shadow);
 }

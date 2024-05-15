@@ -88,8 +88,7 @@ export const ImageCapture = () => {
 
 const root = createShadowRoot(
   'shinkai-image-capture-root',
-  `${themeStyle}
-  ${reactCropStyle}
+  `${themeStyle} ${reactCropStyle}
 `,
 );
 root.render(
