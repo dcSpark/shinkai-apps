@@ -160,8 +160,11 @@ const CreateAgentPage = () => {
     },
   });
 
-  const { model: currentModel, isCustomModel: isCustomModelMode } =
-    addAgentForm.watch();
+  const {
+    model: currentModel,
+    isCustomModel: isCustomModelMode,
+    modelType: currentModelType,
+  } = addAgentForm.watch();
 
   const {
     data: ollamaModels,
@@ -230,6 +233,12 @@ const CreateAgentPage = () => {
     }
     addAgentForm.setValue('modelType', modelTypeOptions[0].value);
   }, [modelTypeOptions, addAgentForm]);
+  useEffect(() => {
+    if (!modelTypeOptions?.length) {
+      return;
+    }
+    addAgentForm.setValue('agentName', currentModelType);
+  }, [addAgentForm, currentModelType, modelTypeOptions?.length]);
 
   const onSubmit = async (data: z.infer<typeof addAgentSchema>) => {
     if (!auth) return;
