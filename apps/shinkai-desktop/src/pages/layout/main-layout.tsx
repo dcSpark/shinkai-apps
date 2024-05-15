@@ -63,7 +63,9 @@ type NavigationLink = {
 const sidebarTransition: TargetAndTransition['transition'] = {
   duration: 0.3,
   type: 'spring',
-  damping: 16,
+  damping: 20,
+  stiffness: 150,
+  mass: 1,
 };
 const showAnimation = {
   hidden: {
