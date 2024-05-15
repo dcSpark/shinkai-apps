@@ -29,8 +29,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { FilesIcon, PaperClipIcon } from '@shinkai_network/shinkai-ui/assets';
-import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { FilesIcon } from '@shinkai_network/shinkai-ui/assets';
 import { PlusIcon, SearchCode } from 'lucide-react';
 import { TreeCheckboxSelectionKeys } from 'primereact/tree';
 import { TreeNode } from 'primereact/treenode';
@@ -87,37 +86,6 @@ const createJobSchema = z.object({
   files: z.array(z.any()).max(3),
 });
 
-export const FileList = ({
-  files,
-  className,
-}: {
-  files: ({ name: string; size?: number } | File)[];
-  className?: string;
-}) => {
-  if (!files) return null;
-  return (
-    <div className={cn('flex w-full flex-col', className)}>
-      {files?.map((file, idx) => (
-        <div
-          className="relative flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-3"
-          key={idx}
-        >
-          <PaperClipIcon className="text-gray-100" />
-          <span className="text-gray-80 flex-1 truncate text-sm">
-            {file.name}
-          </span>
-        </div>
-      ))}
-    </div>
-  );
-};
-
-export function isImageOrPdf(file: File): boolean {
-  if (!file) return false;
-  return (
-    file?.type.startsWith('image/') || file?.type.startsWith('application/pdf')
-  );
-}
 const CreateJobPage = () => {
   const auth = useAuth((state) => state.auth);
   const defaulAgentId = useSettings((state) => state.defaultAgentId);
