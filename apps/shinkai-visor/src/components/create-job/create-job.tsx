@@ -7,6 +7,7 @@ import {
   VRItem,
 } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
+import { transformDataToTreeNodes } from '@shinkai_network/shinkai-node-state/lib/utils/files';
 import {
   Badge,
   Button,
@@ -45,36 +46,6 @@ import { useAuth } from '../../store/auth/auth';
 import { useSettings } from '../../store/settings/settings';
 import { allowedFileExtensions } from './constants';
 import { KnowledgeSearchDrawer, VectorFsScopeDrawer } from './vector-fs-scope';
-
-function transformDataToTreeNodes(
-  data: VRFolder,
-  parentPath: string = '/',
-): TreeNode[] {
-  const result: TreeNode[] = [];
-
-  for (const folder of data?.child_folders ?? []) {
-    const folderNode: TreeNode = {
-      key: folder.path,
-      label: folder.name,
-      data: folder,
-      icon: 'icon-folder',
-      children: transformDataToTreeNodes(folder, folder.path),
-    };
-    result.push(folderNode);
-  }
-
-  for (const item of data.child_items ?? []) {
-    const itemNode: TreeNode = {
-      key: item.path,
-      label: item.name,
-      data: item,
-      icon: 'icon-file',
-    };
-    result.push(itemNode);
-  }
-
-  return result;
-}
 
 const formSchema = z.object({
   agent: z.string().min(1),

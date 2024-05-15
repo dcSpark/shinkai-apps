@@ -7,6 +7,7 @@ import {
   VRItem,
 } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
+import { transformDataToTreeNodes } from '@shinkai_network/shinkai-node-state/lib/utils/files';
 import {
   Badge,
   Button,
@@ -47,38 +48,6 @@ import { ADD_AGENT_PATH } from '../routes/name';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { SubpageLayout } from './layout/simple-layout';
-
-function transformDataToTreeNodes(
-  data: VRFolder,
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
-  parentPath: string = '/',
-): TreeNode[] {
-  const result: TreeNode[] = [];
-
-  for (const folder of data?.child_folders ?? []) {
-    const folderNode: TreeNode = {
-      key: folder.path,
-      label: folder.name,
-      data: folder,
-      icon: 'icon-folder',
-      children: transformDataToTreeNodes(folder, folder.path),
-    };
-    result.push(folderNode);
-  }
-
-  for (const item of data.child_items ?? []) {
-    const itemNode: TreeNode = {
-      key: item.path,
-      label: item.name,
-      data: item,
-      icon: 'icon-file',
-    };
-    result.push(itemNode);
-  }
-
-  return result;
-}
 
 const createJobSchema = z.object({
   model: z.string(),
