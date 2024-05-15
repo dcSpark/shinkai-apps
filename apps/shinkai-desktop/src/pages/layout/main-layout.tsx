@@ -256,42 +256,11 @@ export function MainNav() {
       </TooltipProvider>
       <div className="flex flex-1 flex-col justify-between">
         <div className="flex flex-col gap-1.5">
-          {navigationLinks.map((item) => {
-            return (
-              <TooltipProvider
-                delayDuration={!sidebarExpanded ? 0 : 10000}
-                key={item.title}
-              >
-                <Tooltip>
-                  <TooltipTrigger className="flex items-center gap-1">
-                    <NavLink
-                      external={item.external}
-                      href={item.href}
-                      icon={item.icon}
-                      onClick={item.onClick}
-                      title={item.title}
-                    />
-                  </TooltipTrigger>
-                  <TooltipPortal>
-                    <TooltipContent
-                      align="center"
-                      arrowPadding={2}
-                      side="right"
-                    >
-                      <p>{item.title}</p>
-                    </TooltipContent>
-                  </TooltipPortal>
-                </Tooltip>
-              </TooltipProvider>
-            );
-          })}
-        </div>
-        <div className="flex flex-col gap-1">
           <Popover>
             <PopoverTrigger asChild>
               <motion.button
                 className={cn(
-                  'text-gray-80 mb-2 flex h-8 w-8 items-center justify-center gap-2 self-center rounded-full bg-white/10 hover:bg-white/10 hover:text-white',
+                  'text-gray-80 my-1 flex h-8 w-8 items-center justify-center gap-2 self-center rounded-full bg-white/10 hover:bg-white/10 hover:text-white',
                   sidebarExpanded &&
                     'w-full justify-start rounded-lg bg-transparent px-4 py-3 hover:bg-gray-500',
                 )}
@@ -340,6 +309,37 @@ export function MainNav() {
               </div>
             </PopoverContent>
           </Popover>
+          {navigationLinks.map((item) => {
+            return (
+              <TooltipProvider
+                delayDuration={!sidebarExpanded ? 0 : 10000}
+                key={item.title}
+              >
+                <Tooltip>
+                  <TooltipTrigger className="flex items-center gap-1">
+                    <NavLink
+                      external={item.external}
+                      href={item.href}
+                      icon={item.icon}
+                      onClick={item.onClick}
+                      title={item.title}
+                    />
+                  </TooltipTrigger>
+                  <TooltipPortal>
+                    <TooltipContent
+                      align="center"
+                      arrowPadding={2}
+                      side="right"
+                    >
+                      <p>{item.title}</p>
+                    </TooltipContent>
+                  </TooltipPortal>
+                </Tooltip>
+              </TooltipProvider>
+            );
+          })}
+        </div>
+        <div className="flex flex-col gap-1">
           {footerNavigationLinks.map((item) => {
             return (
               <React.Fragment key={item.title}>
