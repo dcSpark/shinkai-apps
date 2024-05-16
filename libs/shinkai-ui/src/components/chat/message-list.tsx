@@ -1,8 +1,3 @@
-import { GetChatConversationOutput } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
-import {
-  getRelativeDateLabel,
-  groupMessagesByDate,
-} from '@shinkai_network/shinkai-node-state/lib/utils/date';
 import {
   FetchPreviousPageOptions,
   InfiniteData,
@@ -11,6 +6,11 @@ import {
 import { Loader2 } from 'lucide-react';
 import React, { Fragment, useCallback, useEffect, useRef } from 'react';
 
+import {
+  GetChatConversationOutput,
+  getRelativeDateLabel,
+  groupMessagesByDate,
+} from '../../helpers';
 import { cn } from '../../utils';
 import { ScrollArea } from '../scroll-area';
 import { Skeleton } from '../skeleton';

@@ -1,14 +1,27 @@
-import { extractErrorPropertyOrContent } from '@shinkai_network/shinkai-message-ts/utils/shinkai_message_handler';
-import { ChatConversationMessage } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
 import React from 'react';
 
 import { appIcon } from '../../assets';
-import { copyToClipboard } from '../../helpers/copy-to-clipboard';
+import { ChatConversationMessage, copyToClipboard } from '../../helpers';
 import { cn } from '../../utils';
 import { Avatar, AvatarFallback, AvatarImage } from '../avatar';
 import { CopyToClipboardIcon } from '../copy-to-clipboard-icon';
 import { MarkdownPreview } from '../markdown-preview';
 import { FileList } from './files-preview';
+
+export const extractErrorPropertyOrContent = (
+  content: string,
+  property: 'error' | 'error_message',
+) => {
+  try {
+    const parsedContent = JSON.parse(content);
+    if (property in parsedContent) {
+      return parsedContent[property];
+    }
+  } catch (error) {
+    /* ignore */
+  }
+  return String(content);
+};
 
 type MessageProps = {
   message: ChatConversationMessage;

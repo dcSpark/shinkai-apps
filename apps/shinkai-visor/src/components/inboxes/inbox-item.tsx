@@ -8,7 +8,6 @@ import {
   isJobInbox,
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { useArchiveJob } from '@shinkai_network/shinkai-node-state/lib/mutations/archiveJob/useArchiveJob';
-import { formatDateToMonthAndDay } from '@shinkai_network/shinkai-node-state/lib/utils/date';
 import {
   Button,
   Tooltip,
@@ -22,6 +21,7 @@ import {
   ChatBubbleIcon,
   JobBubbleIcon,
 } from '@shinkai_network/shinkai-ui/assets';
+import { formatDateToMonthAndDay } from '@shinkai_network/shinkai-ui/helpers';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'sonner';

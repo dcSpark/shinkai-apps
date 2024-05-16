@@ -1,5 +1,5 @@
 {
-  "name": "@shinkai/shinkai-node-state",
+  "name": "@shinkai_network/shinkai-node-state",
   "version": "0.0.1",
   "main": "./index.js",
   "module": "./index.mjs",
