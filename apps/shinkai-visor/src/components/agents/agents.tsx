@@ -34,7 +34,6 @@ import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'sonner';
-import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
 import { EmptyAgents } from '../empty-agents/empty-agents';

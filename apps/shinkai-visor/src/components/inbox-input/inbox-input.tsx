@@ -1,5 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  ChatMessageFormSchema,
+  chatMessageFormSchema,
+} from '@shinkai_network/shinkai-node-state/forms/chat/chat-message';
+import {
   Button,
   ChatInputArea,
   Form,
@@ -10,13 +14,6 @@ import { motion } from 'framer-motion';
 import { SendHorizonal } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import { z } from 'zod';
-
-const formSchema = z.object({
-  message: z.string().min(1),
-});
-
-type InboxInputFieldType = z.infer<typeof formSchema>;
 
 type InboxInputProps = {
   onSubmit: (value: string) => void;
@@ -26,15 +23,15 @@ type InboxInputProps = {
 };
 
 export const InboxInput = (props: InboxInputProps) => {
-  const form = useForm<InboxInputFieldType>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<ChatMessageFormSchema>({
+    resolver: zodResolver(chatMessageFormSchema),
     defaultValues: {
       message: '',
     },
   });
   const { message } = form.watch();
   const intl = useIntl();
-  const submit = (values: InboxInputFieldType) => {
+  const submit = (values: ChatMessageFormSchema) => {
     const value = values?.message?.trim();
     if (value) {
       props.onSubmit(value);

@@ -1,9 +1,14 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { decryptMessageWithPassphrase } from '@shinkai_network/shinkai-message-ts/cryptography';
 import {
+  RestoreConnectionFormSchema,
+  restoreConnectionFormSchema,
+} from '@shinkai_network/shinkai-node-state/forms/settings/restore-connection';
+import {
   Button,
   buttonVariants,
   ErrorMessage,
+  FileUploader,
   Form,
   FormControl,
   FormField,
@@ -13,39 +18,31 @@ import {
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { ArrowLeft, Trash, Upload } from 'lucide-react';
-import React, { useState } from 'react';
+import { ArrowLeft } from 'lucide-react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, To, useNavigate } from 'react-router-dom';
-import { z } from 'zod';
 
 import { useAuth } from '../store/auth';
 import OnboardingLayout from './layout/onboarding-layout';
-
-const formSchema = z.object({
-  encryptedConnection: z.string().min(1),
-  passphrase: z.string().min(8),
-});
 
 const RestoreConnectionPage = () => {
   const setAuth = useAuth((state) => state.setAuth);
   const navigate = useNavigate();
   const [error, setError] = useState<boolean>(false);
-  const [encryptedConnectionFile, setEncryptedConnectionFile] =
-    useState<File | null>(null);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<RestoreConnectionFormSchema>({
+    resolver: zodResolver(restoreConnectionFormSchema),
     defaultValues: {
-      encryptedConnection: '',
       passphrase: '',
     },
   });
+  const encryptedConnectionFileValue = form.watch('encryptedConnectionFile');
 
-  const restore = async (values: z.infer<typeof formSchema>) => {
+  const restore = async (values: RestoreConnectionFormSchema) => {
     try {
       const decryptedValue = await decryptMessageWithPassphrase(
-        values.encryptedConnection,
+        values.encryptedConnectionFile[0].encryptedConnection,
         values.passphrase,
       );
       if (decryptedValue) {
@@ -59,13 +56,8 @@ const RestoreConnectionPage = () => {
     }
   };
 
-  const onConnectionFileSelected: React.ChangeEventHandler<
-    HTMLInputElement
-  > = async (event): Promise<void> => {
-    if (!event.target.files || !event.target.files[0]) {
-      return;
-    }
-    const file = event.target.files[0];
+  const onConnectionFileSelected = async (files: File[]) => {
+    const file = files[0];
     const reader = new FileReader();
     reader.readAsText(file, 'UTF-8');
     reader.onload = (event) => {
@@ -76,13 +68,13 @@ const RestoreConnectionPage = () => {
       if (!encryptedConnection.startsWith('encrypted:')) {
         return;
       }
-      setEncryptedConnectionFile(file);
-      form.setValue('encryptedConnection', encryptedConnection);
+      const fileWithEncryptedConnection = Object.assign(file, {
+        encryptedConnection,
+      });
+      form.setValue('encryptedConnectionFile', [fileWithEncryptedConnection], {
+        shouldValidate: true,
+      });
     };
-  };
-  const removeConnectionFile = () => {
-    form.setValue('encryptedConnection', '');
-    setEncryptedConnectionFile(null);
   };
 
   return (
@@ -115,7 +107,7 @@ const RestoreConnectionPage = () => {
               <FormField
                 control={form.control}
                 disabled={true}
-                name="encryptedConnection"
+                name="encryptedConnectionFile"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="sr-only">
@@ -124,59 +116,28 @@ const RestoreConnectionPage = () => {
                     <FormControl>
                       <div className="flex flex-col space-y-1">
                         <div className="flex items-center justify-center">
-                          {encryptedConnectionFile ? (
-                            <div className="flex h-[100px] w-full flex-row items-center justify-center space-x-4 rounded-lg border border-dashed">
-                              <div className="flex flex-row items-center">
-                                <span className="text-gray-80 line-clamp-1 text-sm font-medium">
-                                  {encryptedConnectionFile.name}
-                                </span>
-                              </div>
-                              <Button
-                                className="h-6 w-6"
-                                onClick={() => removeConnectionFile()}
-                                size="icon"
-                                type="button"
-                                variant={'ghost'}
-                              >
-                                <Trash className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          ) : (
-                            <label
-                              className="flex h-[100px] w-full cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-gray-100 bg-gray-400"
-                              htmlFor="dropzone-file"
-                            >
-                              <div className="flex flex-col items-center justify-center space-y-1">
-                                <div>
-                                  <Upload className="h-4 w-4" />
-                                </div>
-                                <p className="text-sm text-white">
-                                  Click to upload or drag and drop
-                                </p>
-                                <p className="text-gray-80 text-xs">
-                                  Eg: shinkai.key
-                                </p>
-                              </div>
-                              <input
-                                accept=".key"
-                                alt="shinaki conection file input"
-                                className="hidden"
-                                id="dropzone-file"
-                                onChange={(event) =>
-                                  onConnectionFileSelected(event)
-                                }
-                                type="file"
-                              />
-                            </label>
-                          )}
+                          <FileUploader
+                            accept={['.key'].join(',')}
+                            descriptionText="Eg: shinkai.key"
+                            maxFiles={1}
+                            onChange={(acceptedFiles) => {
+                              onConnectionFileSelected(acceptedFiles);
+                              field.onChange(acceptedFiles);
+                            }}
+                            value={field.value}
+                          />
                         </div>
-                        {encryptedConnectionFile && (
-                          <div className="truncate rounded-lg bg-gray-400 px-2 py-2 font-mono text-sm">
-                            {field.value}
+                        {!!encryptedConnectionFileValue?.length && (
+                          <div className="truncate rounded-lg bg-gray-400 px-2 py-2 text-sm">
+                            {
+                              encryptedConnectionFileValue[0]
+                                .encryptedConnection
+                            }
                           </div>
                         )}
                       </div>
                     </FormControl>
+                    <FormMessage />
                     <FormMessage />
                   </FormItem>
                 )}

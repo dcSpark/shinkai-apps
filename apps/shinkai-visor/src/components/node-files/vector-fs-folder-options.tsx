@@ -30,7 +30,6 @@ import React, { useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
-import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
 import {

@@ -6,6 +6,10 @@ import {
   extractReceiverShinkaiName,
   isJobInbox,
 } from '@shinkai_network/shinkai-message-ts/utils';
+import {
+  ChatMessageFormSchema,
+  chatMessageFormSchema,
+} from '@shinkai_network/shinkai-node-state/forms/chat/chat-message';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMessageToJob/useSendMessageToJob';
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
 import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageWithFilesToInbox/useSendMessageWithFilesToInbox';
@@ -49,15 +53,9 @@ import { useParams } from 'react-router-dom';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
 import { Markdown } from 'tiptap-markdown';
-import { z } from 'zod';
 
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAuth } from '../../store/auth';
-
-const chatSchema = z.object({
-  message: z.string(),
-  file: z.any().optional(),
-});
 
 enum ErrorCodes {
   VectorResource = 'VectorResource',
@@ -69,8 +67,8 @@ const ChatConversation = () => {
   const fromPreviousMessagesRef = useRef<boolean>(false);
   const inboxId = decodeURIComponent(encodedInboxId);
 
-  const chatForm = useForm<z.infer<typeof chatSchema>>({
-    resolver: zodResolver(chatSchema),
+  const chatForm = useForm<ChatMessageFormSchema>({
+    resolver: zodResolver(chatMessageFormSchema),
     defaultValues: {
       message: '',
     },
@@ -133,7 +131,7 @@ const ChatConversation = () => {
   const { mutateAsync: sendTextMessageWithFilesForInbox } =
     useSendMessageWithFilesToInbox();
 
-  const onSubmit = async (data: z.infer<typeof chatSchema>) => {
+  const onSubmit = async (data: ChatMessageFormSchema) => {
     if (!auth || data.message.trim() === '') return;
     fromPreviousMessagesRef.current = false;
     if (data.file) {

@@ -1,5 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AgentInbox } from '@shinkai_network/shinkai-message-ts/models';
+import {
+  UpdateInboxNameFormSchema,
+  updateInboxNameFormSchema,
+} from '@shinkai_network/shinkai-node-state/forms/chat/inbox';
 import { useUpdateInboxName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateInboxName/useUpdateInboxName';
 import {
   Badge,
@@ -16,7 +20,6 @@ import {
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
-import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
 
@@ -30,12 +33,6 @@ export type EditInboxNameDialogProps = {
   currentAgent?: AgentInbox;
 };
 
-const formSchema = z.object({
-  name: z.string().min(6),
-});
-
-type FormSchemaType = z.infer<typeof formSchema>;
-
 export const EditInboxNameDialog = ({
   open,
   name,
@@ -46,8 +43,8 @@ export const EditInboxNameDialog = ({
   currentAgent,
 }: EditInboxNameDialogProps) => {
   const auth = useAuth((state) => state.auth);
-  const form = useForm<FormSchemaType>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<UpdateInboxNameFormSchema>({
+    resolver: zodResolver(updateInboxNameFormSchema),
     defaultValues: {
       name: '',
     },
@@ -60,7 +57,7 @@ export const EditInboxNameDialog = ({
   const cancel = () => {
     onCancel();
   };
-  const submit = (values: FormSchemaType) => {
+  const submit = (values: UpdateInboxNameFormSchema) => {
     updateInboxName({
       nodeAddress: auth?.node_address ?? '',
       sender: auth?.shinkai_identity ?? '',

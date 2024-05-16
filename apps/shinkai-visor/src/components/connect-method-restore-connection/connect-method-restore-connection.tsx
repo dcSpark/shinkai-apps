@@ -1,6 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { decryptMessageWithPassphrase } from '@shinkai_network/shinkai-message-ts/cryptography';
 import {
+  RestoreConnectionFormSchema,
+  restoreConnectionFormSchema,
+} from '@shinkai_network/shinkai-node-state/forms/settings/restore-connection';
+import {
   Button,
   ErrorMessage,
   FileUploader,
@@ -16,25 +20,17 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router';
-import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
-
-const formSchema = z.object({
-  passphrase: z.string().min(8),
-  encryptedConnectionFile: z.array(z.any()).max(1),
-});
-
-type FormType = z.infer<typeof formSchema>;
 
 export const ConnectMethodRestoreConnection = () => {
   const history = useHistory();
   const setAuth = useAuth((state) => state.setAuth);
   const [error, setError] = useState<boolean>(false);
 
-  const form = useForm<FormType>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<RestoreConnectionFormSchema>({
+    resolver: zodResolver(restoreConnectionFormSchema),
     defaultValues: {
       passphrase: '',
     },
@@ -58,7 +54,7 @@ export const ConnectMethodRestoreConnection = () => {
       console.error('Error reading file:', error);
     }
   };
-  const restore = async (values: FormType) => {
+  const restore = async (values: RestoreConnectionFormSchema) => {
     try {
       const decryptedValue = await decryptMessageWithPassphrase(
         values.encryptedConnectionFile[0].encryptedConnection,

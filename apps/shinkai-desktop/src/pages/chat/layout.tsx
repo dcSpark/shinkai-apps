@@ -6,6 +6,10 @@ import {
   isJobInbox,
   isLocalMessage,
 } from '@shinkai_network/shinkai-message-ts/utils';
+import {
+  UpdateInboxNameFormSchema,
+  updateInboxNameFormSchema,
+} from '@shinkai_network/shinkai-node-state/forms/chat/inbox';
 import { useArchiveJob } from '@shinkai_network/shinkai-node-state/lib/mutations/archiveJob/useArchiveJob';
 import { useUpdateInboxName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateInboxName/useUpdateInboxName';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
@@ -41,14 +45,9 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, Outlet, useMatch, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { z } from 'zod';
 
 import { handleSendNotification } from '../../lib/notifications';
 import { useAuth } from '../../store/auth';
-
-const updateInboxNameSchema = z.object({
-  inboxName: z.string(),
-});
 
 const InboxNameInput = ({
   closeEditable,
@@ -60,10 +59,10 @@ const InboxNameInput = ({
   inboxName: string;
 }) => {
   const auth = useAuth((state) => state.auth);
-  const updateInboxNameForm = useForm<z.infer<typeof updateInboxNameSchema>>({
-    resolver: zodResolver(updateInboxNameSchema),
+  const updateInboxNameForm = useForm<UpdateInboxNameFormSchema>({
+    resolver: zodResolver(updateInboxNameFormSchema),
   });
-  const { inboxName: inboxNameValue } = updateInboxNameForm.watch();
+  const { name: inboxNameValue } = updateInboxNameForm.watch();
   const { mutateAsync: updateInboxName } = useUpdateInboxName();
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -72,7 +71,7 @@ const InboxNameInput = ({
       inputRef.current?.focus();
     }
   }, []);
-  const onSubmit = async (data: z.infer<typeof updateInboxNameSchema>) => {
+  const onSubmit = async (data: UpdateInboxNameFormSchema) => {
     if (!auth) return;
 
     await updateInboxName({
@@ -86,7 +85,7 @@ const InboxNameInput = ({
       profile_encryption_sk: auth.profile_encryption_sk,
       profile_identity_sk: auth.profile_identity_sk,
       inboxId,
-      inboxName: data.inboxName,
+      inboxName: data.name,
     });
     closeEditable();
   };
@@ -100,7 +99,7 @@ const InboxNameInput = ({
         <div className="w-full">
           <FormField
             control={updateInboxNameForm.control}
-            name="inboxName"
+            name="name"
             render={({ field }) => (
               <div className="flex h-[46px] items-center rounded-lg bg-gray-300">
                 <Edit3 className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 transform text-white" />
