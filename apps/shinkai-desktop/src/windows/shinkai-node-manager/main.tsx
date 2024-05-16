@@ -194,7 +194,7 @@ const App = () => {
     });
   };
   return (
-    <div className="h-full w-full overflow-hidden p-8">
+    <div className="flex h-full w-full flex-col space-y-2 p-8">
       <div className="flex flex-row items-center">
         <img alt="shinkai logo" className="h-10 w-10" src={logo} />
         <div className="ml-4 flex flex-col">
@@ -299,7 +299,7 @@ const App = () => {
         </div>
       </div>
 
-      <Tabs className="mt-4 h-[400px] w-full" defaultValue="logs">
+      <Tabs className="h-[400px] w-full" defaultValue="logs">
         <TabsList className="w-full">
           <TabsTrigger className="grow" value="logs">
             Logs
@@ -311,24 +311,22 @@ const App = () => {
             Models
           </TabsTrigger>
         </TabsList>
-        <TabsContent className="h-full" value="logs">
-          <ScrollArea className="h-full [&>div>div]:!block">
-            <div className="p-1" ref={logsScrollRef}>
-              {lastNLogs?.length
-                ? lastNLogs?.map((log, index) => {
-                    return (
-                      <>
-                        <div className="text-gray-80 text-sm" key={index}>
-                          {'ℹ️'} {new Date(log.timestamp * 1000).toISOString()}{' '}
-                          | {log.process} | {log.message}
-                        </div>
-                        <Separator className="my-2" />
-                      </>
-                    );
-                  })
-                : undefined}
-            </div>
-          </ScrollArea>
+        <TabsContent className="h-full overflow-y-scroll" value="logs">
+          <div className="p-1" ref={logsScrollRef}>
+            {lastNLogs?.length
+              ? lastNLogs?.map((log, index) => {
+                  return (
+                    <>
+                      <div className="text-gray-80 text-sm" key={index}>
+                        {'ℹ️'} {new Date(log.timestamp * 1000).toISOString()} |{' '}
+                        {log.process} | {log.message}
+                      </div>
+                      <Separator className="my-2" />
+                    </>
+                  );
+                })
+              : undefined}
+          </div>
         </TabsContent>
         <TabsContent className="h-full" value="options">
           <div className="flex flex-row justify-end pr-4">
