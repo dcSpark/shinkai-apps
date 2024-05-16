@@ -1,4 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  QuickConnectFormSchema,
+  quickConnectFormSchema,
+} from '@shinkai_network/shinkai-node-state/forms/auth/quick-connection';
 import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
 import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/lib/queries/getEncryptionKeys/useGetEncryptionKeys';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
@@ -17,26 +21,11 @@ import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, To, useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { z } from 'zod';
 
 import { HOME_PATH } from '../routes/name';
 import { useAuth } from '../store/auth';
 import { useShinkaiNodeEventsToast } from '../windows/shinkai-node-manager/shinkai-node-manager-hooks';
 import OnboardingLayout from './layout/onboarding-layout';
-
-const formSchema = z.object({
-  registration_name: z.string().min(5),
-  node_address: z.string().url({
-    message: 'Node Address must be a valid URL',
-  }),
-  shinkai_identity: z
-    .string()
-    .regex(
-      /^@@[a-zA-Z0-9_]+\.shinkai.*$/,
-      `It should be in the format of @@<name>.shinkai`,
-    )
-    .nullish(),
-});
 
 export interface ConnectionOptionButtonProps extends ButtonProps {
   title: string;
@@ -80,8 +69,8 @@ const OnboardingPage = () => {
     { enabled: isShinkaiPrivate },
   );
 
-  const setupDataForm = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const setupDataForm = useForm<QuickConnectFormSchema>({
+    resolver: zodResolver(quickConnectFormSchema),
     defaultValues: {
       registration_name: 'main_device',
       node_address: isShinkaiPrivate
@@ -120,7 +109,7 @@ const OnboardingPage = () => {
     },
   });
 
-  async function onSubmit(currentValues: z.infer<typeof formSchema>) {
+  async function onSubmit(currentValues: QuickConnectFormSchema) {
     if (!encryptionKeys) return;
     await submitRegistration({
       profile: 'main',

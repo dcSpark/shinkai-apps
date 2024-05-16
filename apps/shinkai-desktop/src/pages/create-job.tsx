@@ -1,5 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils';
+import {
+  CreateJobFormSchema,
+  createJobFormSchema,
+} from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import {
@@ -37,7 +41,6 @@ import { TreeNode } from 'primereact/treenode';
 import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { z } from 'zod';
 
 import {
   KnowledgeSearchDrawer,
@@ -48,12 +51,6 @@ import { ADD_AGENT_PATH } from '../routes/name';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { SubpageLayout } from './layout/simple-layout';
-
-const createJobSchema = z.object({
-  model: z.string(),
-  description: z.string(),
-  files: z.array(z.any()).max(3),
-});
 
 const CreateJobPage = () => {
   const auth = useAuth((state) => state.auth);
@@ -101,8 +98,8 @@ const CreateJobPage = () => {
     }
   }, [VRFiles, isVRFilesSuccess]);
 
-  const createJobForm = useForm<z.infer<typeof createJobSchema>>({
-    resolver: zodResolver(createJobSchema),
+  const createJobForm = useForm<CreateJobFormSchema>({
+    resolver: zodResolver(createJobFormSchema),
     defaultValues: {
       files: [],
     },
@@ -122,9 +119,9 @@ const CreateJobPage = () => {
 
   useEffect(() => {
     if (isSuccess && agents?.length && !defaulAgentId) {
-      createJobForm.setValue('model', agents[0].id);
+      createJobForm.setValue('agent', agents[0].id);
     } else {
-      createJobForm.setValue('model', defaulAgentId);
+      createJobForm.setValue('agent', defaulAgentId);
     }
   }, [agents, createJobForm, defaulAgentId, isSuccess]);
 
@@ -134,7 +131,7 @@ const CreateJobPage = () => {
     }
     const agent = agents.find((agent) => agent.id === locationState.agentName);
     if (agent) {
-      createJobForm.setValue('model', agent.id);
+      createJobForm.setValue('agent', agent.id);
     }
   }, [createJobForm, locationState, agents]);
 
@@ -181,7 +178,7 @@ const CreateJobPage = () => {
     }
   }, [locationState?.selectedVRFiles, locationState?.selectedVRFolders]);
 
-  const onSubmit = async (data: z.infer<typeof createJobSchema>) => {
+  const onSubmit = async (data: CreateJobFormSchema) => {
     if (!auth) return;
     const selectedVRFiles =
       selectedFileKeysRef.current.size > 0
@@ -196,8 +193,8 @@ const CreateJobPage = () => {
       nodeAddress: auth?.node_address ?? '',
       shinkaiIdentity: auth.shinkai_identity,
       profile: auth.profile,
-      agentId: data.model,
-      content: data.description,
+      agentId: data.agent,
+      content: data.content,
       files_inbox: '',
       files: data.files,
       is_hidden: false,
@@ -228,7 +225,7 @@ const CreateJobPage = () => {
           <div className="space-y-6">
             <FormField
               control={createJobForm.control}
-              name="description"
+              name="content"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Tell us the job you want to do</FormLabel>
@@ -255,7 +252,7 @@ const CreateJobPage = () => {
 
             <FormField
               control={createJobForm.control}
-              name="model"
+              name="agent"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Select your AI Agent</FormLabel>

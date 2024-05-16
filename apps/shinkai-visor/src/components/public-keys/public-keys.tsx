@@ -1,28 +1,22 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  PublicKeysFormSchema,
+  publicKeysSchema,
+} from '@shinkai_network/shinkai-node-state/forms/settings/public-keys';
+import {
   CopyToClipboardIcon,
   Form,
   FormField,
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
 
 export const PublicKeys = () => {
-  const formSchema = z.object({
-    node_encryption_pk: z.string().optional(),
-    node_signature_pk: z.string().optional(),
-    profile_encryption_pk: z.string().optional(),
-    profile_identity_pk: z.string().optional(),
-    my_device_encryption_pk: z.string().optional(),
-    my_device_identity_pk: z.string().optional(),
-  });
-  type FormSchemaType = z.infer<typeof formSchema>;
   const auth = useAuth((state) => state.auth);
-  const form = useForm<FormSchemaType>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<PublicKeysFormSchema>({
+    resolver: zodResolver(publicKeysSchema),
     defaultValues: {
       node_encryption_pk: auth?.node_encryption_pk,
       node_signature_pk: auth?.node_signature_pk,
