@@ -146,7 +146,7 @@ export const successOllamaModelsSyncToast = () => {
 };
 
 export const errorOllamaModelsSyncToast = () => {
-  return toast.success(
+  return toast.error(
     'Error synchronizing your local Ollama models with your Shinkai Node',
     {
       ...defaultToastOptions,

@@ -61,11 +61,8 @@ export const useOllamaPullMutation = (
       input,
     ): Promise<AsyncGenerator<ProgressResponse, unknown, unknown>> => {
       const ollamaClient = new Ollama(ollamaConfig);
-      const response = await ollamaClient.pull({
-        model: input.model,
-        stream: true,
-      });
-      const pipeGenerator = async function* transformGenerator(generator: typeof response) {
+
+      const pipeGenerator = async function* transformGenerator(generator: AsyncGenerator<ProgressResponse, unknown, unknown>) {
         for await (const progress of generator) {
           console.log('status', progress.status);
           if (progress.status === 'success') {
@@ -79,7 +76,10 @@ export const useOllamaPullMutation = (
           yield progress;
         }
       }
-      return pipeGenerator(response);
+      return ollamaClient.pull({
+        model: input.model,
+        stream: true,
+      }).then(data => pipeGenerator(data));
     },
     ...options,
     onSuccess: (...onSuccessParameters) => {
