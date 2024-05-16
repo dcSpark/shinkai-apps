@@ -11,10 +11,6 @@ import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/m
 import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageWithFilesToInbox/useSendMessageWithFilesToInbox';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
 import {
-  getRelativeDateLabel,
-  groupMessagesByDate,
-} from '@shinkai_network/shinkai-node-state/lib/utils/date';
-import {
   Alert,
   AlertDescription,
   AlertTitle,
@@ -26,15 +22,13 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  Message,
-  ScrollArea,
+  MessageList,
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-  Skeleton,
   Tooltip,
   TooltipContent,
   TooltipPortal,
@@ -50,21 +44,8 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Placeholder } from '@tiptap/extension-placeholder';
 import { EditorContent, Extension, useEditor } from '@tiptap/react';
 import { StarterKit } from '@tiptap/starter-kit';
-import {
-  AlertCircle,
-  FileCheck2,
-  ImagePlusIcon,
-  Loader2,
-  X,
-} from 'lucide-react';
-import {
-  Fragment,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-} from 'react';
+import { AlertCircle, FileCheck2, ImagePlusIcon, X } from 'lucide-react';
+import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
@@ -88,8 +69,6 @@ enum ErrorCodes {
 const ChatConversation = () => {
   const { inboxId: encodedInboxId = '' } = useParams();
   const auth = useAuth((state) => state.auth);
-  const chatContainerRef = useRef<HTMLDivElement | null>(null);
-  const previousChatHeightRef = useRef<number>(0);
   const fromPreviousMessagesRef = useRef<boolean>(false);
   const inboxId = decodeURIComponent(encodedInboxId);
 
@@ -242,47 +221,6 @@ const ChatConversation = () => {
     inboxId,
   ]);
 
-  const fetchPreviousMessages = useCallback(async () => {
-    fromPreviousMessagesRef.current = true;
-    await fetchPreviousPage();
-  }, [fetchPreviousPage]);
-
-  const handleScroll = useCallback(async () => {
-    const chatContainerElement = chatContainerRef.current;
-    if (!chatContainerElement) return;
-    const currentHeight = chatContainerElement.scrollHeight;
-    const previousHeight = previousChatHeightRef.current;
-
-    if (chatContainerElement.scrollTop < 100 && hasPreviousPage) {
-      await fetchPreviousMessages();
-      previousChatHeightRef.current = currentHeight;
-      chatContainerElement.scrollTop = currentHeight - previousHeight;
-    }
-  }, [fetchPreviousMessages, hasPreviousPage]);
-
-  useEffect(() => {
-    const chatContainerElement = chatContainerRef.current;
-    if (!chatContainerElement) return;
-    chatContainerElement.addEventListener('scroll', handleScroll);
-    return () => {
-      chatContainerElement.removeEventListener('scroll', handleScroll);
-    };
-  }, [handleScroll]);
-
-  const scrollToBottom = () => {
-    if (!chatContainerRef.current) return;
-    chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-  };
-  useEffect(() => {
-    if (!fromPreviousMessagesRef.current) {
-      scrollToBottom();
-    }
-  }, [data?.pages]);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [isChatConversationSuccess]);
-
   useEffect(() => {
     chatForm.reset();
   }, [chatForm, inboxId]);
@@ -300,58 +238,17 @@ const ChatConversation = () => {
   return (
     <div className="flex max-h-screen flex-1 flex-col overflow-hidden pt-2">
       <ConversationHeader />
-      <ScrollArea className="h-full px-5" ref={chatContainerRef}>
-        {isChatConversationSuccess && (
-          <div className="py-2 text-center text-xs">
-            {isFetchingPreviousPage ? (
-              <Loader2 className="flex animate-spin justify-center text-white" />
-            ) : (
-              'All messages has been loaded ✅'
-            )}
-          </div>
-        )}
-        <div className="pb-4">
-          {isChatConversationLoading &&
-            [1, 2, 3, 4].map((index) => (
-              <Skeleton className="h-10 w-full rounded-lg" key={index} />
-            ))}
-          {isChatConversationSuccess &&
-            data?.pages.map((group, index) => (
-              <Fragment key={index}>
-                {Object.entries(groupMessagesByDate(group)).map(
-                  ([date, messages]) => {
-                    return (
-                      <div key={date}>
-                        <div
-                          className={cn(
-                            'relative z-10 m-auto flex h-[30px] w-[150px] items-center justify-center rounded-xl bg-gray-400',
-                            true && 'sticky top-5',
-                          )}
-                        >
-                          <span className="text-sm font-medium capitalize text-gray-100">
-                            {getRelativeDateLabel(
-                              new Date(messages[0].scheduledTime || ''),
-                            )}
-                          </span>
-                        </div>
-                        <div className="flex flex-col gap-4">
-                          {messages.map((message) => {
-                            return (
-                              <Message
-                                key={message.scheduledTime}
-                                message={message}
-                              />
-                            );
-                          })}
-                        </div>
-                      </div>
-                    );
-                  },
-                )}
-              </Fragment>
-            ))}
-        </div>
-      </ScrollArea>
+      <MessageList
+        containerClassName="px-5"
+        fetchPreviousPage={fetchPreviousPage}
+        fromPreviousMessagesRef={fromPreviousMessagesRef}
+        hasPreviousPage={hasPreviousPage}
+        isFetchingPreviousPage={isFetchingPreviousPage}
+        isLoading={isChatConversationLoading}
+        isSuccess={isChatConversationSuccess}
+        noMoreMessageLabel="All messages has been loaded ✅"
+        paginatedMessages={data}
+      />
       {isLimitReachedErrorLastMessage && (
         <Alert className="mx-auto w-[98%] shadow-lg" variant="destructive">
           <AlertCircle className="h-4 w-4" />
