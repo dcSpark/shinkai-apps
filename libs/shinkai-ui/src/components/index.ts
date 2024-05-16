@@ -21,7 +21,6 @@ export * from './hover-card';
 export * from './input';
 export * from './label';
 export * from './markdown-preview';
-export * from './message-editor';
 export * from './popover';
 export * from './prompt-textarea';
 export * from './qr-code';

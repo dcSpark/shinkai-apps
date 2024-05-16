@@ -1,10 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
+  ChatInputArea,
   Form,
   FormField,
   FormItem,
-  MessageEditor,
 } from '@shinkai_network/shinkai-ui';
 import { motion } from 'framer-motion';
 import { SendHorizonal } from 'lucide-react';
@@ -47,7 +47,10 @@ export const InboxInput = (props: InboxInputProps) => {
   };
   return (
     <Form {...form}>
-      <form className="flex gap-2" onSubmit={form.handleSubmit(submit)}>
+      <form
+        className="relative flex gap-2"
+        onSubmit={form.handleSubmit(submit)}
+      >
         <div className="flex grow flex-col">
           <FormField
             control={form.control}
@@ -60,7 +63,7 @@ export const InboxInput = (props: InboxInputProps) => {
                 transition={{ type: 'tween' }}
               >
                 <FormItem>
-                  <MessageEditor
+                  <ChatInputArea
                     disabled={props.loading || props.disabled}
                     isLoading={props.loading}
                     onChange={field.onChange}

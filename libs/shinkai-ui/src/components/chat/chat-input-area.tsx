@@ -5,9 +5,9 @@ import { useEffect, useLayoutEffect, useRef } from 'react';
 import * as React from 'react';
 import { Markdown } from 'tiptap-markdown';
 
-import { DotsLoader } from './dots-loader';
+import { DotsLoader } from '../dots-loader';
 
-export const MessageEditor = ({
+export const ChatInputArea = ({
   value,
   onChange,
   onSubmit,

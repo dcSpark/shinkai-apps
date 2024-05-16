@@ -16,7 +16,7 @@ import {
   AlertTitle,
   Badge,
   Button,
-  DotsLoader,
+  ChatInputArea,
   Form,
   FormControl,
   FormField,
@@ -41,11 +41,8 @@ import {
 } from '@shinkai_network/shinkai-ui/assets';
 import { isFileTypeImageOrPdf } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { Placeholder } from '@tiptap/extension-placeholder';
-import { EditorContent, Extension, useEditor } from '@tiptap/react';
-import { StarterKit } from '@tiptap/starter-kit';
 import { AlertCircle, FileCheck2, ImagePlusIcon, X } from 'lucide-react';
-import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
@@ -131,16 +128,10 @@ const ChatConversation = () => {
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
 
-  const {
-    mutateAsync: sendMessageToInbox,
-    isPending: isSendingMessageToInbox,
-  } = useSendMessageToInbox();
-  const { mutateAsync: sendMessageToJob, isPending: isSendingMessageToJob } =
-    useSendMessageToJob();
-  const {
-    mutateAsync: sendTextMessageWithFilesForInbox,
-    isPending: isSendingTextMessageWithFilesForInbox,
-  } = useSendMessageWithFilesToInbox();
+  const { mutateAsync: sendMessageToInbox } = useSendMessageToInbox();
+  const { mutateAsync: sendMessageToJob } = useSendMessageToJob();
+  const { mutateAsync: sendTextMessageWithFilesForInbox } =
+    useSendMessageWithFilesToInbox();
 
   const onSubmit = async (data: z.infer<typeof chatSchema>) => {
     if (!auth || data.message.trim() === '') return;
@@ -200,26 +191,10 @@ const ChatConversation = () => {
     chatForm.reset();
   };
 
-  const isLoading = useMemo(() => {
-    if (
-      isSendingMessageToJob ||
-      isSendingMessageToInbox ||
-      isSendingTextMessageWithFilesForInbox
-    )
-      return true;
-
+  const isLoadingMessage = useMemo(() => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
-    if (!lastMessage) return false;
-    if (isJobInbox(inboxId) && lastMessage.isLocal) return true;
-
-    return false;
-  }, [
-    isSendingMessageToJob,
-    isSendingMessageToInbox,
-    isSendingTextMessageWithFilesForInbox,
-    data?.pages,
-    inboxId,
-  ]);
+    return isJobInbox(inboxId) && lastMessage?.isLocal;
+  }, [data?.pages, inboxId]);
 
   useEffect(() => {
     chatForm.reset();
@@ -266,17 +241,13 @@ const ChatConversation = () => {
       {!isLimitReachedErrorLastMessage && (
         <div className="flex flex-col justify-start">
           <div className="relative flex items-start gap-2 p-2 pb-3">
-            {isLoading ? (
-              <DotsLoader className="absolute left-8 top-10 flex items-center justify-center" />
-            ) : null}
-
             <Form {...chatForm}>
               <div
                 {...getRootFileProps({
                   className: cn(
                     'dropzone group relative flex h-12 w-12 flex-shrink-0 cursor-pointer items-center justify-center rounded border-2 border-dashed border-slate-500 border-slate-500 transition-colors hover:border-white',
                     file && 'border-0',
-                    isLoading && 'hidden',
+                    isLoadingMessage && 'hidden',
                   ),
                 })}
               >
@@ -333,8 +304,9 @@ const ChatConversation = () => {
                   <FormItem className="flex-1 space-y-0">
                     <FormLabel className="sr-only">Enter message</FormLabel>
                     <FormControl>
-                      <MessageEditor
-                        disabled={isLoading}
+                      <ChatInputArea
+                        disabled={isLoadingMessage}
+                        isLoading={isLoadingMessage}
                         onChange={field.onChange}
                         onSubmit={chatForm.handleSubmit(onSubmit)}
                         value={field.value}
@@ -345,8 +317,9 @@ const ChatConversation = () => {
               />
 
               <Button
-                disabled={isLoading}
-                isLoading={isLoading}
+                className="h-[50px] w-[50px] grow-0 rounded-xl p-0"
+                disabled={isLoadingMessage}
+                isLoading={isLoadingMessage}
                 onClick={chatForm.handleSubmit(onSubmit)}
                 size="icon"
               >
@@ -362,85 +335,6 @@ const ChatConversation = () => {
 };
 
 export default ChatConversation;
-
-const MessageEditor = ({
-  value,
-  onChange,
-  onSubmit,
-  setInitialValue,
-  disabled,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-  onSubmit: () => void;
-  setInitialValue?: string;
-  disabled?: boolean;
-}) => {
-  // onSubmitRef is used to keep the latest onSubmit function
-  const onSubmitRef = useRef(onSubmit);
-  useLayoutEffect(() => {
-    onSubmitRef.current = onSubmit;
-  });
-
-  const editor = useEditor(
-    {
-      editorProps: {
-        attributes: {
-          class: 'prose prose-invert prose-sm mx-auto focus:outline-none',
-        },
-      },
-      extensions: [
-        StarterKit,
-        Placeholder.configure({
-          placeholder: 'Enter message',
-        }),
-        Markdown,
-        Extension.create({
-          addKeyboardShortcuts() {
-            return {
-              Enter: () => {
-                onSubmitRef?.current?.();
-                return this.editor.commands.clearContent();
-              },
-              'Mod-Enter': () => {
-                onSubmitRef?.current?.();
-                return this.editor.commands.clearContent();
-              },
-              'Shift-Enter': ({ editor }) =>
-                editor.commands.first(({ commands }) => [
-                  () => commands.newlineInCode(),
-                  () => commands.splitListItem('listItem'),
-                  () => commands.createParagraphNear(),
-                  () => commands.liftEmptyBlock(),
-                  () => commands.splitBlock(),
-                ]),
-            };
-          },
-        }),
-      ],
-      content: value,
-      autofocus: true,
-      onUpdate({ editor }) {
-        onChange(editor.storage.markdown.getMarkdown());
-      },
-      editable: !disabled,
-    },
-    [disabled],
-  );
-
-  useEffect(() => {
-    setInitialValue === undefined
-      ? editor?.commands.setContent('')
-      : editor?.commands.setContent(value);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setInitialValue]);
-
-  useEffect(() => {
-    if (value === '') editor?.commands.setContent('');
-  }, [value, editor]);
-
-  return <EditorContent editor={editor} />;
-};
 
 export const ConversationHeader = () => {
   const currentInbox = useGetCurrentInbox();

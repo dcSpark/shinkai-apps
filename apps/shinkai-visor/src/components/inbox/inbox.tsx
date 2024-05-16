@@ -113,17 +113,14 @@ export const Inbox = () => {
   }, [decodedInboxId]);
 
   useEffect(() => {
-    const [firstMessagePage] = data?.pages || [];
-    const lastMessage = [...(firstMessagePage || [])].pop();
+    const lastMessage = data?.pages?.at(-1)?.at(-1);
     if (lastMessage) {
-      setIsJobProcessing(
-        isJobInbox && (isSendingMessage || lastMessage.isLocal),
-      );
+      setIsJobProcessing(isJobInbox && lastMessage.isLocal);
     }
-  }, [data?.pages, auth, isSendingMessage, isJobInbox]);
+  }, [data?.pages, auth, isJobInbox]);
+
   useEffect(() => {
-    const [firstMessagePage] = data?.pages || [];
-    const lastMessage = [...(firstMessagePage || [])].pop();
+    const lastMessage = data?.pages?.at(-1)?.at(-1);
     if (lastMessage) {
       setIsJobProcessingFile(
         isJobProcessing && lastMessage.isLocal && !!lastMessage.fileInbox,
