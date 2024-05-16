@@ -2,8 +2,8 @@ import { invoke } from '@tauri-apps/api';
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 
-import { ShinkaiNodeOptions } from '../windows/shinkai-node-manager/shinkai-node-process-client-types';
-import { isLocalShinkaiNode } from '../windows/utils';
+import { isLocalShinkaiNode } from '../lib/shinkai-node-manager/shinkai-node-manager-windows-utils';
+import { ShinkaiNodeOptions } from '../lib/shinkai-node-manager/shinkai-node-manager-client-types';
 import { useAuth } from './auth';
 
 type ShinkaiNodeManagerStore = {

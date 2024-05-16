@@ -1,7 +1,7 @@
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { ExternalToast, toast } from 'sonner';
 
-import { openShinkaiNodeManagerWindow } from './utils';
+import { openShinkaiNodeManagerWindow } from './shinkai-node-manager-windows-utils';
 
 const ShinkaiNodeLogsLabel = ({
   className,
@@ -146,7 +146,7 @@ export const successOllamaModelsSyncToast = () => {
 };
 
 export const errorOllamaModelsSyncToast = () => {
-  return toast.success(
+  return toast.error(
     'Error synchronizing your local Ollama models with your Shinkai Node',
     {
       ...defaultToastOptions,

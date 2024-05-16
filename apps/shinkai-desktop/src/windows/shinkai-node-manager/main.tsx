@@ -42,9 +42,20 @@ import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 
 import logo from '../../../src-tauri/icons/128x128@2x.png';
-import { useAuth } from '../../store/auth';
-import { useShinkaiNodeManager } from '../../store/shinkai-node-manager';
-import { initSyncStorage } from '../../store/sync-utils';
+import { OllamaModels } from '../../components/shinkai-node-manager/ollama-models';
+import {
+  queryClient,
+  useShinkaiNodeGetLastNLogsQuery,
+  useShinkaiNodeGetOptionsQuery,
+  useShinkaiNodeIsRunningQuery,
+  useShinkaiNodeKillMutation,
+  useShinkaiNodeRemoveStorageMutation,
+  useShinkaiNodeSetDefaultOptionsMutation,
+  useShinkaiNodeSetOptionsMutation,
+  useShinkaiNodeSpawnMutation,
+} from '../../lib/shinkai-node-manager/shinkai-node-manager-client';
+import { ShinkaiNodeOptions } from '../../lib/shinkai-node-manager/shinkai-node-manager-client-types';
+import { useShinkaiNodeEventsToast } from '../../lib/shinkai-node-manager/shinkai-node-manager-hooks';
 import {
   errorOllamaModelsSyncToast,
   errorRemovingShinkaiNodeStorageToast,
@@ -57,20 +68,10 @@ import {
   successOllamaModelsSyncToast,
   successRemovingShinkaiNodeStorageToast,
   successShinkaiNodeSetDefaultOptionsToast,
-} from '../toasts-utils';
-import { useShinkaiNodeEventsToast } from './shinkai-node-manager-hooks';
-import {
-  queryClient,
-  useShinkaiNodeGetLastNLogsQuery,
-  useShinkaiNodeGetOptionsQuery,
-  useShinkaiNodeIsRunningQuery,
-  useShinkaiNodeKillMutation,
-  useShinkaiNodeRemoveStorageMutation,
-  useShinkaiNodeSetDefaultOptionsMutation,
-  useShinkaiNodeSetOptionsMutation,
-  useShinkaiNodeSpawnMutation,
-} from './shinkai-node-process-client';
-import { ShinkaiNodeOptions } from './shinkai-node-process-client-types';
+} from '../../lib/shinkai-node-manager/shinkai-node-manager-toasts-utils';
+import { useAuth } from '../../store/auth';
+import { useShinkaiNodeManager } from '../../store/shinkai-node-manager';
+import { initSyncStorage } from '../../store/sync-utils';
 
 initSyncStorage();
 
@@ -105,7 +106,7 @@ const App = () => {
     },
     onError: () => {
       shinkaiNodeStartErrorToast();
-    }
+    },
   });
   const { isPending: shinkaiNodeKillIsPending, mutateAsync: shinkaiNodeKill } =
     useShinkaiNodeKillMutation({
@@ -117,7 +118,7 @@ const App = () => {
       },
       onError: () => {
         shinkaiNodeStopErrorToast();
-      }
+      },
     });
   const {
     isPending: shinkaiNodeRemoveStorageIsPending,
@@ -193,7 +194,7 @@ const App = () => {
     });
   };
   return (
-    <div className="h-full w-full overflow-hidden p-8">
+    <div className="flex h-screen w-full flex-col space-y-2 p-8">
       <div className="flex flex-row items-center">
         <img alt="shinkai logo" className="h-10 w-10" src={logo} />
         <div className="ml-4 flex flex-col">
@@ -298,7 +299,10 @@ const App = () => {
         </div>
       </div>
 
-      <Tabs className="mt-4 h-[400px] w-full" defaultValue="logs">
+      <Tabs
+        className="flex w-full flex-1 flex-col overflow-auto"
+        defaultValue="logs"
+      >
         <TabsList className="w-full">
           <TabsTrigger className="grow" value="logs">
             Logs
@@ -306,9 +310,12 @@ const App = () => {
           <TabsTrigger className="grow" value="options">
             Options
           </TabsTrigger>
+          <TabsTrigger className="grow" value="models">
+            Models
+          </TabsTrigger>
         </TabsList>
-        <TabsContent className="h-full" value="logs">
-          <ScrollArea className="h-full [&>div>div]:!block">
+        <ScrollArea className="mt-2 flex h-full flex-1 flex-col overflow-auto [&>div>div]:!block">
+          <TabsContent className="flex flex-1 flex-col " value="logs">
             <div className="p-1" ref={logsScrollRef}>
               {lastNLogs?.length
                 ? lastNLogs?.map((log, index) => {
@@ -324,47 +331,51 @@ const App = () => {
                   })
                 : undefined}
             </div>
-          </ScrollArea>
-        </TabsContent>
-        <TabsContent className="h-full" value="options">
-          <div className="flex flex-row justify-end pr-4">
-            <Button
-              className=""
-              disabled={shinkaiNodeIsRunning}
-              onClick={() => shinkaiNodeSetDefaultOptions()}
-              variant={'default'}
-            >
-              <ListRestart className="mr-2" />
-              Restore default
-            </Button>
-          </div>
-          <ScrollArea className="mt-2 h-full [&>div>div]:!block">
-            <Form {...shinkaiNodeOptionsForm}>
-              <form className="space-y-2 pr-4">
-                {shinkaiNodeOptions &&
-                  Array.from(Object.entries(shinkaiNodeOptions)).map(
-                    ([key, value]) => {
-                      return (
-                        <FormField
-                          control={shinkaiNodeOptionsForm.control}
-                          defaultValue={value}
-                          disabled={shinkaiNodeIsRunning}
-                          key={key}
-                          name={key as keyof ShinkaiNodeOptions}
-                          render={({ field }) => (
-                            <TextField
-                              field={field}
-                              label={<span className="uppercase">{key}</span>}
-                            />
-                          )}
-                        />
-                      );
-                    },
-                  )}
-              </form>
-            </Form>
-          </ScrollArea>
-        </TabsContent>
+          </TabsContent>
+          <TabsContent className="flex flex-1 flex-col" value="options">
+            <div className="flex flex-row justify-end pr-4">
+              <Button
+                className=""
+                disabled={shinkaiNodeIsRunning}
+                onClick={() => shinkaiNodeSetDefaultOptions()}
+                variant={'default'}
+              >
+                <ListRestart className="mr-2" />
+                Restore default
+              </Button>
+            </div>
+            <div className="mt-2 h-full [&>div>div]:!block">
+              <Form {...shinkaiNodeOptionsForm}>
+                <form className="space-y-2 pr-4">
+                  {shinkaiNodeOptions &&
+                    Array.from(Object.entries(shinkaiNodeOptions)).map(
+                      ([key, value]) => {
+                        return (
+                          <FormField
+                            control={shinkaiNodeOptionsForm.control}
+                            defaultValue={value}
+                            disabled={shinkaiNodeIsRunning}
+                            key={key}
+                            name={key as keyof ShinkaiNodeOptions}
+                            render={({ field }) => (
+                              <TextField
+                                field={field}
+                                label={<span className="uppercase">{key}</span>}
+                              />
+                            )}
+                          />
+                        );
+                      },
+                    )}
+                </form>
+              </Form>
+            </div>
+          </TabsContent>
+
+          <TabsContent className="flex flex-1 flex-col" value="models">
+            <OllamaModels />
+          </TabsContent>
+        </ScrollArea>
       </Tabs>
 
       <AlertDialog
