@@ -8,7 +8,7 @@ import {
 } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api';
 
-import { LogEntry, ShinkaiNodeOptions } from './shinkai-node-process-client-types';
+import { LogEntry, ShinkaiNodeOptions } from './shinkai-node-manager-client-types';
 
 // Client
 export const queryClient = new QueryClient();
@@ -46,6 +46,17 @@ export const useShinkaiNodeGetOptionsQuery = (
     ...options,
   });
   return { ...query } as UseQueryResult<ShinkaiNodeOptions, Error>;
+};
+export const useShinkaiNodeGetOllamaApiUrlQuery = (
+  options?: QueryObserverOptions,
+): UseQueryResult<string, Error> => {
+  const query = useQuery({
+    queryKey: ['shinkai_node_get_ollama_api_url'],
+    queryFn: (): Promise<string> =>
+      invoke('shinkai_node_get_ollama_api_url'),
+    ...options,
+  });
+  return { ...query } as UseQueryResult<string, Error>;
 };
 
 // Mutations

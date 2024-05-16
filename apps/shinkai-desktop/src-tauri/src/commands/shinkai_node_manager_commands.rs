@@ -70,3 +70,11 @@ pub async fn shinkai_node_set_default_options() -> Result<ShinkaiNodeOptions, St
     Ok(options)
 }
 
+#[tauri::command]
+pub async fn shinkai_node_get_ollama_api_url() -> Result<String, String> {
+    let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
+    let ollama_api_url = shinkai_node_manager_guard
+        .get_ollama_api_url();
+    Ok(ollama_api_url)
+}
+
