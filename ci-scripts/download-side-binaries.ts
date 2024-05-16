@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import axios from 'axios';
 import { createWriteStream } from 'fs';
-import { chmod, copyFile, cp, readdir, rm } from 'fs/promises';
+import { copyFile, cp, readdir, rm } from 'fs/promises';
 import { ensureFile } from 'fs-extra';
 import { exec } from 'child_process';
 import * as zl from 'zip-lib';
@@ -38,7 +38,9 @@ const downloadFile = async (url: string, path: string): Promise<void> => {
       }
     },
   });
+  console.log(`ensuring file ${path}`);
   await ensureFile(path);
+  console.log(`creating write stream ${path}`);
   response.data.pipe(
     createWriteStream(path, { encoding: 'binary', flags: 'w' }),
   );
