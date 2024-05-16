@@ -287,7 +287,7 @@ export const KnowledgeSearchDrawer = ({
               </div>
               <div className="flex flex-col gap-2">
                 {Object.entries(groupedData ?? {}).map(
-                  ([generatedFilePath, contents], idx) => (
+                  ([generatedFilePath, contents]) => (
                     <div
                       className="flex items-start gap-1 px-2 py-3 text-sm"
                       key={generatedFilePath}
