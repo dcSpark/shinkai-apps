@@ -47,10 +47,11 @@ import {
 } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import { openShinkaiNodeManagerWindow } from '../../lib/shinkai-node-manager/shinkai-node-manager-windows-utils';
+import { ONBOARDING_PATH } from '../../routes/name';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
 import { useShinkaiNodeManager } from '../../store/shinkai-node-manager';
-import { openShinkaiNodeManagerWindow } from '../../windows/utils';
 
 type NavigationLink = {
   title: string;

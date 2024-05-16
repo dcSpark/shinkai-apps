@@ -22,9 +22,9 @@ import { useForm } from 'react-hook-form';
 import { Link, To, useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import { useShinkaiNodeEventsToast } from '../lib/shinkai-node-manager/shinkai-node-manager-hooks';
 import { HOME_PATH } from '../routes/name';
 import { useAuth } from '../store/auth';
-import { useShinkaiNodeEventsToast } from '../windows/shinkai-node-manager/shinkai-node-manager-hooks';
 import OnboardingLayout from './layout/onboarding-layout';
 
 export interface ConnectionOptionButtonProps extends ButtonProps {
