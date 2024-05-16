@@ -36,7 +36,7 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     quality: OllamaModelQuality.Medium,
     speed: OllamaModelSpeed.Fast,
     size: 4.7, // Size in Gb
-    requiredRAM: 16, //  Size in Gb
+    requiredRAM: 2, //  Size in Gb
     fullName: '',
   },
   {
@@ -49,7 +49,7 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     quality: OllamaModelQuality.Medium,
     speed: OllamaModelSpeed.Fast,
     size: 4.7,
-    requiredRAM: 16,
+    requiredRAM: 2.4,
     fullName: '',
   },
   {

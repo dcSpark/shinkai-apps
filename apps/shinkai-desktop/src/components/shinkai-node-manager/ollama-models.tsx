@@ -146,7 +146,6 @@ export const OllamaModels = () => {
             <TableHead>Quality</TableHead>
             <TableHead>Speed</TableHead>
             <TableHead>Size</TableHead>
-            <TableHead>Required RAM</TableHead>
             <TableHead />
           </TableRow>
         </TableHeader>
@@ -177,7 +176,6 @@ export const OllamaModels = () => {
                   <ModelSpeedTag speed={model.speed} />
                 </TableCell>
                 <TableCell>{model.size} GB</TableCell>
-                <TableCell>{model.requiredRAM} GB</TableCell>
                 <TableCell>
                   {isOllamaListLoading ? (
                     <Loader2 className="animate-spin" />
