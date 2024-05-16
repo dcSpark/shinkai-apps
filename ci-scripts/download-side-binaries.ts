@@ -1,10 +1,11 @@
-import { z } from "zod";
+import { z } from 'zod';
 import axios from 'axios';
 import { createWriteStream } from 'fs';
 import { chmod, copyFile, cp, readdir, rm } from 'fs/promises';
-import { exec } from "child_process";
-import * as zl from "zip-lib";
-import path from "path";
+import { ensureFile } from 'fs-extra';
+import { exec } from 'child_process';
+import * as zl from 'zip-lib';
+import path from 'path';
 
 enum Arch {
   x86_64_unknown_linux_gnu = 'x86_64-unknown-linux-gnu',
@@ -24,20 +25,23 @@ const env: Env = envSchema.parse(process.env);
 const addExecPermissions = (path: string) => {
   console.log(`Adding exec permissions (+x) to ${path}`);
   return exec(`chmod +x ${path}`);
-}
+};
 const downloadFile = async (url: string, path: string): Promise<void> => {
   console.log(`Downloading ${url}`);
   const response = await axios({
-      method: 'GET',
-      url: url,
-      responseType: 'stream',
-      onDownloadProgress: function (progressEvent) {
-        if (progressEvent.progress) {
-          console.log(`${url} progress: ${progressEvent.progress * 100}%`);
-        }
+    method: 'GET',
+    url: url,
+    responseType: 'stream',
+    onDownloadProgress: function (progressEvent) {
+      if (progressEvent.progress) {
+        console.log(`${url} progress: ${progressEvent.progress * 100}%`);
       }
+    },
   });
-  response.data.pipe(createWriteStream(path));
+  await ensureFile(path);
+  response.data.pipe(
+    createWriteStream(path, { encoding: 'binary', flags: 'w' }),
+  );
   await new Promise<void>((resolve, reject) => {
     response.data.on('end', () => {
       resolve();
@@ -48,7 +52,7 @@ const downloadFile = async (url: string, path: string): Promise<void> => {
     });
   });
   console.log(`Download complete: ${url}`);
-}
+};
 
 const downloadShinkaiNodeBinary = async (arch: Arch, version: string) => {
   console.log(`Downloading shinkai-node arch:${arch} version:${version}`);
@@ -60,35 +64,38 @@ const downloadShinkaiNodeBinary = async (arch: Arch, version: string) => {
   }
   await downloadFile(downloadUrl, path);
   await addExecPermissions(path);
-}
+};
 
 const downloadOllamaAarch64AppleDarwin = async (version: string) => {
   let downloadUrl = `https://github.com/ollama/ollama/releases/download/${version}/ollama-darwin`;
   let path = `./apps/shinkai-desktop/src-tauri/bin/ollama-${Arch.aarch64_apple_darwin}`;
   await downloadFile(downloadUrl, path);
   await addExecPermissions(path);
-}
+};
 
 const downloadOllamax8664UnknownLinuxGnu = async (version: string) => {
   let downloadUrl = `https://github.com/ollama/ollama/releases/download/${version}/ollama-linux-amd64`;
   let path = `./apps/shinkai-desktop/src-tauri/bin/ollama-${Arch.x86_64_unknown_linux_gnu}`;
   await downloadFile(downloadUrl, path);
   await addExecPermissions(path);
-}
+};
 
 const downloadOllamax8664PcWindowsMsvc = async (version: string) => {
   let downloadUrl = `https://github.com/ollama/ollama/releases/download/${version}/ollama-windows-amd64.zip`;
   let zippedPath = `./ollama-windows-amd64.zip`;
   await downloadFile(downloadUrl, zippedPath);
 
-  let unzippedPath = "ollama-windows-amd64";
+  let unzippedPath = 'ollama-windows-amd64';
   await zl.extract(zippedPath, unzippedPath);
 
-  let resourcesPath = './apps/shinkai-desktop/src-tauri/bin/ollama-windows-resources/';
+  let resourcesPath =
+    './apps/shinkai-desktop/src-tauri/bin/ollama-windows-resources/';
   const files = await readdir(unzippedPath);
   for (const file of files) {
     if (file !== 'ollama.exe') {
-      await cp(path.join(unzippedPath, file), path.join(resourcesPath, file), { recursive: true });
+      await cp(path.join(unzippedPath, file), path.join(resourcesPath, file), {
+        recursive: true,
+      });
     }
   }
   let binaryPath = `./apps/shinkai-desktop/src-tauri/bin/ollama-${Arch.x86_64_pc_windows_msvc}.exe`;
@@ -96,17 +103,17 @@ const downloadOllamax8664PcWindowsMsvc = async (version: string) => {
   await addExecPermissions(binaryPath);
   await rm(unzippedPath, { recursive: true });
   await rm(zippedPath);
-}
+};
 
 const downloadOllama = {
   [Arch.aarch64_apple_darwin]: downloadOllamaAarch64AppleDarwin,
   [Arch.x86_64_unknown_linux_gnu]: downloadOllamax8664UnknownLinuxGnu,
   [Arch.x86_64_pc_windows_msvc]: downloadOllamax8664PcWindowsMsvc,
-}
+};
 
 export const main = async () => {
   await downloadShinkaiNodeBinary(env.ARCH, env.SHINKAI_NODE_VERSION);
   await downloadOllama[env.ARCH](env.OLLAMA_VERSION);
-}
+};
 
 main().catch(console.error);
