@@ -50,9 +50,6 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
-import { Markdown } from 'tiptap-markdown';
 
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAuth } from '../../store/auth';
