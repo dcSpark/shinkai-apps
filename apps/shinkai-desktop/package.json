@@ -2,5 +2,13 @@
   "name": "shinkai-desktop",
   "private": true,
   "version": "0.5.0",
-  "type": "module"
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx . --ignore-path .gitignore",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev"
+  }
 }
