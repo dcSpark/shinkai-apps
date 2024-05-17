@@ -6,8 +6,6 @@ import { defineConfig } from 'vite';
 import wasm from 'vite-plugin-wasm';
 
 export default defineConfig({
-  cacheDir: '../../node_modules/.vite/shinkai-app',
-
   server: {
     port: 4200,
     host: true,
@@ -22,12 +20,7 @@ export default defineConfig({
     host: 'localhost',
   },
 
-  plugins: [
-    react(),
-    nxViteTsPaths(),
-    legacy(),
-    wasm(),
-  ],
+  plugins: [react(), nxViteTsPaths(), legacy(), wasm()],
 
   test: {
     globals: true,
@@ -47,7 +40,7 @@ export default defineConfig({
     // Important for wasm plugin
     supported: {
       'top-level-await': true,
-      'bigint': true,
-    }
-  }
+      bigint: true,
+    },
+  },
 });

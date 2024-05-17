@@ -5,11 +5,13 @@
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nx/vite:build",
-      "outputs": ["{options.outputPath}"],
+      "executor": "nx:run-commands",
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/apps/shinkai-app"
+        "cwd": "apps/shinkai-app",
+        "commands": [
+          "npx vite build --verbose"
+        ]
       },
       "configurations": {
         "development": {
