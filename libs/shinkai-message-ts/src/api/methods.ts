@@ -461,6 +461,41 @@ export const createJob = async (
   const data = response.data;
   return data.data;
 };
+
+export const updateAgentInJob = async (
+  nodeAddress: string,
+  jobId: string,
+  newAgentId: string,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  setupDetailsState: CredentialsPayload,
+): Promise<{ data: string; status: string }> => {
+  const messageStr = ShinkaiMessageBuilderWrapper.updateAgentInJob(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    jobId,
+    newAgentId,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
+
+  const message = JSON.parse(messageStr);
+
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/change_job_agent'),
+    message,
+    {
+      responseType: 'json',
+    },
+  );
+  const data = response.data;
+  return data;
+};
 export const sendMessageToJob = async (
   nodeAddress: string,
   jobId: string,

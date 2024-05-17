@@ -13,6 +13,8 @@ import {
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMessageToJob/useSendMessageToJob';
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
 import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageWithFilesToInbox/useSendMessageWithFilesToInbox';
+import { useUpdateAgentInJob } from '@shinkai_network/shinkai-node-state/lib/mutations/updateAgentInJob/useUpdateAgentInJob';
+import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
 import {
   Alert,
@@ -21,6 +23,11 @@ import {
   Badge,
   Button,
   ChatInputArea,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
   Form,
   FormControl,
   FormField,
@@ -33,13 +40,9 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-  Tooltip,
-  TooltipContent,
-  TooltipPortal,
-  TooltipProvider,
-  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import {
+  AgentIcon,
   DirectoryTypeIcon,
   FileTypeIcon,
 } from '@shinkai_network/shinkai-ui/assets';
@@ -50,6 +53,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAuth } from '../../store/auth';
@@ -331,6 +335,77 @@ const ChatConversation = () => {
 
 export default ChatConversation;
 
+function AgentSelection() {
+  const auth = useAuth((state) => state.auth);
+  const currentInbox = useGetCurrentInbox();
+  const { agents } = useAgents({
+    nodeAddress: auth?.node_address ?? '',
+    sender: auth?.shinkai_identity ?? '',
+    senderSubidentity: `${auth?.profile}`,
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+    my_device_identity_sk: auth?.profile_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+  });
+
+  const { mutateAsync: updateAgentInJob } = useUpdateAgentInJob({
+    onError: (error) => {
+      toast.error('Failed to update agent', {
+        description: error.message,
+      });
+    },
+  });
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Badge className="hover:bg-gray-350 inline-flex cursor-pointer items-center gap-1 truncate bg-gray-300 text-start text-xs font-normal text-gray-50 shadow-none hover:text-white">
+          {/*<AgentIcon className="h-3 w-3" />*/}
+          <span>{currentInbox?.agent?.id}</span>
+        </Badge>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="start"
+        className="max-h-[300px] w-[300px] overflow-y-auto bg-gray-300 p-1 py-2"
+      >
+        <DropdownMenuRadioGroup
+          onValueChange={async (value) => {
+            const jobId = extractJobIdFromInbox(currentInbox?.inbox_id ?? '');
+            await updateAgentInJob({
+              nodeAddress: auth?.node_address ?? '',
+              shinkaiIdentity: auth?.shinkai_identity ?? '',
+              profile: auth?.profile ?? '',
+              jobId: jobId,
+              newAgentId: value,
+              my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+              my_device_identity_sk: auth?.profile_identity_sk ?? '',
+              node_encryption_pk: auth?.node_encryption_pk ?? '',
+              profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+              profile_identity_sk: auth?.profile_identity_sk ?? '',
+            });
+          }}
+          value={currentInbox?.agent?.id ?? ''}
+        >
+          {agents.map((agent) => (
+            <DropdownMenuRadioItem
+              className="flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-white transition-colors hover:bg-gray-200 aria-checked:bg-gray-200"
+              key={agent.id}
+              value={agent.id}
+            >
+              <AgentIcon className="h-4 w-4" />
+              <div className="flex flex-col gap-1">
+                <span className="text-xs">{agent.id}</span>
+                {/*<span className="text-gray-80 text-xs">{agent.model}</span>*/}
+              </div>
+            </DropdownMenuRadioItem>
+          ))}
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
 export const ConversationHeader = () => {
   const currentInbox = useGetCurrentInbox();
 
@@ -342,28 +417,11 @@ export const ConversationHeader = () => {
 
   return (
     <div className="flex h-[58px] items-center justify-between border-b border-gray-400 px-4 py-2">
-      <div className="space-x-2.5">
-        <span className="line-clamp-1 inline text-sm font-medium capitalize text-white">
+      <div className="inline-flex items-center">
+        <span className="mr-2.5 line-clamp-1 inline text-sm font-medium capitalize text-white">
           {currentInbox?.custom_name || currentInbox?.inbox_id}
         </span>
-        <TooltipProvider delayDuration={0}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Badge className="text-gray-80 inline cursor-pointer truncate bg-gray-400 text-start text-xs font-normal shadow-none">
-                {currentInbox?.agent?.id}
-              </Badge>
-            </TooltipTrigger>
-            <TooltipPortal>
-              <TooltipContent
-                className="flex items-center gap-2"
-                sideOffset={5}
-              >
-                <span className="text-gray-80">Model: </span>
-                {currentInbox?.agent?.model}
-              </TooltipContent>
-            </TooltipPortal>
-          </Tooltip>
-        </TooltipProvider>
+        <AgentSelection />
       </div>
       {hasConversationContext && (
         <Sheet>
