@@ -12,7 +12,7 @@ import {
   Ollama,
   ProgressResponse,
   StatusResponse,
-} from 'ollama';
+} from 'ollama/browser';
 
 import {
   queryClient,

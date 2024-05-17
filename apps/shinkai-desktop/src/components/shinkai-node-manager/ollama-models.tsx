@@ -13,8 +13,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Loader2 } from 'lucide-react';
-import { ModelResponse } from 'ollama';
-import { ProgressResponse } from 'ollama';
+import { ModelResponse, ProgressResponse } from 'ollama/browser';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
