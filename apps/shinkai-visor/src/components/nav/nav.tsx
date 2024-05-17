@@ -422,7 +422,7 @@ export default function NavBar() {
   };
 
   return (
-    <nav className="">
+    <nav className="pb-2.5">
       <AlertDialog open={isConfirmLogoutDialogOpened}>
         <AlertDialogContent className="w-[75%]">
           <AlertDialogHeader>

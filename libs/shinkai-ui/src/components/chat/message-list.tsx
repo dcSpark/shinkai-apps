@@ -141,7 +141,7 @@ export const MessageList = ({
                     <div key={date}>
                       <div
                         className={cn(
-                          'relative z-10 m-auto flex h-[26px] w-fit min-w-[100px] items-center justify-center rounded-xl bg-gray-400 px-2.5',
+                          'relative z-10 m-auto flex h-[26px] w-fit min-w-[100px] items-center justify-center rounded-xl bg-gray-400 px-2.5 capitalize',
                           true && 'sticky top-5',
                         )}
                       >
