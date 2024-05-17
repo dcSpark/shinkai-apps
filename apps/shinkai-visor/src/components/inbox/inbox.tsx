@@ -8,32 +8,18 @@ import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mut
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
 import {
-  getRelativeDateLabel,
-  groupMessagesByDate,
-} from '@shinkai_network/shinkai-node-state/lib/utils/date';
-import {
   Alert,
   AlertDescription,
   AlertTitle,
-  ScrollArea,
-  Skeleton,
+  MessageList,
 } from '@shinkai_network/shinkai-ui';
-import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { AlertCircle, Loader2, Terminal } from 'lucide-react';
-import {
-  Fragment,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { AlertCircle, Terminal } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
 import { useAuth } from '../../store/auth/auth';
 import { InboxInput } from '../inbox-input/inbox-input';
-import { Message } from '../message/message';
 
 enum ErrorCodes {
   VectorResource = 'VectorResource',
@@ -43,7 +29,6 @@ enum ErrorCodes {
 export const Inbox = () => {
   const { inboxId } = useParams<{ inboxId: string }>();
   const auth = useAuth((state) => state.auth);
-  const intl = useIntl();
   const {
     data,
     fetchPreviousPage,
@@ -70,34 +55,13 @@ export const Inbox = () => {
   const { mutateAsync: sendMessageToJob, isPending: isSendingMessageToJob } =
     useSendMessageToJob();
   const isSendingMessage = isSendingMessageToJob || isSendingMessageToInbox;
-  const chatContainerRef = useRef<HTMLDivElement | null>(null);
-  const previousChatHeightRef = useRef<number>(0);
   const fromPreviousMessagesRef = useRef<boolean>(false);
   const [decodedInboxId, setDecodedInboxId] = useState<string>('');
   const [isJobInbox, setIsJobInbox] = useState<boolean>(false);
   const [isJobProcessing, setIsJobProcessing] = useState<boolean>(false);
   const [isJobProcessingFile, setIsJobProcessingFile] =
     useState<boolean>(false);
-  const fetchPreviousMessages = useCallback(async () => {
-    fromPreviousMessagesRef.current = true;
-    await fetchPreviousPage();
-  }, [fetchPreviousPage]);
-  const handleScroll = useCallback(async () => {
-    const chatContainerElement = chatContainerRef.current;
-    if (!chatContainerElement) return;
-    const currentHeight = chatContainerElement.scrollHeight;
-    const previousHeight = previousChatHeightRef.current;
 
-    if (chatContainerElement.scrollTop < 100 && hasPreviousPage) {
-      await fetchPreviousMessages();
-      previousChatHeightRef.current = currentHeight;
-      chatContainerElement.scrollTop = currentHeight - previousHeight;
-    }
-  }, [fetchPreviousMessages, hasPreviousPage]);
-  const scrollToBottom = () => {
-    if (!chatContainerRef.current) return;
-    chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-  };
   const submitSendMessage = (value: string) => {
     if (!auth) return;
     fromPreviousMessagesRef.current = false;
@@ -138,14 +102,6 @@ export const Inbox = () => {
   };
 
   useEffect(() => {
-    const chatContainerElement = chatContainerRef.current;
-    if (!chatContainerElement) return;
-    chatContainerElement.addEventListener('scroll', handleScroll);
-    return () => {
-      chatContainerElement.removeEventListener('scroll', handleScroll);
-    };
-  }, [handleScroll]);
-  useEffect(() => {
     if (inboxId) {
       setDecodedInboxId(decodeURIComponent(inboxId));
     }
@@ -157,22 +113,14 @@ export const Inbox = () => {
   }, [decodedInboxId]);
 
   useEffect(() => {
-    if (!fromPreviousMessagesRef.current) {
-      scrollToBottom();
-    }
-  }, [data?.pages]);
-  useEffect(() => {
-    const [firstMessagePage] = data?.pages || [];
-    const lastMessage = [...(firstMessagePage || [])].pop();
+    const lastMessage = data?.pages?.at(-1)?.at(-1);
     if (lastMessage) {
-      setIsJobProcessing(
-        isJobInbox && (isSendingMessage || lastMessage.isLocal),
-      );
+      setIsJobProcessing(isJobInbox && lastMessage.isLocal);
     }
-  }, [data?.pages, auth, isSendingMessage, isJobInbox]);
+  }, [data?.pages, auth, isJobInbox]);
+
   useEffect(() => {
-    const [firstMessagePage] = data?.pages || [];
-    const lastMessage = [...(firstMessagePage || [])].pop();
+    const lastMessage = data?.pages?.at(-1)?.at(-1);
     if (lastMessage) {
       setIsJobProcessingFile(
         isJobProcessing && lastMessage.isLocal && !!lastMessage.fileInbox,
@@ -192,93 +140,17 @@ export const Inbox = () => {
 
   return (
     <div className="flex h-full flex-col justify-between gap-3">
-      <ScrollArea
-        className="h-full pr-4 [&>div>div]:!block"
-        ref={chatContainerRef}
-      >
-        {isChatConversationSuccess && (
-          <div className="py-2 text-center text-xs text-gray-100">
-            {isFetchingPreviousPage && (
-              <Loader2 className="flex animate-spin justify-center text-white" />
-            )}
-            {!isFetchingPreviousPage && !hasPreviousPage && (
-              <FormattedMessage id="all-messages-loaded" />
-            )}
-          </div>
-        )}
-        <div className="">
-          {isChatConversationLoading && (
-            <div className="flex flex-col space-y-3">
-              {[...Array(5).keys()].map((index) => (
-                <div
-                  className={cn(
-                    'flex w-[95%] items-start gap-3',
-                    index % 2 === 0
-                      ? 'ml-0 mr-auto flex-row'
-                      : 'ml-auto mr-0 flex-row-reverse',
-                  )}
-                  key={`${index}`}
-                >
-                  <Skeleton
-                    className="h-12 w-12 shrink-0 rounded-full"
-                    key={index}
-                  />
-                  <Skeleton
-                    className={cn(
-                      'h-16 w-full rounded-lg px-2.5 py-3',
-                      index % 2 === 0
-                        ? 'rounded-tl-none border border-slate-800'
-                        : 'rounded-tr-none border-none',
-                    )}
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-          {isChatConversationSuccess &&
-            data?.pages?.map((group, index) => (
-              <Fragment key={index}>
-                {Object.entries(groupMessagesByDate(group)).map(
-                  ([date, messages]) => {
-                    return (
-                      <div key={date}>
-                        <div
-                          className={cn(
-                            'relative z-10 m-auto flex h-[26px] w-fit min-w-[100px] items-center justify-center rounded-xl bg-gray-400 px-2.5',
-                            true && 'sticky top-5',
-                          )}
-                        >
-                          <span className="text-gray-80 text-xs font-medium">
-                            {intl.formatMessage({
-                              id: getRelativeDateLabel(
-                                new Date(messages[0].scheduledTime || ''),
-                              ),
-                            })}
-                          </span>
-                        </div>
-                        <div className="flex flex-col gap-4">
-                          {messages.map((message) => {
-                            return (
-                              <div
-                                className={cn('pl-2')}
-                                data-testid={`message-${
-                                  message.isLocal ? 'local' : 'remote'
-                                }-${message.hash}`}
-                                key={`${index}-${message.scheduledTime}`}
-                              >
-                                <Message message={message} />
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    );
-                  },
-                )}
-              </Fragment>
-            ))}
-        </div>
-      </ScrollArea>
+      <MessageList
+        containerClassName="pr-4"
+        fetchPreviousPage={fetchPreviousPage}
+        fromPreviousMessagesRef={fromPreviousMessagesRef}
+        hasPreviousPage={hasPreviousPage}
+        isFetchingPreviousPage={isFetchingPreviousPage}
+        isLoading={isChatConversationLoading}
+        isSuccess={isChatConversationSuccess}
+        noMoreMessageLabel="All messages has been loaded ✅"
+        paginatedMessages={data}
+      />
       {isJobProcessingFile && (
         <Alert className="shadow-lg">
           <Terminal className="h-4 w-4" />

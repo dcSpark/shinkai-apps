@@ -1,22 +1,19 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  ChatMessageFormSchema,
+  chatMessageFormSchema,
+} from '@shinkai_network/shinkai-node-state/forms/chat/chat-message';
+import {
   Button,
+  ChatInputArea,
   Form,
   FormField,
   FormItem,
-  MessageEditor,
 } from '@shinkai_network/shinkai-ui';
 import { motion } from 'framer-motion';
 import { SendHorizonal } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import { z } from 'zod';
-
-const formSchema = z.object({
-  message: z.string().min(1),
-});
-
-type InboxInputFieldType = z.infer<typeof formSchema>;
 
 type InboxInputProps = {
   onSubmit: (value: string) => void;
@@ -26,15 +23,15 @@ type InboxInputProps = {
 };
 
 export const InboxInput = (props: InboxInputProps) => {
-  const form = useForm<InboxInputFieldType>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<ChatMessageFormSchema>({
+    resolver: zodResolver(chatMessageFormSchema),
     defaultValues: {
       message: '',
     },
   });
   const { message } = form.watch();
   const intl = useIntl();
-  const submit = (values: InboxInputFieldType) => {
+  const submit = (values: ChatMessageFormSchema) => {
     const value = values?.message?.trim();
     if (value) {
       props.onSubmit(value);
@@ -47,7 +44,10 @@ export const InboxInput = (props: InboxInputProps) => {
   };
   return (
     <Form {...form}>
-      <form className="flex gap-2" onSubmit={form.handleSubmit(submit)}>
+      <form
+        className="relative flex gap-2"
+        onSubmit={form.handleSubmit(submit)}
+      >
         <div className="flex grow flex-col">
           <FormField
             control={form.control}
@@ -60,7 +60,7 @@ export const InboxInput = (props: InboxInputProps) => {
                 transition={{ type: 'tween' }}
               >
                 <FormItem>
-                  <MessageEditor
+                  <ChatInputArea
                     disabled={props.loading || props.disabled}
                     isLoading={props.loading}
                     onChange={field.onChange}

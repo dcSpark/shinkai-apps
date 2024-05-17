@@ -1,4 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  CreateDMFormSchema,
+  createDMFormSchema,
+} from '@shinkai_network/shinkai-node-state/forms/chat/create-dm';
 import { useCreateChat } from '@shinkai_network/shinkai-node-state/lib/mutations/createChat/useCreateChat';
 import {
   Button,
@@ -14,23 +18,15 @@ import {
 import { useForm } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
-import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
-
-const formSchema = z.object({
-  receiverIdentity: z.string().nonempty(),
-  message: z.string().nonempty(),
-});
-
-type FormSchemaType = z.infer<typeof formSchema>;
 
 export const CreateInbox = () => {
   const history = useHistory();
   const auth = useAuth((state) => state.auth);
   const intl = useIntl();
-  const form = useForm<FormSchemaType>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<CreateDMFormSchema>({
+    resolver: zodResolver(createDMFormSchema),
     defaultValues: {
       receiverIdentity: '',
       message: '',
@@ -41,7 +37,7 @@ export const CreateInbox = () => {
       history.replace(`/inboxes/${encodeURIComponent(data.inboxId)}`);
     },
   });
-  const submit = (values: FormSchemaType) => {
+  const submit = (values: CreateDMFormSchema) => {
     if (!auth) return;
     const { shinkai_identity, profile, registration_name } = auth ?? {};
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

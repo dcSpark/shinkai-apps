@@ -1,4 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  ShareFolderFormSchema,
+  shareFolderFormSchema,
+} from '@shinkai_network/shinkai-node-state/forms/vector-fs/folder';
+import {
+  SearchVectorFormSchema,
+  searchVectorFormSchema,
+} from '@shinkai_network/shinkai-node-state/forms/vector-fs/vector-search';
 import { useCopyVrFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/copyVRFolder/useCopyVrFolder';
 import { useCreateShareableFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/createShareableFolder/useCreateShareableFolder';
 import { useDeleteVrFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/deleteVRFolder/useDeleteVRFolder';
@@ -22,7 +30,6 @@ import React, { useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
-import { z } from 'zod';
 
 import { useAuth } from '../../../store/auth';
 import { useVectorFsStore } from '../context/vector-fs-context';
@@ -211,17 +218,14 @@ export const VectorFsFolderCopyAction = () => {
   );
 };
 
-const searchVectorFSSchema = z.object({
-  searchQuery: z.string().min(1, 'Search query is required'),
-});
-
 export const VectorFsFolderSearchKnowledgeAction = () => {
   const selectedFolder = useVectorFsStore((state) => state.selectedFolder);
   const auth = useAuth((state) => state.auth);
   const [isSearchEntered, setIsSearchEntered] = useState(false);
   const [search, setSearch] = useState('');
   const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
-  const searchVectorFSForm = useForm<z.infer<typeof searchVectorFSSchema>>({
+  const searchVectorFSForm = useForm<SearchVectorFormSchema>({
+    resolver: zodResolver(searchVectorFormSchema),
     defaultValues: {
       searchQuery: '',
     },
@@ -231,31 +235,29 @@ export const VectorFsFolderSearchKnowledgeAction = () => {
     name: 'searchQuery',
   });
 
-  const { isPending, isLoading, isSuccess, data, refetch } =
-    useGetVRSeachSimplified(
-      {
-        nodeAddress: auth?.node_address ?? '',
-        search: search,
-        shinkaiIdentity: auth?.shinkai_identity ?? '',
-        profile: auth?.profile ?? '',
-        my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-        my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-        node_encryption_pk: auth?.node_encryption_pk ?? '',
-        profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-        profile_identity_sk: auth?.profile_identity_sk ?? '',
-        path: selectedFolder?.path,
-      },
-      {
-        enabled: isSearchEntered || !!search,
-        refetchOnWindowFocus: false,
-      },
-    );
+  const { isPending, isLoading, isSuccess, data } = useGetVRSeachSimplified(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      search: search,
+      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      profile: auth?.profile ?? '',
+      my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+      my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+      path: selectedFolder?.path,
+    },
+    {
+      enabled: isSearchEntered || !!search,
+      refetchOnWindowFocus: false,
+    },
+  );
 
-  const onSubmit = async (data: z.infer<typeof searchVectorFSSchema>) => {
+  const onSubmit = async (data: SearchVectorFormSchema) => {
     if (!data.searchQuery) return;
     setIsSearchEntered(true);
     setSearch(data.searchQuery);
-    refetch();
   };
 
   return (
@@ -369,16 +371,12 @@ export const VectorFsFolderSearchKnowledgeAction = () => {
   );
 };
 
-const shareFolderSchema = z.object({
-  folderDescription: z.string().min(1, 'Folder description is required'),
-});
-
 export const VectorFsFolderCreateShareableAction = () => {
   const selectedFolder = useVectorFsStore((state) => state.selectedFolder);
   const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
   const auth = useAuth((state) => state.auth);
-  const shareFolderForm = useForm<z.infer<typeof shareFolderSchema>>({
-    resolver: zodResolver(shareFolderSchema),
+  const shareFolderForm = useForm<ShareFolderFormSchema>({
+    resolver: zodResolver(shareFolderFormSchema),
   });
   const destinationFolderPath = useVectorFolderSelectionStore(
     (state) => state.destinationFolderPath,
@@ -399,7 +397,7 @@ export const VectorFsFolderCreateShareableAction = () => {
       },
     });
 
-  const onSubmit = async (data: z.infer<typeof shareFolderSchema>) => {
+  const onSubmit = async (data: ShareFolderFormSchema) => {
     await createShareableFolder({
       nodeAddress: auth?.node_address ?? '',
       shinkaiIdentity: auth?.shinkai_identity ?? '',

@@ -1,5 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AgentAPIModel } from '@shinkai_network/shinkai-message-ts/models';
+import {
+  addAgentFormDefault,
+  AddAgentFormSchema,
+  addAgentSchema,
+} from '@shinkai_network/shinkai-node-state/forms/agents/add-agent';
 import { useCreateAgent } from '@shinkai_network/shinkai-node-state/lib/mutations/createAgent/useCreateAgent';
 import { useScanOllamaModels } from '@shinkai_network/shinkai-node-state/lib/queries/scanOllamaModels/useScanOllamaModels';
 import {
@@ -28,73 +33,8 @@ import { useForm } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'sonner';
-import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
-
-const formSchema = z
-  .object({
-    agentName: z
-      .string()
-      .regex(
-        /^[a-zA-Z0-9]+(_[a-zA-Z0-9]+)*$/,
-        'It just accepts alphanumeric characters and underscores',
-      ),
-    externalUrl: z.string().url(),
-    apiKey: z.string(),
-    model: z.nativeEnum(Models),
-    modelType: z.string(),
-    isCustomModel: z.boolean().default(false).optional(),
-    modelCustom: z.string().optional(),
-    modelTypeCustom: z.string().optional(),
-  })
-  .superRefine(
-    (
-      { isCustomModel, model, modelType, modelCustom, modelTypeCustom, apiKey },
-      ctx,
-    ) => {
-      if (isCustomModel) {
-        if (!modelCustom) {
-          ctx.addIssue({
-            path: ['modelCustom'],
-            code: z.ZodIssueCode.custom,
-            message: 'Model Name is required',
-          });
-        }
-        if (!modelTypeCustom) {
-          ctx.addIssue({
-            path: ['modelTypeCustom'],
-            code: z.ZodIssueCode.custom,
-            message: 'Model ID is required',
-          });
-        }
-      } else {
-        if (!model) {
-          ctx.addIssue({
-            path: ['model'],
-            code: z.ZodIssueCode.custom,
-            message: 'Model is required',
-          });
-        }
-        if (!modelType) {
-          ctx.addIssue({
-            path: ['modelType'],
-            code: z.ZodIssueCode.custom,
-            message: 'Model Type is required',
-          });
-        }
-        if (!apiKey && model !== Models.Ollama) {
-          ctx.addIssue({
-            path: ['apiKey'],
-            code: z.ZodIssueCode.custom,
-            message: 'Api Key is required',
-          });
-        }
-      }
-    },
-  );
-
-type FormSchemaType = z.infer<typeof formSchema>;
 
 export const getModelObject = (
   model: Models | string,
@@ -115,16 +55,9 @@ export const getModelObject = (
 export const AddAgent = () => {
   const history = useHistory();
   const auth = useAuth((state) => state.auth);
-  const form = useForm<FormSchemaType>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      agentName: '',
-      externalUrl: modelsConfig[Models.OpenAI].apiUrl,
-      apiKey: '',
-      model: Models.OpenAI,
-      modelType: '',
-      isCustomModel: false,
-    },
+  const form = useForm<AddAgentFormSchema>({
+    resolver: zodResolver(addAgentSchema),
+    defaultValues: addAgentFormDefault,
   });
 
   const intl = useIntl();
@@ -197,7 +130,7 @@ export const AddAgent = () => {
       label: intl.formatMessage({ id: 'ollama' }),
     },
   ];
-  const submit = async (values: FormSchemaType) => {
+  const submit = async (values: AddAgentFormSchema) => {
     if (!auth) return;
     let model = getModelObject(values.model, values.modelType);
     if (isCustomModelMode && values.modelCustom && values.modelTypeCustom) {
@@ -209,7 +142,7 @@ export const AddAgent = () => {
       node_name: auth.shinkai_identity,
       agent: {
         allowed_message_senders: [],
-        api_key: values.apiKey,
+        api_key: values.apikey,
         external_url: values.externalUrl,
         full_identity_name: `${auth.shinkai_identity}/${auth.profile}/agent/${values.agentName}`,
         id: values.agentName,
@@ -266,7 +199,7 @@ export const AddAgent = () => {
     if (!modelTypeOptions?.length) {
       return;
     }
-    form.setValue('agentName', currentModelType);
+    form.setValue('agentName', currentModelType.replace(/[^a-zA-Z0-9_]/g, '_'));
   }, [form, currentModelType, modelTypeOptions?.length]);
   return (
     <div className="flex h-full flex-col space-y-3">
@@ -418,7 +351,7 @@ export const AddAgent = () => {
 
             <FormField
               control={form.control}
-              name="apiKey"
+              name="apikey"
               render={({ field }) => (
                 <TextField
                   field={field}

@@ -1,4 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  CreateFolderFormSchema,
+  createFolderFormSchema,
+  SaveWebpageToVectorFsFormSchema,
+  saveWebpageToVectorFsFormSchema,
+  UploadVRFilesFormSchema,
+  uploadVRFilesFormSchema,
+} from '@shinkai_network/shinkai-node-state/forms/vector-fs/folder';
 import { useCreateVRFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/createVRFolder/useCreateVRFolder';
 import { useUploadVRFiles } from '@shinkai_network/shinkai-node-state/lib/mutations/uploadVRFiles/useUploadVRFiles';
 import {
@@ -23,7 +31,6 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
-import { z } from 'zod';
 
 import { allowedFileExtensions } from '../../../lib/constants';
 import { useAuth } from '../../../store/auth';
@@ -33,17 +40,14 @@ import {
   useVectorFolderSelectionStore,
 } from './folder-selection-list';
 
-const createFolderSchema = z.object({
-  name: z.string(),
-});
 export const AddNewFolderAction = () => {
   const auth = useAuth((state) => state.auth);
   const currentGlobalPath = useVectorFsStore(
     (state) => state.currentGlobalPath,
   );
   const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
-  const createFolderForm = useForm<z.infer<typeof createFolderSchema>>({
-    resolver: zodResolver(createFolderSchema),
+  const createFolderForm = useForm<CreateFolderFormSchema>({
+    resolver: zodResolver(createFolderFormSchema),
   });
 
   const {
@@ -61,7 +65,7 @@ export const AddNewFolderAction = () => {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof createFolderSchema>) => {
+  const onSubmit = async (values: CreateFolderFormSchema) => {
     if (!auth) return;
 
     await createVRFolder({
@@ -132,17 +136,14 @@ export const AddNewFolderAction = () => {
     </>
   );
 };
-const uploadVRFilesSchema = z.object({
-  files: z.array(z.any()).min(1),
-});
 export const UploadVRFilesAction = () => {
   const auth = useAuth((state) => state.auth);
   const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
   const currentGlobalPath = useVectorFsStore(
     (state) => state.currentGlobalPath,
   );
-  const createFolderForm = useForm<z.infer<typeof uploadVRFilesSchema>>({
-    resolver: zodResolver(uploadVRFilesSchema),
+  const createFolderForm = useForm<UploadVRFilesFormSchema>({
+    resolver: zodResolver(uploadVRFilesFormSchema),
   });
 
   const { isPending, mutateAsync: uploadVRFiles } = useUploadVRFiles({
@@ -161,7 +162,7 @@ export const UploadVRFilesAction = () => {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof uploadVRFilesSchema>) => {
+  const onSubmit = async (values: UploadVRFilesFormSchema) => {
     if (!auth) return;
     toast.loading('Uploading files', {
       id: 'uploading-VR-files',
@@ -235,10 +236,6 @@ export const UploadVRFilesAction = () => {
     </>
   );
 };
-const saveWebpageToVectorFsSchema = z.object({
-  files: z.array(z.any()).min(1),
-  destinationFolderPath: z.string().min(1),
-});
 export const SaveWebpageToVectorFsAction = () => {
   // const location = useLocation<{ files: File[] }>();
   const location = useLocation();
@@ -251,10 +248,8 @@ export const SaveWebpageToVectorFsAction = () => {
   const setCurrentGlobalPath = useVectorFsStore(
     (state) => state.setCurrentGlobalPath,
   );
-  const saveWebpageToVectorFsForm = useForm<
-    z.infer<typeof saveWebpageToVectorFsSchema>
-  >({
-    resolver: zodResolver(saveWebpageToVectorFsSchema),
+  const saveWebpageToVectorFsForm = useForm<SaveWebpageToVectorFsFormSchema>({
+    resolver: zodResolver(saveWebpageToVectorFsFormSchema),
     defaultValues: {
       files: location?.state?.files || [],
     },
@@ -277,9 +272,7 @@ export const SaveWebpageToVectorFsAction = () => {
     },
   });
 
-  const onSubmit = async (
-    values: z.infer<typeof saveWebpageToVectorFsSchema>,
-  ) => {
+  const onSubmit = async (values: SaveWebpageToVectorFsFormSchema) => {
     if (destinationFolderPath === '/') {
       toast.error(
         "Please select another destination folder. You can't save files to the root folder.",

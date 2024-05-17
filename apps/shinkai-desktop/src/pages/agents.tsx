@@ -1,5 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
+import {
+  EditAgentFormSchema,
+  editAgentSchema,
+} from '@shinkai_network/shinkai-node-state/forms/agents/edit-agent';
 import { useDeleteAgent } from '@shinkai_network/shinkai-node-state/lib/mutations/deleteAgent/useDeleteAgent';
 import { useUpdateAgent } from '@shinkai_network/shinkai-node-state/lib/mutations/updateAgent/useUpdateAgent';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
@@ -29,7 +33,6 @@ import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { z } from 'zod';
 
 import { useAuth } from '../store/auth';
 import { getModelObject } from './create-agent';
@@ -220,16 +223,6 @@ function AgentCard({
   );
 }
 
-const formSchema = z.object({
-  agentName: z.string().optional(),
-  externalUrl: z.string().url(),
-  apiKey: z.string(),
-  modelCustom: z.string(),
-  modelTypeCustom: z.string(),
-});
-
-type FormSchemaType = z.infer<typeof formSchema>;
-
 const EditAgentDrawer = ({
   open,
   onOpenChange,
@@ -249,15 +242,15 @@ const EditAgentDrawer = ({
 }) => {
   const auth = useAuth((state) => state.auth);
 
-  const form = useForm<FormSchemaType>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<EditAgentFormSchema>({
+    resolver: zodResolver(editAgentSchema),
   });
 
   useEffect(() => {
     form.reset({
       agentName: agentId,
       externalUrl: agentExternalUrl,
-      apiKey: agentApiKey,
+      apikey: agentApiKey,
       modelCustom: agentModelProvider,
       modelTypeCustom: agentModelType,
     });
@@ -281,7 +274,7 @@ const EditAgentDrawer = ({
     },
   });
 
-  const submit = async (values: FormSchemaType) => {
+  const submit = async (values: EditAgentFormSchema) => {
     if (!auth) return;
     const model = getModelObject(values.modelCustom, values.modelTypeCustom);
 
@@ -291,7 +284,7 @@ const EditAgentDrawer = ({
       profile: auth?.profile ?? '',
       agent: {
         allowed_message_senders: [],
-        api_key: values.apiKey,
+        api_key: values.apikey,
         external_url: values.externalUrl,
         full_identity_name: `${auth.shinkai_identity}/${auth.profile}/agent/${agentId}`,
         id: agentId,
@@ -341,7 +334,7 @@ const EditAgentDrawer = ({
 
               <FormField
                 control={form.control}
-                name="apiKey"
+                name="apikey"
                 render={({ field }) => (
                   <TextField field={field} label="API Key" />
                 )}

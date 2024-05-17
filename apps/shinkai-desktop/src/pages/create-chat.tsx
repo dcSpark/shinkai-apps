@@ -1,4 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  CreateDMFormSchema,
+  createDMFormSchema,
+} from '@shinkai_network/shinkai-node-state/forms/chat/create-dm';
 import { useCreateChat } from '@shinkai_network/shinkai-node-state/lib/mutations/createChat/useCreateChat';
 import {
   Button,
@@ -13,15 +17,9 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { z } from 'zod';
 
 import { useAuth } from '../store/auth';
 import { SubpageLayout } from './layout/simple-layout';
-
-const createChatSchema = z.object({
-  receiver: z.string(),
-  message: z.string().min(1, 'Message cannot be empty'),
-});
 
 const CreateChatPage = () => {
   const auth = useAuth((state) => state.auth);
@@ -34,13 +32,13 @@ const CreateChatPage = () => {
     },
   });
 
-  const createChatForm = useForm<z.infer<typeof createChatSchema>>({
-    resolver: zodResolver(createChatSchema),
+  const createChatForm = useForm<CreateDMFormSchema>({
+    resolver: zodResolver(createDMFormSchema),
   });
 
-  const onSubmit = async (data: z.infer<typeof createChatSchema>) => {
+  const onSubmit = async (data: CreateDMFormSchema) => {
     if (!auth) return;
-    const [receiver, ...rest] = data.receiver.split('/');
+    const [receiver, ...rest] = data.receiverIdentity.split('/');
 
     await createChat({
       nodeAddress: auth?.node_address ?? '',
@@ -66,7 +64,7 @@ const CreateChatPage = () => {
           <div className="space-y-6">
             <FormField
               control={createChatForm.control}
-              name="receiver"
+              name="receiverIdentity"
               render={({ field }) => (
                 <TextField field={field} label="Shinkai Identity" />
               )}

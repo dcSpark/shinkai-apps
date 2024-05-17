@@ -1,5 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils';
+import {
+  CreateJobFormSchema,
+  createJobFormSchema,
+} from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import {
@@ -7,6 +11,7 @@ import {
   VRItem,
 } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
+import { transformDataToTreeNodes } from '@shinkai_network/shinkai-node-state/lib/utils/files';
 import {
   Badge,
   Button,
@@ -29,15 +34,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { FilesIcon, PaperClipIcon } from '@shinkai_network/shinkai-ui/assets';
-import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { FilesIcon } from '@shinkai_network/shinkai-ui/assets';
 import { PlusIcon, SearchCode } from 'lucide-react';
 import { TreeCheckboxSelectionKeys } from 'primereact/tree';
 import { TreeNode } from 'primereact/treenode';
 import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { z } from 'zod';
 
 import {
   KnowledgeSearchDrawer,
@@ -49,75 +52,6 @@ import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { SubpageLayout } from './layout/simple-layout';
 
-function transformDataToTreeNodes(
-  data: VRFolder,
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
-  parentPath: string = '/',
-): TreeNode[] {
-  const result: TreeNode[] = [];
-
-  for (const folder of data?.child_folders ?? []) {
-    const folderNode: TreeNode = {
-      key: folder.path,
-      label: folder.name,
-      data: folder,
-      icon: 'icon-folder',
-      children: transformDataToTreeNodes(folder, folder.path),
-    };
-    result.push(folderNode);
-  }
-
-  for (const item of data.child_items ?? []) {
-    const itemNode: TreeNode = {
-      key: item.path,
-      label: item.name,
-      data: item,
-      icon: 'icon-file',
-    };
-    result.push(itemNode);
-  }
-
-  return result;
-}
-
-const createJobSchema = z.object({
-  model: z.string(),
-  description: z.string(),
-  files: z.array(z.any()).max(3),
-});
-
-export const FileList = ({
-  files,
-  className,
-}: {
-  files: ({ name: string; size?: number } | File)[];
-  className?: string;
-}) => {
-  if (!files) return null;
-  return (
-    <div className={cn('flex w-full flex-col', className)}>
-      {files?.map((file, idx) => (
-        <div
-          className="relative flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-3"
-          key={idx}
-        >
-          <PaperClipIcon className="text-gray-100" />
-          <span className="text-gray-80 flex-1 truncate text-sm">
-            {file.name}
-          </span>
-        </div>
-      ))}
-    </div>
-  );
-};
-
-export function isImageOrPdf(file: File): boolean {
-  if (!file) return false;
-  return (
-    file?.type.startsWith('image/') || file?.type.startsWith('application/pdf')
-  );
-}
 const CreateJobPage = () => {
   const auth = useAuth((state) => state.auth);
   const defaulAgentId = useSettings((state) => state.defaultAgentId);
@@ -164,8 +98,8 @@ const CreateJobPage = () => {
     }
   }, [VRFiles, isVRFilesSuccess]);
 
-  const createJobForm = useForm<z.infer<typeof createJobSchema>>({
-    resolver: zodResolver(createJobSchema),
+  const createJobForm = useForm<CreateJobFormSchema>({
+    resolver: zodResolver(createJobFormSchema),
     defaultValues: {
       files: [],
     },
@@ -185,9 +119,9 @@ const CreateJobPage = () => {
 
   useEffect(() => {
     if (isSuccess && agents?.length && !defaulAgentId) {
-      createJobForm.setValue('model', agents[0].id);
+      createJobForm.setValue('agent', agents[0].id);
     } else {
-      createJobForm.setValue('model', defaulAgentId);
+      createJobForm.setValue('agent', defaulAgentId);
     }
   }, [agents, createJobForm, defaulAgentId, isSuccess]);
 
@@ -197,7 +131,7 @@ const CreateJobPage = () => {
     }
     const agent = agents.find((agent) => agent.id === locationState.agentName);
     if (agent) {
-      createJobForm.setValue('model', agent.id);
+      createJobForm.setValue('agent', agent.id);
     }
   }, [createJobForm, locationState, agents]);
 
@@ -244,7 +178,7 @@ const CreateJobPage = () => {
     }
   }, [locationState?.selectedVRFiles, locationState?.selectedVRFolders]);
 
-  const onSubmit = async (data: z.infer<typeof createJobSchema>) => {
+  const onSubmit = async (data: CreateJobFormSchema) => {
     if (!auth) return;
     const selectedVRFiles =
       selectedFileKeysRef.current.size > 0
@@ -259,8 +193,8 @@ const CreateJobPage = () => {
       nodeAddress: auth?.node_address ?? '',
       shinkaiIdentity: auth.shinkai_identity,
       profile: auth.profile,
-      agentId: data.model,
-      content: data.description,
+      agentId: data.agent,
+      content: data.content,
       files_inbox: '',
       files: data.files,
       is_hidden: false,
@@ -291,7 +225,7 @@ const CreateJobPage = () => {
           <div className="space-y-6">
             <FormField
               control={createJobForm.control}
-              name="description"
+              name="content"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Tell us the job you want to do</FormLabel>
@@ -318,7 +252,7 @@ const CreateJobPage = () => {
 
             <FormField
               control={createJobForm.control}
-              name="model"
+              name="agent"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Select your AI Agent</FormLabel>

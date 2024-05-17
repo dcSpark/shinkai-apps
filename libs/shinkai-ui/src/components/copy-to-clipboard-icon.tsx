@@ -38,7 +38,7 @@ const CopyToClipboardIcon = ({
   return (
     <Button
       className={cn(
-        'text-gray-80 flex gap-2 rounded-lg bg-gray-400 px-2 text-xs font-normal transition-colors hover:bg-gray-400 hover:text-white',
+        'flex h-8 w-8 gap-2 rounded-lg bg-gray-400 text-xs font-normal text-gray-50 transition-colors hover:bg-gray-400 hover:text-white',
         className,
       )}
       disabled={!string}

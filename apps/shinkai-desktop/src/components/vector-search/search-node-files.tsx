@@ -1,3 +1,8 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  SearchVectorFormSchema,
+  searchVectorFormSchema,
+} from '@shinkai_network/shinkai-node-state/forms/vector-fs/vector-search';
 import { useGetVRSeachSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRSearchSimplified/useGetSearchVRItems';
 import {
   Button,
@@ -24,7 +29,6 @@ import { SearchIcon, XIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { Link } from 'react-router-dom';
-import { z } from 'zod';
 
 import { SimpleLayout } from '../../pages/layout/simple-layout';
 import { useAuth } from '../../store/auth';
@@ -33,9 +37,6 @@ import {
   useVectorFolderSelectionStore,
 } from '../vector-fs/components/folder-selection-list';
 
-const searchVectorFSSchema = z.object({
-  searchQuery: z.string().min(1, 'Search query is required'),
-});
 const SearchNodeFiles = () => {
   const auth = useAuth((state) => state.auth);
   const setDestinationFolderPath = useVectorFolderSelectionStore(
@@ -45,7 +46,8 @@ const SearchNodeFiles = () => {
     (state) => state.destinationFolderPath,
   );
 
-  const searchVectorFSForm = useForm<z.infer<typeof searchVectorFSSchema>>({
+  const searchVectorFSForm = useForm<SearchVectorFormSchema>({
+    resolver: zodResolver(searchVectorFormSchema),
     defaultValues: {
       searchQuery: '',
     },
@@ -78,7 +80,7 @@ const SearchNodeFiles = () => {
     },
   );
 
-  const onSubmit = async (data: z.infer<typeof searchVectorFSSchema>) => {
+  const onSubmit = async (data: SearchVectorFormSchema) => {
     if (!data.searchQuery) return;
     setIsSearchEntered(true);
     setSearch(data.searchQuery);

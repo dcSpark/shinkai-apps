@@ -1,6 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { encryptMessageWithPassphrase } from '@shinkai_network/shinkai-message-ts/cryptography';
 import {
+  ExportConnectionFormSchema,
+  exportConnectionFormSchema,
+} from '@shinkai_network/shinkai-node-state/forms/settings/export-connection';
+import {
   Button,
   Form,
   FormField,
@@ -10,32 +14,15 @@ import {
 import { Download } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { z } from 'zod';
+import { FormattedMessage } from 'react-intl';
 
 import { useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
 
 export const ExportConnection = () => {
-  const intl = useIntl();
-  const formSchema = z
-    .object({
-      passphrase: z.string().min(8),
-      confirmPassphrase: z.string().min(8),
-    })
-    .superRefine(({ passphrase, confirmPassphrase }, ctx) => {
-      if (passphrase !== confirmPassphrase) {
-        ctx.addIssue({
-          code: 'custom',
-          message: intl.formatMessage({ id: 'passphrases-dont-match' }),
-          path: ['confirmPassphrase'],
-        });
-      }
-    });
-  type FormSchemaType = z.infer<typeof formSchema>;
   const auth = useAuth((state) => state.auth);
-  const form = useForm<FormSchemaType>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<ExportConnectionFormSchema>({
+    resolver: zodResolver(exportConnectionFormSchema),
     defaultValues: {
       passphrase: '',
       confirmPassphrase: '',
@@ -47,7 +34,9 @@ export const ExportConnection = () => {
   useEffect(() => {
     setEncryptedSetupData('');
   }, [passphrase, confirmPassphrase, setEncryptedSetupData]);
-  const exportConnection = async (values: FormSchemaType): Promise<void> => {
+  const exportConnection = async (
+    values: ExportConnectionFormSchema,
+  ): Promise<void> => {
     // TODO: Convert to a common format shared by visor, app and desktop
     const parsedSetupData = JSON.stringify(auth);
     const encryptedSetupData = await encryptMessageWithPassphrase(

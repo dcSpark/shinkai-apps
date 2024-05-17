@@ -168,6 +168,7 @@ export const FileUploader = ({
 interface FileImagePreview extends React.HTMLAttributes<HTMLDivElement> {
   file: File;
 }
+
 const FileImagePreview = ({ file, ...props }: FileImagePreview) => {
   const [imageSrc, setImageSrc] = useState('');
   useEffect(() => {

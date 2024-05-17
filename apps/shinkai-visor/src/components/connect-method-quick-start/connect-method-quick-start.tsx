@@ -1,4 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  QuickConnectFormSchema,
+  quickConnectFormSchema,
+} from '@shinkai_network/shinkai-node-state/forms/auth/quick-connection';
 import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
 import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/lib/queries/getEncryptionKeys/useGetEncryptionKeys';
 import {
@@ -17,25 +21,10 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import { useHistory, useLocation } from 'react-router';
-import { z } from 'zod';
 
 import { SetupData, useAuth } from '../../store/auth/auth';
 import { ConnectionMethodOption } from '../connection-method-option/connection-method-option';
 import { Header } from '../header/header';
-
-const formSchema = z.object({
-  registration_name: z.string().min(5),
-  node_address: z.string().url(),
-  shinkai_identity: z
-    .string()
-    .regex(
-      /^@@[a-zA-Z0-9_]+\.shinkai.*$/,
-      `It should be in the format of @@<name>.shinkai`,
-    )
-    .nullish(),
-});
-
-type FormType = z.infer<typeof formSchema>;
 
 export const ConnectMethodQuickStart = () => {
   const history = useHistory();
@@ -45,8 +34,8 @@ export const ConnectMethodQuickStart = () => {
     location.state?.nodeAddress ?? 'http://127.0.0.1:9550';
   const { encryptionKeys, isLoading: isLoadingEncryptionKeys } =
     useGetEncryptionKeys();
-  const form = useForm<FormType>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<QuickConnectFormSchema>({
+    resolver: zodResolver(quickConnectFormSchema),
     defaultValues: {
       registration_name: 'main_device',
       node_address: DEFAULT_NODE_ADDRESS,
@@ -81,7 +70,7 @@ export const ConnectMethodQuickStart = () => {
     form.setValue('node_address', DEFAULT_NODE_ADDRESS);
   }, [DEFAULT_NODE_ADDRESS, form]);
 
-  const connect = async (values: FormType) => {
+  const connect = async (values: QuickConnectFormSchema) => {
     if (!encryptionKeys) {
       return;
     }

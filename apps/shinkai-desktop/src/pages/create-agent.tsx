@@ -1,5 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AgentAPIModel } from '@shinkai_network/shinkai-message-ts/models';
+import {
+  addAgentFormDefault,
+  AddAgentFormSchema,
+  addAgentSchema,
+} from '@shinkai_network/shinkai-node-state/forms/agents/add-agent';
 import { useCreateAgent } from '@shinkai_network/shinkai-node-state/lib/mutations/createAgent/useCreateAgent';
 import { useScanOllamaModels } from '@shinkai_network/shinkai-node-state/lib/queries/scanOllamaModels/useScanOllamaModels';
 import {
@@ -28,73 +33,10 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { z } from 'zod';
 
 import { CREATE_JOB_PATH } from '../routes/name';
 import { useAuth } from '../store/auth';
 import { SubpageLayout } from './layout/simple-layout';
-
-const addAgentSchema = z
-  .object({
-    agentName: z
-      .string()
-      .regex(
-        /^[a-zA-Z0-9]+(_[a-zA-Z0-9]+)*$/,
-        'It just accepts alphanumeric characters and underscores',
-      ),
-    externalUrl: z.string().url(),
-    apikey: z.string(),
-    model: z.nativeEnum(Models),
-    modelType: z.string(),
-    isCustomModel: z.boolean().default(false).optional(),
-    modelCustom: z.string().optional(),
-    modelTypeCustom: z.string().optional(),
-  })
-  .superRefine(
-    (
-      { isCustomModel, model, modelType, modelCustom, modelTypeCustom, apikey },
-      ctx,
-    ) => {
-      if (isCustomModel) {
-        if (!modelCustom) {
-          ctx.addIssue({
-            path: ['modelCustom'],
-            code: z.ZodIssueCode.custom,
-            message: 'Model Name is required',
-          });
-        }
-        if (!modelTypeCustom) {
-          ctx.addIssue({
-            path: ['modelTypeCustom'],
-            code: z.ZodIssueCode.custom,
-            message: 'Model ID is required',
-          });
-        }
-      } else {
-        if (!model) {
-          ctx.addIssue({
-            path: ['model'],
-            code: z.ZodIssueCode.custom,
-            message: 'Model is required',
-          });
-        }
-        if (!modelType) {
-          ctx.addIssue({
-            path: ['modelType'],
-            code: z.ZodIssueCode.custom,
-            message: 'Model Type is required',
-          });
-        }
-        if (!apikey && model !== Models.Ollama) {
-          ctx.addIssue({
-            path: ['apikey'],
-            code: z.ZodIssueCode.custom,
-            message: 'Api Key is required',
-          });
-        }
-      }
-    },
-  );
 
 const modelOptions: { value: Models; label: string }[] = [
   {
@@ -130,15 +72,9 @@ export const getModelObject = (
 const CreateAgentPage = () => {
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
-  const addAgentForm = useForm<z.infer<typeof addAgentSchema>>({
+  const addAgentForm = useForm<AddAgentFormSchema>({
     resolver: zodResolver(addAgentSchema),
-    defaultValues: {
-      modelType: '',
-      externalUrl: modelsConfig[Models.OpenAI].apiUrl,
-      apikey: '',
-      model: Models.OpenAI,
-      isCustomModel: false,
-    },
+    defaultValues: addAgentFormDefault,
   });
   const {
     mutateAsync: createAgent,
@@ -237,10 +173,13 @@ const CreateAgentPage = () => {
     if (!modelTypeOptions?.length) {
       return;
     }
-    addAgentForm.setValue('agentName', currentModelType);
+    addAgentForm.setValue(
+      'agentName',
+      currentModelType.replace(/[^a-zA-Z0-9_]/g, '_'),
+    );
   }, [addAgentForm, currentModelType, modelTypeOptions?.length]);
 
-  const onSubmit = async (data: z.infer<typeof addAgentSchema>) => {
+  const onSubmit = async (data: AddAgentFormSchema) => {
     if (!auth) return;
     let model = getModelObject(data.model, data.modelType);
     if (isCustomModelMode && data.modelCustom && data.modelTypeCustom) {

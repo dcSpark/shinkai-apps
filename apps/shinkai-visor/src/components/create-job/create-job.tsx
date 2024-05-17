@@ -1,5 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils';
+import {
+  CreateJobFormSchema,
+  createJobFormSchema,
+} from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import {
@@ -7,6 +11,7 @@ import {
   VRItem,
 } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
+import { transformDataToTreeNodes } from '@shinkai_network/shinkai-node-state/lib/utils/files';
 import {
   Badge,
   Button,
@@ -38,51 +43,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useLocation } from 'react-router-dom';
-import { z } from 'zod';
 
 import { useQuery } from '../../hooks/use-query';
 import { useAuth } from '../../store/auth/auth';
 import { useSettings } from '../../store/settings/settings';
 import { allowedFileExtensions } from './constants';
 import { KnowledgeSearchDrawer, VectorFsScopeDrawer } from './vector-fs-scope';
-
-function transformDataToTreeNodes(
-  data: VRFolder,
-  parentPath: string = '/',
-): TreeNode[] {
-  const result: TreeNode[] = [];
-
-  for (const folder of data?.child_folders ?? []) {
-    const folderNode: TreeNode = {
-      key: folder.path,
-      label: folder.name,
-      data: folder,
-      icon: 'icon-folder',
-      children: transformDataToTreeNodes(folder, folder.path),
-    };
-    result.push(folderNode);
-  }
-
-  for (const item of data.child_items ?? []) {
-    const itemNode: TreeNode = {
-      key: item.path,
-      label: item.name,
-      data: item,
-      icon: 'icon-file',
-    };
-    result.push(itemNode);
-  }
-
-  return result;
-}
-
-const formSchema = z.object({
-  agent: z.string().min(1),
-  content: z.string().min(1),
-  files: z.array(z.any()).max(3),
-});
-
-type FormSchemaType = z.infer<typeof formSchema>;
 
 export const CreateJob = () => {
   const history = useHistory();
@@ -116,8 +82,8 @@ export const CreateJob = () => {
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
 
-  const form = useForm<FormSchemaType>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<CreateJobFormSchema>({
+    resolver: zodResolver(createJobFormSchema),
     defaultValues: {
       agent: '',
       content: query.get('initialText') ?? '',
@@ -183,7 +149,7 @@ export const CreateJob = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const submit = async (values: FormSchemaType) => {
+  const submit = async (values: CreateJobFormSchema) => {
     if (!auth) return;
     let content = values.content;
     if (query.has('context')) {

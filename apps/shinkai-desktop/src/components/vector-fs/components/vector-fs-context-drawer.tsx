@@ -1,4 +1,9 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { retrieveVectorResource } from '@shinkai_network/shinkai-message-ts/api';
+import {
+  SearchVectorFormSchema,
+  searchVectorFormSchema,
+} from '@shinkai_network/shinkai-node-state/forms/vector-fs/vector-search';
 import {
   VRFolder,
   VRItem,
@@ -24,7 +29,6 @@ import { Tree, TreeCheckboxSelectionKeys } from 'primereact/tree';
 import { TreeNode } from 'primereact/treenode';
 import React, { useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
-import { z } from 'zod';
 
 import { treeOptions } from '../../../lib/constants';
 import { useAuth } from '../../../store/auth';
@@ -121,9 +125,6 @@ export const VectorFsScopeDrawer = ({
   );
 };
 
-const searchVectorFSSchema = z.object({
-  searchQuery: z.string().min(1, 'Search query is required'),
-});
 export const KnowledgeSearchDrawer = ({
   isKnowledgeSearchOpen,
   setIsKnowledgeSearchOpen,
@@ -140,7 +141,8 @@ export const KnowledgeSearchDrawer = ({
   const auth = useAuth((state) => state.auth);
   const [isSearchEntered, setIsSearchEntered] = useState(false);
   const [search, setSearch] = useState('');
-  const searchVectorFSForm = useForm<z.infer<typeof searchVectorFSSchema>>({
+  const searchVectorFSForm = useForm<SearchVectorFormSchema>({
+    resolver: zodResolver(searchVectorFormSchema),
     defaultValues: {
       searchQuery: '',
     },
@@ -168,7 +170,7 @@ export const KnowledgeSearchDrawer = ({
     },
   );
 
-  const onSubmit = async (data: z.infer<typeof searchVectorFSSchema>) => {
+  const onSubmit = async (data: SearchVectorFormSchema) => {
     if (!data.searchQuery) return;
     setIsSearchEntered(true);
     setSearch(data.searchQuery);
