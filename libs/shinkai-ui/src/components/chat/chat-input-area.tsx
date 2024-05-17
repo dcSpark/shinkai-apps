@@ -35,7 +35,7 @@ export const ChatInputArea = ({
       editorProps: {
         attributes: {
           class:
-            'prose prose-invert prose-sm mx-auto focus:outline-none break-words',
+            'prose prose-invert prose-sm mx-auto focus:outline-none break-all',
         },
       },
       extensions: [
