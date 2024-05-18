@@ -45,7 +45,7 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     name: 'Llama-3 Gradient',
     description:
       "This model extends LLama-3 8B's context length from 8k to over 1m tokens.",
-    contextLength: 1040000,
+    contextLength: 256000,
     quality: OllamaModelQuality.Medium,
     speed: OllamaModelSpeed.Fast,
     size: 4.7,
@@ -97,7 +97,7 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     name: 'Dolphin 2.9 Llama 3',
     description:
       "Dolphin-2.9 has a variety of instruction, conversational, and coding skills. It also has initial agentic abilities and supports function calling.",
-    contextLength: 256000,
+    contextLength: 8000,
     quality: OllamaModelQuality.Medium,
     speed: OllamaModelSpeed.Average,
     size: 5.1,
