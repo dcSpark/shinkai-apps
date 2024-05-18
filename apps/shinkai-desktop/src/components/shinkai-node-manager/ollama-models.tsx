@@ -17,12 +17,12 @@ import { ModelResponse, ProgressResponse } from 'ollama/browser';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
-import { OLLAMA_MODELS } from '../../lib/shinkai-node-manager/ollama_models';
 import {
   useOllamaListQuery,
   useOllamaPullMutation,
   useOllamaRemoveMutation,
 } from '../../lib/shinkai-node-manager/ollama-client';
+import { OLLAMA_MODELS } from '../../lib/shinkai-node-manager/ollama-models';
 import {
   useShinkaiNodeGetOllamaApiUrlQuery,
   useShinkaiNodeIsRunningQuery,
@@ -35,7 +35,7 @@ import { ModelSpeedTag } from './components/model-speed-tag';
 export const OllamaModels = () => {
   const auth = useAuth((auth) => auth.auth);
   const { data: ollamaApiUrl } = useShinkaiNodeGetOllamaApiUrlQuery();
-  const ollamaConfig = { host: ollamaApiUrl || '' };
+  const ollamaConfig = { host: ollamaApiUrl || 'http://127.0.0.1:11435' };
   const { data: isShinkaiNodeRunning } = useShinkaiNodeIsRunningQuery();
   const { mutateAsync: shinkaiNodeSpawn } = useShinkaiNodeSpawnMutation({});
   const { mutateAsync: syncOllamaModels } = useSyncOllamaModels();
