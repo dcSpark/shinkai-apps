@@ -1,7 +1,7 @@
 import { Badge } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 
-import { OllamaModelSpeed } from '../../../lib/shinkai-node-manager/ollama_models';
+import { OllamaModelSpeed } from '../../../lib/shinkai-node-manager/ollama-models';
 
 export const ModelSpeedTag = ({ speed }: { speed: OllamaModelSpeed }) => {
   const emojiMap: { [key in OllamaModelSpeed]: string } = {
