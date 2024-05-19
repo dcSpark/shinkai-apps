@@ -8,8 +8,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "serve:android": "SERVE=true npx cap run android",
-    "postinstall": "npx patch-package"
+    "serve:android": "SERVE=true npx cap run android"
   },
   "dependencies": {
     "@capacitor-community/barcode-scanner": "^4.0.1",
@@ -62,18 +61,6 @@
     "@estruyf/github-actions-reporter": "^1.4.0",
     "@noble/ed25519": "^2.0.0",
     "@noble/hashes": "^1.3.2",
-    "@nx/cypress": "17.1.3",
-    "@nx/devkit": "17.2.8",
-    "@nx/eslint-plugin": "17.1.3",
-    "@nx/jest": "17.1.3",
-    "@nx/js": "17.1.3",
-    "@nx/linter": "17.1.3",
-    "@nx/playwright": "^17.2.8",
-    "@nx/react": "17.1.3",
-    "@nx/rollup": "17.1.3",
-    "@nx/vite": "17.1.3",
-    "@nx/webpack": "17.1.3",
-    "@nx/workspace": "17.1.3",
     "@peculiar/webcrypto": "^1.4.3",
     "@playwright/test": "^1.40.1",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
