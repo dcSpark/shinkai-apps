@@ -9,9 +9,7 @@
       "defaultConfiguration": "production",
       "options": {
         "cwd": "apps/shinkai-app",
-        "commands": [
-          "npx vite build --verbose"
-        ]
+        "commands": ["npx vite build --verbose"]
       },
       "configurations": {
         "development": {
@@ -56,11 +54,11 @@
       }
     },
     "serve": {
-      "executor": "@nx/vite:dev-server",
+      "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "shinkai-app:build",
-        "port": 9000
+        "cwd": "apps/shinkai-app",
+        "command": "npx vite"
       },
       "configurations": {
         "development": {
@@ -83,42 +81,6 @@
       "configurations": {
         "development": {},
         "production": {}
-      }
-    },
-    "preview": {
-      "executor": "@nx/vite:preview-server",
-      "defaultConfiguration": "development",
-      "options": {
-        "buildTarget": "shinkai-app:build"
-      },
-      "configurations": {
-        "development": {
-          "buildTarget": "shinkai-app:build:development"
-        },
-        "production": {
-          "buildTarget": "shinkai-app:build:production"
-        }
-      }
-    },
-    "test": {
-      "executor": "@nx/vite:test",
-      "outputs": ["{options.reportsDirectory}"],
-      "options": {
-        "passWithNoTests": true,
-        "reportsDirectory": "../../coverage/apps/shinkai-app"
-      }
-    },
-    "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["apps/shinkai-app/**/*.{ts,tsx,js,jsx}"]
-      }
-    },
-    "serve-static": {
-      "executor": "@nx/web:file-server",
-      "options": {
-        "buildTarget": "shinkai-app:build"
       }
     }
   },
