@@ -64,7 +64,6 @@ export const useOllamaPullMutation = (
 
       const pipeGenerator = async function* transformGenerator(generator: AsyncGenerator<ProgressResponse, unknown, unknown>) {
         for await (const progress of generator) {
-          console.log('status', progress.status);
           if (progress.status === 'success') {
             console.log(
               `completed invalidating`,
