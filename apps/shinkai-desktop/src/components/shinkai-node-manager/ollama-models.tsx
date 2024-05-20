@@ -74,7 +74,6 @@ export const OllamaModels = () => {
           ...pullingModelsMap.current,
           [model]: progress,
         };
-        console.log('mapita', model, pullingModelsMap, progress);
         if (progress.status === 'success') {
           toast.success(`Model ${model} pull completed`);
           if (auth) {
