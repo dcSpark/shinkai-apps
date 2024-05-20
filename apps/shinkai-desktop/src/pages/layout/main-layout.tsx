@@ -270,7 +270,7 @@ export function MainNav() {
                         initial="hidden"
                         variants={showAnimation}
                       >
-                        Create New
+                        Create AI Chat
                       </motion.span>
                     )}
                   </AnimatePresence>
