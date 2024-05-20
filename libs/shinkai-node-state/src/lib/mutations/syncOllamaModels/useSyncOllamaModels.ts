@@ -12,6 +12,7 @@ export type SyncOllamaModelsInput = CredentialsPayload & {
 };
 
 export const useSyncOllamaModels = (
+  allowedModels?: string[],
   options?: UseMutationOptions<void, Error, SyncOllamaModelsInput>,
 ) => {
   const response = useMutation({
@@ -22,9 +23,12 @@ export const useSyncOllamaModels = (
         shinkaiIdentity,
         ...credentials
       } = value;
-      const ollamaModels = await scanOllamaModels(nodeAddress, senderSubidentity, shinkaiIdentity, credentials);
+      let ollamaModels = await scanOllamaModels(nodeAddress, senderSubidentity, shinkaiIdentity, credentials);
       if (!ollamaModels?.length) {
         return;
+      }
+      if (allowedModels?.length) {
+        ollamaModels = ollamaModels.filter(model => allowedModels.includes(model.model));
       }
       const payload = {
         models: ollamaModels.map(v => v.model),
