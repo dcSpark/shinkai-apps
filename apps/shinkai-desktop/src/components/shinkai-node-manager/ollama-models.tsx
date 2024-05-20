@@ -14,7 +14,7 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Loader2 } from 'lucide-react';
 import { ModelResponse, ProgressResponse } from 'ollama/browser';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import {
@@ -46,8 +46,10 @@ export const OllamaModels = () => {
       handlePullProgress(input.model, data);
     },
     onError: (_, input) => {
-      pullingModelsMap.delete(input.model);
-      setPullingModelsMap(new Map(pullingModelsMap));
+      pullingModelsMap.current = {
+        ...pullingModelsMap.current,
+        [input.model]: undefined,
+      };
     },
   });
   const { mutateAsync: ollamaRemove } = useOllamaRemoveMutation(ollamaConfig, {
@@ -65,7 +67,14 @@ export const OllamaModels = () => {
   ): Promise<void> => {
     try {
       for await (const progress of progressIterator) {
-        setPullingModelsMap(new Map(pullingModelsMap.set(model, progress)));
+        if (!progress) {
+          continue;
+        }
+        pullingModelsMap.current = {
+          ...pullingModelsMap.current,
+          [model]: progress,
+        };
+        console.log('mapita', model, pullingModelsMap, progress);
         if (progress.status === 'success') {
           toast.success(`Model ${model} pull completed`);
           if (auth) {
@@ -89,16 +98,21 @@ export const OllamaModels = () => {
     } catch (error) {
       toast.error(`Error pulling model ${model}. ${error?.toString()}`);
     } finally {
-      pullingModelsMap.delete(model);
-      setPullingModelsMap(new Map(pullingModelsMap));
+      pullingModelsMap.current = {
+        ...pullingModelsMap.current,
+        [model]: undefined,
+      };
     }
   };
   const [installedOllamaModelsMap, setInstalledOllamaModelsMap] = useState(
     new Map<string, ModelResponse>(),
   );
-  const [pullingModelsMap, setPullingModelsMap] = useState(
-    new Map<string, ProgressResponse>(),
-  );
+  // const [pullingModelsMap, setPullingModelsMap] = useState<{
+  //   [model: string]: ProgressResponse | undefined;
+  // }>();
+  const pullingModelsMap = useRef<{
+    [model: string]: ProgressResponse | undefined;
+  }>();
 
   const getProgress = (progress: ProgressResponse): number => {
     return Math.ceil((100 * progress.completed) / progress.total);
@@ -188,16 +202,17 @@ export const OllamaModels = () => {
                     >
                       Delete
                     </Button>
-                  ) : pullingModelsMap.has(model.fullName) ? (
+                  ) : pullingModelsMap.current?.[model.fullName] ? (
                     <div className="flex flex-col space-y-1">
                       <Progress
                         className="h-4 w-[150px] bg-gray-700 [&>*]:bg-gray-100"
                         value={getProgress(
-                          pullingModelsMap.get(model.fullName)!,
+                          // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+                          pullingModelsMap.current?.[model.fullName]!,
                         )}
                       />
                       <span>
-                        {pullingModelsMap.get(model.fullName)?.status}
+                        {pullingModelsMap.current?.[model.fullName]?.status}
                       </span>
                     </div>
                   ) : (
