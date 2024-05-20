@@ -38,7 +38,7 @@ export const OllamaModels = () => {
   const ollamaConfig = { host: ollamaApiUrl || 'http://127.0.0.1:11435' };
   const { data: isShinkaiNodeRunning } = useShinkaiNodeIsRunningQuery();
   const { mutateAsync: shinkaiNodeSpawn } = useShinkaiNodeSpawnMutation({});
-  const { mutateAsync: syncOllamaModels } = useSyncOllamaModels();
+  const { mutateAsync: syncOllamaModels } = useSyncOllamaModels(OLLAMA_MODELS.map((value) => value.fullName));
   const { isLoading: isOllamaListLoading, data: installedOllamaModels } =
     useOllamaListQuery(ollamaConfig, {});
   const { mutateAsync: ollamaPull } = useOllamaPullMutation(ollamaConfig, {

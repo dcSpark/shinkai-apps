@@ -43,6 +43,7 @@ import { z } from 'zod';
 
 import logo from '../../../src-tauri/icons/128x128@2x.png';
 import { OllamaModels } from '../../components/shinkai-node-manager/ollama-models';
+import { OLLAMA_MODELS } from '../../lib/shinkai-node-manager/ollama-models';
 import {
   queryClient,
   useShinkaiNodeGetLastNLogsQuery,
@@ -154,14 +155,17 @@ const App = () => {
   const {
     mutateAsync: syncOllamaModels,
     isPending: syncOllamaModelsIsPending,
-  } = useSyncOllamaModels({
-    onSuccess: () => {
-      successOllamaModelsSyncToast();
+  } = useSyncOllamaModels(
+    OLLAMA_MODELS.map((value) => value.fullName),
+    {
+      onSuccess: () => {
+        successOllamaModelsSyncToast();
+      },
+      onError: () => {
+        errorOllamaModelsSyncToast();
+      },
     },
-    onError: () => {
-      errorOllamaModelsSyncToast();
-    },
-  });
+  );
 
   useShinkaiNodeEventsToast();
   useEffect(() => {
