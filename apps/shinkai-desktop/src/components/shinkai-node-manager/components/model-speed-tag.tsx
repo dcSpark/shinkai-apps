@@ -1,4 +1,3 @@
-import { Badge } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 
 import { OllamaModelSpeed } from '../../../lib/shinkai-node-manager/ollama-models';
@@ -12,8 +11,8 @@ export const ModelSpeedTag = ({ speed }: { speed: OllamaModelSpeed }) => {
     [OllamaModelSpeed.VeryFast]: '🐆',
   };
   return (
-    <Badge className={cn('capitalize')} variant="outline">
+    <div className={cn('  px-2 font-normal capitalize')}>
       {speed} {emojiMap[speed]}
-    </Badge>
+    </div>
   );
 };

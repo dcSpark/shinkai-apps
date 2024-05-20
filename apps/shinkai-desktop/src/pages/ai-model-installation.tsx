@@ -1,30 +1,31 @@
 import { buttonVariants } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+import { OllamaModels } from '../components/shinkai-node-manager/ollama-models';
 import { SubpageLayout } from './layout/simple-layout';
 
 const AIModelInstallation = () => {
   return (
-    <SubpageLayout title="Install AI">
-      <div className="flex h-full flex-col">
-        <img
-          alt="AI Model Installation"
-          src="https://via.placeholder.com/150"
-        />
-      </div>
+    <SubpageLayout
+      className="relative flex w-full max-w-6xl flex-col gap-2 px-4"
+      title="Install AI"
+    >
+      <OllamaModels />
       <Link
         className={cn(
           buttonVariants({
-            size: 'lg',
+            size: 'auto',
           }),
-          'mt-4 w-full',
+          'absolute right-0 top-9 mx-auto gap-2 px-6 py-2.5',
         )}
         to={{
           pathname: '/',
         }}
       >
         Continue
+        <ArrowRight className="h-4 w-4" />
       </Link>
     </SubpageLayout>
   );

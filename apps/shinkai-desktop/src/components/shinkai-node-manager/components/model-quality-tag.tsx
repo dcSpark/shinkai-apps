@@ -9,13 +9,18 @@ export const ModelQuailityTag = ({
   quality: OllamaModelQuality;
 }) => {
   const colorMap: { [key in OllamaModelQuality]: string } = {
-    [OllamaModelQuality.Bad]: 'border-red-700 bg-red-400 text-red-600',
-    [OllamaModelQuality.Medium]:
-      'border-yellow-700 bg-yellow-400 text-yellow-600',
-    [OllamaModelQuality.Great]: 'border-green-700 bg-green-400 text-green-600',
+    [OllamaModelQuality.Bad]: 'bg-red-900 text-red-400',
+    [OllamaModelQuality.Medium]: 'text-yellow-400 bg-yellow-900',
+    [OllamaModelQuality.Great]: 'text-green-400 bg-green-900',
   };
   return (
-    <Badge className={cn('capitalize', colorMap[quality])} variant="outline">
+    <Badge
+      className={cn(
+        'rounded-full border-0 px-2 py-1 font-normal capitalize',
+        colorMap[quality],
+      )}
+      variant="outline"
+    >
       {quality}
     </Badge>
   );
