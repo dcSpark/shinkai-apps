@@ -10,21 +10,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   Button,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
   Tooltip,
   TooltipContent,
   TooltipPortal,
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import {
-  AddAgentIcon,
-  FilesIcon,
-  InboxIcon,
-  JobBubbleIcon,
-} from '@shinkai_network/shinkai-ui/assets';
+import { FilesIcon, InboxIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion, TargetAndTransition } from 'framer-motion';
 import {
@@ -48,7 +40,6 @@ import {
 import { toast } from 'sonner';
 
 import { openShinkaiNodeManagerWindow } from '../../lib/shinkai-node-manager/shinkai-node-manager-windows-utils';
-import { ONBOARDING_PATH } from '../../routes/name';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
 import { useShinkaiNodeManager } from '../../store/shinkai-node-manager';
@@ -139,7 +130,7 @@ const NavLink = ({
 export function MainNav() {
   const navigate = useNavigate();
   const logout = useAuth((state) => state.setLogout);
-  // const auth = useAuth((state) => state.auth);
+
   const isLocalShinkaiNodeIsUse = useShinkaiNodeManager(
     (state) => state.isInUse,
   );
@@ -148,8 +139,6 @@ export function MainNav() {
 
   const sidebarExpanded = useSettings((state) => state.sidebarExpanded);
   const toggleSidebar = useSettings((state) => state.toggleSidebar);
-
-  const [showCreateNewActions, setShowCreateNewActions] = useState(false);
 
   const confirmDisconnect = () => {
     setIsConfirmLogoutDialogOpened(true);
@@ -259,59 +248,42 @@ export function MainNav() {
       </TooltipProvider>
       <div className="flex flex-1 flex-col justify-between">
         <div className="flex flex-col gap-1.5">
-          <Popover>
-            <PopoverTrigger asChild>
-              <motion.button
-                className={cn(
-                  'text-gray-80 mb-3 mt-4 flex h-8 w-8 items-center justify-center gap-2 self-center rounded-full bg-white/10 hover:bg-white/10 hover:text-white',
-                  sidebarExpanded &&
-                    'w-full justify-start rounded-lg bg-transparent px-4 py-3 hover:bg-gray-500',
-                )}
-                onClick={() => setShowCreateNewActions(!showCreateNewActions)}
-                whileHover={{ scale: !sidebarExpanded ? 1.05 : 1 }}
-              >
-                <PlusIcon className="h-5 w-5 shrink-0" />
-                <AnimatePresence>
-                  {sidebarExpanded && (
-                    <motion.span
-                      animate="show"
-                      className="whitespace-nowrap text-xs"
-                      exit="hidden"
-                      initial="hidden"
-                      variants={showAnimation}
-                    >
-                      Create New
-                    </motion.span>
+          <TooltipProvider delayDuration={0}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <motion.button
+                  className={cn(
+                    'text-gray-80 mb-3 mt-4 flex h-8 w-8 items-center justify-center gap-2 self-center rounded-full bg-white/10 hover:bg-white/10 hover:text-white',
+                    sidebarExpanded &&
+                      'w-full justify-start rounded-lg bg-transparent px-4 py-3 hover:bg-gray-500',
                   )}
-                </AnimatePresence>
-              </motion.button>
-            </PopoverTrigger>
-            <PopoverContent
-              align="start"
-              className={cn(
-                ' bg-gray-500 p-2',
-                sidebarExpanded ? 'w-[213px]' : 'w-[180px]',
-              )}
-              side="top"
-            >
-              <div className="flex flex-col gap-1">
-                <Link
-                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs text-gray-50 transition-colors hover:bg-gray-400"
-                  to="/create-job"
+                  onClick={() => navigate('/create-job')}
+                  whileHover={{ scale: !sidebarExpanded ? 1.05 : 1 }}
                 >
-                  <JobBubbleIcon className="h-5 w-5" />
+                  <PlusIcon className="h-5 w-5 shrink-0" />
+                  <AnimatePresence>
+                    {sidebarExpanded && (
+                      <motion.span
+                        animate="show"
+                        className="whitespace-nowrap text-xs"
+                        exit="hidden"
+                        initial="hidden"
+                        variants={showAnimation}
+                      >
+                        Create New
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </motion.button>
+              </TooltipTrigger>
+              <TooltipPortal>
+                <TooltipContent align="center" side="right">
                   Create AI Chat
-                </Link>
-                <Link
-                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs text-gray-50 transition-colors hover:bg-gray-400"
-                  to="add-agent"
-                >
-                  <AddAgentIcon className="h-5 w-5" />
-                  Create Agent
-                </Link>
-              </div>
-            </PopoverContent>
-          </Popover>
+                </TooltipContent>
+              </TooltipPortal>
+            </Tooltip>
+          </TooltipProvider>
+
           {navigationLinks.map((item) => {
             return (
               <TooltipProvider
