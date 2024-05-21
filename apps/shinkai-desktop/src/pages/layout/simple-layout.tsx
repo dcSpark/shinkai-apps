@@ -14,7 +14,7 @@ export const SubpageLayout = ({
 }) => {
   return (
     <div className={cn('relative mx-auto max-w-lg py-10', className)}>
-      <Link className="absolute left-0" to={-1 as To}>
+      <Link className="absolute left-4" to={-1 as To}>
         <LucideArrowLeft />
         <span className="sr-only">Back</span>
       </Link>
@@ -22,6 +22,31 @@ export const SubpageLayout = ({
         {title}
       </h1>
       <div className="flex-1">{children}</div>
+    </div>
+  );
+};
+export const FixedHeaderLayout = ({
+  title,
+  children,
+  className,
+}: {
+  title: React.ReactNode;
+  children: React.ReactNode;
+  className?: string;
+}) => {
+  return (
+    <div className={cn('mx-auto h-screen max-w-lg py-10 pb-4', className)}>
+      <div className="mx-2 flex justify-between">
+        <Link className="" to={-1 as To}>
+          <LucideArrowLeft />
+          <span className="sr-only">Back</span>
+        </Link>
+        <h1 className="mb-8 text-center text-2xl font-semibold tracking-tight">
+          {title}
+        </h1>
+        <div />
+      </div>
+      {children}
     </div>
   );
 };

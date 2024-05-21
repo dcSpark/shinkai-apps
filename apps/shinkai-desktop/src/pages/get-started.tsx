@@ -42,7 +42,9 @@ const GetStartedPage = () => {
           node_encryption_pk: response.data?.encryption_public_key ?? '',
         };
         setAuth(updatedSetupData);
-        navigate('/');
+        // Hide http subscription for now
+        // navigate('/connect-ai');
+        navigate('/ai-model-installation');
       } else {
         throw new Error('Failed to submit registration');
       }
@@ -73,27 +75,12 @@ const GetStartedPage = () => {
   }
   return (
     <OnboardingLayout>
-      <div className="flex h-full flex-col">
+      <div className="mx-auto flex h-full max-w-lg flex-col">
         <p className="text-gray-80 text-center text-base tracking-wide">
           Transform your desktop experience using AI with Shinkai Desktop{' '}
           <span aria-hidden> 🔑</span>
         </p>
         <div className="mt-20 flex flex-1 flex-col gap-10">
-          {/* Note: Temporary disabled, model manager and http subscriptions are work in progress */}
-          {/*<Link*/}
-          {/*  className={cn(*/}
-          {/*    buttonVariants({*/}
-          {/*      size: 'lg',*/}
-          {/*    }),*/}
-          {/*    'w-full',*/}
-          {/*  )}*/}
-          {/*  state={{ connectionType: 'local' }}*/}
-          {/*  to={{*/}
-          {/*    pathname: '/onboarding',*/}
-          {/*  }}*/}
-          {/*>*/}
-          {/*  Shinkai Private (Local)*/}
-          {/*</Link>*/}
           <Button
             isLoading={shinkaiNodeSpawnIsPending}
             onClick={() => shinkaiNodeSpawn()}

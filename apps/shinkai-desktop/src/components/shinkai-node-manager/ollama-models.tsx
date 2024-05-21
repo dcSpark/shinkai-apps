@@ -1,6 +1,5 @@
 import { useSyncOllamaModels } from '@shinkai_network/shinkai-node-state/lib/mutations/syncOllamaModels/useSyncOllamaModels';
 import {
-  Badge,
   Button,
   Progress,
   ScrollArea,
@@ -11,10 +10,12 @@ import {
   TableHeader,
   TableRow,
 } from '@shinkai_network/shinkai-ui';
+import { useMap } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { Loader2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Download, Loader2, Minus } from 'lucide-react';
 import { ModelResponse, ProgressResponse } from 'ollama/browser';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect } from 'react';
 import { toast } from 'sonner';
 
 import {
@@ -36,9 +37,15 @@ export const OllamaModels = () => {
   const auth = useAuth((auth) => auth.auth);
   const { data: ollamaApiUrl } = useShinkaiNodeGetOllamaApiUrlQuery();
   const ollamaConfig = { host: ollamaApiUrl || 'http://127.0.0.1:11435' };
+
+  const installedOllamaModelsMap = useMap<string, ModelResponse>();
+  const pullingModelsMap = useMap<string, ProgressResponse>();
+
   const { data: isShinkaiNodeRunning } = useShinkaiNodeIsRunningQuery();
   const { mutateAsync: shinkaiNodeSpawn } = useShinkaiNodeSpawnMutation({});
-  const { mutateAsync: syncOllamaModels } = useSyncOllamaModels(OLLAMA_MODELS.map((value) => value.fullName));
+  const { mutateAsync: syncOllamaModels } = useSyncOllamaModels(
+    OLLAMA_MODELS.map((value) => value.fullName),
+  );
   const { isLoading: isOllamaListLoading, data: installedOllamaModels } =
     useOllamaListQuery(ollamaConfig, {});
   const { mutateAsync: ollamaPull } = useOllamaPullMutation(ollamaConfig, {
@@ -46,15 +53,13 @@ export const OllamaModels = () => {
       handlePullProgress(input.model, data);
     },
     onError: (_, input) => {
-      pullingModelsMap.current = {
-        ...pullingModelsMap.current,
-        [input.model]: undefined,
-      };
+      pullingModelsMap.delete(input.model);
     },
   });
   const { mutateAsync: ollamaRemove } = useOllamaRemoveMutation(ollamaConfig, {
     onSuccess: (_, input) => {
       toast.success(`Model ${input.model} removed`);
+      installedOllamaModelsMap.delete(input.model);
     },
     onError: (error, input) => {
       toast.error(`Error removing ${input.model}. ${error.message}`);
@@ -70,10 +75,7 @@ export const OllamaModels = () => {
         if (!progress) {
           continue;
         }
-        pullingModelsMap.current = {
-          ...pullingModelsMap.current,
-          [model]: progress,
-        };
+        pullingModelsMap.set(model, progress);
         if (progress.status === 'success') {
           toast.success(`Model ${model} pull completed`);
           if (auth) {
@@ -97,36 +99,20 @@ export const OllamaModels = () => {
     } catch (error) {
       toast.error(`Error pulling model ${model}. ${error?.toString()}`);
     } finally {
-      pullingModelsMap.current = {
-        ...pullingModelsMap.current,
-        [model]: undefined,
-      };
+      pullingModelsMap.delete(model);
     }
   };
-  const [installedOllamaModelsMap, setInstalledOllamaModelsMap] = useState(
-    new Map<string, ModelResponse>(),
-  );
-  // const [pullingModelsMap, setPullingModelsMap] = useState<{
-  //   [model: string]: ProgressResponse | undefined;
-  // }>();
-  const pullingModelsMap = useRef<{
-    [model: string]: ProgressResponse | undefined;
-  }>();
 
   const getProgress = (progress: ProgressResponse): number => {
-    return Math.ceil((100 * progress.completed) / progress.total);
+    return Math.ceil((100 * (progress.completed ?? 0)) / (progress.total ?? 1));
   };
 
   useEffect(() => {
-    setInstalledOllamaModelsMap(
-      new Map(
-        installedOllamaModels?.models.map((modelResponse) => [
-          modelResponse.name,
-          modelResponse,
-        ]) || [],
-      ),
-    );
-  }, [installedOllamaModels, setInstalledOllamaModelsMap]);
+    installedOllamaModels?.models &&
+      installedOllamaModels.models.forEach((modelResponse) => {
+        installedOllamaModelsMap.set(modelResponse.name, modelResponse);
+      });
+  }, [installedOllamaModels]);
 
   if (!isShinkaiNodeRunning) {
     return (
@@ -149,33 +135,34 @@ export const OllamaModels = () => {
     );
   }
   return (
-    <ScrollArea className="h-full rounded-md border">
-      <Table>
-        <TableHeader className="sticky top-0 bg-gray-700">
+    <ScrollArea className="h-full flex-1 rounded-md">
+      <Table className="w-full border-collapse text-[13px]">
+        <TableHeader className="bg-gray-400 text-xs">
           <TableRow>
-            <TableHead className="w-[300px]">AI Name</TableHead>
+            <TableHead className="md:w-[300px] lg:w-[480px]">AI Name</TableHead>
             <TableHead>Data Limit</TableHead>
             <TableHead>Quality</TableHead>
             <TableHead>Speed</TableHead>
-            <TableHead>Size</TableHead>
-            <TableHead />
+            <TableHead className="w-[80px]">Size</TableHead>
+            <TableHead className="w-[180px]" />
           </TableRow>
         </TableHeader>
         <TableBody>
           {OLLAMA_MODELS.map((model) => {
             return (
-              <TableRow key={model.fullName}>
+              <TableRow
+                className="transition-colors hover:bg-gray-300/50"
+                key={model.fullName}
+              >
                 <TableCell>
-                  <div className="flex flex-col space-y-2">
-                    <div className="flex flex-row space-x-2">
-                      <span className="font-medium">{model.name}</span>
-                    </div>
-                    <span className="text-gray-80 text-ellipsis text-xs">
+                  <div className="flex flex-col items-start gap-2">
+                    <span className="font-medium">{model.name}</span>
+                    {/*<Badge className={cn('text-[8px]')} variant="outline">*/}
+                    {/*  {model.fullName}*/}
+                    {/*</Badge>*/}
+                    <span className="text-gray-80 line-clamp-3 text-ellipsis text-xs">
                       {model.description}
                     </span>
-                    <Badge className={cn('text-[8px]')} variant="outline">
-                      {model.fullName}
-                    </Badge>
                   </div>
                 </TableCell>
                 <TableCell>
@@ -189,40 +176,57 @@ export const OllamaModels = () => {
                 </TableCell>
                 <TableCell>{model.size} GB</TableCell>
                 <TableCell>
-                  {isOllamaListLoading ? (
-                    <Loader2 className="animate-spin" />
-                  ) : installedOllamaModelsMap.has(model.fullName) ? (
-                    <Button
-                      className="hover:border-brand py-1.5 text-sm hover:bg-transparent hover:text-white"
-                      onClick={() => {
-                        ollamaRemove({ model: model.fullName });
-                      }}
-                      variant={'destructive'}
-                    >
-                      Delete
-                    </Button>
-                  ) : pullingModelsMap.current?.[model.fullName] ? (
-                    <div className="flex flex-col space-y-1">
-                      <Progress
-                        className="h-4 w-[150px] bg-gray-700 [&>*]:bg-gray-100"
-                        value={getProgress(
-                          // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-                          pullingModelsMap.current?.[model.fullName]!,
-                        )}
-                      />
-                      <span>
-                        {pullingModelsMap.current?.[model.fullName]?.status}
-                      </span>
-                    </div>
-                  ) : (
-                    <Button
-                      className="hover:border-brand py-1.5 text-sm hover:bg-transparent hover:text-white"
-                      onClick={() => ollamaPull({ model: model.fullName })}
-                      variant={'outline'}
-                    >
-                      Pull
-                    </Button>
-                  )}
+                  <motion.div
+                    className="flex items-center justify-center"
+                    layout
+                  >
+                    {isOllamaListLoading ? (
+                      <Loader2 className="animate-spin" />
+                    ) : installedOllamaModelsMap.has(model.fullName) ? (
+                      <Button
+                        className="hover:border-brand py-1.5 text-sm hover:text-white"
+                        onClick={() => {
+                          ollamaRemove({ model: model.fullName });
+                        }}
+                        size="auto"
+                        variant={'destructive'}
+                      >
+                        <Minus className="mr-2 h-3 w-3" />
+                        Remove
+                      </Button>
+                    ) : pullingModelsMap.get(model.fullName) ? (
+                      <div className="flex flex-col items-center gap-1">
+                        <span className="text-xs text-gray-100">
+                          {getProgress(
+                            pullingModelsMap.get(
+                              model.fullName,
+                            ) as ProgressResponse,
+                          ) + '%'}
+                        </span>
+                        <Progress
+                          className="h-2 w-full bg-gray-200 [&>*]:bg-gray-100"
+                          value={getProgress(
+                            pullingModelsMap.get(
+                              model.fullName,
+                            ) as ProgressResponse,
+                          )}
+                        />
+                        <span className="text-xs text-gray-100">
+                          {pullingModelsMap.get(model.fullName)?.status}
+                        </span>
+                      </div>
+                    ) : (
+                      <Button
+                        className="hover:border-brand py-1.5 text-sm hover:bg-transparent hover:text-white"
+                        onClick={() => ollamaPull({ model: model.fullName })}
+                        size="auto"
+                        variant={'outline'}
+                      >
+                        <Download className="mr-2 h-4 w-4" />
+                        Install
+                      </Button>
+                    )}
+                  </motion.div>
                 </TableCell>
               </TableRow>
             );
