@@ -22,7 +22,7 @@ type Options = QueryObserverOptions<
 
 export const useGetVRSeachSimplified = (
   input: GetVRSearchSimplifiedInput,
-  options?: Options,
+  options?: Omit<Options, 'queryKey' | 'queryFn'>,
 ) => {
   const response = useQuery({
     queryKey: [FunctionKey.GET_VR_SEARCH_SIMPLIFIED, input],

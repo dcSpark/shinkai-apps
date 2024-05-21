@@ -1,6 +1,6 @@
 import type { CredentialsPayload } from '@shinkai_network/shinkai-message-ts/models';
 import { SmartInbox } from '@shinkai_network/shinkai-message-ts/models';
-import { QueryObserverOptions } from '@tanstack/react-query';
+import { QueryObserverOptions, UseQueryOptions } from '@tanstack/react-query';
 
 import { FunctionKey } from '../../constants';
 
@@ -14,10 +14,9 @@ export type GetInboxesInput = CredentialsPayload & {
 export type GetInboxesOutput = SmartInbox[];
 export type UseGetInboxes = [FunctionKey.GET_INBOXES, GetInboxesInput];
 
-export type Options = QueryObserverOptions<
+export type Options = UseQueryOptions<
   GetInboxesOutput,
   Error,
   GetInboxesOutput,
-  GetInboxesOutput,
-  UseGetInboxes
+  [FunctionKey.GET_INBOXES, GetInboxesInput]
 >;

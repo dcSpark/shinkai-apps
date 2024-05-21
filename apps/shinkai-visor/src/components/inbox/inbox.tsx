@@ -187,7 +187,7 @@ export const Inbox = () => {
     isSuccess: isChatConversationSuccess,
   } = useGetChatConversationWithPagination({
     nodeAddress: auth?.node_address ?? '',
-    inboxId: decodeURIComponent(inboxId) as string,
+    inboxId: decodeURIComponent(inboxId ?? '') as string,
     shinkaiIdentity: auth?.shinkai_identity ?? '',
     profile: auth?.profile ?? '',
     my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',

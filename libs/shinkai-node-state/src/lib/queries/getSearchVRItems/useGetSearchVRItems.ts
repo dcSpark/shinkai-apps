@@ -19,7 +19,7 @@ type Options = QueryObserverOptions<
 
 export const useGetSearchVRItems = (
   input: GetVRSearchItemsInput,
-  options?: Options,
+  options?: Omit<Options, 'queryKey' | 'queryFn'>,
 ) => {
   const response = useQuery({
     queryKey: [FunctionKey.GET_VR_FILES_SEARCH, input],
