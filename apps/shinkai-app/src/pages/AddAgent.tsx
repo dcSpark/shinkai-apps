@@ -15,7 +15,7 @@ import {
 } from '@ionic/react';
 import { useCreateAgent } from '@shinkai_network/shinkai-node-state/lib/mutations/createAgent/useCreateAgent';
 import { Controller, useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import z from 'zod';
 
 import Button from '../components/ui/Button';
@@ -31,7 +31,7 @@ const addAgentSchema = z.object({
 });
 
 const AddAgent: React.FC = () => {
-  const navigate = useNavigate();
+  const history = useHistory();
   const auth = useAuth((state) => state.auth);
   const addAgentForm = useForm<z.infer<typeof addAgentSchema>>({
     resolver: zodResolver(addAgentSchema),
@@ -47,7 +47,7 @@ const AddAgent: React.FC = () => {
     error,
   } = useCreateAgent({
     onSuccess: () => {
-      navigate('/create-job');
+      history.push('/create-job');
     },
   });
   const { model, modelType } = addAgentForm.watch();
