@@ -19,13 +19,13 @@ import {
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router';
 
 import { useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
 
 export const ConnectMethodRestoreConnection = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const setAuth = useAuth((state) => state.setAuth);
   const [error, setError] = useState<boolean>(false);
 
@@ -65,7 +65,7 @@ export const ConnectMethodRestoreConnection = () => {
         console.log('auth', decryptedSetupData);
         setAuth(decryptedSetupData);
         // TODO: Add logic to test if setup data is valid to create an authenticated connection with Shinkai Node
-        history.replace('/inboxes');
+        navigate('/inboxes');
       }
     } catch (_) {
       setError(true);

@@ -38,7 +38,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
 import { ChevronRight, PlusIcon, SearchIcon, X, XIcon } from 'lucide-react';
 import React, { useEffect } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { useQuery } from '../../hooks/use-query';
 import { useAuth } from '../../store/auth/auth';
@@ -53,10 +53,8 @@ const MotionButton = motion(Button);
 
 const AllFiles = () => {
   const auth = useAuth((state) => state.auth);
-  const history = useHistory();
-  const location = useLocation<{
-    files: File[];
-  }>();
+  const navigate = useNavigate();
+  const location = useLocation() as { state: { files: File[] } };
   const query = useQuery();
 
   const currentGlobalPath = useVectorFsStore(
@@ -491,8 +489,7 @@ const AllFiles = () => {
           if (!isVRSelectionActive) {
             setVRSelectionActive(true);
           } else {
-            history.push({
-              pathname: '/inboxes/create-job',
+            navigate('/inboxes/create-job', {
               state: {
                 selectedVRFiles: selectedFiles,
                 selectedVRFolders: selectedFolders,

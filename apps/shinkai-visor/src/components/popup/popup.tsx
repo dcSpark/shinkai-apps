@@ -10,7 +10,7 @@ import { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { IntlProvider } from 'react-intl';
 import { MemoryRouter as Router } from 'react-router-dom';
-import { Route, Switch, useHistory, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
 import { useGlobalPopupChromeMessage } from '../../hooks/use-global-popup-chrome-message';
 import { langMessages, locale } from '../../lang/intl';
@@ -41,7 +41,7 @@ import Welcome from '../welcome/welcome';
 import { WithNav } from '../with-nav/with-nav';
 
 export const Popup = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const auth = useAuth((state) => state.auth);
   const location = useLocation();
   useGlobalPopupChromeMessage();
@@ -51,15 +51,15 @@ export const Popup = () => {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      history.replace('/welcome');
+      navigate('/welcome');
       return;
     }
     if (!lastPage) {
-      history.replace('/inboxes');
+      navigate('/inboxes');
       return;
     }
-    history.replace(lastPage);
-  }, [history, isAuthenticated, lastPage]);
+    navigate(lastPage);
+  }, [navigate, isAuthenticated, lastPage]);
 
   return (
     <AnimatePresence>
@@ -71,8 +71,8 @@ export const Popup = () => {
         initial={{ opacity: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <Switch key={location.pathname} location={location}>
-          <Route exact path="/">
+        <Routes key={location.pathname} location={location}>
+          <Route path="/">
             <AnimatedRoute>
               <SplashScreen />
             </AnimatedRoute>
@@ -88,7 +88,7 @@ export const Popup = () => {
               <WithNav>
                 <Route path="/nodes">
                   <AnimatedRoute>
-                    <Switch>
+                    <Routes>
                       <Route path="/nodes/connect/method/quick-start">
                         <ConnectMethodQuickStart />
                       </Route>
@@ -98,11 +98,11 @@ export const Popup = () => {
                       <Route path="/nodes/connect/method/qr-code">
                         <ConnectMethodQrCode />
                       </Route>
-                    </Switch>
+                    </Routes>
                   </AnimatedRoute>
                 </Route>
                 <Route path="/inboxes">
-                  <Switch>
+                  <Routes>
                     <Route path="/inboxes/create-inbox">
                       <CreateInbox />
                     </Route>
@@ -115,48 +115,48 @@ export const Popup = () => {
                     <Route path="/">
                       <Inboxes />
                     </Route>
-                  </Switch>
+                  </Routes>
                 </Route>
                 <Route path="/node-files">
-                  <Switch>
+                  <Routes>
                     <Route path="/">
                       <VectorFsProvider>
                         <NodeFiles />
                       </VectorFsProvider>
                     </Route>
-                  </Switch>
+                  </Routes>
                 </Route>
                 <Route path="/search-node-files">
-                  <Switch>
+                  <Routes>
                     <Route path="/">
                       <VectorFolderSelectionProvider>
                         <SearchNodeFiles />
                       </VectorFolderSelectionProvider>
                     </Route>
-                  </Switch>
+                  </Routes>
                 </Route>
                 <Route path="/subscriptions">
-                  <Switch>
+                  <Routes>
                     <Route path="/subscriptions/public">
                       <SharedFolderSubscription />
                     </Route>
                     <Route path="/">
                       <MySubscriptions />
                     </Route>
-                  </Switch>
+                  </Routes>
                 </Route>
                 <Route path="/agents">
-                  <Switch>
+                  <Routes>
                     <Route path="/agents/add">
                       <AddAgent />
                     </Route>
                     <Route path="/">
                       <Agents />
                     </Route>
-                  </Switch>
+                  </Routes>
                 </Route>
                 <Route path="/settings">
-                  <Switch>
+                  <Routes>
                     <Route path="/settings/export-connection">
                       <ExportConnection />
                     </Route>
@@ -169,12 +169,12 @@ export const Popup = () => {
                     <Route path="/">
                       <Settings />
                     </Route>
-                  </Switch>
+                  </Routes>
                 </Route>
               </WithNav>
             </AnimatedRoute>
           </Route>
-        </Switch>
+        </Routes>
       </motion.div>
     </AnimatePresence>
   );
