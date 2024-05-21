@@ -136,5 +136,9 @@
   "engines": {
     "node": "18",
     "npm": "9"
-  }
+  },
+  "main": "postcss.config.js",
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }
