@@ -428,6 +428,7 @@ const MainLayout = () => {
     '/connect-ai',
     '/free-subscriptions',
     '/ai-model-installation',
+    '/get-started',
   ];
 
   const displaySidebar =
