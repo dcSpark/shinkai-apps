@@ -59,6 +59,7 @@ export const OllamaModels = () => {
   const { mutateAsync: ollamaRemove } = useOllamaRemoveMutation(ollamaConfig, {
     onSuccess: (_, input) => {
       toast.success(`Model ${input.model} removed`);
+      installedOllamaModelsMap.delete(input.model);
     },
     onError: (error, input) => {
       toast.error(`Error removing ${input.model}. ${error.message}`);
@@ -111,7 +112,7 @@ export const OllamaModels = () => {
       installedOllamaModels.models.forEach((modelResponse) => {
         installedOllamaModelsMap.set(modelResponse.name, modelResponse);
       });
-  }, [installedOllamaModels, installedOllamaModelsMap]);
+  }, [installedOllamaModels]);
 
   if (!isShinkaiNodeRunning) {
     return (
