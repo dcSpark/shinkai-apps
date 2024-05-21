@@ -18,5 +18,6 @@ export type Options = QueryObserverOptions<
   GetInboxesOutput,
   Error,
   GetInboxesOutput,
-  [FunctionKey.GET_INBOXES, GetInboxesInput]
+  GetInboxesOutput,
+  UseGetInboxes
 >;
