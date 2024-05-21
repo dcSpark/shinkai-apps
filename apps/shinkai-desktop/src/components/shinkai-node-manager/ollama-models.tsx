@@ -39,10 +39,7 @@ export const OllamaModels = () => {
   const ollamaConfig = { host: ollamaApiUrl || 'http://127.0.0.1:11435' };
 
   const installedOllamaModelsMap = useMap<string, ModelResponse>();
-  // const [pullingModelsMap, setPullingModelsMap] = useState<{
-  //   [model: string]: ProgressResponse | undefined;
-  // }>();
-  const pullingModelsMap = useMap<string, ProgressResponse | undefined>();
+  const pullingModelsMap = useMap<string, ProgressResponse>();
 
   const { data: isShinkaiNodeRunning } = useShinkaiNodeIsRunningQuery();
   const { mutateAsync: shinkaiNodeSpawn } = useShinkaiNodeSpawnMutation({});
@@ -56,7 +53,7 @@ export const OllamaModels = () => {
       handlePullProgress(input.model, data);
     },
     onError: (_, input) => {
-      pullingModelsMap.set(input.model, undefined);
+      pullingModelsMap.delete(input.model);
     },
   });
   const { mutateAsync: ollamaRemove } = useOllamaRemoveMutation(ollamaConfig, {
@@ -101,12 +98,9 @@ export const OllamaModels = () => {
     } catch (error) {
       toast.error(`Error pulling model ${model}. ${error?.toString()}`);
     } finally {
-      pullingModelsMap.set(model, undefined);
+      pullingModelsMap.delete(model);
     }
   };
-  // const [installedOllamaModelsMap, setInstalledOllamaModelsMap] = useState(
-  //   new Map<string, ModelResponse>(),
-  // );
 
   const getProgress = (progress: ProgressResponse): number => {
     return Math.ceil((100 * (progress.completed ?? 0)) / (progress.total ?? 1));
