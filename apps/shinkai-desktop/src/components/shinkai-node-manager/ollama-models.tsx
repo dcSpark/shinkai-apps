@@ -10,11 +10,12 @@ import {
   TableHeader,
   TableRow,
 } from '@shinkai_network/shinkai-ui';
+import { useMap } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
 import { Download, Loader2, Minus } from 'lucide-react';
 import { ModelResponse, ProgressResponse } from 'ollama/browser';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect } from 'react';
 import { toast } from 'sonner';
 
 import {
@@ -36,6 +37,13 @@ export const OllamaModels = () => {
   const auth = useAuth((auth) => auth.auth);
   const { data: ollamaApiUrl } = useShinkaiNodeGetOllamaApiUrlQuery();
   const ollamaConfig = { host: ollamaApiUrl || 'http://127.0.0.1:11435' };
+
+  const installedOllamaModelsMap = useMap<string, ModelResponse>();
+  // const [pullingModelsMap, setPullingModelsMap] = useState<{
+  //   [model: string]: ProgressResponse | undefined;
+  // }>();
+  const pullingModelsMap = useMap<string, ProgressResponse | undefined>();
+
   const { data: isShinkaiNodeRunning } = useShinkaiNodeIsRunningQuery();
   const { mutateAsync: shinkaiNodeSpawn } = useShinkaiNodeSpawnMutation({});
   const { mutateAsync: syncOllamaModels } = useSyncOllamaModels(
@@ -48,10 +56,7 @@ export const OllamaModels = () => {
       handlePullProgress(input.model, data);
     },
     onError: (_, input) => {
-      pullingModelsMap.current = {
-        ...pullingModelsMap.current,
-        [input.model]: undefined,
-      };
+      pullingModelsMap.set(input.model, undefined);
     },
   });
   const { mutateAsync: ollamaRemove } = useOllamaRemoveMutation(ollamaConfig, {
@@ -72,10 +77,7 @@ export const OllamaModels = () => {
         if (!progress) {
           continue;
         }
-        pullingModelsMap.current = {
-          ...pullingModelsMap.current,
-          [model]: progress,
-        };
+        pullingModelsMap.set(model, progress);
         if (progress.status === 'success') {
           toast.success(`Model ${model} pull completed`);
           if (auth) {
@@ -99,36 +101,23 @@ export const OllamaModels = () => {
     } catch (error) {
       toast.error(`Error pulling model ${model}. ${error?.toString()}`);
     } finally {
-      pullingModelsMap.current = {
-        ...pullingModelsMap.current,
-        [model]: undefined,
-      };
+      pullingModelsMap.set(model, undefined);
     }
   };
-  const [installedOllamaModelsMap, setInstalledOllamaModelsMap] = useState(
-    new Map<string, ModelResponse>(),
-  );
-  // const [pullingModelsMap, setPullingModelsMap] = useState<{
-  //   [model: string]: ProgressResponse | undefined;
-  // }>();
-  const pullingModelsMap = useRef<{
-    [model: string]: ProgressResponse | undefined;
-  }>();
+  // const [installedOllamaModelsMap, setInstalledOllamaModelsMap] = useState(
+  //   new Map<string, ModelResponse>(),
+  // );
 
   const getProgress = (progress: ProgressResponse): number => {
     return Math.ceil((100 * (progress.completed ?? 0)) / (progress.total ?? 1));
   };
 
   useEffect(() => {
-    setInstalledOllamaModelsMap(
-      new Map(
-        installedOllamaModels?.models.map((modelResponse) => [
-          modelResponse.name,
-          modelResponse,
-        ]) || [],
-      ),
-    );
-  }, [installedOllamaModels, setInstalledOllamaModelsMap]);
+    installedOllamaModels?.models &&
+      installedOllamaModels.models.forEach((modelResponse) => {
+        installedOllamaModelsMap.set(modelResponse.name, modelResponse);
+      });
+  }, [installedOllamaModels, installedOllamaModelsMap]);
 
   if (!isShinkaiNodeRunning) {
     return (
@@ -210,25 +199,25 @@ export const OllamaModels = () => {
                         <Minus className="mr-2 h-3 w-3" />
                         Remove
                       </Button>
-                    ) : pullingModelsMap.current?.[model.fullName] ? (
+                    ) : pullingModelsMap.get(model.fullName) ? (
                       <div className="flex flex-col items-center gap-1">
                         <span className="text-xs text-gray-100">
                           {getProgress(
-                            pullingModelsMap.current?.[
-                              model.fullName
-                            ] as ProgressResponse,
+                            pullingModelsMap.get(
+                              model.fullName,
+                            ) as ProgressResponse,
                           ) + '%'}
                         </span>
                         <Progress
                           className="h-2 w-full bg-gray-200 [&>*]:bg-gray-100"
                           value={getProgress(
-                            pullingModelsMap.current?.[
-                              model.fullName
-                            ] as ProgressResponse,
+                            pullingModelsMap.get(
+                              model.fullName,
+                            ) as ProgressResponse,
                           )}
                         />
                         <span className="text-xs text-gray-100">
-                          {pullingModelsMap.current?.[model.fullName]?.status}
+                          {pullingModelsMap.get(model.fullName)?.status}
                         </span>
                       </div>
                     ) : (
