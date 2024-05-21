@@ -155,7 +155,7 @@ export const OllamaModels = () => {
       <Table className="w-full border-collapse text-[13px]">
         <TableHeader className="bg-gray-400 text-xs">
           <TableRow>
-            <TableHead className="w-[480px]">AI Name</TableHead>
+            <TableHead className="md:w-[300px] lg:w-[480px]">AI Name</TableHead>
             <TableHead>Data Limit</TableHead>
             <TableHead>Quality</TableHead>
             <TableHead>Speed</TableHead>

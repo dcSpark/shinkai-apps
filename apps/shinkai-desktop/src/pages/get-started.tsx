@@ -42,7 +42,9 @@ const GetStartedPage = () => {
           node_encryption_pk: response.data?.encryption_public_key ?? '',
         };
         setAuth(updatedSetupData);
-        navigate('/connect-ai');
+        // Hide http subscription for now
+        // navigate('/connect-ai');
+        navigate('/ai-model-installation');
       } else {
         throw new Error('Failed to submit registration');
       }

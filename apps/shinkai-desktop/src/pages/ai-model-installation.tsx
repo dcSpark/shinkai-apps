@@ -21,7 +21,7 @@ const AIModelInstallation = () => {
             buttonVariants({
               size: 'auto',
             }),
-            'absolute right-0 top-9 mx-auto gap-2 px-6 py-2.5',
+            'absolute right-4 top-9 mx-auto gap-2 px-6 py-2.5',
           )}
           to={{
             pathname: '/',
