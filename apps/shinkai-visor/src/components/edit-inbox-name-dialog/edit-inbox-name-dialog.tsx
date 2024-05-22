@@ -1,32 +1,21 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AgentInbox } from '@shinkai_network/shinkai-message-ts/models';
-import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils';
 import {
   UpdateInboxNameFormSchema,
   updateInboxNameFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/inbox';
-import { useUpdateAgentInJob } from '@shinkai_network/shinkai-node-state/lib/mutations/updateAgentInJob/useUpdateAgentInJob';
 import { useUpdateInboxName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateInboxName/useUpdateInboxName';
-import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import {
-  Badge,
   Button,
   DialogFooter,
   Drawer,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
   Form,
   FormField,
   TextField,
 } from '@shinkai_network/shinkai-ui';
-import { AgentIcon } from '@shinkai_network/shinkai-ui/assets';
-import { ChevronDown } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
