@@ -46,13 +46,12 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import {
   DirectoryTypeIcon,
+  fileIconMap,
   FileTypeIcon,
 } from '@shinkai_network/shinkai-ui/assets';
-import {
-  getFileExt,
-  isFileTypeImageOrPdf,
-} from '@shinkai_network/shinkai-ui/helpers';
+import { getFileExt } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { partial } from 'filesize';
 import {
   AlertCircle,
   BotIcon,
@@ -75,6 +74,7 @@ enum ErrorCodes {
   ShinkaiBackendInferenceLimitReached = 'ShinkaiBackendInferenceLimitReached',
 }
 const ChatConversation = () => {
+  const size = partial({ standard: 'jedec' });
   const { inboxId: encodedInboxId = '' } = useParams();
   const auth = useAuth((state) => state.auth);
   const fromPreviousMessagesRef = useRef<boolean>(false);
@@ -92,29 +92,7 @@ const ChatConversation = () => {
       multiple: false,
       onDrop: (acceptedFiles) => {
         const file = acceptedFiles[0];
-        const reader = new FileReader();
-        if (isFileTypeImageOrPdf(file)) {
-          reader.addEventListener('abort', () =>
-            console.log('file reading was aborted'),
-          );
-          reader.addEventListener(
-            'load',
-            (event: ProgressEvent<FileReader>) => {
-              const binaryUrl = event.target?.result;
-              const image = new Image();
-              image.addEventListener('load', function () {
-                const imageInfo = Object.assign(file, {
-                  preview: URL.createObjectURL(file),
-                });
-                chatForm.setValue('file', imageInfo, { shouldValidate: true });
-              });
-              image.src = binaryUrl as string;
-            },
-          );
-          reader.readAsDataURL(file);
-        } else {
-          chatForm.setValue('file', file, { shouldValidate: true });
-        }
+        chatForm.setValue('file', file, { shouldValidate: true });
       },
     });
 
@@ -315,18 +293,24 @@ const ChatConversation = () => {
                           onSubmit={chatForm.handleSubmit(onSubmit)}
                           topAddons={
                             file && (
-                              <div className="relative mt-1 flex w-[170px] items-center gap-2 rounded-lg border border-gray-200 px-2 py-2.5">
-                                {getFileExt(file?.name) ? (
+                              <div className="relative mt-1 flex min-w-[180px] max-w-[220px] items-center gap-2 self-start rounded-lg border border-gray-200 px-2 py-2.5">
+                                {getFileExt(file?.name) &&
+                                fileIconMap[getFileExt(file?.name)] ? (
                                   <FileTypeIcon
-                                    className="text-gray-80 h-5 w-5 "
+                                    className="text-gray-80 h-7 w-7 shrink-0 "
                                     type={getFileExt(file?.name)}
                                   />
                                 ) : (
-                                  <Paperclip className="text-gray-80 h-4 w-4" />
+                                  <Paperclip className="text-gray-80 h-4 w-4 shrink-0" />
                                 )}
-                                <span className="line-clamp-1 break-all text-center text-xs ">
-                                  {file?.name}
-                                </span>
+                                <div className="space-y-1">
+                                  <span className="line-clamp-1 break-all text-left text-xs ">
+                                    {file?.name}
+                                  </span>
+                                  <span className="line-clamp-1 break-all text-left text-xs text-gray-100 ">
+                                    {size(file?.size)}
+                                  </span>
+                                </div>
                                 <button
                                   className={cn(
                                     'absolute -right-2 -top-2 h-5 w-5 cursor-pointer rounded-full bg-gray-500 p-1 text-gray-100 hover:text-white',
