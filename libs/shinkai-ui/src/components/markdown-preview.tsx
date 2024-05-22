@@ -39,10 +39,12 @@ export const MarkdownPreview = ({
         'wmde-markdown-var',
         'max-w-none text-white',
         'prose prose-gray',
-        'prose-h1:!text-xl prose-h1:!mb-3 prose-h2:!text-lg prose-h2:!mb-2 prose-h3:!text-base',
+        'prose-h1:!text-[1.203125rem] prose-h1:!leading-[1.5] prose-h1:!my-3.5 prose-h1:!font-bold',
+        'prose-h2:!text-[1.09375rem] prose-h2:!leading-[1.25] prose-h2:!my-3.5 prose-h2:!font-bold',
+        'prose-h3:!text-base prose-h3:!leading-[1.25] prose-h3:!my-3.5 prose-h3:!font-bold',
         'prose-code:text-white prose-blockquote:text-gray-50 prose-blockquote:bg-gray-200 prose-strong:text-white prose-headings:text-white prose-p:whitespace-pre-wrap',
         'prose-h1:!border-b-0 prose-h2:!border-b-0 prose-h3:!border-b-0 prose-h4:!border-b-0 prose-h5:!border-b-0 prose-h6:!border-b-0',
-        'prose-hr:!border-b-0 prose-hr:!bg-gray-400',
+        'prose-hr:!border-b-0 prose-hr:!h-[2px] prose-hr:!bg-gray-50/80',
         className,
       )}
       components={components}
