@@ -141,7 +141,7 @@ export const MessageList = ({
                     <div key={date}>
                       <div
                         className={cn(
-                          'relative z-10 m-auto flex h-[26px] w-fit min-w-[100px] items-center justify-center rounded-xl bg-gray-400 px-2.5 capitalize',
+                          'relative z-10 m-auto my-2 flex h-[26px] w-fit min-w-[100px] items-center justify-center rounded-xl bg-gray-400 px-2.5 capitalize',
                           true && 'sticky top-5',
                         )}
                       >
@@ -151,7 +151,7 @@ export const MessageList = ({
                           )}
                         </span>
                       </div>
-                      <div className="flex flex-col gap-4">
+                      <div className="flex flex-col">
                         {messages.map((message) => {
                           return (
                             <div

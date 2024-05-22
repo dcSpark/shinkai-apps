@@ -36,7 +36,7 @@
       --color-canvas-default: transparent;
       --color-border-default: theme('colors.gray.400');
       --color-fg-default: theme('colors.white');
-      @apply text-[15px];
+      @apply text-sm;
     }
   }
 
