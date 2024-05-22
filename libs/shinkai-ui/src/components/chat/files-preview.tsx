@@ -28,13 +28,13 @@ export const FileList = ({ files, className }: FileListProps) => {
         {files?.map((file, index) => (
           <motion.li
             {...animations}
-            className="flex items-center justify-between p-2 text-sm leading-6"
+            className="flex w-full items-center justify-between p-2 text-sm leading-6"
             key={index}
           >
-            <div className="flex min-w-0 flex-1 flex-row items-center justify-between gap-2">
+            <div className="flex w-full flex-1 items-center justify-between gap-2">
               {fileIconMap[getFileExt(file.name)] ? (
                 <FileTypeIcon
-                  className="text-gray-80 h-6 w-6"
+                  className="text-gray-80 h-5 w-5"
                   type={getFileExt(file.name)}
                 />
               ) : (
@@ -42,7 +42,7 @@ export const FileList = ({ files, className }: FileListProps) => {
               )}
               {getFileExt(decodeURIComponent(file.name)) === 'html' ? (
                 <a
-                  className="text-gray-80 grow truncate font-medium underline transition-colors hover:text-gray-50"
+                  className="text-gray-80 grow truncate break-all font-medium underline transition-colors hover:text-gray-50"
                   href={decodeURIComponent(file.name).split('.html')[0]}
                   rel="noreferrer"
                   target="_blank"
@@ -50,7 +50,7 @@ export const FileList = ({ files, className }: FileListProps) => {
                   {decodeURIComponent(file.name)}
                 </a>
               ) : (
-                <span className="text-gray-80 grow truncate font-medium">
+                <span className="text-gray-80 grow truncate break-all  font-medium">
                   {decodeURIComponent(file.name)}
                 </span>
               )}

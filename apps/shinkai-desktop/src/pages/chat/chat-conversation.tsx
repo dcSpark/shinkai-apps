@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { PaperPlaneIcon } from '@radix-ui/react-icons';
 import {
   extractErrorPropertyOrContent,
   extractJobIdFromInbox,
@@ -20,7 +19,6 @@ import {
   Alert,
   AlertDescription,
   AlertTitle,
-  Badge,
   Button,
   ChatInputArea,
   DropdownMenu,
@@ -40,15 +38,29 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipPortal,
+  TooltipProvider,
+  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import {
-  AgentIcon,
   DirectoryTypeIcon,
   FileTypeIcon,
 } from '@shinkai_network/shinkai-ui/assets';
-import { isFileTypeImageOrPdf } from '@shinkai_network/shinkai-ui/helpers';
+import {
+  getFileExt,
+  isFileTypeImageOrPdf,
+} from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { AlertCircle, FileCheck2, ImagePlusIcon, X } from 'lucide-react';
+import {
+  AlertCircle,
+  BotIcon,
+  ChevronDownIcon,
+  Paperclip,
+  SendIcon,
+  X,
+} from 'lucide-react';
 import { useEffect, useMemo, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
@@ -241,61 +253,6 @@ const ChatConversation = () => {
         <div className="flex flex-col justify-start">
           <div className="relative flex items-start gap-2 p-2 pb-3">
             <Form {...chatForm}>
-              <div
-                {...getRootFileProps({
-                  className: cn(
-                    'dropzone group relative flex h-12 w-12 flex-shrink-0 cursor-pointer items-center justify-center rounded border-2 border-dashed border-slate-500 border-slate-500 transition-colors hover:border-white',
-                    file && 'border-0',
-                    isLoadingMessage && 'hidden',
-                  ),
-                })}
-              >
-                {!file && (
-                  <ImagePlusIcon className="stroke-slate-500 transition-colors group-hover:stroke-white" />
-                )}
-                <input
-                  {...chatForm.register('file')}
-                  {...getInputFileProps({
-                    onChange: chatForm.register('file').onChange,
-                  })}
-                />
-                {file && (
-                  <>
-                    {isFileTypeImageOrPdf(file) && (
-                      <img
-                        alt=""
-                        className="absolute inset-0 h-full w-full rounded-lg bg-white object-cover"
-                        src={file.preview}
-                      />
-                    )}
-                    {!isFileTypeImageOrPdf(file) && (
-                      <div className="flex flex-col items-center gap-2">
-                        <FileCheck2 className="text-gray-80 h-4 w-4 " />
-                        <span className="line-clamp-2 break-all px-2 text-center text-xs ">
-                          {file?.name}
-                        </span>
-                      </div>
-                    )}
-                  </>
-                )}
-                {file != null && (
-                  <button
-                    className={cn(
-                      'absolute -right-1 -top-1 h-6 w-6 cursor-pointer rounded-full bg-slate-900 p-1 hover:bg-slate-800',
-                      file ? 'block' : 'hidden',
-                    )}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      chatForm.setValue('file', undefined, {
-                        shouldValidate: true,
-                      });
-                    }}
-                  >
-                    <X className="h-full w-full text-slate-500" />
-                  </button>
-                )}
-              </div>
-
               <FormField
                 control={chatForm.control}
                 name="message"
@@ -303,28 +260,96 @@ const ChatConversation = () => {
                   <FormItem className="flex-1 space-y-0">
                     <FormLabel className="sr-only">Enter message</FormLabel>
                     <FormControl>
-                      <ChatInputArea
-                        disabled={isLoadingMessage}
-                        isLoading={isLoadingMessage}
-                        onChange={field.onChange}
-                        onSubmit={chatForm.handleSubmit(onSubmit)}
-                        value={field.value}
-                      />
+                      <div className="">
+                        <div className="flex items-center gap-2.5 px-1 pb-2 pt-1">
+                          <AgentSelection />
+                          <TooltipProvider delayDuration={0}>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div
+                                  {...getRootFileProps({
+                                    className: cn(
+                                      'hover:bg-gray-350 relative flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full rounded-lg p-1.5 text-white',
+                                    ),
+                                  })}
+                                >
+                                  <Paperclip className="h-full w-full" />
+                                  <input
+                                    {...chatForm.register('file')}
+                                    {...getInputFileProps({
+                                      onChange:
+                                        chatForm.register('file').onChange,
+                                    })}
+                                  />
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipPortal>
+                                <TooltipContent
+                                  align="center"
+                                  className="bg-neutral-900"
+                                  side="top"
+                                >
+                                  Upload a File
+                                </TooltipContent>
+                              </TooltipPortal>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                        <ChatInputArea
+                          bottomAddons={
+                            <Button
+                              className="h-[40px] w-[40px] self-end rounded-xl p-3"
+                              disabled={isLoadingMessage}
+                              isLoading={isLoadingMessage}
+                              onClick={chatForm.handleSubmit(onSubmit)}
+                              size="icon"
+                              variant="tertiary"
+                            >
+                              <SendIcon className="h-full w-full" />
+                              <span className="sr-only">Send Message</span>
+                            </Button>
+                          }
+                          disabled={isLoadingMessage}
+                          isLoading={isLoadingMessage}
+                          onChange={field.onChange}
+                          onSubmit={chatForm.handleSubmit(onSubmit)}
+                          topAddons={
+                            file && (
+                              <div className="relative mt-1 flex w-[170px] items-center gap-2 rounded-lg border border-gray-200 px-2 py-2.5">
+                                {getFileExt(file?.name) ? (
+                                  <FileTypeIcon
+                                    className="text-gray-80 h-5 w-5 "
+                                    type={getFileExt(file?.name)}
+                                  />
+                                ) : (
+                                  <Paperclip className="text-gray-80 h-4 w-4" />
+                                )}
+                                <span className="line-clamp-1 break-all text-center text-xs ">
+                                  {file?.name}
+                                </span>
+                                <button
+                                  className={cn(
+                                    'absolute -right-2 -top-2 h-5 w-5 cursor-pointer rounded-full bg-gray-500 p-1 text-gray-100 hover:text-white',
+                                  )}
+                                  onClick={(event) => {
+                                    event.stopPropagation();
+                                    chatForm.setValue('file', undefined, {
+                                      shouldValidate: true,
+                                    });
+                                  }}
+                                >
+                                  <X className="h-full w-full" />
+                                </button>
+                              </div>
+                            )
+                          }
+                          value={field.value}
+                        />
+                      </div>
                     </FormControl>
                   </FormItem>
                 )}
               />
-
-              <Button
-                className="h-[50px] w-[50px] grow-0 rounded-xl p-0"
-                disabled={isLoadingMessage}
-                isLoading={isLoadingMessage}
-                onClick={chatForm.handleSubmit(onSubmit)}
-                size="icon"
-              >
-                <PaperPlaneIcon />
-                <span className="sr-only">Send Message</span>
-              </Button>
             </Form>
           </div>
         </div>
@@ -359,49 +384,66 @@ function AgentSelection() {
   });
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Badge className="hover:bg-gray-350 inline-flex cursor-pointer items-center gap-1 truncate bg-gray-300 text-start text-xs font-normal text-gray-50 shadow-none hover:text-white">
-          {/*<AgentIcon className="h-3 w-3" />*/}
-          <span>{currentInbox?.agent?.id}</span>
-        </Badge>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
-        align="start"
-        className="max-h-[300px] w-[300px] overflow-y-auto bg-gray-300 p-1 py-2"
-      >
-        <DropdownMenuRadioGroup
-          onValueChange={async (value) => {
-            const jobId = extractJobIdFromInbox(currentInbox?.inbox_id ?? '');
-            await updateAgentInJob({
-              nodeAddress: auth?.node_address ?? '',
-              shinkaiIdentity: auth?.shinkai_identity ?? '',
-              profile: auth?.profile ?? '',
-              jobId: jobId,
-              newAgentId: value,
-              my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-              my_device_identity_sk: auth?.profile_identity_sk ?? '',
-              node_encryption_pk: auth?.node_encryption_pk ?? '',
-              profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-              profile_identity_sk: auth?.profile_identity_sk ?? '',
-            });
-          }}
-          value={currentInbox?.agent?.id ?? ''}
-        >
-          {agents.map((agent) => (
-            <DropdownMenuRadioItem
-              className="flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-white transition-colors hover:bg-gray-200 aria-checked:bg-gray-200"
-              key={agent.id}
-              value={agent.id}
+      <TooltipProvider delayDuration={0}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DropdownMenuTrigger className="bg-gray-350 inline-flex cursor-pointer items-center justify-between gap-1 truncate rounded-xl px-2.5 py-1.5 text-start text-xs font-normal text-gray-50  hover:text-white  [&[data-state=open]>.icon]:rotate-180">
+              <BotIcon className="mr-1 h-4 w-4" />
+              <span>{currentInbox?.agent?.id}</span>
+              <ChevronDownIcon className="icon h-3 w-3" />
+            </DropdownMenuTrigger>
+          </TooltipTrigger>
+          <TooltipPortal>
+            <TooltipContent
+              align="center"
+              className="bg-neutral-900"
+              side="top"
             >
-              <AgentIcon className="h-4 w-4" />
-              <div className="flex flex-col gap-1">
-                <span className="text-xs">{agent.id}</span>
-                {/*<span className="text-gray-80 text-xs">{agent.model}</span>*/}
-              </div>
-            </DropdownMenuRadioItem>
-          ))}
-        </DropdownMenuRadioGroup>
-      </DropdownMenuContent>
+              Switch Agent
+            </TooltipContent>
+          </TooltipPortal>
+          <DropdownMenuContent
+            align="start"
+            className="max-h-[300px] min-w-[220px] overflow-y-auto bg-gray-300 p-1 py-2"
+            side="top"
+          >
+            <DropdownMenuRadioGroup
+              onValueChange={async (value) => {
+                const jobId = extractJobIdFromInbox(
+                  currentInbox?.inbox_id ?? '',
+                );
+                await updateAgentInJob({
+                  nodeAddress: auth?.node_address ?? '',
+                  shinkaiIdentity: auth?.shinkai_identity ?? '',
+                  profile: auth?.profile ?? '',
+                  jobId: jobId,
+                  newAgentId: value,
+                  my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+                  my_device_identity_sk: auth?.profile_identity_sk ?? '',
+                  node_encryption_pk: auth?.node_encryption_pk ?? '',
+                  profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+                  profile_identity_sk: auth?.profile_identity_sk ?? '',
+                });
+              }}
+              value={currentInbox?.agent?.id ?? ''}
+            >
+              {agents.map((agent) => (
+                <DropdownMenuRadioItem
+                  className="flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-2 text-white transition-colors hover:bg-gray-200 aria-checked:bg-gray-200"
+                  key={agent.id}
+                  value={agent.id}
+                >
+                  <BotIcon className="h-3.5 w-3.5" />
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs">{agent.id}</span>
+                    {/*<span className="text-gray-80 text-xs">{agent.model}</span>*/}
+                  </div>
+                </DropdownMenuRadioItem>
+              ))}
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </Tooltip>
+      </TooltipProvider>
     </DropdownMenu>
   );
 }
@@ -421,7 +463,7 @@ export const ConversationHeader = () => {
         <span className="mr-2.5 line-clamp-1 inline text-sm font-medium capitalize text-white">
           {currentInbox?.custom_name || currentInbox?.inbox_id}
         </span>
-        <AgentSelection />
+        {/*<AgentSelection />*/}
       </div>
       {hasConversationContext && (
         <Sheet>
@@ -495,10 +537,6 @@ export const ConversationHeader = () => {
                           <span className="text-gray-80 text-sm">
                             {file.name}
                           </span>
-                          <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
-                            {file?.source?.Standard?.FileRef?.file_type
-                              ?.Document ?? '-'}
-                          </Badge>
                         </li>
                       ))}
                     </ul>

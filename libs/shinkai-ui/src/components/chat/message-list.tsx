@@ -92,7 +92,7 @@ export const MessageList = ({
 
   return (
     <ScrollArea
-      className={cn('h-full', containerClassName)}
+      className={cn('h-full [&>div>div]:!block', containerClassName)}
       ref={chatContainerRef}
     >
       {isSuccess && (

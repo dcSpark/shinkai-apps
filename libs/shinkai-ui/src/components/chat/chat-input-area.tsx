@@ -15,6 +15,8 @@ export const ChatInputArea = ({
   disabled,
   isLoading,
   placeholder,
+  topAddons,
+  bottomAddons,
 }: {
   value: string;
   onChange: (value: string) => void;
@@ -23,6 +25,8 @@ export const ChatInputArea = ({
   disabled?: boolean;
   isLoading?: boolean;
   placeholder?: string;
+  topAddons?: React.ReactNode;
+  bottomAddons?: React.ReactNode;
 }) => {
   // onSubmitRef is used to keep the latest onSubmit function
   const onSubmitRef = useRef(onSubmit);
@@ -34,8 +38,7 @@ export const ChatInputArea = ({
     {
       editorProps: {
         attributes: {
-          class:
-            'prose prose-invert prose-sm mx-auto focus:outline-none break-all',
+          class: 'prose prose-invert prose-sm focus:outline-none break-all',
         },
       },
       extensions: [
@@ -89,9 +92,18 @@ export const ChatInputArea = ({
   }, [value, editor]);
 
   return (
-    <>
-      {isLoading ? <DotsLoader className="absolute left-4 top-6 z-50" /> : null}
-      <EditorContent editor={editor} />
-    </>
+    <div
+      aria-disabled={disabled}
+      className="flex min-h-[60px] w-full max-w-full flex-col rounded-md border border-gray-200 bg-gray-400 px-1 py-1  text-sm shadow-sm aria-disabled:cursor-not-allowed aria-disabled:opacity-50"
+    >
+      {topAddons}
+      <div className="relative flex flex-col">
+        {isLoading ? (
+          <DotsLoader className="absolute left-4 top-6 z-50" />
+        ) : null}
+        <EditorContent editor={editor} />
+        {bottomAddons}
+      </div>
+    </div>
   );
 };

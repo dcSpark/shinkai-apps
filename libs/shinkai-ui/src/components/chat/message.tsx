@@ -92,7 +92,7 @@ export const Message = ({ message }: MessageProps) => {
           />
           {!!message.fileInbox?.files?.length && (
             <FileList
-              className="mt-2 w-full min-w-[200px]"
+              className="mt-2 min-w-[200px] max-w-[400px]"
               files={message.fileInbox?.files}
             />
           )}
