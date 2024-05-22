@@ -93,8 +93,7 @@
     ],
     "macOSPrivateApi": true,
     "systemTray": {
-      "iconPath": "icons/tray-icon.png",
-      "iconAsTemplate": true
+      "iconPath": "icons/icon.png"
     },
     "updater": {
       "active": true,
