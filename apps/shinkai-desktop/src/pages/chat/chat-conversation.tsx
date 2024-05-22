@@ -486,7 +486,12 @@ export const ConversationHeader = () => {
                           className="flex items-center gap-2 py-1.5"
                           key={file.path}
                         >
-                          <FileTypeIcon />
+                          <FileTypeIcon
+                            type={
+                              file?.source?.Standard?.FileRef?.file_type
+                                ?.Document
+                            }
+                          />
                           <span className="text-gray-80 text-sm">
                             {file.name}
                           </span>

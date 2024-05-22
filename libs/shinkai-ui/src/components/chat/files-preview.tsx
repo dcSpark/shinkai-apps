@@ -1,8 +1,8 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import React from 'react';
 
-import { PaperClipIcon } from '../../assets/icons';
-import { getFileExt, getFileName } from '../../helpers/file';
+import { fileIconMap, FileTypeIcon, PaperClipIcon } from '../../assets/icons';
+import { getFileExt } from '../../helpers/file';
 import { cn } from '../../utils';
 
 export type FileListProps = {
@@ -32,7 +32,14 @@ export const FileList = ({ files, className }: FileListProps) => {
             key={index}
           >
             <div className="flex min-w-0 flex-1 flex-row items-center justify-between gap-2">
-              <PaperClipIcon className="text-gray-80" />
+              {fileIconMap[getFileExt(file.name)] ? (
+                <FileTypeIcon
+                  className="text-gray-80 h-6 w-6"
+                  type={getFileExt(file.name)}
+                />
+              ) : (
+                <PaperClipIcon className="text-gray-80 h-4 w-4" />
+              )}
               {getFileExt(decodeURIComponent(file.name)) === 'html' ? (
                 <a
                   className="text-gray-80 grow truncate font-medium underline transition-colors hover:text-gray-50"
@@ -40,18 +47,13 @@ export const FileList = ({ files, className }: FileListProps) => {
                   rel="noreferrer"
                   target="_blank"
                 >
-                  {getFileName(decodeURIComponent(file.name))}
+                  {decodeURIComponent(file.name)}
                 </a>
               ) : (
                 <span className="text-gray-80 grow truncate font-medium">
-                  {getFileName(decodeURIComponent(file.name))}
+                  {decodeURIComponent(file.name)}
                 </span>
               )}
-              <div className="flex shrink-0 flex-row space-x-1 overflow-hidden">
-                <span className="text-gray-80 w-[40px] rounded-md bg-gray-200 px-1 text-center text-[10px] font-medium uppercase">
-                  {getFileExt(decodeURIComponent(file.name))}
-                </span>
-              </div>
             </div>
           </motion.li>
         ))}

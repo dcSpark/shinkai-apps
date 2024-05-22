@@ -51,7 +51,13 @@ export const VectorFileDetails = () => {
       <div>
         <div className="space-y-2 text-left">
           <div>
-            <FileTypeIcon className="h-10 w-10" />
+            <FileTypeIcon
+              className="h-10 w-10"
+              type={
+                selectedFile?.vr_header?.resource_source?.Standard?.FileRef
+                  ?.file_type?.Document
+              }
+            />
           </div>
           <p className="text-lg font-medium text-white">
             {selectedFile?.name}
