@@ -6,6 +6,7 @@ import {
 import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
 import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/lib/queries/getEncryptionKeys/useGetEncryptionKeys';
 import { Button, buttonVariants, Separator } from '@shinkai_network/shinkai-ui';
+import { submitRegistrationNoCodeError, submitRegistrationNoCodeNonPristineError } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
@@ -29,27 +30,32 @@ const GetStartedPage = () => {
     },
   });
 
-  const { mutateAsync: submitRegistration } = useSubmitRegistrationNoCode({
-    onSuccess: (response, setupPayload) => {
-      if (response.success && encryptionKeys) {
-        const updatedSetupData = {
-          ...encryptionKeys,
-          ...setupPayload,
-          permission_type: '',
-          shinkai_identity:
-            setupPayload.shinkai_identity || (response.data?.node_name ?? ''),
-          node_signature_pk: response.data?.identity_public_key ?? '',
-          node_encryption_pk: response.data?.encryption_public_key ?? '',
-        };
-        setAuth(updatedSetupData);
-        // Hide http subscription for now
-        // navigate('/connect-ai');
-        navigate('/ai-model-installation');
-      } else {
-        throw new Error('Failed to submit registration');
-      }
+  const { mutateAsync: submitRegistrationNoCode } = useSubmitRegistrationNoCode(
+    {
+      onSuccess: (response, setupPayload) => {
+        if (response.status === 'success' && encryptionKeys) {
+          const updatedSetupData = {
+            ...encryptionKeys,
+            ...setupPayload,
+            permission_type: '',
+            shinkai_identity:
+              setupDataForm.getValues().shinkai_identity ||
+              (response.data?.node_name ?? ''),
+            node_signature_pk: response.data?.identity_public_key ?? '',
+            node_encryption_pk: response.data?.encryption_public_key ?? '',
+          };
+          setAuth(updatedSetupData);
+          // Hide http subscription for now
+          // navigate('/connect-ai');
+          navigate('/ai-model-installation');
+        } else if (response.status === 'non-pristine') {
+          submitRegistrationNoCodeNonPristineError();
+        } else {
+          submitRegistrationNoCodeError();
+        }
+      },
     },
-  });
+  );
   const {
     isPending: shinkaiNodeSpawnIsPending,
     mutateAsync: shinkaiNodeSpawn,
@@ -61,13 +67,8 @@ const GetStartedPage = () => {
 
   async function onSubmit(currentValues: QuickConnectFormSchema) {
     if (!encryptionKeys) return;
-    await submitRegistration({
+    await submitRegistrationNoCode({
       profile: 'main',
-      identity_type: 'device',
-      permission_type: 'admin',
-      shinkai_identity: currentValues.shinkai_identity ?? '',
-      registration_code: '',
-      node_encryption_pk: '',
       node_address: currentValues.node_address,
       registration_name: currentValues.registration_name,
       ...encryptionKeys,

@@ -1,21 +1,19 @@
-import type {
-  APIUseRegistrationCodeSuccessResponse,
-  SubmitInitialRegistrationNoCodePayload,
-} from '@shinkai_network/shinkai-message-ts/models';
+import { submitInitialRegistrationNoCode } from '@shinkai_network/shinkai-message-ts/api';
+import type { SubmitInitialRegistrationNoCodePayload } from '@shinkai_network/shinkai-message-ts/models';
 import type { UseMutationOptions } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 
-import { submitRegistrationNoCode } from '.';
-
-type Data = {
-  success: boolean;
-  data?: APIUseRegistrationCodeSuccessResponse | undefined;
-};
-type Options = UseMutationOptions<Data, Error, SubmitInitialRegistrationNoCodePayload>;
-
-export const useSubmitRegistrationNoCode = (options?: Options) => {
+export const useSubmitRegistrationNoCode = (
+  options: UseMutationOptions<
+    Awaited<ReturnType<typeof submitInitialRegistrationNoCode>>,
+    Error,
+    SubmitInitialRegistrationNoCodePayload
+  >,
+) => {
   return useMutation({
-    mutationFn: submitRegistrationNoCode,
+    mutationFn: (payload) => {
+      return submitInitialRegistrationNoCode(payload);
+    },
     ...options,
   });
 };
