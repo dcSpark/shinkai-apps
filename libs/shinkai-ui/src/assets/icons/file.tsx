@@ -18,7 +18,6 @@ import PptFileIcon from './file-icon/ppt.svg';
 import PptxFileIcon from './file-icon/pptx.svg';
 import PsdFileIcon from './file-icon/psd.svg';
 import SvgFileIcon from './file-icon/svg.svg';
-import WebpFileIcon from './file-icon/webp.svg';
 import XlsFileIcon from './file-icon/xls.svg';
 import XlsxFileIcon from './file-icon/xlsx.svg';
 import XmlFileIcon from './file-icon/xml.svg';
@@ -44,7 +43,6 @@ export const fileIconMap: Record<string, string> = {
   pptx: PptxFileIcon,
   psd: PsdFileIcon,
   svg: SvgFileIcon,
-  webp: WebpFileIcon,
   xls: XlsFileIcon,
   xlsx: XlsxFileIcon,
   xml: XmlFileIcon,
