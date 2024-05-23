@@ -6,11 +6,13 @@ import {
 import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
 import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/lib/queries/getEncryptionKeys/useGetEncryptionKeys';
 import { Button, buttonVariants, Separator } from '@shinkai_network/shinkai-ui';
-import { submitRegistrationNoCodeError, submitRegistrationNoCodeNonPristineError } from '@shinkai_network/shinkai-ui/helpers';
+import { submitRegistrationNoCodeError } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 
+import { ResetStorageBeforeConnectConfirmationPrompt } from '../components/reset-storage-before-connect-confirmation-prompt';
 import { useShinkaiNodeSpawnMutation } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { useShinkaiNodeEventsToast } from '../lib/shinkai-node-manager/shinkai-node-manager-hooks';
 import { useAuth } from '../store/auth';
@@ -18,8 +20,11 @@ import OnboardingLayout from './layout/onboarding-layout';
 
 const GetStartedPage = () => {
   const navigate = useNavigate();
-
   const setAuth = useAuth((state) => state.setAuth);
+  const [
+    resetStorageBeforeConnectConfirmationPromptOpen,
+    setResetStorageBeforeConnectConfirmationPrompt,
+  ] = useState(false);
   useShinkaiNodeEventsToast();
   const { encryptionKeys } = useGetEncryptionKeys();
   const setupDataForm = useForm<QuickConnectFormSchema>({
@@ -33,6 +38,9 @@ const GetStartedPage = () => {
   const { mutateAsync: submitRegistrationNoCode } = useSubmitRegistrationNoCode(
     {
       onSuccess: (response, setupPayload) => {
+        if (response.status !== 'success') {
+          shinkaiNodeKill();
+        }
         if (response.status === 'success' && encryptionKeys) {
           const updatedSetupData = {
             ...encryptionKeys,
@@ -49,7 +57,7 @@ const GetStartedPage = () => {
           // navigate('/connect-ai');
           navigate('/ai-model-installation');
         } else if (response.status === 'non-pristine') {
-          submitRegistrationNoCodeNonPristineError();
+          setResetStorageBeforeConnectConfirmationPrompt(true);
         } else {
           submitRegistrationNoCodeError();
         }
@@ -64,6 +72,7 @@ const GetStartedPage = () => {
       onSubmit(setupDataForm.getValues());
     },
   });
+  const { mutateAsync: shinkaiNodeKill } = useShinkaiNodeSpawnMutation();
 
   async function onSubmit(currentValues: QuickConnectFormSchema) {
     if (!encryptionKeys) return;
@@ -74,8 +83,28 @@ const GetStartedPage = () => {
       ...encryptionKeys,
     });
   }
+
+  const onCancelConfirmation = () => {
+    setResetStorageBeforeConnectConfirmationPrompt(false);
+  };
+
+  const onRestoreConfirmation = () => {
+    setResetStorageBeforeConnectConfirmationPrompt(false);
+  };
+
+  const onResetConfirmation = () => {
+    setResetStorageBeforeConnectConfirmationPrompt(false);
+    onSubmit(setupDataForm.getValues());
+  };
+
   return (
     <OnboardingLayout>
+      <ResetStorageBeforeConnectConfirmationPrompt
+        onCancel={() => onCancelConfirmation()}
+        onReset={() => onResetConfirmation()}
+        onRestore={() => onRestoreConfirmation()}
+        open={resetStorageBeforeConnectConfirmationPromptOpen}
+      />
       <div className="mx-auto flex h-full max-w-lg flex-col">
         <p className="text-gray-80 text-center text-base tracking-wide">
           Transform your desktop experience using AI with Shinkai Desktop{' '}
@@ -124,7 +153,7 @@ const GetStartedPage = () => {
               Sign up For Shinkai Hosting
             </a>
             <div className="text-gray-80 items-center space-x-2 text-center text-base">
-              <span>Already have an Node?</span>
+              <span>Already have a Node?</span>
               <Link
                 className="font-semibold text-white underline"
                 to="/onboarding"
