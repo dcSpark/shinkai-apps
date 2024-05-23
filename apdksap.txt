@@ -1,0 +1,2 @@
+update-url-aarch64-apple-darwin=https://download.shinkai.com/shinkai-desktop/binaries/development/aarch64-apple-darwin/0.5.2.233/Shinkai-Desktop-0.5.2.233_aarch64-apple-darwin.app.tar.gz
+update-urlss-aarch64-apple-darwin=https://download.shinkai.com/shinkai-desktop/binaries/development/aarch64-apple-darwin/0.5.2.233/Shinkai-Desktop-0.5.2.233_aarch64-apple-darwin.app.tar.gz
