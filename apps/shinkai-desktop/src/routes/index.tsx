@@ -7,8 +7,13 @@ import { VectorFolderSelectionProvider } from '../components/vector-fs/component
 import { VectorFsProvider } from '../components/vector-fs/context/vector-fs-context';
 import VectorFs from '../components/vector-fs/vector-fs';
 import SearchNodeFiles from '../components/vector-search/search-node-files';
-import AgentsPage from '../pages/agents';
+import {
+  useShinkaiNodeIsRunningQuery,
+  useShinkaiNodeSetOptionsMutation,
+  useShinkaiNodeSpawnMutation,
+} from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { useShinkaiNodeEventsToast } from '../lib/shinkai-node-manager/shinkai-node-manager-hooks';
+import AgentsPage from '../pages/agents';
 import AIModelInstallation from '../pages/ai-model-installation';
 import ChatConversation from '../pages/chat/chat-conversation';
 import EmptyMessage from '../pages/chat/empty-message';
@@ -31,11 +36,6 @@ import UnavailableShinkaiNode from '../pages/unavailable-shinkai-node';
 import TermsAndConditionsPage from '../pages/welcome';
 import { useAuth } from '../store/auth';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
-import {
-  useShinkaiNodeIsRunningQuery,
-  useShinkaiNodeSetOptionsMutation,
-  useShinkaiNodeSpawnMutation,
-} from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 import {
   CREATE_CHAT_PATH,
   CREATE_JOB_PATH,
