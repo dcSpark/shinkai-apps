@@ -2,7 +2,8 @@
   "tauri": {
     "systemTray": {
       "iconPath": "icons/tray-icon-macos.png",
-      "iconAsTemplate": true
+      "iconAsTemplate": true,
+      "title": "Shinkai Desktop"
     }
   }
 }
