@@ -97,15 +97,13 @@ export const ResetStorageBeforeConnectConfirmationPrompt = ({
           <Button
             className="mt-0 flex-1 text-sm"
             onClick={() => restore()}
+            variant={'ghost'}
           >
             <span aria-label="restore" className="emoji" role="img">
               🔑 Restore
             </span>
           </Button>
-          <Button
-            className="mt-0 flex-1 text-sm"
-            onClick={() => reset()}
-          >
+          <Button className="mt-0 flex-1 text-sm" onClick={() => reset()}>
             <span aria-label="reset" className="emoji" role="img">
               🗑️ Reset
             </span>
