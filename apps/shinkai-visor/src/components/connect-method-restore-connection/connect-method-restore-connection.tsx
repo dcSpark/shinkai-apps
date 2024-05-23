@@ -19,7 +19,7 @@ import {
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';

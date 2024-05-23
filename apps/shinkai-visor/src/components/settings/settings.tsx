@@ -27,7 +27,7 @@ import { ExternalLinkIcon, TrashIcon } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -184,10 +184,10 @@ export const Settings = () => {
       },
     });
   const exportConnection = () => {
-    navigate('settings/export-connection');
+    navigate('/settings/export-connection');
   };
   const createRegistrationCode = () => {
-    navigate('settings/create-registration-code');
+    navigate('/settings/create-registration-code');
   };
   useEffect(() => {
     if (isNodeInfoSuccess) {
@@ -575,7 +575,7 @@ export const Settings = () => {
           </Button>
           <Button
             className="flex flex-1 cursor-pointer flex-col items-start gap-2 rounded-lg p-4 pr-8 text-left"
-            onClick={() => navigate('settings/public-keys')}
+            onClick={() => navigate('/settings/public-keys')}
             size="auto"
             variant="ghost"
           >

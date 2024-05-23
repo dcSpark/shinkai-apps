@@ -9,7 +9,7 @@ import * as React from 'react';
 import { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { IntlProvider } from 'react-intl';
-import { MemoryRouter as Router } from 'react-router-dom';
+import { MemoryRouter as Router, Outlet } from 'react-router-dom';
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
 import { useGlobalPopupChromeMessage } from '../../hooks/use-global-popup-chrome-message';
@@ -59,7 +59,7 @@ export const Popup = () => {
       return;
     }
     navigate(lastPage);
-  }, [navigate, isAuthenticated, lastPage]);
+  }, [isAuthenticated, lastPage]);
 
   return (
     <AnimatePresence>
@@ -72,107 +72,89 @@ export const Popup = () => {
         transition={{ duration: 0.5 }}
       >
         <Routes key={location.pathname} location={location}>
-          <Route path="/">
-            <AnimatedRoute>
-              <SplashScreen />
-            </AnimatedRoute>
-          </Route>
-          <Route path="/welcome">
-            <AnimatedRoute>
-              <Welcome />
-            </AnimatedRoute>
-          </Route>
+          <Route
+            element={
+              <AnimatedRoute>
+                <SplashScreen />
+              </AnimatedRoute>
+            }
+            path="/"
+          />
+          <Route
+            element={
+              <AnimatedRoute>
+                <Welcome />
+              </AnimatedRoute>
+            }
+            path="/welcome"
+          />
 
-          <Route path="*">
-            <AnimatedRoute>
-              <WithNav>
-                <Route path="/nodes">
-                  <AnimatedRoute>
-                    <Routes>
-                      <Route path="/nodes/connect/method/quick-start">
-                        <ConnectMethodQuickStart />
-                      </Route>
-                      <Route path="/nodes/connect/method/restore-connection">
-                        <ConnectMethodRestoreConnection />
-                      </Route>
-                      <Route path="/nodes/connect/method/qr-code">
-                        <ConnectMethodQrCode />
-                      </Route>
-                    </Routes>
-                  </AnimatedRoute>
-                </Route>
-                <Route path="/inboxes">
-                  <Routes>
-                    <Route path="/inboxes/create-inbox">
-                      <CreateInbox />
-                    </Route>
-                    <Route path="/inboxes/create-job">
-                      <CreateJob />
-                    </Route>
-                    <Route path="/inboxes/:inboxId">
-                      <Inbox />
-                    </Route>
-                    <Route path="/">
-                      <Inboxes />
-                    </Route>
-                  </Routes>
-                </Route>
-                <Route path="/node-files">
-                  <Routes>
-                    <Route path="/">
-                      <VectorFsProvider>
-                        <NodeFiles />
-                      </VectorFsProvider>
-                    </Route>
-                  </Routes>
-                </Route>
-                <Route path="/search-node-files">
-                  <Routes>
-                    <Route path="/">
-                      <VectorFolderSelectionProvider>
-                        <SearchNodeFiles />
-                      </VectorFolderSelectionProvider>
-                    </Route>
-                  </Routes>
-                </Route>
-                <Route path="/subscriptions">
-                  <Routes>
-                    <Route path="/subscriptions/public">
-                      <SharedFolderSubscription />
-                    </Route>
-                    <Route path="/">
-                      <MySubscriptions />
-                    </Route>
-                  </Routes>
-                </Route>
-                <Route path="/agents">
-                  <Routes>
-                    <Route path="/agents/add">
-                      <AddAgent />
-                    </Route>
-                    <Route path="/">
-                      <Agents />
-                    </Route>
-                  </Routes>
-                </Route>
-                <Route path="/settings">
-                  <Routes>
-                    <Route path="/settings/export-connection">
-                      <ExportConnection />
-                    </Route>
-                    <Route path="/settings/public-keys">
-                      <PublicKeys />
-                    </Route>
-                    <Route path="/settings/create-registration-code">
-                      <CreateRegistrationCode />
-                    </Route>
-                    <Route path="/">
-                      <Settings />
-                    </Route>
-                  </Routes>
-                </Route>
-              </WithNav>
-            </AnimatedRoute>
+          <Route
+            element={
+              <WithNav />
+            }
+          >
+            {/* <AnimatedRoute> */}
+            <Route path="/nodes">
+              {/* <AnimatedRoute> */}
+              <Route
+                element={<ConnectMethodQuickStart />}
+                path="connect/method/quick-start"
+              />
+              <Route
+                element={<ConnectMethodRestoreConnection />}
+                path="connect/method/restore-connection"
+              />
+              <Route
+                element={<ConnectMethodQrCode />}
+                path="connect/method/qr-code"
+              />
+              {/* </AnimatedRoute> */}
+            </Route>
+            <Route path="inboxes">
+              <Route element={<CreateInbox />} path="create-inbox" />
+              <Route element={<CreateJob />} path="create-job" />
+              <Route element={<Inbox />} path=":inboxId" />
+              <Route element={<Inboxes />} index />
+            </Route>
+            <Route path="node-files">
+              <Route
+                element={
+                  <VectorFsProvider>
+                    <NodeFiles />
+                  </VectorFsProvider>
+                }
+                index
+              />
+            </Route>
+            <Route path="search-node-files">
+              <Route
+                element={
+                  <VectorFolderSelectionProvider>
+                    <SearchNodeFiles />
+                  </VectorFolderSelectionProvider>
+                }
+                path=""
+              />
+            </Route>
+            <Route path="subscriptions">
+              <Route element={<SharedFolderSubscription />} path="public" />
+              <Route element={<MySubscriptions />} index />
+            </Route>
+            <Route path="agents">
+              <Route element={<AddAgent />} path="add" />
+              <Route element={<Agents />} index />
+            </Route>
+            <Route path="settings">
+              <Route element={<ExportConnection />} path="export-connection" />
+              <Route element={<PublicKeys />} path="public-keys" />
+              <Route
+                element={<CreateRegistrationCode />}
+                path="create-registration-code"
+              />
+              <Route element={<Settings />} index />
+            </Route>
+            {/* </AnimatedRoute> */}
           </Route>
         </Routes>
       </motion.div>

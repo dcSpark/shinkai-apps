@@ -1,7 +1,7 @@
 import { Button, Checkbox } from '@shinkai_network/shinkai-ui';
 import { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 
 import logo from '../../../src/assets/icons/visor.svg';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';

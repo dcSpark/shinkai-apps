@@ -63,7 +63,6 @@
     "follow-redirects": ">=1.14.8",
     "framer-motion": "^10.16.3",
     "jsbi": "^4.3.0",
-    "jspdf": "^2.5.1",
     "libsodium-wrappers-sumo": "^0.7.13",
     "lucide-react": "^0.323.0",
     "node-forge": ">=1.0.0",
@@ -115,7 +114,6 @@
     "@rollup/plugin-url": "^7.0.0",
     "@swc-node/register": "~1.6.7",
     "@swc/cli": "~0.1.62",
-    "@swc/core": "~1.3.85",
     "@tailwindcss/typography": "^0.5.10",
     "@tauri-apps/cli": "^1.5.11",
     "@testing-library/jest-dom": "^6.1.2",
@@ -175,15 +173,6 @@
     "vite-tsconfig-paths": "^4.2.3",
     "vitest": "^0.34.3",
     "zip-lib": "^1.0.4"
-  },
-  "optionalDependencies": {
-    "@swc/core-darwin-arm64": "^1.3.91",
-    "@swc/core-darwin-x64": "^1.3.91",
-    "@swc/core-linux-arm-gnueabihf": "^1.3.91",
-    "@swc/core-linux-arm64-gnu": "^1.3.91",
-    "@swc/core-linux-arm64-musl": "^1.3.91",
-    "@swc/core-linux-x64-gnu": "^1.3.91",
-    "@swc/core-linux-x64-musl": "^1.3.91"
   },
   "engines": {
     "node": "18",

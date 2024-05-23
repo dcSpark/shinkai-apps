@@ -52,7 +52,7 @@ import {
 } from 'lucide-react';
 import React, { ReactNode, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link, useLocation, useMatch, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import visorLogo from '../../assets/icons/visor.svg';
@@ -291,19 +291,15 @@ export default function NavBar() {
     location.pathname.includes('/inboxes/job_inbox') ||
     location.pathname.includes('/inboxes/inbox');
 
-  // TODO: fix here
-  const isRootPage = useMatch({
-    path: rootPages[0],
-    end: true,
-  });
-  const isSubPage = useMatch({
-    path: subPages[0],
-    end: true,
-  });
-  const isOnboardingPage = useMatch({
-    path: onboardingPages[0],
-    end: true,
-  });
+  const isRootPage = rootPages.some((value) =>
+    location.pathname.match(`${value}$`),
+  );
+  const isSubPage = subPages.some((value) =>
+    location.pathname.match(`${value}$`),
+  );
+  const isOnboardingPage = onboardingPages.some((value) =>
+    location.pathname.match(`${value}$`),
+  );
 
   const isJobInbox = location.pathname.includes('/inboxes/job_inbox');
 
