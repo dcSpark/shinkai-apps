@@ -25,7 +25,7 @@ import {
 import { queryClient } from '@shinkai_network/shinkai-node-state/lib/constants';
 import { useSubmitRegistration } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistration';
 import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
-import { QrScanner, QrScannerProps } from '@yudiel/react-qr-scanner';
+// import { QrScanner, QrScannerProps } from '@yudiel/react-qr-scanner';
 import { BrowserQRCodeReader } from '@zxing/browser';
 import { checkmarkSharp, cloudUpload, scan } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
@@ -337,16 +337,16 @@ const Connect = () => {
                           />
                           Upload QR Code
                         </Button>
-                        {isPlatform('capacitor') ? (
-                          <Button onClick={handleQRScan}>Scan QR Code</Button>
-                        ) : (
-                          <CustomQrScanner
-                            containerStyle={{ width: '100%' }}
-                            onDecode={handleScan}
-                            onError={handleError}
-                            scanDelay={300}
-                          />
-                        )}
+                        {/*{isPlatform('capacitor') ? (*/}
+                        {/*  <Button onClick={handleQRScan}>Scan QR Code</Button>*/}
+                        {/*) : (*/}
+                        {/*  <CustomQrScanner*/}
+                        {/*    containerStyle={{ width: '100%' }}*/}
+                        {/*    onDecode={handleScan}*/}
+                        {/*    onError={handleError}*/}
+                        {/*    scanDelay={300}*/}
+                        {/*  />*/}
+                        {/*)}*/}
                       </div>
                       <hr className="mb-6 mt-6 w-full border-b border-gray-300 dark:border-slate-600/60" />
                       <form
@@ -877,56 +877,56 @@ function AutomaticForm() {
   );
 }
 
-function CustomQrScanner({
-  onError,
-  onDecode,
-  scanDelay,
-  containerStyle,
-}: {
-  onError: QrScannerProps['onError'];
-  onDecode: QrScannerProps['onDecode'];
-  containerStyle: React.CSSProperties;
-  scanDelay: number;
-}) {
-  const [showScanner, setShowScanner] = useState(false);
-  const [status, setStatus] = useState<
-    'idle' | 'loading' | 'error' | 'success'
-  >('idle');
-
-  return showScanner ? (
-    <div className="relative">
-      <QrScanner
-        containerStyle={containerStyle}
-        onDecode={onDecode}
-        onError={onError}
-        onResult={(result) => {
-          setStatus('success');
-          setShowScanner(false);
-        }}
-        scanDelay={scanDelay}
-      />
-      <Button
-        className="absolute bottom-2 left-1/2 z-10 max-w-[80px] -translate-x-1/2 transform"
-        onClick={() => setShowScanner(false)}
-        variant={'tertiary'}
-      >
-        Close
-      </Button>
-      <IonToast
-        duration={5000}
-        icon={checkmarkSharp}
-        isOpen={status === 'success'}
-        message={'QR Code scanned successfully!'}
-      />
-    </div>
-  ) : (
-    <Button
-      className="mt-6"
-      onClick={() => setShowScanner(true)}
-      variant={'secondary'}
-    >
-      <IonIcon className="mr-4" icon={scan} slot="icon-only" />
-      Scan QR Code
-    </Button>
-  );
-}
+// function CustomQrScanner({
+//   onError,
+//   onDecode,
+//   scanDelay,
+//   containerStyle,
+// }: {
+//   onError: QrScannerProps['onError'];
+//   onDecode: QrScannerProps['onDecode'];
+//   containerStyle: React.CSSProperties;
+//   scanDelay: number;
+// }) {
+//   const [showScanner, setShowScanner] = useState(false);
+//   const [status, setStatus] = useState<
+//     'idle' | 'loading' | 'error' | 'success'
+//   >('idle');
+//
+//   return showScanner ? (
+//     <div className="relative">
+//       <QrScanner
+//         containerStyle={containerStyle}
+//         onDecode={onDecode}
+//         onError={onError}
+//         onResult={() => {
+//           setStatus('success');
+//           setShowScanner(false);
+//         }}
+//         scanDelay={scanDelay}
+//       />
+//       <Button
+//         className="absolute bottom-2 left-1/2 z-10 max-w-[80px] -translate-x-1/2 transform"
+//         onClick={() => setShowScanner(false)}
+//         variant={'tertiary'}
+//       >
+//         Close
+//       </Button>
+//       <IonToast
+//         duration={5000}
+//         icon={checkmarkSharp}
+//         isOpen={status === 'success'}
+//         message={'QR Code scanned successfully!'}
+//       />
+//     </div>
+//   ) : (
+//     <Button
+//       className="mt-6"
+//       onClick={() => setShowScanner(true)}
+//       variant={'secondary'}
+//     >
+//       <IonIcon className="mr-4" icon={scan} slot="icon-only" />
+//       Scan QR Code
+//     </Button>
+//   );
+// }
