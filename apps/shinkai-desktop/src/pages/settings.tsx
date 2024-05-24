@@ -21,7 +21,7 @@ import {
 import { ExportIcon, QrIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
-import { ExternalLinkIcon } from 'lucide-react';
+import { CodesandboxIcon, ExternalLinkIcon } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -29,7 +29,10 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { useShinkaiNodeRespawnMutation } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
-import { isHostingShinkaiNode } from '../lib/shinkai-node-manager/shinkai-node-manager-windows-utils';
+import {
+  isHostingShinkaiNode,
+  openShinkaiNodeManagerWindow,
+} from '../lib/shinkai-node-manager/shinkai-node-manager-windows-utils';
 import { GENERATE_CODE_PATH } from '../routes/name';
 import { SetupData, useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
@@ -293,6 +296,19 @@ const SettingsPage = () => {
           </Form>
         </div>
         <div className="align-center grid grid-cols-2 justify-center gap-4">
+          {isLocalShinkaiNodeInUse && (
+            <Button
+              className="flex flex-1 cursor-pointer flex-col items-start gap-2 rounded-lg p-4 pr-8 text-left"
+              onClick={() => openShinkaiNodeManagerWindow()}
+              size="auto"
+              variant="ghost"
+            >
+              <div className="text-gray-100">
+                <CodesandboxIcon />
+              </div>
+              <p className="text-smm text-white">Shinkai Node Manager</p>
+            </Button>
+          )}
           <Button
             className="flex flex-1 cursor-pointer flex-col items-start gap-2 rounded-lg p-4 pr-8 text-left"
             onClick={() => navigate('/export-connection')}

@@ -24,7 +24,6 @@ import {
   ArrowLeftToLine,
   ArrowRightToLine,
   BotIcon,
-  CodesandboxIcon,
   Compass,
   LibraryBig,
   PlusIcon,
@@ -44,7 +43,6 @@ import { ResourcesBanner } from '../../components/hardware-capabilities/resource
 import { openShinkaiNodeManagerWindow } from '../../lib/shinkai-node-manager/shinkai-node-manager-windows-utils';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
-import { useShinkaiNodeManager } from '../../store/shinkai-node-manager';
 
 type NavigationLink = {
   title: string;
@@ -133,9 +131,6 @@ export function MainNav() {
   const navigate = useNavigate();
   const logout = useAuth((state) => state.setLogout);
 
-  const isLocalShinkaiNodeIsUse = useShinkaiNodeManager(
-    (state) => state.isInUse,
-  );
   const [isConfirmLogoutDialogOpened, setIsConfirmLogoutDialogOpened] =
     useState(false);
 
@@ -187,12 +182,6 @@ export function MainNav() {
       title: 'My Subscriptions',
       href: '/my-subscriptions',
       icon: <LibraryBig className="h-5 w-5" />,
-    },
-    isLocalShinkaiNodeIsUse && {
-      title: 'Shinkai Node Manager',
-      href: '#',
-      icon: <CodesandboxIcon className="h-5 w-5" />,
-      onClick: () => openShinkaiNodeManagerWindow(),
     },
   ].filter(Boolean) as NavigationLink[];
 
@@ -259,7 +248,7 @@ export function MainNav() {
               <TooltipTrigger asChild>
                 <motion.button
                   className={cn(
-                    'text-gray-80 mb-3 mt-4 flex h-8 w-8 items-center justify-center gap-2 self-center rounded-full bg-white/10 hover:bg-white/10 hover:text-white',
+                    'text-gray-80 mb-1.5 mt-4 flex h-8 w-8 items-center justify-center gap-2 self-center rounded-full bg-white/10 hover:bg-white/10 hover:text-white',
                     sidebarExpanded &&
                       'w-full justify-start rounded-lg bg-transparent px-4 py-3 hover:bg-gray-500',
                   )}
@@ -448,8 +437,8 @@ const MainLayout = () => {
     !!auth && !disabledSidebarRoutes.includes(location.pathname);
 
   return (
-    <div className={cn('flex min-h-full flex-col bg-gray-500 text-white ')}>
-      <div className={cn('relative flex flex-1', !!auth && '')}>
+    <div className="flex min-h-full flex-col bg-gray-500 text-white">
+      <div className={cn('flex flex-1', !!auth && '')}>
         {displaySidebar && <MainNav />}
         <motion.div
           animate={{
