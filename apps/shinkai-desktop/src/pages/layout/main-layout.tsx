@@ -10,6 +10,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   Button,
+  Separator,
   Tooltip,
   TooltipContent,
   TooltipPortal,
@@ -29,7 +30,7 @@ import {
   PlusIcon,
   SearchCode,
 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import {
   Link,
   Outlet,
@@ -291,31 +292,37 @@ export function MainNav() {
 
           {navigationLinks.map((item) => {
             return (
-              <TooltipProvider
-                delayDuration={!sidebarExpanded ? 0 : 10000}
-                key={item.title}
-              >
-                <Tooltip>
-                  <TooltipTrigger className="flex items-center gap-1">
-                    <NavLink
-                      external={item.external}
-                      href={item.href}
-                      icon={item.icon}
-                      onClick={item.onClick}
-                      title={item.title}
-                    />
-                  </TooltipTrigger>
-                  <TooltipPortal>
-                    <TooltipContent
-                      align="center"
-                      arrowPadding={2}
-                      side="right"
-                    >
-                      <p>{item.title}</p>
-                    </TooltipContent>
-                  </TooltipPortal>
-                </Tooltip>
-              </TooltipProvider>
+              <Fragment key={item.title}>
+                <TooltipProvider
+                  delayDuration={!sidebarExpanded ? 0 : 10000}
+                  key={item.title}
+                >
+                  <Tooltip>
+                    <TooltipTrigger className="flex items-center gap-1">
+                      <NavLink
+                        external={item.external}
+                        href={item.href}
+                        icon={item.icon}
+                        onClick={item.onClick}
+                        title={item.title}
+                      />
+                    </TooltipTrigger>
+                    <TooltipPortal>
+                      <TooltipContent
+                        align="center"
+                        arrowPadding={2}
+                        side="right"
+                      >
+                        <p>{item.title}</p>
+                      </TooltipContent>
+                    </TooltipPortal>
+                  </Tooltip>
+                </TooltipProvider>
+                {(item.href === '/inboxes' ||
+                  item.href === '/vector-search') && (
+                  <Separator className="my-0.5 w-full bg-gray-200" />
+                )}
+              </Fragment>
             );
           })}
         </div>
