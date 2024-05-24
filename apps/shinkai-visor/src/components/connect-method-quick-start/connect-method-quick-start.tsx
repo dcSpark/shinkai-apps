@@ -16,6 +16,7 @@ import {
   FormField,
   TextField,
 } from '@shinkai_network/shinkai-ui';
+import { submitRegistrationNoCodeError, submitRegistrationNoCodeNonPristineError } from '@shinkai_network/shinkai-ui/helpers';
 // import { QrCode } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -43,25 +44,27 @@ export const ConnectMethodQuickStart = () => {
   });
   const {
     isPending,
-    mutateAsync: submitRegistration,
+    mutateAsync: submitRegistrationNoCode,
     isError: isSubmitError,
     error: submitError,
   } = useSubmitRegistrationNoCode({
     onSuccess: (response, setupPayload) => {
-      if (response.success && encryptionKeys) {
+      if (response.status === 'success' && encryptionKeys) {
         const authData: SetupData = {
           ...encryptionKeys,
           ...setupPayload,
           permission_type: '',
           shinkai_identity:
-            setupPayload.shinkai_identity || (response.data?.node_name ?? ''),
+            form.getValues().shinkai_identity || (response.data?.node_name ?? ''),
           node_signature_pk: response.data?.identity_public_key ?? '',
           node_encryption_pk: response.data?.encryption_public_key ?? '',
         };
         setAuth(authData);
         history.replace('/inboxes');
+      } else if (response.status === 'non-pristine') {
+        submitRegistrationNoCodeNonPristineError();
       } else {
-        throw new Error('Failed to submit registration');
+        submitRegistrationNoCodeError();
       }
     },
   });
@@ -74,13 +77,8 @@ export const ConnectMethodQuickStart = () => {
     if (!encryptionKeys) {
       return;
     }
-    await submitRegistration({
+    await submitRegistrationNoCode({
       profile: 'main',
-      identity_type: 'device',
-      permission_type: 'admin',
-      shinkai_identity: values.shinkai_identity ?? '',
-      registration_code: '',
-      node_encryption_pk: '',
       node_address: values.node_address,
       registration_name: values.registration_name,
       ...encryptionKeys,
