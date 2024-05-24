@@ -56,7 +56,7 @@ const AgentsPage = () => {
     navigate('/add-agent');
   };
   return (
-    <SimpleLayout classname="relative" title="Agents">
+    <SimpleLayout classname="relative" title="AIs">
       <div className="absolute right-3 top-[36px]">
         <Button
           className="h-[40px] gap-2"
@@ -64,7 +64,7 @@ const AgentsPage = () => {
           size="auto"
         >
           <Plus className="h-4 w-4" />
-          <span>Add Agent</span>
+          <span>Add AI</span>
         </Button>
       </div>
       <div className="flex h-full flex-col space-y-3">
@@ -81,7 +81,7 @@ const AgentsPage = () => {
               </p>
             </div>
 
-            <Button onClick={onAddAgentClick}>Add Agent</Button>
+            <Button onClick={onAddAgentClick}>Add AI</Button>
           </div>
         ) : (
           <ScrollArea className="flex h-full flex-col justify-between [&>div>div]:!block">
@@ -265,7 +265,7 @@ const EditAgentDrawer = ({
   const { mutateAsync: updateAgent, isPending } = useUpdateAgent({
     onSuccess: () => {
       onOpenChange(false);
-      toast.success('Agent updated successfully');
+      toast.success('AI updated successfully');
     },
     onError: (error) => {
       toast.error('Error updating agent', {
@@ -320,7 +320,7 @@ const EditAgentDrawer = ({
                 disabled
                 name="agentName"
                 render={({ field }) => (
-                  <TextField field={field} label="Agent Name" />
+                  <TextField field={field} label="AI Name" />
                 )}
               />
 
@@ -382,7 +382,7 @@ const RemoveAgentDrawer = ({
   const { mutateAsync: deleteAgent, isPending } = useDeleteAgent({
     onSuccess: () => {
       onOpenChange(false);
-      toast.success('Agent deleted successfully');
+      toast.success('AI deleted successfully');
     },
     onError: (error) => {
       toast.error('Error deleting agent', {
@@ -396,7 +396,7 @@ const RemoveAgentDrawer = ({
       <SheetContent>
         <SheetHeader>
           <SheetTitle className="font-normal">
-            Delete Agent
+            Delete AI
             <span className="font-medium">{agentId}</span>{' '}
           </SheetTitle>
         </SheetHeader>

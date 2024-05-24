@@ -256,7 +256,7 @@ const EditAgentDrawer = ({
   const { mutateAsync: updateAgent, isPending } = useUpdateAgent({
     onSuccess: () => {
       onOpenChange(false);
-      toast.success('Agent updated successfully');
+      toast.success('AI updated successfully');
     },
     onError: (error) => {
       toast.error('Error updating agent', {
@@ -382,7 +382,7 @@ const RemoveAgentDrawer = ({
   const { mutateAsync: deleteAgent, isPending } = useDeleteAgent({
     onSuccess: () => {
       onOpenChange(false);
-      toast.success('Agent deleted successfully');
+      toast.success('AI deleted successfully');
     },
     onError: (error) => {
       toast.error('Error deleting agent', {
@@ -396,7 +396,7 @@ const RemoveAgentDrawer = ({
       <DrawerContent>
         <DrawerHeader>
           <DrawerTitle className="font-normal">
-            Delete Agent
+            Delete AI
             <span className="font-medium">{agentId}</span>{' '}
           </DrawerTitle>
         </DrawerHeader>

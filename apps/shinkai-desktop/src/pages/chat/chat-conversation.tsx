@@ -383,7 +383,7 @@ function AgentSelection() {
               className="bg-neutral-900"
               side="top"
             >
-              Switch Agent
+              Switch AI
             </TooltipContent>
           </TooltipPortal>
           <DropdownMenuContent

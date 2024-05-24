@@ -163,7 +163,7 @@ export function MainNav() {
     //   icon: <ChatBubbleIcon className="h-5 w-5" />,
     // },
     {
-      title: 'Agents',
+      title: 'AIs',
       href: '/agents',
       icon: <BotIcon className="h-5 w-5" />,
     },

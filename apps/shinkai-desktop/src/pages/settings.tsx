@@ -173,7 +173,7 @@ const SettingsPage = () => {
                       <SelectValue />
                     </SelectTrigger>
                   </FormControl>
-                  <FormLabel>Default Agent</FormLabel>
+                  <FormLabel>Default AI</FormLabel>
                   <SelectContent>
                     {agents?.map((agent) => (
                       <SelectItem key={agent.id} value={agent.id}>
