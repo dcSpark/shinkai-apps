@@ -36,9 +36,9 @@ export const useHardwareGetSummaryQuery = (
 ): UseQueryResult<HardwareSummary, Error> => {
   const query = useQuery({
     ...options,
-    queryKey: ['hardware_capabilities_get_summary'],
+    queryKey: ['hardware_get_summary'],
     queryFn: async (): Promise<HardwareSummary> => {
-      return invoke('hardware_capabilities_get_summary');
+      return invoke('hardware_get_summary');
     },
   });
   return { ...query } as UseQueryResult<HardwareSummary, Error>;

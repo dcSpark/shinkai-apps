@@ -3,7 +3,7 @@ use std::fs;
 use regex::Regex;
 use tokio::sync::mpsc::Sender;
 
-use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
+use crate::{hardware::{hardware_get_summary, RequirementsStatus}, local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions};
 
 use super::{
     logger::LogEntry, process_handler::{ProcessHandler, ProcessHandlerEvent}, process_utils::options_to_env
@@ -32,7 +32,7 @@ impl ShinkaiNodeProcessHandler {
     }
 
     pub fn default_options(default_node_storage_path: String) -> ShinkaiNodeOptions {
-        ShinkaiNodeOptions {
+        let mut options = ShinkaiNodeOptions {
             port: Some("9550".to_string()),
             node_storage_path: Some(default_node_storage_path),
             unstructured_server_url: Some("https://public.shinkai.com/x-un".to_string()),
@@ -44,7 +44,18 @@ impl ShinkaiNodeProcessHandler {
             initial_agent_api_keys: Some("".to_string()),
             starting_num_qr_devices: Some("0".to_string()),
             log_all: Some("1".to_string()),
+        };
+
+        let hardware_summary = hardware_get_summary();
+        match hardware_summary.requirements_status {
+            RequirementsStatus::Unmeet | RequirementsStatus::Minimum => {
+                options.initial_agent_names = Some("o_phi3_3_8b".to_string());
+                options.initial_agent_models = Some("ollama:phi3:3.8b".to_string());
+            }
+            _ => {}
         }
+        options
+        
     }
 
     fn get_base_url(&self) -> String {

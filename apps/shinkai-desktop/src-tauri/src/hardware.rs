@@ -56,8 +56,8 @@ pub const REQUIREMENTS: Requirements = Requirements {
     optimal: Requirement {
         cpus: RECOMMENDED_CPUS,
         memory: RECOMMENDED_MEMORY,
-      discrete_gpu: true,
-  },
+        discrete_gpu: true,
+    },
 };
 
 pub fn hardware_get_summary() -> HardwareSummary {
@@ -79,13 +79,13 @@ pub fn hardware_get_summary() -> HardwareSummary {
 
     let requirement_status;
     if cpus >= RECOMMENDED_CPUS && memory >= RECOMMENDED_MEMORY && discrete_gpu {
-      requirement_status = RequirementsStatus::Optimal;
+        requirement_status = RequirementsStatus::Optimal;
     } else if cpus >= RECOMMENDED_CPUS && memory >= RECOMMENDED_MEMORY {
-      requirement_status = RequirementsStatus::Recommended;
+        requirement_status = RequirementsStatus::Recommended;
     } else if cpus >= MIN_CPUS && memory >= MIN_MEMORY {
-      requirement_status = RequirementsStatus::Minimum;
+        requirement_status = RequirementsStatus::Minimum;
     } else {
-      requirement_status = RequirementsStatus::Unmeet;
+        requirement_status = RequirementsStatus::Unmeet;
     }
     HardwareSummary {
         hardware: Hardware {
