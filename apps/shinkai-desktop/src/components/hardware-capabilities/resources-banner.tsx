@@ -42,7 +42,8 @@ export const ResourcesBanner = ({
     useHardwareMinimumRequirements();
   const sidebarExpanded = useSettings((state) => state.sidebarExpanded);
 
-  const hasMinimumRequirements = hasMinCpus || hasMinRAM;
+  const hasMinimumRequirements =
+    hasMinCpus || hasMinRAM || hardCapabilitiesSummary?.has_discrete_gpu;
 
   const alertContent = (
     <Alert className="shadow-lg" variant="warning">
@@ -52,11 +53,13 @@ export const ResourcesBanner = ({
       </AlertTitle>
       <AlertDescription className="text-xs">
         <div className="flex flex-col gap-1">
-          <span>
-            Your computer doesn&apos;t meet the minimum requirements:{' '}
-            {hardCapabilitiesSummary?.cpus}/{MIN_CPUS} CPUs and {ramAsGb}/
-            {MIN_RAM_GB}GB RAM. AI models could not work or run really slow.
-          </span>
+          {(!hasMinCpus || !hasMinRAM) && (
+            <span>
+              Your computer doesn&apos;t meet the minimum requirements:{' '}
+              {hardCapabilitiesSummary?.cpus}/{MIN_CPUS} CPUs and {ramAsGb}/
+              {MIN_RAM_GB}GB RAM. AI models could not work or run really slow.
+            </span>
+          )}
 
           {!hardCapabilitiesSummary?.has_discrete_gpu && (
             <span>
