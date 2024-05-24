@@ -7,6 +7,7 @@ import { invoke } from '@tauri-apps/api';
 
 export enum RequirementsStatus {
   Unmeet = 'Unmeet',
+  StillUsable = 'StillUsable',
   Minimum = 'Minimum',
   Recommended = 'Recommended',
   Optimal = 'Optimal',
@@ -23,6 +24,7 @@ export type HardwareSummary = {
     cpus: number;
   };
   requirements: {
+    still_usable: Requirement;
     minimum: Requirement;
     recommended: Requirement;
     optimal: Requirement;
