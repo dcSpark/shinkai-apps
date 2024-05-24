@@ -2,6 +2,7 @@ import {
   Alert,
   AlertDescription,
   AlertTitle,
+  TextLink,
   Tooltip,
   TooltipContent,
   TooltipPortal,
@@ -43,7 +44,7 @@ export const ResourcesBanner = ({
   const sidebarExpanded = useSettings((state) => state.sidebarExpanded);
 
   const hasMinimumRequirements =
-    hasMinCpus || hasMinRAM || hardCapabilitiesSummary?.has_discrete_gpu;
+    hasMinCpus && hasMinRAM && hardCapabilitiesSummary?.has_discrete_gpu;
 
   const alertContent = (
     <Alert className="shadow-lg" variant="warning">
@@ -63,15 +64,32 @@ export const ResourcesBanner = ({
 
           {!hardCapabilitiesSummary?.has_discrete_gpu && (
             <span>
-              Your computer doesn&apos;t has a discrete GPU so AI models could
-              run really slow.
+              Your computer doesn&apos;t has a discrete GPU. AI models could run
+              really slow.
             </span>
           )}
+
+          <div className='mt-2'>
+            💡 We recommend to use{' '}
+            <TextLink
+              className='text-yellow-200'
+              label={'Shinkai Hosting'}
+              url={'https://www.shinkai.com/get-shinkai'}
+            />
+          </div>
         </div>
       </AlertDescription>
     </Alert>
   );
 
+  console.log(
+    'dasds',
+    hasMinCpus,
+    hasMinRAM,
+    ramAsGb,
+    hardCapabilitiesSummary,
+    hasMinimumRequirements,
+  );
   if (isInSidebar && !hasMinimumRequirements) {
     return (
       <div className={cn('flex w-full flex-col text-xs', className)}>
