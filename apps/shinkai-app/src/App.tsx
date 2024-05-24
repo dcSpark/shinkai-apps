@@ -19,7 +19,7 @@ import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { queryClient } from '@shinkai_network/shinkai-node-state/lib/constants';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { Redirect, Route } from 'react-router-dom';
+import { Redirect, Route } from 'react-router';
 
 import AddAgent from './pages/AddAgent';
 import AdminCommands from './pages/AdminCommands';

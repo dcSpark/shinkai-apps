@@ -30,7 +30,7 @@ import { BrowserQRCodeReader } from '@zxing/browser';
 import { checkmarkSharp, cloudUpload, scan } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router';
 import { toast } from 'sonner';
 import * as z from 'zod';
 
@@ -289,7 +289,7 @@ const Connect = () => {
               />
             </div>
           </div>
-          <div className="flex grow overflow-auto bg-white p-10 dark:bg-slate-800 md:rounded-[1.25rem] ">
+          <div className="flex grow overflow-auto bg-white p-10 md:rounded-[1.25rem] dark:bg-slate-800 ">
             <div className="mx-auto w-full max-w-[31.5rem] pt-10">
               <a href="https://shinkai.com/" rel="noreferrer" target="_blank">
                 <img
@@ -304,7 +304,7 @@ const Connect = () => {
                 />
               </a>
 
-              <div className="rounded-xl border border-slate-100 pb-5 dark:border-slate-700 md:pb-10">
+              <div className="rounded-xl border border-slate-100 pb-5 md:pb-10 dark:border-slate-700">
                 <IonSegment
                   class="ion-segment"
                   onIonChange={(e) =>
