@@ -89,10 +89,14 @@ export const Popup = () => {
             path="/welcome"
           />
 
-          <Route element={<WithNav />}>
-            {/* <AnimatedRoute> */}
+          <Route
+            element={
+              <AnimatedRoute>
+                <WithNav />
+              </AnimatedRoute>
+            }
+          >
             <Route path="/nodes">
-              {/* <AnimatedRoute> */}
               <Route
                 element={<ConnectMethodQuickStart />}
                 path="connect/method/quick-start"
@@ -105,7 +109,6 @@ export const Popup = () => {
                 element={<ConnectMethodQrCode />}
                 path="connect/method/qr-code"
               />
-              {/* </AnimatedRoute> */}
             </Route>
             <Route path="inboxes">
               <Route element={<CreateInbox />} path="create-inbox" />
@@ -130,7 +133,7 @@ export const Popup = () => {
                     <SearchNodeFiles />
                   </VectorFolderSelectionProvider>
                 }
-                path=""
+                index
               />
             </Route>
             <Route path="subscriptions">
@@ -150,7 +153,6 @@ export const Popup = () => {
               />
               <Route element={<Settings />} index />
             </Route>
-            {/* </AnimatedRoute> */}
           </Route>
         </Routes>
       </motion.div>
