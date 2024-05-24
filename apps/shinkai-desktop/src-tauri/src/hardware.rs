@@ -93,7 +93,7 @@ pub fn hardware_get_summary() -> HardwareSummary {
         requirement_status = RequirementsStatus::Recommended;
     } else if cpus >= MIN_CPUS && memory >= MIN_MEMORY {
         requirement_status = RequirementsStatus::Minimum;
-    } else if cpus >= STILL_USABLE_CPUS && memory >= STILL_USABLE_MEMORY {
+    } else if cpus >= STILL_USABLE_CPUS && memory > STILL_USABLE_MEMORY {
         requirement_status = RequirementsStatus::StillUsable;
     } else {
         requirement_status = RequirementsStatus::Unmeet;
