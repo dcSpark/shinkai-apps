@@ -16,20 +16,35 @@ import { AlertTriangle } from 'lucide-react';
 import { useHardwareCapabilitiesGetSummaryQuery } from '../../lib/hardware-capabilities.ts/hardware_capabilities-client';
 import { showAnimation } from '../../pages/layout/main-layout';
 import { useSettings } from '../../store/settings';
-const MIN_RAM_GB = 16;
+
 const MIN_CPUS = 4;
+const MIN_RAM_GB = 16;
+const RECOMMENDED_CPUS = 10;
+const RECOMMENDED_RAM_GB = 32;
 
 export const useHardwareMinimumRequirements = () => {
   const { data: hardCapabilitiesSummary } =
     useHardwareCapabilitiesGetSummaryQuery();
 
-  const hasMinCpus = (hardCapabilitiesSummary?.cpus || 0) >= MIN_CPUS;
-
-  const hasMinRAM = (hardCapabilitiesSummary?.memory || 0) >= MIN_RAM_GB;
-
   const ramAsGb = (hardCapabilitiesSummary?.memory || 0) / 1024 / 1024 / 1024;
+  const hasMinCpus = (hardCapabilitiesSummary?.cpus || 0) >= MIN_CPUS;
+  const hasMinRAM = ramAsGb >= MIN_RAM_GB;
+  const hasRecommendedCpus =
+    (hardCapabilitiesSummary?.cpus || 0) >= RECOMMENDED_CPUS;
+  const hasRecommendedRAM = ramAsGb >= RECOMMENDED_RAM_GB;
+  const hasMinimumRequirements = hasMinCpus && hasMinRAM;
+  const hasRecommendedRequirements = hasRecommendedCpus && hasRecommendedRAM;
 
-  return { hasMinCpus, hasMinRAM, ramAsGb, hardCapabilitiesSummary };
+  return {
+    hardCapabilitiesSummary,
+    ramAsGb,
+    hasMinCpus,
+    hasMinRAM,
+    hasRecommendedCpus,
+    hasRecommendedRAM,
+    hasMinimumRequirements,
+    hasRecommendedRequirements,
+  };
 };
 
 export const ResourcesBanner = ({
@@ -39,12 +54,20 @@ export const ResourcesBanner = ({
   className?: string;
   isInSidebar?: boolean;
 }) => {
-  const { hasMinCpus, hasMinRAM, ramAsGb, hardCapabilitiesSummary } =
-    useHardwareMinimumRequirements();
+  const {
+    hardCapabilitiesSummary,
+    ramAsGb,
+    hasMinCpus,
+    hasMinRAM,
+    hasMinimumRequirements,
+    hasRecommendedRequirements,
+  } = useHardwareMinimumRequirements();
   const sidebarExpanded = useSettings((state) => state.sidebarExpanded);
 
-  const hasMinimumRequirements =
-    hasMinCpus && hasMinRAM && hardCapabilitiesSummary?.has_discrete_gpu;
+  const hasIssues =
+    !hasMinimumRequirements ||
+    !hasRecommendedRequirements ||
+    !hardCapabilitiesSummary?.has_discrete_gpu;
 
   const alertContent = (
     <Alert className="shadow-lg" variant="warning">
@@ -53,26 +76,33 @@ export const ResourcesBanner = ({
         Device Compatibility
       </AlertTitle>
       <AlertDescription className="text-xs">
-        <div className="flex flex-col gap-1">
-          {(!hasMinCpus || !hasMinRAM) && (
-            <span>
-              Your computer doesn&apos;t meet the minimum requirements:{' '}
-              {hardCapabilitiesSummary?.cpus}/{MIN_CPUS} CPUs and {ramAsGb}/
-              {MIN_RAM_GB}GB RAM. AI models could not work or run really slow.
-            </span>
-          )}
+        <div className="flex flex-col gap-2">
+          <div>AI models could not work or run really slow.</div>
 
-          {!hardCapabilitiesSummary?.has_discrete_gpu && (
-            <span>
-              Your computer doesn&apos;t has a discrete GPU. AI models could run
-              really slow.
-            </span>
-          )}
-
-          <div className='mt-2'>
-            💡 We recommend to use{' '}
+          <div className="ml-2 flex list-disc flex-col space-y-1">
+            {(!hasMinimumRequirements) && (
+              <span>
+                - Your computer doesn&apos;t meet the minimum requirements:{' '}
+                {MIN_CPUS} CPUs and {MIN_RAM_GB}GB RAM.
+              </span>
+            )}
+            {(hasMinimumRequirements && !hasRecommendedRequirements) && (
+              <span>
+                - Your computer doesn&apos;t meet the recommended requirements:{' '}
+                {RECOMMENDED_CPUS} CPUs and {RECOMMENDED_RAM_GB}GB RAM.
+              </span>
+            )}
+            {!hardCapabilitiesSummary?.has_discrete_gpu && (
+              <span>- Your computer doesn&apos;t has a discrete GPU.</span>
+            )}
+          </div>
+          <div className="mt-2">
+            <span aria-label="lightbulb" role="img">
+              💡
+            </span>{' '}
+            We recommend to use{' '}
             <TextLink
-              className='text-yellow-200'
+              className="text-yellow-200"
               label={'Shinkai Hosting'}
               url={'https://www.shinkai.com/get-shinkai'}
             />
@@ -88,9 +118,9 @@ export const ResourcesBanner = ({
     hasMinRAM,
     ramAsGb,
     hardCapabilitiesSummary,
-    hasMinimumRequirements,
+    hasIssues,
   );
-  if (isInSidebar && !hasMinimumRequirements) {
+  if (isInSidebar && hasIssues) {
     return (
       <div className={cn('flex w-full flex-col text-xs', className)}>
         <TooltipProvider delayDuration={0}>
@@ -137,7 +167,7 @@ export const ResourcesBanner = ({
 
   return (
     <div className={cn('flex w-full flex-col text-xs', className)}>
-      {!hasMinimumRequirements && alertContent}
+      {hasIssues && alertContent}
     </div>
   );
 };
