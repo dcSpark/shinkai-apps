@@ -20,6 +20,7 @@ mod audio;
 mod commands;
 mod globals;
 mod local_shinkai_node;
+mod hardware;
 
 fn main() {
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
