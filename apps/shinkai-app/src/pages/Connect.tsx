@@ -1,7 +1,7 @@
 import './Connect.css';
 
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
+// import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
 import { ErrorMessage } from '@hookform/error-message';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -27,7 +27,11 @@ import { useSubmitRegistration } from '@shinkai_network/shinkai-node-state/lib/m
 import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
 // import { QrScanner, QrScannerProps } from '@yudiel/react-qr-scanner';
 import { BrowserQRCodeReader } from '@zxing/browser';
-import { checkmarkSharp, cloudUpload, scan } from 'ionicons/icons';
+import {
+  // checkmarkSharp,
+  cloudUpload,
+  // scan
+} from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useHistory } from 'react-router';
@@ -193,15 +197,15 @@ const Connect = () => {
     );
   }, [setupDataForm]);
 
-  const handleScan = async (data: string) => {
-    if (data) {
-      const result = JSON.parse(data);
-      setupDataForm.reset((prev) => ({
-        ...prev,
-        ...result,
-      }));
-    }
-  };
+  // const handleScan = async (data: string) => {
+  //   if (data) {
+  //     const result = JSON.parse(data);
+  //     setupDataForm.reset((prev) => ({
+  //       ...prev,
+  //       ...result,
+  //     }));
+  //   }
+  // };
 
   const handleImageUpload = async () => {
     try {
@@ -226,18 +230,18 @@ const Connect = () => {
     }
   };
 
-  const handleError = (err: Error) => {
-    console.error(err);
-  };
-
-  const handleQRScan = async () => {
-    if (isPlatform('capacitor')) {
-      const result = await BarcodeScanner.startScan();
-      if (result.hasContent) {
-        handleScan(result.content);
-      }
-    }
-  };
+  // const handleError = (err: Error) => {
+  //   console.error(err);
+  // };
+  //
+  // const handleQRScan = async () => {
+  //   if (isPlatform('capacitor')) {
+  //     const result = await BarcodeScanner.startScan();
+  //     if (result.hasContent) {
+  //       handleScan(result.content);
+  //     }
+  //   }
+  // };
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     await submitRegistration({
