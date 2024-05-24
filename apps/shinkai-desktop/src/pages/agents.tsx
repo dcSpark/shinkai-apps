@@ -34,6 +34,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { useAuth } from '../store/auth';
+import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
 import { getModelObject } from './create-agent';
 import { SimpleLayout } from './layout/simple-layout';
 
@@ -51,7 +52,14 @@ const AgentsPage = () => {
     profile_encryption_sk: auth?.profile_encryption_sk ?? '',
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
+  const isLocalShinkaiNodeIsUse = useShinkaiNodeManager(
+    (state) => state.isInUse,
+  );
   const onAddAgentClick = () => {
+    if (isLocalShinkaiNodeIsUse) {
+      navigate('/agents-locally');
+      return;
+    }
     navigate('/add-agent');
   };
   return (

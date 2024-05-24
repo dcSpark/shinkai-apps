@@ -2,8 +2,9 @@ import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAg
 import { buttonVariants } from '@shinkai_network/shinkai-ui';
 import { Link } from 'react-router-dom';
 
-import { ADD_AGENT_PATH, CREATE_JOB_PATH } from '../../routes/name';
+import { CREATE_JOB_PATH } from '../../routes/name';
 import { useAuth } from '../../store/auth';
+import { useShinkaiNodeManager } from '../../store/shinkai-node-manager';
 
 const EmptyMessage = () => {
   const auth = useAuth((state) => state.auth);
@@ -19,6 +20,9 @@ const EmptyMessage = () => {
     profile_encryption_sk: auth?.profile_encryption_sk ?? '',
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
+  const isLocalShinkaiNodeIsUse = useShinkaiNodeManager(
+    (state) => state.isInUse,
+  );
 
   return (
     <div className="flex w-full items-center justify-center p-6">
@@ -39,7 +43,7 @@ const EmptyMessage = () => {
               className={buttonVariants({
                 variant: 'default',
               })}
-              to={ADD_AGENT_PATH}
+              to={isLocalShinkaiNodeIsUse ? '/agents-locally' : '/add-agent'}
             >
               <span>Create AI</span>
             </Link>

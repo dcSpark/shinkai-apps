@@ -15,6 +15,7 @@ import {
 import { useShinkaiNodeEventsToast } from '../lib/shinkai-node-manager/shinkai-node-manager-hooks';
 import AgentsPage from '../pages/agents';
 import AIModelInstallation from '../pages/ai-model-installation';
+import AgentsLocally from '../pages/ai-model-locally';
 import ChatConversation from '../pages/chat/chat-conversation';
 import EmptyMessage from '../pages/chat/empty-message';
 import ChatLayout from '../pages/chat/layout';
@@ -171,6 +172,7 @@ const AppRoutes = () => {
           }
         >
           <Route element={<CreateAgentPage />} path="add-agent" />
+          <Route element={<AgentsLocally />} path="agents-locally" />
           <Route element={<AgentsPage />} index path="agents" />
         </Route>
         <Route
