@@ -41,7 +41,7 @@ const EmptyMessage = () => {
               })}
               to={ADD_AGENT_PATH}
             >
-              <span>Add AI</span>
+              <span>Create AI</span>
             </Link>
           ) : (
             <Link

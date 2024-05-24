@@ -37,7 +37,7 @@
   "agent-name": "AI name",
   "external-url": "External URL",
   "api-key": "API Key",
-  "add-agent": "Add AI",
+  "add-agent": "Create AI",
   "model.one": "Model",
   "model.other": "Models",
   "openai": "OpenAI",
