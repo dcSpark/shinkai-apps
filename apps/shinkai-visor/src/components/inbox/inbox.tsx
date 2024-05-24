@@ -156,7 +156,7 @@ function AgentSelection() {
 
 export const Inbox = () => {
   const size = partial({ standard: 'jedec' });
-  const { inboxId: encodedInboxId } = useParams<{ inboxId: string }>();
+  const { inboxId: encodedInboxId = '' } = useParams<{ inboxId: string }>();
   const auth = useAuth((state) => state.auth);
   const inboxId = decodeURIComponent(encodedInboxId);
 
