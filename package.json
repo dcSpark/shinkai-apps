@@ -177,5 +177,14 @@
   "engines": {
     "node": "18",
     "npm": "9"
+  },
+  "optionalDependencies": {
+    "@swc/core-darwin-arm64": "^1.5.7",
+    "@swc/core-darwin-x64": "^1.5.7",
+    "@swc/core-linux-arm-gnueabihf": "^1.5.7",
+    "@swc/core-linux-arm64-gnu": "^1.5.7",
+    "@swc/core-linux-arm64-musl": "^1.5.7",
+    "@swc/core-linux-x64-gnu": "^1.5.7",
+    "@swc/core-linux-x64-musl": "^1.5.7"
   }
 }
