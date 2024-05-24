@@ -39,6 +39,7 @@ import {
 } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import { ResourcesBanner } from '../../components/hardware-capabilities/resources-banner';
 import { openShinkaiNodeManagerWindow } from '../../lib/shinkai-node-manager/shinkai-node-manager-windows-utils';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
@@ -52,14 +53,14 @@ type NavigationLink = {
   external?: boolean;
 };
 
-const sidebarTransition: TargetAndTransition['transition'] = {
+export const sidebarTransition: TargetAndTransition['transition'] = {
   duration: 0.3,
   type: 'spring',
   damping: 20,
   stiffness: 150,
   mass: 1,
 };
-const showAnimation = {
+export const showAnimation = {
   hidden: {
     width: 0,
     opacity: 0,
@@ -315,6 +316,7 @@ export function MainNav() {
           })}
         </div>
         <div className="flex flex-col gap-1">
+          <ResourcesBanner isInSidebar />
           {footerNavigationLinks.map((item) => {
             return (
               <React.Fragment key={item.title}>
@@ -435,8 +437,8 @@ const MainLayout = () => {
     !!auth && !disabledSidebarRoutes.includes(location.pathname);
 
   return (
-    <div className="flex min-h-full flex-col bg-gray-500 text-white">
-      <div className={cn('flex flex-1', !!auth && '')}>
+    <div className={cn('flex min-h-full flex-col bg-gray-500 text-white ')}>
+      <div className={cn('relative flex flex-1', !!auth && '')}>
         {displaySidebar && <MainNav />}
         <motion.div
           animate={{

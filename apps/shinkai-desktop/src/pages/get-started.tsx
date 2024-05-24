@@ -12,6 +12,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 
+import { ResourcesBanner } from '../components/hardware-capabilities/resources-banner';
 import { ResetStorageBeforeConnectConfirmationPrompt } from '../components/reset-storage-before-connect-confirmation-prompt';
 import { useShinkaiNodeSpawnMutation } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { useShinkaiNodeEventsToast } from '../lib/shinkai-node-manager/shinkai-node-manager-hooks';
@@ -110,14 +111,18 @@ const GetStartedPage = () => {
           Transform your desktop experience using AI with Shinkai Desktop{' '}
           <span aria-hidden> 🔑</span>
         </p>
-        <div className="mt-20 flex flex-1 flex-col gap-10">
-          <Button
-            isLoading={shinkaiNodeSpawnIsPending}
-            onClick={() => shinkaiNodeSpawn()}
-            size="lg"
-          >
-            Shinkai Private (Local)
-          </Button>
+        <div className="mt-10 flex flex-1 flex-col gap-10">
+          <div className="space-y-4">
+            <Button
+              className="w-full"
+              isLoading={shinkaiNodeSpawnIsPending}
+              onClick={() => shinkaiNodeSpawn()}
+              size="lg"
+            >
+              Shinkai Private (Local)
+            </Button>
+            <ResourcesBanner />
+          </div>
           <Separator className="relative" decorative>
             <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-gray-500 p-2 text-gray-100">
               or
