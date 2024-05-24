@@ -152,7 +152,7 @@ export function MainNav() {
 
   const navigationLinks = [
     {
-      title: 'Conversations',
+      title: 'Chats',
       href: '/inboxes',
       icon: <InboxIcon className="h-5 w-5" />,
     },
@@ -220,33 +220,37 @@ export function MainNav() {
         width: sidebarExpanded ? '230px' : '70px',
       }}
     >
-      <TooltipProvider delayDuration={0}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              className={cn(
-                'border-gray-350 text-gray-80 flex h-6 w-6 items-center justify-center self-center rounded-lg border bg-black/20 p-0 hover:bg-black/20 hover:text-white',
-                sidebarExpanded ? 'self-end' : 'self-center',
-              )}
-              onClick={toggleSidebar}
-              size="auto"
-              type="button"
-              variant="ghost"
-            >
-              {sidebarExpanded ? (
-                <ArrowLeftToLine className="h-3 w-3" />
-              ) : (
-                <ArrowRightToLine className="h-3 w-3" />
-              )}
-            </Button>
-          </TooltipTrigger>
-          <TooltipPortal>
-            <TooltipContent align="center" side="right">
-              Toggle Sidebar
-            </TooltipContent>
-          </TooltipPortal>
-        </Tooltip>
-      </TooltipProvider>
+      <div className="flex justify-between">
+        <img alt="" src="/" />
+        <TooltipProvider delayDuration={0}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                className={cn(
+                  'border-gray-350 text-gray-80 flex h-6 w-6 items-center justify-center self-center rounded-lg border bg-black/20 p-0 hover:bg-black/20 hover:text-white',
+                  sidebarExpanded ? 'self-end' : 'self-center',
+                )}
+                onClick={toggleSidebar}
+                size="auto"
+                type="button"
+                variant="ghost"
+              >
+                {sidebarExpanded ? (
+                  <ArrowLeftToLine className="h-3 w-3" />
+                ) : (
+                  <ArrowRightToLine className="h-3 w-3" />
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipPortal>
+              <TooltipContent align="center" side="right">
+                Toggle Sidebar
+              </TooltipContent>
+            </TooltipPortal>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+
       <div className="flex flex-1 flex-col justify-between">
         <div className="flex flex-col gap-1.5">
           <TooltipProvider delayDuration={0}>
