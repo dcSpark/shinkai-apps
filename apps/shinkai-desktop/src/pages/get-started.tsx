@@ -14,6 +14,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import { ResourcesBanner } from '../components/hardware-capabilities/resources-banner';
 import { ResetStorageBeforeConnectConfirmationPrompt } from '../components/reset-storage-before-connect-confirmation-prompt';
+import { RequirementsStatus, useHardwareGetSummaryQuery } from '../lib/hardware.ts/hardware-client';
 import { useShinkaiNodeSpawnMutation } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { useShinkaiNodeEventsToast } from '../lib/shinkai-node-manager/shinkai-node-manager-hooks';
 import { useAuth } from '../store/auth';
@@ -36,6 +37,7 @@ const GetStartedPage = () => {
     },
   });
 
+  const { data: hardwareSummary } = useHardwareGetSummaryQuery();
   const { mutateAsync: submitRegistrationNoCode } = useSubmitRegistrationNoCode(
     {
       onSuccess: (response, setupPayload) => {
@@ -115,6 +117,7 @@ const GetStartedPage = () => {
           <div className="space-y-4">
             <Button
               className="w-full"
+              disabled={hardwareSummary?.requirements_status === RequirementsStatus.Unmeet}
               isLoading={shinkaiNodeSpawnIsPending}
               onClick={() => shinkaiNodeSpawn()}
               size="lg"
