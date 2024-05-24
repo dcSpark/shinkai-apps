@@ -15,7 +15,6 @@ pub fn hardware_capabilities_get_summary() -> Result<HardwareCapabilitiesSummary
     let adapters = instance.enumerate_adapters(wgpu::Backends::all());
     let mut has_discrete_gpu = false;
     for (i, adapter) in adapters.iter().enumerate() {
-        println!("Adapter {}: {:?}", i, adapter.get_info());
         if adapter.get_info().device_type == DeviceType::DiscreteGpu {
             has_discrete_gpu = true;
             break;
