@@ -18,6 +18,7 @@ pub struct Requirement {
 
 #[derive(Serialize)]
 pub struct Requirements {
+    still_usable: Requirement,
     minimum: Requirement,
     recommended: Requirement,
     optimal: Requirement,
@@ -26,6 +27,7 @@ pub struct Requirements {
 #[derive(Serialize)]
 pub enum RequirementsStatus {
     Unmeet,
+    StillUsable,
     Minimum,
     Recommended,
     Optimal,
@@ -38,11 +40,18 @@ pub struct HardwareSummary {
     pub requirements_status: RequirementsStatus,
 }
 
+pub const STILL_USABLE_CPUS: usize = 4;
+pub const STILL_USABLE_MEMORY: u64 = 8;
 pub const MIN_CPUS: usize = 4;
 pub const MIN_MEMORY: u64 = 16;
 pub const RECOMMENDED_CPUS: usize = 10;
 pub const RECOMMENDED_MEMORY: u64 = 32;
 pub const REQUIREMENTS: Requirements = Requirements {
+    still_usable: Requirement {
+        cpus: STILL_USABLE_CPUS,
+        memory: STILL_USABLE_MEMORY,
+        discrete_gpu: false,
+    },
     minimum: Requirement {
         cpus: MIN_CPUS,
         memory: MIN_MEMORY,
@@ -84,6 +93,8 @@ pub fn hardware_get_summary() -> HardwareSummary {
         requirement_status = RequirementsStatus::Recommended;
     } else if cpus >= MIN_CPUS && memory >= MIN_MEMORY {
         requirement_status = RequirementsStatus::Minimum;
+    } else if cpus >= STILL_USABLE_CPUS && memory > STILL_USABLE_MEMORY {
+        requirement_status = RequirementsStatus::StillUsable;
     } else {
         requirement_status = RequirementsStatus::Unmeet;
     }

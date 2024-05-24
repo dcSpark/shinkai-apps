@@ -33,9 +33,10 @@ export const ResourcesBanner = ({
   const isOptimal =
     hardwareSummary?.requirements_status === RequirementsStatus.Optimal;
   const lessThanMinimum =
-    hardwareSummary?.requirements_status === RequirementsStatus.Unmeet;
+    hardwareSummary?.requirements_status === RequirementsStatus.Unmeet || hardwareSummary?.requirements_status === RequirementsStatus.StillUsable;
   const lessThanRecomendded =
     hardwareSummary?.requirements_status === RequirementsStatus.Unmeet ||
+    hardwareSummary?.requirements_status === RequirementsStatus.StillUsable ||
     hardwareSummary?.requirements_status === RequirementsStatus.Minimum;
 
   const alertContent = (
