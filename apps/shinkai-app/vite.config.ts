@@ -35,7 +35,9 @@ export default defineConfig({
   },
 
   publicDir: 'public',
-
+  build: {
+    outDir: './dist',
+  },
   esbuild: {
     // Important for wasm plugin
     supported: {
