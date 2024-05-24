@@ -9,7 +9,7 @@ import * as React from 'react';
 import { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { IntlProvider } from 'react-intl';
-import { MemoryRouter as Router, Outlet } from 'react-router-dom';
+import { MemoryRouter as Router } from 'react-router-dom';
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
 import { useGlobalPopupChromeMessage } from '../../hooks/use-global-popup-chrome-message';
@@ -89,11 +89,7 @@ export const Popup = () => {
             path="/welcome"
           />
 
-          <Route
-            element={
-              <WithNav />
-            }
-          >
+          <Route element={<WithNav />}>
             {/* <AnimatedRoute> */}
             <Route path="/nodes">
               {/* <AnimatedRoute> */}
