@@ -40,7 +40,6 @@ import {
 import { toast } from 'sonner';
 
 import { ResourcesBanner } from '../../components/hardware-capabilities/resources-banner';
-import { openShinkaiNodeManagerWindow } from '../../lib/shinkai-node-manager/shinkai-node-manager-windows-utils';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
 
