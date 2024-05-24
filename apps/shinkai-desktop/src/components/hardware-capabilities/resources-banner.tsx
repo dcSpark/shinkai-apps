@@ -38,7 +38,6 @@ export const ResourcesBanner = ({
     hardwareSummary?.requirements_status === RequirementsStatus.Unmeet ||
     hardwareSummary?.requirements_status === RequirementsStatus.Minimum;
 
-  console.log('hardware', hardwareSummary);
   const alertContent = (
     <Alert className="shadow-lg" variant="warning">
       <AlertTriangle className="h-4 w-4" />
@@ -68,7 +67,7 @@ export const ResourcesBanner = ({
             )}
 
             {!hardwareSummary?.hardware.discrete_gpu && (
-              <span>- Your computer doesn&apos;t has a discrete GPU.</span>
+              <span>- Your computer doesn&apos;t have a discrete GPU.</span>
             )}
           </div>
           <div className="mt-2">
