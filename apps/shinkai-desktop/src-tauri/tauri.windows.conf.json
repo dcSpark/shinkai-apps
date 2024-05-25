@@ -8,7 +8,7 @@
       },
       "windows": {
         "nsis": {
-          "installerIcon": "icons/icon.png"
+          "installerIcon": "icons/icon.ico"
         }
       }
     }
