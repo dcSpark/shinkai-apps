@@ -47,7 +47,7 @@ export default function OnboardingStepper() {
             currentStepsMap.get(GetStartedSteps.SetupShinkaiNode) ??
             GetStartedStatus.NotStarted,
           title: 'Setup Shinkai Node',
-          body: `You have successfully setup your Shinkai Node.`,
+          body: 'Setup your Shinkai Node to get started',
         },
         {
           label: GetStartedSteps.CreateAI,
@@ -80,7 +80,7 @@ export default function OnboardingStepper() {
           title: 'Create AI Chat',
           body: (
             <div className="flex flex-col items-start gap-2">
-              <span>Create a chat with your AI to start chatting with it</span>
+              <span>Start a conversation with your AI</span>
               <Button
                 className="h-auto gap-1 px-3 py-2"
                 onClick={() => {
@@ -103,7 +103,10 @@ export default function OnboardingStepper() {
           title: 'Upload a file',
           body: (
             <div className="flex flex-col items-start gap-2">
-              <span>Upload a file to your AI to chat with it</span>
+              <span>
+                Keep your notes, websites, docs and others securely stored in
+                one place.
+              </span>
               <Button
                 className="h-auto gap-1 px-3 py-2"
                 onClick={() => {
@@ -126,17 +129,20 @@ export default function OnboardingStepper() {
           title: 'Ask question to files',
           body: (
             <div className="flex flex-col items-start gap-2">
-              <span>Chat with your files</span>
+              <span>
+                Chat with your files. Ask any questions, find information, get
+                summaries and more.
+              </span>
               <Button
                 className="h-auto gap-1 px-3 py-2"
                 onClick={() => {
-                  navigate('/create-job');
+                  navigate('/vector-fs');
                 }}
                 size="sm"
                 variant="outline"
               >
                 <FilesIcon className="h-4 w-4" />
-                Add Local Files as Context
+                Create Chat with Files
               </Button>
             </div>
           ),
@@ -149,7 +155,7 @@ export default function OnboardingStepper() {
           title: 'Subscribe to knowledge',
           body: (
             <div className="flex flex-col items-start gap-2">
-              <span>Subscribe to knowledge to get updates</span>
+              <span>Subscribe to knowledge to get up-to-date information</span>
               <Button
                 className="h-auto gap-1 px-3 py-2"
                 onClick={() => {
@@ -172,7 +178,7 @@ export default function OnboardingStepper() {
           title: 'Share Knowledge',
           body: (
             <div className="flex flex-col items-start gap-2">
-              <span>Share a folder with your AI to get started</span>
+              <span>You can share knowledge from your AI Files explorer</span>
               <Button
                 className="h-auto gap-1 px-3 py-2"
                 onClick={() => {

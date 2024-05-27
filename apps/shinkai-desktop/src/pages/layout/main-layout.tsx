@@ -29,7 +29,7 @@ import {
   PlusIcon,
   SearchCode,
 } from 'lucide-react';
-import React, { Fragment, ReactNode, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import {
   Link,
   Outlet,
@@ -252,7 +252,7 @@ export function MainNav() {
         width: sidebarExpanded ? '230px' : '70px',
       }}
     >
-      <div className="text-gray-80 flex w-full items-center justify-between gap-2 py-3 pl-4">
+      <div className="text-gray-80 flex w-full items-center justify-between gap-2 py-2 pl-4">
         {sidebarExpanded && (
           <ShinkaiLogo className="text-gray-80 h-auto w-[80px]" />
         )}

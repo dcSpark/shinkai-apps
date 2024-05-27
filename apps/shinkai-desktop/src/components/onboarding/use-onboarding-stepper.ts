@@ -1,8 +1,10 @@
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
+import { useGetMySharedFolders } from '@shinkai_network/shinkai-node-state/lib/queries/getMySharedFolders/useGetMySharedFolders';
+import { useGetMySubscriptions } from '@shinkai_network/shinkai-node-state/lib/queries/getMySubscriptions/useGetMySubscriptions';
 import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
-import { transformDataToTreeNodes } from '@shinkai_network/shinkai-node-state/lib/utils/files';
+import { getFlatChildItems } from '@shinkai_network/shinkai-node-state/lib/utils/files';
 import { useMap } from '@shinkai_network/shinkai-ui/hooks';
 import { useEffect } from 'react';
 
@@ -58,6 +60,28 @@ export const useOnboardingSteps = () => {
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
 
+  const { data: subscriptions } = useGetMySubscriptions({
+    nodeAddress: auth?.node_address ?? '',
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    profile: auth?.profile ?? '',
+    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+  });
+
+  const { data: mySharedFolders } = useGetMySharedFolders({
+    nodeAddress: auth?.node_address ?? '',
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    profile: auth?.profile ?? '',
+    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+  });
+
   useEffect(() => {
     if (isSuccess && nodeInfo?.status === 'ok') {
       currentStepsMap.set(
@@ -74,27 +98,46 @@ export const useOnboardingSteps = () => {
   }, [agents]);
 
   useEffect(() => {
-    if (VRFiles) {
-      console.log(transformDataToTreeNodes(VRFiles), '11111');
+    const currentFiles = VRFiles ? getFlatChildItems(VRFiles) : [];
+    if (currentFiles.length > 2) {
+      currentStepsMap.set(GetStartedSteps.UploadAFile, GetStartedStatus.Done);
     }
   }, [VRFiles]);
+
   useEffect(() => {
     if (inboxes.length > 1) {
       currentStepsMap.set(GetStartedSteps.CreateAIChat, GetStartedStatus.Done);
     }
-  }, [inboxes]);
+    const hasMoreThan1Folder =
+      inboxes.filter((inbox) => inbox.job_scope.vector_fs_folders.length > 1)
+        .length > 1;
+    const hasMoreThanZeroItem =
+      inboxes.filter((inbox) => inbox.job_scope.vector_fs_items.length > 0)
+        .length > 0;
 
-  useEffect(() => {
-    if (
-      inboxes.filter((inbox) => inbox.job_scope.vector_fs_folders).length > 1 ||
-      inboxes.filter((inbox) => inbox.job_scope.vector_fs_items).length > 0
-    ) {
+    console.log(hasMoreThan1Folder, hasMoreThanZeroItem);
+    if (hasMoreThanZeroItem || hasMoreThan1Folder) {
       currentStepsMap.set(
         GetStartedSteps.AskQuestionToFiles,
         GetStartedStatus.Done,
       );
     }
   }, [inboxes]);
+
+  useEffect(() => {
+    if ((subscriptions ?? [])?.length > 0) {
+      currentStepsMap.set(
+        GetStartedSteps.SubscribeToKnowledge,
+        GetStartedStatus.Done,
+      );
+    }
+  }, [subscriptions]);
+
+  useEffect(() => {
+    if ((mySharedFolders ?? [])?.length > 0) {
+      currentStepsMap.set(GetStartedSteps.ShareFolder, GetStartedStatus.Done);
+    }
+  }, [mySharedFolders]);
 
   return currentStepsMap;
 };
