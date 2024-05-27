@@ -13,7 +13,7 @@ import {
 import { FilesIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ChevronDown, ChevronUp, PlusIcon, Sparkles } from 'lucide-react';
+import { ChevronDown, PlusIcon, Sparkles, XIcon } from 'lucide-react';
 import React, { ReactNode, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -298,19 +298,21 @@ export const Stepper = ({ steps }: StepperProps) => {
       )}
       <PopoverContent
         align="start"
-        alignOffset={sidebarExpanded ? -14 : -4}
+        alignOffset={sidebarExpanded ? -13 : -4}
         className="bg-gray-300 p-0 text-xs"
-        side="top"
-        sideOffset={sidebarExpanded ? -36 : -44}
+        side="right"
+        sideOffset={sidebarExpanded ? 20 : 12}
       >
         <div className="space-y-2 bg-cyan-900/20 p-3.5">
-          <button
-            className="flex gap-3 rounded-lg p-1 font-medium text-white hover:bg-cyan-800/20"
-            onClick={() => setIsPopoverOpen(false)}
-          >
+          <div className="flex justify-between gap-3 rounded-lg p-1 font-medium text-white">
             <p>Get started checklist</p>
-            <ChevronUp className="h-4 w-4" />
-          </button>
+            <button
+              className="text-gray-80 hover:text-white"
+              onClick={() => setIsPopoverOpen(false)}
+            >
+              <XIcon className="h-4 w-4" />
+            </button>
+          </div>
           <Progress
             className="h-2 w-full rounded-lg bg-cyan-900 [&>div]:bg-cyan-400"
             value={currentPercents}
