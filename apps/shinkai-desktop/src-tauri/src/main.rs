@@ -3,10 +3,11 @@
 
 use std::sync::Arc;
 
+use crate::commands::hardware::hardware_get_summary;
 use crate::commands::shinkai_node_manager_commands::{
-    shinkai_node_get_last_n_logs, shinkai_node_get_options, shinkai_node_is_running,
-    shinkai_node_kill, shinkai_node_remove_storage, shinkai_node_set_options, shinkai_node_spawn,
-    shinkai_node_set_default_options, shinkai_node_get_ollama_api_url
+    shinkai_node_get_last_n_logs, shinkai_node_get_ollama_api_url, shinkai_node_get_options,
+    shinkai_node_is_running, shinkai_node_kill, shinkai_node_remove_storage,
+    shinkai_node_set_default_options, shinkai_node_set_options, shinkai_node_spawn,
 };
 use globals::SHINKAI_NODE_MANAGER_INSTANCE;
 use local_shinkai_node::shinkai_node_manager::ShinkaiNodeManager;
@@ -15,10 +16,11 @@ use tauri::SystemTrayMenuItem;
 use tauri::{CustomMenuItem, Manager, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMenu};
 use tokio::sync::Mutex;
 
-mod globals;
 mod audio;
 mod commands;
+mod globals;
 mod local_shinkai_node;
+mod hardware;
 
 fn main() {
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
@@ -52,6 +54,7 @@ fn main() {
             shinkai_node_remove_storage,
             shinkai_node_set_default_options,
             shinkai_node_get_ollama_api_url,
+            hardware_get_summary,
         ])
         .setup(|app| {
             let app_clone = app.app_handle();
@@ -64,17 +67,22 @@ fn main() {
                 Some(tauri::api::path::BaseDirectory::AppData),
             )?;
             {
-                let _ = SHINKAI_NODE_MANAGER_INSTANCE.set(Arc::new(Mutex::new(ShinkaiNodeManager::new(path.to_str().unwrap().to_string()))));
+                let _ = SHINKAI_NODE_MANAGER_INSTANCE.set(Arc::new(Mutex::new(
+                    ShinkaiNodeManager::new(path.to_str().unwrap().to_string()),
+                )));
             }
             let app_handle = app.app_handle();
             tauri::async_runtime::spawn(async move {
-                let mut shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
+                let mut shinkai_node_manager_guard =
+                    SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
                 let mut receiver = shinkai_node_manager_guard.subscribe_to_events();
                 drop(shinkai_node_manager_guard);
                 while let Ok(state_change) = receiver.recv().await {
-                    app_handle.emit_all("shinkai-node-state-change", state_change).unwrap_or_else(|e| {
-                        println!("Failed to emit global event for state change: {}", e);
-                    });
+                    app_handle
+                        .emit_all("shinkai-node-state-change", state_change)
+                        .unwrap_or_else(|e| {
+                            println!("Failed to emit global event for state change: {}", e);
+                        });
                 }
             });
 
@@ -154,7 +162,8 @@ fn main() {
                 "quit" => {
                     tauri::async_runtime::spawn(async {
                         // For some reason process::exit doesn't fire RunEvent::ExitRequested event in tauri
-                        let mut shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
+                        let mut shinkai_node_manager_guard =
+                            SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
                         if shinkai_node_manager_guard.is_running().await {
                             shinkai_node_manager_guard.kill().await;
                         }
@@ -168,21 +177,24 @@ fn main() {
         .build(tauri::generate_context!())
         .expect("error while running tauri application")
         .run(move |_app_handle, event| match event {
-            RunEvent::ExitRequested {  .. } => {
+            RunEvent::ExitRequested { .. } => {
                 tauri::async_runtime::spawn(async {
                     // For some reason process::exit doesn't fire RunEvent::ExitRequested event in tauri
-                    let mut shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
+                    let mut shinkai_node_manager_guard =
+                        SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
                     if shinkai_node_manager_guard.is_running().await {
                         shinkai_node_manager_guard.kill().await;
                     }
                     std::process::exit(0);
                 });
             }
-            RunEvent::Exit => {},
-            RunEvent::WindowEvent { label: _, event: _, .. } => {},
-            RunEvent::Ready => {},
-            RunEvent::Resumed => {},
-            RunEvent::MainEventsCleared => {},
-            _ => {},
+            RunEvent::Exit => {}
+            RunEvent::WindowEvent {
+                label: _, event: _, ..
+            } => {}
+            RunEvent::Ready => {}
+            RunEvent::Resumed => {}
+            RunEvent::MainEventsCleared => {}
+            _ => {}
         });
 }

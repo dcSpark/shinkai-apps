@@ -255,11 +255,11 @@ const CreateJobPage = () => {
               name="agent"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Select your AI Agent</FormLabel>
+                  <FormLabel>Select your AI</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select your AI Agent" />
+                        <SelectValue placeholder="Select your AI" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -277,7 +277,7 @@ const CreateJobPage = () => {
                           variant="ghost"
                         >
                           <PlusIcon className="mr-2" />
-                          Add Agents
+                          Create AI
                         </Button>
                       )}
                     </SelectContent>

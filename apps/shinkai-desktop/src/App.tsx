@@ -15,7 +15,6 @@ function App() {
         <AppRoutes />
       </Router>
       <Toaster />
-
       {/* <ReactQueryDevtools initialIsOpen={false} /> */}
     </QueryClientProvider>
   );

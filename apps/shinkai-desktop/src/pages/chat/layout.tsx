@@ -347,7 +347,7 @@ const ChatLayout = () => {
         <>
           <div className="flex h-full max-w-[280px] flex-[280px] shrink-0 flex-col px-2 py-4">
             <div className="mb-4 flex items-center justify-between gap-2 px-2">
-              <h2>Conversations</h2>
+              <h2>Chats</h2>
               <TooltipProvider delayDuration={0}>
                 <Tooltip>
                   <TooltipTrigger asChild>

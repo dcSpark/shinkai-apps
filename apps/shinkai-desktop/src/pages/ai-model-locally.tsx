@@ -1,40 +1,42 @@
 import { buttonVariants } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { ArrowRight } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-import { ResourcesBanner } from '../components/hardware-capabilities/resources-banner';
 import { OllamaModels } from '../components/shinkai-node-manager/ollama-models';
 import { queryClient } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
-import { FixedHeaderLayout } from './layout/simple-layout';
+import { SubpageLayout } from './layout/simple-layout';
 
-const AIModelInstallation = () => {
+const AgentsLocally = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <FixedHeaderLayout
+      <SubpageLayout
         className="relative flex w-full max-w-6xl flex-col gap-2 px-4"
-        title="Install AI"
+        title="Install AI Models"
       >
-        <ResourcesBanner />
+        <p className="text-gray-80 pb-2 text-sm">
+          After installing AI models on your local machine, they will become
+          available as AI
+        </p>
         <OllamaModels />
-        <div className="flex justify-center pt-3">
+        <div className="absolute right-4 top-6 flex justify-center pt-3">
           <Link
             className={cn(
               buttonVariants({
-                size: 'lg',
+                size: 'auto',
               }),
-              'min-w-[200px] gap-2 px-6 py-2.5',
+              'min-w-[120px] gap-2 py-2.5',
             )}
-            to={{ pathname: '/' }}
+            to={{ pathname: '/add-agent' }}
           >
-            Continue
-            <ArrowRight className="h-4 w-4" />
+            <Plus className="h-4 w-4" />
+            Manually Add AI
           </Link>
         </div>
-      </FixedHeaderLayout>
+      </SubpageLayout>
     </QueryClientProvider>
   );
 };
 
-export default AIModelInstallation;
+export default AgentsLocally;
