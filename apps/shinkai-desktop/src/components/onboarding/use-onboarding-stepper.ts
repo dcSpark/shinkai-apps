@@ -115,7 +115,6 @@ export const useOnboardingSteps = () => {
       inboxes.filter((inbox) => inbox.job_scope.vector_fs_items.length > 0)
         .length > 0;
 
-    console.log(hasMoreThan1Folder, hasMoreThanZeroItem);
     if (hasMoreThanZeroItem || hasMoreThan1Folder) {
       currentStepsMap.set(
         GetStartedSteps.AskQuestionToFiles,
