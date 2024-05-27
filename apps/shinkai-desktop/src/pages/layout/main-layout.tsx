@@ -40,7 +40,7 @@ import {
 import { toast } from 'sonner';
 
 import { ResourcesBanner } from '../../components/hardware-capabilities/resources-banner';
-import OboardingStepper from '../../components/onboarding/onboarding';
+import OnboardingStepper from '../../components/onboarding/onboarding';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
 
@@ -262,7 +262,7 @@ export function MainNav() {
             <TooltipTrigger asChild>
               <Button
                 className={cn(
-                  'border-gray-350 text-gray-80 h-6 w-6 shrink-0 rounded-lg  border  bg-black/20 p-0 hover:bg-black/20 hover:text-white',
+                  'border-gray-350 text-gray-80 h-6 w-6 shrink-0 rounded-lg border bg-black/20 p-0 hover:bg-black/20 hover:text-white',
                   // sidebarExpanded ? 'self-end' : 'self-center',
                 )}
                 onClick={toggleSidebar}
@@ -288,6 +288,7 @@ export function MainNav() {
 
       <div className="flex flex-1 flex-col justify-between">
         <div className="flex flex-col gap-1.5">
+          <OnboardingStepper />
           <TooltipProvider delayDuration={0}>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -393,7 +394,6 @@ export function MainNav() {
               </React.Fragment>
             );
           })}
-          <OboardingStepper />
         </div>
       </div>
 

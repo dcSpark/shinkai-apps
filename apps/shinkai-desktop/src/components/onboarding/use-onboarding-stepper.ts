@@ -82,11 +82,12 @@ export const useOnboardingSteps = () => {
     if (inboxes.length > 1) {
       currentStepsMap.set(GetStartedSteps.CreateAIChat, GetStartedStatus.Done);
     }
+  }, [inboxes]);
+
+  useEffect(() => {
     if (
-      inboxes.filter(
-        (inbox) =>
-          inbox.job_scope.vector_fs_folders || inbox.job_scope.vector_fs_items,
-      ).length > 1
+      inboxes.filter((inbox) => inbox.job_scope.vector_fs_folders).length > 1 ||
+      inboxes.filter((inbox) => inbox.job_scope.vector_fs_items).length > 0
     ) {
       currentStepsMap.set(
         GetStartedSteps.AskQuestionToFiles,
