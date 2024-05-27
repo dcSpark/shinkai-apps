@@ -172,6 +172,9 @@ const ShinkaiLogo = ({ className }: { className?: string }) => (
 export function MainNav() {
   const navigate = useNavigate();
   const logout = useAuth((state) => state.setLogout);
+  const isGetStartedChecklistHidden = useSettings(
+    (state) => state.isGetStartedChecklistHidden,
+  );
 
   const [isConfirmLogoutDialogOpened, setIsConfirmLogoutDialogOpened] =
     useState(false);
@@ -288,7 +291,7 @@ export function MainNav() {
 
       <div className="flex flex-1 flex-col justify-between">
         <div className="flex flex-col gap-1.5">
-          <OnboardingStepper />
+          {!isGetStartedChecklistHidden && <OnboardingStepper />}
           <TooltipProvider delayDuration={0}>
             <Tooltip>
               <TooltipTrigger asChild>

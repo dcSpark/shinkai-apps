@@ -178,11 +178,15 @@ export default function OnboardingStepper() {
           title: 'Share Knowledge',
           body: (
             <div className="flex flex-col items-start gap-2">
-              <span>You can share knowledge from your AI Files explorer</span>
+              <span>
+                You can share knowledge from your AI Files explorer Click
+              </span>
+              <span>Go to folder options, and select `Share`</span>
+
               <Button
                 className="h-auto gap-1 px-3 py-2"
                 onClick={() => {
-                  navigate('/public-subscriptions');
+                  navigate('/vector-fs');
                 }}
                 size="sm"
                 variant="outline"
@@ -249,6 +253,9 @@ interface StepperProps extends React.HTMLAttributes<HTMLDivElement> {
   steps: Step[];
 }
 export const Stepper = ({ steps }: StepperProps) => {
+  const setGetStartedChecklistHidden = useSettings(
+    (state) => state.setGetStartedChecklistHidden,
+  );
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const allStepsDone = steps.filter(
     (step) => step.status === GetStartedStatus.Done,
@@ -259,6 +266,9 @@ export const Stepper = ({ steps }: StepperProps) => {
   );
   const sidebarExpanded = useSettings((state) => state.sidebarExpanded);
 
+  const hasCompletedAllSteps = steps.every(
+    (step) => step.status === GetStartedStatus.Done,
+  );
   return (
     <Popover onOpenChange={setIsPopoverOpen} open={isPopoverOpen}>
       <AnimatePresence mode="popLayout">
@@ -278,14 +288,31 @@ export const Stepper = ({ steps }: StepperProps) => {
               className="h-2 w-full rounded-lg bg-cyan-900 [&>div]:bg-cyan-400"
               value={currentPercents}
             />
-            <motion.span className="text-gray-80">
-              {currentPercents}% - Next,{' '}
-              {
-                steps.find(
-                  (step) => step.status === GetStartedStatus.NotStarted,
-                )?.title
-              }
-            </motion.span>
+            {hasCompletedAllSteps ? (
+              <span className="text-gray-80">
+                {currentPercents}% -
+                <Button
+                  className="h-auto py-0 text-xs"
+                  onClick={() => {
+                    setGetStartedChecklistHidden(true);
+                    setIsPopoverOpen(false);
+                  }}
+                  size="sm"
+                  variant="link"
+                >
+                  Dismiss Checklist
+                </Button>
+              </span>
+            ) : (
+              <span className="text-gray-80 truncate">
+                {currentPercents}% - Next,{' '}
+                {
+                  steps.find(
+                    (step) => step.status === GetStartedStatus.NotStarted,
+                  )?.title
+                }
+              </span>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
@@ -324,46 +351,69 @@ export const Stepper = ({ steps }: StepperProps) => {
             value={currentPercents}
           />
         </div>
-        <div className="">
-          <Accordion
-            className="divide-y divide-gray-200 [&>div:first-of-type]:rounded-t-lg [&>div:last-of-type]:rounded-b-lg"
-            collapsible
-            type="single"
-          >
-            {steps.map((step, index) => {
-              const stepStatus = step.status ?? GetStartedStatus.NotStarted;
-              return (
-                <AccordionItem
-                  className="gap-4 bg-gray-300"
-                  key={index}
-                  value={step.label}
-                >
-                  <AccordionTrigger
-                    className={cn(
-                      'px-3 py-2 text-gray-50 [&>svg]:mt-0 [&>svg]:h-4 [&>svg]:w-4 [&>svg]:stroke-white',
-                      'hover:bg-gray-500 hover:no-underline',
-                    )}
+        {hasCompletedAllSteps && (
+          <div>
+            <div className="flex justify-center gap-2 bg-gray-300 p-3">
+              <span className="text-gray-80">You have completed all steps</span>
+              <CheckIcon className="w-4 text-cyan-700" />
+            </div>
+            <div className="flex justify-center gap-2 p-3">
+              <Button
+                className="h-auto gap-1 px-3 py-2"
+                onClick={() => {
+                  setGetStartedChecklistHidden(true);
+                  setIsPopoverOpen(false);
+                }}
+                size="sm"
+                variant="outline"
+              >
+                Dismiss checklist
+              </Button>
+            </div>
+          </div>
+        )}
+        {!hasCompletedAllSteps && (
+          <div className="">
+            <Accordion
+              className="divide-y divide-gray-200 [&>div:first-of-type]:rounded-t-lg [&>div:last-of-type]:rounded-b-lg"
+              collapsible
+              type="single"
+            >
+              {steps.map((step, index) => {
+                const stepStatus = step.status ?? GetStartedStatus.NotStarted;
+                return (
+                  <AccordionItem
+                    className="gap-4 bg-gray-300"
+                    key={index}
+                    value={step.label}
                   >
-                    <div className="flex flex-row items-center gap-2 font-normal text-white">
-                      <div
-                        className={cn(
-                          'flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-100 p-1',
-                          stepIconColorMap[stepStatus]?.iconClassName,
-                        )}
-                      >
-                        {stepIconColorMap[stepStatus]?.icon}
+                    <AccordionTrigger
+                      className={cn(
+                        'px-3 py-2 text-gray-50 [&>svg]:mt-0 [&>svg]:h-4 [&>svg]:w-4 [&>svg]:stroke-white',
+                        'hover:bg-gray-500 hover:no-underline',
+                      )}
+                    >
+                      <div className="flex flex-row items-center gap-2 font-normal text-white">
+                        <div
+                          className={cn(
+                            'flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-100 p-1',
+                            stepIconColorMap[stepStatus]?.iconClassName,
+                          )}
+                        >
+                          {stepIconColorMap[stepStatus]?.icon}
+                        </div>
+                        {step.title}
                       </div>
-                      {step.title}
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="bg-gray-300 px-0 py-1 pb-3 pl-[43px] pr-8 text-xs text-neutral-200">
-                    <div className="flex-1 font-light">{step.body}</div>
-                  </AccordionContent>
-                </AccordionItem>
-              );
-            })}
-          </Accordion>
-        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="bg-gray-300 px-0 py-1 pb-3 pl-[43px] pr-8 text-xs text-neutral-200">
+                      <div className="flex-1 font-light">{step.body}</div>
+                    </AccordionContent>
+                  </AccordionItem>
+                );
+              })}
+            </Accordion>
+          </div>
+        )}
       </PopoverContent>
     </Popover>
   );
