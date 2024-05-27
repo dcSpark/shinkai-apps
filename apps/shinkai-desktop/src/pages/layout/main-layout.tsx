@@ -29,7 +29,7 @@ import {
   PlusIcon,
   SearchCode,
 } from 'lucide-react';
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, ReactNode, useEffect, useState } from 'react';
 import {
   Link,
   Outlet,
@@ -40,6 +40,7 @@ import {
 import { toast } from 'sonner';
 
 import { ResourcesBanner } from '../../components/hardware-capabilities/resources-banner';
+import OboardingStepper from '../../components/onboarding/onboarding';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
 
@@ -392,6 +393,7 @@ export function MainNav() {
               </React.Fragment>
             );
           })}
+          <OboardingStepper />
         </div>
       </div>
 
