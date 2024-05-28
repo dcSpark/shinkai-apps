@@ -10,7 +10,7 @@ import {
   PopoverTrigger,
   Progress,
 } from '@shinkai_network/shinkai-ui';
-import { FilesIcon } from '@shinkai_network/shinkai-ui/assets';
+import { CreateAIIcon, FilesIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown, PlusIcon, Sparkles, XIcon } from 'lucide-react';
@@ -141,7 +141,7 @@ export default function OnboardingStepper() {
                 size="sm"
                 variant="outline"
               >
-                <FilesIcon className="h-4 w-4" />
+                <CreateAIIcon className="h-4 w-4" />
                 Create Chat with Files
               </Button>
             </div>
