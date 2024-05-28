@@ -1,8 +1,7 @@
 import '../../theme/styles.css';
 
-import { queryClient } from '@shinkai_network/shinkai-node-state/lib/constants';
 import { Toaster } from '@shinkai_network/shinkai-ui';
-import { QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
 import { PrimeReactProvider } from 'primereact/api';
 import * as React from 'react';
@@ -186,6 +185,8 @@ if (!container) {
   throw new Error(`container with id ${CONTAINER_ID} not found`);
 }
 const root = createRoot(container);
+
+const queryClient = new QueryClient();
 
 root.render(
   <React.StrictMode>

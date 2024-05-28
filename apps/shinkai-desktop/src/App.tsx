@@ -1,11 +1,12 @@
-import { queryClient } from '@shinkai_network/shinkai-node-state/lib/constants';
 import { Toaster } from '@shinkai_network/shinkai-ui';
-import { QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter as Router } from 'react-router-dom';
 
 // import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import AppRoutes from './routes';
 import { initSyncStorage } from './store/sync-utils';
+
+const queryClient = new QueryClient();
 
 initSyncStorage();
 function App() {

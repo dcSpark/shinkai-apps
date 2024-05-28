@@ -8,10 +8,14 @@ import {
 } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api';
 
-import { LogEntry, ShinkaiNodeOptions } from './shinkai-node-manager-client-types';
+import {
+  LogEntry,
+  ShinkaiNodeOptions,
+} from './shinkai-node-manager-client-types';
 
 // Client
-export const queryClient = new QueryClient();
+
+const queryClient = new QueryClient();
 
 // Queries
 export const useShinkaiNodeIsRunningQuery = (
@@ -52,8 +56,7 @@ export const useShinkaiNodeGetOllamaApiUrlQuery = (
 ): UseQueryResult<string, Error> => {
   const query = useQuery({
     queryKey: ['shinkai_node_get_ollama_api_url'],
-    queryFn: (): Promise<string> =>
-      invoke('shinkai_node_get_ollama_api_url'),
+    queryFn: (): Promise<string> => invoke('shinkai_node_get_ollama_api_url'),
     ...options,
   });
   return { ...query } as UseQueryResult<string, Error>;
@@ -159,8 +162,8 @@ export const useShinkaiNodeSetDefaultOptionsMutation = (
 export const useShinkaiNodeRespawnMutation = (options?: UseMutationOptions) => {
   const response = useMutation({
     mutationFn: async () => {
-        await invoke('shinkai_node_kill');
-        await invoke('shinkai_node_spawn');
+      await invoke('shinkai_node_kill');
+      await invoke('shinkai_node_spawn');
     },
     onSuccess: (...onSuccessParameters) => {
       queryClient.invalidateQueries({

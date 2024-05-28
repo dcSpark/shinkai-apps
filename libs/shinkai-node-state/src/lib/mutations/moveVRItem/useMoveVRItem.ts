@@ -1,12 +1,17 @@
-import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
+import {
+  useMutation,
+  type UseMutationOptions,
+  useQueryClient,
+} from '@tanstack/react-query';
 
-import { FunctionKey, queryClient } from '../../constants';
+import { FunctionKey } from '../../constants';
 import { moveVRItem } from './index';
 import { MoveVRItemInput, MoveVRItemOutput } from './types';
 
 type Options = UseMutationOptions<MoveVRItemOutput, Error, MoveVRItemInput>;
 
 export const useMoveVRItem = (options?: Options) => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: moveVRItem,
     ...options,
