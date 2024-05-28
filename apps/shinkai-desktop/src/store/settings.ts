@@ -6,6 +6,8 @@ type SettingsStore = {
   setDefaultAgentId: (defaultAgentId: string) => void;
   sidebarExpanded: boolean;
   toggleSidebar: () => void;
+  isGetStartedChecklistHidden: boolean;
+  setGetStartedChecklistHidden: (isGetStartedChecklistHidden: boolean) => void;
 };
 
 export const useSettings = create<SettingsStore>()(
@@ -20,6 +22,11 @@ export const useSettings = create<SettingsStore>()(
         sidebarExpanded: false,
         toggleSidebar: () => {
           set((state) => ({ sidebarExpanded: !state.sidebarExpanded }));
+        },
+
+        isGetStartedChecklistHidden: false,
+        setGetStartedChecklistHidden: (isGetStartedChecklistHidden) => {
+          set({ isGetStartedChecklistHidden });
         },
       }),
       {

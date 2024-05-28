@@ -40,6 +40,7 @@ import {
 import { toast } from 'sonner';
 
 import { ResourcesBanner } from '../../components/hardware-capabilities/resources-banner';
+import OnboardingStepper from '../../components/onboarding/onboarding';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
 
@@ -171,6 +172,9 @@ const ShinkaiLogo = ({ className }: { className?: string }) => (
 export function MainNav() {
   const navigate = useNavigate();
   const logout = useAuth((state) => state.setLogout);
+  const isGetStartedChecklistHidden = useSettings(
+    (state) => state.isGetStartedChecklistHidden,
+  );
 
   const [isConfirmLogoutDialogOpened, setIsConfirmLogoutDialogOpened] =
     useState(false);
@@ -251,7 +255,7 @@ export function MainNav() {
         width: sidebarExpanded ? '230px' : '70px',
       }}
     >
-      <div className="text-gray-80 flex w-full items-center justify-between gap-2 py-3 pl-4">
+      <div className="text-gray-80 flex w-full items-center justify-between gap-2 py-2 pl-4">
         {sidebarExpanded && (
           <ShinkaiLogo className="text-gray-80 h-auto w-[80px]" />
         )}
@@ -261,7 +265,7 @@ export function MainNav() {
             <TooltipTrigger asChild>
               <Button
                 className={cn(
-                  'border-gray-350 text-gray-80 h-6 w-6 shrink-0 rounded-lg  border  bg-black/20 p-0 hover:bg-black/20 hover:text-white',
+                  'border-gray-350 text-gray-80 h-6 w-6 shrink-0 rounded-lg border bg-black/20 p-0 hover:bg-black/20 hover:text-white',
                   // sidebarExpanded ? 'self-end' : 'self-center',
                 )}
                 onClick={toggleSidebar}
@@ -287,6 +291,7 @@ export function MainNav() {
 
       <div className="flex flex-1 flex-col justify-between">
         <div className="flex flex-col gap-1.5">
+          {!isGetStartedChecklistHidden && <OnboardingStepper />}
           <TooltipProvider delayDuration={0}>
             <Tooltip>
               <TooltipTrigger asChild>

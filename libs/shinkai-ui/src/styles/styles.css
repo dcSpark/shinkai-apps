@@ -74,7 +74,7 @@
   @apply pointer-events-none float-left h-0 text-gray-100;
 }
 .tiptap {
-  @apply placeholder:text-gray-80 px-2 py-1 text-sm text-white shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-transparent disabled:cursor-not-allowed disabled:opacity-50;
+  @apply max-w-full placeholder:text-gray-80 px-2 py-1 text-sm text-white shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-transparent disabled:cursor-not-allowed disabled:opacity-50;
 }
 .tiptap[contenteditable='false'] {
   @apply opacity-40;
