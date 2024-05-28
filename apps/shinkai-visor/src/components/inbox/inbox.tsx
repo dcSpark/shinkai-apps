@@ -303,7 +303,7 @@ export const Inbox = () => {
         isFetchingPreviousPage={isFetchingPreviousPage}
         isLoading={isChatConversationLoading}
         isSuccess={isChatConversationSuccess}
-        noMoreMessageLabel="All messages has been loaded ✅"
+        noMoreMessageLabel="All previous messages have been loaded ✅"
         paginatedMessages={data}
       />
       {isJobProcessingFile && (
