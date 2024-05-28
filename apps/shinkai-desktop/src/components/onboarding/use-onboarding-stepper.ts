@@ -9,11 +9,15 @@ import { useMap } from '@shinkai_network/shinkai-ui/hooks';
 import { useEffect } from 'react';
 
 import { useAuth } from '../../store/auth';
+import { useShinkaiNodeManager } from '../../store/shinkai-node-manager';
 import { GetStartedStatus, GetStartedSteps } from './onboarding';
 
 export const useOnboardingSteps = () => {
   const currentStepsMap = useMap<GetStartedSteps, GetStartedStatus>();
   const auth = useAuth((state) => state.auth);
+  const isLocalShinkaiNodeInUse = useShinkaiNodeManager(
+    (state) => state.isInUse,
+  );
 
   const { nodeInfo, isSuccess } = useGetHealth(
     { node_address: auth?.node_address ?? '' },
@@ -92,10 +96,11 @@ export const useOnboardingSteps = () => {
   }, [isSuccess]);
 
   useEffect(() => {
-    if (agents.length > 1) {
+    const defaultAgentsCount = isLocalShinkaiNodeInUse ? 1 : 3;
+    if (agents.length > defaultAgentsCount) {
       currentStepsMap.set(GetStartedSteps.CreateAI, GetStartedStatus.Done);
     }
-  }, [agents]);
+  }, [agents, isLocalShinkaiNodeInUse]);
 
   useEffect(() => {
     const currentFiles = VRFiles ? getFlatChildItems(VRFiles) : [];
