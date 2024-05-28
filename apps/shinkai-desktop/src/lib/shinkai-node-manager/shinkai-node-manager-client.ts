@@ -4,6 +4,7 @@ import {
   useMutation,
   UseMutationOptions,
   useQuery,
+  useQueryClient,
   UseQueryResult,
 } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api';
@@ -15,7 +16,7 @@ import {
 
 // Client
 
-const queryClient = new QueryClient();
+export const shinkaiNodeQueryClient = new QueryClient();
 
 // Queries
 export const useShinkaiNodeIsRunningQuery = (
@@ -64,6 +65,7 @@ export const useShinkaiNodeGetOllamaApiUrlQuery = (
 
 // Mutations
 export const useShinkaiNodeSpawnMutation = (options?: UseMutationOptions) => {
+  const queryClient = useQueryClient();
   const response = useMutation({
     mutationFn: () => {
       return invoke('shinkai_node_spawn');
@@ -82,6 +84,7 @@ export const useShinkaiNodeSpawnMutation = (options?: UseMutationOptions) => {
 };
 
 export const useShinkaiNodeKillMutation = (options?: UseMutationOptions) => {
+  const queryClient = useQueryClient();
   const response = useMutation({
     mutationFn: () => {
       return invoke('shinkai_node_kill');
@@ -118,6 +121,7 @@ export const useShinkaiNodeSetOptionsMutation = (
     ShinkaiNodeOptions
   >,
 ) => {
+  const queryClient = useQueryClient();
   const response = useMutation({
     mutationFn: (
       shinkaiNodeOptions: Partial<ShinkaiNodeOptions>,
@@ -142,6 +146,7 @@ export const useShinkaiNodeSetOptionsMutation = (
 export const useShinkaiNodeSetDefaultOptionsMutation = (
   options?: UseMutationOptions<ShinkaiNodeOptions, Error, void>,
 ) => {
+  const queryClient = useQueryClient();
   const response = useMutation({
     mutationFn: (): Promise<ShinkaiNodeOptions> => {
       return invoke('shinkai_node_set_default_options', {});
@@ -160,6 +165,7 @@ export const useShinkaiNodeSetDefaultOptionsMutation = (
 };
 
 export const useShinkaiNodeRespawnMutation = (options?: UseMutationOptions) => {
+  const queryClient = useQueryClient();
   const response = useMutation({
     mutationFn: async () => {
       await invoke('shinkai_node_kill');
