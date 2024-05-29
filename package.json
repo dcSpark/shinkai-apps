@@ -4,8 +4,7 @@
   "license": "MIT",
   "private": true,
   "workspaces": [
-    "apps/shinkai-app",
-    "apps/shinkai-desktop"
+    "apps/shinkai-app"
   ],
   "scripts": {
     "postinstall": "npx patch-package"
