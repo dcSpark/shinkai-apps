@@ -21,7 +21,9 @@ export default defineConfig({
   },
 
   plugins: [react(), nxViteTsPaths(), legacy(), wasm()],
-
+  build: {
+    outDir: '../../dist/apps/shinkai-app',
+  },
   test: {
     globals: true,
     cache: {

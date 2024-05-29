@@ -15,7 +15,7 @@ import {
 } from '@ionic/react';
 import { useCreateAgent } from '@shinkai_network/shinkai-node-state/lib/mutations/createAgent/useCreateAgent';
 import { Controller, useForm } from 'react-hook-form';
-import { useHistory } from 'react-router';
+import { useHistory } from 'react-router-dom';
 import z from 'zod';
 
 import Button from '../components/ui/Button';

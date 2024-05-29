@@ -4,7 +4,8 @@
   "license": "MIT",
   "private": true,
   "workspaces": [
-    "apps/shinkai-app"
+    "apps/shinkai-app",
+    "apps/shinkai-desktop"
   ],
   "scripts": {
     "postinstall": "npx patch-package"
@@ -75,7 +76,7 @@
     "react-image-crop": "^10.1.8",
     "react-intl": "^6.4.5",
     "react-qrcode-logo": "^2.9.0",
-    "react-router-dom": "^6.16.0",
+    "react-router-dom": "^6.23.1",
     "rxjs": "^7.8.1",
     "sonner": "^1.4.0",
     "tailwind-merge": "^1.14.0",
