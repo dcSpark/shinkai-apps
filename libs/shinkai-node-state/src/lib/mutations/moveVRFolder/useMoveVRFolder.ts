@@ -1,12 +1,17 @@
-import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
+import {
+  useMutation,
+  type UseMutationOptions,
+  useQueryClient,
+} from '@tanstack/react-query';
 
-import { FunctionKey, queryClient } from '../../constants';
+import { FunctionKey } from '../../constants';
 import { moveVRFolder } from './index';
 import { MoveVRFolderInput, MoveVRFolderOutput } from './types';
 
 type Options = UseMutationOptions<MoveVRFolderOutput, Error, MoveVRFolderInput>;
 
 export const useMoveVrFolder = (options?: Options) => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: moveVRFolder,
     ...options,

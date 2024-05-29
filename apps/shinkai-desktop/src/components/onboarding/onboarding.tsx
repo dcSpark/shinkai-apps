@@ -178,9 +178,7 @@ export default function OnboardingStepper() {
           title: 'Share Knowledge',
           body: (
             <div className="flex flex-col items-start gap-2">
-              <span>
-                You can share knowledge from your AI Files explorer Click
-              </span>
+              <span>You can share knowledge from your AI Files explorer.</span>
               <span>Go to folder options, and select `Share`</span>
 
               <Button
@@ -322,10 +320,9 @@ export const Stepper = ({ steps }: StepperProps) => {
           <Sparkles className="h-4 w-4" />
           <span className="sr-only">Get Started with Shinkai</span>
           <Badge className="bg-brand absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full p-0">
-            {
+            {steps.length -
               steps.filter((step) => step.status === GetStartedStatus.Done)
-                .length
-            }
+                .length}
           </Badge>
         </PopoverTrigger>
       )}
