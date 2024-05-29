@@ -91,7 +91,6 @@ export const ConnectMethodRestoreConnection = () => {
           <div className="flex grow flex-col space-y-3">
             <FormField
               control={form.control}
-              disabled={true}
               name="encryptedConnectionFile"
               render={({ field }) => (
                 <FormItem>
