@@ -45,7 +45,7 @@ import logo from '../../../src-tauri/icons/128x128@2x.png';
 import { OllamaModels } from '../../components/shinkai-node-manager/ollama-models';
 import { OLLAMA_MODELS } from '../../lib/shinkai-node-manager/ollama-models';
 import {
-  queryClient,
+  shinkaiNodeQueryClient,
   useShinkaiNodeGetLastNLogsQuery,
   useShinkaiNodeGetOptionsQuery,
   useShinkaiNodeIsRunningQuery,
@@ -420,7 +420,7 @@ const App = () => {
 };
 
 ReactDOM.createRoot(document.querySelector('#root') as HTMLElement).render(
-  <QueryClientProvider client={queryClient}>
+  <QueryClientProvider client={shinkaiNodeQueryClient}>
     <React.StrictMode>
       <App />
       <Toaster />

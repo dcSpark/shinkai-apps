@@ -26,9 +26,8 @@ import {
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import { ScrollArea } from '@shinkai_network/shinkai-ui';
-import { AgentIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { Edit, Plus, TrashIcon } from 'lucide-react';
+import { BotIcon, Edit, Plus, TrashIcon } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
@@ -123,7 +122,7 @@ function AgentCard({
       >
         <div className="flex items-center gap-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg ">
-            <AgentIcon className="h-6 w-6" />
+            <BotIcon className="h-6 w-6" />
           </div>
           <div className="flex flex-col items-baseline gap-2">
             <span className="w-full truncate text-start text-sm">
@@ -253,7 +252,7 @@ const EditAgentDrawer = ({
   const { mutateAsync: updateAgent, isPending } = useUpdateAgent({
     onSuccess: () => {
       onOpenChange(false);
-      toast.success('Agent updated successfully');
+      toast.success('AI updated successfully');
     },
     onError: (error) => {
       toast.error('Error updating agent', {
@@ -379,7 +378,7 @@ const RemoveAgentDrawer = ({
   const { mutateAsync: deleteAgent, isPending } = useDeleteAgent({
     onSuccess: () => {
       onOpenChange(false);
-      toast.success('Agent deleted successfully');
+      toast.success('AI deleted successfully');
     },
     onError: (error) => {
       toast.error('Error deleting agent', {
@@ -393,7 +392,7 @@ const RemoveAgentDrawer = ({
       <DrawerContent>
         <DrawerHeader>
           <DrawerTitle className="font-normal">
-            Delete Agent
+            Delete AI
             <span className="font-medium">{agentId}</span>{' '}
           </DrawerTitle>
         </DrawerHeader>

@@ -22,9 +22,9 @@ import {
   generateEncryptionKeys,
   generateSignatureKeys,
 } from '@shinkai_network/shinkai-message-ts/utils';
-import { queryClient } from '@shinkai_network/shinkai-node-state/lib/constants';
 import { useSubmitRegistration } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistration';
 import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
+import { useQueryClient } from '@tanstack/react-query';
 // import { QrScanner, QrScannerProps } from '@yudiel/react-qr-scanner';
 import { BrowserQRCodeReader } from '@zxing/browser';
 import {
@@ -74,6 +74,7 @@ const formSchema = z.object({
 
 const Connect = () => {
   const history = useHistory();
+  const queryClient = useQueryClient();
   const setAuth = useAuth((state) => state.setAuth);
   const setLogout = useAuth((state) => state.setLogout);
   const [mode, setMode] = useState<'Automatic' | 'Manual'>('Automatic');
@@ -681,7 +682,8 @@ function AutomaticForm() {
     error,
   } = useSubmitRegistrationNoCode({
     onSuccess: (response) => {
-      if (!response.success) throw new Error('Failed to submit registration');
+      if (response.status !== 'success')
+        throw new Error('Failed to submit registration');
       const values = setupDataForm.getValues();
       setAuth({
         profile: values.profile,
@@ -772,13 +774,8 @@ function AutomaticForm() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     await submitRegistrationNocode({
-      registration_code: values.registration_code ?? '',
       profile: values.profile,
-      identity_type: values.identity_type,
-      permission_type: values.permission_type,
       node_address: values.node_address,
-      shinkai_identity: values.shinkai_identity,
-      node_encryption_pk: values.node_encryption_pk ?? '',
       registration_name: values.registration_name,
       my_device_identity_sk: values.my_device_identity_sk,
       my_device_encryption_sk: values.my_device_encryption_sk,

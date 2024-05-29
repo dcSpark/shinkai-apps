@@ -105,7 +105,7 @@ function AgentSelection() {
               className="bg-neutral-900"
               side="top"
             >
-              Switch Agent
+              Switch AI
             </TooltipContent>
           </TooltipPortal>
           <DropdownMenuContent
@@ -303,7 +303,7 @@ export const Inbox = () => {
         isFetchingPreviousPage={isFetchingPreviousPage}
         isLoading={isChatConversationLoading}
         isSuccess={isChatConversationSuccess}
-        noMoreMessageLabel="All messages has been loaded ✅"
+        noMoreMessageLabel="All previous messages have been loaded ✅"
         paginatedMessages={data}
       />
       {isJobProcessingFile && (

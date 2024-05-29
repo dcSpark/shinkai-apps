@@ -40,17 +40,17 @@ const registerMenu = () => {
   });
   chrome.contextMenus.create({
     id: ContextMenu.SendPageToAgent,
-    title: 'Send Page to Agent',
+    title: 'Send Page to AI',
     contexts: ['all'],
   });
   chrome.contextMenus.create({
     id: ContextMenu.SendToAgent,
-    title: 'Send Selection to Agent',
+    title: 'Send Selection to AI',
     contexts: ['selection'],
   });
   chrome.contextMenus.create({
     id: ContextMenu.SendCaptureToAgent,
-    title: 'Send Capture to Agent',
+    title: 'Send Capture to AI',
     contexts: ['all'],
   });
 };

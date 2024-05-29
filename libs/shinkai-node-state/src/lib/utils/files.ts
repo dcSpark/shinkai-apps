@@ -1,6 +1,6 @@
 import { TreeNode } from 'primereact/treenode';
 
-import { VRFolder } from '../queries/getVRPathSimplified/types';
+import { VRFolder, VRItem } from '../queries/getVRPathSimplified/types';
 
 export function transformDataToTreeNodes(
   data: VRFolder,
@@ -28,6 +28,20 @@ export function transformDataToTreeNodes(
       icon: 'icon-file',
     };
     result.push(itemNode);
+  }
+
+  return result;
+}
+
+export function getFlatChildItems(data: VRFolder): VRItem[] {
+  let result: VRItem[] = [];
+
+  for (const folder of data?.child_folders ?? []) {
+    result = result.concat(getFlatChildItems(folder));
+  }
+
+  for (const item of data.child_items ?? []) {
+    result.push(item);
   }
 
   return result;

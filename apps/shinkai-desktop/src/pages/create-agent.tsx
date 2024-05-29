@@ -211,7 +211,7 @@ const CreateAgentPage = () => {
   };
 
   return (
-    <SubpageLayout title="Create Agent">
+    <SubpageLayout title="Create AI">
       <Form {...addAgentForm}>
         <form
           className="space-y-10"
@@ -329,7 +329,7 @@ const CreateAgentPage = () => {
               control={addAgentForm.control}
               name="agentName"
               render={({ field }) => (
-                <TextField autoFocus field={field} label="Agent Name" />
+                <TextField autoFocus field={field} label="AI Name" />
               )}
             />
             <FormField
@@ -356,7 +356,7 @@ const CreateAgentPage = () => {
             isLoading={isPending}
             type="submit"
           >
-            Create Agent
+            Create AI
           </Button>
         </form>
       </Form>

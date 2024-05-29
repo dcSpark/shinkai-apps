@@ -155,7 +155,7 @@ const GenerateCodePage = () => {
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select your AI Agent" />
+                          <SelectValue placeholder="Select your AI" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -192,7 +192,7 @@ const GenerateCodePage = () => {
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select your AI Agent" />
+                        <SelectValue placeholder="Select your AI" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>

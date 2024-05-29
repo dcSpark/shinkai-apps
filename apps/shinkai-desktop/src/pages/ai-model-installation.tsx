@@ -4,17 +4,19 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+import { ResourcesBanner } from '../components/hardware-capabilities/resources-banner';
 import { OllamaModels } from '../components/shinkai-node-manager/ollama-models';
-import { queryClient } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
+import { shinkaiNodeQueryClient } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { FixedHeaderLayout } from './layout/simple-layout';
 
 const AIModelInstallation = () => {
   return (
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={shinkaiNodeQueryClient}>
       <FixedHeaderLayout
         className="relative flex w-full max-w-6xl flex-col gap-2 px-4"
         title="Install AI"
       >
+        <ResourcesBanner />
         <OllamaModels />
         <div className="flex justify-center pt-3">
           <Link

@@ -374,21 +374,23 @@ export const health = async (payload: {
 export const submitInitialRegistrationNoCode = async (
   payload: SubmitInitialRegistrationNoCodePayload,
 ): Promise<{
-  success: boolean;
+  status: 'success' | 'error' | 'non-pristine';
   data?: APIUseRegistrationCodeSuccessResponse;
 }> => {
   try {
     // Used to fetch the shinkai identity
-    const healthResponse = await httpClient.get(
+    const healthResponse = await httpClient.get<{ status: 'ok'; node_name: string; is_pristine: boolean }>(
       urlJoin(payload.node_address, '/v1/shinkai_health'),
     );
-    const { status, node_name }: { status: 'ok'; node_name: string } =
+    const { status, node_name, is_pristine } =
       healthResponse.data;
     if (status !== 'ok') {
-      throw new Error(
-        `Node status error, can't fetch shinkai identity from health ${status} ${node_name}`,
-      );
+      return { status: 'error' };
     }
+    if (!is_pristine) {
+      return { status: 'non-pristine' };
+    }
+
     const messageStr =
       ShinkaiMessageBuilderWrapper.initial_registration_with_no_code_for_device(
         payload.my_device_encryption_sk,
@@ -413,10 +415,10 @@ export const submitInitialRegistrationNoCode = async (
     );
     // Update the API_ENDPOINT after successful registration
     const data = response.data;
-    return { success: true, data };
+    return { status: 'success', data };
   } catch (error) {
     console.error('Error in initial registration:', error);
-    return { success: false };
+    return { status: 'error' };
   }
 };
 

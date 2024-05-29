@@ -1,13 +1,14 @@
-import type { UseMutationOptions } from '@tanstack/react-query';
+import { UseMutationOptions, useQueryClient } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 
-import { FunctionKey, queryClient } from '../../constants';
+import { FunctionKey } from '../../constants';
 import { archiveJob } from '.';
 import { ArchiveJobInput, ArchiveJobOutput } from './types';
 
 type Options = UseMutationOptions<ArchiveJobOutput, Error, ArchiveJobInput>;
 
 export const useArchiveJob = (options?: Options) => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: archiveJob,
     ...options,
