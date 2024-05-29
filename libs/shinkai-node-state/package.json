@@ -2,12 +2,11 @@
   "name": "@shinkai_network/shinkai-node-state",
   "version": "0.0.1",
   "main": "./index.js",
-  "module": "./index.mjs",
-  "typings": "./index.d.ts",
-  "dependencies": {
-    "@tanstack/react-query": "5.8.4",
-    "@shinkai_network/shinkai-message-ts": "*",
-    "zod": "^3.22.2",
-    "primereact": "^10.6.2"
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./index.mjs",
+      "require": "./index.js"
+    }
   }
 }

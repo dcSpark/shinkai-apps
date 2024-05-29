@@ -1,7 +1,7 @@
 import '../../theme/styles.css';
 
+import { QueryProvider } from '@shinkai_network/shinkai-node-state';
 import { Toaster } from '@shinkai_network/shinkai-ui';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
 import { PrimeReactProvider } from 'primereact/api';
 import * as React from 'react';
@@ -186,12 +186,10 @@ if (!container) {
 }
 const root = createRoot(container);
 
-const queryClient = new QueryClient();
-
 root.render(
   <React.StrictMode>
     <PrimeReactProvider>
-      <QueryClientProvider client={queryClient}>
+      <QueryProvider>
         <IntlProvider locale={locale} messages={langMessages}>
           <div className="font-inter h-full w-full">
             <Router>
@@ -200,8 +198,7 @@ root.render(
           </div>
           <Toaster />
         </IntlProvider>
-        {/*<ReactQueryDevtools initialIsOpen={false} />*/}
-      </QueryClientProvider>
+      </QueryProvider>
     </PrimeReactProvider>
   </React.StrictMode>,
 );

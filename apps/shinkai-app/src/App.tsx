@@ -17,7 +17,7 @@ import './theme/variables.css';
 
 import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryProvider } from '@shinkai_network/shinkai-node-state';
 import { Redirect, Route } from 'react-router-dom';
 
 import AddAgent from './pages/AddAgent';
@@ -52,11 +52,9 @@ function PrivateRoute({
   );
 }
 
-const queryClient = new QueryClient();
-
 const App: React.FC = () => {
   return (
-    <QueryClientProvider client={queryClient}>
+    <QueryProvider>
       <IonApp>
         <IonReactRouter>
           <IonRouterOutlet>
@@ -89,7 +87,7 @@ const App: React.FC = () => {
           </IonRouterOutlet>
         </IonReactRouter>
       </IonApp>
-    </QueryClientProvider>
+    </QueryProvider>
   );
 };
 
