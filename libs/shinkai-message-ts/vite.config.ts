@@ -1,5 +1,7 @@
 /// <reference types="vitest" />
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
+// @ts-expect-error path
+import path from 'path';
 import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
 import topLevelAwait from 'vite-plugin-top-level-await';
@@ -27,7 +29,8 @@ export default defineConfig({
     wasm(),
     topLevelAwait(),
     dts({
-      tsConfigFilePath: 'tsconfig.lib.json',
+      entryRoot: 'src',
+      tsconfigPath: path.join(__dirname, 'tsconfig.lib.json'),
       rollupTypes: true,
       copyDtsFiles: true,
       clearPureImport: false,
@@ -42,5 +45,5 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: './scripts/setupTests.ts',
   },
-  root: './',
+  root: __dirname,
 });

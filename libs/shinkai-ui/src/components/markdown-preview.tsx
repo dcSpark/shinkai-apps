@@ -48,6 +48,7 @@ export const MarkdownPreview = ({
         className,
       )}
       components={components}
+      // @ts-expect-error https://github.com/orgs/rehypejs/discussions/63
       rehypePlugins={rehypePlugins}
       source={source}
       wrapperElement={{ 'data-color-mode': 'dark' }}
