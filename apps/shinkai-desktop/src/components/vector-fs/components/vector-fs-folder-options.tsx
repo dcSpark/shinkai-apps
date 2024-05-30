@@ -14,6 +14,9 @@ import { useMoveVrFolder } from '@shinkai_network/shinkai-node-state/lib/mutatio
 import { useUnshareFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/unshareFolder/useUnshareFolder';
 import { useGetVRSeachSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRSearchSimplified/useGetSearchVRItems';
 import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
   Button,
   Form,
   FormField,
@@ -25,13 +28,14 @@ import {
   SheetTitle,
   TextField,
 } from '@shinkai_network/shinkai-ui';
-import { SearchIcon, XIcon } from 'lucide-react';
+import { AlertCircle, SearchIcon, XIcon } from 'lucide-react';
 import React, { useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';
+import { useShinkaiNodeManager } from '../../../store/shinkai-node-manager';
 import { useVectorFsStore } from '../context/vector-fs-context';
 import {
   FolderSelectionList,
@@ -411,7 +415,9 @@ export const VectorFsFolderCreateShareableAction = () => {
       profile_identity_sk: auth?.profile_identity_sk ?? '',
     });
   };
-
+  const isLocalShinkaiNodeInUse = useShinkaiNodeManager(
+    (state) => state.isInUse,
+  );
   return (
     <React.Fragment>
       <SheetHeader>
@@ -440,12 +446,36 @@ export const VectorFsFolderCreateShareableAction = () => {
           />
           <Button
             className="mt-4"
-            disabled={destinationFolderPath === selectedFolder?.path}
+            disabled={
+              destinationFolderPath === selectedFolder?.path ||
+              !!isLocalShinkaiNodeInUse
+            }
             isLoading={isPending}
             type="submit"
           >
             Share Folder
           </Button>
+
+          {isLocalShinkaiNodeInUse && (
+            <Alert className="mx-auto w-[98%] shadow-lg" variant="warning">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle className="text-sm">Enable Folder Sharing</AlertTitle>
+              <AlertDescription className="text-xs">
+                <div className="">
+                  You must register a Shinkai identity before you can share
+                  folders over the Shinkai Network.{' '}
+                  <a
+                    className="underline"
+                    href="https://docs.shinkai.com/for-end-users/register-identity-onchain/"
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    Click Here To Learn How
+                  </a>
+                </div>
+              </AlertDescription>
+            </Alert>
+          )}
         </form>
       </Form>
     </React.Fragment>
