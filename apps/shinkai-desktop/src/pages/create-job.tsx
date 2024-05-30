@@ -277,7 +277,7 @@ const CreateJobPage = () => {
                           variant="ghost"
                         >
                           <PlusIcon className="mr-2" />
-                          Create AI
+                          Add AI
                         </Button>
                       )}
                     </SelectContent>
