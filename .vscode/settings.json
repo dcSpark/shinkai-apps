@@ -1,16 +1,17 @@
 {
-    "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": "explicit"
-    },
-    "editor.tabSize": 2,
-    "json.schemas": [
+  "editor.codeActionsOnSave": {
+    "quickfix.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
+  },
+  "editor.defaultFormatter": "biomejs.biome",
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2,
+  "json.schemas": [
     {
       "fileMatch": ["manifest.json"],
       "url": "https://json.schemastore.org/chrome-manifest.json"
     }
   ],
-  "rust-analyzer.linkedProjects": [
-    "apps/shinkai-desktop/src-tauri/Cargo.toml"
-  ],
+  "rust-analyzer.linkedProjects": ["apps/shinkai-desktop/src-tauri/Cargo.toml"],
   "rust-analyzer.check.command": "clippy"
 }
