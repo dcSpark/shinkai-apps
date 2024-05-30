@@ -12,8 +12,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  Textarea,
   TextField,
+  Textarea,
 } from '@shinkai_network/shinkai-ui';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -57,17 +57,12 @@ const CreateChatPage = () => {
   return (
     <SubpageLayout title="Create DM Chat">
       <Form {...createChatForm}>
-        <form
-          className="space-y-10"
-          onSubmit={createChatForm.handleSubmit(onSubmit)}
-        >
+        <form className="space-y-10" onSubmit={createChatForm.handleSubmit(onSubmit)}>
           <div className="space-y-6">
             <FormField
               control={createChatForm.control}
               name="receiverIdentity"
-              render={({ field }) => (
-                <TextField field={field} label="Shinkai Identity" />
-              )}
+              render={({ field }) => <TextField field={field} label="Shinkai Identity" />}
             />
             <FormField
               control={createChatForm.control}
@@ -79,10 +74,7 @@ const CreateChatPage = () => {
                     <Textarea
                       className="resize-nonee"
                       onKeyDown={(event) => {
-                        if (
-                          event.key === 'Enter' &&
-                          (event.metaKey || event.ctrlKey)
-                        ) {
+                        if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
                           createChatForm.handleSubmit(onSubmit)();
                         }
                       }}
@@ -96,12 +88,7 @@ const CreateChatPage = () => {
             />
           </div>
 
-          <Button
-            className="w-full"
-            disabled={isPending}
-            isLoading={isPending}
-            type="submit"
-          >
+          <Button className="w-full" disabled={isPending} isLoading={isPending} type="submit">
             Create DM Chat
           </Button>
         </form>

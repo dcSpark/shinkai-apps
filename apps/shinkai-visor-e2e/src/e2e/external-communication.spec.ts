@@ -12,10 +12,7 @@ export const extenralCommunicationTests = () => {
     await nodeManager.stopNode();
   });
 
-  test('any command unauthorized in non allowed origin', async ({
-    page,
-    extensionId,
-  }) => {
+  test('any command unauthorized in non allowed origin', async ({ page, extensionId }) => {
     await page.goto('https://google.com');
     // eslint-disable-next-line playwright/no-networkidle
     await page.waitForLoadState('networkidle');
@@ -34,10 +31,7 @@ export const extenralCommunicationTests = () => {
     await expect(response.status).toBe('unauthorized');
   });
 
-  test('is-node-pristine error if node is not running', async ({
-    page,
-    extensionId,
-  }) => {
+  test('is-node-pristine error if node is not running', async ({ page, extensionId }) => {
     const response = await page.evaluate(
       async ({ extensionId }) => {
         return chrome.runtime.sendMessage(extensionId, {
@@ -74,11 +68,7 @@ export const extenralCommunicationTests = () => {
     await expect(response.payload.isPristine).toBe(true);
   });
 
-  test('is-node-pristine error when node is not pristine', async ({
-    page,
-    popup,
-    extensionId,
-  }) => {
+  test('is-node-pristine error when node is not pristine', async ({ page, popup, extensionId }) => {
     await nodeManager.startNode(true);
     await acceptTerms(popup);
     await quickConnect(popup);
@@ -147,11 +137,7 @@ export const extenralCommunicationTests = () => {
     await nodeManager.stopNode();
   });
 
-  test('get-profile-inboxes success with length 1', async ({
-    page,
-    popup,
-    extensionId,
-  }) => {
+  test('get-profile-inboxes success with length 1', async ({ page, popup, extensionId }) => {
     await nodeManager.startNode(true);
     await acceptTerms(popup);
     await quickConnect(popup);
@@ -173,10 +159,7 @@ export const extenralCommunicationTests = () => {
     await nodeManager.stopNode();
   });
 
-  test('is-installed', async ({
-    page,
-    extensionId,
-  }) => {
+  test('is-installed', async ({ page, extensionId }) => {
     const response = await page.evaluate(
       async ({ extensionId }) => {
         return chrome.runtime.sendMessage(extensionId, {
@@ -192,10 +175,7 @@ export const extenralCommunicationTests = () => {
     await expect(response.payload.version).toMatch(/.*\..*\..*\..*/);
   });
 
-  test('is-node-connected', async ({
-    page,
-    extensionId,
-  }) => {
+  test('is-node-connected', async ({ page, extensionId }) => {
     const response = await page.evaluate(
       async ({ extensionId }) => {
         return chrome.runtime.sendMessage(extensionId, {

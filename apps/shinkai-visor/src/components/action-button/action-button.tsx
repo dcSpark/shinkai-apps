@@ -21,14 +21,7 @@ import {
 import { createShadowRoot, delay } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
-import {
-  Focus,
-  FolderDown,
-  NotebookPenIcon,
-  PanelTopIcon,
-  XIcon,
-  ZapIcon,
-} from 'lucide-react';
+import { Focus, FolderDown, NotebookPenIcon, PanelTopIcon, XIcon, ZapIcon } from 'lucide-react';
 import * as React from 'react';
 import { useEffect, useRef } from 'react';
 import { IntlProvider } from 'react-intl';
@@ -105,38 +98,25 @@ const createAction = (
 
 const ActionButton = () => {
   useGlobalActionButtonChromeMessage();
-  const { isVectorResourceFound, currentVectorResource } =
-    useVectorResourceMetatags();
+  const { isVectorResourceFound, currentVectorResource } = useVectorResourceMetatags();
 
-  const displayActionButton = useSettings(
-    (settingsStore) => settingsStore.displayActionButton,
-  );
+  const displayActionButton = useSettings((settingsStore) => settingsStore.displayActionButton);
   const prevDisplayActionButton = useRef<boolean>(displayActionButton);
 
   const setDisplayActionButton = useSettings(
     (settingsStore) => settingsStore.setDisplayActionButton,
   );
-  const disabledHosts = useSettings(
-    (settingsStore) => settingsStore.disabledHosts,
-  );
-  const setDisabledHosts = useSettings(
-    (settingsStore) => settingsStore.setDisabledHosts,
-  );
+  const disabledHosts = useSettings((settingsStore) => settingsStore.disabledHosts);
+  const setDisabledHosts = useSettings((settingsStore) => settingsStore.setDisabledHosts);
   const displaySummaryActionButton = useSettings(
     (settingsStore) => settingsStore.displaySummaryActionButton,
   );
   const displayImageCaptureActionButton = useSettings(
     (settingsStore) => settingsStore.displayImageCaptureActionButton,
   );
-  const sideButtonOffset = useSettings(
-    (settingsStore) => settingsStore.sideButtonOffset,
-  );
-  const setSideButtonOffset = useSettings(
-    (settingsStore) => settingsStore.setSideButtonOffset,
-  );
-  const sidebarShortcut = useSettings(
-    (settingsStore) => settingsStore.sidebarShortcut,
-  );
+  const sideButtonOffset = useSettings((settingsStore) => settingsStore.sideButtonOffset);
+  const setSideButtonOffset = useSettings((settingsStore) => settingsStore.setSideButtonOffset);
+  const sidebarShortcut = useSettings((settingsStore) => settingsStore.sidebarShortcut);
   useKeyboardShortcut(sidebarShortcut, toggleSidePanel);
 
   const activationConstraint = {
@@ -273,11 +253,7 @@ const ActionButton = () => {
                             {item?.icon}
                           </button>
                         </TooltipTrigger>
-                        <TooltipContent
-                          align="center"
-                          side="left"
-                          sideOffset={3}
-                        >
+                        <TooltipContent align="center" side="left" sideOffset={3}>
                           <p className="font-inter">{item?.label}</p>
                         </TooltipContent>
                       </Tooltip>

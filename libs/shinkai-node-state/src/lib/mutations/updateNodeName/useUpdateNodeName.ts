@@ -1,15 +1,11 @@
 import { UseMutationOptions, useQueryClient } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 
-import { FunctionKey } from '../../constants';
 import { updateNodeName } from '.';
+import { FunctionKey } from '../../constants';
 import { UpdateNodeNameInput, UpdateNodeNameOutput } from './types';
 
-type Options = UseMutationOptions<
-  UpdateNodeNameOutput,
-  Error,
-  UpdateNodeNameInput
->;
+type Options = UseMutationOptions<UpdateNodeNameOutput, Error, UpdateNodeNameInput>;
 
 export const useUpdateNodeName = (options?: Options) => {
   const queryClient = useQueryClient();

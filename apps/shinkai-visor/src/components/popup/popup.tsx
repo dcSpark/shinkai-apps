@@ -96,18 +96,12 @@ export const Popup = () => {
             }
           >
             <Route path="/nodes">
-              <Route
-                element={<ConnectMethodQuickStart />}
-                path="connect/method/quick-start"
-              />
+              <Route element={<ConnectMethodQuickStart />} path="connect/method/quick-start" />
               <Route
                 element={<ConnectMethodRestoreConnection />}
                 path="connect/method/restore-connection"
               />
-              <Route
-                element={<ConnectMethodQrCode />}
-                path="connect/method/qr-code"
-              />
+              <Route element={<ConnectMethodQrCode />} path="connect/method/qr-code" />
             </Route>
             <Route path="inboxes">
               <Route element={<CreateInbox />} path="create-inbox" />
@@ -146,10 +140,7 @@ export const Popup = () => {
             <Route path="settings">
               <Route element={<ExportConnection />} path="export-connection" />
               <Route element={<PublicKeys />} path="public-keys" />
-              <Route
-                element={<CreateRegistrationCode />}
-                path="create-registration-code"
-              />
+              <Route element={<CreateRegistrationCode />} path="create-registration-code" />
               <Route element={<Settings />} index />
             </Route>
           </Route>

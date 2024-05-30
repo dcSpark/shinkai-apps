@@ -1,18 +1,10 @@
-import {
-  useMutation,
-  type UseMutationOptions,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { type UseMutationOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { FunctionKey } from '../../constants';
 import { uploadVRFiles } from '.';
+import { FunctionKey } from '../../constants';
 import { UploadVRFilesInput, UploadVRFilesOutput } from './types';
 
-type Options = UseMutationOptions<
-  UploadVRFilesOutput,
-  Error,
-  UploadVRFilesInput
->;
+type Options = UseMutationOptions<UploadVRFilesOutput, Error, UploadVRFilesInput>;
 
 export const useUploadVRFiles = (options?: Options) => {
   const queryClient = useQueryClient();

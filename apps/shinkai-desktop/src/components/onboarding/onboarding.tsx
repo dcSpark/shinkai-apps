@@ -44,16 +44,13 @@ export default function OnboardingStepper() {
         {
           label: GetStartedSteps.SetupShinkaiNode,
           status:
-            currentStepsMap.get(GetStartedSteps.SetupShinkaiNode) ??
-            GetStartedStatus.NotStarted,
+            currentStepsMap.get(GetStartedSteps.SetupShinkaiNode) ?? GetStartedStatus.NotStarted,
           title: 'Setup Shinkai Node',
           body: 'Setup your Shinkai Node to get started',
         },
         {
           label: GetStartedSteps.CreateAI,
-          status:
-            currentStepsMap.get(GetStartedSteps.CreateAI) ??
-            GetStartedStatus.NotStarted,
+          status: currentStepsMap.get(GetStartedSteps.CreateAI) ?? GetStartedStatus.NotStarted,
           title: 'Create AI',
           body: (
             <div className="flex flex-col items-start gap-2">
@@ -74,9 +71,7 @@ export default function OnboardingStepper() {
         },
         {
           label: GetStartedSteps.CreateAIChat,
-          status:
-            currentStepsMap.get(GetStartedSteps.CreateAIChat) ??
-            GetStartedStatus.NotStarted,
+          status: currentStepsMap.get(GetStartedSteps.CreateAIChat) ?? GetStartedStatus.NotStarted,
           title: 'Create AI Chat',
           body: (
             <div className="flex flex-col items-start gap-2">
@@ -97,16 +92,11 @@ export default function OnboardingStepper() {
         },
         {
           label: GetStartedSteps.UploadAFile,
-          status:
-            currentStepsMap.get(GetStartedSteps.UploadAFile) ??
-            GetStartedStatus.NotStarted,
+          status: currentStepsMap.get(GetStartedSteps.UploadAFile) ?? GetStartedStatus.NotStarted,
           title: 'Upload a file',
           body: (
             <div className="flex flex-col items-start gap-2">
-              <span>
-                Keep your notes, websites, docs and others securely stored in
-                one place.
-              </span>
+              <span>Keep your notes, websites, docs and others securely stored in one place.</span>
               <Button
                 className="h-auto gap-1 px-3 py-2"
                 onClick={() => {
@@ -124,14 +114,12 @@ export default function OnboardingStepper() {
         {
           label: GetStartedSteps.AskQuestionToFiles,
           status:
-            currentStepsMap.get(GetStartedSteps.AskQuestionToFiles) ??
-            GetStartedStatus.NotStarted,
+            currentStepsMap.get(GetStartedSteps.AskQuestionToFiles) ?? GetStartedStatus.NotStarted,
           title: 'Ask question to files',
           body: (
             <div className="flex flex-col items-start gap-2">
               <span>
-                Chat with your files. Ask any questions, find information, get
-                summaries and more.
+                Chat with your files. Ask any questions, find information, get summaries and more.
               </span>
               <Button
                 className="h-auto gap-1 px-3 py-2"
@@ -172,9 +160,7 @@ export default function OnboardingStepper() {
         },
         {
           label: GetStartedSteps.ShareFolder,
-          status:
-            currentStepsMap.get(GetStartedSteps.ShareFolder) ??
-            GetStartedStatus.NotStarted,
+          status: currentStepsMap.get(GetStartedSteps.ShareFolder) ?? GetStartedStatus.NotStarted,
           title: 'Share Knowledge',
           body: (
             <div className="flex flex-col items-start gap-2">
@@ -251,22 +237,14 @@ interface StepperProps extends React.HTMLAttributes<HTMLDivElement> {
   steps: Step[];
 }
 export const Stepper = ({ steps }: StepperProps) => {
-  const setGetStartedChecklistHidden = useSettings(
-    (state) => state.setGetStartedChecklistHidden,
-  );
+  const setGetStartedChecklistHidden = useSettings((state) => state.setGetStartedChecklistHidden);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const allStepsDone = steps.filter(
-    (step) => step.status === GetStartedStatus.Done,
-  );
+  const allStepsDone = steps.filter((step) => step.status === GetStartedStatus.Done);
 
-  const currentPercents = Math.floor(
-    (allStepsDone.length / steps.length) * 100,
-  );
+  const currentPercents = Math.floor((allStepsDone.length / steps.length) * 100);
   const sidebarExpanded = useSettings((state) => state.sidebarExpanded);
 
-  const hasCompletedAllSteps = steps.every(
-    (step) => step.status === GetStartedStatus.Done,
-  );
+  const hasCompletedAllSteps = steps.every((step) => step.status === GetStartedStatus.Done);
   return (
     <Popover onOpenChange={setIsPopoverOpen} open={isPopoverOpen}>
       <AnimatePresence mode="popLayout">
@@ -304,11 +282,7 @@ export const Stepper = ({ steps }: StepperProps) => {
             ) : (
               <span className="text-gray-80 truncate">
                 {currentPercents}% - Next,{' '}
-                {
-                  steps.find(
-                    (step) => step.status === GetStartedStatus.NotStarted,
-                  )?.title
-                }
+                {steps.find((step) => step.status === GetStartedStatus.NotStarted)?.title}
               </span>
             )}
           </motion.div>
@@ -320,9 +294,7 @@ export const Stepper = ({ steps }: StepperProps) => {
           <Sparkles className="h-4 w-4" />
           <span className="sr-only">Get Started with Shinkai</span>
           <Badge className="bg-brand absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full p-0">
-            {steps.length -
-              steps.filter((step) => step.status === GetStartedStatus.Done)
-                .length}
+            {steps.length - steps.filter((step) => step.status === GetStartedStatus.Done).length}
           </Badge>
         </PopoverTrigger>
       )}
@@ -379,11 +351,7 @@ export const Stepper = ({ steps }: StepperProps) => {
               {steps.map((step, index) => {
                 const stepStatus = step.status ?? GetStartedStatus.NotStarted;
                 return (
-                  <AccordionItem
-                    className="gap-4 bg-gray-300"
-                    key={index}
-                    value={step.label}
-                  >
+                  <AccordionItem className="gap-4 bg-gray-300" key={index} value={step.label}>
                     <AccordionTrigger
                       className={cn(
                         'px-3 py-2 text-gray-50 [&>svg]:mt-0 [&>svg]:h-4 [&>svg]:w-4 [&>svg]:stroke-white',

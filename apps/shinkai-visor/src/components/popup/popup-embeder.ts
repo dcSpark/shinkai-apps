@@ -18,10 +18,7 @@ baseContainer.style.overflow = 'hidden';
 
 const iframe = document.createElement('iframe');
 iframe.setAttribute('id', 'popup-iframe');
-iframe.setAttribute(
-  'src',
-  chrome.runtime.getURL('src/components/popup/popup.html'),
-);
+iframe.setAttribute('src', chrome.runtime.getURL('src/components/popup/popup.html'));
 iframe.setAttribute('allow', 'clipboard-write');
 iframe.style.border = 'none';
 iframe.style.width = '100%';
@@ -46,18 +43,11 @@ htmlRoot.addEventListener('keydown', function (ev) {
 let isVisible = false;
 
 chrome.runtime.onMessage.addListener(
-  async (
-    message: ServiceWorkerInternalMessage,
-    sender: chrome.runtime.MessageSender,
-  ) => {
+  async (message: ServiceWorkerInternalMessage, sender: chrome.runtime.MessageSender) => {
     switch (message.type) {
       case ServiceWorkerInternalMessageType.ContentScriptBridge:
-        if (
-          message.data.type ===
-          ContentScriptBridgeMessageType.TogglePopupVisibility
-        ) {
-          isVisible =
-            message.data.data !== undefined ? message.data.data : !isVisible;
+        if (message.data.type === ContentScriptBridgeMessageType.TogglePopupVisibility) {
+          isVisible = message.data.data !== undefined ? message.data.data : !isVisible;
           baseContainer.style.pointerEvents = isVisible ? 'auto' : 'none';
         }
         break;

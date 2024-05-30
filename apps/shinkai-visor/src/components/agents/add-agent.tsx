@@ -1,16 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AgentAPIModel } from '@shinkai_network/shinkai-message-ts/models';
 import {
-  addAgentFormDefault,
   AddAgentFormSchema,
+  addAgentFormDefault,
   addAgentSchema,
 } from '@shinkai_network/shinkai-node-state/forms/agents/add-agent';
 import { useCreateAgent } from '@shinkai_network/shinkai-node-state/lib/mutations/createAgent/useCreateAgent';
 import { useScanOllamaModels } from '@shinkai_network/shinkai-node-state/lib/queries/scanOllamaModels/useScanOllamaModels';
-import {
-  Models,
-  modelsConfig,
-} from '@shinkai_network/shinkai-node-state/lib/utils/models';
+import { Models, modelsConfig } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import {
   Button,
   Form,
@@ -36,10 +33,7 @@ import { toast } from 'sonner';
 
 import { useAuth } from '../../store/auth/auth';
 
-export const getModelObject = (
-  model: Models | string,
-  modelType: string,
-): AgentAPIModel => {
+export const getModelObject = (model: Models | string, modelType: string): AgentAPIModel => {
   switch (model) {
     case Models.OpenAI:
       return { OpenAI: { model_type: modelType } };
@@ -160,9 +154,7 @@ export const AddAgent = () => {
       },
     });
   };
-  const [modelTypeOptions, setModelTypeOptions] = useState<
-    { label: string; value: string }[]
-  >([]);
+  const [modelTypeOptions, setModelTypeOptions] = useState<{ label: string; value: string }[]>([]);
 
   useEffect(() => {
     if (isCustomModelMode) {
@@ -254,10 +246,7 @@ export const AddAgent = () => {
                       </FormControl>
                       <SelectContent>
                         {modelOptions.map((model) => (
-                          <SelectItem
-                            key={model.value}
-                            value={model.value.toString()}
-                          >
+                          <SelectItem key={model.value} value={model.value.toString()}>
                             {model.label}
                           </SelectItem>
                         ))}
@@ -291,10 +280,7 @@ export const AddAgent = () => {
                       </FormControl>
                       <SelectContent className="max-h-[150px] overflow-y-auto text-xs">
                         {modelTypeOptions.map((modelType) => (
-                          <SelectItem
-                            key={modelType.value}
-                            value={modelType.value}
-                          >
+                          <SelectItem key={modelType.value} value={modelType.value}>
                             {modelType.label}
                           </SelectItem>
                         ))}
@@ -311,16 +297,12 @@ export const AddAgent = () => {
                 <FormField
                   control={form.control}
                   name="modelCustom"
-                  render={({ field }) => (
-                    <TextField field={field} label={'Model Name'} />
-                  )}
+                  render={({ field }) => <TextField field={field} label={'Model Name'} />}
                 />
                 <FormField
                   control={form.control}
                   name="modelTypeCustom"
-                  render={({ field }) => (
-                    <TextField field={field} label={'Model ID'} />
-                  )}
+                  render={({ field }) => <TextField field={field} label={'Model ID'} />}
                 />
               </>
             )}
@@ -342,10 +324,7 @@ export const AddAgent = () => {
               control={form.control}
               name="externalUrl"
               render={({ field }) => (
-                <TextField
-                  field={field}
-                  label={<FormattedMessage id="external-url" />}
-                />
+                <TextField field={field} label={<FormattedMessage id="external-url" />} />
               )}
             />
 
@@ -353,10 +332,7 @@ export const AddAgent = () => {
               control={form.control}
               name="apikey"
               render={({ field }) => (
-                <TextField
-                  field={field}
-                  label={<FormattedMessage id="api-key" />}
-                />
+                <TextField field={field} label={<FormattedMessage id="api-key" />} />
               )}
             />
           </div>

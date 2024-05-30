@@ -51,10 +51,7 @@ export class FileUploader {
       throw new Error('Symmetric key is not set');
     }
 
-    const rawKey = await window.crypto.subtle.exportKey(
-      'raw',
-      this.symmetric_key,
-    );
+    const rawKey = await window.crypto.subtle.exportKey('raw', this.symmetric_key);
     const rawKeyArray = new Uint8Array(rawKey);
     const rawKeyString = Array.from(rawKeyArray)
       .map((b) => b.toString(16).padStart(2, '0'))
@@ -66,35 +63,28 @@ export class FileUploader {
 
   async createFolder(): Promise<string> {
     const keyData = window.crypto.getRandomValues(new Uint8Array(32));
-    this.symmetric_key = await window.crypto.subtle.importKey(
-      'raw',
-      keyData,
-      'AES-GCM',
-      true,
-      ['encrypt', 'decrypt'],
-    );
+    this.symmetric_key = await window.crypto.subtle.importKey('raw', keyData, 'AES-GCM', true, [
+      'encrypt',
+      'decrypt',
+    ]);
 
     // Export symmetric key
-    const exportedKey = await window.crypto.subtle.exportKey(
-      'raw',
-      this.symmetric_key,
-    );
+    const exportedKey = await window.crypto.subtle.exportKey('raw', this.symmetric_key);
     const exportedKeyArray = new Uint8Array(exportedKey);
     const exportedKeyString = Array.from(exportedKeyArray)
       .map((b) => b.toString(16).padStart(2, '0'))
       .join('');
 
-    const message =
-      ShinkaiMessageBuilderWrapper.send_create_files_inbox_with_sym_key(
-        this.my_encryption_secret_key,
-        this.my_signature_secret_key,
-        this.receiver_public_key,
-        this.job_inbox,
-        exportedKeyString,
-        this.sender,
-        this.sender_subidentity,
-        this.receiver,
-      );
+    const message = ShinkaiMessageBuilderWrapper.send_create_files_inbox_with_sym_key(
+      this.my_encryption_secret_key,
+      this.my_signature_secret_key,
+      this.receiver_public_key,
+      this.job_inbox,
+      exportedKeyString,
+      this.sender,
+      this.sender_subidentity,
+      this.receiver,
+    );
 
     await httpClient.post(
       urlJoin(this.base_url, '/v1/create_files_inbox_with_symmetric_key'),
@@ -135,27 +125,15 @@ export class FileUploader {
       .join('');
 
     const formData = new FormData();
-    formData.append(
-      'file',
-      new Blob([encryptedFileData]),
-      filename || file.name,
-    );
+    formData.append('file', new Blob([encryptedFileData]), filename || file.name);
 
     await httpClient.post(
-      urlJoin(
-        this.base_url,
-        '/v1/add_file_to_inbox_with_symmetric_key',
-        hash,
-        nonce,
-      ),
+      urlJoin(this.base_url, '/v1/add_file_to_inbox_with_symmetric_key', hash, nonce),
       formData,
     );
   }
 
-  async finalizeAndSend(
-    content: string,
-    parent: string | null,
-  ): Promise<ShinkaiMessage> {
+  async finalizeAndSend(content: string, parent: string | null): Promise<ShinkaiMessage> {
     if (!this.job_id) {
       throw new Error(`finalizeAndSend: job_id not found`);
     }
@@ -175,18 +153,12 @@ export class FileUploader {
 
     const message = JSON.parse(messageStr);
 
-    const response = await httpClient.post(
-      urlJoin(this.base_url, '/v1/job_message'),
-      message,
-      {
-        responseType: 'json',
-      },
-    );
+    const response = await httpClient.post(urlJoin(this.base_url, '/v1/job_message'), message, {
+      responseType: 'json',
+    });
     return response.data;
   }
-  async finalizeAndAddItemsToDb(
-    destinationPath: string = '/',
-  ): Promise<{ status: string }> {
+  async finalizeAndAddItemsToDb(destinationPath: string = '/'): Promise<{ status: string }> {
     const messageStr = ShinkaiMessageBuilderWrapper.createItems(
       this.my_encryption_secret_key,
       this.my_signature_secret_key,

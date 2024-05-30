@@ -16,8 +16,7 @@ const AgentsLocally = () => {
         title="Install AI Models"
       >
         <p className="text-gray-80 pb-2 text-sm">
-          After installing AI models on your local machine, they will become
-          available as AI
+          After installing AI models on your local machine, they will become available as AI
         </p>
         <OllamaModels />
         <div className="absolute right-4 top-6 flex justify-center pt-3">

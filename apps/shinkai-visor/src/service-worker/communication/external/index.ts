@@ -12,27 +12,25 @@ const GLOBALLY_ALLOWED_ORIGINS: RegExp[] = [
   ...(import.meta.env.DEV ? [/localhost/, /typescriptlang/] : []),
 ];
 const originIsGloballyAllowed = (origin: string): boolean =>
-  GLOBALLY_ALLOWED_ORIGINS.some((globallyAllowedOrigin) =>
-    globallyAllowedOrigin.test(origin),
-  );
+  GLOBALLY_ALLOWED_ORIGINS.some((globallyAllowedOrigin) => globallyAllowedOrigin.test(origin));
+// biome-ignore lint/correctness/noUnusedVariables: <explanation>
 const originIsAllowed = (origin: string): boolean => {
   // Implements specific auth. IE control permissions o
   return false;
 };
+// biome-ignore lint/correctness/noUnusedVariables: <explanation>
 const originHasPermission = (origin: string): boolean => {
   return true;
 };
 const authenticate = (origin: string): boolean => {
-  const isAuthenticated =
-    originIsGloballyAllowed(origin ?? '') || originIsAllowed(origin);
+  const isAuthenticated = originIsGloballyAllowed(origin ?? '') || originIsAllowed(origin);
   if (!isAuthenticated) {
     // TODO: Implemented authentication workflow
   }
   return isAuthenticated;
 };
 const authorize = (origin: string): boolean => {
-  const isAuthorized =
-    originIsGloballyAllowed(origin ?? '') || originHasPermission(origin);
+  const isAuthorized = originIsGloballyAllowed(origin ?? '') || originHasPermission(origin);
   if (!isAuthorized) {
     // TODO: Implemented authorization workflow
   }
@@ -109,10 +107,7 @@ export const listen = (): void => {
           }, OPEN_SIDEPANEL_DELAY_MS);
         }
 
-        const responsePayload = await action.resolver(
-          message.payload,
-          sender.tab.id,
-        );
+        const responsePayload = await action.resolver(message.payload, sender.tab.id);
         return sendResponse({
           status: ServiceWorkerExternalMessageResponseStatus.Success,
           payload: responsePayload,

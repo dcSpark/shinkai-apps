@@ -1,11 +1,11 @@
-/// <reference types="vitest" />
-import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 // @ts-expect-error path
 import path from 'path';
-import { defineConfig } from 'vite';
+/// <reference types="vitest" />
+import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import dts from 'vite-plugin-dts';
 import topLevelAwait from 'vite-plugin-top-level-await';
 import wasm from 'vite-plugin-wasm';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   cacheDir: '../../node_modules/.vite/shinkai-message-ts',

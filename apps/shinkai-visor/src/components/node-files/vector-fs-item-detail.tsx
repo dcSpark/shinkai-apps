@@ -25,7 +25,7 @@ export const VectorFileDetails = () => {
   const size = partial({ standard: 'jedec' });
   const auth = useAuth((state) => state.auth);
   const { mutateAsync: downloadVRFile } = useDownloadVRFile({
-    onSuccess: (response, variables, context) => {
+    onSuccess: (response, variables) => {
       const blob = new Blob([response.data], {
         type: 'application/octet-stream',
       });
@@ -54,29 +54,24 @@ export const VectorFileDetails = () => {
             <FileTypeIcon
               className="h-10 w-10"
               type={
-                selectedFile?.vr_header?.resource_source?.Standard?.FileRef
-                  ?.file_type?.Document
+                selectedFile?.vr_header?.resource_source?.Standard?.FileRef?.file_type?.Document
               }
             />
           </div>
           <p className="text-lg font-medium text-white">
             {selectedFile?.name}
             <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
-              {selectedFile?.vr_header?.resource_source?.Standard?.FileRef
-                ?.file_type?.Document ?? '-'}
+              {selectedFile?.vr_header?.resource_source?.Standard?.FileRef?.file_type?.Document ??
+                '-'}
             </Badge>
           </p>
           <p className="text-sm text-gray-100">
-            <span>
-              {formatDateToUSLocaleString(selectedFile?.created_datetime)}
-            </span>{' '}
-            - <span>{size(selectedFile?.vr_size ?? 0)}</span>
+            <span>{formatDateToUSLocaleString(selectedFile?.created_datetime)}</span> -{' '}
+            <span>{size(selectedFile?.vr_size ?? 0)}</span>
           </p>
         </div>
         <div className="py-6">
-          <h2 className="mb-3 text-left text-lg font-medium  text-white">
-            Information
-          </h2>
+          <h2 className="mb-3 text-left text-lg font-medium  text-white">Information</h2>
           <div className="divide-y divide-gray-300">
             {[
               { label: 'Created', value: selectedFile?.created_datetime },
@@ -89,14 +84,9 @@ export const VectorFileDetails = () => {
                 value: selectedFile?.last_read_datetime,
               },
             ].map((item) => (
-              <div
-                className="flex items-center justify-between py-2 font-medium"
-                key={item.label}
-              >
+              <div className="flex items-center justify-between py-2 font-medium" key={item.label}>
                 <span className="text-gray-100">{item.label}</span>
-                <span className="text-white">
-                  {formatDateToLocaleStringWithTime(item.value)}
-                </span>
+                <span className="text-white">{formatDateToLocaleStringWithTime(item.value)}</span>
               </div>
             ))}
           </div>

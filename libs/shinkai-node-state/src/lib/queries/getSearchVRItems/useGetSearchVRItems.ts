@@ -4,10 +4,7 @@ import { FunctionKey } from '../../constants';
 import { getSearchVRItems } from './index';
 import { GetVRSearchItemsInput, GetVRSearchItemsOutput } from './types';
 
-export type UseGetSearchVRItems = [
-  FunctionKey.GET_VR_FILES_SEARCH,
-  GetVRSearchItemsInput,
-];
+export type UseGetSearchVRItems = [FunctionKey.GET_VR_FILES_SEARCH, GetVRSearchItemsInput];
 
 type Options = QueryObserverOptions<
   GetVRSearchItemsOutput,

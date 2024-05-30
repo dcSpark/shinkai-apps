@@ -1,4 +1,4 @@
-import { buttonVariants, Checkbox } from '@shinkai_network/shinkai-ui';
+import { Checkbox, buttonVariants } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -56,8 +56,7 @@ const TermsAndConditionsPage = () => {
                 buttonVariants({
                   variant: 'default',
                 }),
-                !acceptedTermsAndContidions &&
-                  'pointer-events-none bg-gray-300 opacity-60',
+                !acceptedTermsAndContidions && 'pointer-events-none bg-gray-300 opacity-60',
               )}
               to={'/get-started'}
             >

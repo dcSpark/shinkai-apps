@@ -56,22 +56,13 @@ const SetupStepOne = ({
         />
         <div className="text-center">
           <p className="text-2xl font-bold text-white">
-            <span className="text-[hsl(359.24deg_98.75%_68.63%)]">
-              {' '}
-              Pin Shinkai
-            </span>{' '}
-            to your browser
+            <span className="text-[hsl(359.24deg_98.75%_68.63%)]"> Pin Shinkai</span> to your
+            browser
           </p>
-          <p className="text-gray-80 text-base">
-            Quick access to your Advanced Personal AI
-          </p>
+          <p className="text-gray-80 text-base">Quick access to your Advanced Personal AI</p>
         </div>
         <div className="h-[270px] overflow-hidden rounded-xl">
-          <img
-            alt=""
-            className="h-full w-full object-contain"
-            src="./pin-extension.png"
-          />
+          <img alt="" className="h-full w-full object-contain" src="./pin-extension.png" />
         </div>
         <Button
           onClick={() => {
@@ -98,21 +89,14 @@ const SetupStepTwo = () => {
         <div className="text-center">
           <p className="text-2xl font-bold text-white">
             Welcome to
-            <span className="text-[hsl(359.24deg_98.75%_68.63%)]">
-              {' '}
-              Shinkai Visor
-            </span>{' '}
+            <span className="text-[hsl(359.24deg_98.75%_68.63%)]"> Shinkai Visor</span>{' '}
             <span aria-hidden={true} className={'ml-1 text-2xl'}>
               🎉{' '}
             </span>
           </p>
         </div>
         <div className="relative">
-          <img
-            alt={''}
-            className="w-full object-cover"
-            src={srcUrlResolver(coverImage)}
-          />
+          <img alt={''} className="w-full object-cover" src={srcUrlResolver(coverImage)} />
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform" />
         </div>
         <Button
@@ -131,11 +115,7 @@ const SetupStepTwo = () => {
 export const Setup = () => {
   const [stepNumber, setStepNumber] = React.useState(0);
 
-  return stepNumber === 0 ? (
-    <SetupStepOne setStepNumber={setStepNumber} />
-  ) : (
-    <SetupStepTwo />
-  );
+  return stepNumber === 0 ? <SetupStepOne setStepNumber={setStepNumber} /> : <SetupStepTwo />;
 };
 
 console.log('hello world');

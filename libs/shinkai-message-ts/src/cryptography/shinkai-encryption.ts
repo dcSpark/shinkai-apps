@@ -16,9 +16,7 @@ export async function encryptMessageWithPassphrase(
     sodium.crypto_pwhash_ALG_DEFAULT,
   );
 
-  const nonce = sodium.randombytes_buf(
-    sodium.crypto_aead_chacha20poly1305_IETF_NPUBBYTES,
-  );
+  const nonce = sodium.randombytes_buf(sodium.crypto_aead_chacha20poly1305_IETF_NPUBBYTES);
   const ciphertext = sodium.crypto_aead_chacha20poly1305_ietf_encrypt(
     message,
     null,
@@ -27,8 +25,7 @@ export async function encryptMessageWithPassphrase(
     key,
   );
 
-  const encrypted_body =
-    sodium.to_hex(salt) + sodium.to_hex(nonce) + sodium.to_hex(ciphertext);
+  const encrypted_body = sodium.to_hex(salt) + sodium.to_hex(nonce) + sodium.to_hex(ciphertext);
   return `encrypted:${encrypted_body}`;
 }
 

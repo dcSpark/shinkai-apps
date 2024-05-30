@@ -1,15 +1,8 @@
-import {
-  useMutation,
-  type UseMutationOptions,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { type UseMutationOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { FunctionKey } from '../../constants';
 import { unsubscribeToSharedFolder } from './index';
-import {
-  UnsubscribeToSharedFolderInput,
-  UnsubscribeToSharedFolderOutput,
-} from './types';
+import { UnsubscribeToSharedFolderInput, UnsubscribeToSharedFolderOutput } from './types';
 
 type Options = UseMutationOptions<
   UnsubscribeToSharedFolderOutput,

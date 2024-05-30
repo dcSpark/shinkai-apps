@@ -29,9 +29,7 @@ type VectorFsStore = {
   selectedFolder: VRFolder | null;
   setSelectedFolder: (selectedFolder: VRFolder | null) => void;
   selectedVectorFsTab: 'all' | 'shared-folders';
-  setSelectedVectorFsTab: (
-    selectedVectorFsTab: 'all' | 'shared-folders',
-  ) => void;
+  setSelectedVectorFsTab: (selectedVectorFsTab: 'all' | 'shared-folders') => void;
 };
 
 const createVectorFsStore = () =>
@@ -80,9 +78,7 @@ const createVectorFsStore = () =>
     },
   }));
 
-const VectorFsContext = createContext<ReturnType<
-  typeof createVectorFsStore
-> | null>(null);
+const VectorFsContext = createContext<ReturnType<typeof createVectorFsStore> | null>(null);
 
 export const VectorFsProvider = ({
   children,
@@ -93,11 +89,7 @@ export const VectorFsProvider = ({
   if (!storeRef.current) {
     storeRef.current = createVectorFsStore();
   }
-  return (
-    <VectorFsContext.Provider value={storeRef.current}>
-      {children}
-    </VectorFsContext.Provider>
-  );
+  return <VectorFsContext.Provider value={storeRef.current}>{children}</VectorFsContext.Provider>;
 };
 
 export function useVectorFsStore<T>(selector: (state: VectorFsStore) => T) {

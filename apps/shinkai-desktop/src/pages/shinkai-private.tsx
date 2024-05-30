@@ -9,8 +9,8 @@ const ShinkaiPrivatePage = () => {
     <SubpageLayout title="Connect AI">
       <div className="flex h-full flex-col">
         <p className="text-gray-80 text-center text-base tracking-wide">
-          Create AI models to be used with Shinkai. You can run your own
-          locally, or use our hosted service if you have a low-spec computer.
+          Create AI models to be used with Shinkai. You can run your own locally, or use our hosted
+          service if you have a low-spec computer.
         </p>
         <div className="mt-20 flex flex-1 flex-col gap-6">
           <Link

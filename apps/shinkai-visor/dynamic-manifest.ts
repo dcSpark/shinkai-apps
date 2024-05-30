@@ -4,9 +4,7 @@ import baseManifestJson from './public/manifest.json';
 
 const getVersion = () => {
   const version = process.env.VERSION || baseManifestJson.version || '0.0.0.1';
-  const [major, minor, patch, label = '0'] = version
-    .replace(/[^\d.-]+/g, '')
-    .split(/[.-]/);
+  const [major, minor, patch, label = '0'] = version.replace(/[^\d.-]+/g, '').split(/[.-]/);
   return `${major}.${minor}.${patch}.${label}`;
 };
 
@@ -15,9 +13,7 @@ const getName = () => {
 };
 
 const getDescription = () => {
-  return `${process.env.DESCRIPTION_PREFIX || ''}${
-    baseManifestJson.description
-  }`;
+  return `${process.env.DESCRIPTION_PREFIX || ''}${baseManifestJson.description}`;
 };
 
 const getPublicKey = () => {
@@ -27,6 +23,7 @@ const getPublicKey = () => {
   );
 };
 
+// biome-ignore lint/correctness/noUnusedVariables: <explanation>
 export const dynamicManifest = defineManifest((env) => {
   return {
     ...baseManifestJson,

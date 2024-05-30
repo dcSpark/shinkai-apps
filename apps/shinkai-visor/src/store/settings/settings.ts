@@ -38,9 +38,7 @@ export const useSettings = create<SettingsStore>()(
           });
         },
         displayImageCaptureActionButton: true,
-        setDisplayImageCaptureActionButton: (
-          displayImageCaptureActionButton,
-        ) => {
+        setDisplayImageCaptureActionButton: (displayImageCaptureActionButton) => {
           set({ displayImageCaptureActionButton });
           sendMessage({
             type: ServiceWorkerInternalMessageType.RehydrateStore,

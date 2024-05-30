@@ -1,15 +1,11 @@
 import { UseMutationOptions, useQueryClient } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 
-import { FunctionKey } from '../../constants';
 import { updateAgentInJob } from '.';
+import { FunctionKey } from '../../constants';
 import { UpdateAgentInJobInput, UpdateAgentInJobOutput } from './types';
 
-type Options = UseMutationOptions<
-  UpdateAgentInJobOutput,
-  Error,
-  UpdateAgentInJobInput
->;
+type Options = UseMutationOptions<UpdateAgentInJobOutput, Error, UpdateAgentInJobInput>;
 
 export const useUpdateAgentInJob = (options?: Options) => {
   const queryClient = useQueryClient();

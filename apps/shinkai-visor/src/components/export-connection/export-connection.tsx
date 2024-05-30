@@ -4,13 +4,7 @@ import {
   ExportConnectionFormSchema,
   exportConnectionFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/settings/export-connection';
-import {
-  Button,
-  Form,
-  FormField,
-  Input,
-  TextField,
-} from '@shinkai_network/shinkai-ui';
+import { Button, Form, FormField, Input, TextField } from '@shinkai_network/shinkai-ui';
 import { Download } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -34,9 +28,7 @@ export const ExportConnection = () => {
   useEffect(() => {
     setEncryptedSetupData('');
   }, [passphrase, confirmPassphrase, setEncryptedSetupData]);
-  const exportConnection = async (
-    values: ExportConnectionFormSchema,
-  ): Promise<void> => {
+  const exportConnection = async (values: ExportConnectionFormSchema): Promise<void> => {
     // TODO: Convert to a common format shared by visor, app and desktop
     const parsedSetupData = JSON.stringify(auth);
     const encryptedSetupData = await encryptMessageWithPassphrase(
@@ -50,10 +42,9 @@ export const ExportConnection = () => {
     const content = encryptedSetupData;
     const file = new Blob([content], { type: 'text/plain' });
     link.href = URL.createObjectURL(file);
-    link.download =
-      `${auth?.shinkai_identity}_${auth?.registration_name}.shinkai.key`
-        .replace(/@/g, '')
-        .replace(/\//g, '_');
+    link.download = `${auth?.shinkai_identity}_${auth?.registration_name}.shinkai.key`
+      .replace(/@/g, '')
+      .replace(/\//g, '_');
     link.click();
     URL.revokeObjectURL(link.href);
   };
@@ -108,11 +99,7 @@ export const ExportConnection = () => {
             </div>
             <div className="flex w-full flex-row space-x-1">
               <div className="grow cursor-pointer" onClick={() => download()}>
-                <Input
-                  className="cursor-pointer truncate"
-                  readOnly
-                  value={encryptedSetupData}
-                />
+                <Input className="cursor-pointer truncate" readOnly value={encryptedSetupData} />
               </div>
               <Button className="" onClick={() => download()}>
                 <Download className="h-4 w-4" />

@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import { useAuth } from '../../store/auth/auth';
 import NavBar from '../nav/nav';
 
-export const WithNav = (props: PropsWithChildren) => {
+export const WithNav = () => {
   const auth = useAuth((state) => state.auth);
   const location = useLocation();
 
@@ -35,14 +35,11 @@ export const WithNav = (props: PropsWithChildren) => {
   }, [isSuccess, nodeInfo?.status, isFetching]);
 
   return (
-    <div
-      className={cn(
-        'flex h-full w-full flex-col space-y-6',
-        isInboxPage && 'space-y-0',
-      )}
-    >
+    <div className={cn('flex h-full w-full flex-col space-y-6', isInboxPage && 'space-y-0')}>
       <NavBar />
-      <div className="grow overflow-auto"><Outlet /></div>
+      <div className="grow overflow-auto">
+        <Outlet />
+      </div>
     </div>
   );
 };

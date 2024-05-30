@@ -1,23 +1,13 @@
-import {
-  InfiniteData,
-  useInfiniteQuery,
-  useQuery,
-} from '@tanstack/react-query';
+import { InfiniteData, useInfiniteQuery, useQuery } from '@tanstack/react-query';
 
-import { FunctionKey } from '../../constants';
 import { getAvailableSharedFolders } from '.';
-import {
-  GetAvailableSharedItemsInput,
-  GetAvailableSharedItemsOutput,
-  Options,
-} from './types';
+import { FunctionKey } from '../../constants';
+import { GetAvailableSharedItemsInput, GetAvailableSharedItemsOutput, Options } from './types';
 
 export const SHARED_FOLDERS_PAGINATION_LIMIT = 8;
 export const SHARED_FOLDERS_PAGINATION_REFETCH = 10000;
 
-export const useGetAvailableSharedFoldersWithPagination = (
-  input: GetAvailableSharedItemsInput,
-) => {
+export const useGetAvailableSharedFoldersWithPagination = (input: GetAvailableSharedItemsInput) => {
   const response = useInfiniteQuery<
     GetAvailableSharedItemsOutput,
     Error,

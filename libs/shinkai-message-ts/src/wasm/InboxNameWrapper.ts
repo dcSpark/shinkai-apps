@@ -38,8 +38,7 @@ export class InboxNameWrapper {
   }
 
   static get_job_inbox_name_from_params(unique_id: string): InboxNameWrapper {
-    const wasmWrapper =
-      InboxNameWrapperWASM.get_job_inbox_name_from_params(unique_id);
+    const wasmWrapper = InboxNameWrapperWASM.get_job_inbox_name_from_params(unique_id);
     return new InboxNameWrapper(wasmWrapper.get_value);
   }
 

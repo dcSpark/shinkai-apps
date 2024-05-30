@@ -1,7 +1,4 @@
-import {
-  ShinkaiMessage,
-  SmartInbox,
-} from '@shinkai_network/shinkai-message-ts/models';
+import { ShinkaiMessage, SmartInbox } from '@shinkai_network/shinkai-message-ts/models';
 import {
   extractErrorPropertyOrContent,
   getMessageContent,
@@ -16,11 +13,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import {
-  ArchiveIcon,
-  ChatBubbleIcon,
-  JobBubbleIcon,
-} from '@shinkai_network/shinkai-ui/assets';
+import { ArchiveIcon, ChatBubbleIcon, JobBubbleIcon } from '@shinkai_network/shinkai-ui/assets';
 import { formatDateToMonthAndDay } from '@shinkai_network/shinkai-ui/helpers';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -61,17 +54,11 @@ const InboxItem = ({
     >
       <div className="flex w-full items-center justify-between gap-4">
         <span className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-gray-300">
-          {isJobChatInbox ? (
-            <JobBubbleIcon />
-          ) : (
-            <ChatBubbleIcon className="h-4 w-4 shrink-0" />
-          )}
+          {isJobChatInbox ? <JobBubbleIcon /> : <ChatBubbleIcon className="h-4 w-4 shrink-0" />}
         </span>
         <div className="flex-auto overflow-hidden">
           <div className="flex flex-col space-y-1">
-            <span className="truncate text-left text-white">
-              {inbox.custom_name}
-            </span>
+            <span className="truncate text-left text-white">{inbox.custom_name}</span>
             <div className="truncate text-left text-xs text-gray-100">
               {inbox.last_message &&
                 extractErrorPropertyOrContent(
@@ -147,10 +134,7 @@ const ActiveInboxItem = ({ inbox }: { inbox: SmartInbox }) => {
     },
   });
 
-  const handleArchiveJob = async (
-    event: React.MouseEvent,
-    inbox: SmartInbox,
-  ) => {
+  const handleArchiveJob = async (event: React.MouseEvent, inbox: SmartInbox) => {
     event.stopPropagation();
     await archiveJob({
       nodeAddress: auth?.node_address ?? '',

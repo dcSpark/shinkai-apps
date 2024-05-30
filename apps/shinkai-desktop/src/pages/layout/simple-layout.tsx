@@ -18,9 +18,7 @@ export const SubpageLayout = ({
         <LucideArrowLeft />
         <span className="sr-only">Back</span>
       </Link>
-      <h1 className="mb-8 text-center text-2xl font-semibold tracking-tight">
-        {title}
-      </h1>
+      <h1 className="mb-8 text-center text-2xl font-semibold tracking-tight">{title}</h1>
       <div className="flex-1">{children}</div>
     </div>
   );
@@ -41,9 +39,7 @@ export const FixedHeaderLayout = ({
           <LucideArrowLeft />
           <span className="sr-only">Back</span>
         </Link>
-        <h1 className="mb-8 text-center text-2xl font-semibold tracking-tight">
-          {title}
-        </h1>
+        <h1 className="mb-8 text-center text-2xl font-semibold tracking-tight">{title}</h1>
         <div />
       </div>
       {children}
@@ -60,15 +56,8 @@ export const SimpleLayout = ({
   classname?: string;
 }) => {
   return (
-    <div
-      className={cn(
-        'mx-auto flex h-full max-w-4xl flex-col gap-4 px-5 py-10',
-        classname,
-      )}
-    >
-      {title ? (
-        <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
-      ) : null}
+    <div className={cn('mx-auto flex h-full max-w-4xl flex-col gap-4 px-5 py-10', classname)}>
+      {title ? <h1 className="text-2xl font-semibold tracking-tight">{title}</h1> : null}
       <div className="flex-1">{children}</div>
     </div>
   );

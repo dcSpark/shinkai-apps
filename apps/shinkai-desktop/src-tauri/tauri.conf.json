@@ -54,9 +54,7 @@
       "http": {
         "all": false,
         "request": true,
-        "scope": [
-          "http://localhost"
-        ]
+        "scope": ["http://localhost"]
       }
     },
     "bundle": {
@@ -73,10 +71,7 @@
       "macOS": {
         "minimumSystemVersion": "10.13"
       },
-      "externalBin": [
-        "bin/shinkai-node",
-        "bin/ollama"
-      ]
+      "externalBin": ["bin/shinkai-node", "bin/ollama"]
     },
     "security": {
       "csp": null

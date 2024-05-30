@@ -5,7 +5,7 @@ import {
 } from '@shinkai_network/shinkai-node-state/forms/auth/quick-connection';
 import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
 import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/lib/queries/getEncryptionKeys/useGetEncryptionKeys';
-import { Button, buttonVariants, Separator } from '@shinkai_network/shinkai-ui';
+import { Button, Separator, buttonVariants } from '@shinkai_network/shinkai-ui';
 import { submitRegistrationNoCodeError } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useState } from 'react';
@@ -38,43 +38,38 @@ const GetStartedPage = () => {
   });
 
   const { data: hardwareSummary } = useHardwareGetSummaryQuery();
-  const { mutateAsync: submitRegistrationNoCode } = useSubmitRegistrationNoCode(
-    {
-      onSuccess: (response, setupPayload) => {
-        if (response.status !== 'success') {
-          shinkaiNodeKill();
-        }
-        if (response.status === 'success' && encryptionKeys) {
-          const updatedSetupData = {
-            ...encryptionKeys,
-            ...setupPayload,
-            permission_type: '',
-            shinkai_identity:
-              setupDataForm.getValues().shinkai_identity ||
-              (response.data?.node_name ?? ''),
-            node_signature_pk: response.data?.identity_public_key ?? '',
-            node_encryption_pk: response.data?.encryption_public_key ?? '',
-          };
-          setAuth(updatedSetupData);
-          // Hide http subscription for now
-          // navigate('/connect-ai');
-          navigate('/ai-model-installation');
-        } else if (response.status === 'non-pristine') {
-          setResetStorageBeforeConnectConfirmationPrompt(true);
-        } else {
-          submitRegistrationNoCodeError();
-        }
-      },
-    },
-  );
-  const {
-    isPending: shinkaiNodeSpawnIsPending,
-    mutateAsync: shinkaiNodeSpawn,
-  } = useShinkaiNodeSpawnMutation({
-    onSuccess: () => {
-      onSubmit(setupDataForm.getValues());
+  const { mutateAsync: submitRegistrationNoCode } = useSubmitRegistrationNoCode({
+    onSuccess: (response, setupPayload) => {
+      if (response.status !== 'success') {
+        shinkaiNodeKill();
+      }
+      if (response.status === 'success' && encryptionKeys) {
+        const updatedSetupData = {
+          ...encryptionKeys,
+          ...setupPayload,
+          permission_type: '',
+          shinkai_identity:
+            setupDataForm.getValues().shinkai_identity || (response.data?.node_name ?? ''),
+          node_signature_pk: response.data?.identity_public_key ?? '',
+          node_encryption_pk: response.data?.encryption_public_key ?? '',
+        };
+        setAuth(updatedSetupData);
+        // Hide http subscription for now
+        // navigate('/connect-ai');
+        navigate('/ai-model-installation');
+      } else if (response.status === 'non-pristine') {
+        setResetStorageBeforeConnectConfirmationPrompt(true);
+      } else {
+        submitRegistrationNoCodeError();
+      }
     },
   });
+  const { isPending: shinkaiNodeSpawnIsPending, mutateAsync: shinkaiNodeSpawn } =
+    useShinkaiNodeSpawnMutation({
+      onSuccess: () => {
+        onSubmit(setupDataForm.getValues());
+      },
+    });
   const { mutateAsync: shinkaiNodeKill } = useShinkaiNodeSpawnMutation();
 
   async function onSubmit(currentValues: QuickConnectFormSchema) {
@@ -162,10 +157,7 @@ const GetStartedPage = () => {
             </a>
             <div className="text-gray-80 items-center space-x-2 text-center text-base">
               <span>Already have a Node?</span>
-              <Link
-                className="font-semibold text-white underline"
-                to="/onboarding"
-              >
+              <Link className="font-semibold text-white underline" to="/onboarding">
                 Quick Connect
               </Link>
             </div>

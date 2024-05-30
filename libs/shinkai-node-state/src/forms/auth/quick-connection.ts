@@ -7,10 +7,7 @@ export const quickConnectFormSchema = z.object({
   }),
   shinkai_identity: z
     .string()
-    .regex(
-      /^@@[a-zA-Z0-9_]+\.shinkai.*$/,
-      `It should be in the format of @@<name>.shinkai`,
-    )
+    .regex(/^@@[a-zA-Z0-9_]+\.shinkai.*$/, `It should be in the format of @@<name>.shinkai`)
     .nullish(),
 });
 

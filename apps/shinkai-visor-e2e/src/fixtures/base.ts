@@ -1,11 +1,5 @@
-import {
-  type BrowserContext,
-  chromium,
-  Page,
-  test as base,
-  Worker,
-} from '@playwright/test';
 import * as path from 'path';
+import { type BrowserContext, Page, Worker, test as base, chromium } from '@playwright/test';
 
 import { waitFor } from '../utils/test-utils';
 
@@ -21,12 +15,9 @@ export const test = base.extend<{
   extensionId: string;
   popup: Page;
 }>({
-  // eslint-disable-next-line no-empty-pattern
+  // biome-ignore lint/correctness/noEmptyPattern:
   context: async ({}, use) => {
-    const pathToExtension = path.join(
-      __dirname,
-      '../../../../dist/apps/shinkai-visor',
-    );
+    const pathToExtension = path.join(__dirname, '../../../../dist/apps/shinkai-visor');
     const context = await chromium.launchPersistentContext('', {
       headless: false,
       args: [
@@ -49,6 +40,7 @@ export const test = base.extend<{
     console.log(`extension is installed extensionId:${extensionId}`);
     await use(extensionId);
   },
+  // biome-ignore lint/correctness/noUnusedVariables:
   page: async ({ page, extensionId }, use) => {
     await page.goto('/');
     // Required because a new tab is created after install the extension
@@ -57,6 +49,7 @@ export const test = base.extend<{
     await page.waitForLoadState('networkidle');
     await use(page);
   },
+  // biome-ignore lint/correctness/noUnusedVariables:
   popup: async ({ context, page, worker, extensionId }, use) => {
     await page.bringToFront();
     // eslint-disable-next-line playwright/no-networkidle
@@ -70,7 +63,6 @@ export const test = base.extend<{
       5000,
     );
     await page.getByTestId('action-button').click();
-
 
     let popupPage: Page | undefined = undefined;
     await waitFor(

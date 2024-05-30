@@ -6,28 +6,22 @@
     "indentStyle": "space",
     "indentWidth": 2,
     "lineEnding": "lf",
-    "lineWidth": 80,
-    "attributePosition": "auto",
-    "ignore": ["./dist", "./coverage"]
+    "lineWidth": 100,
+    "attributePosition": "auto"
   },
-  "organizeImports": { "enabled": true },
+  "organizeImports": {
+    "enabled": true
+  },
   "files": {
-    "ignore": [
-      "./coverage",
-      "./dist",
-      "./node_modules",
-      "./android",
-      "./ios",
-      "./src-tauri",
-      ".nx",
-      "./shinkai-message-ts/src/pkg"
-    ]
+    "ignore": ["/coverage", "dist", "node_modules", "android", "ios", "src-tauri", ".nx", "pkg"]
   },
   "linter": {
     "enabled": true,
     "rules": {
       "recommended": false,
-      "a11y": { "noBlankTarget": "error" },
+      "a11y": {
+        "noBlankTarget": "error"
+      },
       "complexity": {
         "noExtraBooleanCast": "error",
         "noMultipleSpacesInRegularExpressionLiterals": "error",
@@ -61,7 +55,9 @@
         "useValidForDirection": "error",
         "useYield": "error"
       },
-      "security": { "noDangerouslySetInnerHtml": "error" },
+      "security": {
+        "noDangerouslySetInnerHtml": "error"
+      },
       "suspicious": {
         "noAsyncPromiseExecutor": "error",
         "noCatchAssign": "error",
@@ -88,10 +84,27 @@
         "useGetterReturn": "error",
         "useValidTypeof": "error"
       }
-    },
-    "ignore": ["**/*", "**/node_modules", "**/android", "**/ios"]
+    }
+  },
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
   },
   "javascript": {
+    "globals": [
+      "it",
+      "cy",
+      "expect",
+      "describe",
+      "beforeEach",
+      "afterEach",
+      "jest",
+      "test",
+      "beforeAll",
+      "afterAll",
+      "chrome"
+    ],
     "formatter": {
       "jsxQuoteStyle": "double",
       "quoteProperties": "asNeeded",
@@ -107,10 +120,21 @@
   "overrides": [
     {
       "include": ["*.ts", "*.tsx", "*.js", "*.jsx"],
-      "linter": { "rules": {} }
+      "linter": {
+        "rules": {}
+      }
     },
-    { "include": ["*.ts", "*.tsx"], "linter": { "rules": {} } },
-    { "include": ["*.js", "*.jsx"] },
-    { "include": ["*.spec.ts", "*.spec.tsx", "*.spec.js", "*.spec.jsx"] }
+    {
+      "include": ["*.ts", "*.tsx"],
+      "linter": {
+        "rules": {}
+      }
+    },
+    {
+      "include": ["*.js", "*.jsx"]
+    },
+    {
+      "include": ["*.spec.ts", "*.spec.tsx", "*.spec.js", "*.spec.jsx"]
+    }
   ]
 }

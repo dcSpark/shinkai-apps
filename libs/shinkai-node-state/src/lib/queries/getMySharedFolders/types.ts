@@ -31,10 +31,7 @@ export type GetMySharedFoldersInput = JobCredentialsPayload & {
   shinkaiIdentity: string;
   profile: string;
 };
-export type UseGetMySharedFolders = [
-  FunctionKey.GET_MY_SHARED_FOLDERS,
-  GetMySharedFoldersInput,
-];
+export type UseGetMySharedFolders = [FunctionKey.GET_MY_SHARED_FOLDERS, GetMySharedFoldersInput];
 
 export type GetMyShareFoldersOutput = SharedFolder[];
 

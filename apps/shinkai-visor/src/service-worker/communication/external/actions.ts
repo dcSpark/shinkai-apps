@@ -9,10 +9,7 @@ import {
   isNodePristineResolver,
   quickConnectionIntent,
 } from './resolvers';
-import {
-  ServiceWorkerExternalMessageActionsMap,
-  ServiceWorkerExternalMessageType,
-} from './types';
+import { ServiceWorkerExternalMessageActionsMap, ServiceWorkerExternalMessageType } from './types';
 
 export const ACTIONS_MAP: ServiceWorkerExternalMessageActionsMap = {
   [ServiceWorkerExternalMessageType.IsInstalled]: {

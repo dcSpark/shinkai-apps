@@ -1,10 +1,5 @@
 import { expect, test } from '../fixtures/base';
-import {
-  acceptTerms,
-  addAgent,
-  navigateToMenu,
-  quickConnect,
-} from '../utils/basic-actions';
+import { acceptTerms, addAgent, navigateToMenu, quickConnect } from '../utils/basic-actions';
 import { getAgent } from '../utils/dummy-data';
 import { hasError } from '../utils/input-errors';
 import { NodeManager } from '../utils/node-manager';
@@ -20,10 +15,7 @@ export const jobsTests = () => {
     await quickConnect(popup);
     const agent = getAgent();
     await addAgent(popup, agent);
-    const agentInput = popup
-      .getByLabel('Agent')
-      .locator('..')
-      .locator('select');
+    const agentInput = popup.getByLabel('Agent').locator('..').locator('select');
     await expect(agentInput).toHaveValue(agent.agentName);
   });
 
@@ -41,9 +33,7 @@ export const jobsTests = () => {
     await hasError(messageInput);
   });
 
-  test('create job redirect to inbox and contains messages', async ({
-    popup,
-  }) => {
+  test('create job redirect to inbox and contains messages', async ({ popup }) => {
     await navigateToMenu(popup, 'nav-menu-create-job-button');
     const messageInput = popup.getByLabel('Message');
     await messageInput.fill('is this AI agent working?');

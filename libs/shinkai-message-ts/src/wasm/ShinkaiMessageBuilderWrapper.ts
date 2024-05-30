@@ -1,8 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  MessageSchemaType,
-  TSEncryptionMethod,
-} from '../models/SchemaTypes.js';
+import { MessageSchemaType, TSEncryptionMethod } from '../models/SchemaTypes.js';
 import {
   ShinkaiMessageBuilderWrapper as ShinkaiMessageBuilderWrapperWASM,
   ShinkaiMessageWrapper,
@@ -82,36 +79,16 @@ export class ShinkaiMessageBuilderWrapper {
     this.wasmBuilder.external_metadata(recipient, sender);
   }
 
-  external_metadata_with_intra(
-    recipient: string,
-    sender: string,
-    intra_sender: string,
-  ): void {
-    this.wasmBuilder.external_metadata_with_intra(
-      recipient,
-      sender,
-      intra_sender,
-    );
+  external_metadata_with_intra(recipient: string, sender: string, intra_sender: string): void {
+    this.wasmBuilder.external_metadata_with_intra(recipient, sender, intra_sender);
   }
 
-  external_metadata_with_other(
-    recipient: string,
-    sender: string,
-    other: string,
-  ): void {
+  external_metadata_with_other(recipient: string, sender: string, other: string): void {
     this.wasmBuilder.external_metadata_with_other(recipient, sender, other);
   }
 
-  external_metadata_with_schedule(
-    recipient: string,
-    sender: string,
-    scheduled_time: string,
-  ): void {
-    this.wasmBuilder.external_metadata_with_schedule(
-      recipient,
-      sender,
-      scheduled_time,
-    );
+  external_metadata_with_schedule(recipient: string, sender: string, scheduled_time: string): void {
+    this.wasmBuilder.external_metadata_with_schedule(recipient, sender, scheduled_time);
   }
 
   build(): ShinkaiMessageWrapper {
@@ -464,12 +441,7 @@ export class ShinkaiMessageBuilderWrapper {
 
     builder.message_raw_content(text_message);
     builder.message_schema_type(MessageSchemaType.TextContent.toString());
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      inbox,
-      'None',
-    );
+    builder.internal_metadata(sender_subidentity, receiver_subidentity, inbox, 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
@@ -497,12 +469,7 @@ export class ShinkaiMessageBuilderWrapper {
 
     builder.message_raw_content(text_message);
     builder.message_schema_type(MessageSchemaType.TextContent.toString());
-    builder.internal_metadata_with_inbox(
-      sender_subidentity,
-      receiver_subidentity,
-      inbox,
-      'None',
-    );
+    builder.internal_metadata_with_inbox(sender_subidentity, receiver_subidentity, inbox, 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
 
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
@@ -529,9 +496,7 @@ export class ShinkaiMessageBuilderWrapper {
     );
 
     builder.message_raw_content(symmetric_key_sk);
-    builder.message_schema_type(
-      MessageSchemaType.SymmetricKeyExchange.toString(),
-    );
+    builder.message_schema_type(MessageSchemaType.SymmetricKeyExchange.toString());
     builder.internal_metadata_with_inbox(sender_subidentity, '', inbox, 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
@@ -557,12 +522,7 @@ export class ShinkaiMessageBuilderWrapper {
     );
     builder.message_raw_content(inbox_name);
     builder.message_schema_type(MessageSchemaType.TextContent.toString());
-    builder.internal_metadata_with_inbox(
-      sender_subidentity,
-      receiver_subidentity,
-      inbox,
-      'None',
-    );
+    builder.internal_metadata_with_inbox(sender_subidentity, receiver_subidentity, inbox, 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
@@ -589,12 +549,7 @@ export class ShinkaiMessageBuilderWrapper {
     );
     builder.message_raw_content(file_inbox);
     builder.message_schema_type(MessageSchemaType.TextContent.toString());
-    builder.internal_metadata_with_inbox(
-      sender_subidentity,
-      receiver_subidentity,
-      inbox,
-      'None',
-    );
+    builder.internal_metadata_with_inbox(sender_subidentity, receiver_subidentity, inbox, 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
@@ -621,12 +576,7 @@ export class ShinkaiMessageBuilderWrapper {
 
     builder.message_raw_content('');
     builder.message_schema_type(MessageSchemaType.APIFinishJob.toString());
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      inbox,
-      'None',
-    );
+    builder.internal_metadata(sender_subidentity, receiver_subidentity, inbox, 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
@@ -655,12 +605,7 @@ export class ShinkaiMessageBuilderWrapper {
 
     builder.message_raw_content(body);
     builder.message_schema_type(MessageSchemaType.VecFsCreateFolder.toString());
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      '',
-      'None',
-    );
+    builder.internal_metadata(sender_subidentity, receiver_subidentity, '', 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
@@ -690,12 +635,7 @@ export class ShinkaiMessageBuilderWrapper {
 
     builder.message_raw_content(body);
     builder.message_schema_type(MessageSchemaType.VecFsMoveFolder.toString());
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      '',
-      'None',
-    );
+    builder.internal_metadata(sender_subidentity, receiver_subidentity, '', 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
@@ -723,12 +663,7 @@ export class ShinkaiMessageBuilderWrapper {
 
     builder.message_raw_content(body);
     builder.message_schema_type(MessageSchemaType.VecFsDeleteFolder.toString());
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      '',
-      'None',
-    );
+    builder.internal_metadata(sender_subidentity, receiver_subidentity, '', 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
@@ -757,12 +692,7 @@ export class ShinkaiMessageBuilderWrapper {
 
     builder.message_raw_content(body);
     builder.message_schema_type(MessageSchemaType.VecFsCopyFolder.toString());
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      '',
-      'None',
-    );
+    builder.internal_metadata(sender_subidentity, receiver_subidentity, '', 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
@@ -792,12 +722,7 @@ export class ShinkaiMessageBuilderWrapper {
 
     builder.message_raw_content(body);
     builder.message_schema_type(MessageSchemaType.VecFsMoveItem.toString());
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      '',
-      'None',
-    );
+    builder.internal_metadata(sender_subidentity, receiver_subidentity, '', 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
@@ -827,12 +752,7 @@ export class ShinkaiMessageBuilderWrapper {
 
     builder.message_raw_content(body);
     builder.message_schema_type(MessageSchemaType.VecFsCopyItem.toString());
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      '',
-      'None',
-    );
+    builder.internal_metadata(sender_subidentity, receiver_subidentity, '', 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
@@ -860,12 +780,7 @@ export class ShinkaiMessageBuilderWrapper {
 
     builder.message_raw_content(body);
     builder.message_schema_type(MessageSchemaType.VecFsDeleteItem.toString());
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      '',
-      'None',
-    );
+    builder.internal_metadata(sender_subidentity, receiver_subidentity, '', 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
@@ -893,9 +808,7 @@ export class ShinkaiMessageBuilderWrapper {
     );
 
     builder.message_raw_content(body);
-    builder.message_schema_type(
-      MessageSchemaType.ConvertFilesAndSaveToFolder.toString(),
-    );
+    builder.message_schema_type(MessageSchemaType.ConvertFilesAndSaveToFolder.toString());
     builder.internal_metadata(sender_subidentity, '', '', 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
@@ -924,15 +837,8 @@ export class ShinkaiMessageBuilderWrapper {
     );
 
     builder.message_raw_content(body);
-    builder.message_schema_type(
-      MessageSchemaType.VecFsRetrieveVectorResource.toString(),
-    );
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      '',
-      'None',
-    );
+    builder.message_schema_type(MessageSchemaType.VecFsRetrieveVectorResource.toString());
+    builder.internal_metadata(sender_subidentity, receiver_subidentity, '', 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
@@ -960,15 +866,8 @@ export class ShinkaiMessageBuilderWrapper {
     );
 
     builder.message_raw_content(body);
-    builder.message_schema_type(
-      MessageSchemaType.VecFsRetrievePathSimplifiedJson.toString(),
-    );
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      '',
-      'None',
-    );
+    builder.message_schema_type(MessageSchemaType.VecFsRetrievePathSimplifiedJson.toString());
+    builder.internal_metadata(sender_subidentity, receiver_subidentity, '', 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
@@ -1002,12 +901,7 @@ export class ShinkaiMessageBuilderWrapper {
     builder.message_schema_type(
       MessageSchemaType.VecFsRetrieveVectorSearchSimplifiedJson.toString(),
     );
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      '',
-      'None',
-    );
+    builder.internal_metadata(sender_subidentity, receiver_subidentity, '', 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
@@ -1038,12 +932,7 @@ export class ShinkaiMessageBuilderWrapper {
 
     builder.message_raw_content(body);
     builder.message_schema_type(MessageSchemaType.VecFsSearchItems.toString());
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      '',
-      'None',
-    );
+    builder.internal_metadata(sender_subidentity, receiver_subidentity, '', 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
@@ -1075,15 +964,8 @@ export class ShinkaiMessageBuilderWrapper {
     );
 
     builder.message_raw_content(body);
-    builder.message_schema_type(
-      MessageSchemaType.AvailableSharedItems.toString(),
-    );
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      '',
-      'None',
-    );
+    builder.message_schema_type(MessageSchemaType.AvailableSharedItems.toString());
+    builder.internal_metadata(sender_subidentity, receiver_subidentity, '', 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
@@ -1115,15 +997,8 @@ export class ShinkaiMessageBuilderWrapper {
     );
 
     builder.message_raw_content(body);
-    builder.message_schema_type(
-      MessageSchemaType.AvailableSharedItems.toString(),
-    );
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      '',
-      'None',
-    );
+    builder.message_schema_type(MessageSchemaType.AvailableSharedItems.toString());
+    builder.internal_metadata(sender_subidentity, receiver_subidentity, '', 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
@@ -1162,15 +1037,8 @@ export class ShinkaiMessageBuilderWrapper {
     );
 
     builder.message_raw_content(body);
-    builder.message_schema_type(
-      MessageSchemaType.CreateShareableFolder.toString(),
-    );
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      '',
-      'None',
-    );
+    builder.message_schema_type(MessageSchemaType.CreateShareableFolder.toString());
+    builder.internal_metadata(sender_subidentity, receiver_subidentity, '', 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
@@ -1200,12 +1068,7 @@ export class ShinkaiMessageBuilderWrapper {
 
     builder.message_raw_content(body);
     builder.message_schema_type(MessageSchemaType.UnshareFolder.toString());
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      '',
-      'None',
-    );
+    builder.internal_metadata(sender_subidentity, receiver_subidentity, '', 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
@@ -1239,15 +1102,8 @@ export class ShinkaiMessageBuilderWrapper {
     );
 
     builder.message_raw_content(body);
-    builder.message_schema_type(
-      MessageSchemaType.SubscribeToSharedFolder.toString(),
-    );
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      '',
-      'None',
-    );
+    builder.message_schema_type(MessageSchemaType.SubscribeToSharedFolder.toString());
+    builder.internal_metadata(sender_subidentity, receiver_subidentity, '', 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
@@ -1281,15 +1137,8 @@ export class ShinkaiMessageBuilderWrapper {
     );
 
     builder.message_raw_content(body);
-    builder.message_schema_type(
-      MessageSchemaType.UnsubscribeToSharedFolder.toString(),
-    );
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      '',
-      'None',
-    );
+    builder.message_schema_type(MessageSchemaType.UnsubscribeToSharedFolder.toString());
+    builder.internal_metadata(sender_subidentity, receiver_subidentity, '', 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
@@ -1315,12 +1164,7 @@ export class ShinkaiMessageBuilderWrapper {
 
     builder.message_raw_content(body);
     builder.message_schema_type(MessageSchemaType.MySubscriptions.toString());
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      '',
-      'None',
-    );
+    builder.internal_metadata(sender_subidentity, receiver_subidentity, '', 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
@@ -1345,12 +1189,7 @@ export class ShinkaiMessageBuilderWrapper {
 
     builder.message_raw_content(newNodeName);
     builder.message_schema_type(MessageSchemaType.ChangeNodesName.toString());
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      '',
-      'None',
-    );
+    builder.internal_metadata(sender_subidentity, receiver_subidentity, '', 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
@@ -1382,15 +1221,8 @@ export class ShinkaiMessageBuilderWrapper {
     );
 
     builder.message_raw_content(body);
-    builder.message_schema_type(
-      MessageSchemaType.ChangeJobAgentRequest.toString(),
-    );
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      '',
-      'None',
-    );
+    builder.message_schema_type(MessageSchemaType.ChangeJobAgentRequest.toString());
+    builder.internal_metadata(sender_subidentity, receiver_subidentity, '', 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
@@ -1418,15 +1250,8 @@ export class ShinkaiMessageBuilderWrapper {
     );
 
     builder.message_raw_content(body);
-    builder.message_schema_type(
-      MessageSchemaType.VecFsRetrieveVRPack.toString(),
-    );
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      '',
-      'None',
-    );
+    builder.message_schema_type(MessageSchemaType.VecFsRetrieveVRPack.toString());
+    builder.internal_metadata(sender_subidentity, receiver_subidentity, '', 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
@@ -1452,15 +1277,8 @@ export class ShinkaiMessageBuilderWrapper {
     );
 
     builder.message_raw_content(body);
-    builder.message_schema_type(
-      MessageSchemaType.APIModifyAgentRequest.toString(),
-    );
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      '',
-      'None',
-    );
+    builder.message_schema_type(MessageSchemaType.APIModifyAgentRequest.toString());
+    builder.internal_metadata(sender_subidentity, receiver_subidentity, '', 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
@@ -1484,15 +1302,8 @@ export class ShinkaiMessageBuilderWrapper {
     );
 
     builder.message_raw_content(agentId);
-    builder.message_schema_type(
-      MessageSchemaType.APIRemoveAgentRequest.toString(),
-    );
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      '',
-      'None',
-    );
+    builder.message_schema_type(MessageSchemaType.APIRemoveAgentRequest.toString());
+    builder.internal_metadata(sender_subidentity, receiver_subidentity, '', 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
@@ -1516,15 +1327,8 @@ export class ShinkaiMessageBuilderWrapper {
     );
 
     builder.message_raw_content('');
-    builder.message_schema_type(
-      MessageSchemaType.APIScanOllamaModels.toString(),
-    );
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      '',
-      'None',
-    );
+    builder.message_schema_type(MessageSchemaType.APIScanOllamaModels.toString());
+    builder.internal_metadata(sender_subidentity, receiver_subidentity, '', 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
@@ -1549,15 +1353,8 @@ export class ShinkaiMessageBuilderWrapper {
     );
 
     builder.message_raw_content(JSON.stringify(payload));
-    builder.message_schema_type(
-      MessageSchemaType.APIAddOllamaModels.toString(),
-    );
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      '',
-      'None',
-    );
+    builder.message_schema_type(MessageSchemaType.APIAddOllamaModels.toString());
+    builder.internal_metadata(sender_subidentity, receiver_subidentity, '', 'None');
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
 

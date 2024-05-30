@@ -37,9 +37,9 @@ const createVectorFsStore = () =>
     },
   }));
 
-const VectorFolderSelectionContext = createContext<ReturnType<
-  typeof createVectorFsStore
-> | null>(null);
+const VectorFolderSelectionContext = createContext<ReturnType<typeof createVectorFsStore> | null>(
+  null,
+);
 
 export const VectorFolderSelectionProvider = ({
   children,
@@ -83,22 +83,19 @@ export const FolderSelectionList = () => {
     (state) => state.setCurrentSelectedFolderPath,
   );
 
-  const { isPending: isVRFilesPending, data: VRFiles } = useGetVRPathSimplified(
-    {
-      nodeAddress: auth?.node_address ?? '',
-      profile: auth?.profile ?? '',
-      shinkaiIdentity: auth?.shinkai_identity ?? '',
-      path: currentSelectedFolderPath,
-      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-      my_device_identity_sk: auth?.profile_identity_sk ?? '',
-      node_encryption_pk: auth?.node_encryption_pk ?? '',
-      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-      profile_identity_sk: auth?.profile_identity_sk ?? '',
-    },
-  );
+  const { isPending: isVRFilesPending, data: VRFiles } = useGetVRPathSimplified({
+    nodeAddress: auth?.node_address ?? '',
+    profile: auth?.profile ?? '',
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    path: currentSelectedFolderPath,
+    my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+    my_device_identity_sk: auth?.profile_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+  });
 
-  const splitCurrentPath =
-    destinationFolderPath?.split('/').filter(Boolean) ?? [];
+  const splitCurrentPath = destinationFolderPath?.split('/').filter(Boolean) ?? [];
 
   return (
     <div className="space-y-2 py-6">
@@ -136,9 +133,7 @@ export const FolderSelectionList = () => {
                   <button
                     className="flex items-center gap-1 rounded-full bg-transparent p-2 hover:bg-gray-400"
                     onClick={() => {
-                      const buildPath = splitCurrentPath
-                        .slice(0, idx + 1)
-                        .join('/');
+                      const buildPath = splitCurrentPath.slice(0, idx + 1).join('/');
                       setCurrentSelectedFolderPath('/' + buildPath);
                       setDestinationFolderPath(buildPath);
                     }}
@@ -153,11 +148,7 @@ export const FolderSelectionList = () => {
         </BreadcrumbList>
       </Breadcrumb>
       <ScrollArea className="min-h-[300px]">
-        <div
-          className={cn(
-            'grid flex-1 grid-cols-1 divide-y divide-gray-300 py-1',
-          )}
-        >
+        <div className={cn('grid flex-1 grid-cols-1 divide-y divide-gray-300 py-1')}>
           {isVRFilesPending &&
             Array.from({ length: 4 }).map((_, idx) => (
               <div
@@ -165,7 +156,7 @@ export const FolderSelectionList = () => {
                 key={idx}
               />
             ))}
-          {VRFiles?.child_folders.map((folder, index: number) => {
+          {VRFiles?.child_folders.map((folder) => {
             return (
               <button
                 className={cn(

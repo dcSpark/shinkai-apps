@@ -1,8 +1,5 @@
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import {
-  TreePassThroughMethodOptions,
-  TreePassThroughOptions,
-} from 'primereact/tree';
+import { TreePassThroughMethodOptions, TreePassThroughOptions } from 'primereact/tree';
 
 export const allowedFileExtensions = [
   '.eml',

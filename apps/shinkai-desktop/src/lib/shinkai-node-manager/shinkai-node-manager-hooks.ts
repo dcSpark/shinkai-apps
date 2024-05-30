@@ -6,16 +6,16 @@ import {
   ShinkaiNodeManagerEventMap,
 } from './shinkai-node-manager-client-types';
 import {
-  ollamaStartedToast,
   ollamaStartErrorToast,
+  ollamaStartedToast,
   ollamaStopErrorToast,
   ollamaStoppedToast,
   pullingModelDoneToast,
   pullingModelErrorToast,
   pullingModelProgressToast,
   pullingModelStartToast,
-  shinkaiNodeStartedToast,
   shinkaiNodeStartErrorToast,
+  shinkaiNodeStartedToast,
   shinkaiNodeStopErrorToast,
   shinkaiNodeStoppedToast,
   startingOllamaToast,
@@ -43,21 +43,17 @@ const useTauriEvent = <T>(eventName: string, callback: EventCallback<T>) => {
   }, [eventName, callback]);
 };
 
-export const useShinkaiNodeStateChange = (
-  callback: EventCallback<ShinkaiNodeManagerEventMap>,
-) => {
-  return useTauriEvent<ShinkaiNodeManagerEventMap>(
-    'shinkai-node-state-change',
-    callback,
-  );
+export const useShinkaiNodeStateChange = (callback: EventCallback<ShinkaiNodeManagerEventMap>) => {
+  return useTauriEvent<ShinkaiNodeManagerEventMap>('shinkai-node-state-change', callback);
 };
 
 export const mapEvent = (event: object | string): ShinkaiNodeManagerEventMap => {
-  if (
-    typeof event === 'object'
-  ) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return { type: Object.keys(event)[0] as ShinkaiNodeManagerEvent, payload: Object.values(event)[0] } as any;
+  if (typeof event === 'object') {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return {
+      type: Object.keys(event)[0] as ShinkaiNodeManagerEvent,
+      payload: Object.values(event)[0],
+    } as any;
   } else {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return { type: event as ShinkaiNodeManagerEvent } as any;
@@ -112,7 +108,10 @@ export const useShinkaiNodeEventsToast = () => {
         pullingModelStartToast(shinkaiNodeEvent.payload.model);
         break;
       case ShinkaiNodeManagerEvent.PullingModelProgress:
-        pullingModelProgressToast(shinkaiNodeEvent.payload.model, shinkaiNodeEvent.payload.progress);
+        pullingModelProgressToast(
+          shinkaiNodeEvent.payload.model,
+          shinkaiNodeEvent.payload.progress,
+        );
         break;
       case ShinkaiNodeManagerEvent.PullingModelDone:
         pullingModelDoneToast(shinkaiNodeEvent.payload.model);

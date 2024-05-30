@@ -73,9 +73,7 @@ test('ShinkaiNameWrapper from_shinkai_message_sender', () => {
       "version": "V1_0"
     }`;
     const message = JSON.parse(encryptedMessage);
-    expect(
-      ShinkaiNameWrapper.from_shinkai_message_sender(message),
-    ).toThrowError();
+    expect(ShinkaiNameWrapper.from_shinkai_message_sender(message)).toThrowError();
   });
 
   it('should parse node_name, full_name, subidentity_name and subidentity_type when message is unepcrypted', () => {
@@ -108,15 +106,10 @@ test('ShinkaiNameWrapper from_shinkai_message_sender', () => {
       "version": "V1_0"
     }`;
     const message = JSON.parse(messageJson);
-    const messageNameWrapper =
-      ShinkaiNameWrapper.from_shinkai_message_sender(message);
+    const messageNameWrapper = ShinkaiNameWrapper.from_shinkai_message_sender(message);
     expect(messageNameWrapper.get_node_name).toBe('@@node1.shinkai');
-    expect(messageNameWrapper.get_full_name).toBe(
-      '@@node1.shinkai/main/device/main_device',
-    );
-    expect(messageNameWrapper.get_subidentity_name).toBe(
-      'main/device/main_device',
-    );
+    expect(messageNameWrapper.get_full_name).toBe('@@node1.shinkai/main/device/main_device');
+    expect(messageNameWrapper.get_subidentity_name).toBe('main/device/main_device');
     expect(messageNameWrapper.get_subidentity_type).toBe('device');
   });
 });

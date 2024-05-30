@@ -48,17 +48,14 @@ import {
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const auth = useAuth((state) => state.auth);
-  const shinkaiNodeOptions = useShinkaiNodeManager(
-    (state) => state.shinkaiNodeOptions,
-  );
+  const shinkaiNodeOptions = useShinkaiNodeManager((state) => state.shinkaiNodeOptions);
   useShinkaiNodeEventsToast();
   const isInUse = useShinkaiNodeManager((state) => state.isInUse);
   const autoStartShinkaiNodeTried = useRef<boolean>(false);
   const { data: shinkaiNodeIsRunning } = useShinkaiNodeIsRunningQuery({
     refetchInterval: 1000,
   });
-  const { mutateAsync: shinkaiNodeSetOptions } =
-    useShinkaiNodeSetOptionsMutation();
+  const { mutateAsync: shinkaiNodeSetOptions } = useShinkaiNodeSetOptionsMutation();
   const { mutateAsync: shinkaiNodeSpawn } = useShinkaiNodeSpawnMutation({});
 
   /*
@@ -66,11 +63,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     Node auto start process probably should be in rust side
   */
   useEffect(() => {
-    if (
-      !autoStartShinkaiNodeTried.current &&
-      isInUse &&
-      !shinkaiNodeIsRunning
-    ) {
+    if (!autoStartShinkaiNodeTried.current && isInUse && !shinkaiNodeIsRunning) {
       autoStartShinkaiNodeTried.current = true;
       Promise.resolve().then(async () => {
         if (shinkaiNodeOptions) {
@@ -100,21 +93,12 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route element={<MainLayout />}>
-        <Route
-          element={<UnavailableShinkaiNode />}
-          path={'/unavailable-shinkai-node'}
-        />
+        <Route element={<UnavailableShinkaiNode />} path={'/unavailable-shinkai-node'} />
         <Route element={<TermsAndConditionsPage />} path={'/welcome'} />
         <Route element={<GetStartedPage />} path={'/get-started'} />
         <Route element={<ShinkaiPrivatePage />} path={'/connect-ai'} />
-        <Route
-          element={<FreeSubscriptionsPage />}
-          path={'/free-subscriptions'}
-        />
-        <Route
-          element={<AIModelInstallation />}
-          path={'/ai-model-installation'}
-        />
+        <Route element={<FreeSubscriptionsPage />} path={'/free-subscriptions'} />
+        <Route element={<AIModelInstallation />} path={'/ai-model-installation'} />
         <Route element={<OnboardingPage />} path={ONBOARDING_PATH} />
         <Route element={<RestoreConnectionPage />} path={'/restore'} />
         <Route element={<ConnectMethodQrCodePage />} path={'/connect-qr'} />
@@ -159,10 +143,7 @@ const AppRoutes = () => {
           }
         >
           <Route element={<MySubscriptions />} path="my-subscriptions" />
-          <Route
-            element={<PublicSharedFolderSubscription />}
-            path="public-subscriptions"
-          />
+          <Route element={<PublicSharedFolderSubscription />} path="public-subscriptions" />
         </Route>
         <Route
           element={

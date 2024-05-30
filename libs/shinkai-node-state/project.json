@@ -6,10 +6,9 @@
   "tags": [],
   "targets": {
     "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
+      "executor": "nx:run-commands",
       "options": {
-        "lintFilePatterns": ["libs/shinkai-node-state/**/*.{ts,tsx,js,jsx}"]
+        "command": "npx biome check --apply {projectRoot}"
       }
     },
     "build": {

@@ -1,18 +1,15 @@
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { VRFolder } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import {
-  buttonVariants,
   Checkbox,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  buttonVariants,
 } from '@shinkai_network/shinkai-ui';
-import {
-  DirectoryTypeIcon,
-  SharedFolderIcon,
-} from '@shinkai_network/shinkai-ui/assets';
+import { DirectoryTypeIcon, SharedFolderIcon } from '@shinkai_network/shinkai-ui/assets';
 import { formatDateToUSLocaleString } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
@@ -25,7 +22,7 @@ import {
 } from 'lucide-react';
 import React from 'react';
 
-import { useVectorFsStore, VectorFSLayout } from './node-file-context';
+import { VectorFSLayout, useVectorFsStore } from './node-file-context';
 import { VectorFsFolderAction } from './vector-fs-drawer';
 
 export const VectorFsFolderInfo = ({
@@ -65,23 +62,16 @@ const VectorFsFolder = ({
   isSelectedFolder: boolean;
   isSharedFolder?: boolean;
 }) => {
-  const setActiveDrawerMenuOption = useVectorFsStore(
-    (state) => state.setActiveDrawerMenuOption,
-  );
-  const setSelectedFolder = useVectorFsStore(
-    (state) => state.setSelectedFolder,
-  );
+  const setActiveDrawerMenuOption = useVectorFsStore((state) => state.setActiveDrawerMenuOption);
+  const setSelectedFolder = useVectorFsStore((state) => state.setSelectedFolder);
 
   const layout = useVectorFsStore((state) => state.layout);
-  const isVRSelectionActive = useVectorFsStore(
-    (state) => state.isVRSelectionActive,
-  );
+  const isVRSelectionActive = useVectorFsStore((state) => state.isVRSelectionActive);
   const wrapperClassName = cn(
     'flex items-center justify-between gap-2 truncate rounded-lg py-3.5 pr-2 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400',
     layout === VectorFSLayout.Grid && 'bg-gray-400/30 p-2',
   );
-  const totalItem =
-    (folder.child_folders?.length ?? 0) + (folder.child_items?.length ?? 0);
+  const totalItem = (folder.child_folders?.length ?? 0) + (folder.child_items?.length ?? 0);
 
   const FolderIcon = isSharedFolder ? SharedFolderIcon : DirectoryTypeIcon;
 
@@ -95,16 +85,9 @@ const VectorFsFolder = ({
             handleSelectFolders(folder);
           }}
         />
-        <label
-          className="flex flex-1 items-center gap-3"
-          htmlFor={`item-${folder.name}`}
-        >
+        <label className="flex flex-1 items-center gap-3" htmlFor={`item-${folder.name}`}>
           <FolderIcon />
-          <VectorFsFolderInfo
-            folder={folder}
-            layout={layout}
-            totalItem={totalItem}
-          />
+          <VectorFsFolderInfo folder={folder} layout={layout} totalItem={totalItem} />
         </label>
       </div>
     );
@@ -113,11 +96,7 @@ const VectorFsFolder = ({
   return (
     <button className={wrapperClassName} onClick={onClick}>
       <FolderIcon />
-      <VectorFsFolderInfo
-        folder={folder}
-        layout={layout}
-        totalItem={totalItem}
-      />
+      <VectorFsFolderInfo folder={folder} layout={layout} totalItem={totalItem} />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <div
@@ -138,10 +117,7 @@ const VectorFsFolder = ({
             <DotsVerticalIcon className="text-gray-100" />
           </div>
         </DropdownMenuTrigger>
-        <DropdownMenuContent
-          align="end"
-          className="min-w-[160px] border bg-gray-500 px-2.5 py-2"
-        >
+        <DropdownMenuContent align="end" className="min-w-[160px] border bg-gray-500 px-2.5 py-2">
           {[
             {
               name: 'Move',

@@ -35,8 +35,7 @@ const MySubscriptions = () => {
         ))}
       {isSuccess && !subscriptions.length && (
         <p className="text-gray-80 text-left">
-          You have no subscriptions. You can subscribe to shared folders from
-          other nodes.
+          You have no subscriptions. You can subscribe to shared folders from other nodes.
         </p>
       )}
       {isSuccess && !!subscriptions.length && (
@@ -46,7 +45,6 @@ const MySubscriptions = () => {
               folderName={subscription.shared_folder.replace(/\//g, '')}
               folderPath={subscription.shared_folder}
               key={subscription.subscription_id.unique_id}
-              nodeName={subscription.subscriber_node}
               streamerNodeName={subscription.streaming_node}
               streamerNodeProfile={subscription.streaming_profile}
             />
@@ -62,12 +60,10 @@ export default MySubscriptions;
 const SubscribedSharedFolder = ({
   folderName,
   folderPath,
-  nodeName,
   streamerNodeName,
   streamerNodeProfile,
 }: {
   folderName: string;
-  nodeName: string;
   folderPath: string;
   streamerNodeName: string;
   streamerNodeProfile: string;

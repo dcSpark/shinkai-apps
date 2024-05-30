@@ -50,23 +50,47 @@ export interface OllamaStopErrorEvent {
   error: string;
 }
 
-export type ShinkaiNodeManagerEventMap = 
-  | { type: ShinkaiNodeManagerEvent.StartingShinkaiNode, payload: never }
-  | { type: ShinkaiNodeManagerEvent.ShinkaiNodeStarted, payload: never }
-  | { type: ShinkaiNodeManagerEvent.ShinkaiNodeStartError, payload: ShinkaiNodeStartErrorEvent }
-  | { type: ShinkaiNodeManagerEvent.StartingOllama, payload: never }
-  | { type: ShinkaiNodeManagerEvent.OllamaStarted, payload: never }
-  | { type: ShinkaiNodeManagerEvent.OllamaStartError, payload: OllamaStartErrorEvent }
-  | { type: ShinkaiNodeManagerEvent.PullingModelStart, payload: PullingModelStartEvent }
-  | { type: ShinkaiNodeManagerEvent.PullingModelProgress, payload: PullingModelProgressEvent }
-  | { type: ShinkaiNodeManagerEvent.PullingModelDone, payload: PullingModelDoneEvent }
-  | { type: ShinkaiNodeManagerEvent.PullingModelError, payload: PullingModelErrorEvent }
-  | { type: ShinkaiNodeManagerEvent.StoppingShinkaiNode, payload: never }
-  | { type: ShinkaiNodeManagerEvent.ShinkaiNodeStopped, payload: never }
-  | { type: ShinkaiNodeManagerEvent.ShinkaiNodeStopError, payload: ShinkaiNodeStopErrorEvent }
-  | { type: ShinkaiNodeManagerEvent.StoppingOllama, payload: never }
-  | { type: ShinkaiNodeManagerEvent.OllamaStopped, payload: never }
-  | { type: ShinkaiNodeManagerEvent.OllamaStopError, payload: OllamaStopErrorEvent }
+export type ShinkaiNodeManagerEventMap =
+  | { type: ShinkaiNodeManagerEvent.StartingShinkaiNode; payload: never }
+  | { type: ShinkaiNodeManagerEvent.ShinkaiNodeStarted; payload: never }
+  | {
+      type: ShinkaiNodeManagerEvent.ShinkaiNodeStartError;
+      payload: ShinkaiNodeStartErrorEvent;
+    }
+  | { type: ShinkaiNodeManagerEvent.StartingOllama; payload: never }
+  | { type: ShinkaiNodeManagerEvent.OllamaStarted; payload: never }
+  | {
+      type: ShinkaiNodeManagerEvent.OllamaStartError;
+      payload: OllamaStartErrorEvent;
+    }
+  | {
+      type: ShinkaiNodeManagerEvent.PullingModelStart;
+      payload: PullingModelStartEvent;
+    }
+  | {
+      type: ShinkaiNodeManagerEvent.PullingModelProgress;
+      payload: PullingModelProgressEvent;
+    }
+  | {
+      type: ShinkaiNodeManagerEvent.PullingModelDone;
+      payload: PullingModelDoneEvent;
+    }
+  | {
+      type: ShinkaiNodeManagerEvent.PullingModelError;
+      payload: PullingModelErrorEvent;
+    }
+  | { type: ShinkaiNodeManagerEvent.StoppingShinkaiNode; payload: never }
+  | { type: ShinkaiNodeManagerEvent.ShinkaiNodeStopped; payload: never }
+  | {
+      type: ShinkaiNodeManagerEvent.ShinkaiNodeStopError;
+      payload: ShinkaiNodeStopErrorEvent;
+    }
+  | { type: ShinkaiNodeManagerEvent.StoppingOllama; payload: never }
+  | { type: ShinkaiNodeManagerEvent.OllamaStopped; payload: never }
+  | {
+      type: ShinkaiNodeManagerEvent.OllamaStopError;
+      payload: OllamaStopErrorEvent;
+    };
 
 export type ShinkaiNodeOptions = {
   port?: number;

@@ -123,41 +123,25 @@ describe('shinkai_messag_handler isLocalMessage', () => {
   };
   it('false when message was sent by agent', () => {
     const message = JSON.parse(messageSentByNode1AgentGpt);
-    const isLocal = isLocalMessage(
-      message,
-      myNodeSetup.myNodeIdentity,
-      myNodeSetup.myProfile,
-    );
+    const isLocal = isLocalMessage(message, myNodeSetup.myNodeIdentity, myNodeSetup.myProfile);
     expect(isLocal).toBe(false);
   });
 
   it('false when message was sent by a different node', () => {
     const message = JSON.parse(messageSentByNode2MainDevice);
-    const isLocal = isLocalMessage(
-      message,
-      myNodeSetup.myNodeIdentity,
-      myNodeSetup.myProfile,
-    );
+    const isLocal = isLocalMessage(message, myNodeSetup.myNodeIdentity, myNodeSetup.myProfile);
     expect(isLocal).toBe(false);
   });
 
   it('true when message was sent by same node', () => {
     const message = JSON.parse(messageSentByNode1MainDevice);
-    const isLocal = isLocalMessage(
-      message,
-      myNodeSetup.myNodeIdentity,
-      myNodeSetup.myProfile,
-    );
+    const isLocal = isLocalMessage(message, myNodeSetup.myNodeIdentity, myNodeSetup.myProfile);
     expect(isLocal).toBe(true);
   });
 
   it('true when message was sent by same node but different device', () => {
     const message = JSON.parse(messageSentByNode1SecondaryDevice);
-    const isLocal = isLocalMessage(
-      message,
-      myNodeSetup.myNodeIdentity,
-      myNodeSetup.myProfile,
-    );
+    const isLocal = isLocalMessage(message, myNodeSetup.myNodeIdentity, myNodeSetup.myProfile);
     expect(isLocal).toBe(true);
   });
 });

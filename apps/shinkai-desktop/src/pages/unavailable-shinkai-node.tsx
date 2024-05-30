@@ -26,19 +26,14 @@ const UnavailableShinkaiNodePage = () => {
     <OnboardingLayout>
       <div className="flex h-full flex-col justify-between">
         <p className="text-4xl font-semibold leading-[1.5] tracking-wide">
-          Your Shinkai Node is unavailable{' '}
-          <span aria-hidden> 🔕</span>
+          Your Shinkai Node is unavailable <span aria-hidden> 🔕</span>
         </p>
         <div className="">
           <div className="flex flex-col gap-10">
             <div className="flex flex-col space-y-3">
-              <Button variant={'default'}>
-                Start it locally
-              </Button>
+              <Button variant={'default'}>Start it locally</Button>
 
-              <Button variant={'default'}>
-                Disconnect
-              </Button>
+              <Button variant={'default'}>Disconnect</Button>
             </div>
           </div>
         </div>

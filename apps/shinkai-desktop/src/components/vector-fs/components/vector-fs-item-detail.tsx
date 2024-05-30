@@ -1,17 +1,11 @@
 import { useDownloadVRFile } from '@shinkai_network/shinkai-node-state/lib/mutations/downloadVRFile/useDownloadVRFile';
-import {
-  Badge,
-  Button,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from '@shinkai_network/shinkai-ui';
+import { Badge, Button, SheetFooter, SheetHeader, SheetTitle } from '@shinkai_network/shinkai-ui';
 import { FileTypeIcon } from '@shinkai_network/shinkai-ui/assets';
 import {
   formatDateToLocaleStringWithTime,
   formatDateToUSLocaleString,
 } from '@shinkai_network/shinkai-ui/helpers';
-import { dialog, fs } from '@tauri-apps/api';
+import { fs, dialog } from '@tauri-apps/api';
 import { BaseDirectory } from '@tauri-apps/api/fs';
 import { partial } from 'filesize';
 import { LockIcon } from 'lucide-react';
@@ -42,9 +36,7 @@ export const VectorFileDetails = () => {
       await fs.writeBinaryFile(
         {
           path,
-          contents: await fetch(dataUrl).then((response) =>
-            response.arrayBuffer(),
-          ),
+          contents: await fetch(dataUrl).then((response) => response.arrayBuffer()),
         },
         {
           dir: BaseDirectory.Download,
@@ -64,30 +56,26 @@ export const VectorFileDetails = () => {
             <FileTypeIcon
               className="h-10 w-10"
               type={
-                selectedFile?.vr_header?.resource_source?.Standard?.FileRef
-                  ?.file_type?.Document
+                selectedFile?.vr_header?.resource_source?.Standard?.FileRef?.file_type?.Document
               }
             />
           </div>
           <p className="text-lg font-medium text-white">
             {selectedFile?.name}
             <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
-              {selectedFile?.vr_header?.resource_source?.Standard?.FileRef
-                ?.file_type?.Document ?? '-'}
+              {selectedFile?.vr_header?.resource_source?.Standard?.FileRef?.file_type?.Document ??
+                '-'}
             </Badge>
           </p>
           <p className="text-gray-100">
             <span className="text-sm">
               {formatDateToUSLocaleString(selectedFile?.created_datetime)}
             </span>{' '}
-            -{' '}
-            <span className="text-sm">{size(selectedFile?.vr_size ?? 0)}</span>
+            - <span className="text-sm">{size(selectedFile?.vr_size ?? 0)}</span>
           </p>
         </div>
         <div className="py-6">
-          <h2 className="mb-3 text-left text-lg font-medium  text-white">
-            Information
-          </h2>
+          <h2 className="mb-3 text-left text-lg font-medium  text-white">Information</h2>
           <div className="divide-y divide-gray-300">
             {[
               { label: 'Created', value: selectedFile?.created_datetime },
@@ -100,10 +88,7 @@ export const VectorFileDetails = () => {
                 value: selectedFile?.last_read_datetime,
               },
             ].map((item) => (
-              <div
-                className="flex items-center justify-between py-2 font-medium"
-                key={item.label}
-              >
+              <div className="flex items-center justify-between py-2 font-medium" key={item.label}>
                 <span className="text-sm text-gray-100">{item.label}</span>
                 <span className="text-sm text-white">
                   {formatDateToLocaleStringWithTime(item.value)}

@@ -103,9 +103,7 @@ const SearchNodeFiles = () => {
           stiffness: 100,
         }}
       >
-        <h1 className="text-center text-2xl font-semibold text-white">
-          AI Files Content Search
-        </h1>
+        <h1 className="text-center text-2xl font-semibold text-white">AI Files Content Search</h1>
         <p className="text-gray-80 mx-auto text-center text-sm">
           Search to find content across all files in your AI Files easily
         </p>
@@ -173,12 +171,8 @@ const SearchNodeFiles = () => {
       {isSearchEntered && isSuccess && (
         <ScrollArea className="pr-4 [&>div>div]:!block">
           <div className="flex items-center">
-            <h2 className="p-2 text-base font-medium text-gray-50">
-              Found {data?.length} results
-            </h2>
-            {!(
-              destinationFolderPath == null || destinationFolderPath === '/'
-            ) && (
+            <h2 className="p-2 text-base font-medium text-gray-50">Found {data?.length} results</h2>
+            {!(destinationFolderPath == null || destinationFolderPath === '/') && (
               <Button
                 className="underline"
                 onClick={() => {
@@ -203,9 +197,7 @@ const SearchNodeFiles = () => {
                       className={'underline'}
                       to={{
                         pathname: '/node-files',
-                        search: `?path=${encodeURIComponent(
-                          pathList.join('/'),
-                        )}`,
+                        search: `?path=${encodeURIComponent(pathList.join('/'))}`,
                       }}
                     >
                       {pathList.join('/')}

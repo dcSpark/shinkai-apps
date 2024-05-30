@@ -10,7 +10,6 @@ import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAg
 import {
   Badge,
   Button,
-  buttonVariants,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -24,6 +23,7 @@ import {
   SheetHeader,
   SheetTitle,
   TextField,
+  buttonVariants,
 } from '@shinkai_network/shinkai-ui';
 import { ScrollArea } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
@@ -52,9 +52,7 @@ const AgentsPage = () => {
     profile_encryption_sk: auth?.profile_encryption_sk ?? '',
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
-  const isLocalShinkaiNodeIsUse = useShinkaiNodeManager(
-    (state) => state.isInUse,
-  );
+  const isLocalShinkaiNodeIsUse = useShinkaiNodeManager((state) => state.isInUse);
   const onAddAgentClick = () => {
     if (isLocalShinkaiNodeIsUse) {
       navigate('/agents-locally');
@@ -65,11 +63,7 @@ const AgentsPage = () => {
   return (
     <SimpleLayout classname="relative" title="AIs">
       <div className="absolute right-3 top-[36px]">
-        <Button
-          className="h-[40px] gap-2"
-          onClick={onAddAgentClick}
-          size="auto"
-        >
+        <Button className="h-[40px] gap-2" onClick={onAddAgentClick} size="auto">
           <Plus className="h-4 w-4" />
           <span>Create AI</span>
         </Button>
@@ -83,8 +77,7 @@ const AgentsPage = () => {
               </span>
               <p className="text-2xl font-semibold">No available agents</p>
               <p className="text-center text-sm font-medium text-gray-100">
-                Connect your first agent to start asking Shinkai AI. Try
-                connecting OpenAI
+                Connect your first agent to start asking Shinkai AI. Try connecting OpenAI
               </p>
             </div>
 
@@ -123,10 +116,8 @@ function AgentCard({
   externalUrl: string;
   agentApiKey: string;
 }) {
-  const [isDeleteAgentDrawerOpen, setIsDeleteAgentDrawerOpen] =
-    React.useState(false);
-  const [isEditAgentDrawerOpen, setIsEditAgentDrawerOpen] =
-    React.useState(false);
+  const [isDeleteAgentDrawerOpen, setIsDeleteAgentDrawerOpen] = React.useState(false);
+  const [isEditAgentDrawerOpen, setIsEditAgentDrawerOpen] = React.useState(false);
 
   const navigate = useNavigate();
 
@@ -145,9 +136,7 @@ function AgentCard({
             <BotIcon className="h-6 w-6" />
           </div>
           <div className="flex flex-col items-baseline gap-2">
-            <span className="w-full truncate text-start text-sm">
-              {agentId}
-            </span>
+            <span className="w-full truncate text-start text-sm">{agentId}</span>
             <Badge className="text-gray-80 truncate bg-gray-400 text-start text-xs font-normal shadow-none">
               {model}
             </Badge>
@@ -173,10 +162,7 @@ function AgentCard({
               <DotsVerticalIcon className="text-gray-100" />
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="end"
-            className="w-[160px] border bg-gray-500 px-2.5 py-2"
-          >
+          <DropdownMenuContent align="end" className="w-[160px] border bg-gray-500 px-2.5 py-2">
             {[
               {
                 name: 'Edit',
@@ -194,9 +180,7 @@ function AgentCard({
               },
             ].map((option) => (
               <React.Fragment key={option.name}>
-                {option.name === 'Delete' && (
-                  <DropdownMenuSeparator className="bg-gray-300" />
-                )}
+                {option.name === 'Delete' && <DropdownMenuSeparator className="bg-gray-300" />}
                 <DropdownMenuItem
                   key={option.name}
                   onClick={(event) => {
@@ -261,13 +245,7 @@ const EditAgentDrawer = ({
       modelCustom: agentModelProvider,
       modelTypeCustom: agentModelType,
     });
-  }, [
-    agentId,
-    agentModelProvider,
-    agentModelType,
-    agentExternalUrl,
-    agentApiKey,
-  ]);
+  }, [agentId, agentModelProvider, agentModelType, agentExternalUrl, agentApiKey]);
 
   const { mutateAsync: updateAgent, isPending } = useUpdateAgent({
     onSuccess: () => {
@@ -326,48 +304,33 @@ const EditAgentDrawer = ({
                 control={form.control}
                 disabled
                 name="agentName"
-                render={({ field }) => (
-                  <TextField field={field} label="AI Name" />
-                )}
+                render={({ field }) => <TextField field={field} label="AI Name" />}
               />
 
               <FormField
                 control={form.control}
                 name="externalUrl"
-                render={({ field }) => (
-                  <TextField field={field} label="External URL" />
-                )}
+                render={({ field }) => <TextField field={field} label="External URL" />}
               />
 
               <FormField
                 control={form.control}
                 name="apikey"
-                render={({ field }) => (
-                  <TextField field={field} label="API Key" />
-                )}
+                render={({ field }) => <TextField field={field} label="API Key" />}
               />
 
               <FormField
                 control={form.control}
                 name="modelCustom"
-                render={({ field }) => (
-                  <TextField field={field} label={'Model Name'} />
-                )}
+                render={({ field }) => <TextField field={field} label={'Model Name'} />}
               />
               <FormField
                 control={form.control}
                 name="modelTypeCustom"
-                render={({ field }) => (
-                  <TextField field={field} label={'Model ID'} />
-                )}
+                render={({ field }) => <TextField field={field} label={'Model ID'} />}
               />
             </div>
-            <Button
-              className="w-full"
-              disabled={isPending}
-              isLoading={isPending}
-              type="submit"
-            >
+            <Button className="w-full" disabled={isPending} isLoading={isPending} type="submit">
               Save
             </Button>
           </form>
@@ -408,8 +371,7 @@ const RemoveAgentDrawer = ({
           </SheetTitle>
         </SheetHeader>
         <p className="text-gray-80 my-3 text-base">
-          Are you sure you want to delete this agent? This action cannot be
-          undone.
+          Are you sure you want to delete this agent? This action cannot be undone.
         </p>
         <SheetFooter>
           <Button

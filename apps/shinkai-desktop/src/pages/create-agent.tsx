@@ -1,16 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AgentAPIModel } from '@shinkai_network/shinkai-message-ts/models';
 import {
-  addAgentFormDefault,
   AddAgentFormSchema,
+  addAgentFormDefault,
   addAgentSchema,
 } from '@shinkai_network/shinkai-node-state/forms/agents/add-agent';
 import { useCreateAgent } from '@shinkai_network/shinkai-node-state/lib/mutations/createAgent/useCreateAgent';
 import { useScanOllamaModels } from '@shinkai_network/shinkai-node-state/lib/queries/scanOllamaModels/useScanOllamaModels';
-import {
-  Models,
-  modelsConfig,
-} from '@shinkai_network/shinkai-node-state/lib/utils/models';
+import { Models, modelsConfig } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import {
   Button,
   ErrorMessage,
@@ -53,10 +50,7 @@ const modelOptions: { value: Models; label: string }[] = [
   },
 ];
 
-export const getModelObject = (
-  model: Models | string,
-  modelType: string,
-): AgentAPIModel => {
+export const getModelObject = (model: Models | string, modelType: string): AgentAPIModel => {
   switch (model) {
     case Models.OpenAI:
       return { OpenAI: { model_type: modelType } };
@@ -136,9 +130,7 @@ const CreateAgentPage = () => {
     }
   }, [isOllamaModelsError, ollamaModelsError?.message]);
 
-  const [modelTypeOptions, setModelTypeOptions] = useState<
-    { label: string; value: string }[]
-  >([]);
+  const [modelTypeOptions, setModelTypeOptions] = useState<{ label: string; value: string }[]>([]);
   useEffect(() => {
     if (isCustomModelMode) {
       addAgentForm.setValue('externalUrl', '');
@@ -173,10 +165,7 @@ const CreateAgentPage = () => {
     if (!modelTypeOptions?.length) {
       return;
     }
-    addAgentForm.setValue(
-      'agentName',
-      currentModelType.replace(/[^a-zA-Z0-9_]/g, '_'),
-    );
+    addAgentForm.setValue('agentName', currentModelType.replace(/[^a-zA-Z0-9_]/g, '_'));
   }, [addAgentForm, currentModelType, modelTypeOptions?.length]);
 
   const onSubmit = async (data: AddAgentFormSchema) => {
@@ -213,10 +202,7 @@ const CreateAgentPage = () => {
   return (
     <SubpageLayout title="Create AI">
       <Form {...addAgentForm}>
-        <form
-          className="space-y-10"
-          onSubmit={addAgentForm.handleSubmit(onSubmit)}
-        >
+        <form className="space-y-10" onSubmit={addAgentForm.handleSubmit(onSubmit)}>
           <div className="space-y-6">
             <FormField
               control={addAgentForm.control}
@@ -248,10 +234,7 @@ const CreateAgentPage = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Select your Model</FormLabel>
-                    <Select
-                      defaultValue={field.value}
-                      onValueChange={field.onChange}
-                    >
+                    <Select defaultValue={field.value} onValueChange={field.onChange}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder={' '} />
@@ -259,10 +242,7 @@ const CreateAgentPage = () => {
                       </FormControl>
                       <SelectContent>
                         {modelOptions.map((model) => (
-                          <SelectItem
-                            key={model.value}
-                            value={model.value.toString()}
-                          >
+                          <SelectItem key={model.value} value={model.value.toString()}>
                             {model.label}
                           </SelectItem>
                         ))}
@@ -292,10 +272,7 @@ const CreateAgentPage = () => {
                       </FormControl>
                       <SelectContent className="max-h-[150px] overflow-y-auto text-xs">
                         {modelTypeOptions.map((modelType) => (
-                          <SelectItem
-                            key={modelType.value}
-                            value={modelType.value}
-                          >
+                          <SelectItem key={modelType.value} value={modelType.value}>
                             {modelType.label}
                           </SelectItem>
                         ))}
@@ -311,16 +288,12 @@ const CreateAgentPage = () => {
                 <FormField
                   control={addAgentForm.control}
                   name="modelCustom"
-                  render={({ field }) => (
-                    <TextField field={field} label={'Model Name'} />
-                  )}
+                  render={({ field }) => <TextField field={field} label={'Model Name'} />}
                 />
                 <FormField
                   control={addAgentForm.control}
                   name="modelTypeCustom"
-                  render={({ field }) => (
-                    <TextField field={field} label={'Model ID'} />
-                  )}
+                  render={({ field }) => <TextField field={field} label={'Model ID'} />}
                 />
               </>
             )}
@@ -328,34 +301,23 @@ const CreateAgentPage = () => {
             <FormField
               control={addAgentForm.control}
               name="agentName"
-              render={({ field }) => (
-                <TextField autoFocus field={field} label="AI Name" />
-              )}
+              render={({ field }) => <TextField autoFocus field={field} label="AI Name" />}
             />
             <FormField
               control={addAgentForm.control}
               name="externalUrl"
-              render={({ field }) => (
-                <TextField field={field} label="External URL" />
-              )}
+              render={({ field }) => <TextField field={field} label="External URL" />}
             />
             <FormField
               control={addAgentForm.control}
               name="apikey"
-              render={({ field }) => (
-                <TextField field={field} label="Api Key" />
-              )}
+              render={({ field }) => <TextField field={field} label="Api Key" />}
             />
           </div>
 
           {isError && <ErrorMessage message={error.message} />}
 
-          <Button
-            className="w-full"
-            disabled={isPending}
-            isLoading={isPending}
-            type="submit"
-          >
+          <Button className="w-full" disabled={isPending} isLoading={isPending} type="submit">
             Create AI
           </Button>
         </form>

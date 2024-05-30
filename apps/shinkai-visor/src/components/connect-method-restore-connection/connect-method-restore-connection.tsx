@@ -75,12 +75,8 @@ export const ConnectMethodRestoreConnection = () => {
   return (
     <div className="flex h-full flex-col space-y-3">
       <Header
-        description={
-          <FormattedMessage id="restore-connection-connection-method-description" />
-        }
-        title={
-          <FormattedMessage id="restore-connection-connection-method-title" />
-        }
+        description={<FormattedMessage id="restore-connection-connection-method-description" />}
+        title={<FormattedMessage id="restore-connection-connection-method-title" />}
       />
 
       <Form {...form}>

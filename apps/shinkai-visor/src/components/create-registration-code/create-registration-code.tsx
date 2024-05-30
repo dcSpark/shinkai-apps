@@ -58,34 +58,31 @@ export const CreateRegistrationCode = () => {
     name: 'identityType',
     control: form.control,
   });
-  const [generatedSetupData, setGeneratedSetupData] = useState<
-    QRSetupData | undefined
-  >();
+  const [generatedSetupData, setGeneratedSetupData] = useState<QRSetupData | undefined>();
   const [qrCodeModalOpen, setQrCodeModalOpen] = useState(false);
 
-  const { mutateAsync: createRegistrationCode, isPending } =
-    useCreateRegistrationCode({
-      onSuccess: (registrationCode) => {
-        const formValues = form.getValues();
-        setGeneratedSetupData({
-          registration_code: registrationCode,
-          profile: formValues.profile,
-          identity_type: formValues.identityType,
-          permission_type: formValues.permissionType,
-          node_address: auth?.node_address ?? '',
-          shinkai_identity: auth?.shinkai_identity ?? '',
-          node_encryption_pk: auth?.node_encryption_pk ?? '',
-          node_signature_pk: auth?.node_signature_pk ?? '',
-          ...(formValues.identityType === IdentityType.Device && {
-            profile_encryption_sk: auth?.profile_encryption_sk,
-            profile_encryption_pk: auth?.profile_encryption_pk,
-            profile_identity_sk: auth?.profile_identity_sk,
-            profile_identity_pk: auth?.profile_identity_pk,
-          }),
-        } as QRSetupData);
-        setQrCodeModalOpen(true);
-      },
-    });
+  const { mutateAsync: createRegistrationCode, isPending } = useCreateRegistrationCode({
+    onSuccess: (registrationCode) => {
+      const formValues = form.getValues();
+      setGeneratedSetupData({
+        registration_code: registrationCode,
+        profile: formValues.profile,
+        identity_type: formValues.identityType,
+        permission_type: formValues.permissionType,
+        node_address: auth?.node_address ?? '',
+        shinkai_identity: auth?.shinkai_identity ?? '',
+        node_encryption_pk: auth?.node_encryption_pk ?? '',
+        node_signature_pk: auth?.node_signature_pk ?? '',
+        ...(formValues.identityType === IdentityType.Device && {
+          profile_encryption_sk: auth?.profile_encryption_sk,
+          profile_encryption_pk: auth?.profile_encryption_pk,
+          profile_identity_sk: auth?.profile_identity_sk,
+          profile_identity_pk: auth?.profile_identity_pk,
+        }),
+      } as QRSetupData);
+      setQrCodeModalOpen(true);
+    },
+  });
   const identityTypeOptions: { value: IdentityType; label: string }[] = [
     {
       label: intl.formatMessage({ id: 'profile.one' }),
@@ -202,10 +199,7 @@ export const CreateRegistrationCode = () => {
                   disabled={true}
                   name="profile"
                   render={({ field }) => (
-                    <TextField
-                      field={field}
-                      label={<FormattedMessage id="profile.one" />}
-                    />
+                    <TextField field={field} label={<FormattedMessage id="profile.one" />} />
                   )}
                 />
               )}

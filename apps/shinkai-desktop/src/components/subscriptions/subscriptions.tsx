@@ -36,8 +36,7 @@ const MySubscriptions = () => {
           ))}
         {isSuccess && !subscriptions.length && (
           <p className="text-gray-80 text-left">
-            You have no subscriptions. You can subscribe to shared folders from
-            other nodes.
+            You have no subscriptions. You can subscribe to shared folders from other nodes.
           </p>
         )}
         {isSuccess && !!subscriptions.length && (

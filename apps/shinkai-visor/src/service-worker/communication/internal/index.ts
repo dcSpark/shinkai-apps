@@ -14,30 +14,19 @@ import {
   summarizePage,
 } from '../../action';
 
-export const sendContentScriptMessage = (
-  message: ContentScriptBridgeMessage,
-  tabId?: number,
-) => {
+export const sendContentScriptMessage = (message: ContentScriptBridgeMessage, tabId?: number) => {
   const contentScriptMessage: ServiceWorkerInternalMessage = {
     type: ServiceWorkerInternalMessageType.ContentScriptBridge,
     data: message,
   };
   if (tabId) {
-    chrome.tabs.sendMessage<ServiceWorkerInternalMessage>(
-      tabId,
-      contentScriptMessage,
-    );
+    chrome.tabs.sendMessage<ServiceWorkerInternalMessage>(tabId, contentScriptMessage);
   } else {
-    chrome.runtime.sendMessage<ServiceWorkerInternalMessage>(
-      contentScriptMessage,
-    );
+    chrome.runtime.sendMessage<ServiceWorkerInternalMessage>(contentScriptMessage);
   }
 };
 
-export const sendMessage = (
-  message: ServiceWorkerInternalMessage,
-  tabId?: number,
-) => {
+export const sendMessage = (message: ServiceWorkerInternalMessage, tabId?: number) => {
   if (tabId) {
     chrome.tabs.sendMessage<ServiceWorkerInternalMessage>(tabId, message);
   } else {
@@ -138,19 +127,12 @@ export const listen = (): void => {
           if (!sender?.tab?.id) {
             return;
           }
-          console.log(
-            'sw onMessage - forwarding message to tab',
-            message,
-            sender,
-            sender?.tab,
-          );
+          console.log('sw onMessage - forwarding message to tab', message, sender, sender?.tab);
           sendContentScriptMessage(message.data, sender?.tab?.id);
           break;
         case ServiceWorkerInternalMessageType.RehydrateStore:
           // Internal rehydrate
-          chrome.tabs.query({}, (tabs) =>
-            tabs.forEach((tab) => sendMessage(message, tab.id)),
-          );
+          chrome.tabs.query({}, (tabs) => tabs.forEach((tab) => sendMessage(message, tab.id)));
           useAuth.persist.rehydrate();
           useSettings.persist.rehydrate();
           break;

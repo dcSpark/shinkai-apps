@@ -1,3 +1,5 @@
+import React from 'react';
+
 interface ErrorMessageProps extends React.HTMLAttributes<HTMLDivElement> {
   message: string;
 }

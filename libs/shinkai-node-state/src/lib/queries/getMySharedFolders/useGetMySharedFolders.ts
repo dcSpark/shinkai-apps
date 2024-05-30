@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { FunctionKey } from '../../constants';
 import { getMySharedFolders } from '.';
+import { FunctionKey } from '../../constants';
 import { GetMySharedFoldersInput, Options } from './types';
 
 export const useGetMySharedFolders = (

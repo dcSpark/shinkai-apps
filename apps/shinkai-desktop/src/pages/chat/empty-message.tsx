@@ -20,9 +20,7 @@ const EmptyMessage = () => {
     profile_encryption_sk: auth?.profile_encryption_sk ?? '',
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
-  const isLocalShinkaiNodeIsUse = useShinkaiNodeManager(
-    (state) => state.isInUse,
-  );
+  const isLocalShinkaiNodeIsUse = useShinkaiNodeManager((state) => state.isInUse);
 
   return (
     <div className="flex w-full items-center justify-center p-6">
@@ -33,8 +31,8 @@ const EmptyMessage = () => {
 
         <h1 className="text-2xl font-bold text-white">Ask Shinkai AI</h1>
         <p className="text-gray-80 text-sm">
-          Try “How to make a HTTP request in JavaScript” , “Give me the top 10
-          rock music in the 80s”, “Explain me how internet works”
+          Try “How to make a HTTP request in JavaScript” , “Give me the top 10 rock music in the
+          80s”, “Explain me how internet works”
         </p>
 
         <div className="mt-4">

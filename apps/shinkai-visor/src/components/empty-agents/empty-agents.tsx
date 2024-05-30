@@ -1,4 +1,5 @@
 import { Button } from '@shinkai_network/shinkai-ui';
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useNavigate } from 'react-router-dom';
 

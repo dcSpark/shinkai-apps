@@ -26,11 +26,7 @@ export class SerializedAgentWrapper {
     let modelStr = '';
     if (agent.model && agent.model.OpenAI && agent.model.OpenAI.model_type) {
       modelStr = 'openai:' + agent.model.OpenAI.model_type;
-    } else if (
-      agent.model &&
-      agent.model.GenericAPI &&
-      agent.model.GenericAPI.model_type
-    ) {
+    } else if (agent.model && agent.model.GenericAPI && agent.model.GenericAPI.model_type) {
       modelStr = 'genericapi:' + agent.model.GenericAPI.model_type;
     } else if (agent?.model?.Ollama) {
       modelStr = 'ollama:' + agent.model.Ollama.model_type;
@@ -41,17 +37,11 @@ export class SerializedAgentWrapper {
       throw new Error('Invalid model: ' + JSON.stringify(agent.model));
     }
     const toolkitPermissionsStr =
-      agent.toolkit_permissions.length > 0
-        ? agent.toolkit_permissions.join(',')
-        : '';
+      agent.toolkit_permissions.length > 0 ? agent.toolkit_permissions.join(',') : '';
     const storageBucketPermissionsStr =
-      agent.storage_bucket_permissions.length > 0
-        ? agent.storage_bucket_permissions.join(',')
-        : '';
+      agent.storage_bucket_permissions.length > 0 ? agent.storage_bucket_permissions.join(',') : '';
     const allowedMessageSendersStr =
-      agent.allowed_message_senders.length > 0
-        ? agent.allowed_message_senders.join(',')
-        : '';
+      agent.allowed_message_senders.length > 0 ? agent.allowed_message_senders.join(',') : '';
 
     const wasmWrapper = SerializedAgentWrapperWASM.fromStrings(
       agent.id,

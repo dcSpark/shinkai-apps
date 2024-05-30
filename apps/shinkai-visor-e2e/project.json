@@ -3,6 +3,8 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/shinkai-visor-e2e/src",
   "projectType": "application",
+  "tags": [],
+  "implicitDependencies": ["shinkai-visor"],
   "targets": {
     "e2e": {
       "executor": "@nx/playwright:playwright",
@@ -12,13 +14,10 @@
       }
     },
     "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
+      "executor": "nx:run-commands",
       "options": {
-        "lintFilePatterns": ["apps/shinkai-visor-e2e/**/*.{js,ts}"]
+        "command": "npx biome check --apply {projectRoot}"
       }
     }
-  },
-  "tags": [],
-  "implicitDependencies": ["shinkai-visor"]
+  }
 }

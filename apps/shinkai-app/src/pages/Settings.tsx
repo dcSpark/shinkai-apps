@@ -1,4 +1,10 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import {
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+} from '@ionic/react';
 
 const Settings: React.FC = () => {
   return (
@@ -8,9 +14,7 @@ const Settings: React.FC = () => {
           <IonTitle>Settings</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent fullscreen>
-        {/* Your settings UI goes here */}
-      </IonContent>
+      <IonContent fullscreen>{/* Your settings UI goes here */}</IonContent>
     </IonPage>
   );
 };

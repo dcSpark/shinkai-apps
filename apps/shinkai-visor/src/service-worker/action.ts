@@ -9,7 +9,7 @@ import {
 export const OPEN_SIDEPANEL_DELAY_MS = 600;
 
 export const sendVectorResourceFoundToVectorFs = async (
-  info: chrome.contextMenus.OnClickData | undefined,
+  _info: chrome.contextMenus.OnClickData | undefined,
   tab: chrome.tabs.Tab | undefined,
   vectorResourceUrl: string,
 ) => {
@@ -30,9 +30,9 @@ export const sendVectorResourceFoundToVectorFs = async (
       data: {
         filename: `${encodeURIComponent(tab.title || Date.now())}.html`,
         fileType: fileType,
-        fileDataUrl: `data:${fileType};base64,${Buffer.from(
-          htmlContent.result,
-        ).toString('base64')}`,
+        fileDataUrl: `data:${fileType};base64,${Buffer.from(htmlContent.result).toString(
+          'base64',
+        )}`,
       },
     };
     sendMessage(message);
@@ -48,15 +48,13 @@ export const sendVectorResourceFoundToVectorFs = async (
     data: {
       filename: `${encodeURIComponent(vectorResourceName || Date.now())}.vrkai`,
       fileType: fileType,
-      fileDataUrl: `data:${fileType};base64,${Buffer.from(
-        vectorResource,
-      ).toString('base64')}`,
+      fileDataUrl: `data:${fileType};base64,${Buffer.from(vectorResource).toString('base64')}`,
     },
   };
   sendMessage(message);
 };
 export const sendVectorResourceFoundToAgent = async (
-  info: chrome.contextMenus.OnClickData | undefined,
+  _info: chrome.contextMenus.OnClickData | undefined,
   tab: chrome.tabs.Tab | undefined,
   vectorResourceUrl: string,
 ) => {
@@ -73,15 +71,13 @@ export const sendVectorResourceFoundToAgent = async (
     data: {
       filename: `${encodeURIComponent(vectorResourceName || Date.now())}.vrkai`,
       fileType: fileType,
-      fileDataUrl: `data:${fileType};base64,${Buffer.from(
-        vectorResource,
-      ).toString('base64')}`,
+      fileDataUrl: `data:${fileType};base64,${Buffer.from(vectorResource).toString('base64')}`,
     },
   };
   sendMessage(message);
 };
 export const sendPageToAgent = async (
-  info: chrome.contextMenus.OnClickData | undefined,
+  _info: chrome.contextMenus.OnClickData | undefined,
   tab: chrome.tabs.Tab | undefined,
 ) => {
   // At this point, agents can just process text
@@ -101,15 +97,13 @@ export const sendPageToAgent = async (
     data: {
       filename: `${encodeURIComponent(tab.url || Date.now())}.html`,
       fileType: fileType,
-      fileDataUrl: `data:${fileType};base64,${Buffer.from(
-        htmlContent.result,
-      ).toString('base64')}`,
+      fileDataUrl: `data:${fileType};base64,${Buffer.from(htmlContent.result).toString('base64')}`,
     },
   };
   sendMessage(message);
 };
 export const summarizePage = async (
-  info: chrome.contextMenus.OnClickData | undefined,
+  _info: chrome.contextMenus.OnClickData | undefined,
   tab: chrome.tabs.Tab | undefined,
 ) => {
   // At this point, agents can just process text
@@ -129,14 +123,13 @@ export const summarizePage = async (
     data: {
       filename: `${encodeURIComponent(tab.url || Date.now())}.html`,
       fileType: fileType,
-      fileDataUrl: `data:${fileType};base64,${Buffer.from(
-        htmlContent.result,
-      ).toString('base64')}`,
+      fileDataUrl: `data:${fileType};base64,${Buffer.from(htmlContent.result).toString('base64')}`,
     },
   };
   sendMessage(message);
 };
 export const sendCaptureToAgent = async (
+  // biome-ignore lint/correctness/noUnusedVariables:
   info: chrome.contextMenus.OnClickData | undefined,
   tab: chrome.tabs.Tab | undefined,
 ) => {
@@ -145,24 +138,16 @@ export const sendCaptureToAgent = async (
   }
   const image = await new Promise<string>((resolve) => {
     chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
-      chrome.tabs.captureVisibleTab(
-        tab.windowId,
-        { format: 'jpeg', quality: 92 },
-        (image) => {
-          resolve(image);
-        },
-      );
+      chrome.tabs.captureVisibleTab(tab.windowId, { format: 'jpeg', quality: 92 }, (image) => {
+        resolve(image);
+      });
     });
   });
   let message: ServiceWorkerInternalMessage = {
     type: ServiceWorkerInternalMessageType.CaptureImage,
     data: { image },
   };
-  const croppedImage =
-    await chrome.tabs.sendMessage<ServiceWorkerInternalMessage>(
-      tab.id,
-      message,
-    );
+  const croppedImage = await chrome.tabs.sendMessage<ServiceWorkerInternalMessage>(tab.id, message);
   message = {
     type: ServiceWorkerInternalMessageType.SendCaptureToAgent,
     data: {

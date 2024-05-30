@@ -19,7 +19,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { FilesIcon, InboxIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { AnimatePresence, motion, TargetAndTransition } from 'framer-motion';
+import { AnimatePresence, TargetAndTransition, motion } from 'framer-motion';
 import {
   ArrowLeftToLine,
   ArrowRightToLine,
@@ -30,13 +30,7 @@ import {
   SearchCode,
 } from 'lucide-react';
 import React, { Fragment, useEffect, useState } from 'react';
-import {
-  Link,
-  Outlet,
-  useLocation,
-  useMatch,
-  useNavigate,
-} from 'react-router-dom';
+import { Link, Outlet, useLocation, useMatch, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { ResourcesBanner } from '../../components/hardware-capabilities/resources-banner';
@@ -172,12 +166,9 @@ const ShinkaiLogo = ({ className }: { className?: string }) => (
 export function MainNav() {
   const navigate = useNavigate();
   const logout = useAuth((state) => state.setLogout);
-  const isGetStartedChecklistHidden = useSettings(
-    (state) => state.isGetStartedChecklistHidden,
-  );
+  const isGetStartedChecklistHidden = useSettings((state) => state.isGetStartedChecklistHidden);
 
-  const [isConfirmLogoutDialogOpened, setIsConfirmLogoutDialogOpened] =
-    useState(false);
+  const [isConfirmLogoutDialogOpened, setIsConfirmLogoutDialogOpened] = useState(false);
 
   const sidebarExpanded = useSettings((state) => state.sidebarExpanded);
   const toggleSidebar = useSettings((state) => state.toggleSidebar);
@@ -256,9 +247,7 @@ export function MainNav() {
       }}
     >
       <div className="text-gray-80 flex w-full items-center justify-between gap-2 py-2 pl-4">
-        {sidebarExpanded && (
-          <ShinkaiLogo className="text-gray-80 h-auto w-[80px]" />
-        )}
+        {sidebarExpanded && <ShinkaiLogo className="text-gray-80 h-auto w-[80px]" />}
 
         <TooltipProvider delayDuration={0}>
           <Tooltip>
@@ -331,10 +320,7 @@ export function MainNav() {
           {navigationLinks.map((item) => {
             return (
               <Fragment key={item.title}>
-                <TooltipProvider
-                  delayDuration={!sidebarExpanded ? 0 : 10000}
-                  key={item.title}
-                >
+                <TooltipProvider delayDuration={!sidebarExpanded ? 0 : 10000} key={item.title}>
                   <Tooltip>
                     <TooltipTrigger className="flex items-center gap-1">
                       <NavLink
@@ -346,18 +332,13 @@ export function MainNav() {
                       />
                     </TooltipTrigger>
                     <TooltipPortal>
-                      <TooltipContent
-                        align="center"
-                        arrowPadding={2}
-                        side="right"
-                      >
+                      <TooltipContent align="center" arrowPadding={2} side="right">
                         <p>{item.title}</p>
                       </TooltipContent>
                     </TooltipPortal>
                   </Tooltip>
                 </TooltipProvider>
-                {(item.href === '/inboxes' ||
-                  item.href === '/vector-search') && (
+                {(item.href === '/inboxes' || item.href === '/vector-search') && (
                   <Separator className="my-0.5 w-full bg-gray-200" />
                 )}
               </Fragment>
@@ -369,10 +350,7 @@ export function MainNav() {
           {footerNavigationLinks.map((item) => {
             return (
               <React.Fragment key={item.title}>
-                <TooltipProvider
-                  delayDuration={!sidebarExpanded ? 0 : 10000}
-                  key={item.title}
-                >
+                <TooltipProvider delayDuration={!sidebarExpanded ? 0 : 10000} key={item.title}>
                   <Tooltip>
                     <TooltipTrigger className="flex items-center gap-1">
                       <NavLink
@@ -384,11 +362,7 @@ export function MainNav() {
                       />
                     </TooltipTrigger>
                     <TooltipPortal>
-                      <TooltipContent
-                        align="center"
-                        arrowPadding={2}
-                        side="right"
-                      >
+                      <TooltipContent align="center" arrowPadding={2} side="right">
                         <p>{item.title}</p>
                       </TooltipContent>
                     </TooltipPortal>
@@ -400,10 +374,7 @@ export function MainNav() {
         </div>
       </div>
 
-      <AlertDialog
-        onOpenChange={setIsConfirmLogoutDialogOpened}
-        open={isConfirmLogoutDialogOpened}
-      >
+      <AlertDialog onOpenChange={setIsConfirmLogoutDialogOpened} open={isConfirmLogoutDialogOpened}>
         <AlertDialogContent className="w-[75%]">
           <AlertDialogHeader>
             <AlertDialogTitle>Disconnect Shinkai</AlertDialogTitle>
@@ -411,8 +382,7 @@ export function MainNav() {
               <div className="flex flex-col space-y-3 text-left text-white/70">
                 <div className="flex flex-col space-y-1 ">
                   <span className="text-sm">
-                    Are you sure you want to disconnect? This will permanently
-                    delete your data
+                    Are you sure you want to disconnect? This will permanently delete your data
                   </span>
                 </div>
                 <div className="text-sm">
@@ -482,8 +452,7 @@ const MainLayout = () => {
     '/get-started',
   ];
 
-  const displaySidebar =
-    !!auth && !disabledSidebarRoutes.includes(location.pathname);
+  const displaySidebar = !!auth && !disabledSidebarRoutes.includes(location.pathname);
 
   return (
     <div className="flex min-h-full flex-col bg-gray-500 text-white">
@@ -491,20 +460,12 @@ const MainLayout = () => {
         {displaySidebar && <MainNav />}
         <motion.div
           animate={{
-            paddingLeft: !displaySidebar
-              ? '0px'
-              : sidebarExpanded
-                ? '230px'
-                : '70px',
+            paddingLeft: !displaySidebar ? '0px' : sidebarExpanded ? '230px' : '70px',
             transition: sidebarTransition,
           }}
           className={cn('flex-1')}
           initial={{
-            paddingLeft: !displaySidebar
-              ? '0px'
-              : sidebarExpanded
-                ? '230px'
-                : '70px',
+            paddingLeft: !displaySidebar ? '0px' : sidebarExpanded ? '230px' : '70px',
           }}
         >
           <Outlet />

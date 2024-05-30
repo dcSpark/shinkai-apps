@@ -46,8 +46,10 @@ export const OllamaModels = () => {
   const { mutateAsync: syncOllamaModels } = useSyncOllamaModels(
     OLLAMA_MODELS.map((value) => value.fullName),
   );
-  const { isLoading: isOllamaListLoading, data: installedOllamaModels } =
-    useOllamaListQuery(ollamaConfig, {});
+  const { isLoading: isOllamaListLoading, data: installedOllamaModels } = useOllamaListQuery(
+    ollamaConfig,
+    {},
+  );
   const { mutateAsync: ollamaPull } = useOllamaPullMutation(ollamaConfig, {
     onSuccess: (data, input) => {
       handlePullProgress(input.model, data);
@@ -150,10 +152,7 @@ export const OllamaModels = () => {
         <TableBody>
           {OLLAMA_MODELS.map((model) => {
             return (
-              <TableRow
-                className="transition-colors hover:bg-gray-300/50"
-                key={model.fullName}
-              >
+              <TableRow className="transition-colors hover:bg-gray-300/50" key={model.fullName}>
                 <TableCell>
                   <div className="flex flex-col items-start gap-2">
                     <span className="font-medium">{model.name}</span>
@@ -165,9 +164,7 @@ export const OllamaModels = () => {
                     </span>
                   </div>
                 </TableCell>
-                <TableCell>
-                  {Math.round(model.contextLength / 8000)} book length
-                </TableCell>
+                <TableCell>{Math.round(model.contextLength / 8000)} book length</TableCell>
                 <TableCell>
                   <ModelQuailityTag quality={model.quality} />
                 </TableCell>
@@ -176,10 +173,7 @@ export const OllamaModels = () => {
                 </TableCell>
                 <TableCell>{model.size} GB</TableCell>
                 <TableCell>
-                  <motion.div
-                    className="flex items-center justify-center"
-                    layout
-                  >
+                  <motion.div className="flex items-center justify-center" layout>
                     {isOllamaListLoading ? (
                       <Loader2 className="animate-spin" />
                     ) : installedOllamaModelsMap.has(model.fullName) ? (
@@ -197,18 +191,13 @@ export const OllamaModels = () => {
                     ) : pullingModelsMap.get(model.fullName) ? (
                       <div className="flex flex-col items-center gap-1">
                         <span className="text-xs text-gray-100">
-                          {getProgress(
-                            pullingModelsMap.get(
-                              model.fullName,
-                            ) as ProgressResponse,
-                          ) + '%'}
+                          {getProgress(pullingModelsMap.get(model.fullName) as ProgressResponse) +
+                            '%'}
                         </span>
                         <Progress
                           className="h-2 w-full bg-gray-200 [&>*]:bg-gray-100"
                           value={getProgress(
-                            pullingModelsMap.get(
-                              model.fullName,
-                            ) as ProgressResponse,
+                            pullingModelsMap.get(model.fullName) as ProgressResponse,
                           )}
                         />
                         <span className="text-xs text-gray-100">

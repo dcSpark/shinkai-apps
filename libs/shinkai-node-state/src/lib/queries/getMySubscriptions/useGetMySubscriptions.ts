@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { FunctionKey } from '../../constants';
 import { getMySubscriptions } from '.';
+import { FunctionKey } from '../../constants';
 import { GetMySubscriptionsInput, Options } from './types';
 
 export const useGetMySubscriptions = (

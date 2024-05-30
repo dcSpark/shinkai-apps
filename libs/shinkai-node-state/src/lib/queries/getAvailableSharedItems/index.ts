@@ -1,9 +1,6 @@
 import { getAvailableSharedFolders as getAvailableSharedFoldersAPI } from '@shinkai_network/shinkai-message-ts/api';
 
-import {
-  GetAvailableSharedItemsInput,
-  GetAvailableSharedItemsOutput,
-} from './types';
+import { GetAvailableSharedItemsInput, GetAvailableSharedItemsOutput } from './types';
 
 export const getAvailableSharedFolders = async ({
   pageSize,
@@ -11,11 +8,6 @@ export const getAvailableSharedFolders = async ({
   priceFilter,
   search,
 }: GetAvailableSharedItemsInput): Promise<GetAvailableSharedItemsOutput> => {
-  const response = await getAvailableSharedFoldersAPI(
-    pageSize,
-    page,
-    priceFilter,
-    search,
-  );
+  const response = await getAvailableSharedFoldersAPI(pageSize, page, priceFilter, search);
   return response;
 };

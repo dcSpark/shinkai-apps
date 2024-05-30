@@ -1,9 +1,5 @@
 import { useGetAvailableSharedFoldersWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getAvailableSharedItems/useGetAvailableSharedFoldersWithPagination';
-import {
-  Button,
-  buttonVariants,
-  ScrollArea,
-} from '@shinkai_network/shinkai-ui';
+import { Button, ScrollArea, buttonVariants } from '@shinkai_network/shinkai-ui';
 import { SharedFolderIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useInView } from 'framer-motion';
@@ -38,10 +34,7 @@ const FreeSubscriptionsPage = () => {
   const locationState = useLocation().state as { installLocally?: boolean };
   return (
     <div className="h-screen overflow-y-hidden">
-      <SubpageLayout
-        className="h-full"
-        title="Subscribe To Knowledge Sources  📨"
-      >
+      <SubpageLayout className="h-full" title="Subscribe To Knowledge Sources  📨">
         <div className="flex h-full flex-col">
           <p className="text-gray-80 text-center text-base tracking-wide">
             Subscribe to get up-to-date info/content your AI can seamlessly use.
@@ -107,9 +100,7 @@ const FreeSubscriptionsPage = () => {
               'mt-4 w-full',
             )}
             to={{
-              pathname: locationState?.installLocally
-                ? '/ai-model-installation'
-                : '/',
+              pathname: locationState?.installLocally ? '/ai-model-installation' : '/',
             }}
           >
             Continue

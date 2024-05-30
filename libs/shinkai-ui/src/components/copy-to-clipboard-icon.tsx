@@ -47,9 +47,7 @@ const CopyToClipboardIcon = ({
       type="button"
       variant="ghost"
     >
-      <ClipboardIcon
-        className={cn('h-3.5 w-3.5', clipboard && 'text-green-600')}
-      />
+      <ClipboardIcon className={cn('h-3.5 w-3.5', clipboard && 'text-green-600')} />
       {children}
     </Button>
   );

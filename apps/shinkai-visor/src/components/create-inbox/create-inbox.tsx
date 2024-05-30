@@ -12,8 +12,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  Textarea,
   TextField,
+  Textarea,
 } from '@shinkai_network/shinkai-ui';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -60,9 +60,7 @@ export const CreateInbox = () => {
     });
   };
 
-  const endAdornment = auth
-    ? `.${auth.shinkai_identity.split('.')[1]}/${auth.profile}`
-    : '';
+  const endAdornment = auth ? `.${auth.shinkai_identity.split('.')[1]}/${auth.profile}` : '';
   return (
     <div className="flex h-full flex-col space-y-8">
       <Form {...form}>
@@ -97,10 +95,7 @@ export const CreateInbox = () => {
                       autoFocus
                       className="resize-none"
                       onKeyDown={(event) => {
-                        if (
-                          event.key === 'Enter' &&
-                          (event.metaKey || event.ctrlKey)
-                        ) {
+                        if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
                           form.handleSubmit(submit)();
                         }
                       }}

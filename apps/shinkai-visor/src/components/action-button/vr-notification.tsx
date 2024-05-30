@@ -16,9 +16,7 @@ export enum VectorResourceType {
 }
 export type VectorResourceMetatag =
   | {
-      'element-type':
-        | VectorResourceType.DirectVrkai
-        | VectorResourceType.DirectVrpack;
+      'element-type': VectorResourceType.DirectVrkai | VectorResourceType.DirectVrpack;
       content: string;
       metadata: string;
     }
@@ -34,14 +32,11 @@ export type VectorResourceMetatag =
     };
 
 export const useVectorResourceMetatags = () => {
-  const [isVectorResourceFound, setIsVectorResourceFound] =
-    React.useState(false);
+  const [isVectorResourceFound, setIsVectorResourceFound] = React.useState(false);
   const [currentVectorResource, setCurrentVectorResource] = React.useState('');
 
   useEffect(() => {
-    const meta = document.querySelector(
-      'meta[name="shinkai-vector-resources"]',
-    );
+    const meta = document.querySelector('meta[name="shinkai-vector-resources"]');
     if (!meta) return;
     const vectorResources: VectorResourceMetatag[] = JSON.parse(
       meta.getAttribute('content') as string,
@@ -55,12 +50,7 @@ export const useVectorResourceMetatags = () => {
       setCurrentVectorResource(firstHttpVectorResource.url);
       setTimeout(() => {
         toast.custom(
-          (t) => (
-            <VrNotification
-              toastId={t}
-              vectorResourceUrl={firstHttpVectorResource.url}
-            />
-          ),
+          (t) => <VrNotification toastId={t} vectorResourceUrl={firstHttpVectorResource.url} />,
           { duration: 4000 },
         );
       });
@@ -100,10 +90,7 @@ export const saveVectorResourceFound = async (vectorResourceUrl: string) => {
   });
 };
 
-const VrNotification = ({
-  vectorResourceUrl,
-  toastId,
-}: VrNotificationProps) => {
+const VrNotification = ({ vectorResourceUrl, toastId }: VrNotificationProps) => {
   return (
     <button
       className="flex items-center gap-3"
@@ -119,12 +106,9 @@ const VrNotification = ({
           src={srcUrlResolver(shinkaiLogo)}
         />
         <div className="flex flex-col">
-          <span className="font-medium text-white">
-            Shinkai Instant Q/A Available
-          </span>
+          <span className="font-medium text-white">Shinkai Instant Q/A Available</span>
           <span className="text-gray-80 font-regular text-xs">
-            Webpage is AI-Ready. Ask questions with no extra processing time by
-            clicking here.
+            Webpage is AI-Ready. Ask questions with no extra processing time by clicking here.
           </span>
         </div>
       </div>

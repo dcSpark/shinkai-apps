@@ -8,7 +8,7 @@ import { storageTests } from './storage.spec';
 import { welcomeTests } from './welcome.spec';
 
 test.describe.configure({ mode: 'serial' });
-// eslint-disable-next-line no-empty-pattern
+// biome-ignore lint/correctness/noEmptyPattern:
 test.beforeEach(({}, testInfo) => {
   console.log(`Executing ${testInfo.title}`);
 });

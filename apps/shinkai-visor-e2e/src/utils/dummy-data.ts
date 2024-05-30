@@ -5,5 +5,5 @@ export const getAgent = () => {
     apiKey: process.env.OPEN_AI_API_KEY,
     model: 'open-ai',
     models: 'gpt-4-1106-preview',
-  }
+  };
 };

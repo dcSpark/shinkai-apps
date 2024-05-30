@@ -6,7 +6,7 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "types": ["vite/client", "vitest"],
-    "resolveJsonModule": true,
+    "resolveJsonModule": true
   },
   "files": [],
   "include": [],

@@ -1,10 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   CreateFolderFormSchema,
-  createFolderFormSchema,
   SaveWebpageToVectorFsFormSchema,
-  saveWebpageToVectorFsFormSchema,
   UploadVRFilesFormSchema,
+  createFolderFormSchema,
+  saveWebpageToVectorFsFormSchema,
   uploadVRFilesFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/vector-fs/folder';
 import { useCreateVRFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/createVRFolder/useCreateVRFolder';
@@ -23,10 +23,7 @@ import {
   FormMessage,
   TextField,
 } from '@shinkai_network/shinkai-ui';
-import {
-  DirectoryTypeIcon,
-  FileTypeIcon,
-} from '@shinkai_network/shinkai-ui/assets';
+import { DirectoryTypeIcon, FileTypeIcon } from '@shinkai_network/shinkai-ui/assets';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
@@ -35,17 +32,12 @@ import { toast } from 'sonner';
 
 import { useAuth } from '../../store/auth/auth';
 import { allowedFileExtensions } from '../create-job/constants';
-import {
-  FolderSelectionList,
-  useVectorFolderSelectionStore,
-} from './folder-selection-list';
+import { FolderSelectionList, useVectorFolderSelectionStore } from './folder-selection-list';
 import { useVectorFsStore } from './node-file-context';
 
 export const AddNewFolderAction = () => {
   const auth = useAuth((state) => state.auth);
-  const currentGlobalPath = useVectorFsStore(
-    (state) => state.currentGlobalPath,
-  );
+  const currentGlobalPath = useVectorFsStore((state) => state.currentGlobalPath);
   const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
   const createFolderForm = useForm<CreateFolderFormSchema>({
     resolver: zodResolver(createFolderFormSchema),
@@ -99,10 +91,7 @@ export const AddNewFolderAction = () => {
         </DrawerTitle>
       </DrawerHeader>
       <Form {...createFolderForm}>
-        <form
-          className="space-y-8 pt-4"
-          onSubmit={createFolderForm.handleSubmit(onSubmit)}
-        >
+        <form className="space-y-8 pt-4" onSubmit={createFolderForm.handleSubmit(onSubmit)}>
           <FormField
             control={createFolderForm.control}
             name="name"
@@ -112,10 +101,7 @@ export const AddNewFolderAction = () => {
                 field={{
                   ...field,
                   onKeyDown: (event) => {
-                    if (
-                      event.key === 'Enter' &&
-                      (event.metaKey || event.ctrlKey)
-                    ) {
+                    if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
                       createFolderForm.handleSubmit(onSubmit)();
                     }
                   },
@@ -124,12 +110,7 @@ export const AddNewFolderAction = () => {
               />
             )}
           />
-          <Button
-            className="w-full"
-            disabled={isPending}
-            isLoading={isPending}
-            type="submit"
-          >
+          <Button className="w-full" disabled={isPending} isLoading={isPending} type="submit">
             Create Folder
           </Button>
         </form>
@@ -141,9 +122,7 @@ export const AddNewFolderAction = () => {
 export const UploadVRFilesAction = () => {
   const auth = useAuth((state) => state.auth);
   const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
-  const currentGlobalPath = useVectorFsStore(
-    (state) => state.currentGlobalPath,
-  );
+  const currentGlobalPath = useVectorFsStore((state) => state.currentGlobalPath);
   const createFolderForm = useForm<UploadVRFilesFormSchema>({
     resolver: zodResolver(uploadVRFilesFormSchema),
   });
@@ -196,10 +175,7 @@ export const UploadVRFilesAction = () => {
         </DrawerTitle>
       </DrawerHeader>
       <Form {...createFolderForm}>
-        <form
-          className="space-y-8"
-          onSubmit={createFolderForm.handleSubmit(onSubmit)}
-        >
+        <form className="space-y-8" onSubmit={createFolderForm.handleSubmit(onSubmit)}>
           <FormField
             control={createFolderForm.control}
             name="files"
@@ -227,12 +203,7 @@ export const UploadVRFilesAction = () => {
               </FormItem>
             )}
           />
-          <Button
-            className="w-full"
-            disabled={isPending}
-            isLoading={isPending}
-            type="submit"
-          >
+          <Button className="w-full" disabled={isPending} isLoading={isPending} type="submit">
             Upload
           </Button>
         </form>
@@ -251,9 +222,7 @@ export const SaveWebpageToVectorFsAction = () => {
   const destinationFolderPath = useVectorFolderSelectionStore(
     (state) => state.destinationFolderPath,
   );
-  const setCurrentGlobalPath = useVectorFsStore(
-    (state) => state.setCurrentGlobalPath,
-  );
+  const setCurrentGlobalPath = useVectorFsStore((state) => state.setCurrentGlobalPath);
   const saveWebpageToVectorFsForm = useForm<SaveWebpageToVectorFsFormSchema>({
     resolver: zodResolver(saveWebpageToVectorFsFormSchema),
     defaultValues: {
@@ -308,10 +277,7 @@ export const SaveWebpageToVectorFsAction = () => {
   };
 
   useEffect(() => {
-    saveWebpageToVectorFsForm.setValue(
-      'destinationFolderPath',
-      destinationFolderPath ?? '/',
-    );
+    saveWebpageToVectorFsForm.setValue('destinationFolderPath', destinationFolderPath ?? '/');
   }, [destinationFolderPath, saveWebpageToVectorFsForm]);
 
   return (
@@ -353,12 +319,7 @@ export const SaveWebpageToVectorFsAction = () => {
             )}
           />
 
-          <Button
-            className="w-full"
-            disabled={isPending}
-            isLoading={isPending}
-            type="submit"
-          >
+          <Button className="w-full" disabled={isPending} isLoading={isPending} type="submit">
             Save
           </Button>
         </form>

@@ -66,12 +66,10 @@ const CreateJobPage = () => {
   };
 
   const [isVectorFSOpen, setIsVectorFSOpen] = React.useState(false);
-  const [isKnowledgeSearchOpen, setIsKnowledgeSearchOpen] =
-    React.useState(false);
+  const [isKnowledgeSearchOpen, setIsKnowledgeSearchOpen] = React.useState(false);
 
   const [nodes, setNodes] = useState<TreeNode[]>([]);
-  const [selectedKeys, setSelectedKeys] =
-    useState<TreeCheckboxSelectionKeys | null>(null);
+  const [selectedKeys, setSelectedKeys] = useState<TreeCheckboxSelectionKeys | null>(null);
 
   const selectedFileKeysRef = useRef<Map<string, VRItem>>(new Map());
   const selectedFolderKeysRef = useRef<Map<string, VRFolder>>(new Map());
@@ -138,9 +136,7 @@ const CreateJobPage = () => {
   const { isPending, mutateAsync: createJob } = useCreateJob({
     onSuccess: (data) => {
       // TODO: job_inbox, false is hardcoded
-      navigate(
-        `/inboxes/${encodeURIComponent(buildInboxIdFromJobId(data.jobId))}`,
-      );
+      navigate(`/inboxes/${encodeURIComponent(buildInboxIdFromJobId(data.jobId))}`);
     },
   });
 
@@ -181,9 +177,7 @@ const CreateJobPage = () => {
   const onSubmit = async (data: CreateJobFormSchema) => {
     if (!auth) return;
     const selectedVRFiles =
-      selectedFileKeysRef.current.size > 0
-        ? Array.from(selectedFileKeysRef.current.values())
-        : [];
+      selectedFileKeysRef.current.size > 0 ? Array.from(selectedFileKeysRef.current.values()) : [];
     const selectedVRFolders =
       selectedFolderKeysRef.current.size > 0
         ? Array.from(selectedFolderKeysRef.current.values())
@@ -218,10 +212,7 @@ const CreateJobPage = () => {
   return (
     <SubpageLayout title="Create AI Chat">
       <Form {...createJobForm}>
-        <form
-          className="space-y-8"
-          onSubmit={createJobForm.handleSubmit(onSubmit)}
-        >
+        <form className="space-y-8" onSubmit={createJobForm.handleSubmit(onSubmit)}>
           <div className="space-y-6">
             <FormField
               control={createJobForm.control}
@@ -234,10 +225,7 @@ const CreateJobPage = () => {
                       autoFocus={true}
                       className="resize-none"
                       onKeyDown={(event) => {
-                        if (
-                          event.key === 'Enter' &&
-                          (event.metaKey || event.ctrlKey)
-                        ) {
+                        if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
                           createJobForm.handleSubmit(onSubmit)();
                         }
                       }}
@@ -288,12 +276,9 @@ const CreateJobPage = () => {
             <div className="my-3 rounded-md bg-gray-400 px-3 py-4">
               <div className="mb-5 flex items-start justify-between gap-4">
                 <div className="space-y-1">
-                  <h2 className="text-sm font-medium text-gray-100">
-                    Set Chat Context
-                  </h2>
+                  <h2 className="text-sm font-medium text-gray-100">Set Chat Context</h2>
                   <p className="text-gray-80 text-xs">
-                    Add files or folders for your AI to use as context during
-                    your conversation.
+                    Add files or folders for your AI to use as context during your conversation.
                   </p>
                 </div>
                 <TooltipProvider delayDuration={0}>
@@ -307,15 +292,11 @@ const CreateJobPage = () => {
                         variant="ghost"
                       >
                         <SearchCode className="h-5 w-5" />
-                        <p className="sr-only text-xs text-white">
-                          AI Files Content Search
-                        </p>
+                        <p className="sr-only text-xs text-white">AI Files Content Search</p>
                       </Button>
                     </TooltipTrigger>
                     <TooltipPortal>
-                      <TooltipContent sideOffset={0}>
-                        Search AI Files Content
-                      </TooltipContent>
+                      <TooltipContent sideOffset={0}>Search AI Files Content</TooltipContent>
                     </TooltipPortal>
                   </Tooltip>
                 </TooltipProvider>
@@ -363,12 +344,7 @@ const CreateJobPage = () => {
               </div>
             </div>
           </div>
-          <Button
-            className="w-full"
-            disabled={isPending}
-            isLoading={isPending}
-            type="submit"
-          >
+          <Button className="w-full" disabled={isPending} isLoading={isPending} type="submit">
             Create AI Chat
           </Button>
         </form>

@@ -1,8 +1,4 @@
-import {
-  useMutation,
-  type UseMutationOptions,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { type UseMutationOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { FunctionKey } from '../../constants';
 import { moveVRItem } from './index';

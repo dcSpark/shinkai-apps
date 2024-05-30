@@ -109,15 +109,13 @@ export const Inboxes = () => {
 
   return (
     <div className="flex h-full flex-col justify-between space-y-3 overflow-hidden">
-      {isAgentsSuccess &&
-        isInboxesSuccess &&
-        !agents?.length &&
-        !inboxes.length && <EmptyAgents data-testid="empty-agents" />}
+      {isAgentsSuccess && isInboxesSuccess && !agents?.length && !inboxes.length && (
+        <EmptyAgents data-testid="empty-agents" />
+      )}
 
-      {isInboxesSuccess &&
-        isAgentsSuccess &&
-        !inboxes?.length &&
-        agents?.length > 0 && <EmptyInboxes data-testid="empty-inboxes" />}
+      {isInboxesSuccess && isAgentsSuccess && !inboxes?.length && agents?.length > 0 && (
+        <EmptyInboxes data-testid="empty-inboxes" />
+      )}
 
       {isInboxesPending && (
         <div className="flex flex-col gap-2">
@@ -135,17 +133,11 @@ export const Inboxes = () => {
           <ScrollArea className="pr-4 [&>div>div]:!block">
             <Tabs defaultValue="actives">
               <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger
-                  className="flex items-center gap-1.5"
-                  value="actives"
-                >
+                <TabsTrigger className="flex items-center gap-1.5" value="actives">
                   <ActiveIcon className="h-4 w-4" />
                   Active
                 </TabsTrigger>
-                <TabsTrigger
-                  className="flex items-center gap-1.5"
-                  value="archives"
-                >
+                <TabsTrigger className="flex items-center gap-1.5" value="archives">
                   <ArchiveIcon className="h-4 w-4" />
                   Archived
                 </TabsTrigger>
@@ -157,9 +149,7 @@ export const Inboxes = () => {
                       <ActiveInboxItem inbox={inbox} key={inbox.inbox_id} />
                     ))
                   ) : (
-                    <p className="py-5 text-center">
-                      No actives conversations found.{' '}
-                    </p>
+                    <p className="py-5 text-center">No actives conversations found. </p>
                   )}
                 </div>
               </TabsContent>
@@ -170,9 +160,7 @@ export const Inboxes = () => {
                       <ArchiveInboxItem inbox={inbox} key={inbox.inbox_id} />
                     ))
                   ) : (
-                    <p className="py-5 text-center">
-                      No archived conversations found.{' '}
-                    </p>
+                    <p className="py-5 text-center">No archived conversations found. </p>
                   )}
                 </div>
               </TabsContent>
@@ -182,11 +170,7 @@ export const Inboxes = () => {
       )}
       <div className="fixed bottom-4 right-4" ref={dialContainerRef}>
         {/* auth?.shinkai_identity.includes('localhost') ? (*/}
-        <Button
-          className="h-[60px] w-[60px]"
-          onClick={() => onCreateJobClick()}
-          size="icon"
-        >
+        <Button className="h-[60px] w-[60px]" onClick={() => onCreateJobClick()} size="icon">
           <Plus />
         </Button>
         {/*) : (*/}

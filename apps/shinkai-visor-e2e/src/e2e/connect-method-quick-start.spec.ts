@@ -7,20 +7,18 @@ export const connectMethodQuickStartTests = () => {
 
   test.describe.configure({ mode: 'serial' });
 
-  test.beforeEach(async ({ page, popup }) => {
+  test.beforeEach(async ({ popup }) => {
     await acceptTerms(popup);
   });
 
-  test.afterEach(async ({ page }, testInfo) => {
+  test.afterEach(async () => {
     await nodeManager.stopNode();
   });
 
   test('error appear if node is not running', async ({ popup }) => {
     const quickConnectButton = popup.getByTestId('quick-connect-button');
     await quickConnectButton.click();
-    const quickConnectErrorMessage = popup.getByTestId(
-      'quick-connect-error-message',
-    );
+    const quickConnectErrorMessage = popup.getByTestId('quick-connect-error-message');
     await expect(quickConnectErrorMessage).toBeVisible();
   });
 
@@ -37,9 +35,7 @@ export const connectMethodQuickStartTests = () => {
     await nodeManager.startNode(false);
     const quickConnectButton = popup.getByTestId('quick-connect-button');
     quickConnectButton.click();
-    const quickConnectErrorMessage = popup.getByTestId(
-      'quick-connect-error-message',
-    );
+    const quickConnectErrorMessage = popup.getByTestId('quick-connect-error-message');
     await expect(quickConnectErrorMessage).toBeVisible();
   });
 };

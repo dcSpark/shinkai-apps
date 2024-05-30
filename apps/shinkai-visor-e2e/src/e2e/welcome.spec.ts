@@ -2,20 +2,14 @@ import { expect, test } from '../fixtures/base';
 import { acceptTerms } from '../utils/basic-actions';
 
 export const welcomeTests = () => {
-  test('welcome should be the first page', async ({ page, popup }) => {
+  test('welcome should be the first page', async ({ popup }) => {
     const tosLink = popup.getByTestId('terms-of-service-link');
     const ppLink = popup.getByTestId('privacy-policy-link');
 
     await expect(tosLink).toBeVisible();
-    await expect(tosLink).toHaveAttribute(
-      'href',
-      'https://www.shinkai.com/terms-of-service',
-    );
+    await expect(tosLink).toHaveAttribute('href', 'https://www.shinkai.com/terms-of-service');
     await expect(ppLink).toBeVisible();
-    await expect(ppLink).toHaveAttribute(
-      'href',
-      'https://www.shinkai.com/privacy-policy',
-    );
+    await expect(ppLink).toHaveAttribute('href', 'https://www.shinkai.com/privacy-policy');
   });
 
   test('terms button should start unchecked', async ({ popup }) => {
@@ -35,9 +29,7 @@ export const welcomeTests = () => {
     await expect(getStartedButton).toHaveAttribute('disabled');
   });
 
-  test('get started button should be enabled when terms are accepted', async ({
-    popup,
-  }) => {
+  test('get started button should be enabled when terms are accepted', async ({ popup }) => {
     const termsInput = popup.getByTestId('terms');
     await termsInput.click();
 

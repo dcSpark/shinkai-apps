@@ -1,13 +1,13 @@
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { VRItem } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import {
-  buttonVariants,
   Checkbox,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  buttonVariants,
 } from '@shinkai_network/shinkai-ui';
 import { FileTypeIcon } from '@shinkai_network/shinkai-ui/assets';
 import { formatDateToUSLocaleString } from '@shinkai_network/shinkai-ui/helpers';
@@ -16,7 +16,7 @@ import { partial } from 'filesize';
 import { CopyIcon, FileInputIcon, TrashIcon } from 'lucide-react';
 import React from 'react';
 
-import { useVectorFsStore, VectorFSLayout } from '../context/vector-fs-context';
+import { VectorFSLayout, useVectorFsStore } from '../context/vector-fs-context';
 import { VectorFsItemAction } from './vector-fs-drawer';
 
 export const VectorFsItemInfo = ({
@@ -54,12 +54,8 @@ const VectorFsItem = ({
   isSelectedFile: boolean;
 }) => {
   const layout = useVectorFsStore((state) => state.layout);
-  const isVRSelectionActive = useVectorFsStore(
-    (state) => state.isVRSelectionActive,
-  );
-  const setActiveDrawerMenuOption = useVectorFsStore(
-    (state) => state.setActiveDrawerMenuOption,
-  );
+  const isVRSelectionActive = useVectorFsStore((state) => state.isVRSelectionActive);
+  const setActiveDrawerMenuOption = useVectorFsStore((state) => state.setActiveDrawerMenuOption);
   const setSelectedFile = useVectorFsStore((state) => state.setSelectedFile);
   const size = partial({ standard: 'jedec' });
 
@@ -81,21 +77,11 @@ const VectorFsItem = ({
             handleSelectFiles(file);
           }}
         />
-        <label
-          className="flex flex-1 items-center gap-3"
-          htmlFor={`item-${file.name}`}
-        >
+        <label className="flex flex-1 items-center gap-3" htmlFor={`item-${file.name}`}>
           <FileTypeIcon
-            type={
-              file?.vr_header?.resource_source?.Standard?.FileRef?.file_type
-                ?.Document
-            }
+            type={file?.vr_header?.resource_source?.Standard?.FileRef?.file_type?.Document}
           />
-          <VectorFsItemInfo
-            createdDatetime={createdDatetime}
-            file={file}
-            fileSize={fileSize}
-          />
+          <VectorFsItemInfo createdDatetime={createdDatetime} file={file} fileSize={fileSize} />
         </label>
       </div>
     );
@@ -104,16 +90,9 @@ const VectorFsItem = ({
   return (
     <button className={wrapperClassname} onClick={onClick}>
       <FileTypeIcon
-        type={
-          file?.vr_header?.resource_source?.Standard?.FileRef?.file_type
-            ?.Document
-        }
+        type={file?.vr_header?.resource_source?.Standard?.FileRef?.file_type?.Document}
       />
-      <VectorFsItemInfo
-        createdDatetime={createdDatetime}
-        file={file}
-        fileSize={fileSize}
-      />
+      <VectorFsItemInfo createdDatetime={createdDatetime} file={file} fileSize={fileSize} />
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <div
@@ -134,10 +113,7 @@ const VectorFsItem = ({
             <DotsVerticalIcon className="text-gray-100" />
           </div>
         </DropdownMenuTrigger>
-        <DropdownMenuContent
-          align="end"
-          className="w-[160px] border bg-gray-500 px-2.5 py-2"
-        >
+        <DropdownMenuContent align="end" className="w-[160px] border bg-gray-500 px-2.5 py-2">
           {[
             {
               name: 'Move',
@@ -162,9 +138,7 @@ const VectorFsItem = ({
             },
           ].map((option) => (
             <React.Fragment key={option.name}>
-              {option.name === 'Delete' && (
-                <DropdownMenuSeparator className="bg-gray-300" />
-              )}
+              {option.name === 'Delete' && <DropdownMenuSeparator className="bg-gray-300" />}
               <DropdownMenuItem
                 key={option.name}
                 onClick={(event) => {

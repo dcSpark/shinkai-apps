@@ -23,6 +23,4 @@ export const saveWebpageToVectorFsFormSchema = z.object({
   destinationFolderPath: z.string().min(1),
 });
 
-export type SaveWebpageToVectorFsFormSchema = z.infer<
-  typeof saveWebpageToVectorFsFormSchema
->;
+export type SaveWebpageToVectorFsFormSchema = z.infer<typeof saveWebpageToVectorFsFormSchema>;

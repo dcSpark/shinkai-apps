@@ -24,14 +24,11 @@ import { SerializedAgentWrapper } from '../wasm/SerializedAgentWrapper';
 import { ShinkaiMessageBuilderWrapper } from '../wasm/ShinkaiMessageBuilderWrapper';
 import { ShinkaiNameWrapper } from '../wasm/ShinkaiNameWrapper';
 
-export const fetchPublicKey =
-  (nodeAddress: string) => async (): Promise<any> => {
-    const response = await httpClient.get(
-      urlJoin(nodeAddress, '/get_public_key'),
-    );
-    const data = await response.data;
-    return data;
-  };
+export const fetchPublicKey = (nodeAddress: string) => async (): Promise<any> => {
+  const response = await httpClient.get(urlJoin(nodeAddress, '/get_public_key'));
+  const data = await response.data;
+  return data;
+};
 
 export const createChatWithMessage = async (
   nodeAddress: string,
@@ -42,12 +39,8 @@ export const createChatWithMessage = async (
   text_message: string,
   setupDetailsState: CredentialsPayload,
 ): Promise<{ inboxId: string }> => {
-  const senderShinkaiName = new ShinkaiNameWrapper(
-    sender + '/' + sender_subidentity,
-  );
-  const receiverShinkaiName = new ShinkaiNameWrapper(
-    receiver + '/' + receiver_subidentity,
-  );
+  const senderShinkaiName = new ShinkaiNameWrapper(sender + '/' + sender_subidentity);
+  const receiverShinkaiName = new ShinkaiNameWrapper(receiver + '/' + receiver_subidentity);
 
   const senderProfile = senderShinkaiName.extract_profile();
   const receiverProfile = receiverShinkaiName.extract_profile();
@@ -102,9 +95,7 @@ export const sendTextMessageWithInbox = async (
   setupDetailsState: CredentialsPayload,
 ): Promise<{ inboxId: string }> => {
   // Note(Nico): we are forcing to send messages from profiles by removing device related stuff
-  const senderShinkaiName = new ShinkaiNameWrapper(
-    sender + '/' + sender_subidentity,
-  );
+  const senderShinkaiName = new ShinkaiNameWrapper(sender + '/' + sender_subidentity);
   const senderProfile = senderShinkaiName.get_profile_name;
 
   const messageStr = ShinkaiMessageBuilderWrapper.send_text_message_with_inbox(
@@ -184,16 +175,15 @@ export const getAllInboxesForProfile = async (
   target_shinkai_name_profile: string,
   setupDetailsState: CredentialsPayload,
 ): Promise<SmartInbox[]> => {
-  const messageString =
-    ShinkaiMessageBuilderWrapper.get_all_inboxes_for_profile(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      sender,
-      sender_subidentity,
-      receiver,
-      target_shinkai_name_profile,
-    );
+  const messageString = ShinkaiMessageBuilderWrapper.get_all_inboxes_for_profile(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    sender,
+    sender_subidentity,
+    receiver,
+    target_shinkai_name_profile,
+  );
 
   const message = JSON.parse(messageString);
 
@@ -284,9 +274,7 @@ export const submitRequestRegistrationCode = async (
   // TODO: refactor the profile name to be a constant
   // maybe we should add ShinkaiName and InboxName to the wasm library (just ADDED them this needs refactor)
   const sender_profile_name =
-    setupDetailsState.profile +
-    '/device/' +
-    setupDetailsState.registration_name;
+    setupDetailsState.profile + '/device/' + setupDetailsState.registration_name;
 
   const messageStr = ShinkaiMessageBuilderWrapper.request_code_registration(
     setupDetailsState.my_device_encryption_sk,
@@ -315,24 +303,21 @@ export const submitRequestRegistrationCode = async (
 
 export const submitRegistrationCode = async (
   setupData: SetupPayload,
-): Promise<
-  { encryption_public_key: string; identity_public_key: string } | undefined
-> => {
+): Promise<{ encryption_public_key: string; identity_public_key: string } | undefined> => {
   try {
-    const messageStr =
-      ShinkaiMessageBuilderWrapper.use_code_registration_for_device(
-        setupData.my_device_encryption_sk,
-        setupData.my_device_identity_sk,
-        setupData.profile_encryption_sk,
-        setupData.profile_identity_sk,
-        setupData.node_encryption_pk,
-        setupData.registration_code,
-        setupData.identity_type,
-        setupData.permission_type,
-        setupData.registration_name,
-        setupData.profile || '', // sender_profile_name: it doesn't exist yet in the Node
-        setupData.shinkai_identity,
-      );
+    const messageStr = ShinkaiMessageBuilderWrapper.use_code_registration_for_device(
+      setupData.my_device_encryption_sk,
+      setupData.my_device_identity_sk,
+      setupData.profile_encryption_sk,
+      setupData.profile_identity_sk,
+      setupData.node_encryption_pk,
+      setupData.registration_code,
+      setupData.identity_type,
+      setupData.permission_type,
+      setupData.registration_name,
+      setupData.profile || '', // sender_profile_name: it doesn't exist yet in the Node
+      setupData.shinkai_identity,
+    );
 
     const message = JSON.parse(messageStr);
 
@@ -361,12 +346,9 @@ export const health = async (payload: {
   is_pristine: boolean;
   version: string;
 }> => {
-  const healthResponse = await httpClient.get(
-    urlJoin(payload.node_address, '/v1/shinkai_health'),
-    {
-      responseType: 'json',
-    },
-  );
+  const healthResponse = await httpClient.get(urlJoin(payload.node_address, '/v1/shinkai_health'), {
+    responseType: 'json',
+  });
   const responseData = healthResponse.data;
   return responseData;
 };
@@ -379,11 +361,12 @@ export const submitInitialRegistrationNoCode = async (
 }> => {
   try {
     // Used to fetch the shinkai identity
-    const healthResponse = await httpClient.get<{ status: 'ok'; node_name: string; is_pristine: boolean }>(
-      urlJoin(payload.node_address, '/v1/shinkai_health'),
-    );
-    const { status, node_name, is_pristine } =
-      healthResponse.data;
+    const healthResponse = await httpClient.get<{
+      status: 'ok';
+      node_name: string;
+      is_pristine: boolean;
+    }>(urlJoin(payload.node_address, '/v1/shinkai_health'));
+    const { status, node_name, is_pristine } = healthResponse.data;
     if (status !== 'ok') {
       return { status: 'error' };
     }
@@ -391,17 +374,16 @@ export const submitInitialRegistrationNoCode = async (
       return { status: 'non-pristine' };
     }
 
-    const messageStr =
-      ShinkaiMessageBuilderWrapper.initial_registration_with_no_code_for_device(
-        payload.my_device_encryption_sk,
-        payload.my_device_identity_sk,
-        payload.profile_encryption_sk,
-        payload.profile_identity_sk,
-        payload.registration_name,
-        payload.registration_name,
-        payload.profile || '', // sender_profile_name: it doesn't exist yet in the Node
-        node_name,
-      );
+    const messageStr = ShinkaiMessageBuilderWrapper.initial_registration_with_no_code_for_device(
+      payload.my_device_encryption_sk,
+      payload.my_device_identity_sk,
+      payload.profile_encryption_sk,
+      payload.profile_identity_sk,
+      payload.registration_name,
+      payload.registration_name,
+      payload.profile || '', // sender_profile_name: it doesn't exist yet in the Node
+      node_name,
+    );
 
     const message = JSON.parse(messageStr);
 
@@ -488,13 +470,9 @@ export const updateAgentInJob = async (
 
   const message = JSON.parse(messageStr);
 
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/change_job_agent'),
-    message,
-    {
-      responseType: 'json',
-    },
-  );
+  const response = await httpClient.post(urlJoin(nodeAddress, '/v1/change_job_agent'), message, {
+    responseType: 'json',
+  });
   const data = response.data;
   return data;
 };
@@ -564,13 +542,9 @@ export const getProfileAgents = async (
   const messageHash = calculateMessageHash(message);
   console.log('Get Profile Agents Message Hash:', messageHash);
 
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/available_agents'),
-    message,
-    {
-      responseType: 'json',
-    },
-  );
+  const response = await httpClient.post(urlJoin(nodeAddress, '/v1/available_agents'), message, {
+    responseType: 'json',
+  });
   const data = response.data;
   return data.data;
 };
@@ -620,18 +594,17 @@ export const getFileNames = async (
   inboxId: string,
   fileInbox: string,
 ): Promise<{ success: string; data: string[] }> => {
-  const messageString =
-    ShinkaiMessageBuilderWrapper.get_filenames_for_file_inbox(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      sender,
-      sender_subidentity,
-      receiver,
-      '',
-      inboxId,
-      fileInbox,
-    );
+  const messageString = ShinkaiMessageBuilderWrapper.get_filenames_for_file_inbox(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    sender,
+    sender_subidentity,
+    receiver,
+    '',
+    inboxId,
+    fileInbox,
+  );
 
   const message = JSON.parse(messageString);
 
@@ -765,20 +738,19 @@ export const retrieveVectorSearchSimplified = async (
   path: string | null = null,
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
-  const messageStr =
-    ShinkaiMessageBuilderWrapper.retrieveVectorSearchSimplified(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      searchQuery,
-      path,
-      10,
-      null,
-      sender,
-      sender_subidentity,
-      receiver,
-      receiver_subidentity,
-    );
+  const messageStr = ShinkaiMessageBuilderWrapper.retrieveVectorSearchSimplified(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    searchQuery,
+    path,
+    10,
+    null,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
 
   const message = JSON.parse(messageStr);
 
@@ -820,8 +792,7 @@ export const uploadFilesToVR = async (
     for (const fileToUpload of files) {
       await fileUploader.uploadEncryptedFile(fileToUpload);
     }
-    const response =
-      await fileUploader.finalizeAndAddItemsToDb(destinationPath);
+    const response = await fileUploader.finalizeAndAddItemsToDb(destinationPath);
 
     return response;
   } catch (error) {
@@ -1130,8 +1101,7 @@ export const getAvailableSharedFolders = async (
   const queryParams = new URLSearchParams();
   if (pageSize != null) queryParams.append('pageSize', pageSize.toString());
   if (page != null) queryParams.append('page', page.toString());
-  if (priceFilter && priceFilter !== 'all')
-    queryParams.append('price', priceFilter);
+  if (priceFilter && priceFilter !== 'all') queryParams.append('price', priceFilter);
   if (search) queryParams.append('search', search);
 
   const response = await httpClient.get(

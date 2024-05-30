@@ -22,19 +22,17 @@ export const UnsubscribeButton = ({
   fullWidth?: boolean;
 }) => {
   const auth = useAuth((state) => state.auth);
-  const {
-    mutateAsync: unsubscribeSharedFolder,
-    isPending: isUnsubscribingPending,
-  } = useUnsubscribeToSharedFolder({
-    onSuccess: () => {
-      toast.success('Subscription removed');
-    },
-    onError: (error) => {
-      toast.error('Error removing subscription', {
-        description: error.message,
-      });
-    },
-  });
+  const { mutateAsync: unsubscribeSharedFolder, isPending: isUnsubscribingPending } =
+    useUnsubscribeToSharedFolder({
+      onSuccess: () => {
+        toast.success('Subscription removed');
+      },
+      onError: (error) => {
+        toast.error('Error removing subscription', {
+          description: error.message,
+        });
+      },
+    });
 
   const [isHovered, setIsHovered] = useState(false);
 
@@ -83,17 +81,16 @@ export const SubscribeButton = ({
   fullWidth?: boolean;
 }) => {
   const auth = useAuth((state) => state.auth);
-  const { mutateAsync: subscribeSharedFolder, isPending } =
-    useSubscribeToSharedFolder({
-      onSuccess: () => {
-        toast.success('Subscription added');
-      },
-      onError: (error) => {
-        toast.error('Error adding subscription', {
-          description: error.message,
-        });
-      },
-    });
+  const { mutateAsync: subscribeSharedFolder, isPending } = useSubscribeToSharedFolder({
+    onSuccess: () => {
+      toast.success('Subscription added');
+    },
+    onError: (error) => {
+      toast.error('Error adding subscription', {
+        description: error.message,
+      });
+    },
+  });
 
   return (
     <MotionButton
