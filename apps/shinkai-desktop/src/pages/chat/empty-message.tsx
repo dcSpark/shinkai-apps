@@ -45,7 +45,7 @@ const EmptyMessage = () => {
               })}
               to={isLocalShinkaiNodeIsUse ? '/agents-locally' : '/add-agent'}
             >
-              <span>Create AI</span>
+              <span>Add AI</span>
             </Link>
           ) : (
             <Link

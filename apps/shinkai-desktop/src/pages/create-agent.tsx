@@ -211,7 +211,7 @@ const CreateAgentPage = () => {
   };
 
   return (
-    <SubpageLayout title="Create AI">
+    <SubpageLayout title="Add AI">
       <Form {...addAgentForm}>
         <form
           className="space-y-10"
@@ -356,7 +356,7 @@ const CreateAgentPage = () => {
             isLoading={isPending}
             type="submit"
           >
-            Create AI
+            Add AI
           </Button>
         </form>
       </Form>
