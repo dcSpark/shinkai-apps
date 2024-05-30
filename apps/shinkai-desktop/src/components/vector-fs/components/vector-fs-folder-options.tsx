@@ -35,7 +35,6 @@ import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';
-import { useShinkaiNodeManager } from '../../../store/shinkai-node-manager';
 import { useVectorFsStore } from '../context/vector-fs-context';
 import {
   FolderSelectionList,
@@ -415,9 +414,9 @@ export const VectorFsFolderCreateShareableAction = () => {
       profile_identity_sk: auth?.profile_identity_sk ?? '',
     });
   };
-  const isLocalShinkaiNodeInUse = useShinkaiNodeManager(
-    (state) => state.isInUse,
-  );
+  const isShinkaiIdentityLocalhost =
+    auth?.shinkai_identity.includes('localhost.shinkai');
+
   return (
     <React.Fragment>
       <SheetHeader>
@@ -448,7 +447,7 @@ export const VectorFsFolderCreateShareableAction = () => {
             className="mt-4"
             disabled={
               destinationFolderPath === selectedFolder?.path ||
-              !!isLocalShinkaiNodeInUse
+              isShinkaiIdentityLocalhost
             }
             isLoading={isPending}
             type="submit"
@@ -456,7 +455,7 @@ export const VectorFsFolderCreateShareableAction = () => {
             Share Folder
           </Button>
 
-          {isLocalShinkaiNodeInUse && (
+          {isShinkaiIdentityLocalhost && (
             <Alert className="mx-auto w-[98%] shadow-lg" variant="warning">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle className="text-sm">Enable Folder Sharing</AlertTitle>
