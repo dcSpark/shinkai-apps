@@ -19,6 +19,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
   TextField,
@@ -171,6 +172,10 @@ export const UploadVRFilesAction = () => {
           <FileTypeIcon className="h-10 w-10" />
           File Upload
         </SheetTitle>
+        <SheetDescription>
+          Uploading your files transforms them to be AI-ready and available to
+          use in Shinkai.
+        </SheetDescription>
       </SheetHeader>
       <Form {...createFolderForm}>
         <form className="space-y-8" onSubmit={createFolderForm.handleSubmit(onSubmit)}>

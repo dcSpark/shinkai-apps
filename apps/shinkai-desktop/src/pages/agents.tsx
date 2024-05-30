@@ -65,7 +65,7 @@ const AgentsPage = () => {
       <div className="absolute right-3 top-[36px]">
         <Button className="h-[40px] gap-2" onClick={onAddAgentClick} size="auto">
           <Plus className="h-4 w-4" />
-          <span>Create AI</span>
+          <span>Add AI</span>
         </Button>
       </div>
       <div className="flex h-full flex-col space-y-3">
@@ -81,7 +81,7 @@ const AgentsPage = () => {
               </p>
             </div>
 
-            <Button onClick={onAddAgentClick}>Create AI</Button>
+            <Button onClick={onAddAgentClick}>Add AI</Button>
           </div>
         ) : (
           <ScrollArea className="flex h-full flex-col justify-between [&>div>div]:!block">

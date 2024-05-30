@@ -50,11 +50,13 @@ export default function OnboardingStepper() {
         },
         {
           label: GetStartedSteps.CreateAI,
-          status: currentStepsMap.get(GetStartedSteps.CreateAI) ?? GetStartedStatus.NotStarted,
-          title: 'Create AI',
+          status:
+            currentStepsMap.get(GetStartedSteps.CreateAI) ??
+            GetStartedStatus.NotStarted,
+          title: 'Add AI',
           body: (
             <div className="flex flex-col items-start gap-2">
-              <span>Create an AI agent that utilizes your favorite LLM</span>
+              <span>Add an AI agent that utilizes your favorite LLM</span>
               <Button
                 className="h-auto gap-1 px-3 py-2"
                 onClick={() => {
@@ -64,7 +66,7 @@ export default function OnboardingStepper() {
                 variant="outline"
               >
                 <PlusIcon className="h-4 w-4" />
-                Create AI
+                Add AI
               </Button>
             </div>
           ),

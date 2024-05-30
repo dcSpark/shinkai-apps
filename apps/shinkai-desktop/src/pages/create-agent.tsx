@@ -200,7 +200,7 @@ const CreateAgentPage = () => {
   };
 
   return (
-    <SubpageLayout title="Create AI">
+    <SubpageLayout title="Add AI">
       <Form {...addAgentForm}>
         <form className="space-y-10" onSubmit={addAgentForm.handleSubmit(onSubmit)}>
           <div className="space-y-6">
@@ -317,8 +317,13 @@ const CreateAgentPage = () => {
 
           {isError && <ErrorMessage message={error.message} />}
 
-          <Button className="w-full" disabled={isPending} isLoading={isPending} type="submit">
-            Create AI
+          <Button
+            className="w-full"
+            disabled={isPending}
+            isLoading={isPending}
+            type="submit"
+          >
+            Add AI
           </Button>
         </form>
       </Form>
