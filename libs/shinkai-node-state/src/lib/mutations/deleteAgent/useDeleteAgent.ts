@@ -1,4 +1,8 @@
-import { type UseMutationOptions, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  type UseMutationOptions,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 
 import { FunctionKey } from '../../constants';
 import { deleteAgent } from './index';

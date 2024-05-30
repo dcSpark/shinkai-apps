@@ -35,7 +35,12 @@ export const WithNav = () => {
   }, [isSuccess, nodeInfo?.status, isFetching]);
 
   return (
-    <div className={cn('flex h-full w-full flex-col space-y-6', isInboxPage && 'space-y-0')}>
+    <div
+      className={cn(
+        'flex h-full w-full flex-col space-y-6',
+        isInboxPage && 'space-y-0',
+      )}
+    >
       <NavBar />
       <div className="grow overflow-auto">
         <Outlet />

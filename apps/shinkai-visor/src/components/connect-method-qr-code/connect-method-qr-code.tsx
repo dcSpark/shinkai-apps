@@ -2,7 +2,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { QRSetupData } from '@shinkai_network/shinkai-message-ts/models';
 import { useSubmitRegistration } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistration';
 import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/lib/queries/getEncryptionKeys/useGetEncryptionKeys';
-import { Button, ErrorMessage, Form, FormField, TextField } from '@shinkai_network/shinkai-ui';
+import {
+  Button,
+  ErrorMessage,
+  Form,
+  FormField,
+  TextField,
+} from '@shinkai_network/shinkai-ui';
 import { BrowserQRCodeReader } from '@zxing/browser';
 import { QrCode, Trash, Upload } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
@@ -48,7 +54,8 @@ type AddNodeDataFromQr = Pick<
 export const ConnectMethodQrCode = () => {
   const navigate = useNavigate();
   const setAuth = useAuth((state) => state.setAuth);
-  const { encryptionKeys, isLoading: isLoadingEncryptionKeys } = useGetEncryptionKeys();
+  const { encryptionKeys, isLoading: isLoadingEncryptionKeys } =
+    useGetEncryptionKeys();
   const form = useForm<FormType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -146,8 +153,12 @@ export const ConnectMethodQrCode = () => {
   return (
     <div className="flex h-full flex-col space-y-3">
       <Header
-        description={<FormattedMessage id="qr-code-connection-connection-method-description" />}
-        title={<FormattedMessage id="qr-code-connection-connection-method-title" />}
+        description={
+          <FormattedMessage id="qr-code-connection-connection-method-description" />
+        }
+        title={
+          <FormattedMessage id="qr-code-connection-connection-method-title" />
+        }
       />
 
       <Form {...form}>
@@ -163,10 +174,16 @@ export const ConnectMethodQrCode = () => {
                     <div className="flex flex-row items-center justify-center space-x-3">
                       <div className="flex flex-row items-center">
                         <QrCode className="mr-1 h-4 w-4 space-x-1" />
-                        <span className="font-semibold">{qrImageFile.name}</span>
+                        <span className="font-semibold">
+                          {qrImageFile.name}
+                        </span>
                       </div>
                       <div className="relative">
-                        <img alt="qr connection data" className="h-[80px]" src={qrImageUrl} />
+                        <img
+                          alt="qr connection data"
+                          className="h-[80px]"
+                          src={qrImageUrl}
+                        />
                         <Button
                           className="absolute right-1 top-1 h-6 w-6"
                           onClick={() => removeQRFile()}
@@ -210,7 +227,10 @@ export const ConnectMethodQrCode = () => {
                   control={form.control}
                   name="registration_name"
                   render={({ field }) => (
-                    <TextField field={field} label={<FormattedMessage id="registration-name" />} />
+                    <TextField
+                      field={field}
+                      label={<FormattedMessage id="registration-name" />}
+                    />
                   )}
                 />
 
@@ -218,7 +238,10 @@ export const ConnectMethodQrCode = () => {
                   control={form.control}
                   name="node_address"
                   render={({ field }) => (
-                    <TextField field={field} label={<FormattedMessage id="node-address" />} />
+                    <TextField
+                      field={field}
+                      label={<FormattedMessage id="node-address" />}
+                    />
                   )}
                 />
 
@@ -226,7 +249,10 @@ export const ConnectMethodQrCode = () => {
                   control={form.control}
                   name="shinkai_identity"
                   render={({ field }) => (
-                    <TextField field={field} label={<FormattedMessage id="shinkai-identity" />} />
+                    <TextField
+                      field={field}
+                      label={<FormattedMessage id="shinkai-identity" />}
+                    />
                   )}
                 />
               </>

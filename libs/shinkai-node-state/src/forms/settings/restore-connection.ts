@@ -5,4 +5,6 @@ export const restoreConnectionFormSchema = z.object({
   encryptedConnectionFile: z.array(z.any()).max(1),
 });
 
-export type RestoreConnectionFormSchema = z.infer<typeof restoreConnectionFormSchema>;
+export type RestoreConnectionFormSchema = z.infer<
+  typeof restoreConnectionFormSchema
+>;

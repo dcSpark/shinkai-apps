@@ -10,7 +10,10 @@ export const blobToBase64 = (blob: Blob): Promise<string> => {
   });
 };
 
-export const dataUrlToFile = (dataUrl: string, filename: string): File | undefined => {
+export const dataUrlToFile = (
+  dataUrl: string,
+  filename: string,
+): File | undefined => {
   const arr = dataUrl.split(',');
   if (arr.length < 2) {
     return undefined;

@@ -4,7 +4,10 @@ import { ExternalToast, toast } from 'sonner';
 import React from 'react';
 import { openShinkaiNodeManagerWindow } from './shinkai-node-manager-windows-utils';
 
-const ShinkaiNodeLogsLabel = ({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) => {
+const ShinkaiNodeLogsLabel = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLSpanElement>) => {
   return (
     <span
       className={cn('cursor-pointer text-white', className)}
@@ -37,7 +40,8 @@ export const shinkaiNodeStartedToast = () => {
 export const shinkaiNodeStartErrorToast = () => {
   toast.error(
     <div>
-      Error starting your local Shinkai Node, see <ShinkaiNodeLogsLabel /> for more information
+      Error starting your local Shinkai Node, see <ShinkaiNodeLogsLabel /> for
+      more information
     </div>,
     {
       ...defaultToastOptions,
@@ -58,7 +62,8 @@ export const ollamaStartedToast = () => {
 export const ollamaStartErrorToast = () => {
   toast.error(
     <div>
-      Error starting your local Ollama, see <ShinkaiNodeLogsLabel /> for more information
+      Error starting your local Ollama, see <ShinkaiNodeLogsLabel /> for more
+      information
     </div>,
     {
       ...defaultToastOptions,
@@ -74,7 +79,8 @@ export const stoppingShinkaiNodeToast = () => {
 export const shinkaiNodeStopErrorToast = () => {
   toast.error(
     <div>
-      Error stopping your local Shinkai Node, see <ShinkaiNodeLogsLabel /> for more information
+      Error stopping your local Shinkai Node, see <ShinkaiNodeLogsLabel /> for
+      more information
     </div>,
     {
       ...defaultToastOptions,
@@ -95,7 +101,8 @@ export const stoppingOllamaToast = () => {
 export const ollamaStopErrorToast = () => {
   toast.error(
     <div>
-      Error stopping your local Ollama, see <ShinkaiNodeLogsLabel /> for more information
+      Error stopping your local Ollama, see <ShinkaiNodeLogsLabel /> for more
+      information
     </div>,
     {
       ...defaultToastOptions,
@@ -117,8 +124,8 @@ export const successRemovingShinkaiNodeStorageToast = () => {
 export const errorRemovingShinkaiNodeStorageToast = () => {
   return toast.error(
     <div>
-      Error removing your local Shinkai Node storage, see <ShinkaiNodeLogsLabel /> for more
-      information
+      Error removing your local Shinkai Node storage, see{' '}
+      <ShinkaiNodeLogsLabel /> for more information
     </div>,
     { ...defaultToastOptions },
   );
@@ -131,15 +138,21 @@ export const successShinkaiNodeSetDefaultOptionsToast = () => {
 };
 
 export const successOllamaModelsSyncToast = () => {
-  return toast.success('Local Ollama models synchronized with your Shinkai Node', {
-    ...defaultToastOptions,
-  });
+  return toast.success(
+    'Local Ollama models synchronized with your Shinkai Node',
+    {
+      ...defaultToastOptions,
+    },
+  );
 };
 
 export const errorOllamaModelsSyncToast = () => {
-  return toast.error('Error synchronizing your local Ollama models with your Shinkai Node', {
-    ...defaultToastOptions,
-  });
+  return toast.error(
+    'Error synchronizing your local Ollama models with your Shinkai Node',
+    {
+      ...defaultToastOptions,
+    },
+  );
 };
 
 export const pullingModelStartToast = (model: string) => {
@@ -161,7 +174,8 @@ export const pullingModelDoneToast = (model: string) => {
 export const pullingModelErrorToast = (model: string) => {
   return toast.error(
     <div>
-      Error downloading AI model {model}, see <ShinkaiNodeLogsLabel /> for more information
+      Error downloading AI model {model}, see <ShinkaiNodeLogsLabel /> for more
+      information
     </div>,
     {
       ...defaultToastOptions,

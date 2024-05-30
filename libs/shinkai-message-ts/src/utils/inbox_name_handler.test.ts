@@ -12,7 +12,11 @@ suite('extractReceiverShinkaiName', () => {
       'inbox::@@node1.shinkai/main::@@node1.shinkai/main/device/main_device::false',
       '@@node1.shinkai',
     );
-    assert.equal(result, '@@node1.shinkai', 'Returned the correct receiver name');
+    assert.equal(
+      result,
+      '@@node1.shinkai',
+      'Returned the correct receiver name',
+    );
   });
 
   test('throws error for invalid format (too few parts)', () => {
@@ -28,7 +32,10 @@ suite('extractReceiverShinkaiName', () => {
   test('throws error for invalid format (too many parts)', () => {
     assert.throws(
       () => {
-        extractReceiverShinkaiName('inbox::' + '@@node1.shinkai::'.repeat(100), '@@node1.shinkai');
+        extractReceiverShinkaiName(
+          'inbox::' + '@@node1.shinkai::'.repeat(100),
+          '@@node1.shinkai',
+        );
       },
       ShinkaiNameError,
       'InvalidFormat',
@@ -51,7 +58,8 @@ suite('extractReceiverShinkaiName', () => {
 
 describe('getOtherPersonIdentity', () => {
   it('should return the other person identity', () => {
-    const inboxName = 'inbox::@@node1.shinkai/main::@@node1.shinkai/main/device/main_device::false';
+    const inboxName =
+      'inbox::@@node1.shinkai/main::@@node1.shinkai/main/device/main_device::false';
     const myIdentity = '@@node1.shinkai/main/device/main_device';
     const expectedIdentity = '@@node1.shinkai/main';
 

@@ -54,11 +54,17 @@ const MotionButton = motion(Button);
 const SettingsPage = () => {
   const navigate = useNavigate();
   const auth = useAuth((authStore) => authStore.auth);
-  const isLocalShinkaiNodeInUse = useShinkaiNodeManager((state) => state.isInUse);
+  const isLocalShinkaiNodeInUse = useShinkaiNodeManager(
+    (state) => state.isInUse,
+  );
   const setAuth = useAuth((authStore) => authStore.setAuth);
 
-  const defaultAgentId = useSettings((settingsStore) => settingsStore.defaultAgentId);
-  const setDefaultAgentId = useSettings((settingsStore) => settingsStore.setDefaultAgentId);
+  const defaultAgentId = useSettings(
+    (settingsStore) => settingsStore.defaultAgentId,
+  );
+  const setDefaultAgentId = useSettings(
+    (settingsStore) => settingsStore.setDefaultAgentId,
+  );
   const { nodeInfo, isSuccess: isNodeInfoSuccess } = useGetHealth({
     node_address: auth?.node_address ?? '',
   });
@@ -90,27 +96,28 @@ const SettingsPage = () => {
   });
 
   const { mutateAsync: respawnShinkaiNode } = useShinkaiNodeRespawnMutation();
-  const { mutateAsync: updateNodeName, isPending: isUpdateNodeNamePending } = useUpdateNodeName({
-    onSuccess: () => {
-      toast.success('Node name updated successfully');
-      if (!auth) return;
-      const newAuth: SetupData = { ...auth };
-      setAuth({
-        ...newAuth,
-        shinkai_identity: currentShinkaiIdentity,
-      });
-      if (isLocalShinkaiNodeInUse) {
-        respawnShinkaiNode();
-      } else if (!isHostingShinkaiNode(auth.node_address)) {
-        toast.info('Please restart your Shinkai Node');
-      }
-    },
-    onError: (error) => {
-      toast.error('Failed to update node name', {
-        description: error.message,
-      });
-    },
-  });
+  const { mutateAsync: updateNodeName, isPending: isUpdateNodeNamePending } =
+    useUpdateNodeName({
+      onSuccess: () => {
+        toast.success('Node name updated successfully');
+        if (!auth) return;
+        const newAuth: SetupData = { ...auth };
+        setAuth({
+          ...newAuth,
+          shinkai_identity: currentShinkaiIdentity,
+        });
+        if (isLocalShinkaiNodeInUse) {
+          respawnShinkaiNode();
+        } else if (!isHostingShinkaiNode(auth.node_address)) {
+          toast.info('Please restart your Shinkai Node');
+        }
+      },
+      onError: (error) => {
+        toast.error('Failed to update node name', {
+          description: error.message,
+        });
+      },
+    });
 
   useEffect(() => {
     if (isNodeInfoSuccess) {
@@ -160,7 +167,9 @@ const SettingsPage = () => {
                   onValueChange={(value) => {
                     form.setValue('defaultAgentId', value);
                   }}
-                  value={agents?.find((agent) => agent.id === defaultAgentId)?.id}
+                  value={
+                    agents?.find((agent) => agent.id === defaultAgentId)?.id
+                  }
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -184,7 +193,9 @@ const SettingsPage = () => {
                 control={form.control}
                 disabled
                 name="nodeAddress"
-                render={({ field }) => <TextField field={field} label="Node Address" />}
+                render={({ field }) => (
+                  <TextField field={field} label="Node Address" />
+                )}
               />
               <FormField
                 control={form.control}
@@ -194,7 +205,8 @@ const SettingsPage = () => {
                     field={{
                       ...field,
                       onKeyDown: (event) => {
-                        if (currentShinkaiIdentity === auth?.shinkai_identity) return;
+                        if (currentShinkaiIdentity === auth?.shinkai_identity)
+                          return;
                         if (event.key === 'Enter') {
                           handleUpdateNodeName();
                         }
@@ -202,7 +214,9 @@ const SettingsPage = () => {
                     }}
                     helperMessage={
                       <span className="text-gray-80 inline-flex items-center gap-1 px-1 py-2.5 hover:text-white">
-                        {auth?.shinkai_identity.includes('localhost.shinkai') ? (
+                        {auth?.shinkai_identity.includes(
+                          'localhost.shinkai',
+                        ) ? (
                           <a
                             className={cn(
                               buttonVariants({
@@ -258,7 +272,10 @@ const SettingsPage = () => {
                   <Button
                     className="min-w-10 h-10 rounded-lg text-sm"
                     onClick={() => {
-                      form.setValue('shinkaiIdentity', auth?.shinkai_identity ?? '');
+                      form.setValue(
+                        'shinkaiIdentity',
+                        auth?.shinkai_identity ?? '',
+                      );
                     }}
                     type="button"
                     variant="outline"
@@ -271,7 +288,9 @@ const SettingsPage = () => {
                 control={form.control}
                 disabled
                 name="nodeVersion"
-                render={({ field }) => <TextField field={field} label="Node Version" />}
+                render={({ field }) => (
+                  <TextField field={field} label="Node Version" />
+                )}
               />
             </form>
           </Form>

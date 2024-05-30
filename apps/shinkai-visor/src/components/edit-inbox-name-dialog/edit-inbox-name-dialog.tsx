@@ -94,16 +94,30 @@ export const EditInboxNameDialog = ({
                 control={form.control}
                 name="name"
                 render={({ field }) => (
-                  <TextField autoFocus field={field} label={<FormattedMessage id="name.one" />} />
+                  <TextField
+                    autoFocus
+                    field={field}
+                    label={<FormattedMessage id="name.one" />}
+                  />
                 )}
               />
             </div>
             <DialogFooter>
               <div className="flex gap-2 pt-4">
-                <Button className="flex-1" onClick={cancel} type="button" variant="ghost">
+                <Button
+                  className="flex-1"
+                  onClick={cancel}
+                  type="button"
+                  variant="ghost"
+                >
                   <FormattedMessage id="cancel" />
                 </Button>
-                <Button className="flex-1" disabled={isPending} isLoading={isPending} type="submit">
+                <Button
+                  className="flex-1"
+                  disabled={isPending}
+                  isLoading={isPending}
+                  type="submit"
+                >
                   <FormattedMessage id="save" />
                 </Button>
               </div>

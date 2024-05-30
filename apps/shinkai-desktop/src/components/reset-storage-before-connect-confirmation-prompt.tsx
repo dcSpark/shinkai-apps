@@ -29,7 +29,8 @@ export const ResetStorageBeforeConnectConfirmationPrompt = ({
   const navigate = useNavigate();
   const { mutateAsync: shinkaiNodeKill } = useShinkaiNodeKillMutation();
   const { mutateAsync: shinkaiNodeSpawn } = useShinkaiNodeSpawnMutation();
-  const { mutateAsync: shinkaiNodeRemoveStorage } = useShinkaiNodeRemoveStorageMutation();
+  const { mutateAsync: shinkaiNodeRemoveStorage } =
+    useShinkaiNodeRemoveStorageMutation();
 
   const cancel = () => {
     if (typeof onCancel === 'function') {
@@ -62,23 +63,23 @@ export const ResetStorageBeforeConnectConfirmationPrompt = ({
             <div className="flex flex-col space-y-3 text-left text-white/70">
               <div className="flex flex-col space-y-3">
                 <span className="text-sm">
-                  Your Shinkai Node is currently locked by existing keys. To connect again you have
-                  two options:
+                  Your Shinkai Node is currently locked by existing keys. To
+                  connect again you have two options:
                 </span>
                 <div className="flex flex-col space-y-1">
                   <span className="text-xs">
                     <span aria-label="restore" className="emoji" role="img">
                       🔑
                     </span>
-                    <b className="ml-1">Restore:</b> Try to restore your connection using a backed
-                    up keys.
+                    <b className="ml-1">Restore:</b> Try to restore your
+                    connection using a backed up keys.
                   </span>
                   <span className="text-xs">
                     <span aria-label="reset" className="emoji" role="img">
                       🗑️
                     </span>
-                    <b className="ml-1">Reset:</b> Delete your Shinkai Node Storage (this will
-                    permanently delete all your data).
+                    <b className="ml-1">Reset:</b> Delete your Shinkai Node
+                    Storage (this will permanently delete all your data).
                   </span>
                 </div>
               </div>
@@ -86,10 +87,18 @@ export const ResetStorageBeforeConnectConfirmationPrompt = ({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="mt-4 flex gap-2">
-          <Button className="mt-0 flex-1 text-sm" onClick={() => cancel()} variant={'ghost'}>
+          <Button
+            className="mt-0 flex-1 text-sm"
+            onClick={() => cancel()}
+            variant={'ghost'}
+          >
             Cancel
           </Button>
-          <Button className="mt-0 flex-1 text-sm" onClick={() => restore()} variant={'ghost'}>
+          <Button
+            className="mt-0 flex-1 text-sm"
+            onClick={() => restore()}
+            variant={'ghost'}
+          >
             <span aria-label="restore" className="emoji" role="img">
               🔑 Restore
             </span>

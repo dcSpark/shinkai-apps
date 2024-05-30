@@ -1,4 +1,8 @@
-import { QueryObserverOptions, UseQueryResult, useQuery } from '@tanstack/react-query';
+import {
+  QueryObserverOptions,
+  UseQueryResult,
+  useQuery,
+} from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api';
 
 export enum RequirementsStatus {

@@ -68,14 +68,18 @@ export const formatShortcutKey = (event: ShorcutKey) => {
 
   if (isMacOS && event.altKey) modifiers.push(modifierSymbols.alt);
   if (isMacOS && event.shiftKey) modifiers.push(modifierSymbols.shift);
-  if (event.metaKey && (isMacOS || !event.ctrlKey)) modifiers.push(modifierSymbols.meta);
-  if (event.ctrlKey && (!isMacOS || !event.metaKey)) modifiers.push(modifierSymbols.ctrl);
+  if (event.metaKey && (isMacOS || !event.ctrlKey))
+    modifiers.push(modifierSymbols.meta);
+  if (event.ctrlKey && (!isMacOS || !event.metaKey))
+    modifiers.push(modifierSymbols.ctrl);
   if (!isMacOS && event.shiftKey) modifiers.push(modifierSymbols.shift);
   if (!isMacOS && event.altKey) modifiers.push(modifierSymbols.alt);
 
   if (/./.test(event.key) && (!isMacOS || event.key !== 'Alt')) {
     const keyRepresentation =
-      isMacOS && event.altKey ? String.fromCharCode(event.keyCode) : event.key.toUpperCase();
+      isMacOS && event.altKey
+        ? String.fromCharCode(event.keyCode)
+        : event.key.toUpperCase();
     modifiers.push(keyRepresentation);
   }
 

@@ -1,10 +1,18 @@
-import { type UseMutationOptions, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  type UseMutationOptions,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 
 import { FunctionKey } from '../../constants';
 import { deleteVRFolder } from './index';
 import { DeleteVRFolderInput, DeleteVRFolderOutput } from './types';
 
-type Options = UseMutationOptions<DeleteVRFolderOutput, Error, DeleteVRFolderInput>;
+type Options = UseMutationOptions<
+  DeleteVRFolderOutput,
+  Error,
+  DeleteVRFolderInput
+>;
 
 export const useDeleteVrFolder = (options?: Options) => {
   const queryClient = useQueryClient();

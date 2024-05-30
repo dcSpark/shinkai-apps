@@ -34,7 +34,8 @@ export const useAuth = create<AuthStore>()(
       (set, get) => ({
         auth: null,
         setAuth: (auth) => {
-          const valueChanged = JSON.stringify(get().auth) !== JSON.stringify(auth);
+          const valueChanged =
+            JSON.stringify(get().auth) !== JSON.stringify(auth);
           set({ auth });
           if (valueChanged) {
             sendMessage({

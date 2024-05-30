@@ -103,8 +103,10 @@ function AgentCard({
   externalUrl: string;
   agentApiKey: string;
 }) {
-  const [isDeleteAgentDrawerOpen, setIsDeleteAgentDrawerOpen] = React.useState(false);
-  const [isEditAgentDrawerOpen, setIsEditAgentDrawerOpen] = React.useState(false);
+  const [isDeleteAgentDrawerOpen, setIsDeleteAgentDrawerOpen] =
+    React.useState(false);
+  const [isEditAgentDrawerOpen, setIsEditAgentDrawerOpen] =
+    React.useState(false);
 
   const navigate = useNavigate();
 
@@ -123,7 +125,9 @@ function AgentCard({
             <BotIcon className="h-6 w-6" />
           </div>
           <div className="flex flex-col items-baseline gap-2">
-            <span className="w-full truncate text-start text-sm">{agentId}</span>
+            <span className="w-full truncate text-start text-sm">
+              {agentId}
+            </span>
             <Badge className="text-gray-80 truncate bg-gray-400 text-start text-xs font-normal shadow-none">
               {model}
             </Badge>
@@ -149,7 +153,10 @@ function AgentCard({
               <DotsVerticalIcon className="text-gray-100" />
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-[160px] border bg-gray-500 px-2.5 py-2">
+          <DropdownMenuContent
+            align="end"
+            className="w-[160px] border bg-gray-500 px-2.5 py-2"
+          >
             {[
               {
                 name: 'Edit',
@@ -167,7 +174,9 @@ function AgentCard({
               },
             ].map((option) => (
               <React.Fragment key={option.name}>
-                {option.name === 'Delete' && <DropdownMenuSeparator className="bg-gray-300" />}
+                {option.name === 'Delete' && (
+                  <DropdownMenuSeparator className="bg-gray-300" />
+                )}
                 <DropdownMenuItem
                   key={option.name}
                   onClick={(event) => {
@@ -232,7 +241,13 @@ const EditAgentDrawer = ({
       modelCustom: agentModelProvider,
       modelTypeCustom: agentModelType,
     });
-  }, [agentId, agentModelProvider, agentModelType, agentExternalUrl, agentApiKey]);
+  }, [
+    agentId,
+    agentModelProvider,
+    agentModelType,
+    agentExternalUrl,
+    agentApiKey,
+  ]);
 
   const { mutateAsync: updateAgent, isPending } = useUpdateAgent({
     onSuccess: () => {
@@ -292,7 +307,10 @@ const EditAgentDrawer = ({
                 disabled
                 name="agentName"
                 render={({ field }) => (
-                  <TextField field={field} label={<FormattedMessage id="agent-name" />} />
+                  <TextField
+                    field={field}
+                    label={<FormattedMessage id="agent-name" />}
+                  />
                 )}
               />
 
@@ -300,7 +318,10 @@ const EditAgentDrawer = ({
                 control={form.control}
                 name="externalUrl"
                 render={({ field }) => (
-                  <TextField field={field} label={<FormattedMessage id="external-url" />} />
+                  <TextField
+                    field={field}
+                    label={<FormattedMessage id="external-url" />}
+                  />
                 )}
               />
 
@@ -308,22 +329,34 @@ const EditAgentDrawer = ({
                 control={form.control}
                 name="apikey"
                 render={({ field }) => (
-                  <TextField field={field} label={<FormattedMessage id="api-key" />} />
+                  <TextField
+                    field={field}
+                    label={<FormattedMessage id="api-key" />}
+                  />
                 )}
               />
 
               <FormField
                 control={form.control}
                 name="modelCustom"
-                render={({ field }) => <TextField field={field} label={'Model Name'} />}
+                render={({ field }) => (
+                  <TextField field={field} label={'Model Name'} />
+                )}
               />
               <FormField
                 control={form.control}
                 name="modelTypeCustom"
-                render={({ field }) => <TextField field={field} label={'Model ID'} />}
+                render={({ field }) => (
+                  <TextField field={field} label={'Model ID'} />
+                )}
               />
             </div>
-            <Button className="w-full" disabled={isPending} isLoading={isPending} type="submit">
+            <Button
+              className="w-full"
+              disabled={isPending}
+              isLoading={isPending}
+              type="submit"
+            >
               Save
             </Button>
           </form>
@@ -364,7 +397,8 @@ const RemoveAgentDrawer = ({
           </DrawerTitle>
         </DrawerHeader>
         <p className="text-gray-80 my-3 text-base">
-          Are you sure you want to delete this agent? This action cannot be undone.
+          Are you sure you want to delete this agent? This action cannot be
+          undone.
         </p>
         <DrawerFooter>
           <Button

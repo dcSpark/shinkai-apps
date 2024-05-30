@@ -15,11 +15,15 @@ export enum ServiceWorkerExternalMessageType {
 
 export type BaseServiceWorkerExternalMessage = {
   type: ServiceWorkerExternalMessageType;
-  payload: Parameters<(typeof ACTIONS_MAP)[ServiceWorkerExternalMessageType]['resolver']>[0];
+  payload: Parameters<
+    (typeof ACTIONS_MAP)[ServiceWorkerExternalMessageType]['resolver']
+  >[0];
 };
 export type BaseServiceWorkerExternalMessageResponse = {
   type: ServiceWorkerExternalMessageType;
-  payload: ReturnType<(typeof ACTIONS_MAP)[ServiceWorkerExternalMessageType]['resolver']>;
+  payload: ReturnType<
+    (typeof ACTIONS_MAP)[ServiceWorkerExternalMessageType]['resolver']
+  >;
 };
 
 export interface ServiceWorkerExternalMessageInstallToolkit {

@@ -36,34 +36,44 @@ import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';
 import { useVectorFsStore } from '../context/vector-fs-context';
-import { FolderSelectionList, useVectorFolderSelectionStore } from './folder-selection-list';
+import {
+  FolderSelectionList,
+  useVectorFolderSelectionStore,
+} from './folder-selection-list';
 
 export const VectorFsFolderMoveAction = () => {
   const selectedFolder = useVectorFsStore((state) => state.selectedFolder);
   const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
   const auth = useAuth((state) => state.auth);
-  const setCurrentGlobalPath = useVectorFsStore((state) => state.setCurrentGlobalPath);
+  const setCurrentGlobalPath = useVectorFsStore(
+    (state) => state.setCurrentGlobalPath,
+  );
   const destinationFolderPath = useVectorFolderSelectionStore(
     (state) => state.destinationFolderPath,
   );
 
-  const { mutateAsync: moveVrFolder, isPending: isMovingVrFolder } = useMoveVrFolder({
-    onSuccess: () => {
-      setCurrentGlobalPath(destinationFolderPath ?? '/');
-      closeDrawerMenu();
-      toast.success('Folder moved successfully');
-    },
-    onError: () => {
-      toast.error('Failed to move folder');
-    },
-  });
+  const { mutateAsync: moveVrFolder, isPending: isMovingVrFolder } =
+    useMoveVrFolder({
+      onSuccess: () => {
+        setCurrentGlobalPath(destinationFolderPath ?? '/');
+        closeDrawerMenu();
+        toast.success('Folder moved successfully');
+      },
+      onError: () => {
+        toast.error('Failed to move folder');
+      },
+    });
 
   return (
     <React.Fragment>
       <SheetHeader>
         <SheetTitle className="font-normal">
           Move
-          <span className="font-medium"> &quot;{selectedFolder?.name}&quot;</span> to ...
+          <span className="font-medium">
+            {' '}
+            &quot;{selectedFolder?.name}&quot;
+          </span>{' '}
+          to ...
         </SheetTitle>
       </SheetHeader>
       <FolderSelectionList />
@@ -113,11 +123,15 @@ export const VectorFsFolderDeleteAction = () => {
       <SheetHeader>
         <SheetTitle className="font-normal">
           Delete
-          <span className="font-medium"> &quot;{selectedFolder?.name}&quot;</span>{' '}
+          <span className="font-medium">
+            {' '}
+            &quot;{selectedFolder?.name}&quot;
+          </span>{' '}
         </SheetTitle>
       </SheetHeader>
       <p className="text-gray-80 my-3 text-base">
-        Are you sure you want to delete this folder? This action cannot be undone.
+        Are you sure you want to delete this folder? This action cannot be
+        undone.
       </p>
       <SheetFooter>
         <Button
@@ -149,7 +163,9 @@ export const VectorFsFolderCopyAction = () => {
   const selectedFolder = useVectorFsStore((state) => state.selectedFolder);
   const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
   const auth = useAuth((state) => state.auth);
-  const setCurrentGlobalPath = useVectorFsStore((state) => state.setCurrentGlobalPath);
+  const setCurrentGlobalPath = useVectorFsStore(
+    (state) => state.setCurrentGlobalPath,
+  );
   const destinationFolderPath = useVectorFolderSelectionStore(
     (state) => state.destinationFolderPath,
   );
@@ -170,7 +186,11 @@ export const VectorFsFolderCopyAction = () => {
       <SheetHeader>
         <SheetTitle className="font-normal">
           Copy
-          <span className="font-medium"> &quot;{selectedFolder?.name}&quot;</span> to ...
+          <span className="font-medium">
+            {' '}
+            &quot;{selectedFolder?.name}&quot;
+          </span>{' '}
+          to ...
         </SheetTitle>
       </SheetHeader>
       <FolderSelectionList />
@@ -248,7 +268,10 @@ export const VectorFsFolderSearchKnowledgeAction = () => {
       <SheetHeader>
         <SheetTitle className="font-normal">
           AI Files Content Search within
-          <span className="font-medium"> &quot;{selectedFolder?.name}&quot;</span>{' '}
+          <span className="font-medium">
+            {' '}
+            &quot;{selectedFolder?.name}&quot;
+          </span>{' '}
         </SheetTitle>
       </SheetHeader>
       <p className="text-gray-80 my-3 text-sm">
@@ -311,7 +334,9 @@ export const VectorFsFolderSearchKnowledgeAction = () => {
           ))}
         {isSearchEntered && isSuccess && (
           <div>
-            <h2 className="text-gray-80 p-2 font-medium">Found {data?.length} results</h2>
+            <h2 className="text-gray-80 p-2 font-medium">
+              Found {data?.length} results
+            </h2>
             <div className="flex flex-col gap-2 divide-y divide-slate-600">
               {data?.map(([content, pathList, score], idx) => (
                 <div className="flex flex-col gap-1 px-2 py-3" key={idx}>
@@ -326,7 +351,9 @@ export const VectorFsFolderSearchKnowledgeAction = () => {
                         }}
                         to={{
                           pathname: '/node-files',
-                          search: `?path=${encodeURIComponent(pathList.join('/'))}`,
+                          search: `?path=${encodeURIComponent(
+                            pathList.join('/'),
+                          )}`,
                         }}
                       >
                         {pathList.join('/')}
@@ -357,18 +384,21 @@ export const VectorFsFolderCreateShareableAction = () => {
   const destinationFolderPath = useVectorFolderSelectionStore(
     (state) => state.destinationFolderPath,
   );
-  const setSelectedVectorFsTab = useVectorFsStore((state) => state.setSelectedVectorFsTab);
+  const setSelectedVectorFsTab = useVectorFsStore(
+    (state) => state.setSelectedVectorFsTab,
+  );
 
-  const { mutateAsync: createShareableFolder, isPending } = useCreateShareableFolder({
-    onSuccess: () => {
-      closeDrawerMenu();
-      toast.success('Folder shared successfully');
-      setSelectedVectorFsTab('shared-folders');
-    },
-    onError: () => {
-      toast.error('Failed to shared folder');
-    },
-  });
+  const { mutateAsync: createShareableFolder, isPending } =
+    useCreateShareableFolder({
+      onSuccess: () => {
+        closeDrawerMenu();
+        toast.success('Folder shared successfully');
+        setSelectedVectorFsTab('shared-folders');
+      },
+      onError: () => {
+        toast.error('Failed to shared folder');
+      },
+    });
 
   const onSubmit = async (data: ShareFolderFormSchema) => {
     await createShareableFolder({
@@ -392,7 +422,10 @@ export const VectorFsFolderCreateShareableAction = () => {
       <SheetHeader>
         <SheetTitle className="line-clamp-1 font-normal">
           Share
-          <span className="font-medium"> &quot;{selectedFolder?.name}&quot;</span>{' '}
+          <span className="font-medium">
+            {' '}
+            &quot;{selectedFolder?.name}&quot;
+          </span>{' '}
         </SheetTitle>
         <SheetDescription>
           You can share folders that you store in AI Files with anyone.
@@ -406,7 +439,9 @@ export const VectorFsFolderCreateShareableAction = () => {
           <FormField
             control={shareFolderForm.control}
             name="folderDescription"
-            render={({ field }) => <TextField autoFocus field={field} label="Folder Description" />}
+            render={({ field }) => (
+              <TextField autoFocus field={field} label="Folder Description" />
+            )}
           />
           <Button
             className="mt-4"
@@ -468,11 +503,15 @@ export const VectorFsFolderUnshareAction = () => {
       <SheetHeader>
         <SheetTitle className="line-clamp-1 font-normal">
           Unshare
-          <span className="font-medium"> &quot;{selectedFolder?.name}&quot;</span> ?
+          <span className="font-medium">
+            {' '}
+            &quot;{selectedFolder?.name}&quot;
+          </span>{' '}
+          ?
         </SheetTitle>
         <SheetDescription className="py-3">
-          Everyone will be removed from this folder. You’ll still keep a copy of this folder in your
-          AI Files. <br />
+          Everyone will be removed from this folder. You’ll still keep a copy of
+          this folder in your AI Files. <br />
           Note: Removed members will keep a copy of this shared folder.
         </SheetDescription>
       </SheetHeader>

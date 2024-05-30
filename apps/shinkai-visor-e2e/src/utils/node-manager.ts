@@ -77,7 +77,9 @@ export class NodeManager {
       if (options.readyMatcher) {
         const timeoutRef = setTimeout(() => {
           childProcess.kill();
-          reject(`ready matcher timeout after ${options.readyMatcherTimeoutMs}`);
+          reject(
+            `ready matcher timeout after ${options.readyMatcherTimeoutMs}`,
+          );
         }, options.readyMatcherTimeoutMs ?? 15000);
         childProcess.stdout?.on('data', (chunk: Buffer) => {
           if (options.readyMatcher?.test(chunk.toString())) {

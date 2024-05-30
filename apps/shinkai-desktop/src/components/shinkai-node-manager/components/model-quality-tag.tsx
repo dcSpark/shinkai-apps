@@ -15,7 +15,10 @@ export const ModelQuailityTag = ({
   };
   return (
     <Badge
-      className={cn('rounded-full border-0 px-2 py-1 font-normal capitalize', colorMap[quality])}
+      className={cn(
+        'rounded-full border-0 px-2 py-1 font-normal capitalize',
+        colorMap[quality],
+      )}
       variant="outline"
     >
       {quality}

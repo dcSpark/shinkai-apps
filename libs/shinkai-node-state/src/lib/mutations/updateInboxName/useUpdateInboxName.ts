@@ -5,7 +5,11 @@ import { updateInboxName } from '.';
 import { FunctionKey } from '../../constants';
 import type { UpdateInboxNameInput, UpdateInboxNameOutput } from './types';
 
-type Options = UseMutationOptions<UpdateInboxNameOutput, Error, UpdateInboxNameInput>;
+type Options = UseMutationOptions<
+  UpdateInboxNameOutput,
+  Error,
+  UpdateInboxNameInput
+>;
 
 export const useUpdateInboxName = (options?: Options) => {
   const queryClient = useQueryClient();

@@ -34,7 +34,10 @@
       "defaultConfiguration": "development",
       "options": {
         "cwd": "apps/shinkai-desktop",
-        "commands": ["cd src-tauri && cargo check", "npx biome check --apply ."],
+        "commands": [
+          "cd src-tauri && cargo check",
+          "npx biome check --apply ."
+        ],
         "parallel": true
       },
       "configurations": {

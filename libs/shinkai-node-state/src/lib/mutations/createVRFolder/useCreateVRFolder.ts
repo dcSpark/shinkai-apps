@@ -5,7 +5,11 @@ import { createVRFolder } from '.';
 import { FunctionKey } from '../../constants';
 import { CreateVRFolderInput, CreateVRFolderOutput } from './types';
 
-type Options = UseMutationOptions<CreateVRFolderOutput, Error, CreateVRFolderInput>;
+type Options = UseMutationOptions<
+  CreateVRFolderOutput,
+  Error,
+  CreateVRFolderInput
+>;
 
 export const useCreateVRFolder = (options?: Options) => {
   const queryClient = useQueryClient();

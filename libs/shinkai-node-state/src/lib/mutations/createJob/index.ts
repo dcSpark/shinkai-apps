@@ -4,7 +4,10 @@ import {
   sendTextMessageWithFilesForInbox,
 } from '@shinkai_network/shinkai-message-ts/api';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils';
-import { JobCreationWrapper, JobScopeWrapper } from '@shinkai_network/shinkai-message-ts/wasm';
+import {
+  JobCreationWrapper,
+  JobScopeWrapper,
+} from '@shinkai_network/shinkai-message-ts/wasm';
 
 import { CreateJobInput } from './types';
 

@@ -7,7 +7,10 @@ const sharedTailwindConfig = require('../../libs/shinkai-ui/src/shinkai-preset.j
 module.exports = {
   presets: [sharedTailwindConfig],
   content: [
-    join(__dirname, '{src,pages,components,app}/**/*!(*.stories|*.spec).{ts,tsx,html,css}'),
+    join(
+      __dirname,
+      '{src,pages,components,app}/**/*!(*.stories|*.spec).{ts,tsx,html,css}',
+    ),
     ...createGlobPatternsForDependencies(__dirname),
   ],
 };

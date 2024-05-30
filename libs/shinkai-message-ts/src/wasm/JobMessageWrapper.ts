@@ -5,8 +5,18 @@ import { JobMessageWrapper as JobMessageWrapperWASM } from '../pkg/shinkai_messa
 export class JobMessageWrapper {
   private wasmWrapper: JobMessageWrapperWASM;
 
-  constructor(job_id_js: any, content_js: any, files_inbox_js: any, parent: any) {
-    this.wasmWrapper = new JobMessageWrapperWASM(job_id_js, content_js, files_inbox_js, parent);
+  constructor(
+    job_id_js: any,
+    content_js: any,
+    files_inbox_js: any,
+    parent: any,
+  ) {
+    this.wasmWrapper = new JobMessageWrapperWASM(
+      job_id_js,
+      content_js,
+      files_inbox_js,
+      parent,
+    );
   }
 
   to_jsvalue(): any {

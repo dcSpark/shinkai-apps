@@ -55,7 +55,9 @@ export const useOllamaPullMutation = (
 ) => {
   const queryClient = useQueryClient();
   const response = useMutation({
-    mutationFn: async (input): Promise<AsyncGenerator<ProgressResponse, unknown, unknown>> => {
+    mutationFn: async (
+      input,
+    ): Promise<AsyncGenerator<ProgressResponse, unknown, unknown>> => {
       const ollamaClient = new Ollama(ollamaConfig);
 
       const pipeGenerator = async function* transformGenerator(

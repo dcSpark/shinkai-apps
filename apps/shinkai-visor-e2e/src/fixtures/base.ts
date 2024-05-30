@@ -1,5 +1,11 @@
 import * as path from 'path';
-import { type BrowserContext, Page, Worker, test as base, chromium } from '@playwright/test';
+import {
+  type BrowserContext,
+  Page,
+  Worker,
+  test as base,
+  chromium,
+} from '@playwright/test';
 
 import { waitFor } from '../utils/test-utils';
 
@@ -17,7 +23,10 @@ export const test = base.extend<{
 }>({
   // biome-ignore lint/correctness/noEmptyPattern:
   context: async ({}, use) => {
-    const pathToExtension = path.join(__dirname, '../../../../dist/apps/shinkai-visor');
+    const pathToExtension = path.join(
+      __dirname,
+      '../../../../dist/apps/shinkai-visor',
+    );
     const context = await chromium.launchPersistentContext('', {
       headless: false,
       args: [

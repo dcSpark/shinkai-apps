@@ -40,14 +40,28 @@ import {
   JobBubbleIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { ArrowLeft, Compass, LibraryBig, Menu, SearchCode, Settings, X, XIcon } from 'lucide-react';
+import {
+  ArrowLeft,
+  Compass,
+  LibraryBig,
+  Menu,
+  SearchCode,
+  Settings,
+  X,
+  XIcon,
+} from 'lucide-react';
 import React, { ReactNode, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import visorLogo from '../../assets/icons/visor.svg';
-import { onboardingPages, rootPages, routes, subPages } from '../../constants/routing';
+import {
+  onboardingPages,
+  rootPages,
+  routes,
+  subPages,
+} from '../../constants/routing';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAuth } from '../../store/auth/auth';
@@ -68,23 +82,26 @@ enum MenuOption {
   Settings = 'settings',
   Logout = 'logout',
 }
-const routeTitleDescriptionMapping: Record<string, { title: ReactNode; description?: ReactNode }> =
-  {
-    [routes.CreateJob]: { title: <FormattedMessage id="create-job" /> },
-    [routes.CreateInbox]: { title: <FormattedMessage id="create-inbox" /> },
-    [routes.Inboxes]: { title: <FormattedMessage id="inbox.other" /> },
-    [routes.VectorFs]: { title: 'My AI Files Explorer' },
-    [routes.Subscriptions]: { title: 'My Subscriptions' },
-    [routes.PublicFolders]: { title: 'Browse Public Subscriptions' },
-    [routes.Settings]: { title: <FormattedMessage id="setting.other" /> },
-    [routes.Agents]: { title: <FormattedMessage id="agent.other" /> },
-    [routes.AddAgent]: { title: <FormattedMessage id="add-agent" /> },
-    [routes.PublicKeys]: { title: 'Public Keys' },
-  };
+const routeTitleDescriptionMapping: Record<
+  string,
+  { title: ReactNode; description?: ReactNode }
+> = {
+  [routes.CreateJob]: { title: <FormattedMessage id="create-job" /> },
+  [routes.CreateInbox]: { title: <FormattedMessage id="create-inbox" /> },
+  [routes.Inboxes]: { title: <FormattedMessage id="inbox.other" /> },
+  [routes.VectorFs]: { title: 'My AI Files Explorer' },
+  [routes.Subscriptions]: { title: 'My Subscriptions' },
+  [routes.PublicFolders]: { title: 'Browse Public Subscriptions' },
+  [routes.Settings]: { title: <FormattedMessage id="setting.other" /> },
+  [routes.Agents]: { title: <FormattedMessage id="agent.other" /> },
+  [routes.AddAgent]: { title: <FormattedMessage id="add-agent" /> },
+  [routes.PublicKeys]: { title: 'Public Keys' },
+};
 
 const DisplayInboxName = () => {
   const currentInbox = useGetCurrentInbox();
-  const [isEditInboxNameDialogOpened, setIsEditInboxNameDialogOpened] = useState<boolean>(false);
+  const [isEditInboxNameDialogOpened, setIsEditInboxNameDialogOpened] =
+    useState<boolean>(false);
 
   const hasFolders = !!currentInbox?.job_scope?.vector_fs_folders?.length;
   const hasFiles = !!currentInbox?.job_scope?.vector_fs_items?.length;
@@ -114,14 +131,18 @@ const DisplayInboxName = () => {
                 <span className="text-gray-80 flex items-center gap-1 text-xs font-medium">
                   <DirectoryTypeIcon className="ml-1 h-4 w-4" />
                   {currentInbox?.job_scope.vector_fs_folders.length}{' '}
-                  {currentInbox?.job_scope.vector_fs_folders.length === 1 ? 'folder' : 'folders'}
+                  {currentInbox?.job_scope.vector_fs_folders.length === 1
+                    ? 'folder'
+                    : 'folders'}
                 </span>
               )}
               {hasFiles && (
                 <span className="text-gray-80 flex items-center gap-1 text-xs font-medium">
                   <FileTypeIcon className="ml-1 h-4 w-4" />
                   {currentInbox?.job_scope.vector_fs_items.length}{' '}
-                  {currentInbox?.job_scope.vector_fs_items.length === 1 ? 'file' : 'files'}
+                  {currentInbox?.job_scope.vector_fs_items.length === 1
+                    ? 'file'
+                    : 'files'}
                 </span>
               )}
             </Button>
@@ -140,12 +161,19 @@ const DisplayInboxName = () => {
                   <div className="space-y-1">
                     <span className="font-medium text-white">Folders</span>
                     <ul>
-                      {currentInbox?.job_scope?.vector_fs_folders?.map((folder) => (
-                        <li className="flex items-center gap-2 py-1.5" key={folder.path}>
-                          <DirectoryTypeIcon />
-                          <div className="text-gray-80 text-sm">{folder.name}</div>
-                        </li>
-                      ))}
+                      {currentInbox?.job_scope?.vector_fs_folders?.map(
+                        (folder) => (
+                          <li
+                            className="flex items-center gap-2 py-1.5"
+                            key={folder.path}
+                          >
+                            <DirectoryTypeIcon />
+                            <div className="text-gray-80 text-sm">
+                              {folder.name}
+                            </div>
+                          </li>
+                        ),
+                      )}
                     </ul>
                   </div>
                 )}
@@ -154,11 +182,19 @@ const DisplayInboxName = () => {
                     <span className="font-medium text-white">Files</span>
                     <ul>
                       {currentInbox?.job_scope?.vector_fs_items?.map((file) => (
-                        <li className="flex items-center gap-2 py-1.5" key={file.path}>
+                        <li
+                          className="flex items-center gap-2 py-1.5"
+                          key={file.path}
+                        >
                           <FileTypeIcon
-                            type={file?.source?.Standard?.FileRef?.file_type?.Document}
+                            type={
+                              file?.source?.Standard?.FileRef?.file_type
+                                ?.Document
+                            }
                           />
-                          <span className="text-gray-80 text-sm">{file.name}</span>
+                          <span className="text-gray-80 text-sm">
+                            {file.name}
+                          </span>
                         </li>
                       ))}
                     </ul>
@@ -216,7 +252,8 @@ const ArchiveJobButton = () => {
           <Button
             className={cn(
               'absolute right-10 shrink-0 bg-inherit hover:bg-gray-400',
-              currentInbox?.is_finished && 'text-gray-80 hover:bg-inherit hover:text-white ',
+              currentInbox?.is_finished &&
+                'text-gray-80 hover:bg-inherit hover:text-white ',
             )}
             disabled={currentInbox?.is_finished}
             onClick={handleArchiveJob}
@@ -253,16 +290,26 @@ export default function NavBar() {
     location.pathname.includes('/inboxes/job_inbox') ||
     location.pathname.includes('/inboxes/inbox');
 
-  const isRootPage = rootPages.some((value) => location.pathname.match(`${value}$`));
-  const isSubPage = subPages.some((value) => location.pathname.match(`${value}$`));
-  const isOnboardingPage = onboardingPages.some((value) => location.pathname.match(`${value}$`));
+  const isRootPage = rootPages.some((value) =>
+    location.pathname.match(`${value}$`),
+  );
+  const isSubPage = subPages.some((value) =>
+    location.pathname.match(`${value}$`),
+  );
+  const isOnboardingPage = onboardingPages.some((value) =>
+    location.pathname.match(`${value}$`),
+  );
 
   const isJobInbox = location.pathname.includes('/inboxes/job_inbox');
 
-  const [isConfirmLogoutDialogOpened, setIsConfirmLogoutDialogOpened] = useState(false);
+  const [isConfirmLogoutDialogOpened, setIsConfirmLogoutDialogOpened] =
+    useState(false);
 
   const goBack = () => {
-    if (location.pathname.includes('/inboxes/') || location.pathname.includes('/agents')) {
+    if (
+      location.pathname.includes('/inboxes/') ||
+      location.pathname.includes('/agents')
+    ) {
       navigate('/inboxes');
       return;
     }
@@ -323,7 +370,8 @@ export default function NavBar() {
   };
 
   const renderHeaderContent = () => {
-    const routeTitleDescription = routeTitleDescriptionMapping[location.pathname as MenuOption];
+    const routeTitleDescription =
+      routeTitleDescriptionMapping[location.pathname as MenuOption];
 
     if (isOnboardingPage) {
       return (
@@ -338,7 +386,12 @@ export default function NavBar() {
       return (
         <>
           <div className="flex items-center gap-3">
-            <Button className="flex-none" onClick={goBack} size="icon" variant="ghost">
+            <Button
+              className="flex-none"
+              onClick={goBack}
+              size="icon"
+              variant="ghost"
+            >
               <ArrowLeft className="h-4 w-4" />
             </Button>
             {!isInboxPage && routeTitleDescription && (
@@ -420,8 +473,16 @@ export default function NavBar() {
               open={isMenuOpened}
             >
               <DropdownMenuTrigger asChild>
-                <Button data-testid="nav-menu-button" size="icon" variant="ghost">
-                  {!isMenuOpened ? <Menu className="h-4 w-4" /> : <X className="h-4 w-4" />}
+                <Button
+                  data-testid="nav-menu-button"
+                  size="icon"
+                  variant="ghost"
+                >
+                  {!isMenuOpened ? (
+                    <Menu className="h-4 w-4" />
+                  ) : (
+                    <X className="h-4 w-4" />
+                  )}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
@@ -433,7 +494,9 @@ export default function NavBar() {
                 <DropdownMenuLabel>
                   <FormattedMessage id="inbox.other" />
                 </DropdownMenuLabel>
-                <DropdownMenuItem onClick={() => onClickMenuOption(MenuOption.Inboxes)}>
+                <DropdownMenuItem
+                  onClick={() => onClickMenuOption(MenuOption.Inboxes)}
+                >
                   <InboxIcon className="mr-2 h-4 w-4" />
                   <span>
                     <FormattedMessage id="inbox.other" />
@@ -461,20 +524,28 @@ export default function NavBar() {
                 {/*)}*/}
 
                 <DropdownMenuLabel>AI Files</DropdownMenuLabel>
-                <DropdownMenuItem onClick={() => onClickMenuOption(MenuOption.NodeFiles)}>
+                <DropdownMenuItem
+                  onClick={() => onClickMenuOption(MenuOption.NodeFiles)}
+                >
                   <FilesIcon className="mr-2 h-4 w-4" />
                   <span>My AI Files Explorer</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onClickMenuOption(MenuOption.SearchNodeFiles)}>
+                <DropdownMenuItem
+                  onClick={() => onClickMenuOption(MenuOption.SearchNodeFiles)}
+                >
                   <SearchCode className="mr-2 h-4 w-4" />
                   <span>AI Files Content Search</span>
                 </DropdownMenuItem>
                 <DropdownMenuLabel>Subscriptions</DropdownMenuLabel>
-                <DropdownMenuItem onClick={() => onClickMenuOption(MenuOption.PublicItems)}>
+                <DropdownMenuItem
+                  onClick={() => onClickMenuOption(MenuOption.PublicItems)}
+                >
                   <Compass className="mr-2 h-4 w-4" />
                   <span>Browse Public Subscriptions</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onClickMenuOption(MenuOption.MySubscriptions)}>
+                <DropdownMenuItem
+                  onClick={() => onClickMenuOption(MenuOption.MySubscriptions)}
+                >
                   <LibraryBig className="mr-2 h-4 w-4" />
                   <span>My Subscriptions</span>
                 </DropdownMenuItem>
@@ -503,13 +574,17 @@ export default function NavBar() {
                 <DropdownMenuLabel>
                   <FormattedMessage id="account.one" />
                 </DropdownMenuLabel>
-                <DropdownMenuItem onClick={() => onClickMenuOption(MenuOption.Settings)}>
+                <DropdownMenuItem
+                  onClick={() => onClickMenuOption(MenuOption.Settings)}
+                >
                   <Settings className="mr-2 h-4 w-4" />
                   <span>
                     <FormattedMessage id="setting.other" />
                   </span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onClickMenuOption(MenuOption.Logout)}>
+                <DropdownMenuItem
+                  onClick={() => onClickMenuOption(MenuOption.Logout)}
+                >
                   <DisconnectIcon className="mr-2 h-4 w-4" />
                   <span>
                     <FormattedMessage id="disconnect" />

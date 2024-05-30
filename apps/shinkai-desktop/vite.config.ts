@@ -46,7 +46,10 @@ export default defineConfig(() => ({
     rollupOptions: {
       input: {
         index: resolve(__dirname, 'index.html'),
-        shinkai_node_manager: resolve(__dirname, 'src/windows/shinkai-node-manager/index.html'),
+        shinkai_node_manager: resolve(
+          __dirname,
+          'src/windows/shinkai-node-manager/index.html',
+        ),
       },
     },
   },

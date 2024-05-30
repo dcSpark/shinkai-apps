@@ -28,7 +28,14 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { Bot, ListRestart, Loader2, PlayCircle, StopCircle, Trash } from 'lucide-react';
+import {
+  Bot,
+  ListRestart,
+  Loader2,
+  PlayCircle,
+  StopCircle,
+  Trash,
+} from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { useForm, useWatch } from 'react-hook-form';
@@ -74,7 +81,8 @@ const App = () => {
   const setLogout = useAuth((auth) => auth.setLogout);
   const { setShinkaiNodeOptions } = useShinkaiNodeManager();
   const logsScrollRef = useRef<HTMLDivElement | null>(null);
-  const [isConfirmResetDialogOpened, setIsConfirmResetDialogOpened] = useState<boolean>(false);
+  const [isConfirmResetDialogOpened, setIsConfirmResetDialogOpened] =
+    useState<boolean>(false);
   const { data: shinkaiNodeIsRunning } = useShinkaiNodeIsRunningQuery({
     refetchInterval: 1000,
   });
@@ -87,18 +95,20 @@ const App = () => {
       refetchInterval: 1000,
     },
   );
-  const { isPending: shinkaiNodeSpawnIsPending, mutateAsync: shinkaiNodeSpawn } =
-    useShinkaiNodeSpawnMutation({
-      onMutate: () => {
-        startingShinkaiNodeToast();
-      },
-      onSuccess: () => {
-        shinkaiNodeStartedToast();
-      },
-      onError: () => {
-        shinkaiNodeStartErrorToast();
-      },
-    });
+  const {
+    isPending: shinkaiNodeSpawnIsPending,
+    mutateAsync: shinkaiNodeSpawn,
+  } = useShinkaiNodeSpawnMutation({
+    onMutate: () => {
+      startingShinkaiNodeToast();
+    },
+    onSuccess: () => {
+      shinkaiNodeStartedToast();
+    },
+    onError: () => {
+      shinkaiNodeStartErrorToast();
+    },
+  });
   const { isPending: shinkaiNodeKillIsPending, mutateAsync: shinkaiNodeKill } =
     useShinkaiNodeKillMutation({
       onMutate: () => {
@@ -111,45 +121,51 @@ const App = () => {
         shinkaiNodeStopErrorToast();
       },
     });
-  const { isPending: shinkaiNodeRemoveStorageIsPending, mutateAsync: shinkaiNodeRemoveStorage } =
-    useShinkaiNodeRemoveStorageMutation({
-      onSuccess: () => {
-        successRemovingShinkaiNodeStorageToast();
-        setLogout();
-      },
-      onError: () => {
-        errorRemovingShinkaiNodeStorageToast();
+  const {
+    isPending: shinkaiNodeRemoveStorageIsPending,
+    mutateAsync: shinkaiNodeRemoveStorage,
+  } = useShinkaiNodeRemoveStorageMutation({
+    onSuccess: () => {
+      successRemovingShinkaiNodeStorageToast();
+      setLogout();
+    },
+    onError: () => {
+      errorRemovingShinkaiNodeStorageToast();
+    },
+  });
+  const { mutateAsync: shinkaiNodeSetOptions } =
+    useShinkaiNodeSetOptionsMutation({
+      onSuccess: (options) => {
+        setShinkaiNodeOptions(options);
       },
     });
-  const { mutateAsync: shinkaiNodeSetOptions } = useShinkaiNodeSetOptionsMutation({
-    onSuccess: (options) => {
-      setShinkaiNodeOptions(options);
-    },
-  });
-  const { mutateAsync: shinkaiNodeSetDefaultOptions } = useShinkaiNodeSetDefaultOptionsMutation({
-    onSuccess: (options) => {
-      shinkaiNodeOptionsForm.reset(options);
-      successShinkaiNodeSetDefaultOptionsToast();
-    },
-  });
+  const { mutateAsync: shinkaiNodeSetDefaultOptions } =
+    useShinkaiNodeSetDefaultOptionsMutation({
+      onSuccess: (options) => {
+        shinkaiNodeOptionsForm.reset(options);
+        successShinkaiNodeSetDefaultOptionsToast();
+      },
+    });
   const shinkaiNodeOptionsForm = useForm<ShinkaiNodeOptions>({
     resolver: zodResolver(z.any()),
   });
   const shinkaiNodeOptionsFormWatch = useWatch({
     control: shinkaiNodeOptionsForm.control,
   });
-  const { mutateAsync: syncOllamaModels, isPending: syncOllamaModelsIsPending } =
-    useSyncOllamaModels(
-      OLLAMA_MODELS.map((value) => value.fullName),
-      {
-        onSuccess: () => {
-          successOllamaModelsSyncToast();
-        },
-        onError: () => {
-          errorOllamaModelsSyncToast();
-        },
+  const {
+    mutateAsync: syncOllamaModels,
+    isPending: syncOllamaModelsIsPending,
+  } = useSyncOllamaModels(
+    OLLAMA_MODELS.map((value) => value.fullName),
+    {
+      onSuccess: () => {
+        successOllamaModelsSyncToast();
       },
-    );
+      onError: () => {
+        errorOllamaModelsSyncToast();
+      },
+    },
+  );
 
   useShinkaiNodeEventsToast();
   useEffect(() => {
@@ -195,7 +211,9 @@ const App = () => {
               <TooltipTrigger>
                 <Button
                   disabled={
-                    shinkaiNodeSpawnIsPending || shinkaiNodeKillIsPending || shinkaiNodeIsRunning
+                    shinkaiNodeSpawnIsPending ||
+                    shinkaiNodeKillIsPending ||
+                    shinkaiNodeIsRunning
                   }
                   onClick={() => {
                     console.log('SPAWNING');
@@ -221,7 +239,9 @@ const App = () => {
               <TooltipTrigger>
                 <Button
                   disabled={
-                    shinkaiNodeSpawnIsPending || shinkaiNodeKillIsPending || !shinkaiNodeIsRunning
+                    shinkaiNodeSpawnIsPending ||
+                    shinkaiNodeKillIsPending ||
+                    !shinkaiNodeIsRunning
                   }
                   onClick={() => shinkaiNodeKill()}
                   variant={'default'}
@@ -283,7 +303,10 @@ const App = () => {
         </div>
       </div>
 
-      <Tabs className="flex w-full flex-1 flex-col overflow-auto" defaultValue="logs">
+      <Tabs
+        className="flex w-full flex-1 flex-col overflow-auto"
+        defaultValue="logs"
+      >
         <TabsList className="w-full">
           <TabsTrigger className="grow" value="logs">
             Logs
@@ -303,8 +326,8 @@ const App = () => {
                     return (
                       <React.Fragment key={index}>
                         <div className="text-gray-80 text-sm" key={index}>
-                          {'i'} {new Date(log.timestamp * 1000).toISOString()} | {log.process} |{' '}
-                          {log.message}
+                          {'i'} {new Date(log.timestamp * 1000).toISOString()} |{' '}
+                          {log.process} | {log.message}
                         </div>
                         <Separator className="my-2" />
                       </React.Fragment>
@@ -329,23 +352,25 @@ const App = () => {
               <Form {...shinkaiNodeOptionsForm}>
                 <form className="space-y-2 pr-4">
                   {shinkaiNodeOptions &&
-                    Array.from(Object.entries(shinkaiNodeOptions)).map(([key, value]) => {
-                      return (
-                        <FormField
-                          control={shinkaiNodeOptionsForm.control}
-                          defaultValue={value}
-                          disabled={shinkaiNodeIsRunning}
-                          key={key}
-                          name={key as keyof ShinkaiNodeOptions}
-                          render={({ field }) => (
-                            <TextField
-                              field={field}
-                              label={<span className="uppercase">{key}</span>}
-                            />
-                          )}
-                        />
-                      );
-                    })}
+                    Array.from(Object.entries(shinkaiNodeOptions)).map(
+                      ([key, value]) => {
+                        return (
+                          <FormField
+                            control={shinkaiNodeOptionsForm.control}
+                            defaultValue={value}
+                            disabled={shinkaiNodeIsRunning}
+                            key={key}
+                            name={key as keyof ShinkaiNodeOptions}
+                            render={({ field }) => (
+                              <TextField
+                                field={field}
+                                label={<span className="uppercase">{key}</span>}
+                              />
+                            )}
+                          />
+                        );
+                      },
+                    )}
                 </form>
               </Form>
             </div>
@@ -357,7 +382,10 @@ const App = () => {
         </ScrollArea>
       </Tabs>
 
-      <AlertDialog onOpenChange={setIsConfirmResetDialogOpened} open={isConfirmResetDialogOpened}>
+      <AlertDialog
+        onOpenChange={setIsConfirmResetDialogOpened}
+        open={isConfirmResetDialogOpened}
+      >
         <AlertDialogContent className="w-[75%]">
           <AlertDialogHeader>
             <AlertDialogTitle>Reset your Shinkai Node</AlertDialogTitle>
@@ -365,8 +393,8 @@ const App = () => {
               <div className="flex flex-col space-y-3 text-left text-white/70">
                 <div className="flex flex-col space-y-1 ">
                   <span className="text-sm">
-                    Are you sure you want to reset your Shinkai Node? This will permanently delete
-                    all your data.
+                    Are you sure you want to reset your Shinkai Node? This will
+                    permanently delete all your data.
                   </span>
                 </div>
               </div>

@@ -43,11 +43,18 @@ const useTauriEvent = <T>(eventName: string, callback: EventCallback<T>) => {
   }, [eventName, callback]);
 };
 
-export const useShinkaiNodeStateChange = (callback: EventCallback<ShinkaiNodeManagerEventMap>) => {
-  return useTauriEvent<ShinkaiNodeManagerEventMap>('shinkai-node-state-change', callback);
+export const useShinkaiNodeStateChange = (
+  callback: EventCallback<ShinkaiNodeManagerEventMap>,
+) => {
+  return useTauriEvent<ShinkaiNodeManagerEventMap>(
+    'shinkai-node-state-change',
+    callback,
+  );
 };
 
-export const mapEvent = (event: object | string): ShinkaiNodeManagerEventMap => {
+export const mapEvent = (
+  event: object | string,
+): ShinkaiNodeManagerEventMap => {
   if (typeof event === 'object') {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return {

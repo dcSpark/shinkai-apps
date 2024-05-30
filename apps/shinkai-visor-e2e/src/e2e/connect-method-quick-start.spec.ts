@@ -18,7 +18,9 @@ export const connectMethodQuickStartTests = () => {
   test('error appear if node is not running', async ({ popup }) => {
     const quickConnectButton = popup.getByTestId('quick-connect-button');
     await quickConnectButton.click();
-    const quickConnectErrorMessage = popup.getByTestId('quick-connect-error-message');
+    const quickConnectErrorMessage = popup.getByTestId(
+      'quick-connect-error-message',
+    );
     await expect(quickConnectErrorMessage).toBeVisible();
   });
 
@@ -35,7 +37,9 @@ export const connectMethodQuickStartTests = () => {
     await nodeManager.startNode(false);
     const quickConnectButton = popup.getByTestId('quick-connect-button');
     quickConnectButton.click();
-    const quickConnectErrorMessage = popup.getByTestId('quick-connect-error-message');
+    const quickConnectErrorMessage = popup.getByTestId(
+      'quick-connect-error-message',
+    );
     await expect(quickConnectErrorMessage).toBeVisible();
   });
 };

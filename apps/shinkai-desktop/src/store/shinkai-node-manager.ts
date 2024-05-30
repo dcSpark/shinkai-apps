@@ -10,7 +10,9 @@ type ShinkaiNodeManagerStore = {
   isInUse: boolean | null;
   setIsInUse: (value: boolean) => void;
   shinkaiNodeOptions: Partial<ShinkaiNodeOptions> | null;
-  setShinkaiNodeOptions: (shinkaiNodeOptions: Partial<ShinkaiNodeOptions>) => void;
+  setShinkaiNodeOptions: (
+    shinkaiNodeOptions: Partial<ShinkaiNodeOptions>,
+  ) => void;
 };
 
 export const useShinkaiNodeManager = create<ShinkaiNodeManagerStore>()(

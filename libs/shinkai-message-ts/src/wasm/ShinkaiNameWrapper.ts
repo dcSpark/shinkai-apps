@@ -10,7 +10,9 @@ export class ShinkaiNameWrapper {
     this.wasmWrapper = new ShinkaiNameWrapperWASM(shinkai_name_js);
   }
 
-  static from_shinkai_message_sender(message: ShinkaiMessage): ShinkaiNameWrapper {
+  static from_shinkai_message_sender(
+    message: ShinkaiMessage,
+  ): ShinkaiNameWrapper {
     if (!message.body || !('unencrypted' in message.body)) {
       throw new Error('shinkai message is encrypted');
     }
@@ -50,10 +52,14 @@ export class ShinkaiNameWrapper {
   }
 
   extract_profile(): ShinkaiNameWrapper {
-    return new ShinkaiNameWrapper(this.wasmWrapper.extract_profile().get_full_name);
+    return new ShinkaiNameWrapper(
+      this.wasmWrapper.extract_profile().get_full_name,
+    );
   }
 
   extract_node(): ShinkaiNameWrapper {
-    return new ShinkaiNameWrapper(this.wasmWrapper.extract_node().get_full_name);
+    return new ShinkaiNameWrapper(
+      this.wasmWrapper.extract_node().get_full_name,
+    );
   }
 }

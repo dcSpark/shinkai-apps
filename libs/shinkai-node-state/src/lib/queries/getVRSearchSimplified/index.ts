@@ -1,6 +1,9 @@
 import { retrieveVectorSearchSimplified as retrieveVectorSearchSimplifiedApi } from '@shinkai_network/shinkai-message-ts/api';
 
-import { GetVRSearchSimplifiedInput, GetVRSearchSimplifiedOutput } from './types';
+import {
+  GetVRSearchSimplifiedInput,
+  GetVRSearchSimplifiedOutput,
+} from './types';
 
 export const getVRSearchSimplified = async ({
   nodeAddress,

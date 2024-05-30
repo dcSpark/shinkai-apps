@@ -17,7 +17,10 @@ enum ContextMenu {
 
 const menuActions = new Map<
   string | number,
-  (info: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab | undefined) => void
+  (
+    info: chrome.contextMenus.OnClickData,
+    tab: chrome.tabs.Tab | undefined,
+  ) => void
 >([
   [ContextMenu.SendPageToAgent, sendPageToAgent],
   [ContextMenu.SendToAgent, sendToAgent],

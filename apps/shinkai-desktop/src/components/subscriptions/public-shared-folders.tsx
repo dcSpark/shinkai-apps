@@ -31,7 +31,10 @@ import { useDebounce } from '../../hooks/use-debounce';
 import { treeOptions } from '../../lib/constants';
 import { SimpleLayout } from '../../pages/layout/simple-layout';
 import { useAuth } from '../../store/auth';
-import { SubscribeButton, UnsubscribeButton } from './components/subscription-button';
+import {
+  SubscribeButton,
+  UnsubscribeButton,
+} from './components/subscription-button';
 
 const PublicSharedFolderSubscription = () => {
   const [searchQuery, setSearchQuery] = React.useState('');
@@ -62,11 +65,17 @@ const PublicSharedFolderSubscription = () => {
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
 
-  const { data, fetchNextPage, hasNextPage, isPending, isFetchingNextPage, isSuccess } =
-    useGetAvailableSharedFoldersWithPagination({
-      search: debouncedSearchQuery,
-      priceFilter: paidFilter,
-    });
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isPending,
+    isFetchingNextPage,
+    isSuccess,
+  } = useGetAvailableSharedFoldersWithPagination({
+    search: debouncedSearchQuery,
+    priceFilter: paidFilter,
+  });
 
   const { nodeInfo } = useGetHealth({ node_address: auth?.node_address ?? '' });
 
@@ -143,13 +152,15 @@ const PublicSharedFolderSubscription = () => {
               key={idx}
             />
           ))}
-        {isSuccess && !data?.pages?.[0]?.values?.length && debouncedSearchQuery === searchQuery && (
-          <p className="text-gray-80 text-left">
-            {searchQuery || paidFilter
-              ? 'There are no public folders available that match your search criteria.'
-              : 'There are no public folders available to subscribe to right now.'}
-          </p>
-        )}
+        {isSuccess &&
+          !data?.pages?.[0]?.values?.length &&
+          debouncedSearchQuery === searchQuery && (
+            <p className="text-gray-80 text-left">
+              {searchQuery || paidFilter
+                ? 'There are no public folders available that match your search criteria.'
+                : 'There are no public folders available to subscribe to right now.'}
+            </p>
+          )}
         {isSuccess && debouncedSearchQuery === searchQuery && (
           <ScrollArea className="[&>div>div]:!block">
             <div className="w-full">
@@ -157,21 +168,26 @@ const PublicSharedFolderSubscription = () => {
                 <Fragment key={idx}>
                   {page.values.map((sharedFolder) => {
                     const isMySharedFolder =
-                      nodeInfo?.node_name === '@@' + sharedFolder?.identity?.identityRaw &&
-                      mySharedFolders?.some((folder) => folder.path === sharedFolder.path);
+                      nodeInfo?.node_name ===
+                        '@@' + sharedFolder?.identity?.identityRaw &&
+                      mySharedFolders?.some(
+                        (folder) => folder.path === sharedFolder.path,
+                      );
 
                     if (isMySharedFolder) return;
 
                     return (
                       <PublicSharedFolder
                         folderDescription={
-                          sharedFolder?.folderDescription ?? 'no description found'
+                          sharedFolder?.folderDescription ??
+                          'no description found'
                         }
                         folderName={sharedFolder.path}
                         folderPath={sharedFolder.path}
                         folderTree={sharedFolder.raw.tree}
                         isAlreadySubscribed={subscriptions?.some(
-                          (subscription) => subscription.shared_folder === sharedFolder.path,
+                          (subscription) =>
+                            subscription.shared_folder === sharedFolder.path,
                         )}
                         isFree={sharedFolder?.isFree}
                         key={`${sharedFolder?.identity?.identityRaw}::${sharedFolder.path}`}
@@ -204,7 +220,10 @@ const PublicSharedFolderSubscription = () => {
 
 export default PublicSharedFolderSubscription;
 
-function transformTreeNode(node: FolderTreeNode, parentPath: string = ''): PrimeTreeNode {
+function transformTreeNode(
+  node: FolderTreeNode,
+  parentPath: string = '',
+): PrimeTreeNode {
   const path = parentPath ? `${parentPath}/${node.name}` : node.path;
   return {
     id: path,
@@ -261,7 +280,10 @@ export const PublicSharedFolder = ({
               streamerNodeProfile="main"
             />
           ) : (
-            <SubscribeButton folderPath={folderPath} nodeName={nodeNameWithPrefix} />
+            <SubscribeButton
+              folderPath={folderPath}
+              nodeName={nodeNameWithPrefix}
+            />
           )}
         </div>
       </SheetTrigger>
@@ -294,7 +316,10 @@ const FolderDetailsDrawerContent = ({
     '0-0': true,
   });
 
-  const expandNode = (node: PrimeTreeNode, _expandedKeys: TreeExpandedKeysType) => {
+  const expandNode = (
+    node: PrimeTreeNode,
+    _expandedKeys: TreeExpandedKeysType,
+  ) => {
     if (node.children && node.children.length) {
       _expandedKeys[node?.key ?? ''] = true;
 
@@ -322,7 +347,9 @@ const FolderDetailsDrawerContent = ({
     <SheetContent>
       <SheetHeader>
         <SheetTitle className="mb-2">Public Subscription Details</SheetTitle>
-        <SheetDescription>List of folders and files shared with you</SheetDescription>
+        <SheetDescription>
+          List of folders and files shared with you
+        </SheetDescription>
       </SheetHeader>
 
       <div className="flex flex-wrap justify-end gap-2">
@@ -353,7 +380,11 @@ const FolderDetailsDrawerContent = ({
             streamerNodeProfile={streamerNodeProfile ?? 'main'}
           />
         ) : (
-          <SubscribeButton folderPath={folderPath} fullWidth nodeName={streamerNodeName ?? ''} />
+          <SubscribeButton
+            folderPath={folderPath}
+            fullWidth
+            nodeName={streamerNodeName ?? ''}
+          />
         )}
       </SheetFooter>
     </SheetContent>
@@ -389,12 +420,16 @@ export const SubscriptionInfo = ({
         </span>
         {/*</a>*/}
 
-        <span className="text-gray-80 text-sm first-letter:uppercase">{folderDescription}</span>
+        <span className="text-gray-80 text-sm first-letter:uppercase">
+          {folderDescription}
+        </span>
       </div>
       <div className="text-gray-80 flex items-center gap-2 text-xs">
         <a
           className="transition-all hover:text-white hover:underline"
-          href={`https://shinkai-contracts.pages.dev/identity/${nodeName.split('@@')?.[1]}`}
+          href={`https://shinkai-contracts.pages.dev/identity/${
+            nodeName.split('@@')?.[1]
+          }`}
           onClick={(e) => {
             e.preventDefault();
           }}

@@ -56,7 +56,8 @@ const TermsAndConditionsPage = () => {
                 buttonVariants({
                   variant: 'default',
                 }),
-                !acceptedTermsAndContidions && 'pointer-events-none bg-gray-300 opacity-60',
+                !acceptedTermsAndContidions &&
+                  'pointer-events-none bg-gray-300 opacity-60',
               )}
               to={'/get-started'}
             >

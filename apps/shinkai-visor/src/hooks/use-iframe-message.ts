@@ -7,7 +7,9 @@ export type UseChromeMessageCallbackParameters = [
   message: ServiceWorkerInternalMessage,
   sender: chrome.runtime.MessageSender,
 ];
-export type UseChromeMessageCallback = (...params: UseChromeMessageCallbackParameters) => void;
+export type UseChromeMessageCallback = (
+  ...params: UseChromeMessageCallbackParameters
+) => void;
 
 export const useIFrameMessage = (callback: UseChromeMessageCallback) => {
   useEffect(() => {

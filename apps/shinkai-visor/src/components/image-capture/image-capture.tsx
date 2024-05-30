@@ -51,11 +51,19 @@ export const ImageCapture = () => {
         }}
         onComplete={async (c) => {
           console.log('crop completed', c);
-          if (typeof finishCaptureRef.current === 'function' && imageRef.current) {
+          if (
+            typeof finishCaptureRef.current === 'function' &&
+            imageRef.current
+          ) {
             if (c.width === 0 || c.height === 0) {
               return;
             }
-            const croppedImage = await getCroppedImage(imageRef.current, c, 1, 0);
+            const croppedImage = await getCroppedImage(
+              imageRef.current,
+              c,
+              1,
+              0,
+            );
             if (!croppedImage) {
               return;
             }

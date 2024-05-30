@@ -5,6 +5,9 @@ describe('shinkai-app', () => {
 
   it('should display app description', () => {
     // Function helper example, see `../support/app.po.ts` file
-    getDescription().should('have.text', 'AI AGENT OS THAT UNLOCKS THE POTENTIAL OF LLMs');
+    getDescription().should(
+      'have.text',
+      'AI AGENT OS THAT UNLOCKS THE POTENTIAL OF LLMs',
+    );
   });
 });

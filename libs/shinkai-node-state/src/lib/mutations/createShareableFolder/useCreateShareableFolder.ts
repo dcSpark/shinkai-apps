@@ -1,10 +1,21 @@
-import { type UseMutationOptions, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  type UseMutationOptions,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 
 import { FunctionKey } from '../../constants';
 import { createShareableFolder } from './index';
-import { CreateShareableFolderInput, CreateShareableFolderOutput } from './types';
+import {
+  CreateShareableFolderInput,
+  CreateShareableFolderOutput,
+} from './types';
 
-type Options = UseMutationOptions<CreateShareableFolderOutput, Error, CreateShareableFolderInput>;
+type Options = UseMutationOptions<
+  CreateShareableFolderOutput,
+  Error,
+  CreateShareableFolderInput
+>;
 
 export const useCreateShareableFolder = (options?: Options) => {
   const queryClient = useQueryClient();

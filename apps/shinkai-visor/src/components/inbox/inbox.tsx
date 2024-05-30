@@ -100,7 +100,11 @@ function AgentSelection() {
             </DropdownMenuTrigger>
           </TooltipTrigger>
           <TooltipPortal>
-            <TooltipContent align="center" className="bg-neutral-900" side="top">
+            <TooltipContent
+              align="center"
+              className="bg-neutral-900"
+              side="top"
+            >
               Switch AI
             </TooltipContent>
           </TooltipPortal>
@@ -111,7 +115,9 @@ function AgentSelection() {
           >
             <DropdownMenuRadioGroup
               onValueChange={async (value) => {
-                const jobId = extractJobIdFromInbox(currentInbox?.inbox_id ?? '');
+                const jobId = extractJobIdFromInbox(
+                  currentInbox?.inbox_id ?? '',
+                );
                 await updateAgentInJob({
                   nodeAddress: auth?.node_address ?? '',
                   shinkaiIdentity: auth?.shinkai_identity ?? '',
@@ -161,13 +167,14 @@ export const Inbox = () => {
     },
   });
 
-  const { getRootProps: getRootFileProps, getInputProps: getInputFileProps } = useDropzone({
-    multiple: false,
-    onDrop: (acceptedFiles) => {
-      const file = acceptedFiles[0];
-      chatForm.setValue('file', file, { shouldValidate: true });
-    },
-  });
+  const { getRootProps: getRootFileProps, getInputProps: getInputFileProps } =
+    useDropzone({
+      multiple: false,
+      onDrop: (acceptedFiles) => {
+        const file = acceptedFiles[0];
+        chatForm.setValue('file', file, { shouldValidate: true });
+      },
+    });
 
   const { file } = chatForm.watch();
 
@@ -193,10 +200,12 @@ export const Inbox = () => {
 
   const { mutateAsync: sendMessageToInbox } = useSendMessageToInbox();
   const { mutateAsync: sendMessageToJob } = useSendMessageToJob();
-  const { mutateAsync: sendTextMessageWithFilesForInbox } = useSendMessageWithFilesToInbox();
+  const { mutateAsync: sendTextMessageWithFilesForInbox } =
+    useSendMessageWithFilesToInbox();
 
   const fromPreviousMessagesRef = useRef<boolean>(false);
-  const [isJobProcessingFile, setIsJobProcessingFile] = useState<boolean>(false);
+  const [isJobProcessingFile, setIsJobProcessingFile] =
+    useState<boolean>(false);
 
   const onSubmit = async (data: ChatMessageFormSchema) => {
     if (!auth || data.message.trim() === '') return;
@@ -268,14 +277,19 @@ export const Inbox = () => {
   useEffect(() => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
     if (lastMessage) {
-      setIsJobProcessingFile(isLoadingMessage && lastMessage.isLocal && !!lastMessage.fileInbox);
+      setIsJobProcessingFile(
+        isLoadingMessage && lastMessage.isLocal && !!lastMessage.fileInbox,
+      );
     }
   }, [data?.pages, auth, isLoadingMessage]);
 
   const isLimitReachedErrorLastMessage = useMemo(() => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
     if (!lastMessage) return;
-    const errorCode = extractErrorPropertyOrContent(lastMessage.content, 'error');
+    const errorCode = extractErrorPropertyOrContent(
+      lastMessage.content,
+      'error',
+    );
     return errorCode === ErrorCodes.ShinkaiBackendInferenceLimitReached;
   }, [data?.pages]);
 
@@ -349,7 +363,8 @@ export const Inbox = () => {
                                   <input
                                     {...chatForm.register('file')}
                                     {...getInputFileProps({
-                                      onChange: chatForm.register('file').onChange,
+                                      onChange:
+                                        chatForm.register('file').onChange,
                                     })}
                                     className="sr-only"
                                   />
@@ -388,7 +403,8 @@ export const Inbox = () => {
                           topAddons={
                             file && (
                               <div className="relative mt-1 flex min-w-[180px] max-w-[220px] items-center gap-2 self-start rounded-lg border border-gray-200 px-2 py-2.5">
-                                {getFileExt(file?.name) && fileIconMap[getFileExt(file?.name)] ? (
+                                {getFileExt(file?.name) &&
+                                fileIconMap[getFileExt(file?.name)] ? (
                                   <FileTypeIcon
                                     className="text-gray-80 h-7 w-7 shrink-0 "
                                     type={getFileExt(file?.name)}

@@ -5,7 +5,11 @@ import { updateAgentInJob } from '.';
 import { FunctionKey } from '../../constants';
 import { UpdateAgentInJobInput, UpdateAgentInJobOutput } from './types';
 
-type Options = UseMutationOptions<UpdateAgentInJobOutput, Error, UpdateAgentInJobInput>;
+type Options = UseMutationOptions<
+  UpdateAgentInJobOutput,
+  Error,
+  UpdateAgentInJobInput
+>;
 
 export const useUpdateAgentInJob = (options?: Options) => {
   const queryClient = useQueryClient();

@@ -77,7 +77,9 @@ const OnboardingPage = () => {
     resolver: zodResolver(quickConnectFormSchema),
     defaultValues: {
       registration_name: 'main_device',
-      node_address: isShinkaiPrivate ? LOCAL_NODE_ADDRESS : 'http://127.0.0.1:9550',
+      node_address: isShinkaiPrivate
+        ? LOCAL_NODE_ADDRESS
+        : 'http://127.0.0.1:9550',
     },
   });
 
@@ -94,7 +96,8 @@ const OnboardingPage = () => {
           ...setupPayload,
           permission_type: '',
           shinkai_identity:
-            setupDataForm.getValues().shinkai_identity || (response.data?.node_name ?? ''),
+            setupDataForm.getValues().shinkai_identity ||
+            (response.data?.node_name ?? ''),
           node_signature_pk: response.data?.identity_public_key ?? '',
           node_encryption_pk: response.data?.encryption_public_key ?? '',
         };
@@ -153,12 +156,17 @@ const OnboardingPage = () => {
             </h1>
           </div>
           <Form {...setupDataForm}>
-            <form className="space-y-6" onSubmit={setupDataForm.handleSubmit(onSubmit)}>
+            <form
+              className="space-y-6"
+              onSubmit={setupDataForm.handleSubmit(onSubmit)}
+            >
               <div className="space-y-4">
                 <FormField
                   control={setupDataForm.control}
                   name="node_address"
-                  render={({ field }) => <TextField field={field} label={'Node Address'} />}
+                  render={({ field }) => (
+                    <TextField field={field} label={'Node Address'} />
+                  )}
                 />
                 {isError && <ErrorMessage message={error.message} />}
               </div>

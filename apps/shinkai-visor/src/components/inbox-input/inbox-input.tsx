@@ -3,7 +3,13 @@ import {
   ChatMessageFormSchema,
   chatMessageFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/chat-message';
-import { Button, ChatInputArea, Form, FormField, FormItem } from '@shinkai_network/shinkai-ui';
+import {
+  Button,
+  ChatInputArea,
+  Form,
+  FormField,
+  FormItem,
+} from '@shinkai_network/shinkai-ui';
 import { motion } from 'framer-motion';
 import { SendHorizonal } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -38,7 +44,10 @@ export const InboxInput = (props: InboxInputProps) => {
   };
   return (
     <Form {...form}>
-      <form className="relative flex gap-2" onSubmit={form.handleSubmit(submit)}>
+      <form
+        className="relative flex gap-2"
+        onSubmit={form.handleSubmit(submit)}
+      >
         <div className="flex grow flex-col">
           <FormField
             control={form.control}
@@ -72,7 +81,9 @@ export const InboxInput = (props: InboxInputProps) => {
           >
             <Button
               className="h-[60px] w-[60px] grow-0 rounded-xl p-0"
-              disabled={!form.formState.isValid || props.disabled || props.loading}
+              disabled={
+                !form.formState.isValid || props.disabled || props.loading
+              }
             >
               <SendHorizonal className="h-6 w-6" />
               <span className="sr-only">Send Message</span>

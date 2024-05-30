@@ -30,7 +30,8 @@ export const ResourcesBanner = ({
   const { data: hardwareSummary } = useHardwareGetSummaryQuery();
   const sidebarExpanded = useSettings((state) => state.sidebarExpanded);
 
-  const isOptimal = hardwareSummary?.requirements_status === RequirementsStatus.Optimal;
+  const isOptimal =
+    hardwareSummary?.requirements_status === RequirementsStatus.Optimal;
   const lessThanMinimum =
     hardwareSummary?.requirements_status === RequirementsStatus.Unmeet ||
     hardwareSummary?.requirements_status === RequirementsStatus.StillUsable;
@@ -42,7 +43,9 @@ export const ResourcesBanner = ({
   const alertContent = (
     <Alert className="shadow-lg" variant="warning">
       <AlertTriangle className="h-4 w-4" />
-      <AlertTitle className="text-sm font-medium">Device Compatibility</AlertTitle>
+      <AlertTitle className="text-sm font-medium">
+        Device Compatibility
+      </AlertTitle>
       <AlertDescription className="text-xs">
         <div className="flex flex-col gap-2">
           <div>AI models could not work or run really slow.</div>
@@ -57,9 +60,10 @@ export const ResourcesBanner = ({
             ) : (
               lessThanRecomendded && (
                 <span>
-                  - Your computer doesn&apos;t meet the recommended requirements:{' '}
-                  {hardwareSummary?.requirements.recommended.cpus} CPUs and{' '}
-                  {hardwareSummary?.requirements.recommended.memory}GB RAM.
+                  - Your computer doesn&apos;t meet the recommended
+                  requirements: {hardwareSummary?.requirements.recommended.cpus}{' '}
+                  CPUs and {hardwareSummary?.requirements.recommended.memory}GB
+                  RAM.
                 </span>
               )
             )}
@@ -113,7 +117,12 @@ export const ResourcesBanner = ({
               </Alert>
             </TooltipTrigger>
             <TooltipPortal>
-              <TooltipContent align="center" arrowPadding={2} className="max-w-md p-0" side="right">
+              <TooltipContent
+                align="center"
+                arrowPadding={2}
+                className="max-w-md p-0"
+                side="right"
+              >
                 {alertContent}
               </TooltipContent>
             </TooltipPortal>

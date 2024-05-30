@@ -30,8 +30,14 @@ export const addAgent = async (
   const agentName = popup.getByLabel('Agent name');
   const externalUrl = popup.getByLabel('External url');
   const apiKey = popup.getByLabel('API Key');
-  const model = popup.getByLabel('Model', { exact: true }).locator('..').locator('select');
-  const models = popup.getByLabel('Models', { exact: true }).locator('..').locator('select');
+  const model = popup
+    .getByLabel('Model', { exact: true })
+    .locator('..')
+    .locator('select');
+  const models = popup
+    .getByLabel('Models', { exact: true })
+    .locator('..')
+    .locator('select');
 
   await agentName.fill(agent.agentName);
   await externalUrl.fill('https://api.openai.com');
@@ -42,7 +48,10 @@ export const addAgent = async (
   await expect(popup.getByTestId('create-job-submit-button')).toBeVisible();
 };
 
-export const navigateToMenu = async (popup: Page, menuTestId: string): Promise<void> => {
+export const navigateToMenu = async (
+  popup: Page,
+  menuTestId: string,
+): Promise<void> => {
   await popup.getByTestId('nav-menu-button').click();
   await popup.getByTestId(menuTestId).click();
 };

@@ -5,7 +5,11 @@ import { updateNodeName } from '.';
 import { FunctionKey } from '../../constants';
 import { UpdateNodeNameInput, UpdateNodeNameOutput } from './types';
 
-type Options = UseMutationOptions<UpdateNodeNameOutput, Error, UpdateNodeNameInput>;
+type Options = UseMutationOptions<
+  UpdateNodeNameOutput,
+  Error,
+  UpdateNodeNameInput
+>;
 
 export const useUpdateNodeName = (options?: Options) => {
   const queryClient = useQueryClient();

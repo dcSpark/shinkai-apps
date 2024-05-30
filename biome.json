@@ -6,14 +6,23 @@
     "indentStyle": "space",
     "indentWidth": 2,
     "lineEnding": "lf",
-    "lineWidth": 100,
+    "lineWidth": 80,
     "attributePosition": "auto"
   },
   "organizeImports": {
     "enabled": true
   },
   "files": {
-    "ignore": ["/coverage", "dist", "node_modules", "android", "ios", "src-tauri", ".nx", "pkg"]
+    "ignore": [
+      "/coverage",
+      "dist",
+      "node_modules",
+      "android",
+      "ios",
+      "src-tauri",
+      ".nx",
+      "pkg"
+    ]
   },
   "linter": {
     "enabled": true,

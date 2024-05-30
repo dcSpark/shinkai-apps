@@ -42,7 +42,8 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     model: 'llama3-gradient',
     tag: '8b-instruct-1048k-q3_K_M',
     name: 'Llama-3 Gradient',
-    description: "This model extends LLama-3 8B's context length from 8k to over 1m tokens.",
+    description:
+      "This model extends LLama-3 8B's context length from 8k to over 1m tokens.",
     contextLength: 256000,
     quality: OllamaModelQuality.Medium,
     speed: OllamaModelSpeed.Fast,

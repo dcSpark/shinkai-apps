@@ -17,8 +17,12 @@ globalThis.crypto = crypto;
 const generateKeys = async () => {
   const seed = new Uint8Array(32);
   const encryptionKeys = generateKeyPair(seed);
-  const my_encryption_sk_string = toHexString(new Uint8Array(encryptionKeys.private));
-  const my_encryption_pk_string = toHexString(new Uint8Array(encryptionKeys.public));
+  const my_encryption_sk_string = toHexString(
+    new Uint8Array(encryptionKeys.private),
+  );
+  const my_encryption_pk_string = toHexString(
+    new Uint8Array(encryptionKeys.public),
+  );
 
   const privKey = ed.utils.randomPrivateKey(); // Secure random private key
   const pubKey = await ed.getPublicKeyAsync(privKey);
@@ -106,7 +110,12 @@ test('ShinkaiMessageBuilderWrapper should set body content correctly', async () 
   await messageBuilder.message_raw_content('Hello world!');
   await messageBuilder.body_encryption('None');
   await messageBuilder.message_schema_type(MessageSchemaType.TextContent);
-  await messageBuilder.internal_metadata('sender_user2', 'recipient_user1', '', 'None');
+  await messageBuilder.internal_metadata(
+    'sender_user2',
+    'recipient_user1',
+    '',
+    'None',
+  );
   await messageBuilder.external_metadata_with_schedule(
     '@@other_node.shinkai',
     '@@my_node.shinkai',
@@ -127,19 +136,20 @@ test('ShinkaiMessageBuilderWrapper should create a use code registration message
   const registrationName = 'sample_registration_name';
   const shinkaiIdentity = '@@my_node.shinkai';
 
-  const codeRegistrationMessage = ShinkaiMessageBuilderWrapper.use_code_registration_for_device(
-    device_keys.my_encryption_sk_string,
-    device_keys.my_identity_sk_string,
-    profile_keys.my_encryption_sk_string,
-    profile_keys.my_identity_sk_string,
-    device_keys.receiver_public_key_string,
-    registrationCode,
-    identityType,
-    permissionType,
-    registrationName,
-    '', // sender_profile_name: it doesn't exist yet in the Node
-    shinkaiIdentity,
-  );
+  const codeRegistrationMessage =
+    ShinkaiMessageBuilderWrapper.use_code_registration_for_device(
+      device_keys.my_encryption_sk_string,
+      device_keys.my_identity_sk_string,
+      profile_keys.my_encryption_sk_string,
+      profile_keys.my_identity_sk_string,
+      device_keys.receiver_public_key_string,
+      registrationCode,
+      identityType,
+      permissionType,
+      registrationName,
+      '', // sender_profile_name: it doesn't exist yet in the Node
+      shinkaiIdentity,
+    );
 
   expect(codeRegistrationMessage).toBeTruthy();
   expect(typeof codeRegistrationMessage).toBe('string');
@@ -178,15 +188,16 @@ test('ShinkaiMessageBuilderWrapper should create a new request code registration
   const senderProfileName = 'sample_sender_profile_name';
   const shinkaiIdentity = '@@my_node.shinkai';
 
-  const requestCodeRegistrationMessage = ShinkaiMessageBuilderWrapper.request_code_registration(
-    keys.my_encryption_sk_string,
-    keys.my_identity_sk_string,
-    keys.receiver_public_key_string,
-    permissionType,
-    codeType,
-    senderProfileName,
-    shinkaiIdentity,
-  );
+  const requestCodeRegistrationMessage =
+    ShinkaiMessageBuilderWrapper.request_code_registration(
+      keys.my_encryption_sk_string,
+      keys.my_identity_sk_string,
+      keys.receiver_public_key_string,
+      permissionType,
+      codeType,
+      senderProfileName,
+      shinkaiIdentity,
+    );
 
   expect(requestCodeRegistrationMessage).toBeTruthy();
   expect(typeof requestCodeRegistrationMessage).toBe('string');
@@ -201,17 +212,18 @@ test('ShinkaiMessageBuilderWrapper should get last messages from inbox', async (
   const senderProfileName = 'sample_sender_profile_name';
   const shinkaiIdentity = '@@my_node.shinkai';
 
-  const lastMessages = ShinkaiMessageBuilderWrapper.get_last_messages_from_inbox(
-    keys.my_encryption_sk_string,
-    keys.my_identity_sk_string,
-    keys.receiver_public_key_string,
-    inbox,
-    count,
-    offset,
-    shinkaiIdentity,
-    senderProfileName,
-    shinkaiIdentity,
-  );
+  const lastMessages =
+    ShinkaiMessageBuilderWrapper.get_last_messages_from_inbox(
+      keys.my_encryption_sk_string,
+      keys.my_identity_sk_string,
+      keys.receiver_public_key_string,
+      inbox,
+      count,
+      offset,
+      shinkaiIdentity,
+      senderProfileName,
+      shinkaiIdentity,
+    );
 
   expect(lastMessages).toBeTruthy();
   expect(typeof lastMessages).toBe('string');
@@ -308,7 +320,9 @@ test('ShinkaiMessageBuilderWrapper should generate an encrypted message_data but
 
   const message_json = JSON.parse(message);
   expect(message_json.body).toHaveProperty('unencrypted');
-  expect(message_json.body.unencrypted.message_data).toHaveProperty('encrypted');
+  expect(message_json.body.unencrypted.message_data).toHaveProperty(
+    'encrypted',
+  );
   expect(message_json.body.unencrypted.internal_metadata).toEqual(
     expect.objectContaining({
       sender_subidentity: 'sender_subidentity',

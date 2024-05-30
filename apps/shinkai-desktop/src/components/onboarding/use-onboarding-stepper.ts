@@ -15,7 +15,9 @@ import { GetStartedStatus, GetStartedSteps } from './onboarding';
 export const useOnboardingSteps = () => {
   const currentStepsMap = useMap<GetStartedSteps, GetStartedStatus>();
   const auth = useAuth((state) => state.auth);
-  const isLocalShinkaiNodeInUse = useShinkaiNodeManager((state) => state.isInUse);
+  const isLocalShinkaiNodeInUse = useShinkaiNodeManager(
+    (state) => state.isInUse,
+  );
 
   const { nodeInfo, isSuccess } = useGetHealth(
     { node_address: auth?.node_address ?? '' },
@@ -86,7 +88,10 @@ export const useOnboardingSteps = () => {
 
   useEffect(() => {
     if (isSuccess && nodeInfo?.status === 'ok') {
-      currentStepsMap.set(GetStartedSteps.SetupShinkaiNode, GetStartedStatus.Done);
+      currentStepsMap.set(
+        GetStartedSteps.SetupShinkaiNode,
+        GetStartedStatus.Done,
+      );
     }
   }, [isSuccess]);
 
@@ -109,18 +114,26 @@ export const useOnboardingSteps = () => {
       currentStepsMap.set(GetStartedSteps.CreateAIChat, GetStartedStatus.Done);
     }
     const hasMoreThan1Folder =
-      inboxes.filter((inbox) => inbox.job_scope.vector_fs_folders.length > 1).length > 1;
+      inboxes.filter((inbox) => inbox.job_scope.vector_fs_folders.length > 1)
+        .length > 1;
     const hasMoreThanZeroItem =
-      inboxes.filter((inbox) => inbox.job_scope.vector_fs_items.length > 0).length > 0;
+      inboxes.filter((inbox) => inbox.job_scope.vector_fs_items.length > 0)
+        .length > 0;
 
     if (hasMoreThanZeroItem || hasMoreThan1Folder) {
-      currentStepsMap.set(GetStartedSteps.AskQuestionToFiles, GetStartedStatus.Done);
+      currentStepsMap.set(
+        GetStartedSteps.AskQuestionToFiles,
+        GetStartedStatus.Done,
+      );
     }
   }, [inboxes]);
 
   useEffect(() => {
     if ((subscriptions ?? [])?.length > 0) {
-      currentStepsMap.set(GetStartedSteps.SubscribeToKnowledge, GetStartedStatus.Done);
+      currentStepsMap.set(
+        GetStartedSteps.SubscribeToKnowledge,
+        GetStartedStatus.Done,
+      );
     }
   }, [subscriptions]);
 

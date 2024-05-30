@@ -65,7 +65,9 @@ export const Settings = () => {
   const navigate = useNavigate();
   const auth = useAuth((authStore) => authStore.auth);
   const setAuth = useAuth((authStore) => authStore.setAuth);
-  const displayActionButton = useSettings((settingsStore) => settingsStore.displayActionButton);
+  const displayActionButton = useSettings(
+    (settingsStore) => settingsStore.displayActionButton,
+  );
   const displaySummaryActionButton = useSettings(
     (settingsStore) => settingsStore.displaySummaryActionButton,
   );
@@ -84,16 +86,28 @@ export const Settings = () => {
     (settingsStore) => settingsStore.setDisplayImageCaptureActionButton,
   );
 
-  const defaultAgentId = useSettings((settingsStore) => settingsStore.defaultAgentId);
-  const setDefaultAgentId = useSettings((settingsStore) => settingsStore.setDefaultAgentId);
-  const sidebarShortcut = useSettings((settingsStore) => settingsStore.sidebarShortcut);
-  const setSidebarShortcut = useSettings((settingsStore) => settingsStore.setSidebarShortcut);
+  const defaultAgentId = useSettings(
+    (settingsStore) => settingsStore.defaultAgentId,
+  );
+  const setDefaultAgentId = useSettings(
+    (settingsStore) => settingsStore.setDefaultAgentId,
+  );
+  const sidebarShortcut = useSettings(
+    (settingsStore) => settingsStore.sidebarShortcut,
+  );
+  const setSidebarShortcut = useSettings(
+    (settingsStore) => settingsStore.setSidebarShortcut,
+  );
 
   const { nodeInfo, isSuccess: isNodeInfoSuccess } = useGetHealth({
     node_address: auth?.node_address ?? '',
   });
-  const disabledHosts = useSettings((settingsStore) => settingsStore.disabledHosts);
-  const setDisabledHosts = useSettings((settingsStore) => settingsStore.setDisabledHosts);
+  const disabledHosts = useSettings(
+    (settingsStore) => settingsStore.disabledHosts,
+  );
+  const setDisabledHosts = useSettings(
+    (settingsStore) => settingsStore.setDisabledHosts,
+  );
 
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
@@ -144,26 +158,31 @@ export const Settings = () => {
     profile_encryption_sk: auth?.profile_encryption_sk ?? '',
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
-  const { mutateAsync: updateNodeName, isPending: isUpdateNodeNamePending } = useUpdateNodeName({
-    onSuccess: () => {
-      toast.success(intl.formatMessage({ id: 'shinkai-identity-updated-successfully' }));
-      if (!auth) return;
-      const isHostingShinkaiNode = auth?.node_address.includes('hosting.shinkai.com');
-      if (!isHostingShinkaiNode) {
-        toast.info(intl.formatMessage({ id: 'restart-your-shinkai-node' }));
-      }
-      const newAuth: SetupData = { ...auth };
-      setAuth({
-        ...newAuth,
-        shinkai_identity: currentShinkaiIdentity,
-      });
-    },
-    onError: (error) => {
-      toast.error('Failed to update node name', {
-        description: error.message,
-      });
-    },
-  });
+  const { mutateAsync: updateNodeName, isPending: isUpdateNodeNamePending } =
+    useUpdateNodeName({
+      onSuccess: () => {
+        toast.success(
+          intl.formatMessage({ id: 'shinkai-identity-updated-successfully' }),
+        );
+        if (!auth) return;
+        const isHostingShinkaiNode = auth?.node_address.includes(
+          'hosting.shinkai.com',
+        );
+        if (!isHostingShinkaiNode) {
+          toast.info(intl.formatMessage({ id: 'restart-your-shinkai-node' }));
+        }
+        const newAuth: SetupData = { ...auth };
+        setAuth({
+          ...newAuth,
+          shinkai_identity: currentShinkaiIdentity,
+        });
+      },
+      onError: (error) => {
+        toast.error('Failed to update node name', {
+          description: error.message,
+        });
+      },
+    });
   const exportConnection = () => {
     navigate('/settings/export-connection');
   };
@@ -191,7 +210,10 @@ export const Settings = () => {
   }, [currentDisplaySummaryAction, setDisplaySummaryActionButton]);
   useEffect(() => {
     setDisplayImageCaptureActionButton(currentDisplayImageCaptureActionButton);
-  }, [currentDisplayImageCaptureActionButton, setDisplayImageCaptureActionButton]);
+  }, [
+    currentDisplayImageCaptureActionButton,
+    setDisplayImageCaptureActionButton,
+  ]);
 
   const handleUpdateNodeName = async () => {
     if (!auth) return;
@@ -248,7 +270,10 @@ export const Settings = () => {
               disabled
               name="nodeAddress"
               render={({ field }) => (
-                <TextField field={field} label={<FormattedMessage id="node-address" />} />
+                <TextField
+                  field={field}
+                  label={<FormattedMessage id="node-address" />}
+                />
               )}
             />
             <FormField
@@ -259,7 +284,8 @@ export const Settings = () => {
                   field={{
                     ...field,
                     onKeyDown: (event) => {
-                      if (currentShinkaiIdentity === auth?.shinkai_identity) return;
+                      if (currentShinkaiIdentity === auth?.shinkai_identity)
+                        return;
                       if (event.key === 'Enter') {
                         handleUpdateNodeName();
                       }
@@ -323,7 +349,10 @@ export const Settings = () => {
                 <Button
                   className="h-10 min-w-10 rounded-lg text-sm"
                   onClick={() => {
-                    form.setValue('shinkaiIdentity', auth?.shinkai_identity ?? '');
+                    form.setValue(
+                      'shinkaiIdentity',
+                      auth?.shinkai_identity ?? '',
+                    );
                   }}
                   type="button"
                   variant="outline"
@@ -337,7 +366,10 @@ export const Settings = () => {
               disabled
               name="nodeVersion"
               render={({ field }) => (
-                <TextField field={field} label={<FormattedMessage id="node-version" />} />
+                <TextField
+                  field={field}
+                  label={<FormattedMessage id="node-version" />}
+                />
               )}
             />
             <h2 className="pt-4 text-lg font-medium">Sidebar</h2>
@@ -384,7 +416,9 @@ export const Settings = () => {
                                   className="object-fit h-4 w-4 overflow-hidden rounded-full"
                                   src={`https://s2.googleusercontent.com/s2/favicons?domain=${host}`}
                                 />
-                                <span className="text-gray-80 truncate">{host}</span>
+                                <span className="text-gray-80 truncate">
+                                  {host}
+                                </span>
                               </div>
                               <button
                                 className={cn(
@@ -421,7 +455,11 @@ export const Settings = () => {
               render={({ field }) => (
                 <FormItem className="flex gap-2.5">
                   <FormControl>
-                    <Switch aria-readonly checked={field.value} onCheckedChange={field.onChange} />
+                    <Switch
+                      aria-readonly
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
                   </FormControl>
                   <div className="space-y-1 leading-none">
                     <FormLabel className="static space-y-1.5 text-sm text-white">
@@ -440,14 +478,19 @@ export const Settings = () => {
               render={({ field }) => (
                 <FormItem className="flex gap-2.5">
                   <FormControl>
-                    <Switch aria-readonly checked={field.value} onCheckedChange={field.onChange} />
+                    <Switch
+                      aria-readonly
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
                   </FormControl>
                   <div className="space-y-1 leading-none">
                     <FormLabel className="static space-y-1.5 text-sm text-white">
                       Include 1-Click Image Capture Option
                     </FormLabel>
                     <FormDescription>
-                      Adds an Image Capture Button to the Quick Access hover menu.
+                      Adds an Image Capture Button to the Quick Access hover
+                      menu.
                     </FormDescription>
                   </div>
                 </FormItem>
@@ -459,7 +502,8 @@ export const Settings = () => {
               render={() => (
                 <TextField
                   classes={{
-                    input: 'text-gray-80 text-base font-semibold tracking-widest caret-transparent',
+                    input:
+                      'text-gray-80 text-base font-semibold tracking-widest caret-transparent',
                   }}
                   field={{
                     value: formatShortcutKey(currentSidebarShorcut),
@@ -471,7 +515,9 @@ export const Settings = () => {
                       form.setValue('shortcutSidebar', keyInfo);
                     },
                   }}
-                  helperMessage={<FormattedMessage id="shortcut-key-description" />}
+                  helperMessage={
+                    <FormattedMessage id="shortcut-key-description" />
+                  }
                   label={<FormattedMessage id="shortcut-key" />}
                 />
               )}

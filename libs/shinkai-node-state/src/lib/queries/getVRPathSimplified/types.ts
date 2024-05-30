@@ -72,7 +72,10 @@ export type GetVRPathSimplifiedInput = JobCredentialsPayload & {
   profile: string;
   path: string;
 };
-export type UseGetMySharedFolders = [FunctionKey.GET_VR_FILES, GetVRPathSimplifiedInput];
+export type UseGetMySharedFolders = [
+  FunctionKey.GET_VR_FILES,
+  GetVRPathSimplifiedInput,
+];
 
 export type GetVRPathSimplifiedOutput = VRFolder;
 

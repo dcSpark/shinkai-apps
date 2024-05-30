@@ -6,7 +6,10 @@ export class ShinkaiNameError extends Error {
   }
 }
 
-export const getOtherPersonIdentity = (inboxName: string, myIdentity: string) => {
+export const getOtherPersonIdentity = (
+  inboxName: string,
+  myIdentity: string,
+) => {
   const parts = inboxName.split('::');
   const otherPersonIdentity = parts.filter(
     (part) => part !== myIdentity && part !== 'inbox' && part !== 'false',

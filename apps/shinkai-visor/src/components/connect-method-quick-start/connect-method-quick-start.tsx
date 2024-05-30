@@ -36,8 +36,10 @@ export const ConnectMethodQuickStart = () => {
     state: { nodeAddress: string };
   };
   const setAuth = useAuth((state) => state.setAuth);
-  const DEFAULT_NODE_ADDRESS = location.state?.nodeAddress ?? 'http://127.0.0.1:9550';
-  const { encryptionKeys, isLoading: isLoadingEncryptionKeys } = useGetEncryptionKeys();
+  const DEFAULT_NODE_ADDRESS =
+    location.state?.nodeAddress ?? 'http://127.0.0.1:9550';
+  const { encryptionKeys, isLoading: isLoadingEncryptionKeys } =
+    useGetEncryptionKeys();
   const form = useForm<QuickConnectFormSchema>({
     resolver: zodResolver(quickConnectFormSchema),
     defaultValues: {
@@ -57,7 +59,9 @@ export const ConnectMethodQuickStart = () => {
           ...encryptionKeys,
           ...setupPayload,
           permission_type: '',
-          shinkai_identity: form.getValues().shinkai_identity || (response.data?.node_name ?? ''),
+          shinkai_identity:
+            form.getValues().shinkai_identity ||
+            (response.data?.node_name ?? ''),
           node_signature_pk: response.data?.identity_public_key ?? '',
           node_encryption_pk: response.data?.encryption_public_key ?? '',
         };
@@ -98,17 +102,27 @@ export const ConnectMethodQuickStart = () => {
     <div className="flex h-full flex-col justify-between gap-6 overflow-auto pr-2">
       <div>
         <Header
-          description={<FormattedMessage id="quick-connection-connection-method-description" />}
-          title={<FormattedMessage id="quick-connection-connection-method-title" />}
+          description={
+            <FormattedMessage id="quick-connection-connection-method-description" />
+          }
+          title={
+            <FormattedMessage id="quick-connection-connection-method-title" />
+          }
         />
         <Form {...form}>
-          <form className="mt-8 space-y-5" onSubmit={form.handleSubmit(connect)}>
+          <form
+            className="mt-8 space-y-5"
+            onSubmit={form.handleSubmit(connect)}
+          >
             <div className="flex flex-col justify-between gap-2">
               <FormField
                 control={form.control}
                 name="node_address"
                 render={({ field }) => (
-                  <TextField field={field} label={<FormattedMessage id="node-address" />} />
+                  <TextField
+                    field={field}
+                    label={<FormattedMessage id="node-address" />}
+                  />
                 )}
               />
 
@@ -200,14 +214,18 @@ export const ConnectMethodQuickStart = () => {
         {/*/>*/}
 
         <ConnectionMethodOption
-          description={<FormattedMessage id="restore-connection-connection-method-description" />}
+          description={
+            <FormattedMessage id="restore-connection-connection-method-description" />
+          }
           icon={
             <span aria-hidden className="text-base">
               🔑
             </span>
           }
           onClick={() => selectRestoreMethod()}
-          title={<FormattedMessage id="restore-connection-connection-method-title" />}
+          title={
+            <FormattedMessage id="restore-connection-connection-method-title" />
+          }
         />
       </div>
     </div>

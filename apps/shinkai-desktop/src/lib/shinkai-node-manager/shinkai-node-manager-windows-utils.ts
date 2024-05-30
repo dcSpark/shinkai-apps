@@ -21,7 +21,8 @@ export const openShinkaiNodeManagerWindow = () => {
 };
 
 export const isLocalShinkaiNode = (nodeAddress: string) => {
-  const isLocalShinkaiNode = nodeAddress.includes('localhost') || nodeAddress.includes('127.0.0.1');
+  const isLocalShinkaiNode =
+    nodeAddress.includes('localhost') || nodeAddress.includes('127.0.0.1');
   return isLocalShinkaiNode;
 };
 

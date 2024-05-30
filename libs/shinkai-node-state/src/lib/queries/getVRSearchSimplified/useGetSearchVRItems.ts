@@ -2,7 +2,10 @@ import { QueryObserverOptions, useQuery } from '@tanstack/react-query';
 
 import { FunctionKey } from '../../constants';
 import { getVRSearchSimplified } from './index';
-import { GetVRSearchSimplifiedInput, GetVRSearchSimplifiedOutput } from './types';
+import {
+  GetVRSearchSimplifiedInput,
+  GetVRSearchSimplifiedOutput,
+} from './types';
 
 export type UseGetSearchVRItems = [
   FunctionKey.GET_VR_SEARCH_SIMPLIFIED,

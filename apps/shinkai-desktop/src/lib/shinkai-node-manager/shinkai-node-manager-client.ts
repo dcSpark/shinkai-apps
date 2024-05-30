@@ -9,7 +9,10 @@ import {
 } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api';
 
-import { LogEntry, ShinkaiNodeOptions } from './shinkai-node-manager-client-types';
+import {
+  LogEntry,
+  ShinkaiNodeOptions,
+} from './shinkai-node-manager-client-types';
 
 // Client
 
@@ -43,7 +46,8 @@ export const useShinkaiNodeGetOptionsQuery = (
 ): UseQueryResult<ShinkaiNodeOptions, Error> => {
   const query = useQuery({
     queryKey: ['shinkai_node_get_options'],
-    queryFn: (): Promise<ShinkaiNodeOptions> => invoke('shinkai_node_get_options'),
+    queryFn: (): Promise<ShinkaiNodeOptions> =>
+      invoke('shinkai_node_get_options'),
     ...options,
   });
   return { ...query } as UseQueryResult<ShinkaiNodeOptions, Error>;
@@ -98,7 +102,9 @@ export const useShinkaiNodeKillMutation = (options?: UseMutationOptions) => {
   return { ...response };
 };
 
-export const useShinkaiNodeRemoveStorageMutation = (options?: UseMutationOptions) => {
+export const useShinkaiNodeRemoveStorageMutation = (
+  options?: UseMutationOptions,
+) => {
   const response = useMutation({
     mutationFn: () => {
       return invoke('shinkai_node_remove_storage');
@@ -109,11 +115,17 @@ export const useShinkaiNodeRemoveStorageMutation = (options?: UseMutationOptions
 };
 
 export const useShinkaiNodeSetOptionsMutation = (
-  options?: UseMutationOptions<Partial<ShinkaiNodeOptions>, Error, ShinkaiNodeOptions>,
+  options?: UseMutationOptions<
+    Partial<ShinkaiNodeOptions>,
+    Error,
+    ShinkaiNodeOptions
+  >,
 ) => {
   const queryClient = useQueryClient();
   const response = useMutation({
-    mutationFn: (shinkaiNodeOptions: Partial<ShinkaiNodeOptions>): Promise<ShinkaiNodeOptions> => {
+    mutationFn: (
+      shinkaiNodeOptions: Partial<ShinkaiNodeOptions>,
+    ): Promise<ShinkaiNodeOptions> => {
       return invoke('shinkai_node_set_options', {
         options: shinkaiNodeOptions,
       });

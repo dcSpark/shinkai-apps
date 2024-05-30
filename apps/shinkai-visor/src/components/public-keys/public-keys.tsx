@@ -3,7 +3,12 @@ import {
   PublicKeysFormSchema,
   publicKeysSchema,
 } from '@shinkai_network/shinkai-node-state/forms/settings/public-keys';
-import { CopyToClipboardIcon, Form, FormField, TextField } from '@shinkai_network/shinkai-ui';
+import {
+  CopyToClipboardIcon,
+  Form,
+  FormField,
+  TextField,
+} from '@shinkai_network/shinkai-ui';
 import { useForm } from 'react-hook-form';
 
 import { useAuth } from '../../store/auth/auth';
@@ -76,7 +81,9 @@ export const PublicKeys = () => {
                 </div>
               </div>
               <div>
-                <h2 className="text-gray-80 mb-2 text-sm">Profile Public Keys</h2>
+                <h2 className="text-gray-80 mb-2 text-sm">
+                  Profile Public Keys
+                </h2>
                 <div className="space-y-3">
                   <FormField
                     control={form.control}
@@ -123,7 +130,9 @@ export const PublicKeys = () => {
                 </div>
               </div>
               <div>
-                <h2 className="text-gray-80 mb-2 text-sm">My Device Public Keys</h2>
+                <h2 className="text-gray-80 mb-2 text-sm">
+                  My Device Public Keys
+                </h2>
                 <div className="space-y-3">
                   <FormField
                     control={form.control}

@@ -55,12 +55,18 @@ const generateCodeSchema = z.object({
 });
 
 const identityTypeOptions = [IdentityType.Profile, IdentityType.Device];
-const permissionOptions = [PermissionType.Admin, PermissionType.Standard, PermissionType.None];
+const permissionOptions = [
+  PermissionType.Admin,
+  PermissionType.Standard,
+  PermissionType.None,
+];
 
 const GenerateCodePage = () => {
   const auth = useAuth((state) => state.auth);
   const [qrCodeModalOpen, setQrCodeModalOpen] = useState(false);
-  const [generatedSetupData, setGeneratedSetupData] = useState<QRSetupData | undefined>();
+  const [generatedSetupData, setGeneratedSetupData] = useState<
+    QRSetupData | undefined
+  >();
 
   const form = useForm<z.infer<typeof generateCodeSchema>>({
     resolver: zodResolver(generateCodeSchema),
@@ -71,31 +77,33 @@ const GenerateCodePage = () => {
     },
   });
 
-  const { mutateAsync: createRegistrationCode, isPending } = useCreateRegistrationCode({
-    onSuccess: (registrationCode) => {
-      const formValues = form.getValues();
-      const setupData: QRSetupData = {
-        registration_code: registrationCode,
-        permission_type: formValues.permissionType,
-        identity_type: formValues.identityType,
-        profile: formValues.profile,
-        node_address: auth?.node_address ?? '',
-        shinkai_identity: auth?.shinkai_identity ?? '',
-        node_encryption_pk: auth?.node_encryption_pk ?? '',
-        node_signature_pk: auth?.node_signature_pk ?? '',
-        ...(formValues.identityType === IdentityType.Device && formValues.profile === auth?.profile
-          ? {
-              profile_encryption_pk: auth.profile_encryption_pk,
-              profile_encryption_sk: auth.profile_encryption_sk,
-              profile_identity_pk: auth.profile_identity_pk,
-              profile_identity_sk: auth.profile_identity_sk,
-            }
-          : {}),
-      };
-      setGeneratedSetupData(setupData);
-      setQrCodeModalOpen(true);
-    },
-  });
+  const { mutateAsync: createRegistrationCode, isPending } =
+    useCreateRegistrationCode({
+      onSuccess: (registrationCode) => {
+        const formValues = form.getValues();
+        const setupData: QRSetupData = {
+          registration_code: registrationCode,
+          permission_type: formValues.permissionType,
+          identity_type: formValues.identityType,
+          profile: formValues.profile,
+          node_address: auth?.node_address ?? '',
+          shinkai_identity: auth?.shinkai_identity ?? '',
+          node_encryption_pk: auth?.node_encryption_pk ?? '',
+          node_signature_pk: auth?.node_signature_pk ?? '',
+          ...(formValues.identityType === IdentityType.Device &&
+          formValues.profile === auth?.profile
+            ? {
+                profile_encryption_pk: auth.profile_encryption_pk,
+                profile_encryption_sk: auth.profile_encryption_sk,
+                profile_identity_pk: auth.profile_identity_pk,
+                profile_identity_sk: auth.profile_identity_sk,
+              }
+            : {}),
+        };
+        setGeneratedSetupData(setupData);
+        setQrCodeModalOpen(true);
+      },
+    });
 
   const { identityType } = form.watch();
 
@@ -169,7 +177,9 @@ const GenerateCodePage = () => {
                 control={form.control}
                 disabled={true}
                 name="profile"
-                render={({ field }) => <TextField field={field} label="Profile" />}
+                render={({ field }) => (
+                  <TextField field={field} label="Profile" />
+                )}
               />
             )}
 
@@ -198,7 +208,12 @@ const GenerateCodePage = () => {
               )}
             />
           </div>
-          <Button className="w-full" disabled={isPending} isLoading={isPending} type="submit">
+          <Button
+            className="w-full"
+            disabled={isPending}
+            isLoading={isPending}
+            type="submit"
+          >
             Generate Code
           </Button>
         </form>

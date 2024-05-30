@@ -62,14 +62,24 @@ const AllFiles = () => {
   const location = useLocation();
   const query = useURLQueryParams();
 
-  const currentGlobalPath = useVectorFsStore((state) => state.currentGlobalPath);
-  const setCurrentGlobalPath = useVectorFsStore((state) => state.setCurrentGlobalPath);
-  const setActiveDrawerMenuOption = useVectorFsStore((state) => state.setActiveDrawerMenuOption);
+  const currentGlobalPath = useVectorFsStore(
+    (state) => state.currentGlobalPath,
+  );
+  const setCurrentGlobalPath = useVectorFsStore(
+    (state) => state.setCurrentGlobalPath,
+  );
+  const setActiveDrawerMenuOption = useVectorFsStore(
+    (state) => state.setActiveDrawerMenuOption,
+  );
   const layout = useVectorFsStore((state) => state.layout);
   const isSortByName = useVectorFsStore((state) => state.isSortByName);
 
-  const isVRSelectionActive = useVectorFsStore((state) => state.isVRSelectionActive);
-  const setVRSelectionActive = useVectorFsStore((state) => state.setVRSelectionActive);
+  const isVRSelectionActive = useVectorFsStore(
+    (state) => state.isVRSelectionActive,
+  );
+  const setVRSelectionActive = useVectorFsStore(
+    (state) => state.setVRSelectionActive,
+  );
   const [searchQuery, setSearchQuery] = React.useState('');
   const debouncedSearchQuery = useDebounce(searchQuery, 600);
   const {
@@ -137,7 +147,9 @@ const AllFiles = () => {
       const path = decodeURIComponent(query.get('path') ?? '');
       const directoryMainPath = path.split('/').slice(0, -1);
       setCurrentGlobalPath(
-        directoryMainPath.length > 1 ? '/' + directoryMainPath.join('/') : '/' + directoryMainPath,
+        directoryMainPath.length > 1
+          ? '/' + directoryMainPath.join('/')
+          : '/' + directoryMainPath,
       );
     }
   }, [query]);
@@ -150,7 +162,11 @@ const AllFiles = () => {
   };
 
   const handleSelectFolders = (folder: VRFolder) => {
-    if (selectedFolders.some((selectedFolder) => selectedFolder.path === folder.path)) {
+    if (
+      selectedFolders.some(
+        (selectedFolder) => selectedFolder.path === folder.path,
+      )
+    ) {
       setSelectedFolders(selectedFolders.filter((item) => item !== folder));
     } else {
       setSelectedFolders([...selectedFolders, folder]);
@@ -159,7 +175,9 @@ const AllFiles = () => {
 
   useEffect(() => {
     if (location.state?.files) {
-      setActiveDrawerMenuOption(VectorFsGlobalAction.GenerateFromDocumentIncludeFolder);
+      setActiveDrawerMenuOption(
+        VectorFsGlobalAction.GenerateFromDocumentIncludeFolder,
+      );
     }
   }, [location.state?.files, setActiveDrawerMenuOption]);
 
@@ -185,13 +203,17 @@ const AllFiles = () => {
 
   const folderList = React.useMemo(() => {
     return isSortByName
-      ? [...(VRFiles?.child_folders ?? [])].sort((a, b) => a.name.localeCompare(b.name))
+      ? [...(VRFiles?.child_folders ?? [])].sort((a, b) =>
+          a.name.localeCompare(b.name),
+        )
       : VRFiles?.child_folders;
   }, [VRFiles?.child_folders, isSortByName]);
 
   const itemList = React.useMemo(() => {
     return isSortByName
-      ? [...(VRFiles?.child_items ?? [])].sort((a, b) => a.name.localeCompare(b.name))
+      ? [...(VRFiles?.child_items ?? [])].sort((a, b) =>
+          a.name.localeCompare(b.name),
+        )
       : VRFiles?.child_items;
   }, [VRFiles?.child_items, isSortByName]);
 
@@ -218,7 +240,11 @@ const AllFiles = () => {
           sideOffset={10}
         >
           {actionList.map((item, index) => (
-            <DropdownMenuItem disabled={item.disabled} key={index} onClick={item.onClick}>
+            <DropdownMenuItem
+              disabled={item.disabled}
+              key={index}
+              onClick={item.onClick}
+            >
               {item.icon}
               <span>{item.name}</span>
             </DropdownMenuItem>
@@ -253,7 +279,11 @@ const AllFiles = () => {
         </div>
         <div className="flex gap-3">
           <VectorFsToggleSortName />
-          <Separator className="bg-gray-300" decorative orientation="vertical" />
+          <Separator
+            className="bg-gray-300"
+            decorative
+            orientation="vertical"
+          />
           <VectorFsToggleLayout />
         </div>
       </div>
@@ -291,7 +321,9 @@ const AllFiles = () => {
                       <button
                         className="flex items-center gap-1 rounded-full bg-transparent p-2 hover:bg-gray-400"
                         onClick={() => {
-                          const buildPath = splitCurrentPath.slice(0, idx + 1).join('/');
+                          const buildPath = splitCurrentPath
+                            .slice(0, idx + 1)
+                            .join('/');
                           setCurrentGlobalPath('/' + buildPath);
                         }}
                       >
@@ -311,7 +343,8 @@ const AllFiles = () => {
             'grid flex-1',
             layout === VectorFSLayout.Grid &&
               'grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5',
-            layout === VectorFSLayout.List && 'grid-cols-1 divide-y divide-gray-400',
+            layout === VectorFSLayout.List &&
+              'grid-cols-1 divide-y divide-gray-400',
             searchQuery && 'pt-4',
           )}
         >
@@ -356,7 +389,9 @@ const AllFiles = () => {
                   key={index}
                   onClick={() => {
                     setSelectedFile(file);
-                    setActiveDrawerMenuOption(VectorFsGlobalAction.VectorFileDetails);
+                    setActiveDrawerMenuOption(
+                      VectorFsGlobalAction.VectorFileDetails,
+                    );
                   }}
                 />
               );
@@ -371,7 +406,9 @@ const AllFiles = () => {
                   <h2 className="font-medium text-white">
                     This will be the home for all your files.
                   </h2>
-                  <span>Use the &quot;+&quot; button to start uploading files.</span>
+                  <span>
+                    Use the &quot;+&quot; button to start uploading files.
+                  </span>
                 </div>
               </div>
             )}
@@ -383,11 +420,13 @@ const AllFiles = () => {
                 No files found
               </div>
             )}
-          {searchQuery && isSearchVRItemsSuccess && searchVRItems?.length === 0 && (
-            <div className="flex h-20 items-center justify-center text-gray-100">
-              No files found
-            </div>
-          )}
+          {searchQuery &&
+            isSearchVRItemsSuccess &&
+            searchVRItems?.length === 0 && (
+              <div className="flex h-20 items-center justify-center text-gray-100">
+                No files found
+              </div>
+            )}
           {searchQuery &&
             isSearchVRItemsSuccess &&
             searchQuery === debouncedSearchQuery &&
@@ -421,7 +460,11 @@ const AllFiles = () => {
         </ContextMenuTrigger>
         <ContextMenuContent className="p-2">
           {actionList.map((item, index) => (
-            <ContextMenuItem disabled={item.disabled} key={index} onClick={item.onClick}>
+            <ContextMenuItem
+              disabled={item.disabled}
+              key={index}
+              onClick={item.onClick}
+            >
               {item.icon}
               <span>{item.name}</span>
             </ContextMenuItem>
@@ -465,7 +508,10 @@ const AllFiles = () => {
             >
               {!isVRSelectionActive && <CreateAIIcon />}
               <motion.div
-                className={cn('sr-only flex flex-col', isVRSelectionActive && 'not-sr-only')}
+                className={cn(
+                  'sr-only flex flex-col',
+                  isVRSelectionActive && 'not-sr-only',
+                )}
                 layout
               >
                 <span>Create AI Chat</span>

@@ -64,7 +64,8 @@ test('InboxNameWrapper get_regular_inbox_name_from_params', () => {
       recipient: '@@bob.shinkai',
       recipient_subidentity: 'profileName',
       is_e2e: true,
-      expected: 'inbox::@@alice.shinkai/profilename::@@bob.shinkai/profilename::true',
+      expected:
+        'inbox::@@alice.shinkai/profilename::@@bob.shinkai/profilename::true',
     },
   ];
 

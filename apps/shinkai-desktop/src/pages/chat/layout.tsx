@@ -105,7 +105,9 @@ const InboxNameInput = ({
                 <Edit3 className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 transform text-white" />
 
                 <FormItem className="space-y-0 pl-7 text-xs">
-                  <FormLabel className="sr-only static">Update inbox name</FormLabel>
+                  <FormLabel className="sr-only static">
+                    Update inbox name
+                  </FormLabel>
                   <FormControl>
                     <Input
                       className="h-full border-none bg-transparent py-2 pr-16 text-xs caret-white placeholder:text-gray-100 focus-visible:ring-0 focus-visible:ring-white"
@@ -161,9 +163,14 @@ const MessageButton = ({
       ? getMessageContent(inbox.last_message)?.slice(0, 40)
       : inbox.custom_name?.slice(0, 40);
 
-  const lastMessageTime = inbox.last_message?.external_metadata?.scheduled_time ?? '';
+  const lastMessageTime =
+    inbox.last_message?.external_metadata?.scheduled_time ?? '';
   const isJobLastMessage = inbox.last_message
-    ? !isLocalMessage(inbox.last_message, auth?.shinkai_identity ?? '', auth?.profile ?? '')
+    ? !isLocalMessage(
+        inbox.last_message,
+        auth?.shinkai_identity ?? '',
+        auth?.profile ?? '',
+      )
     : false;
 
   const match = useMatch(to);
@@ -171,13 +178,23 @@ const MessageButton = ({
   const previousLastMessageTime = previousDataRef.current;
 
   useEffect(() => {
-    if (lastMessageTime !== previousLastMessageTime && isJobInbox(inboxId) && isJobLastMessage) {
+    if (
+      lastMessageTime !== previousLastMessageTime &&
+      isJobInbox(inboxId) &&
+      isJobLastMessage
+    ) {
       handleSendNotification(
         `${inboxName} response received`,
         'Go to Shinkai Desktop to see the response',
       );
     }
-  }, [lastMessageTime, isJobLastMessage, inboxId, previousLastMessageTime, inboxName]);
+  }, [
+    lastMessageTime,
+    isJobLastMessage,
+    inboxId,
+    previousLastMessageTime,
+    inboxName,
+  ]);
 
   const [isEditable, setIsEditable] = useState(false);
 
@@ -192,7 +209,10 @@ const MessageButton = ({
     },
   });
 
-  const handleArchiveJob = async (event: React.MouseEvent, inbox: SmartInbox) => {
+  const handleArchiveJob = async (
+    event: React.MouseEvent,
+    inbox: SmartInbox,
+  ) => {
     event.preventDefault();
     await archiveJob({
       nodeAddress: auth?.node_address ?? '',
@@ -227,7 +247,9 @@ const MessageButton = ({
       ) : (
         <ChatBubbleIcon className="mr-2 h-4 w-4 shrink-0" />
       )}
-      <span className="line-clamp-1 flex-1 break-all text-left text-xs">{inboxName}</span>
+      <span className="line-clamp-1 flex-1 break-all text-left text-xs">
+        {inboxName}
+      </span>
       <div className="translate-x-full transition duration-200 group-hover:translate-x-0">
         <TooltipProvider delayDuration={0}>
           <Tooltip>
@@ -299,7 +321,11 @@ const ChatLayout = () => {
         const allInboxesAreCompleted = query.state.data?.every((inbox) => {
           return (
             inbox.last_message &&
-            !isLocalMessage(inbox.last_message, auth?.shinkai_identity ?? '', auth?.profile ?? '')
+            !isLocalMessage(
+              inbox.last_message,
+              auth?.shinkai_identity ?? '',
+              auth?.profile ?? '',
+            )
           );
         });
         return allInboxesAreCompleted ? 0 : 3000;
@@ -348,11 +374,17 @@ const ChatLayout = () => {
             <ScrollArea>
               <Tabs defaultValue="actives">
                 <TabsList className="grid w-full grid-cols-2 bg-transparent">
-                  <TabsTrigger className="flex items-center gap-1.5" value="actives">
+                  <TabsTrigger
+                    className="flex items-center gap-1.5"
+                    value="actives"
+                  >
                     <ActiveIcon className="h-4 w-4" />
                     Actives
                   </TabsTrigger>
-                  <TabsTrigger className="flex items-center gap-1.5" value="archives">
+                  <TabsTrigger
+                    className="flex items-center gap-1.5"
+                    value="archives"
+                  >
                     <ArchiveIcon className="h-4 w-4" />
                     Archives
                   </TabsTrigger>

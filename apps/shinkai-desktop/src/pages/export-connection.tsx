@@ -4,7 +4,13 @@ import {
   ExportConnectionFormSchema,
   exportConnectionFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/settings/export-connection';
-import { Button, Form, FormField, Input, TextField } from '@shinkai_network/shinkai-ui';
+import {
+  Button,
+  Form,
+  FormField,
+  Input,
+  TextField,
+} from '@shinkai_network/shinkai-ui';
 import { fs, dialog } from '@tauri-apps/api';
 import { BaseDirectory } from '@tauri-apps/api/fs';
 import { Download } from 'lucide-react';
@@ -29,7 +35,9 @@ export const ExportConnection = () => {
   useEffect(() => {
     setEncryptedSetupData('');
   }, [passphrase, confirmPassphrase, setEncryptedSetupData]);
-  const exportConnection = async (values: ExportConnectionFormSchema): Promise<void> => {
+  const exportConnection = async (
+    values: ExportConnectionFormSchema,
+  ): Promise<void> => {
     // TODO: Convert to a common format shared by visor, app and desktop
     const parsedSetupData = JSON.stringify(auth);
     const encryptedSetupData = await encryptMessageWithPassphrase(
@@ -47,15 +55,18 @@ export const ExportConnection = () => {
       reader.readAsDataURL(file);
     });
     const path = await dialog.save({
-      defaultPath: `${auth?.shinkai_identity}_${auth?.registration_name}.shinkai.key`
-        .replace(/@/g, '')
-        .replace(/\//g, '_'),
+      defaultPath:
+        `${auth?.shinkai_identity}_${auth?.registration_name}.shinkai.key`
+          .replace(/@/g, '')
+          .replace(/\//g, '_'),
     });
     if (path) {
       await fs.writeBinaryFile(
         {
           path,
-          contents: await fetch(dataUrl).then((response) => response.arrayBuffer()),
+          contents: await fetch(dataUrl).then((response) =>
+            response.arrayBuffer(),
+          ),
         },
         {
           dir: BaseDirectory.Download,
@@ -83,7 +94,11 @@ export const ExportConnection = () => {
                 control={form.control}
                 name="confirmPassphrase"
                 render={({ field }) => (
-                  <TextField field={field} label="Repeat Passphrase" type="password" />
+                  <TextField
+                    field={field}
+                    label="Repeat Passphrase"
+                    type="password"
+                  />
                 )}
               />
             </div>
@@ -100,12 +115,17 @@ export const ExportConnection = () => {
                 Download and keep this connection file in a safe place
               </span>
               <span>
-                Use it with your passphrase to restore the connection to your Shinkai Node
+                Use it with your passphrase to restore the connection to your
+                Shinkai Node
               </span>
             </div>
             <div className="flex w-full flex-row space-x-1">
               <div className="grow cursor-pointer" onClick={() => download()}>
-                <Input className="cursor-pointer truncate" readOnly value={encryptedSetupData} />
+                <Input
+                  className="cursor-pointer truncate"
+                  readOnly
+                  value={encryptedSetupData}
+                />
               </div>
               <Button className="" onClick={() => download()}>
                 <Download className="h-4 w-4" />

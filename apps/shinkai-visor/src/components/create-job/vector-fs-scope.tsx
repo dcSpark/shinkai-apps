@@ -75,7 +75,10 @@ export const VectorFsScopeDrawer = ({
           <Tree
             onSelect={(e) => {
               if (e.node.icon === 'icon-folder') {
-                selectedFolderKeysRef.current.set(String(e.node.key), e.node.data);
+                selectedFolderKeysRef.current.set(
+                  String(e.node.key),
+                  e.node.data,
+                );
                 return;
               }
               selectedFileKeysRef.current.set(String(e.node.key), e.node.data);
@@ -174,14 +177,17 @@ export const KnowledgeSearchDrawer = ({
     setSearch(data.searchQuery);
   };
 
-  const groupedData = data?.reduce<Record<string, string[]>>((acc, [content, pathList]) => {
-    const generatedFilePath = '/' + pathList.join('/');
-    if (!acc[generatedFilePath]) {
-      acc[generatedFilePath] = [];
-    }
-    acc[generatedFilePath].push(content);
-    return acc;
-  }, {});
+  const groupedData = data?.reduce<Record<string, string[]>>(
+    (acc, [content, pathList]) => {
+      const generatedFilePath = '/' + pathList.join('/');
+      if (!acc[generatedFilePath]) {
+        acc[generatedFilePath] = [];
+      }
+      acc[generatedFilePath].push(content);
+      return acc;
+    },
+    {},
+  );
 
   return (
     <Drawer
@@ -270,7 +276,9 @@ export const KnowledgeSearchDrawer = ({
           {isSearchEntered && isSuccess && (
             <div>
               <div className="flex items-center justify-between gap-4 p-2">
-                <h2 className="text-gray-80 font-medium">Found {data?.length} results</h2>
+                <h2 className="text-gray-80 font-medium">
+                  Found {data?.length} results
+                </h2>
                 {selectedKeys && Object.keys(selectedKeys).length > 0 && (
                   <span className="text-brand font-medium">
                     Selected {Object.keys(selectedKeys).length} files
@@ -278,62 +286,80 @@ export const KnowledgeSearchDrawer = ({
                 )}
               </div>
               <div className="flex flex-col gap-2">
-                {Object.entries(groupedData ?? {}).map(([generatedFilePath, contents]) => (
-                  <div className="flex items-start gap-1 px-2 py-3 text-sm" key={generatedFilePath}>
-                    <Checkbox
-                      checked={generatedFilePath in (selectedKeys || {})}
-                      inputId={generatedFilePath}
-                      name="files"
-                      onChange={async (event) => {
-                        const newKeys = { ...selectedKeys };
-                        if (event.value in (selectedKeys || {})) {
-                          delete newKeys[event.value];
-                        } else {
-                          newKeys[event.value] = { checked: true };
-                          const fileInfo = await retrieveVectorResource(
-                            auth?.node_address ?? '',
-                            auth?.shinkai_identity ?? '',
-                            auth?.profile ?? '',
-                            auth?.shinkai_identity ?? '',
-                            auth?.profile ?? '',
-                            generatedFilePath,
-                            {
-                              my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-                              my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-                              node_encryption_pk: auth?.node_encryption_pk ?? '',
-                              profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-                              profile_identity_sk: auth?.profile_identity_sk ?? '',
-                            },
-                          );
+                {Object.entries(groupedData ?? {}).map(
+                  ([generatedFilePath, contents]) => (
+                    <div
+                      className="flex items-start gap-1 px-2 py-3 text-sm"
+                      key={generatedFilePath}
+                    >
+                      <Checkbox
+                        checked={generatedFilePath in (selectedKeys || {})}
+                        inputId={generatedFilePath}
+                        name="files"
+                        onChange={async (event) => {
+                          const newKeys = { ...selectedKeys };
+                          if (event.value in (selectedKeys || {})) {
+                            delete newKeys[event.value];
+                          } else {
+                            newKeys[event.value] = { checked: true };
+                            const fileInfo = await retrieveVectorResource(
+                              auth?.node_address ?? '',
+                              auth?.shinkai_identity ?? '',
+                              auth?.profile ?? '',
+                              auth?.shinkai_identity ?? '',
+                              auth?.profile ?? '',
+                              generatedFilePath,
+                              {
+                                my_device_encryption_sk:
+                                  auth?.my_device_encryption_sk ?? '',
+                                my_device_identity_sk:
+                                  auth?.my_device_identity_sk ?? '',
+                                node_encryption_pk:
+                                  auth?.node_encryption_pk ?? '',
+                                profile_encryption_sk:
+                                  auth?.profile_encryption_sk ?? '',
+                                profile_identity_sk:
+                                  auth?.profile_identity_sk ?? '',
+                              },
+                            );
 
-                          selectedFileKeysRef.current.set(event.value, {
-                            ...fileInfo.data,
-                            path: event.value,
-                            vr_header: {
-                              resource_name: fileInfo.data.name,
-                              resource_source: fileInfo.data.source,
-                            },
-                          });
-                        }
-                        onSelectedKeysChange(newKeys);
-                      }}
-                      value={generatedFilePath}
-                    />
-                    <label className="ml-2 flex-1" htmlFor={generatedFilePath}>
-                      <div className="flex items-center gap-1">
-                        <FileTypeIcon className="h-6 w-6" />
-                        <span className="text-sm">{generatedFilePath.split('/').at(-1)}</span>
-                      </div>
-                      <div className="divide-y divide-gray-300">
-                        {contents?.map((content) => (
-                          <p className="text-gray-80 py-3 text-xs" key={content}>
-                            {content}
-                          </p>
-                        ))}
-                      </div>
-                    </label>
-                  </div>
-                ))}
+                            selectedFileKeysRef.current.set(event.value, {
+                              ...fileInfo.data,
+                              path: event.value,
+                              vr_header: {
+                                resource_name: fileInfo.data.name,
+                                resource_source: fileInfo.data.source,
+                              },
+                            });
+                          }
+                          onSelectedKeysChange(newKeys);
+                        }}
+                        value={generatedFilePath}
+                      />
+                      <label
+                        className="ml-2 flex-1"
+                        htmlFor={generatedFilePath}
+                      >
+                        <div className="flex items-center gap-1">
+                          <FileTypeIcon className="h-6 w-6" />
+                          <span className="text-sm">
+                            {generatedFilePath.split('/').at(-1)}
+                          </span>
+                        </div>
+                        <div className="divide-y divide-gray-300">
+                          {contents?.map((content) => (
+                            <p
+                              className="text-gray-80 py-3 text-xs"
+                              key={content}
+                            >
+                              {content}
+                            </p>
+                          ))}
+                        </div>
+                      </label>
+                    </div>
+                  ),
+                )}
               </div>
             </div>
           )}

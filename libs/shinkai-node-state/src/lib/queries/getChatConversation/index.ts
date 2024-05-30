@@ -1,4 +1,7 @@
-import { getFileNames, getLastMessagesFromInbox } from '@shinkai_network/shinkai-message-ts/api';
+import {
+  getFileNames,
+  getLastMessagesFromInbox,
+} from '@shinkai_network/shinkai-message-ts/api';
 import type { ShinkaiMessage } from '@shinkai_network/shinkai-message-ts/models';
 import {
   getMessageContent,
@@ -37,15 +40,16 @@ export const getChatConversation = async ({
       node_encryption_pk,
     },
   );
-  const transformedMessagePromises: Promise<ChatConversationMessage>[] = data.map(
-    async (shinkaiMessage) => {
+  const transformedMessagePromises: Promise<ChatConversationMessage>[] =
+    data.map(async (shinkaiMessage) => {
       const filesInbox = getMessageFilesInbox(shinkaiMessage);
       const content = getMessageContent(shinkaiMessage);
       const isLocal = isLocalMessage(shinkaiMessage, shinkaiIdentity, profile);
       const message: ChatConversationMessage = {
         hash:
           shinkaiMessage.body && 'unencrypted' in shinkaiMessage.body
-            ? shinkaiMessage.body.unencrypted.internal_metadata?.node_api_data?.node_message_hash
+            ? shinkaiMessage.body.unencrypted.internal_metadata?.node_api_data
+                ?.node_message_hash
             : '',
         inboxId,
         content,
@@ -57,7 +61,8 @@ export const getChatConversation = async ({
         isLocal,
         scheduledTime:
           shinkaiMessage.body && 'unencrypted' in shinkaiMessage.body
-            ? shinkaiMessage.body.unencrypted.internal_metadata?.node_api_data?.node_timestamp
+            ? shinkaiMessage.body.unencrypted.internal_metadata?.node_api_data
+                ?.node_timestamp
             : '',
       };
       if (filesInbox) {
@@ -80,7 +85,6 @@ export const getChatConversation = async ({
         };
       }
       return message;
-    },
-  );
+    });
   return Promise.all(transformedMessagePromises);
 };

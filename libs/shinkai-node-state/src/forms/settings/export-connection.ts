@@ -15,4 +15,6 @@ export const exportConnectionFormSchema = z
     }
   });
 
-export type ExportConnectionFormSchema = z.infer<typeof exportConnectionFormSchema>;
+export type ExportConnectionFormSchema = z.infer<
+  typeof exportConnectionFormSchema
+>;

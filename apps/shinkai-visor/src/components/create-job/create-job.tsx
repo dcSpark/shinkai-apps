@@ -111,10 +111,12 @@ export const CreateJob = () => {
     },
   });
   const [isVectorFSOpen, setIsVectorFSOpen] = React.useState(false);
-  const [isKnowledgeSearchOpen, setIsKnowledgeSearchOpen] = React.useState(false);
+  const [isKnowledgeSearchOpen, setIsKnowledgeSearchOpen] =
+    React.useState(false);
 
   const [nodes, setNodes] = useState<TreeNode[]>([]);
-  const [selectedKeys, setSelectedKeys] = useState<TreeCheckboxSelectionKeys | null>(null);
+  const [selectedKeys, setSelectedKeys] =
+    useState<TreeCheckboxSelectionKeys | null>(null);
 
   useEffect(() => {
     form.setValue('files', location?.state?.files || []);
@@ -136,7 +138,8 @@ export const CreateJob = () => {
     let defaultAgentId = '';
     defaultAgentId =
       defaultAgentId ||
-      (currentDefaultAgentId && agents.find((agent) => agent.id === currentDefaultAgentId)
+      (currentDefaultAgentId &&
+      agents.find((agent) => agent.id === currentDefaultAgentId)
         ? currentDefaultAgentId
         : '');
     defaultAgentId = defaultAgentId || (agents?.length ? agents[0].id : '');
@@ -156,7 +159,9 @@ export const CreateJob = () => {
       content = `${values.content} - \`\`\`${query.get('context')}\`\`\``;
     }
     const selectedVRFiles =
-      selectedFileKeysRef.current.size > 0 ? Array.from(selectedFileKeysRef.current.values()) : [];
+      selectedFileKeysRef.current.size > 0
+        ? Array.from(selectedFileKeysRef.current.values())
+        : [];
     const selectedVRFolders =
       selectedFolderKeysRef.current.size > 0
         ? Array.from(selectedFolderKeysRef.current.values())
@@ -203,16 +208,17 @@ export const CreateJob = () => {
         {} as Record<string, { checked: boolean }>,
       );
 
-      const selectedVRFoldersPathMap = location?.state?.selectedVRFolders?.reduce(
-        (acc, folder) => {
-          selectedFolderKeysRef.current.set(folder.path, folder);
-          acc[folder.path] = {
-            checked: true,
-          };
-          return acc;
-        },
-        {} as Record<string, { checked: boolean }>,
-      );
+      const selectedVRFoldersPathMap =
+        location?.state?.selectedVRFolders?.reduce(
+          (acc, folder) => {
+            selectedFolderKeysRef.current.set(folder.path, folder);
+            acc[folder.path] = {
+              checked: true,
+            };
+            return acc;
+          },
+          {} as Record<string, { checked: boolean }>,
+        );
 
       setSelectedKeys({
         ...selectedVRFilesPathMap,
@@ -264,8 +270,12 @@ export const CreateJob = () => {
             {query.has('context') && (
               <div className="my-4">
                 <blockquote className="border-l-4 border-gray-200 bg-gray-300 py-2.5 pl-3 pr-3">
-                  <span className="text-gray-80 font-medium">Your selected text</span>
-                  <p className="line-clamp-2 h-full text-white">{query.get('context')}</p>
+                  <span className="text-gray-80 font-medium">
+                    Your selected text
+                  </span>
+                  <p className="line-clamp-2 h-full text-white">
+                    {query.get('context')}
+                  </p>
                 </blockquote>
               </div>
             )}
@@ -283,7 +293,10 @@ export const CreateJob = () => {
                       autoFocus
                       className="resize-none"
                       onKeyDown={(event) => {
-                        if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
+                        if (
+                          event.key === 'Enter' &&
+                          (event.metaKey || event.ctrlKey)
+                        ) {
                           form.handleSubmit(submit)();
                         }
                       }}
@@ -301,9 +314,12 @@ export const CreateJob = () => {
             <div className="my-3 rounded-md bg-gray-400 px-3 py-4">
               <div className="mb-5 flex items-start justify-between gap-4">
                 <div className="space-y-1">
-                  <h2 className="text-sm font-medium text-gray-100">Set Chat Context</h2>
+                  <h2 className="text-sm font-medium text-gray-100">
+                    Set Chat Context
+                  </h2>
                   <p className="text-gray-80 text-xs">
-                    Add files or folders for your AI to use as context during your conversation.
+                    Add files or folders for your AI to use as context during
+                    your conversation.
                   </p>
                 </div>
                 <TooltipProvider delayDuration={0}>
@@ -317,11 +333,15 @@ export const CreateJob = () => {
                         variant="ghost"
                       >
                         <SearchCode className="h-5 w-5" />
-                        <p className="sr-only text-xs text-white">AI Files Content Search</p>
+                        <p className="sr-only text-xs text-white">
+                          AI Files Content Search
+                        </p>
                       </Button>
                     </TooltipTrigger>
                     <TooltipPortal>
-                      <TooltipContent sideOffset={0}>Search AI Files Content</TooltipContent>
+                      <TooltipContent sideOffset={0}>
+                        Search AI Files Content
+                      </TooltipContent>
                     </TooltipPortal>
                   </Tooltip>
                 </TooltipProvider>

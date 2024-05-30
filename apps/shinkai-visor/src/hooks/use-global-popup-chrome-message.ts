@@ -22,14 +22,20 @@ export const useGlobalPopupChromeMessage = () => {
         break;
       }
       case ServiceWorkerInternalMessageType.SendPageToAgent: {
-        const file = dataUrlToFile(message.data.fileDataUrl, message.data.filename);
+        const file = dataUrlToFile(
+          message.data.fileDataUrl,
+          message.data.filename,
+        );
         navigate('/inboxes/create-job', {
           state: { files: [file] },
         });
         break;
       }
       case ServiceWorkerInternalMessageType.SendPageToVectorFs: {
-        const file = dataUrlToFile(message.data.fileDataUrl, message.data.filename);
+        const file = dataUrlToFile(
+          message.data.fileDataUrl,
+          message.data.filename,
+        );
         navigate('/node-files', {
           state: { files: [file] },
         });
@@ -39,28 +45,40 @@ export const useGlobalPopupChromeMessage = () => {
         const params = new URLSearchParams({
           initialText: 'Summarize this',
         });
-        const file = dataUrlToFile(message.data.fileDataUrl, message.data.filename);
+        const file = dataUrlToFile(
+          message.data.fileDataUrl,
+          message.data.filename,
+        );
         navigate(`/inboxes/create-job?${params.toString()}`, {
           state: { files: [file] },
         });
         break;
       }
       case ServiceWorkerInternalMessageType.SendCaptureToAgent: {
-        const imageFile = dataUrlToFile(message.data.imageDataUrl, message.data.filename);
+        const imageFile = dataUrlToFile(
+          message.data.imageDataUrl,
+          message.data.filename,
+        );
         navigate('/inboxes/create-job', {
           state: { files: [imageFile] },
         });
         break;
       }
       case ServiceWorkerInternalMessageType.SendVectorResourceToJobCreation: {
-        const vrFile = dataUrlToFile(message.data.imageDataUrl, message.data.filename);
+        const vrFile = dataUrlToFile(
+          message.data.imageDataUrl,
+          message.data.filename,
+        );
         navigate('/inboxes/create-job', {
           state: { files: [vrFile] },
         });
         break;
       }
       case ServiceWorkerInternalMessageType.SendVectorResourceToVectorFS: {
-        const vrFile = dataUrlToFile(message.data.imageDataUrl, message.data.filename);
+        const vrFile = dataUrlToFile(
+          message.data.imageDataUrl,
+          message.data.filename,
+        );
         navigate('/node-files', {
           state: { files: [vrFile] },
         });

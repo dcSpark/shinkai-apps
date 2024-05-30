@@ -17,7 +17,8 @@ const getPlatformIcon = (platform: string): string => {
   }
 };
 
-const { isPermissionGranted, requestPermission, sendNotification } = notification;
+const { isPermissionGranted, requestPermission, sendNotification } =
+  notification;
 
 export const handleSendNotification = async (title?: string, body?: string) => {
   //ask for permission for notification

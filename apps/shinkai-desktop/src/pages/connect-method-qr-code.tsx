@@ -3,7 +3,13 @@ import { QRSetupData } from '@shinkai_network/shinkai-message-ts/models';
 import { useSubmitRegistration } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistration';
 import { generateMyEncryptionKeys } from '@shinkai_network/shinkai-node-state/lib/queries/getEncryptionKeys/index';
 import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/lib/queries/getEncryptionKeys/useGetEncryptionKeys';
-import { Button, ErrorMessage, Form, FormField, TextField } from '@shinkai_network/shinkai-ui';
+import {
+  Button,
+  ErrorMessage,
+  Form,
+  FormField,
+  TextField,
+} from '@shinkai_network/shinkai-ui';
 import { BrowserQRCodeReader } from '@zxing/browser';
 import { QrCode, Trash, Upload } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
@@ -48,7 +54,8 @@ type AddNodeDataFromQr = Pick<
 export const ConnectMethodQrCodePage = () => {
   const setAuth = useAuth((state) => state.setAuth);
   const navigate = useNavigate();
-  const { encryptionKeys, isLoading: isLoadingEncryptionKeys } = useGetEncryptionKeys();
+  const { encryptionKeys, isLoading: isLoadingEncryptionKeys } =
+    useGetEncryptionKeys();
   const form = useForm<FormType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -172,10 +179,16 @@ export const ConnectMethodQrCodePage = () => {
                       <div className="flex flex-row items-center justify-center space-x-3">
                         <div className="flex flex-row items-center">
                           <QrCode className="mr-1 h-4 w-4 space-x-1" />
-                          <span className="font-semibold">{qrImageFile.name}</span>
+                          <span className="font-semibold">
+                            {qrImageFile.name}
+                          </span>
                         </div>
                         <div className="relative">
-                          <img alt="qr connection data" className="h-[80px]" src={qrImageUrl} />
+                          <img
+                            alt="qr connection data"
+                            className="h-[80px]"
+                            src={qrImageUrl}
+                          />
                           <Button
                             className="absolute right-1 top-1 h-6 w-6"
                             onClick={() => removeQRFile()}
@@ -195,7 +208,9 @@ export const ConnectMethodQrCodePage = () => {
                           <div>
                             <Upload className="h-4 w-4" />
                           </div>
-                          <p className="text-sm text-white">Click to upload or drag and drop</p>
+                          <p className="text-sm text-white">
+                            Click to upload or drag and drop
+                          </p>
                           <p className="text-gray-80 text-xs">JPG | PNG</p>
                         </div>
                         <input
@@ -216,19 +231,25 @@ export const ConnectMethodQrCodePage = () => {
                   <FormField
                     control={form.control}
                     name="registration_name"
-                    render={({ field }) => <TextField field={field} label="Registration Name" />}
+                    render={({ field }) => (
+                      <TextField field={field} label="Registration Name" />
+                    )}
                   />
 
                   <FormField
                     control={form.control}
                     name="node_address"
-                    render={({ field }) => <TextField field={field} label="Node Address" />}
+                    render={({ field }) => (
+                      <TextField field={field} label="Node Address" />
+                    )}
                   />
 
                   <FormField
                     control={form.control}
                     name="shinkai_identity"
-                    render={({ field }) => <TextField field={field} label="Identity Name" />}
+                    render={({ field }) => (
+                      <TextField field={field} label="Identity Name" />
+                    )}
                   />
                 </>
               )}

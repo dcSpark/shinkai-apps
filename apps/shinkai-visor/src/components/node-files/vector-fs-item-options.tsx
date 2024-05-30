@@ -1,40 +1,52 @@
 import { useCopyVrItem } from '@shinkai_network/shinkai-node-state/lib/mutations/copyVRItem/useCopyVrItem';
 import { useDeleteVRItem } from '@shinkai_network/shinkai-node-state/lib/mutations/deleteVRItem/useDeleteVRItem';
 import { useMoveVRItem } from '@shinkai_network/shinkai-node-state/lib/mutations/moveVRItem/useMoveVRItem';
-import { Button, DrawerFooter, DrawerHeader, DrawerTitle } from '@shinkai_network/shinkai-ui';
+import {
+  Button,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from '@shinkai_network/shinkai-ui';
 import React from 'react';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../store/auth/auth';
-import { FolderSelectionList, useVectorFolderSelectionStore } from './folder-selection-list';
+import {
+  FolderSelectionList,
+  useVectorFolderSelectionStore,
+} from './folder-selection-list';
 import { useVectorFsStore } from './node-file-context';
 
 export const VectorFsItemMoveAction = () => {
   const selectedFile = useVectorFsStore((state) => state.selectedFile);
   const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
   const auth = useAuth((state) => state.auth);
-  const setCurrentGlobalPath = useVectorFsStore((state) => state.setCurrentGlobalPath);
+  const setCurrentGlobalPath = useVectorFsStore(
+    (state) => state.setCurrentGlobalPath,
+  );
   const destinationFolderPath = useVectorFolderSelectionStore(
     (state) => state.destinationFolderPath,
   );
 
-  const { mutateAsync: moveVrFolder, isPending: isMovingVrFolder } = useMoveVRItem({
-    onSuccess: () => {
-      setCurrentGlobalPath(destinationFolderPath ?? '/');
-      closeDrawerMenu();
-      toast.success('Item moved successfully');
-    },
-    onError: () => {
-      toast.error('Failed to move item');
-    },
-  });
+  const { mutateAsync: moveVrFolder, isPending: isMovingVrFolder } =
+    useMoveVRItem({
+      onSuccess: () => {
+        setCurrentGlobalPath(destinationFolderPath ?? '/');
+        closeDrawerMenu();
+        toast.success('Item moved successfully');
+      },
+      onError: () => {
+        toast.error('Failed to move item');
+      },
+    });
 
   return (
     <React.Fragment>
       <DrawerHeader>
         <DrawerTitle className="font-normal">
           Move
-          <span className="font-medium"> &quot;{selectedFile?.name}&quot;</span> to ...
+          <span className="font-medium"> &quot;{selectedFile?.name}&quot;</span>{' '}
+          to ...
         </DrawerTitle>
       </DrawerHeader>
       <FolderSelectionList />
@@ -84,7 +96,10 @@ export const VectorFsItemDeleteAction = () => {
       <DrawerHeader>
         <DrawerTitle className="font-normal">
           Delete
-          <span className="font-medium"> &quot;{selectedFile?.name}&quot;</span>{' '}
+          <span className="font-medium">
+            {' '}
+            &quot;{selectedFile?.name}&quot;
+          </span>{' '}
         </DrawerTitle>
       </DrawerHeader>
 
@@ -121,7 +136,9 @@ export const VectorFsItemCopyAction = () => {
   const selectedFile = useVectorFsStore((state) => state.selectedFile);
   const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
   const auth = useAuth((state) => state.auth);
-  const setCurrentGlobalPath = useVectorFsStore((state) => state.setCurrentGlobalPath);
+  const setCurrentGlobalPath = useVectorFsStore(
+    (state) => state.setCurrentGlobalPath,
+  );
   const destinationFolderPath = useVectorFolderSelectionStore(
     (state) => state.destinationFolderPath,
   );
@@ -142,7 +159,8 @@ export const VectorFsItemCopyAction = () => {
       <DrawerHeader>
         <DrawerTitle className="font-normal">
           Copy
-          <span className="font-medium"> &quot;{selectedFile?.name}&quot;</span> to ...
+          <span className="font-medium"> &quot;{selectedFile?.name}&quot;</span>{' '}
+          to ...
         </DrawerTitle>
       </DrawerHeader>
       <FolderSelectionList />

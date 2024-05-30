@@ -44,11 +44,22 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { DirectoryTypeIcon, FileTypeIcon, fileIconMap } from '@shinkai_network/shinkai-ui/assets';
+import {
+  DirectoryTypeIcon,
+  FileTypeIcon,
+  fileIconMap,
+} from '@shinkai_network/shinkai-ui/assets';
 import { getFileExt } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { partial } from 'filesize';
-import { AlertCircle, BotIcon, ChevronDownIcon, Paperclip, SendIcon, X } from 'lucide-react';
+import {
+  AlertCircle,
+  BotIcon,
+  ChevronDownIcon,
+  Paperclip,
+  SendIcon,
+  X,
+} from 'lucide-react';
 import { useEffect, useMemo, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
@@ -76,13 +87,14 @@ const ChatConversation = () => {
     },
   });
 
-  const { getRootProps: getRootFileProps, getInputProps: getInputFileProps } = useDropzone({
-    multiple: false,
-    onDrop: (acceptedFiles) => {
-      const file = acceptedFiles[0];
-      chatForm.setValue('file', file, { shouldValidate: true });
-    },
-  });
+  const { getRootProps: getRootFileProps, getInputProps: getInputFileProps } =
+    useDropzone({
+      multiple: false,
+      onDrop: (acceptedFiles) => {
+        const file = acceptedFiles[0];
+        chatForm.setValue('file', file, { shouldValidate: true });
+      },
+    });
 
   const { file } = chatForm.watch();
 
@@ -107,7 +119,8 @@ const ChatConversation = () => {
 
   const { mutateAsync: sendMessageToInbox } = useSendMessageToInbox();
   const { mutateAsync: sendMessageToJob } = useSendMessageToJob();
-  const { mutateAsync: sendTextMessageWithFilesForInbox } = useSendMessageWithFilesToInbox();
+  const { mutateAsync: sendTextMessageWithFilesForInbox } =
+    useSendMessageWithFilesToInbox();
 
   const onSubmit = async (data: ChatMessageFormSchema) => {
     if (!auth || data.message.trim() === '') return;
@@ -179,7 +192,10 @@ const ChatConversation = () => {
   const isLimitReachedErrorLastMessage = useMemo(() => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
     if (!lastMessage) return;
-    const errorCode = extractErrorPropertyOrContent(lastMessage.content, 'error');
+    const errorCode = extractErrorPropertyOrContent(
+      lastMessage.content,
+      'error',
+    );
     return errorCode === ErrorCodes.ShinkaiBackendInferenceLimitReached;
   }, [data?.pages]);
 
@@ -204,8 +220,8 @@ const ChatConversation = () => {
           <AlertDescription className="text-gray-80 text-xs">
             <div className="flex flex-row items-center space-x-2">
               {/* eslint-disable-next-line react/no-unescaped-entities */}
-              You've used all of your queries for the month on this model/agent. Please start a new
-              chat with another agent.
+              You've used all of your queries for the month on this model/agent.
+              Please start a new chat with another agent.
             </div>
           </AlertDescription>
         </Alert>
@@ -239,7 +255,8 @@ const ChatConversation = () => {
                                   <input
                                     {...chatForm.register('file')}
                                     {...getInputFileProps({
-                                      onChange: chatForm.register('file').onChange,
+                                      onChange:
+                                        chatForm.register('file').onChange,
                                     })}
                                   />
                                 </div>
@@ -277,7 +294,8 @@ const ChatConversation = () => {
                           topAddons={
                             file && (
                               <div className="relative mt-1 flex min-w-[180px] max-w-[220px] items-center gap-2 self-start rounded-lg border border-gray-200 px-2 py-2.5">
-                                {getFileExt(file?.name) && fileIconMap[getFileExt(file?.name)] ? (
+                                {getFileExt(file?.name) &&
+                                fileIconMap[getFileExt(file?.name)] ? (
                                   <FileTypeIcon
                                     className="text-gray-80 h-7 w-7 shrink-0 "
                                     type={getFileExt(file?.name)}
@@ -360,7 +378,11 @@ function AgentSelection() {
             </DropdownMenuTrigger>
           </TooltipTrigger>
           <TooltipPortal>
-            <TooltipContent align="center" className="bg-neutral-900" side="top">
+            <TooltipContent
+              align="center"
+              className="bg-neutral-900"
+              side="top"
+            >
               Switch AI
             </TooltipContent>
           </TooltipPortal>
@@ -371,7 +393,9 @@ function AgentSelection() {
           >
             <DropdownMenuRadioGroup
               onValueChange={async (value) => {
-                const jobId = extractJobIdFromInbox(currentInbox?.inbox_id ?? '');
+                const jobId = extractJobIdFromInbox(
+                  currentInbox?.inbox_id ?? '',
+                );
                 await updateAgentInJob({
                   nodeAddress: auth?.node_address ?? '',
                   shinkaiIdentity: auth?.shinkai_identity ?? '',
@@ -411,7 +435,8 @@ function AgentSelection() {
 export const ConversationHeader = () => {
   const currentInbox = useGetCurrentInbox();
 
-  const hasFolders = (currentInbox?.job_scope?.vector_fs_folders ?? [])?.length > 0;
+  const hasFolders =
+    (currentInbox?.job_scope?.vector_fs_folders ?? [])?.length > 0;
   const hasFiles = (currentInbox?.job_scope?.vector_fs_items ?? [])?.length > 0;
 
   const hasConversationContext = hasFolders || hasFiles;
@@ -435,14 +460,18 @@ export const ConversationHeader = () => {
                 <span className="text-gray-80 flex items-center gap-1 text-xs font-medium">
                   <DirectoryTypeIcon className="ml-1 h-4 w-4" />
                   {currentInbox?.job_scope.vector_fs_folders.length}{' '}
-                  {currentInbox?.job_scope.vector_fs_folders.length === 1 ? 'folder' : 'folders'}
+                  {currentInbox?.job_scope.vector_fs_folders.length === 1
+                    ? 'folder'
+                    : 'folders'}
                 </span>
               )}
               {hasFiles && (
                 <span className="text-gray-80 flex items-center gap-1 truncate text-xs font-medium">
                   <FileTypeIcon className="ml-1 h-4 w-4" />
                   {currentInbox?.job_scope.vector_fs_items.length}{' '}
-                  {currentInbox?.job_scope.vector_fs_items.length === 1 ? 'file' : 'files'}
+                  {currentInbox?.job_scope.vector_fs_items.length === 1
+                    ? 'file'
+                    : 'files'}
                 </span>
               )}
             </Button>
@@ -458,12 +487,19 @@ export const ConversationHeader = () => {
                   <div className="space-y-1">
                     <span className="font-medium text-white">Folders</span>
                     <ul>
-                      {currentInbox?.job_scope?.vector_fs_folders?.map((folder) => (
-                        <li className="flex items-center gap-2 py-1.5" key={folder.path}>
-                          <DirectoryTypeIcon />
-                          <div className="text-gray-80 text-sm">{folder.name}</div>
-                        </li>
-                      ))}
+                      {currentInbox?.job_scope?.vector_fs_folders?.map(
+                        (folder) => (
+                          <li
+                            className="flex items-center gap-2 py-1.5"
+                            key={folder.path}
+                          >
+                            <DirectoryTypeIcon />
+                            <div className="text-gray-80 text-sm">
+                              {folder.name}
+                            </div>
+                          </li>
+                        ),
+                      )}
                     </ul>
                   </div>
                 )}
@@ -472,11 +508,19 @@ export const ConversationHeader = () => {
                     <span className="font-medium text-white">Files</span>
                     <ul>
                       {currentInbox?.job_scope?.vector_fs_items?.map((file) => (
-                        <li className="flex items-center gap-2 py-1.5" key={file.path}>
+                        <li
+                          className="flex items-center gap-2 py-1.5"
+                          key={file.path}
+                        >
                           <FileTypeIcon
-                            type={file?.source?.Standard?.FileRef?.file_type?.Document}
+                            type={
+                              file?.source?.Standard?.FileRef?.file_type
+                                ?.Document
+                            }
                           />
-                          <span className="text-gray-80 text-sm">{file.name}</span>
+                          <span className="text-gray-80 text-sm">
+                            {file.name}
+                          </span>
                         </li>
                       ))}
                     </ul>

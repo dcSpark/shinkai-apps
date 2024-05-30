@@ -1,4 +1,8 @@
-import { Drawer, DrawerClose, DrawerContent } from '@shinkai_network/shinkai-ui';
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+} from '@shinkai_network/shinkai-ui';
 import { XIcon } from 'lucide-react';
 import React from 'react';
 
@@ -25,9 +29,15 @@ import {
 } from './vector-fs-item-options';
 
 const VectorFSDrawer = () => {
-  const activeDrawerMenuOption = useVectorFsStore((state) => state.activeDrawerMenuOption);
-  const setActiveDrawerMenuOption = useVectorFsStore((state) => state.setActiveDrawerMenuOption);
-  const setSelectedFolder = useVectorFsStore((state) => state.setSelectedFolder);
+  const activeDrawerMenuOption = useVectorFsStore(
+    (state) => state.activeDrawerMenuOption,
+  );
+  const setActiveDrawerMenuOption = useVectorFsStore(
+    (state) => state.setActiveDrawerMenuOption,
+  );
+  const setSelectedFolder = useVectorFsStore(
+    (state) => state.setSelectedFolder,
+  );
   const setSelectedFile = useVectorFsStore((state) => state.setSelectedFile);
   return (
     <Drawer
@@ -76,7 +86,10 @@ export enum VectorFsItemAction {
   Delete = 'delete-item',
 }
 
-export type VectorFsActions = VectorFsGlobalAction | VectorFsFolderAction | VectorFsItemAction;
+export type VectorFsActions =
+  | VectorFsGlobalAction
+  | VectorFsFolderAction
+  | VectorFsItemAction;
 
 const VectorFSDrawerContent = ({
   selectedOption,

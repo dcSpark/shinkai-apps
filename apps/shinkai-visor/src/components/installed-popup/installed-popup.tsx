@@ -23,7 +23,12 @@ const InstalledPopup = () => {
       </div>
       <div className="flex flex-1 flex-col items-center justify-center space-y-3">
         <div className="p-3">
-          <Player autoplay className="w-full" loop src={InstalledPopupAnimation} />
+          <Player
+            autoplay
+            className="w-full"
+            loop
+            src={InstalledPopupAnimation}
+          />
         </div>
 
         <p className="text-md text-center text-white" data-cy="welcome-message">

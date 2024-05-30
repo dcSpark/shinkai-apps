@@ -1,4 +1,5 @@
-export const waitMs = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+export const waitMs = (ms: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms));
 
 export const waitFor = <T extends void>(
   fn: () => Promise<T | void>,

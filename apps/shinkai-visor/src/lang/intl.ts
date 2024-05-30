@@ -11,4 +11,5 @@ const langMap = new Map<string, LangMessage>([
 const DEFAULT_LOCALE = 'en';
 
 export const locale = navigator.language || DEFAULT_LOCALE;
-export const langMessages: LangMessage = langMap.get(locale) || (english as unknown as LangMessage);
+export const langMessages: LangMessage =
+  langMap.get(locale) || (english as unknown as LangMessage);

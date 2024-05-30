@@ -39,7 +39,9 @@ export default function MySharedFolders() {
         <VectorFsToggleLayout />
       </div>
       {isSuccess && !sharedFolders.length && (
-        <p className="text-gray-80 text-center">Your shared folders will be displayed here.</p>
+        <p className="text-gray-80 text-center">
+          Your shared folders will be displayed here.
+        </p>
       )}
       {isSuccess && !!sharedFolders.length && (
         <ScrollArea>
@@ -48,7 +50,8 @@ export default function MySharedFolders() {
               'grid flex-1',
               layout === VectorFSLayout.Grid &&
                 'grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5',
-              layout === VectorFSLayout.List && 'grid-cols-1 divide-y divide-gray-400',
+              layout === VectorFSLayout.List &&
+                'grid-cols-1 divide-y divide-gray-400',
             )}
           >
             {sharedFolders?.map((folder) => (
@@ -80,11 +83,19 @@ function SharedFolderItem({
   totalItems: number;
   path: string;
 }) {
-  const setCurrentGlobalPath = useVectorFsStore((state) => state.setCurrentGlobalPath);
+  const setCurrentGlobalPath = useVectorFsStore(
+    (state) => state.setCurrentGlobalPath,
+  );
   const layout = useVectorFsStore((state) => state.layout);
-  const setActiveDrawerMenuOption = useVectorFsStore((state) => state.setActiveDrawerMenuOption);
-  const setSelectedFolder = useVectorFsStore((state) => state.setSelectedFolder);
-  const setSelectedVectorFsTab = useVectorFsStore((state) => state.setSelectedVectorFsTab);
+  const setActiveDrawerMenuOption = useVectorFsStore(
+    (state) => state.setActiveDrawerMenuOption,
+  );
+  const setSelectedFolder = useVectorFsStore(
+    (state) => state.setSelectedFolder,
+  );
+  const setSelectedVectorFsTab = useVectorFsStore(
+    (state) => state.setSelectedVectorFsTab,
+  );
 
   return (
     <button
@@ -128,7 +139,10 @@ function SharedFolderItem({
             <DotsVerticalIcon className="text-gray-100" />
           </div>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="min-w-[160px] border bg-gray-500 px-2.5 py-2">
+        <DropdownMenuContent
+          align="end"
+          className="min-w-[160px] border bg-gray-500 px-2.5 py-2"
+        >
           {[
             {
               name: 'Unshare',
