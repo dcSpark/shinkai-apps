@@ -95,7 +95,7 @@ export const ResourcesBanner = ({
             <TooltipTrigger className="flex items-center gap-1">
               <Alert
                 className={cn(
-                  'pointer shadow-lg [&>svg]:static [&>svg~*]:pl-0',
+                  'cursor-default shadow-lg [&>svg]:static [&>svg~*]:pl-0',
                   'flex w-full items-center gap-2 rounded-lg px-4 py-2',
                 )}
                 variant="warning"

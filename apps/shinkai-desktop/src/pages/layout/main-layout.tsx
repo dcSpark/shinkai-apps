@@ -40,6 +40,7 @@ import {
 import { toast } from 'sonner';
 
 import { ResourcesBanner } from '../../components/hardware-capabilities/resources-banner';
+import { UpdateBanner } from '../../components/hardware-capabilities/update-banner';
 import OnboardingStepper from '../../components/onboarding/onboarding';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
@@ -366,6 +367,7 @@ export function MainNav() {
         </div>
         <div className="flex flex-col gap-1">
           <ResourcesBanner isInSidebar />
+          <UpdateBanner />
           {footerNavigationLinks.map((item) => {
             return (
               <React.Fragment key={item.title}>
