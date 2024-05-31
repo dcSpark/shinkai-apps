@@ -4,7 +4,8 @@
   "license": "MIT",
   "private": true,
   "workspaces": [
-    "apps/shinkai-app"
+    "apps/shinkai-app",
+    "apps/shinkai-desktop"
   ],
   "scripts": {
     "postinstall": "npx patch-package"
@@ -155,6 +156,7 @@
     "url-loader": "^4.1.1",
     "vite": "^5.2.12",
     "vite-plugin-dts": "^3.9.1",
+    "vite-plugin-node-polyfills": "^0.22.0",
     "vite-plugin-top-level-await": "^1.4.1",
     "vite-plugin-wasm": "^3.3.0",
     "vite-tsconfig-paths": "^4.3.2",
