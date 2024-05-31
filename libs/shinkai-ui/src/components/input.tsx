@@ -4,7 +4,8 @@ import { useEffect, useImperativeHandle, useRef } from 'react';
 import { cn } from '../utils';
 import { Badge } from './badge';
 
-export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface InputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
   startAdornment?: React.ReactNode;
   endAdornment?: React.ReactNode;
 }
@@ -17,10 +18,14 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
     const style: React.CSSProperties = {};
     if (startAdornment) {
-      style.paddingLeft = `${(startAdornmentRef?.current?.offsetWidth ?? 0) + 20}px`;
+      style.paddingLeft = `${
+        (startAdornmentRef?.current?.offsetWidth ?? 0) + 20
+      }px`;
     }
     if (endAdornment) {
-      style.paddingRight = `${(endAdornmentRef?.current?.offsetWidth ?? 0) + 20}px`;
+      style.paddingRight = `${
+        (endAdornmentRef?.current?.offsetWidth ?? 0) + 20
+      }px`;
     }
 
     useImperativeHandle(ref, () => inputRef.current!, []);
@@ -66,7 +71,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {endAdornment}
           </Badge>
         ) : null}
-        {endAdornment && typeof endAdornment !== 'string' && React.isValidElement(endAdornment)
+        {endAdornment &&
+        typeof endAdornment !== 'string' &&
+        React.isValidElement(endAdornment)
           ? React.cloneElement(endAdornment as React.ReactElement, {
               ref: endAdornmentRef,
             })

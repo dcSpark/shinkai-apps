@@ -95,7 +95,9 @@ export const ChatInputArea = ({
     <div className="flex min-h-[60px] w-full max-w-full flex-col rounded-md border border-gray-200 bg-gray-400 px-1 py-1  text-sm shadow-sm aria-disabled:cursor-not-allowed aria-disabled:opacity-50">
       {topAddons}
       <div className="relative flex flex-col">
-        {isLoading ? <DotsLoader className="absolute left-4 top-6 z-50" /> : null}
+        {isLoading ? (
+          <DotsLoader className="absolute left-4 top-6 z-50" />
+        ) : null}
         <EditorContent editor={editor} />
         {bottomAddons}
       </div>

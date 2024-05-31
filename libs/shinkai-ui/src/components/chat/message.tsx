@@ -65,9 +65,17 @@ export const Message = ({ message }: MessageProps) => {
                 'text-gray-80 h-7 w-7 border border-gray-200 bg-transparent [&>svg]:h-3 [&>svg]:w-3',
               )}
               onCopyClipboard={() => {
-                copyToClipboard(extractErrorPropertyOrContent(message.content, 'error_message'));
+                copyToClipboard(
+                  extractErrorPropertyOrContent(
+                    message.content,
+                    'error_message',
+                  ),
+                );
               }}
-              string={extractErrorPropertyOrContent(message.content, 'error_message')}
+              string={extractErrorPropertyOrContent(
+                message.content,
+                'error_message',
+              )}
             />
           </div>
           <MarkdownPreview
@@ -77,7 +85,10 @@ export const Message = ({ message }: MessageProps) => {
                 <a {...props} target="_blank" />
               ),
             }}
-            source={extractErrorPropertyOrContent(message.content, 'error_message')}
+            source={extractErrorPropertyOrContent(
+              message.content,
+              'error_message',
+            )}
           />
           {!!message.fileInbox?.files?.length && (
             <FileList

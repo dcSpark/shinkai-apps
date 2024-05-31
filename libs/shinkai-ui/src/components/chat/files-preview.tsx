@@ -18,7 +18,12 @@ export const FileList = ({ files, className }: FileListProps) => {
   };
 
   return (
-    <ul className={cn('divide-y divide-gray-100 rounded-md border border-gray-200', className)}>
+    <ul
+      className={cn(
+        'divide-y divide-gray-100 rounded-md border border-gray-200',
+        className,
+      )}
+    >
       <AnimatePresence>
         {files?.map((file, index) => (
           <motion.li
@@ -28,7 +33,10 @@ export const FileList = ({ files, className }: FileListProps) => {
           >
             <div className="flex w-full flex-1 items-center justify-between gap-2">
               {fileIconMap[getFileExt(file.name)] ? (
-                <FileTypeIcon className="text-gray-80 h-5 w-5" type={getFileExt(file.name)} />
+                <FileTypeIcon
+                  className="text-gray-80 h-5 w-5"
+                  type={getFileExt(file.name)}
+                />
               ) : (
                 <PaperClipIcon className="text-gray-80 h-4 w-4" />
               )}

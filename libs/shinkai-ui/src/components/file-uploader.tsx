@@ -33,18 +33,34 @@ export const FileItem = ({
     <div className="bg-gray-350 relative flex items-center gap-2 rounded-xl px-3 py-1.5 pr-2">
       <span className="flex w-[30px] items-center justify-center">
         {hasPreviewImage ? (
-          <FileImagePreview className="h-full rounded-md object-cover" file={file} />
+          <FileImagePreview
+            className="h-full rounded-md object-cover"
+            file={file}
+          />
         ) : fileIconMap[getFileExt(file.name)] ? (
-          <FileTypeIcon className="text-gray-80 " type={getFileExt(file.name)} />
+          <FileTypeIcon
+            className="text-gray-80 "
+            type={getFileExt(file.name)}
+          />
         ) : (
           <PaperClipIcon className="text-gray-80 h-4 w-4" />
         )}
       </span>
       <div className="line-clamp-1 flex flex-1 flex-col gap-1">
-        <button className="text-left hover:underline" onClick={() => openFile(file)} type="button">
-          <span className="line-clamp-1 text-sm text-gray-50">{decodeURIComponent(file.name)}</span>
+        <button
+          className="text-left hover:underline"
+          onClick={() => openFile(file)}
+          type="button"
+        >
+          <span className="line-clamp-1 text-sm text-gray-50">
+            {decodeURIComponent(file.name)}
+          </span>
         </button>
-        {file.size && <span className="shrink-0 text-xs text-gray-100">{size(file.size)}</span>}
+        {file.size && (
+          <span className="shrink-0 text-xs text-gray-100">
+            {size(file.size)}
+          </span>
+        )}
       </div>
       {!!actions?.length && (
         <div className="shrink-0">
@@ -86,14 +102,15 @@ export const FileUploader = ({
   descriptionText?: string;
   shouldDisableScrolling?: boolean;
 }) => {
-  const { getRootProps: getRootFileProps, getInputProps: getInputFileProps } = useDropzone({
-    multiple: allowMultiple,
-    maxFiles: maxFiles,
-    onDrop: (acceptedFiles) => {
-      onChange(acceptedFiles);
-    },
-    disabled: disabled,
-  });
+  const { getRootProps: getRootFileProps, getInputProps: getInputFileProps } =
+    useDropzone({
+      multiple: allowMultiple,
+      maxFiles: maxFiles,
+      onDrop: (acceptedFiles) => {
+        onChange(acceptedFiles);
+      },
+      disabled: disabled,
+    });
 
   return (
     <div className="flex w-full flex-col gap-2.5">
@@ -109,7 +126,9 @@ export const FileUploader = ({
           </div>
           <p className="text-sm text-white">Click to upload or drag and drop</p>
           {descriptionText && (
-            <p className="text-gray-80 line-clamp-1 text-xs">{descriptionText}</p>
+            <p className="text-gray-80 line-clamp-1 text-xs">
+              {descriptionText}
+            </p>
           )}
         </div>
 
@@ -171,5 +190,9 @@ const FileImagePreview = ({ file, ...props }: FileImagePreview) => {
       reader.readAsDataURL(file);
     }
   }, [file]);
-  return imageSrc ? <img alt="preview" src={imageSrc} {...props} /> : <Loader2 />;
+  return imageSrc ? (
+    <img alt="preview" src={imageSrc} {...props} />
+  ) : (
+    <Loader2 />
+  );
 };

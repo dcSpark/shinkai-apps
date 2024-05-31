@@ -33,11 +33,16 @@ export const MessageList = ({
   isFetchingPreviousPage: boolean;
   hasPreviousPage: boolean;
   fromPreviousMessagesRef: React.MutableRefObject<boolean>;
-  paginatedMessages: InfiniteData<GetChatConversationOutput, unknown> | undefined;
+  paginatedMessages:
+    | InfiniteData<GetChatConversationOutput, unknown>
+    | undefined;
   fetchPreviousPage: (
     options?: FetchPreviousPageOptions | undefined,
   ) => Promise<
-    InfiniteQueryObserverResult<InfiniteData<GetChatConversationOutput, unknown>, Error>
+    InfiniteQueryObserverResult<
+      InfiniteData<GetChatConversationOutput, unknown>,
+      Error
+    >
   >;
   containerClassName?: string;
 }) => {
@@ -108,15 +113,22 @@ export const MessageList = ({
               <div
                 className={cn(
                   'flex w-[95%] items-start gap-2',
-                  index % 2 === 0 ? 'ml-0 mr-auto flex-row' : 'ml-auto mr-0 flex-row-reverse',
+                  index % 2 === 0
+                    ? 'ml-0 mr-auto flex-row'
+                    : 'ml-auto mr-0 flex-row-reverse',
                 )}
                 key={`${index}`}
               >
-                <Skeleton className="h-10 w-10 shrink-0 rounded-full bg-gray-300" key={index} />
+                <Skeleton
+                  className="h-10 w-10 shrink-0 rounded-full bg-gray-300"
+                  key={index}
+                />
                 <Skeleton
                   className={cn(
                     'h-16 w-full rounded-lg px-2.5 py-3',
-                    index % 2 === 0 ? 'rounded-tl-none bg-gray-300' : 'rounded-tr-none bg-gray-200',
+                    index % 2 === 0
+                      ? 'rounded-tl-none bg-gray-300'
+                      : 'rounded-tr-none bg-gray-200',
                   )}
                 />
               </div>
@@ -126,36 +138,40 @@ export const MessageList = ({
         {isSuccess &&
           paginatedMessages?.pages?.map((group, index) => (
             <Fragment key={index}>
-              {Object.entries(groupMessagesByDate(group)).map(([date, messages]) => {
-                return (
-                  <div key={date}>
-                    <div
-                      className={cn(
-                        'relative z-10 m-auto my-2 flex h-[26px] w-fit min-w-[100px] items-center justify-center rounded-xl bg-gray-400 px-2.5 capitalize',
-                        true && 'sticky top-5',
-                      )}
-                    >
-                      <span className="text-gray-80 text-xs font-medium">
-                        {getRelativeDateLabel(new Date(messages[0].scheduledTime || ''))}
-                      </span>
+              {Object.entries(groupMessagesByDate(group)).map(
+                ([date, messages]) => {
+                  return (
+                    <div key={date}>
+                      <div
+                        className={cn(
+                          'relative z-10 m-auto my-2 flex h-[26px] w-fit min-w-[100px] items-center justify-center rounded-xl bg-gray-400 px-2.5 capitalize',
+                          true && 'sticky top-5',
+                        )}
+                      >
+                        <span className="text-gray-80 text-xs font-medium">
+                          {getRelativeDateLabel(
+                            new Date(messages[0].scheduledTime || ''),
+                          )}
+                        </span>
+                      </div>
+                      <div className="flex flex-col">
+                        {messages.map((message) => {
+                          return (
+                            <div
+                              data-testid={`message-${
+                                message.isLocal ? 'local' : 'remote'
+                              }-${message.hash}`}
+                              key={`${index}-${message.scheduledTime}`}
+                            >
+                              <Message message={message} />
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
-                    <div className="flex flex-col">
-                      {messages.map((message) => {
-                        return (
-                          <div
-                            data-testid={`message-${message.isLocal ? 'local' : 'remote'}-${
-                              message.hash
-                            }`}
-                            key={`${index}-${message.scheduledTime}`}
-                          >
-                            <Message message={message} />
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                },
+              )}
             </Fragment>
           ))}
       </div>

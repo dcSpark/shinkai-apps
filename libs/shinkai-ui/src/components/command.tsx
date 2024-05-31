@@ -58,7 +58,11 @@ const CommandList = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.List>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.List>
 >(({ className, ...props }, ref) => (
-  <CommandPrimitive.List className={cn('overflow-x-hidden', className)} ref={ref} {...props} />
+  <CommandPrimitive.List
+    className={cn('overflow-x-hidden', className)}
+    ref={ref}
+    {...props}
+  />
 ));
 
 CommandList.displayName = CommandPrimitive.List.displayName;
@@ -67,7 +71,11 @@ const CommandEmpty = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Empty>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Empty>
 >((props, ref) => (
-  <CommandPrimitive.Empty className="py-6 text-center text-sm" ref={ref} {...props} />
+  <CommandPrimitive.Empty
+    className="py-6 text-center text-sm"
+    ref={ref}
+    {...props}
+  />
 ));
 
 CommandEmpty.displayName = CommandPrimitive.Empty.displayName;
@@ -116,9 +124,15 @@ const CommandItem = React.forwardRef<
 
 CommandItem.displayName = CommandPrimitive.Item.displayName;
 
-const CommandShortcut = ({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) => {
+const CommandShortcut = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLSpanElement>) => {
   return (
-    <span className={cn('text-gray-80 ml-auto text-xs tracking-widest', className)} {...props} />
+    <span
+      className={cn('text-gray-80 ml-auto text-xs tracking-widest', className)}
+      {...props}
+    />
   );
 };
 CommandShortcut.displayName = 'CommandShortcut';

@@ -9,5 +9,7 @@ export const getFileExt = (fileName: string): string => {
 
 export const isFileTypeImageOrPdf = (file: File): boolean => {
   if (!file) return false;
-  return file?.type.startsWith('image/') || file?.type.startsWith('application/pdf');
+  return (
+    file?.type.startsWith('image/') || file?.type.startsWith('application/pdf')
+  );
 };

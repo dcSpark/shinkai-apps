@@ -1,4 +1,8 @@
-import { DraggableSyntheticListeners, useDraggable, useDroppable } from '@dnd-kit/core';
+import {
+  DraggableSyntheticListeners,
+  useDraggable,
+  useDroppable,
+} from '@dnd-kit/core';
 import { Transform } from '@dnd-kit/utilities';
 import React, { CSSProperties, forwardRef } from 'react';
 
@@ -49,15 +53,22 @@ export const Action = forwardRef<HTMLButtonElement, ActionProps>(
   },
 );
 // eslint-disable-next-line react/display-name
-export const Handle = forwardRef<HTMLButtonElement, ActionProps>((props, ref) => {
-  return (
-    <Action cursor="grab" data-cypress="draggable-handle" ref={ref} {...props}>
-      <svg viewBox="0 0 20 20" width="12">
-        <path d="M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-8a2 2 0 1 0-.001-4.001A2 2 0 0 0 13 6zm0 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z" />
-      </svg>
-    </Action>
-  );
-});
+export const Handle = forwardRef<HTMLButtonElement, ActionProps>(
+  (props, ref) => {
+    return (
+      <Action
+        cursor="grab"
+        data-cypress="draggable-handle"
+        ref={ref}
+        {...props}
+      >
+        <svg viewBox="0 0 20 20" width="12">
+          <path d="M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-8a2 2 0 1 0-.001-4.001A2 2 0 0 0 13 6zm0 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z" />
+        </svg>
+      </Action>
+    );
+  },
+);
 export enum Axis {
   All,
   Vertical,
@@ -76,52 +87,54 @@ interface Props {
   children: React.ReactNode;
 }
 
-export const Draggable = forwardRef<HTMLButtonElement, Props>(function Draggable(
-  {
-    axis,
-    dragOverlay,
-    dragging,
-    handle,
-    listeners,
-    transform,
-    style,
-    buttonStyle,
-    children,
-    ...props
-  },
-  ref,
-) {
-  return (
-    <div
-      className={cn(
-        'Draggable',
-        dragOverlay && 'dragOverlay',
-        dragging && 'dragging',
-        handle && 'handle',
-      )}
-      style={
-        {
-          ...style,
-          '--translate-x': `${transform?.x ?? 0}px`,
-          '--translate-y': `${transform?.y ?? 0}px`,
-        } as React.CSSProperties
-      }
-    >
-      <button
-        {...props}
-        aria-label="Draggable"
-        data-cypress="draggable-item"
-        {...(handle ? {} : listeners)}
-        ref={ref}
-        style={buttonStyle}
-        tabIndex={handle ? -1 : undefined}
+export const Draggable = forwardRef<HTMLButtonElement, Props>(
+  function Draggable(
+    {
+      axis,
+      dragOverlay,
+      dragging,
+      handle,
+      listeners,
+      transform,
+      style,
+      buttonStyle,
+      children,
+      ...props
+    },
+    ref,
+  ) {
+    return (
+      <div
+        className={cn(
+          'Draggable',
+          dragOverlay && 'dragOverlay',
+          dragging && 'dragging',
+          handle && 'handle',
+        )}
+        style={
+          {
+            ...style,
+            '--translate-x': `${transform?.x ?? 0}px`,
+            '--translate-y': `${transform?.y ?? 0}px`,
+          } as React.CSSProperties
+        }
       >
-        {children}
-        {handle ? <Handle {...(handle ? listeners : {})} /> : null}
-      </button>
-    </div>
-  );
-});
+        <button
+          {...props}
+          aria-label="Draggable"
+          data-cypress="draggable-item"
+          {...(handle ? {} : listeners)}
+          ref={ref}
+          style={buttonStyle}
+          tabIndex={handle ? -1 : undefined}
+        >
+          {children}
+          {handle ? <Handle {...(handle ? listeners : {})} /> : null}
+        </button>
+      </div>
+    );
+  },
+);
 
 interface DraggableItemProps {
   handle?: boolean;
@@ -141,9 +154,10 @@ export function DraggableItem({
   buttonStyle,
   children,
 }: DraggableItemProps) {
-  const { attributes, isDragging, listeners, setNodeRef, transform } = useDraggable({
-    id: 'draggable',
-  });
+  const { attributes, isDragging, listeners, setNodeRef, transform } =
+    useDraggable({
+      id: 'draggable',
+    });
 
   return (
     <Draggable
