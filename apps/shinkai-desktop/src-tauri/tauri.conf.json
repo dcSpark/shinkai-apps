@@ -24,8 +24,14 @@
         "open": true,
         "sidecar": true,
         "scope": [
-          { "name": "bin/shinkai-node", "sidecar": true },
-          { "name": "bin/ollama", "sidecar": true }
+          {
+            "name": "bin/shinkai-node",
+            "sidecar": true
+          },
+          {
+            "name": "bin/ollama",
+            "sidecar": true
+          }
         ]
       },
       "window": {
@@ -85,8 +91,8 @@
       {
         "transparent": true,
         "title": "Shinkai Desktop",
-        "width": 1000,
-        "height": 750,
+        "width": 1080,
+        "height": 820,
         "resizable": true,
         "fileDropEnabled": false
       }
