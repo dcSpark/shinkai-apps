@@ -10,6 +10,7 @@ import { defineConfig } from 'vitest/config';
 
 import { dynamicManifest } from './dynamic-manifest';
 
+const outDir = resolve(__dirname, '..', '..', 'dist/apps/shinkai-visor');
 export default defineConfig({
   cacheDir: '../../node_modules/.vite/shinkai-visor',
 
@@ -28,7 +29,7 @@ export default defineConfig({
     port: 4301,
     host: 'localhost',
   },
-
+  publicDir: resolve(__dirname, 'public'),
   plugins: [
     react(),
     nxViteTsPaths({ debug: true }),
@@ -49,9 +50,10 @@ export default defineConfig({
       provider: 'v8',
     },
   },
-  root: __dirname,
+
   build: {
-    outDir: '../../dist/apps/shinkai-visor',
+    outDir,
+
     rollupOptions: {
       input: {
         popup: resolve(__dirname, 'src/components/popup/popup.html'),

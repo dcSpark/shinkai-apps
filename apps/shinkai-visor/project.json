@@ -25,21 +25,13 @@
     },
     "serve": {
       "dependsOn": ["shinkai-message-ts:build"],
-      "executor": "@nx/vite:dev-server",
+      "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "outputPath": "dist/apps/shinkai-visor"
+        "cwd": "apps/shinkai-visor",
+        "command": "npx vite"
       },
-      "configurations": {
-        "development": {
-          "buildTarget": "shinkai-visor:build:development",
-          "hmr": true
-        },
-        "production": {
-          "buildTarget": "shinkai-visor:build:production",
-          "hmr": false
-        }
-      }
+      "configurations": {}
     },
     "preview": {
       "executor": "@nx/vite:preview-server",
