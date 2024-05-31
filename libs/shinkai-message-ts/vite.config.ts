@@ -1,4 +1,4 @@
-// @ts-expect-error path
+// @ts-ignore
 import path from 'path';
 /// <reference types="vitest" />
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
@@ -38,12 +38,16 @@ export default defineConfig({
   ],
   test: {
     watch: false,
-    cache: {
-      dir: '../../node_modules/.vitest',
-    },
-    globals: true,
-    environment: 'jsdom',
     setupFiles: './scripts/setupTests.ts',
+    globals: true,
+    cache: { dir: '../../node_modules/.vitest/libs/shinkai-message-ts' },
+    environment: 'jsdom',
+    include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    reporters: ['default'],
+    coverage: {
+      reportsDirectory: '../../coverage/libs/shinkai-message-ts',
+      provider: 'v8',
+    },
   },
   root: __dirname,
 });
