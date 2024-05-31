@@ -49,7 +49,7 @@ export default defineConfig({
       provider: 'v8',
     },
   },
-  root: './',
+  root: __dirname,
   build: {
     outDir: '../../dist/apps/shinkai-visor',
     rollupOptions: {
