@@ -9,6 +9,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  Badge,
   Button,
   Separator,
   Tooltip,
@@ -17,17 +18,21 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { FilesIcon, InboxIcon } from '@shinkai_network/shinkai-ui/assets';
+import {
+  AISearchContentIcon,
+  AiTasksIcon,
+  BrowseSubscriptionIcon,
+  FilesIcon,
+  InboxIcon,
+  MySubscriptionsIcon,
+} from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion, TargetAndTransition } from 'framer-motion';
 import {
   ArrowLeftToLine,
   ArrowRightToLine,
   BotIcon,
-  Compass,
-  LibraryBig,
   PlusIcon,
-  SearchCode,
 } from 'lucide-react';
 import React, { Fragment, useEffect, useState } from 'react';
 import {
@@ -50,6 +55,7 @@ type NavigationLink = {
   icon: React.ReactNode;
   onClick?: () => void;
   external?: boolean;
+  disabled?: boolean;
 };
 
 export const sidebarTransition: TargetAndTransition['transition'] = {
@@ -57,6 +63,7 @@ export const sidebarTransition: TargetAndTransition['transition'] = {
   stiffness: 260,
   damping: 24,
 };
+
 export const showAnimation = {
   hidden: {
     width: 0,
@@ -79,12 +86,14 @@ const NavLink = ({
   onClick,
   icon,
   title,
+  disabled,
 }: {
   href: string;
   external?: boolean;
   onClick?: () => void;
   icon: React.ReactNode;
   title: string;
+  disabled?: boolean;
 }) => {
   const sidebarExpanded = useSettings((state) => state.sidebarExpanded);
 
@@ -92,6 +101,36 @@ const NavLink = ({
     path: href,
     end: false,
   });
+
+  if (disabled) {
+    return (
+      <div
+        className={cn(
+          'flex w-full items-center gap-2 rounded-lg px-4 py-3 text-white transition-colors',
+          'opacity-40',
+        )}
+      >
+        <span>{icon}</span>
+        {sidebarExpanded && <span className="sr-only">{title}</span>}
+        <AnimatePresence>
+          {sidebarExpanded && (
+            <motion.div
+              animate="show"
+              className="flex items-center gap-4 whitespace-nowrap text-xs"
+              exit="hidden"
+              initial="hidden"
+              variants={showAnimation}
+            >
+              {title}{' '}
+              <Badge className="text-[10px]" variant="inputAdornment">
+                SOON
+              </Badge>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  }
 
   return (
     <Link
@@ -197,7 +236,12 @@ export function MainNav() {
       href: '/inboxes',
       icon: <InboxIcon className="h-5 w-5" />,
     },
-
+    {
+      title: 'AI Tasks',
+      href: '/ai-tasks',
+      icon: <AiTasksIcon className="h-5 w-5" />,
+      disabled: true,
+    },
     // auth?.shinkai_identity.includes('localhost') && {
     //   title: 'Create DM Chat',
     //   href: '/create-chat',
@@ -216,17 +260,17 @@ export function MainNav() {
     {
       title: 'AI Files Content Search',
       href: '/vector-search',
-      icon: <SearchCode className="h-5 w-5" />,
+      icon: <AISearchContentIcon className="h-5 w-5" />,
     },
     {
       title: 'Browse Public Subscriptions',
       href: '/public-subscriptions',
-      icon: <Compass className="h-5 w-5" />,
+      icon: <BrowseSubscriptionIcon className="h-5 w-5" />,
     },
     {
       title: 'My Subscriptions',
       href: '/my-subscriptions',
-      icon: <LibraryBig className="h-5 w-5" />,
+      icon: <MySubscriptionsIcon className="h-5 w-5" />,
     },
   ].filter(Boolean) as NavigationLink[];
 
@@ -338,6 +382,7 @@ export function MainNav() {
                   <Tooltip>
                     <TooltipTrigger className="flex items-center gap-1">
                       <NavLink
+                        disabled={item.disabled}
                         external={item.external}
                         href={item.href}
                         icon={item.icon}
@@ -351,12 +396,16 @@ export function MainNav() {
                         arrowPadding={2}
                         side="right"
                       >
-                        <p>{item.title}</p>
+                        <p>
+                          {item.disabled
+                            ? item.title + '- coming soon!'
+                            : item.title}
+                        </p>
                       </TooltipContent>
                     </TooltipPortal>
                   </Tooltip>
                 </TooltipProvider>
-                {(item.href === '/inboxes' ||
+                {(item.href === '/ai-tasks' ||
                   item.href === '/vector-search') && (
                   <Separator className="my-0.5 w-full bg-gray-200" />
                 )}

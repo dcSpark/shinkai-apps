@@ -35,8 +35,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { FilesIcon } from '@shinkai_network/shinkai-ui/assets';
-import { SearchCode } from 'lucide-react';
+import {
+  AISearchContentIcon,
+  FilesIcon,
+} from '@shinkai_network/shinkai-ui/assets';
 import { TreeCheckboxSelectionKeys } from 'primereact/tree';
 import { TreeNode } from 'primereact/treenode';
 import React, { useEffect, useRef, useState } from 'react';
@@ -329,7 +331,7 @@ export const CreateJob = () => {
                         type="button"
                         variant="ghost"
                       >
-                        <SearchCode className="h-5 w-5" />
+                        <AISearchContentIcon className="h-5 w-5" />
                         <p className="sr-only text-xs text-white">
                           AI Files Content Search
                         </p>
