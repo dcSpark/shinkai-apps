@@ -56,7 +56,6 @@ export default defineConfig({
   },
   build: {
     outDir: '../../dist/apps/shinkai-visor',
-    emptyOutDir: true,
     rollupOptions: {
       input: {
         popup: resolve(__dirname, 'src/components/popup/popup.html'),

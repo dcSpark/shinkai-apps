@@ -293,9 +293,10 @@ export default function NavBar() {
   const isRootPage = rootPages.some((value) =>
     location.pathname.match(`${value}$`),
   );
-  const isSubPage = subPages.some((value) =>
-    location.pathname.match(`${value}$`),
-  );
+  const isSubPage =
+    subPages.some((value) => location.pathname.match(`${value}$`)) ||
+    location.pathname.includes('/inboxes/');
+
   const isOnboardingPage = onboardingPages.some((value) =>
     location.pathname.match(`${value}$`),
   );

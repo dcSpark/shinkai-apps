@@ -205,7 +205,7 @@ const ActionButton = () => {
                 <img
                   alt="shinkai-app-logo select-none"
                   className={'h-full w-full select-none'}
-                  src={shinkaiLogo}
+                  src={srcUrlResolver(shinkaiLogo)}
                 />
               </motion.button>
             </HoverCardTrigger>
