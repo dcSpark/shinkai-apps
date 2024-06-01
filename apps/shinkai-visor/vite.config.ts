@@ -1,17 +1,21 @@
 import { resolve } from 'path';
-/// <reference types="vitest" />
+
+/// <reference types='vitest' />
+import { defineConfig } from 'vitest/config';
+
 import { crx } from '@crxjs/vite-plugin';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import react from '@vitejs/plugin-react';
 import topLevelAwait from 'vite-plugin-top-level-await';
 import wasm from 'vite-plugin-wasm';
 import tsconfigPaths from 'vite-tsconfig-paths';
-import { defineConfig } from 'vitest/config';
 
 import { dynamicManifest } from './dynamic-manifest';
 
-const outDir = resolve(__dirname, '..', '..', 'dist/apps/shinkai-visor');
+const _outDir = resolve(__dirname, '..', '..', 'dist/apps/shinkai-visor');
+
 export default defineConfig({
+  root: __dirname,
   cacheDir: '../../node_modules/.vite/shinkai-visor',
 
   server: {
@@ -29,7 +33,7 @@ export default defineConfig({
     port: 4301,
     host: 'localhost',
   },
-  publicDir: resolve(__dirname, 'public'),
+
   plugins: [
     react(),
     nxViteTsPaths({ debug: true }),
@@ -50,10 +54,9 @@ export default defineConfig({
       provider: 'v8',
     },
   },
-
   build: {
-    outDir,
-
+    outDir: '../../dist/apps/shinkai-visor',
+    emptyOutDir: true,
     rollupOptions: {
       input: {
         popup: resolve(__dirname, 'src/components/popup/popup.html'),

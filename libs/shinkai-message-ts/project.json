@@ -23,8 +23,7 @@
         "main": "libs/shinkai-message-ts/src/index.ts",
         "tsConfig": "libs/shinkai-message-ts/tsconfig.lib.json",
         "minimal": true,
-        "generateLockfile": true,
-        "watch": true
+        "generateLockfile": true
       }
     },
     "lint": {

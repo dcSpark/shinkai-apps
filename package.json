@@ -3,10 +3,7 @@
   "version": "0.7.7",
   "license": "MIT",
   "private": true,
-  "workspaces": [
-    "apps/shinkai-app",
-    "apps/shinkai-desktop"
-  ],
+  "workspaces": ["apps/shinkai-app", "apps/shinkai-desktop"],
   "scripts": {
     "postinstall": "npx patch-package"
   },
@@ -128,7 +125,6 @@
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",
     "@types/uuid": "^9.0.8",
-    "@vitejs/plugin-legacy": "^5.4.0",
     "@vitejs/plugin-react": "~4.3.0",
     "@vitest/coverage-v8": "^1.6.0",
     "@vitest/ui": "^1.6.0",
@@ -156,7 +152,6 @@
     "url-loader": "^4.1.1",
     "vite": "^5.2.12",
     "vite-plugin-dts": "^3.9.1",
-    "vite-plugin-node-polyfills": "^0.22.0",
     "vite-plugin-top-level-await": "^1.4.1",
     "vite-plugin-wasm": "^3.3.0",
     "vite-tsconfig-paths": "^4.3.2",
