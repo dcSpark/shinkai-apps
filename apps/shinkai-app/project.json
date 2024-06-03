@@ -5,71 +5,35 @@
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "nx:run-commands",
-      "defaultConfiguration": "production",
-      "options": {
-        "cwd": "apps/shinkai-app",
-        "commands": ["npx tsc && npx vite build"]
-      },
-      "configurations": {
-        "development": {
-          "mode": "development"
-        },
-        "production": {
-          "mode": "production"
-        }
-      }
+      "command": "cd apps/shinkai-app && npx tsc && npx vite build"
     },
     "build:ios": {
-      "executor": "nx:run-commands",
-      "defaultConfiguration": "production",
-      "options": {
-        "commands": [
-          "npx nx build shinkai-app",
-          "cd apps/shinkai-app && npx cap sync ios",
-          "cd apps/shinkai-app && npx cap build ios"
-        ],
-        "parallel": false
-      },
+      "commands": [
+        "npx nx build shinkai-app",
+        "cd apps/shinkai-app && npx cap sync ios",
+        "cd apps/shinkai-app && npx cap build ios"
+      ],
       "configurations": {
         "development": {},
         "production": {}
       }
     },
     "build:android": {
-      "executor": "nx:run-commands",
       "defaultConfiguration": "production",
-      "options": {
-        "commands": [
-          "npx nx build shinkai-app",
-          "cd apps/shinkai-app && npx cap sync android",
-          "cd apps/shinkai-app && npx cap build android --keystorepath=$ANDROID_KEYSTORE_FILE_PATH --keystorepass=$ANDROID_KEYSTORE_PASS --keystorealias=$ANDROID_KEYSTORE_ALIAS --keystorealiaspass=$ANDROID_KEYSTORE_ALIAS_PASS",
-          "cp -r ./apps/shinkai-app/android/app/build/outputs/bundle/release/ ./dist/apps/shinkai-app-android"
-        ],
-        "parallel": false
-      },
+      "commands": [
+        "npx nx build shinkai-app",
+        "cd apps/shinkai-app && npx cap sync android",
+        "cd apps/shinkai-app && npx cap build android --keystorepath=$ANDROID_KEYSTORE_FILE_PATH --keystorepass=$ANDROID_KEYSTORE_PASS --keystorealias=$ANDROID_KEYSTORE_ALIAS --keystorealiaspass=$ANDROID_KEYSTORE_ALIAS_PASS",
+        "cp -r ./apps/shinkai-app/android/app/build/outputs/bundle/release/ ./dist/apps/shinkai-app-android"
+      ],
       "configurations": {
         "development": {},
         "production": {}
       }
     },
     "serve": {
-      "executor": "nx:run-commands",
       "defaultConfiguration": "development",
-      "options": {
-        "cwd": "apps/shinkai-app",
-        "command": "npx vite"
-      },
-      "configurations": {
-        "development": {
-          "buildTarget": "shinkai-app:build:development",
-          "hmr": true
-        },
-        "production": {
-          "buildTarget": "shinkai-app:build:production",
-          "hmr": false
-        }
-      }
+      "command": "cd apps/shinkai-app && npx vite"
     },
     "serve:android": {
       "executor": "nx:run-script",

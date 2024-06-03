@@ -3,7 +3,7 @@
   "version": "0.7.7",
   "license": "MIT",
   "private": true,
-  "workspaces": ["apps/shinkai-app", "apps/shinkai-desktop"],
+  "workspaces": ["apps/shinkai-app"],
   "scripts": {
     "postinstall": "npx patch-package"
   },
@@ -141,8 +141,6 @@
     "nx": "19.1.1",
     "patch-package": "^8.0.0",
     "postcss": "^8.4.38",
-    "prettier": "^3.2.5",
-    "prettier-plugin-tailwindcss": "^0.5.14",
     "react-refresh": "^0.14.2",
     "tailwindcss": "^3.4.3",
     "ts-jest": "^29.1.4",
