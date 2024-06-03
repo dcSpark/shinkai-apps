@@ -48,6 +48,7 @@ export const MarkdownPreview = ({
         className,
       )}
       components={components}
+      // @ts-ignore
       rehypePlugins={rehypePlugins}
       source={source}
       wrapperElement={{ 'data-color-mode': 'dark' }}
