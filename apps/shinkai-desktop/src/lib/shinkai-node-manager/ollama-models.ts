@@ -42,15 +42,16 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     fullName: '',
   },
   {
-    model: 'hhao/openbmb-minicpm-llama3-v-2_5',
-    tag: 'q4_K_M',
-    name: 'MiniCPM-Llama3-V 2.5',
-    description: "A GPT-4V Level Multimodal LLM. MiniCPM-Llama3-V 2.5 is the latest model in the MiniCPM-V series, built on SigLip-400M and Llama3-8B-Instruct with a total of 8B parameters. It exhibits significant performance improvements, strong OCR capabilities, trustworthy behavior, multilingual support, and efficient deployment on edge devices.",
+    model: 'aya',
+    tag: 'aya:8b-23-q4_K_M',
+    name: 'Aya 23 8b',
+    description:
+      "Aya 23, released by Cohere, is a new family of state-of-the-art, multilingual models that support 23 languages.",
     contextLength: 8000,
-    quality: OllamaModelQuality.Good,
+    quality: OllamaModelQuality.Medium,
     speed: OllamaModelSpeed.Fast,
-    size: 4.7, // Estimated size in Gb
-    requiredRAM: 8, // Estimated RAM in Gb
+    size: 4.8, // Size in Gb
+    requiredRAM: 16, //  Size in Gb
     fullName: '',
   },
   {
