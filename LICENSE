@@ -1,0 +1,64 @@
+Shinkai
+Protocol License Agreement
+
+Copyright 2024 Mariana Layer Labs (BVI), LTD
+
+This Protocol License Agreement (this "Agreement"), is a binding agreement between Mariana Layer Labs (BVI), LTD ("MLL") and the person or entity identified on the Github platform as the licensee of the Software ("Licensee"). MLL PROVIDES THE SOFTWARE SOLELY ON THE TERMS AND CONDITIONS SET FORTH IN THIS AGREEMENT AND ON THE CONDITION THAT LICENSEE ACCEPTS AND COMPLIES WITH THEM BY THE MEANS PROVIDED FOR ACCEPTANCE ON THE GITHUB PLATFORM YOU (A) ACCEPT THIS AGREEMENT AND AGREE THAT LICENSEE IS LEGALLY BOUND BY ITS TERMS; AND (B) REPRESENT AND WARRANT THAT: (I) YOU ARE 18 YEARS OF AGE OR OLDER/OF LEGAL AGE TO ENTER INTO A BINDING AGREEMENT; AND (II) IF LICENSEE IS A CORPORATION, GOVERNMENTAL ORGANIZATION, OR OTHER LEGAL ENTITY, YOU HAVE THE RIGHT, POWER, AND AUTHORITY TO ENTER INTO THIS AGREEMENT ON BEHALF OF LICENSEE AND BIND LICENSEE TO ITS TERMS. IF LICENSEE DOES NOT AGREE TO THE TERMS OF THIS AGREEMENT, MLL WILL NOT AND DOES NOT LICENCE THE SOFTWARE TO LICENSEE AND YOU MUST NOT DOWNLOAD/INSTALL THE SOFTWARE OR DOCUMENTATION.
+
+NOTWITHSTANDING ANYTHING TO THE CONTRARY IN THIS AGREEMENT OR YOUR OR LICENSEE'S ACCEPTANCE OF THE TERMS AND CONDITIONS OF THIS AGREEMENT, NO LICENCE IS GRANTED (WHETHER EXPRESSLY, BY IMPLICATION OR OTHERWISE) UNDER THIS AGREEMENT, AND THIS AGREEMENT EXPRESSLY EXCLUDES ANY RIGHT CONCERNING ANY SOFTWARE THAT LICENSEE DID NOT ACQUIRE LAWFULLY OR THAT IS NOT A LEGITIMATE, AUTHORIZED COPY OF MLL'S SOFTWARE.
+
+1. Definitions
+
+“Contributor” refers to MLL, and any other individual or legal entity that contributes to the development of the Software.
+
+“License” refers to the terms and conditions for copying, using, modifying, and distributing the Software.
+
+“Shinkai Foundation” refers to Shinkai Foundation, a Cayman Islands foundation company.
+
+“Software” refers to the Shinkai protocol including, without limitation, the smart contract protocol developed by Mariana Layer Labs (BVI), LTD, a British Virgin Islands business company, made available in source code form, and any derivative works or modifications thereof.
+
+“Token” refers to digital tokens, including but not limited to cryptocurrencies, utility tokens, and governance tokens, that interact with or are created by the Software.
+
+2. Grant of License
+
+Subject to the terms of this License, MLL grants you a worldwide, royalty-free, non-exclusive, perpetual license to deal in the Software without restriction, including use, reproduce, modify, display, perform, sublicense, and distribute the Software, in both source code and object code forms, and to permit persons to whom the Software is furnished to do so. If you sublicense the Software, you may not offer or impose any terms that further alter or restrict this License or the recipient’s rights hereunder.
+
+3. Redistribution
+
+You may redistribute copies of the Software, provided that each copy is distributed under the terms of this License, including the restriction set forth in Section 4.
+
+a. The above copyright notice shall be included in all copies or substantial portions of the Software.
+
+b. You must give any recipients of the Software a copy of this License.
+
+c. You must cause any modified files to carry prominent notices stating that you have altered the files.
+
+d. MLL and Shinkai Foundation retain permission to use any and all modified versions of the Software in their sole discretion.
+
+4. Limited Restriction
+
+Notwithstanding the foregoing, you are expressly prohibited from using the Software to develop, support, maintain, or otherwise produce a Token (a “Prohibited Token”) designed to reproduce, emulate, or replace the KAI token developed by MLL. This restriction applies to Tokens that have substantially similar purposes or functionalities as the KAI token, as determined solely by MLL or Shinkai Foundation. This Section 4 must not be altered or omitted in any (re)distribution or sublicensing of the Software.
+
+5. Disclaimer of Warranty and Limitation of Liability
+
+a. Disclaimer of Warranty. The Software is provided “as is”, without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, and noninfringement. In no event shall MLL, Shinkai Foundation, or their affiliates be held liable for any warranty, update, service, or support related to the Software.
+
+b. Limitation of Liability. To the maximum extent permitted by applicable law, in no event shall MLL or any of its affiliates be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, procurement of substitute goods or services; loss of use, data, or profits; or business interruption) however caused and on any theory of liability, whether in contract, strict liability, or tort (including negligence or otherwise) arising in any way out of the use of or inability to use the Software, even if advised of the possibility of such damage.
+
+6. General
+
+This License does not grant permission to use the trade names, trademarks, service marks, or product names of MLL, Shinkai Foundation, or their affiliates, except as required for reasonable and customary use in describing the origin of the Software and reproducing the content of the notice file.
+
+7. Miscellaneous
+
+a. Automatic Termination Upon Violation. This License and the rights granted hereunder will terminate automatically upon any breach by you of the terms of this License, particularly your obligation under Section 4. Upon termination, all sublicenses to the Software that have been granted to third parties under this License shall also terminate automatically, to the extent that such third parties also have implemented a Prohibited Token. You shall promptly notify all such sublicensees of the Software of the termination of this License and the consequent termination of their sublicenses.
+
+b. Survival. Sections 5 (Disclaimer of Warranty and Limitation of Liability), 6 (General), and 7 (Miscellaneous) of this License shall continue in effect following termination.
+
+c. Governing Law; Consent to Personal Jurisdiction. This Agreement and any dispute or claim arising out of or in connection with it or its subject matter or the formation (including non-contractual disputes or claims) shall be governed and construed in accordance with the laws of the British Virgin Islands. To the extent that any lawsuit is permitted under this Agreement, the Parties hereby expressly consent to the personal and exclusive jurisdiction and venue of the British Virgin Islands.
+
+d. Arbitration Procedure. All disputes, claims, suits, actions, causes of action, demands or proceedings (collectively, “Disputes”) arising out of or in connection with this Agreement shall be resolved as follows. First, all Parties shall participate in at least one (1) live or teleconferenced (i.e., using Zoom or a similar videoconferencing software that allows the Parties to communicate in real time) mediation session with an American Arbitration Association (“AAA”) neutral. The Parties agree to participate in mediation in good faith and the Parties agree to share equally in the cost of such mediation. Should the Dispute not be settled within seven (7) days following the live mediation session, either Party may then commence an arbitration. The Parties agree that any and all arbitration shall occur in New York, New York. Arbitration will be conducted confidentially by one (1) arbitrator in accordance with the rules of the AAA, which are hereby incorporated by reference. The Parties shall seek to agree upon the arbitrator within fourteen (14) days of the request for arbitration, and if no such agreement is reached, the AAA shall appoint the arbitrator within seven (7) days thereafter, or as soon as is practicable and in accordance with AAA’s usual procedures concerning the appointment of arbitrators. Each Party shall pay its own expenses in such arbitration, including its attorneys’ fees, subject to reapportionment by the arbitrator in a final award. Any interim or provisional relief that would be available from a court of law shall be available in accordance with the rules of AAA, however nothing in this provision shall prevent the Company from obtaining preliminary injunctive relief in a court of competent jurisdiction located in New York, New York if necessary to prevent irreparable harm pending the conclusion of any arbitration. The state and federal courts located in New York, New York will have exclusive jurisdiction over any appeals and the enforcement of an arbitration award. The final arbitration award may be confirmed in a state or federal court located in New York, New York and the Parties agree to waive any claim of improper venue or forum non conveniens. The Parties expressly agree that any arbitration demand, service of process, notice of motion or other legal documents in connection with any arbitration or enforcement proceedings may be served either by first class mail, postage prepaid, or by overnight courier service (e.g., FedEx or DHL), addressed to a Party at its address for notice, and that such mailing shall be deemed good and sufficient service.
+
+e. Modification, Waiver. No modification of or amendment to this Agreement, nor any waiver of any rights under this Agreement, will be effective unless in a writing signed by the Parties. Waiver by the Company for a particular breach of any provision of this Agreement will not operate as a waiver of any other or subsequent breach.
+
+f. Severance. If any provision or part-provision of this Agreement is or becomes invalid, illegal or unenforceable, it shall be deemed modified to the minimum extent necessary to make it valid, legal and enforceable. If such modification is not possible, the relevant provision or part-provision shall be deemed deleted. Any modification to or deletion of a provision or part-provision under this clause shall not affect the validity and enforceability of the rest of this Agreement.

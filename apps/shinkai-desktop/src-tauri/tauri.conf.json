@@ -24,8 +24,14 @@
         "open": true,
         "sidecar": true,
         "scope": [
-          { "name": "bin/shinkai-node", "sidecar": true },
-          { "name": "bin/ollama", "sidecar": true }
+          {
+            "name": "bin/shinkai-node",
+            "sidecar": true
+          },
+          {
+            "name": "bin/ollama",
+            "sidecar": true
+          }
         ]
       },
       "window": {
@@ -54,7 +60,12 @@
       "http": {
         "all": false,
         "request": true,
-        "scope": ["http://localhost"]
+        "scope": [
+          "http://localhost"
+        ]
+      },
+      "process": {
+        "relaunch": true
       }
     },
     "bundle": {
@@ -71,7 +82,10 @@
       "macOS": {
         "minimumSystemVersion": "10.13"
       },
-      "externalBin": ["bin/shinkai-node", "bin/ollama"]
+      "externalBin": [
+        "bin/shinkai-node",
+        "bin/ollama"
+      ]
     },
     "security": {
       "csp": null
@@ -80,8 +94,8 @@
       {
         "transparent": true,
         "title": "Shinkai Desktop",
-        "width": 1000,
-        "height": 750,
+        "width": 1080,
+        "height": 820,
         "resizable": true,
         "fileDropEnabled": false
       }
@@ -95,7 +109,7 @@
       "endpoints": [
         "https://download.shinkai.com/shinkai-desktop/binaries/production/updates.json"
       ],
-      "dialog": true,
+      "dialog": false,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDY5RTREOUVBODQ0QUYwRDQKUldUVThFcUU2dG5rYVV1MjlvS2FGKzZSMVFnRnFVdUh1ZnVWc2pDSHFqWThaYUFneC9rUU1Gc2MK"
     }
   }

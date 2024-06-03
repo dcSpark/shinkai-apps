@@ -30,6 +30,7 @@ export enum GetStartedSteps {
   SubscribeToKnowledge = 'SubscribeToKnowledge',
   ShareFolder = 'ShareFolder',
 }
+
 export enum GetStartedStatus {
   Done = 'done',
   NotStarted = 'not-started',
@@ -61,7 +62,7 @@ export default function OnboardingStepper() {
               <Button
                 className="h-auto gap-1 px-3 py-2"
                 onClick={() => {
-                  navigate('/add-agent');
+                  navigate('/agents-locally');
                 }}
                 size="sm"
                 variant="outline"
@@ -250,6 +251,7 @@ export type Step = {
 interface StepperProps extends React.HTMLAttributes<HTMLDivElement> {
   steps: Step[];
 }
+
 export const Stepper = ({ steps }: StepperProps) => {
   const setGetStartedChecklistHidden = useSettings(
     (state) => state.setGetStartedChecklistHidden,
@@ -302,7 +304,7 @@ export const Stepper = ({ steps }: StepperProps) => {
                 </Button>
               </span>
             ) : (
-              <span className="text-gray-80 truncate">
+              <span className="text-gray-80 truncate capitalize">
                 {currentPercents}% - Next,{' '}
                 {
                   steps.find(
@@ -390,7 +392,7 @@ export const Stepper = ({ steps }: StepperProps) => {
                         'hover:bg-gray-500 hover:no-underline',
                       )}
                     >
-                      <div className="flex flex-row items-center gap-2 font-normal text-white">
+                      <div className="flex flex-row items-center gap-2 font-normal capitalize text-white">
                         <div
                           className={cn(
                             'flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-100 p-1',
