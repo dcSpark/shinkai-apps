@@ -29,13 +29,13 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import {
+  AISearchContentIcon,
   AddAgentIcon,
   AgentIcon,
-  AISearchContentIcon,
   AiTasksIcon,
   ArchiveIcon,
-  BrowseSubscriptionIcon,
   ArchivedIcon,
+  BrowseSubscriptionIcon,
   DirectoryTypeIcon,
   DisconnectIcon,
   FileTypeIcon,
