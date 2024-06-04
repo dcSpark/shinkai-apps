@@ -1,12 +1,17 @@
-import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
+import {
+  useMutation,
+  type UseMutationOptions,
+  useQueryClient,
+} from '@tanstack/react-query';
 
-import { FunctionKey, queryClient } from '../../constants';
+import { FunctionKey } from '../../constants';
 import { deleteVRItem } from './index';
 import { DeleteVRItemInput, DeleteVRItemOutput } from './types';
 
 type Options = UseMutationOptions<DeleteVRItemOutput, Error, DeleteVRItemInput>;
 
 export const useDeleteVRItem = (options?: Options) => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteVRItem,
     ...options,

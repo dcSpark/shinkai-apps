@@ -26,15 +26,15 @@ import {
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import { ScrollArea } from '@shinkai_network/shinkai-ui';
-import { AgentIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { Edit, Plus, TrashIcon } from 'lucide-react';
+import { BotIcon, Edit, Plus, TrashIcon } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { useAuth } from '../store/auth';
+import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
 import { getModelObject } from './create-agent';
 import { SimpleLayout } from './layout/simple-layout';
 
@@ -52,11 +52,18 @@ const AgentsPage = () => {
     profile_encryption_sk: auth?.profile_encryption_sk ?? '',
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
+  const isLocalShinkaiNodeIsUse = useShinkaiNodeManager(
+    (state) => state.isInUse,
+  );
   const onAddAgentClick = () => {
+    if (isLocalShinkaiNodeIsUse) {
+      navigate('/agents-locally');
+      return;
+    }
     navigate('/add-agent');
   };
   return (
-    <SimpleLayout classname="relative" title="Agents">
+    <SimpleLayout classname="relative" title="AIs">
       <div className="absolute right-3 top-[36px]">
         <Button
           className="h-[40px] gap-2"
@@ -64,7 +71,7 @@ const AgentsPage = () => {
           size="auto"
         >
           <Plus className="h-4 w-4" />
-          <span>Add Agent</span>
+          <span>Add AI</span>
         </Button>
       </div>
       <div className="flex h-full flex-col space-y-3">
@@ -81,7 +88,7 @@ const AgentsPage = () => {
               </p>
             </div>
 
-            <Button onClick={onAddAgentClick}>Add Agent</Button>
+            <Button onClick={onAddAgentClick}>Add AI</Button>
           </div>
         ) : (
           <ScrollArea className="flex h-full flex-col justify-between [&>div>div]:!block">
@@ -135,7 +142,7 @@ function AgentCard({
       >
         <div className="flex items-center gap-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg ">
-            <AgentIcon className="h-6 w-6" />
+            <BotIcon className="h-6 w-6" />
           </div>
           <div className="flex flex-col items-baseline gap-2">
             <span className="w-full truncate text-start text-sm">
@@ -265,7 +272,7 @@ const EditAgentDrawer = ({
   const { mutateAsync: updateAgent, isPending } = useUpdateAgent({
     onSuccess: () => {
       onOpenChange(false);
-      toast.success('Agent updated successfully');
+      toast.success('AI updated successfully');
     },
     onError: (error) => {
       toast.error('Error updating agent', {
@@ -320,7 +327,7 @@ const EditAgentDrawer = ({
                 disabled
                 name="agentName"
                 render={({ field }) => (
-                  <TextField field={field} label="Agent Name" />
+                  <TextField field={field} label="AI Name" />
                 )}
               />
 
@@ -382,7 +389,7 @@ const RemoveAgentDrawer = ({
   const { mutateAsync: deleteAgent, isPending } = useDeleteAgent({
     onSuccess: () => {
       onOpenChange(false);
-      toast.success('Agent deleted successfully');
+      toast.success('AI deleted successfully');
     },
     onError: (error) => {
       toast.error('Error deleting agent', {
@@ -396,7 +403,7 @@ const RemoveAgentDrawer = ({
       <SheetContent>
         <SheetHeader>
           <SheetTitle className="font-normal">
-            Delete Agent
+            Delete AI
             <span className="font-medium">{agentId}</span>{' '}
           </SheetTitle>
         </SheetHeader>

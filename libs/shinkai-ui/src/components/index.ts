@@ -40,3 +40,4 @@ export * from './tooltip';
 export * from './table';
 export * from './progress';
 export * from './chat';
+export * from './text-link';

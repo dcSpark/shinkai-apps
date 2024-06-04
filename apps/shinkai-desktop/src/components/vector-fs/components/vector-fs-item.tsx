@@ -1,7 +1,6 @@
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { VRItem } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import {
-  Badge,
   buttonVariants,
   Checkbox,
   DropdownMenu,
@@ -33,15 +32,7 @@ export const VectorFsItemInfo = ({
 
   return (
     <div className="flex-1 truncate text-left">
-      <div className="text-sm font-medium">
-        {file.name}
-        {layout === VectorFSLayout.List && (
-          <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
-            {file?.vr_header?.resource_source?.Standard?.FileRef?.file_type
-              ?.Document ?? '-'}
-          </Badge>
-        )}
-      </div>
+      <div className="text-sm font-medium">{file.name}</div>
       {layout === VectorFSLayout.List && (
         <p className="text-xs font-medium text-gray-100">
           <span>{createdDatetime}</span> - <span>{fileSize}</span>
@@ -94,7 +85,12 @@ const VectorFsItem = ({
           className="flex flex-1 items-center gap-3"
           htmlFor={`item-${file.name}`}
         >
-          <FileTypeIcon />
+          <FileTypeIcon
+            type={
+              file?.vr_header?.resource_source?.Standard?.FileRef?.file_type
+                ?.Document
+            }
+          />
           <VectorFsItemInfo
             createdDatetime={createdDatetime}
             file={file}
@@ -107,7 +103,12 @@ const VectorFsItem = ({
 
   return (
     <button className={wrapperClassname} onClick={onClick}>
-      <FileTypeIcon />
+      <FileTypeIcon
+        type={
+          file?.vr_header?.resource_source?.Standard?.FileRef?.file_type
+            ?.Document
+        }
+      />
       <VectorFsItemInfo
         createdDatetime={createdDatetime}
         file={file}

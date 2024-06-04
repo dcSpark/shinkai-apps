@@ -3,7 +3,8 @@ import { Loader2, Trash, Upload } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 
-import { PaperClipIcon } from '../assets';
+import { fileIconMap, FileTypeIcon, PaperClipIcon } from '../assets';
+import { getFileExt } from '../helpers/file';
 import { cn } from '../utils';
 import { Button } from './button';
 import { ScrollArea } from './scroll-area';
@@ -36,8 +37,13 @@ export const FileItem = ({
             className="h-full rounded-md object-cover"
             file={file}
           />
+        ) : fileIconMap[getFileExt(file.name)] ? (
+          <FileTypeIcon
+            className="text-gray-80 "
+            type={getFileExt(file.name)}
+          />
         ) : (
-          <PaperClipIcon className="text-gray-80 h-5 w-5" />
+          <PaperClipIcon className="text-gray-80 h-4 w-4" />
         )}
       </span>
       <div className="line-clamp-1 flex flex-1 flex-col gap-1">

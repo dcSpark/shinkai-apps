@@ -7,3 +7,11 @@ body,
 #root {
   @apply font-inter h-full rounded-lg border-0 bg-gray-500 text-white;
 }
+html {
+  @apply overscroll-none;
+}
+
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-400;
+}

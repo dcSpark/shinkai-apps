@@ -31,26 +31,21 @@ import {
 import {
   AddAgentIcon,
   AgentIcon,
+  AISearchContentIcon,
+  AiTasksIcon,
   ArchivedIcon,
   ArchiveIcon,
+  BrowseSubscriptionIcon,
   DirectoryTypeIcon,
   DisconnectIcon,
   FilesIcon,
   FileTypeIcon,
   InboxIcon,
   JobBubbleIcon,
+  MySubscriptionsIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import {
-  ArrowLeft,
-  Compass,
-  LibraryBig,
-  Menu,
-  SearchCode,
-  Settings,
-  X,
-  XIcon,
-} from 'lucide-react';
+import { ArrowLeft, Menu, Settings, X, XIcon } from 'lucide-react';
 import React, { ReactNode, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useRouteMatch } from 'react-router';
@@ -77,6 +72,7 @@ enum MenuOption {
   Agents = 'agents',
   AddAgent = 'add-agent',
   CreateJob = 'create-job',
+  CreateAITask = '',
   NodeFiles = 'node-files',
   SearchNodeFiles = 'search-node-files',
   MySubscriptions = 'my-subscriptions',
@@ -84,6 +80,7 @@ enum MenuOption {
   Settings = 'settings',
   Logout = 'logout',
 }
+
 const routeTitleDescriptionMapping: Record<
   string,
   { title: ReactNode; description?: ReactNode }
@@ -188,14 +185,15 @@ const DisplayInboxName = () => {
                           className="flex items-center gap-2 py-1.5"
                           key={file.path}
                         >
-                          <FileTypeIcon />
+                          <FileTypeIcon
+                            type={
+                              file?.source?.Standard?.FileRef?.file_type
+                                ?.Document
+                            }
+                          />
                           <span className="text-gray-80 text-sm">
                             {file.name}
                           </span>
-                          <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
-                            {file?.source?.Standard?.FileRef?.file_type
-                              ?.Document ?? '-'}
-                          </Badge>
                         </li>
                       ))}
                     </ul>
@@ -333,6 +331,10 @@ export default function NavBar() {
       case MenuOption.CreateInbox:
         history.push(routes.CreateInbox);
         setLastPage(routes.CreateInbox);
+        break;
+      case MenuOption.CreateAITask:
+        history.push(routes.CreateAITask);
+        setLastPage(routes.CreateAITask);
         break;
       case MenuOption.CreateJob:
         history.push(routes.CreateJob);
@@ -516,6 +518,16 @@ export default function NavBar() {
                     <FormattedMessage id="create-job" />
                   </span>
                 </DropdownMenuItem>
+                <DropdownMenuItem
+                  disabled={true}
+                  onClick={() => onClickMenuOption(MenuOption.CreateAITask)}
+                >
+                  <AiTasksIcon className="mr-2 h-4 w-4" />
+                  <span className="mr-3">AI Tasks</span>
+                  <Badge className="text-[10px]" variant="inputAdornment">
+                    SOON
+                  </Badge>
+                </DropdownMenuItem>
 
                 {/*{auth?.shinkai_identity.includes('localhost') ? null : (*/}
                 {/*  <DropdownMenuItem*/}
@@ -538,20 +550,20 @@ export default function NavBar() {
                 <DropdownMenuItem
                   onClick={() => onClickMenuOption(MenuOption.SearchNodeFiles)}
                 >
-                  <SearchCode className="mr-2 h-4 w-4" />
+                  <AISearchContentIcon className="mr-2 h-4 w-4" />
                   <span>AI Files Content Search</span>
                 </DropdownMenuItem>
                 <DropdownMenuLabel>Subscriptions</DropdownMenuLabel>
                 <DropdownMenuItem
                   onClick={() => onClickMenuOption(MenuOption.PublicItems)}
                 >
-                  <Compass className="mr-2 h-4 w-4" />
+                  <BrowseSubscriptionIcon className="mr-2 h-4 w-4" />
                   <span>Browse Public Subscriptions</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => onClickMenuOption(MenuOption.MySubscriptions)}
                 >
-                  <LibraryBig className="mr-2 h-4 w-4" />
+                  <MySubscriptionsIcon className="mr-2 h-4 w-4" />
                   <span>My Subscriptions</span>
                 </DropdownMenuItem>
 

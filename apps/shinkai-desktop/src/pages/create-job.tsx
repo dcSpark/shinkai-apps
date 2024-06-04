@@ -34,8 +34,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { FilesIcon } from '@shinkai_network/shinkai-ui/assets';
-import { PlusIcon, SearchCode } from 'lucide-react';
+import {
+  AISearchContentIcon,
+  FilesIcon,
+} from '@shinkai_network/shinkai-ui/assets';
+import { PlusIcon } from 'lucide-react';
 import { TreeCheckboxSelectionKeys } from 'primereact/tree';
 import { TreeNode } from 'primereact/treenode';
 import React, { useEffect, useRef, useState } from 'react';
@@ -255,11 +258,11 @@ const CreateJobPage = () => {
               name="agent"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Select your AI Agent</FormLabel>
+                  <FormLabel>Select your AI</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select your AI Agent" />
+                        <SelectValue placeholder="Select your AI" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -277,7 +280,7 @@ const CreateJobPage = () => {
                           variant="ghost"
                         >
                           <PlusIcon className="mr-2" />
-                          Add Agents
+                          Add AI
                         </Button>
                       )}
                     </SelectContent>
@@ -306,7 +309,7 @@ const CreateJobPage = () => {
                         type="button"
                         variant="ghost"
                       >
-                        <SearchCode className="h-5 w-5" />
+                        <AISearchContentIcon className="h-5 w-5" />
                         <p className="sr-only text-xs text-white">
                           AI Files Content Search
                         </p>

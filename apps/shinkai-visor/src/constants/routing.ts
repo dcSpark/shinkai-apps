@@ -4,6 +4,7 @@ export const routes = {
   Inbox: '/inboxes/:inboxId',
   CreateInbox: '/inboxes/create-inbox',
   CreateJob: '/inboxes/create-job',
+  CreateAITask: '/inboxes/create-ai-task',
   VectorFs: '/node-files',
   SearchNodeFiles: '/search-node-files',
   Subscriptions: '/subscriptions',

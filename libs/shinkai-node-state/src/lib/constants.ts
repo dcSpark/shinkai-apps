@@ -1,7 +1,3 @@
-import { QueryClient } from '@tanstack/react-query';
-
-export const queryClient = new QueryClient();
-
 export enum FunctionKey {
   GET_HEALTH = 'GET_HEALTH',
   GET_ENCRYPTION_KEYS = 'GET_ENCRYPTION_KEYS',

@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@shinkai_network/shinkai-ui';
 import {
+  AISearchContentIcon,
   DirectoryTypeIcon,
   SharedFolderIcon,
 } from '@shinkai_network/shinkai-ui/assets';
@@ -18,7 +19,6 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
   CopyIcon,
   FolderInputIcon,
-  SearchCode,
   Share2,
   // Share2Icon,
   TrashIcon,
@@ -159,7 +159,7 @@ const VectorFsFolder = ({
             },
             {
               name: 'Search within folder',
-              icon: <SearchCode className="mr-3 h-4 w-4" />,
+              icon: <AISearchContentIcon className="mr-3 h-4 w-4" />,
               onClick: () => {
                 setActiveDrawerMenuOption(VectorFsFolderAction.SearchKnowledge);
               },

@@ -25,6 +25,11 @@ import {
   Input,
   ScrollArea,
   Separator,
+  Tooltip,
+  TooltipContent,
+  TooltipPortal,
+  TooltipProvider,
+  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import {
   AddNewFolderIcon,
@@ -178,7 +183,7 @@ const AllFiles = () => {
 
   const actionList = [
     {
-      name: 'Add new folder',
+      name: 'Add New Folder',
       icon: <AddNewFolderIcon className="mr-2 h-4 w-4" />,
       onClick: () => {
         setActiveDrawerMenuOption(VectorFsGlobalAction.NewFolder);
@@ -225,7 +230,7 @@ const AllFiles = () => {
             size="sm"
             // variant=""
           >
-            <PlusIcon className="h-4 w-4" /> Upload
+            <PlusIcon className="h-4 w-4" /> Add New
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
@@ -477,44 +482,54 @@ const AllFiles = () => {
       {/*    <span className="font-medium">TODO</span>*/}
       {/*  </span>*/}
       {/*</div>*/}
-
-      <MotionButton
-        className={cn(
-          'fixed bottom-3 right-4 h-[60px] w-[60px]',
-          isVRSelectionActive && 'w-[210px]',
-        )}
-        layout
-        onClick={() => {
-          if (!isVRSelectionActive) {
-            setVRSelectionActive(true);
-          } else {
-            navigate('/create-job', {
-              state: {
-                selectedVRFiles: selectedFiles,
-                selectedVRFolders: selectedFolders,
-              },
-            });
-          }
-        }}
-        size={isVRSelectionActive ? 'lg' : 'icon'}
-        transition={{ duration: 0.2 }}
-      >
-        {!isVRSelectionActive && <CreateAIIcon />}
-        <motion.div
-          className={cn(
-            'sr-only flex flex-col',
-            isVRSelectionActive && 'not-sr-only',
-          )}
-          layout
-        >
-          <span>Create AI Chat</span>
-          {isVRSelectionActive && (
-            <span className="text-sm text-neutral-200">
-              {selectedFiles.length + selectedFolders.length} selected
-            </span>
-          )}
-        </motion.div>
-      </MotionButton>
+      <TooltipProvider delayDuration={0}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <MotionButton
+              className={cn(
+                'fixed bottom-3 right-4 h-[60px] w-[60px]',
+                isVRSelectionActive && 'w-[210px]',
+              )}
+              layout
+              onClick={() => {
+                if (!isVRSelectionActive) {
+                  setVRSelectionActive(true);
+                } else {
+                  navigate('/create-job', {
+                    state: {
+                      selectedVRFiles: selectedFiles,
+                      selectedVRFolders: selectedFolders,
+                    },
+                  });
+                }
+              }}
+              size={isVRSelectionActive ? 'lg' : 'icon'}
+              transition={{ duration: 0.2 }}
+            >
+              {!isVRSelectionActive && <CreateAIIcon />}
+              <motion.div
+                className={cn(
+                  'sr-only flex flex-col',
+                  isVRSelectionActive && 'not-sr-only',
+                )}
+                layout
+              >
+                <span>Create AI Chat</span>
+                {isVRSelectionActive && (
+                  <span className="text-sm text-neutral-200">
+                    {selectedFiles.length + selectedFolders.length} selected
+                  </span>
+                )}
+              </motion.div>
+            </MotionButton>
+          </TooltipTrigger>
+          <TooltipPortal>
+            <TooltipContent side="left">
+              <p>Create AI Chat</p>
+            </TooltipContent>
+          </TooltipPortal>
+        </Tooltip>
+      </TooltipProvider>
       {isVRSelectionActive && (
         <MotionButton
           animate={{ opacity: 1 }}

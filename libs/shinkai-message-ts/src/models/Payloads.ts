@@ -49,5 +49,4 @@ export interface SubmitInitialRegistrationNoCodePayload {
   profile_identity_sk: string;
   registration_name: string;
   profile: string;
-  shinkai_identity: string;
 }
