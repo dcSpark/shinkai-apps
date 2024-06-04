@@ -31,31 +31,36 @@ impl ShinkaiNodeProcessHandler {
         }
     }
 
+    pub fn default_initial_model() -> String {
+        let mut model = "llama3:8b-instruct-q4_1".to_string();
+        let hardware_summary = hardware_get_summary();
+        match hardware_summary.requirements_status {
+            RequirementsStatus::Unmeet | RequirementsStatus::Minimum => {
+                model = "phi3:3.8b".to_string();
+            }
+            _ => {}
+        }
+        model
+    }
+
     pub fn default_options(default_node_storage_path: String) -> ShinkaiNodeOptions {
-        let mut options = ShinkaiNodeOptions {
+        let initial_model = Self::default_initial_model();
+        let initial_agent_names = format!("o_{}", initial_model.replace(|c: char| !c.is_alphanumeric(), "_"));
+        let initial_agent_models = format!("ollama:{}", initial_model);
+        let options = ShinkaiNodeOptions {
             port: Some("9550".to_string()),
             node_storage_path: Some(default_node_storage_path),
             unstructured_server_url: Some("https://public.shinkai.com/x-un".to_string()),
             embeddings_server_url: Some("http://127.0.0.1:11435".to_string()),
             first_device_needs_registration_code: Some("false".to_string()),
             initial_agent_urls: Some("http://127.0.0.1:11435".to_string()),
-            initial_agent_names: Some("o_llama3_8b_instruct_q4_1".to_string()),
-            initial_agent_models: Some("ollama:llama3:8b-instruct-q4_1".to_string()),
+            initial_agent_names: Some(initial_agent_names),
+            initial_agent_models: Some(initial_agent_models),
             initial_agent_api_keys: Some("".to_string()),
             starting_num_qr_devices: Some("0".to_string()),
             log_all: Some("1".to_string()),
         };
-
-        let hardware_summary = hardware_get_summary();
-        match hardware_summary.requirements_status {
-            RequirementsStatus::Unmeet | RequirementsStatus::Minimum => {
-                options.initial_agent_names = Some("o_phi3_3_8b".to_string());
-                options.initial_agent_models = Some("ollama:phi3:3.8b".to_string());
-            }
-            _ => {}
-        }
         options
-        
     }
 
     fn get_base_url(&self) -> String {

@@ -1,5 +1,6 @@
 import { useSyncOllamaModels } from '@shinkai_network/shinkai-node-state/lib/mutations/syncOllamaModels/useSyncOllamaModels';
 import {
+  Badge,
   Button,
   Progress,
   ScrollArea,
@@ -25,6 +26,7 @@ import {
 } from '../../lib/shinkai-node-manager/ollama-client';
 import { OLLAMA_MODELS } from '../../lib/shinkai-node-manager/ollama-models';
 import {
+  useShinkaiNodeGetDefaultModel,
   useShinkaiNodeGetOllamaApiUrlQuery,
   useShinkaiNodeIsRunningQuery,
   useShinkaiNodeSpawnMutation,
@@ -36,6 +38,7 @@ import { ModelSpeedTag } from './components/model-speed-tag';
 export const OllamaModels = () => {
   const auth = useAuth((auth) => auth.auth);
   const { data: ollamaApiUrl } = useShinkaiNodeGetOllamaApiUrlQuery();
+  const { data: defaultModel } = useShinkaiNodeGetDefaultModel();
   const ollamaConfig = { host: ollamaApiUrl || 'http://127.0.0.1:11435' };
 
   const installedOllamaModelsMap = useMap<string, ModelResponse>();
@@ -107,6 +110,10 @@ export const OllamaModels = () => {
     return Math.ceil((100 * (progress.completed ?? 0)) / (progress.total ?? 1));
   };
 
+  const isDefaultModel = (model: string): boolean => {
+    return defaultModel === model;
+  };
+
   useEffect(() => {
     installedOllamaModels?.models &&
       installedOllamaModels.models.forEach((modelResponse) => {
@@ -156,7 +163,21 @@ export const OllamaModels = () => {
               >
                 <TableCell>
                   <div className="flex flex-col items-start gap-2">
-                    <span className="font-medium">{model.name}</span>
+                    <div className="flex flex-row gap-3 items-center">
+                      <span className="font-medium">{model.name}</span>
+                      {isDefaultModel(model.fullName) && (
+                        <Badge
+                          className={cn(
+                            'rounded-full border-0 px-2 py-1 font-normal capitalize',
+                            'bg-green-900 text-green-400',
+                          )}
+                          variant="outline"
+                        >
+                          Recommended
+                        </Badge>
+                      )}
+                    </div>
+
                     {/*<Badge className={cn('text-[8px]')} variant="outline">*/}
                     {/*  {model.fullName}*/}
                     {/*</Badge>*/}

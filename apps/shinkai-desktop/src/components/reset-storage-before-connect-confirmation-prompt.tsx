@@ -8,7 +8,7 @@ import {
   AlertDialogTitle,
   Button,
 } from '@shinkai_network/shinkai-ui';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 
 import {
   useShinkaiNodeKillMutation,
