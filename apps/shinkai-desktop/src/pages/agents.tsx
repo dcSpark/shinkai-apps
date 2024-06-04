@@ -10,7 +10,6 @@ import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAg
 import {
   Badge,
   Button,
-  buttonVariants,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -24,6 +23,7 @@ import {
   SheetHeader,
   SheetTitle,
   TextField,
+  buttonVariants,
 } from '@shinkai_network/shinkai-ui';
 import { ScrollArea } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';

@@ -20,7 +20,7 @@ import { ActiveIcon, ArchiveIcon } from '@shinkai_network/shinkai-ui/assets';
 import { Plus } from 'lucide-react';
 import React, { useMemo, useRef } from 'react';
 // import { FormattedMessage } from 'react-intl';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../store/auth/auth';
 // import { EditInboxNameDialog } from '../edit-inbox-name-dialog/edit-inbox-name-dialog';
@@ -29,7 +29,7 @@ import { EmptyInboxes } from '../empty-inboxes/empty-inboxes';
 import { ActiveInboxItem, ArchiveInboxItem } from './inbox-item';
 
 export const Inboxes = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const auth = useAuth((state) => state.auth);
   const dialContainerRef = useRef<HTMLDivElement>(null);
   // const [dialOpened, setDialOpened] = useState<boolean>(false);
@@ -70,10 +70,10 @@ export const Inboxes = () => {
   });
 
   const onCreateJobClick = () => {
-    history.push('/inboxes/create-job');
+    navigate('/inboxes/create-job');
   };
   // const onCreateInboxClick = () => {
-  //   history.push('/inboxes/create-inbox');
+  //   navigate('/inboxes/create-inbox');
   // };
 
   // const openEditInboxNameDialog = (inboxId: string, name: string) => {

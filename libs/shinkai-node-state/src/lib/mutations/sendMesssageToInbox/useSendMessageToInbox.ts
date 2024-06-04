@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { FunctionKey } from '../../constants';
 import { sendMessageToInbox } from '.';
+import { FunctionKey } from '../../constants';
 
 export const useSendMessageToInbox = () => {
   const queryClient = useQueryClient();

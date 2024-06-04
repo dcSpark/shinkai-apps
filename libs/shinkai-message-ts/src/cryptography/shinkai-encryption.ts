@@ -1,4 +1,5 @@
-import * as sodium from 'libsodium-wrappers-sumo';
+// @ts-ignore
+import sodium from 'libsodium-wrappers-sumo';
 
 export async function encryptMessageWithPassphrase(
   message: string,

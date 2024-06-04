@@ -1,6 +1,6 @@
 import { useGetMySubscriptions } from '@shinkai_network/shinkai-node-state/lib/queries/getMySubscriptions/useGetMySubscriptions';
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../store/auth/auth';
 import { UnsubscribeButton } from './components/subscription-button';
@@ -46,7 +46,6 @@ const MySubscriptions = () => {
               folderName={subscription.shared_folder.replace(/\//g, '')}
               folderPath={subscription.shared_folder}
               key={subscription.subscription_id.unique_id}
-              nodeName={subscription.subscriber_node}
               streamerNodeName={subscription.streaming_node}
               streamerNodeProfile={subscription.streaming_profile}
             />
@@ -62,22 +61,20 @@ export default MySubscriptions;
 const SubscribedSharedFolder = ({
   folderName,
   folderPath,
-  nodeName,
   streamerNodeName,
   streamerNodeProfile,
 }: {
   folderName: string;
-  nodeName: string;
   folderPath: string;
   streamerNodeName: string;
   streamerNodeProfile: string;
 }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   return (
     <div
       className="flex min-h-[72px] cursor-pointer items-center justify-between gap-2 rounded-lg py-3.5 pr-2.5 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400"
-      onClick={() => history.push(`/node-files`)}
+      onClick={() => navigate(`/node-files`)}
       role="button"
       tabIndex={0}
     >

@@ -9,7 +9,7 @@ const rehypePlugins: PluggableList = [
   [
     rehypeRewrite,
     {
-      rewrite: (node, index, parent) => {
+      rewrite: (node, _, parent) => {
         if (
           node.type === 'element' &&
           node.tagName === 'a' &&
@@ -48,6 +48,7 @@ export const MarkdownPreview = ({
         className,
       )}
       components={components}
+      // @ts-ignore
       rehypePlugins={rehypePlugins}
       source={source}
       wrapperElement={{ 'data-color-mode': 'dark' }}

@@ -24,7 +24,7 @@ import { cameraOutline } from 'ionicons/icons';
 import { send } from 'ionicons/icons';
 import React, { Fragment } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import z from 'zod';
 
 import Avatar from '../components/ui/Avatar';

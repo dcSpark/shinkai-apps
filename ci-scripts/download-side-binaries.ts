@@ -1,11 +1,11 @@
-import { z } from 'zod';
-import axios from 'axios';
-import { createWriteStream } from 'fs';
-import { copyFile, cp, readdir, rm } from 'fs/promises';
-import { ensureFile } from 'fs-extra';
 import { exec } from 'child_process';
-import * as zl from 'zip-lib';
+import { createWriteStream } from 'fs';
 import path from 'path';
+import axios from 'axios';
+import { ensureFile } from 'fs-extra';
+import { copyFile, cp, readdir, rm } from 'fs/promises';
+import * as zl from 'zip-lib';
+import { z } from 'zod';
 
 enum Arch {
   x86_64_unknown_linux_gnu = 'x86_64-unknown-linux-gnu',

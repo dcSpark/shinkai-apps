@@ -1,8 +1,8 @@
 import { UseMutationOptions, useQueryClient } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 
-import { FunctionKey } from '../../constants';
 import { updateInboxName } from '.';
+import { FunctionKey } from '../../constants';
 import type { UpdateInboxNameInput, UpdateInboxNameOutput } from './types';
 
 type Options = UseMutationOptions<

@@ -11,7 +11,7 @@ import {
   Input,
   TextField,
 } from '@shinkai_network/shinkai-ui';
-import { dialog, fs } from '@tauri-apps/api';
+import { fs, dialog } from '@tauri-apps/api';
 import { BaseDirectory } from '@tauri-apps/api/fs';
 import { Download } from 'lucide-react';
 import { useEffect, useState } from 'react';

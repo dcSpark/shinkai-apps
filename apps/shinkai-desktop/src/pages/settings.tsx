@@ -5,7 +5,6 @@ import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAg
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import {
   Button,
-  buttonVariants,
   Form,
   FormControl,
   FormField,
@@ -18,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
   TextField,
+  buttonVariants,
 } from '@shinkai_network/shinkai-ui';
 import { ExportIcon, QrIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';

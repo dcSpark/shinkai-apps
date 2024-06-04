@@ -26,6 +26,6 @@ export const isLocalShinkaiNode = (nodeAddress: string) => {
   return isLocalShinkaiNode;
 };
 
-export const isHostingShinkaiNode  = (nodeAddress: string) => {
+export const isHostingShinkaiNode = (nodeAddress: string) => {
   return nodeAddress?.includes('hosting.shinkai.com');
 };

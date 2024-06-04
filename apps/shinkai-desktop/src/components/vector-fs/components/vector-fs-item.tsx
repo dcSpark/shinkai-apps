@@ -1,13 +1,13 @@
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { VRItem } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import {
-  buttonVariants,
   Checkbox,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  buttonVariants,
 } from '@shinkai_network/shinkai-ui';
 import { FileTypeIcon } from '@shinkai_network/shinkai-ui/assets';
 import { formatDateToUSLocaleString } from '@shinkai_network/shinkai-ui/helpers';
@@ -16,7 +16,7 @@ import { partial } from 'filesize';
 import { CopyIcon, FileInputIcon, TrashIcon } from 'lucide-react';
 import React from 'react';
 
-import { useVectorFsStore, VectorFSLayout } from '../context/vector-fs-context';
+import { VectorFSLayout, useVectorFsStore } from '../context/vector-fs-context';
 import { VectorFsItemAction } from './vector-fs-drawer';
 
 export const VectorFsItemInfo = ({

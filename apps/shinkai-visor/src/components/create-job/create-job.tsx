@@ -44,7 +44,7 @@ import { TreeNode } from 'primereact/treenode';
 import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { useQuery } from '../../hooks/use-query';
 import { useAuth } from '../../store/auth/auth';
@@ -53,14 +53,17 @@ import { allowedFileExtensions } from './constants';
 import { KnowledgeSearchDrawer, VectorFsScopeDrawer } from './vector-fs-scope';
 
 export const CreateJob = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const intl = useIntl();
-  const location = useLocation<{
-    files: File[];
-    agentName: string;
-    selectedVRFiles: VRItem[];
-    selectedVRFolders: VRFolder[];
-  }>();
+  const location = useLocation() as {
+    state: {
+      agentName: string;
+      files: File[];
+      selectedVRFiles: VRItem[];
+      selectedVRFolders: VRFolder[];
+    };
+  };
+
   const query = useQuery();
   const auth = useAuth((state) => state.auth);
 
@@ -106,7 +109,7 @@ export const CreateJob = () => {
   const { isPending, mutateAsync: createJob } = useCreateJob({
     onSuccess: (data) => {
       const jobId = encodeURIComponent(buildInboxIdFromJobId(data.jobId));
-      history.replace(`/inboxes/${jobId}`);
+      navigate(`/inboxes/${jobId}`);
     },
   });
   const [isVectorFSOpen, setIsVectorFSOpen] = React.useState(false);

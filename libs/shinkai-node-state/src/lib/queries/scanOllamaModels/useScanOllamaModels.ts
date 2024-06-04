@@ -2,8 +2,8 @@ import { scanOllamaModels } from '@shinkai_network/shinkai-message-ts/api';
 import { CredentialsPayload } from '@shinkai_network/shinkai-message-ts/models';
 import {
   QueryObserverOptions,
-  useQuery,
   UseQueryResult,
+  useQuery,
 } from '@tanstack/react-query';
 
 import { FunctionKey } from '../../constants';
@@ -15,11 +15,13 @@ export type ScanOllamaModelsInput = CredentialsPayload & {
   shinkaiIdentity: string;
 };
 
-export type ScanOllamaModelsResponse = Awaited<ReturnType<typeof scanOllamaModels>>;
+export type ScanOllamaModelsResponse = Awaited<
+  ReturnType<typeof scanOllamaModels>
+>;
 
 export const useScanOllamaModels = (
   input: ScanOllamaModelsInput,
-  options?: QueryObserverOptions,
+  options?: Omit<QueryObserverOptions, 'queryKey' | 'queryFn'>,
 ): UseQueryResult<ScanOllamaModelsResponse, Error> => {
   const query = useQuery({
     queryKey: [FunctionKey.SCAN_OLLAMA_MODELS, input],

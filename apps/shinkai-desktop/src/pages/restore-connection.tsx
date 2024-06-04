@@ -6,7 +6,6 @@ import {
 } from '@shinkai_network/shinkai-node-state/forms/settings/restore-connection';
 import {
   Button,
-  buttonVariants,
   ErrorMessage,
   FileUploader,
   Form,
@@ -16,6 +15,7 @@ import {
   FormLabel,
   FormMessage,
   TextField,
+  buttonVariants,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { ArrowLeft } from 'lucide-react';
@@ -106,7 +106,6 @@ const RestoreConnectionPage = () => {
             <div className="flex grow flex-col space-y-3">
               <FormField
                 control={form.control}
-                disabled={true}
                 name="encryptedConnectionFile"
                 render={({ field }) => (
                   <FormItem>

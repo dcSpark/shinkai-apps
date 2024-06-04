@@ -2,7 +2,7 @@ import { ToggleGroup, ToggleGroupItem } from '@shinkai_network/shinkai-ui';
 import { LayoutGrid, List } from 'lucide-react';
 import React from 'react';
 
-import { useVectorFsStore, VectorFSLayout } from './node-file-context';
+import { VectorFSLayout, useVectorFsStore } from './node-file-context';
 
 export default function VectorFsToggleLayout() {
   const layout = useVectorFsStore((state) => state.layout);

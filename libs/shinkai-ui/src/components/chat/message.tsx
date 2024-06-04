@@ -17,7 +17,7 @@ export const extractErrorPropertyOrContent = (
     if (property in parsedContent) {
       return parsedContent[property];
     }
-  } catch (error) {
+  } catch {
     /* ignore */
   }
   return String(content);

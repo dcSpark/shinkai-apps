@@ -14,7 +14,7 @@ import {
 } from '@ionic/react';
 import { useCreateChat } from '@shinkai_network/shinkai-node-state/lib/mutations/createChat/useCreateChat';
 import { Controller, useForm } from 'react-hook-form';
-import { useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router';
 import z from 'zod';
 
 import Button from '../components/ui/Button';
@@ -70,12 +70,12 @@ const CreateChat: React.FC = () => {
       <IonContentCustom>
         <IonGrid
           className={
-            'md:rounded-[1.25rem] bg-white dark:bg-slate-800 p-4 md:p-10 space-y-2 md:space-y-4'
+            'space-y-2 bg-white p-4 md:space-y-4 md:rounded-[1.25rem] md:p-10 dark:bg-slate-800'
           }
         >
           <IonRow>
             <IonCol>
-              <h2 className={'text-lg mb-3 md:mb-8 text-center'}>
+              <h2 className={'mb-3 text-center text-lg md:mb-8'}>
                 New Chat Details
               </h2>
               <form
@@ -93,7 +93,7 @@ const CreateChat: React.FC = () => {
                           onIonChange={(e) =>
                             createChatForm.setValue(
                               'receiver',
-                              e.detail.value as string
+                              e.detail.value as string,
                             )
                           }
                           placeholder="@@name.shinkai or @@name.shinkai/profile"
@@ -119,7 +119,7 @@ const CreateChat: React.FC = () => {
                           onIonChange={(e) =>
                             createChatForm.setValue(
                               'message',
-                              e.detail.value as string
+                              e.detail.value as string,
                             )
                           }
                           value={field.value}

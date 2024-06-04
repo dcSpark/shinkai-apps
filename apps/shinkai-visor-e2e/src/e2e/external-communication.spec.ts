@@ -173,10 +173,7 @@ export const extenralCommunicationTests = () => {
     await nodeManager.stopNode();
   });
 
-  test('is-installed', async ({
-    page,
-    extensionId,
-  }) => {
+  test('is-installed', async ({ page, extensionId }) => {
     const response = await page.evaluate(
       async ({ extensionId }) => {
         return chrome.runtime.sendMessage(extensionId, {
@@ -192,10 +189,7 @@ export const extenralCommunicationTests = () => {
     await expect(response.payload.version).toMatch(/.*\..*\..*\..*/);
   });
 
-  test('is-node-connected', async ({
-    page,
-    extensionId,
-  }) => {
+  test('is-node-connected', async ({ page, extensionId }) => {
     const response = await page.evaluate(
       async ({ extensionId }) => {
         return chrome.runtime.sendMessage(extensionId, {

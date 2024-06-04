@@ -31,7 +31,7 @@ import { send } from 'ionicons/icons';
 import { cameraOutline } from 'ionicons/icons';
 import { document as documentIcon } from 'ionicons/icons';
 import React, { Fragment, useCallback, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 
 import Avatar from '../components/ui/Avatar';
 import {
