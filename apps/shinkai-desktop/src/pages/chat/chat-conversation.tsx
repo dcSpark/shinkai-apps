@@ -67,6 +67,7 @@ import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
+import useAnalytics from '../../lib/posthog-provider';
 import { useAuth } from '../../store/auth';
 
 enum ErrorCodes {
@@ -75,6 +76,8 @@ enum ErrorCodes {
 }
 
 const ChatConversation = () => {
+  const { captureAnalyticEvent } = useAnalytics();
+
   const size = partial({ standard: 'jedec' });
   const { inboxId: encodedInboxId = '' } = useParams();
   const auth = useAuth((state) => state.auth);
@@ -119,9 +122,19 @@ const ChatConversation = () => {
   });
 
   const { mutateAsync: sendMessageToInbox } = useSendMessageToInbox();
-  const { mutateAsync: sendMessageToJob } = useSendMessageToJob();
+  const { mutateAsync: sendMessageToJob } = useSendMessageToJob({
+    onSuccess: () => {
+      captureAnalyticEvent('AI Chat', undefined);
+    },
+  });
   const { mutateAsync: sendTextMessageWithFilesForInbox } =
-    useSendMessageWithFilesToInbox();
+    useSendMessageWithFilesToInbox({
+      onSuccess: () => {
+        captureAnalyticEvent('AI Chat with Files', {
+          filesCount: 1,
+        });
+      },
+    });
 
   const onSubmit = async (data: ChatMessageFormSchema) => {
     if (!auth || data.message.trim() === '') return;
