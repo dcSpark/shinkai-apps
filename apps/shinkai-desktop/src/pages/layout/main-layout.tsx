@@ -248,11 +248,7 @@ export function MainNav() {
     //   href: '/create-chat',
     //   icon: <ChatBubbleIcon className="h-5 w-5" />,
     // },
-    {
-      title: 'AIs',
-      href: '/agents',
-      icon: <BotIcon className="h-5 w-5" />,
-    },
+
     {
       title: 'My AI Files Explorer',
       href: '/vector-fs',
@@ -276,6 +272,11 @@ export function MainNav() {
   ].filter(Boolean) as NavigationLink[];
 
   const footerNavigationLinks = [
+    {
+      title: 'AIs',
+      href: '/agents',
+      icon: <BotIcon className="h-5 w-5" />,
+    },
     {
       title: 'Settings',
       href: '/settings',

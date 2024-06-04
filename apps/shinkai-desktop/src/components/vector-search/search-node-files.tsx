@@ -6,17 +6,17 @@ import {
 import { useGetVRSeachSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRSearchSimplified/useGetSearchVRItems';
 import {
   Button,
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerFooter,
-  DrawerTrigger,
   Form,
   FormField,
   Input,
   ScrollArea,
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
+  SheetTrigger,
   Tooltip,
   TooltipContent,
   TooltipPortal,
@@ -99,6 +99,7 @@ const SearchNodeFiles = () => {
             y: isSearchEntered ? '0%' : '30vh',
             from: '20vh',
           }}
+          initial={false}
           transition={{
             type: 'spring',
             damping: 15,
@@ -249,10 +250,10 @@ function SelectFolderButton() {
       : destinationFolderPath;
 
   return (
-    <Drawer>
+    <Sheet>
       <TooltipProvider delayDuration={100}>
         <Tooltip>
-          <DrawerTrigger asChild>
+          <SheetTrigger asChild>
             <TooltipTrigger asChild>
               <Button
                 className="hover:bg-gray-400 hover:text-white"
@@ -263,7 +264,7 @@ function SelectFolderButton() {
                 {selectedFolderLabel}
               </Button>
             </TooltipTrigger>
-          </DrawerTrigger>
+          </SheetTrigger>
           <TooltipPortal>
             <TooltipContent>
               <p>{selectedFolderPath}</p>
@@ -272,19 +273,16 @@ function SelectFolderButton() {
         </Tooltip>
       </TooltipProvider>
 
-      <DrawerContent>
-        <DrawerClose className="absolute right-4 top-5">
-          <XIcon className="text-gray-80" />
-        </DrawerClose>
+      <SheetContent>
         <SheetHeader>
           <SheetTitle>Select a Folder</SheetTitle>
         </SheetHeader>
         <FolderSelectionList />
-        <DrawerFooter>
-          <DrawerClose asChild>
+        <SheetFooter>
+          <SheetClose asChild>
             <Button type="button">Select</Button>
-          </DrawerClose>
-          <DrawerClose asChild>
+          </SheetClose>
+          <SheetClose asChild>
             <Button
               onClick={() => {
                 setDestinationFolderPath(null);
@@ -294,9 +292,9 @@ function SelectFolderButton() {
             >
               Reset Filters
             </Button>
-          </DrawerClose>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+          </SheetClose>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
   );
 }

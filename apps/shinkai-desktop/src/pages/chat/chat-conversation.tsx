@@ -73,6 +73,7 @@ enum ErrorCodes {
   VectorResource = 'VectorResource',
   ShinkaiBackendInferenceLimitReached = 'ShinkaiBackendInferenceLimitReached',
 }
+
 const ChatConversation = () => {
   const size = partial({ standard: 'jedec' });
   const { inboxId: encodedInboxId = '' } = useParams();
@@ -278,7 +279,6 @@ const ChatConversation = () => {
                             <Button
                               className="h-[40px] w-[40px] self-end rounded-xl p-3"
                               disabled={isLoadingMessage}
-                              isLoading={isLoadingMessage}
                               onClick={chatForm.handleSubmit(onSubmit)}
                               size="icon"
                               variant="tertiary"

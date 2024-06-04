@@ -48,7 +48,7 @@ export const Message = ({ message }: MessageProps) => {
         </Avatar>
         <div
           className={cn(
-            ' relative mt-1 flex flex-col rounded-lg bg-black/40 px-3 py-2 text-sm text-white',
+            'relative mt-1 flex flex-col rounded-lg bg-black/40 px-3 py-2 text-sm text-white',
             message.isLocal
               ? 'rounded-tr-none bg-gray-300'
               : 'rounded-bl-none border-none bg-gray-200',
