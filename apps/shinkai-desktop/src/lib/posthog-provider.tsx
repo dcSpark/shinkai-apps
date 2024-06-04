@@ -1,5 +1,5 @@
 import { PostHogProvider, usePostHog } from 'posthog-js/react';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 import { useSettings } from '../store/settings';
 
@@ -8,7 +8,11 @@ export const AnalyticsEvents = {
   UploadFiles: 'upload_files',
 } as const;
 
-const AnalyticsProvider = ({ children }: { children: React.ReactNode }) => {
+export const AnalyticsProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const optInAnalytics = useSettings((state) => state.optInAnalytics);
   const posthog = usePostHog();
 
@@ -46,4 +50,57 @@ const AnalyticsProvider = ({ children }: { children: React.ReactNode }) => {
     children
   );
 };
-export default AnalyticsProvider;
+
+export type AnalyticEventName =
+  | 'AI Chat'
+  | 'AI Chat with Files'
+  | 'Upload Files'
+  | 'Ask Local Files';
+
+export type AnalyticEventProps<TEventName extends AnalyticEventName> =
+  TEventName extends 'AI Chat'
+    ? undefined
+    : TEventName extends 'AI Chat with Files'
+      ? {
+          filesCount: number;
+        }
+      : TEventName extends 'Upload Files'
+        ? {
+            filesCount: number;
+          }
+        : TEventName extends 'Ask Local Files'
+          ? {
+              foldersCount: number;
+              filesCount: number;
+            }
+          : undefined;
+
+const useAnalytics = () => {
+  const posthog = usePostHog();
+
+  function captureAnalyticEvent<TEventName extends AnalyticEventName>(
+    eventName: TEventName,
+    eventProps: AnalyticEventProps<TEventName>,
+  ) {
+    // Only send analytic events on production
+    console.log(import.meta.env.MODE, 'import.meta.env.MODE');
+    if (import.meta.env.MODE !== 'production') {
+      return;
+    }
+
+    if (!posthog) {
+      console.error(
+        'Attempted to send analytic event but posthog was undefined',
+      );
+      return;
+    }
+
+    posthog.capture(eventName, { ...eventProps });
+  }
+
+  return {
+    captureAnalyticEvent,
+  };
+};
+
+export default useAnalytics;
