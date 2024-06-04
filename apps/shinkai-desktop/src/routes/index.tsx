@@ -1,13 +1,5 @@
-import { usePostHog } from 'posthog-js/react';
 import React, { useEffect, useRef } from 'react';
-import {
-  Navigate,
-  Outlet,
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
-} from 'react-router-dom';
+import { Navigate, Outlet, Route, Routes, useNavigate } from 'react-router-dom';
 
 import PublicSharedFolderSubscription from '../components/subscriptions/public-shared-folders';
 import MySubscriptions from '../components/subscriptions/subscriptions';
@@ -128,13 +120,6 @@ const useOnboardingRedirect = () => {
 
 const AppRoutes = () => {
   useOnboardingRedirect();
-  
-  const location = useLocation();
-  const posthog = usePostHog();
-
-  React.useEffect(() => {
-    posthog.capture('$pageview');
-  }, [location, posthog]);
 
   return (
     <Routes>
