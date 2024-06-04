@@ -186,7 +186,7 @@ const AllFiles = () => {
 
   const actionList = [
     {
-      name: 'Add new folder',
+      name: 'Add New Folder',
       icon: <AddNewFolderIcon className="mr-2 h-4 w-4" />,
       onClick: () => {
         setActiveDrawerMenuOption(VectorFsGlobalAction.NewFolder);

@@ -100,7 +100,10 @@ export const MessageList = ({
           {isFetchingPreviousPage && (
             <Loader2 className="flex animate-spin justify-center text-white" />
           )}
-          {!isFetchingPreviousPage && !hasPreviousPage && noMoreMessageLabel}
+          {!isFetchingPreviousPage &&
+            !hasPreviousPage &&
+            (paginatedMessages?.pages ?? [])?.length > 1 &&
+            noMoreMessageLabel}
         </div>
       )}
       <div className="">
@@ -109,7 +112,7 @@ export const MessageList = ({
             {[...Array(5).keys()].map((index) => (
               <div
                 className={cn(
-                  'flex w-[95%] items-start gap-3',
+                  'flex w-[95%] items-start gap-2',
                   index % 2 === 0
                     ? 'ml-0 mr-auto flex-row'
                     : 'ml-auto mr-0 flex-row-reverse',
@@ -117,15 +120,15 @@ export const MessageList = ({
                 key={`${index}`}
               >
                 <Skeleton
-                  className="h-12 w-12 shrink-0 rounded-full"
+                  className="h-10 w-10 shrink-0 rounded-full bg-gray-300"
                   key={index}
                 />
                 <Skeleton
                   className={cn(
                     'h-16 w-full rounded-lg px-2.5 py-3',
                     index % 2 === 0
-                      ? 'rounded-tl-none border border-slate-800'
-                      : 'rounded-tr-none border-none',
+                      ? 'rounded-tl-none bg-gray-300'
+                      : 'rounded-tr-none bg-gray-200',
                   )}
                 />
               </div>

@@ -5,12 +5,12 @@ import { Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 import { OllamaModels } from '../components/shinkai-node-manager/ollama-models';
-import { queryClient } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
+import { shinkaiNodeQueryClient } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { SubpageLayout } from './layout/simple-layout';
 
 const AgentsLocally = () => {
   return (
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={shinkaiNodeQueryClient}>
       <SubpageLayout
         className="relative flex w-full max-w-6xl flex-col gap-2 px-4"
         title="Install AI Models"

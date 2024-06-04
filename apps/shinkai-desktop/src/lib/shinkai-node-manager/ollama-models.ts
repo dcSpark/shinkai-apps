@@ -1,6 +1,8 @@
 export enum OllamaModelQuality {
   Bad = 'bad',
+  Low = 'low',
   Medium = 'medium',
+  Good = 'good',
   Great = 'great',
 }
 
@@ -29,27 +31,53 @@ export const OLLAMA_MODELS: OllamaModel[] = [
   {
     model: 'llama3',
     tag: '8b-instruct-q4_1',
-    name: 'Llama-3',
+    name: 'Llama-3 8b',
     description:
       "Meta Llama 3: The most capable openly available LLM to date",
     contextLength: 8000,
     quality: OllamaModelQuality.Medium,
     speed: OllamaModelSpeed.Fast,
     size: 4.7, // Size in Gb
-    requiredRAM: 2, //  Size in Gb
+    requiredRAM: 16, //  Size in Gb
     fullName: '',
   },
   {
-    model: 'llama3-gradient',
-    tag: '8b-instruct-1048k-q3_K_M',
-    name: 'Llama-3 Gradient',
+    model: 'aya',
+    tag: 'aya:8b-23-q4_K_M',
+    name: 'Aya 23 8b',
     description:
-      "This model extends LLama-3 8B's context length from 8k to over 1m tokens.",
-    contextLength: 256000,
+      "Aya 23, released by Cohere, is a new family of state-of-the-art, multilingual models that support 23 languages.",
+    contextLength: 8000,
     quality: OllamaModelQuality.Medium,
     speed: OllamaModelSpeed.Fast,
-    size: 4.7,
-    requiredRAM: 2.4,
+    size: 4.8, // Size in Gb
+    requiredRAM: 16, //  Size in Gb
+    fullName: '',
+  },
+  {
+    model: 'phi3',
+    tag: '3.8b',
+    name: 'Phi-3 Mini',
+    description:
+      "Phi-3 Mini is a 3.8B parameters, lightweight, state-of-the-art open model trained with the Phi-3 datasets that includes both synthetic data and the filtered publicly available websites data with a focus on high-quality and reasoning dense properties.",
+    contextLength: 4000,
+    quality: OllamaModelQuality.Low,
+    speed: OllamaModelSpeed.VeryFast,
+    size: 2.3,
+    requiredRAM: 8,
+    fullName: '',
+  },
+  {
+    model: 'llava-phi3',
+    tag: '3.8b-mini-q4_0',
+    name: 'LLaVA Phi 3',
+    description:
+      "(Image-to-Text Model) lLlava-phi3 is a LLaVA model fine-tuned from Phi 3 Mini 4k, with strong performance benchmarks on par with the original LLaVA model.",
+    contextLength: 4000,
+    quality: OllamaModelQuality.Low,
+    speed: OllamaModelSpeed.VeryFast,
+    size: 2.9,
+    requiredRAM: 8,
     fullName: '',
   },
   {
@@ -59,7 +87,7 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     description:
       "Falcon2 is an 11B parameters causal decoder-only model built by TII and trained over 5T tokens.",
     contextLength: 8192,
-    quality: OllamaModelQuality.Great,
+    quality: OllamaModelQuality.Good,
     speed: OllamaModelSpeed.Average,
     size: 7.1,
     requiredRAM: 16,
@@ -72,23 +100,10 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     description:
       "ChatQA-1.5 is built on top of the Llama-3 base model, and incorporates conversational QA data to enhance its tabular and arithmetic calculation capability.",
     contextLength: 8000,
-    quality: OllamaModelQuality.Great,
-    speed: OllamaModelSpeed.Average,
+    quality: OllamaModelQuality.Medium,
+    speed: OllamaModelSpeed.Fast,
     size: 4.9,
     requiredRAM: 16,
-    fullName: '',
-  },
-  {
-    model: 'llava-phi3',
-    tag: '3.8b-mini-q4_0',
-    name: 'LLaVA Phi 3',
-    description:
-      "llava-phi3 is a LLaVA model fine-tuned from Phi 3 Mini 4k, with strong performance benchmarks on par with the original LLaVA model:",
-    contextLength: 4000,
-    quality: OllamaModelQuality.Bad,
-    speed: OllamaModelSpeed.VeryFast,
-    size: 2.9,
-    requiredRAM: 8,
     fullName: '',
   },
   {
@@ -99,7 +114,7 @@ export const OLLAMA_MODELS: OllamaModel[] = [
       "Dolphin-2.9 has a variety of instruction, conversational, and coding skills. It also has initial agentic abilities and supports function calling.",
     contextLength: 8000,
     quality: OllamaModelQuality.Medium,
-    speed: OllamaModelSpeed.Average,
+    speed: OllamaModelSpeed.Fast,
     size: 5.1,
     requiredRAM: 16,
     fullName: '',
@@ -111,10 +126,10 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     description:
       "Command R+ is a powerful, scalable large language model purpose-built to excel at real-world enterprise use cases.",
     contextLength: 128000,
-    quality: OllamaModelQuality.Great,
+    quality: OllamaModelQuality.Good,
     speed: OllamaModelSpeed.Slow,
     size: 59,
-    requiredRAM: 16,
+    requiredRAM: 32,
     fullName: '',
   },
   {
@@ -124,23 +139,10 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     description:
       "WizardLM-2 is a next generation state-of-the-art large language model with improved performance on complex chat, multilingual, reasoning and agent use cases.",
     contextLength: 8000,
-    quality: OllamaModelQuality.Great,
+    quality: OllamaModelQuality.Good,
     speed: OllamaModelSpeed.Slow,
     size: 80,
     requiredRAM: 16,
-    fullName: '',
-  },
-  {
-    model: 'phi3',
-    tag: '3.8b',
-    name: 'Phi-3 Mini',
-    description:
-      "Phi-3 Mini is a 3.8B parameters, lightweight, state-of-the-art open model trained with the Phi-3 datasets that includes both synthetic data and the filtered publicly available websites data with a focus on high-quality and reasoning dense properties.",
-    contextLength: 4000,
-    quality: OllamaModelQuality.Bad,
-    speed: OllamaModelSpeed.VeryFast,
-    size: 2.3,
-    requiredRAM: 8,
     fullName: '',
   },
   {
@@ -150,10 +152,23 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     description:
       "Hermes-2 Θ (Theta) is the first experimental merged model released by Nous Research, in collaboration with Charles Goddard at Arcee, the team behind MergeKit.",
     contextLength: 8000,
-    quality: OllamaModelQuality.Bad,
+    quality: OllamaModelQuality.Medium,
     speed: OllamaModelSpeed.VeryFast,
     size: 16,
     requiredRAM: 16,
+    fullName: '',
+  },
+  {
+    model: 'llama3',
+    tag: '70b-instruct-q4_K_M',
+    name: 'Llama-3 70B',
+    description:
+      "Meta Llama 3: The most capable openly available LLM to date",
+    contextLength: 8000,
+    quality: OllamaModelQuality.Good,
+    speed: OllamaModelSpeed.Fast,
+    size: 4.7, // Size in Gb
+    requiredRAM: 32, //  Size in Gb
     fullName: '',
   },
 ].map((model) => {

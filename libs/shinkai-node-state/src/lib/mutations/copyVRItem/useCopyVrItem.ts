@@ -1,12 +1,17 @@
-import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
+import {
+  useMutation,
+  type UseMutationOptions,
+  useQueryClient,
+} from '@tanstack/react-query';
 
-import { FunctionKey, queryClient } from '../../constants';
+import { FunctionKey } from '../../constants';
 import { copyVRItem } from './index';
 import { CopyVRItemInput, CopyVRItemOutput } from './types';
 
 type Options = UseMutationOptions<CopyVRItemOutput, Error, CopyVRItemInput>;
 
 export const useCopyVrItem = (options?: Options) => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: copyVRItem,
     ...options,

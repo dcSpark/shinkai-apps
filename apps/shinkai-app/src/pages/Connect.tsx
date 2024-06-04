@@ -22,9 +22,9 @@ import {
   generateEncryptionKeys,
   generateSignatureKeys,
 } from '@shinkai_network/shinkai-message-ts/utils';
-import { queryClient } from '@shinkai_network/shinkai-node-state/lib/constants';
 import { useSubmitRegistration } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistration';
 import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
+import { useQueryClient } from '@tanstack/react-query';
 import { QrScanner, QrScannerProps } from '@yudiel/react-qr-scanner';
 import { BrowserQRCodeReader } from '@zxing/browser';
 import { checkmarkSharp, cloudUpload, scan } from 'ionicons/icons';
@@ -70,6 +70,7 @@ const formSchema = z.object({
 
 const Connect = () => {
   const history = useHistory();
+  const queryClient = useQueryClient();
   const setAuth = useAuth((state) => state.setAuth);
   const setLogout = useAuth((state) => state.setLogout);
   const [mode, setMode] = useState<'Automatic' | 'Manual'>('Automatic');

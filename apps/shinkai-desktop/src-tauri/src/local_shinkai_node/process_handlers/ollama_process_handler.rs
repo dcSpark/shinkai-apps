@@ -100,7 +100,7 @@ impl OllamaProcessHandler {
     }
 
     pub fn kill_llama_process() {
-        kill_process_by_name("ollama_llama");
+        kill_process_by_name("ollama_llama_server");
     }
     pub async fn kill(&self) {
         Self::kill_llama_process();

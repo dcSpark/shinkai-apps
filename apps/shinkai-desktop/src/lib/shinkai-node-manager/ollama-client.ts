@@ -4,6 +4,7 @@ import {
   useMutation,
   UseMutationOptions,
   useQuery,
+  useQueryClient,
   UseQueryResult,
 } from '@tanstack/react-query';
 import {
@@ -13,10 +14,6 @@ import {
   ProgressResponse,
   StatusResponse,
 } from 'ollama/browser';
-
-import {
-  queryClient,
-} from '../../lib/shinkai-node-manager/shinkai-node-manager-client';
 
 const removeForbiddenHeadersInOllamaCors = async (
   input: RequestInfo | URL,
@@ -56,29 +53,32 @@ export const useOllamaPullMutation = (
     { model: string }
   >,
 ) => {
+  const queryClient = useQueryClient();
   const response = useMutation({
     mutationFn: async (
       input,
     ): Promise<AsyncGenerator<ProgressResponse, unknown, unknown>> => {
       const ollamaClient = new Ollama(ollamaConfig);
 
-      const pipeGenerator = async function* transformGenerator(generator: AsyncGenerator<ProgressResponse, unknown, unknown>) {
+      const pipeGenerator = async function* transformGenerator(
+        generator: AsyncGenerator<ProgressResponse, unknown, unknown>,
+      ) {
         for await (const progress of generator) {
           if (progress.status === 'success') {
-            console.log(
-              `completed invalidating`,
-            );
+            console.log(`completed invalidating`);
             queryClient.invalidateQueries({
               queryKey: ['ollama_list'],
             });
           }
           yield progress;
         }
-      }
-      return ollamaClient.pull({
-        model: input.model,
-        stream: true,
-      }).then(data => pipeGenerator(data));
+      };
+      return ollamaClient
+        .pull({
+          model: input.model,
+          stream: true,
+        })
+        .then((data) => pipeGenerator(data));
     },
     ...options,
     onSuccess: (...onSuccessParameters) => {
@@ -100,6 +100,7 @@ export const useOllamaRemoveMutation = (
   ollamaConfig: OllamaConfig,
   options?: UseMutationOptions<StatusResponse, Error, { model: string }>,
 ) => {
+  const queryClient = useQueryClient();
   const response = useMutation({
     mutationFn: async (input): Promise<StatusResponse> => {
       const ollamaClient = new Ollama(ollamaConfig);
