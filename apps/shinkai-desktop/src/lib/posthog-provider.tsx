@@ -83,9 +83,9 @@ const useAnalytics = () => {
     eventProps: AnalyticEventProps<TEventName>,
   ) {
     // Only send analytic events on production
-    // if (import.meta.env.MODE !== 'production') {
-    //   return;
-    // }
+    if (import.meta.env.MODE !== 'production') {
+      return;
+    }
 
     if (!posthog) {
       console.error(
