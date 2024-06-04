@@ -1,5 +1,13 @@
+import { usePostHog } from 'posthog-js/react';
 import React, { useEffect, useRef } from 'react';
-import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
+import {
+  Navigate,
+  Outlet,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from 'react-router-dom';
 
 import PublicSharedFolderSubscription from '../components/subscriptions/public-shared-folders';
 import MySubscriptions from '../components/subscriptions/subscriptions';
@@ -16,6 +24,8 @@ import { useShinkaiNodeEventsToast } from '../lib/shinkai-node-manager/shinkai-n
 import AgentsPage from '../pages/agents';
 import AIModelInstallation from '../pages/ai-model-installation';
 import AgentsLocally from '../pages/ai-model-locally';
+import AnalyticsPage from '../pages/analytics';
+import AnalyticsSettingsPage from '../pages/analytics-settings';
 import ChatConversation from '../pages/chat/chat-conversation';
 import EmptyMessage from '../pages/chat/empty-message';
 import ChatLayout from '../pages/chat/layout';
@@ -36,13 +46,13 @@ import ShinkaiPrivatePage from '../pages/shinkai-private';
 import UnavailableShinkaiNode from '../pages/unavailable-shinkai-node';
 import TermsAndConditionsPage from '../pages/welcome';
 import { useAuth } from '../store/auth';
+import { useSettings } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
 import {
   CREATE_CHAT_PATH,
   CREATE_JOB_PATH,
   EXPORT_CONNECTION,
   GENERATE_CODE_PATH,
-  ONBOARDING_PATH,
   SETTINGS_PATH,
 } from './name';
 
@@ -96,7 +106,36 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return children;
 };
 
+const useOnboardingRedirect = () => {
+  const termsAndConditionsAccepted = useSettings(
+    (state) => state.termsAndConditionsAccepted,
+  );
+  const optInAnalytics = useSettings((state) => state.optInAnalytics);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (termsAndConditionsAccepted === undefined) {
+      navigate('/welcome');
+      return;
+    }
+
+    if (optInAnalytics === undefined) {
+      navigate('/analytics');
+      return;
+    }
+  }, []);
+};
+
 const AppRoutes = () => {
+  useOnboardingRedirect();
+  
+  const location = useLocation();
+  const posthog = usePostHog();
+
+  React.useEffect(() => {
+    posthog.capture('$pageview');
+  }, [location, posthog]);
+
   return (
     <Routes>
       <Route element={<MainLayout />}>
@@ -106,6 +145,7 @@ const AppRoutes = () => {
         />
         <Route element={<TermsAndConditionsPage />} path={'/welcome'} />
         <Route element={<GetStartedPage />} path={'/get-started'} />
+        <Route element={<AnalyticsPage />} path={'/analytics'} />
         <Route element={<ShinkaiPrivatePage />} path={'/connect-ai'} />
         <Route
           element={<FreeSubscriptionsPage />}
@@ -115,7 +155,7 @@ const AppRoutes = () => {
           element={<AIModelInstallation />}
           path={'/ai-model-installation'}
         />
-        <Route element={<OnboardingPage />} path={ONBOARDING_PATH} />
+        <Route element={<OnboardingPage />} path={'/onboarding'} />
         <Route element={<RestoreConnectionPage />} path={'/restore'} />
         <Route element={<ConnectMethodQrCodePage />} path={'/connect-qr'} />
         <Route
@@ -222,6 +262,14 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
           path={'public-keys'}
+        />
+        <Route
+          element={
+            <ProtectedRoute>
+              <AnalyticsSettingsPage />
+            </ProtectedRoute>
+          }
+          path={'analytics-settings'}
         />
       </Route>
       <Route element={<Navigate replace to={'inboxes/'} />} path="/" />

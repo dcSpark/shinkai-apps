@@ -21,7 +21,7 @@ import {
 import { ExportIcon, QrIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
-import { CodesandboxIcon, ExternalLinkIcon } from 'lucide-react';
+import { BarChart2, CodesandboxIcon, ExternalLinkIcon } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -45,6 +45,7 @@ const formSchema = z.object({
   nodeAddress: z.string(),
   shinkaiIdentity: z.string(),
   nodeVersion: z.string(),
+  optInAnalytics: z.boolean(),
 });
 
 type FormSchemaType = z.infer<typeof formSchema>;
@@ -57,6 +58,8 @@ const SettingsPage = () => {
   const isLocalShinkaiNodeInUse = useShinkaiNodeManager(
     (state) => state.isInUse,
   );
+  const optInAnalytics = useSettings((state) => state.optInAnalytics);
+
   const setAuth = useAuth((authStore) => authStore.setAuth);
 
   const defaultAgentId = useSettings(
@@ -75,6 +78,7 @@ const SettingsPage = () => {
       defaultAgentId: defaultAgentId,
       nodeAddress: auth?.node_address,
       shinkaiIdentity: auth?.shinkai_identity,
+      optInAnalytics,
     },
   });
 
@@ -309,6 +313,7 @@ const SettingsPage = () => {
               <p className="text-smm text-white">Shinkai Node Manager</p>
             </Button>
           )}
+
           <Button
             className="flex flex-1 cursor-pointer flex-col items-start gap-2 rounded-lg p-4 pr-8 text-left"
             onClick={() => navigate('/export-connection')}
@@ -328,6 +333,15 @@ const SettingsPage = () => {
               <QrIcon />
             </div>
             <p className="text-smm text-white">Create Registration Code</p>
+          </Button>
+          <Button
+            className="flex flex-1 cursor-pointer flex-col items-start gap-2 rounded-lg p-4 pr-8 text-left"
+            onClick={() => navigate('/analytics-settings')}
+            size="auto"
+            variant="ghost"
+          >
+            <BarChart2 className="text-gray-80" />
+            <p className="text-smm text-white">Analytics</p>
           </Button>
           <Button
             className="flex flex-1 cursor-pointer flex-col items-start gap-2 rounded-lg p-4 pr-8 text-left"

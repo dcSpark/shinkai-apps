@@ -172,6 +172,7 @@
     "lucide-react": "^0.323.0",
     "node-forge": ">=1.0.0",
     "ollama": "^0.5.0",
+    "posthog-js": "^1.136.7",
     "primereact": "^10.6.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",

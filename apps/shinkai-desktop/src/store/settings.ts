@@ -8,6 +8,11 @@ type SettingsStore = {
   toggleSidebar: () => void;
   isGetStartedChecklistHidden: boolean;
   setGetStartedChecklistHidden: (isGetStartedChecklistHidden: boolean) => void;
+  termsAndConditionsAccepted?: boolean;
+  setTermsAndConditionsAccepted: (termsAndConditionsAccepted: boolean) => void;
+  optInAnalytics?: boolean;
+  acceptAnalytics: () => void;
+  denyAnalytics: () => void;
 };
 
 export const useSettings = create<SettingsStore>()(
@@ -27,6 +32,19 @@ export const useSettings = create<SettingsStore>()(
         isGetStartedChecklistHidden: false,
         setGetStartedChecklistHidden: (isGetStartedChecklistHidden) => {
           set({ isGetStartedChecklistHidden });
+        },
+
+        termsAndConditionsAccepted: undefined,
+        setTermsAndConditionsAccepted: (termsAndConditionsAccepted) => {
+          set({ termsAndConditionsAccepted });
+        },
+
+        optInAnalytics: undefined,
+        acceptAnalytics: () => {
+          set({ optInAnalytics: true });
+        },
+        denyAnalytics: () => {
+          set({ optInAnalytics: false });
         },
       }),
       {
