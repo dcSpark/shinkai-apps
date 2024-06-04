@@ -1,25 +1,25 @@
 import {
   QueryObserverOptions,
-  useMutation,
   UseMutationOptions,
+  UseQueryResult,
+  useMutation,
   useQuery,
   useQueryClient,
-  UseQueryResult,
 } from '@tanstack/react-query';
 import { platform } from '@tauri-apps/api/os';
 import { relaunch } from '@tauri-apps/api/process';
 import {
+  UpdateResult,
   checkUpdate,
   installUpdate,
   onUpdaterEvent,
-  UpdateResult,
 } from '@tauri-apps/api/updater';
 
 import { useShinkaiNodeKillMutation } from '../shinkai-node-manager/shinkai-node-manager-client';
 
 // Queries
 export const useCheckUpdateQuery = (
-  options?: QueryObserverOptions,
+  options?: Omit<QueryObserverOptions, 'queryKey'>,
 ): UseQueryResult<UpdateResult, Error> => {
   const query = useQuery({
     ...options,

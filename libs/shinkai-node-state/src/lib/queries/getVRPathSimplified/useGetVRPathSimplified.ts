@@ -6,7 +6,7 @@ import { GetVRPathSimplifiedInput, Options } from './types';
 
 export const useGetVRPathSimplified = (
   input: GetVRPathSimplifiedInput,
-  options?: Options,
+  options?: Omit<Options, 'queryKey' | 'queryFn'>,
 ) => {
   const response = useQuery({
     queryKey: [FunctionKey.GET_VR_FILES, input],

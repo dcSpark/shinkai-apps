@@ -96,12 +96,12 @@ const AddAgent: React.FC = () => {
       <IonContentCustom>
         <IonGrid
           className={
-            'md:rounded-[1.25rem] bg-white dark:bg-slate-800 p-4 md:p-10 space-y-2 md:space-y-4'
+            'space-y-2 bg-white p-4 md:space-y-4 md:rounded-[1.25rem] md:p-10 dark:bg-slate-800'
           }
         >
           <IonRow>
             <IonCol>
-              <h2 className={'text-lg mb-3 md:mb-8 text-center'}>
+              <h2 className={'mb-3 text-center text-lg md:mb-8'}>
                 New Agent Details
               </h2>
 
@@ -122,7 +122,7 @@ const AddAgent: React.FC = () => {
                           onIonChange={(e) =>
                             addAgentForm.setValue(
                               'agentName',
-                              e.detail.value as string
+                              e.detail.value as string,
                             )
                           }
                         />
@@ -148,7 +148,7 @@ const AddAgent: React.FC = () => {
                           onIonChange={(e) =>
                             addAgentForm.setValue(
                               'externalUrl',
-                              e.detail.value as string
+                              e.detail.value as string,
                             )
                           }
                         />
@@ -175,7 +175,7 @@ const AddAgent: React.FC = () => {
                           onIonChange={(e) =>
                             addAgentForm.setValue(
                               'apikey',
-                              e.detail.value as string
+                              e.detail.value as string,
                             )
                           }
                         />
@@ -231,7 +231,7 @@ const AddAgent: React.FC = () => {
                             onIonChange={(e) =>
                               addAgentForm.setValue(
                                 'modelType',
-                                e.detail.value as string
+                                e.detail.value as string,
                               )
                             }
                           />

@@ -1,7 +1,7 @@
-import './Modal.css'
+import './Modal.css';
 
-import { IonContent, IonHeader, IonModal, IonTitle } from "@ionic/react";
-import React from "react";
+import { IonContent, IonHeader, IonModal, IonTitle } from '@ionic/react';
+import React from 'react';
 
 const Modal = ({
   header,
@@ -13,8 +13,8 @@ const Modal = ({
   isOpen: boolean;
 }) => {
   return (
-    <IonModal className="ion-modal-custom" isOpen={isOpen} >
-      <IonHeader className={"p-4 font-bold shadow"}>
+    <IonModal className="ion-modal-custom" isOpen={isOpen}>
+      <IonHeader className={'p-4 font-bold shadow'}>
         <IonTitle>{header}</IonTitle>
       </IonHeader>
       <IonContent>{content}</IonContent>

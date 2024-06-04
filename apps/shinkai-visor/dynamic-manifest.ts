@@ -27,6 +27,7 @@ const getPublicKey = () => {
   );
 };
 
+// biome-ignore lint/correctness/noUnusedVariables: <explanation>
 export const dynamicManifest = defineManifest((env) => {
   return {
     ...baseManifestJson,

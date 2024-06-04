@@ -21,7 +21,7 @@ import { addOutline, arrowForward } from 'ionicons/icons';
 import { Edit3Icon } from 'lucide-react';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router';
 import { z } from 'zod';
 
 import Avatar from '../components/ui/Avatar';
@@ -65,7 +65,7 @@ const MessageButton = ({ inbox }: { inbox: SmartInbox }) => {
   if (isEditable) {
     return (
       <form
-        className="flex justify-between items-center gap-2"
+        className="flex items-center justify-between gap-2"
         onSubmit={updateInboxNameForm.handleSubmit(onSubmit)}
       >
         <Controller
@@ -78,7 +78,7 @@ const MessageButton = ({ inbox }: { inbox: SmartInbox }) => {
                 onIonInput={(e) =>
                   updateInboxNameForm.setValue(
                     'inboxName',
-                    e.detail.value as string
+                    e.detail.value as string,
                   )
                 }
                 placeholder={decodeURIComponent(inbox.custom_name)}
@@ -192,8 +192,8 @@ const Home: React.FC = () => {
       {/* <ExploreContainer /> */}
 
       <IonContentCustom>
-        <div className="h-full flex flex-col mt-4">
-          <div className="flex-1 md:rounded-lg space-y-2 md:space-y-4">
+        <div className="mt-4 flex h-full flex-col">
+          <div className="flex-1 space-y-2 md:space-y-4 md:rounded-lg">
             {inboxes?.map((inbox) => (
               <MessageButton inbox={inbox} key={inbox.inbox_id} />
             ))}
@@ -251,7 +251,7 @@ const Home: React.FC = () => {
         className="ion-actionSheet-custom"
         isOpen={showActionSheet}
         onDidDismiss={() => setShowActionSheet(false)}
-       />
+      />
       <IonAlert
         buttons={[
           {

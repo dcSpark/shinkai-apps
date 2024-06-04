@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/shinkai-visor/src",
   "projectType": "application",
+  "tags": [],
   "targets": {
     "build": {
       "executor": "@nx/vite:build",
@@ -30,16 +31,7 @@
         "cwd": "apps/shinkai-visor",
         "command": "npx vite"
       },
-      "configurations": {
-        "development": {
-          "buildTarget": "shinkai-visor:build:development",
-          "hmr": true
-        },
-        "production": {
-          "buildTarget": "shinkai-visor:build:production",
-          "hmr": false
-        }
-      }
+      "configurations": {}
     },
     "preview": {
       "executor": "@nx/vite:preview-server",
@@ -65,10 +57,9 @@
       }
     },
     "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
+      "executor": "nx:run-commands",
       "options": {
-        "lintFilePatterns": ["apps/shinkai-visor/**/*.{ts,tsx,js,jsx}"]
+        "command": "npx biome check --apply {projectRoot}"
       }
     },
     "serve-static": {
@@ -77,6 +68,5 @@
         "buildTarget": "shinkai-visor:build"
       }
     }
-  },
-  "tags": []
+  }
 }

@@ -29,7 +29,6 @@ export type EditInboxNameDialogProps = {
   inboxId: string;
   name: string;
   onOpenChange: (open: boolean) => void;
-  currentAgent?: AgentInbox;
 };
 
 export const EditInboxNameDialog = ({
@@ -39,7 +38,6 @@ export const EditInboxNameDialog = ({
   onSaved,
   inboxId,
   onOpenChange,
-  currentAgent,
 }: EditInboxNameDialogProps) => {
   const auth = useAuth((state) => state.auth);
   const form = useForm<UpdateInboxNameFormSchema>({

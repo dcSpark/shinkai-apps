@@ -27,7 +27,7 @@ import {
   MySubscriptionsIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { AnimatePresence, motion, TargetAndTransition } from 'framer-motion';
+import { AnimatePresence, TargetAndTransition, motion } from 'framer-motion';
 import {
   ArrowLeftToLine,
   ArrowRightToLine,

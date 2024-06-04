@@ -31,7 +31,7 @@ export const IonContentCustom = React.forwardRef(
       children: React.ReactNode;
       onScroll?: (e: CustomEvent<ScrollDetail>) => void;
     },
-    ref?: React.Ref<HTMLIonContentElement>
+    ref?: React.Ref<HTMLIonContentElement>,
   ) => {
     return (
       <IonContent
@@ -44,7 +44,7 @@ export const IonContentCustom = React.forwardRef(
         <div className="container mx-auto min-h-full px-6">{children}</div>
       </IonContent>
     );
-  }
+  },
 );
 IonContentCustom.displayName = 'IonContentCustom';
 

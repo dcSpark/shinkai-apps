@@ -19,7 +19,7 @@ export const createRegistrationCode = async ({
     nodeAddress,
     permissionsType,
     finalCodeType,
-    setupPayload
+    setupPayload,
   );
   return code;
 };

@@ -23,7 +23,7 @@ import {
 } from '@shinkai_network/shinkai-ui/assets';
 import { formatDateToMonthAndDay } from '@shinkai_network/shinkai-ui/helpers';
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../store/auth/auth';
@@ -38,14 +38,16 @@ const InboxItem = ({
     onClick: (event: React.MouseEvent, inbox: SmartInbox) => void;
   }[];
 }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const navigateToInbox = (inbox: {
     inbox_id: string;
     custom_name: string;
     last_message?: ShinkaiMessage;
   }) => {
-    history.push(`/inboxes/${encodeURIComponent(inbox.inbox_id)}`, { inbox });
+    navigate(`/inboxes/${encodeURIComponent(inbox.inbox_id)}`, {
+      state: { inbox },
+    });
   };
 
   const isJobChatInbox = isJobInbox(decodeURIComponent(inbox.inbox_id));

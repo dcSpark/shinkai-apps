@@ -7,11 +7,11 @@ export const connectMethodQuickStartTests = () => {
 
   test.describe.configure({ mode: 'serial' });
 
-  test.beforeEach(async ({ page, popup }) => {
+  test.beforeEach(async ({ popup }) => {
     await acceptTerms(popup);
   });
 
-  test.afterEach(async ({ page }, testInfo) => {
+  test.afterEach(async () => {
     await nodeManager.stopNode();
   });
 

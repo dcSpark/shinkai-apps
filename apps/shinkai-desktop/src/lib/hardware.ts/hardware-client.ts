@@ -1,7 +1,7 @@
 import {
   QueryObserverOptions,
-  useQuery,
   UseQueryResult,
+  useQuery,
 } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api';
 

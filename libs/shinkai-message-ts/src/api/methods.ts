@@ -379,11 +379,12 @@ export const submitInitialRegistrationNoCode = async (
 }> => {
   try {
     // Used to fetch the shinkai identity
-    const healthResponse = await httpClient.get<{ status: 'ok'; node_name: string; is_pristine: boolean }>(
-      urlJoin(payload.node_address, '/v1/shinkai_health'),
-    );
-    const { status, node_name, is_pristine } =
-      healthResponse.data;
+    const healthResponse = await httpClient.get<{
+      status: 'ok';
+      node_name: string;
+      is_pristine: boolean;
+    }>(urlJoin(payload.node_address, '/v1/shinkai_health'));
+    const { status, node_name, is_pristine } = healthResponse.data;
     if (status !== 'ok') {
       return { status: 'error' };
     }

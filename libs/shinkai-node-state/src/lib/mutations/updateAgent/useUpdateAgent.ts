@@ -1,8 +1,8 @@
 import { UseMutationOptions, useQueryClient } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 
-import { FunctionKey } from '../../constants';
 import { updateAgent } from '.';
+import { FunctionKey } from '../../constants';
 import { UpdateAgentInput, UpdateAgentOutput } from './types';
 
 type Options = UseMutationOptions<UpdateAgentOutput, Error, UpdateAgentInput>;

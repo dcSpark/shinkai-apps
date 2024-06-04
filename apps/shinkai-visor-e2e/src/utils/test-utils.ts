@@ -7,7 +7,7 @@ export const waitFor = <T extends void>(
   timeoutMs: number,
 ): Promise<T | void> => {
   const start = Date.now();
-  // eslint-disable-next-line no-async-promise-executor
+  // biome-ignore lint/suspicious/noAsyncPromiseExecutor: <explanation>
   return new Promise(async (resolve, reject) => {
     let currentValue: T | void;
     let lastError: Error | undefined;

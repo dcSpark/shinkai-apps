@@ -11,10 +11,10 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { BrowserQRCodeReader } from '@zxing/browser';
 import { QrCode, Trash, Upload } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import * as z from 'zod';
 
 import { SetupData, useAuth } from '../../store/auth/auth';
@@ -52,7 +52,7 @@ type AddNodeDataFromQr = Pick<
 >;
 
 export const ConnectMethodQrCode = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const setAuth = useAuth((state) => state.setAuth);
   const { encryptionKeys, isLoading: isLoadingEncryptionKeys } =
     useGetEncryptionKeys();
@@ -133,7 +133,7 @@ export const ConnectMethodQrCode = () => {
 
   const authSuccess = (setupData: SetupData) => {
     setAuth(setupData);
-    history.replace('/inboxes');
+    navigate('/inboxes');
   };
 
   useEffect(() => {

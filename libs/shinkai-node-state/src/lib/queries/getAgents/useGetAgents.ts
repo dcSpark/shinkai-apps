@@ -1,8 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery } from '@tanstack/react-query';
 
-import { FunctionKey } from "../../constants";
-import { getAgents } from ".";
-import type { GetAgentsInput } from "./types";
+import { getAgents } from '.';
+import { FunctionKey } from '../../constants';
+import type { GetAgentsInput } from './types';
 
 export const useAgents = (input: GetAgentsInput) => {
   const response = useQuery({

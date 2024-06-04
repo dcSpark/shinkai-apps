@@ -1,8 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AgentAPIModel } from '@shinkai_network/shinkai-message-ts/models';
 import {
-  addAgentFormDefault,
   AddAgentFormSchema,
+  addAgentFormDefault,
   addAgentSchema,
 } from '@shinkai_network/shinkai-node-state/forms/agents/add-agent';
 import { useCreateAgent } from '@shinkai_network/shinkai-node-state/lib/mutations/createAgent/useCreateAgent';

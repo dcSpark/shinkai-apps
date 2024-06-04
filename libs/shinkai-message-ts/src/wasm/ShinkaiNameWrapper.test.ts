@@ -1,4 +1,4 @@
-import { test } from 'vitest';
+import { describe, test } from 'vitest';
 
 import { ShinkaiNameWrapper } from './ShinkaiNameWrapper';
 
@@ -54,8 +54,8 @@ test('ShinkaiNameWrapper get_profile_name', () => {
   }
 });
 
-test('ShinkaiNameWrapper from_shinkai_message_sender', () => {
-  it('should fail when message is first level encrypted', () => {
+describe('ShinkaiNameWrapper from_shinkai_message_sender', () => {
+  test('should fail when message is first level encrypted', () => {
     const encryptedMessage = `{
       "body": {
         "encrypted": {
@@ -73,12 +73,12 @@ test('ShinkaiNameWrapper from_shinkai_message_sender', () => {
       "version": "V1_0"
     }`;
     const message = JSON.parse(encryptedMessage);
-    expect(
+    expect(() =>
       ShinkaiNameWrapper.from_shinkai_message_sender(message),
     ).toThrowError();
   });
 
-  it('should parse node_name, full_name, subidentity_name and subidentity_type when message is unepcrypted', () => {
+  test('should parse node_name, full_name, subidentity_name and subidentity_type when message is unepcrypted', () => {
     const messageJson = `{
       "body": {
         "unencrypted": {
@@ -114,9 +114,7 @@ test('ShinkaiNameWrapper from_shinkai_message_sender', () => {
     expect(messageNameWrapper.get_full_name).toBe(
       '@@node1.shinkai/main/device/main_device',
     );
-    expect(messageNameWrapper.get_subidentity_name).toBe(
-      'main/device/main_device',
-    );
+    expect(messageNameWrapper.get_subidentity_name).toBe('main_device');
     expect(messageNameWrapper.get_subidentity_type).toBe('device');
   });
 });

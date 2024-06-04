@@ -12,8 +12,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  Textarea,
   TextField,
+  Textarea,
 } from '@shinkai_network/shinkai-ui';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
