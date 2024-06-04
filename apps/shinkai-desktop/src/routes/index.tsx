@@ -13,6 +13,7 @@ import {
   useShinkaiNodeSpawnMutation,
 } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { useShinkaiNodeEventsToast } from '../lib/shinkai-node-manager/shinkai-node-manager-hooks';
+import { ShinkaiNodeRunningOverlay } from '../lib/shinkai-node-overlay';
 import AgentsPage from '../pages/agents';
 import AIModelInstallation from '../pages/ai-model-installation';
 import AgentsLocally from '../pages/ai-model-locally';
@@ -95,7 +96,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     return <Navigate replace to={'/welcome'} />;
   }
 
-  return children;
+  return <ShinkaiNodeRunningOverlay>{children}</ShinkaiNodeRunningOverlay>;
 };
 
 const useOnboardingRedirect = () => {

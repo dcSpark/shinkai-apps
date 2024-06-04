@@ -1,6 +1,7 @@
 import { Button } from '@shinkai_network/shinkai-ui';
 import React from 'react';
 
+import { useAuth } from '../store/auth';
 import { useShinkaiNodeIsRunningQuery } from './shinkai-node-manager/shinkai-node-manager-client';
 import { openShinkaiNodeManagerWindow } from './shinkai-node-manager/shinkai-node-manager-windows-utils';
 
@@ -15,8 +16,9 @@ export const ShinkaiNodeRunningOverlay = ({
   children: React.ReactNode;
 }) => {
   const { data: isShinkaiNodeRunning } = useShinkaiNodeIsRunningQuery();
+  const auth = useAuth((state) => state.auth);
 
-  return isShinkaiNodeRunning ? (
+  return !!auth && isShinkaiNodeRunning ? (
     children
   ) : (
     <div className="flex h-screen flex-col items-center justify-center gap-10">
