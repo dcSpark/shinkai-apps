@@ -263,13 +263,13 @@ export function MainNav() {
       title: 'Browse Subscriptions',
       href: '/public-subscriptions',
       icon: <BrowseSubscriptionIcon className="h-5 w-5" />,
-      disabled: true,
+      disabled: import.meta.env.PROD,
     },
     {
       title: 'My Subscriptions',
       href: '/my-subscriptions',
       icon: <MySubscriptionsIcon className="h-5 w-5" />,
-      disabled: true,
+      disabled: import.meta.env.PROD,
     },
   ].filter(Boolean) as NavigationLink[];
 
