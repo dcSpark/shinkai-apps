@@ -67,7 +67,7 @@ import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
-import useAnalytics from '../../lib/posthog-provider';
+import { useAnalytics } from '../../lib/posthog-provider';
 import { useAuth } from '../../store/auth';
 
 enum ErrorCodes {

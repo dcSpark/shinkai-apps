@@ -3,6 +3,7 @@ import { Toaster } from '@shinkai_network/shinkai-ui';
 import { BrowserRouter as Router } from 'react-router-dom';
 
 import { AnalyticsProvider } from './lib/posthog-provider';
+import { ShinkaiNodeRunningOverlay } from './lib/shinkai-node-provider';
 import AppRoutes from './routes';
 import { initSyncStorage } from './store/sync-utils';
 
@@ -12,10 +13,12 @@ function App() {
   return (
     <AnalyticsProvider>
       <QueryProvider>
-        <Router>
-          <AppRoutes />
-        </Router>
-        <Toaster />
+        <ShinkaiNodeRunningOverlay>
+          <Router>
+            <AppRoutes />
+          </Router>
+          <Toaster />
+        </ShinkaiNodeRunningOverlay>
       </QueryProvider>
     </AnalyticsProvider>
   );

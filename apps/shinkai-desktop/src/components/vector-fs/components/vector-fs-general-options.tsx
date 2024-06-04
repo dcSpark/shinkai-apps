@@ -34,7 +34,7 @@ import { useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { allowedFileExtensions } from '../../../lib/constants';
-import useAnalytics from '../../../lib/posthog-provider';
+import { useAnalytics } from '../../../lib/posthog-provider';
 import { useAuth } from '../../../store/auth';
 import { useVectorFsStore } from '../context/vector-fs-context';
 import {

@@ -50,7 +50,7 @@ import {
   VectorFsScopeDrawer,
 } from '../components/vector-fs/components/vector-fs-context-drawer';
 import { allowedFileExtensions } from '../lib/constants';
-import useAnalytics from '../lib/posthog-provider';
+import { useAnalytics } from '../lib/posthog-provider';
 import { ADD_AGENT_PATH } from '../routes/name';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';

@@ -75,7 +75,7 @@ export type AnalyticEventProps<TEventName extends AnalyticEventName> =
             }
           : undefined;
 
-const useAnalytics = () => {
+export const useAnalytics = () => {
   const posthog = usePostHog();
 
   function captureAnalyticEvent<TEventName extends AnalyticEventName>(
@@ -101,5 +101,3 @@ const useAnalytics = () => {
     captureAnalyticEvent,
   };
 };
-
-export default useAnalytics;
