@@ -117,12 +117,12 @@ const NavLink = ({
           {sidebarExpanded && (
             <motion.div
               animate="show"
-              className="flex items-center gap-4 whitespace-nowrap text-xs"
+              className="flex items-center gap-3 whitespace-nowrap text-xs"
               exit="hidden"
               initial="hidden"
               variants={showAnimation}
             >
-              {title}{' '}
+              <span className="max-w-[100px] truncate">{title} </span>
               <Badge className="text-[10px]" variant="inputAdornment">
                 SOON
               </Badge>
@@ -248,11 +248,7 @@ export function MainNav() {
     //   href: '/create-chat',
     //   icon: <ChatBubbleIcon className="h-5 w-5" />,
     // },
-    {
-      title: 'AIs',
-      href: '/agents',
-      icon: <BotIcon className="h-5 w-5" />,
-    },
+
     {
       title: 'My AI Files Explorer',
       href: '/vector-fs',
@@ -264,18 +260,25 @@ export function MainNav() {
       icon: <AISearchContentIcon className="h-5 w-5" />,
     },
     {
-      title: 'Browse Public Subscriptions',
+      title: 'Browse Subscriptions',
       href: '/public-subscriptions',
       icon: <BrowseSubscriptionIcon className="h-5 w-5" />,
+      disabled: import.meta.env.PROD,
     },
     {
       title: 'My Subscriptions',
       href: '/my-subscriptions',
       icon: <MySubscriptionsIcon className="h-5 w-5" />,
+      disabled: import.meta.env.PROD,
     },
   ].filter(Boolean) as NavigationLink[];
 
   const footerNavigationLinks = [
+    {
+      title: 'AIs',
+      href: '/agents',
+      icon: <BotIcon className="h-5 w-5" />,
+    },
     {
       title: 'Settings',
       href: '/settings',
@@ -311,7 +314,6 @@ export function MainNav() {
               <Button
                 className={cn(
                   'border-gray-350 text-gray-80 h-6 w-6 shrink-0 rounded-lg border bg-black/20 p-0 hover:bg-black/20 hover:text-white',
-                  // sidebarExpanded ? 'self-end' : 'self-center',
                 )}
                 onClick={toggleSidebar}
                 size="auto"
@@ -377,7 +379,9 @@ export function MainNav() {
             return (
               <Fragment key={item.title}>
                 <TooltipProvider
-                  delayDuration={!sidebarExpanded ? 0 : 10000}
+                  delayDuration={
+                    item.disabled ? 0 : !sidebarExpanded ? 0 : 10000
+                  }
                   key={item.title}
                 >
                   <Tooltip>
@@ -398,9 +402,16 @@ export function MainNav() {
                         side="right"
                       >
                         <p>
-                          {item.disabled
-                            ? item.title + '- coming soon!'
-                            : item.title}
+                          {item.disabled ? (
+                            <>
+                              {item.title} <br />
+                              <span className="text-gray-80 text-xs">
+                                Coming Soon - Early July
+                              </span>
+                            </>
+                          ) : (
+                            item.title
+                          )}
                         </p>
                       </TooltipContent>
                     </TooltipPortal>

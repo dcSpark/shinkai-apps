@@ -50,6 +50,7 @@ import {
   VectorFsScopeDrawer,
 } from '../components/vector-fs/components/vector-fs-context-drawer';
 import { allowedFileExtensions } from '../lib/constants';
+import { useAnalytics } from '../lib/posthog-provider';
 import { ADD_AGENT_PATH } from '../routes/name';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
@@ -60,6 +61,7 @@ const CreateJobPage = () => {
   const defaulAgentId = useSettings((state) => state.defaultAgentId);
   const navigate = useNavigate();
   const location = useLocation();
+  const { captureAnalyticEvent } = useAnalytics();
 
   const locationState = location.state as {
     files: File[];
@@ -139,11 +141,28 @@ const CreateJobPage = () => {
   }, [createJobForm, locationState, agents]);
 
   const { isPending, mutateAsync: createJob } = useCreateJob({
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
       // TODO: job_inbox, false is hardcoded
       navigate(
         `/inboxes/${encodeURIComponent(buildInboxIdFromJobId(data.jobId))}`,
       );
+      const files = variables?.files ?? [];
+      const localFilesCount = (variables.selectedVRFiles ?? [])?.length;
+      const localFoldersCount = (variables.selectedVRFolders ?? [])?.length;
+
+      if (localFilesCount > 0 || localFoldersCount > 0) {
+        captureAnalyticEvent('Ask Local Files', {
+          foldersCount: localFoldersCount,
+          filesCount: localFilesCount,
+        });
+      }
+      if (files?.length > 0) {
+        captureAnalyticEvent('AI Chat with Files', {
+          filesCount: files.length,
+        });
+      } else {
+        captureAnalyticEvent('AI Chat', undefined);
+      }
     },
   });
 

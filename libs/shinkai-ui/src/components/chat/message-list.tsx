@@ -3,8 +3,14 @@ import {
   InfiniteData,
   InfiniteQueryObserverResult,
 } from '@tanstack/react-query';
-import { Loader2 } from 'lucide-react';
-import React, { Fragment, useCallback, useEffect, useRef } from 'react';
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+} from 'react';
+import { useInView } from 'react-intersection-observer';
 
 import {
   GetChatConversationOutput,
@@ -12,7 +18,6 @@ import {
   groupMessagesByDate,
 } from '../../helpers';
 import { cn } from '../../utils';
-import { ScrollArea } from '../scroll-area';
 import { Skeleton } from '../skeleton';
 import { Message } from './message';
 
@@ -48,38 +53,62 @@ export const MessageList = ({
 }) => {
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const previousChatHeightRef = useRef<number>(0);
+  const { ref, inView } = useInView();
 
   const fetchPreviousMessages = useCallback(async () => {
     fromPreviousMessagesRef.current = true;
     await fetchPreviousPage();
   }, [fetchPreviousPage]);
 
-  const handleScroll = useCallback(async () => {
-    const chatContainerElement = chatContainerRef.current;
-    if (!chatContainerElement) return;
-    const currentHeight = chatContainerElement.scrollHeight;
-    const previousHeight = previousChatHeightRef.current;
+  useEffect(() => {
+    if (hasPreviousPage && inView) {
+      fetchPreviousMessages();
+    }
+  }, [hasPreviousPage, inView]);
 
-    if (chatContainerElement.scrollTop < 100 && hasPreviousPage) {
-      await fetchPreviousMessages();
-      previousChatHeightRef.current = currentHeight;
+  // adjust the scroll position of a chat container after new messages are fetched
+  useLayoutEffect(() => {
+    if (!isFetchingPreviousPage) {
+      const chatContainerElement = chatContainerRef.current;
+      if (!chatContainerElement) return;
+      const currentHeight = chatContainerElement.scrollHeight;
+      const previousHeight = previousChatHeightRef.current;
       chatContainerElement.scrollTop = currentHeight - previousHeight;
     }
-  }, [fetchPreviousMessages, hasPreviousPage]);
+  }, [paginatedMessages, isFetchingPreviousPage]);
 
   useEffect(() => {
     const chatContainerElement = chatContainerRef.current;
     if (!chatContainerElement) return;
-    chatContainerElement.addEventListener('scroll', handleScroll);
+    const handleScroll = async () => {
+      const currentHeight = chatContainerElement.scrollHeight;
+      const currentScrollTop = chatContainerElement.scrollTop;
+      previousChatHeightRef.current = currentHeight;
+
+      if (inView && hasPreviousPage && !isFetchingPreviousPage) {
+        previousChatHeightRef.current = currentHeight - currentScrollTop;
+      }
+    };
+
+    chatContainerElement.addEventListener('scroll', handleScroll, {
+      passive: true,
+    });
     return () => {
       chatContainerElement.removeEventListener('scroll', handleScroll);
     };
-  }, [handleScroll]);
+  }, [
+    fetchPreviousMessages,
+    hasPreviousPage,
+    inView,
+    isFetchingPreviousPage,
+    paginatedMessages?.pages?.length,
+  ]);
 
   const scrollToBottom = () => {
     if (!chatContainerRef.current) return;
     chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
   };
+
   useEffect(() => {
     if (!fromPreviousMessagesRef.current) {
       scrollToBottom();
@@ -91,25 +120,53 @@ export const MessageList = ({
   }, [isSuccess]);
 
   return (
-    <ScrollArea
-      className={cn('h-full [&>div>div]:!block', containerClassName)}
+    <div
+      className={cn(
+        'scroll flex-1 overflow-y-auto overscroll-none will-change-scroll',
+        containerClassName,
+      )}
       ref={chatContainerRef}
     >
-      {isSuccess && (
-        <div className="py-2 text-center text-xs text-gray-100">
-          {isFetchingPreviousPage && (
-            <Loader2 className="flex animate-spin justify-center text-white" />
-          )}
-          {!isFetchingPreviousPage &&
-            !hasPreviousPage &&
-            (paginatedMessages?.pages ?? [])?.length > 1 &&
-            noMoreMessageLabel}
-        </div>
-      )}
+      {isSuccess &&
+        !isFetchingPreviousPage &&
+        !hasPreviousPage &&
+        (paginatedMessages?.pages ?? [])?.length > 1 && (
+          <div className="py-2 text-center text-xs text-gray-100">
+            {noMoreMessageLabel}
+          </div>
+        )}
       <div className="">
         {isLoading && (
           <div className="flex flex-col space-y-3">
-            {[...Array(5).keys()].map((index) => (
+            {[...Array(10).keys()].map((index) => (
+              <div
+                className={cn(
+                  'flex w-[95%] items-start gap-2',
+                  index % 2 === 0
+                    ? 'ml-0 mr-auto flex-row'
+                    : 'ml-auto mr-0 flex-row-reverse',
+                )}
+                key={`${index}`}
+              >
+                <Skeleton
+                  className="h-10 w-10 shrink-0 rounded-full bg-gray-300"
+                  key={index}
+                />
+                <Skeleton
+                  className={cn(
+                    'h-16 w-full rounded-lg px-2.5 py-3',
+                    index % 2 === 0
+                      ? 'rounded-tl-none bg-gray-300'
+                      : 'rounded-tr-none bg-gray-200',
+                  )}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+        {(hasPreviousPage || isFetchingPreviousPage) && (
+          <div className="flex flex-col space-y-3" ref={ref}>
+            {[...Array(3).keys()].map((index) => (
               <div
                 className={cn(
                   'flex w-[95%] items-start gap-2',
@@ -175,6 +232,6 @@ export const MessageList = ({
             </Fragment>
           ))}
       </div>
-    </ScrollArea>
+    </div>
   );
 };

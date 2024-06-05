@@ -34,6 +34,7 @@ import { useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { allowedFileExtensions } from '../../../lib/constants';
+import { useAnalytics } from '../../../lib/posthog-provider';
 import { useAuth } from '../../../store/auth';
 import { useVectorFsStore } from '../context/vector-fs-context';
 import {
@@ -138,6 +139,8 @@ export const AddNewFolderAction = () => {
   );
 };
 export const UploadVRFilesAction = () => {
+  const { captureAnalyticEvent } = useAnalytics();
+
   const auth = useAuth((state) => state.auth);
   const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
   const currentGlobalPath = useVectorFsStore(
@@ -148,7 +151,10 @@ export const UploadVRFilesAction = () => {
   });
 
   const { isPending, mutateAsync: uploadVRFiles } = useUploadVRFiles({
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
+      captureAnalyticEvent('Upload Files', {
+        filesCount: variables.files.length,
+      });
       toast.success('Files uploaded successfully', {
         id: 'uploading-VR-files',
         description: '',

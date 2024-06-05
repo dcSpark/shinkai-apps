@@ -67,13 +67,17 @@ import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
+import { useAnalytics } from '../../lib/posthog-provider';
 import { useAuth } from '../../store/auth';
 
 enum ErrorCodes {
   VectorResource = 'VectorResource',
   ShinkaiBackendInferenceLimitReached = 'ShinkaiBackendInferenceLimitReached',
 }
+
 const ChatConversation = () => {
+  const { captureAnalyticEvent } = useAnalytics();
+
   const size = partial({ standard: 'jedec' });
   const { inboxId: encodedInboxId = '' } = useParams();
   const auth = useAuth((state) => state.auth);
@@ -118,9 +122,19 @@ const ChatConversation = () => {
   });
 
   const { mutateAsync: sendMessageToInbox } = useSendMessageToInbox();
-  const { mutateAsync: sendMessageToJob } = useSendMessageToJob();
+  const { mutateAsync: sendMessageToJob } = useSendMessageToJob({
+    onSuccess: () => {
+      captureAnalyticEvent('AI Chat', undefined);
+    },
+  });
   const { mutateAsync: sendTextMessageWithFilesForInbox } =
-    useSendMessageWithFilesToInbox();
+    useSendMessageWithFilesToInbox({
+      onSuccess: () => {
+        captureAnalyticEvent('AI Chat with Files', {
+          filesCount: 1,
+        });
+      },
+    });
 
   const onSubmit = async (data: ChatMessageFormSchema) => {
     if (!auth || data.message.trim() === '') return;
@@ -278,7 +292,6 @@ const ChatConversation = () => {
                             <Button
                               className="h-[40px] w-[40px] self-end rounded-xl p-3"
                               disabled={isLoadingMessage}
-                              isLoading={isLoadingMessage}
                               onClick={chatForm.handleSubmit(onSubmit)}
                               size="icon"
                               variant="tertiary"

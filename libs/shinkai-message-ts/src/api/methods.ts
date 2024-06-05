@@ -17,7 +17,7 @@ import {
 } from '../models/Payloads';
 import { SerializedAgent } from '../models/SchemaTypes';
 import { InboxNameWrapper } from '../pkg/shinkai_message_wasm';
-import { calculateMessageHash } from '../utils';
+// import { calculateMessageHash } from '../utils';
 import { urlJoin } from '../utils/url-join';
 import { FileUploader } from '../wasm/FileUploaderUsingSymmetricKeyManager';
 import { SerializedAgentWrapper } from '../wasm/SerializedAgentWrapper';
@@ -379,11 +379,12 @@ export const submitInitialRegistrationNoCode = async (
 }> => {
   try {
     // Used to fetch the shinkai identity
-    const healthResponse = await httpClient.get<{ status: 'ok'; node_name: string; is_pristine: boolean }>(
-      urlJoin(payload.node_address, '/v1/shinkai_health'),
-    );
-    const { status, node_name, is_pristine } =
-      healthResponse.data;
+    const healthResponse = await httpClient.get<{
+      status: 'ok';
+      node_name: string;
+      is_pristine: boolean;
+    }>(urlJoin(payload.node_address, '/v1/shinkai_health'));
+    const { status, node_name, is_pristine } = healthResponse.data;
     if (status !== 'ok') {
       return { status: 'error' };
     }
@@ -560,9 +561,7 @@ export const getProfileAgents = async (
   );
 
   const message = JSON.parse(messageStr);
-  console.log('Get Profile Agents Message:', message);
-  const messageHash = calculateMessageHash(message);
-  console.log('Get Profile Agents Message Hash:', messageHash);
+  // const messageHash = calculateMessageHash(message);
 
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v1/available_agents'),

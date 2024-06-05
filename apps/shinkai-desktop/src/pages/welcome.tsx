@@ -1,14 +1,17 @@
 import { buttonVariants, Checkbox } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import { useSettings } from '../store/settings';
 import OnboardingLayout from './layout/onboarding-layout';
 
 const TermsAndConditionsPage = () => {
-  const [acceptedTermsAndContidions, setAcceptedTermsAndContidions] = useState<
-    boolean | 'indeterminate'
-  >(false);
+  const termsAndConditionsAccepted = useSettings(
+    (state) => state.termsAndConditionsAccepted,
+  );
+  const setTermsAndConditionsAccepted = useSettings(
+    (state) => state.setTermsAndConditionsAccepted,
+  );
 
   return (
     <OnboardingLayout>
@@ -21,9 +24,9 @@ const TermsAndConditionsPage = () => {
           <div className="flex flex-col gap-10">
             <div className="flex gap-3">
               <Checkbox
-                checked={acceptedTermsAndContidions}
+                checked={termsAndConditionsAccepted}
                 id="terms"
-                onCheckedChange={setAcceptedTermsAndContidions}
+                onCheckedChange={setTermsAndConditionsAccepted}
               />
               <label
                 className="inline-block cursor-pointer text-xs leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -56,10 +59,10 @@ const TermsAndConditionsPage = () => {
                 buttonVariants({
                   variant: 'default',
                 }),
-                !acceptedTermsAndContidions &&
+                !termsAndConditionsAccepted &&
                   'pointer-events-none bg-gray-300 opacity-60',
               )}
-              to={'/get-started'}
+              to={'/analytics'}
             >
               Get Started
             </Link>
