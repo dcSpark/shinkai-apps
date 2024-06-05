@@ -16,11 +16,10 @@ export const AnalyticsProvider = ({
   const optInAnalytics = useSettings((state) => state.optInAnalytics);
   const posthog = usePostHog();
 
-  const posthogHost = import.meta.env.VITE_POSTHOG_HOST;
   const posthogApiKey = import.meta.env.VITE_POSTHOG_API_KEY;
 
   const options = {
-    api_host: import.meta.env.VITE_POSTHOG_HOST,
+    api_host: 'https://us.i.posthog.com',
     // default `false`, make sure we do not capture sensitive info
     disable_session_recording: true,
     autocapture: false,
@@ -39,7 +38,7 @@ export const AnalyticsProvider = ({
     }
   }, [optInAnalytics, posthog]);
 
-  return optInAnalytics && posthogHost && posthogApiKey ? (
+  return optInAnalytics && posthogApiKey ? (
     <PostHogProvider
       apiKey={import.meta.env.VITE_POSTHOG_API_KEY}
       options={options}
