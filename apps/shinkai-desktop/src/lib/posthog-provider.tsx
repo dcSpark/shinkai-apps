@@ -27,7 +27,6 @@ export const AnalyticsProvider = ({
       if (import.meta.env.DEV) posthog.debug();
     },
     opt_out_capturing_by_default: false,
-    debug: true,
   };
 
   useEffect(() => {

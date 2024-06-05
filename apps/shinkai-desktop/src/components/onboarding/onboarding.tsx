@@ -50,8 +50,8 @@ export default function OnboardingStepper() {
           status:
             currentStepsMap.get(GetStartedSteps.SetupShinkaiNode) ??
             GetStartedStatus.NotStarted,
-          title: 'Setup Shinkai Node',
-          body: 'Setup your Shinkai Node to get started',
+          title: 'Setup Shinkai Desktop',
+          body: 'Setup Shinkai Desktop to get started',
         },
         {
           label: GetStartedSteps.CreateAI,
