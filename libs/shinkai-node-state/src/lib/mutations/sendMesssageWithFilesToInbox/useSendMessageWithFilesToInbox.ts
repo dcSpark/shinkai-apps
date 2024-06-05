@@ -17,7 +17,7 @@ type Options = UseMutationOptions<
   SendMessageWithFilesToInboxInput
 >;
 
-export const useSendMessageWithFilesToInbox = (options: Options) => {
+export const useSendMessageWithFilesToInbox = (options?: Options) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: sendMessageWithFilesToInbox,
