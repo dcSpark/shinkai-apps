@@ -17,7 +17,7 @@ import {
 } from '../models/Payloads';
 import { SerializedAgent } from '../models/SchemaTypes';
 import { InboxNameWrapper } from '../pkg/shinkai_message_wasm';
-import { calculateMessageHash } from '../utils';
+// import { calculateMessageHash } from '../utils';
 import { urlJoin } from '../utils/url-join';
 import { FileUploader } from '../wasm/FileUploaderUsingSymmetricKeyManager';
 import { SerializedAgentWrapper } from '../wasm/SerializedAgentWrapper';
@@ -561,7 +561,7 @@ export const getProfileAgents = async (
   );
 
   const message = JSON.parse(messageStr);
-  const messageHash = calculateMessageHash(message);
+  // const messageHash = calculateMessageHash(message);
 
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v1/available_agents'),
