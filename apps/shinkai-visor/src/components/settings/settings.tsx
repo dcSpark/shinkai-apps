@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { isShinkaiIdentityLocalhost } from '@shinkai_network/shinkai-message-ts/utils';
 import { useUpdateNodeName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateNodeName/useUpdateNodeName';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
@@ -230,6 +231,9 @@ export const Settings = () => {
     });
   };
 
+  const isIdentityLocalhost = isShinkaiIdentityLocalhost(
+    auth?.shinkai_identity ?? '',
+  );
   return (
     <div className="flex flex-col space-y-8 pr-2.5">
       <div className="flex flex-col space-y-8">
@@ -293,7 +297,7 @@ export const Settings = () => {
                   }}
                   helperMessage={
                     <span className="text-gray-80 inline-flex items-center gap-1 px-1 py-2.5 hover:text-white">
-                      {auth?.shinkai_identity.includes('localhost.shinkai') ? (
+                      {isIdentityLocalhost ? (
                         <a
                           className={cn(
                             buttonVariants({
