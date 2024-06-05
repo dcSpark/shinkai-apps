@@ -179,7 +179,7 @@ jobs:
             ~/.cargo/git/db/
             target/
           key: ${{ matrix.arch }}-build-cargo-${{ hashFiles('**/Cargo.lock') }}
-  
+
       - name: Setup Node version
         uses: actions/setup-node@v3
         with:
@@ -197,7 +197,7 @@ jobs:
       - name: Download side binaries
         env:
           ARCH: ${{ matrix.arch }}
-          SHINKAI_NODE_VERSION: v0.7.7
+          SHINKAI_NODE_VERSION: v0.7.8
           OLLAMA_VERSION: v0.1.41
         run: |
           npx ts-node ./ci-scripts/download-side-binaries.ts
@@ -280,7 +280,7 @@ jobs:
           registry-url: https://registry.npmjs.org
           cache: 'npm'
           cache-dependency-path: package-lock.json
-  
+
       - name: Install dependencies
         run: |
           npm cache verify
@@ -310,7 +310,7 @@ jobs:
           aws_bucket: shinkai-download
           source_dir: files-to-r2
           destination_dir: ./shinkai-desktop/binaries/development/
-  
+
   notify-slack:
     environment: development
     needs:
