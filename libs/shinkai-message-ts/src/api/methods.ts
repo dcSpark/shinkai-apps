@@ -1378,6 +1378,7 @@ export const updateNodeName = async (
   receiver_subidentity: string,
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
+  console.log('updateNodeName', newNodeName);
   const messageStr = ShinkaiMessageBuilderWrapper.updateNodeName(
     setupDetailsState.profile_encryption_sk,
     setupDetailsState.profile_identity_sk,

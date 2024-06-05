@@ -3,7 +3,7 @@
   "collaborators": [
     "Nico Arqueros <nico@shinkai.com>"
   ],
-  "version": "0.6.4",
+  "version": "0.7.6",
   "files": [
     "shinkai_message_wasm_bg.wasm",
     "shinkai_message_wasm.js",
