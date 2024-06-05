@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
   schedule:
-    - cron: "0 0 * * 2,4"
+    - cron: '0 0 * * 2,4'
 
 defaults:
   run:
@@ -193,6 +193,13 @@ jobs:
         run: |
           npm cache verify
           npm ci --no-audit --prefer-offline
+
+      - name: Create ENV file
+        run: |
+          touch .env
+          echo VITE_POSTHOG_API_KEY=${{ secrets.VITE_POSTHOG_API_KEY }} >> .env
+          echo VITE_POSTHOG_HOST=${{ secrets.VITE_POSTHOG_HOST }} >> .env
+          cat .env
 
       - name: Download side binaries
         env:
