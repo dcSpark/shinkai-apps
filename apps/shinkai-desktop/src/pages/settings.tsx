@@ -231,7 +231,7 @@ const SettingsPage = () => {
                               }),
                               'rounded-lg p-0 text-xs text-inherit underline',
                             )}
-                            href={`https://shinkai-contracts.pages.dev?encryption_pk=${auth?.node_encryption_pk}&signature_pk=${auth?.node_signature_pk}`}
+                            href={`https://shinkai-contracts.pages.dev?encryption_pk=${auth?.node_encryption_pk}&signature_pk=${auth?.node_signature_pk}&node_address=${auth?.node_address}`}
                             rel="noreferrer"
                             target="_blank"
                           >
