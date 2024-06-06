@@ -111,7 +111,7 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     tag: '8b-v2.9-q4_1',
     name: 'Dolphin 2.9 Llama 3',
     description:
-      "Dolphin-2.9 has a variety of instruction, conversational, and coding skills. It also has initial agentic abilities and supports function calling.",
+      "Dolphin-2.9 (uncensored) has a variety of instruction, conversational, and coding skills. It also has initial agentic abilities and supports function calling.",
     contextLength: 8000,
     quality: OllamaModelQuality.Medium,
     speed: OllamaModelSpeed.Fast,
