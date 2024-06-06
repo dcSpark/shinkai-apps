@@ -189,7 +189,7 @@ export const OllamaModels = () => {
                   </div>
                 </TableCell>
                 <TableCell className="whitespace-nowrap">
-                  {Math.round(model.contextLength / 8000)} book length
+                 {Math.round((model.contextLength * 0.75) / 380)} Book Pages
                 </TableCell>
                 <TableCell>
                   <ModelQuailityTag quality={model.quality} />
