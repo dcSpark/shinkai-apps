@@ -5,7 +5,9 @@ use tokio::sync::mpsc::Sender;
 use crate::local_shinkai_node::ollama_api::ollama_api_client::OllamaApiClient;
 
 use super::{
-    logger::LogEntry, process_handler::{ProcessHandler, ProcessHandlerEvent}, process_utils::{kill_process_by_name, options_to_env}
+    logger::LogEntry,
+    process_handler::{ProcessHandler, ProcessHandlerEvent},
+    process_utils::{kill_process_by_name, options_to_env},
 };
 
 #[derive(Serialize, Clone)]
@@ -29,7 +31,8 @@ impl OllamaProcessHandler {
     pub fn new(options: Option<OllamaOptions>, event_sender: Sender<ProcessHandlerEvent>) -> Self {
         let ready_matcher = Regex::new(Self::READY_MATCHER).unwrap();
         Self::kill_llama_process();
-        let process_handler = ProcessHandler::new(Self::PROCESS_NAME.to_string(), event_sender, ready_matcher);
+        let process_handler =
+            ProcessHandler::new(Self::PROCESS_NAME.to_string(), event_sender, ready_matcher);
         OllamaProcessHandler {
             process_handler,
             options: options.unwrap_or(Self::default_options()),
@@ -39,7 +42,7 @@ impl OllamaProcessHandler {
     pub fn default_options() -> OllamaOptions {
         OllamaOptions {
             ollama_host: "127.0.0.1:11435".to_string(),
-            ollama_num_parallel: "2".to_string(),
+            ollama_num_parallel: "1".to_string(),
             ollama_max_loaded_models: "2".to_string(),
             ollama_origins: "*".to_string(),
         }

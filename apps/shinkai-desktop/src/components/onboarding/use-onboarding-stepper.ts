@@ -96,8 +96,8 @@ export const useOnboardingSteps = () => {
   }, [isSuccess]);
 
   useEffect(() => {
-    const defaultAgentsCount = isLocalShinkaiNodeInUse ? 1 : 3;
-    if (agents.length > defaultAgentsCount) {
+    // const defaultAgentsCount = isLocalShinkaiNodeInUse ? 0 : 3;
+    if (agents.length > 0) {
       currentStepsMap.set(GetStartedSteps.CreateAI, GetStartedStatus.Done);
     }
   }, [agents, isLocalShinkaiNodeInUse]);

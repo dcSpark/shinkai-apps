@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { isShinkaiIdentityLocalhost } from '@shinkai_network/shinkai-message-ts/utils';
 import {
   ShareFolderFormSchema,
   shareFolderFormSchema,
@@ -414,8 +415,10 @@ export const VectorFsFolderCreateShareableAction = () => {
       profile_identity_sk: auth?.profile_identity_sk ?? '',
     });
   };
-  const isShinkaiIdentityLocalhost =
-    auth?.shinkai_identity.includes('localhost.shinkai');
+
+  const isIdentityLocalhost = isShinkaiIdentityLocalhost(
+    auth?.shinkai_identity ?? '',
+  );
 
   return (
     <React.Fragment>
@@ -447,7 +450,7 @@ export const VectorFsFolderCreateShareableAction = () => {
             className="mt-4"
             disabled={
               destinationFolderPath === selectedFolder?.path ||
-              isShinkaiIdentityLocalhost
+              isIdentityLocalhost
             }
             isLoading={isPending}
             type="submit"
@@ -455,7 +458,7 @@ export const VectorFsFolderCreateShareableAction = () => {
             Share Folder
           </Button>
 
-          {isShinkaiIdentityLocalhost && (
+          {isIdentityLocalhost && (
             <Alert className="mx-auto w-[98%] shadow-lg" variant="warning">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle className="text-sm">Enable Folder Sharing</AlertTitle>

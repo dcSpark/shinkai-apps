@@ -146,7 +146,7 @@ export const OllamaModels = () => {
       <Table className="w-full border-collapse text-[13px]">
         <TableHeader className="bg-gray-400 text-xs">
           <TableRow>
-            <TableHead className="md:w-[300px] lg:w-[480px]">AI Name</TableHead>
+            <TableHead className="md:w-[300px] lg:w-[480px]">Models</TableHead>
             <TableHead>Data Limit</TableHead>
             <TableHead>Quality</TableHead>
             <TableHead>Speed</TableHead>
@@ -155,7 +155,9 @@ export const OllamaModels = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {OLLAMA_MODELS.map((model) => {
+          {OLLAMA_MODELS.sort((model) =>
+            installedOllamaModelsMap.has(model.fullName) ? -1 : 1,
+          ).map((model) => {
             return (
               <TableRow
                 className="transition-colors hover:bg-gray-300/50"
@@ -163,13 +165,13 @@ export const OllamaModels = () => {
               >
                 <TableCell>
                   <div className="flex flex-col items-start gap-2">
-                    <div className="flex flex-row gap-3 items-center">
+                    <div className="flex flex-row items-center gap-3">
                       <span className="font-medium">{model.name}</span>
                       {isDefaultModel(model.fullName) && (
                         <Badge
                           className={cn(
-                            'rounded-full border-0 px-2 py-1 font-normal capitalize',
-                            'bg-green-900 text-green-400',
+                            'rounded-md border-0 px-2 py-1 font-normal capitalize',
+                            'bg-emerald-900 text-emerald-400',
                           )}
                           variant="outline"
                         >
@@ -186,7 +188,7 @@ export const OllamaModels = () => {
                     </span>
                   </div>
                 </TableCell>
-                <TableCell>
+                <TableCell className="whitespace-nowrap">
                   {Math.round(model.contextLength / 8000)} book length
                 </TableCell>
                 <TableCell>
@@ -195,7 +197,9 @@ export const OllamaModels = () => {
                 <TableCell>
                   <ModelSpeedTag speed={model.speed} />
                 </TableCell>
-                <TableCell>{model.size} GB</TableCell>
+                <TableCell className="whitespace-nowrap">
+                  {model.size} GB
+                </TableCell>
                 <TableCell>
                   <motion.div
                     className="flex items-center justify-center"

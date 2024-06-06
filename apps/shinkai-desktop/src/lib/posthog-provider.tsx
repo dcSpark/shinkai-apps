@@ -1,6 +1,8 @@
+import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import { PostHogProvider, usePostHog } from 'posthog-js/react';
 import React, { useEffect } from 'react';
 
+import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 
 export const AnalyticsEvents = {
@@ -16,11 +18,10 @@ export const AnalyticsProvider = ({
   const optInAnalytics = useSettings((state) => state.optInAnalytics);
   const posthog = usePostHog();
 
-  const posthogHost = import.meta.env.VITE_POSTHOG_HOST;
   const posthogApiKey = import.meta.env.VITE_POSTHOG_API_KEY;
 
   const options = {
-    api_host: import.meta.env.VITE_POSTHOG_HOST,
+    api_host: 'https://us.i.posthog.com',
     // default `false`, make sure we do not capture sensitive info
     disable_session_recording: true,
     autocapture: false,
@@ -28,7 +29,6 @@ export const AnalyticsProvider = ({
       if (import.meta.env.DEV) posthog.debug();
     },
     opt_out_capturing_by_default: false,
-    debug: true,
   };
 
   useEffect(() => {
@@ -39,7 +39,7 @@ export const AnalyticsProvider = ({
     }
   }, [optInAnalytics, posthog]);
 
-  return optInAnalytics && posthogHost && posthogApiKey ? (
+  return optInAnalytics && posthogApiKey ? (
     <PostHogProvider
       apiKey={import.meta.env.VITE_POSTHOG_API_KEY}
       options={options}
@@ -78,6 +78,11 @@ export type AnalyticEventProps<TEventName extends AnalyticEventName> =
 export const useAnalytics = () => {
   const posthog = usePostHog();
 
+  const auth = useAuth((authStore) => authStore.auth);
+  const { nodeInfo } = useGetHealth({
+    node_address: auth?.node_address ?? '',
+  });
+
   function captureAnalyticEvent<TEventName extends AnalyticEventName>(
     eventName: TEventName,
     eventProps: AnalyticEventProps<TEventName>,
@@ -94,7 +99,10 @@ export const useAnalytics = () => {
       return;
     }
 
-    posthog.capture(eventName, { ...eventProps });
+    posthog.capture(eventName, {
+      $browser_version: nodeInfo?.version,
+      ...eventProps,
+    });
   }
 
   return {

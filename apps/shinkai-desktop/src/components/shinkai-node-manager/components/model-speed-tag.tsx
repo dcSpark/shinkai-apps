@@ -11,7 +11,7 @@ export const ModelSpeedTag = ({ speed }: { speed: OllamaModelSpeed }) => {
     [OllamaModelSpeed.VeryFast]: '🐆',
   };
   return (
-    <div className={cn('  px-2 font-normal capitalize')}>
+    <div className={cn('  whitespace-nowrap px-2 font-normal capitalize')}>
       {speed} {emojiMap[speed]}
     </div>
   );
