@@ -45,7 +45,7 @@ export const GalxeValidation = () => {
   const { mutateAsync: registerShinkaiDesktopInstallation, isPending } =
     useGalxeRegisterShinkaiDesktopInstallationMutation({
       onSuccess: () => {
-        toast.error(
+        toast.success(
           'Your Shinkai Desktop installation was registered successfully. It may take some hours to be registered in Galxe quest.',
         );
       },
