@@ -28,6 +28,7 @@ import CreateChatPage from '../pages/create-chat';
 import CreateJobPage from '../pages/create-job';
 import { ExportConnection } from '../pages/export-connection';
 import FreeSubscriptionsPage from '../pages/free-subscription';
+import { GalxeValidation } from '../pages/galxe-validation';
 import GenerateCodePage from '../pages/generate-code';
 import GetStartedPage from '../pages/get-started';
 import MainLayout from '../pages/layout/main-layout';
@@ -256,6 +257,14 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
           path={'analytics-settings'}
+        />
+         <Route
+          element={
+            <ProtectedRoute>
+              <GalxeValidation />
+            </ProtectedRoute>
+          }
+          path={'galxe-validation'}
         />
       </Route>
       <Route element={<Navigate replace to={'inboxes/'} />} path="/" />

@@ -29,6 +29,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import galxeIcon from '../assets/galxe-icon.png';
 import { useShinkaiNodeRespawnMutation } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 import {
   isHostingShinkaiNode,
@@ -363,6 +364,18 @@ const SettingsPage = () => {
               </svg>
             </div>
             <p className="text-smm text-white">Show Public Keys</p>
+          </Button>
+
+          <Button
+            className="flex flex-1 cursor-pointer flex-col items-start gap-2 rounded-lg p-4 pr-8 text-left"
+            onClick={() => navigate('/galxe-validation')}
+            size="auto"
+            variant="ghost"
+          >
+            <div className="text-gray-100">
+              <img alt="galxe icon" className='w-6 h-6' src={galxeIcon} />
+            </div>
+            <p className="text-smm text-white">Galxe Validation</p>
           </Button>
         </div>
       </div>
