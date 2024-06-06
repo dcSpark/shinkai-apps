@@ -8,6 +8,7 @@ import {
   UseQueryResult,
 } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api';
+import { relaunch } from '@tauri-apps/api/process';
 
 import {
   LogEntry,
@@ -179,7 +180,7 @@ export const useShinkaiNodeRespawnMutation = (options?: UseMutationOptions) => {
   const response = useMutation({
     mutationFn: async () => {
       await invoke('shinkai_node_kill');
-      await invoke('shinkai_node_spawn');
+      await relaunch();
     },
     onSuccess: (...onSuccessParameters) => {
       queryClient.invalidateQueries({
