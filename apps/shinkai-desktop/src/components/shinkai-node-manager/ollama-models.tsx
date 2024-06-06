@@ -146,7 +146,7 @@ export const OllamaModels = () => {
       <Table className="w-full border-collapse text-[13px]">
         <TableHeader className="bg-gray-400 text-xs">
           <TableRow>
-            <TableHead className="md:w-[300px] lg:w-[480px]">AI Name</TableHead>
+            <TableHead className="md:w-[300px] lg:w-[480px]">Models</TableHead>
             <TableHead>Data Limit</TableHead>
             <TableHead>Quality</TableHead>
             <TableHead>Speed</TableHead>
@@ -155,7 +155,9 @@ export const OllamaModels = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {OLLAMA_MODELS.map((model) => {
+          {OLLAMA_MODELS.sort((model) =>
+            installedOllamaModelsMap.has(model.fullName) ? -1 : 1,
+          ).map((model) => {
             return (
               <TableRow
                 className="transition-colors hover:bg-gray-300/50"
