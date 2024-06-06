@@ -1,9 +1,12 @@
 import {
   QueryObserverOptions,
+  useMutation,
+  UseMutationOptions,
   useQuery,
   UseQueryResult,
 } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api';
+import axios from 'axios';
 
 // Queries
 export const useGalxeGenerateDesktopInstallationProofQuery = (
@@ -17,4 +20,27 @@ export const useGalxeGenerateDesktopInstallationProofQuery = (
     },
   });
   return { ...query } as UseQueryResult<[string, string], Error>;
+};
+
+// Mutations
+export const useGalxeRegisterShinkaiDesktopInstallationMutation = (
+  options?: UseMutationOptions<
+    void,
+    Error,
+    { address: string; signature: string; combined: string }
+  >,
+) => {
+  return useMutation({
+    mutationFn: async ({ address, signature, combined }): Promise<void> => {
+      await axios.post(
+        `https://dev-backend-hosting.shinkai.com/galxe/register-shinkai-desktop-installation`,
+        {
+          address,
+          signature,
+          combined,
+        },
+      );
+    },
+    ...options,
+  });
 };
