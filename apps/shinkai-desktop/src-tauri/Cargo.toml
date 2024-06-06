@@ -30,6 +30,9 @@ regex = "1.10.4"
 once_cell = "1.19.0"
 wgpu = "0.20.0"
 sysinfo = "0.30.12"
+ed25519-dalek = { version = "2.1.1", features = ["rand_core"] }
+blake3 = "1.5.1"
+hex = "0.4.3"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
