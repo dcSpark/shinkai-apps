@@ -1,7 +1,9 @@
+import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import { Button } from '@shinkai_network/shinkai-ui';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { useAuth } from '../store/auth';
+import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
 import { useShinkaiNodeIsRunningQuery } from './shinkai-node-manager/shinkai-node-manager-client';
 import { openShinkaiNodeManagerWindow } from './shinkai-node-manager/shinkai-node-manager-windows-utils';
 
@@ -15,10 +17,19 @@ export const ShinkaiNodeRunningOverlay = ({
 }: {
   children: React.ReactNode;
 }) => {
+  const auth = useAuth((store) => store.auth);
+  const [isShinkaiNodeHealthy, setIsShinkaiNodeHealthy] = useState<boolean>(false);
   const { data: isShinkaiNodeRunning } = useShinkaiNodeIsRunningQuery();
-  const auth = useAuth((state) => state.auth);
+  const isInUse = useShinkaiNodeManager((store) => store.isInUse);
+  const { data: health, isRefetchError: isHealthRefetchError } = useGetHealth(
+    { node_address: auth?.node_address ?? '' },
+    { refetchInterval: 15000 },
+  );
+  useEffect(() => {
+    setIsShinkaiNodeHealthy(!isHealthRefetchError && health?.status === 'ok');
+  }, [health, isHealthRefetchError]);
 
-  return !!auth && isShinkaiNodeRunning ? (
+  return !!auth && isShinkaiNodeHealthy ? (
     children
   ) : (
     <div className="flex h-screen flex-col items-center justify-center gap-10">
@@ -31,13 +42,15 @@ export const ShinkaiNodeRunningOverlay = ({
           Please make sure the Shinkai Node is running and try again.
         </p>
       </div>
-      <Button
-        onClick={() => {
-          openShinkaiNodeManagerWindow();
-        }}
-      >
-        Launch Shinkai Node
-      </Button>
+      {isInUse && !isShinkaiNodeRunning && (
+        <Button
+          onClick={() => {
+            openShinkaiNodeManagerWindow();
+          }}
+        >
+          Launch Shinkai Node
+        </Button>
+      )}
     </div>
   );
 };
