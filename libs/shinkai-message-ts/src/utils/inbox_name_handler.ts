@@ -17,6 +17,12 @@ export const getOtherPersonIdentity = (
   return otherPersonIdentity[0];
 };
 
+export const isShinkaiIdentityLocalhost = (
+  shinkaiIdentity: string,
+): boolean => {
+  return shinkaiIdentity.includes('localhost.arb-sep-shinkai');
+};
+
 export const extractReceiverShinkaiName = (
   deserializedId: string,
   senderShinkaiName: string,

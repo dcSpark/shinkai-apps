@@ -10,7 +10,9 @@ export const ModelQuailityTag = ({
 }) => {
   const colorMap: { [key in OllamaModelQuality]: string } = {
     [OllamaModelQuality.Bad]: 'bg-red-900 text-red-400',
+    [OllamaModelQuality.Low]: 'bg-orange-900 text-orange-400',
     [OllamaModelQuality.Medium]: 'text-yellow-400 bg-yellow-900',
+    [OllamaModelQuality.Good]: 'text-green-400 bg-green-900',
     [OllamaModelQuality.Great]: 'text-green-400 bg-green-900',
   };
   return (

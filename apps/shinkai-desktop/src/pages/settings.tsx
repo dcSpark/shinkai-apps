@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { isShinkaiIdentityLocalhost } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useUpdateNodeName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateNodeName/useUpdateNodeName';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
@@ -156,6 +157,9 @@ const SettingsPage = () => {
     setDefaultAgentId(currentDefaultAgentId);
   }, [currentDefaultAgentId, setDefaultAgentId]);
 
+  const isIdentityLocalhost = isShinkaiIdentityLocalhost(
+    auth?.shinkai_identity ?? '',
+  );
   return (
     <SimpleLayout classname="max-w-lg" title="Settings">
       <p className="mb-3">Manage your account settings preferences.</p>
@@ -218,9 +222,7 @@ const SettingsPage = () => {
                     }}
                     helperMessage={
                       <span className="text-gray-80 inline-flex items-center gap-1 px-1 py-2.5 hover:text-white">
-                        {auth?.shinkai_identity.includes(
-                          'localhost.shinkai',
-                        ) ? (
+                        {isIdentityLocalhost ? (
                           <a
                             className={cn(
                               buttonVariants({
@@ -229,7 +231,7 @@ const SettingsPage = () => {
                               }),
                               'rounded-lg p-0 text-xs text-inherit underline',
                             )}
-                            href={`https://shinkai-contracts.pages.dev?encryption_pk=${auth?.node_encryption_pk}&signature_pk=${auth?.node_signature_pk}`}
+                            href={`https://shinkai-contracts.pages.dev?encryption_pk=${auth?.node_encryption_pk}&signature_pk=${auth?.node_signature_pk}&node_address=${auth?.node_address}`}
                             rel="noreferrer"
                             target="_blank"
                           >
