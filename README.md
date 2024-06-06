@@ -8,6 +8,11 @@
 There is a companion repo called Shinkai Node, that allows you to set up the node anywhere as the central unit of the Shinkai Network, handling tasks such as agent management, job processing, and secure communications. 
 You can find it <a href="https://github.com/dcSpark/shinkai-node">here</a>.</p><br/>
 
+
+https://github.com/dcSpark/shinkai-apps/assets/46382556/010114fb-0ed4-449a-9f27-a266b22b7bdb
+
+
+
 ## Projects
 
 ### Apps
