@@ -37,6 +37,7 @@ import {
   ActiveIcon,
   ArchiveIcon,
   ChatBubbleIcon,
+  CreateAIIcon,
   JobBubbleIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
@@ -359,7 +360,7 @@ const ChatLayout = () => {
                       size="icon"
                       variant="ghost"
                     >
-                      <PlusIcon className="h-4 w-4" />
+                      <CreateAIIcon className="h-4 w-4 shrink-0" />
                       <span className="sr-only">Create AI Chat</span>
                     </Button>
                   </TooltipTrigger>

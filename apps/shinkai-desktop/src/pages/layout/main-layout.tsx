@@ -22,6 +22,7 @@ import {
   AISearchContentIcon,
   AiTasksIcon,
   BrowseSubscriptionIcon,
+  CreateAIIcon,
   FilesIcon,
   InboxIcon,
   MySubscriptionsIcon,
@@ -351,7 +352,7 @@ export function MainNav() {
                   onClick={() => navigate('/create-job')}
                   whileHover={{ scale: !sidebarExpanded ? 1.05 : 1 }}
                 >
-                  <PlusIcon className="h-5 w-5 shrink-0" />
+                  <CreateAIIcon className="h-5 w-5 shrink-0" />
                   <AnimatePresence>
                     {sidebarExpanded && (
                       <motion.span
