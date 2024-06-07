@@ -1,9 +1,9 @@
 use blake3::Hasher;
 use ed25519_dalek::{Signer, SigningKey, VerifyingKey};
 
-pub fn unsafe_deterministic_signature_keypair(n: u32) -> (SigningKey, VerifyingKey) {
+pub fn unsafe_deterministic_signature_keypair(bytes: &[u8]) -> (SigningKey, VerifyingKey) {
   let mut hasher = blake3::Hasher::new();
-  hasher.update(&n.to_le_bytes());
+  hasher.update(bytes);
   let hash = hasher.finalize();
 
   let secret_key = SigningKey::from_bytes(hash.as_bytes());
@@ -11,9 +11,9 @@ pub fn unsafe_deterministic_signature_keypair(n: u32) -> (SigningKey, VerifyingK
   (secret_key, public_key)
 }
 
-pub fn generate_desktop_installation_proof() -> Result<(String, String), String> {
+pub fn generate_desktop_installation_proof(node_signature: String) -> Result<(String, String), String> {
     let secret_desktop_key: &str = option_env!("SECRET_DESKTOP_INSTALLATION_PROOF_KEY").unwrap_or("Dc9{3R9JmXe7£w9Fs](7");
-    let (secret_key, public_key) = unsafe_deterministic_signature_keypair(42);
+    let (secret_key, public_key) = unsafe_deterministic_signature_keypair(node_signature.as_bytes());
     // Convert the public key to hex
     let public_key_hex = hex::encode(public_key.to_bytes());
 

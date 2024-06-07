@@ -18,6 +18,7 @@ import {
   useGalxeGenerateDesktopInstallationProofQuery,
   useGalxeRegisterShinkaiDesktopInstallationMutation,
 } from '../lib/galxe/galxe-client';
+import { useAuth } from '../store/auth';
 import { SubpageLayout } from './layout/simple-layout';
 
 export const RegisterShinkaiDesktopInstallationFormSchema = z.object({
@@ -30,9 +31,9 @@ export type RegisterShinkaiDesktopInstallationForm = z.infer<
 >;
 
 export const GalxeValidation = () => {
+  const auth = useAuth(store => store.auth);
   const { data: installationProof } =
-    useGalxeGenerateDesktopInstallationProofQuery();
-
+    useGalxeGenerateDesktopInstallationProofQuery(auth?.node_signature_pk || '');
   const form = useForm<RegisterShinkaiDesktopInstallationForm>({
     resolver: zodResolver(RegisterShinkaiDesktopInstallationFormSchema),
     defaultValues: {

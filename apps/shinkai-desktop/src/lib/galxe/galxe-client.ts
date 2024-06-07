@@ -11,13 +11,14 @@ import axios from 'axios';
 
 // Queries
 export const useGalxeGenerateDesktopInstallationProofQuery = (
+  nodeSignature: string,
   options?: QueryObserverOptions,
 ): UseQueryResult<[string, string], Error> => {
   const query = useQuery({
     ...options,
     queryKey: ['galxe_generate_desktop_installation_proof'],
     queryFn: async (): Promise<[string, string]> => {
-      return invoke('galxe_generate_desktop_installation_proof');
+      return invoke('galxe_generate_desktop_installation_proof', { nodeSignature });
     },
   });
   return { ...query } as UseQueryResult<[string, string], Error>;
