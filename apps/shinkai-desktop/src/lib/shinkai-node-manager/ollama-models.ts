@@ -42,6 +42,71 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     fullName: '',
   },
   {
+    model: 'qwen2',
+    tag: '7b-instruct-q4_K_M',
+    name: 'Qwen2 7B',
+    description:
+      "Qwen2 is trained on data in 29 languages, including English and Chinese. It is available in 4 parameter sizes: 0.5B, 1.5B, 7B, 72B. Last Update June 7th.",
+    contextLength: 128000,
+    quality: OllamaModelQuality.Good,
+    speed: OllamaModelSpeed.Average,
+    size: 4.7, // Size in GB
+    requiredRAM: 16, // Size in GB
+    fullName: '',
+  },
+  {
+    model: 'llava-phi3',
+    tag: '3.8b-mini-q4_0',
+    name: 'LLaVA Phi 3',
+    description:
+      "(Image-to-Text Model) lLlava-phi3 is a LLaVA model fine-tuned from Phi 3 Mini 4k, with strong performance benchmarks on par with the original LLaVA model.",
+    contextLength: 4000,
+    quality: OllamaModelQuality.Low,
+    speed: OllamaModelSpeed.VeryFast,
+    size: 2.9,
+    requiredRAM: 8,
+    fullName: '',
+  },
+  {
+    model: 'qwen2',
+    tag: '1.5b-instruct-q4_K_M',
+    name: 'Qwen2 1.5B',
+    description:
+      "Qwen2 is trained on data in 29 languages, including English and Chinese. It is available in 4 parameter sizes: 0.5B, 1.5B, 7B, 72B. Last Update June 7th.",
+    contextLength: 32000,
+    quality: OllamaModelQuality.Low,
+    speed: OllamaModelSpeed.Fast,
+    size: 0.986, // Size in GB
+    requiredRAM: 8, // Size in GB
+    fullName: '',
+  },
+  {
+    model: 'qwen2',
+    tag: '0.5b-instruct-q4_K_M',
+    name: 'Qwen2 0.5B',
+    description:
+      "Qwen2 is trained on data in 29 languages, including English and Chinese. It is available in 4 parameter sizes: 0.5B, 1.5B, 7B, 72B. Last Update June 7th.",
+    contextLength: 32000,
+    quality: OllamaModelQuality.Bad,
+    speed: OllamaModelSpeed.VeryFast,
+    size: 0.397, // Size in GB
+    requiredRAM: 8, // Size in GB
+    fullName: '',
+  },
+  {
+    model: 'dolphin-llama3',
+    tag: '8b-v2.9-q4_1',
+    name: 'Dolphin 2.9 Llama 3',
+    description:
+      "Dolphin-2.9 (uncensored) has a variety of instruction, conversational, and coding skills. It also has initial agentic abilities and supports function calling.",
+    contextLength: 8000,
+    quality: OllamaModelQuality.Medium,
+    speed: OllamaModelSpeed.Fast,
+    size: 5.1,
+    requiredRAM: 16,
+    fullName: '',
+  },
+  {
     model: 'aya',
     tag: 'aya:8b-23-q4_K_M',
     name: 'Aya 23 8b',
@@ -68,19 +133,6 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     fullName: '',
   },
   {
-    model: 'llava-phi3',
-    tag: '3.8b-mini-q4_0',
-    name: 'LLaVA Phi 3',
-    description:
-      "(Image-to-Text Model) lLlava-phi3 is a LLaVA model fine-tuned from Phi 3 Mini 4k, with strong performance benchmarks on par with the original LLaVA model.",
-    contextLength: 4000,
-    quality: OllamaModelQuality.Low,
-    speed: OllamaModelSpeed.VeryFast,
-    size: 2.9,
-    requiredRAM: 8,
-    fullName: '',
-  },
-  {
     model: 'falcon2',
     tag: '11b-q4_1',
     name: 'Falcon 2',
@@ -103,19 +155,6 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     quality: OllamaModelQuality.Medium,
     speed: OllamaModelSpeed.Fast,
     size: 4.9,
-    requiredRAM: 16,
-    fullName: '',
-  },
-  {
-    model: 'dolphin-llama3',
-    tag: '8b-v2.9-q4_1',
-    name: 'Dolphin 2.9 Llama 3',
-    description:
-      "Dolphin-2.9 (uncensored) has a variety of instruction, conversational, and coding skills. It also has initial agentic abilities and supports function calling.",
-    contextLength: 8000,
-    quality: OllamaModelQuality.Medium,
-    speed: OllamaModelSpeed.Fast,
-    size: 5.1,
     requiredRAM: 16,
     fullName: '',
   },
@@ -166,9 +205,22 @@ export const OLLAMA_MODELS: OllamaModel[] = [
       "Meta Llama 3: The most capable openly available LLM to date",
     contextLength: 8000,
     quality: OllamaModelQuality.Good,
-    speed: OllamaModelSpeed.Fast,
+    speed: OllamaModelSpeed.Slow,
     size: 4.7, // Size in Gb
     requiredRAM: 32, //  Size in Gb
+    fullName: '',
+  },
+  {
+    model: 'qwen2',
+    tag: '72b-instruct-q4_K_M',
+    name: 'Qwen2 72B',
+    description:
+      "Qwen2 is trained on data in 29 languages, including English and Chinese. It is available in 4 parameter sizes: 0.5B, 1.5B, 7B, 72B. Last Update June 7th.",
+    contextLength: 128000,
+    quality: OllamaModelQuality.Good,
+    speed: OllamaModelSpeed.Slow,
+    size: 59, // Size in GB
+    requiredRAM: 32, // Size in GB
     fullName: '',
   },
 ].map((model) => {
