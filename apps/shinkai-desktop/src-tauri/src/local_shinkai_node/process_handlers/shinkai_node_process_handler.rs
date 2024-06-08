@@ -35,8 +35,11 @@ impl ShinkaiNodeProcessHandler {
         let mut model = "llama3:8b-instruct-q4_1".to_string();
         let hardware_summary = hardware_get_summary();
         match hardware_summary.requirements_status {
-            RequirementsStatus::Unmeet | RequirementsStatus::Minimum => {
+            RequirementsStatus::Minimum => {
                 model = "phi3:3.8b".to_string();
+            }
+            RequirementsStatus::StillUsable | RequirementsStatus::Unmeet => {
+                model = "qwen2:1.5b-instruct-q4_K_M".to_string();
             }
             _ => {}
         }
