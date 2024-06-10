@@ -49,6 +49,7 @@ import {
   KnowledgeSearchDrawer,
   VectorFsScopeDrawer,
 } from '../components/vector-fs/components/vector-fs-context-drawer';
+import config from '../config';
 import { allowedFileExtensions } from '../lib/constants';
 import { useAnalytics } from '../lib/posthog-provider';
 import { ADD_AGENT_PATH } from '../routes/name';
@@ -219,6 +220,7 @@ const CreateJobPage = () => {
       content: data.content,
       files_inbox: '',
       files: data.files,
+      workflow: data.workflow,
       is_hidden: false,
       selectedVRFiles,
       selectedVRFolders,
@@ -271,7 +273,26 @@ const CreateJobPage = () => {
                 </FormItem>
               )}
             />
-
+            {config.isInternalUse && (
+              <FormField
+                control={createJobForm.control}
+                name="workflow"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Workflows</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        autoFocus={true}
+                        className="resize-none"
+                        placeholder="Workflow"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             <FormField
               control={createJobForm.control}
               name="agent"
