@@ -29,12 +29,7 @@ import {
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion, TargetAndTransition } from 'framer-motion';
-import {
-  ArrowLeftToLine,
-  ArrowRightToLine,
-  BotIcon,
-  PlusIcon,
-} from 'lucide-react';
+import { ArrowLeftToLine, ArrowRightToLine, BotIcon } from 'lucide-react';
 import React, { Fragment, useEffect, useState } from 'react';
 import {
   Link,
