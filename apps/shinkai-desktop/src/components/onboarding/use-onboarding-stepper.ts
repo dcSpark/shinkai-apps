@@ -1,3 +1,4 @@
+import { isShinkaiIdentityLocalhost } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
@@ -127,6 +128,15 @@ export const useOnboardingSteps = () => {
       );
     }
   }, [inboxes]);
+
+  useEffect(() => {
+    if (!isShinkaiIdentityLocalhost(auth?.shinkai_identity ?? '')) {
+      currentStepsMap.set(
+        GetStartedSteps.RegisterIdentity,
+        GetStartedStatus.Done,
+      );
+    }
+  }, [auth]);
 
   // useEffect(() => {
   //   if ((subscriptions ?? [])?.length > 0) {

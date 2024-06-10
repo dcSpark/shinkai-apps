@@ -12,6 +12,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import {
   CreateAIIcon,
+  IdentityIcon,
   // FilesIcon
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
@@ -28,6 +29,7 @@ export enum GetStartedSteps {
   SetupShinkaiNode = 'SetupShinkaiNode',
   CreateAI = 'CreateAI',
   CreateAIChat = 'CreateAIChat',
+  RegisterIdentity = 'RegisterIdentity',
   UploadAFile = 'UploadAFile',
   AskQuestionToFiles = 'AskQuestionToFiles',
   SubscribeToKnowledge = 'SubscribeToKnowledge',
@@ -95,6 +97,34 @@ export default function OnboardingStepper() {
               >
                 <PlusIcon className="h-4 w-4" />
                 Create AI Chat
+              </Button>
+            </div>
+          ),
+        },
+        {
+          label: GetStartedSteps.RegisterIdentity,
+          status:
+            currentStepsMap.get(GetStartedSteps.RegisterIdentity) ??
+            GetStartedStatus.NotStarted,
+          title: 'Register Shinkai Identity',
+          body: (
+            <div className="flex flex-col items-start gap-2">
+              <span>
+                Registering a Shinkai identity on-chain enables you to connect
+                Shinkai Desktop to the Shinkai Network with full p2p
+                capabilities.
+              </span>
+
+              <Button
+                className="h-auto gap-1 px-3 py-2"
+                onClick={() => {
+                  navigate('/settings');
+                }}
+                size="sm"
+                variant="outline"
+              >
+                <IdentityIcon className="h-4 w-4" />
+                Register Identity
               </Button>
             </div>
           ),
