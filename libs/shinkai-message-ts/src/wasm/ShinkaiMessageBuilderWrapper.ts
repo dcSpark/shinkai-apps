@@ -343,7 +343,6 @@ export class ShinkaiMessageBuilderWrapper {
     content: string,
     files_inbox: string,
     parent: string | null,
-    workflow: string | undefined,
     my_encryption_secret_key: string,
     my_signature_secret_key: string,
     receiver_public_key: string,
@@ -357,7 +356,6 @@ export class ShinkaiMessageBuilderWrapper {
       content,
       files_inbox,
       parent === null ? '' : parent,
-      workflow,
       my_encryption_secret_key,
       my_signature_secret_key,
       receiver_public_key,
@@ -635,7 +633,6 @@ export class ShinkaiMessageBuilderWrapper {
     const message = builder.build_to_string();
     return message;
   }
-
   static createFolder(
     my_encryption_secret_key: string,
     my_signature_secret_key: string,
@@ -705,7 +702,6 @@ export class ShinkaiMessageBuilderWrapper {
     const message = builder.build_to_string();
     return message;
   }
-
   static deleteFolder(
     my_encryption_secret_key: string,
     my_signature_secret_key: string,
@@ -739,7 +735,6 @@ export class ShinkaiMessageBuilderWrapper {
     const message = builder.build_to_string();
     return message;
   }
-
   static copyFolder(
     my_encryption_secret_key: string,
     my_signature_secret_key: string,
@@ -844,7 +839,6 @@ export class ShinkaiMessageBuilderWrapper {
     const message = builder.build_to_string();
     return message;
   }
-
   static deleteItem(
     my_encryption_secret_key: string,
     my_signature_secret_key: string,
@@ -1020,7 +1014,6 @@ export class ShinkaiMessageBuilderWrapper {
     const message = builder.build_to_string();
     return message;
   }
-
   static searchItems(
     my_encryption_secret_key: string,
     my_signature_secret_key: string,
@@ -1057,7 +1050,6 @@ export class ShinkaiMessageBuilderWrapper {
     const message = builder.build_to_string();
     return message;
   }
-
   static getAvailableSharedItems(
     my_encryption_secret_key: string,
     my_signature_secret_key: string,
@@ -1098,7 +1090,6 @@ export class ShinkaiMessageBuilderWrapper {
     const message = builder.build_to_string();
     return message;
   }
-
   static getMySharedFolders(
     my_encryption_secret_key: string,
     my_signature_secret_key: string,
@@ -1139,7 +1130,6 @@ export class ShinkaiMessageBuilderWrapper {
     const message = builder.build_to_string();
     return message;
   }
-
   static createShareableFolder(
     my_encryption_secret_key: string,
     my_signature_secret_key: string,
@@ -1187,7 +1177,6 @@ export class ShinkaiMessageBuilderWrapper {
     const message = builder.build_to_string();
     return message;
   }
-
   static unshareFolder(
     my_encryption_secret_key: string,
     my_signature_secret_key: string,
@@ -1223,7 +1212,6 @@ export class ShinkaiMessageBuilderWrapper {
     const message = builder.build_to_string();
     return message;
   }
-
   static subscribeToSharedFolder(
     my_encryption_secret_key: string,
     my_signature_secret_key: string,
@@ -1266,7 +1254,6 @@ export class ShinkaiMessageBuilderWrapper {
     const message = builder.build_to_string();
     return message;
   }
-
   static unsubscribeToSharedFolder(
     my_encryption_secret_key: string,
     my_signature_secret_key: string,
@@ -1309,7 +1296,6 @@ export class ShinkaiMessageBuilderWrapper {
     const message = builder.build_to_string();
     return message;
   }
-
   static getMySubscriptions(
     my_encryption_secret_key: string,
     my_signature_secret_key: string,
@@ -1341,7 +1327,6 @@ export class ShinkaiMessageBuilderWrapper {
     const message = builder.build_to_string();
     return message;
   }
-
   static updateNodeName(
     my_encryption_secret_key: string,
     my_signature_secret_key: string,
@@ -1372,7 +1357,6 @@ export class ShinkaiMessageBuilderWrapper {
     const message = builder.build_to_string();
     return message;
   }
-
   static updateAgentInJob(
     my_encryption_secret_key: string,
     my_signature_secret_key: string,
@@ -1413,7 +1397,6 @@ export class ShinkaiMessageBuilderWrapper {
     const message = builder.build_to_string();
     return message;
   }
-
   static downloadVectorResource(
     my_encryption_secret_key: string,
     my_signature_secret_key: string,
@@ -1450,7 +1433,6 @@ export class ShinkaiMessageBuilderWrapper {
     const message = builder.build_to_string();
     return message;
   }
-
   static modifyAgent(
     my_encryption_secret_key: string,
     my_signature_secret_key: string,
@@ -1485,7 +1467,6 @@ export class ShinkaiMessageBuilderWrapper {
     const message = builder.build_to_string();
     return message;
   }
-
   static deleteAgent(
     my_encryption_secret_key: string,
     my_signature_secret_key: string,
