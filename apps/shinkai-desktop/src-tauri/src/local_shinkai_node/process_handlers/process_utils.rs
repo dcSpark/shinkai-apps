@@ -17,6 +17,9 @@ pub fn options_to_env<T: serde::Serialize>(options: &T) -> HashMap<String, Strin
 pub fn kill_process_by_name(process_name: &str) {
     let adapted_process_name = if cfg!(target_os = "windows") {
         format!("{}.exe", process_name).to_string()
+    } else if cfg!(target_os = "linux") {
+        // For linux pkill pattern just supports 15 characters 
+        process_name.chars().take(15).collect::<String>()
     } else {
         process_name.to_string()
     };
