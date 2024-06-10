@@ -16,10 +16,7 @@ import {
   FormField,
   TextField,
 } from '@shinkai_network/shinkai-ui';
-import {
-  submitRegistrationNoCodeError,
-  submitRegistrationNoCodeNonPristineError,
-} from '@shinkai_network/shinkai-ui/helpers';
+import { submitRegistrationNoCodeError, submitRegistrationNoCodeNonPristineError } from '@shinkai_network/shinkai-ui/helpers';
 // import { QrCode } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -58,8 +55,7 @@ export const ConnectMethodQuickStart = () => {
           ...setupPayload,
           permission_type: '',
           shinkai_identity:
-            form.getValues().shinkai_identity ||
-            (response.data?.node_name ?? ''),
+            form.getValues().shinkai_identity || (response.data?.node_name ?? ''),
           node_signature_pk: response.data?.identity_public_key ?? '',
           node_encryption_pk: response.data?.encryption_public_key ?? '',
         };

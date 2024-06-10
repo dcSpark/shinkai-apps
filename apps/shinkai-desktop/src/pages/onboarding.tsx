@@ -36,7 +36,6 @@ export interface ConnectionOptionButtonProps extends ButtonProps {
   description: string;
   icon: React.ReactNode;
 }
-
 const ConnectionOptionButton = ({
   description,
   icon,

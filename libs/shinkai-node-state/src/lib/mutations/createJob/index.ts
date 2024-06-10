@@ -20,7 +20,6 @@ export const createJob = async ({
   files_inbox,
   files,
   is_hidden,
-  workflow,
   selectedVRFiles = [],
   selectedVRFolders = [],
   my_device_encryption_sk,
@@ -90,7 +89,6 @@ export const createJob = async ({
           profile_encryption_sk,
           profile_identity_sk,
         },
-        workflow,
       )
     : await sendMessageToJob(
         nodeAddress,
@@ -98,7 +96,6 @@ export const createJob = async ({
         content,
         files_inbox,
         '',
-        workflow,
         shinkaiIdentity,
         profile,
         receiver,

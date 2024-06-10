@@ -10,7 +10,6 @@ export type SendMessageWithFilesToInboxInput = CredentialsPayload & {
   senderSubidentity: string;
   message: string;
   inboxId: string;
-  workflow?: string;
   files: File[];
 };
 export type SendMessageWithFilesToInboxOutput = {

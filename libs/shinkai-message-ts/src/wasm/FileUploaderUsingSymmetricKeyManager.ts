@@ -19,7 +19,6 @@ export class FileUploader {
   private job_inbox: string;
   private symmetric_key: CryptoKey | null;
   private folder_id: string | null;
-  private workflow: string | undefined;
 
   constructor(
     base_url: string,
@@ -30,7 +29,6 @@ export class FileUploader {
     sender: string,
     sender_subidentity: string,
     receiver: string,
-    workflow: string | undefined,
   ) {
     this.base_url = base_url;
     this.my_encryption_secret_key = my_encryption_secret_key;
@@ -46,7 +44,6 @@ export class FileUploader {
     this.receiver = receiver;
     this.symmetric_key = null;
     this.folder_id = null;
-    this.workflow = workflow;
   }
 
   async calculateHashFromSymmetricKey(): Promise<string> {
@@ -167,7 +164,6 @@ export class FileUploader {
       content,
       this.folder_id || '',
       parent,
-      this.workflow,
       this.my_encryption_secret_key,
       this.my_signature_secret_key,
       this.receiver_public_key,
@@ -188,7 +184,6 @@ export class FileUploader {
     );
     return response.data;
   }
-
   async finalizeAndAddItemsToDb(
     destinationPath: string = '/',
   ): Promise<{ status: string }> {

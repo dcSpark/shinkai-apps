@@ -148,7 +148,6 @@ export const sendTextMessageWithFilesForInbox = async (
   job_inbox: string,
   files: File[],
   setupDetailsState: CredentialsPayload,
-  workflow: string | undefined,
 ): Promise<{ inboxId: string; message: ShinkaiMessage }> => {
   const fileUploader = new FileUploader(
     nodeAddress,
@@ -159,7 +158,6 @@ export const sendTextMessageWithFilesForInbox = async (
     sender,
     sender_subidentity,
     receiver,
-    workflow,
   );
 
   await fileUploader.createFolder();
@@ -507,7 +505,6 @@ export const sendMessageToJob = async (
   content: string,
   files_inbox: string,
   parent: string | null,
-  workflow: string | undefined,
   sender: string,
   sender_subidentity: string,
   receiver: string,
@@ -524,7 +521,6 @@ export const sendMessageToJob = async (
     content,
     files_inbox,
     parent || '',
-    workflow,
     setupDetailsState.profile_encryption_sk,
     setupDetailsState.profile_identity_sk,
     setupDetailsState.node_encryption_pk,
@@ -817,7 +813,6 @@ export const uploadFilesToVR = async (
       sender,
       sender_subidentity,
       receiver,
-      undefined,
     );
 
     await fileUploader.createFolder();
