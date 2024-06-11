@@ -5,10 +5,12 @@
   "files": [
     "LICENSE"
   ],
+  "workspaces": [
+    "apps/shinkai-app"
+  ],
   "scripts": {
     "postinstall": "npx patch-package"
   },
-  "workspaces": ["apps/shinkai-app"],
   "dependencies": {
     "@dnd-kit/core": "^6.1.0",
     "@dnd-kit/modifiers": "^7.0.0",
@@ -66,15 +68,15 @@
     "libsodium-wrappers-sumo": "^0.7.13",
     "lucide-react": "^0.379.0",
     "node-forge": ">=1.0.0",
-    "posthog-js": "^1.136.7",
     "ollama": "^0.5.1",
+    "posthog-js": "^1.136.7",
     "primereact": "^10.6.2",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-dropzone": "^14.2.3",
-    "react-intersection-observer": "^9.10.2",
     "react-hook-form": "^7.51.5",
     "react-image-crop": "^11.0.5",
+    "react-intersection-observer": "^9.10.2",
     "react-intl": "^6.4.5",
     "react-qrcode-logo": "^3.0.0",
     "react-router-dom": "^6.23.1",
@@ -160,10 +162,6 @@
     "vitest": "^1.6.0",
     "zip-lib": "^1.0.4"
   },
-  "engines": {
-    "node": "18",
-    "npm": "9"
-  },
   "optionalDependencies": {
     "@swc/core-darwin-arm64": "^1.5.22",
     "@swc/core-darwin-x64": "^1.5.22",
@@ -172,5 +170,9 @@
     "@swc/core-linux-arm64-musl": "^1.5.22",
     "@swc/core-linux-x64-gnu": "^1.5.22",
     "@swc/core-linux-x64-musl": "^1.5.22"
+  },
+  "engines": {
+    "node": "18",
+    "npm": "9"
   }
 }
