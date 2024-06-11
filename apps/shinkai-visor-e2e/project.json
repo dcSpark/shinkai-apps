@@ -4,19 +4,28 @@
   "sourceRoot": "apps/shinkai-visor-e2e/src",
   "projectType": "application",
   "tags": [],
-  "implicitDependencies": ["shinkai-visor"],
+  "implicitDependencies": [
+    "shinkai-visor"
+  ],
   "targets": {
     "e2e": {
       "executor": "@nx/playwright:playwright",
-      "outputs": ["{workspaceRoot}/dist/.playwright/apps/shinkai-visor-e2e"],
+      "outputs": [
+        "{workspaceRoot}/dist/.playwright/apps/shinkai-visor-e2e"
+      ],
       "options": {
         "config": "apps/shinkai-visor-e2e/playwright.config.ts"
       }
     },
     "lint": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/linter:eslint",
+      "outputs": [
+        "{options.outputFile}"
+      ],
       "options": {
-        "command": "npx biome check --apply {projectRoot}"
+        "lintFilePatterns": [
+          "apps/shinkai-visor-e2e/**/*.{js,ts}"
+        ]
       }
     }
   }

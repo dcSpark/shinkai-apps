@@ -4,35 +4,59 @@
     "default": {
       "runner": "nx/tasks-runners/default",
       "options": {
-        "cacheableOperations": ["build", "lint", "test", "e2e"]
+        "cacheableOperations": [
+          "build",
+          "lint",
+          "test",
+          "e2e"
+        ]
       }
     }
   },
   "targetDefaults": {
     "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["production", "^production"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "production",
+        "^production"
+      ]
     },
     "lint": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx biome check --apply {projectRoot}"
-      }
+      "inputs": [
+        "default",
+        "{workspaceRoot}/.eslintrc.json",
+        "{workspaceRoot}/.eslintignore"
+      ]
     },
     "test": {
-      "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"]
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/jest.preset.js"
+      ]
     },
     "e2e": {
-      "inputs": ["default", "^production"],
+      "inputs": [
+        "default",
+        "^production"
+      ],
       "cache": true
     },
     "@nx/vite:test": {
       "cache": true,
-      "inputs": ["default", "^production"]
+      "inputs": [
+        "default",
+        "^production"
+      ]
     }
   },
   "namedInputs": {
-    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals"
+    ],
     "production": [
       "default",
       "!{projectRoot}/.eslintrc.json",
@@ -50,6 +74,7 @@
     "@nx/react": {
       "application": {
         "babel": true,
+        "linter": "eslint",
         "style": "css",
         "bundler": "webpack"
       },
@@ -62,5 +87,21 @@
         "unitTestRunner": "none"
       }
     }
-  }
+  },
+  "plugins": [
+    {
+      "plugin": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "lint",
+        "extensions": [
+          "ts",
+          "tsx",
+          "js",
+          "jsx",
+          "html",
+          "vue"
+        ]
+      }
+    }
+  ]
 }

@@ -4,7 +4,9 @@
   "sourceRoot": "apps/shinkai-app-e2e/src",
   "projectType": "application",
   "tags": [],
-  "implicitDependencies": ["shinkai-app"],
+  "implicitDependencies": [
+    "shinkai-app"
+  ],
   "targets": {
     "e2e": {
       "executor": "@nx/cypress:cypress",
@@ -23,9 +25,14 @@
       }
     },
     "lint": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/linter:eslint",
+      "outputs": [
+        "{options.outputFile}"
+      ],
       "options": {
-        "command": "npx biome check --apply {projectRoot}"
+        "lintFilePatterns": [
+          "apps/shinkai-app-e2e/**/*.{js,ts}"
+        ]
       }
     }
   }

@@ -7,7 +7,9 @@
   "targets": {
     "build": {
       "executor": "@nx/vite:build",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "defaultConfiguration": "production",
       "options": {
         "outputPath": "dist/apps/shinkai-visor"
@@ -24,7 +26,9 @@
       }
     },
     "serve": {
-      "dependsOn": ["shinkai-message-ts:build"],
+      "dependsOn": [
+        "shinkai-message-ts:build"
+      ],
       "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
@@ -50,16 +54,23 @@
     },
     "test": {
       "executor": "@nx/vite:test",
-      "outputs": ["{options.reportsDirectory}"],
+      "outputs": [
+        "{options.reportsDirectory}"
+      ],
       "options": {
         "passWithNoTests": true,
         "reportsDirectory": "../../coverage/apps/shinkai-visor"
       }
     },
     "lint": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/linter:eslint",
+      "outputs": [
+        "{options.outputFile}"
+      ],
       "options": {
-        "command": "npx biome check --apply {projectRoot}"
+        "lintFilePatterns": [
+          "apps/shinkai-visor/**/*.{ts,tsx,js,jsx}"
+        ]
       }
     },
     "serve-static": {

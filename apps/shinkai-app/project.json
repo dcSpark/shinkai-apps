@@ -46,6 +46,17 @@
         "development": {},
         "production": {}
       }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": [
+        "{options.outputFile}"
+      ],
+      "options": {
+        "lintFilePatterns": [
+          "apps/shinkai-app/**/*.{ts,tsx,js,jsx}"
+        ]
+      }
     }
   },
   "tags": []

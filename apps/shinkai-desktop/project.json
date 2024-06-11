@@ -10,7 +10,9 @@
       "defaultConfiguration": "development",
       "options": {
         "cwd": "apps/shinkai-desktop",
-        "commands": ["npx tauri build --verbose"]
+        "commands": [
+          "npx tauri build --verbose"
+        ]
       },
       "configurations": {
         "development": {},
@@ -36,7 +38,7 @@
         "cwd": "apps/shinkai-desktop",
         "commands": [
           "cd src-tauri && cargo check",
-          "npx biome check --apply ."
+          "npx lint"
         ],
         "parallel": true
       },
