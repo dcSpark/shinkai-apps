@@ -2,6 +2,7 @@ import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/ge
 import { PostHogProvider, usePostHog } from 'posthog-js/react';
 import React, { useEffect } from 'react';
 
+import config from '../config';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 
@@ -18,7 +19,7 @@ export const AnalyticsProvider = ({
   const optInAnalytics = useSettings((state) => state.optInAnalytics);
   const posthog = usePostHog();
 
-  const posthogApiKey = import.meta.env.VITE_POSTHOG_API_KEY;
+  const posthogApiKey = config.posthogApiKey;
 
   const options = {
     api_host: 'https://us.i.posthog.com',
@@ -26,7 +27,7 @@ export const AnalyticsProvider = ({
     disable_session_recording: true,
     autocapture: false,
     loaded: () => {
-      if (import.meta.env.DEV) posthog.debug();
+      if (config.isDev) posthog.debug();
     },
     opt_out_capturing_by_default: false,
   };
@@ -40,10 +41,7 @@ export const AnalyticsProvider = ({
   }, [optInAnalytics, posthog]);
 
   return optInAnalytics && posthogApiKey ? (
-    <PostHogProvider
-      apiKey={import.meta.env.VITE_POSTHOG_API_KEY}
-      options={options}
-    >
+    <PostHogProvider apiKey={posthogApiKey} options={options}>
       {children}
     </PostHogProvider>
   ) : (
@@ -88,7 +86,7 @@ export const useAnalytics = () => {
     eventProps: AnalyticEventProps<TEventName>,
   ) {
     // Only send analytic events on production
-    if (import.meta.env.MODE !== 'production') {
+    if (!config.isProduction) {
       return;
     }
 

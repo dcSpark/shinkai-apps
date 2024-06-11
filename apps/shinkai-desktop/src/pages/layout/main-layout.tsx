@@ -29,12 +29,7 @@ import {
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion, TargetAndTransition } from 'framer-motion';
-import {
-  ArrowLeftToLine,
-  ArrowRightToLine,
-  BotIcon,
-  PlusIcon,
-} from 'lucide-react';
+import { ArrowLeftToLine, ArrowRightToLine, BotIcon } from 'lucide-react';
 import React, { Fragment, useEffect, useState } from 'react';
 import {
   Link,
@@ -48,6 +43,7 @@ import { toast } from 'sonner';
 import { ResourcesBanner } from '../../components/hardware-capabilities/resources-banner';
 import { UpdateBanner } from '../../components/hardware-capabilities/update-banner';
 import OnboardingStepper from '../../components/onboarding/onboarding';
+import config from '../../config';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
 
@@ -264,13 +260,13 @@ export function MainNav() {
       title: 'Browse Subscriptions',
       href: '/public-subscriptions',
       icon: <BrowseSubscriptionIcon className="h-5 w-5" />,
-      disabled: import.meta.env.PROD,
+      disabled: config.isProduction,
     },
     {
       title: 'My Subscriptions',
       href: '/my-subscriptions',
       icon: <MySubscriptionsIcon className="h-5 w-5" />,
-      disabled: import.meta.env.PROD,
+      disabled: config.isProduction,
     },
   ].filter(Boolean) as NavigationLink[];
 
