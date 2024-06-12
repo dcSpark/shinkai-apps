@@ -213,10 +213,11 @@ export const MessageList = ({
                           )}
                         </span>
                       </div>
-                      <div className="flex flex-col">
+                      <div className="flex flex-col gap-10">
                         {messages.map((message) => {
                           return (
                             <div
+                              className="relative bg-gray-400"
                               data-testid={`message-${
                                 message.isLocal ? 'local' : 'remote'
                               }-${message.hash}`}
@@ -229,6 +230,10 @@ export const MessageList = ({
                                 }
                                 regenerateLastMessage={regenerateLastMessage}
                               />
+                              <p className="text-gray-80 absolute bottom-0 text-sm">
+                                hashMessage: {message.hash} <br />
+                                parentHash: {message.parentHash}
+                              </p>
                             </div>
                           );
                         })}

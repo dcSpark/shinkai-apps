@@ -14,7 +14,7 @@ import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/m
 import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageWithFilesToInbox/useSendMessageWithFilesToInbox';
 import { useUpdateAgentInJob } from '@shinkai_network/shinkai-node-state/lib/mutations/updateAgentInJob/useUpdateAgentInJob';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
-import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
+import { useGetChatConversationBranchesWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversationBranches/useGetChatConversationWithPagination';
 import {
   Alert,
   AlertDescription,
@@ -109,7 +109,7 @@ const ChatConversation = () => {
     isPending: isChatConversationLoading,
     isFetchingPreviousPage,
     isSuccess: isChatConversationSuccess,
-  } = useGetChatConversationWithPagination({
+  } = useGetChatConversationBranchesWithPagination({
     nodeAddress: auth?.node_address ?? '',
     inboxId: inboxId as string,
     shinkaiIdentity: auth?.shinkai_identity ?? '',

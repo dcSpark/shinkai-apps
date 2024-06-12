@@ -1,22 +1,44 @@
 import {
   getFileNames,
   getLastMessagesFromInbox,
+  getLastMessagesFromInboxWithBranches,
 } from '@shinkai_network/shinkai-message-ts/api';
 import type { ShinkaiMessage } from '@shinkai_network/shinkai-message-ts/models';
 import {
   getMessageContent,
   getMessageFilesInbox,
   isLocalMessage,
-} from '@shinkai_network/shinkai-message-ts/utils';
+} from '@shinkai_network/shinkai-message-ts/utils/shinkai_message_handler';
 
-import {
-  ChatConversationMessage,
-  GetChatConversationInput,
-  GetChatConversationOutput,
-} from './types';
-import { CONVERSATION_PAGINATION_LIMIT } from './useGetChatConversationWithPagination';
+import { ChatConversationMessage } from '../getChatConversation/types';
+import { CONVERSATION_PAGINATION_LIMIT } from '../getChatConversation/useGetChatConversationWithPagination';
+import { GetChatConversationBranchesInput } from './types';
 
-export const getChatConversation = async ({
+type ResponseItem = {
+  hash: string;
+  inboxId: string;
+  content: string;
+  sender: { avatar: string };
+  isLocal: boolean;
+  scheduledTime: string;
+  parentHash?: string;
+};
+
+function flattenMessagesWithParentHash(
+  messages: ResponseItem[][],
+): ResponseItem[] {
+  const flattenedMessages: ResponseItem[] = [];
+
+  messages.forEach((messageGroup, index) => {
+    messageGroup.forEach((message, subIndex) => {
+      flattenedMessages.push(message);
+    });
+  });
+
+  return flattenedMessages;
+}
+
+export const getChatConversationBranches = async ({
   nodeAddress,
   inboxId,
   count = CONVERSATION_PAGINATION_LIMIT,
@@ -26,8 +48,8 @@ export const getChatConversation = async ({
   profile_encryption_sk,
   profile_identity_sk,
   node_encryption_pk,
-}: GetChatConversationInput): Promise<GetChatConversationOutput> => {
-  const data: ShinkaiMessage[] = await getLastMessagesFromInbox(
+}: GetChatConversationBranchesInput) => {
+  const data: ShinkaiMessage[][] = await getLastMessagesFromInboxWithBranches(
     nodeAddress,
     inboxId,
     count,
@@ -40,8 +62,22 @@ export const getChatConversation = async ({
       node_encryption_pk,
     },
   );
+
+  console.log(
+    '===>',
+    data.map((x) =>
+      x.map((y) => {
+        const content = getMessageContent(y);
+        return {
+          content: content.split('20'),
+        };
+      }),
+    ),
+  );
+  const flattenMessages: ShinkaiMessage[] = data.flat(1);
+
   const transformedMessagePromises: Promise<ChatConversationMessage>[] =
-    data.map(async (shinkaiMessage) => {
+    flattenMessages.map(async (shinkaiMessage) => {
       const filesInbox = getMessageFilesInbox(shinkaiMessage);
       const content = getMessageContent(shinkaiMessage);
       const isLocal = isLocalMessage(shinkaiMessage, shinkaiIdentity, profile);
@@ -91,5 +127,14 @@ export const getChatConversation = async ({
       }
       return message;
     });
-  return Promise.all(transformedMessagePromises);
+  const messages = await Promise.all(transformedMessagePromises);
+  // filter out messages if a message is repeated by its hash
+  const uniqueMessages = messages.filter(
+    (message, index, self) =>
+      index ===
+      self.findIndex(
+        (t) => t.hash === message.hash && t.parentHash === message.parentHash,
+      ),
+  );
+  return uniqueMessages;
 };
