@@ -49,7 +49,7 @@ export const test = base.extend<{
     console.log(`extension is installed extensionId:${extensionId}`);
     await use(extensionId);
   },
-  // biome-ignore lint/correctness/noUnusedVariables:
+
   page: async ({ page, extensionId }, use) => {
     await page.goto('/');
     // Required because a new tab is created after install the extension
@@ -58,7 +58,6 @@ export const test = base.extend<{
     await page.waitForLoadState('networkidle');
     await use(page);
   },
-  // biome-ignore lint/correctness/noUnusedVariables:
   popup: async ({ context, page, worker, extensionId }, use) => {
     await page.bringToFront();
     // eslint-disable-next-line playwright/no-networkidle

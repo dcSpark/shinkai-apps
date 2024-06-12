@@ -10,7 +10,6 @@
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 declare namespace Cypress {
-  // biome-ignore lint/correctness/noUnusedVariables: <explanation>
   interface Chainable<Subject> {
     getDataCy(...args: Parameters<typeof cy.get>): ReturnType<typeof cy.get>;
   }

@@ -137,7 +137,6 @@ export const summarizePage = async (
   sendMessage(message);
 };
 export const sendCaptureToAgent = async (
-  // biome-ignore lint/correctness/noUnusedVariables:
   info: chrome.contextMenus.OnClickData | undefined,
   tab: chrome.tabs.Tab | undefined,
 ) => {

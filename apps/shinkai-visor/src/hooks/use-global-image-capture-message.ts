@@ -7,9 +7,11 @@ export const useGlobalImageCaptureChromeMessage = ({
   capture: ({
     image,
     finishCapture,
-  }: { image: string; finishCapture: (image: string) => void }) => void;
+  }: {
+    image: string;
+    finishCapture: (image: string) => void;
+  }) => void;
 }) => {
-  // biome-ignore lint/correctness/noUnusedVariables: <explanation>
   useChromeMessage(async (message, sender, sendResponse) => {
     switch (message.type) {
       case ServiceWorkerInternalMessageType.CaptureImage: {

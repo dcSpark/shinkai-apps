@@ -8,7 +8,7 @@ import { useChromeMessage } from './use-chrome-message';
 
 export const useGlobalPopupChromeMessage = () => {
   const navigate = useNavigate();
-  // biome-ignore lint/correctness/noUnusedVariables:
+
   useChromeMessage(async (message, sender) => {
     switch (message.type) {
       case ServiceWorkerInternalMessageType.SendToAgent: {

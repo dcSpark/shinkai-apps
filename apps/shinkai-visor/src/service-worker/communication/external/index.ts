@@ -15,12 +15,12 @@ const originIsGloballyAllowed = (origin: string): boolean =>
   GLOBALLY_ALLOWED_ORIGINS.some((globallyAllowedOrigin) =>
     globallyAllowedOrigin.test(origin),
   );
-// biome-ignore lint/correctness/noUnusedVariables: <explanation>
+
 const originIsAllowed = (origin: string): boolean => {
   // Implements specific auth. IE control permissions o
   return false;
 };
-// biome-ignore lint/correctness/noUnusedVariables: <explanation>
+
 const originHasPermission = (origin: string): boolean => {
   return true;
 };
