@@ -6,7 +6,11 @@
   "main": "src/index.js",
   "types": "src/index.d.ts",
   "typings": "src/index.d.ts",
-  "keywords": ["shinkai", "shinkai-message", "shinkai-message wrapper"],
+  "keywords": [
+    "shinkai",
+    "shinkai-message",
+    "shinkai-message wrapper"
+  ],
   "publishConfig": {
     "access": "public"
   },
@@ -44,12 +48,24 @@
   },
   "typesVersions": {
     "*": {
-      ".": ["index.d.ts"],
-      "api": ["api.d.ts"],
-      "models": ["models.d.ts"],
-      "utils": ["utils.d.ts"],
-      "wasm": ["wasm.d.ts"],
-      "cryptography": ["cryptography.d.ts"]
+      ".": [
+        "index.d.ts"
+      ],
+      "api": [
+        "api.d.ts"
+      ],
+      "models": [
+        "models.d.ts"
+      ],
+      "utils": [
+        "utils.d.ts"
+      ],
+      "wasm": [
+        "wasm.d.ts"
+      ],
+      "cryptography": [
+        "cryptography.d.ts"
+      ]
     }
   }
 }

@@ -1,4 +1,5 @@
-// @ts-expect-error fix import
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import sodium from 'libsodium-wrappers-sumo';
 
 export async function encryptMessageWithPassphrase(
