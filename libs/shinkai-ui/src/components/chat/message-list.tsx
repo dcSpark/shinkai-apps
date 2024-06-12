@@ -31,6 +31,7 @@ export const MessageList = ({
   fetchPreviousPage,
   fromPreviousMessagesRef,
   containerClassName,
+  regenerateLastMessage,
 }: {
   noMoreMessageLabel: string;
   isSuccess: boolean;
@@ -49,6 +50,7 @@ export const MessageList = ({
       Error
     >
   >;
+  regenerateLastMessage: (key1: string, key: string) => void;
   containerClassName?: string;
 }) => {
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
@@ -220,7 +222,13 @@ export const MessageList = ({
                               }-${message.hash}`}
                               key={`${index}-${message.scheduledTime}`}
                             >
-                              <Message message={message} />
+                              <Message
+                                message={message}
+                                previousMessage={
+                                  messages[messages.indexOf(message) - 1]
+                                }
+                                regenerateLastMessage={regenerateLastMessage}
+                              />
                             </div>
                           );
                         })}
