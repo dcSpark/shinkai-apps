@@ -60,8 +60,8 @@ import { useShinkaiNodeEventsToast } from '../../lib/shinkai-node-manager/shinka
 import {
   errorOllamaModelsSyncToast,
   errorRemovingShinkaiNodeStorageToast,
-  shinkaiNodeStartErrorToast,
   shinkaiNodeStartedToast,
+  shinkaiNodeStartErrorToast,
   shinkaiNodeStopErrorToast,
   shinkaiNodeStoppedToast,
   startingShinkaiNodeToast,

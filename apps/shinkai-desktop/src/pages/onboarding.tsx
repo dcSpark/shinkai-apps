@@ -9,11 +9,11 @@ import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/ge
 import {
   Button,
   ButtonProps,
+  buttonVariants,
   ErrorMessage,
   Form,
   FormField,
   TextField,
-  buttonVariants,
 } from '@shinkai_network/shinkai-ui';
 import {
   submitRegistrationNoCodeError,

@@ -1,16 +1,16 @@
 import { FunctionKey } from '@shinkai_network/shinkai-node-state/lib/constants';
 import {
   QueryObserverOptions,
-  UseMutationOptions,
-  UseQueryResult,
   useMutation,
+  UseMutationOptions,
   useQuery,
   useQueryClient,
+  UseQueryResult,
 } from '@tanstack/react-query';
 import {
+  Config as OllamaConfig,
   ListResponse,
   Ollama,
-  Config as OllamaConfig,
   ProgressResponse,
   StatusResponse,
 } from 'ollama/browser';

@@ -1,8 +1,8 @@
 import { useGetAvailableSharedFoldersWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getAvailableSharedItems/useGetAvailableSharedFoldersWithPagination';
 import {
   Button,
-  ScrollArea,
   buttonVariants,
+  ScrollArea,
 } from '@shinkai_network/shinkai-ui';
 import { SharedFolderIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';

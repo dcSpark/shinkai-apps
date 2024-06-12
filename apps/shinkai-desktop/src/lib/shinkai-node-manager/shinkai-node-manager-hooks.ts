@@ -6,16 +6,16 @@ import {
   ShinkaiNodeManagerEventMap,
 } from './shinkai-node-manager-client-types';
 import {
-  ollamaStartErrorToast,
   ollamaStartedToast,
+  ollamaStartErrorToast,
   ollamaStopErrorToast,
   ollamaStoppedToast,
   pullingModelDoneToast,
   pullingModelErrorToast,
   pullingModelProgressToast,
   pullingModelStartToast,
-  shinkaiNodeStartErrorToast,
   shinkaiNodeStartedToast,
+  shinkaiNodeStartErrorToast,
   shinkaiNodeStopErrorToast,
   shinkaiNodeStoppedToast,
   startingOllamaToast,

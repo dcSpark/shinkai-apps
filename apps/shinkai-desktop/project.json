@@ -38,7 +38,7 @@
         "cwd": "apps/shinkai-desktop",
         "commands": [
           "cd src-tauri && cargo check",
-          "npx lint"
+          "npx eslint --ext .js,.jsx,.ts,.tsx . --ignore-path .gitignore"
         ],
         "parallel": true
       },

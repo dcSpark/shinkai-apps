@@ -1,11 +1,11 @@
 import {
   QueryClient,
   QueryObserverOptions,
-  UseMutationOptions,
-  UseQueryResult,
   useMutation,
+  UseMutationOptions,
   useQuery,
   useQueryClient,
+  UseQueryResult,
 } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api';
 import { relaunch } from '@tauri-apps/api/process';

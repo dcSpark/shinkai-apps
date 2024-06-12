@@ -41,7 +41,7 @@ import {
   JobBubbleIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { Edit3, PlusIcon } from 'lucide-react';
+import { Edit3 } from 'lucide-react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, Outlet, useMatch, useNavigate } from 'react-router-dom';
@@ -237,7 +237,7 @@ const MessageButton = ({
   ) : (
     <Link
       className={cn(
-        'text-gray-80 group group flex h-[46px] w-full items-center gap-2 rounded-lg px-2 py-2 hover:bg-gray-300',
+        'text-gray-80 group flex h-[46px] w-full items-center gap-2 rounded-lg px-2 py-2 hover:bg-gray-300',
         match && 'bg-gray-300 text-white',
       )}
       key={inboxId}

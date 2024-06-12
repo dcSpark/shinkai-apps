@@ -6,6 +6,7 @@ import {
 } from '@shinkai_network/shinkai-node-state/forms/settings/restore-connection';
 import {
   Button,
+  buttonVariants,
   ErrorMessage,
   FileUploader,
   Form,
@@ -15,7 +16,6 @@ import {
   FormLabel,
   FormMessage,
   TextField,
-  buttonVariants,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { ArrowLeft } from 'lucide-react';

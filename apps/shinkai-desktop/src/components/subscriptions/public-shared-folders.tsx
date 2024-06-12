@@ -222,7 +222,7 @@ export default PublicSharedFolderSubscription;
 
 function transformTreeNode(
   node: FolderTreeNode,
-  parentPath: string = '',
+  parentPath = '',
 ): PrimeTreeNode {
   const path = parentPath ? `${parentPath}/${node.name}` : node.path;
   return {

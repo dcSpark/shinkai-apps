@@ -46,8 +46,8 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import {
   DirectoryTypeIcon,
-  FileTypeIcon,
   fileIconMap,
+  FileTypeIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { getFileExt } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';

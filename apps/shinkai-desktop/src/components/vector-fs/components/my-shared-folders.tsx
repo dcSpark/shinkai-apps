@@ -1,12 +1,12 @@
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { useGetMySharedFolders } from '@shinkai_network/shinkai-node-state/lib/queries/getMySharedFolders/useGetMySharedFolders';
 import {
+  buttonVariants,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
   ScrollArea,
-  buttonVariants,
 } from '@shinkai_network/shinkai-ui';
 import { SharedFolderIcon } from '@shinkai_network/shinkai-ui/assets';
 import { formatDateToUSLocaleString } from '@shinkai_network/shinkai-ui/helpers';
@@ -15,7 +15,7 @@ import { Link2Off } from 'lucide-react';
 import React from 'react';
 
 import { useAuth } from '../../../store/auth';
-import { VectorFSLayout, useVectorFsStore } from '../context/vector-fs-context';
+import { useVectorFsStore,VectorFSLayout } from '../context/vector-fs-context';
 import { VectorFsFolderAction } from './vector-fs-drawer';
 import VectorFsToggleLayout from './vector-fs-toggle-layout';
 
