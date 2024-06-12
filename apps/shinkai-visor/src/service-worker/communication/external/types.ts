@@ -2,6 +2,7 @@ import { Agent, SmartInbox } from '@shinkai_network/shinkai-message-ts/models';
 import { ZodSchema } from 'zod';
 
 import { ACTIONS_MAP } from './actions';
+
 export enum ServiceWorkerExternalMessageType {
   IsInstalled = 'is-installed',
   InstallToolkit = 'install-toolkit',
@@ -34,21 +35,26 @@ export interface ServiceWorkerExternalMessageInstallToolkit {
   };
   url: string;
 }
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ServiceWorkerExternalMessageInstallToolkitResponse {}
 
 export interface ServiceWorkerExternalMessageIsNodePristine {
   nodeAddress: string;
 }
+
 export interface ServiceWorkerExternalMessageIsNodePristineResponse {
   isPristine: boolean;
 }
 
 export type ServiceWorkerExternalMessageGetProfileAgents = never;
+
 export interface ServiceWorkerExternalMessageGetProfileAgentsResponse {
   agents: Agent[];
 }
 
 export type ServiceWorkerExternalMessageGetProfileInboxes = never;
+
 export interface ServiceWorkerExternalMessageGetProfileInboxesResponse {
   inboxes: SmartInbox[];
 }
@@ -57,6 +63,7 @@ export interface ServiceWorkerExternalMessageQuickConnectionIntent {
   nodeAddress: string;
   tabId: number;
 }
+
 export type ServiceWorkerExternalMessageQuickConnectionIntentResponse = void;
 
 export type ServiceWorkerExternalMessageIsInstalledResponse = {
@@ -67,6 +74,7 @@ export type ServiceWorkerExternalMessageIsInstalledResponse = {
 export interface ServiceWorkerExternalMessageIsConnected {
   nodeAddress: string;
 }
+
 export type ServiceWorkerExternalMessageIsConnectedResponse = {
   isNodeConnected: boolean;
 };
@@ -82,23 +90,28 @@ export enum ServiceWorkerExternalMessageResponseStatus {
   Error = 'error',
   Success = 'success',
 }
+
 export interface ServiceWorkerExternalMessageResponseUnauthorized {
   status: ServiceWorkerExternalMessageResponseStatus.Unauthorized;
   message: string;
 }
+
 export interface ServiceWorkerExternalMessageResponseForbidden {
   status: ServiceWorkerExternalMessageResponseStatus.Forbidden;
   message: string;
 }
+
 export interface ServiceWorkerExternalMessageResponseBadRequest {
   status: ServiceWorkerExternalMessageResponseStatus.BadRequest;
   message: string;
   errors: { [field: string]: string[] | undefined };
 }
+
 export interface ServiceWorkerExternalMessageResponseError {
   status: ServiceWorkerExternalMessageResponseStatus.Error;
   message: string;
 }
+
 export type ServiceWorkerExternalMessageResponsePayload = ReturnType<
   (typeof ACTIONS_MAP)[ServiceWorkerExternalMessageType]['resolver']
 >;

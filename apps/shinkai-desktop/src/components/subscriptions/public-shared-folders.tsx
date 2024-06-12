@@ -222,7 +222,7 @@ export default PublicSharedFolderSubscription;
 
 function transformTreeNode(
   node: FolderTreeNode,
-  parentPath: string = '',
+  parentPath = '',
 ): PrimeTreeNode {
   const path = parentPath ? `${parentPath}/${node.name}` : node.path;
   return {
@@ -427,9 +427,9 @@ export const SubscriptionInfo = ({
       <div className="text-gray-80 flex items-center gap-2 text-xs">
         <a
           className="transition-all hover:text-white hover:underline"
-          href={`https://shinkai-contracts.pages.dev/identity/${nodeName.split(
-            '@@',
-          )?.[1]}`}
+          href={`https://shinkai-contracts.pages.dev/identity/${
+            nodeName.split('@@')?.[1]
+          }`}
           onClick={(e) => {
             e.preventDefault();
           }}

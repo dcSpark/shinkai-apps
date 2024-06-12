@@ -24,15 +24,17 @@ import {
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
-import { useHistory, useLocation } from 'react-router';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { SetupData, useAuth } from '../../store/auth/auth';
 import { ConnectionMethodOption } from '../connection-method-option/connection-method-option';
 import { Header } from '../header/header';
 
 export const ConnectMethodQuickStart = () => {
-  const history = useHistory();
-  const location = useLocation<{ nodeAddress: string }>();
+  const navigate = useNavigate();
+  const location = useLocation() as {
+    state: { nodeAddress: string };
+  };
   const setAuth = useAuth((state) => state.setAuth);
   const DEFAULT_NODE_ADDRESS =
     location.state?.nodeAddress ?? 'http://127.0.0.1:9550';
@@ -64,7 +66,7 @@ export const ConnectMethodQuickStart = () => {
           node_encryption_pk: response.data?.encryption_public_key ?? '',
         };
         setAuth(authData);
-        history.replace('/inboxes');
+        navigate('/inboxes');
       } else if (response.status === 'non-pristine') {
         submitRegistrationNoCodeNonPristineError();
       } else {
@@ -93,7 +95,7 @@ export const ConnectMethodQuickStart = () => {
   //   history.push('/nodes/connect/method/qr-code');
   // };
   const selectRestoreMethod = () => {
-    history.push('/nodes/connect/method/restore-connection');
+    navigate('/nodes/connect/method/restore-connection');
   };
 
   return (

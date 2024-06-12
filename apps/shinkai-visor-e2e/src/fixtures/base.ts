@@ -49,6 +49,7 @@ export const test = base.extend<{
     console.log(`extension is installed extensionId:${extensionId}`);
     await use(extensionId);
   },
+
   page: async ({ page, extensionId }, use) => {
     await page.goto('/');
     // Required because a new tab is created after install the extension
@@ -71,7 +72,6 @@ export const test = base.extend<{
     );
     await page.getByTestId('action-button').click();
 
-
     let popupPage: Page | undefined = undefined;
     await waitFor(
       async () => {
@@ -84,6 +84,7 @@ export const test = base.extend<{
               new RegExp(`^chrome-extension:\/\/${extensionId}.*popup.html$`),
             ),
           );
+        // eslint-disable-next-line playwright/no-standalone-expect
         await expect(popupPage).toBeDefined();
       },
       500,

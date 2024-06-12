@@ -12,10 +12,17 @@ test.describe.configure({ mode: 'serial' });
 test.beforeEach(({}, testInfo) => {
   console.log(`Executing ${testInfo.title}`);
 });
+// eslint-disable-next-line playwright/valid-describe-callback
 test.describe('popup', popupTests);
+// eslint-disable-next-line playwright/valid-describe-callback
 test.describe('welcome', welcomeTests);
+// eslint-disable-next-line playwright/valid-describe-callback
 test.describe('connect method quick start', connectMethodQuickStartTests);
+// eslint-disable-next-line playwright/valid-describe-callback
 test.describe('agents', agentTests);
+// eslint-disable-next-line playwright/valid-describe-callback
 test.describe('jobs', jobsTests);
+// eslint-disable-next-line playwright/valid-describe-callback
 test.describe('external communication', extenralCommunicationTests);
+// eslint-disable-next-line playwright/valid-describe-callback
 test.describe('storage', storageTests);

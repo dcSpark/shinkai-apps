@@ -1,7 +1,7 @@
 export async function copyToClipboard(text: string) {
   try {
     await navigator.clipboard.writeText(text);
-  } catch (error) {
+  } catch {
     // Fallback for browsers where the Clipboard API is not supported
     const textarea = document.createElement('textarea');
     textarea.style.position = 'fixed';

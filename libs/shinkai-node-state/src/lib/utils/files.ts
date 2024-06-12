@@ -4,8 +4,7 @@ import { VRFolder, VRItem } from '../queries/getVRPathSimplified/types';
 
 export function transformDataToTreeNodes(
   data: VRFolder,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  parentPath: string = '/',
+  parentPath = '/',
 ): TreeNode[] {
   const result: TreeNode[] = [];
 

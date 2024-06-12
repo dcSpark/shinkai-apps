@@ -1,9 +1,7 @@
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import react from '@vitejs/plugin-react';
-import { resolve } from 'path'
+import { resolve } from 'path';
 import { defineConfig } from 'vite';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
 import wasm from 'vite-plugin-wasm';
 
 // https://vitejs.dev/config/
@@ -48,7 +46,10 @@ export default defineConfig(() => ({
     rollupOptions: {
       input: {
         index: resolve(__dirname, 'index.html'),
-        shinkai_node_manager: resolve(__dirname, 'src/windows/shinkai-node-manager/index.html'),
+        shinkai_node_manager: resolve(
+          __dirname,
+          'src/windows/shinkai-node-manager/index.html',
+        ),
       },
     },
   },

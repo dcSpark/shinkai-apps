@@ -27,9 +27,7 @@ export const UpdateBanner = ({ className }: { className?: string }) => {
     refetchInterval: CHECK_UPDATE_INTERVAL_MS,
   });
   const { mutateAsync: installUpdate, isPending: isInstallUpdatePending } =
-    useInstallUpdateMutation({
-      onSuccess: () => {},
-    });
+    useInstallUpdateMutation({});
   const { mutateAsync: relaunch } = useRelaunchMutation();
 
   const applyUpdate = async () => {
@@ -53,9 +51,7 @@ export const UpdateBanner = ({ className }: { className?: string }) => {
             <span className="font-bold">v{checkUpdate?.manifest?.version}</span>{' '}
             is ready to be installed.
           </div>
-          <div className=''>
-            This will restart the application.
-          </div>
+          <div className="">This will restart the application.</div>
         </div>
       </AlertDescription>
     </Alert>
@@ -76,8 +72,12 @@ export const UpdateBanner = ({ className }: { className?: string }) => {
                 )}
                 variant="success"
               >
-                {isInstallUpdatePending ? (<Loader2 className='h-5 w-5 shrink-0 animate-spin' />) : <ArrowDown className="h-5 w-5 shrink-0" />}
-                
+                {isInstallUpdatePending ? (
+                  <Loader2 className="h-5 w-5 shrink-0 animate-spin" />
+                ) : (
+                  <ArrowDown className="h-5 w-5 shrink-0" />
+                )}
+
                 <AnimatePresence>
                   {sidebarExpanded && (
                     <motion.span

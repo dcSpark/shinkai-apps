@@ -7,20 +7,30 @@
   "targets": {
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
+      "outputs": [
+        "{options.outputFile}"
+      ],
       "options": {
-        "lintFilePatterns": ["libs/shinkai-ui/**/*.{ts,tsx,js,jsx}"]
+        "lintFilePatterns": [
+          "libs/shinkai-ui/**/*.{ts,tsx,js,jsx}"
+        ]
       }
     },
     "build": {
       "executor": "@nx/rollup:rollup",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
         "outputPath": "dist/libs/shinkai-ui",
         "tsConfig": "libs/shinkai-ui/tsconfig.lib.json",
         "project": "libs/shinkai-ui/package.json",
         "entryFile": "libs/shinkai-ui/src/index.ts",
-        "external": ["react", "react-dom", "react/jsx-runtime"],
+        "external": [
+          "react",
+          "react-dom",
+          "react/jsx-runtime"
+        ],
         "rollupConfig": "@nx/react/plugins/bundle-rollup",
         "compiler": "babel",
         "assets": [

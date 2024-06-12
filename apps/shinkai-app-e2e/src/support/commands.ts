@@ -10,7 +10,6 @@
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 declare namespace Cypress {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface Chainable<Subject> {
     getDataCy(...args: Parameters<typeof cy.get>): ReturnType<typeof cy.get>;
   }
@@ -18,7 +17,7 @@ declare namespace Cypress {
 //
 // -- This is a parent command --
 Cypress.Commands.add('getDataCy', (selector, ...args) => {
-  return cy.get(`[data-cy=${selector}]`, ...args)
+  return cy.get(`[data-cy=${selector}]`, ...args);
 });
 //
 // -- This is a child command --

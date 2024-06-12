@@ -28,6 +28,6 @@ export const sendMessageToInbox = async ({
       node_encryption_pk,
       profile_encryption_sk,
       profile_identity_sk,
-    }
+    },
   );
 };

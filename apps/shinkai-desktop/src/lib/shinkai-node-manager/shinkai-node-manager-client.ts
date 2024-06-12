@@ -21,7 +21,7 @@ export const shinkaiNodeQueryClient = new QueryClient();
 
 // Queries
 export const useShinkaiNodeIsRunningQuery = (
-  options?: QueryObserverOptions,
+  options?: Omit<QueryObserverOptions, 'queryKey'>,
 ): UseQueryResult<boolean, Error> => {
   const query = useQuery({
     queryKey: ['shinkai_node_is_running'],
@@ -32,7 +32,7 @@ export const useShinkaiNodeIsRunningQuery = (
 };
 export const useShinkaiNodeGetLastNLogsQuery = (
   input: { length: number },
-  options?: QueryObserverOptions,
+  options?: Omit<QueryObserverOptions, 'queryKey'>,
 ): UseQueryResult<LogEntry[], Error> => {
   const query = useQuery({
     queryKey: ['shinkai_node_get_last_n_logs'],
@@ -43,7 +43,7 @@ export const useShinkaiNodeGetLastNLogsQuery = (
   return { ...query } as UseQueryResult<LogEntry[], Error>;
 };
 export const useShinkaiNodeGetOptionsQuery = (
-  options?: QueryObserverOptions,
+  options?: Omit<QueryObserverOptions, 'queryKey'>,
 ): UseQueryResult<ShinkaiNodeOptions, Error> => {
   const query = useQuery({
     queryKey: ['shinkai_node_get_options'],
@@ -54,7 +54,7 @@ export const useShinkaiNodeGetOptionsQuery = (
   return { ...query } as UseQueryResult<ShinkaiNodeOptions, Error>;
 };
 export const useShinkaiNodeGetOllamaApiUrlQuery = (
-  options?: QueryObserverOptions,
+  options?: Omit<QueryObserverOptions, 'queryKey'>,
 ): UseQueryResult<string, Error> => {
   const query = useQuery({
     queryKey: ['shinkai_node_get_ollama_api_url'],

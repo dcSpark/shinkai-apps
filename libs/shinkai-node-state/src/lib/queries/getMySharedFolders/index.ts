@@ -1,6 +1,6 @@
 import { getMySharedFolders as getMySharedFoldersAPI } from '@shinkai_network/shinkai-message-ts/api';
 
-import { GetMySharedFoldersInput, GetMyShareFoldersOutput } from './types';
+import { GetMySharedFoldersInput,GetMyShareFoldersOutput } from './types';
 
 export const getMySharedFolders = async ({
   nodeAddress,

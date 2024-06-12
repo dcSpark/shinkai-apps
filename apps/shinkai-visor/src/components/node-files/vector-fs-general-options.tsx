@@ -247,7 +247,9 @@ export const UploadVRFilesAction = () => {
 };
 
 export const SaveWebpageToVectorFsAction = () => {
-  const location = useLocation<{ files: File[] }>();
+  const location = useLocation() as {
+    state: { files: File[] };
+  };
   const auth = useAuth((state) => state.auth);
   const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
 

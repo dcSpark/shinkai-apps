@@ -52,12 +52,15 @@ export const useShinkaiNodeStateChange = (
   );
 };
 
-export const mapEvent = (event: object | string): ShinkaiNodeManagerEventMap => {
-  if (
-    typeof event === 'object'
-  ) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return { type: Object.keys(event)[0] as ShinkaiNodeManagerEvent, payload: Object.values(event)[0] } as any;
+export const mapEvent = (
+  event: object | string,
+): ShinkaiNodeManagerEventMap => {
+  if (typeof event === 'object') {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return {
+      type: Object.keys(event)[0] as ShinkaiNodeManagerEvent,
+      payload: Object.values(event)[0],
+    } as any;
   } else {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return { type: event as ShinkaiNodeManagerEvent } as any;
@@ -112,7 +115,10 @@ export const useShinkaiNodeEventsToast = () => {
         pullingModelStartToast(shinkaiNodeEvent.payload.model);
         break;
       case ShinkaiNodeManagerEvent.PullingModelProgress:
-        pullingModelProgressToast(shinkaiNodeEvent.payload.model, shinkaiNodeEvent.payload.progress);
+        pullingModelProgressToast(
+          shinkaiNodeEvent.payload.model,
+          shinkaiNodeEvent.payload.progress,
+        );
         break;
       case ShinkaiNodeManagerEvent.PullingModelDone:
         pullingModelDoneToast(shinkaiNodeEvent.payload.model);

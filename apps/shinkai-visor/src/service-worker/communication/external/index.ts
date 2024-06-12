@@ -15,10 +15,12 @@ const originIsGloballyAllowed = (origin: string): boolean =>
   GLOBALLY_ALLOWED_ORIGINS.some((globallyAllowedOrigin) =>
     globallyAllowedOrigin.test(origin),
   );
+
 const originIsAllowed = (origin: string): boolean => {
   // Implements specific auth. IE control permissions o
   return false;
 };
+
 const originHasPermission = (origin: string): boolean => {
   return true;
 };

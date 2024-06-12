@@ -17,12 +17,12 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../store/auth/auth';
 
 export const CreateInbox = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const auth = useAuth((state) => state.auth);
   const intl = useIntl();
   const form = useForm<CreateDMFormSchema>({
@@ -34,7 +34,7 @@ export const CreateInbox = () => {
   });
   const { isPending, mutateAsync: createChat } = useCreateChat({
     onSuccess: (data) => {
-      history.replace(`/inboxes/${encodeURIComponent(data.inboxId)}`);
+      navigate(`/inboxes/${encodeURIComponent(data.inboxId)}`);
     },
   });
   const submit = (values: CreateDMFormSchema) => {

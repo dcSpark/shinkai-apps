@@ -1,5 +1,5 @@
 import { dataUrlToFile } from '@shinkai_network/shinkai-ui/helpers';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { ServiceWorkerInternalMessageType } from '../service-worker/communication/internal/types';
 import { useAuth } from '../store/auth/auth';
@@ -7,14 +7,15 @@ import { useSettings } from '../store/settings/settings';
 import { useChromeMessage } from './use-chrome-message';
 
 export const useGlobalPopupChromeMessage = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
+
   useChromeMessage(async (message, sender) => {
     switch (message.type) {
       case ServiceWorkerInternalMessageType.SendToAgent: {
         const params = new URLSearchParams({
           context: message?.data?.textContent,
         });
-        history.push({
+        navigate({
           pathname: '/inboxes/create-job',
           search: params.toString(),
         });
@@ -25,8 +26,7 @@ export const useGlobalPopupChromeMessage = () => {
           message.data.fileDataUrl,
           message.data.filename,
         );
-        history.push({
-          pathname: '/inboxes/create-job',
+        navigate('/inboxes/create-job', {
           state: { files: [file] },
         });
         break;
@@ -36,8 +36,7 @@ export const useGlobalPopupChromeMessage = () => {
           message.data.fileDataUrl,
           message.data.filename,
         );
-        history.push({
-          pathname: '/node-files',
+        navigate('/node-files', {
           state: { files: [file] },
         });
         break;
@@ -50,10 +49,8 @@ export const useGlobalPopupChromeMessage = () => {
           message.data.fileDataUrl,
           message.data.filename,
         );
-        history.push({
-          pathname: '/inboxes/create-job',
+        navigate(`/inboxes/create-job?${params.toString()}`, {
           state: { files: [file] },
-          search: params.toString(),
         });
         break;
       }
@@ -62,8 +59,7 @@ export const useGlobalPopupChromeMessage = () => {
           message.data.imageDataUrl,
           message.data.filename,
         );
-        history.push({
-          pathname: '/inboxes/create-job',
+        navigate('/inboxes/create-job', {
           state: { files: [imageFile] },
         });
         break;
@@ -73,8 +69,7 @@ export const useGlobalPopupChromeMessage = () => {
           message.data.imageDataUrl,
           message.data.filename,
         );
-        history.push({
-          pathname: '/inboxes/create-job',
+        navigate('/inboxes/create-job', {
           state: { files: [vrFile] },
         });
         break;
@@ -84,15 +79,13 @@ export const useGlobalPopupChromeMessage = () => {
           message.data.imageDataUrl,
           message.data.filename,
         );
-        history.push({
-          pathname: '/node-files',
+        navigate('/node-files', {
           state: { files: [vrFile] },
         });
         break;
       }
       case ServiceWorkerInternalMessageType.QuickConnectionIntent: {
-        history.push({
-          pathname: '/nodes/connect/method/quick-start',
+        navigate('/nodes/connect/method/quick-start', {
           state: { nodeAddress: message.data.nodeAddress },
         });
         break;
@@ -102,7 +95,7 @@ export const useGlobalPopupChromeMessage = () => {
         useSettings.persist.rehydrate();
         break;
       case ServiceWorkerInternalMessageType.ExportConnectionIntent: {
-        history.push({
+        navigate({
           pathname: '/settings/export-connection',
         });
         break;

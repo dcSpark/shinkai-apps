@@ -9,7 +9,7 @@ import {
 export const OPEN_SIDEPANEL_DELAY_MS = 600;
 
 export const sendVectorResourceFoundToVectorFs = async (
-  info: chrome.contextMenus.OnClickData | undefined,
+  _info: chrome.contextMenus.OnClickData | undefined,
   tab: chrome.tabs.Tab | undefined,
   vectorResourceUrl: string,
 ) => {
@@ -56,7 +56,7 @@ export const sendVectorResourceFoundToVectorFs = async (
   sendMessage(message);
 };
 export const sendVectorResourceFoundToAgent = async (
-  info: chrome.contextMenus.OnClickData | undefined,
+  _info: chrome.contextMenus.OnClickData | undefined,
   tab: chrome.tabs.Tab | undefined,
   vectorResourceUrl: string,
 ) => {
@@ -81,7 +81,7 @@ export const sendVectorResourceFoundToAgent = async (
   sendMessage(message);
 };
 export const sendPageToAgent = async (
-  info: chrome.contextMenus.OnClickData | undefined,
+  _info: chrome.contextMenus.OnClickData | undefined,
   tab: chrome.tabs.Tab | undefined,
 ) => {
   // At this point, agents can just process text
@@ -109,7 +109,7 @@ export const sendPageToAgent = async (
   sendMessage(message);
 };
 export const summarizePage = async (
-  info: chrome.contextMenus.OnClickData | undefined,
+  _info: chrome.contextMenus.OnClickData | undefined,
   tab: chrome.tabs.Tab | undefined,
 ) => {
   // At this point, agents can just process text

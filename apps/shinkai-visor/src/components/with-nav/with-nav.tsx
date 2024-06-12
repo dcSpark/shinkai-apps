@@ -1,13 +1,13 @@
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { PropsWithChildren, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../store/auth/auth';
 import NavBar from '../nav/nav';
 
-export const WithNav = (props: PropsWithChildren) => {
+export const WithNav = () => {
   const auth = useAuth((state) => state.auth);
   const location = useLocation();
 
@@ -42,7 +42,9 @@ export const WithNav = (props: PropsWithChildren) => {
       )}
     >
       <NavBar />
-      <div className="grow overflow-auto">{props.children}</div>
+      <div className="grow overflow-auto">
+        <Outlet />
+      </div>
     </div>
   );
 };

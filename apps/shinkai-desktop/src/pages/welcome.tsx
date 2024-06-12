@@ -1,4 +1,4 @@
-import { buttonVariants, Checkbox } from '@shinkai_network/shinkai-ui';
+import { buttonVariants,Checkbox } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Link } from 'react-router-dom';
 

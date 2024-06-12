@@ -19,7 +19,7 @@ import { useShinkaiNodeKillMutation } from '../shinkai-node-manager/shinkai-node
 
 // Queries
 export const useCheckUpdateQuery = (
-  options?: QueryObserverOptions,
+  options?: Omit<QueryObserverOptions, 'queryKey'>,
 ): UseQueryResult<UpdateResult, Error> => {
   const query = useQuery({
     ...options,

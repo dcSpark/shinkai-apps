@@ -1,10 +1,9 @@
+import { ShinkaiLogoIcon } from '@shinkai_network/shinkai-ui/assets';
 import { delay } from '@shinkai_network/shinkai-ui/helpers';
 import { XIcon } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { toast } from 'sonner';
 
-import shinkaiLogo from '../../assets/icons/shinkai-min.svg';
-import { srcUrlResolver } from '../../helpers/src-url-resolver';
 import { OPEN_SIDEPANEL_DELAY_MS } from '../../service-worker/action';
 import { ServiceWorkerInternalMessageType } from '../../service-worker/communication/internal/types';
 
@@ -14,6 +13,7 @@ export enum VectorResourceType {
   Network = 'network',
   Http = 'http',
 }
+
 export type VectorResourceMetatag =
   | {
       'element-type':
@@ -113,11 +113,8 @@ const VrNotification = ({
       }}
     >
       <div className="flex items-center gap-1.5">
-        <img
-          alt="shinkai-app-logo select-none"
-          className={'h-[25px] w-[25px] select-none'}
-          src={srcUrlResolver(shinkaiLogo)}
-        />
+        <ShinkaiLogoIcon className={'h-[25px] w-[25px] select-none'} />
+
         <div className="flex flex-col">
           <span className="font-medium text-white">
             Shinkai Instant Q/A Available

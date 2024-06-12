@@ -47,7 +47,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useDebounce } from '../../../hooks/use-debounce';
 import { useURLQueryParams } from '../../../hooks/use-url-query-params';
 import { useAuth } from '../../../store/auth';
-import { useVectorFsStore, VectorFSLayout } from '../context/vector-fs-context';
+import { useVectorFsStore,VectorFSLayout } from '../context/vector-fs-context';
 import { VectorFsGlobalAction } from './vector-fs-drawer';
 import VectorFsFolder from './vector-fs-folder';
 import VectorFsItem from './vector-fs-item';

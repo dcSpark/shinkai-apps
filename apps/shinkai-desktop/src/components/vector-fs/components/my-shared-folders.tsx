@@ -15,7 +15,7 @@ import { Link2Off } from 'lucide-react';
 import React from 'react';
 
 import { useAuth } from '../../../store/auth';
-import { useVectorFsStore, VectorFSLayout } from '../context/vector-fs-context';
+import { useVectorFsStore,VectorFSLayout } from '../context/vector-fs-context';
 import { VectorFsFolderAction } from './vector-fs-drawer';
 import VectorFsToggleLayout from './vector-fs-toggle-layout';
 

@@ -1,13 +1,13 @@
 import { Button, Checkbox } from '@shinkai_network/shinkai-ui';
 import { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 
 import logo from '../../../src/assets/icons/visor.svg';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
 
 export default function Welcome() {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [acceptedTermsAndContidions, setAcceptedTermsAndContidions] = useState<
     boolean | 'indeterminate'
   >(false);
@@ -73,7 +73,7 @@ export default function Welcome() {
       <Button
         data-testid="get-started-button"
         disabled={!acceptedTermsAndContidions}
-        onClick={() => history.replace('/nodes/connect/method/quick-start')}
+        onClick={() => navigate('/nodes/connect/method/quick-start')}
       >
         <FormattedMessage id="setup" />
       </Button>

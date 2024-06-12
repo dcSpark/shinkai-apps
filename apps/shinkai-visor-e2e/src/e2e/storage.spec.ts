@@ -23,10 +23,7 @@ export const storageTests = () => {
     await nodeManager.stopNode();
   });
 
-  test('data should persist after refresh browser', async ({
-    popup,
-    page,
-  }) => {
+  test('data should persist after refresh browser', async ({ popup, page }) => {
     const agent = getAgent();
     await addAgent(popup, agent);
 
@@ -44,7 +41,6 @@ export const storageTests = () => {
 
   test('data should persist after open a new tab', async ({
     popup,
-    page,
     context,
   }) => {
     const agent = getAgent();

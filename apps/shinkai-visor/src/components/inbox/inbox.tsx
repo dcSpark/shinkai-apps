@@ -38,7 +38,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { fileIconMap, FileTypeIcon } from '@shinkai_network/shinkai-ui/assets';
+import { fileIconMap,FileTypeIcon } from '@shinkai_network/shinkai-ui/assets';
 import { getFileExt } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { partial } from 'filesize';
@@ -156,7 +156,7 @@ function AgentSelection() {
 
 export const Inbox = () => {
   const size = partial({ standard: 'jedec' });
-  const { inboxId: encodedInboxId } = useParams<{ inboxId: string }>();
+  const { inboxId: encodedInboxId = '' } = useParams<{ inboxId: string }>();
   const auth = useAuth((state) => state.auth);
   const inboxId = decodeURIComponent(encodedInboxId);
 
@@ -187,7 +187,7 @@ export const Inbox = () => {
     isSuccess: isChatConversationSuccess,
   } = useGetChatConversationWithPagination({
     nodeAddress: auth?.node_address ?? '',
-    inboxId: decodeURIComponent(inboxId) as string,
+    inboxId: decodeURIComponent(inboxId ?? '') as string,
     shinkaiIdentity: auth?.shinkai_identity ?? '',
     profile: auth?.profile ?? '',
     my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',

@@ -31,7 +31,7 @@ import { BotIcon, Edit, Plus, TrashIcon } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../store/auth/auth';
@@ -40,7 +40,7 @@ import { getModelObject } from './add-agent';
 
 export const Agents = () => {
   const auth = useAuth((state) => state.auth);
-  const history = useHistory();
+  const navigate = useNavigate();
   const { agents } = useAgents({
     nodeAddress: auth?.node_address ?? '',
     sender: auth?.shinkai_identity ?? '',
@@ -53,7 +53,7 @@ export const Agents = () => {
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
   const onAddAgentClick = () => {
-    history.push('/agents/add');
+    navigate('/agents/add');
   };
   return (
     <div className="flex h-full flex-col space-y-3">
@@ -108,7 +108,7 @@ function AgentCard({
   const [isEditAgentDrawerOpen, setIsEditAgentDrawerOpen] =
     React.useState(false);
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   return (
     <React.Fragment>
@@ -116,10 +116,7 @@ function AgentCard({
         className="flex cursor-pointer items-center justify-between gap-1 rounded-lg py-3.5 pr-2.5 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400"
         data-testid={`${agentId}-agent-button`}
         onClick={() => {
-          history.replace(
-            { pathname: '/inboxes/create-job' },
-            { agentName: agentId },
-          );
+          navigate('/inboxes/create-job', { state: { agentName: agentId } });
         }}
         role="button"
       >

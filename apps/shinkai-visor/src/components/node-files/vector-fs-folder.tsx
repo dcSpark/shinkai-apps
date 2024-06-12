@@ -25,7 +25,7 @@ import {
 } from 'lucide-react';
 import React from 'react';
 
-import { useVectorFsStore, VectorFSLayout } from './node-file-context';
+import { useVectorFsStore,VectorFSLayout } from './node-file-context';
 import { VectorFsFolderAction } from './vector-fs-drawer';
 
 export const VectorFsFolderInfo = ({

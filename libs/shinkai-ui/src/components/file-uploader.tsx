@@ -3,7 +3,7 @@ import { Loader2, Trash, Upload } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 
-import { fileIconMap, FileTypeIcon, PaperClipIcon } from '../assets';
+import { fileIconMap,FileTypeIcon, PaperClipIcon } from '../assets';
 import { getFileExt } from '../helpers/file';
 import { cn } from '../utils';
 import { Button } from './button';

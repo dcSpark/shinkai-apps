@@ -31,7 +31,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../store/auth/auth';
@@ -53,7 +53,7 @@ export const getModelObject = (
 };
 
 export const AddAgent = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const auth = useAuth((state) => state.auth);
   const form = useForm<AddAgentFormSchema>({
     resolver: zodResolver(addAgentSchema),
@@ -105,9 +105,9 @@ export const AddAgent = () => {
 
   const { mutateAsync: createAgent, isPending } = useCreateAgent({
     onSuccess: () => {
-      history.replace(
+      navigate(
         { pathname: '/inboxes/create-job' },
-        { agentName: form.getValues().agentName },
+        { state: { agentName: form.getValues().agentName } },
       );
     },
     onError: (error) => {

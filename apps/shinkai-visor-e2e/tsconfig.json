@@ -4,11 +4,7 @@
     "sourceMap": false,
     "outDir": "../../dist/out-tsc",
     "allowJs": true,
-    "types": [
-      "node",
-      "vite/client",
-      "@types/chrome"
-    ],
+    "types": ["node", "vite/client", "@types/chrome"]
   },
   "include": ["src/**/*.ts", "src/**/*.js", "cypress.config.ts"]
 }

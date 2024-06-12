@@ -25,7 +25,7 @@ export const VectorFileDetails = () => {
   const size = partial({ standard: 'jedec' });
   const auth = useAuth((state) => state.auth);
   const { mutateAsync: downloadVRFile } = useDownloadVRFile({
-    onSuccess: (response, variables, context) => {
+    onSuccess: (response, variables) => {
       const blob = new Blob([response.data], {
         type: 'application/octet-stream',
       });

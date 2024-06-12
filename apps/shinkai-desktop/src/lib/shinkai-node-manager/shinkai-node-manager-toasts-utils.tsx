@@ -1,4 +1,5 @@
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import React from 'react';
 import { ExternalToast, toast } from 'sonner';
 
 import { openShinkaiNodeManagerWindow } from './shinkai-node-manager-windows-utils';

@@ -2,7 +2,7 @@ import { expect, test } from '../fixtures/base';
 import { acceptTerms } from '../utils/basic-actions';
 
 export const welcomeTests = () => {
-  test('welcome should be the first page', async ({ page, popup }) => {
+  test('welcome should be the first page', async ({ popup }) => {
     const tosLink = popup.getByTestId('terms-of-service-link');
     const ppLink = popup.getByTestId('privacy-policy-link');
 

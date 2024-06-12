@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import React from 'react';
 
-import { fileIconMap, FileTypeIcon, PaperClipIcon } from '../../assets/icons';
+import { fileIconMap,FileTypeIcon, PaperClipIcon } from '../../assets/icons';
 import { getFileExt } from '../../helpers/file';
 import { cn } from '../../utils';
 

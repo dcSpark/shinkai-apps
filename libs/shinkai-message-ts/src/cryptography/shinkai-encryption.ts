@@ -1,4 +1,6 @@
-import * as sodium from 'libsodium-wrappers-sumo';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import sodium from 'libsodium-wrappers-sumo';
 
 export async function encryptMessageWithPassphrase(
   message: string,

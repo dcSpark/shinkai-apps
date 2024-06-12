@@ -11,7 +11,7 @@ import {
   formatDateToLocaleStringWithTime,
   formatDateToUSLocaleString,
 } from '@shinkai_network/shinkai-ui/helpers';
-import { dialog, fs } from '@tauri-apps/api';
+import { dialog,fs } from '@tauri-apps/api';
 import { BaseDirectory } from '@tauri-apps/api/fs';
 import { partial } from 'filesize';
 import { LockIcon } from 'lucide-react';

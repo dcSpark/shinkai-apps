@@ -15,11 +15,13 @@ export type ScanOllamaModelsInput = CredentialsPayload & {
   shinkaiIdentity: string;
 };
 
-export type ScanOllamaModelsResponse = Awaited<ReturnType<typeof scanOllamaModels>>;
+export type ScanOllamaModelsResponse = Awaited<
+  ReturnType<typeof scanOllamaModels>
+>;
 
 export const useScanOllamaModels = (
   input: ScanOllamaModelsInput,
-  options?: QueryObserverOptions,
+  options?: Omit<QueryObserverOptions, 'queryKey' | 'queryFn'>,
 ): UseQueryResult<ScanOllamaModelsResponse, Error> => {
   const query = useQuery({
     queryKey: [FunctionKey.SCAN_OLLAMA_MODELS, input],

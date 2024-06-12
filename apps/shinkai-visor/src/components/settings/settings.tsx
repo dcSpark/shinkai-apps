@@ -28,7 +28,7 @@ import { ExternalLinkIcon, TrashIcon } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -63,7 +63,7 @@ type FormSchemaType = z.infer<typeof formSchema>;
 const MotionButton = motion(Button);
 export const Settings = () => {
   const intl = useIntl();
-  const history = useHistory();
+  const navigate = useNavigate();
   const auth = useAuth((authStore) => authStore.auth);
   const setAuth = useAuth((authStore) => authStore.setAuth);
   const displayActionButton = useSettings(
@@ -185,10 +185,10 @@ export const Settings = () => {
       },
     });
   const exportConnection = () => {
-    history.push('settings/export-connection');
+    navigate('/settings/export-connection');
   };
   const createRegistrationCode = () => {
-    history.push('settings/create-registration-code');
+    navigate('/settings/create-registration-code');
   };
   useEffect(() => {
     if (isNodeInfoSuccess) {
@@ -351,7 +351,7 @@ export const Settings = () => {
                   <FormattedMessage id="save" />
                 </MotionButton>
                 <Button
-                  className="min-w-10 h-10 rounded-lg text-sm"
+                  className="h-10 min-w-10 rounded-lg text-sm"
                   onClick={() => {
                     form.setValue(
                       'shinkaiIdentity',
@@ -579,7 +579,7 @@ export const Settings = () => {
           </Button>
           <Button
             className="flex flex-1 cursor-pointer flex-col items-start gap-2 rounded-lg p-4 pr-8 text-left"
-            onClick={() => history.push('settings/public-keys')}
+            onClick={() => navigate('/settings/public-keys')}
             size="auto"
             variant="ghost"
           >

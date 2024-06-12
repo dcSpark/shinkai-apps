@@ -48,8 +48,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { ArrowLeft, Menu, Settings, X, XIcon } from 'lucide-react';
 import React, { ReactNode, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useRouteMatch } from 'react-router';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import visorLogo from '../../assets/icons/visor.svg';
@@ -205,7 +204,6 @@ const DisplayInboxName = () => {
         </Drawer>
       )}
       <EditInboxNameDialog
-        currentAgent={currentInbox?.agent}
         inboxId={currentInbox?.inbox_id || ''}
         name={currentInbox?.custom_name || ''}
         onCancel={() => setIsEditInboxNameDialogOpened(false)}
@@ -278,7 +276,7 @@ const ArchiveJobButton = () => {
 };
 
 export default function NavBar() {
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const setLastPage = useSettings((state) => state.setLastPage);
 
@@ -290,18 +288,16 @@ export default function NavBar() {
     location.pathname.includes('/inboxes/job_inbox') ||
     location.pathname.includes('/inboxes/inbox');
 
-  const isRootPage = useRouteMatch({
-    path: rootPages,
-    strict: true,
-  });
-  const isSubPage = useRouteMatch({
-    path: subPages,
-    strict: true,
-  });
-  const isOnboardingPage = useRouteMatch({
-    path: onboardingPages,
-    strict: true,
-  });
+  const isRootPage = rootPages.some((value) =>
+    location.pathname.match(`${value}$`),
+  );
+  const isSubPage =
+    subPages.some((value) => location.pathname.match(`${value}$`)) ||
+    location.pathname.includes('/inboxes/');
+
+  const isOnboardingPage = onboardingPages.some((value) =>
+    location.pathname.match(`${value}$`),
+  );
 
   const isJobInbox = location.pathname.includes('/inboxes/job_inbox');
 
@@ -313,10 +309,10 @@ export default function NavBar() {
       location.pathname.includes('/inboxes/') ||
       location.pathname.includes('/agents')
     ) {
-      history.push('/inboxes');
+      navigate('/inboxes');
       return;
     }
-    history.goBack();
+    navigate(-1);
   };
   const logout = (): void => {
     setAuth(null);
@@ -325,47 +321,47 @@ export default function NavBar() {
   const onClickMenuOption = (key: MenuOption) => {
     switch (key) {
       case MenuOption.Inboxes:
-        history.push(routes.Inboxes);
+        navigate(routes.Inboxes);
         setLastPage(routes.Inboxes);
         break;
       case MenuOption.CreateInbox:
-        history.push(routes.CreateInbox);
+        navigate(routes.CreateInbox);
         setLastPage(routes.CreateInbox);
         break;
       case MenuOption.CreateAITask:
-        history.push(routes.CreateAITask);
+        navigate(routes.CreateAITask);
         setLastPage(routes.CreateAITask);
         break;
       case MenuOption.CreateJob:
-        history.push(routes.CreateJob);
+        navigate(routes.CreateJob);
         setLastPage(routes.CreateJob);
         break;
       case MenuOption.NodeFiles:
-        history.push(routes.VectorFs);
+        navigate(routes.VectorFs);
         setLastPage(routes.VectorFs);
         break;
       case MenuOption.SearchNodeFiles:
-        history.push(routes.SearchNodeFiles);
+        navigate(routes.SearchNodeFiles);
         setLastPage(routes.SearchNodeFiles);
         break;
       case MenuOption.MySubscriptions:
-        history.push(routes.Subscriptions);
+        navigate(routes.Subscriptions);
         setLastPage(routes.Subscriptions);
         break;
       case MenuOption.PublicItems:
-        history.push(routes.PublicFolders);
+        navigate(routes.PublicFolders);
         setLastPage(routes.PublicFolders);
         break;
       case MenuOption.Agents:
-        history.push(routes.Agents);
+        navigate(routes.Agents);
         setLastPage(routes.Agents);
         break;
       case MenuOption.AddAgent:
-        history.push(routes.AddAgent);
+        navigate(routes.AddAgent);
         setLastPage(routes.AddAgent);
         break;
       case MenuOption.Settings:
-        history.push(routes.Settings);
+        navigate(routes.Settings);
         setLastPage(routes.Settings);
         break;
       case MenuOption.Logout:

@@ -6,7 +6,7 @@ import { GetMySubscriptionsInput, Options } from './types';
 
 export const useGetMySubscriptions = (
   input: GetMySubscriptionsInput,
-  options?: Options,
+  options?: Omit<Options, 'queryKey' | 'queryFn'>,
 ) => {
   const response = useQuery({
     queryKey: [FunctionKey.GET_MY_SUBSCRIPTIONS, input],

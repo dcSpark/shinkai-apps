@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/shinkai-desktop/src",
   "projectType": "application",
+  "tags": [],
   "targets": {
     "build": {
       "executor": "nx:run-commands",
@@ -34,14 +35,17 @@
       "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "cwd": "apps/shinkai-desktop/src-tauri",
-        "command": "cargo check"
+        "cwd": "apps/shinkai-desktop",
+        "commands": [
+          "cd src-tauri && cargo check",
+          "npx eslint --ext .js,.jsx,.ts,.tsx . --ignore-path .gitignore"
+        ],
+        "parallel": true
       },
       "configurations": {
         "development": {},
         "production": {}
       }
     }
-  },
-  "tags": []
+  }
 }

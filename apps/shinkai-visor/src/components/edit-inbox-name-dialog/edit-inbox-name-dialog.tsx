@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AgentInbox } from '@shinkai_network/shinkai-message-ts/models';
 import {
   UpdateInboxNameFormSchema,
   updateInboxNameFormSchema,
@@ -29,7 +28,6 @@ export type EditInboxNameDialogProps = {
   inboxId: string;
   name: string;
   onOpenChange: (open: boolean) => void;
-  currentAgent?: AgentInbox;
 };
 
 export const EditInboxNameDialog = ({
@@ -39,7 +37,6 @@ export const EditInboxNameDialog = ({
   onSaved,
   inboxId,
   onOpenChange,
-  currentAgent,
 }: EditInboxNameDialogProps) => {
   const auth = useAuth((state) => state.auth);
   const form = useForm<UpdateInboxNameFormSchema>({

@@ -18,6 +18,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
+import { ShinkaiLogoIcon } from '@shinkai_network/shinkai-ui/assets';
 import { createShadowRoot, delay } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
@@ -33,8 +34,6 @@ import * as React from 'react';
 import { useEffect, useRef } from 'react';
 import { IntlProvider } from 'react-intl';
 
-import shinkaiLogo from '../../assets/icons/shinkai-min.svg';
-import { srcUrlResolver } from '../../helpers/src-url-resolver';
 import { useGlobalActionButtonChromeMessage } from '../../hooks/use-global-action-button-chrome-message';
 import useKeyboardShortcut from '../../hooks/use-keyboard-shortcut';
 import { langMessages, locale } from '../../lang/intl';
@@ -198,15 +197,11 @@ const ActionButton = () => {
           <HoverCard openDelay={150}>
             <HoverCardTrigger asChild>
               <motion.button
-                className="hover:bg-brand overflow shadow-4xl h-[48px] w-[48px] rounded-2xl bg-gray-500 p-2 shadow-2xl transition-colors duration-75 "
+                className="hover:bg-brand overflow shadow-4xl h-[48px] w-[48px] rounded-2xl bg-gray-500 p-2 shadow-2xl transition-colors duration-75"
                 data-testid="action-button"
                 onClick={toggleSidePanel}
               >
-                <img
-                  alt="shinkai-app-logo select-none"
-                  className={'h-full w-full select-none'}
-                  src={srcUrlResolver(shinkaiLogo)}
-                />
+                <ShinkaiLogoIcon className={'h-full w-full select-none'} />
               </motion.button>
             </HoverCardTrigger>
             <HoverCardContent className="relative">

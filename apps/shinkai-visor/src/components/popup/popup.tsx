@@ -9,7 +9,7 @@ import { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { IntlProvider } from 'react-intl';
 import { MemoryRouter as Router } from 'react-router-dom';
-import { Route, Switch, useHistory, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
 import { useGlobalPopupChromeMessage } from '../../hooks/use-global-popup-chrome-message';
 import { langMessages, locale } from '../../lang/intl';
@@ -40,7 +40,7 @@ import Welcome from '../welcome/welcome';
 import { WithNav } from '../with-nav/with-nav';
 
 export const Popup = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const auth = useAuth((state) => state.auth);
   const location = useLocation();
   useGlobalPopupChromeMessage();
@@ -50,15 +50,15 @@ export const Popup = () => {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      history.replace('/welcome');
+      navigate('/welcome');
       return;
     }
     if (!lastPage) {
-      history.replace('/inboxes');
+      navigate('/inboxes');
       return;
     }
-    history.replace(lastPage);
-  }, [history, isAuthenticated, lastPage]);
+    navigate(lastPage);
+  }, [isAuthenticated, lastPage]);
 
   return (
     <AnimatePresence>
@@ -70,110 +70,90 @@ export const Popup = () => {
         initial={{ opacity: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <Switch key={location.pathname} location={location}>
-          <Route exact path="/">
-            <AnimatedRoute>
-              <SplashScreen />
-            </AnimatedRoute>
-          </Route>
-          <Route path="/welcome">
-            <AnimatedRoute>
-              <Welcome />
-            </AnimatedRoute>
-          </Route>
+        <Routes key={location.pathname} location={location}>
+          <Route
+            element={
+              <AnimatedRoute>
+                <SplashScreen />
+              </AnimatedRoute>
+            }
+            path="/"
+          />
+          <Route
+            element={
+              <AnimatedRoute>
+                <Welcome />
+              </AnimatedRoute>
+            }
+            path="/welcome"
+          />
 
-          <Route path="*">
-            <AnimatedRoute>
-              <WithNav>
-                <Route path="/nodes">
-                  <AnimatedRoute>
-                    <Switch>
-                      <Route path="/nodes/connect/method/quick-start">
-                        <ConnectMethodQuickStart />
-                      </Route>
-                      <Route path="/nodes/connect/method/restore-connection">
-                        <ConnectMethodRestoreConnection />
-                      </Route>
-                      <Route path="/nodes/connect/method/qr-code">
-                        <ConnectMethodQrCode />
-                      </Route>
-                    </Switch>
-                  </AnimatedRoute>
-                </Route>
-                <Route path="/inboxes">
-                  <Switch>
-                    <Route path="/inboxes/create-inbox">
-                      <CreateInbox />
-                    </Route>
-                    <Route path="/inboxes/create-job">
-                      <CreateJob />
-                    </Route>
-                    <Route path="/inboxes/:inboxId">
-                      <Inbox />
-                    </Route>
-                    <Route path="/">
-                      <Inboxes />
-                    </Route>
-                  </Switch>
-                </Route>
-                <Route path="/node-files">
-                  <Switch>
-                    <Route path="/">
-                      <VectorFsProvider>
-                        <NodeFiles />
-                      </VectorFsProvider>
-                    </Route>
-                  </Switch>
-                </Route>
-                <Route path="/search-node-files">
-                  <Switch>
-                    <Route path="/">
-                      <VectorFolderSelectionProvider>
-                        <SearchNodeFiles />
-                      </VectorFolderSelectionProvider>
-                    </Route>
-                  </Switch>
-                </Route>
-                <Route path="/subscriptions">
-                  <Switch>
-                    <Route path="/subscriptions/public">
-                      <SharedFolderSubscription />
-                    </Route>
-                    <Route path="/">
-                      <MySubscriptions />
-                    </Route>
-                  </Switch>
-                </Route>
-                <Route path="/agents">
-                  <Switch>
-                    <Route path="/agents/add">
-                      <AddAgent />
-                    </Route>
-                    <Route path="/">
-                      <Agents />
-                    </Route>
-                  </Switch>
-                </Route>
-                <Route path="/settings">
-                  <Switch>
-                    <Route path="/settings/export-connection">
-                      <ExportConnection />
-                    </Route>
-                    <Route path="/settings/public-keys">
-                      <PublicKeys />
-                    </Route>
-                    <Route path="/settings/create-registration-code">
-                      <CreateRegistrationCode />
-                    </Route>
-                    <Route path="/">
-                      <Settings />
-                    </Route>
-                  </Switch>
-                </Route>
-              </WithNav>
-            </AnimatedRoute>
+          <Route
+            element={
+              <AnimatedRoute>
+                <WithNav />
+              </AnimatedRoute>
+            }
+          >
+            <Route path="/nodes">
+              <Route
+                element={<ConnectMethodQuickStart />}
+                path="connect/method/quick-start"
+              />
+              <Route
+                element={<ConnectMethodRestoreConnection />}
+                path="connect/method/restore-connection"
+              />
+              <Route
+                element={<ConnectMethodQrCode />}
+                path="connect/method/qr-code"
+              />
+            </Route>
+            <Route path="inboxes">
+              <Route element={<CreateInbox />} path="create-inbox" />
+              <Route element={<CreateJob />} path="create-job" />
+              <Route element={<Inbox />} path=":inboxId" />
+              <Route element={<Inboxes />} index />
+            </Route>
+            <Route path="node-files">
+              <Route
+                element={
+                  <VectorFsProvider>
+                    <NodeFiles />
+                  </VectorFsProvider>
+                }
+                index
+              />
+            </Route>
+            <Route path="search-node-files">
+              <Route
+                element={
+                  <VectorFolderSelectionProvider>
+                    <SearchNodeFiles />
+                  </VectorFolderSelectionProvider>
+                }
+                index
+              />
+            </Route>
+            <Route path="subscriptions">
+              <Route element={<SharedFolderSubscription />} path="public" />
+              <Route element={<MySubscriptions />} index />
+            </Route>
+            <Route path="agents">
+              <Route element={<AddAgent />} path="add" />
+              <Route element={<Agents />} index />
+            </Route>
+            <Route path="settings">
+              <Route element={<ExportConnection />} path="export-connection" />
+              <Route element={<PublicKeys />} path="public-keys" />
+              <Route
+                element={<CreateRegistrationCode />}
+                path="create-registration-code"
+              />
+              <Route element={<Settings />} index />
+            </Route>
           </Route>
-        </Switch>
+        </Routes>
       </motion.div>
     </AnimatePresence>
   );

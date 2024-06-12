@@ -45,10 +45,7 @@ export const VectorFsItemMoveAction = () => {
       <DrawerHeader>
         <DrawerTitle className="font-normal">
           Move
-          <span className="font-medium">
-            {' '}
-            &quot;{selectedFile?.name}&quot;
-          </span>{' '}
+          <span className="font-medium"> &quot;{selectedFile?.name}&quot;</span>{' '}
           to ...
         </DrawerTitle>
       </DrawerHeader>
@@ -162,10 +159,7 @@ export const VectorFsItemCopyAction = () => {
       <DrawerHeader>
         <DrawerTitle className="font-normal">
           Copy
-          <span className="font-medium">
-            {' '}
-            &quot;{selectedFile?.name}&quot;
-          </span>{' '}
+          <span className="font-medium"> &quot;{selectedFile?.name}&quot;</span>{' '}
           to ...
         </DrawerTitle>
       </DrawerHeader>

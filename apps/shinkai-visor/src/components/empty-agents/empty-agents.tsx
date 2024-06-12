@@ -1,14 +1,14 @@
 import { Button } from '@shinkai_network/shinkai-ui';
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-interface EmptyAgentsProps extends React.HTMLAttributes<HTMLDivElement> {
-}
+type EmptyAgentsProps = React.HTMLAttributes<HTMLDivElement>
 
 export const EmptyAgents = ({ ...props }: EmptyAgentsProps) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   return (
-    <div className="flex grow flex-col items-center justify-center" { ...props }>
+    <div className="flex grow flex-col items-center justify-center" {...props}>
       <div className="mb-8 space-y-3 text-center">
         <span aria-hidden className="text-5xl">
           🤖
@@ -21,7 +21,7 @@ export const EmptyAgents = ({ ...props }: EmptyAgentsProps) => {
         </p>
       </div>
 
-      <Button onClick={() => history.push('/agents/add')}>
+      <Button onClick={() => navigate('/agents/add')}>
         <FormattedMessage id="add-agent" />
       </Button>
     </div>

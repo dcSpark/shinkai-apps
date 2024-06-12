@@ -1,11 +1,12 @@
 import { Button } from '@shinkai_network/shinkai-ui';
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-interface EmptyInboxesProps extends React.HTMLAttributes<HTMLDivElement> {}
+type EmptyInboxesProps = React.HTMLAttributes<HTMLDivElement>
 
 export const EmptyInboxes = ({ ...props }: EmptyInboxesProps) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   return (
     <div className="flex grow flex-col items-center justify-center" {...props}>
       <div className="mb-8 space-y-3 text-center">
@@ -20,7 +21,7 @@ export const EmptyInboxes = ({ ...props }: EmptyInboxesProps) => {
         </p>
       </div>
 
-      <Button onClick={() => history.push('/inboxes/create-job')}>
+      <Button onClick={() => navigate('/inboxes/create-job')}>
         <FormattedMessage id="create-job" />
       </Button>
     </div>

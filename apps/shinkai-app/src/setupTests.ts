@@ -5,14 +5,16 @@
 import '@testing-library/jest-dom/extend-expect';
 
 // Mock matchmedia
-window.matchMedia = window.matchMedia || function() {
-  return {
+window.matchMedia =
+  window.matchMedia ||
+  function () {
+    return {
       matches: false,
-      addListener: function() {
+      addListener: function () {
         console.log('method in mock, doing nothing...');
       },
-      removeListener: function() {
+      removeListener: function () {
         console.log('method in mock, doing nothing...');
-      }
+      },
+    };
   };
-};

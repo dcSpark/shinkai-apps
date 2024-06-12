@@ -34,51 +34,51 @@ export const ChatInputArea = ({
     onSubmitRef.current = onSubmit;
   });
 
-  const editor = useEditor(
-    {
-      editorProps: {
-        attributes: {
-          class: 'prose prose-invert prose-sm focus:outline-none break-all',
-        },
+  const editor = useEditor({
+    editorProps: {
+      attributes: {
+        class: 'prose prose-invert prose-sm focus:outline-none break-all',
       },
-      extensions: [
-        StarterKit,
-        Placeholder.configure({
-          placeholder: placeholder ?? 'Enter message',
-        }),
-        Markdown,
-        Extension.create({
-          addKeyboardShortcuts() {
-            return {
-              Enter: () => {
-                onSubmitRef?.current?.();
-                return this.editor.commands.clearContent();
-              },
-              'Mod-Enter': () => {
-                onSubmitRef?.current?.();
-                return this.editor.commands.clearContent();
-              },
-              'Shift-Enter': ({ editor }) =>
-                editor.commands.first(({ commands }) => [
-                  () => commands.newlineInCode(),
-                  () => commands.splitListItem('listItem'),
-                  () => commands.createParagraphNear(),
-                  () => commands.liftEmptyBlock(),
-                  () => commands.splitBlock(),
-                ]),
-            };
-          },
-        }),
-      ],
-      content: value,
-      autofocus: true,
-      onUpdate({ editor }) {
-        onChange(editor.storage.markdown.getMarkdown());
-      },
-      editable: !disabled,
     },
-    [disabled],
-  );
+    extensions: [
+      StarterKit,
+      Placeholder.configure({
+        placeholder: placeholder ?? 'Enter message',
+      }),
+      Markdown,
+      Extension.create({
+        addKeyboardShortcuts() {
+          return {
+            Enter: () => {
+              onSubmitRef?.current?.();
+              return this.editor.commands.clearContent();
+            },
+            'Mod-Enter': () => {
+              onSubmitRef?.current?.();
+              return this.editor.commands.clearContent();
+            },
+            'Shift-Enter': ({ editor }) =>
+              editor.commands.first(({ commands }) => [
+                () => commands.newlineInCode(),
+                () => commands.splitListItem('listItem'),
+                () => commands.createParagraphNear(),
+                () => commands.liftEmptyBlock(),
+                () => commands.splitBlock(),
+              ]),
+          };
+        },
+      }),
+    ],
+    content: value,
+    autofocus: true,
+    onUpdate({ editor }) {
+      onChange(editor.storage.markdown.getMarkdown());
+    },
+  });
+
+  useEffect(() => {
+    editor?.setOptions({ editable: !disabled });
+  }, [disabled, editor]);
 
   useEffect(() => {
     setInitialValue === undefined
@@ -92,10 +92,7 @@ export const ChatInputArea = ({
   }, [value, editor]);
 
   return (
-    <div
-      aria-disabled={disabled}
-      className="flex min-h-[60px] w-full max-w-full flex-col rounded-md border border-gray-200 bg-gray-400 px-1 py-1  text-sm shadow-sm aria-disabled:cursor-not-allowed aria-disabled:opacity-50"
-    >
+    <div className="flex min-h-[60px] w-full max-w-full flex-col rounded-md border border-gray-200 bg-gray-400 px-1 py-1  text-sm shadow-sm aria-disabled:cursor-not-allowed aria-disabled:opacity-50">
       {topAddons}
       <div
         aria-disabled={disabled}

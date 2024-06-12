@@ -324,13 +324,13 @@ const App = () => {
               {lastNLogs?.length
                 ? lastNLogs?.map((log, index) => {
                     return (
-                      <>
+                      <React.Fragment key={index}>
                         <div className="text-gray-80 text-sm" key={index}>
-                          {'ℹ️'} {new Date(log.timestamp * 1000).toISOString()}{' '}
-                          | {log.process} | {log.message}
+                          {'i'} {new Date(log.timestamp * 1000).toISOString()} |{' '}
+                          {log.process} | {log.message}
                         </div>
                         <Separator className="my-2" />
-                      </>
+                      </React.Fragment>
                     );
                   })
                 : undefined}

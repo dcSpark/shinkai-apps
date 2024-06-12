@@ -16,7 +16,7 @@ import { partial } from 'filesize';
 import { CopyIcon, FileInputIcon, TrashIcon } from 'lucide-react';
 import React from 'react';
 
-import { useVectorFsStore, VectorFSLayout } from './node-file-context';
+import { useVectorFsStore,VectorFSLayout } from './node-file-context';
 import { VectorFsItemAction } from './vector-fs-drawer';
 
 export const VectorFsItemInfo = ({

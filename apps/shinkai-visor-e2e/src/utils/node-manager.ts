@@ -5,9 +5,9 @@ import * as path from 'path';
 export class NodeManager {
   private defaultNodeOptions = {
     FIRST_DEVICE_NEEDS_REGISTRATION_CODE: false,
-    GLOBAL_IDENTITY_NAME: "@@localhost.shinkai",
-    EMBEDDINGS_SERVER_URL: "https://internal.shinkai.com/x-embed-api",
-    UNSTRUCTURED_SERVER_URL: "https://internal.shinkai.com/x-unstructured-api",
+    GLOBAL_IDENTITY_NAME: '@@localhost.shinkai',
+    EMBEDDINGS_SERVER_URL: 'https://internal.shinkai.com/x-embed-api',
+    UNSTRUCTURED_SERVER_URL: 'https://internal.shinkai.com/x-unstructured-api',
     NO_SECRET_FILE: true,
     NODE_STORAGE_PATH: path.join(__dirname, '../shinkai-node/db'),
     NODE_API_IP: '127.0.0.1',
@@ -18,7 +18,10 @@ export class NodeManager {
   private nodeExecPath: string;
 
   constructor(nodeExecPath?: string) {
-    this.nodeExecPath = nodeExecPath || process.env.SHINKAI_NODE_EXEC_PATH || path.join(__filename, '../../shinkai-node/shinkai_node_macos');
+    this.nodeExecPath =
+      nodeExecPath ||
+      process.env.SHINKAI_NODE_EXEC_PATH ||
+      path.join(__filename, '../../shinkai-node/shinkai_node_macos');
   }
 
   private resetToPristine(nodeStoragePath: string) {
@@ -26,7 +29,10 @@ export class NodeManager {
     if (!fs.existsSync(nodeStoragePath)) {
       fs.mkdirSync(nodeStoragePath);
     }
-    fs.copyFileSync(path.join(__dirname, '../shinkai-node/.secret'), path.join(nodeStoragePath, '.secret'));
+    fs.copyFileSync(
+      path.join(__dirname, '../shinkai-node/.secret'),
+      path.join(nodeStoragePath, '.secret'),
+    );
   }
 
   private async spawnNode(
@@ -71,7 +77,9 @@ export class NodeManager {
       if (options.readyMatcher) {
         const timeoutRef = setTimeout(() => {
           childProcess.kill();
-          reject(`ready matcher timeout after ${options.readyMatcherTimeoutMs}`);
+          reject(
+            `ready matcher timeout after ${options.readyMatcherTimeoutMs}`,
+          );
         }, options.readyMatcherTimeoutMs ?? 15000);
         childProcess.stdout?.on('data', (chunk: Buffer) => {
           if (options.readyMatcher?.test(chunk.toString())) {
@@ -88,13 +96,18 @@ export class NodeManager {
 
   async startNode(pristine: boolean, nodeOptions?: object): Promise<void> {
     console.log('starting node');
-    const mergedOptions = { ...this.defaultNodeOptions, ...(nodeOptions || {}) };
+    const mergedOptions = {
+      ...this.defaultNodeOptions,
+      ...(nodeOptions || {}),
+    };
     if (pristine) {
       this.resetToPristine(mergedOptions.NODE_STORAGE_PATH);
     }
-    const nodeEnv = Object.entries(mergedOptions).map(([key, value]) => {
-      return `${key}="${value}"`;
-    }).join(' ');
+    const nodeEnv = Object.entries(mergedOptions)
+      .map(([key, value]) => {
+        return `${key}="${value}"`;
+      })
+      .join(' ');
 
     this.node = await this.spawnNode(`${nodeEnv} ${this.nodeExecPath}`, {
       pipeLogs: true,
@@ -114,7 +127,7 @@ export class NodeManager {
       const timeout = setTimeout(() => {
         console.warn('stopping node timeout');
         resolve();
-      }, 5000)
+      }, 5000);
       this.node.once('exit', () => {
         console.log('stopping node success');
         clearTimeout(timeout);
