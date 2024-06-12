@@ -1,3 +1,4 @@
+import { RotateCcw } from 'lucide-react';
 import React from 'react';
 
 import { appIcon } from '../../assets';
@@ -27,9 +28,16 @@ export const extractErrorPropertyOrContent = (
 type MessageProps = {
   isPending?: boolean;
   message: ChatConversationMessage;
+  previousMessage: ChatConversationMessage;
+  regenerateLastMessage: (key1: string, key: string) => void;
 };
 
-export const Message = ({ message, isPending }: MessageProps) => {
+export const Message = ({
+  message,
+  isPending,
+  regenerateLastMessage,
+  previousMessage,
+}: MessageProps) => {
   return (
     <div className="group pb-10">
       <div
@@ -78,6 +86,22 @@ export const Message = ({ message, isPending }: MessageProps) => {
                 'error_message',
               )}
             />
+            {!message.isLocal && (
+              <button
+                className={cn(
+                  'text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent [&>svg]:h-3 [&>svg]:w-3',
+                )}
+                onClick={() => {
+                  console.log('regenerateLastMessage', previousMessage.content);
+                  regenerateLastMessage(
+                    previousMessage.content,
+                    previousMessage.hash,
+                  );
+                }}
+              >
+                <RotateCcw />
+              </button>
+            )}
           </div>
           {message.content ? (
             <MarkdownPreview
