@@ -1,11 +1,11 @@
 import {
-  type UseMutationOptions,
   useMutation,
+  type UseMutationOptions,
   useQueryClient,
 } from '@tanstack/react-query';
 
-import { uploadVRFiles } from '.';
 import { FunctionKey } from '../../constants';
+import { uploadVRFiles } from '.';
 import { UploadVRFilesInput, UploadVRFilesOutput } from './types';
 
 type Options = UseMutationOptions<

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { getHealth } from '.';
 import { FunctionKey } from '../../constants';
+import { getHealth } from '.';
 import { GetHealthInput, Options } from './types';
 
 export const useGetHealth = (

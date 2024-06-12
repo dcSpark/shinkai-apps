@@ -3,7 +3,8 @@
     "../../.eslintrc.json"
   ],
   "ignorePatterns": [
-    "!**/*"
+    "!**/*",
+    "src-tauri/**"
   ],
   "overrides": [
     {

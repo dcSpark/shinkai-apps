@@ -1,8 +1,8 @@
 import { isJobInbox } from '@shinkai_network/shinkai-message-ts/utils';
 import { InfiniteData, useInfiniteQuery } from '@tanstack/react-query';
 
-import { getChatConversation } from '.';
 import { FunctionKey } from '../../constants';
+import { getChatConversation } from '.';
 import { GetChatConversationInput, GetChatConversationOutput } from './types';
 
 export const CONVERSATION_PAGINATION_LIMIT = 12;

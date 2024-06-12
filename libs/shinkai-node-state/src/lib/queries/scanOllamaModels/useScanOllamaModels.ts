@@ -2,8 +2,8 @@ import { scanOllamaModels } from '@shinkai_network/shinkai-message-ts/api';
 import { CredentialsPayload } from '@shinkai_network/shinkai-message-ts/models';
 import {
   QueryObserverOptions,
-  UseQueryResult,
   useQuery,
+  UseQueryResult,
 } from '@tanstack/react-query';
 
 import { FunctionKey } from '../../constants';

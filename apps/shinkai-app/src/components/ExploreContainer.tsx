@@ -8,8 +8,8 @@ const ExploreContainer: React.FC = () => {
         Start with Ionic{' '}
         <a
           href="https://ionicframework.com/docs/components"
-          target="_blank"
           rel="noopener noreferrer"
+          target="_blank"
         >
           UI Components
         </a>

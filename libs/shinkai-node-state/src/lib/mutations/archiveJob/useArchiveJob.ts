@@ -1,8 +1,8 @@
 import { UseMutationOptions, useQueryClient } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 
-import { archiveJob } from '.';
 import { FunctionKey } from '../../constants';
+import { archiveJob } from '.';
 import { ArchiveJobInput, ArchiveJobOutput } from './types';
 
 type Options = UseMutationOptions<ArchiveJobOutput, Error, ArchiveJobInput>;

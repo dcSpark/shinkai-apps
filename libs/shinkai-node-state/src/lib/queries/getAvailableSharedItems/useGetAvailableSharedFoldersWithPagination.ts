@@ -4,8 +4,8 @@ import {
   useQuery,
 } from '@tanstack/react-query';
 
-import { getAvailableSharedFolders } from '.';
 import { FunctionKey } from '../../constants';
+import { getAvailableSharedFolders } from '.';
 import {
   GetAvailableSharedItemsInput,
   GetAvailableSharedItemsOutput,

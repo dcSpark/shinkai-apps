@@ -1,11 +1,11 @@
-import * as path from 'path';
 import {
   type BrowserContext,
-  Page,
-  Worker,
-  test as base,
   chromium,
+  Page,
+  test as base,
+  Worker,
 } from '@playwright/test';
+import * as path from 'path';
 
 import { waitFor } from '../utils/test-utils';
 
@@ -21,7 +21,7 @@ export const test = base.extend<{
   extensionId: string;
   popup: Page;
 }>({
-  // biome-ignore lint/correctness/noEmptyPattern:
+  // eslint-disable-next-line no-empty-pattern
   context: async ({}, use) => {
     const pathToExtension = path.join(
       __dirname,
@@ -85,6 +85,7 @@ export const test = base.extend<{
               new RegExp(`^chrome-extension:\/\/${extensionId}.*popup.html$`),
             ),
           );
+        // eslint-disable-next-line playwright/no-standalone-expect
         await expect(popupPage).toBeDefined();
       },
       500,

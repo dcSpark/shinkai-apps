@@ -1,11 +1,11 @@
 import {
-  type UseMutationOptions,
   useMutation,
+  type UseMutationOptions,
   useQueryClient,
 } from '@tanstack/react-query';
 
-import { sendMessageToJob } from '.';
 import { FunctionKey } from '../../constants';
+import { sendMessageToJob } from '.';
 import { SendMessageToJobInput, SendMessageToJobOutput } from './types';
 
 type Options = UseMutationOptions<
