@@ -3,8 +3,7 @@ import * as React from 'react';
 import { cn } from '../utils';
 
 const MIN_TEXTAREA_HEIGHT = 32;
-export interface TextareaProps
-  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
+export type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement>
 
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ className, ...props }) => {

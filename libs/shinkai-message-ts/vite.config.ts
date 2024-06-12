@@ -1,7 +1,7 @@
-// @ts-ignore
-import path from 'path';
 /// <reference types="vitest" />
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
+// @ts-expect-error path
+import path from 'path';
 import dts from 'vite-plugin-dts';
 import topLevelAwait from 'vite-plugin-top-level-await';
 import wasm from 'vite-plugin-wasm';

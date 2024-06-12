@@ -48,7 +48,7 @@ export const MarkdownPreview = ({
         className,
       )}
       components={components}
-      // @ts-ignore
+      // @ts-expect-error `rehypePlugins` is not in the type definition
       rehypePlugins={rehypePlugins}
       source={source}
       wrapperElement={{ 'data-color-mode': 'dark' }}

@@ -66,7 +66,7 @@ export async function canvasPreview(
 export const canvasToBlob = (
   canvas: HTMLCanvasElement,
   type: 'image/jpeg' = 'image/jpeg',
-  quality: number = 0.92,
+  quality = 0.92,
 ): Promise<Blob | null> => {
   return new Promise((resolve) => {
     canvas.toBlob(resolve, type, quality);

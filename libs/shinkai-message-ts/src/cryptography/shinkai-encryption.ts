@@ -1,4 +1,4 @@
-// @ts-ignore
+// @ts-expect-error import
 import sodium from 'libsodium-wrappers-sumo';
 
 export async function encryptMessageWithPassphrase(

@@ -190,7 +190,7 @@ export class FileUploader {
   }
 
   async finalizeAndAddItemsToDb(
-    destinationPath: string = '/',
+    destinationPath = '/',
   ): Promise<{ status: string }> {
     const messageStr = ShinkaiMessageBuilderWrapper.createItems(
       this.my_encryption_secret_key,

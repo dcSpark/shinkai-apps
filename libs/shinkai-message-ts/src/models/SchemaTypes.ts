@@ -48,6 +48,7 @@ export enum MessageSchemaType {
   APIScanOllamaModels = 'APIScanOllamaModels',
   APIAddOllamaModels = 'APIAddOllamaModels',
 }
+
 export interface LocalScopeVRKaiEntry {
   vrkai: {
     resource: {
@@ -98,6 +99,7 @@ export interface LocalScopeVRKaiEntry {
     };
   };
 }
+
 export interface LocalScopeVRPackEntry {
   vrpack: {
     embedding_models_used: Record<string, string>;
@@ -140,6 +142,7 @@ export interface LocalScopeVRPackEntry {
     vrkai_count: number;
   };
 }
+
 export interface VectorFSItemScopeEntry {
   name: string;
   path: string;
@@ -156,11 +159,15 @@ export interface VectorFSItemScopeEntry {
     };
   };
 }
+
 export interface VectorFSFolderScopeEntry {
   name: string;
   path: string;
 }
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface NetworkFolderScopeEntry {}
+
 export interface JobScope {
   local_vrkai: LocalScopeVRKaiEntry[];
   local_vrpack: LocalScopeVRPackEntry[];
@@ -217,6 +224,7 @@ export interface SerializedAgent {
   storage_bucket_permissions: string[];
   allowed_message_senders: string[];
 }
+
 export type Agent = {
   id: string;
   full_identity_name: string; // ShinkaiName
@@ -239,6 +247,7 @@ export type AgentAPIModel = {
 export interface ModelType {
   model_type: string;
 }
+
 export interface Ollama {
   model_type: string;
 }

@@ -690,7 +690,7 @@ export const createVRFolder = async (
   receiver: string,
   receiver_subidentity: string,
   folderName: string,
-  path: string = '/',
+  path = '/',
   setupDetailsState: CredentialsPayload,
 ): Promise<{ status: string }> => {
   const messageStr = ShinkaiMessageBuilderWrapper.createFolder(
@@ -725,7 +725,7 @@ export const retrieveVRPathSimplified = async (
   sender_subidentity: string,
   receiver: string,
   receiver_subidentity: string,
-  path: string = '/',
+  path = '/',
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
   const messageStr = ShinkaiMessageBuilderWrapper.retrievePathSimplified(
@@ -841,7 +841,7 @@ export const retrieveVectorResource = async (
   sender_subidentity: string,
   receiver: string,
   receiver_subidentity: string,
-  path: string = '/',
+  path = '/',
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
   const messageStr = ShinkaiMessageBuilderWrapper.retrieveResource(
@@ -1094,7 +1094,7 @@ export const searchItemsVR = async (
   receiver: string,
   receiver_subidentity: string,
   search: string,
-  path: string = '/',
+  path = '/',
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
   const messageStr = ShinkaiMessageBuilderWrapper.searchItems(
