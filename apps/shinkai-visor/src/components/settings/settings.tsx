@@ -180,7 +180,7 @@ export const Settings = () => {
       },
       onError: (error) => {
         toast.error('Failed to update node name', {
-          description: error.message,
+          description: error?.response?.data?.error ?? error.message,
         });
       },
     });

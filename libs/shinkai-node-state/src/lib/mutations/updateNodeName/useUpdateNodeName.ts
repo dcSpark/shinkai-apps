@@ -1,5 +1,6 @@
 import { UseMutationOptions, useQueryClient } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 
 import { FunctionKey } from '../../constants';
 import { updateNodeName } from '.';
@@ -7,7 +8,7 @@ import { UpdateNodeNameInput, UpdateNodeNameOutput } from './types';
 
 type Options = UseMutationOptions<
   UpdateNodeNameOutput,
-  Error,
+  AxiosError<{ status: string; error: string }>,
   UpdateNodeNameInput
 >;
 

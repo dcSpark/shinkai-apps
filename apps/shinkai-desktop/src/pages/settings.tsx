@@ -120,7 +120,7 @@ const SettingsPage = () => {
       },
       onError: (error) => {
         toast.error('Failed to update node name', {
-          description: error.message,
+          description: error?.response?.data?.error ?? error.message,
         });
       },
     });
@@ -373,7 +373,7 @@ const SettingsPage = () => {
             variant="ghost"
           >
             <div className="text-gray-100">
-              <img alt="galxe icon" className='w-6 h-6' src={galxeIcon} />
+              <img alt="galxe icon" className="h-6 w-6" src={galxeIcon} />
             </div>
             <p className="text-smm text-white">Galxe Validation</p>
           </Button>
