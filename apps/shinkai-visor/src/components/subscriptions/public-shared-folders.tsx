@@ -220,7 +220,7 @@ export default PublicSharedFolderSubscription;
 
 function transformTreeNode(
   node: FolderTreeNode,
-  parentPath: string = '',
+  parentPath = '',
 ): PrimeTreeNode {
   const path = parentPath ? `${parentPath}/${node.name}` : node.path;
   return {
@@ -404,7 +404,7 @@ export const SubscriptionInfo = ({
   isFree: boolean;
 }) => (
   <div className="flex items-center gap-3">
-    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-300/50 ">
+    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-300/50">
       <SharedFolderIcon className="h-6 w-6" />
     </div>
     <div className="space-y-3">

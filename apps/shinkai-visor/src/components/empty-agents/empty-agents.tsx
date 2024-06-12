@@ -3,7 +3,7 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useNavigate } from 'react-router-dom';
 
-interface EmptyAgentsProps extends React.HTMLAttributes<HTMLDivElement> {}
+type EmptyAgentsProps = React.HTMLAttributes<HTMLDivElement>
 
 export const EmptyAgents = ({ ...props }: EmptyAgentsProps) => {
   const navigate = useNavigate();

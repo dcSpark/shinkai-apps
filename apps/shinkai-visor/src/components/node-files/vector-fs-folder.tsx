@@ -1,13 +1,13 @@
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { VRFolder } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import {
+  buttonVariants,
   Checkbox,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  buttonVariants,
 } from '@shinkai_network/shinkai-ui';
 import {
   AISearchContentIcon,
@@ -25,7 +25,7 @@ import {
 } from 'lucide-react';
 import React from 'react';
 
-import { VectorFSLayout, useVectorFsStore } from './node-file-context';
+import { useVectorFsStore,VectorFSLayout } from './node-file-context';
 import { VectorFsFolderAction } from './vector-fs-drawer';
 
 export const VectorFsFolderInfo = ({

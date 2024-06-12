@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AgentInbox } from '@shinkai_network/shinkai-message-ts/models';
 import {
   UpdateInboxNameFormSchema,
   updateInboxNameFormSchema,

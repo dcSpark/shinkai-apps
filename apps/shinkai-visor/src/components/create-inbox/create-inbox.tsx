@@ -12,8 +12,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  TextField,
   Textarea,
+  TextField,
 } from '@shinkai_network/shinkai-ui';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
