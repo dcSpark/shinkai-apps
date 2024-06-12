@@ -35,7 +35,7 @@ To get started first clone this repo:
 $ git clone https://github.com/dcSpark/shinkai-apps
 
 # Download side binaries. IE:
-ARCH="aarch64-apple-darwin" OLLAMA_VERSION="v0.1.42" SHINKAI_NODE_VERSION="v0.7.10" npx ts-node ./ci-scripts/download-side-binaries.ts
+ARCH="aarch64-apple-darwin" OLLAMA_VERSION="v0.1.42" SHINKAI_NODE_VERSION="v0.7.11" npx ts-node ./ci-scripts/download-side-binaries.ts
 ```
 
 Once you have done that simply use `npm` to compile/serve it yourself:
