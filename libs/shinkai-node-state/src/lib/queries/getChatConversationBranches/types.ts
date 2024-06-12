@@ -1,18 +1,17 @@
 import type { JobCredentialsPayload } from '@shinkai_network/shinkai-message-ts/models';
 
-export type GetChatConversationInput = JobCredentialsPayload & {
+export type GetChatConversationBranchesInput = JobCredentialsPayload & {
   nodeAddress: string;
   inboxId: string;
   count?: number;
   lastKey?: string;
   shinkaiIdentity: string;
   profile: string;
-  refetchIntervalEnabled?: boolean;
+  refetchInterval?: number;
 };
 
-export type ChatConversationMessage = {
+export type ChatConversationBranchesMessage = {
   hash: string;
-  parentHash: string;
   inboxId: string;
   scheduledTime: string | undefined;
   content: string;
@@ -28,4 +27,5 @@ export type ChatConversationMessage = {
   };
 };
 
-export type GetChatConversationOutput = ChatConversationMessage[];
+export type GetChatConversationBranchesOutput =
+  ChatConversationBranchesMessage[];

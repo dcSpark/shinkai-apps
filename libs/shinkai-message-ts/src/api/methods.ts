@@ -1572,3 +1572,36 @@ export const addOllamaModels = async (
   const data = response.data;
   return data;
 };
+
+export const getLastMessagesFromInboxWithBranches = async (
+  nodeAddress: string,
+  inbox: string,
+  count: number,
+  lastKey: string | undefined,
+  setupDetailsState: LastMessagesFromInboxCredentialsPayload,
+) => {
+  const messageStr = ShinkaiMessageBuilderWrapper.get_last_messages_from_inbox(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    inbox,
+    count,
+    lastKey,
+    setupDetailsState.shinkai_identity,
+    setupDetailsState.profile,
+    setupDetailsState.shinkai_identity,
+  );
+
+  const message = JSON.parse(messageStr);
+
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/last_messages_from_inbox_with_branches'),
+    message,
+
+    {
+      responseType: 'json',
+    },
+  );
+  const data = response.data.data;
+  return data;
+};
