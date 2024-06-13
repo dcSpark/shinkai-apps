@@ -33,18 +33,42 @@ To get started first clone this repo:
 
 ```
 $ git clone https://github.com/dcSpark/shinkai-apps
-
-# Download side binaries. IE:
-ARCH="aarch64-apple-darwin" OLLAMA_VERSION="v0.1.42" SHINKAI_NODE_VERSION="v0.7.11" npx ts-node ./ci-scripts/download-side-binaries.ts
 ```
 
+### Download side binaries:
+
+#### Macos
+```
+ARCH="aarch64-apple-darwin" \
+OLLAMA_VERSION="v0.1.43"\
+SHINKAI_NODE_VERSION="v0.7.12" \
+npx ts-node ./ci-scripts/download-side-binaries.ts
+```
+
+#### Linux
+```
+ARCH="x86_64-unknown-linux-gnu" \
+OLLAMA_VERSION="v0.1.43"\
+SHINKAI_NODE_VERSION="v0.7.12" \
+npx ts-node ./ci-scripts/download-side-binaries.ts
+```
+
+#### Windows
+```
+$ENV:OLLAMA_VERSION="v0.1.43"      
+$ENV:SHINKAI_NODE_VERSION="v0.7.12"
+$ENV:ARCH="x86_64-pc-windows-msvc" 
+npx ts-node ./ci-scripts/download-side-binaries.ts
+```
+
+### Run one of the projects
 Once you have done that simply use `npm` to compile/serve it yourself:
 
 ```
-$ cd shinkai-apps
-$ nvm use
-$ npm ci
-$ npx nx serve {project-name}
+cd shinkai-apps
+nvm use
+npm ci
+npx nx serve {project-name} # IE: npx nx serve shinkai-desktop
 ```
 
 ### Project specific configurations
