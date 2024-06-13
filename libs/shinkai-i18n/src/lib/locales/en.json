@@ -24,6 +24,14 @@
     "limitReachedDescription": "You've used all of your queries for the month on this model/agent. Please start a new chat with another agent.",
     "enterMessage": "Enter Message",
     "sendMessage": "Send Message",
+    "form": {
+      "message": "Tell us the job you want to do",
+      "messagePlaceholder": "Eg: Explain me how internet works...",
+      "workflows": "Workflows",
+      "selectAI": "Select your AI",
+      "setContext": "Set Chat Context",
+      "setContextText": "Add files or folders for your AI to use as context during your conversation."
+    },
     "context": {
       "title": "Conversation Context",
       "description": "List of folders and files used as context for this conversation"
