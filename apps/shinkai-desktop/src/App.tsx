@@ -1,4 +1,3 @@
-import { I18nProvider } from '@shinkai/shinkai-i18n';
 import { QueryProvider } from '@shinkai_network/shinkai-node-state';
 import { Toaster } from '@shinkai_network/shinkai-ui';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -16,11 +15,9 @@ function App() {
     <ErrorBoundary FallbackComponent={FullPageErrorFallback}>
       <AnalyticsProvider>
         <QueryProvider>
-          <I18nProvider>
-            <Router>
-              <AppRoutes />
-            </Router>
-          </I18nProvider>
+          <Router>
+            <AppRoutes />
+          </Router>
           <Toaster />
         </QueryProvider>
       </AnalyticsProvider>

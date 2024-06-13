@@ -1,6 +1,6 @@
+import { useTranslation } from '@shinkai/shinkai-i18n';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { buttonVariants } from '@shinkai_network/shinkai-ui';
-import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { CREATE_JOB_PATH } from '../../routes/name';
@@ -33,11 +33,11 @@ const EmptyMessage = () => {
           🤖
         </span>
 
-        <h1 className="text-2xl font-bold text-white">Ask Shinkai AI</h1>
-        <h1 className="text-2xl font-bold text-white">{t('sss')}</h1>
+        <h1 className="text-2xl font-bold text-white">
+          {t('chat.emptyStateTitle')}
+        </h1>
         <p className="text-gray-80 text-sm">
-          Try “How to make a HTTP request in JavaScript” , “Give me the top 10
-          rock music in the 80s”, “Explain me how internet works”
+          {t('chat.emptyStateDescription')}
         </p>
 
         <div className="mt-4">
@@ -48,7 +48,7 @@ const EmptyMessage = () => {
               })}
               to={isLocalShinkaiNodeIsUse ? '/agents-locally' : '/add-agent'}
             >
-              <span>Add AI</span>
+              <span>{t('agents.add')}</span>
             </Link>
           ) : (
             <Link
@@ -57,7 +57,7 @@ const EmptyMessage = () => {
               })}
               to={CREATE_JOB_PATH}
             >
-              <span>Create AI Chat</span>
+              <span>{t('chat.create')}</span>
             </Link>
           )}
         </div>
