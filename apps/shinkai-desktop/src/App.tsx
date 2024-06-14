@@ -12,16 +12,16 @@ initSyncStorage();
 
 function App() {
   return (
-    <AnalyticsProvider>
-      <QueryProvider>
-        <ErrorBoundary FallbackComponent={FullPageErrorFallback}>
+    <ErrorBoundary FallbackComponent={FullPageErrorFallback}>
+      <AnalyticsProvider>
+        <QueryProvider>
           <Router>
             <AppRoutes />
           </Router>
-        </ErrorBoundary>
-        <Toaster />
-      </QueryProvider>
-    </AnalyticsProvider>
+          <Toaster />
+        </QueryProvider>
+      </AnalyticsProvider>
+    </ErrorBoundary>
   );
 }
 
