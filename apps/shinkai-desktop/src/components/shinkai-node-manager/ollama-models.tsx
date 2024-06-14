@@ -17,7 +17,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
 import { Download, Loader2, Minus } from 'lucide-react';
 import { ModelResponse, ProgressResponse } from 'ollama/browser';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { toast } from 'sonner';
 
 import {
@@ -142,6 +142,13 @@ export const OllamaModels = () => {
       </div>
     );
   }
+
+  const modelList = useMemo(() => {
+    return OLLAMA_MODELS.sort((model) =>
+      installedOllamaModelsMap.has(model.fullName) ? -1 : 1,
+    );
+  }, [installedOllamaModelsMap]);
+
   return (
     <ScrollArea className="h-full flex-1 rounded-md">
       <Table className="w-full border-collapse text-[13px]">
@@ -156,9 +163,7 @@ export const OllamaModels = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {OLLAMA_MODELS.sort((model) =>
-            installedOllamaModelsMap.has(model.fullName) ? -1 : 1,
-          ).map((model) => {
+          {modelList.map((model) => {
             return (
               <TableRow
                 className="transition-colors hover:bg-gray-300/50"
@@ -261,7 +266,7 @@ export const OllamaModels = () => {
         <TableFooter className="text-right">
           <TableRow>
             <TableCell colSpan={6}>
-              <span className="text-xs text-gray-100">Powered by Ollama</span>
+              <span className="text-gray-80 text-xs">Powered by Ollama</span>
             </TableCell>
           </TableRow>
         </TableFooter>
