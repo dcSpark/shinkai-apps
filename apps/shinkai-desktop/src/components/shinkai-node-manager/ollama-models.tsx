@@ -7,6 +7,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -50,7 +51,7 @@ export const OllamaModels = () => {
     OLLAMA_MODELS.map((value) => value.fullName),
   );
   const { isLoading: isOllamaListLoading, data: installedOllamaModels } =
-    useOllamaListQuery(ollamaConfig, {});
+    useOllamaListQuery(ollamaConfig);
   const { mutateAsync: ollamaPull } = useOllamaPullMutation(ollamaConfig, {
     onSuccess: (data, input) => {
       handlePullProgress(input.model, data);
@@ -189,7 +190,7 @@ export const OllamaModels = () => {
                   </div>
                 </TableCell>
                 <TableCell className="whitespace-nowrap">
-                 {Math.round((model.contextLength * 0.75) / 380)} Book Pages
+                  {Math.round((model.contextLength * 0.75) / 380)} Book Pages
                 </TableCell>
                 <TableCell>
                   <ModelQuailityTag quality={model.quality} />
@@ -257,6 +258,13 @@ export const OllamaModels = () => {
             );
           })}
         </TableBody>
+        <TableFooter className="text-right">
+          <TableRow>
+            <TableCell colSpan={6}>
+              <span className="text-xs text-gray-100">Powered by Ollama</span>
+            </TableCell>
+          </TableRow>
+        </TableFooter>
       </Table>
     </ScrollArea>
   );
