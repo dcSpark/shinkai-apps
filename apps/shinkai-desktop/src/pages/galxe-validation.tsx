@@ -31,9 +31,11 @@ export type RegisterShinkaiDesktopInstallationForm = z.infer<
 >;
 
 export const GalxeValidation = () => {
-  const auth = useAuth(store => store.auth);
+  const auth = useAuth((store) => store.auth);
   const { data: installationProof } =
-    useGalxeGenerateDesktopInstallationProofQuery(auth?.node_signature_pk || '');
+    useGalxeGenerateDesktopInstallationProofQuery(
+      auth?.node_signature_pk || '',
+    );
   const form = useForm<RegisterShinkaiDesktopInstallationForm>({
     resolver: zodResolver(RegisterShinkaiDesktopInstallationFormSchema),
     defaultValues: {
@@ -50,9 +52,12 @@ export const GalxeValidation = () => {
           'Your Shinkai Desktop installation was registered successfully. It may take some hours to be registered in Galxe quest.',
         );
       },
-      onError: () => {
+      onError: (error) => {
         toast.error(
           'Error registering your Shinkai Desktop installation. Please ensure your EVM Address was not used previously to register a different installation.',
+          {
+            description: error?.response?.data?.message ?? error.message,
+          },
         );
       },
     });
@@ -119,7 +124,6 @@ export const GalxeValidation = () => {
 
                   <FormField
                     control={form.control}
-                    disabled={true}
                     name="signature"
                     render={({ field }) => (
                       <TextField
@@ -142,7 +146,6 @@ export const GalxeValidation = () => {
 
                   <FormField
                     control={form.control}
-                    disabled={true}
                     name="combined"
                     render={({ field }) => (
                       <TextField

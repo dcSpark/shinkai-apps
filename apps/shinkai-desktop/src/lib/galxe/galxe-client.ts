@@ -7,7 +7,7 @@ import {
 } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api';
 import { getName } from '@tauri-apps/api/app';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 // Queries
 export const useGalxeGenerateDesktopInstallationProofQuery = (
@@ -18,7 +18,9 @@ export const useGalxeGenerateDesktopInstallationProofQuery = (
     ...options,
     queryKey: ['galxe_generate_desktop_installation_proof'],
     queryFn: async (): Promise<[string, string]> => {
-      return invoke('galxe_generate_desktop_installation_proof', { nodeSignature });
+      return invoke('galxe_generate_desktop_installation_proof', {
+        nodeSignature,
+      });
     },
   });
   return { ...query } as UseQueryResult<[string, string], Error>;
@@ -28,14 +30,17 @@ export const useGalxeGenerateDesktopInstallationProofQuery = (
 export const useGalxeRegisterShinkaiDesktopInstallationMutation = (
   options?: UseMutationOptions<
     void,
-    Error,
+    AxiosError<{ message: string; error: string }>,
     { address: string; signature: string; combined: string }
   >,
 ) => {
   return useMutation({
     mutationFn: async ({ address, signature, combined }): Promise<void> => {
       const appName = await getName();
-      const baseUrl = appName === 'Shinkai Desktop' ? 'https://backend-hosting.shinkai.com' : 'https://dev-backend-hosting.shinkai.com';
+      const baseUrl =
+        appName === 'Shinkai Desktop'
+          ? 'https://backend-hosting.shinkai.com'
+          : 'https://dev-backend-hosting.shinkai.com';
       await axios.post(
         `${baseUrl}/galxe/register-shinkai-desktop-installation`,
         {
