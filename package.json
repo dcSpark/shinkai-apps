@@ -74,6 +74,7 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-dropzone": "^14.2.3",
+    "react-error-boundary": "^4.0.13",
     "react-hook-form": "^7.51.5",
     "react-image-crop": "^11.0.5",
     "react-intersection-observer": "^9.10.2",
@@ -117,7 +118,6 @@
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.13",
     "@rollup/plugin-url": "^8.0.2",
     "@swc-node/register": "~1.9.1",
-    "@swc/cli": "~0.3.12",
     "@swc/core": "~1.5.7",
     "@tailwindcss/typography": "^0.5.13",
     "@tauri-apps/cli": "^1.5.14",
@@ -173,15 +173,6 @@
     "vite-tsconfig-paths": "^4.3.2",
     "vitest": "^1.6.0",
     "zip-lib": "^1.0.4"
-  },
-  "optionalDependencies": {
-    "@swc/core-darwin-arm64": "^1.5.22",
-    "@swc/core-darwin-x64": "^1.5.22",
-    "@swc/core-linux-arm-gnueabihf": "^1.5.22",
-    "@swc/core-linux-arm64-gnu": "^1.5.22",
-    "@swc/core-linux-arm64-musl": "^1.5.22",
-    "@swc/core-linux-x64-gnu": "^1.5.22",
-    "@swc/core-linux-x64-musl": "^1.5.22"
   },
   "engines": {
     "node": "18",
