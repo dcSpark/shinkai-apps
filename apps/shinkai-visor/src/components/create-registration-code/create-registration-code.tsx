@@ -199,11 +199,10 @@ export const CreateRegistrationCode = () => {
               {identityType === IdentityType.Device && (
                 <FormField
                   control={form.control}
-                  disabled={true}
                   name="profile"
                   render={({ field }) => (
                     <TextField
-                      field={field}
+                      field={{ ...field, readOnly: true }}
                       label={<FormattedMessage id="profile.one" />}
                     />
                   )}

@@ -175,10 +175,12 @@ const GenerateCodePage = () => {
             {identityType === IdentityType.Device && (
               <FormField
                 control={form.control}
-                disabled={true}
                 name="profile"
                 render={({ field }) => (
-                  <TextField field={field} label="Profile" />
+                  <TextField
+                    field={{ ...field, readOnly: true }}
+                    label="Profile"
+                  />
                 )}
               />
             )}
