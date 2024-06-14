@@ -1,4 +1,4 @@
-import { useTranslation } from '@shinkai/shinkai-i18n';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { buttonVariants } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { QueryClientProvider } from '@tanstack/react-query';

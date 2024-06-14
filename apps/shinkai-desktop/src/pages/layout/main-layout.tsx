@@ -1,5 +1,5 @@
 import { ExitIcon, GearIcon } from '@radix-ui/react-icons';
-import { useTranslation } from '@shinkai/shinkai-i18n';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import {
   AlertDialog,

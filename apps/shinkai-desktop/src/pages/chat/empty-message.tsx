@@ -1,4 +1,4 @@
-import { useTranslation } from '@shinkai/shinkai-i18n';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { buttonVariants } from '@shinkai_network/shinkai-ui';
 import { Link } from 'react-router-dom';

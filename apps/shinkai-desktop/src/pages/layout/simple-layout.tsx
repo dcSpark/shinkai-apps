@@ -1,4 +1,4 @@
-import { useTranslation } from '@shinkai/shinkai-i18n';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { LucideArrowLeft } from 'lucide-react';
 import React from 'react';

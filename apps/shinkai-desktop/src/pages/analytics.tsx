@@ -1,4 +1,4 @@
-import { useTranslation } from '@shinkai/shinkai-i18n';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { Button } from '@shinkai_network/shinkai-ui';
 import { useNavigate } from 'react-router-dom';
 

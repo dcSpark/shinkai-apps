@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslation } from '@shinkai/shinkai-i18n';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 // import { PlusCircledIcon } from '@radix-ui/react-icons';
 import { SmartInbox } from '@shinkai_network/shinkai-message-ts/models';
 import {

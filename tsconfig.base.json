@@ -18,7 +18,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@shinkai/shinkai-i18n": [
+      "@shinkai_network/shinkai-i18n": [
         "libs/shinkai-i18n/src/index.ts"
       ],
       "@shinkai_network/shinkai-message-ts/*": [
