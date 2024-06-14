@@ -34,16 +34,6 @@
       "options": {
         "cwd": "apps/shinkai-visor",
         "command": "npx vite"
-      },
-      "configurations": {
-        "development": {
-          "buildTarget": "shinkai-visor:build:development",
-          "hmr": true
-        },
-        "production": {
-          "buildTarget": "shinkai-visor:build:production",
-          "hmr": false
-        }
       }
     },
     "preview": {
