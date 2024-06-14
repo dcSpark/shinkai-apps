@@ -120,7 +120,13 @@ export const OllamaModels = () => {
       installedOllamaModels.models.forEach((modelResponse) => {
         installedOllamaModelsMap.set(modelResponse.name, modelResponse);
       });
-  }, [installedOllamaModels]);
+  }, [installedOllamaModels?.models, installedOllamaModelsMap]);
+
+  const modelList = useMemo(() => {
+    return OLLAMA_MODELS.sort((model) =>
+      installedOllamaModelsMap.has(model.fullName) ? -1 : 1,
+    );
+  }, [installedOllamaModelsMap]);
 
   if (!isShinkaiNodeRunning) {
     return (
@@ -142,12 +148,6 @@ export const OllamaModels = () => {
       </div>
     );
   }
-
-  const modelList = useMemo(() => {
-    return OLLAMA_MODELS.sort((model) =>
-      installedOllamaModelsMap.has(model.fullName) ? -1 : 1,
-    );
-  }, [installedOllamaModelsMap]);
 
   return (
     <ScrollArea className="h-full flex-1 rounded-md">

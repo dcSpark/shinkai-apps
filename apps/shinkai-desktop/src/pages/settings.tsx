@@ -21,9 +21,10 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { ExportIcon, QrIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { getVersion } from '@tauri-apps/api/app';
 import { motion } from 'framer-motion';
 import { BarChart2, CodesandboxIcon, ExternalLinkIcon } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -74,6 +75,8 @@ const SettingsPage = () => {
     node_address: auth?.node_address ?? '',
   });
 
+  const [appVersion, setAppVersion] = useState('');
+
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -88,6 +91,12 @@ const SettingsPage = () => {
     control: form.control,
     name: 'defaultAgentId',
   });
+
+  useEffect(() => {
+    (async () => {
+      setAppVersion(await getVersion());
+    })();
+  }, []);
 
   const { agents } = useAgents({
     nodeAddress: auth?.node_address ?? '',
@@ -277,7 +286,7 @@ const SettingsPage = () => {
                     Save
                   </MotionButton>
                   <Button
-                    className="min-w-10 h-10 rounded-lg text-sm"
+                    className="h-10 min-w-10 rounded-lg text-sm"
                     onClick={() => {
                       form.setValue(
                         'shinkaiIdentity',
@@ -377,6 +386,12 @@ const SettingsPage = () => {
             </div>
             <p className="text-smm text-white">Galxe Validation</p>
           </Button>
+        </div>
+        <div>
+          <p className="text-gray-80 text-right text-xs">
+            Shinkai Desktop Version:{' '}
+            <span className="font-bold">{appVersion}</span>
+          </p>
         </div>
       </div>
     </SimpleLayout>
