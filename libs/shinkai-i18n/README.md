@@ -41,14 +41,4 @@ const myFunction
 Note that this should only be used in cases where we can't use `useTranslation`. The hook does extra
 processing, hence why it is preferred in all other cases.
 
-After adding internationalized texts within the app using the methods described, you'll need to
-extract the translation keys from the code using the next command:
-
-```sh
-npx extract-translation-keys
-```
-
-The new translations will be added to the relevant locale file
-([example](./translations/en.json)) with a default text, which you'll need to update with the
-content you want.
 
