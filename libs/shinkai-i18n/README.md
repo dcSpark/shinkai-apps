@@ -5,7 +5,7 @@ are stored inside the [locales](./src/lib/locales) directory. This means all tex
 need to be rendered using the `t` function, returned by `useTranslation`:
 
 ```tsx
-import { useTranslation } from 'libs/shinkai-i18n';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 
 const Component: React.FC = () => {
   const { t } = useTranslation();
@@ -17,7 +17,7 @@ const Component: React.FC = () => {
 If a text contains HTML or JSX elements, then the `Trans` component can be used instead:
 
 ```tsx
-import { useTranslation } from 'libs/translations';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 
 const Component: React.FC = () => {
   const { Trans } = useTranslation();
@@ -32,7 +32,7 @@ If a text needs to be accessed from outside of a component, then the `t` functio
 translation client can be used:
 
 ```tsx
-import { t } from 'libs/translations';
+import { t } from '@shinkai_network/shinkai-i18n';
 
 const myFunction
 () => t('functionName.textKey');
