@@ -1,27 +1,22 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
-  "tasksRunnerOptions": {
-    "default": {
-      "runner": "nx/tasks-runners/default",
-      "options": {
-        "cacheableOperations": ["build", "lint", "test", "e2e"]
-      }
-    }
-  },
   "targetDefaults": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": ["production", "^production"]
+      "inputs": ["production", "^production"],
+      "cache": true
     },
     "lint": {
       "inputs": [
         "default",
         "{workspaceRoot}/.eslintrc.json",
         "{workspaceRoot}/.eslintignore"
-      ]
+      ],
+      "cache": true
     },
     "test": {
-      "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"]
+      "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"],
+      "cache": true
     },
     "e2e": {
       "inputs": ["default", "^production"],
@@ -53,7 +48,7 @@
         "babel": true,
         "linter": "eslint",
         "style": "css",
-        "bundler": "webpack"
+        "bundler": "vite"
       },
       "component": {
         "style": "css"
@@ -69,19 +64,10 @@
     {
       "plugin": "@nx/eslint/plugin",
       "options": {
-        "targetName": "eslint:lint",
+        "targetName": "lint",
         "extensions": ["ts", "tsx", "js", "jsx", "html", "vue"]
       }
-    },
-    {
-      "plugin": "@nx/vite/plugin",
-      "options": {
-        "buildTargetName": "vite:build",
-        "testTargetName": "vite:test",
-        "serveTargetName": "vite:serve",
-        "previewTargetName": "vite:preview",
-        "serveStaticTargetName": "vite:serve-static"
-      }
     }
-  ]
+  ],
+  "useInferencePlugins": false
 }
