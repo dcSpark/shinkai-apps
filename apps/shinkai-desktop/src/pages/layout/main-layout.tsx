@@ -1,4 +1,5 @@
 import { ExitIcon, GearIcon } from '@radix-ui/react-icons';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import {
   AlertDialog,
@@ -93,6 +94,7 @@ const NavLink = ({
   title: string;
   disabled?: boolean;
 }) => {
+  const { t } = useTranslation();
   const sidebarExpanded = useSettings((state) => state.sidebarExpanded);
 
   const isMatch = useMatch({
@@ -120,8 +122,8 @@ const NavLink = ({
               variants={showAnimation}
             >
               <span className="max-w-[100px] truncate">{title} </span>
-              <Badge className="text-[10px]" variant="inputAdornment">
-                SOON
+              <Badge className="text-[10px] uppercase" variant="inputAdornment">
+                {t('common.soon')}
               </Badge>
             </motion.div>
           )}
@@ -207,6 +209,7 @@ const ShinkaiLogo = ({ className }: { className?: string }) => (
 );
 
 export function MainNav() {
+  const { t, Trans } = useTranslation();
   const navigate = useNavigate();
   const logout = useAuth((state) => state.setLogout);
   const isGetStartedChecklistHidden = useSettings(
@@ -230,12 +233,12 @@ export function MainNav() {
 
   const navigationLinks = [
     {
-      title: 'Chats',
+      title: t('layout.menuItems.chats'),
       href: '/inboxes',
       icon: <InboxIcon className="h-5 w-5" />,
     },
     {
-      title: 'AI Tasks',
+      title: t('layout.menuItems.aiTasks'),
       href: '/ai-tasks',
       icon: <AiTasksIcon className="h-5 w-5" />,
       disabled: true,
@@ -247,23 +250,23 @@ export function MainNav() {
     // },
 
     {
-      title: 'My AI Files Explorer',
+      title: t('layout.menuItems.vectorFs'),
       href: '/vector-fs',
       icon: <FilesIcon className="h-5 w-5" />,
     },
     {
-      title: 'AI Files Content Search',
+      title: t('layout.menuItems.vectorSearch'),
       href: '/vector-search',
       icon: <AISearchContentIcon className="h-5 w-5" />,
     },
     {
-      title: 'Browse Subscriptions',
+      title: t('layout.menuItems.subscriptions'),
       href: '/public-subscriptions',
       icon: <BrowseSubscriptionIcon className="h-5 w-5" />,
       disabled: config.isProduction,
     },
     {
-      title: 'My Subscriptions',
+      title: t('layout.menuItems.mySubscriptions'),
       href: '/my-subscriptions',
       icon: <MySubscriptionsIcon className="h-5 w-5" />,
       disabled: config.isProduction,
@@ -272,17 +275,17 @@ export function MainNav() {
 
   const footerNavigationLinks = [
     {
-      title: 'AIs',
+      title: t('layout.menuItems.agents'),
       href: '/agents',
       icon: <BotIcon className="h-5 w-5" />,
     },
     {
-      title: 'Settings',
+      title: t('layout.menuItems.settings'),
       href: '/settings',
       icon: <GearIcon className="h-5 w-5" />,
     },
     {
-      title: 'Disconnect',
+      title: t('layout.menuItems.disconnect'),
       href: '#',
       icon: <ExitIcon className="h-5 w-5" />,
       onClick: () => confirmDisconnect(),
@@ -295,7 +298,7 @@ export function MainNav() {
         width: sidebarExpanded ? '230px' : '70px',
         transition: sidebarTransition,
       }}
-      className="fixed inset-0 z-30 flex w-auto shrink-0 flex-col gap-2 overflow-y-auto overflow-x-hidden border-r border-gray-400/30  bg-gradient-to-b from-gray-300 to-gray-400/70 px-2 py-6 shadow-xl"
+      className="fixed inset-0 z-30 flex w-auto shrink-0 flex-col gap-2 overflow-y-auto overflow-x-hidden border-r border-gray-400/30 bg-gradient-to-b from-gray-300 to-gray-400/70 px-2 py-6 shadow-xl"
       initial={{
         width: sidebarExpanded ? '230px' : '70px',
       }}
@@ -326,7 +329,7 @@ export function MainNav() {
             </TooltipTrigger>
             <TooltipPortal>
               <TooltipContent align="center" side="right">
-                Toggle Sidebar
+                {t('layout.sidebar.toggle')}
               </TooltipContent>
             </TooltipPortal>
           </Tooltip>
@@ -358,7 +361,7 @@ export function MainNav() {
                         initial="hidden"
                         variants={showAnimation}
                       >
-                        Create AI Chat
+                        {t('chat.create')}
                       </motion.span>
                     )}
                   </AnimatePresence>
@@ -366,7 +369,7 @@ export function MainNav() {
               </TooltipTrigger>
               <TooltipPortal>
                 <TooltipContent align="center" side="right">
-                  Create AI Chat
+                  {t('chat.create')}
                 </TooltipContent>
               </TooltipPortal>
             </Tooltip>
@@ -403,7 +406,7 @@ export function MainNav() {
                             <>
                               {item.title} <br />
                               <span className="text-gray-80 text-xs">
-                                Coming Soon - Early July
+                                {t('common.comingSoon')}
                               </span>
                             </>
                           ) : (
@@ -465,27 +468,29 @@ export function MainNav() {
       >
         <AlertDialogContent className="w-[75%]">
           <AlertDialogHeader>
-            <AlertDialogTitle>Disconnect Shinkai</AlertDialogTitle>
+            <AlertDialogTitle>{t('disconnect.modalTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
               <div className="flex flex-col space-y-3 text-left text-white/70">
-                <div className="flex flex-col space-y-1 ">
+                <div className="flex flex-col space-y-1">
                   <span className="text-sm">
-                    Are you sure you want to disconnect? This will permanently
-                    delete your data
+                    {t('disconnect.modalDescription')}
                   </span>
                 </div>
                 <div className="text-sm">
-                  Before continuing, please
-                  <Link
-                    className="mx-1 inline-block cursor-pointer text-white underline"
-                    onClick={() => {
-                      setIsConfirmLogoutDialogOpened(false);
+                  <Trans
+                    components={{
+                      Link: (
+                        <Link
+                          className="mx-0.5 inline-block cursor-pointer text-white underline"
+                          onClick={() => {
+                            setIsConfirmLogoutDialogOpened(false);
+                          }}
+                          to={'/export-connection'}
+                        />
+                      ),
                     }}
-                    to={'/export-connection'}
-                  >
-                    export your connection
-                  </Link>
-                  to restore your connection at any time.
+                    i18nKey="disconnect.exportConnection"
+                  />
                 </div>
               </div>
             </AlertDialogDescription>
@@ -497,10 +502,10 @@ export function MainNav() {
                 setIsConfirmLogoutDialogOpened(false);
               }}
             >
-              Cancel
+              {t('common.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction className="flex-1" onClick={handleDisconnect}>
-              Disconnect
+              {t('common.disconnect')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -510,6 +515,7 @@ export function MainNav() {
 }
 
 const MainLayout = () => {
+  const { t } = useTranslation();
   const location = useLocation();
   const auth = useAuth((state) => state.auth);
   const sidebarExpanded = useSettings((state) => state.sidebarExpanded);
@@ -521,9 +527,8 @@ const MainLayout = () => {
 
   useEffect(() => {
     if (isSuccess && nodeInfo?.status !== 'ok') {
-      toast.error('Node Unavailable', {
-        description:
-          'Visor is having trouble connecting to your Shinkai Node. Your node may be offline, or your internet connection may be down.',
+      toast.error(t('errors.nodeUnavailable.title'), {
+        description: t('errors.nodeUnavailable.description'),
         important: true,
         id: 'node-unavailable',
         duration: 20000,

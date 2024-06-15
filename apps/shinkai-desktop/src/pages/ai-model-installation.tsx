@@ -1,3 +1,4 @@
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { buttonVariants } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -10,11 +11,12 @@ import { shinkaiNodeQueryClient } from '../lib/shinkai-node-manager/shinkai-node
 import { FixedHeaderLayout } from './layout/simple-layout';
 
 const AIModelInstallation = () => {
+  const { t } = useTranslation();
   return (
     <QueryClientProvider client={shinkaiNodeQueryClient}>
       <FixedHeaderLayout
         className="relative flex w-full max-w-6xl flex-col gap-2 px-4"
-        title="Install AI"
+        title={t('agents.installAI')}
       >
         <ResourcesBanner />
         <OllamaModels />
@@ -28,7 +30,7 @@ const AIModelInstallation = () => {
             )}
             to={{ pathname: '/' }}
           >
-            Continue
+            {t('common.continue')}
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>

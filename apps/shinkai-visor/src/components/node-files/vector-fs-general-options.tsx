@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   CreateFolderFormSchema,
   createFolderFormSchema,
@@ -30,7 +31,6 @@ import {
 } from '@shinkai_network/shinkai-ui/assets';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { FormattedMessage } from 'react-intl';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -140,6 +140,7 @@ export const AddNewFolderAction = () => {
 };
 
 export const UploadVRFilesAction = () => {
+  const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
   const currentGlobalPath = useVectorFsStore(
@@ -210,9 +211,7 @@ export const UploadVRFilesAction = () => {
             name="files"
             render={({ field }) => (
               <FormItem className="mt-3">
-                <FormLabel className="sr-only">
-                  <FormattedMessage id="file.one" />
-                </FormLabel>
+                <FormLabel className="sr-only">{t('common.file')}</FormLabel>
                 <FormControl>
                   <div className="flex flex-col space-y-1">
                     <div className="flex items-center justify-center">

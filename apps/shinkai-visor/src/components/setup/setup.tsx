@@ -5,13 +5,11 @@ import { CornerRightUp } from 'lucide-react';
 import * as React from 'react';
 import { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
-import { IntlProvider } from 'react-intl';
 import { MemoryRouter as Router } from 'react-router-dom';
 
 import visorLogo from '../../assets/icons/visor.svg';
 import coverImage from '../../assets/images/setup-cover.png';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
-import { langMessages, locale } from '../../lang/intl';
 import { sendMessage } from '../../service-worker/communication/internal';
 import { ServiceWorkerInternalMessageType } from '../../service-worker/communication/internal/types';
 
@@ -34,7 +32,7 @@ const SetupStepOne = ({
 
   return (
     <div className="flex h-full items-center justify-center">
-      <div className="absolute right-[70px] top-10 flex flex-col items-center gap-6 ">
+      <div className="absolute right-[70px] top-10 flex flex-col items-center gap-6">
         <CornerRightUp />
         <div className="flex gap-2 font-semibold">
           <span>Click</span>
@@ -48,7 +46,7 @@ const SetupStepOne = ({
         </div>
       </div>
 
-      <div className=" flex h-[532px] w-[506px] flex-col items-center justify-between rounded-2xl bg-gray-400 px-6 py-7">
+      <div className="flex h-[532px] w-[506px] flex-col items-center justify-between rounded-2xl bg-gray-400 px-6 py-7">
         <img
           alt="shinkai-app-logo"
           className="w-[90px] self-start"
@@ -146,12 +144,10 @@ if (!container) {
 const root = createRoot(container);
 root.render(
   <React.StrictMode>
-    <IntlProvider locale={locale} messages={langMessages}>
-      <div className="font-inter h-full w-full">
-        <Router>
-          <Setup />
-        </Router>
-      </div>
-    </IntlProvider>
+    <div className="font-inter h-full w-full">
+      <Router>
+        <Setup />
+      </Router>
+    </div>
   </React.StrictMode>,
 );

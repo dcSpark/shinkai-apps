@@ -32,11 +32,9 @@ import {
 } from 'lucide-react';
 import * as React from 'react';
 import { useEffect, useRef } from 'react';
-import { IntlProvider } from 'react-intl';
 
 import { useGlobalActionButtonChromeMessage } from '../../hooks/use-global-action-button-chrome-message';
 import useKeyboardShortcut from '../../hooks/use-keyboard-shortcut';
-import { langMessages, locale } from '../../lang/intl';
 import { OPEN_SIDEPANEL_DELAY_MS } from '../../service-worker/action';
 import { ServiceWorkerInternalMessageType } from '../../service-worker/communication/internal/types';
 import { useSettings } from '../../store/settings/settings';
@@ -302,8 +300,7 @@ root.render(
         className: 'bg-neutral-900 rounded-full text-sm font-medium px-3 py-2',
       }}
     />
-    <IntlProvider locale={locale} messages={langMessages}>
-      <ActionButton />
-    </IntlProvider>
+
+    <ActionButton />
   </React.StrictMode>,
 );

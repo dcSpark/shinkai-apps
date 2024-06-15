@@ -8,10 +8,8 @@ import * as React from 'react';
 import { useRef, useState } from 'react';
 import ReactCrop, { Crop, PixelCrop } from 'react-image-crop';
 import reactCropStyle from 'react-image-crop/dist/ReactCrop.css?inline';
-import { IntlProvider } from 'react-intl';
 
 import { useGlobalImageCaptureChromeMessage } from '../../hooks/use-global-image-capture-message';
-import { langMessages, locale } from '../../lang/intl';
 import themeStyle from '../../theme/styles.css?inline';
 
 export const ImageCapture = () => {
@@ -93,10 +91,8 @@ const root = createShadowRoot(
 );
 root.render(
   <React.StrictMode>
-    <IntlProvider locale={locale} messages={langMessages}>
-      <div className="z-max pointer-events-none fixed h-full w-full overflow-hidden">
-        <ImageCapture />
-      </div>
-    </IntlProvider>
+    <div className="z-max pointer-events-none fixed h-full w-full overflow-hidden">
+      <ImageCapture />
+    </div>
   </React.StrictMode>,
 );

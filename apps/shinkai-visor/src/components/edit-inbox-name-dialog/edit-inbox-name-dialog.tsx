@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   UpdateInboxNameFormSchema,
   updateInboxNameFormSchema,
@@ -17,7 +18,6 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { FormattedMessage } from 'react-intl';
 
 import { useAuth } from '../../store/auth/auth';
 
@@ -38,6 +38,7 @@ export const EditInboxNameDialog = ({
   inboxId,
   onOpenChange,
 }: EditInboxNameDialogProps) => {
+  const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const form = useForm<UpdateInboxNameFormSchema>({
     resolver: zodResolver(updateInboxNameFormSchema),
@@ -76,10 +77,7 @@ export const EditInboxNameDialog = ({
       <DrawerContent>
         <DrawerHeader className="mb-6">
           <DrawerTitle>
-            <FormattedMessage id="edit" />{' '}
-            <span className="mr-1 capitalize">
-              <FormattedMessage id="inbox.one" />
-            </span>
+            {t('common.edit')} <span className="mr-1 capitalize">Chat</span>
             Name
           </DrawerTitle>
         </DrawerHeader>
@@ -96,7 +94,7 @@ export const EditInboxNameDialog = ({
                   <TextField
                     autoFocus
                     field={field}
-                    label={<FormattedMessage id="name.one" />}
+                    label={t('inboxes.inboxName')}
                   />
                 )}
               />
@@ -109,7 +107,7 @@ export const EditInboxNameDialog = ({
                   type="button"
                   variant="ghost"
                 >
-                  <FormattedMessage id="cancel" />
+                  {t('common.cancel')}
                 </Button>
                 <Button
                   className="flex-1"
@@ -117,7 +115,7 @@ export const EditInboxNameDialog = ({
                   isLoading={isPending}
                   type="submit"
                 >
-                  <FormattedMessage id="save" />
+                  {t('common.save')}
                 </Button>
               </div>
             </DialogFooter>

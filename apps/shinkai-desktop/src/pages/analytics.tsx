@@ -1,3 +1,4 @@
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { Button } from '@shinkai_network/shinkai-ui';
 import { useNavigate } from 'react-router-dom';
 
@@ -6,6 +7,7 @@ import OnboardingLayout from './layout/onboarding-layout';
 
 const AnalyticsPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const denyAnalytics = useSettings((state) => state.denyAnalytics);
   const acceptAnalytics = useSettings((state) => state.acceptAnalytics);
 
@@ -13,10 +15,10 @@ const AnalyticsPage = () => {
     <OnboardingLayout>
       <div className="mx-auto flex h-full max-w-lg flex-col">
         <p className="text-center text-3xl font-medium leading-[1.5] tracking-wide">
-          Help us improve Shinkai
+          {t('analytics.title')}
         </p>
         <div className="mt-10 flex flex-1 flex-col gap-10 text-sm text-gray-50">
-          <ul className="space-y-3  text-gray-50">
+          <ul className="space-y-3 text-gray-50">
             {[
               '✅ Always allow you to opt-out via Settings',
 
@@ -57,7 +59,7 @@ const AnalyticsPage = () => {
             size="lg"
             variant="ghost"
           >
-            No Thanks
+            {t('common.noThanks')}
           </Button>
           <Button
             className="w-full"
@@ -67,7 +69,7 @@ const AnalyticsPage = () => {
             }}
             size="lg"
           >
-            I Agree
+            {t('common.iAgree')}
           </Button>
         </div>
       </div>

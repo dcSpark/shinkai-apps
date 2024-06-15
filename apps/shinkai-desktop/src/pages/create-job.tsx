@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils';
 import {
   CreateJobFormSchema,
@@ -58,6 +59,7 @@ import { useSettings } from '../store/settings';
 import { SubpageLayout } from './layout/simple-layout';
 
 const CreateJobPage = () => {
+  const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const defaulAgentId = useSettings((state) => state.defaultAgentId);
   const navigate = useNavigate();
@@ -240,7 +242,7 @@ const CreateJobPage = () => {
   // }, []);
 
   return (
-    <SubpageLayout title="Create AI Chat">
+    <SubpageLayout title={t('chat.create')}>
       <Form {...createJobForm}>
         <form
           className="space-y-8"
@@ -252,7 +254,7 @@ const CreateJobPage = () => {
               name="content"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tell us the job you want to do</FormLabel>
+                  <FormLabel>{t('chat.form.message')}</FormLabel>
                   <FormControl>
                     <Textarea
                       autoFocus={true}
@@ -265,7 +267,7 @@ const CreateJobPage = () => {
                           createJobForm.handleSubmit(onSubmit)();
                         }
                       }}
-                      placeholder="Eg: Explain me how internet works..."
+                      placeholder={t('chat.form.messagePlaceholder')}
                       {...field}
                     />
                   </FormControl>
@@ -279,7 +281,7 @@ const CreateJobPage = () => {
                 name="workflow"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Workflows</FormLabel>
+                    <FormLabel>{t('chat.form.workflows')}</FormLabel>
                     <FormControl>
                       <Textarea
                         autoFocus={true}
@@ -298,11 +300,11 @@ const CreateJobPage = () => {
               name="agent"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Select your AI</FormLabel>
+                  <FormLabel>{t('chat.form.selectAI')}</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select your AI" />
+                        <SelectValue placeholder={t('chat.form.selectAI')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -320,7 +322,7 @@ const CreateJobPage = () => {
                           variant="ghost"
                         >
                           <PlusIcon className="mr-2" />
-                          Add AI
+                          {t('agents.add')}
                         </Button>
                       )}
                     </SelectContent>
@@ -332,11 +334,10 @@ const CreateJobPage = () => {
               <div className="mb-5 flex items-start justify-between gap-4">
                 <div className="space-y-1">
                   <h2 className="text-sm font-medium text-gray-100">
-                    Set Chat Context
+                    {t('chat.form.setContext')}
                   </h2>
                   <p className="text-gray-80 text-xs">
-                    Add files or folders for your AI to use as context during
-                    your conversation.
+                    {t('chat.form.setContextText')}
                   </p>
                 </div>
                 <TooltipProvider delayDuration={0}>
@@ -412,7 +413,7 @@ const CreateJobPage = () => {
             isLoading={isPending}
             type="submit"
           >
-            Create AI Chat
+            {t('chat.create')}
           </Button>
         </form>
       </Form>

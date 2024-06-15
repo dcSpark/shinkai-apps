@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { AgentAPIModel } from '@shinkai_network/shinkai-message-ts/models';
 import {
   addAgentFormDefault,
@@ -30,7 +31,6 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { FormattedMessage, useIntl } from 'react-intl';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -54,13 +54,12 @@ export const getModelObject = (
 
 export const AddAgent = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const form = useForm<AddAgentFormSchema>({
     resolver: zodResolver(addAgentSchema),
     defaultValues: addAgentFormDefault,
   });
-
-  const intl = useIntl();
 
   const {
     model: currentModel,
@@ -119,15 +118,15 @@ export const AddAgent = () => {
   const modelOptions: { value: Models; label: string }[] = [
     {
       value: Models.OpenAI,
-      label: intl.formatMessage({ id: 'openai' }),
+      label: 'OpenAI',
     },
     {
       value: Models.TogetherComputer,
-      label: intl.formatMessage({ id: 'togethercomputer' }),
+      label: 'Together AI',
     },
     {
       value: Models.Ollama,
-      label: intl.formatMessage({ id: 'ollama' }),
+      label: 'Ollama',
     },
   ];
   const submit = async (values: AddAgentFormSchema) => {
@@ -213,7 +212,7 @@ export const AddAgent = () => {
               control={form.control}
               name="isCustomModel"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center space-x-3  py-2">
+                <FormItem className="flex flex-row items-center space-x-3 py-2">
                   <FormControl>
                     <Switch
                       checked={field.value}
@@ -244,9 +243,7 @@ export const AddAgent = () => {
                       onValueChange={field.onChange}
                       value={field.value}
                     >
-                      <FormLabel>
-                        <FormattedMessage id="model.one" />
-                      </FormLabel>
+                      <FormLabel>Model</FormLabel>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Models place" />
@@ -275,9 +272,7 @@ export const AddAgent = () => {
                 name="modelType"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      <FormattedMessage id="model.other" />
-                    </FormLabel>
+                    <FormLabel>Models</FormLabel>
                     <Select
                       defaultValue={field.value as unknown as string}
                       disabled={!!isCustomModelMode}
@@ -312,14 +307,17 @@ export const AddAgent = () => {
                   control={form.control}
                   name="modelCustom"
                   render={({ field }) => (
-                    <TextField field={field} label={'Model Name'} />
+                    <TextField
+                      field={field}
+                      label={t('agents.form.modelName')}
+                    />
                   )}
                 />
                 <FormField
                   control={form.control}
                   name="modelTypeCustom"
                   render={({ field }) => (
-                    <TextField field={field} label={'Model ID'} />
+                    <TextField field={field} label={t('agents.form.modelId')} />
                   )}
                 />
               </>
@@ -333,7 +331,7 @@ export const AddAgent = () => {
                   autoFocus
                   data-testid="agent-name-input"
                   field={field}
-                  label={<FormattedMessage id="agent-name" />}
+                  label={t('agents.form.agentName')}
                 />
               )}
             />
@@ -342,10 +340,7 @@ export const AddAgent = () => {
               control={form.control}
               name="externalUrl"
               render={({ field }) => (
-                <TextField
-                  field={field}
-                  label={<FormattedMessage id="external-url" />}
-                />
+                <TextField field={field} label={t('agents.form.externalUrl')} />
               )}
             />
 
@@ -353,10 +348,7 @@ export const AddAgent = () => {
               control={form.control}
               name="apikey"
               render={({ field }) => (
-                <TextField
-                  field={field}
-                  label={<FormattedMessage id="api-key" />}
-                />
+                <TextField field={field} label={t('agents.form.apiKey')} />
               )}
             />
           </div>
@@ -367,7 +359,7 @@ export const AddAgent = () => {
             isLoading={isPending}
             type="submit"
           >
-            <FormattedMessage id="add-agent" />
+            {t('agents.add')}
           </Button>
         </form>
       </Form>

@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   EditAgentFormSchema,
   editAgentSchema,
@@ -39,6 +40,7 @@ import { getModelObject } from './create-agent';
 import { SimpleLayout } from './layout/simple-layout';
 
 const AgentsPage = () => {
+  const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
   const { agents } = useAgents({
@@ -63,7 +65,7 @@ const AgentsPage = () => {
     navigate('/add-agent');
   };
   return (
-    <SimpleLayout classname="relative" title="AIs">
+    <SimpleLayout classname="relative" title={t('agents.label')}>
       <div className="absolute right-3 top-[36px]">
         <Button
           className="h-[40px] gap-2"
@@ -71,7 +73,7 @@ const AgentsPage = () => {
           size="auto"
         >
           <Plus className="h-4 w-4" />
-          <span>Add AI</span>
+          <span>{t('agents.add')}</span>
         </Button>
       </div>
       <div className="flex h-full flex-col space-y-3">
@@ -81,14 +83,15 @@ const AgentsPage = () => {
               <span aria-hidden className="text-5xl">
                 🤖
               </span>
-              <p className="text-2xl font-semibold">No available agents</p>
+              <p className="text-2xl font-semibold">
+                {t('agents.notFound.title')}
+              </p>
               <p className="text-center text-sm font-medium text-gray-100">
-                Connect your first agent to start asking Shinkai AI. Try
-                connecting OpenAI
+                {t('agents.notFound.description')}
               </p>
             </div>
 
-            <Button onClick={onAddAgentClick}>Add AI</Button>
+            <Button onClick={onAddAgentClick}>{t('agents.add')}</Button>
           </div>
         ) : (
           <ScrollArea className="flex h-full flex-col justify-between [&>div>div]:!block">
@@ -123,6 +126,7 @@ function AgentCard({
   externalUrl: string;
   agentApiKey: string;
 }) {
+  const { t } = useTranslation();
   const [isDeleteAgentDrawerOpen, setIsDeleteAgentDrawerOpen] =
     React.useState(false);
   const [isEditAgentDrawerOpen, setIsEditAgentDrawerOpen] =
@@ -141,7 +145,7 @@ function AgentCard({
         role="button"
       >
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg ">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg">
             <BotIcon className="h-6 w-6" />
           </div>
           <div className="flex flex-col items-baseline gap-2">
@@ -169,7 +173,7 @@ function AgentCard({
               role="button"
               tabIndex={0}
             >
-              <span className="sr-only">More options</span>
+              <span className="sr-only">{t('common.moreOptions')}</span>
               <DotsVerticalIcon className="text-gray-100" />
             </div>
           </DropdownMenuTrigger>
@@ -179,14 +183,14 @@ function AgentCard({
           >
             {[
               {
-                name: 'Edit',
+                name: t('common.edit'),
                 icon: <Edit className="mr-3 h-4 w-4" />,
                 onClick: () => {
                   setIsEditAgentDrawerOpen(true);
                 },
               },
               {
-                name: 'Delete',
+                name: t('common.delete'),
                 icon: <TrashIcon className="mr-3 h-4 w-4" />,
                 onClick: () => {
                   setIsDeleteAgentDrawerOpen(true);
@@ -247,6 +251,7 @@ const EditAgentDrawer = ({
   agentExternalUrl: string;
   agentApiKey: string;
 }) => {
+  const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
 
   const form = useForm<EditAgentFormSchema>({
@@ -272,10 +277,10 @@ const EditAgentDrawer = ({
   const { mutateAsync: updateAgent, isPending } = useUpdateAgent({
     onSuccess: () => {
       onOpenChange(false);
-      toast.success('AI updated successfully');
+      toast.success(t('agents.success.updateAgent'));
     },
     onError: (error) => {
-      toast.error('Error updating agent', {
+      toast.error(t('agents.errors.updateAgent'), {
         description: typeof error === 'string' ? error : error.message,
       });
     },
@@ -313,7 +318,7 @@ const EditAgentDrawer = ({
       <SheetContent>
         <SheetHeader className="mb-6">
           <SheetTitle className="font-normal">
-            Update <span className="font-medium">{agentId}</span>{' '}
+            {t('common.update')} <span className="font-medium">{agentId}</span>{' '}
           </SheetTitle>
         </SheetHeader>
         <Form {...form}>
@@ -327,7 +332,7 @@ const EditAgentDrawer = ({
                 disabled
                 name="agentName"
                 render={({ field }) => (
-                  <TextField field={field} label="AI Name" />
+                  <TextField field={field} label={t('agents.form.agentName')} />
                 )}
               />
 
@@ -335,7 +340,10 @@ const EditAgentDrawer = ({
                 control={form.control}
                 name="externalUrl"
                 render={({ field }) => (
-                  <TextField field={field} label="External URL" />
+                  <TextField
+                    field={field}
+                    label={t('agents.form.externalUrl')}
+                  />
                 )}
               />
 
@@ -343,7 +351,7 @@ const EditAgentDrawer = ({
                 control={form.control}
                 name="apikey"
                 render={({ field }) => (
-                  <TextField field={field} label="API Key" />
+                  <TextField field={field} label={t('agents.form.apiKey')} />
                 )}
               />
 
@@ -351,14 +359,14 @@ const EditAgentDrawer = ({
                 control={form.control}
                 name="modelCustom"
                 render={({ field }) => (
-                  <TextField field={field} label={'Model Name'} />
+                  <TextField field={field} label={t('agents.form.modelName')} />
                 )}
               />
               <FormField
                 control={form.control}
                 name="modelTypeCustom"
                 render={({ field }) => (
-                  <TextField field={field} label={'Model ID'} />
+                  <TextField field={field} label={t('agents.form.modelId')} />
                 )}
               />
             </div>
@@ -368,7 +376,7 @@ const EditAgentDrawer = ({
               isLoading={isPending}
               type="submit"
             >
-              Save
+              {t('common.save')}
             </Button>
           </form>
         </Form>
@@ -385,14 +393,15 @@ const RemoveAgentDrawer = ({
   onOpenChange: (open: boolean) => void;
   agentId: string;
 }) => {
+  const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const { mutateAsync: deleteAgent, isPending } = useDeleteAgent({
     onSuccess: () => {
       onOpenChange(false);
-      toast.success('AI deleted successfully');
+      toast.success(t('agents.success.deleteAgent'));
     },
     onError: (error) => {
-      toast.error('Error deleting agent', {
+      toast.error(t('agents.errors.deleteAgent'), {
         description: typeof error === 'string' ? error : error.message,
       });
     },
@@ -403,13 +412,12 @@ const RemoveAgentDrawer = ({
       <SheetContent>
         <SheetHeader>
           <SheetTitle className="font-normal">
-            Delete AI
+            {t('agents.delete.label')}
             <span className="font-medium">{agentId}</span>{' '}
           </SheetTitle>
         </SheetHeader>
         <p className="text-gray-80 my-3 text-base">
-          Are you sure you want to delete this agent? This action cannot be
-          undone.
+          {t('agents.delete.description')}
         </p>
         <SheetFooter>
           <Button
@@ -431,7 +439,7 @@ const RemoveAgentDrawer = ({
             }}
             variant="destructive"
           >
-            Delete
+            {t('common.delete')}
           </Button>
         </SheetFooter>
       </SheetContent>

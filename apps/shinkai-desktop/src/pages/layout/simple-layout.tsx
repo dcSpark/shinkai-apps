@@ -1,3 +1,4 @@
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { LucideArrowLeft } from 'lucide-react';
 import React from 'react';
@@ -12,11 +13,12 @@ export const SubpageLayout = ({
   children: React.ReactNode;
   className?: string;
 }) => {
+  const { t } = useTranslation();
   return (
     <div className={cn('relative mx-auto max-w-lg py-10', className)}>
       <Link className="absolute left-4" to={-1 as To}>
         <LucideArrowLeft />
-        <span className="sr-only">Back</span>
+        <span className="sr-only">{t('common.back')}</span>
       </Link>
       <h1 className="mb-8 text-center text-2xl font-semibold tracking-tight">
         {title}
@@ -34,12 +36,14 @@ export const FixedHeaderLayout = ({
   children: React.ReactNode;
   className?: string;
 }) => {
+  const { t } = useTranslation();
+
   return (
     <div className={cn('mx-auto h-screen max-w-lg py-10 pb-4', className)}>
       <div className="mx-2 flex justify-between">
         <Link className="" to={-1 as To}>
           <LucideArrowLeft />
-          <span className="sr-only">Back</span>
+          <span className="sr-only">{t('common.back')}</span>
         </Link>
         <h1 className="mb-8 text-center text-2xl font-semibold tracking-tight">
           {title}

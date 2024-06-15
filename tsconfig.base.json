@@ -10,11 +10,17 @@
     "importHelpers": true,
     "target": "es2015",
     "module": "esnext",
-    "lib": ["es2020", "dom"],
+    "lib": [
+      "es2020",
+      "dom"
+    ],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@shinkai_network/shinkai-i18n": [
+        "libs/shinkai-i18n/src/index.ts"
+      ],
       "@shinkai_network/shinkai-message-ts/*": [
         "libs/shinkai-message-ts/src/*.ts"
       ],
@@ -24,7 +30,9 @@
       "@shinkai_network/shinkai-node-state/*": [
         "libs/shinkai-node-state/src/*.ts"
       ],
-      "@shinkai_network/shinkai-ui": ["libs/shinkai-ui/src/index.ts"],
+      "@shinkai_network/shinkai-ui": [
+        "libs/shinkai-ui/src/index.ts"
+      ],
       "@shinkai_network/shinkai-ui/assets": [
         "libs/shinkai-ui/src/assets/index.ts"
       ],
@@ -34,8 +42,13 @@
       "@shinkai_network/shinkai-ui/hooks": [
         "libs/shinkai-ui/src/hooks/index.ts"
       ],
-      "@shinkai_network/shinkai-ui/utils": ["libs/shinkai-ui/src/utils.ts"]
+      "@shinkai_network/shinkai-ui/utils": [
+        "libs/shinkai-ui/src/utils.ts"
+      ]
     }
   },
-  "exclude": ["node_modules", "tmp"]
+  "exclude": [
+    "node_modules",
+    "tmp"
+  ]
 }

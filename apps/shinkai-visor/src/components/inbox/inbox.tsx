@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   extractErrorPropertyOrContent,
   extractJobIdFromInbox,
@@ -38,7 +39,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { fileIconMap,FileTypeIcon } from '@shinkai_network/shinkai-ui/assets';
+import { fileIconMap, FileTypeIcon } from '@shinkai_network/shinkai-ui/assets';
 import { getFileExt } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { partial } from 'filesize';
@@ -54,7 +55,6 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
-import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -93,7 +93,7 @@ function AgentSelection() {
       <TooltipProvider delayDuration={0}>
         <Tooltip>
           <TooltipTrigger asChild>
-            <DropdownMenuTrigger className="bg-gray-350 inline-flex cursor-pointer items-center justify-between gap-1 truncate rounded-xl px-2.5 py-1.5 text-start text-xs font-normal text-gray-50  hover:text-white  [&[data-state=open]>.icon]:rotate-180">
+            <DropdownMenuTrigger className="bg-gray-350 inline-flex cursor-pointer items-center justify-between gap-1 truncate rounded-xl px-2.5 py-1.5 text-start text-xs font-normal text-gray-50 hover:text-white [&[data-state=open]>.icon]:rotate-180">
               <BotIcon className="mr-1 h-4 w-4" />
               <span>{currentInbox?.agent?.id}</span>
               <ChevronDownIcon className="icon h-3 w-3" />
@@ -156,6 +156,7 @@ function AgentSelection() {
 
 export const Inbox = () => {
   const size = partial({ standard: 'jedec' });
+  const { t } = useTranslation();
   const { inboxId: encodedInboxId = '' } = useParams<{ inboxId: string }>();
   const auth = useAuth((state) => state.auth);
   const inboxId = decodeURIComponent(encodedInboxId);
@@ -310,13 +311,11 @@ export const Inbox = () => {
         <Alert className="shadow-lg">
           <Terminal className="h-4 w-4" />
           <AlertTitle className="text-sm">
-            <FormattedMessage id="file-processing-alert-title" />
+            Your file is being processed
           </AlertTitle>
           <AlertDescription className="text-xs">
             <div className="flex flex-row items-center space-x-2">
-              <span>
-                <FormattedMessage id="file-processing-alert-description" />
-              </span>
+              <span>It can take a few minutes</span>
             </div>
           </AlertDescription>
           <Terminal className="h-4 w-4" />
@@ -326,11 +325,11 @@ export const Inbox = () => {
         <Alert className="shadow-lg" variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle className="text-sm">
-            <FormattedMessage id="limit-reached" />
+            {t('chat.limitReachedTitle')}
           </AlertTitle>
           <AlertDescription className="text-gray-80 text-xs">
             <div className="flex flex-row items-center space-x-2">
-              <FormattedMessage id="limit-reached-description" />
+              {t('chat.limitReachedDescription')}
             </div>
           </AlertDescription>
         </Alert>
@@ -406,17 +405,17 @@ export const Inbox = () => {
                                 {getFileExt(file?.name) &&
                                 fileIconMap[getFileExt(file?.name)] ? (
                                   <FileTypeIcon
-                                    className="text-gray-80 h-7 w-7 shrink-0 "
+                                    className="text-gray-80 h-7 w-7 shrink-0"
                                     type={getFileExt(file?.name)}
                                   />
                                 ) : (
                                   <Paperclip className="text-gray-80 h-4 w-4 shrink-0" />
                                 )}
                                 <div className="space-y-1">
-                                  <span className="line-clamp-1 break-all text-left text-xs ">
+                                  <span className="line-clamp-1 break-all text-left text-xs">
                                     {file?.name}
                                   </span>
-                                  <span className="line-clamp-1 break-all text-left text-xs text-gray-100 ">
+                                  <span className="line-clamp-1 break-all text-left text-xs text-gray-100">
                                     {size(file?.size)}
                                   </span>
                                 </div>

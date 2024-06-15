@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 // import { PlusCircledIcon } from '@radix-ui/react-icons';
 import { SmartInbox } from '@shinkai_network/shinkai-message-ts/models';
 import {
@@ -59,6 +60,7 @@ const InboxNameInput = ({
   inboxId: string;
   inboxName: string;
 }) => {
+  const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const updateInboxNameForm = useForm<UpdateInboxNameFormSchema>({
     resolver: zodResolver(updateInboxNameFormSchema),
@@ -107,7 +109,7 @@ const InboxNameInput = ({
 
                 <FormItem className="space-y-0 pl-7 text-xs">
                   <FormLabel className="sr-only static">
-                    Update inbox name
+                    {t('inboxes.updateName')}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -130,7 +132,7 @@ const InboxNameInput = ({
             type="submit"
             variant="default"
           >
-            Save
+            {t('common.save')}
           </Button>
         ) : (
           <Button
@@ -139,7 +141,7 @@ const InboxNameInput = ({
             size="sm"
             variant="ghost"
           >
-            Cancel
+            {t('common.cancel')}
           </Button>
         )}
       </form>
@@ -157,7 +159,7 @@ const MessageButton = ({
   inbox: SmartInbox;
 }) => {
   const auth = useAuth((state) => state.auth);
-
+  const { t } = useTranslation();
   const inboxId = inbox.inbox_id;
   const inboxName =
     inbox.last_message && inbox.custom_name === inbox.inbox_id
@@ -267,7 +269,7 @@ const MessageButton = ({
             </TooltipTrigger>
             <TooltipPortal>
               <TooltipContent>
-                <p>Rename</p>
+                <p>{t('common.rename')}</p>
               </TooltipContent>
             </TooltipPortal>
           </Tooltip>
@@ -288,7 +290,7 @@ const MessageButton = ({
               </TooltipTrigger>
               <TooltipPortal>
                 <TooltipContent>
-                  <p>Archive</p>
+                  <p>{t('chat.archives.archive')}</p>
                 </TooltipContent>
               </TooltipPortal>
             </Tooltip>
@@ -300,6 +302,7 @@ const MessageButton = ({
 };
 
 const ChatLayout = () => {
+  const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
   const { inboxes } = useGetInboxes(
@@ -348,7 +351,7 @@ const ChatLayout = () => {
         <>
           <div className="flex h-full max-w-[280px] flex-[280px] shrink-0 flex-col px-2 py-4">
             <div className="mb-4 flex items-center justify-between gap-2 px-2">
-              <h2>Chats</h2>
+              <h2>{t('chat.chats')}</h2>
               <TooltipProvider delayDuration={0}>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -361,12 +364,12 @@ const ChatLayout = () => {
                       variant="ghost"
                     >
                       <CreateAIIcon className="h-4 w-4 shrink-0" />
-                      <span className="sr-only">Create AI Chat</span>
+                      <span className="sr-only">{t('chat.create')}</span>
                     </Button>
                   </TooltipTrigger>
                   <TooltipPortal>
                     <TooltipContent>
-                      <p>Create AI Chat</p>
+                      <p>{t('chat.create')}</p>
                     </TooltipContent>
                   </TooltipPortal>
                 </Tooltip>
@@ -380,14 +383,14 @@ const ChatLayout = () => {
                     value="actives"
                   >
                     <ActiveIcon className="h-4 w-4" />
-                    Actives
+                    {t('chat.actives.label')}
                   </TabsTrigger>
                   <TabsTrigger
                     className="flex items-center gap-1.5"
                     value="archives"
                   >
                     <ArchiveIcon className="h-4 w-4" />
-                    Archives
+                    {t('chat.archives.label')}
                   </TabsTrigger>
                 </TabsList>
                 <TabsContent value="actives">
@@ -402,7 +405,7 @@ const ChatLayout = () => {
                       ))
                     ) : (
                       <p className="text-gray-80 py-3 text-center text-sm">
-                        No active conversations found.{' '}
+                        {t('chat.actives.notFound')}{' '}
                       </p>
                     )}
                   </div>
@@ -420,7 +423,7 @@ const ChatLayout = () => {
                       ))
                     ) : (
                       <p className="text-gray-80 py-3 text-center text-sm">
-                        No archived conversations found.{' '}
+                        {t('chat.archives.notFound')}{' '}
                       </p>
                     )}
                   </div>

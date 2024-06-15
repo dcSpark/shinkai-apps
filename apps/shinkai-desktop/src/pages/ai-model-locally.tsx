@@ -1,3 +1,4 @@
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { buttonVariants } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -9,15 +10,15 @@ import { shinkaiNodeQueryClient } from '../lib/shinkai-node-manager/shinkai-node
 import { SubpageLayout } from './layout/simple-layout';
 
 const AgentsLocally = () => {
+  const { t } = useTranslation();
   return (
     <QueryClientProvider client={shinkaiNodeQueryClient}>
       <SubpageLayout
         className="relative flex w-full max-w-6xl flex-col gap-2 px-4"
-        title="Install AI Models"
+        title={t('agents.localAI.installTitle')}
       >
         <p className="text-gray-80 pb-2 text-sm">
-          After installing AI models on your local machine, they will become
-          available as AI
+          {t('agents.localAI.installText')}
         </p>
         <OllamaModels />
         <div className="absolute right-4 top-6 flex justify-center pt-3">
@@ -31,7 +32,7 @@ const AgentsLocally = () => {
             to={{ pathname: '/add-agent' }}
           >
             <Plus className="h-4 w-4" />
-            Manually Add AI
+            {t('agents.addManually')}
           </Link>
         </div>
       </SubpageLayout>

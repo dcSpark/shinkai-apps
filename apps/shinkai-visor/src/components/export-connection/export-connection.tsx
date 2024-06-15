@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { encryptMessageWithPassphrase } from '@shinkai_network/shinkai-message-ts/cryptography';
 import {
   ExportConnectionFormSchema,
@@ -14,12 +15,12 @@ import {
 import { Download } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { FormattedMessage } from 'react-intl';
 
 import { useAuth } from '../../store/auth/auth';
 import { Header } from '../header/header';
 
 export const ExportConnection = () => {
+  const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const form = useForm<ExportConnectionFormSchema>({
     resolver: zodResolver(exportConnectionFormSchema),
@@ -59,7 +60,7 @@ export const ExportConnection = () => {
   };
   return (
     <div className="flex h-full flex-col gap-8">
-      <Header title={<FormattedMessage id="export-connection" />} />
+      <Header title={t('exportConnection.label')} />
       <div className="flex grow flex-col space-y-2">
         <Form {...form}>
           <form
@@ -73,7 +74,7 @@ export const ExportConnection = () => {
                 render={({ field }) => (
                   <TextField
                     field={field}
-                    label={<FormattedMessage id="passphrase" />}
+                    label={t('common.passphrase')}
                     type="password"
                   />
                 )}
@@ -84,27 +85,25 @@ export const ExportConnection = () => {
                 render={({ field }) => (
                   <TextField
                     field={field}
-                    label={<FormattedMessage id="confirm-passphrase" />}
+                    label={t('common.repeatPassphrase')}
                     type="password"
                   />
                 )}
               />
             </div>
             <Button className="w-full" type="submit">
-              <FormattedMessage id="generate-connection-file" />
+              {t('exportConnection.generateFile')}
             </Button>
           </form>
         </Form>
 
         {encryptedSetupData && (
-          <div className=" flex grow flex-col items-center justify-center space-y-3">
+          <div className="flex grow flex-col items-center justify-center space-y-3">
             <div className="flex flex-col space-y-1">
               <span className="font-semibold">
-                <FormattedMessage id="download-keep-safe-place" />
+                {t('exportConnection.downloadText')}
               </span>
-              <span>
-                <FormattedMessage id="use-it-to-restore" />
-              </span>
+              <span>{t('exportConnection.restoreText')}</span>
             </div>
             <div className="flex w-full flex-row space-x-1">
               <div className="grow cursor-pointer" onClick={() => download()}>

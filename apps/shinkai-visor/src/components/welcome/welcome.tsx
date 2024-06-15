@@ -1,6 +1,6 @@
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { Button, Checkbox } from '@shinkai_network/shinkai-ui';
 import { useState } from 'react';
-import { FormattedMessage } from 'react-intl';
 import { useNavigate } from 'react-router-dom';
 
 import logo from '../../../src/assets/icons/visor.svg';
@@ -8,6 +8,7 @@ import { srcUrlResolver } from '../../helpers/src-url-resolver';
 
 export default function Welcome() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [acceptedTermsAndContidions, setAcceptedTermsAndContidions] = useState<
     boolean | 'indeterminate'
   >(false);
@@ -31,7 +32,7 @@ export default function Welcome() {
           />
         </div>
         <p className="text-2xl font-semibold" data-cy="welcome-message">
-          <FormattedMessage id="welcome" />
+          {t('extension.welcome')}
         </p>
       </div>
       <div className="flex items-start space-x-2">
@@ -75,7 +76,7 @@ export default function Welcome() {
         disabled={!acceptedTermsAndContidions}
         onClick={() => navigate('/nodes/connect/method/quick-start')}
       >
-        <FormattedMessage id="setup" />
+        {t('common.getStarted')}
       </Button>
     </div>
   );

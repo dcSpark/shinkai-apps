@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   EditAgentFormSchema,
   editAgentSchema,
@@ -30,7 +31,6 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { BotIcon, Edit, Plus, TrashIcon } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { FormattedMessage } from 'react-intl';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -121,7 +121,7 @@ function AgentCard({
         role="button"
       >
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg ">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg">
             <BotIcon className="h-6 w-6" />
           </div>
           <div className="flex flex-col items-baseline gap-2">
@@ -228,6 +228,7 @@ const EditAgentDrawer = ({
   agentApiKey: string;
 }) => {
   const auth = useAuth((state) => state.auth);
+  const { t } = useTranslation();
 
   const form = useForm<EditAgentFormSchema>({
     resolver: zodResolver(editAgentSchema),
@@ -307,10 +308,7 @@ const EditAgentDrawer = ({
                 disabled
                 name="agentName"
                 render={({ field }) => (
-                  <TextField
-                    field={field}
-                    label={<FormattedMessage id="agent-name" />}
-                  />
+                  <TextField field={field} label={t('agents.form.agentName')} />
                 )}
               />
 
@@ -320,7 +318,7 @@ const EditAgentDrawer = ({
                 render={({ field }) => (
                   <TextField
                     field={field}
-                    label={<FormattedMessage id="external-url" />}
+                    label={t('agents.form.externalUrl')}
                   />
                 )}
               />
@@ -329,10 +327,7 @@ const EditAgentDrawer = ({
                 control={form.control}
                 name="apikey"
                 render={({ field }) => (
-                  <TextField
-                    field={field}
-                    label={<FormattedMessage id="api-key" />}
-                  />
+                  <TextField field={field} label={t('agents.form.apiKey')} />
                 )}
               />
 
@@ -340,14 +335,14 @@ const EditAgentDrawer = ({
                 control={form.control}
                 name="modelCustom"
                 render={({ field }) => (
-                  <TextField field={field} label={'Model Name'} />
+                  <TextField field={field} label={t('agents.form.modelName')} />
                 )}
               />
               <FormField
                 control={form.control}
                 name="modelTypeCustom"
                 render={({ field }) => (
-                  <TextField field={field} label={'Model ID'} />
+                  <TextField field={field} label={t('agents.form.modelId')} />
                 )}
               />
             </div>
@@ -357,7 +352,7 @@ const EditAgentDrawer = ({
               isLoading={isPending}
               type="submit"
             >
-              Save
+              {t('common.save')}
             </Button>
           </form>
         </Form>

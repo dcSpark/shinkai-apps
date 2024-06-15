@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { AgentAPIModel } from '@shinkai_network/shinkai-message-ts/models';
 import {
   addAgentFormDefault,
@@ -70,6 +71,7 @@ export const getModelObject = (
 };
 
 const CreateAgentPage = () => {
+  const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
   const addAgentForm = useForm<AddAgentFormSchema>({
@@ -211,7 +213,7 @@ const CreateAgentPage = () => {
   };
 
   return (
-    <SubpageLayout title="Add AI">
+    <SubpageLayout title={t('agents.add')}>
       <Form {...addAgentForm}>
         <form
           className="space-y-10"
@@ -312,14 +314,17 @@ const CreateAgentPage = () => {
                   control={addAgentForm.control}
                   name="modelCustom"
                   render={({ field }) => (
-                    <TextField field={field} label={'Model Name'} />
+                    <TextField
+                      field={field}
+                      label={t('agents.form.modelName')}
+                    />
                   )}
                 />
                 <FormField
                   control={addAgentForm.control}
                   name="modelTypeCustom"
                   render={({ field }) => (
-                    <TextField field={field} label={'Model ID'} />
+                    <TextField field={field} label={t('agents.form.modelId')} />
                   )}
                 />
               </>
@@ -329,21 +334,25 @@ const CreateAgentPage = () => {
               control={addAgentForm.control}
               name="agentName"
               render={({ field }) => (
-                <TextField autoFocus field={field} label="AI Name" />
+                <TextField
+                  autoFocus
+                  field={field}
+                  label={t('agents.form.agentName')}
+                />
               )}
             />
             <FormField
               control={addAgentForm.control}
               name="externalUrl"
               render={({ field }) => (
-                <TextField field={field} label="External URL" />
+                <TextField field={field} label={t('agents.form.externalUrl')} />
               )}
             />
             <FormField
               control={addAgentForm.control}
               name="apikey"
               render={({ field }) => (
-                <TextField field={field} label="Api Key" />
+                <TextField field={field} label={t('agents.form.apiKey')} />
               )}
             />
           </div>
@@ -356,7 +365,7 @@ const CreateAgentPage = () => {
             isLoading={isPending}
             type="submit"
           >
-            Add AI
+            {t('agents.add')}
           </Button>
         </form>
       </Form>

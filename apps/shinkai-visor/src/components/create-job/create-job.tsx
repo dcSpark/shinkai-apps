@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils';
 import {
   CreateJobFormSchema,
@@ -43,7 +44,6 @@ import { TreeCheckboxSelectionKeys } from 'primereact/tree';
 import { TreeNode } from 'primereact/treenode';
 import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { FormattedMessage, useIntl } from 'react-intl';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { useQuery } from '../../hooks/use-query';
@@ -54,7 +54,7 @@ import { KnowledgeSearchDrawer, VectorFsScopeDrawer } from './vector-fs-scope';
 
 export const CreateJob = () => {
   const navigate = useNavigate();
-  const intl = useIntl();
+  const { t } = useTranslation();
   const location = useLocation() as {
     state: {
       agentName: string;
@@ -242,9 +242,7 @@ export const CreateJob = () => {
               name="agent"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    <FormattedMessage id="agent.one" />
-                  </FormLabel>
+                  <FormLabel>AI</FormLabel>
                   <Select
                     defaultValue={field.value}
                     name={field.name}
@@ -287,9 +285,7 @@ export const CreateJob = () => {
               name="content"
               render={({ field }) => (
                 <FormItem className="mt-3">
-                  <FormLabel>
-                    <FormattedMessage id="message.one" />
-                  </FormLabel>
+                  <FormLabel>Message</FormLabel>
                   <FormControl>
                     <Textarea
                       autoFocus
@@ -302,9 +298,7 @@ export const CreateJob = () => {
                           form.handleSubmit(submit)();
                         }
                       }}
-                      placeholder={intl.formatMessage({
-                        id: 'tmwtd',
-                      })}
+                      placeholder={t('chat.form.message')}
                       {...field}
                     />
                   </FormControl>
@@ -372,7 +366,7 @@ export const CreateJob = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="sr-only">
-                        <FormattedMessage id="file.one" />
+                        {t('common.file')}
                       </FormLabel>
                       <FormControl>
                         <FileUploader
@@ -401,7 +395,7 @@ export const CreateJob = () => {
             isLoading={isPending}
             type="submit"
           >
-            <FormattedMessage id="create-job" />
+            {t('chat.create')}
           </Button>
         </form>
       </Form>

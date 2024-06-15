@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   extractErrorPropertyOrContent,
   extractJobIdFromInbox,
@@ -77,7 +78,7 @@ enum ErrorCodes {
 
 const ChatConversation = () => {
   const { captureAnalyticEvent } = useAnalytics();
-
+  const { t } = useTranslation();
   const size = partial({ standard: 'jedec' });
   const { inboxId: encodedInboxId = '' } = useParams();
   const auth = useAuth((state) => state.auth);
@@ -230,12 +231,12 @@ const ChatConversation = () => {
       {isLimitReachedErrorLastMessage && (
         <Alert className="mx-auto w-[98%] shadow-lg" variant="destructive">
           <AlertCircle className="h-4 w-4" />
-          <AlertTitle className="text-sm">Limit Reached</AlertTitle>
+          <AlertTitle className="text-sm">
+            {t('chat.limitReachedTitle')}
+          </AlertTitle>
           <AlertDescription className="text-gray-80 text-xs">
             <div className="flex flex-row items-center space-x-2">
-              {/* eslint-disable-next-line react/no-unescaped-entities */}
-              You've used all of your queries for the month on this model/agent.
-              Please start a new chat with another agent.
+              {t('chat.limitReachedDescription')}
             </div>
           </AlertDescription>
         </Alert>
@@ -250,7 +251,9 @@ const ChatConversation = () => {
                 name="message"
                 render={({ field }) => (
                   <FormItem className="flex-1 space-y-0">
-                    <FormLabel className="sr-only">Enter message</FormLabel>
+                    <FormLabel className="sr-only">
+                      {t('chat.enterMessage')}
+                    </FormLabel>
                     <FormControl>
                       <div className="">
                         <div className="flex items-center gap-2.5 px-1 pb-2 pt-1">
@@ -281,7 +284,7 @@ const ChatConversation = () => {
                                   className="bg-neutral-900"
                                   side="top"
                                 >
-                                  Upload a File
+                                  {t('common.uploadFile')}
                                 </TooltipContent>
                               </TooltipPortal>
                             </Tooltip>
@@ -297,7 +300,9 @@ const ChatConversation = () => {
                               variant="tertiary"
                             >
                               <SendIcon className="h-full w-full" />
-                              <span className="sr-only">Send Message</span>
+                              <span className="sr-only">
+                                {t('chat.sendMessage')}
+                              </span>
                             </Button>
                           }
                           disabled={isLoadingMessage}
@@ -310,17 +315,17 @@ const ChatConversation = () => {
                                 {getFileExt(file?.name) &&
                                 fileIconMap[getFileExt(file?.name)] ? (
                                   <FileTypeIcon
-                                    className="text-gray-80 h-7 w-7 shrink-0 "
+                                    className="text-gray-80 h-7 w-7 shrink-0"
                                     type={getFileExt(file?.name)}
                                   />
                                 ) : (
                                   <Paperclip className="text-gray-80 h-4 w-4 shrink-0" />
                                 )}
                                 <div className="space-y-1">
-                                  <span className="line-clamp-1 break-all text-left text-xs ">
+                                  <span className="line-clamp-1 break-all text-left text-xs">
                                     {file?.name}
                                   </span>
-                                  <span className="line-clamp-1 break-all text-left text-xs text-gray-100 ">
+                                  <span className="line-clamp-1 break-all text-left text-xs text-gray-100">
                                     {size(file?.size)}
                                   </span>
                                 </div>
@@ -358,6 +363,7 @@ const ChatConversation = () => {
 export default ChatConversation;
 
 function AgentSelection() {
+  const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const currentInbox = useGetCurrentInbox();
   const { agents } = useAgents({
@@ -374,7 +380,7 @@ function AgentSelection() {
 
   const { mutateAsync: updateAgentInJob } = useUpdateAgentInJob({
     onError: (error) => {
-      toast.error('Failed to update agent', {
+      toast.error(t('agents.errors.updateAgent'), {
         description: error.message,
       });
     },
@@ -384,7 +390,7 @@ function AgentSelection() {
       <TooltipProvider delayDuration={0}>
         <Tooltip>
           <TooltipTrigger asChild>
-            <DropdownMenuTrigger className="bg-gray-350 inline-flex cursor-pointer items-center justify-between gap-1 truncate rounded-xl px-2.5 py-1.5 text-start text-xs font-normal text-gray-50  hover:text-white  [&[data-state=open]>.icon]:rotate-180">
+            <DropdownMenuTrigger className="bg-gray-350 inline-flex cursor-pointer items-center justify-between gap-1 truncate rounded-xl px-2.5 py-1.5 text-start text-xs font-normal text-gray-50 hover:text-white [&[data-state=open]>.icon]:rotate-180">
               <BotIcon className="mr-1 h-4 w-4" />
               <span>{currentInbox?.agent?.id}</span>
               <ChevronDownIcon className="icon h-3 w-3" />
@@ -396,7 +402,7 @@ function AgentSelection() {
               className="bg-neutral-900"
               side="top"
             >
-              Switch AI
+              {t('agents.switch')}
             </TooltipContent>
           </TooltipPortal>
           <DropdownMenuContent
@@ -447,7 +453,7 @@ function AgentSelection() {
 
 export const ConversationHeader = () => {
   const currentInbox = useGetCurrentInbox();
-
+  const { t } = useTranslation();
   const hasFolders =
     (currentInbox?.job_scope?.vector_fs_folders ?? [])?.length > 0;
   const hasFiles = (currentInbox?.job_scope?.vector_fs_items ?? [])?.length > 0;
@@ -491,14 +497,16 @@ export const ConversationHeader = () => {
           </SheetTrigger>
           <SheetContent className="max-w-md">
             <SheetHeader>
-              <SheetTitle>Conversation Context</SheetTitle>
+              <SheetTitle>{t('chat.context.title')}</SheetTitle>
               <SheetDescription className="mb-4 mt-2">
-                List of folders and files used as context for this conversation
+                {t('chat.context.description')}
               </SheetDescription>
               <div className="space-y-3 pt-4">
                 {hasFolders && (
                   <div className="space-y-1">
-                    <span className="font-medium text-white">Folders</span>
+                    <span className="font-medium text-white">
+                      {t('common.folders')}
+                    </span>
                     <ul>
                       {currentInbox?.job_scope?.vector_fs_folders?.map(
                         (folder) => (
@@ -518,7 +526,9 @@ export const ConversationHeader = () => {
                 )}
                 {hasFiles && (
                   <div className="space-y-1">
-                    <span className="font-medium text-white">Files</span>
+                    <span className="font-medium text-white">
+                      {t('common.files')}
+                    </span>
                     <ul>
                       {currentInbox?.job_scope?.vector_fs_items?.map((file) => (
                         <li

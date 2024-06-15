@@ -3,12 +3,10 @@ import '../../theme/styles.css';
 import { Player } from '@lottiefiles/react-lottie-player';
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
-import { FormattedMessage, IntlProvider } from 'react-intl';
 
 import InstalledPopupAnimation from '../../assets/animations/installed-popup.json';
 import logo from '../../assets/icons/visor.svg';
 import { srcUrlResolver } from '../../helpers/src-url-resolver';
-import { langMessages, locale } from '../../lang/intl';
 
 const InstalledPopup = () => {
   return (
@@ -32,7 +30,8 @@ const InstalledPopup = () => {
         </div>
 
         <p className="text-md text-center text-white" data-cy="welcome-message">
-          <FormattedMessage id="installed-sucessfully" />
+          Shinkai Visor was installed successfully, navigate to a website and
+          use the action button to start asking Shinkai AI
         </p>
       </div>
     </div>
@@ -45,10 +44,8 @@ if (!container) {
 const root = createRoot(container);
 root.render(
   <React.StrictMode>
-    <IntlProvider locale={locale} messages={langMessages}>
-      <div className="font-inter h-full w-full overflow-hidden bg-gray-500 p-3 shadow-xl">
-        <InstalledPopup />
-      </div>
-    </IntlProvider>
+    <div className="font-inter h-full w-full overflow-hidden bg-gray-500 p-3 shadow-xl">
+      <InstalledPopup />
+    </div>
   </React.StrictMode>,
 );
