@@ -52,7 +52,7 @@ jobs:
         env:
           OPEN_AI_API_KEY: ${{ secrets.OPEN_AI_API_KEY }}
         run: |
-          npx nx run-many -t lint,build,test --parallel=3 --skip-nx-cache --verbose --exclude=shinkai-desktop,shinkai_message_wasm
+          npx nx run-many -t lint,build,test --parallel=3 --skip-nx-cache --verbose --exclude=shinkai-desktop
           npx nx lint shinkai-desktop
 
 #      - name: Run E2E for Visor
