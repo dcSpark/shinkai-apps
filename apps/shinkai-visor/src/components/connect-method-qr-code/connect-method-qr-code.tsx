@@ -13,7 +13,6 @@ import { BrowserQRCodeReader } from '@zxing/browser';
 import { QrCode, Trash, Upload } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { FormattedMessage } from 'react-intl';
 import { useNavigate } from 'react-router-dom';
 import * as z from 'zod';
 
@@ -152,14 +151,7 @@ export const ConnectMethodQrCode = () => {
 
   return (
     <div className="flex h-full flex-col space-y-3">
-      <Header
-        description={
-          <FormattedMessage id="qr-code-connection-connection-method-description" />
-        }
-        title={
-          <FormattedMessage id="qr-code-connection-connection-method-title" />
-        }
-      />
+      <Header description="Use a QR code to connect" title={'QR Code'} />
 
       <Form {...form}>
         <form
@@ -204,7 +196,7 @@ export const ConnectMethodQrCode = () => {
                           <Upload className="h-4 w-4" />
                         </div>
                         <p className="text-sm text-white">
-                          <FormattedMessage id="click-to-upload" />
+                          Click to upload or drag and drop
                         </p>
                         <p className="text-gray-80 text-xs">JPG | PNG</p>
                       </div>
@@ -227,10 +219,7 @@ export const ConnectMethodQrCode = () => {
                   control={form.control}
                   name="registration_name"
                   render={({ field }) => (
-                    <TextField
-                      field={field}
-                      label={<FormattedMessage id="registration-name" />}
-                    />
+                    <TextField field={field} label={'Device Nickname'} />
                   )}
                 />
 
@@ -238,10 +227,7 @@ export const ConnectMethodQrCode = () => {
                   control={form.control}
                   name="node_address"
                   render={({ field }) => (
-                    <TextField
-                      field={field}
-                      label={<FormattedMessage id="node-address" />}
-                    />
+                    <TextField field={field} label={'Node Address'} />
                   )}
                 />
 
@@ -249,10 +235,7 @@ export const ConnectMethodQrCode = () => {
                   control={form.control}
                   name="shinkai_identity"
                   render={({ field }) => (
-                    <TextField
-                      field={field}
-                      label={<FormattedMessage id="shinkai-identity" />}
-                    />
+                    <TextField field={field} label="Shinkai Identity" />
                   )}
                 />
               </>
@@ -266,7 +249,7 @@ export const ConnectMethodQrCode = () => {
             isLoading={isPending}
             type="submit"
           >
-            <FormattedMessage id="connect" />
+            Connect
           </Button>
         </form>
       </Form>

@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { QRSetupData } from '@shinkai_network/shinkai-message-ts/models';
 import { useCreateRegistrationCode } from '@shinkai_network/shinkai-node-state/lib/mutations/createRegistrationCode/useCreateRegistrationCode';
 import {
@@ -19,7 +20,6 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { useEffect, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
-import { FormattedMessage, useIntl } from 'react-intl';
 import { z } from 'zod';
 
 import { useAuth } from '../../store/auth/auth';
@@ -43,7 +43,8 @@ const formSchema = z.object({
 });
 
 export const CreateRegistrationCode = () => {
-  const intl = useIntl();
+  const { t } = useTranslation();
+
   type FormSchemaType = z.infer<typeof formSchema>;
   const auth = useAuth((state) => state.auth);
   const form = useForm<FormSchemaType>({
@@ -88,25 +89,25 @@ export const CreateRegistrationCode = () => {
     });
   const identityTypeOptions: { value: IdentityType; label: string }[] = [
     {
-      label: intl.formatMessage({ id: 'profile.one' }),
+      label: 'Profile',
       value: IdentityType.Profile,
     },
     {
-      label: intl.formatMessage({ id: 'device.one' }),
+      label: 'Device',
       value: IdentityType.Device,
     },
   ];
   const permissionOptions: { value: PermissionType; label: string }[] = [
     {
-      label: intl.formatMessage({ id: 'admin' }),
+      label: 'Admin',
       value: PermissionType.Admin,
     },
     {
-      label: intl.formatMessage({ id: 'standard' }),
+      label: 'Standard',
       value: PermissionType.Standard,
     },
     {
-      label: intl.formatMessage({ id: 'none' }),
+      label: 'None',
       value: PermissionType.None,
     },
   ];
@@ -151,7 +152,7 @@ export const CreateRegistrationCode = () => {
   }, [form, identityType, auth]);
   return (
     <div className="flex h-full flex-col space-y-8">
-      <Header title={<FormattedMessage id="create-registration-code" />} />
+      <Header title={t('settings.registerNewCode.label')} />
       <div className="flex grow flex-col space-y-2">
         <Form {...form}>
           <form
@@ -166,9 +167,7 @@ export const CreateRegistrationCode = () => {
                   name="identityType"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>
-                        <FormattedMessage id="identity-type" />
-                      </FormLabel>
+                      <FormLabel>Identity type</FormLabel>
                       <Select
                         defaultValue={field.value}
                         name={field.name}
@@ -203,7 +202,7 @@ export const CreateRegistrationCode = () => {
                   render={({ field }) => (
                     <TextField
                       field={{ ...field, readOnly: true }}
-                      label={<FormattedMessage id="profile.one" />}
+                      label="Profile"
                     />
                   )}
                 />
@@ -213,9 +212,7 @@ export const CreateRegistrationCode = () => {
                 name="permissionType"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      <FormattedMessage id="permission-type" />
-                    </FormLabel>
+                    <FormLabel>Permission type</FormLabel>
                     <Select
                       defaultValue={field.value}
                       name={field.name}
@@ -244,18 +241,20 @@ export const CreateRegistrationCode = () => {
               />
             </div>
             <Button className="w-full" isLoading={isPending} type="submit">
-              <FormattedMessage id="generate-registration-code" />
+              Generate registration code
             </Button>
           </form>
         </Form>
 
         <QrCodeModal
-          description={<FormattedMessage id="use-it-to-register-and-connect" />}
+          description={
+            'Scan the QR code with your Shinkai app or download it to register'
+          }
           modalClassName={'w-[85%]'}
           onOpenChange={setQrCodeModalOpen}
           onSave={download}
           open={qrCodeModalOpen}
-          title={<FormattedMessage id="scan-or-download-registration-code" />}
+          title={"Here's your QR Code"}
           value={JSON.stringify(generatedSetupData)}
         />
       </div>

@@ -1,4 +1,7 @@
 {
+  "extension": {
+    "welcome": "Transform your web browsing experience using AI with Shinkai Visor ✨"
+  },
   "layout": {
     "sidebar": {
       "toggle": "Toggle Sidebar"
@@ -47,15 +50,50 @@
     }
   },
   "inboxes": {
-    "updateName": "Update inbox name"
+    "updateName": "Update inbox name",
+    "inboxName": "Name"
+  },
+  "shinkaiNode": {
+    "restartNode": "Please restart your Shinkai Node",
+    "nodeAddress": "Node Address",
+    "nodeVersion": "Node Version"
+  },
+  "settings": {
+    "defaultAgent": "Default AI",
+    "shinkaiIdentity":{
+      "label": "Shinkai Identity",
+      "updatedIdentity": "Shinkai Identity updated successfully."
+    },
+    "quickAccessButton": {
+      "label": "Show Shinkai Quick Access Button",
+      "description": "The Quick Access Button can be moved by clicking and holding."
+    },
+    "shortcutKey": {
+      "label": "Shortcut Key",
+      "description": "Modify the shortcut key to launch sidebar"
+    },
+    "exportConnection": {
+      "label": "Export connection"
+    },
+    "registerNewCode": {
+      "label": "Register new device"
+    }
+  },
+  "exportConnection": {
+    "label": "Export Connection",
+    "generateFile": "Generate connection file",
+    "downloadText": "Download and keep this connection file in a safe place",
+    "restoreText": "Use it with your passphrase to restore the connection to your Shinkai Node"
   },
   "common": {
     "uploadFile": "Upload a File",
     "folders": "Folders",
     "files": "Files",
+    "file": "File",
     "save": "Save",
     "cancel": "Cancel",
     "continue": "Continue",
+    "connect": "Connect",
     "rename": "Rename",
     "disconnect": "Disconnect",
     "soon": "soon",
@@ -66,7 +104,10 @@
     "moreOptions": "More Options",
     "comingSoon": "Coming soon - Early July",
     "noThanks": "No, Thanks",
-    "iAgree": "I Agree"
+    "iAgree": "I Agree",
+    "getStarted": "Get Started",
+    "passphrase": "Passphrase",
+    "repeatPassphrase": "Confirm passphrase"
   },
   "analytics": {
     "title": "Help us improve Shinkai"

@@ -1,3 +1,4 @@
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useArchiveJob } from '@shinkai_network/shinkai-node-state/lib/mutations/archiveJob/useArchiveJob';
 import {
   AlertDialog,
@@ -47,7 +48,6 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { ArrowLeft, Menu, Settings, X, XIcon } from 'lucide-react';
 import React, { ReactNode, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -84,15 +84,15 @@ const routeTitleDescriptionMapping: Record<
   string,
   { title: ReactNode; description?: ReactNode }
 > = {
-  [routes.CreateJob]: { title: <FormattedMessage id="create-job" /> },
-  [routes.CreateInbox]: { title: <FormattedMessage id="create-inbox" /> },
-  [routes.Inboxes]: { title: <FormattedMessage id="inbox.other" /> },
+  [routes.CreateJob]: { title: 'Create AI Chat' },
+  [routes.CreateInbox]: { title: 'Create DM Chat' },
+  [routes.Inboxes]: { title: 'Chats' },
   [routes.VectorFs]: { title: 'My AI Files Explorer' },
   [routes.Subscriptions]: { title: 'My Subscriptions' },
   [routes.PublicFolders]: { title: 'Browse Public Subscriptions' },
-  [routes.Settings]: { title: <FormattedMessage id="setting.other" /> },
-  [routes.Agents]: { title: <FormattedMessage id="agent.other" /> },
-  [routes.AddAgent]: { title: <FormattedMessage id="add-agent" /> },
+  [routes.Settings]: { title: 'Settings' },
+  [routes.Agents]: { title: 'AIs' },
+  [routes.AddAgent]: { title: 'Add AI' },
   [routes.PublicKeys]: { title: 'Public Keys' },
 };
 
@@ -251,7 +251,7 @@ const ArchiveJobButton = () => {
             className={cn(
               'absolute right-10 shrink-0 bg-inherit hover:bg-gray-400',
               currentInbox?.is_finished &&
-                'text-gray-80 hover:bg-inherit hover:text-white ',
+                'text-gray-80 hover:bg-inherit hover:text-white',
             )}
             disabled={currentInbox?.is_finished}
             onClick={handleArchiveJob}
@@ -277,6 +277,7 @@ const ArchiveJobButton = () => {
 
 export default function NavBar() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const location = useLocation();
   const setLastPage = useSettings((state) => state.setLastPage);
 
@@ -424,14 +425,12 @@ export default function NavBar() {
       <AlertDialog open={isConfirmLogoutDialogOpened}>
         <AlertDialogContent className="w-[75%]">
           <AlertDialogHeader>
-            <AlertDialogTitle>
-              <FormattedMessage id="are-you-sure" />
-            </AlertDialogTitle>
+            <AlertDialogTitle>{t('disconnect.modalTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
               <div className="flex flex-col space-y-3 text-left text-white/70">
-                <div className="flex flex-col space-y-1 ">
+                <div className="flex flex-col space-y-1">
                   <span className="text-sm">
-                    <FormattedMessage id="permanently-lose-connection" />
+                    {t('disconnect.modalDescription')}
                   </span>
                 </div>
                 <div className="text-sm">
@@ -452,10 +451,10 @@ export default function NavBar() {
               className="mt-0 flex-1"
               onClick={() => setIsConfirmLogoutDialogOpened(false)}
             >
-              <FormattedMessage id="cancel" />
+              {t('common.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction className="flex-1" onClick={() => logout()}>
-              <FormattedMessage id="continue" />
+              {t('common.continue')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -495,31 +494,27 @@ export default function NavBar() {
                 sideOffset={10}
               >
                 <DropdownMenuLabel>
-                  <FormattedMessage id="inbox.other" />
+                  {t('layout.menuItems.chats')}
                 </DropdownMenuLabel>
                 <DropdownMenuItem
                   onClick={() => onClickMenuOption(MenuOption.Inboxes)}
                 >
                   <InboxIcon className="mr-2 h-4 w-4" />
-                  <span>
-                    <FormattedMessage id="inbox.other" />
-                  </span>
+                  <span>{t('layout.menuItems.chats')}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   data-testid="nav-menu-create-job-button"
                   onClick={() => onClickMenuOption(MenuOption.CreateJob)}
                 >
                   <JobBubbleIcon className="mr-2 h-4 w-4" />
-                  <span>
-                    <FormattedMessage id="create-job" />
-                  </span>
+                  <span>{t('chat.create')}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   disabled={true}
                   onClick={() => onClickMenuOption(MenuOption.CreateAITask)}
                 >
                   <AiTasksIcon className="mr-2 h-4 w-4" />
-                  <span className="mr-3">AI Tasks</span>
+                  <span className="mr-3">{t('layout.menuItems.aiTasks')}</span>
                   <Badge className="text-[10px]" variant="inputAdornment">
                     SOON
                   </Badge>
@@ -541,67 +536,55 @@ export default function NavBar() {
                   onClick={() => onClickMenuOption(MenuOption.NodeFiles)}
                 >
                   <FilesIcon className="mr-2 h-4 w-4" />
-                  <span>My AI Files Explorer</span>
+                  <span>{t('layout.menuItems.vectorFs')}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => onClickMenuOption(MenuOption.SearchNodeFiles)}
                 >
                   <AISearchContentIcon className="mr-2 h-4 w-4" />
-                  <span>AI Files Content Search</span>
+                  <span>{t('layout.menuItems.vectorSearch')}</span>
                 </DropdownMenuItem>
                 <DropdownMenuLabel>Subscriptions</DropdownMenuLabel>
                 <DropdownMenuItem
                   onClick={() => onClickMenuOption(MenuOption.PublicItems)}
                 >
                   <BrowseSubscriptionIcon className="mr-2 h-4 w-4" />
-                  <span>Browse Public Subscriptions</span>
+                  <span>{t('layout.menuItems.subscriptions')}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => onClickMenuOption(MenuOption.MySubscriptions)}
                 >
                   <MySubscriptionsIcon className="mr-2 h-4 w-4" />
-                  <span>My Subscriptions</span>
+                  <span>{t('layout.menuItems.mySubscriptions')}</span>
                 </DropdownMenuItem>
 
-                <DropdownMenuLabel>
-                  <FormattedMessage id="agent.other" />
-                </DropdownMenuLabel>
+                <DropdownMenuLabel>AIs</DropdownMenuLabel>
                 <DropdownMenuItem
                   data-testid="nav-menu-agents-button"
                   onClick={() => onClickMenuOption(MenuOption.Agents)}
                 >
                   <AgentIcon className="mr-2 h-4 w-4" />
-                  <span>
-                    <FormattedMessage id="agent.other" />
-                  </span>
+                  <span>AIs</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   data-testid="nav-menu-add-agent-button"
                   onClick={() => onClickMenuOption(MenuOption.AddAgent)}
                 >
                   <AddAgentIcon className="mr-2 h-4 w-4" />
-                  <span>
-                    <FormattedMessage id="add-agent" />
-                  </span>
+                  <span>Add AI</span>
                 </DropdownMenuItem>
-                <DropdownMenuLabel>
-                  <FormattedMessage id="account.one" />
-                </DropdownMenuLabel>
+                <DropdownMenuLabel>Account</DropdownMenuLabel>
                 <DropdownMenuItem
                   onClick={() => onClickMenuOption(MenuOption.Settings)}
                 >
                   <Settings className="mr-2 h-4 w-4" />
-                  <span>
-                    <FormattedMessage id="setting.other" />
-                  </span>
+                  <span>{t('layout.menuItems.settings')}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => onClickMenuOption(MenuOption.Logout)}
                 >
                   <DisconnectIcon className="mr-2 h-4 w-4" />
-                  <span>
-                    <FormattedMessage id="disconnect" />
-                  </span>
+                  <span>{t('layout.menuItems.disconnect')}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

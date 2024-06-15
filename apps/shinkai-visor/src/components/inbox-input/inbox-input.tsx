@@ -13,7 +13,6 @@ import {
 import { motion } from 'framer-motion';
 import { SendHorizonal } from 'lucide-react';
 import { useForm } from 'react-hook-form';
-import { useIntl } from 'react-intl';
 
 type InboxInputProps = {
   onSubmit: (value: string) => void;
@@ -30,7 +29,7 @@ export const InboxInput = (props: InboxInputProps) => {
     },
   });
   const { message } = form.watch();
-  const intl = useIntl();
+
   const submit = (values: ChatMessageFormSchema) => {
     const value = values?.message?.trim();
     if (value) {
@@ -65,7 +64,7 @@ export const InboxInput = (props: InboxInputProps) => {
                     isLoading={props.loading}
                     onChange={field.onChange}
                     onSubmit={form.handleSubmit(submit)}
-                    placeholder={intl.formatMessage({ id: 'tmwtd' })}
+                    placeholder="Tell me what to do"
                     value={field.value}
                   />
                 </FormItem>

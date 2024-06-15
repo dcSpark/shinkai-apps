@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { isShinkaiIdentityLocalhost } from '@shinkai_network/shinkai-message-ts/utils';
 import { useUpdateNodeName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateNodeName/useUpdateNodeName';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
@@ -27,7 +28,6 @@ import { motion } from 'framer-motion';
 import { ExternalLinkIcon, TrashIcon } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
-import { FormattedMessage, useIntl } from 'react-intl';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -62,7 +62,7 @@ const formSchema = z.object({
 type FormSchemaType = z.infer<typeof formSchema>;
 const MotionButton = motion(Button);
 export const Settings = () => {
-  const intl = useIntl();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const auth = useAuth((authStore) => authStore.auth);
   const setAuth = useAuth((authStore) => authStore.setAuth);
@@ -162,15 +162,13 @@ export const Settings = () => {
   const { mutateAsync: updateNodeName, isPending: isUpdateNodeNamePending } =
     useUpdateNodeName({
       onSuccess: () => {
-        toast.success(
-          intl.formatMessage({ id: 'shinkai-identity-updated-successfully' }),
-        );
+        toast.success(t('settings.shinkaiIdentity.updatedIdentity'));
         if (!auth) return;
         const isHostingShinkaiNode = auth?.node_address.includes(
           'hosting.shinkai.com',
         );
         if (!isHostingShinkaiNode) {
-          toast.info(intl.formatMessage({ id: 'restart-your-shinkai-node' }));
+          toast.info(t('shinkaiNode.restartNode'));
         }
         const newAuth: SetupData = { ...auth };
         setAuth({
@@ -254,9 +252,7 @@ export const Settings = () => {
                     <SelectValue />
                   </SelectTrigger>
                 </FormControl>
-                <FormLabel>
-                  <FormattedMessage id="default-agent" />
-                </FormLabel>
+                <FormLabel>{t('settings.defaultAgent')}</FormLabel>
                 <SelectContent>
                   {agents?.map((agent) => (
                     <SelectItem key={agent.id} value={agent.id}>
@@ -274,10 +270,7 @@ export const Settings = () => {
               disabled
               name="nodeAddress"
               render={({ field }) => (
-                <TextField
-                  field={field}
-                  label={<FormattedMessage id="node-address" />}
-                />
+                <TextField field={field} label={t('shinkaiNode.nodeAddress')} />
               )}
             />
             <FormField
@@ -334,7 +327,7 @@ export const Settings = () => {
                       <ExternalLinkIcon className="h-4 w-4" />
                     </span>
                   }
-                  label={<FormattedMessage id="shinkai-identity" />}
+                  label={t('settings.shinkaiIdentity.label')}
                 />
               )}
             />
@@ -348,7 +341,7 @@ export const Settings = () => {
                   size="auto"
                   type="button"
                 >
-                  <FormattedMessage id="save" />
+                  {t('common.save')}
                 </MotionButton>
                 <Button
                   className="h-10 min-w-10 rounded-lg text-sm"
@@ -361,7 +354,7 @@ export const Settings = () => {
                   type="button"
                   variant="outline"
                 >
-                  <FormattedMessage id="cancel" />
+                  {t('common.cancel')}
                 </Button>
               </div>
             )}
@@ -370,10 +363,7 @@ export const Settings = () => {
               disabled
               name="nodeVersion"
               render={({ field }) => (
-                <TextField
-                  field={field}
-                  label={<FormattedMessage id="node-version" />}
-                />
+                <TextField field={field} label={t('shinkaiNode.nodeVersion')} />
               )}
             />
             <h2 className="pt-4 text-lg font-medium">Sidebar</h2>
@@ -396,10 +386,10 @@ export const Settings = () => {
                           className="static space-y-1.5 text-sm text-white"
                           htmlFor="displayActionButton"
                         >
-                          <FormattedMessage id="show-action-button-label" />
+                          {t('settings.quickAccessButton.label')}
                         </FormLabel>
                         <FormDescription>
-                          <FormattedMessage id="show-action-button-description" />
+                          {t('settings.quickAccessButton.description')}
                         </FormDescription>
                       </div>
                     </FormItem>
@@ -519,10 +509,8 @@ export const Settings = () => {
                       form.setValue('shortcutSidebar', keyInfo);
                     },
                   }}
-                  helperMessage={
-                    <FormattedMessage id="shortcut-key-description" />
-                  }
-                  label={<FormattedMessage id="shortcut-key" />}
+                  helperMessage={t('settings.shortcutKey.description')}
+                  label={t('settings.shortcutKey.label')}
                 />
               )}
             />
@@ -536,7 +524,7 @@ export const Settings = () => {
                   }}
                   type="button"
                 >
-                  <FormattedMessage id="save" />
+                  {t('common.save')}
                 </Button>
                 <Button
                   className="h-10 w-10 rounded-lg text-sm"
@@ -546,7 +534,7 @@ export const Settings = () => {
                   type="button"
                   variant="outline"
                 >
-                  <FormattedMessage id="cancel" />
+                  {t('common.cancel')}
                 </Button>
               </div>
             ) : null}
@@ -561,7 +549,7 @@ export const Settings = () => {
           >
             <ExportIcon />
             <p className="text-smm text-white">
-              <FormattedMessage id="export-connection" />
+              {t('settings.exportConnection.label')}
             </p>
           </Button>
           <Button
@@ -574,7 +562,7 @@ export const Settings = () => {
               <QrIcon />
             </div>
             <p className="text-smm text-white">
-              <FormattedMessage id="create-registration-code" />
+              {t('settings.registerNewCode.label')}
             </p>
           </Button>
           <Button

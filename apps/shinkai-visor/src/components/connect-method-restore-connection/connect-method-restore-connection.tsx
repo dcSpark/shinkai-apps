@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { decryptMessageWithPassphrase } from '@shinkai_network/shinkai-message-ts/cryptography';
 import {
   RestoreConnectionFormSchema,
@@ -18,7 +19,6 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { FormattedMessage } from 'react-intl';
 import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../store/auth/auth';
@@ -26,6 +26,7 @@ import { Header } from '../header/header';
 
 export const ConnectMethodRestoreConnection = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const setAuth = useAuth((state) => state.setAuth);
   const [error, setError] = useState<boolean>(false);
 
@@ -75,12 +76,8 @@ export const ConnectMethodRestoreConnection = () => {
   return (
     <div className="flex h-full flex-col space-y-3">
       <Header
-        description={
-          <FormattedMessage id="restore-connection-connection-method-description" />
-        }
-        title={
-          <FormattedMessage id="restore-connection-connection-method-title" />
-        }
+        description={'Use a connection file and passphrase'}
+        title={'Restore'}
       />
 
       <Form {...form}>
@@ -95,7 +92,7 @@ export const ConnectMethodRestoreConnection = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="sr-only">
-                    <FormattedMessage id="encrypted-connection" />
+                    Encrypted connection
                   </FormLabel>
                   <FormControl>
                     <div className="flex flex-col space-y-1">
@@ -129,7 +126,7 @@ export const ConnectMethodRestoreConnection = () => {
               render={({ field }) => (
                 <TextField
                   field={field}
-                  label={<FormattedMessage id="passphrase" />}
+                  label={t('common.passphrase')}
                   type={'password'}
                 />
               )}
@@ -138,7 +135,7 @@ export const ConnectMethodRestoreConnection = () => {
           </div>
 
           <Button className="w-full" type="submit">
-            <FormattedMessage id="restore-connection" />
+            Restore connection
           </Button>
         </form>
       </Form>

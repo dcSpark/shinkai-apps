@@ -7,12 +7,10 @@ import { PrimeReactProvider } from 'primereact/api';
 import * as React from 'react';
 import { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
-import { IntlProvider } from 'react-intl';
 import { MemoryRouter as Router } from 'react-router-dom';
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
 import { useGlobalPopupChromeMessage } from '../../hooks/use-global-popup-chrome-message';
-import { langMessages, locale } from '../../lang/intl';
 import { useAuth } from '../../store/auth/auth';
 import { useSettings } from '../../store/settings/settings';
 import { AddAgent } from '../agents/add-agent';
@@ -170,14 +168,12 @@ root.render(
   <React.StrictMode>
     <PrimeReactProvider>
       <QueryProvider>
-        <IntlProvider locale={locale} messages={langMessages}>
-          <div className="font-inter h-full w-full">
-            <Router>
-              <Popup />
-            </Router>
-          </div>
-          <Toaster />
-        </IntlProvider>
+        <div className="font-inter h-full w-full">
+          <Router>
+            <Popup />
+          </Router>
+        </div>
+        <Toaster />
       </QueryProvider>
     </PrimeReactProvider>
   </React.StrictMode>,

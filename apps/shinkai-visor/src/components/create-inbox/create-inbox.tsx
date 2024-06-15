@@ -16,7 +16,6 @@ import {
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import { useForm } from 'react-hook-form';
-import { FormattedMessage, useIntl } from 'react-intl';
 import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../store/auth/auth';
@@ -24,7 +23,7 @@ import { useAuth } from '../../store/auth/auth';
 export const CreateInbox = () => {
   const navigate = useNavigate();
   const auth = useAuth((state) => state.auth);
-  const intl = useIntl();
+
   const form = useForm<CreateDMFormSchema>({
     resolver: zodResolver(createDMFormSchema),
     defaultValues: {
@@ -78,7 +77,7 @@ export const CreateInbox = () => {
                 <TextField
                   endAdornment={endAdornment}
                   field={field}
-                  label={<FormattedMessage id="message-receiver" />}
+                  label="Message receiver"
                   startAdornment={'@@'}
                 />
               )}
@@ -89,9 +88,7 @@ export const CreateInbox = () => {
               name="message"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    <FormattedMessage id="message.one" />
-                  </FormLabel>
+                  <FormLabel>Message</FormLabel>
                   <FormControl>
                     <Textarea
                       autoFocus
@@ -104,9 +101,7 @@ export const CreateInbox = () => {
                           form.handleSubmit(submit)();
                         }
                       }}
-                      placeholder={intl.formatMessage({
-                        id: 'tmwtd',
-                      })}
+                      placeholder="Tell me what to do"
                       {...field}
                     />
                   </FormControl>
@@ -121,7 +116,7 @@ export const CreateInbox = () => {
             isLoading={isPending}
             type="submit"
           >
-            <FormattedMessage id="create-inbox" />
+            Create DM Chat
           </Button>
         </form>
       </Form>

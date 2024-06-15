@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   QuickConnectFormSchema,
   quickConnectFormSchema,
@@ -23,7 +24,6 @@ import {
 // import { QrCode } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { FormattedMessage } from 'react-intl';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { SetupData, useAuth } from '../../store/auth/auth';
@@ -32,6 +32,7 @@ import { Header } from '../header/header';
 
 export const ConnectMethodQuickStart = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const location = useLocation() as {
     state: { nodeAddress: string };
   };
@@ -102,12 +103,8 @@ export const ConnectMethodQuickStart = () => {
     <div className="flex h-full flex-col justify-between gap-6 overflow-auto pr-2">
       <div>
         <Header
-          description={
-            <FormattedMessage id="quick-connection-connection-method-description" />
-          }
-          title={
-            <FormattedMessage id="quick-connection-connection-method-title" />
-          }
+          description={'Use address to connect for first time'}
+          title={'Quick connection ⚡'}
         />
         <Form {...form}>
           <form
@@ -121,7 +118,7 @@ export const ConnectMethodQuickStart = () => {
                 render={({ field }) => (
                   <TextField
                     field={field}
-                    label={<FormattedMessage id="node-address" />}
+                    label={t('shinkaiNode.nodeAddress')}
                   />
                 )}
               />
@@ -129,7 +126,7 @@ export const ConnectMethodQuickStart = () => {
               <Accordion collapsible type="single">
                 <AccordionItem value="item-1">
                   <AccordionTrigger className="pl-2">
-                    <FormattedMessage id="advanced-options" />
+                    Advanced options
                   </AccordionTrigger>
 
                   <AccordionContent className="flex flex-col justify-between space-y-2 pb-0">
@@ -137,10 +134,7 @@ export const ConnectMethodQuickStart = () => {
                       control={form.control}
                       name="registration_name"
                       render={({ field }) => (
-                        <TextField
-                          field={field}
-                          label={<FormattedMessage id="registration-name" />}
-                        />
+                        <TextField field={field} label="Device Nickname" />
                       )}
                     />
                     {/*<FormField*/}
@@ -171,7 +165,7 @@ export const ConnectMethodQuickStart = () => {
               isLoading={isPending}
               type="submit"
             >
-              <FormattedMessage id="connect" />
+              {t('common.connect')}
             </Button>
           </form>
         </Form>
@@ -214,18 +208,14 @@ export const ConnectMethodQuickStart = () => {
         {/*/>*/}
 
         <ConnectionMethodOption
-          description={
-            <FormattedMessage id="restore-connection-connection-method-description" />
-          }
+          description={'Use a connection file and passphrase'}
           icon={
             <span aria-hidden className="text-base">
               🔑
             </span>
           }
           onClick={() => selectRestoreMethod()}
-          title={
-            <FormattedMessage id="restore-connection-connection-method-title" />
-          }
+          title={'Restore'}
         />
       </div>
     </div>

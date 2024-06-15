@@ -1,3 +1,4 @@
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
 import {
@@ -19,7 +20,6 @@ import { ActiveIcon, ArchiveIcon } from '@shinkai_network/shinkai-ui/assets';
 // import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Plus } from 'lucide-react';
 import React, { useMemo, useRef } from 'react';
-// import { FormattedMessage } from 'react-intl';
 import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../store/auth/auth';
@@ -29,6 +29,8 @@ import { EmptyInboxes } from '../empty-inboxes/empty-inboxes';
 import { ActiveInboxItem, ArchiveInboxItem } from './inbox-item';
 
 export const Inboxes = () => {
+  const { t } = useTranslation();
+
   const navigate = useNavigate();
   const auth = useAuth((state) => state.auth);
   const dialContainerRef = useRef<HTMLDivElement>(null);
@@ -140,14 +142,14 @@ export const Inboxes = () => {
                   value="actives"
                 >
                   <ActiveIcon className="h-4 w-4" />
-                  Active
+                  {t('chat.actives.label')}
                 </TabsTrigger>
                 <TabsTrigger
                   className="flex items-center gap-1.5"
                   value="archives"
                 >
                   <ArchiveIcon className="h-4 w-4" />
-                  Archived
+                  {t('chat.archives.label')}
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="actives">
@@ -158,7 +160,7 @@ export const Inboxes = () => {
                     ))
                   ) : (
                     <p className="py-5 text-center">
-                      No actives conversations found.{' '}
+                      {t('chat.actives.notFound')}{' '}
                     </p>
                   )}
                 </div>
@@ -171,7 +173,7 @@ export const Inboxes = () => {
                     ))
                   ) : (
                     <p className="py-5 text-center">
-                      No archived conversations found.{' '}
+                      {t('chat.archives.notFound')}{' '}
                     </p>
                   )}
                 </div>
