@@ -1,7 +1,7 @@
 # Shinkai i18n
 
 This package uses [i18next](https://react.i18next.com/) to translate the app. All the translations
-are stored inside the [locales](./locales) directory. This means all texts within the app
+are stored inside the [locales](./src/lib/locales) directory. This means all texts within the app
 need to be rendered using the `t` function, returned by `useTranslation`:
 
 ```tsx
