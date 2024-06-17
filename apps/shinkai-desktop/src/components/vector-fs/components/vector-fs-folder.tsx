@@ -24,8 +24,9 @@ import {
   TrashIcon,
 } from 'lucide-react';
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import { useVectorFsStore,VectorFSLayout } from '../context/vector-fs-context';
+import { useVectorFsStore, VectorFSLayout } from '../context/vector-fs-context';
 import { VectorFsFolderAction } from './vector-fs-drawer';
 
 export const VectorFsFolderInfo = ({
@@ -68,6 +69,7 @@ const VectorFsFolder = ({
   const setActiveDrawerMenuOption = useVectorFsStore(
     (state) => state.setActiveDrawerMenuOption,
   );
+  const navigate = useNavigate();
   const setSelectedFolder = useVectorFsStore(
     (state) => state.setSelectedFolder,
   );
@@ -161,7 +163,11 @@ const VectorFsFolder = ({
               name: 'Search within folder',
               icon: <AISearchContentIcon className="mr-3 h-4 w-4" />,
               onClick: () => {
-                setActiveDrawerMenuOption(VectorFsFolderAction.SearchKnowledge);
+                navigate('/vector-search', {
+                  state: {
+                    folderPath: folder.path,
+                  },
+                });
               },
             },
             {

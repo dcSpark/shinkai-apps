@@ -33,9 +33,9 @@ import { motion } from 'framer-motion';
 import { SearchIcon, XIcon } from 'lucide-react';
 import { Checkbox } from 'primereact/checkbox';
 import { TreeCheckboxSelectionKeys } from 'primereact/tree';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import { SimpleLayout } from '../../pages/layout/simple-layout';
 import { useAuth } from '../../store/auth';
@@ -45,6 +45,11 @@ import {
 } from '../vector-fs/components/folder-selection-list';
 
 const SearchNodeFiles = () => {
+  const location = useLocation();
+  const locationState = location.state as {
+    folderPath: string;
+  };
+
   const auth = useAuth((state) => state.auth);
   const [selectedKeys, setSelectedKeys] =
     useState<TreeCheckboxSelectionKeys | null>(null);
@@ -107,6 +112,12 @@ const SearchNodeFiles = () => {
     },
     {},
   );
+
+  useEffect(() => {
+    if (locationState?.folderPath) {
+      setDestinationFolderPath(locationState.folderPath);
+    }
+  }, [locationState?.folderPath, setDestinationFolderPath]);
 
   return (
     <SimpleLayout>
@@ -182,10 +193,28 @@ const SearchNodeFiles = () => {
                 </Button>
               </div>
 
-              <div className="flex items-center gap-4 self-start px-2 py-1">
+              <div className="flex items-center gap-2 self-start px-2 py-1">
                 <div className="flex items-center gap-2">
                   <span className="text-gray-80 text-xs">Folder Location:</span>
                   <SelectFolderButton />
+                </div>
+                <div className="flex items-center">
+                  {!(
+                    destinationFolderPath == null ||
+                    destinationFolderPath === '/'
+                  ) && (
+                    <Button
+                      className="underline"
+                      onClick={() => {
+                        setDestinationFolderPath(null);
+                      }}
+                      size="sm"
+                      type="button"
+                      variant="link"
+                    >
+                      Reset Filters
+                    </Button>
+                  )}
                 </div>
               </div>
             </form>
@@ -236,23 +265,6 @@ const SearchNodeFiles = () => {
 
         {isSearchEntered && isSuccess && (
           <ScrollArea className="pr-4 [&>div>div]:!block">
-            <div className="flex items-center">
-              {!(
-                destinationFolderPath == null || destinationFolderPath === '/'
-              ) && (
-                <Button
-                  className="underline"
-                  onClick={() => {
-                    setDestinationFolderPath(null);
-                  }}
-                  size="sm"
-                  type="button"
-                  variant="link"
-                >
-                  Reset Filters
-                </Button>
-              )}
-            </div>
             <div className="flex flex-col gap-2 divide-y divide-slate-600">
               {isSearchEntered && isSuccess && (
                 <div className="flex flex-col gap-2">
