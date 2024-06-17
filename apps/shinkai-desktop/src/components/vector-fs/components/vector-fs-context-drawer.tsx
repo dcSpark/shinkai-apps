@@ -202,53 +202,55 @@ export const KnowledgeSearchDrawer = ({
 
         <Form {...searchVectorFSForm}>
           <form
-            className="mb-4 flex flex-1 shrink-0 items-center gap-2 pt-4"
+            className="flex shrink-0 flex-col items-center gap-2 pt-4"
             onSubmit={searchVectorFSForm.handleSubmit(onSubmit)}
           >
-            <FormField
-              control={searchVectorFSForm.control}
-              name="searchQuery"
-              render={({ field }) => (
-                <div className="relative flex h-10 w-full flex-1 items-center">
-                  <Input
-                    autoFocus
-                    className="placeholder-gray-80 !h-[50px] bg-gray-200 py-2 pl-10"
-                    onChange={field.onChange}
-                    placeholder="Search anything..."
-                    value={field.value}
-                  />
-                  <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2 bg-gray-300" />
-                  {currentSearchQuery && (
-                    <Button
-                      className="absolute right-1 h-8 w-8 bg-gray-200 p-2"
-                      onClick={() => {
-                        searchVectorFSForm.reset({ searchQuery: '' });
-                        setIsSearchEntered(false);
-                      }}
-                      size="auto"
-                      type="button"
-                      variant="ghost"
-                    >
-                      <XIcon />
-                      <span className="sr-only">Clear Search</span>
-                    </Button>
-                  )}
-                </div>
-              )}
-            />
-            <Button
-              className="h-12 w-12 rounded-lg"
-              disabled={isPending && isLoading}
-              isLoading={isPending && isLoading}
-              size="icon"
-              type="submit"
-            >
-              <SearchIcon />
-              <span className="sr-only">Search</span>
-            </Button>
+            <div className="flex w-full flex-1 items-center gap-2">
+              <FormField
+                control={searchVectorFSForm.control}
+                name="searchQuery"
+                render={({ field }) => (
+                  <div className="relative flex-1">
+                    <Input
+                      autoFocus
+                      className="placeholder-gray-80 !h-[50px] bg-gray-200 py-2 pl-10"
+                      onChange={field.onChange}
+                      placeholder="Search anything..."
+                      value={field.value}
+                    />
+                    <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2 bg-gray-300" />
+                    {currentSearchQuery && (
+                      <Button
+                        className="absolute right-1 top-2 h-8 w-8 bg-gray-200 p-2"
+                        onClick={() => {
+                          searchVectorFSForm.reset({ searchQuery: '' });
+                          setIsSearchEntered(false);
+                        }}
+                        size="auto"
+                        type="button"
+                        variant="ghost"
+                      >
+                        <XIcon />
+                        <span className="sr-only">Clear Search</span>
+                      </Button>
+                    )}
+                  </div>
+                )}
+              />
+              <Button
+                className="h-[48px] w-[48px] shrink-0 rounded-xl p-3.5"
+                disabled={isPending && isLoading}
+                isLoading={isPending && isLoading}
+                size="auto"
+                type="submit"
+              >
+                <SearchIcon />
+                <span className="sr-only">Search</span>
+              </Button>
+            </div>
           </form>
         </Form>
-        <ScrollArea className="h-[calc(100vh-340px)] pr-4  [&>div>div]:!block">
+        <ScrollArea className="h-[calc(100vh-340px)] pr-4 [&>div>div]:!block">
           {isSearchEntered &&
             isPending &&
             Array.from({ length: 4 }).map((_, idx) => (

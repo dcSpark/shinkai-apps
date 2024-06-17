@@ -168,7 +168,12 @@ const CreateJobPage = () => {
       }
     },
   });
-
+  console.log(
+    location,
+    '==>',
+    locationState?.selectedVRFiles,
+    'locationState?.selectedVRFiles',
+  );
   useEffect(() => {
     if (
       locationState?.selectedVRFiles?.length > 0 ||

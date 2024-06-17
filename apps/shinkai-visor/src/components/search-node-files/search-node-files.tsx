@@ -1,11 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { retrieveVectorResource } from '@shinkai_network/shinkai-message-ts/api/methods';
 import {
   SearchVectorFormSchema,
   searchVectorFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/vector-fs/vector-search';
+import { VRItem } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import { useGetVRSeachSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRSearchSimplified/useGetSearchVRItems';
 import {
+  Badge,
   Button,
+  buttonVariants,
   Drawer,
   DrawerClose,
   DrawerContent,
@@ -23,12 +27,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
+import { FileTypeIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
 import { SearchIcon, XIcon } from 'lucide-react';
-import React, { useState } from 'react';
+import { Checkbox } from 'primereact/checkbox';
+import { TreeCheckboxSelectionKeys } from 'primereact/tree';
+import React, { useEffect, useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import { useAuth } from '../../store/auth/auth';
 import {
@@ -38,6 +45,15 @@ import {
 
 const SearchNodeFiles = () => {
   const auth = useAuth((state) => state.auth);
+  const location = useLocation();
+  const locationState = location.state as {
+    folderPath: string;
+  };
+
+  const [selectedKeys, setSelectedKeys] =
+    useState<TreeCheckboxSelectionKeys | null>(null);
+  const selectedFileKeysRef = useRef<Map<string, VRItem>>(new Map());
+
   const setDestinationFolderPath = useVectorFolderSelectionStore(
     (state) => state.setDestinationFolderPath,
   );
@@ -85,6 +101,24 @@ const SearchNodeFiles = () => {
     setSearch(data.searchQuery);
   };
 
+  const groupedData = data?.reduce<Record<string, string[]>>(
+    (acc, [content, pathList]) => {
+      const generatedFilePath = '/' + pathList.join('/');
+      if (!acc[generatedFilePath]) {
+        acc[generatedFilePath] = [];
+      }
+      acc[generatedFilePath].push(content);
+      return acc;
+    },
+    {},
+  );
+
+  useEffect(() => {
+    if (locationState?.folderPath) {
+      setDestinationFolderPath(locationState.folderPath);
+    }
+  }, [locationState?.folderPath, setDestinationFolderPath]);
+
   return (
     <div
       className={cn(
@@ -114,51 +148,71 @@ const SearchNodeFiles = () => {
             className="flex shrink-0 flex-col items-center gap-2 pt-4"
             onSubmit={searchVectorFSForm.handleSubmit(onSubmit)}
           >
-            <FormField
-              control={searchVectorFSForm.control}
-              name="searchQuery"
-              render={({ field }) => (
-                <div className="relative flex h-10 w-full flex-1 items-center">
-                  <Input
-                    autoFocus
-                    className="placeholder-gray-80 !h-[50px] bg-gray-200 py-2 pl-10"
-                    onChange={field.onChange}
-                    placeholder="Search anything..."
-                    value={field.value}
-                  />
-                  <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2" />
-                  {currentSearchQuery && (
-                    <Button
-                      className="absolute right-1 h-8 w-8 bg-gray-200 p-2"
-                      onClick={() => {
-                        searchVectorFSForm.reset({ searchQuery: '' });
-                      }}
-                      size="auto"
-                      type="button"
-                      variant="ghost"
-                    >
-                      <XIcon />
-                      <span className="sr-only">Clear Search</span>
-                    </Button>
-                  )}
-                </div>
-              )}
-            />
+            <div className="flex w-full flex-1 items-center gap-2">
+              <FormField
+                control={searchVectorFSForm.control}
+                name="searchQuery"
+                render={({ field }) => (
+                  <div className="relative flex h-10 w-full flex-1 items-center">
+                    <Input
+                      autoFocus
+                      className="placeholder-gray-80 !h-[50px] bg-gray-200 py-2 pl-10"
+                      onChange={field.onChange}
+                      placeholder="Search anything..."
+                      value={field.value}
+                    />
+                    <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2" />
+                    {currentSearchQuery && (
+                      <Button
+                        className="absolute right-1 h-8 w-8 bg-gray-200 p-2"
+                        onClick={() => {
+                          searchVectorFSForm.reset({ searchQuery: '' });
+                        }}
+                        size="auto"
+                        type="button"
+                        variant="ghost"
+                      >
+                        <XIcon />
+                        <span className="sr-only">Clear Search</span>
+                      </Button>
+                    )}
+                  </div>
+                )}
+              />
+              <Button
+                className="h-[48px] w-[48px] shrink-0 rounded-xl p-3.5"
+                disabled={isPending && isLoading}
+                isLoading={isPending && isLoading}
+                size="auto"
+                type="submit"
+              >
+                <SearchIcon />
+                <span className="sr-only">Search</span>
+              </Button>
+            </div>
             <div className="flex items-center gap-4 self-start px-2 py-1">
               <div className="flex items-center gap-2">
                 <span className="text-gray-80 text-xs">Folder Location:</span>
                 <SelectFolderButton />
               </div>
+              <div className="flex items-center">
+                {!(
+                  destinationFolderPath == null || destinationFolderPath === '/'
+                ) && (
+                  <Button
+                    className="underline"
+                    onClick={() => {
+                      setDestinationFolderPath(null);
+                    }}
+                    size="sm"
+                    type="button"
+                    variant="link"
+                  >
+                    Reset Filters
+                  </Button>
+                )}
+              </div>
             </div>
-            <Button
-              className="w-1/2 rounded-xl"
-              disabled={isPending && isLoading}
-              isLoading={isPending && isLoading}
-              size="lg"
-              type="submit"
-            >
-              <span className="">Search</span>
-            </Button>
           </form>
         </Form>
       </motion.div>
@@ -171,53 +225,120 @@ const SearchNodeFiles = () => {
           />
         ))}
       {isSearchEntered && isSuccess && (
-        <ScrollArea className="pr-4 [&>div>div]:!block">
-          <div className="flex items-center">
-            <h2 className="p-2 text-base font-medium text-gray-50">
-              Found {data?.length} results
-            </h2>
-            {!(
-              destinationFolderPath == null || destinationFolderPath === '/'
-            ) && (
-              <Button
-                className="underline"
-                onClick={() => {
-                  setDestinationFolderPath(null);
+        <div className="flex min-h-[50px] items-center justify-between gap-4 px-2">
+          <h2 className="text-gray-80 text-sm font-medium">
+            Found {data?.length} results
+          </h2>
+          {selectedKeys && Object.keys(selectedKeys).length > 0 && (
+            <div className="space-x-2">
+              <Link
+                className={cn(
+                  buttonVariants({
+                    size: 'sm',
+                    variant: 'outline',
+                  }),
+                  'gap-1.5 px-5',
+                )}
+                state={{
+                  selectedVRFiles: Array.from(
+                    selectedFileKeysRef.current.values(),
+                  ),
                 }}
-                size="sm"
-                type="button"
-                variant="link"
+                to="/inboxes/create-job"
               >
-                Reset Filters
-              </Button>
-            )}
-          </div>
+                <span className="text-sm">Create AI Chat</span>
+                <Badge
+                  className="bg-brand text-xs font-medium"
+                  variant="inputAdornment"
+                >
+                  {Object.keys(selectedKeys).length}
+                </Badge>
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
+      {isSearchEntered && isSuccess && (
+        <ScrollArea className="pr-4 [&>div>div]:!block">
           <div className="flex flex-col gap-2 divide-y divide-slate-600">
-            {data?.map(([content, pathList, score], idx) => (
-              <div className="flex flex-col gap-1 px-2 py-3" key={idx}>
-                <p className="text-sm text-white">{content}</p>
-                <div className="text-gray-80 flex justify-between text-xs">
-                  <div className="flex items-center gap-1">
-                    <span>Source:</span>
-                    <Link
-                      className={'underline'}
-                      to={{
-                        pathname: '/node-files',
-                        search: `?path=${encodeURIComponent(
-                          pathList.join('/'),
-                        )}`,
-                      }}
+            {isSearchEntered && isSuccess && (
+              <div className="flex flex-col gap-2">
+                {Object.entries(groupedData ?? {}).map(
+                  ([generatedFilePath, contents]) => (
+                    <div
+                      className="flex items-start gap-1 px-2 py-3 text-sm"
+                      key={generatedFilePath}
                     >
-                      {pathList.join('/')}
-                    </Link>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <span>Accuracy:</span>
-                    <span>{parseFloat(score.toFixed(2)) * 100 + '%'}</span>
-                  </div>
-                </div>
+                      <Checkbox
+                        checked={generatedFilePath in (selectedKeys || {})}
+                        inputId={generatedFilePath}
+                        name="files"
+                        onChange={async (event) => {
+                          const newKeys = { ...selectedKeys };
+                          if (event.value in (selectedKeys || {})) {
+                            delete newKeys[event.value];
+                          } else {
+                            newKeys[event.value] = { checked: true };
+                            const fileInfo = await retrieveVectorResource(
+                              auth?.node_address ?? '',
+                              auth?.shinkai_identity ?? '',
+                              auth?.profile ?? '',
+                              auth?.shinkai_identity ?? '',
+                              auth?.profile ?? '',
+                              generatedFilePath,
+                              {
+                                my_device_encryption_sk:
+                                  auth?.my_device_encryption_sk ?? '',
+                                my_device_identity_sk:
+                                  auth?.my_device_identity_sk ?? '',
+                                node_encryption_pk:
+                                  auth?.node_encryption_pk ?? '',
+                                profile_encryption_sk:
+                                  auth?.profile_encryption_sk ?? '',
+                                profile_identity_sk:
+                                  auth?.profile_identity_sk ?? '',
+                              },
+                            );
+
+                            selectedFileKeysRef.current.set(event.value, {
+                              ...fileInfo.data,
+                              path: event.value,
+                              vr_header: {
+                                resource_name: fileInfo.data.name,
+                                resource_source: fileInfo.data.source,
+                              },
+                            });
+                          }
+                          setSelectedKeys(newKeys);
+                        }}
+                        value={generatedFilePath}
+                      />
+                      <label
+                        className="ml-2 flex-1"
+                        htmlFor={generatedFilePath}
+                      >
+                        <div className="flex items-center gap-1">
+                          <FileTypeIcon className="h-6 w-6" />
+                          <span className="text-sm">
+                            {generatedFilePath.split('/').at(-1)}
+                          </span>
+                        </div>
+                        <div className="divide-y divide-gray-300">
+                          {contents?.map((content) => (
+                            <p
+                              className="text-gray-80 py-3 text-xs"
+                              key={content}
+                            >
+                              {content}
+                            </p>
+                          ))}
+                        </div>
+                      </label>
+                    </div>
+                  ),
+                )}
               </div>
-            ))}
+            )}
           </div>
         </ScrollArea>
       )}
