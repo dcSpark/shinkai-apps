@@ -22,6 +22,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
   Tooltip,
   TooltipContent,
@@ -46,7 +47,7 @@ import {
   MySubscriptionsIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { ArrowLeft, Menu, Settings, X, XIcon } from 'lucide-react';
+import { ArrowLeft, BotIcon, Menu, Settings, X, XIcon } from 'lucide-react';
 import React, { ReactNode, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -493,9 +494,6 @@ export default function NavBar() {
                 className="w-[280px] space-y-2.5 rounded-br-none rounded-tr-none"
                 sideOffset={10}
               >
-                <DropdownMenuLabel>
-                  {t('layout.menuItems.chats')}
-                </DropdownMenuLabel>
                 <DropdownMenuItem
                   onClick={() => onClickMenuOption(MenuOption.Inboxes)}
                 >
@@ -510,15 +508,20 @@ export default function NavBar() {
                   <span>{t('chat.create')}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
+                  className="py-0"
                   disabled={true}
                   onClick={() => onClickMenuOption(MenuOption.CreateAITask)}
                 >
                   <AiTasksIcon className="mr-2 h-4 w-4" />
                   <span className="mr-3">{t('layout.menuItems.aiTasks')}</span>
-                  <Badge className="text-[10px]" variant="inputAdornment">
-                    SOON
+                  <Badge
+                    className="text-[10px] uppercase"
+                    variant="inputAdornment"
+                  >
+                    {t('common.soon')}
                   </Badge>
                 </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-gray-200" />
 
                 {/*{auth?.shinkai_identity.includes('localhost') ? null : (*/}
                 {/*  <DropdownMenuItem*/}
@@ -531,7 +534,6 @@ export default function NavBar() {
                 {/*  </DropdownMenuItem>*/}
                 {/*)}*/}
 
-                <DropdownMenuLabel>AI Files</DropdownMenuLabel>
                 <DropdownMenuItem
                   onClick={() => onClickMenuOption(MenuOption.NodeFiles)}
                 >
@@ -544,36 +546,49 @@ export default function NavBar() {
                   <AISearchContentIcon className="mr-2 h-4 w-4" />
                   <span>{t('layout.menuItems.vectorSearch')}</span>
                 </DropdownMenuItem>
-                <DropdownMenuLabel>Subscriptions</DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-gray-200" />
                 <DropdownMenuItem
+                  className="py-0.5"
+                  disabled={true}
                   onClick={() => onClickMenuOption(MenuOption.PublicItems)}
                 >
                   <BrowseSubscriptionIcon className="mr-2 h-4 w-4" />
-                  <span>{t('layout.menuItems.subscriptions')}</span>
+                  <span className="mr-3">
+                    {t('layout.menuItems.subscriptions')}
+                  </span>
+                  <Badge
+                    className="text-[10px] uppercase"
+                    variant="inputAdornment"
+                  >
+                    {t('common.soon')}
+                  </Badge>
                 </DropdownMenuItem>
                 <DropdownMenuItem
+                  className="py-0.5"
+                  disabled={true}
                   onClick={() => onClickMenuOption(MenuOption.MySubscriptions)}
                 >
                   <MySubscriptionsIcon className="mr-2 h-4 w-4" />
-                  <span>{t('layout.menuItems.mySubscriptions')}</span>
+                  <span className="mr-3">
+                    {t('layout.menuItems.mySubscriptions')}
+                  </span>
+                  <Badge
+                    className="text-[10px] uppercase"
+                    variant="inputAdornment"
+                  >
+                    {t('common.soon')}
+                  </Badge>
                 </DropdownMenuItem>
 
-                <DropdownMenuLabel>AIs</DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-gray-200" />
+
                 <DropdownMenuItem
                   data-testid="nav-menu-agents-button"
                   onClick={() => onClickMenuOption(MenuOption.Agents)}
                 >
-                  <AgentIcon className="mr-2 h-4 w-4" />
-                  <span>AIs</span>
+                  <BotIcon className="mr-2 h-4 w-4" />
+                  <span>{t('layout.menuItems.agents')}</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  data-testid="nav-menu-add-agent-button"
-                  onClick={() => onClickMenuOption(MenuOption.AddAgent)}
-                >
-                  <AddAgentIcon className="mr-2 h-4 w-4" />
-                  <span>Add AI</span>
-                </DropdownMenuItem>
-                <DropdownMenuLabel>Account</DropdownMenuLabel>
                 <DropdownMenuItem
                   onClick={() => onClickMenuOption(MenuOption.Settings)}
                 >
