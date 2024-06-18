@@ -1,3 +1,4 @@
+import { LocaleMode, switchLanguage } from '@shinkai_network/shinkai-i18n';
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 
@@ -15,6 +16,8 @@ type SettingsStore = {
   denyAnalytics: () => void;
   optInExperimental?: boolean;
   setOptInExperimental: (optInExperimental: boolean) => void;
+  userLanguage: LocaleMode;
+  setUserLanguage: (userLanguage: LocaleMode) => void;
 };
 
 export const useSettings = create<SettingsStore>()(
@@ -52,6 +55,12 @@ export const useSettings = create<SettingsStore>()(
         optInExperimental: false,
         setOptInExperimental: (optInExperimental) => {
           set({ optInExperimental });
+        },
+
+        userLanguage: 'auto',
+        setUserLanguage: (userLanguage) => {
+          set({ userLanguage });
+          switchLanguage(userLanguage);
         },
       }),
       {

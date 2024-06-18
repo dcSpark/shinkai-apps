@@ -1,0 +1,161 @@
+{
+  "extension": {
+    "welcome": "使用 Shinkai Visor ✨ 变革您的网页浏览体验"
+  },
+  "layout": {
+    "sidebar": {
+      "toggle": "切换侧边栏"
+    },
+    "menuItems": {
+      "chats": "聊天",
+      "aiTasks": "AI 任务",
+      "vectorFs": "我的 AI 文件浏览器",
+      "vectorSearch": "AI 文件内容搜索",
+      "subscriptions": "浏览订阅",
+      "mySubscriptions": "我的订阅",
+      "agents": "AI",
+      "settings": "设置",
+      "disconnect": "断开连接"
+    }
+  },
+  "chat": {
+    "chats": "聊天",
+    "emptyStateTitle": "询问 Shinkai AI",
+    "emptyStateDescription": "尝试 “如何在 JavaScript 中进行 HTTP 请求”, “给我 80 年代十大摇滚音乐”, “解释互联网的工作原理”",
+    "create": "创建 AI 聊天",
+    "limitReachedTitle": "已达到限制",
+    "limitReachedDescription": "您已用尽本月对此模型/代理的所有查询。请开始与其他代理的新聊天。",
+    "enterMessage": "输入消息",
+    "sendMessage": "发送消息",
+    "form": {
+      "message": "告诉我们您想做的工作",
+      "messagePlaceholder": "例如：解释互联网的工作原理...",
+      "workflows": "工作流",
+      "selectAI": "选择您的 AI",
+      "setContext": "设置聊天上下文",
+      "setContextText": "添加文件或文件夹，供您的 AI 在对话中使用。"
+    },
+    "context": {
+      "title": "对话上下文",
+      "description": "作为本次对话上下文使用的文件夹和文件列表"
+    },
+    "actives": {
+      "label": "活跃",
+      "notFound": "未找到活跃的对话。"
+    },
+    "archives": {
+      "label": "档案",
+      "archive": "存档",
+      "notFound": "未找到存档对话。"
+    }
+  },
+  "inboxes": {
+    "updateName": "更新收件箱名称",
+    "inboxName": "名称"
+  },
+  "shinkaiNode": {
+    "restartNode": "请重启您的 Shinkai 节点",
+    "nodeAddress": "节点地址",
+    "nodeVersion": "节点版本"
+  },
+  "settings": {
+    "defaultAgent": "默认 AI",
+    "shinkaiIdentity":{
+      "label": "Shinkai 身份",
+      "updatedIdentity": "Shinkai 身份更新成功。"
+    },
+    "quickAccessButton": {
+      "label": "显示 Shinkai 快速访问按钮",
+      "description": "可以通过点击和按住来移动快速访问按钮。"
+    },
+    "shortcutKey": {
+      "label": "快捷键",
+      "description": "修改启动侧边栏的快捷键"
+    },
+    "exportConnection": {
+      "label": "导出连接"
+    },
+    "registerNewCode": {
+      "label": "注册新设备"
+    }
+  },
+  "exportConnection": {
+    "label": "导出连接",
+    "generateFile": "生成连接文件",
+    "downloadText": "下载并妥善保管此连接文件",
+    "restoreText": "使用您的密码短语来恢复与 Shinkai 节点的连接"
+  },
+  "common": {
+    "uploadFile": "上传文件",
+    "folders": "文件夹",
+    "files": "文件",
+    "file": "文件",
+    "save": "保存",
+    "cancel": "取消",
+    "continue": "继续",
+    "connect": "连接",
+    "rename": "重命名",
+    "disconnect": "断开连接",
+    "soon": "即将",
+    "back": "返回",
+    "edit": "编辑",
+    "delete": "删除",
+    "update": "更新",
+    "moreOptions": "更多选项",
+    "comingSoon": "即将到来 - 七月初",
+    "noThanks": "不，谢谢",
+    "iAgree": "我同意",
+    "getStarted": "开始",
+    "passphrase": "密码短语",
+    "repeatPassphrase": "确认密码短语"
+  },
+  "analytics": {
+    "title": "帮助我们改进 Shinkai"
+  },
+  "agents": {
+    "label": "AI",
+    "add": "添加 AI",
+    "addManually": "手动添加 AI",
+    "delete": {
+      "label": "删除 AI",
+      "description": "您确定要删除此 AI 吗？此操作无法撤消。"
+    },
+    "switch": "切换 AI",
+    "notFound": {
+      "title": "没有可用的 AI",
+      "description": "连接您的第一个 AI 以开始询问 Shinkai AI。尝试连接 OpenAI"
+    },
+    "localAI": {
+      "installTitle": "安装 AI 模型",
+      "installText": "在本地机器上安装 AI 模型后，它们将作为 AI 可用"
+    },
+    "form": {
+      "agentName": "AI 名称",
+      "externalUrl": "外部 URL",
+      "apiKey": "API 密钥",
+      "modelName": "模型名称",
+      "modelId": "模型 ID"
+    },
+    "success": {
+      "createAgent": "AI 创建成功",
+      "deleteAgent": "AI 删除成功",
+      "updateAgent": "AI 更新成功"
+    },
+    "errors": {
+      "createAgent": "添加 AI 时出错",
+      "updateAgent": "更新 AI 时出错",
+      "deleteAgent": "删除 AI 时出错"
+    }
+  },
+  "disconnect": {
+    "modalTitle": "断开 Shinkai",
+    "modalDescription": "您确定要断开连接吗？这将永久删除您的数据",
+    "exportConnection": "在继续之前，请<Link>导出您的连接</Link>以随时恢复连接。"
+  },
+  "errors": {
+    "nodeUnavailable": {
+      "title": "节点不可用",
+      "description": "我们在连接您的 Shinkai 节点时遇到问题。您的节点可能离线，或者您的互联网连接可能已断开。"
+    }
+  }
+}

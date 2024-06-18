@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { LocaleMode, localeOptions } from '@shinkai_network/shinkai-i18n';
 import { isShinkaiIdentityLocalhost } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useUpdateNodeName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateNodeName/useUpdateNodeName';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
@@ -51,6 +52,7 @@ const formSchema = z.object({
   nodeVersion: z.string(),
   optInAnalytics: z.boolean(),
   optInExperimental: z.boolean(),
+  language: z.string(),
 });
 
 type FormSchemaType = z.infer<typeof formSchema>;
@@ -63,6 +65,8 @@ const SettingsPage = () => {
   const isLocalShinkaiNodeInUse = useShinkaiNodeManager(
     (state) => state.isInUse,
   );
+  const userLanguage = useSettings((state) => state.userLanguage);
+  const setUserLanguage = useSettings((state) => state.setUserLanguage);
   const optInAnalytics = useSettings((state) => state.optInAnalytics);
   const optInExperimental = useSettings((state) => state.optInExperimental);
   const setOptInExperimental = useSettings(
@@ -91,6 +95,7 @@ const SettingsPage = () => {
       shinkaiIdentity: auth?.shinkai_identity,
       optInAnalytics,
       optInExperimental,
+      language: userLanguage,
     },
   });
 
@@ -103,12 +108,20 @@ const SettingsPage = () => {
     control: form.control,
     name: 'optInExperimental',
   });
+  const currentLanguage = useWatch({
+    control: form.control,
+    name: 'language',
+  });
 
   useEffect(() => {
     (async () => {
       setAppVersion(await getVersion());
     })();
   }, []);
+
+  useEffect(() => {
+    setUserLanguage(currentLanguage as LocaleMode);
+  }, [currentLanguage, setUserLanguage]);
 
   useEffect(() => {
     setOptInExperimental(currentOptInExperimental);
@@ -341,6 +354,39 @@ const SettingsPage = () => {
                         Enable Experimental Features
                       </FormLabel>
                     </div>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="language"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Language</FormLabel>
+                    <Select
+                      defaultValue={field.value}
+                      onValueChange={field.onChange}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select language" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {[
+                          {
+                            label: 'Automatic',
+                            value: 'auto',
+                          },
+                          ...localeOptions,
+                        ].map((locale) => (
+                          <SelectItem key={locale.value} value={locale.value}>
+                            {locale.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </FormItem>
                 )}
               />
