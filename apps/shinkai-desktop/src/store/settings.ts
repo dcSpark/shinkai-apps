@@ -13,6 +13,8 @@ type SettingsStore = {
   optInAnalytics?: boolean;
   acceptAnalytics: () => void;
   denyAnalytics: () => void;
+  optInExperimental?: boolean;
+  setOptInExperimental: (optInExperimental: boolean) => void;
 };
 
 export const useSettings = create<SettingsStore>()(
@@ -45,6 +47,11 @@ export const useSettings = create<SettingsStore>()(
         },
         denyAnalytics: () => {
           set({ optInAnalytics: false });
+        },
+
+        optInExperimental: false,
+        setOptInExperimental: (optInExperimental) => {
+          set({ optInExperimental });
         },
       }),
       {

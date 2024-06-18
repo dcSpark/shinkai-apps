@@ -47,7 +47,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useDebounce } from '../../../hooks/use-debounce';
 import { useURLQueryParams } from '../../../hooks/use-url-query-params';
 import { useAuth } from '../../../store/auth';
-import { useVectorFsStore,VectorFSLayout } from '../context/vector-fs-context';
+import { useVectorFsStore, VectorFSLayout } from '../context/vector-fs-context';
 import { VectorFsGlobalAction } from './vector-fs-drawer';
 import VectorFsFolder from './vector-fs-folder';
 import VectorFsItem from './vector-fs-item';
@@ -228,7 +228,6 @@ const AllFiles = () => {
           <Button
             className="absolute left-auto right-0 top-0 flex gap-2 self-end px-6"
             size="sm"
-            // variant=""
           >
             <PlusIcon className="h-4 w-4" /> Add New
           </Button>
@@ -252,7 +251,7 @@ const AllFiles = () => {
         </DropdownMenuContent>
       </DropdownMenu>
       <div className="mt-2 flex justify-between gap-3">
-        <div className="relative flex h-10 w-full max-w-[500px]  items-center">
+        <div className="relative flex h-10 w-full max-w-[500px] items-center">
           <Input
             className="placeholder-gray-80 !h-full bg-transparent py-2 pl-10"
             onChange={(e) => {

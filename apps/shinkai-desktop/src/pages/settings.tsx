@@ -17,6 +17,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Switch,
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import { ExportIcon, QrIcon } from '@shinkai_network/shinkai-ui/assets';
@@ -49,6 +50,7 @@ const formSchema = z.object({
   shinkaiIdentity: z.string(),
   nodeVersion: z.string(),
   optInAnalytics: z.boolean(),
+  optInExperimental: z.boolean(),
 });
 
 type FormSchemaType = z.infer<typeof formSchema>;
@@ -62,6 +64,10 @@ const SettingsPage = () => {
     (state) => state.isInUse,
   );
   const optInAnalytics = useSettings((state) => state.optInAnalytics);
+  const optInExperimental = useSettings((state) => state.optInExperimental);
+  const setOptInExperimental = useSettings(
+    (state) => state.setOptInExperimental,
+  );
 
   const setAuth = useAuth((authStore) => authStore.setAuth);
 
@@ -84,6 +90,7 @@ const SettingsPage = () => {
       nodeAddress: auth?.node_address,
       shinkaiIdentity: auth?.shinkai_identity,
       optInAnalytics,
+      optInExperimental,
     },
   });
 
@@ -92,11 +99,20 @@ const SettingsPage = () => {
     name: 'defaultAgentId',
   });
 
+  const currentOptInExperimental = useWatch({
+    control: form.control,
+    name: 'optInExperimental',
+  });
+
   useEffect(() => {
     (async () => {
       setAppVersion(await getVersion());
     })();
   }, []);
+
+  useEffect(() => {
+    setOptInExperimental(currentOptInExperimental);
+  }, [currentOptInExperimental, setOptInExperimental]);
 
   const { agents } = useAgents({
     nodeAddress: auth?.node_address ?? '',
@@ -306,6 +322,26 @@ const SettingsPage = () => {
                 name="nodeVersion"
                 render={({ field }) => (
                   <TextField field={field} label="Node Version" />
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="optInExperimental"
+                render={({ field }) => (
+                  <FormItem className="flex gap-2.5">
+                    <FormControl>
+                      <Switch
+                        aria-readonly
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel className="static space-y-1.5 text-sm text-white">
+                        Enable Experimental Features
+                      </FormLabel>
+                    </div>
+                  </FormItem>
                 )}
               />
             </form>
