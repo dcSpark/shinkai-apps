@@ -218,8 +218,18 @@ const AppRoutes = () => {
               <WorkflowPlayground />
             </ProtectedRoute>
           }
-          path={'/workflow-playground'}
-        />
+          path="workflow-playground"
+        >
+          <Route
+            element={
+              <div className="flex h-[400px] flex-col items-center justify-center">
+                <h1 className="">Create your workflow!</h1>
+              </div>
+            }
+            index
+          />
+          <Route element={<ChatConversation />} path=":inboxId" />
+        </Route>
         <Route
           element={
             <ProtectedRoute>

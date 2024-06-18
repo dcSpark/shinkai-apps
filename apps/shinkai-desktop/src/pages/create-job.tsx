@@ -83,8 +83,6 @@ const CreateJobPage = () => {
   const selectedFileKeysRef = useRef<Map<string, VRItem>>(new Map());
   const selectedFolderKeysRef = useRef<Map<string, VRFolder>>(new Map());
 
-  const optInExperimental = useSettings((state) => state.optInExperimental);
-
   const {
     // isPending: isVRFilesPending,
     data: VRFiles,
@@ -276,26 +274,6 @@ const CreateJobPage = () => {
                 </FormItem>
               )}
             />
-            {optInExperimental && (
-              <FormField
-                control={createJobForm.control}
-                name="workflow"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('chat.form.workflows')}</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        autoFocus={true}
-                        className="resize-none"
-                        placeholder="Workflow"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
             <FormField
               control={createJobForm.control}
               name="agent"
