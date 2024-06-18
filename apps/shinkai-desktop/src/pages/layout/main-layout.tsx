@@ -27,6 +27,7 @@ import {
   FilesIcon,
   InboxIcon,
   MySubscriptionsIcon,
+  WorkflowPlaygroundIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion, TargetAndTransition } from 'framer-motion';
@@ -210,6 +211,8 @@ const ShinkaiLogo = ({ className }: { className?: string }) => (
 
 export function MainNav() {
   const { t, Trans } = useTranslation();
+  const optInExperimental = useSettings((state) => state.optInExperimental);
+
   const navigate = useNavigate();
   const logout = useAuth((state) => state.setLogout);
   const isGetStartedChecklistHidden = useSettings(
@@ -259,6 +262,7 @@ export function MainNav() {
       href: '/vector-search',
       icon: <AISearchContentIcon className="h-5 w-5" />,
     },
+
     {
       title: t('layout.menuItems.subscriptions'),
       href: '/public-subscriptions',
@@ -270,6 +274,11 @@ export function MainNav() {
       href: '/my-subscriptions',
       icon: <MySubscriptionsIcon className="h-5 w-5" />,
       disabled: config.isProduction,
+    },
+    optInExperimental && {
+      title: t('layout.menuItems.workflowPlayground'),
+      href: '/workflow-playground',
+      icon: <WorkflowPlaygroundIcon className="h-5 w-5" />,
     },
   ].filter(Boolean) as NavigationLink[];
 

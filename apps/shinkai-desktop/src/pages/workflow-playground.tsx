@@ -44,7 +44,7 @@ import { TreeCheckboxSelectionKeys } from 'primereact/tree';
 import { TreeNode } from 'primereact/treenode';
 import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 import {
   KnowledgeSearchDrawer,
@@ -57,7 +57,7 @@ import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { SubpageLayout } from './layout/simple-layout';
 
-const CreateJobPage = () => {
+const WorkflowPlayground = () => {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const defaulAgentId = useSettings((state) => state.defaultAgentId);
@@ -146,7 +146,7 @@ const CreateJobPage = () => {
     onSuccess: (data, variables) => {
       // TODO: job_inbox, false is hardcoded
       navigate(
-        `/inboxes/${encodeURIComponent(buildInboxIdFromJobId(data.jobId))}`,
+        `/workflow-playground/${encodeURIComponent(buildInboxIdFromJobId(data.jobId))}`,
       );
       const files = variables?.files ?? [];
       const localFilesCount = (variables.selectedVRFiles ?? [])?.length;
@@ -241,161 +241,186 @@ const CreateJobPage = () => {
   // }, []);
 
   return (
-    <SubpageLayout title={t('chat.create')}>
-      <Form {...createJobForm}>
-        <form
-          className="space-y-8"
-          onSubmit={createJobForm.handleSubmit(onSubmit)}
-        >
-          <div className="space-y-6">
-            <FormField
-              control={createJobForm.control}
-              name="content"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('chat.form.message')}</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      autoFocus={true}
-                      className="resize-none"
-                      onKeyDown={(event) => {
-                        if (
-                          event.key === 'Enter' &&
-                          (event.metaKey || event.ctrlKey)
-                        ) {
-                          createJobForm.handleSubmit(onSubmit)();
-                        }
-                      }}
-                      placeholder={t('chat.form.messagePlaceholder')}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={createJobForm.control}
-              name="agent"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('chat.form.selectAI')}</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+    <SubpageLayout className="max-w-6xl px-3" title={'Workflow Playground'}>
+      <div className="flex h-[calc(100vh_-_150px)] gap-6 overflow-hidden">
+        <Form {...createJobForm}>
+          <form
+            className="flex-1 space-y-8 overflow-y-auto"
+            onSubmit={createJobForm.handleSubmit(onSubmit)}
+          >
+            <div className="space-y-6">
+              <FormField
+                control={createJobForm.control}
+                name="content"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('chat.form.message')}</FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder={t('chat.form.selectAI')} />
-                      </SelectTrigger>
+                      <Textarea
+                        autoFocus={true}
+                        className="resize-none"
+                        onKeyDown={(event) => {
+                          if (
+                            event.key === 'Enter' &&
+                            (event.metaKey || event.ctrlKey)
+                          ) {
+                            createJobForm.handleSubmit(onSubmit)();
+                          }
+                        }}
+                        placeholder={t('chat.form.messagePlaceholder')}
+                        {...field}
+                      />
                     </FormControl>
-                    <SelectContent>
-                      {agents?.length ? (
-                        agents.map((agent) => (
-                          <SelectItem key={agent.id} value={agent.id}>
-                            <span>{agent.id} </span>
-                          </SelectItem>
-                        ))
-                      ) : (
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={createJobForm.control}
+                name="workflow"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('chat.form.workflows')}</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        autoFocus={true}
+                        className="resize-none"
+                        placeholder="Workflow"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={createJobForm.control}
+                name="agent"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('chat.form.selectAI')}</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder={t('chat.form.selectAI')} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {agents?.length ? (
+                          agents.map((agent) => (
+                            <SelectItem key={agent.id} value={agent.id}>
+                              <span>{agent.id} </span>
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <Button
+                            onClick={() => {
+                              navigate(ADD_AGENT_PATH);
+                            }}
+                            variant="ghost"
+                          >
+                            <PlusIcon className="mr-2" />
+                            {t('agents.add')}
+                          </Button>
+                        )}
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+              <div className="my-3 rounded-md bg-gray-400 px-3 py-4">
+                <div className="mb-5 flex items-start justify-between gap-4">
+                  <div className="space-y-1">
+                    <h2 className="text-sm font-medium text-gray-100">
+                      {t('chat.form.setContext')}
+                    </h2>
+                    <p className="text-gray-80 text-xs">
+                      {t('chat.form.setContextText')}
+                    </p>
+                  </div>
+                  <TooltipProvider delayDuration={0}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
                         <Button
-                          onClick={() => {
-                            navigate(ADD_AGENT_PATH);
-                          }}
+                          className="flex h-10 w-10 items-center justify-center gap-2 rounded-lg p-2.5 text-left hover:bg-gray-500"
+                          onClick={() => setIsKnowledgeSearchOpen(true)}
+                          size="icon"
+                          type="button"
                           variant="ghost"
                         >
-                          <PlusIcon className="mr-2" />
-                          {t('agents.add')}
+                          <AISearchContentIcon className="h-5 w-5" />
+                          <p className="sr-only text-xs text-white">
+                            AI Files Content Search
+                          </p>
                         </Button>
-                      )}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
-            <div className="my-3 rounded-md bg-gray-400 px-3 py-4">
-              <div className="mb-5 flex items-start justify-between gap-4">
-                <div className="space-y-1">
-                  <h2 className="text-sm font-medium text-gray-100">
-                    {t('chat.form.setContext')}
-                  </h2>
-                  <p className="text-gray-80 text-xs">
-                    {t('chat.form.setContextText')}
-                  </p>
+                      </TooltipTrigger>
+                      <TooltipPortal>
+                        <TooltipContent sideOffset={0}>
+                          Search AI Files Content
+                        </TooltipContent>
+                      </TooltipPortal>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
-                <TooltipProvider delayDuration={0}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        className="flex h-10 w-10 items-center justify-center gap-2 rounded-lg p-2.5 text-left hover:bg-gray-500"
-                        onClick={() => setIsKnowledgeSearchOpen(true)}
-                        size="icon"
-                        type="button"
-                        variant="ghost"
-                      >
-                        <AISearchContentIcon className="h-5 w-5" />
-                        <p className="sr-only text-xs text-white">
-                          AI Files Content Search
-                        </p>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipPortal>
-                      <TooltipContent sideOffset={0}>
-                        Search AI Files Content
-                      </TooltipContent>
-                    </TooltipPortal>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <Button
-                  className="hover:bg-gray-350 flex h-[40px] items-center justify-between gap-2 rounded-lg p-2.5 text-left"
-                  onClick={() => setIsVectorFSOpen(true)}
-                  size="auto"
-                  type="button"
-                  variant="outline"
-                >
-                  <div className="flex items-center gap-2">
-                    <FilesIcon className="h-4 w-4" />
-                    <p className="text-sm text-white">Local AI Files</p>
-                  </div>
-                  {Object.keys(selectedKeys ?? {}).length > 0 && (
-                    <Badge className="bg-brand text-white">
-                      {Object.keys(selectedKeys ?? {}).length}
-                    </Badge>
-                  )}
-                </Button>
-                <FormField
-                  control={createJobForm.control}
-                  name="files"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="sr-only">Upload a file</FormLabel>
-                      <FormControl>
-                        <FileUploader
-                          accept={allowedFileExtensions.join(',')}
-                          allowMultiple
-                          descriptionText={allowedFileExtensions?.join(' | ')}
-                          onChange={(acceptedFiles) => {
-                            field.onChange(acceptedFiles);
-                          }}
-                          shouldDisableScrolling
-                          value={field.value}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="flex flex-col gap-1.5">
+                  <Button
+                    className="hover:bg-gray-350 flex h-[40px] items-center justify-between gap-2 rounded-lg p-2.5 text-left"
+                    onClick={() => setIsVectorFSOpen(true)}
+                    size="auto"
+                    type="button"
+                    variant="outline"
+                  >
+                    <div className="flex items-center gap-2">
+                      <FilesIcon className="h-4 w-4" />
+                      <p className="text-sm text-white">Local AI Files</p>
+                    </div>
+                    {Object.keys(selectedKeys ?? {}).length > 0 && (
+                      <Badge className="bg-brand text-white">
+                        {Object.keys(selectedKeys ?? {}).length}
+                      </Badge>
+                    )}
+                  </Button>
+                  <FormField
+                    control={createJobForm.control}
+                    name="files"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="sr-only">Upload a file</FormLabel>
+                        <FormControl>
+                          <FileUploader
+                            accept={allowedFileExtensions.join(',')}
+                            allowMultiple
+                            descriptionText={allowedFileExtensions?.join(' | ')}
+                            onChange={(acceptedFiles) => {
+                              field.onChange(acceptedFiles);
+                            }}
+                            shouldDisableScrolling
+                            value={field.value}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               </div>
             </div>
-          </div>
-          <Button
-            className="w-full"
-            disabled={isPending}
-            isLoading={isPending}
-            type="submit"
-          >
-            {t('chat.create')}
-          </Button>
-        </form>
-      </Form>
+            <Button
+              className="w-full"
+              disabled={isPending}
+              isLoading={isPending}
+              size="sm"
+              type="submit"
+            >
+              Try Workflow
+            </Button>
+          </form>
+        </Form>
+        <div className="flex h-full flex-1 flex-col">
+          <Outlet />
+        </div>
+      </div>
+
       <VectorFsScopeDrawer
         isVectorFSOpen={isVectorFSOpen}
         nodes={nodes}
@@ -415,4 +440,4 @@ const CreateJobPage = () => {
     </SubpageLayout>
   );
 };
-export default CreateJobPage;
+export default WorkflowPlayground;
