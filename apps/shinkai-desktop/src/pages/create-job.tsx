@@ -50,7 +50,6 @@ import {
   KnowledgeSearchDrawer,
   VectorFsScopeDrawer,
 } from '../components/vector-fs/components/vector-fs-context-drawer';
-import config from '../config';
 import { allowedFileExtensions } from '../lib/constants';
 import { useAnalytics } from '../lib/posthog-provider';
 import { ADD_AGENT_PATH } from '../routes/name';
@@ -83,6 +82,8 @@ const CreateJobPage = () => {
 
   const selectedFileKeysRef = useRef<Map<string, VRItem>>(new Map());
   const selectedFolderKeysRef = useRef<Map<string, VRFolder>>(new Map());
+
+  const optInExperimental = useSettings((state) => state.optInExperimental);
 
   const {
     // isPending: isVRFilesPending,
@@ -168,12 +169,7 @@ const CreateJobPage = () => {
       }
     },
   });
-  console.log(
-    location,
-    '==>',
-    locationState?.selectedVRFiles,
-    'locationState?.selectedVRFiles',
-  );
+
   useEffect(() => {
     if (
       locationState?.selectedVRFiles?.length > 0 ||
@@ -280,7 +276,7 @@ const CreateJobPage = () => {
                 </FormItem>
               )}
             />
-            {config.isInternalUse && (
+            {optInExperimental && (
               <FormField
                 control={createJobForm.control}
                 name="workflow"
