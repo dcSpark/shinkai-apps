@@ -39,16 +39,10 @@ import SettingsPage from '../pages/settings';
 import ShinkaiPrivatePage from '../pages/shinkai-private';
 import UnavailableShinkaiNode from '../pages/unavailable-shinkai-node';
 import TermsAndConditionsPage from '../pages/welcome';
+import WorkflowPlayground from '../pages/workflow-playground';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
-import {
-  CREATE_CHAT_PATH,
-  CREATE_JOB_PATH,
-  EXPORT_CONNECTION,
-  GENERATE_CODE_PATH,
-  SETTINGS_PATH,
-} from './name';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const auth = useAuth((state) => state.auth);
@@ -208,7 +202,7 @@ const AppRoutes = () => {
               <CreateChatPage />
             </ProtectedRoute>
           }
-          path={CREATE_CHAT_PATH}
+          path={'/create-chat'}
         />
         <Route
           element={
@@ -216,7 +210,15 @@ const AppRoutes = () => {
               <CreateJobPage />
             </ProtectedRoute>
           }
-          path={CREATE_JOB_PATH}
+          path={'/create-job'}
+        />
+        <Route
+          element={
+            <ProtectedRoute>
+              <WorkflowPlayground />
+            </ProtectedRoute>
+          }
+          path={'/workflow-playground'}
         />
         <Route
           element={
@@ -224,7 +226,7 @@ const AppRoutes = () => {
               <SettingsPage />
             </ProtectedRoute>
           }
-          path={SETTINGS_PATH}
+          path={'/settings'}
         />
         <Route
           element={
@@ -232,7 +234,7 @@ const AppRoutes = () => {
               <GenerateCodePage />
             </ProtectedRoute>
           }
-          path={GENERATE_CODE_PATH}
+          path={'/generate-code'}
         />
         <Route
           element={
@@ -240,7 +242,7 @@ const AppRoutes = () => {
               <ExportConnection />
             </ProtectedRoute>
           }
-          path={EXPORT_CONNECTION}
+          path={'/export-connection'}
         />
         <Route
           element={
@@ -258,7 +260,7 @@ const AppRoutes = () => {
           }
           path={'analytics-settings'}
         />
-         <Route
+        <Route
           element={
             <ProtectedRoute>
               <GalxeValidation />
