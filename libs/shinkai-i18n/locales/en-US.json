@@ -61,7 +61,7 @@
   },
   "settings": {
     "defaultAgent": "Default AI",
-    "shinkaiIdentity":{
+    "shinkaiIdentity": {
       "label": "Shinkai Identity",
       "updatedIdentity": "Shinkai Identity updated successfully."
     },
