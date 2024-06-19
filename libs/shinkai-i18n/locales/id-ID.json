@@ -1,0 +1,162 @@
+{
+  "agents": {
+    "add": "Tambahkan AI",
+    "addManually": "Tambahkan AI Secara Manual",
+    "delete": {
+      "description": "Apakah Anda yakin ingin menghapus AI ini? Tindakan ini tidak dapat dibatalkan.",
+      "label": "Hapus AI"
+    },
+    "errors": {
+      "createAgent": "Kesalahan menambahkan AI",
+      "deleteAgent": "Kesalahan menghapus AI",
+      "updateAgent": "Kesalahan memperbarui AI"
+    },
+    "form": {
+      "agentName": "Nama AI",
+      "apiKey": "Kunci API",
+      "externalUrl": "URL Eksternal",
+      "modelId": "ID Model",
+      "modelName": "Nama Model"
+    },
+    "label": "AI",
+    "localAI": {
+      "installText": "Setelah memasang model AI di mesin lokal Anda, mereka akan menjadi tersedia sebagai AI",
+      "installTitle": "Pasang Model AI"
+    },
+    "notFound": {
+      "description": "Hubungkan AI pertama Anda untuk mulai bertanya kepada Shinkai AI. Coba hubungkan OpenAI",
+      "title": "Tidak ada AI tersedia"
+    },
+    "success": {
+      "createAgent": "AI berhasil dibuat",
+      "deleteAgent": "AI berhasil dihapus",
+      "updateAgent": "AI berhasil diperbarui"
+    },
+    "switch": "Alihkan AI"
+  },
+  "analytics": {
+    "title": "Bantu kami meningkatkan Shinkai"
+  },
+  "chat": {
+    "actives": {
+      "label": "Aktif",
+      "notFound": "Tidak ditemukan percakapan aktif."
+    },
+    "archives": {
+      "archive": "Arsip",
+      "label": "Arsip",
+      "notFound": "Tidak ditemukan percakapan yang diarsipkan."
+    },
+    "chats": "Obrolan",
+    "context": {
+      "description": "Daftar folder dan berkas yang digunakan sebagai konteks untuk percakapan ini",
+      "title": "Konteks Percakapan"
+    },
+    "create": "Buat Obrolan AI",
+    "emptyStateDescription": "Coba “Bagaimana cara membuat permintaan HTTP dalam JavaScript”, “Beri saya 10 musik rock teratas di tahun 80an”, “Jelaskan bagaimana internet bekerja”",
+    "emptyStateTitle": "Tanyakan kepada Shinkai AI",
+    "enterMessage": "Masukkan Pesan",
+    "form": {
+      "message": "Beritahu kami pekerjaan yang ingin Anda lakukan",
+      "messagePlaceholder": "Contoh: Jelaskan bagaimana internet bekerja...",
+      "selectAI": "Pilih AI Anda",
+      "setContext": "Atur Konteks Obrolan",
+      "setContextText": "Tambahkan berkas atau folder untuk AI Anda gunakan sebagai konteks selama percakapan Anda.",
+      "workflows": "Alur Kerja"
+    },
+    "limitReachedDescription": "Anda telah menggunakan semua kueri Anda untuk bulan ini pada model/agen ini. Silakan mulai obrolan baru dengan agen lain.",
+    "limitReachedTitle": "Batas Telah Tercapai",
+    "sendMessage": "Kirim Pesan"
+  },
+  "common": {
+    "back": "Kembali",
+    "cancel": "Batal",
+    "comingSoon": "Segera hadir - Awal Juli",
+    "connect": "Hubungkan",
+    "continue": "Lanjutkan",
+    "delete": "Hapus",
+    "disconnect": "Putuskan Koneksi",
+    "edit": "Edit",
+    "file": "Berkas",
+    "files": "Berkas",
+    "folders": "Folder",
+    "getStarted": "Mulai",
+    "iAgree": "Saya Setuju",
+    "moreOptions": "Opsi Lainnya",
+    "noThanks": "Tidak, Terima Kasih",
+    "passphrase": "Frasa Sandi",
+    "rename": "Ganti Nama",
+    "repeatPassphrase": "Konfirmasi frasa sandi",
+    "save": "Simpan",
+    "soon": "segera",
+    "update": "Perbarui",
+    "uploadFile": "Unggah Berkas"
+  },
+  "disconnect": {
+    "exportConnection": "Sebelum melanjutkan, harap<Link>ekspor koneksi Anda</Link>untuk memulihkan koneksi Anda kapan saja.",
+    "modalDescription": "Apakah Anda yakin ingin memutuskan koneksi? Ini akan menghapus data Anda secara permanen",
+    "modalTitle": "Putuskan Koneksi Shinkai"
+  },
+  "errors": {
+    "nodeUnavailable": {
+      "description": "Kami mengalami masalah dalam menghubungkan ke Node Shinkai Anda. Node Anda mungkin offline, atau koneksi internet Anda mungkin terputus.",
+      "title": "Node Tidak Tersedia"
+    }
+  },
+  "exportConnection": {
+    "downloadText": "Unduh dan simpan berkas koneksi ini di tempat yang aman",
+    "generateFile": "Buat berkas koneksi",
+    "label": "Ekspor Koneksi",
+    "restoreText": "Gunakan dengan frasa sandi Anda untuk memulihkan koneksi ke Node Shinkai Anda"
+  },
+  "extension": {
+    "welcome": "Transformasikan pengalaman menjelajah web Anda menggunakan kecerdasan buatan dengan Shinkai Visor ✨"
+  },
+  "inboxes": {
+    "inboxName": "Nama",
+    "updateName": "Perbarui nama kotak masuk"
+  },
+  "layout": {
+    "menuItems": {
+      "agents": "AI",
+      "aiTasks": "Tugas AI",
+      "chats": "Obrolan",
+      "disconnect": "Putuskan Koneksi",
+      "mySubscriptions": "Langganan Saya",
+      "settings": "Pengaturan",
+      "subscriptions": "Jelajahi Langganan",
+      "vectorFs": "Pencari Berkas AI Saya",
+      "vectorSearch": "Pencarian Konten Berkas AI",
+      "workflowPlayground": "Lapangan Permainan Alur Kerja"
+    },
+    "sidebar": {
+      "toggle": "Alihkan Sidebar"
+    }
+  },
+  "settings": {
+    "defaultAgent": "AI Default",
+    "exportConnection": {
+      "label": "Ekspor koneksi"
+    },
+    "quickAccessButton": {
+      "description": "Tombol Akses Cepat dapat dipindahkan dengan mengklik dan menahan.",
+      "label": "Tampilkan Tombol Akses Cepat Shinkai"
+    },
+    "registerNewCode": {
+      "label": "Daftarkan perangkat baru"
+    },
+    "shinkaiIdentity": {
+      "label": "Identitas Shinkai",
+      "updatedIdentity": "Identitas Shinkai berhasil diperbarui."
+    },
+    "shortcutKey": {
+      "description": "Ubah tombol pintas untuk meluncurkan sidebar",
+      "label": "Tombol Pintas"
+    }
+  },
+  "shinkaiNode": {
+    "nodeAddress": "Alamat Node",
+    "nodeVersion": "Versi Node",
+    "restartNode": "Harap restart Node Shinkai Anda"
+  }
+}

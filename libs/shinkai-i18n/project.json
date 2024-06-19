@@ -12,6 +12,13 @@
         "cwd": "libs/shinkai-i18n",
         "commands": ["npx tsx ./scripts/translations.ts"]
       }
+    },
+    "i18n": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "libs/shinkai-i18n",
+        "commands": ["npx tsx ./scripts/translations.ts && npx lobe-i18n"]
+      }
     }
   }
 }

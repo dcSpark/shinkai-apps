@@ -1,0 +1,162 @@
+{
+  "agents": {
+    "add": "Añadir IA",
+    "addManually": "Añadir IA Manualmente",
+    "delete": {
+      "description": "¿Estás seguro de que deseas eliminar esta IA? Esta acción no se puede deshacer.",
+      "label": "Eliminar IA"
+    },
+    "errors": {
+      "createAgent": "Error al añadir IA",
+      "deleteAgent": "Error al eliminar IA",
+      "updateAgent": "Error al actualizar IA"
+    },
+    "form": {
+      "agentName": "Nombre de la IA",
+      "apiKey": "Clave API",
+      "externalUrl": "URL Externa",
+      "modelId": "ID del Modelo",
+      "modelName": "Nombre del Modelo"
+    },
+    "label": "IAs",
+    "localAI": {
+      "installText": "Después de instalar modelos de IA en tu máquina local, estarán disponibles como IA",
+      "installTitle": "Instalar Modelos de IA"
+    },
+    "notFound": {
+      "description": "Conecta tu primera IA para empezar a preguntar a Shinkai IA. Prueba conectando OpenAI",
+      "title": "No hay IAs disponibles"
+    },
+    "success": {
+      "createAgent": "IA creada con éxito",
+      "deleteAgent": "IA eliminada con éxito",
+      "updateAgent": "IA actualizada con éxito"
+    },
+    "switch": "Cambiar IA"
+  },
+  "analytics": {
+    "title": "Ayúdanos a mejorar Shinkai"
+  },
+  "chat": {
+    "actives": {
+      "label": "Activos",
+      "notFound": "No se encontraron conversaciones activas."
+    },
+    "archives": {
+      "archive": "Archivo",
+      "label": "Archivos",
+      "notFound": "No se encontraron conversaciones archivadas."
+    },
+    "chats": "Chats",
+    "context": {
+      "description": "Lista de carpetas y archivos utilizados como contexto para esta conversación",
+      "title": "Contexto de la Conversación"
+    },
+    "create": "Crear Chat de IA",
+    "emptyStateDescription": "Prueba con “Cómo hacer una solicitud HTTP en JavaScript”, “Dame las 10 mejores canciones de rock de los 80”, “Explícame cómo funciona internet”",
+    "emptyStateTitle": "Pregunta a Shinkai IA",
+    "enterMessage": "Introducir Mensaje",
+    "form": {
+      "message": "Cuéntanos la tarea que deseas realizar",
+      "messagePlaceholder": "Ej: Explícame cómo funciona internet...",
+      "selectAI": "Selecciona tu IA",
+      "setContext": "Establecer Contexto del Chat",
+      "setContextText": "Añade archivos o carpetas para que tu IA los utilice como contexto durante la conversación.",
+      "workflows": "Procesos"
+    },
+    "limitReachedDescription": "Has utilizado todas tus consultas del mes en este modelo/agente. Por favor, inicia un nuevo chat con otro agente.",
+    "limitReachedTitle": "Límite Alcanzado",
+    "sendMessage": "Enviar Mensaje"
+  },
+  "common": {
+    "back": "Atrás",
+    "cancel": "Cancelar",
+    "comingSoon": "Próximamente - Principios de Julio",
+    "connect": "Conectar",
+    "continue": "Continuar",
+    "delete": "Eliminar",
+    "disconnect": "Desconectar",
+    "edit": "Editar",
+    "file": "Archivo",
+    "files": "Archivos",
+    "folders": "Carpetas",
+    "getStarted": "Empezar",
+    "iAgree": "Estoy de Acuerdo",
+    "moreOptions": "Más Opciones",
+    "noThanks": "No, Gracias",
+    "passphrase": "Frase de Paso",
+    "rename": "Renombrar",
+    "repeatPassphrase": "Confirmar frase de paso",
+    "save": "Guardar",
+    "soon": "pronto",
+    "update": "Actualizar",
+    "uploadFile": "Subir un Archivo"
+  },
+  "disconnect": {
+    "exportConnection": "Antes de continuar, por favor <Link>exporta tu conexión</Link> para restaurarla en cualquier momento.",
+    "modalDescription": "¿Estás seguro de que deseas desconectar? Esto eliminará permanentemente tus datos",
+    "modalTitle": "Desconectar Shinkai"
+  },
+  "errors": {
+    "nodeUnavailable": {
+      "description": "Estamos teniendo problemas para conectar con tu Nodo Shinkai. Tu nodo puede estar desconectado o tu conexión a internet puede estar caída.",
+      "title": "Nodo No Disponible"
+    }
+  },
+  "exportConnection": {
+    "downloadText": "Descarga y guarda este archivo de conexión en un lugar seguro",
+    "generateFile": "Generar archivo de conexión",
+    "label": "Exportar Conexión",
+    "restoreText": "Úsalo con tu frase de paso para restaurar la conexión a tu Nodo Shinkai"
+  },
+  "extension": {
+    "welcome": "Transforma tu experiencia de navegación web utilizando IA con Shinkai Visor ✨"
+  },
+  "inboxes": {
+    "inboxName": "Nombre",
+    "updateName": "Actualizar nombre del buzón"
+  },
+  "layout": {
+    "menuItems": {
+      "agents": "IAs",
+      "aiTasks": "Tareas de IA",
+      "chats": "Chats",
+      "disconnect": "Desconectar",
+      "mySubscriptions": "Mis Suscripciones",
+      "settings": "Ajustes",
+      "subscriptions": "Explorar Suscripciones",
+      "vectorFs": "Explorador de Mis Archivos de IA",
+      "vectorSearch": "Búsqueda de Contenido de Archivos de IA",
+      "workflowPlayground": "Área de Juegos de Procesos"
+    },
+    "sidebar": {
+      "toggle": "Alternar barra lateral"
+    }
+  },
+  "settings": {
+    "defaultAgent": "IA Predeterminada",
+    "exportConnection": {
+      "label": "Exportar conexión"
+    },
+    "quickAccessButton": {
+      "description": "El Botón de Acceso Rápido se puede mover haciendo clic y manteniendo presionado.",
+      "label": "Mostrar Botón de Acceso Rápido de Shinkai"
+    },
+    "registerNewCode": {
+      "label": "Registrar nuevo dispositivo"
+    },
+    "shinkaiIdentity": {
+      "label": "Identidad Shinkai",
+      "updatedIdentity": "Identidad Shinkai actualizada con éxito."
+    },
+    "shortcutKey": {
+      "description": "Modifica la tecla de acceso directo para abrir la barra lateral",
+      "label": "Tecla de Acceso Directo"
+    }
+  },
+  "shinkaiNode": {
+    "nodeAddress": "Dirección del Nodo",
+    "nodeVersion": "Versión del Nodo",
+    "restartNode": "Por favor, reinicia tu Nodo Shinkai"
+  }
+}

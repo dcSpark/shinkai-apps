@@ -1,0 +1,162 @@
+{
+  "agents": {
+    "add": "AIを追加",
+    "addManually": "AIを手動で追加",
+    "delete": {
+      "description": "このAIを削除してもよろしいですか？この操作は元に戻すことができません",
+      "label": "AIを削除"
+    },
+    "errors": {
+      "createAgent": "AIの追加中にエラーが発生しました",
+      "deleteAgent": "AIの削除中にエラーが発生しました",
+      "updateAgent": "AIの更新中にエラーが発生しました"
+    },
+    "form": {
+      "agentName": "AI名",
+      "apiKey": "APIキー",
+      "externalUrl": "外部URL",
+      "modelId": "モデルID",
+      "modelName": "モデル名"
+    },
+    "label": "AI",
+    "localAI": {
+      "installText": "ローカルマシンにAIモデルをインストールすると、AIとして利用できるようになります",
+      "installTitle": "AIモデルをインストール"
+    },
+    "notFound": {
+      "description": "最初のAIを接続してShinkai AIに質問を始めてください。OpenAIを接続してみてください",
+      "title": "利用可能なAIがありません"
+    },
+    "success": {
+      "createAgent": "AIが正常に作成されました",
+      "deleteAgent": "AIが正常に削除されました",
+      "updateAgent": "AIが正常に更新されました"
+    },
+    "switch": "AIを切り替え"
+  },
+  "analytics": {
+    "title": "Shinkaiの改善にご協力ください"
+  },
+  "chat": {
+    "actives": {
+      "label": "アクティブ",
+      "notFound": "アクティブな会話は見つかりませんでした"
+    },
+    "archives": {
+      "archive": "アーカイブ",
+      "label": "アーカイブ",
+      "notFound": "アーカイブされた会話は見つかりませんでした"
+    },
+    "chats": "チャット",
+    "context": {
+      "description": "この会話のコンテキストとして使用されるフォルダーとファイルのリスト",
+      "title": "会話コンテキスト"
+    },
+    "create": "AIチャットを作成",
+    "emptyStateDescription": "「JavaScriptでHTTPリクエストを作成する方法」、「80年代のロック音楽のトップ10を教えて」、「インターネットの仕組みを説明して」などをお試しください",
+    "emptyStateTitle": "Shinkai AIに質問してみてください",
+    "enterMessage": "メッセージを入力",
+    "form": {
+      "message": "行いたい作業を教えてください",
+      "messagePlaceholder": "例: インターネットの仕組みを説明して...",
+      "selectAI": "AIを選択",
+      "setContext": "チャットコンテキストを設定",
+      "setContextText": "会話中にAIが使用するコンテキストとしてファイルやフォルダーを追加してください",
+      "workflows": "ワークフロー"
+    },
+    "limitReachedDescription": "今月のこのモデル/エージェントでのクエリをすべて使用しました。別のエージェントと新しいチャットを開始してください。",
+    "limitReachedTitle": "制限に達しました",
+    "sendMessage": "メッセージを送信"
+  },
+  "common": {
+    "back": "戻る",
+    "cancel": "キャンセル",
+    "comingSoon": "近日公開 - 7月上旬",
+    "connect": "接続",
+    "continue": "続行",
+    "delete": "削除",
+    "disconnect": "切断",
+    "edit": "編集",
+    "file": "ファイル",
+    "files": "ファイル",
+    "folders": "フォルダ",
+    "getStarted": "開始",
+    "iAgree": "同意します",
+    "moreOptions": "その他のオプション",
+    "noThanks": "いいえ、結構です",
+    "passphrase": "パスフレーズ",
+    "rename": "名前を変更",
+    "repeatPassphrase": "パスフレーズを確認",
+    "save": "保存",
+    "soon": "近日公開",
+    "update": "更新",
+    "uploadFile": "ファイルをアップロード"
+  },
+  "disconnect": {
+    "exportConnection": "続行する前に、接続をいつでも復元するために<Link>接続をエクスポート</Link>してください",
+    "modalDescription": "本当に切断しますか？これによりデータが永久に削除されます",
+    "modalTitle": "Shinkaiを切断"
+  },
+  "errors": {
+    "nodeUnavailable": {
+      "description": "Shinkaiノードに接続できません。ノードがオフラインになっているか、インターネット接続が切断されている可能性があります",
+      "title": "ノードが利用できません"
+    }
+  },
+  "exportConnection": {
+    "downloadText": "この接続ファイルをダウンロードして安全な場所に保存してください",
+    "generateFile": "接続ファイルを生成",
+    "label": "接続をエクスポート",
+    "restoreText": "パスフレーズと一緒に使用して、接続をShinkaiノードに復元します"
+  },
+  "extension": {
+    "welcome": "Shinkai Visorを使用してAIでWebブラウジング体験を変えましょう ✨"
+  },
+  "inboxes": {
+    "inboxName": "名前",
+    "updateName": "受信トレイ名を更新"
+  },
+  "layout": {
+    "menuItems": {
+      "agents": "AI",
+      "aiTasks": "AIタスク",
+      "chats": "チャット",
+      "disconnect": "切断",
+      "mySubscriptions": "私のサブスクリプション",
+      "settings": "設定",
+      "subscriptions": "サブスクリプションを閲覧",
+      "vectorFs": "私のAIファイルエクスプローラ",
+      "vectorSearch": "AIファイルコンテンツ検索",
+      "workflowPlayground": "ワークフロープレイグラウンド"
+    },
+    "sidebar": {
+      "toggle": "サイドバーの切り替え"
+    }
+  },
+  "settings": {
+    "defaultAgent": "デフォルトAI",
+    "exportConnection": {
+      "label": "接続をエクスポート"
+    },
+    "quickAccessButton": {
+      "description": "クイックアクセスボタンはクリックして保持して移動できます",
+      "label": "Shinkaiクイックアクセスボタンを表示"
+    },
+    "registerNewCode": {
+      "label": "新しいデバイスを登録"
+    },
+    "shinkaiIdentity": {
+      "label": "Shinkaiアイデンティティ",
+      "updatedIdentity": "Shinkaiアイデンティティが正常に更新されました"
+    },
+    "shortcutKey": {
+      "description": "サイドバーを起動するショートカットキーを変更します",
+      "label": "ショートカットキー"
+    }
+  },
+  "shinkaiNode": {
+    "nodeAddress": "ノードアドレス",
+    "nodeVersion": "ノードバージョン",
+    "restartNode": "Shinkaiノードを再起動してください"
+  }
+}

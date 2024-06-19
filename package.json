@@ -104,6 +104,7 @@
     "@babel/preset-react": "^7.24.6",
     "@crxjs/vite-plugin": "^2.0.0-beta.23",
     "@estruyf/github-actions-reporter": "^1.7.0",
+    "@lobehub/i18n-cli": "^1.18.1",
     "@nx/cypress": "19.3.0",
     "@nx/devkit": "19.3.0",
     "@nx/eslint": "19.3.0",
