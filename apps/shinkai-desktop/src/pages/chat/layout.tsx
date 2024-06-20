@@ -1,6 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-// import { PlusCircledIcon } from '@radix-ui/react-icons';
 import { SmartInbox } from '@shinkai_network/shinkai-message-ts/models';
 import {
   getMessageContent,
@@ -187,8 +186,10 @@ const MessageButton = ({
       isJobLastMessage
     ) {
       handleSendNotification(
-        `${inboxName} response received`,
-        'Go to Shinkai Desktop to see the response',
+        t('notifications.messageReceived.label'),
+        t('notifications.messageReceived.description', {
+          inboxName: inboxName,
+        }),
       );
     }
   }, [
@@ -203,10 +204,10 @@ const MessageButton = ({
 
   const { mutateAsync: archiveJob } = useArchiveJob({
     onSuccess: () => {
-      toast.success('Your conversation has been archived');
+      toast.success(t('chat.archives.success'));
     },
     onError: (error) => {
-      toast.error('Error archiving job', {
+      toast.error(t('chat.archives.error'), {
         description: error.message,
       });
     },

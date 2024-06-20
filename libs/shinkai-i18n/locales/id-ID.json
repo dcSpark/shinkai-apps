@@ -35,6 +35,15 @@
     "switch": "Alihkan AI"
   },
   "analytics": {
+    "bulletPoints": {
+      "five": "❌ Tidak pernah mengumpulkan kueri AI Anda",
+      "four": "❌ Tidak pernah mengumpulkan alamat IP Anda",
+      "one": "✅ Selalu memungkinkan Anda untuk memilih keluar melalui Pengaturan",
+      "six": "❌ Tidak pernah menggunakan informasi pribadi untuk tujuan pelatihan",
+      "three": "✅ Mengirim informasi analitik tentang fitur yang Anda gunakan tanpa konten atau tanggapan",
+      "two": "✅ Analitik Teracak"
+    },
+    "moreInfo": "Untuk informasi lebih lanjut terkait praktik privasi kami, silakan lihat <a>Kebijakan Privasi</a>",
     "title": "Bantu kami meningkatkan Shinkai"
   },
   "chat": {
@@ -42,10 +51,13 @@
       "label": "Aktif",
       "notFound": "Tidak ditemukan percakapan aktif."
     },
+    "allMessagesLoaded": "Semua pesan sebelumnya telah dimuat ✅",
     "archives": {
       "archive": "Arsip",
+      "error": "Kesalahan saat mengarsipkan percakapan",
       "label": "Arsip",
-      "notFound": "Tidak ditemukan percakapan yang diarsipkan."
+      "notFound": "Tidak ditemukan percakapan yang diarsipkan.",
+      "success": "Percakapan Anda telah diarsipkan"
     },
     "chats": "Obrolan",
     "context": {
@@ -78,7 +90,11 @@
     "disconnect": "Putuskan Koneksi",
     "edit": "Edit",
     "file": "Berkas",
+    "fileWithCount_one": "{{count}} Berkas",
+    "fileWithCount_other": "{{count}} Berkas",
     "files": "Berkas",
+    "folderWithCount_one": "{{count}} Folder",
+    "folderWithCount_other": "{{count}} Folder",
     "folders": "Folder",
     "getStarted": "Mulai",
     "iAgree": "Saya Setuju",
@@ -131,6 +147,12 @@
     },
     "sidebar": {
       "toggle": "Alihkan Sidebar"
+    }
+  },
+  "notifications": {
+    "messageReceived": {
+      "description": "Anda telah menerima tanggapan dari {{inboxName}}",
+      "label": "Pesan Diterima"
     }
   },
   "settings": {

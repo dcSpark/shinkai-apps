@@ -35,6 +35,15 @@
     "switch": "切换 AI"
   },
   "analytics": {
+    "bulletPoints": {
+      "five": "❌ 从不收集您的AI查询",
+      "four": "❌ 从不收集您的IP地址",
+      "one": "✅ 始终允许您通过设置选择退出",
+      "six": "❌ 从不使用个人信息进行培训目的",
+      "three": "✅ 发送关于您使用的功能的分析信息，但不包含任何内容或响应",
+      "two": "✅ 随机化分析"
+    },
+    "moreInfo": "有关我们的隐私惯例的更多信息，请参阅我们的<a>隐私政策</a>",
     "title": "帮助我们改进 Shinkai"
   },
   "chat": {
@@ -42,10 +51,13 @@
       "label": "活跃",
       "notFound": "未找到活跃的对话。"
     },
+    "allMessagesLoaded": "所有先前的消息都已加载 ✅",
     "archives": {
       "archive": "存档",
+      "error": "归档作业出错",
       "label": "档案",
-      "notFound": "未找到存档对话。"
+      "notFound": "未找到存档对话。",
+      "success": "您的对话已被归档"
     },
     "chats": "聊天",
     "context": {
@@ -78,7 +90,11 @@
     "disconnect": "断开连接",
     "edit": "编辑",
     "file": "文件",
+    "fileWithCount_one": "{{count}} 个文件",
+    "fileWithCount_other": "{{count}} 个文件",
     "files": "文件",
+    "folderWithCount_one": "{{count}} 文件夹",
+    "folderWithCount_other": "{{count}} 文件夹",
     "folders": "文件夹",
     "getStarted": "开始",
     "iAgree": "我同意",
@@ -131,6 +147,12 @@
     },
     "sidebar": {
       "toggle": "切换侧边栏"
+    }
+  },
+  "notifications": {
+    "messageReceived": {
+      "description": "您收到了来自{{inboxName}}的回复",
+      "label": "已收到消息"
     }
   },
   "settings": {

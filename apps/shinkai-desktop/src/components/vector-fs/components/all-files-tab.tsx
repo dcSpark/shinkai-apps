@@ -228,6 +228,7 @@ const AllFiles = () => {
           <Button
             className="absolute left-auto right-0 top-0 flex gap-2 self-end px-6"
             size="sm"
+            // variant=""
           >
             <PlusIcon className="h-4 w-4" /> Add New
           </Button>

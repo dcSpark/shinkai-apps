@@ -35,6 +35,15 @@
     "switch": "AIを切り替え"
   },
   "analytics": {
+    "bulletPoints": {
+      "five": "❌ AIクエリを収集しません",
+      "four": "❌ IPアドレスを収集しません",
+      "one": "✅ 設定からオプトアウトできるように常に許可",
+      "six": "❌ 個人情報をトレーニング目的で使用しません",
+      "three": "✅ 使用する機能に関する分析情報を送信しますが、コンテンツや応答は含まれません",
+      "two": "✅ ランダム化された分析"
+    },
+    "moreInfo": "プライバシーに関する当社のプラクティスに関する詳細情報については、<a>プライバシーポリシー</a>をご覧ください",
     "title": "Shinkaiの改善にご協力ください"
   },
   "chat": {
@@ -42,10 +51,13 @@
       "label": "アクティブ",
       "notFound": "アクティブな会話は見つかりませんでした"
     },
+    "allMessagesLoaded": "すべての以前のメッセージが読み込まれました ✅",
     "archives": {
       "archive": "アーカイブ",
+      "error": "ジョブのアーカイブ中にエラーが発生しました",
       "label": "アーカイブ",
-      "notFound": "アーカイブされた会話は見つかりませんでした"
+      "notFound": "アーカイブされた会話は見つかりませんでした",
+      "success": "会話がアーカイブされました"
     },
     "chats": "チャット",
     "context": {
@@ -78,7 +90,11 @@
     "disconnect": "切断",
     "edit": "編集",
     "file": "ファイル",
+    "fileWithCount_one": "{{count}} ファイル",
+    "fileWithCount_other": "{{count}} ファイル",
     "files": "ファイル",
+    "folderWithCount_one": "{{count}} フォルダ",
+    "folderWithCount_other": "{{count}} フォルダ",
     "folders": "フォルダ",
     "getStarted": "開始",
     "iAgree": "同意します",
@@ -131,6 +147,12 @@
     },
     "sidebar": {
       "toggle": "サイドバーの切り替え"
+    }
+  },
+  "notifications": {
+    "messageReceived": {
+      "description": "{{inboxName}} からの応答を受信しました",
+      "label": "メッセージを受信しました"
     }
   },
   "settings": {

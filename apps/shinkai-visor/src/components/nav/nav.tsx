@@ -98,6 +98,7 @@ const routeTitleDescriptionMapping: Record<
 };
 
 const DisplayInboxName = () => {
+  const { t } = useTranslation();
   const currentInbox = useGetCurrentInbox();
   const [isEditInboxNameDialogOpened, setIsEditInboxNameDialogOpened] =
     useState<boolean>(false);
@@ -129,19 +130,17 @@ const DisplayInboxName = () => {
               {hasFolders && (
                 <span className="text-gray-80 flex items-center gap-1 text-xs font-medium">
                   <DirectoryTypeIcon className="ml-1 h-4 w-4" />
-                  {currentInbox?.job_scope.vector_fs_folders.length}{' '}
-                  {currentInbox?.job_scope.vector_fs_folders.length === 1
-                    ? 'folder'
-                    : 'folders'}
+                  {t('common.folderWithCount', {
+                    count: currentInbox?.job_scope.vector_fs_folders.length,
+                  })}
                 </span>
               )}
               {hasFiles && (
                 <span className="text-gray-80 flex items-center gap-1 text-xs font-medium">
                   <FileTypeIcon className="ml-1 h-4 w-4" />
-                  {currentInbox?.job_scope.vector_fs_items.length}{' '}
-                  {currentInbox?.job_scope.vector_fs_items.length === 1
-                    ? 'file'
-                    : 'files'}
+                  {t('common.fileWithCount', {
+                    count: currentInbox?.job_scope.vector_fs_folders.length,
+                  })}
                 </span>
               )}
             </Button>

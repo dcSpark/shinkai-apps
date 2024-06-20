@@ -26,6 +26,7 @@ export default {
     emptyStateDescription:
       'Try “How to make a HTTP request in JavaScript” , “Give me the top 10 rock music in the 80s”, “Explain me how internet works”',
     create: 'Create AI Chat',
+    allMessagesLoaded: 'All previous messages have been loaded ✅',
     limitReachedTitle: 'Limit Reached',
     limitReachedDescription:
       "You've used all of your queries for the month on this model/agent. Please start a new chat with another agent.",
@@ -53,6 +54,8 @@ export default {
       label: 'Archives',
       archive: 'Archive',
       notFound: 'No archived conversations found.',
+      success: 'Your conversation has been archived',
+      error: 'Error archiving job',
     },
   },
   inboxes: {
@@ -96,8 +99,12 @@ export default {
   common: {
     uploadFile: 'Upload a File',
     folders: 'Folders',
+    folderWithCount_one: '{{count}} Folder',
+    folderWithCount_other: '{{count}} Folders',
     files: 'Files',
     file: 'File',
+    fileWithCount_one: '{{count}} File',
+    fileWithCount_other: '{{count}} Files',
     save: 'Save',
     cancel: 'Cancel',
     continue: 'Continue',
@@ -119,6 +126,17 @@ export default {
   },
   analytics: {
     title: 'Help us improve Shinkai',
+    bulletPoints: {
+      one: '✅ Always allow you to opt-out via Settings',
+      two: '✅ Randomized Analytics',
+      three:
+        '✅ Send analytical information about what features you use but without any content or responses',
+      four: '❌ Never collect your IP address',
+      five: '❌ Never collect your AI queries',
+      six: '❌ Never use personal information for training purposes',
+    },
+    moreInfo:
+      'Fore more information in relation to our privacy practices, please see our <a>Privacy Policy</a>',
   },
   agents: {
     label: 'AIs',
@@ -170,6 +188,12 @@ export default {
       title: 'Node Unavailable',
       description:
         "We're having trouble connecting to your Shinkai Node. Your node may be offline, or your internet connection may be down.",
+    },
+  },
+  notifications: {
+    messageReceived: {
+      label: 'Message Received',
+      description: 'You have received a response from {{inboxName}}',
     },
   },
 };

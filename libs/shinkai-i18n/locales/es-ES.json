@@ -35,6 +35,15 @@
     "switch": "Cambiar IA"
   },
   "analytics": {
+    "bulletPoints": {
+      "five": "❌ Nunca recopila tus consultas de IA",
+      "four": "❌ Nunca recopila tu dirección IP",
+      "one": "✅ Siempre te permite optar por no participar a través de Configuración",
+      "six": "❌ Nunca utiliza información personal con fines de entrenamiento",
+      "three": "✅ Envía información analítica sobre qué funciones utilizas pero sin ningún contenido o respuestas",
+      "two": "✅ Análisis aleatorios"
+    },
+    "moreInfo": "Para obtener más información sobre nuestras prácticas de privacidad, consulta nuestra <a>Política de Privacidad</a>",
     "title": "Ayúdanos a mejorar Shinkai"
   },
   "chat": {
@@ -42,10 +51,13 @@
       "label": "Activos",
       "notFound": "No se encontraron conversaciones activas."
     },
+    "allMessagesLoaded": "Todos los mensajes anteriores han sido cargados ✅",
     "archives": {
       "archive": "Archivo",
+      "error": "Error al archivar la conversación",
       "label": "Archivos",
-      "notFound": "No se encontraron conversaciones archivadas."
+      "notFound": "No se encontraron conversaciones archivadas.",
+      "success": "Tu conversación ha sido archivada"
     },
     "chats": "Chats",
     "context": {
@@ -78,7 +90,11 @@
     "disconnect": "Desconectar",
     "edit": "Editar",
     "file": "Archivo",
+    "fileWithCount_one": "{{count}} Archivo",
+    "fileWithCount_other": "{{count}} Archivos",
     "files": "Archivos",
+    "folderWithCount_one": "{{count}} Carpeta",
+    "folderWithCount_other": "{{count}} Carpetas",
     "folders": "Carpetas",
     "getStarted": "Empezar",
     "iAgree": "Estoy de Acuerdo",
@@ -131,6 +147,12 @@
     },
     "sidebar": {
       "toggle": "Alternar barra lateral"
+    }
+  },
+  "notifications": {
+    "messageReceived": {
+      "description": "Has recibido una respuesta de {{inboxName}}",
+      "label": "Mensaje Recibido"
     }
   },
   "settings": {

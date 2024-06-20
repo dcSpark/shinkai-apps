@@ -3,7 +3,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import resourcesToBackend from 'i18next-resources-to-backend';
 import { initReactI18next } from 'react-i18next';
 
-import { Locales, normalizeLocale } from './resources';
+import { Locales, normalizeLocale } from './constants';
 
 const isDev = import.meta.env.DEV;
 
@@ -20,6 +20,7 @@ i18n
     debug: isDev,
     lng: 'en',
     fallbackLng: 'en',
+    defaultNS: 'translation',
     interpolation: {
       escapeValue: false,
     },

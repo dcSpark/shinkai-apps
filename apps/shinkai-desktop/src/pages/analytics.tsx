@@ -7,7 +7,7 @@ import OnboardingLayout from './layout/onboarding-layout';
 
 const AnalyticsPage = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, Trans } = useTranslation();
   const denyAnalytics = useSettings((state) => state.denyAnalytics);
   const acceptAnalytics = useSettings((state) => state.acceptAnalytics);
 
@@ -20,32 +20,30 @@ const AnalyticsPage = () => {
         <div className="mt-10 flex flex-1 flex-col gap-10 text-sm text-gray-50">
           <ul className="space-y-3 text-gray-50">
             {[
-              '✅ Always allow you to opt-out via Settings',
-
-              '✅ Randomized Analytics',
-
-              '✅ Send analytical information about what features you use but without any content or responses',
-
-              '❌ Never collect your IP address',
-
-              '❌ Never collect your AI queries',
-
-              '❌ Never use personal information for training purposes',
+              t('analytics.bulletPoints.one'),
+              t('analytics.bulletPoints.two'),
+              t('analytics.bulletPoints.three'),
+              t('analytics.bulletPoints.four'),
+              t('analytics.bulletPoints.five'),
+              t('analytics.bulletPoints.six'),
             ].map((item) => (
               <li key={item}>{item}</li>
             ))}
           </ul>
           <p className="">
-            Fore more information in relation to our privacy practices, please
-            see our{' '}
-            <a
-              className={'text-white underline'}
-              href={'https://www.shinkai.com/privacy-policy'}
-              rel="noreferrer"
-              target={'_blank'}
-            >
-              Privacy Policy
-            </a>
+            <Trans
+              components={{
+                a: (
+                  <a
+                    className={'text-white underline'}
+                    href={'https://www.shinkai.com/privacy-policy'}
+                    rel="noreferrer"
+                    target={'_blank'}
+                  />
+                ),
+              }}
+              i18nKey="analytics.moreInfo"
+            />
           </p>
         </div>
 
