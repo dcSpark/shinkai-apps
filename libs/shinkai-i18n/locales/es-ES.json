@@ -38,6 +38,9 @@
     "switch": "Cambiar IA"
   },
   "aiFilesSearch": {
+    "description": "Busca para encontrar contenido en todos los archivos de tus archivos AI fácilmente",
+    "filesSelected": "Seleccionados {{count}} archivos",
+    "foundResults": "Encontrado {{count}} resultado",
     "label": "Búsqueda de Contenido en Archivos de IA"
   },
   "analytics": {
@@ -49,6 +52,7 @@
       "three": "✅ Envía información analítica sobre qué funciones utilizas pero sin ningún contenido o respuestas",
       "two": "✅ Análisis aleatorios"
     },
+    "label": "Analíticas",
     "moreInfo": "Para obtener más información sobre nuestras prácticas de privacidad, consulta nuestra <a>Política de Privacidad</a>",
     "title": "Ayúdanos a mejorar Shinkai"
   },
@@ -98,11 +102,13 @@
     "alreadyHaveNode": "¿Ya tienes un Nodo?",
     "back": "Atrás",
     "cancel": "Cancelar",
+    "clearSearch": "Limpiar búsqueda",
     "comingSoon": "Próximamente - Principios de Julio",
     "connect": "Conectar",
     "continue": "Continuar",
     "delete": "Eliminar",
     "disconnect": "Desconectar",
+    "done": "Hecho",
     "edit": "Editar",
     "file": "Archivo",
     "fileWithCount_one": "{{count}} Archivo",
@@ -113,6 +119,7 @@
     "folders": "Carpetas",
     "getStarted": "Empezar",
     "iAgree": "Estoy de Acuerdo",
+    "install": "Instalar",
     "logInShinkaiHosting": "Iniciar Sesión en Shinkai Hosting",
     "moreOptions": "Más Opciones",
     "noThanks": "No, Gracias",
@@ -120,14 +127,21 @@
     "optOut": "Optar por No Participar",
     "passphrase": "Frase de Paso",
     "quickConnect": "Conexión Rápida",
+    "recommended": "Recomendado",
+    "remove": "Eliminar",
     "rename": "Renombrar",
     "repeatPassphrase": "Confirmar frase de paso",
     "save": "Guardar",
+    "search": "Buscar",
+    "searchPlaceholder": "Buscar...",
+    "seeOptions": "Ver Opciones",
     "shinkaiPrivate": "Shinkai Privado (Local)",
     "signUpShinkaiHosting": "Registrarse en Shinkai Hosting",
     "soon": "pronto",
     "termsAndConditionsText": "Acepto nuestros <a>Términos de Servicio</a> y <b>Política de Privacidad</b>",
+    "unselectAll": "Deseleccionar todo",
     "update": "Actualizar",
+    "upload": "Subir",
     "uploadFile": "Subir un Archivo"
   },
   "desktop": {
@@ -206,6 +220,23 @@
       "failedToFetch": "Error al obtener modelos locales de Ollama. Por favor, asegúrate de que Ollama esté funcionando correctamente."
     }
   },
+  "onboardingChecklist": {
+    "addAI": "Añadir IA",
+    "addAIDescription": "Agrega un agente de IA que utilice tu LLM favorito",
+    "askFiles": "Hacer preguntas a los archivos",
+    "askFilesButton": "Crear Chat con Archivos",
+    "askFilesDescription": "Chatea con tus archivos. Haz cualquier pregunta, encuentra información, obtén resúmenes y más.",
+    "completedSteps": "Has completado todos los pasos",
+    "createAIChat": "Crear Chat de IA",
+    "createAIChatDescription": "Inicia una conversación con tu IA",
+    "dismiss": "Descartar Lista de Verificación",
+    "getStartedChecklist": "Lista de verificación para comenzar",
+    "getStartedText": "Comienza con Shinkai",
+    "setupShinkaiDesktop": "Configurar Shinkai Desktop",
+    "setupShinkaiDesktopDescription": "Configura Shinkai Desktop para comenzar",
+    "uploadAFile": "Subir un archivo",
+    "uploadAFileDescription": "Guarda tus notas, sitios web, documentos y otros de forma segura en un solo lugar."
+  },
   "quickConnection": {
     "connectingToNode": "Conectando a tu Nodo Shinkai local",
     "form": {
@@ -213,6 +244,10 @@
       "nodeAddress": "Dirección del Nodo"
     },
     "label": "Conexión Rápida"
+  },
+  "registrationCode": {
+    "create": "Crear Código de Registro",
+    "label": "Código de Registro"
   },
   "restoreConnection": {
     "description": "Utiliza un archivo de conexión y una frase de contraseña",
@@ -247,7 +282,8 @@
       "nodeSignature": "Firma del Nodo",
       "profileEncryption": "Cifrado del Perfil",
       "profileIdentity": "Identidad del Perfil",
-      "profilePublicKeys": "Claves Públicas del Perfil"
+      "profilePublicKeys": "Claves Públicas del Perfil",
+      "show": "Mostrar Claves Públicas"
     },
     "quickAccessButton": {
       "description": "El Botón de Acceso Rápido se puede mover haciendo clic y manteniendo presionado.",
@@ -271,14 +307,93 @@
     }
   },
   "shinkaiNode": {
+    "manager": "Gestor de Nodos de Shinkai",
+    "models": {
+      "errors": {
+        "modelInstalled": "Error al instalar el modelo {{modelName}}",
+        "modelRemoved": "Error al eliminar el modelo {{modelName}}"
+      },
+      "poweredByOllama": "Desarrollado por Ollama",
+      "success": {
+        "modelInstalled": "Modelo {{modelName}} instalado exitosamente",
+        "modelRemoved": "Modelo {{modelName}} eliminado exitosamente"
+      },
+      "table": {
+        "bookPages": "Páginas del libro",
+        "dataLimit": "Límite de datos",
+        "models": "Modelos",
+        "quality": "Calidad",
+        "size": "Tamaño",
+        "speed": "Velocidad"
+      }
+    },
     "nodeAddress": "Dirección del Nodo",
     "nodeVersion": "Versión del Nodo",
     "restartNode": "Por favor, reinicia tu Nodo Shinkai",
     "unavailable": "Tu Nodo Shinkai no está disponible"
   },
   "vectorFs": {
+    "actions": {
+      "addNew": "Añadir nuevo",
+      "copy": "Copiar",
+      "createFolder": "Añadir nueva carpeta",
+      "delete": "Eliminar",
+      "move": "Mover",
+      "searchWithinFolder": "Buscar dentro de la carpeta",
+      "share": "Compartir",
+      "unshare": "Dejar de compartir",
+      "uploadFile": "Subir archivo",
+      "uploadFileText": "Subir tus archivos los transforma para estar listos en AI y disponibles para usar en Shinkai."
+    },
+    "allFiles": "Todos los archivos",
+    "deleteFileConfirmation": "¿Estás seguro de que quieres eliminar este archivo? Esta acción no se puede deshacer.",
+    "deleteFolderConfirmation": "¿Estás seguro de que quieres eliminar esta carpeta? Esta acción no se puede deshacer.",
+    "emptyState": {
+      "noFiles": "No se encontraron archivos",
+      "noFilesAndFolders": "Este será el hogar de todos tus archivos.",
+      "noFilesAndFoldersDescription": "Usa el botón \"+\" para comenzar a subir archivos.",
+      "noSharedFolders": "Tus carpetas compartidas se mostrarán aquí."
+    },
+    "errors": {
+      "fileCopied": "Error al copiar el archivo",
+      "fileDeleted": "Error al eliminar el archivo",
+      "fileMoved": "Error al mover el archivo",
+      "filesUploaded": "Error al subir archivos",
+      "folderCopied": "Error al copiar la carpeta",
+      "folderCreated": "Error al crear la carpeta",
+      "folderDeleted": "Error al eliminar la carpeta",
+      "folderMoved": "Error al mover la carpeta",
+      "folderShared": "Error al compartir la carpeta",
+      "folderUnshared": "Error al dejar de compartir la carpeta"
+    },
+    "filesSelected": "{{count}} seleccionados",
+    "forms": {
+      "folderName": "Nombre de la carpeta"
+    },
+    "home": "Inicio",
     "label": "Mi Explorador de Archivos de IA",
-    "localFiles": "Archivos de IA Locales"
+    "localFiles": "Archivos de IA Locales",
+    "pending": {
+      "filesUploading": "Subiendo archivos"
+    },
+    "shareFolderWarning": {
+      "action": "Haz clic aquí para aprender cómo",
+      "text": "Debes registrar una identidad de Shinkai antes de poder compartir carpetas en la Red de Shinkai.",
+      "title": "Activar Compartir Carpeta"
+    },
+    "sharedFolders": "Carpetas compartidas",
+    "success": {
+      "fileCopied": "Archivo copiado exitosamente",
+      "fileDeleted": "Archivo eliminado exitosamente",
+      "fileMoved": "Archivo movido exitosamente",
+      "filesUploaded": "Archivos subidos exitosamente",
+      "folderCopied": "Carpeta copiada exitosamente",
+      "folderCreated": "Carpeta creada exitosamente",
+      "folderDeleted": "Carpeta eliminada exitosamente",
+      "folderMoved": "Carpeta movida exitosamente",
+      "folderShared": "Carpeta compartida exitosamente",
+      "folderUnshared": "Carpeta dejó de compartirse exitosamente"
+    }
   },
   "workflowPlayground": {
     "label": "Área de Juego de Flujo de Trabajo"

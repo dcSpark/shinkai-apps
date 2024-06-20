@@ -38,6 +38,9 @@
     "switch": "AIを切り替え"
   },
   "aiFilesSearch": {
+    "description": "AIファイル全体を簡単に検索してコンテンツを見つける",
+    "filesSelected": "{{count}} 個のファイルが選択されました",
+    "foundResults": "{{count}} 件の結果が見つかりました",
     "label": "AIファイルコンテンツ検索"
   },
   "analytics": {
@@ -49,6 +52,7 @@
       "three": "✅ 使用する機能に関する分析情報を送信しますが、コンテンツや応答は含まれません",
       "two": "✅ ランダム化された分析"
     },
+    "label": "分析",
     "moreInfo": "プライバシーに関する当社のプラクティスに関する詳細情報については、<a>プライバシーポリシー</a>をご覧ください",
     "title": "Shinkaiの改善にご協力ください"
   },
@@ -98,11 +102,13 @@
     "alreadyHaveNode": "すでにノードをお持ちですか？",
     "back": "戻る",
     "cancel": "キャンセル",
+    "clearSearch": "検索をクリア",
     "comingSoon": "近日公開 - 7月上旬",
     "connect": "接続",
     "continue": "続行",
     "delete": "削除",
     "disconnect": "切断",
+    "done": "完了",
     "edit": "編集",
     "file": "ファイル",
     "fileWithCount_one": "{{count}} ファイル",
@@ -113,6 +119,7 @@
     "folders": "フォルダ",
     "getStarted": "開始",
     "iAgree": "同意します",
+    "install": "インストール",
     "logInShinkaiHosting": "Shinkai Hostingにログイン",
     "moreOptions": "その他のオプション",
     "noThanks": "いいえ、結構です",
@@ -120,14 +127,21 @@
     "optOut": "オプトアウト",
     "passphrase": "パスフレーズ",
     "quickConnect": "クイック接続",
+    "recommended": "おすすめ",
+    "remove": "削除",
     "rename": "名前を変更",
     "repeatPassphrase": "パスフレーズを確認",
     "save": "保存",
+    "search": "検索",
+    "searchPlaceholder": "検索...",
+    "seeOptions": "オプションを表示",
     "shinkaiPrivate": "Shinkaiプライベート（ローカル）",
     "signUpShinkaiHosting": "Shinkai Hostingにサインアップ",
     "soon": "近日公開",
     "termsAndConditionsText": "弊社の<a>利用規約</a>および<b>プライバシーポリシー</b>に同意します",
+    "unselectAll": "すべて選択解除",
     "update": "更新",
+    "upload": "アップロード",
     "uploadFile": "ファイルをアップロード"
   },
   "desktop": {
@@ -206,6 +220,23 @@
       "failedToFetch": "ローカルのOllamaモデルの取得に失敗しました。Ollamaが正常に動作していることを確認してください。"
     }
   },
+  "onboardingChecklist": {
+    "addAI": "AIを追加",
+    "addAIDescription": "お気に入りのLLMを利用するAIエージェントを追加",
+    "askFiles": "ファイルに質問する",
+    "askFilesButton": "ファイルとのチャットを作成",
+    "askFilesDescription": "ファイルとチャット。質問、情報の検索、要約など",
+    "completedSteps": "すべてのステップが完了しました",
+    "createAIChat": "AIチャットを作成",
+    "createAIChatDescription": "AIとの会話を開始",
+    "dismiss": "チェックリストを閉じる",
+    "getStartedChecklist": "開始チェックリスト",
+    "getStartedText": "Shinkaiを始めましょう",
+    "setupShinkaiDesktop": "Shinkaiデスクトップのセットアップ",
+    "setupShinkaiDesktopDescription": "Shinkaiデスクトップのセットアップを行いましょう",
+    "uploadAFile": "ファイルをアップロード",
+    "uploadAFileDescription": "ノート、ウェブサイト、ドキュメントなどを安全に保存"
+  },
   "quickConnection": {
     "connectingToNode": "ローカルShinkaiノードに接続中",
     "form": {
@@ -213,6 +244,10 @@
       "nodeAddress": "ノードアドレス"
     },
     "label": "クイック接続"
+  },
+  "registrationCode": {
+    "create": "登録コードを作成",
+    "label": "登録コード"
   },
   "restoreConnection": {
     "description": "接続ファイルとパスフレーズを使用します",
@@ -247,7 +282,8 @@
       "nodeSignature": "ノードの署名",
       "profileEncryption": "プロフィールの暗号化",
       "profileIdentity": "プロフィールのIdentity",
-      "profilePublicKeys": "プロフィールの公開鍵"
+      "profilePublicKeys": "プロフィールの公開鍵",
+      "show": "公開鍵を表示"
     },
     "quickAccessButton": {
       "description": "クイックアクセスボタンはクリックして保持して移動できます",
@@ -271,14 +307,93 @@
     }
   },
   "shinkaiNode": {
+    "manager": "Shinkaiノードマネージャー",
+    "models": {
+      "errors": {
+        "modelInstalled": "モデル {{modelName}} のインストール中にエラーが発生しました",
+        "modelRemoved": "モデル {{modelName}} の削除中にエラーが発生しました"
+      },
+      "poweredByOllama": "Ollamaの提供",
+      "success": {
+        "modelInstalled": "モデル {{modelName}} が正常にインストールされました",
+        "modelRemoved": "モデル {{modelName}} が正常に削除されました"
+      },
+      "table": {
+        "bookPages": "ページ数",
+        "dataLimit": "データ制限",
+        "models": "モデル",
+        "quality": "品質",
+        "size": "サイズ",
+        "speed": "速度"
+      }
+    },
     "nodeAddress": "ノードアドレス",
     "nodeVersion": "ノードバージョン",
     "restartNode": "Shinkaiノードを再起動してください",
     "unavailable": "Shinkaiノードが利用できません"
   },
   "vectorFs": {
+    "actions": {
+      "addNew": "新規追加",
+      "copy": "コピー",
+      "createFolder": "新しいフォルダを作成",
+      "delete": "削除",
+      "move": "移動",
+      "searchWithinFolder": "フォルダ内を検索",
+      "share": "共有",
+      "unshare": "共有解除",
+      "uploadFile": "ファイルをアップロード",
+      "uploadFileText": "ファイルをアップロードすると、AIで使用できるように変換され、Shinkaiで利用可能になります。"
+    },
+    "allFiles": "すべてのファイル",
+    "deleteFileConfirmation": "このファイルを削除してもよろしいですか？この操作は元に戻すことができません。",
+    "deleteFolderConfirmation": "このフォルダを削除してもよろしいですか？この操作は元に戻すことができません。",
+    "emptyState": {
+      "noFiles": "ファイルが見つかりません",
+      "noFilesAndFolders": "これはすべてのファイルのホームになります。",
+      "noFilesAndFoldersDescription": "ファイルをアップロードするには「+」ボタンを使用してください。",
+      "noSharedFolders": "共有フォルダはここに表示されます。"
+    },
+    "errors": {
+      "fileCopied": "ファイルのコピー中にエラーが発生しました",
+      "fileDeleted": "ファイルの削除中にエラーが発生しました",
+      "fileMoved": "ファイルの移動中にエラーが発生しました",
+      "filesUploaded": "ファイルのアップロード中にエラーが発生しました",
+      "folderCopied": "フォルダのコピー中にエラーが発生しました",
+      "folderCreated": "フォルダの作成中にエラーが発生しました",
+      "folderDeleted": "フォルダの削除中にエラーが発生しました",
+      "folderMoved": "フォルダの移動中にエラーが発生しました",
+      "folderShared": "フォルダの共有中にエラーが発生しました",
+      "folderUnshared": "フォルダの共有解除中にエラーが発生しました"
+    },
+    "filesSelected": "{{count}} 個選択されました",
+    "forms": {
+      "folderName": "フォルダ名"
+    },
+    "home": "ホーム",
     "label": "私のAIファイルエクスプローラー",
-    "localFiles": "ローカルAIファイル"
+    "localFiles": "ローカルAIファイル",
+    "pending": {
+      "filesUploading": "ファイルをアップロード中"
+    },
+    "shareFolderWarning": {
+      "action": "ここをクリックして方法を学ぶ",
+      "text": "Shinkaiネットワークを介してフォルダを共有する前に、Shinkaiアイデンティティを登録する必要があります。",
+      "title": "フォルダ共有を有効にする"
+    },
+    "sharedFolders": "共有フォルダ",
+    "success": {
+      "fileCopied": "ファイルが正常にコピーされました",
+      "fileDeleted": "ファイルが削除されました",
+      "fileMoved": "ファイルが正常に移動しました",
+      "filesUploaded": "ファイルが正常にアップロードされました",
+      "folderCopied": "フォルダが正常にコピーされました",
+      "folderCreated": "フォルダが正常に作成されました",
+      "folderDeleted": "フォルダが削除されました",
+      "folderMoved": "フォルダが正常に移動しました",
+      "folderShared": "フォルダが正常に共有されました",
+      "folderUnshared": "フォルダが正常に共有解除されました"
+    }
   },
   "workflowPlayground": {
     "label": "ワークフロープレイグラウンド"

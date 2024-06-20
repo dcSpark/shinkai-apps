@@ -38,6 +38,9 @@
     "switch": "Alihkan AI"
   },
   "aiFilesSearch": {
+    "description": "Cari untuk menemukan konten di semua file AI Anda dengan mudah",
+    "filesSelected": "Dipilih {{count}} file",
+    "foundResults": "Ditemukan {{count}} hasil",
     "label": "Pencarian Konten File AI"
   },
   "analytics": {
@@ -49,6 +52,7 @@
       "three": "✅ Mengirim informasi analitik tentang fitur yang Anda gunakan tanpa konten atau tanggapan",
       "two": "✅ Analitik Teracak"
     },
+    "label": "Analitika",
     "moreInfo": "Untuk informasi lebih lanjut terkait praktik privasi kami, silakan lihat <a>Kebijakan Privasi</a>",
     "title": "Bantu kami meningkatkan Shinkai"
   },
@@ -98,11 +102,13 @@
     "alreadyHaveNode": "Sudah memiliki Node?",
     "back": "Kembali",
     "cancel": "Batal",
+    "clearSearch": "Hapus Pencarian",
     "comingSoon": "Segera hadir - Awal Juli",
     "connect": "Hubungkan",
     "continue": "Lanjutkan",
     "delete": "Hapus",
     "disconnect": "Putuskan Koneksi",
+    "done": "Selesai",
     "edit": "Edit",
     "file": "Berkas",
     "fileWithCount_one": "{{count}} Berkas",
@@ -113,6 +119,7 @@
     "folders": "Folder",
     "getStarted": "Mulai",
     "iAgree": "Saya Setuju",
+    "install": "Instal",
     "logInShinkaiHosting": "Masuk ke Hosting Shinkai",
     "moreOptions": "Opsi Lainnya",
     "noThanks": "Tidak, Terima Kasih",
@@ -120,14 +127,21 @@
     "optOut": "Pilih Keluar",
     "passphrase": "Frasa Sandi",
     "quickConnect": "Koneksi Cepat",
+    "recommended": "Direkomendasikan",
+    "remove": "Hapus",
     "rename": "Ganti Nama",
     "repeatPassphrase": "Konfirmasi frasa sandi",
     "save": "Simpan",
+    "search": "Cari",
+    "searchPlaceholder": "Cari...",
+    "seeOptions": "Lihat Opsi",
     "shinkaiPrivate": "Shinkai Pribadi (Lokal)",
     "signUpShinkaiHosting": "Daftar untuk Hosting Shinkai",
     "soon": "segera",
     "termsAndConditionsText": "Saya menyetujui <a>Syarat Layanan</a> kami dan <b>Kebijakan Privasi</b>",
+    "unselectAll": "Batalkan Pilihan Semua",
     "update": "Perbarui",
+    "upload": "Unggah",
     "uploadFile": "Unggah Berkas"
   },
   "desktop": {
@@ -206,6 +220,23 @@
       "failedToFetch": "Gagal mengambil model Ollama lokal. Pastikan Ollama berjalan dengan benar."
     }
   },
+  "onboardingChecklist": {
+    "addAI": "Tambahkan AI",
+    "addAIDescription": "Tambahkan agen AI yang menggunakan LLM favorit Anda",
+    "askFiles": "Tanyakan Pertanyaan ke File",
+    "askFilesButton": "Buat Obrolan dengan File",
+    "askFilesDescription": "Obrolan dengan file Anda. Ajukan pertanyaan apa pun, temukan informasi, dapatkan ringkasan, dan lainnya.",
+    "completedSteps": "Anda telah menyelesaikan semua langkah",
+    "createAIChat": "Buat Obrolan AI",
+    "createAIChatDescription": "Mulai percakapan dengan AI Anda",
+    "dismiss": "Abaikan Daftar Pemeriksaan",
+    "getStartedChecklist": "Daftar pemeriksaan memulai",
+    "getStartedText": "Memulai dengan Shinkai",
+    "setupShinkaiDesktop": "Atur Desktop Shinkai",
+    "setupShinkaiDesktopDescription": "Atur Desktop Shinkai untuk memulai",
+    "uploadAFile": "Unggah File",
+    "uploadAFileDescription": "Simpan catatan, situs web, dokumen, dan lainnya dengan aman di satu tempat."
+  },
   "quickConnection": {
     "connectingToNode": "Menghubungkan ke Node Shinkai lokal Anda",
     "form": {
@@ -213,6 +244,10 @@
       "nodeAddress": "Alamat Node"
     },
     "label": "Koneksi Cepat"
+  },
+  "registrationCode": {
+    "create": "Buat Kode Registrasi",
+    "label": "Kode Registrasi"
   },
   "restoreConnection": {
     "description": "Gunakan file koneksi dan frasa sandi",
@@ -247,7 +282,8 @@
       "nodeSignature": "Tanda Tangan Node",
       "profileEncryption": "Enkripsi Profil",
       "profileIdentity": "Identitas Profil",
-      "profilePublicKeys": "Kunci Publik Profil"
+      "profilePublicKeys": "Kunci Publik Profil",
+      "show": "Tampilkan Kunci Publik"
     },
     "quickAccessButton": {
       "description": "Tombol Akses Cepat dapat dipindahkan dengan mengklik dan menahan.",
@@ -271,14 +307,93 @@
     }
   },
   "shinkaiNode": {
+    "manager": "Manajer Node Shinkai",
+    "models": {
+      "errors": {
+        "modelInstalled": "Kesalahan saat menginstal model {{modelName}}",
+        "modelRemoved": "Kesalahan saat menghapus model {{modelName}}"
+      },
+      "poweredByOllama": "Didukung oleh Ollama",
+      "success": {
+        "modelInstalled": "Model {{modelName}} berhasil diinstal",
+        "modelRemoved": "Model {{modelName}} berhasil dihapus"
+      },
+      "table": {
+        "bookPages": "Halaman Buku",
+        "dataLimit": "Batas Data",
+        "models": "Model",
+        "quality": "Kualitas",
+        "size": "Ukuran",
+        "speed": "Kecepatan"
+      }
+    },
     "nodeAddress": "Alamat Node",
     "nodeVersion": "Versi Node",
     "restartNode": "Harap restart Node Shinkai Anda",
     "unavailable": "Node Shinkai Anda tidak tersedia"
   },
   "vectorFs": {
+    "actions": {
+      "addNew": "Tambah Baru",
+      "copy": "Salin",
+      "createFolder": "Tambah Folder Baru",
+      "delete": "Hapus",
+      "move": "Pindah",
+      "searchWithinFolder": "Cari dalam folder",
+      "share": "Bagikan",
+      "unshare": "Batalkan Berbagi",
+      "uploadFile": "Unggah File",
+      "uploadFileText": "Mengunggah file Anda mengubahnya menjadi siap AI dan tersedia untuk digunakan di Shinkai."
+    },
+    "allFiles": "Semua File",
+    "deleteFileConfirmation": "Apakah Anda yakin ingin menghapus file ini? Tindakan ini tidak dapat dibatalkan.",
+    "deleteFolderConfirmation": "Apakah Anda yakin ingin menghapus folder ini? Tindakan ini tidak dapat dibatalkan.",
+    "emptyState": {
+      "noFiles": "Tidak ada file ditemukan",
+      "noFilesAndFolders": "Ini akan menjadi rumah untuk semua file Anda.",
+      "noFilesAndFoldersDescription": "Gunakan tombol \"+\" untuk mulai mengunggah file.",
+      "noSharedFolders": "Folder bersama Anda akan ditampilkan di sini."
+    },
+    "errors": {
+      "fileCopied": "Kesalahan saat menyalin file",
+      "fileDeleted": "Kesalahan saat menghapus file",
+      "fileMoved": "Kesalahan saat memindahkan file",
+      "filesUploaded": "Kesalahan saat mengunggah file",
+      "folderCopied": "Kesalahan saat menyalin folder",
+      "folderCreated": "Kesalahan saat membuat folder",
+      "folderDeleted": "Kesalahan saat menghapus folder",
+      "folderMoved": "Kesalahan saat memindahkan folder",
+      "folderShared": "Kesalahan saat membagikan folder",
+      "folderUnshared": "Kesalahan saat tidak membagikan folder"
+    },
+    "filesSelected": "{{count}} dipilih",
+    "forms": {
+      "folderName": "Nama Folder"
+    },
+    "home": "Beranda",
     "label": "Penjelajah File AI Saya",
-    "localFiles": "File AI Lokal"
+    "localFiles": "File AI Lokal",
+    "pending": {
+      "filesUploading": "Mengunggah file"
+    },
+    "shareFolderWarning": {
+      "action": "Klik di Sini untuk Belajar Cara",
+      "text": "Anda harus mendaftarkan identitas Shinkai sebelum Anda dapat berbagi folder melalui Jaringan Shinkai.",
+      "title": "Aktifkan Berbagi Folder"
+    },
+    "sharedFolders": "Folder Bersama",
+    "success": {
+      "fileCopied": "File berhasil disalin",
+      "fileDeleted": "File telah dihapus",
+      "fileMoved": "File berhasil dipindahkan",
+      "filesUploaded": "File berhasil diunggah",
+      "folderCopied": "Folder berhasil disalin",
+      "folderCreated": "Folder berhasil dibuat",
+      "folderDeleted": "Folder telah dihapus",
+      "folderMoved": "Folder berhasil dipindahkan",
+      "folderShared": "Folder berhasil dibagikan",
+      "folderUnshared": "Folder berhasil tidak dibagikan"
+    }
   },
   "workflowPlayground": {
     "label": "Taman Bermain Alur Kerja"
