@@ -1,3 +1,4 @@
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   Tabs,
   TabsContent,
@@ -12,6 +13,8 @@ import VectorFSDrawer from './components/vector-fs-drawer';
 import { useVectorFsStore } from './context/vector-fs-context';
 
 export default function VectorFs() {
+  const { t } = useTranslation();
+
   const selectedVectorFsTab = useVectorFsStore(
     (state) => state.selectedVectorFsTab,
   );
@@ -27,15 +30,15 @@ export default function VectorFs() {
         }
         value={selectedVectorFsTab}
       >
-        <TabsList className="max-w-xs ">
+        <TabsList className="max-w-xs">
           <TabsTrigger className="flex flex-1 items-center gap-2" value="all">
-            All Files
+            {t('vectorFs.allFiles')}
           </TabsTrigger>
           <TabsTrigger
             className="flex flex-1 items-center gap-2"
             value="shared-folders"
           >
-            Shared Folders
+            {t('vectorFs.sharedFolders')}{' '}
           </TabsTrigger>
         </TabsList>
         <TabsContent className="h-full" value="all">

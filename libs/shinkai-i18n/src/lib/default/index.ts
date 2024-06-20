@@ -71,10 +71,77 @@ export default {
   },
   aiFilesSearch: {
     label: 'AI Files Content Search',
+    description:
+      'Search to find content across all files in your AI Files easily',
+    foundResults: 'Found {{count}} result',
+    filesSelected: 'Selected {{count}} files',
   },
   vectorFs: {
     label: 'My AI Files Explorer',
     localFiles: 'Local AI Files',
+    allFiles: 'All Files',
+    sharedFolders: 'Shared Folders',
+    actions: {
+      addNew: 'Add New',
+      createFolder: 'Add New Folder',
+      uploadFile: 'File Upload',
+      share: 'Share',
+      unshare: 'Unshare',
+      move: 'Move',
+      copy: 'Copy',
+      delete: 'Delete',
+      searchWithinFolder: 'Search within folder',
+      uploadFileText:
+        'Uploading your files transforms them to be AI-ready and available to use in Shinkai.',
+    },
+    forms: {
+      folderName: 'Folder Name',
+    },
+    pending: {
+      filesUploading: 'Uploading files',
+    },
+    success: {
+      folderMoved: 'Folder moved successfully',
+      folderDeleted: 'Folder has been deleted',
+      folderCopied: 'Folder copied successfully',
+      folderShared: 'Folder shared successfully',
+      folderUnshared: 'Folder unshared successfully',
+      folderCreated: 'Folder created successfully',
+      filesUploaded: 'Files uploaded successfully',
+      fileMoved: 'File moved successfully',
+      fileDeleted: 'File has been deleted',
+      fileCopied: 'File copied successfully',
+    },
+    errors: {
+      folderMoved: 'Error moving folder',
+      folderDeleted: 'Error deleting folder',
+      folderCopied: 'Error copying folder',
+      folderShared: 'Error sharing folder',
+      folderUnshared: 'Error unsharing folder',
+      folderCreated: 'Error creating folder',
+      filesUploaded: 'Error uploading files',
+      fileMoved: 'Error moving file',
+      fileDeleted: 'Error deleting file',
+      fileCopied: 'Error copying file',
+    },
+    home: 'Home',
+    emptyState: {
+      noFilesAndFolders: 'This will be the home for all your files.',
+      noFilesAndFoldersDescription:
+        'Use the "+" button to start uploading files.',
+      noFiles: 'No files found',
+      noSharedFolders: 'Your shared folders will be displayed here.',
+    },
+    filesSelected: '{{count}} selected',
+    deleteFolderConfirmation:
+      'Are you sure you want to delete this folder? This action cannot be undone.',
+    deleteFileConfirmation:
+      'Are you sure you want to delete this file? This action cannot be undone.',
+    shareFolderWarning: {
+      title: 'Enable Folder Sharing',
+      text: 'You must register a Shinkai identity before you can share folders over the Shinkai Network.',
+      action: 'Click Here to Learn How',
+    },
   },
   inboxes: {
     updateName: 'Update inbox name',
@@ -86,6 +153,44 @@ export default {
     nodeVersion: 'Node Version',
     unavailable: 'Your Shinkai Node is unavailable',
     manager: 'Shinkai Node Manager',
+    models: {
+      table: {
+        models: 'Models',
+        dataLimit: 'Data Limit',
+        quality: 'Quality',
+        speed: 'Speed',
+        size: 'Size',
+        bookPages: 'Book Pages',
+      },
+      success: {
+        modelRemoved: 'Model {{modelName}} removed successfully',
+        modelInstalled: 'Model {{modelName}} installed successfully',
+      },
+      errors: {
+        modelRemoved: 'Error removing model {{modelName}}',
+        modelInstalled: 'Error installing model {{modelName}}',
+      },
+      poweredByOllama: 'Powered by Ollama',
+    },
+  },
+  onboardingChecklist: {
+    getStartedText: 'Get Started with Shinkai',
+    getStartedChecklist: 'Get started checklist',
+    setupShinkaiDesktop: 'Setup Shinkai Desktop',
+    setupShinkaiDesktopDescription: 'Setup Shinkai Desktop to get started',
+    addAI: 'Add AI',
+    addAIDescription: 'Add an AI agent that utilizes your favorite LLM',
+    createAIChat: 'Create AI Chat',
+    createAIChatDescription: 'Start a conversation with your AI',
+    uploadAFile: 'Upload a File',
+    uploadAFileDescription:
+      'Keep your notes, websites, docs and others securely stored in one place.',
+    askFiles: 'Ask Questions to Files',
+    askFilesDescription:
+      'Chat with your files. Ask any questions, find information, get summaries and more.',
+    askFilesButton: 'Create Chat with Files',
+    dismiss: 'Dismiss Checklist',
+    completedSteps: 'You have completed all steps',
   },
   settings: {
     label: 'Settings',
@@ -161,6 +266,10 @@ export default {
     create: 'Create Registration Code',
   },
   common: {
+    search: 'Search',
+    upload: 'Upload',
+    clearSearch: 'Clear Search',
+    searchPlaceholder: 'Search...',
     uploadFile: 'Upload a File',
     folders: 'Folders',
     folderWithCount_one: '{{count}} Folder',
@@ -194,8 +303,14 @@ export default {
     quickConnect: 'Quick Connect',
     alreadyHaveNode: 'Already have a Node?',
     shinkaiPrivate: 'Shinkai Private (Local)',
+    seeOptions: 'See Options',
     termsAndConditionsText:
       'I agree to our <a>Terms of Service</a> and <b>Privacy Policy</b>',
+    recommended: 'Recommended',
+    remove: 'Remove',
+    install: 'Install',
+    unselectAll: 'Unselect All',
+    done: 'Done',
   },
   quickConnection: {
     label: 'Quick Connection',

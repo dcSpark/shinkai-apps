@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   CreateFolderFormSchema,
   createFolderFormSchema,
@@ -43,6 +44,7 @@ import {
 } from './folder-selection-list';
 
 export const AddNewFolderAction = () => {
+  const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const currentGlobalPath = useVectorFsStore(
     (state) => state.currentGlobalPath,
@@ -58,12 +60,12 @@ export const AddNewFolderAction = () => {
     isSuccess,
   } = useCreateVRFolder({
     onSuccess: () => {
-      toast.success('Folder created successfully');
+      toast.success(t('vectorFs.success.folderCreated'));
       createFolderForm.reset();
       closeDrawerMenu();
     },
     onError: () => {
-      toast.error('Error creating folder');
+      toast.error(t('vectorFs.errors.folderCreated'));
     },
   });
 
@@ -86,7 +88,7 @@ export const AddNewFolderAction = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      toast.success('Folder created successfully');
+      toast.success(t('vectorFs.success.folderCreated'));
       createFolderForm.reset();
     }
   }, [createFolderForm, isSuccess]);
@@ -96,7 +98,7 @@ export const AddNewFolderAction = () => {
       <SheetHeader>
         <SheetTitle className="flex flex-col items-start gap-1">
           <DirectoryTypeIcon className="h-10 w-10" />
-          Add New Folder
+          {t('vectorFs.actions.createFolder')}
         </SheetTitle>
       </SheetHeader>
       <Form {...createFolderForm}>
@@ -121,7 +123,7 @@ export const AddNewFolderAction = () => {
                     }
                   },
                 }}
-                label="Folder Name"
+                label={t('vectorFs.forms.folderName')}
               />
             )}
           />
@@ -131,7 +133,7 @@ export const AddNewFolderAction = () => {
             isLoading={isPending}
             type="submit"
           >
-            Create Folder
+            {t('vectorFs.actions.createFolder')}
           </Button>
         </form>
       </Form>
@@ -139,6 +141,8 @@ export const AddNewFolderAction = () => {
   );
 };
 export const UploadVRFilesAction = () => {
+  const { t } = useTranslation();
+
   const { captureAnalyticEvent } = useAnalytics();
 
   const auth = useAuth((state) => state.auth);
@@ -155,14 +159,14 @@ export const UploadVRFilesAction = () => {
       captureAnalyticEvent('Upload Files', {
         filesCount: variables.files.length,
       });
-      toast.success('Files uploaded successfully', {
+      toast.success(t('vectorFs.success.filesUploaded'), {
         id: 'uploading-VR-files',
         description: '',
       });
       createFolderForm.reset();
     },
     onError: () => {
-      toast.error('Error uploading files', {
+      toast.error(t('vectorFs.errors.filesUploaded'), {
         id: 'uploading-VR-files',
         description: '',
       });
@@ -171,7 +175,7 @@ export const UploadVRFilesAction = () => {
 
   const onSubmit = async (values: UploadVRFilesFormSchema) => {
     if (!auth) return;
-    toast.loading('Uploading files', {
+    toast.loading(t('vectorFs.pending.filesUploading'), {
       id: 'uploading-VR-files',
       description: 'This process might take from 1-2 minutes per file.',
       position: 'bottom-left',
@@ -197,11 +201,10 @@ export const UploadVRFilesAction = () => {
       <SheetHeader>
         <SheetTitle className="flex flex-col items-start gap-1">
           <FileTypeIcon className="h-10 w-10" />
-          File Upload
+          {t('vectorFs.actions.uploadFile')}
         </SheetTitle>
         <SheetDescription>
-          Uploading your files transforms them to be AI-ready and available to
-          use in Shinkai.
+          {t('vectorFs.actions.uploadFileText')}
         </SheetDescription>
       </SheetHeader>
       <Form {...createFolderForm}>
@@ -240,7 +243,7 @@ export const UploadVRFilesAction = () => {
             isLoading={isPending}
             type="submit"
           >
-            Upload
+            {t('common.upload')}
           </Button>
         </form>
       </Form>

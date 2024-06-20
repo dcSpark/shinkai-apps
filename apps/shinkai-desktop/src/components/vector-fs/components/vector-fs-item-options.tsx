@@ -1,3 +1,4 @@
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useCopyVrItem } from '@shinkai_network/shinkai-node-state/lib/mutations/copyVRItem/useCopyVrItem';
 import { useDeleteVRItem } from '@shinkai_network/shinkai-node-state/lib/mutations/deleteVRItem/useDeleteVRItem';
 import { useMoveVRItem } from '@shinkai_network/shinkai-node-state/lib/mutations/moveVRItem/useMoveVRItem';
@@ -18,6 +19,7 @@ import {
 } from './folder-selection-list';
 
 export const VectorFsItemMoveAction = () => {
+  const { t } = useTranslation();
   const selectedFile = useVectorFsStore((state) => state.selectedFile);
   const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
   const auth = useAuth((state) => state.auth);
@@ -33,10 +35,10 @@ export const VectorFsItemMoveAction = () => {
       onSuccess: () => {
         setCurrentGlobalPath(destinationFolderPath ?? '/');
         closeDrawerMenu();
-        toast.success('Item moved successfully');
+        toast.success(t('vectorFs.success.fileMoved'));
       },
       onError: () => {
-        toast.error('Failed to move item');
+        toast.error(t('vectorFs.errors.fileMoved'));
       },
     });
 
@@ -44,8 +46,11 @@ export const VectorFsItemMoveAction = () => {
     <React.Fragment>
       <SheetHeader>
         <SheetTitle className="font-normal">
-          Move
-          <span className="font-medium"> &quot;{selectedFile?.name}&quot;</span>{' '}
+          {t('vectorFs.actions.move')}
+          <span className="font-medium">
+            {' '}
+            &quot;{selectedFile?.name}&quot;
+          </span>{' '}
           to ...
         </SheetTitle>
       </SheetHeader>
@@ -70,13 +75,14 @@ export const VectorFsItemMoveAction = () => {
             });
           }}
         >
-          Move
+          {t('vectorFs.actions.move')}
         </Button>
       </DrawerFooter>
     </React.Fragment>
   );
 };
 export const VectorFsItemDeleteAction = () => {
+  const { t } = useTranslation();
   const selectedFile = useVectorFsStore((state) => state.selectedFile);
   const auth = useAuth((state) => state.auth);
   const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
@@ -84,10 +90,10 @@ export const VectorFsItemDeleteAction = () => {
   const { mutateAsync: deleteVrItem, isPending } = useDeleteVRItem({
     onSuccess: () => {
       closeDrawerMenu();
-      toast.success('Item has been deleted');
+      toast.success(t('vectorFs.success.fileDeleted'));
     },
     onError: () => {
-      toast.error('Failed to delete item');
+      toast.error(t('vectorFs.errors.fileDeleted'));
     },
   });
 
@@ -95,7 +101,7 @@ export const VectorFsItemDeleteAction = () => {
     <React.Fragment>
       <SheetHeader>
         <SheetTitle className="font-normal">
-          Delete
+          {t('vectorFs.actions.delete')}
           <span className="font-medium">
             {' '}
             &quot;{selectedFile?.name}&quot;
@@ -104,7 +110,7 @@ export const VectorFsItemDeleteAction = () => {
       </SheetHeader>
 
       <p className="text-gray-80 my-3 text-base">
-        Are you sure you want to delete this item? This action cannot be undone.
+        {t('vectorFs.deleteFileConfirmation')}
       </p>
       <DrawerFooter>
         <Button
@@ -125,7 +131,7 @@ export const VectorFsItemDeleteAction = () => {
           }}
           variant="destructive"
         >
-          Delete
+          {t('vectorFs.actions.delete')}
         </Button>
       </DrawerFooter>
     </React.Fragment>
@@ -133,6 +139,8 @@ export const VectorFsItemDeleteAction = () => {
 };
 
 export const VectorFsItemCopyAction = () => {
+  const { t } = useTranslation();
+
   const selectedFile = useVectorFsStore((state) => state.selectedFile);
   const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
   const auth = useAuth((state) => state.auth);
@@ -147,10 +155,10 @@ export const VectorFsItemCopyAction = () => {
     onSuccess: () => {
       setCurrentGlobalPath(destinationFolderPath ?? '/');
       closeDrawerMenu();
-      toast.success('Item copied successfully');
+      toast.success(t('vectorFs.success.fileCopied'));
     },
     onError: () => {
-      toast.error('Failed to copy item');
+      toast.error(t('vectorFs.errors.fileCopied'));
     },
   });
 
@@ -158,8 +166,11 @@ export const VectorFsItemCopyAction = () => {
     <React.Fragment>
       <SheetHeader>
         <SheetTitle className="font-normal">
-          Copy
-          <span className="font-medium"> &quot;{selectedFile?.name}&quot;</span>{' '}
+          {t('vectorFs.actions.copy')}
+          <span className="font-medium">
+            {' '}
+            &quot;{selectedFile?.name}&quot;
+          </span>{' '}
           to ...
         </SheetTitle>
       </SheetHeader>
@@ -184,7 +195,7 @@ export const VectorFsItemCopyAction = () => {
             });
           }}
         >
-          Copy
+          {t('vectorFs.actions.copy')}
         </Button>
       </DrawerFooter>
     </React.Fragment>
