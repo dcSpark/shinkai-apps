@@ -287,7 +287,7 @@ export const OllamaModels = () => {
                         variant={'outline'}
                       >
                         <Download className="mr-2 h-4 w-4" />
-                        {t('common.remove')}
+                        {t('common.install')}
                       </Button>
                     )}
                   </motion.div>
