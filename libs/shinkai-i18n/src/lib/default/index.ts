@@ -85,6 +85,7 @@ export default {
     nodeAddress: 'Node Address',
     nodeVersion: 'Node Version',
     unavailable: 'Your Shinkai Node is unavailable',
+    manager: 'Shinkai Node Manager',
   },
   settings: {
     label: 'Settings',
@@ -123,6 +124,7 @@ export default {
     },
     publicKeys: {
       label: 'Public Keys',
+      show: 'Show Public Keys',
       nodePublicKeys: 'Node Public Keys',
       profilePublicKeys: 'Profile Public Keys',
       myDevicePublicKeys: 'My Device Public Keys',
@@ -153,6 +155,10 @@ export default {
       encryptedConnectionFile: 'Encrypted Connection File',
       passphrase: 'Passphrase',
     },
+  },
+  registrationCode: {
+    label: 'Registration Code',
+    create: 'Create Registration Code',
   },
   common: {
     uploadFile: 'Upload a File',
@@ -200,6 +206,7 @@ export default {
     connectingToNode: 'Connecting to your local Shinkai Node',
   },
   analytics: {
+    label: 'Analytics',
     title: 'Help us improve Shinkai',
     bulletPoints: {
       one: '✅ Always allow you to opt-out via Settings',
