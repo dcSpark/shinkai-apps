@@ -1,3 +1,4 @@
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import { Button } from '@shinkai_network/shinkai-ui';
 import { useEffect } from 'react';
@@ -8,6 +9,7 @@ import OnboardingLayout from './layout/onboarding-layout';
 
 const UnavailableShinkaiNodePage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const { isSuccess: isGetShinkaiNodeHealthSuccess } = useGetHealth(
     {
@@ -26,7 +28,7 @@ const UnavailableShinkaiNodePage = () => {
     <OnboardingLayout>
       <div className="flex h-full flex-col justify-between">
         <p className="text-4xl font-semibold leading-[1.5] tracking-wide">
-          Your Shinkai Node is unavailable <span aria-hidden> 🔕</span>
+          {t('shinkaiNode.unavailable')} <span aria-hidden> 🔕</span>
         </p>
         <div className="">
           <div className="flex flex-col gap-10">

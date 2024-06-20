@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { encryptMessageWithPassphrase } from '@shinkai_network/shinkai-message-ts/cryptography';
 import {
   ExportConnectionFormSchema,
@@ -11,7 +12,7 @@ import {
   Input,
   TextField,
 } from '@shinkai_network/shinkai-ui';
-import { dialog,fs } from '@tauri-apps/api';
+import { dialog, fs } from '@tauri-apps/api';
 import { BaseDirectory } from '@tauri-apps/api/fs';
 import { Download } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -21,6 +22,7 @@ import { useAuth } from '../store/auth';
 import { SubpageLayout } from './layout/simple-layout';
 
 export const ExportConnection = () => {
+  const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const form = useForm<ExportConnectionFormSchema>({
     resolver: zodResolver(exportConnectionFormSchema),
@@ -75,7 +77,7 @@ export const ExportConnection = () => {
     }
   };
   return (
-    <SubpageLayout title="Export Connection">
+    <SubpageLayout title={t('exportConnection.label')}>
       <div className="flex grow flex-col space-y-2">
         <Form {...form}>
           <form
@@ -87,7 +89,11 @@ export const ExportConnection = () => {
                 control={form.control}
                 name="passphrase"
                 render={({ field }) => (
-                  <TextField field={field} label="Passphrase" type="password" />
+                  <TextField
+                    field={field}
+                    label={t('exportConnection.form.passphrase')}
+                    type="password"
+                  />
                 )}
               />
               <FormField
@@ -96,28 +102,25 @@ export const ExportConnection = () => {
                 render={({ field }) => (
                   <TextField
                     field={field}
-                    label="Repeat Passphrase"
+                    label={t('exportConnection.form.passphrase')}
                     type="password"
                   />
                 )}
               />
             </div>
             <Button className="w-full" type="submit">
-              Generate Connection File
+              {t('exportConnection.generateFile')}
             </Button>
           </form>
         </Form>
 
         {encryptedSetupData && (
-          <div className=" flex grow flex-col items-center justify-center space-y-3">
+          <div className="flex grow flex-col items-center justify-center space-y-3">
             <div className="flex flex-col space-y-1">
               <span className="font-semibold">
-                Download and keep this connection file in a safe place
+                {t('exportConnection.downloadText')}
               </span>
-              <span>
-                Use it with your passphrase to restore the connection to your
-                Shinkai Node
-              </span>
+              <span>{t('exportConnection.restoreText')}</span>
             </div>
             <div className="flex w-full flex-row space-x-1">
               <div className="grow cursor-pointer" onClick={() => download()}>

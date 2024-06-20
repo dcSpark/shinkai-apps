@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   CreateDMFormSchema,
   createDMFormSchema,
@@ -24,6 +25,7 @@ import { SubpageLayout } from './layout/simple-layout';
 const CreateChatPage = () => {
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const { isPending, mutateAsync: createChat } = useCreateChat({
     onSuccess: (data) => {
@@ -55,7 +57,7 @@ const CreateChatPage = () => {
     });
   };
   return (
-    <SubpageLayout title="Create DM Chat">
+    <SubpageLayout title={t('chatDM.create')}>
       <Form {...createChatForm}>
         <form
           className="space-y-10"
@@ -66,7 +68,10 @@ const CreateChatPage = () => {
               control={createChatForm.control}
               name="receiverIdentity"
               render={({ field }) => (
-                <TextField field={field} label="Shinkai Identity" />
+                <TextField
+                  field={field}
+                  label={t('chatDM.form.shinkaiIdentity')}
+                />
               )}
             />
             <FormField
@@ -74,7 +79,7 @@ const CreateChatPage = () => {
               name="message"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Message</FormLabel>
+                  <FormLabel>{t('chatDM.form.message')}</FormLabel>
                   <FormControl>
                     <Textarea
                       className="resize-nonee"
@@ -86,7 +91,7 @@ const CreateChatPage = () => {
                           createChatForm.handleSubmit(onSubmit)();
                         }
                       }}
-                      placeholder="Enter your message"
+                      placeholder={t('chatDM.form.messagePlaceholder')}
                       {...field}
                     />
                   </FormControl>
@@ -102,7 +107,7 @@ const CreateChatPage = () => {
             isLoading={isPending}
             type="submit"
           >
-            Create DM Chat
+            {t('chatDM.create')}
           </Button>
         </form>
       </Form>

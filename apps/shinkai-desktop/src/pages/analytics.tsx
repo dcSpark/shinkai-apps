@@ -2,6 +2,7 @@ import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { Button } from '@shinkai_network/shinkai-ui';
 import { useNavigate } from 'react-router-dom';
 
+import { analyticsBulletPoints } from '../constants/analytics';
 import { useSettings } from '../store/settings';
 import OnboardingLayout from './layout/onboarding-layout';
 
@@ -19,14 +20,7 @@ const AnalyticsPage = () => {
         </p>
         <div className="mt-10 flex flex-1 flex-col gap-10 text-sm text-gray-50">
           <ul className="space-y-3 text-gray-50">
-            {[
-              t('analytics.bulletPoints.one'),
-              t('analytics.bulletPoints.two'),
-              t('analytics.bulletPoints.three'),
-              t('analytics.bulletPoints.four'),
-              t('analytics.bulletPoints.five'),
-              t('analytics.bulletPoints.six'),
-            ].map((item) => (
+            {analyticsBulletPoints.map((item) => (
               <li key={item}>{item}</li>
             ))}
           </ul>

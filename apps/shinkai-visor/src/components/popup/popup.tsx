@@ -1,5 +1,6 @@
 import '../../theme/styles.css';
 
+import { I18nProvider } from '@shinkai_network/shinkai-i18n';
 import { QueryProvider } from '@shinkai_network/shinkai-node-state';
 import { Toaster } from '@shinkai_network/shinkai-ui';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -166,15 +167,17 @@ const root = createRoot(container);
 
 root.render(
   <React.StrictMode>
-    <PrimeReactProvider>
-      <QueryProvider>
-        <div className="font-inter h-full w-full">
-          <Router>
-            <Popup />
-          </Router>
-        </div>
-        <Toaster />
-      </QueryProvider>
-    </PrimeReactProvider>
+    <I18nProvider>
+      <PrimeReactProvider>
+        <QueryProvider>
+          <div className="font-inter h-full w-full">
+            <Router>
+              <Popup />
+            </Router>
+          </div>
+          <Toaster />
+        </QueryProvider>
+      </PrimeReactProvider>
+    </I18nProvider>
   </React.StrictMode>,
 );

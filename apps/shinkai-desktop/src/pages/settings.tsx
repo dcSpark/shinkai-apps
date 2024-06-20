@@ -1,5 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { LocaleMode, localeOptions } from '@shinkai_network/shinkai-i18n';
+import {
+  LocaleMode,
+  localeOptions,
+  useTranslation,
+} from '@shinkai_network/shinkai-i18n';
 import { isShinkaiIdentityLocalhost } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useUpdateNodeName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateNodeName/useUpdateNodeName';
 import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
@@ -61,6 +65,7 @@ const MotionButton = motion(Button);
 
 const SettingsPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const auth = useAuth((authStore) => authStore.auth);
   const isLocalShinkaiNodeInUse = useShinkaiNodeManager(
     (state) => state.isInUse,
@@ -143,7 +148,7 @@ const SettingsPage = () => {
   const { mutateAsync: updateNodeName, isPending: isUpdateNodeNamePending } =
     useUpdateNodeName({
       onSuccess: () => {
-        toast.success('Node name updated successfully');
+        toast.success(t('settings.shinkaiIdentity.success'));
         if (!auth) return;
         const newAuth: SetupData = { ...auth };
         setAuth({
@@ -153,11 +158,11 @@ const SettingsPage = () => {
         if (isLocalShinkaiNodeInUse) {
           respawnShinkaiNode();
         } else if (!isHostingShinkaiNode(auth.node_address)) {
-          toast.info('Please restart your Shinkai Node');
+          toast.info(t('shinkaiNode.restartNode'));
         }
       },
       onError: (error) => {
-        toast.error('Failed to update node name', {
+        toast.error(t('settings.shinkaiIdentity.error'), {
           description: error?.response?.data?.error ?? error.message,
         });
       },
@@ -200,8 +205,8 @@ const SettingsPage = () => {
     auth?.shinkai_identity ?? '',
   );
   return (
-    <SimpleLayout classname="max-w-lg" title="Settings">
-      <p className="mb-3">Manage your account settings preferences.</p>
+    <SimpleLayout classname="max-w-lg" title={t('settings.label')}>
+      <p className="mb-3">{t('settings.description')}</p>
 
       <div className="flex flex-col space-y-8 pr-2.5">
         <div className="flex flex-col space-y-8">
@@ -223,7 +228,7 @@ const SettingsPage = () => {
                       <SelectValue />
                     </SelectTrigger>
                   </FormControl>
-                  <FormLabel>Default AI</FormLabel>
+                  <FormLabel>{t('settings.defaultAgent')}</FormLabel>
                   <SelectContent>
                     {agents?.map((agent) => (
                       <SelectItem key={agent.id} value={agent.id}>
@@ -241,7 +246,10 @@ const SettingsPage = () => {
                 disabled
                 name="nodeAddress"
                 render={({ field }) => (
-                  <TextField field={field} label="Node Address" />
+                  <TextField
+                    field={field}
+                    label={t('shinkaiNode.nodeAddress')}
+                  />
                 )}
               />
               <FormField
@@ -274,7 +282,7 @@ const SettingsPage = () => {
                             rel="noreferrer"
                             target="_blank"
                           >
-                            Register your Shinkai Identity
+                            {t('settings.shinkaiIdentity.registerIdentity')}
                           </a>
                         ) : (
                           <a
@@ -292,13 +300,13 @@ const SettingsPage = () => {
                             rel="noreferrer"
                             target="_blank"
                           >
-                            Go to My Shinkai Identity
+                            {t('settings.shinkaiIdentity.goToShinkaiIdentity')}
                           </a>
                         )}
                         <ExternalLinkIcon className="h-4 w-4" />
                       </span>
                     }
-                    label="Shinkai Identity"
+                    label={t('settings.shinkaiIdentity.label')}
                   />
                 )}
               />
@@ -312,7 +320,7 @@ const SettingsPage = () => {
                     size="auto"
                     type="button"
                   >
-                    Save
+                    {t('common.save')}
                   </MotionButton>
                   <Button
                     className="h-10 min-w-10 rounded-lg text-sm"
@@ -325,7 +333,7 @@ const SettingsPage = () => {
                     type="button"
                     variant="outline"
                   >
-                    Cancel
+                    {t('common.cancel')}
                   </Button>
                 </div>
               )}
@@ -334,7 +342,10 @@ const SettingsPage = () => {
                 disabled
                 name="nodeVersion"
                 render={({ field }) => (
-                  <TextField field={field} label="Node Version" />
+                  <TextField
+                    field={field}
+                    label={t('shinkaiNode.nodeVersion')}
+                  />
                 )}
               />
               <FormField
@@ -351,7 +362,7 @@ const SettingsPage = () => {
                     </FormControl>
                     <div className="space-y-1 leading-none">
                       <FormLabel className="static space-y-1.5 text-sm text-white">
-                        Enable Experimental Features
+                        {t('settings.experimentalFeature.label')}
                       </FormLabel>
                     </div>
                   </FormItem>
@@ -363,14 +374,16 @@ const SettingsPage = () => {
                 name="language"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Language</FormLabel>
+                    <FormLabel>{t('settings.language.label')}</FormLabel>
                     <Select
                       defaultValue={field.value}
                       onValueChange={field.onChange}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select language" />
+                          <SelectValue
+                            placeholder={t('settings.language.selectLanguage')}
+                          />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -471,7 +484,7 @@ const SettingsPage = () => {
         </div>
         <div>
           <p className="text-gray-80 text-right text-xs">
-            Shinkai Desktop Version:{' '}
+            {t('settings.shinkaiVersion')}{' '}
             <span className="font-bold">{appVersion}</span>
           </p>
         </div>

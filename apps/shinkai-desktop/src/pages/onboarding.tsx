@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   QuickConnectFormSchema,
   quickConnectFormSchema,
@@ -64,6 +65,7 @@ const LOCAL_NODE_ADDRESS = 'http://127.0.0.1:9850';
 
 const OnboardingPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const setAuth = useAuth((state) => state.setAuth);
   useShinkaiNodeEventsToast();
   const { encryptionKeys } = useGetEncryptionKeys();
@@ -129,7 +131,7 @@ const OnboardingPage = () => {
 
   useEffect(() => {
     if (isNodeInfoSuccess && isShinkaiPrivate && nodeInfo?.is_pristine) {
-      toast.loading('Connecting yo your local Shinkai Node', {
+      toast.loading(t('quickConnection.connectingToNode'), {
         id: 'auto-connect-shinkai-private',
       });
       setupDataForm.handleSubmit(onSubmit)();
@@ -153,7 +155,7 @@ const OnboardingPage = () => {
               <ArrowLeft className="h-6 w-6" />
             </Link>
             <h1 className="text-left text-2xl font-semibold">
-              Quick Connection <span aria-hidden>⚡</span>
+              {t('quickConnection.label')} <span aria-hidden>⚡</span>
             </h1>
           </div>
           <Form {...setupDataForm}>
@@ -166,7 +168,10 @@ const OnboardingPage = () => {
                   control={setupDataForm.control}
                   name="node_address"
                   render={({ field }) => (
-                    <TextField field={field} label={'Node Address'} />
+                    <TextField
+                      field={field}
+                      label={t('quickConnection.form.nodeAddress')}
+                    />
                   )}
                 />
                 {isError && <ErrorMessage message={error.message} />}
@@ -178,7 +183,7 @@ const OnboardingPage = () => {
                 type="submit"
                 variant="default"
               >
-                Connect
+                {t('quickConnection.form.connect')}
               </Button>
             </form>
           </Form>
@@ -196,7 +201,7 @@ const OnboardingPage = () => {
           {/*/>*/}
 
           <ConnectionOptionButton
-            description={'Use a connection file and passphrase'}
+            description={t('restoreConnection.description')}
             icon={
               <span aria-hidden className="text-base">
                 🔑
@@ -205,7 +210,7 @@ const OnboardingPage = () => {
             onClick={() => {
               navigate('/restore');
             }}
-            title={'Restore'}
+            title={t('restoreConnection.restore')}
           />
         </div>
       </div>

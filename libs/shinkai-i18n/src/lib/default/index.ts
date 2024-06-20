@@ -3,6 +3,9 @@ export default {
     welcome:
       'Transform your web browsing experience using AI with Shinkai Visor ✨',
   },
+  desktop: {
+    welcome: 'Transform your desktop experience using AI with Shinkai Desktop',
+  },
   layout: {
     sidebar: {
       toggle: 'Toggle Sidebar',
@@ -18,6 +21,14 @@ export default {
       agents: 'AIs',
       settings: 'Settings',
       disconnect: 'Disconnect',
+    },
+  },
+  chatDM: {
+    create: 'Create DM Chat',
+    form: {
+      shinkaiIdentity: 'Shinkai Identity',
+      message: 'Message',
+      messagePlaceholder: 'Enter your message',
     },
   },
   chat: {
@@ -58,6 +69,13 @@ export default {
       error: 'Error archiving job',
     },
   },
+  aiFilesSearch: {
+    label: 'AI Files Content Search',
+  },
+  vectorFs: {
+    label: 'My AI Files Explorer',
+    localFiles: 'Local AI Files',
+  },
   inboxes: {
     updateName: 'Update inbox name',
     inboxName: 'Name',
@@ -66,18 +84,33 @@ export default {
     restartNode: 'Please restart your Shinkai Node',
     nodeAddress: 'Node Address',
     nodeVersion: 'Node Version',
+    unavailable: 'Your Shinkai Node is unavailable',
   },
   settings: {
+    label: 'Settings',
+    description: 'Manage your account settings preferences.',
     defaultAgent: 'Default AI',
     shinkaiIdentity: {
       label: 'Shinkai Identity',
       updatedIdentity: 'Shinkai Identity updated successfully.',
+      registerIdentity: 'Register your Shinkai Identity',
+      goToShinkaiIdentity: 'Go to My Shinkai Identity',
+      success: 'Shinkai Identity updated successfully',
+      error: 'Error updating Shinkai Identity',
     },
     quickAccessButton: {
       label: 'Show Shinkai Quick Access Button',
       description:
         'The Quick Access Button can be moved by clicking and holding.',
     },
+    experimentalFeature: {
+      label: 'Enable Experimental Features',
+    },
+    language: {
+      label: 'Language',
+      selectLanguage: 'Select Language',
+    },
+    shinkaiVersion: 'Shinkai Desktop Version:',
     shortcutKey: {
       label: 'Shortcut Key',
       description: 'Modify the shortcut key to launch sidebar',
@@ -88,6 +121,18 @@ export default {
     registerNewCode: {
       label: 'Register new device',
     },
+    publicKeys: {
+      label: 'Public Keys',
+      nodePublicKeys: 'Node Public Keys',
+      profilePublicKeys: 'Profile Public Keys',
+      myDevicePublicKeys: 'My Device Public Keys',
+      nodeEncryption: 'Node Encryption',
+      nodeSignature: 'Node Signature',
+      profileEncryption: 'Profile Encryption',
+      profileIdentity: 'Profile Identity',
+      myDeviceEncryption: 'My Device Encryption',
+      myDeviceIdentity: 'My Device Identity',
+    },
   },
   exportConnection: {
     label: 'Export Connection',
@@ -95,6 +140,19 @@ export default {
     downloadText: 'Download and keep this connection file in a safe place',
     restoreText:
       'Use it with your passphrase to restore the connection to your Shinkai Node',
+    form: {
+      passphrase: 'Passphrase',
+      repeatPassphrase: 'Repeat Passphrase',
+    },
+  },
+  restoreConnection: {
+    label: 'Restore Connection',
+    restore: 'Restore',
+    description: 'Use a connection file and passphrase',
+    form: {
+      encryptedConnectionFile: 'Encrypted Connection File',
+      passphrase: 'Passphrase',
+    },
   },
   common: {
     uploadFile: 'Upload a File',
@@ -123,6 +181,23 @@ export default {
     getStarted: 'Get Started',
     passphrase: 'Passphrase',
     repeatPassphrase: 'Confirm passphrase',
+    optIn: 'Opt In',
+    optOut: 'Opt Out',
+    logInShinkaiHosting: 'Log In To Shinkai Hosting',
+    signUpShinkaiHosting: 'Sign up For Shinkai Hosting',
+    quickConnect: 'Quick Connect',
+    alreadyHaveNode: 'Already have a Node?',
+    shinkaiPrivate: 'Shinkai Private (Local)',
+    termsAndConditionsText:
+      'I agree to our <a>Terms of Service</a> and <b>Privacy Policy</b>',
+  },
+  quickConnection: {
+    label: 'Quick Connection',
+    form: {
+      nodeAddress: 'Node Address',
+      connect: 'Connect',
+    },
+    connectingToNode: 'Connecting to your local Shinkai Node',
   },
   analytics: {
     title: 'Help us improve Shinkai',
@@ -164,6 +239,9 @@ export default {
       apiKey: 'API Key',
       modelName: 'Model Name',
       modelId: 'Model ID',
+      modelType: 'Model Type',
+      toggleCustomModel: 'Add a custom model',
+      selectModel: 'Select your Model',
     },
     success: {
       createAgent: 'AI created successfully',
@@ -174,6 +252,34 @@ export default {
       createAgent: 'Error adding AI',
       updateAgent: 'Error updating AI',
       deleteAgent: 'Error deleting AI',
+    },
+  },
+  workflowPlayground: {
+    label: 'Workflow Playground',
+  },
+  ollama: {
+    errors: {
+      failedToFetch:
+        'Failed to fetch local Ollama models. Please ensure Ollama is running correctly.',
+    },
+  },
+  galxe: {
+    label: 'Galxe Validation',
+    goToGalxeQuest: 'Check our Galxe Quest',
+    form: {
+      evmAddress: 'EVM Address',
+      evmAddressHelper: 'Add the EVM Address you are using in Galxe',
+      signature: 'Signature',
+      proof: 'Proof',
+      registerInstallation: 'Register Installation',
+    },
+    success: {
+      registerDesktopInstallation:
+        'Your Shinkai Desktop installation was registered successfully. It may take some hours to be registered in Galxe quest.',
+    },
+    errors: {
+      registerDesktopInstallation:
+        'Error registering your Shinkai Desktop installation. Please ensure your EVM Address was not used previously to register a different installation.',
     },
   },
   disconnect: {
