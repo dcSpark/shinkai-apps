@@ -19,9 +19,7 @@ const initI18n = () => {
     )
     .init({
       debug: isDev,
-      lng: 'en-US',
       fallbackLng: 'en-US',
-      defaultNS: 'translation',
       interpolation: {
         escapeValue: false,
       },

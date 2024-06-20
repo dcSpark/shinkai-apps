@@ -152,7 +152,34 @@ export default {
     nodeAddress: 'Node Address',
     nodeVersion: 'Node Version',
     unavailable: 'Your Shinkai Node is unavailable',
+    notifications: {
+      startingNode: 'Starting your local Shinkai Node',
+      runningNode: 'Your local Shinkai Node is running',
+      stoppedNode: 'Your local Shinkai Node was stopped',
+      stopNode: 'Stopping your local Shinkai Node',
+      removedNote: 'Your local Shinkai Node storage was removed',
+      startingOllama: 'Starting your local Ollama',
+      runningOllama: 'Your local Ollama is running',
+      stoppedOllama: 'Your local Ollama was stopped',
+      stopOllama: 'Stopping your local Ollama',
+      syncedOllama: 'Local Ollama models synchronized with your Shinkai Node',
+      errorSyncOllama:
+        'Error synchronizing your local Ollama models with your Shinkai Node',
+      optionsRestored: 'Options restored to default values',
+      startingDownload: 'Starting download for AI model {{modeName}}',
+      downloadingModel: 'Downloading AI model {{modeName}} - {{progress}}%',
+      downloadedModel: 'AI model {{modeName}} downloaded successfully',
+    },
     manager: 'Shinkai Node Manager',
+    resetNodeWarning: {
+      title: 'Unable to connect',
+      description:
+        'Your Shinkai Node is currently locked by existing keys. To connect again you have two options:',
+      option1:
+        '<b>Restore:</b> Try to restore your connection using a backed up keys.',
+      option2:
+        '<b>Reset:</b> Delete your Shinkai Node Storage (this will permanently delete all your data).',
+    },
     models: {
       table: {
         models: 'Models',
@@ -268,6 +295,8 @@ export default {
   common: {
     search: 'Search',
     next: 'Next',
+    restore: 'Restore',
+    reset: 'Reset',
     clickToUpload: 'Click to upload or drag and drop',
     upload: 'Upload',
     clearSearch: 'Clear Search',
@@ -415,6 +444,7 @@ export default {
     exportConnection:
       'Before continuing, please<Link>export your connection</Link>to restore your connection at any time.',
   },
+
   errors: {
     nodeUnavailable: {
       title: 'Node Unavailable',
