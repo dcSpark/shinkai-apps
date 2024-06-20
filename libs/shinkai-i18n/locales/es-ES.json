@@ -16,7 +16,10 @@
       "apiKey": "Clave API",
       "externalUrl": "URL Externa",
       "modelId": "ID del Modelo",
-      "modelName": "Nombre del Modelo"
+      "modelName": "Nombre del Modelo",
+      "modelType": "Tipo de Modelo",
+      "selectModel": "Selecciona tu Modelo",
+      "toggleCustomModel": "Agregar un modelo personalizado"
     },
     "label": "IAs",
     "localAI": {
@@ -33,6 +36,9 @@
       "updateAgent": "IA actualizada con éxito"
     },
     "switch": "Cambiar IA"
+  },
+  "aiFilesSearch": {
+    "label": "Búsqueda de Contenido en Archivos de IA"
   },
   "analytics": {
     "bulletPoints": {
@@ -80,7 +86,16 @@
     "limitReachedTitle": "Límite Alcanzado",
     "sendMessage": "Enviar Mensaje"
   },
+  "chatDM": {
+    "create": "Crear Chat DM",
+    "form": {
+      "message": "Mensaje",
+      "messagePlaceholder": "Ingresa tu mensaje",
+      "shinkaiIdentity": "Identidad Shinkai"
+    }
+  },
   "common": {
+    "alreadyHaveNode": "¿Ya tienes un Nodo?",
     "back": "Atrás",
     "cancel": "Cancelar",
     "comingSoon": "Próximamente - Principios de Julio",
@@ -98,15 +113,25 @@
     "folders": "Carpetas",
     "getStarted": "Empezar",
     "iAgree": "Estoy de Acuerdo",
+    "logInShinkaiHosting": "Iniciar Sesión en Shinkai Hosting",
     "moreOptions": "Más Opciones",
     "noThanks": "No, Gracias",
+    "optIn": "Optar por Participar",
+    "optOut": "Optar por No Participar",
     "passphrase": "Frase de Paso",
+    "quickConnect": "Conexión Rápida",
     "rename": "Renombrar",
     "repeatPassphrase": "Confirmar frase de paso",
     "save": "Guardar",
+    "shinkaiPrivate": "Shinkai Privado (Local)",
+    "signUpShinkaiHosting": "Registrarse en Shinkai Hosting",
     "soon": "pronto",
+    "termsAndConditionsText": "Acepto nuestros <a>Términos de Servicio</a> y <b>Política de Privacidad</b>",
     "update": "Actualizar",
     "uploadFile": "Subir un Archivo"
+  },
+  "desktop": {
+    "welcome": "Transforma tu experiencia de escritorio utilizando IA con Shinkai Desktop"
   },
   "disconnect": {
     "exportConnection": "Antes de continuar, por favor <Link>exporta tu conexión</Link> para restaurarla en cualquier momento.",
@@ -121,12 +146,33 @@
   },
   "exportConnection": {
     "downloadText": "Descarga y guarda este archivo de conexión en un lugar seguro",
+    "form": {
+      "passphrase": "Frase de Contraseña",
+      "repeatPassphrase": "Repetir Frase de Contraseña"
+    },
     "generateFile": "Generar archivo de conexión",
     "label": "Exportar Conexión",
     "restoreText": "Úsalo con tu frase de paso para restaurar la conexión a tu Nodo Shinkai"
   },
   "extension": {
     "welcome": "Transforma tu experiencia de navegación web utilizando IA con Shinkai Visor ✨"
+  },
+  "galxe": {
+    "errors": {
+      "registerDesktopInstallation": "Error al registrar tu instalación de Shinkai Desktop. Por favor, asegúrate de que tu Dirección EVM no se haya utilizado previamente para registrar una instalación diferente."
+    },
+    "form": {
+      "evmAddress": "Dirección EVM",
+      "evmAddressHelper": "Agrega la Dirección EVM que estás usando en Galxe",
+      "proof": "Prueba",
+      "registerInstallation": "Registrar Instalación",
+      "signature": "Firma"
+    },
+    "goToGalxeQuest": "Ver nuestra Búsqueda Galxe",
+    "label": "Validación Galxe",
+    "success": {
+      "registerDesktopInstallation": "Tu instalación de Shinkai Desktop se registró exitosamente. Puede tardar algunas horas en registrarse en la búsqueda Galxe."
+    }
   },
   "inboxes": {
     "inboxName": "Nombre",
@@ -155,10 +201,53 @@
       "label": "Mensaje Recibido"
     }
   },
+  "ollama": {
+    "errors": {
+      "failedToFetch": "Error al obtener modelos locales de Ollama. Por favor, asegúrate de que Ollama esté funcionando correctamente."
+    }
+  },
+  "quickConnection": {
+    "connectingToNode": "Conectando a tu Nodo Shinkai local",
+    "form": {
+      "connect": "Conectar",
+      "nodeAddress": "Dirección del Nodo"
+    },
+    "label": "Conexión Rápida"
+  },
+  "restoreConnection": {
+    "description": "Utiliza un archivo de conexión y una frase de contraseña",
+    "form": {
+      "encryptedConnectionFile": "Archivo de Conexión Encriptado",
+      "passphrase": "Frase de Contraseña"
+    },
+    "label": "Restaurar Conexión",
+    "restore": "Restaurar"
+  },
   "settings": {
     "defaultAgent": "IA Predeterminada",
+    "description": "Administra tus preferencias de configuración de cuenta.",
+    "experimentalFeature": {
+      "label": "Activar Funciones Experimentales"
+    },
     "exportConnection": {
       "label": "Exportar conexión"
+    },
+    "label": "Configuración",
+    "language": {
+      "label": "Idioma",
+      "selectLanguage": "Seleccionar Idioma"
+    },
+    "publicKeys": {
+      "label": "Claves Públicas",
+      "myDeviceEncryption": "Cifrado de Mi Dispositivo",
+      "myDeviceIdentity": "Identidad de Mi Dispositivo",
+      "myDevicePublicKeys": "Claves Públicas de Mi Dispositivo",
+      "nodeEncryption": "Cifrado del Nodo",
+      "nodePublicKeys": "Claves Públicas del Nodo",
+      "nodeSignature": "Firma del Nodo",
+      "profileEncryption": "Cifrado del Perfil",
+      "profileIdentity": "Identidad del Perfil",
+      "profilePublicKeys": "Claves Públicas del Perfil"
     },
     "quickAccessButton": {
       "description": "El Botón de Acceso Rápido se puede mover haciendo clic y manteniendo presionado.",
@@ -168,9 +257,14 @@
       "label": "Registrar nuevo dispositivo"
     },
     "shinkaiIdentity": {
+      "error": "Error al actualizar la Identidad Shinkai",
+      "goToShinkaiIdentity": "Ir a Mi Identidad Shinkai",
       "label": "Identidad Shinkai",
+      "registerIdentity": "Registrar tu Identidad Shinkai",
+      "success": "Identidad Shinkai actualizada exitosamente",
       "updatedIdentity": "Identidad Shinkai actualizada con éxito."
     },
+    "shinkaiVersion": "Versión de Shinkai Desktop:",
     "shortcutKey": {
       "description": "Modifica la tecla de acceso directo para abrir la barra lateral",
       "label": "Tecla de Acceso Directo"
@@ -179,6 +273,14 @@
   "shinkaiNode": {
     "nodeAddress": "Dirección del Nodo",
     "nodeVersion": "Versión del Nodo",
-    "restartNode": "Por favor, reinicia tu Nodo Shinkai"
+    "restartNode": "Por favor, reinicia tu Nodo Shinkai",
+    "unavailable": "Tu Nodo Shinkai no está disponible"
+  },
+  "vectorFs": {
+    "label": "Mi Explorador de Archivos de IA",
+    "localFiles": "Archivos de IA Locales"
+  },
+  "workflowPlayground": {
+    "label": "Área de Juego de Flujo de Trabajo"
   }
 }

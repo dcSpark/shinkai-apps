@@ -16,7 +16,10 @@
       "apiKey": "APIキー",
       "externalUrl": "外部URL",
       "modelId": "モデルID",
-      "modelName": "モデル名"
+      "modelName": "モデル名",
+      "modelType": "モデルタイプ",
+      "selectModel": "モデルを選択",
+      "toggleCustomModel": "カスタムモデルを追加"
     },
     "label": "AI",
     "localAI": {
@@ -33,6 +36,9 @@
       "updateAgent": "AIが正常に更新されました"
     },
     "switch": "AIを切り替え"
+  },
+  "aiFilesSearch": {
+    "label": "AIファイルコンテンツ検索"
   },
   "analytics": {
     "bulletPoints": {
@@ -80,7 +86,16 @@
     "limitReachedTitle": "制限に達しました",
     "sendMessage": "メッセージを送信"
   },
+  "chatDM": {
+    "create": "DMチャットを作成",
+    "form": {
+      "message": "メッセージ",
+      "messagePlaceholder": "メッセージを入力してください",
+      "shinkaiIdentity": "Shinkai Identity"
+    }
+  },
   "common": {
+    "alreadyHaveNode": "すでにノードをお持ちですか？",
     "back": "戻る",
     "cancel": "キャンセル",
     "comingSoon": "近日公開 - 7月上旬",
@@ -98,15 +113,25 @@
     "folders": "フォルダ",
     "getStarted": "開始",
     "iAgree": "同意します",
+    "logInShinkaiHosting": "Shinkai Hostingにログイン",
     "moreOptions": "その他のオプション",
     "noThanks": "いいえ、結構です",
+    "optIn": "オプトイン",
+    "optOut": "オプトアウト",
     "passphrase": "パスフレーズ",
+    "quickConnect": "クイック接続",
     "rename": "名前を変更",
     "repeatPassphrase": "パスフレーズを確認",
     "save": "保存",
+    "shinkaiPrivate": "Shinkaiプライベート（ローカル）",
+    "signUpShinkaiHosting": "Shinkai Hostingにサインアップ",
     "soon": "近日公開",
+    "termsAndConditionsText": "弊社の<a>利用規約</a>および<b>プライバシーポリシー</b>に同意します",
     "update": "更新",
     "uploadFile": "ファイルをアップロード"
+  },
+  "desktop": {
+    "welcome": "Shinkai Desktopを使用してAIでデスクトップ体験を変革しましょう"
   },
   "disconnect": {
     "exportConnection": "続行する前に、接続をいつでも復元するために<Link>接続をエクスポート</Link>してください",
@@ -121,12 +146,33 @@
   },
   "exportConnection": {
     "downloadText": "この接続ファイルをダウンロードして安全な場所に保存してください",
+    "form": {
+      "passphrase": "パスフレーズ",
+      "repeatPassphrase": "パスフレーズを繰り返す"
+    },
     "generateFile": "接続ファイルを生成",
     "label": "接続をエクスポート",
     "restoreText": "パスフレーズと一緒に使用して、接続をShinkaiノードに復元します"
   },
   "extension": {
     "welcome": "Shinkai Visorを使用してAIでWebブラウジング体験を変えましょう ✨"
+  },
+  "galxe": {
+    "errors": {
+      "registerDesktopInstallation": "Shinkai Desktopのインストールを登録する際にエラーが発生しました。以前に使用されたEVMアドレスを確認してください。"
+    },
+    "form": {
+      "evmAddress": "EVMアドレス",
+      "evmAddressHelper": "Galxeで使用しているEVMアドレスを追加",
+      "proof": "証明",
+      "registerInstallation": "インストールを登録",
+      "signature": "署名"
+    },
+    "goToGalxeQuest": "Galxeクエストを確認",
+    "label": "Galxe検証",
+    "success": {
+      "registerDesktopInstallation": "Shinkai Desktopのインストールが正常に登録されました。Galxeクエストに登録されるまで数時間かかる場合があります。"
+    }
   },
   "inboxes": {
     "inboxName": "名前",
@@ -155,10 +201,53 @@
       "label": "メッセージを受信しました"
     }
   },
+  "ollama": {
+    "errors": {
+      "failedToFetch": "ローカルのOllamaモデルの取得に失敗しました。Ollamaが正常に動作していることを確認してください。"
+    }
+  },
+  "quickConnection": {
+    "connectingToNode": "ローカルShinkaiノードに接続中",
+    "form": {
+      "connect": "接続",
+      "nodeAddress": "ノードアドレス"
+    },
+    "label": "クイック接続"
+  },
+  "restoreConnection": {
+    "description": "接続ファイルとパスフレーズを使用します",
+    "form": {
+      "encryptedConnectionFile": "暗号化された接続ファイル",
+      "passphrase": "パスフレーズ"
+    },
+    "label": "接続を復元",
+    "restore": "復元"
+  },
   "settings": {
     "defaultAgent": "デフォルトAI",
+    "description": "アカウント設定を管理します",
+    "experimentalFeature": {
+      "label": "実験的な機能を有効にする"
+    },
     "exportConnection": {
       "label": "接続をエクスポート"
+    },
+    "label": "設定",
+    "language": {
+      "label": "言語",
+      "selectLanguage": "言語を選択"
+    },
+    "publicKeys": {
+      "label": "公開鍵",
+      "myDeviceEncryption": "私のデバイスの暗号化",
+      "myDeviceIdentity": "私のデバイスのIdentity",
+      "myDevicePublicKeys": "私のデバイスの公開鍵",
+      "nodeEncryption": "ノードの暗号化",
+      "nodePublicKeys": "ノードの公開鍵",
+      "nodeSignature": "ノードの署名",
+      "profileEncryption": "プロフィールの暗号化",
+      "profileIdentity": "プロフィールのIdentity",
+      "profilePublicKeys": "プロフィールの公開鍵"
     },
     "quickAccessButton": {
       "description": "クイックアクセスボタンはクリックして保持して移動できます",
@@ -168,9 +257,14 @@
       "label": "新しいデバイスを登録"
     },
     "shinkaiIdentity": {
+      "error": "Shinkai Identityの更新中にエラーが発生しました",
+      "goToShinkaiIdentity": "私のShinkai Identityに移動",
       "label": "Shinkaiアイデンティティ",
+      "registerIdentity": "Shinkai Identityを登録",
+      "success": "Shinkai Identityが正常に更新されました",
       "updatedIdentity": "Shinkaiアイデンティティが正常に更新されました"
     },
+    "shinkaiVersion": "Shinkai Desktopバージョン：",
     "shortcutKey": {
       "description": "サイドバーを起動するショートカットキーを変更します",
       "label": "ショートカットキー"
@@ -179,6 +273,14 @@
   "shinkaiNode": {
     "nodeAddress": "ノードアドレス",
     "nodeVersion": "ノードバージョン",
-    "restartNode": "Shinkaiノードを再起動してください"
+    "restartNode": "Shinkaiノードを再起動してください",
+    "unavailable": "Shinkaiノードが利用できません"
+  },
+  "vectorFs": {
+    "label": "私のAIファイルエクスプローラー",
+    "localFiles": "ローカルAIファイル"
+  },
+  "workflowPlayground": {
+    "label": "ワークフロープレイグラウンド"
   }
 }

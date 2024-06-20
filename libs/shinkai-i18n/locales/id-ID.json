@@ -16,7 +16,10 @@
       "apiKey": "Kunci API",
       "externalUrl": "URL Eksternal",
       "modelId": "ID Model",
-      "modelName": "Nama Model"
+      "modelName": "Nama Model",
+      "modelType": "Tipe Model",
+      "selectModel": "Pilih Model Anda",
+      "toggleCustomModel": "Tambahkan model kustom"
     },
     "label": "AI",
     "localAI": {
@@ -33,6 +36,9 @@
       "updateAgent": "AI berhasil diperbarui"
     },
     "switch": "Alihkan AI"
+  },
+  "aiFilesSearch": {
+    "label": "Pencarian Konten File AI"
   },
   "analytics": {
     "bulletPoints": {
@@ -80,7 +86,16 @@
     "limitReachedTitle": "Batas Telah Tercapai",
     "sendMessage": "Kirim Pesan"
   },
+  "chatDM": {
+    "create": "Buat Obrolan DM",
+    "form": {
+      "message": "Pesan",
+      "messagePlaceholder": "Masukkan pesan Anda",
+      "shinkaiIdentity": "Identitas Shinkai"
+    }
+  },
   "common": {
+    "alreadyHaveNode": "Sudah memiliki Node?",
     "back": "Kembali",
     "cancel": "Batal",
     "comingSoon": "Segera hadir - Awal Juli",
@@ -98,15 +113,25 @@
     "folders": "Folder",
     "getStarted": "Mulai",
     "iAgree": "Saya Setuju",
+    "logInShinkaiHosting": "Masuk ke Hosting Shinkai",
     "moreOptions": "Opsi Lainnya",
     "noThanks": "Tidak, Terima Kasih",
+    "optIn": "Pilih Masuk",
+    "optOut": "Pilih Keluar",
     "passphrase": "Frasa Sandi",
+    "quickConnect": "Koneksi Cepat",
     "rename": "Ganti Nama",
     "repeatPassphrase": "Konfirmasi frasa sandi",
     "save": "Simpan",
+    "shinkaiPrivate": "Shinkai Pribadi (Lokal)",
+    "signUpShinkaiHosting": "Daftar untuk Hosting Shinkai",
     "soon": "segera",
+    "termsAndConditionsText": "Saya menyetujui <a>Syarat Layanan</a> kami dan <b>Kebijakan Privasi</b>",
     "update": "Perbarui",
     "uploadFile": "Unggah Berkas"
+  },
+  "desktop": {
+    "welcome": "Transformasikan pengalaman desktop Anda menggunakan AI dengan Shinkai Desktop"
   },
   "disconnect": {
     "exportConnection": "Sebelum melanjutkan, harap<Link>ekspor koneksi Anda</Link>untuk memulihkan koneksi Anda kapan saja.",
@@ -121,12 +146,33 @@
   },
   "exportConnection": {
     "downloadText": "Unduh dan simpan berkas koneksi ini di tempat yang aman",
+    "form": {
+      "passphrase": "Frasa Sandi",
+      "repeatPassphrase": "Ulangi Frasa Sandi"
+    },
     "generateFile": "Buat berkas koneksi",
     "label": "Ekspor Koneksi",
     "restoreText": "Gunakan dengan frasa sandi Anda untuk memulihkan koneksi ke Node Shinkai Anda"
   },
   "extension": {
     "welcome": "Transformasikan pengalaman menjelajah web Anda menggunakan kecerdasan buatan dengan Shinkai Visor ✨"
+  },
+  "galxe": {
+    "errors": {
+      "registerDesktopInstallation": "Kesalahan saat mendaftarkan instalasi Desktop Shinkai Anda. Pastikan Alamat EVM Anda tidak pernah digunakan sebelumnya untuk mendaftar instalasi yang berbeda."
+    },
+    "form": {
+      "evmAddress": "Alamat EVM",
+      "evmAddressHelper": "Tambahkan Alamat EVM yang Anda gunakan di Galxe",
+      "proof": "Bukti",
+      "registerInstallation": "Daftarkan Instalasi",
+      "signature": "Tanda Tangan"
+    },
+    "goToGalxeQuest": "Periksa Galxe Quest kami",
+    "label": "Validasi Galxe",
+    "success": {
+      "registerDesktopInstallation": "Instalasi Desktop Shinkai Anda berhasil terdaftar. Mungkin memerlukan beberapa jam untuk terdaftar dalam quest Galxe."
+    }
   },
   "inboxes": {
     "inboxName": "Nama",
@@ -155,10 +201,53 @@
       "label": "Pesan Diterima"
     }
   },
+  "ollama": {
+    "errors": {
+      "failedToFetch": "Gagal mengambil model Ollama lokal. Pastikan Ollama berjalan dengan benar."
+    }
+  },
+  "quickConnection": {
+    "connectingToNode": "Menghubungkan ke Node Shinkai lokal Anda",
+    "form": {
+      "connect": "Hubungkan",
+      "nodeAddress": "Alamat Node"
+    },
+    "label": "Koneksi Cepat"
+  },
+  "restoreConnection": {
+    "description": "Gunakan file koneksi dan frasa sandi",
+    "form": {
+      "encryptedConnectionFile": "File Koneksi Terenkripsi",
+      "passphrase": "Frasa Sandi"
+    },
+    "label": "Pulihkan Koneksi",
+    "restore": "Pulihkan"
+  },
   "settings": {
     "defaultAgent": "AI Default",
+    "description": "Kelola preferensi pengaturan akun Anda.",
+    "experimentalFeature": {
+      "label": "Aktifkan Fitur Eksperimental"
+    },
     "exportConnection": {
       "label": "Ekspor koneksi"
+    },
+    "label": "Pengaturan",
+    "language": {
+      "label": "Bahasa",
+      "selectLanguage": "Pilih Bahasa"
+    },
+    "publicKeys": {
+      "label": "Kunci Publik",
+      "myDeviceEncryption": "Enkripsi Perangkat Saya",
+      "myDeviceIdentity": "Identitas Perangkat Saya",
+      "myDevicePublicKeys": "Kunci Publik Perangkat Saya",
+      "nodeEncryption": "Enkripsi Node",
+      "nodePublicKeys": "Kunci Publik Node",
+      "nodeSignature": "Tanda Tangan Node",
+      "profileEncryption": "Enkripsi Profil",
+      "profileIdentity": "Identitas Profil",
+      "profilePublicKeys": "Kunci Publik Profil"
     },
     "quickAccessButton": {
       "description": "Tombol Akses Cepat dapat dipindahkan dengan mengklik dan menahan.",
@@ -168,9 +257,14 @@
       "label": "Daftarkan perangkat baru"
     },
     "shinkaiIdentity": {
+      "error": "Kesalahan saat memperbarui Identitas Shinkai",
+      "goToShinkaiIdentity": "Pergi ke Identitas Shinkai Saya",
       "label": "Identitas Shinkai",
+      "registerIdentity": "Daftarkan Identitas Shinkai Anda",
+      "success": "Identitas Shinkai berhasil diperbarui",
       "updatedIdentity": "Identitas Shinkai berhasil diperbarui."
     },
+    "shinkaiVersion": "Versi Desktop Shinkai:",
     "shortcutKey": {
       "description": "Ubah tombol pintas untuk meluncurkan sidebar",
       "label": "Tombol Pintas"
@@ -179,6 +273,14 @@
   "shinkaiNode": {
     "nodeAddress": "Alamat Node",
     "nodeVersion": "Versi Node",
-    "restartNode": "Harap restart Node Shinkai Anda"
+    "restartNode": "Harap restart Node Shinkai Anda",
+    "unavailable": "Node Shinkai Anda tidak tersedia"
+  },
+  "vectorFs": {
+    "label": "Penjelajah File AI Saya",
+    "localFiles": "File AI Lokal"
+  },
+  "workflowPlayground": {
+    "label": "Taman Bermain Alur Kerja"
   }
 }

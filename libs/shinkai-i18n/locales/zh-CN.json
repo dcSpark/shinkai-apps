@@ -16,7 +16,10 @@
       "apiKey": "API 密钥",
       "externalUrl": "外部 URL",
       "modelId": "模型 ID",
-      "modelName": "模型名称"
+      "modelName": "模型名称",
+      "modelType": "模型类型",
+      "selectModel": "选择您的模型",
+      "toggleCustomModel": "添加自定义模型"
     },
     "label": "AI",
     "localAI": {
@@ -33,6 +36,9 @@
       "updateAgent": "AI 更新成功"
     },
     "switch": "切换 AI"
+  },
+  "aiFilesSearch": {
+    "label": "AI文件内容搜索"
   },
   "analytics": {
     "bulletPoints": {
@@ -80,7 +86,16 @@
     "limitReachedTitle": "已达到限制",
     "sendMessage": "发送消息"
   },
+  "chatDM": {
+    "create": "创建直接消息聊天",
+    "form": {
+      "message": "消息",
+      "messagePlaceholder": "输入您的消息",
+      "shinkaiIdentity": "Shinkai身份"
+    }
+  },
   "common": {
+    "alreadyHaveNode": "已有节点？",
     "back": "返回",
     "cancel": "取消",
     "comingSoon": "即将到来 - 七月初",
@@ -98,15 +113,25 @@
     "folders": "文件夹",
     "getStarted": "开始",
     "iAgree": "我同意",
+    "logInShinkaiHosting": "登录Shinkai Hosting",
     "moreOptions": "更多选项",
     "noThanks": "不，谢谢",
+    "optIn": "选择加入",
+    "optOut": "选择退出",
     "passphrase": "密码短语",
+    "quickConnect": "快速连接",
     "rename": "重命名",
     "repeatPassphrase": "确认密码短语",
     "save": "保存",
+    "shinkaiPrivate": "Shinkai私有（本地）",
+    "signUpShinkaiHosting": "注册Shinkai Hosting",
     "soon": "即将",
+    "termsAndConditionsText": "我同意我们的<a>服务条款</a>和<b>隐私政策</b>",
     "update": "更新",
     "uploadFile": "上传文件"
+  },
+  "desktop": {
+    "welcome": "使用Shinkai Desktop利用人工智能改变您的桌面体验"
   },
   "disconnect": {
     "exportConnection": "在继续之前，请<Link>导出您的连接</Link>以随时恢复连接。",
@@ -121,12 +146,33 @@
   },
   "exportConnection": {
     "downloadText": "下载并妥善保管此连接文件",
+    "form": {
+      "passphrase": "密码",
+      "repeatPassphrase": "重复密码"
+    },
     "generateFile": "生成连接文件",
     "label": "导出连接",
     "restoreText": "使用您的密码短语来恢复与 Shinkai 节点的连接"
   },
   "extension": {
     "welcome": "使用 Shinkai Visor ✨ 变革您的网页浏览体验"
+  },
+  "galxe": {
+    "errors": {
+      "registerDesktopInstallation": "注册Shinkai Desktop安装时出错。请确保您的EVM地址之前未用于注册其他安装。"
+    },
+    "form": {
+      "evmAddress": "EVM地址",
+      "evmAddressHelper": "添加您在Galxe中使用的EVM地址",
+      "proof": "证明",
+      "registerInstallation": "注册安装",
+      "signature": "签名"
+    },
+    "goToGalxeQuest": "查看我们的Galxe任务",
+    "label": "Galxe验证",
+    "success": {
+      "registerDesktopInstallation": "您的Shinkai Desktop安装已成功注册。可能需要几个小时才能在Galxe任务中注册。"
+    }
   },
   "inboxes": {
     "inboxName": "名称",
@@ -155,10 +201,53 @@
       "label": "已收到消息"
     }
   },
+  "ollama": {
+    "errors": {
+      "failedToFetch": "无法获取本地Ollama模型。请确保Ollama正常运行。"
+    }
+  },
+  "quickConnection": {
+    "connectingToNode": "连接到您的本地Shinkai节点",
+    "form": {
+      "connect": "连接",
+      "nodeAddress": "节点地址"
+    },
+    "label": "快速连接"
+  },
+  "restoreConnection": {
+    "description": "使用连接文件和密码",
+    "form": {
+      "encryptedConnectionFile": "加密连接文件",
+      "passphrase": "密码"
+    },
+    "label": "恢复连接",
+    "restore": "恢复"
+  },
   "settings": {
     "defaultAgent": "默认 AI",
+    "description": "管理您的帐户设置偏好。",
+    "experimentalFeature": {
+      "label": "启用实验性功能"
+    },
     "exportConnection": {
       "label": "导出连接"
+    },
+    "label": "设置",
+    "language": {
+      "label": "语言",
+      "selectLanguage": "选择语言"
+    },
+    "publicKeys": {
+      "label": "公钥",
+      "myDeviceEncryption": "我的设备加密",
+      "myDeviceIdentity": "我的设备身份",
+      "myDevicePublicKeys": "我的设备公钥",
+      "nodeEncryption": "节点加密",
+      "nodePublicKeys": "节点公钥",
+      "nodeSignature": "节点签名",
+      "profileEncryption": "个人资料加密",
+      "profileIdentity": "个人资料身份",
+      "profilePublicKeys": "个人资料公钥"
     },
     "quickAccessButton": {
       "description": "可以通过点击和按住来移动快速访问按钮。",
@@ -168,9 +257,14 @@
       "label": "注册新设备"
     },
     "shinkaiIdentity": {
+      "error": "更新Shinkai身份时出错",
+      "goToShinkaiIdentity": "前往我的Shinkai身份",
       "label": "Shinkai 身份",
+      "registerIdentity": "注册您的Shinkai身份",
+      "success": "Shinkai身份更新成功",
       "updatedIdentity": "Shinkai 身份更新成功。"
     },
+    "shinkaiVersion": "Shinkai Desktop版本：",
     "shortcutKey": {
       "description": "修改启动侧边栏的快捷键",
       "label": "快捷键"
@@ -179,6 +273,14 @@
   "shinkaiNode": {
     "nodeAddress": "节点地址",
     "nodeVersion": "节点版本",
-    "restartNode": "请重启您的 Shinkai 节点"
+    "restartNode": "请重启您的 Shinkai 节点",
+    "unavailable": "您的Shinkai节点不可用"
+  },
+  "vectorFs": {
+    "label": "我的AI文件资源管理器",
+    "localFiles": "本地AI文件"
+  },
+  "workflowPlayground": {
+    "label": "工作流程游乐场"
   }
 }
