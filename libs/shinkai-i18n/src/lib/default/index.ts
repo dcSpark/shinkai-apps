@@ -267,6 +267,8 @@ export default {
   },
   common: {
     search: 'Search',
+    next: 'Next',
+    clickToUpload: 'Click to upload or drag and drop',
     upload: 'Upload',
     clearSearch: 'Clear Search',
     searchPlaceholder: 'Search...',
@@ -311,6 +313,8 @@ export default {
     install: 'Install',
     unselectAll: 'Unselect All',
     done: 'Done',
+    resetFilters: 'Reset Filters',
+    folderLocation: 'Folder Location:',
   },
   quickConnection: {
     label: 'Quick Connection',

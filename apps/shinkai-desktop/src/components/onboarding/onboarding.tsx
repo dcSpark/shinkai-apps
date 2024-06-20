@@ -305,7 +305,7 @@ export const Stepper = ({ steps }: StepperProps) => {
               </span>
             ) : (
               <span className="text-gray-80 truncate capitalize">
-                {currentPercents}% - Next,{' '}
+                {currentPercents}% - {t('common.next')},{' '}
                 {
                   steps.find(
                     (step) => step.status === GetStartedStatus.NotStarted,

@@ -193,13 +193,15 @@ const SearchNodeFiles = () => {
                   type="submit"
                 >
                   <SearchIcon />
-                  <span className="sr-only">Search</span>
+                  <span className="sr-only">{t('common.search')}</span>
                 </Button>
               </div>
 
               <div className="flex items-center gap-2 self-start px-2 py-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-gray-80 text-xs">Folder Location:</span>
+                  <span className="text-gray-80 text-xs">
+                    {t('common.folderLocation')}
+                  </span>
                   <SelectFolderButton />
                 </div>
                 <div className="flex items-center">
@@ -216,7 +218,7 @@ const SearchNodeFiles = () => {
                       type="button"
                       variant="link"
                     >
-                      Reset Filters
+                      {t('common.resetFilters')}
                     </Button>
                   )}
                 </div>
