@@ -7,6 +7,8 @@ import { colors } from 'consola/utils';
 import { diff } from 'just-diff';
 import { unset } from 'lodash';
 
+// @ts-expect-error i18nrc
+import i18nConfig from '../.i18nrc';
 import { divider, readJSON, tagWhite, writeJSON } from '../src/lib/utils';
 
 const DEFAULT_LOCALE = 'en-US';
@@ -39,7 +41,7 @@ const genDiff = () => {
 
   const clearLocals = [];
 
-  for (const locale of [DEFAULT_LOCALE]) {
+  for (const locale of [i18nConfig.entryLocale, ...i18nConfig.outputLocales]) {
     const localeFilepath = outputLocaleJsonFilepath(locale);
     if (!existsSync(localeFilepath)) continue;
     const localeJSON = readJSON(localeFilepath);
