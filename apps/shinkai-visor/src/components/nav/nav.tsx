@@ -21,7 +21,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   Tooltip,
@@ -31,8 +30,6 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import {
-  AddAgentIcon,
-  AgentIcon,
   AISearchContentIcon,
   AiTasksIcon,
   ArchivedIcon,

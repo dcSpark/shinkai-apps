@@ -12,7 +12,7 @@ const initI18n = () => {
     .use(initReactI18next)
     .use(LanguageDetector)
     .use(
-      resourcesToBackend(async (lng: string, ns: string) => {
+      resourcesToBackend(async (lng: string) => {
         if (isDev && lng === 'en-US') return import(`./default`);
         return import(`../../locales/${normalizeLocale(lng)}.json`);
       }),
