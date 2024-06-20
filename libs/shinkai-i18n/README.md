@@ -27,7 +27,7 @@ module.exports = {
 };
 ```
 
-2. Run `npx nx i18n shinkai-i18n` to generate the translations for the new locale.
+2. Run `npx nx i18n shinkai-i18n` to generate the translations for the new locale. Make sure you added your OPENAI_API_KEY in the `.env` file. 
 
 ### Add a new translation key
 
