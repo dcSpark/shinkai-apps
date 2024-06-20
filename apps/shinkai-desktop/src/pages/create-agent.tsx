@@ -92,7 +92,7 @@ const CreateAgentPage = () => {
       });
     },
     onError: (error) => {
-      toast.error('Error adding agent', {
+      toast.error(t('agents.errors.createAgent'), {
         description: error instanceof Error ? error.message : error,
       });
     },
@@ -129,12 +129,9 @@ const CreateAgentPage = () => {
 
   useEffect(() => {
     if (isOllamaModelsError) {
-      toast.error(
-        'Failed to fetch local Ollama models. Please ensure Ollama is running correctly.',
-        {
-          description: ollamaModelsError?.message,
-        },
-      );
+      toast.error(t('ollama.errors.failedToFetch'), {
+        description: ollamaModelsError?.message,
+      });
     }
   }, [isOllamaModelsError, ollamaModelsError?.message]);
 
@@ -238,7 +235,9 @@ const CreateAgentPage = () => {
                       field.value && 'text-white',
                     )}
                   >
-                    <label htmlFor="custom-model">Add a custom model</label>
+                    <label htmlFor="custom-model">
+                      {t('agents.form.toggleCustomModel')}
+                    </label>
                   </div>
                 </FormItem>
               )}
@@ -249,7 +248,7 @@ const CreateAgentPage = () => {
                 name="model"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Select your Model</FormLabel>
+                    <FormLabel>{t('agents.form.selectModel')}</FormLabel>
                     <Select
                       defaultValue={field.value}
                       onValueChange={field.onChange}
@@ -281,7 +280,7 @@ const CreateAgentPage = () => {
                 name="modelType"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Model Type</FormLabel>
+                    <FormLabel>{t('agents.form.modelType')}</FormLabel>
                     <Select
                       defaultValue={field.value as unknown as string}
                       onValueChange={field.onChange}

@@ -1,3 +1,4 @@
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useSyncOllamaModels } from '@shinkai_network/shinkai-node-state/lib/mutations/syncOllamaModels/useSyncOllamaModels';
 import {
   Badge,
@@ -38,6 +39,7 @@ import { ModelSpeedTag } from './components/model-speed-tag';
 
 export const OllamaModels = () => {
   const auth = useAuth((auth) => auth.auth);
+  const { t } = useTranslation();
   const { data: ollamaApiUrl } = useShinkaiNodeGetOllamaApiUrlQuery();
   const { data: defaultModel } = useShinkaiNodeGetDefaultModel();
   const ollamaConfig = { host: ollamaApiUrl || 'http://127.0.0.1:11435' };
@@ -62,11 +64,22 @@ export const OllamaModels = () => {
   });
   const { mutateAsync: ollamaRemove } = useOllamaRemoveMutation(ollamaConfig, {
     onSuccess: (_, input) => {
-      toast.success(`Model ${input.model} removed`);
+      toast.success(
+        t('shinkaiNode.models.success.modelRemoved', {
+          modelName: input.model,
+        }),
+      );
       installedOllamaModelsMap.delete(input.model);
     },
     onError: (error, input) => {
-      toast.error(`Error removing ${input.model}. ${error.message}`);
+      toast.error(
+        t('shinkaiNode.models.errors.modelRemoved', {
+          modelName: input.model,
+        }),
+        {
+          description: error.message,
+        },
+      );
     },
   });
 
@@ -81,7 +94,11 @@ export const OllamaModels = () => {
         }
         pullingModelsMap.set(model, progress);
         if (progress.status === 'success') {
-          toast.success(`Model ${model} pull completed`);
+          toast.success(
+            t('shinkaiNode.models.success.modelInstalled', {
+              modelName: model,
+            }),
+          );
           if (auth) {
             syncOllamaModels({
               nodeAddress: auth?.node_address ?? '',
@@ -97,11 +114,22 @@ export const OllamaModels = () => {
           }
           break;
         } else if (progress.status === 'error') {
-          toast.error(`Error pulling model ${model}}`);
+          toast.error(
+            t('shinkaiNode.models.errors.modelInstalled', {
+              modelName: model,
+            }),
+          );
         }
       }
     } catch (error) {
-      toast.error(`Error pulling model ${model}. ${error?.toString()}`);
+      toast.error(
+        t('shinkaiNode.models.errors.modelInstalled', {
+          modelName: model,
+        }),
+        {
+          description: error?.toString(),
+        },
+      );
     } finally {
       pullingModelsMap.delete(model);
     }
@@ -154,11 +182,15 @@ export const OllamaModels = () => {
       <Table className="w-full border-collapse text-[13px]">
         <TableHeader className="bg-gray-400 text-xs">
           <TableRow>
-            <TableHead className="md:w-[300px] lg:w-[480px]">Models</TableHead>
-            <TableHead>Data Limit</TableHead>
-            <TableHead>Quality</TableHead>
-            <TableHead>Speed</TableHead>
-            <TableHead className="w-[80px]">Size</TableHead>
+            <TableHead className="md:w-[300px] lg:w-[480px]">
+              {t('shinkaiNode.models.table.models')}
+            </TableHead>
+            <TableHead> {t('shinkaiNode.models.table.dataLimit')}</TableHead>
+            <TableHead>{t('shinkaiNode.models.table.quality')}</TableHead>
+            <TableHead>{t('shinkaiNode.models.table.quality')}</TableHead>
+            <TableHead className="w-[80px]">
+              {t('shinkaiNode.models.table.size')}
+            </TableHead>
             <TableHead className="w-[180px]" />
           </TableRow>
         </TableHeader>
@@ -181,7 +213,7 @@ export const OllamaModels = () => {
                           )}
                           variant="outline"
                         >
-                          Recommended
+                          {t('common.recommended')}
                         </Badge>
                       )}
                     </div>
@@ -195,7 +227,8 @@ export const OllamaModels = () => {
                   </div>
                 </TableCell>
                 <TableCell className="whitespace-nowrap">
-                  {Math.round((model.contextLength * 0.75) / 380)} Book Pages
+                  {Math.round((model.contextLength * 0.75) / 380)}{' '}
+                  {t('shinkaiNode.models.table.bookPages')}
                 </TableCell>
                 <TableCell>
                   <ModelQuailityTag quality={model.quality} />
@@ -223,7 +256,7 @@ export const OllamaModels = () => {
                         variant={'destructive'}
                       >
                         <Minus className="mr-2 h-3 w-3" />
-                        Remove
+                        {t('common.remove')}
                       </Button>
                     ) : pullingModelsMap.get(model.fullName) ? (
                       <div className="flex flex-col items-center gap-1">
@@ -254,7 +287,7 @@ export const OllamaModels = () => {
                         variant={'outline'}
                       >
                         <Download className="mr-2 h-4 w-4" />
-                        Install
+                        {t('common.install')}
                       </Button>
                     )}
                   </motion.div>
@@ -266,7 +299,9 @@ export const OllamaModels = () => {
         <TableFooter className="text-right">
           <TableRow>
             <TableCell colSpan={6}>
-              <span className="text-gray-80 text-xs">Powered by Ollama</span>
+              <span className="text-gray-80 text-xs">
+                {t('shinkaiNode.models.poweredByOllama')}
+              </span>
             </TableCell>
           </TableRow>
         </TableFooter>

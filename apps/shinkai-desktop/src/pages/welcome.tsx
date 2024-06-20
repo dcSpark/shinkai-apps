@@ -1,4 +1,5 @@
-import { buttonVariants,Checkbox } from '@shinkai_network/shinkai-ui';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { buttonVariants, Checkbox } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Link } from 'react-router-dom';
 
@@ -6,6 +7,7 @@ import { useSettings } from '../store/settings';
 import OnboardingLayout from './layout/onboarding-layout';
 
 const TermsAndConditionsPage = () => {
+  const { t, Trans } = useTranslation();
   const termsAndConditionsAccepted = useSettings(
     (state) => state.termsAndConditionsAccepted,
   );
@@ -16,9 +18,8 @@ const TermsAndConditionsPage = () => {
   return (
     <OnboardingLayout>
       <div className="flex h-full flex-col justify-between">
-        <p className="text-center text-3xl font-medium leading-[1.5] tracking-wide ">
-          Transform your desktop experience using AI with Shinkai Desktop{' '}
-          <span aria-hidden> 🔑</span>
+        <p className="text-center text-3xl font-medium leading-[1.5] tracking-wide">
+          {t('desktop.welcome')} <span aria-hidden> 🔑</span>
         </p>
         <div className="">
           <div className="flex flex-col gap-10">
@@ -33,24 +34,27 @@ const TermsAndConditionsPage = () => {
                 htmlFor="terms"
               >
                 <span className={'leading-4 tracking-wide'}>
-                  I agree to our{' '}
-                  <a
-                    className={'text-white underline'}
-                    href={'https://www.shinkai.com/terms-of-service'}
-                    rel="noreferrer"
-                    target={'_blank'}
-                  >
-                    Terms of Service
-                  </a>{' '}
-                  and{' '}
-                  <a
-                    className={'text-white underline'}
-                    href={'https://www.shinkai.com/privacy-policy'}
-                    rel="noreferrer"
-                    target={'_blank'}
-                  >
-                    Privacy Policy
-                  </a>
+                  <Trans
+                    components={{
+                      a: (
+                        <a
+                          className={'text-white underline'}
+                          href={'https://www.shinkai.com/terms-of-service'}
+                          rel="noreferrer"
+                          target={'_blank'}
+                        />
+                      ),
+                      b: (
+                        <a
+                          className={'text-white underline'}
+                          href={'https://www.shinkai.com/privacy-policy'}
+                          rel="noreferrer"
+                          target={'_blank'}
+                        />
+                      ),
+                    }}
+                    i18nKey="common.termsAndConditionsText"
+                  />
                 </span>
               </label>
             </div>
@@ -64,7 +68,7 @@ const TermsAndConditionsPage = () => {
               )}
               to={'/analytics'}
             >
-              Get Started
+              {t('common.getStarted')}
             </Link>
           </div>
         </div>

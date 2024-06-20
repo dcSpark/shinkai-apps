@@ -12,11 +12,12 @@ import { FixedHeaderLayout } from './layout/simple-layout';
 
 const AIModelInstallation = () => {
   const { t } = useTranslation();
+
   return (
     <QueryClientProvider client={shinkaiNodeQueryClient}>
       <FixedHeaderLayout
         className="relative flex w-full max-w-6xl flex-col gap-2 px-4"
-        title={t('agents.installAI')}
+        title={t('agents.localAI.installTitle')}
       >
         <ResourcesBanner />
         <OllamaModels />

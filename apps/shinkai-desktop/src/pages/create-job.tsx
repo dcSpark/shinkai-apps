@@ -331,13 +331,13 @@ const CreateJobPage = () => {
                       >
                         <AISearchContentIcon className="h-5 w-5" />
                         <p className="sr-only text-xs text-white">
-                          AI Files Content Search
+                          {t('aiFilesSearch.label')}
                         </p>
                       </Button>
                     </TooltipTrigger>
                     <TooltipPortal>
                       <TooltipContent sideOffset={0}>
-                        Search AI Files Content
+                        {t('aiFilesSearch.label')}
                       </TooltipContent>
                     </TooltipPortal>
                   </Tooltip>
@@ -353,7 +353,9 @@ const CreateJobPage = () => {
                 >
                   <div className="flex items-center gap-2">
                     <FilesIcon className="h-4 w-4" />
-                    <p className="text-sm text-white">Local AI Files</p>
+                    <p className="text-sm text-white">
+                      {t('vectorFs.localFiles')}
+                    </p>
                   </div>
                   {Object.keys(selectedKeys ?? {}).length > 0 && (
                     <Badge className="bg-brand text-white">
@@ -366,7 +368,9 @@ const CreateJobPage = () => {
                   name="files"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="sr-only">Upload a file</FormLabel>
+                      <FormLabel className="sr-only">
+                        {t('common.uploadFile')}
+                      </FormLabel>
                       <FormControl>
                         <FileUploader
                           accept={allowedFileExtensions.join(',')}

@@ -1,0 +1,430 @@
+{
+  "agents": {
+    "add": "Añadir IA",
+    "addManually": "Añadir IA Manualmente",
+    "delete": {
+      "description": "¿Estás seguro de que deseas eliminar esta IA? Esta acción no se puede deshacer.",
+      "label": "Eliminar IA"
+    },
+    "errors": {
+      "createAgent": "Error al añadir IA",
+      "deleteAgent": "Error al eliminar IA",
+      "updateAgent": "Error al actualizar IA"
+    },
+    "form": {
+      "agentName": "Nombre de la IA",
+      "apiKey": "Clave API",
+      "externalUrl": "URL Externa",
+      "modelId": "ID del Modelo",
+      "modelName": "Nombre del Modelo",
+      "modelType": "Tipo de Modelo",
+      "selectModel": "Selecciona tu Modelo",
+      "toggleCustomModel": "Agregar un modelo personalizado"
+    },
+    "label": "IAs",
+    "localAI": {
+      "installText": "Después de instalar modelos de IA en tu máquina local, estarán disponibles como IA",
+      "installTitle": "Instalar Modelos de IA"
+    },
+    "notFound": {
+      "description": "Conecta tu primera IA para empezar a preguntar a Shinkai IA. Prueba conectando OpenAI",
+      "title": "No hay IAs disponibles"
+    },
+    "success": {
+      "createAgent": "IA creada con éxito",
+      "deleteAgent": "IA eliminada con éxito",
+      "updateAgent": "IA actualizada con éxito"
+    },
+    "switch": "Cambiar IA"
+  },
+  "aiFilesSearch": {
+    "description": "Busca para encontrar contenido en todos los archivos de tus archivos AI fácilmente",
+    "filesSelected": "Seleccionados {{count}} archivos",
+    "foundResults": "Encontrado {{count}} resultado",
+    "label": "Búsqueda de Contenido en Archivos de IA"
+  },
+  "analytics": {
+    "bulletPoints": {
+      "five": "❌ Nunca recopila tus consultas de IA",
+      "four": "❌ Nunca recopila tu dirección IP",
+      "one": "✅ Siempre te permite optar por no participar a través de Configuración",
+      "six": "❌ Nunca utiliza información personal con fines de entrenamiento",
+      "three": "✅ Envía información analítica sobre qué funciones utilizas pero sin ningún contenido o respuestas",
+      "two": "✅ Análisis aleatorios"
+    },
+    "label": "Analíticas",
+    "moreInfo": "Para obtener más información sobre nuestras prácticas de privacidad, consulta nuestra <a>Política de Privacidad</a>",
+    "title": "Ayúdanos a mejorar Shinkai"
+  },
+  "chat": {
+    "actives": {
+      "label": "Activos",
+      "notFound": "No se encontraron conversaciones activas."
+    },
+    "allMessagesLoaded": "Todos los mensajes anteriores han sido cargados ✅",
+    "archives": {
+      "archive": "Archivo",
+      "error": "Error al archivar la conversación",
+      "label": "Archivos",
+      "notFound": "No se encontraron conversaciones archivadas.",
+      "success": "Tu conversación ha sido archivada"
+    },
+    "chats": "Chats",
+    "context": {
+      "description": "Lista de carpetas y archivos utilizados como contexto para esta conversación",
+      "title": "Contexto de la Conversación"
+    },
+    "create": "Crear Chat de IA",
+    "emptyStateDescription": "Prueba con “Cómo hacer una solicitud HTTP en JavaScript”, “Dame las 10 mejores canciones de rock de los 80”, “Explícame cómo funciona internet”",
+    "emptyStateTitle": "Pregunta a Shinkai IA",
+    "enterMessage": "Introducir Mensaje",
+    "form": {
+      "message": "Cuéntanos la tarea que deseas realizar",
+      "messagePlaceholder": "Ej: Explícame cómo funciona internet...",
+      "selectAI": "Selecciona tu IA",
+      "setContext": "Establecer Contexto del Chat",
+      "setContextText": "Añade archivos o carpetas para que tu IA los utilice como contexto durante la conversación.",
+      "workflows": "Procesos"
+    },
+    "limitReachedDescription": "Has utilizado todas tus consultas del mes en este modelo/agente. Por favor, inicia un nuevo chat con otro agente.",
+    "limitReachedTitle": "Límite Alcanzado",
+    "sendMessage": "Enviar Mensaje"
+  },
+  "chatDM": {
+    "create": "Crear Chat DM",
+    "form": {
+      "message": "Mensaje",
+      "messagePlaceholder": "Ingresa tu mensaje",
+      "shinkaiIdentity": "Identidad Shinkai"
+    }
+  },
+  "common": {
+    "alreadyHaveNode": "¿Ya tienes un Nodo?",
+    "back": "Atrás",
+    "cancel": "Cancelar",
+    "clearSearch": "Limpiar búsqueda",
+    "clickToUpload": "Haz clic para subir o arrastra y suelta",
+    "comingSoon": "Próximamente - Principios de Julio",
+    "connect": "Conectar",
+    "continue": "Continuar",
+    "delete": "Eliminar",
+    "disconnect": "Desconectar",
+    "done": "Hecho",
+    "edit": "Editar",
+    "file": "Archivo",
+    "fileWithCount_one": "{{count}} Archivo",
+    "fileWithCount_other": "{{count}} Archivos",
+    "files": "Archivos",
+    "folderLocation": "Ubicación de la carpeta:",
+    "folderWithCount_one": "{{count}} Carpeta",
+    "folderWithCount_other": "{{count}} Carpetas",
+    "folders": "Carpetas",
+    "getStarted": "Empezar",
+    "iAgree": "Estoy de Acuerdo",
+    "install": "Instalar",
+    "logInShinkaiHosting": "Iniciar Sesión en Shinkai Hosting",
+    "moreOptions": "Más Opciones",
+    "next": "Siguiente",
+    "noThanks": "No, Gracias",
+    "optIn": "Optar por Participar",
+    "optOut": "Optar por No Participar",
+    "passphrase": "Frase de Paso",
+    "quickConnect": "Conexión Rápida",
+    "recommended": "Recomendado",
+    "remove": "Eliminar",
+    "rename": "Renombrar",
+    "repeatPassphrase": "Confirmar frase de paso",
+    "reset": "Restablecer",
+    "resetFilters": "Restablecer filtros",
+    "restore": "Restaurar",
+    "save": "Guardar",
+    "search": "Buscar",
+    "searchPlaceholder": "Buscar...",
+    "seeOptions": "Ver Opciones",
+    "shinkaiPrivate": "Shinkai Privado (Local)",
+    "signUpShinkaiHosting": "Registrarse en Shinkai Hosting",
+    "soon": "pronto",
+    "termsAndConditionsText": "Acepto nuestros <a>Términos de Servicio</a> y <b>Política de Privacidad</b>",
+    "unselectAll": "Deseleccionar todo",
+    "update": "Actualizar",
+    "upload": "Subir",
+    "uploadFile": "Subir un Archivo"
+  },
+  "desktop": {
+    "welcome": "Transforma tu experiencia de escritorio utilizando IA con Shinkai Desktop"
+  },
+  "disconnect": {
+    "exportConnection": "Antes de continuar, por favor <Link>exporta tu conexión</Link> para restaurarla en cualquier momento.",
+    "modalDescription": "¿Estás seguro de que deseas desconectar? Esto eliminará permanentemente tus datos",
+    "modalTitle": "Desconectar Shinkai"
+  },
+  "errors": {
+    "nodeUnavailable": {
+      "description": "Estamos teniendo problemas para conectar con tu Nodo Shinkai. Tu nodo puede estar desconectado o tu conexión a internet puede estar caída.",
+      "title": "Nodo No Disponible"
+    }
+  },
+  "exportConnection": {
+    "downloadText": "Descarga y guarda este archivo de conexión en un lugar seguro",
+    "form": {
+      "passphrase": "Frase de Contraseña",
+      "repeatPassphrase": "Repetir Frase de Contraseña"
+    },
+    "generateFile": "Generar archivo de conexión",
+    "label": "Exportar Conexión",
+    "restoreText": "Úsalo con tu frase de paso para restaurar la conexión a tu Nodo Shinkai"
+  },
+  "extension": {
+    "welcome": "Transforma tu experiencia de navegación web utilizando IA con Shinkai Visor ✨"
+  },
+  "galxe": {
+    "errors": {
+      "registerDesktopInstallation": "Error al registrar tu instalación de Shinkai Desktop. Por favor, asegúrate de que tu Dirección EVM no se haya utilizado previamente para registrar una instalación diferente."
+    },
+    "form": {
+      "evmAddress": "Dirección EVM",
+      "evmAddressHelper": "Agrega la Dirección EVM que estás usando en Galxe",
+      "proof": "Prueba",
+      "registerInstallation": "Registrar Instalación",
+      "signature": "Firma"
+    },
+    "goToGalxeQuest": "Ver nuestra Búsqueda Galxe",
+    "label": "Validación Galxe",
+    "success": {
+      "registerDesktopInstallation": "Tu instalación de Shinkai Desktop se registró exitosamente. Puede tardar algunas horas en registrarse en la búsqueda Galxe."
+    }
+  },
+  "inboxes": {
+    "inboxName": "Nombre",
+    "updateName": "Actualizar nombre del buzón"
+  },
+  "layout": {
+    "menuItems": {
+      "agents": "IAs",
+      "aiTasks": "Tareas de IA",
+      "chats": "Chats",
+      "disconnect": "Desconectar",
+      "mySubscriptions": "Mis Suscripciones",
+      "settings": "Ajustes",
+      "subscriptions": "Explorar Suscripciones",
+      "vectorFs": "Explorador de Mis Archivos de IA",
+      "vectorSearch": "Búsqueda de Contenido de Archivos de IA",
+      "workflowPlayground": "Área de Juegos de Procesos"
+    },
+    "sidebar": {
+      "toggle": "Alternar barra lateral"
+    }
+  },
+  "notifications": {
+    "messageReceived": {
+      "description": "Has recibido una respuesta de {{inboxName}}",
+      "label": "Mensaje Recibido"
+    }
+  },
+  "ollama": {
+    "errors": {
+      "failedToFetch": "Error al obtener modelos locales de Ollama. Por favor, asegúrate de que Ollama esté funcionando correctamente."
+    }
+  },
+  "onboardingChecklist": {
+    "addAI": "Añadir IA",
+    "addAIDescription": "Agrega un agente de IA que utilice tu LLM favorito",
+    "askFiles": "Hacer preguntas a los archivos",
+    "askFilesButton": "Crear Chat con Archivos",
+    "askFilesDescription": "Chatea con tus archivos. Haz cualquier pregunta, encuentra información, obtén resúmenes y más.",
+    "completedSteps": "Has completado todos los pasos",
+    "createAIChat": "Crear Chat de IA",
+    "createAIChatDescription": "Inicia una conversación con tu IA",
+    "dismiss": "Descartar Lista de Verificación",
+    "getStartedChecklist": "Lista de verificación para comenzar",
+    "getStartedText": "Comienza con Shinkai",
+    "setupShinkaiDesktop": "Configurar Shinkai Desktop",
+    "setupShinkaiDesktopDescription": "Configura Shinkai Desktop para comenzar",
+    "uploadAFile": "Subir un archivo",
+    "uploadAFileDescription": "Guarda tus notas, sitios web, documentos y otros de forma segura en un solo lugar."
+  },
+  "quickConnection": {
+    "connectingToNode": "Conectando a tu Nodo Shinkai local",
+    "form": {
+      "connect": "Conectar",
+      "nodeAddress": "Dirección del Nodo"
+    },
+    "label": "Conexión Rápida"
+  },
+  "registrationCode": {
+    "create": "Crear Código de Registro",
+    "label": "Código de Registro"
+  },
+  "restoreConnection": {
+    "description": "Utiliza un archivo de conexión y una frase de contraseña",
+    "form": {
+      "encryptedConnectionFile": "Archivo de Conexión Encriptado",
+      "passphrase": "Frase de Contraseña"
+    },
+    "label": "Restaurar Conexión",
+    "restore": "Restaurar"
+  },
+  "settings": {
+    "defaultAgent": "IA Predeterminada",
+    "description": "Administra tus preferencias de configuración de cuenta.",
+    "experimentalFeature": {
+      "label": "Activar Funciones Experimentales"
+    },
+    "exportConnection": {
+      "label": "Exportar conexión"
+    },
+    "label": "Configuración",
+    "language": {
+      "label": "Idioma",
+      "selectLanguage": "Seleccionar Idioma"
+    },
+    "publicKeys": {
+      "label": "Claves Públicas",
+      "myDeviceEncryption": "Cifrado de Mi Dispositivo",
+      "myDeviceIdentity": "Identidad de Mi Dispositivo",
+      "myDevicePublicKeys": "Claves Públicas de Mi Dispositivo",
+      "nodeEncryption": "Cifrado del Nodo",
+      "nodePublicKeys": "Claves Públicas del Nodo",
+      "nodeSignature": "Firma del Nodo",
+      "profileEncryption": "Cifrado del Perfil",
+      "profileIdentity": "Identidad del Perfil",
+      "profilePublicKeys": "Claves Públicas del Perfil",
+      "show": "Mostrar Claves Públicas"
+    },
+    "quickAccessButton": {
+      "description": "El Botón de Acceso Rápido se puede mover haciendo clic y manteniendo presionado.",
+      "label": "Mostrar Botón de Acceso Rápido de Shinkai"
+    },
+    "registerNewCode": {
+      "label": "Registrar nuevo dispositivo"
+    },
+    "shinkaiIdentity": {
+      "error": "Error al actualizar la Identidad Shinkai",
+      "goToShinkaiIdentity": "Ir a Mi Identidad Shinkai",
+      "label": "Identidad Shinkai",
+      "registerIdentity": "Registrar tu Identidad Shinkai",
+      "success": "Identidad Shinkai actualizada exitosamente",
+      "updatedIdentity": "Identidad Shinkai actualizada con éxito."
+    },
+    "shinkaiVersion": "Versión de Shinkai Desktop:",
+    "shortcutKey": {
+      "description": "Modifica la tecla de acceso directo para abrir la barra lateral",
+      "label": "Tecla de Acceso Directo"
+    }
+  },
+  "shinkaiNode": {
+    "manager": "Gestor de Nodos de Shinkai",
+    "models": {
+      "errors": {
+        "modelInstalled": "Error al instalar el modelo {{modelName}}",
+        "modelRemoved": "Error al eliminar el modelo {{modelName}}"
+      },
+      "poweredByOllama": "Desarrollado por Ollama",
+      "success": {
+        "modelInstalled": "Modelo {{modelName}} instalado exitosamente",
+        "modelRemoved": "Modelo {{modelName}} eliminado exitosamente"
+      },
+      "table": {
+        "bookPages": "Páginas del libro",
+        "dataLimit": "Límite de datos",
+        "models": "Modelos",
+        "quality": "Calidad",
+        "size": "Tamaño",
+        "speed": "Velocidad"
+      }
+    },
+    "nodeAddress": "Dirección del Nodo",
+    "nodeVersion": "Versión del Nodo",
+    "notifications": {
+      "downloadedModel": "Modelo de IA {{modeName}} descargado exitosamente",
+      "downloadingModel": "Descargando modelo de IA {{modeName}} - {{progress}}%",
+      "errorSyncOllama": "Error al sincronizar los modelos locales de Ollama con tu Nodo Shinkai",
+      "optionsRestored": "Opciones restauradas a los valores predeterminados",
+      "removedNote": "Se eliminó el almacenamiento de tu Nodo Shinkai local",
+      "runningNode": "Tu Nodo Shinkai local está en funcionamiento",
+      "runningOllama": "Tu Ollama local está en funcionamiento",
+      "startingDownload": "Iniciando descarga para el modelo de IA {{modeName}}",
+      "startingNode": "Iniciando tu Nodo Shinkai local",
+      "startingOllama": "Iniciando tu Ollama local",
+      "stopNode": "Deteniendo tu Nodo Shinkai local",
+      "stopOllama": "Deteniendo tu Ollama local",
+      "stoppedNode": "Tu Nodo Shinkai local se detuvo",
+      "stoppedOllama": "Tu Ollama local se detuvo",
+      "syncedOllama": "Los modelos locales de Ollama se han sincronizado con tu Nodo Shinkai"
+    },
+    "resetNodeWarning": {
+      "description": "Su nodo Shinkai está actualmente bloqueado por claves existentes. Para volver a conectarse, tiene dos opciones:",
+      "option1": "<b>Restaurar:</b> Intente restaurar su conexión utilizando las claves respaldadas.",
+      "option2": "<b>Restablecer:</b> Elimine el almacenamiento de su nodo Shinkai (esto eliminará permanentemente todos sus datos).",
+      "title": "No se puede conectar"
+    },
+    "restartNode": "Por favor, reinicia tu Nodo Shinkai",
+    "unavailable": "Tu Nodo Shinkai no está disponible"
+  },
+  "vectorFs": {
+    "actions": {
+      "addNew": "Añadir nuevo",
+      "copy": "Copiar",
+      "createFolder": "Añadir nueva carpeta",
+      "delete": "Eliminar",
+      "move": "Mover",
+      "searchWithinFolder": "Buscar dentro de la carpeta",
+      "share": "Compartir",
+      "unshare": "Dejar de compartir",
+      "uploadFile": "Subir archivo",
+      "uploadFileText": "Subir tus archivos los transforma para estar listos en AI y disponibles para usar en Shinkai."
+    },
+    "allFiles": "Todos los archivos",
+    "deleteFileConfirmation": "¿Estás seguro de que quieres eliminar este archivo? Esta acción no se puede deshacer.",
+    "deleteFolderConfirmation": "¿Estás seguro de que quieres eliminar esta carpeta? Esta acción no se puede deshacer.",
+    "emptyState": {
+      "noFiles": "No se encontraron archivos",
+      "noFilesAndFolders": "Este será el hogar de todos tus archivos.",
+      "noFilesAndFoldersDescription": "Usa el botón \"+\" para comenzar a subir archivos.",
+      "noSharedFolders": "Tus carpetas compartidas se mostrarán aquí."
+    },
+    "errors": {
+      "fileCopied": "Error al copiar el archivo",
+      "fileDeleted": "Error al eliminar el archivo",
+      "fileMoved": "Error al mover el archivo",
+      "filesUploaded": "Error al subir archivos",
+      "folderCopied": "Error al copiar la carpeta",
+      "folderCreated": "Error al crear la carpeta",
+      "folderDeleted": "Error al eliminar la carpeta",
+      "folderMoved": "Error al mover la carpeta",
+      "folderShared": "Error al compartir la carpeta",
+      "folderUnshared": "Error al dejar de compartir la carpeta"
+    },
+    "filesSelected": "{{count}} seleccionados",
+    "forms": {
+      "folderName": "Nombre de la carpeta"
+    },
+    "home": "Inicio",
+    "label": "Mi Explorador de Archivos de IA",
+    "localFiles": "Archivos de IA Locales",
+    "pending": {
+      "filesUploading": "Subiendo archivos"
+    },
+    "shareFolderWarning": {
+      "action": "Haz clic aquí para aprender cómo",
+      "text": "Debes registrar una identidad de Shinkai antes de poder compartir carpetas en la Red de Shinkai.",
+      "title": "Activar Compartir Carpeta"
+    },
+    "sharedFolders": "Carpetas compartidas",
+    "success": {
+      "fileCopied": "Archivo copiado exitosamente",
+      "fileDeleted": "Archivo eliminado exitosamente",
+      "fileMoved": "Archivo movido exitosamente",
+      "filesUploaded": "Archivos subidos exitosamente",
+      "folderCopied": "Carpeta copiada exitosamente",
+      "folderCreated": "Carpeta creada exitosamente",
+      "folderDeleted": "Carpeta eliminada exitosamente",
+      "folderMoved": "Carpeta movida exitosamente",
+      "folderShared": "Carpeta compartida exitosamente",
+      "folderUnshared": "Carpeta dejó de compartirse exitosamente"
+    }
+  },
+  "workflowPlayground": {
+    "label": "Área de Juego de Flujo de Trabajo"
+  }
+}

@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { decryptMessageWithPassphrase } from '@shinkai_network/shinkai-message-ts/cryptography';
 import {
   RestoreConnectionFormSchema,
@@ -27,6 +28,7 @@ import { useAuth } from '../store/auth';
 import OnboardingLayout from './layout/onboarding-layout';
 
 const RestoreConnectionPage = () => {
+  const { t } = useTranslation();
   const setAuth = useAuth((state) => state.setAuth);
   const navigate = useNavigate();
   const [error, setError] = useState<boolean>(false);
@@ -93,10 +95,10 @@ const RestoreConnectionPage = () => {
             <ArrowLeft className="h-6 w-6" />
           </Link>
           <h1 className="text-left text-2xl font-semibold">
-            Restore connection <span aria-hidden>🔑</span>
+            {t('restoreConnection.label')} <span aria-hidden>🔑</span>
           </h1>
         </div>
-        <p>Use a connection file and passphrase</p>
+        <p>{t('restoreConnection.description')}</p>
 
         <Form {...form}>
           <form
@@ -110,7 +112,7 @@ const RestoreConnectionPage = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="sr-only">
-                      Encryption Connection
+                      {t('restoreConnection.form.encryptedConnectionFile')}
                     </FormLabel>
                     <FormControl>
                       <div className="flex flex-col space-y-1">
@@ -137,7 +139,6 @@ const RestoreConnectionPage = () => {
                       </div>
                     </FormControl>
                     <FormMessage />
-                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -148,7 +149,7 @@ const RestoreConnectionPage = () => {
                 render={({ field }) => (
                   <TextField
                     field={field}
-                    label={'Passphrase'}
+                    label={t('restoreConnection.form.passphrase')}
                     type={'password'}
                   />
                 )}
@@ -157,7 +158,7 @@ const RestoreConnectionPage = () => {
             </div>
 
             <Button className="w-full" type="submit">
-              Restore connection
+              {t('restoreConnection.label')}
             </Button>
           </form>
         </Form>

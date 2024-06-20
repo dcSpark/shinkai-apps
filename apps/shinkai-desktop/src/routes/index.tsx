@@ -37,7 +37,6 @@ import { PublicKeys } from '../pages/public-keys';
 import RestoreConnectionPage from '../pages/restore-connection';
 import SettingsPage from '../pages/settings';
 import ShinkaiPrivatePage from '../pages/shinkai-private';
-import UnavailableShinkaiNode from '../pages/unavailable-shinkai-node';
 import TermsAndConditionsPage from '../pages/welcome';
 import WorkflowPlayground from '../pages/workflow-playground';
 import { useAuth } from '../store/auth';
@@ -120,10 +119,6 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route element={<MainLayout />}>
-        <Route
-          element={<UnavailableShinkaiNode />}
-          path={'/unavailable-shinkai-node'}
-        />
         <Route element={<TermsAndConditionsPage />} path={'/welcome'} />
         <Route element={<GetStartedPage />} path={'/get-started'} />
         <Route element={<AnalyticsPage />} path={'/analytics'} />

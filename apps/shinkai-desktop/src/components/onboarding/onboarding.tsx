@@ -1,3 +1,4 @@
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   Accordion,
   AccordionContent,
@@ -41,6 +42,7 @@ export enum GetStartedStatus {
 
 export default function OnboardingStepper() {
   const currentStepsMap = useOnboardingSteps();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   return (
     <Stepper
@@ -50,18 +52,18 @@ export default function OnboardingStepper() {
           status:
             currentStepsMap.get(GetStartedSteps.SetupShinkaiNode) ??
             GetStartedStatus.NotStarted,
-          title: 'Setup Shinkai Desktop',
-          body: 'Setup Shinkai Desktop to get started',
+          title: t('onboardingChecklist.setupShinkaiDesktop'),
+          body: t('onboardingChecklist.setupShinkaiDesktopDescription'),
         },
         {
           label: GetStartedSteps.CreateAI,
           status:
             currentStepsMap.get(GetStartedSteps.CreateAI) ??
             GetStartedStatus.NotStarted,
-          title: 'Add AI',
+          title: t('onboardingChecklist.addAI'),
           body: (
             <div className="flex flex-col items-start gap-2">
-              <span>Add an AI agent that utilizes your favorite LLM</span>
+              <span>{t('onboardingChecklist.addAIDescription')}</span>
               <Button
                 className="h-auto gap-1 px-3 py-2"
                 onClick={() => {
@@ -71,7 +73,7 @@ export default function OnboardingStepper() {
                 variant="outline"
               >
                 <PlusIcon className="h-4 w-4" />
-                Add AI
+                {t('onboardingChecklist.addAI')}
               </Button>
             </div>
           ),
@@ -81,10 +83,10 @@ export default function OnboardingStepper() {
           status:
             currentStepsMap.get(GetStartedSteps.CreateAIChat) ??
             GetStartedStatus.NotStarted,
-          title: 'Create AI Chat',
+          title: t('onboardingChecklist.createAIChat'),
           body: (
             <div className="flex flex-col items-start gap-2">
-              <span>Start a conversation with your AI</span>
+              <span>{t('onboardingChecklist.createAIChatDescription')}</span>
               <Button
                 className="h-auto gap-1 px-3 py-2"
                 onClick={() => {
@@ -94,7 +96,7 @@ export default function OnboardingStepper() {
                 variant="outline"
               >
                 <PlusIcon className="h-4 w-4" />
-                Create AI Chat
+                {t('onboardingChecklist.createAIChat')}
               </Button>
             </div>
           ),
@@ -104,13 +106,10 @@ export default function OnboardingStepper() {
           status:
             currentStepsMap.get(GetStartedSteps.UploadAFile) ??
             GetStartedStatus.NotStarted,
-          title: 'Upload a file',
+          title: t('onboardingChecklist.uploadAFile'),
           body: (
             <div className="flex flex-col items-start gap-2">
-              <span>
-                Keep your notes, websites, docs and others securely stored in
-                one place.
-              </span>
+              <span>{t('onboardingChecklist.uploadAFileDescription')}</span>
               <Button
                 className="h-auto gap-1 px-3 py-2"
                 onClick={() => {
@@ -120,7 +119,7 @@ export default function OnboardingStepper() {
                 variant="outline"
               >
                 <PlusIcon className="h-4 w-4" />
-                Upload a File
+                {t('onboardingChecklist.uploadAFile')}
               </Button>
             </div>
           ),
@@ -130,13 +129,10 @@ export default function OnboardingStepper() {
           status:
             currentStepsMap.get(GetStartedSteps.AskQuestionToFiles) ??
             GetStartedStatus.NotStarted,
-          title: 'Ask question to files',
+          title: t('onboardingChecklist.askFiles'),
           body: (
             <div className="flex flex-col items-start gap-2">
-              <span>
-                Chat with your files. Ask any questions, find information, get
-                summaries and more.
-              </span>
+              <span>{t('onboardingChecklist.askFilesDescription')}</span>
               <Button
                 className="h-auto gap-1 px-3 py-2"
                 onClick={() => {
@@ -146,7 +142,7 @@ export default function OnboardingStepper() {
                 variant="outline"
               >
                 <CreateAIIcon className="h-4 w-4" />
-                Create Chat with Files
+                {t('onboardingChecklist.askFilesButton')}
               </Button>
             </div>
           ),
@@ -256,6 +252,7 @@ interface StepperProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export const Stepper = ({ steps }: StepperProps) => {
+  const { t } = useTranslation();
   const setGetStartedChecklistHidden = useSettings(
     (state) => state.setGetStartedChecklistHidden,
   );
@@ -284,7 +281,7 @@ export const Stepper = ({ steps }: StepperProps) => {
             transition={showAnimation}
           >
             <PopoverTrigger className="flex gap-3 rounded-lg p-1 font-medium text-white hover:bg-cyan-800/20 [&[data-state=open]>svg]:rotate-180">
-              Get Started with Shinkai
+              {t('onboardingChecklist.getStartedText')}{' '}
               <ChevronDown className="h-4 w-4" />
             </PopoverTrigger>
             <Progress
@@ -303,12 +300,12 @@ export const Stepper = ({ steps }: StepperProps) => {
                   size="sm"
                   variant="link"
                 >
-                  Dismiss Checklist
+                  {t('onboardingChecklist.dismiss')}
                 </Button>
               </span>
             ) : (
               <span className="text-gray-80 truncate capitalize">
-                {currentPercents}% - Next,{' '}
+                {currentPercents}% - {t('common.next')},{' '}
                 {
                   steps.find(
                     (step) => step.status === GetStartedStatus.NotStarted,
@@ -323,7 +320,9 @@ export const Stepper = ({ steps }: StepperProps) => {
       {!sidebarExpanded && (
         <PopoverTrigger className="relative mt-4 flex h-10 w-10 items-center justify-center gap-2 self-center rounded-full bg-cyan-700 text-xs text-white ring-4 ring-cyan-900 transition-colors hover:bg-cyan-900">
           <Sparkles className="h-4 w-4" />
-          <span className="sr-only">Get Started with Shinkai</span>
+          <span className="sr-only">
+            {t('onboardingChecklist.getStartedText')}
+          </span>
           <Badge className="bg-brand absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full p-0">
             {steps.length -
               steps.filter((step) => step.status === GetStartedStatus.Done)
@@ -340,7 +339,7 @@ export const Stepper = ({ steps }: StepperProps) => {
       >
         <div className="space-y-2 bg-cyan-900/20 p-3.5">
           <div className="flex justify-between gap-3 rounded-lg p-1 font-medium text-white">
-            <p>Get started checklist</p>
+            <p>{t('onboardingChecklist.getStartedChecklist')}</p>
             <button
               className="text-gray-80 hover:text-white"
               onClick={() => setIsPopoverOpen(false)}
@@ -356,7 +355,9 @@ export const Stepper = ({ steps }: StepperProps) => {
         {hasCompletedAllSteps && (
           <div>
             <div className="flex justify-center gap-2 bg-gray-300 p-3">
-              <span className="text-gray-80">You have completed all steps</span>
+              <span className="text-gray-80">
+                {t('onboardingChecklist.completedSteps')}
+              </span>
               <CheckIcon className="w-4 text-cyan-700" />
             </div>
             <div className="flex justify-center gap-2 p-3">
@@ -369,7 +370,7 @@ export const Stepper = ({ steps }: StepperProps) => {
                 size="sm"
                 variant="outline"
               >
-                Dismiss checklist
+                {t('onboardingChecklist.dismiss')}{' '}
               </Button>
             </div>
           </div>

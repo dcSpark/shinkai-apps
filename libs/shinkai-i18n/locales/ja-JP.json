@@ -1,0 +1,430 @@
+{
+  "agents": {
+    "add": "AIを追加",
+    "addManually": "AIを手動で追加",
+    "delete": {
+      "description": "このAIを削除してもよろしいですか？この操作は元に戻すことができません",
+      "label": "AIを削除"
+    },
+    "errors": {
+      "createAgent": "AIの追加中にエラーが発生しました",
+      "deleteAgent": "AIの削除中にエラーが発生しました",
+      "updateAgent": "AIの更新中にエラーが発生しました"
+    },
+    "form": {
+      "agentName": "AI名",
+      "apiKey": "APIキー",
+      "externalUrl": "外部URL",
+      "modelId": "モデルID",
+      "modelName": "モデル名",
+      "modelType": "モデルタイプ",
+      "selectModel": "モデルを選択",
+      "toggleCustomModel": "カスタムモデルを追加"
+    },
+    "label": "AI",
+    "localAI": {
+      "installText": "ローカルマシンにAIモデルをインストールすると、AIとして利用できるようになります",
+      "installTitle": "AIモデルをインストール"
+    },
+    "notFound": {
+      "description": "最初のAIを接続してShinkai AIに質問を始めてください。OpenAIを接続してみてください",
+      "title": "利用可能なAIがありません"
+    },
+    "success": {
+      "createAgent": "AIが正常に作成されました",
+      "deleteAgent": "AIが正常に削除されました",
+      "updateAgent": "AIが正常に更新されました"
+    },
+    "switch": "AIを切り替え"
+  },
+  "aiFilesSearch": {
+    "description": "AIファイル全体を簡単に検索してコンテンツを見つける",
+    "filesSelected": "{{count}} 個のファイルが選択されました",
+    "foundResults": "{{count}} 件の結果が見つかりました",
+    "label": "AIファイルコンテンツ検索"
+  },
+  "analytics": {
+    "bulletPoints": {
+      "five": "❌ AIクエリを収集しません",
+      "four": "❌ IPアドレスを収集しません",
+      "one": "✅ 設定からオプトアウトできるように常に許可",
+      "six": "❌ 個人情報をトレーニング目的で使用しません",
+      "three": "✅ 使用する機能に関する分析情報を送信しますが、コンテンツや応答は含まれません",
+      "two": "✅ ランダム化された分析"
+    },
+    "label": "分析",
+    "moreInfo": "プライバシーに関する当社のプラクティスに関する詳細情報については、<a>プライバシーポリシー</a>をご覧ください",
+    "title": "Shinkaiの改善にご協力ください"
+  },
+  "chat": {
+    "actives": {
+      "label": "アクティブ",
+      "notFound": "アクティブな会話は見つかりませんでした"
+    },
+    "allMessagesLoaded": "すべての以前のメッセージが読み込まれました ✅",
+    "archives": {
+      "archive": "アーカイブ",
+      "error": "ジョブのアーカイブ中にエラーが発生しました",
+      "label": "アーカイブ",
+      "notFound": "アーカイブされた会話は見つかりませんでした",
+      "success": "会話がアーカイブされました"
+    },
+    "chats": "チャット",
+    "context": {
+      "description": "この会話のコンテキストとして使用されるフォルダーとファイルのリスト",
+      "title": "会話コンテキスト"
+    },
+    "create": "AIチャットを作成",
+    "emptyStateDescription": "「JavaScriptでHTTPリクエストを作成する方法」、「80年代のロック音楽のトップ10を教えて」、「インターネットの仕組みを説明して」などをお試しください",
+    "emptyStateTitle": "Shinkai AIに質問してみてください",
+    "enterMessage": "メッセージを入力",
+    "form": {
+      "message": "行いたい作業を教えてください",
+      "messagePlaceholder": "例: インターネットの仕組みを説明して...",
+      "selectAI": "AIを選択",
+      "setContext": "チャットコンテキストを設定",
+      "setContextText": "会話中にAIが使用するコンテキストとしてファイルやフォルダーを追加してください",
+      "workflows": "ワークフロー"
+    },
+    "limitReachedDescription": "今月のこのモデル/エージェントでのクエリをすべて使用しました。別のエージェントと新しいチャットを開始してください。",
+    "limitReachedTitle": "制限に達しました",
+    "sendMessage": "メッセージを送信"
+  },
+  "chatDM": {
+    "create": "DMチャットを作成",
+    "form": {
+      "message": "メッセージ",
+      "messagePlaceholder": "メッセージを入力してください",
+      "shinkaiIdentity": "Shinkai Identity"
+    }
+  },
+  "common": {
+    "alreadyHaveNode": "すでにノードをお持ちですか？",
+    "back": "戻る",
+    "cancel": "キャンセル",
+    "clearSearch": "検索をクリア",
+    "clickToUpload": "クリックしてアップロードするか、ドラッグアンドドロップ",
+    "comingSoon": "近日公開 - 7月上旬",
+    "connect": "接続",
+    "continue": "続行",
+    "delete": "削除",
+    "disconnect": "切断",
+    "done": "完了",
+    "edit": "編集",
+    "file": "ファイル",
+    "fileWithCount_one": "{{count}} ファイル",
+    "fileWithCount_other": "{{count}} ファイル",
+    "files": "ファイル",
+    "folderLocation": "フォルダの場所:",
+    "folderWithCount_one": "{{count}} フォルダ",
+    "folderWithCount_other": "{{count}} フォルダ",
+    "folders": "フォルダ",
+    "getStarted": "開始",
+    "iAgree": "同意します",
+    "install": "インストール",
+    "logInShinkaiHosting": "Shinkai Hostingにログイン",
+    "moreOptions": "その他のオプション",
+    "next": "次へ",
+    "noThanks": "いいえ、結構です",
+    "optIn": "オプトイン",
+    "optOut": "オプトアウト",
+    "passphrase": "パスフレーズ",
+    "quickConnect": "クイック接続",
+    "recommended": "おすすめ",
+    "remove": "削除",
+    "rename": "名前を変更",
+    "repeatPassphrase": "パスフレーズを確認",
+    "reset": "リセット",
+    "resetFilters": "フィルターをリセット",
+    "restore": "復元",
+    "save": "保存",
+    "search": "検索",
+    "searchPlaceholder": "検索...",
+    "seeOptions": "オプションを表示",
+    "shinkaiPrivate": "Shinkaiプライベート（ローカル）",
+    "signUpShinkaiHosting": "Shinkai Hostingにサインアップ",
+    "soon": "近日公開",
+    "termsAndConditionsText": "弊社の<a>利用規約</a>および<b>プライバシーポリシー</b>に同意します",
+    "unselectAll": "すべて選択解除",
+    "update": "更新",
+    "upload": "アップロード",
+    "uploadFile": "ファイルをアップロード"
+  },
+  "desktop": {
+    "welcome": "Shinkai Desktopを使用してAIでデスクトップ体験を変革しましょう"
+  },
+  "disconnect": {
+    "exportConnection": "続行する前に、接続をいつでも復元するために<Link>接続をエクスポート</Link>してください",
+    "modalDescription": "本当に切断しますか？これによりデータが永久に削除されます",
+    "modalTitle": "Shinkaiを切断"
+  },
+  "errors": {
+    "nodeUnavailable": {
+      "description": "Shinkaiノードに接続できません。ノードがオフラインになっているか、インターネット接続が切断されている可能性があります",
+      "title": "ノードが利用できません"
+    }
+  },
+  "exportConnection": {
+    "downloadText": "この接続ファイルをダウンロードして安全な場所に保存してください",
+    "form": {
+      "passphrase": "パスフレーズ",
+      "repeatPassphrase": "パスフレーズを繰り返す"
+    },
+    "generateFile": "接続ファイルを生成",
+    "label": "接続をエクスポート",
+    "restoreText": "パスフレーズと一緒に使用して、接続をShinkaiノードに復元します"
+  },
+  "extension": {
+    "welcome": "Shinkai Visorを使用してAIでWebブラウジング体験を変えましょう ✨"
+  },
+  "galxe": {
+    "errors": {
+      "registerDesktopInstallation": "Shinkai Desktopのインストールを登録する際にエラーが発生しました。以前に使用されたEVMアドレスを確認してください。"
+    },
+    "form": {
+      "evmAddress": "EVMアドレス",
+      "evmAddressHelper": "Galxeで使用しているEVMアドレスを追加",
+      "proof": "証明",
+      "registerInstallation": "インストールを登録",
+      "signature": "署名"
+    },
+    "goToGalxeQuest": "Galxeクエストを確認",
+    "label": "Galxe検証",
+    "success": {
+      "registerDesktopInstallation": "Shinkai Desktopのインストールが正常に登録されました。Galxeクエストに登録されるまで数時間かかる場合があります。"
+    }
+  },
+  "inboxes": {
+    "inboxName": "名前",
+    "updateName": "受信トレイ名を更新"
+  },
+  "layout": {
+    "menuItems": {
+      "agents": "AI",
+      "aiTasks": "AIタスク",
+      "chats": "チャット",
+      "disconnect": "切断",
+      "mySubscriptions": "私のサブスクリプション",
+      "settings": "設定",
+      "subscriptions": "サブスクリプションを閲覧",
+      "vectorFs": "私のAIファイルエクスプローラ",
+      "vectorSearch": "AIファイルコンテンツ検索",
+      "workflowPlayground": "ワークフロープレイグラウンド"
+    },
+    "sidebar": {
+      "toggle": "サイドバーの切り替え"
+    }
+  },
+  "notifications": {
+    "messageReceived": {
+      "description": "{{inboxName}} からの応答を受信しました",
+      "label": "メッセージを受信しました"
+    }
+  },
+  "ollama": {
+    "errors": {
+      "failedToFetch": "ローカルのOllamaモデルの取得に失敗しました。Ollamaが正常に動作していることを確認してください。"
+    }
+  },
+  "onboardingChecklist": {
+    "addAI": "AIを追加",
+    "addAIDescription": "お気に入りのLLMを利用するAIエージェントを追加",
+    "askFiles": "ファイルに質問する",
+    "askFilesButton": "ファイルとのチャットを作成",
+    "askFilesDescription": "ファイルとチャット。質問、情報の検索、要約など",
+    "completedSteps": "すべてのステップが完了しました",
+    "createAIChat": "AIチャットを作成",
+    "createAIChatDescription": "AIとの会話を開始",
+    "dismiss": "チェックリストを閉じる",
+    "getStartedChecklist": "開始チェックリスト",
+    "getStartedText": "Shinkaiを始めましょう",
+    "setupShinkaiDesktop": "Shinkaiデスクトップのセットアップ",
+    "setupShinkaiDesktopDescription": "Shinkaiデスクトップのセットアップを行いましょう",
+    "uploadAFile": "ファイルをアップロード",
+    "uploadAFileDescription": "ノート、ウェブサイト、ドキュメントなどを安全に保存"
+  },
+  "quickConnection": {
+    "connectingToNode": "ローカルShinkaiノードに接続中",
+    "form": {
+      "connect": "接続",
+      "nodeAddress": "ノードアドレス"
+    },
+    "label": "クイック接続"
+  },
+  "registrationCode": {
+    "create": "登録コードを作成",
+    "label": "登録コード"
+  },
+  "restoreConnection": {
+    "description": "接続ファイルとパスフレーズを使用します",
+    "form": {
+      "encryptedConnectionFile": "暗号化された接続ファイル",
+      "passphrase": "パスフレーズ"
+    },
+    "label": "接続を復元",
+    "restore": "復元"
+  },
+  "settings": {
+    "defaultAgent": "デフォルトAI",
+    "description": "アカウント設定を管理します",
+    "experimentalFeature": {
+      "label": "実験的な機能を有効にする"
+    },
+    "exportConnection": {
+      "label": "接続をエクスポート"
+    },
+    "label": "設定",
+    "language": {
+      "label": "言語",
+      "selectLanguage": "言語を選択"
+    },
+    "publicKeys": {
+      "label": "公開鍵",
+      "myDeviceEncryption": "私のデバイスの暗号化",
+      "myDeviceIdentity": "私のデバイスのIdentity",
+      "myDevicePublicKeys": "私のデバイスの公開鍵",
+      "nodeEncryption": "ノードの暗号化",
+      "nodePublicKeys": "ノードの公開鍵",
+      "nodeSignature": "ノードの署名",
+      "profileEncryption": "プロフィールの暗号化",
+      "profileIdentity": "プロフィールのIdentity",
+      "profilePublicKeys": "プロフィールの公開鍵",
+      "show": "公開鍵を表示"
+    },
+    "quickAccessButton": {
+      "description": "クイックアクセスボタンはクリックして保持して移動できます",
+      "label": "Shinkaiクイックアクセスボタンを表示"
+    },
+    "registerNewCode": {
+      "label": "新しいデバイスを登録"
+    },
+    "shinkaiIdentity": {
+      "error": "Shinkai Identityの更新中にエラーが発生しました",
+      "goToShinkaiIdentity": "私のShinkai Identityに移動",
+      "label": "Shinkaiアイデンティティ",
+      "registerIdentity": "Shinkai Identityを登録",
+      "success": "Shinkai Identityが正常に更新されました",
+      "updatedIdentity": "Shinkaiアイデンティティが正常に更新されました"
+    },
+    "shinkaiVersion": "Shinkai Desktopバージョン：",
+    "shortcutKey": {
+      "description": "サイドバーを起動するショートカットキーを変更します",
+      "label": "ショートカットキー"
+    }
+  },
+  "shinkaiNode": {
+    "manager": "Shinkaiノードマネージャー",
+    "models": {
+      "errors": {
+        "modelInstalled": "モデル {{modelName}} のインストール中にエラーが発生しました",
+        "modelRemoved": "モデル {{modelName}} の削除中にエラーが発生しました"
+      },
+      "poweredByOllama": "Ollamaの提供",
+      "success": {
+        "modelInstalled": "モデル {{modelName}} が正常にインストールされました",
+        "modelRemoved": "モデル {{modelName}} が正常に削除されました"
+      },
+      "table": {
+        "bookPages": "ページ数",
+        "dataLimit": "データ制限",
+        "models": "モデル",
+        "quality": "品質",
+        "size": "サイズ",
+        "speed": "速度"
+      }
+    },
+    "nodeAddress": "ノードアドレス",
+    "nodeVersion": "ノードバージョン",
+    "notifications": {
+      "downloadedModel": "AIモデル {{modeName}} のダウンロードが完了しました",
+      "downloadingModel": "AIモデル {{modeName}} をダウンロード中 - {{progress}}%",
+      "errorSyncOllama": "ローカルオラマモデルをシンカイノードと同期する際にエラーが発生しました",
+      "optionsRestored": "オプションがデフォルト値に復元されました",
+      "removedNote": "ローカルシンカイノードのストレージが削除されました",
+      "runningNode": "ローカルシンカイノードが稼働中です",
+      "runningOllama": "ローカルオラマが稼働中です",
+      "startingDownload": "AIモデル {{modeName}} のダウンロードを開始しています",
+      "startingNode": "ローカルシンカイノードを起動しています",
+      "startingOllama": "ローカルオラマを起動しています",
+      "stopNode": "ローカルシンカイノードを停止しています",
+      "stopOllama": "ローカルオラマを停止しています",
+      "stoppedNode": "ローカルシンカイノードが停止されました",
+      "stoppedOllama": "ローカルオラマが停止されました",
+      "syncedOllama": "ローカルオラマモデルがシンカイノードと同期されました"
+    },
+    "resetNodeWarning": {
+      "description": "現在、既存のキーによってShinkaiノードがロックされています。再度接続するには、次の2つのオプションがあります：",
+      "option1": "<b>復元：</b> バックアップされたキーを使用して接続を復元しようとします。",
+      "option2": "<b>リセット：</b> Shinkaiノードストレージを削除します（これによりすべてのデータが永久に削除されます）。",
+      "title": "接続できません"
+    },
+    "restartNode": "Shinkaiノードを再起動してください",
+    "unavailable": "Shinkaiノードが利用できません"
+  },
+  "vectorFs": {
+    "actions": {
+      "addNew": "新規追加",
+      "copy": "コピー",
+      "createFolder": "新しいフォルダを作成",
+      "delete": "削除",
+      "move": "移動",
+      "searchWithinFolder": "フォルダ内を検索",
+      "share": "共有",
+      "unshare": "共有解除",
+      "uploadFile": "ファイルをアップロード",
+      "uploadFileText": "ファイルをアップロードすると、AIで使用できるように変換され、Shinkaiで利用可能になります。"
+    },
+    "allFiles": "すべてのファイル",
+    "deleteFileConfirmation": "このファイルを削除してもよろしいですか？この操作は元に戻すことができません。",
+    "deleteFolderConfirmation": "このフォルダを削除してもよろしいですか？この操作は元に戻すことができません。",
+    "emptyState": {
+      "noFiles": "ファイルが見つかりません",
+      "noFilesAndFolders": "これはすべてのファイルのホームになります。",
+      "noFilesAndFoldersDescription": "ファイルをアップロードするには「+」ボタンを使用してください。",
+      "noSharedFolders": "共有フォルダはここに表示されます。"
+    },
+    "errors": {
+      "fileCopied": "ファイルのコピー中にエラーが発生しました",
+      "fileDeleted": "ファイルの削除中にエラーが発生しました",
+      "fileMoved": "ファイルの移動中にエラーが発生しました",
+      "filesUploaded": "ファイルのアップロード中にエラーが発生しました",
+      "folderCopied": "フォルダのコピー中にエラーが発生しました",
+      "folderCreated": "フォルダの作成中にエラーが発生しました",
+      "folderDeleted": "フォルダの削除中にエラーが発生しました",
+      "folderMoved": "フォルダの移動中にエラーが発生しました",
+      "folderShared": "フォルダの共有中にエラーが発生しました",
+      "folderUnshared": "フォルダの共有解除中にエラーが発生しました"
+    },
+    "filesSelected": "{{count}} 個選択されました",
+    "forms": {
+      "folderName": "フォルダ名"
+    },
+    "home": "ホーム",
+    "label": "私のAIファイルエクスプローラー",
+    "localFiles": "ローカルAIファイル",
+    "pending": {
+      "filesUploading": "ファイルをアップロード中"
+    },
+    "shareFolderWarning": {
+      "action": "ここをクリックして方法を学ぶ",
+      "text": "Shinkaiネットワークを介してフォルダを共有する前に、Shinkaiアイデンティティを登録する必要があります。",
+      "title": "フォルダ共有を有効にする"
+    },
+    "sharedFolders": "共有フォルダ",
+    "success": {
+      "fileCopied": "ファイルが正常にコピーされました",
+      "fileDeleted": "ファイルが削除されました",
+      "fileMoved": "ファイルが正常に移動しました",
+      "filesUploaded": "ファイルが正常にアップロードされました",
+      "folderCopied": "フォルダが正常にコピーされました",
+      "folderCreated": "フォルダが正常に作成されました",
+      "folderDeleted": "フォルダが削除されました",
+      "folderMoved": "フォルダが正常に移動しました",
+      "folderShared": "フォルダが正常に共有されました",
+      "folderUnshared": "フォルダが正常に共有解除されました"
+    }
+  },
+  "workflowPlayground": {
+    "label": "ワークフロープレイグラウンド"
+  }
+}

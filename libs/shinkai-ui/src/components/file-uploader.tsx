@@ -1,9 +1,10 @@
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { partial } from 'filesize';
 import { Loader2, Trash, Upload } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 
-import { fileIconMap,FileTypeIcon, PaperClipIcon } from '../assets';
+import { fileIconMap, FileTypeIcon, PaperClipIcon } from '../assets';
 import { getFileExt } from '../helpers/file';
 import { cn } from '../utils';
 import { Button } from './button';
@@ -38,10 +39,7 @@ export const FileItem = ({
             file={file}
           />
         ) : fileIconMap[getFileExt(file.name)] ? (
-          <FileTypeIcon
-            className="text-gray-80 "
-            type={getFileExt(file.name)}
-          />
+          <FileTypeIcon className="text-gray-80" type={getFileExt(file.name)} />
         ) : (
           <PaperClipIcon className="text-gray-80 h-4 w-4" />
         )}
@@ -102,6 +100,7 @@ export const FileUploader = ({
   descriptionText?: string;
   shouldDisableScrolling?: boolean;
 }) => {
+  const { t } = useTranslation();
   const { getRootProps: getRootFileProps, getInputProps: getInputFileProps } =
     useDropzone({
       multiple: allowMultiple,
@@ -124,7 +123,7 @@ export const FileUploader = ({
           <div className="bg-gray-350 rounded-full p-2 shadow-sm">
             <Upload className="h-4 w-4" />
           </div>
-          <p className="text-sm text-white">Click to upload or drag and drop</p>
+          <p className="text-sm text-white">{t('common.clickToUpload')}</p>
           {descriptionText && (
             <p className="text-gray-80 line-clamp-1 text-xs">
               {descriptionText}

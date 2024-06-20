@@ -1,11 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   QuickConnectFormSchema,
   quickConnectFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/auth/quick-connection';
 import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
 import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/lib/queries/getEncryptionKeys/useGetEncryptionKeys';
-import { Button, buttonVariants,Separator } from '@shinkai_network/shinkai-ui';
+import { Button, buttonVariants, Separator } from '@shinkai_network/shinkai-ui';
 import { submitRegistrationNoCodeError } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useState } from 'react';
@@ -25,6 +26,7 @@ import OnboardingLayout from './layout/onboarding-layout';
 
 const GetStartedPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const setAuth = useAuth((state) => state.setAuth);
   const [
     resetStorageBeforeConnectConfirmationPromptOpen,
@@ -113,8 +115,7 @@ const GetStartedPage = () => {
       />
       <div className="mx-auto flex h-full max-w-lg flex-col">
         <p className="text-gray-80 text-center text-base tracking-wide">
-          Transform your desktop experience using AI with Shinkai Desktop{' '}
-          <span aria-hidden> 🔑</span>
+          {t('desktop.welcome')} <span aria-hidden> 🔑</span>
         </p>
         <div className="mt-10 flex flex-1 flex-col gap-10">
           <div className="space-y-4">
@@ -128,7 +129,7 @@ const GetStartedPage = () => {
               onClick={() => shinkaiNodeSpawn()}
               size="lg"
             >
-              Shinkai Private (Local)
+              {t('common.shinkaiPrivate')}
             </Button>
             <ResourcesBanner />
           </div>
@@ -150,7 +151,7 @@ const GetStartedPage = () => {
               rel="noreferrer"
               target="_blank"
             >
-              Log In To Shinkai Hosting
+              {t('common.logInShinkaiHosting')}
             </a>
             <a
               className={cn(
@@ -164,15 +165,15 @@ const GetStartedPage = () => {
               rel="noreferrer"
               target="_blank"
             >
-              Sign up For Shinkai Hosting
+              {t('common.signUpShinkaiHosting')}
             </a>
             <div className="text-gray-80 items-center space-x-2 text-center text-base">
-              <span>Already have a Node?</span>
+              <span>{t('common.alreadyHaveNode')}</span>
               <Link
                 className="font-semibold text-white underline"
                 to="/onboarding"
               >
-                Quick Connect
+                {t('common.quickConnect')}
               </Link>
             </div>
           </div>

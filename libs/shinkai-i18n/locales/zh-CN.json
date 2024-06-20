@@ -1,0 +1,430 @@
+{
+  "agents": {
+    "add": "添加 AI",
+    "addManually": "手动添加 AI",
+    "delete": {
+      "description": "您确定要删除此 AI 吗？此操作无法撤消。",
+      "label": "删除 AI"
+    },
+    "errors": {
+      "createAgent": "添加 AI 时出错",
+      "deleteAgent": "删除 AI 时出错",
+      "updateAgent": "更新 AI 时出错"
+    },
+    "form": {
+      "agentName": "AI 名称",
+      "apiKey": "API 密钥",
+      "externalUrl": "外部 URL",
+      "modelId": "模型 ID",
+      "modelName": "模型名称",
+      "modelType": "模型类型",
+      "selectModel": "选择您的模型",
+      "toggleCustomModel": "添加自定义模型"
+    },
+    "label": "AI",
+    "localAI": {
+      "installText": "在本地机器上安装 AI 模型后，它们将作为 AI 可用",
+      "installTitle": "安装 AI 模型"
+    },
+    "notFound": {
+      "description": "连接您的第一个 AI 以开始询问 Shinkai AI。尝试连接 OpenAI",
+      "title": "没有可用的 AI"
+    },
+    "success": {
+      "createAgent": "AI 创建成功",
+      "deleteAgent": "AI 删除成功",
+      "updateAgent": "AI 更新成功"
+    },
+    "switch": "切换 AI"
+  },
+  "aiFilesSearch": {
+    "description": "搜索以轻松查找 AI 文件中的所有文件内容",
+    "filesSelected": "已选择 {{count}} 个文件",
+    "foundResults": "找到 {{count}} 个结果",
+    "label": "AI文件内容搜索"
+  },
+  "analytics": {
+    "bulletPoints": {
+      "five": "❌ 从不收集您的AI查询",
+      "four": "❌ 从不收集您的IP地址",
+      "one": "✅ 始终允许您通过设置选择退出",
+      "six": "❌ 从不使用个人信息进行培训目的",
+      "three": "✅ 发送关于您使用的功能的分析信息，但不包含任何内容或响应",
+      "two": "✅ 随机化分析"
+    },
+    "label": "分析",
+    "moreInfo": "有关我们的隐私惯例的更多信息，请参阅我们的<a>隐私政策</a>",
+    "title": "帮助我们改进 Shinkai"
+  },
+  "chat": {
+    "actives": {
+      "label": "活跃",
+      "notFound": "未找到活跃的对话。"
+    },
+    "allMessagesLoaded": "所有先前的消息都已加载 ✅",
+    "archives": {
+      "archive": "存档",
+      "error": "归档作业出错",
+      "label": "档案",
+      "notFound": "未找到存档对话。",
+      "success": "您的对话已被归档"
+    },
+    "chats": "聊天",
+    "context": {
+      "description": "作为本次对话上下文使用的文件夹和文件列表",
+      "title": "对话上下文"
+    },
+    "create": "创建 AI 聊天",
+    "emptyStateDescription": "尝试 “如何在 JavaScript 中进行 HTTP 请求”, “给我 80 年代十大摇滚音乐”, “解释互联网的工作原理”",
+    "emptyStateTitle": "询问 Shinkai AI",
+    "enterMessage": "输入消息",
+    "form": {
+      "message": "告诉我们您想做的工作",
+      "messagePlaceholder": "例如：解释互联网的工作原理...",
+      "selectAI": "选择您的 AI",
+      "setContext": "设置聊天上下文",
+      "setContextText": "添加文件或文件夹，供您的 AI 在对话中使用。",
+      "workflows": "工作流"
+    },
+    "limitReachedDescription": "您已用尽本月对此模型/代理的所有查询。请开始与其他代理的新聊天。",
+    "limitReachedTitle": "已达到限制",
+    "sendMessage": "发送消息"
+  },
+  "chatDM": {
+    "create": "创建直接消息聊天",
+    "form": {
+      "message": "消息",
+      "messagePlaceholder": "输入您的消息",
+      "shinkaiIdentity": "Shinkai身份"
+    }
+  },
+  "common": {
+    "alreadyHaveNode": "已有节点？",
+    "back": "返回",
+    "cancel": "取消",
+    "clearSearch": "清除搜索",
+    "clickToUpload": "点击上传或拖放",
+    "comingSoon": "即将到来 - 七月初",
+    "connect": "连接",
+    "continue": "继续",
+    "delete": "删除",
+    "disconnect": "断开连接",
+    "done": "完成",
+    "edit": "编辑",
+    "file": "文件",
+    "fileWithCount_one": "{{count}} 个文件",
+    "fileWithCount_other": "{{count}} 个文件",
+    "files": "文件",
+    "folderLocation": "文件夹位置：",
+    "folderWithCount_one": "{{count}} 文件夹",
+    "folderWithCount_other": "{{count}} 文件夹",
+    "folders": "文件夹",
+    "getStarted": "开始",
+    "iAgree": "我同意",
+    "install": "安装",
+    "logInShinkaiHosting": "登录Shinkai Hosting",
+    "moreOptions": "更多选项",
+    "next": "下一个",
+    "noThanks": "不，谢谢",
+    "optIn": "选择加入",
+    "optOut": "选择退出",
+    "passphrase": "密码短语",
+    "quickConnect": "快速连接",
+    "recommended": "推荐",
+    "remove": "移除",
+    "rename": "重命名",
+    "repeatPassphrase": "确认密码短语",
+    "reset": "重置",
+    "resetFilters": "重置筛选器",
+    "restore": "恢复",
+    "save": "保存",
+    "search": "搜索",
+    "searchPlaceholder": "搜索...",
+    "seeOptions": "查看选项",
+    "shinkaiPrivate": "Shinkai私有（本地）",
+    "signUpShinkaiHosting": "注册Shinkai Hosting",
+    "soon": "即将",
+    "termsAndConditionsText": "我同意我们的<a>服务条款</a>和<b>隐私政策</b>",
+    "unselectAll": "取消全选",
+    "update": "更新",
+    "upload": "上传",
+    "uploadFile": "上传文件"
+  },
+  "desktop": {
+    "welcome": "使用Shinkai Desktop利用人工智能改变您的桌面体验"
+  },
+  "disconnect": {
+    "exportConnection": "在继续之前，请<Link>导出您的连接</Link>以随时恢复连接。",
+    "modalDescription": "您确定要断开连接吗？这将永久删除您的数据",
+    "modalTitle": "断开 Shinkai"
+  },
+  "errors": {
+    "nodeUnavailable": {
+      "description": "我们在连接您的 Shinkai 节点时遇到问题。您的节点可能离线，或者您的互联网连接可能已断开。",
+      "title": "节点不可用"
+    }
+  },
+  "exportConnection": {
+    "downloadText": "下载并妥善保管此连接文件",
+    "form": {
+      "passphrase": "密码",
+      "repeatPassphrase": "重复密码"
+    },
+    "generateFile": "生成连接文件",
+    "label": "导出连接",
+    "restoreText": "使用您的密码短语来恢复与 Shinkai 节点的连接"
+  },
+  "extension": {
+    "welcome": "使用 Shinkai Visor ✨ 变革您的网页浏览体验"
+  },
+  "galxe": {
+    "errors": {
+      "registerDesktopInstallation": "注册Shinkai Desktop安装时出错。请确保您的EVM地址之前未用于注册其他安装。"
+    },
+    "form": {
+      "evmAddress": "EVM地址",
+      "evmAddressHelper": "添加您在Galxe中使用的EVM地址",
+      "proof": "证明",
+      "registerInstallation": "注册安装",
+      "signature": "签名"
+    },
+    "goToGalxeQuest": "查看我们的Galxe任务",
+    "label": "Galxe验证",
+    "success": {
+      "registerDesktopInstallation": "您的Shinkai Desktop安装已成功注册。可能需要几个小时才能在Galxe任务中注册。"
+    }
+  },
+  "inboxes": {
+    "inboxName": "名称",
+    "updateName": "更新收件箱名称"
+  },
+  "layout": {
+    "menuItems": {
+      "agents": "AI",
+      "aiTasks": "AI 任务",
+      "chats": "聊天",
+      "disconnect": "断开连接",
+      "mySubscriptions": "我的订阅",
+      "settings": "设置",
+      "subscriptions": "浏览订阅",
+      "vectorFs": "我的 AI 文件浏览器",
+      "vectorSearch": "AI 文件内容搜索",
+      "workflowPlayground": "工作流播放器"
+    },
+    "sidebar": {
+      "toggle": "切换侧边栏"
+    }
+  },
+  "notifications": {
+    "messageReceived": {
+      "description": "您收到了来自{{inboxName}}的回复",
+      "label": "已收到消息"
+    }
+  },
+  "ollama": {
+    "errors": {
+      "failedToFetch": "无法获取本地Ollama模型。请确保Ollama正常运行。"
+    }
+  },
+  "onboardingChecklist": {
+    "addAI": "添加 AI",
+    "addAIDescription": "添加一个利用您喜爱的 LLM 的 AI 代理",
+    "askFiles": "向文件提问",
+    "askFilesButton": "与文件创建聊天",
+    "askFilesDescription": "与您的文件聊天。提出任何问题，查找信息，获取摘要等。",
+    "completedSteps": "您已完成所有步骤",
+    "createAIChat": "创建 AI 聊天",
+    "createAIChatDescription": "与您的 AI 开始对话",
+    "dismiss": "忽略清单",
+    "getStartedChecklist": "开始使用清单",
+    "getStartedText": "开始使用 Shinkai",
+    "setupShinkaiDesktop": "设置 Shinkai 桌面",
+    "setupShinkaiDesktopDescription": "设置 Shinkai 桌面以开始使用",
+    "uploadAFile": "上传文件",
+    "uploadAFileDescription": "将您的笔记、网站、文档等安全存储在一个地方。"
+  },
+  "quickConnection": {
+    "connectingToNode": "连接到您的本地Shinkai节点",
+    "form": {
+      "connect": "连接",
+      "nodeAddress": "节点地址"
+    },
+    "label": "快速连接"
+  },
+  "registrationCode": {
+    "create": "创建注册码",
+    "label": "注册码"
+  },
+  "restoreConnection": {
+    "description": "使用连接文件和密码",
+    "form": {
+      "encryptedConnectionFile": "加密连接文件",
+      "passphrase": "密码"
+    },
+    "label": "恢复连接",
+    "restore": "恢复"
+  },
+  "settings": {
+    "defaultAgent": "默认 AI",
+    "description": "管理您的帐户设置偏好。",
+    "experimentalFeature": {
+      "label": "启用实验性功能"
+    },
+    "exportConnection": {
+      "label": "导出连接"
+    },
+    "label": "设置",
+    "language": {
+      "label": "语言",
+      "selectLanguage": "选择语言"
+    },
+    "publicKeys": {
+      "label": "公钥",
+      "myDeviceEncryption": "我的设备加密",
+      "myDeviceIdentity": "我的设备身份",
+      "myDevicePublicKeys": "我的设备公钥",
+      "nodeEncryption": "节点加密",
+      "nodePublicKeys": "节点公钥",
+      "nodeSignature": "节点签名",
+      "profileEncryption": "个人资料加密",
+      "profileIdentity": "个人资料身份",
+      "profilePublicKeys": "个人资料公钥",
+      "show": "显示公钥"
+    },
+    "quickAccessButton": {
+      "description": "可以通过点击和按住来移动快速访问按钮。",
+      "label": "显示 Shinkai 快速访问按钮"
+    },
+    "registerNewCode": {
+      "label": "注册新设备"
+    },
+    "shinkaiIdentity": {
+      "error": "更新Shinkai身份时出错",
+      "goToShinkaiIdentity": "前往我的Shinkai身份",
+      "label": "Shinkai 身份",
+      "registerIdentity": "注册您的Shinkai身份",
+      "success": "Shinkai身份更新成功",
+      "updatedIdentity": "Shinkai 身份更新成功。"
+    },
+    "shinkaiVersion": "Shinkai Desktop版本：",
+    "shortcutKey": {
+      "description": "修改启动侧边栏的快捷键",
+      "label": "快捷键"
+    }
+  },
+  "shinkaiNode": {
+    "manager": "Shinkai 节点管理器",
+    "models": {
+      "errors": {
+        "modelInstalled": "安装模型 {{modelName}} 时出错",
+        "modelRemoved": "移除模型 {{modelName}} 时出错"
+      },
+      "poweredByOllama": "由 Ollama 提供支持",
+      "success": {
+        "modelInstalled": "成功安装模型 {{modelName}}",
+        "modelRemoved": "成功移除模型 {{modelName}}"
+      },
+      "table": {
+        "bookPages": "书页",
+        "dataLimit": "数据限制",
+        "models": "模型",
+        "quality": "质量",
+        "size": "大小",
+        "speed": "速度"
+      }
+    },
+    "nodeAddress": "节点地址",
+    "nodeVersion": "节点版本",
+    "notifications": {
+      "downloadedModel": "AI 模型 {{modeName}} 下载成功",
+      "downloadingModel": "正在下载 AI 模型 {{modeName}} - {{progress}}%",
+      "errorSyncOllama": "同步本地 Ollama 模型与您的 Shinkai 节点时出错",
+      "optionsRestored": "选项已恢复为默认值",
+      "removedNote": "您的本地 Shinkai 节点存储已移除",
+      "runningNode": "您的本地 Shinkai 节点正在运行",
+      "runningOllama": "您的本地 Ollama 正在运行",
+      "startingDownload": "开始下载 AI 模型 {{modeName}}",
+      "startingNode": "正在启动本地 Shinkai 节点",
+      "startingOllama": "正在启动本地 Ollama",
+      "stopNode": "正在停止本地 Shinkai 节点",
+      "stopOllama": "正在停止本地 Ollama",
+      "stoppedNode": "您的本地 Shinkai 节点已停止",
+      "stoppedOllama": "您的本地 Ollama 已停止",
+      "syncedOllama": "本地 Ollama 模型已与您的 Shinkai 节点同步"
+    },
+    "resetNodeWarning": {
+      "description": "您的深海节点当前被现有密钥锁定。要重新连接，您有两个选项：",
+      "option1": "<b>恢复：</b> 尝试使用备份密钥恢复连接。",
+      "option2": "<b>重置：</b> 删除您的深海节点存储（这将永久删除所有数据）。",
+      "title": "无法连接"
+    },
+    "restartNode": "请重启您的 Shinkai 节点",
+    "unavailable": "您的Shinkai节点不可用"
+  },
+  "vectorFs": {
+    "actions": {
+      "addNew": "添加新文件",
+      "copy": "复制",
+      "createFolder": "添加新文件夹",
+      "delete": "删除",
+      "move": "移动",
+      "searchWithinFolder": "文件夹内搜索",
+      "share": "分享",
+      "unshare": "取消分享",
+      "uploadFile": "文件上传",
+      "uploadFileText": "上传您的文件会使它们变得适用于 AI 并可在 Shinkai 中使用。"
+    },
+    "allFiles": "所有文件",
+    "deleteFileConfirmation": "您确定要删除此文件吗？此操作无法撤消。",
+    "deleteFolderConfirmation": "您确定要删除此文件夹吗？此操作无法撤消。",
+    "emptyState": {
+      "noFiles": "未找到文件",
+      "noFilesAndFolders": "这将成为您所有文件的主页。",
+      "noFilesAndFoldersDescription": "使用“+”按钮开始上传文件。",
+      "noSharedFolders": "您的共享文件夹将显示在这里。"
+    },
+    "errors": {
+      "fileCopied": "复制文件时出错",
+      "fileDeleted": "删除文件时出错",
+      "fileMoved": "移动文件时出错",
+      "filesUploaded": "上传文件时出错",
+      "folderCopied": "复制文件夹时出错",
+      "folderCreated": "创建文件夹时出错",
+      "folderDeleted": "删除文件夹时出错",
+      "folderMoved": "移动文件夹时出错",
+      "folderShared": "分享文件夹时出错",
+      "folderUnshared": "取消分享文件夹时出错"
+    },
+    "filesSelected": "{{count}} 已选择",
+    "forms": {
+      "folderName": "文件夹名称"
+    },
+    "home": "主页",
+    "label": "我的AI文件资源管理器",
+    "localFiles": "本地AI文件",
+    "pending": {
+      "filesUploading": "正在上传文件"
+    },
+    "shareFolderWarning": {
+      "action": "点击此处了解如何操作",
+      "text": "您必须在 Shinkai 网络上注册 Shinkai 身份，然后才能共享文件夹。",
+      "title": "启用文件夹共享"
+    },
+    "sharedFolders": "共享文件夹",
+    "success": {
+      "fileCopied": "文件复制成功",
+      "fileDeleted": "文件已删除",
+      "fileMoved": "文件移动成功",
+      "filesUploaded": "文件上传成功",
+      "folderCopied": "文件夹复制成功",
+      "folderCreated": "文件夹创建成功",
+      "folderDeleted": "文件夹已删除",
+      "folderMoved": "文件夹移动成功",
+      "folderShared": "文件夹分享成功",
+      "folderUnshared": "文件夹取消分享成功"
+    }
+  },
+  "workflowPlayground": {
+    "label": "工作流程游乐场"
+  }
+}

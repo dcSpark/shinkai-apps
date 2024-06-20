@@ -1,0 +1,430 @@
+{
+  "agents": {
+    "add": "Tambahkan AI",
+    "addManually": "Tambahkan AI Secara Manual",
+    "delete": {
+      "description": "Apakah Anda yakin ingin menghapus AI ini? Tindakan ini tidak dapat dibatalkan.",
+      "label": "Hapus AI"
+    },
+    "errors": {
+      "createAgent": "Kesalahan menambahkan AI",
+      "deleteAgent": "Kesalahan menghapus AI",
+      "updateAgent": "Kesalahan memperbarui AI"
+    },
+    "form": {
+      "agentName": "Nama AI",
+      "apiKey": "Kunci API",
+      "externalUrl": "URL Eksternal",
+      "modelId": "ID Model",
+      "modelName": "Nama Model",
+      "modelType": "Tipe Model",
+      "selectModel": "Pilih Model Anda",
+      "toggleCustomModel": "Tambahkan model kustom"
+    },
+    "label": "AI",
+    "localAI": {
+      "installText": "Setelah memasang model AI di mesin lokal Anda, mereka akan menjadi tersedia sebagai AI",
+      "installTitle": "Pasang Model AI"
+    },
+    "notFound": {
+      "description": "Hubungkan AI pertama Anda untuk mulai bertanya kepada Shinkai AI. Coba hubungkan OpenAI",
+      "title": "Tidak ada AI tersedia"
+    },
+    "success": {
+      "createAgent": "AI berhasil dibuat",
+      "deleteAgent": "AI berhasil dihapus",
+      "updateAgent": "AI berhasil diperbarui"
+    },
+    "switch": "Alihkan AI"
+  },
+  "aiFilesSearch": {
+    "description": "Cari untuk menemukan konten di semua file AI Anda dengan mudah",
+    "filesSelected": "Dipilih {{count}} file",
+    "foundResults": "Ditemukan {{count}} hasil",
+    "label": "Pencarian Konten File AI"
+  },
+  "analytics": {
+    "bulletPoints": {
+      "five": "❌ Tidak pernah mengumpulkan kueri AI Anda",
+      "four": "❌ Tidak pernah mengumpulkan alamat IP Anda",
+      "one": "✅ Selalu memungkinkan Anda untuk memilih keluar melalui Pengaturan",
+      "six": "❌ Tidak pernah menggunakan informasi pribadi untuk tujuan pelatihan",
+      "three": "✅ Mengirim informasi analitik tentang fitur yang Anda gunakan tanpa konten atau tanggapan",
+      "two": "✅ Analitik Teracak"
+    },
+    "label": "Analitika",
+    "moreInfo": "Untuk informasi lebih lanjut terkait praktik privasi kami, silakan lihat <a>Kebijakan Privasi</a>",
+    "title": "Bantu kami meningkatkan Shinkai"
+  },
+  "chat": {
+    "actives": {
+      "label": "Aktif",
+      "notFound": "Tidak ditemukan percakapan aktif."
+    },
+    "allMessagesLoaded": "Semua pesan sebelumnya telah dimuat ✅",
+    "archives": {
+      "archive": "Arsip",
+      "error": "Kesalahan saat mengarsipkan percakapan",
+      "label": "Arsip",
+      "notFound": "Tidak ditemukan percakapan yang diarsipkan.",
+      "success": "Percakapan Anda telah diarsipkan"
+    },
+    "chats": "Obrolan",
+    "context": {
+      "description": "Daftar folder dan berkas yang digunakan sebagai konteks untuk percakapan ini",
+      "title": "Konteks Percakapan"
+    },
+    "create": "Buat Obrolan AI",
+    "emptyStateDescription": "Coba “Bagaimana cara membuat permintaan HTTP dalam JavaScript”, “Beri saya 10 musik rock teratas di tahun 80an”, “Jelaskan bagaimana internet bekerja”",
+    "emptyStateTitle": "Tanyakan kepada Shinkai AI",
+    "enterMessage": "Masukkan Pesan",
+    "form": {
+      "message": "Beritahu kami pekerjaan yang ingin Anda lakukan",
+      "messagePlaceholder": "Contoh: Jelaskan bagaimana internet bekerja...",
+      "selectAI": "Pilih AI Anda",
+      "setContext": "Atur Konteks Obrolan",
+      "setContextText": "Tambahkan berkas atau folder untuk AI Anda gunakan sebagai konteks selama percakapan Anda.",
+      "workflows": "Alur Kerja"
+    },
+    "limitReachedDescription": "Anda telah menggunakan semua kueri Anda untuk bulan ini pada model/agen ini. Silakan mulai obrolan baru dengan agen lain.",
+    "limitReachedTitle": "Batas Telah Tercapai",
+    "sendMessage": "Kirim Pesan"
+  },
+  "chatDM": {
+    "create": "Buat Obrolan DM",
+    "form": {
+      "message": "Pesan",
+      "messagePlaceholder": "Masukkan pesan Anda",
+      "shinkaiIdentity": "Identitas Shinkai"
+    }
+  },
+  "common": {
+    "alreadyHaveNode": "Sudah memiliki Node?",
+    "back": "Kembali",
+    "cancel": "Batal",
+    "clearSearch": "Hapus Pencarian",
+    "clickToUpload": "Klik untuk mengunggah atau seret dan lepas",
+    "comingSoon": "Segera hadir - Awal Juli",
+    "connect": "Hubungkan",
+    "continue": "Lanjutkan",
+    "delete": "Hapus",
+    "disconnect": "Putuskan Koneksi",
+    "done": "Selesai",
+    "edit": "Edit",
+    "file": "Berkas",
+    "fileWithCount_one": "{{count}} Berkas",
+    "fileWithCount_other": "{{count}} Berkas",
+    "files": "Berkas",
+    "folderLocation": "Lokasi Folder:",
+    "folderWithCount_one": "{{count}} Folder",
+    "folderWithCount_other": "{{count}} Folder",
+    "folders": "Folder",
+    "getStarted": "Mulai",
+    "iAgree": "Saya Setuju",
+    "install": "Instal",
+    "logInShinkaiHosting": "Masuk ke Hosting Shinkai",
+    "moreOptions": "Opsi Lainnya",
+    "next": "Berikutnya",
+    "noThanks": "Tidak, Terima Kasih",
+    "optIn": "Pilih Masuk",
+    "optOut": "Pilih Keluar",
+    "passphrase": "Frasa Sandi",
+    "quickConnect": "Koneksi Cepat",
+    "recommended": "Direkomendasikan",
+    "remove": "Hapus",
+    "rename": "Ganti Nama",
+    "repeatPassphrase": "Konfirmasi frasa sandi",
+    "reset": "Reset",
+    "resetFilters": "Reset Filter",
+    "restore": "Pulihkan",
+    "save": "Simpan",
+    "search": "Cari",
+    "searchPlaceholder": "Cari...",
+    "seeOptions": "Lihat Opsi",
+    "shinkaiPrivate": "Shinkai Pribadi (Lokal)",
+    "signUpShinkaiHosting": "Daftar untuk Hosting Shinkai",
+    "soon": "segera",
+    "termsAndConditionsText": "Saya menyetujui <a>Syarat Layanan</a> kami dan <b>Kebijakan Privasi</b>",
+    "unselectAll": "Batalkan Pilihan Semua",
+    "update": "Perbarui",
+    "upload": "Unggah",
+    "uploadFile": "Unggah Berkas"
+  },
+  "desktop": {
+    "welcome": "Transformasikan pengalaman desktop Anda menggunakan AI dengan Shinkai Desktop"
+  },
+  "disconnect": {
+    "exportConnection": "Sebelum melanjutkan, harap<Link>ekspor koneksi Anda</Link>untuk memulihkan koneksi Anda kapan saja.",
+    "modalDescription": "Apakah Anda yakin ingin memutuskan koneksi? Ini akan menghapus data Anda secara permanen",
+    "modalTitle": "Putuskan Koneksi Shinkai"
+  },
+  "errors": {
+    "nodeUnavailable": {
+      "description": "Kami mengalami masalah dalam menghubungkan ke Node Shinkai Anda. Node Anda mungkin offline, atau koneksi internet Anda mungkin terputus.",
+      "title": "Node Tidak Tersedia"
+    }
+  },
+  "exportConnection": {
+    "downloadText": "Unduh dan simpan berkas koneksi ini di tempat yang aman",
+    "form": {
+      "passphrase": "Frasa Sandi",
+      "repeatPassphrase": "Ulangi Frasa Sandi"
+    },
+    "generateFile": "Buat berkas koneksi",
+    "label": "Ekspor Koneksi",
+    "restoreText": "Gunakan dengan frasa sandi Anda untuk memulihkan koneksi ke Node Shinkai Anda"
+  },
+  "extension": {
+    "welcome": "Transformasikan pengalaman menjelajah web Anda menggunakan kecerdasan buatan dengan Shinkai Visor ✨"
+  },
+  "galxe": {
+    "errors": {
+      "registerDesktopInstallation": "Kesalahan saat mendaftarkan instalasi Desktop Shinkai Anda. Pastikan Alamat EVM Anda tidak pernah digunakan sebelumnya untuk mendaftar instalasi yang berbeda."
+    },
+    "form": {
+      "evmAddress": "Alamat EVM",
+      "evmAddressHelper": "Tambahkan Alamat EVM yang Anda gunakan di Galxe",
+      "proof": "Bukti",
+      "registerInstallation": "Daftarkan Instalasi",
+      "signature": "Tanda Tangan"
+    },
+    "goToGalxeQuest": "Periksa Galxe Quest kami",
+    "label": "Validasi Galxe",
+    "success": {
+      "registerDesktopInstallation": "Instalasi Desktop Shinkai Anda berhasil terdaftar. Mungkin memerlukan beberapa jam untuk terdaftar dalam quest Galxe."
+    }
+  },
+  "inboxes": {
+    "inboxName": "Nama",
+    "updateName": "Perbarui nama kotak masuk"
+  },
+  "layout": {
+    "menuItems": {
+      "agents": "AI",
+      "aiTasks": "Tugas AI",
+      "chats": "Obrolan",
+      "disconnect": "Putuskan Koneksi",
+      "mySubscriptions": "Langganan Saya",
+      "settings": "Pengaturan",
+      "subscriptions": "Jelajahi Langganan",
+      "vectorFs": "Pencari Berkas AI Saya",
+      "vectorSearch": "Pencarian Konten Berkas AI",
+      "workflowPlayground": "Lapangan Permainan Alur Kerja"
+    },
+    "sidebar": {
+      "toggle": "Alihkan Sidebar"
+    }
+  },
+  "notifications": {
+    "messageReceived": {
+      "description": "Anda telah menerima tanggapan dari {{inboxName}}",
+      "label": "Pesan Diterima"
+    }
+  },
+  "ollama": {
+    "errors": {
+      "failedToFetch": "Gagal mengambil model Ollama lokal. Pastikan Ollama berjalan dengan benar."
+    }
+  },
+  "onboardingChecklist": {
+    "addAI": "Tambahkan AI",
+    "addAIDescription": "Tambahkan agen AI yang menggunakan LLM favorit Anda",
+    "askFiles": "Tanyakan Pertanyaan ke File",
+    "askFilesButton": "Buat Obrolan dengan File",
+    "askFilesDescription": "Obrolan dengan file Anda. Ajukan pertanyaan apa pun, temukan informasi, dapatkan ringkasan, dan lainnya.",
+    "completedSteps": "Anda telah menyelesaikan semua langkah",
+    "createAIChat": "Buat Obrolan AI",
+    "createAIChatDescription": "Mulai percakapan dengan AI Anda",
+    "dismiss": "Abaikan Daftar Pemeriksaan",
+    "getStartedChecklist": "Daftar pemeriksaan memulai",
+    "getStartedText": "Memulai dengan Shinkai",
+    "setupShinkaiDesktop": "Atur Desktop Shinkai",
+    "setupShinkaiDesktopDescription": "Atur Desktop Shinkai untuk memulai",
+    "uploadAFile": "Unggah File",
+    "uploadAFileDescription": "Simpan catatan, situs web, dokumen, dan lainnya dengan aman di satu tempat."
+  },
+  "quickConnection": {
+    "connectingToNode": "Menghubungkan ke Node Shinkai lokal Anda",
+    "form": {
+      "connect": "Hubungkan",
+      "nodeAddress": "Alamat Node"
+    },
+    "label": "Koneksi Cepat"
+  },
+  "registrationCode": {
+    "create": "Buat Kode Registrasi",
+    "label": "Kode Registrasi"
+  },
+  "restoreConnection": {
+    "description": "Gunakan file koneksi dan frasa sandi",
+    "form": {
+      "encryptedConnectionFile": "File Koneksi Terenkripsi",
+      "passphrase": "Frasa Sandi"
+    },
+    "label": "Pulihkan Koneksi",
+    "restore": "Pulihkan"
+  },
+  "settings": {
+    "defaultAgent": "AI Default",
+    "description": "Kelola preferensi pengaturan akun Anda.",
+    "experimentalFeature": {
+      "label": "Aktifkan Fitur Eksperimental"
+    },
+    "exportConnection": {
+      "label": "Ekspor koneksi"
+    },
+    "label": "Pengaturan",
+    "language": {
+      "label": "Bahasa",
+      "selectLanguage": "Pilih Bahasa"
+    },
+    "publicKeys": {
+      "label": "Kunci Publik",
+      "myDeviceEncryption": "Enkripsi Perangkat Saya",
+      "myDeviceIdentity": "Identitas Perangkat Saya",
+      "myDevicePublicKeys": "Kunci Publik Perangkat Saya",
+      "nodeEncryption": "Enkripsi Node",
+      "nodePublicKeys": "Kunci Publik Node",
+      "nodeSignature": "Tanda Tangan Node",
+      "profileEncryption": "Enkripsi Profil",
+      "profileIdentity": "Identitas Profil",
+      "profilePublicKeys": "Kunci Publik Profil",
+      "show": "Tampilkan Kunci Publik"
+    },
+    "quickAccessButton": {
+      "description": "Tombol Akses Cepat dapat dipindahkan dengan mengklik dan menahan.",
+      "label": "Tampilkan Tombol Akses Cepat Shinkai"
+    },
+    "registerNewCode": {
+      "label": "Daftarkan perangkat baru"
+    },
+    "shinkaiIdentity": {
+      "error": "Kesalahan saat memperbarui Identitas Shinkai",
+      "goToShinkaiIdentity": "Pergi ke Identitas Shinkai Saya",
+      "label": "Identitas Shinkai",
+      "registerIdentity": "Daftarkan Identitas Shinkai Anda",
+      "success": "Identitas Shinkai berhasil diperbarui",
+      "updatedIdentity": "Identitas Shinkai berhasil diperbarui."
+    },
+    "shinkaiVersion": "Versi Desktop Shinkai:",
+    "shortcutKey": {
+      "description": "Ubah tombol pintas untuk meluncurkan sidebar",
+      "label": "Tombol Pintas"
+    }
+  },
+  "shinkaiNode": {
+    "manager": "Manajer Node Shinkai",
+    "models": {
+      "errors": {
+        "modelInstalled": "Kesalahan saat menginstal model {{modelName}}",
+        "modelRemoved": "Kesalahan saat menghapus model {{modelName}}"
+      },
+      "poweredByOllama": "Didukung oleh Ollama",
+      "success": {
+        "modelInstalled": "Model {{modelName}} berhasil diinstal",
+        "modelRemoved": "Model {{modelName}} berhasil dihapus"
+      },
+      "table": {
+        "bookPages": "Halaman Buku",
+        "dataLimit": "Batas Data",
+        "models": "Model",
+        "quality": "Kualitas",
+        "size": "Ukuran",
+        "speed": "Kecepatan"
+      }
+    },
+    "nodeAddress": "Alamat Node",
+    "nodeVersion": "Versi Node",
+    "notifications": {
+      "downloadedModel": "Model AI {{modeName}} berhasil diunduh",
+      "downloadingModel": "Mengunduh model AI {{modeName}} - {{progress}}%",
+      "errorSyncOllama": "Kesalahan saat menyinkronkan model Ollama lokal dengan Node Shinkai Anda",
+      "optionsRestored": "Opsi dikembalikan ke nilai default",
+      "removedNote": "Penyimpanan Node Shinkai lokal Anda telah dihapus",
+      "runningNode": "Node Shinkai lokal Anda sedang berjalan",
+      "runningOllama": "Ollama lokal Anda sedang berjalan",
+      "startingDownload": "Memulai unduhan untuk model AI {{modeName}}",
+      "startingNode": "Memulai Node Shinkai lokal Anda",
+      "startingOllama": "Memulai Ollama lokal Anda",
+      "stopNode": "Menghentikan Node Shinkai lokal Anda",
+      "stopOllama": "Menghentikan Ollama lokal Anda",
+      "stoppedNode": "Node Shinkai lokal Anda telah dihentikan",
+      "stoppedOllama": "Ollama lokal Anda telah dihentikan",
+      "syncedOllama": "Model Ollama lokal disinkronkan dengan Node Shinkai Anda"
+    },
+    "resetNodeWarning": {
+      "description": "Node Shinkai Anda saat ini terkunci oleh kunci yang ada. Untuk terhubung kembali, Anda memiliki dua pilihan:",
+      "option1": "<b>Pulihkan:</b> Coba pulihkan koneksi Anda menggunakan kunci yang telah dibackup.",
+      "option2": "<b>Reset:</b> Hapus Penyimpanan Node Shinkai Anda (ini akan menghapus semua data Anda secara permanen).",
+      "title": "Tidak dapat terhubung"
+    },
+    "restartNode": "Harap restart Node Shinkai Anda",
+    "unavailable": "Node Shinkai Anda tidak tersedia"
+  },
+  "vectorFs": {
+    "actions": {
+      "addNew": "Tambah Baru",
+      "copy": "Salin",
+      "createFolder": "Tambah Folder Baru",
+      "delete": "Hapus",
+      "move": "Pindah",
+      "searchWithinFolder": "Cari dalam folder",
+      "share": "Bagikan",
+      "unshare": "Batalkan Berbagi",
+      "uploadFile": "Unggah File",
+      "uploadFileText": "Mengunggah file Anda mengubahnya menjadi siap AI dan tersedia untuk digunakan di Shinkai."
+    },
+    "allFiles": "Semua File",
+    "deleteFileConfirmation": "Apakah Anda yakin ingin menghapus file ini? Tindakan ini tidak dapat dibatalkan.",
+    "deleteFolderConfirmation": "Apakah Anda yakin ingin menghapus folder ini? Tindakan ini tidak dapat dibatalkan.",
+    "emptyState": {
+      "noFiles": "Tidak ada file ditemukan",
+      "noFilesAndFolders": "Ini akan menjadi rumah untuk semua file Anda.",
+      "noFilesAndFoldersDescription": "Gunakan tombol \"+\" untuk mulai mengunggah file.",
+      "noSharedFolders": "Folder bersama Anda akan ditampilkan di sini."
+    },
+    "errors": {
+      "fileCopied": "Kesalahan saat menyalin file",
+      "fileDeleted": "Kesalahan saat menghapus file",
+      "fileMoved": "Kesalahan saat memindahkan file",
+      "filesUploaded": "Kesalahan saat mengunggah file",
+      "folderCopied": "Kesalahan saat menyalin folder",
+      "folderCreated": "Kesalahan saat membuat folder",
+      "folderDeleted": "Kesalahan saat menghapus folder",
+      "folderMoved": "Kesalahan saat memindahkan folder",
+      "folderShared": "Kesalahan saat membagikan folder",
+      "folderUnshared": "Kesalahan saat tidak membagikan folder"
+    },
+    "filesSelected": "{{count}} dipilih",
+    "forms": {
+      "folderName": "Nama Folder"
+    },
+    "home": "Beranda",
+    "label": "Penjelajah File AI Saya",
+    "localFiles": "File AI Lokal",
+    "pending": {
+      "filesUploading": "Mengunggah file"
+    },
+    "shareFolderWarning": {
+      "action": "Klik di Sini untuk Belajar Cara",
+      "text": "Anda harus mendaftarkan identitas Shinkai sebelum Anda dapat berbagi folder melalui Jaringan Shinkai.",
+      "title": "Aktifkan Berbagi Folder"
+    },
+    "sharedFolders": "Folder Bersama",
+    "success": {
+      "fileCopied": "File berhasil disalin",
+      "fileDeleted": "File telah dihapus",
+      "fileMoved": "File berhasil dipindahkan",
+      "filesUploaded": "File berhasil diunggah",
+      "folderCopied": "Folder berhasil disalin",
+      "folderCreated": "Folder berhasil dibuat",
+      "folderDeleted": "Folder telah dihapus",
+      "folderMoved": "Folder berhasil dipindahkan",
+      "folderShared": "Folder berhasil dibagikan",
+      "folderUnshared": "Folder berhasil tidak dibagikan"
+    }
+  },
+  "workflowPlayground": {
+    "label": "Taman Bermain Alur Kerja"
+  }
+}

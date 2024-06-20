@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   PublicKeysFormSchema,
   publicKeysSchema,
@@ -15,6 +16,7 @@ import { useAuth } from '../store/auth';
 import { SubpageLayout } from './layout/simple-layout';
 
 export const PublicKeys = () => {
+  const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const form = useForm<PublicKeysFormSchema>({
     resolver: zodResolver(publicKeysSchema),
@@ -29,13 +31,15 @@ export const PublicKeys = () => {
   });
 
   return (
-    <SubpageLayout title="Public Keys">
+    <SubpageLayout title={t('settings.publicKeys.label')}>
       <div className="flex grow flex-col space-y-2">
         <Form {...form}>
           <form className="flex flex-col justify-between space-y-8">
             <div className="flex grow flex-col space-y-5">
               <div>
-                <h2 className="text-gray-80 mb-2 text-sm">Node Public Keys</h2>
+                <h2 className="text-gray-80 mb-2 text-sm">
+                  {t('settings.publicKeys.nodePublicKeys')}
+                </h2>
                 <div className="space-y-3">
                   <FormField
                     control={form.control}
@@ -54,7 +58,7 @@ export const PublicKeys = () => {
                           </div>
                         }
                         field={{ ...field, readOnly: true }}
-                        label="Node Encryption"
+                        label={t('settings.publicKeys.nodeEncryption')}
                       />
                     )}
                   />
@@ -75,7 +79,7 @@ export const PublicKeys = () => {
                           </div>
                         }
                         field={{ ...field, readOnly: true }}
-                        label="Node Signature"
+                        label={t('settings.publicKeys.nodeSignature')}
                       />
                     )}
                   />
@@ -83,7 +87,7 @@ export const PublicKeys = () => {
               </div>
               <div>
                 <h2 className="text-gray-80 mb-2 text-sm">
-                  Profile Public Keys
+                  {t('settings.publicKeys.profilePublicKeys')}
                 </h2>
                 <div className="space-y-3">
                   <FormField
@@ -103,7 +107,7 @@ export const PublicKeys = () => {
                           </div>
                         }
                         field={{ ...field, readOnly: true }}
-                        label="Profile Encryption"
+                        label={t('settings.publicKeys.profileEncryption')}
                       />
                     )}
                   />
@@ -124,7 +128,7 @@ export const PublicKeys = () => {
                           </div>
                         }
                         field={{ ...field, readOnly: true }}
-                        label="Profile Identity"
+                        label={t('settings.publicKeys.profileIdentity')}
                       />
                     )}
                   />
@@ -132,7 +136,7 @@ export const PublicKeys = () => {
               </div>
               <div>
                 <h2 className="text-gray-80 mb-2 text-sm">
-                  My Device Public Keys
+                  {t('settings.publicKeys.myDevicePublicKeys')}
                 </h2>
                 <div className="space-y-3">
                   <FormField
@@ -152,7 +156,7 @@ export const PublicKeys = () => {
                           </div>
                         }
                         field={{ ...field, readOnly: true }}
-                        label="My Device Encryption"
+                        label={t('settings.publicKeys.myDeviceEncryption')}
                       />
                     )}
                   />
@@ -173,7 +177,7 @@ export const PublicKeys = () => {
                           </div>
                         }
                         field={{ ...field, readOnly: true }}
-                        label="My Device Identity"
+                        label={t('settings.publicKeys.myDeviceIdentity')}
                       />
                     )}
                   />

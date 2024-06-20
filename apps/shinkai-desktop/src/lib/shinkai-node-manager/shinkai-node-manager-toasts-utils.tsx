@@ -1,3 +1,4 @@
+import { t } from '@shinkai_network/shinkai-i18n';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import React from 'react';
 import { ExternalToast, toast } from 'sonner';
@@ -28,12 +29,12 @@ const defaultToastOptions: ExternalToast = {
 };
 
 export const startingShinkaiNodeToast = () => {
-  return toast.loading('Starting your local Shinkai Node', {
+  return toast.loading(t('shinkaiNode.notifications.startingNode'), {
     ...defaultToastOptions,
   });
 };
 export const shinkaiNodeStartedToast = () => {
-  return toast.success('Your local Shinkai Node is running', {
+  return toast.success(t('shinkaiNode.notifications.runningNode'), {
     ...defaultToastOptions,
   });
 };
@@ -50,12 +51,12 @@ export const shinkaiNodeStartErrorToast = () => {
 };
 
 export const startingOllamaToast = () => {
-  return toast.loading('Starting your local Ollama', {
+  return toast.loading(t('shinkaiNode.notifications.startingOllama'), {
     ...defaultToastOptions,
   });
 };
 export const ollamaStartedToast = () => {
-  return toast.success('Your local Ollama is running', {
+  return toast.success(t('shinkaiNode.notifications.runningOllama'), {
     ...defaultToastOptions,
   });
 };
@@ -72,7 +73,7 @@ export const ollamaStartErrorToast = () => {
 };
 
 export const stoppingShinkaiNodeToast = () => {
-  return toast.loading('Stopping your local Shinkai Node', {
+  return toast.loading(t('shinkaiNode.notifications.stopNode'), {
     ...defaultToastOptions,
   });
 };
@@ -88,13 +89,13 @@ export const shinkaiNodeStopErrorToast = () => {
   );
 };
 export const shinkaiNodeStoppedToast = () => {
-  return toast.success('Your local Shinkai Node was stopped', {
+  return toast.success(t('shinkaiNode.notifications.stoppedNode'), {
     ...defaultToastOptions,
   });
 };
 
 export const stoppingOllamaToast = () => {
-  return toast.loading('Stopping your local Ollama', {
+  return toast.loading(t('shinkaiNode.notifications.stopOllama'), {
     ...defaultToastOptions,
   });
 };
@@ -110,13 +111,13 @@ export const ollamaStopErrorToast = () => {
   );
 };
 export const ollamaStoppedToast = () => {
-  return toast.success('Your local Ollama was stopped', {
+  return toast.success(t('shinkaiNode.notifications.stoppedOllama'), {
     ...defaultToastOptions,
   });
 };
 
 export const successRemovingShinkaiNodeStorageToast = () => {
-  return toast.success('Your local Shinkai Node storage was removed', {
+  return toast.success(t('shinkaiNode.notifications.removedNote'), {
     ...defaultToastOptions,
   });
 };
@@ -132,43 +133,51 @@ export const errorRemovingShinkaiNodeStorageToast = () => {
 };
 
 export const successShinkaiNodeSetDefaultOptionsToast = () => {
-  return toast.success('Options restored to default values', {
+  return toast.success(t('shinkaiNode.notifications.optionsRestored'), {
     ...defaultToastOptions,
   });
 };
 
 export const successOllamaModelsSyncToast = () => {
-  return toast.success(
-    'Local Ollama models synchronized with your Shinkai Node',
-    {
-      ...defaultToastOptions,
-    },
-  );
+  return toast.success(t('shinkaiNode.notifications.syncedOllama'), {
+    ...defaultToastOptions,
+  });
 };
 
 export const errorOllamaModelsSyncToast = () => {
-  return toast.error(
-    'Error synchronizing your local Ollama models with your Shinkai Node',
+  return toast.error(t('shinkaiNode.notifications.errorSyncOllama'), {
+    ...defaultToastOptions,
+  });
+};
+
+export const pullingModelStartToast = (model: string) => {
+  return toast.loading(
+    t('shinkaiNode.notifications.startingDownload', { modelName: model }),
     {
       ...defaultToastOptions,
     },
   );
 };
-
-export const pullingModelStartToast = (model: string) => {
-  return toast.loading(`Starting download for AI model ${model}`, {
-    ...defaultToastOptions,
-  });
-};
 export const pullingModelProgressToast = (model: string, progress: number) => {
-  return toast.loading(`Downloading AI model ${model} ${progress}%`, {
-    ...defaultToastOptions,
-  });
+  return toast.loading(
+    t('shinkaiNode.notifications.downloadingModel', {
+      modelName: model,
+      progress,
+    }),
+    {
+      ...defaultToastOptions,
+    },
+  );
 };
 export const pullingModelDoneToast = (model: string) => {
-  return toast.loading(`AI model ${model} downloaded`, {
-    ...defaultToastOptions,
-  });
+  return toast.loading(
+    t('shinkaiNode.notifications.downloadedModel', {
+      modelName: model,
+    }),
+    {
+      ...defaultToastOptions,
+    },
+  );
 };
 
 export const pullingModelErrorToast = (model: string) => {

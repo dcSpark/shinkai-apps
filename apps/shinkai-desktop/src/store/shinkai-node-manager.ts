@@ -40,7 +40,6 @@ useAuth.subscribe((state) => {
 });
 
 const handleAuthSideEffect = async (nodeAddress: string) => {
-  console.log('handleAuthSideEffect', nodeAddress);
   const isLocal = isLocalShinkaiNode(nodeAddress);
   const isRunning: boolean = await invoke('shinkai_node_is_running');
   useShinkaiNodeManager.getState().setIsInUse(isLocal && isRunning);

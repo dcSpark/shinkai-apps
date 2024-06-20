@@ -1,3 +1,4 @@
+import { I18nProvider } from '@shinkai_network/shinkai-i18n';
 import { QueryProvider } from '@shinkai_network/shinkai-node-state';
 import { Toaster } from '@shinkai_network/shinkai-ui';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -12,16 +13,18 @@ initSyncStorage();
 
 function App() {
   return (
-    <ErrorBoundary FallbackComponent={FullPageErrorFallback}>
-      <AnalyticsProvider>
-        <QueryProvider>
-          <Router>
-            <AppRoutes />
-          </Router>
-          <Toaster />
-        </QueryProvider>
-      </AnalyticsProvider>
-    </ErrorBoundary>
+    <I18nProvider>
+      <ErrorBoundary FallbackComponent={FullPageErrorFallback}>
+        <AnalyticsProvider>
+          <QueryProvider>
+            <Router>
+              <AppRoutes />
+            </Router>
+            <Toaster />
+          </QueryProvider>
+        </AnalyticsProvider>
+      </ErrorBoundary>
+    </I18nProvider>
   );
 }
 

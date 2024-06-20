@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   Button,
   buttonVariants,
@@ -31,6 +32,7 @@ export type RegisterShinkaiDesktopInstallationForm = z.infer<
 >;
 
 export const GalxeValidation = () => {
+  const { t } = useTranslation();
   const auth = useAuth((store) => store.auth);
   const { data: installationProof } =
     useGalxeGenerateDesktopInstallationProofQuery(
@@ -48,17 +50,12 @@ export const GalxeValidation = () => {
   const { mutateAsync: registerShinkaiDesktopInstallation, isPending } =
     useGalxeRegisterShinkaiDesktopInstallationMutation({
       onSuccess: () => {
-        toast.success(
-          'Your Shinkai Desktop installation was registered successfully. It may take some hours to be registered in Galxe quest.',
-        );
+        toast.success(t('galxe.success.registerDesktopInstallation'));
       },
       onError: (error) => {
-        toast.error(
-          'Error registering your Shinkai Desktop installation. Please ensure your EVM Address was not used previously to register a different installation.',
-          {
-            description: error?.response?.data?.message ?? error.message,
-          },
-        );
+        toast.error(t('galxe.errors.registerDesktopInstallation'), {
+          description: error?.response?.data?.message ?? error.message,
+        });
       },
     });
 
@@ -72,7 +69,7 @@ export const GalxeValidation = () => {
   }, [installationProof, form]);
 
   return (
-    <SubpageLayout title="Galxe Validation">
+    <SubpageLayout title={t('galxe.label')}>
       <div className="flex grow flex-col space-y-2">
         <span className="text-gray-80 inline-flex items-center gap-1 px-1 py-2.5 hover:text-white">
           <a
@@ -87,7 +84,7 @@ export const GalxeValidation = () => {
             rel="noreferrer"
             target="_blank"
           >
-            Check our Galxe Quest
+            {t('galxe.goToGalxeQuest')}
           </a>
           <ExternalLinkIcon className="h-4 w-4" />
         </span>
@@ -116,8 +113,8 @@ export const GalxeValidation = () => {
                           </div>
                         }
                         field={{ ...field }}
-                        helperMessage="Add the EVM Address you are using in Galxe"
-                        label="EVM Address"
+                        helperMessage={t('galxe.form.evmAddressHelper')}
+                        label={t('galxe.form.evmAddress')}
                       />
                     )}
                   />
@@ -139,7 +136,7 @@ export const GalxeValidation = () => {
                           </div>
                         }
                         field={{ ...field, readOnly: true }}
-                        label="Signature"
+                        label={t('galxe.form.signature')}
                       />
                     )}
                   />
@@ -161,14 +158,16 @@ export const GalxeValidation = () => {
                           </div>
                         }
                         field={{ ...field, readOnly: true }}
-                        label="Proof"
+                        label={t('galxe.form.proof')}
                       />
                     )}
                   />
 
                   <Button className="w-full" disabled={isPending} type="submit">
                     {isPending && <Loader2 className="animate-spin" />}
-                    <span className="ml-2">Register Installation</span>
+                    <span className="ml-2">
+                      {t('galxe.form.registerInstallation')}
+                    </span>
                   </Button>
                 </div>
               </div>

@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { retrieveVectorResource } from '@shinkai_network/shinkai-message-ts/api/methods';
 import {
   SearchVectorFormSchema,
@@ -49,6 +50,7 @@ const SearchNodeFiles = () => {
   const locationState = location.state as {
     folderPath: string;
   };
+  const { t } = useTranslation();
 
   const auth = useAuth((state) => state.auth);
   const [selectedKeys, setSelectedKeys] =
@@ -140,10 +142,10 @@ const SearchNodeFiles = () => {
           }}
         >
           <h1 className="text-center text-2xl font-semibold text-white">
-            AI Files Content Search
+            {t('aiFilesSearch.label')}
           </h1>
           <p className="text-gray-80 mx-auto text-center text-sm">
-            Search to find content across all files in your AI Files easily
+            {t('aiFilesSearch.description')}
           </p>
           <Form {...searchVectorFSForm}>
             <form
@@ -160,7 +162,7 @@ const SearchNodeFiles = () => {
                         autoFocus
                         className="placeholder-gray-80 !h-[50px] bg-gray-200 py-2 pl-10"
                         onChange={field.onChange}
-                        placeholder="Search anything..."
+                        placeholder={t('common.searchPlaceholder')}
                         value={field.value}
                       />
                       <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2" />
@@ -175,7 +177,9 @@ const SearchNodeFiles = () => {
                           variant="ghost"
                         >
                           <XIcon />
-                          <span className="sr-only">Clear Search</span>
+                          <span className="sr-only">
+                            {t('common.clearSearch')}
+                          </span>
                         </Button>
                       )}
                     </div>
@@ -189,13 +193,15 @@ const SearchNodeFiles = () => {
                   type="submit"
                 >
                   <SearchIcon />
-                  <span className="sr-only">Search</span>
+                  <span className="sr-only">{t('common.search')}</span>
                 </Button>
               </div>
 
               <div className="flex items-center gap-2 self-start px-2 py-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-gray-80 text-xs">Folder Location:</span>
+                  <span className="text-gray-80 text-xs">
+                    {t('common.folderLocation')}
+                  </span>
                   <SelectFolderButton />
                 </div>
                 <div className="flex items-center">
@@ -212,7 +218,7 @@ const SearchNodeFiles = () => {
                       type="button"
                       variant="link"
                     >
-                      Reset Filters
+                      {t('common.resetFilters')}
                     </Button>
                   )}
                 </div>

@@ -119,7 +119,6 @@ export const ConnectMethodQrCodePage = () => {
   };
 
   const connect = (values: FormType) => {
-    console.log('values', values);
     submitRegistration({
       ...values,
       registration_code: values.registration_code ?? '',
@@ -133,7 +132,6 @@ export const ConnectMethodQrCodePage = () => {
   };
 
   useEffect(() => {
-    console.log('generate keys');
     generateMyEncryptionKeys().then((encryptionKeys) => {
       form.reset((prevInitialValues) => ({
         ...prevInitialValues,

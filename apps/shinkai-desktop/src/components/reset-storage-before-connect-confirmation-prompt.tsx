@@ -1,4 +1,5 @@
 import { AlertDialogProps } from '@radix-ui/react-alert-dialog';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -27,6 +28,8 @@ export const ResetStorageBeforeConnectConfirmationPrompt = ({
   onReset?: () => void;
 } & AlertDialogProps) => {
   const navigate = useNavigate();
+  const { t, Trans } = useTranslation();
+
   const { mutateAsync: shinkaiNodeKill } = useShinkaiNodeKillMutation();
   const { mutateAsync: shinkaiNodeSpawn } = useShinkaiNodeSpawnMutation();
   const { mutateAsync: shinkaiNodeRemoveStorage } =
@@ -58,28 +61,37 @@ export const ResetStorageBeforeConnectConfirmationPrompt = ({
     <AlertDialog {...props}>
       <AlertDialogContent className="w-[75%]">
         <AlertDialogHeader>
-          <AlertDialogTitle>Unable to connect</AlertDialogTitle>
+          <AlertDialogTitle>
+            {t('shinkaiNode.resetNodeWarning.title')}
+          </AlertDialogTitle>
           <AlertDialogDescription>
             <div className="flex flex-col space-y-3 text-left text-white/70">
               <div className="flex flex-col space-y-3">
                 <span className="text-sm">
-                  Your Shinkai Node is currently locked by existing keys. To
-                  connect again you have two options:
+                  {t('shinkaiNode.resetNodeWarning.description')}
                 </span>
                 <div className="flex flex-col space-y-1">
                   <span className="text-xs">
                     <span aria-label="restore" className="emoji" role="img">
                       🔑
                     </span>
-                    <b className="ml-1">Restore:</b> Try to restore your
-                    connection using a backed up keys.
+                    <Trans
+                      components={{
+                        b: <b className="ml-1" />,
+                      }}
+                      i18nKey="shinkaiNode.resetNodeWarning.option1"
+                    />
                   </span>
                   <span className="text-xs">
                     <span aria-label="reset" className="emoji" role="img">
                       🗑️
                     </span>
-                    <b className="ml-1">Reset:</b> Delete your Shinkai Node
-                    Storage (this will permanently delete all your data).
+                    <Trans
+                      components={{
+                        b: <b className="ml-1" />,
+                      }}
+                      i18nKey="shinkaiNode.resetNodeWarning.option2"
+                    />
                   </span>
                 </div>
               </div>
@@ -90,9 +102,9 @@ export const ResetStorageBeforeConnectConfirmationPrompt = ({
           <Button
             className="mt-0 flex-1 text-sm"
             onClick={() => cancel()}
-            variant={'ghost'}
+            variant={'outline'}
           >
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button
             className="mt-0 flex-1 text-sm"
@@ -100,12 +112,12 @@ export const ResetStorageBeforeConnectConfirmationPrompt = ({
             variant={'ghost'}
           >
             <span aria-label="restore" className="emoji" role="img">
-              🔑 Restore
+              🔑 {t('common.restore')}
             </span>
           </Button>
           <Button className="mt-0 flex-1 text-sm" onClick={() => reset()}>
             <span aria-label="reset" className="emoji" role="img">
-              🗑️ Reset
+              🗑️ {t('common.reset')}
             </span>
           </Button>
         </AlertDialogFooter>

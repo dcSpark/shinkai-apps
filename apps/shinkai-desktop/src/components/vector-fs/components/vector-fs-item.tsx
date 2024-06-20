@@ -1,4 +1,5 @@
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { VRItem } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import {
   buttonVariants,
@@ -16,7 +17,7 @@ import { partial } from 'filesize';
 import { CopyIcon, FileInputIcon, TrashIcon } from 'lucide-react';
 import React from 'react';
 
-import { useVectorFsStore,VectorFSLayout } from '../context/vector-fs-context';
+import { useVectorFsStore, VectorFSLayout } from '../context/vector-fs-context';
 import { VectorFsItemAction } from './vector-fs-drawer';
 
 export const VectorFsItemInfo = ({
@@ -53,6 +54,8 @@ const VectorFsItem = ({
   handleSelectFiles: (file: VRItem) => void;
   isSelectedFile: boolean;
 }) => {
+  const { t } = useTranslation();
+
   const layout = useVectorFsStore((state) => state.layout);
   const isVRSelectionActive = useVectorFsStore(
     (state) => state.isVRSelectionActive,
@@ -130,7 +133,7 @@ const VectorFsItem = ({
             role="button"
             tabIndex={0}
           >
-            <span className="sr-only">More options</span>
+            <span className="sr-only">{t('common.moreOptions')}</span>
             <DotsVerticalIcon className="text-gray-100" />
           </div>
         </DropdownMenuTrigger>
@@ -140,31 +143,29 @@ const VectorFsItem = ({
         >
           {[
             {
-              name: 'Move',
+              name: t('vectorFs.actions.move'),
               icon: <FileInputIcon className="mr-3 h-4 w-4" />,
               onClick: () => {
                 setActiveDrawerMenuOption(VectorFsItemAction.Move);
               },
             },
             {
-              name: 'Copy',
+              name: t('vectorFs.actions.copy'),
               icon: <CopyIcon className="mr-3 h-4 w-4" />,
               onClick: () => {
                 setActiveDrawerMenuOption(VectorFsItemAction.Copy);
               },
             },
             {
-              name: 'Delete',
+              name: t('vectorFs.actions.delete'),
               icon: <TrashIcon className="mr-3 h-4 w-4" />,
               onClick: () => {
                 setActiveDrawerMenuOption(VectorFsItemAction.Delete);
               },
             },
-          ].map((option) => (
+          ].map((option, idx) => (
             <React.Fragment key={option.name}>
-              {option.name === 'Delete' && (
-                <DropdownMenuSeparator className="bg-gray-300" />
-              )}
+              {idx === 2 && <DropdownMenuSeparator className="bg-gray-300" />}
               <DropdownMenuItem
                 key={option.name}
                 onClick={(event) => {
