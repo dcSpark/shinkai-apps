@@ -32,8 +32,9 @@ module.exports = {
 ### Add a new translation key
 
 1. Add the new text to the [default translations file](./src/lib/default).
-2. Run `npx nx generate-i18n shinkai-i18n` to generate the new translations in the [locales](locales) directory. This will only update the default locale (en-US).
-3. Run `npx nx i18n shinkai-i18n` to generate the translations for all other locales using lobe-i18n.
+2. Run `npx nx i18n shinkai-i18n` to generate the new translations in the default locale (en-US.json) and then, will generate the translations for all other locales using lobe-i18n.
+
+Note: If you want to remove translation keys, you can simply remove the key from the default translation file and run `npx nx generate-i18n shinkai-i18n` to remove the key from all other locales.
 
 ### Remove a i18n text
 
