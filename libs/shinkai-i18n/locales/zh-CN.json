@@ -47,6 +47,7 @@
       "message": "告诉我们您想做的工作",
       "messagePlaceholder": "例如：解释互联网的工作原理...",
       "selectAI": "选择您的 AI",
+      "selectedText": "您选择的文本",
       "setContext": "设置聊天上下文",
       "setContextText": "添加文件或文件夹，供您的 AI 在对话中使用。",
       "workflows": "工作流"

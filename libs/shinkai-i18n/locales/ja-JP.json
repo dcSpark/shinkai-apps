@@ -47,6 +47,7 @@
       "message": "行いたい作業を教えてください",
       "messagePlaceholder": "例: インターネットの仕組みを説明して...",
       "selectAI": "AIを選択",
+      "selectedText": "選択したテキスト",
       "setContext": "チャットコンテキストを設定",
       "setContextText": "会話中にAIが使用するコンテキストとしてファイルやフォルダーを追加してください",
       "workflows": "ワークフロー"

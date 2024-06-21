@@ -47,6 +47,7 @@
       "message": "Cuéntanos la tarea que deseas realizar",
       "messagePlaceholder": "Ej: Explícame cómo funciona internet...",
       "selectAI": "Selecciona tu IA",
+      "selectedText": "Tu texto seleccionado",
       "setContext": "Establecer Contexto del Chat",
       "setContextText": "Añade archivos o carpetas para que tu IA los utilice como contexto durante la conversación.",
       "workflows": "Procesos"
