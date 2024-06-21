@@ -1,4 +1,5 @@
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { VRFolder } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import {
   buttonVariants,
@@ -66,6 +67,7 @@ const VectorFsFolder = ({
   isSelectedFolder: boolean;
   isSharedFolder?: boolean;
 }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const setActiveDrawerMenuOption = useVectorFsStore(
     (state) => state.setActiveDrawerMenuOption,
@@ -136,7 +138,7 @@ const VectorFsFolder = ({
             role="button"
             tabIndex={0}
           >
-            <span className="sr-only">More options</span>
+            <span className="sr-only">{t('common.moreOptions')}</span>
             <DotsVerticalIcon className="text-gray-100" />
           </div>
         </DropdownMenuTrigger>
@@ -146,21 +148,21 @@ const VectorFsFolder = ({
         >
           {[
             {
-              name: 'Move',
+              name: t('vectorFs.actions.move'),
               icon: <FolderInputIcon className="mr-3 h-4 w-4" />,
               onClick: () => {
                 setActiveDrawerMenuOption(VectorFsFolderAction.Move);
               },
             },
             {
-              name: 'Copy',
+              name: t('vectorFs.actions.copy'),
               icon: <CopyIcon className="mr-3 h-4 w-4" />,
               onClick: () => {
                 setActiveDrawerMenuOption(VectorFsFolderAction.Copy);
               },
             },
             {
-              name: 'Search within folder',
+              name: t('vectorFs.actions.searchWithinFolder'),
               icon: <AISearchContentIcon className="mr-3 h-4 w-4" />,
               onClick: () => {
                 navigate('/search-node-files', {
@@ -171,24 +173,22 @@ const VectorFsFolder = ({
               },
             },
             {
-              name: 'Share',
+              name: t('vectorFs.actions.share'),
               icon: <Share2 className="mr-3 h-4 w-4" />,
               onClick: () => {
                 setActiveDrawerMenuOption(VectorFsFolderAction.CreateShareable);
               },
             },
             {
-              name: 'Delete',
+              name: t('vectorFs.actions.delete'),
               icon: <TrashIcon className="mr-3 h-4 w-4" />,
               onClick: () => {
                 setActiveDrawerMenuOption(VectorFsFolderAction.Delete);
               },
             },
-          ].map((option) => (
+          ].map((option, idx) => (
             <React.Fragment key={option.name}>
-              {(option.name === 'Share' ||
-                option.name === 'Delete' ||
-                option.name === 'Search within folder') && (
+              {(idx === 3 || idx === 5 || idx === 2) && (
                 <DropdownMenuSeparator className="bg-gray-300" />
               )}
               <DropdownMenuItem

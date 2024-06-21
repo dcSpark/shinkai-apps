@@ -22,7 +22,7 @@ export default function VectorFs() {
     (state) => state.setSelectedVectorFsTab,
   );
   return (
-    <SimpleLayout title="AI Files Explorer">
+    <SimpleLayout title={t('vectorFs.label')}>
       <Tabs
         className="relative flex h-full flex-col"
         onValueChange={(value) =>
