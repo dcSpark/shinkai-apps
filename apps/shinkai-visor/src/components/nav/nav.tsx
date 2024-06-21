@@ -147,14 +147,16 @@ const DisplayInboxName = () => {
               <XIcon className="text-gray-80" />
             </DrawerClose>
             <DrawerHeader>
-              <DrawerTitle>Chat Context</DrawerTitle>
+              <DrawerTitle>{t('chat.context.title')}</DrawerTitle>
               <DrawerDescription className="mb-4 mt-2">
-                List of folders and files used as context for this conversation
+                {t('chat.context.description')}
               </DrawerDescription>
               <div className="space-y-3 pt-4">
                 {hasFolders && (
                   <div className="space-y-1">
-                    <span className="font-medium text-white">Folders</span>
+                    <span className="font-medium text-white">
+                      {t('common.folders')}
+                    </span>
                     <ul>
                       {currentInbox?.job_scope?.vector_fs_folders?.map(
                         (folder) => (
@@ -174,7 +176,9 @@ const DisplayInboxName = () => {
                 )}
                 {hasFiles && (
                   <div className="space-y-1">
-                    <span className="font-medium text-white">Files</span>
+                    <span className="font-medium text-white">
+                      {t('common.files')}
+                    </span>
                     <ul>
                       {currentInbox?.job_scope?.vector_fs_items?.map((file) => (
                         <li
@@ -214,13 +218,14 @@ const DisplayInboxName = () => {
 
 const ArchiveJobButton = () => {
   const currentInbox = useGetCurrentInbox();
+  const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const { mutateAsync: archiveJob } = useArchiveJob({
     onSuccess: () => {
-      toast.success('Your conversation has been archived');
+      toast.success(t('chat.archives.success'));
     },
     onError: (error) => {
-      toast.error('Error archiving job', {
+      toast.error(t('chat.archives.error'), {
         description: error.message,
       });
     },
@@ -274,7 +279,7 @@ const ArchiveJobButton = () => {
 
 export default function NavBar() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, Trans } = useTranslation();
   const location = useLocation();
   const setLastPage = useSettings((state) => state.setLastPage);
 
@@ -431,14 +436,17 @@ export default function NavBar() {
                   </span>
                 </div>
                 <div className="text-sm">
-                  Before continuing, please
-                  <Link
-                    className="mx-1 inline-block cursor-pointer text-white underline"
-                    to={'/settings/export-connection'}
-                  >
-                    export your connection
-                  </Link>
-                  to restore your connection at any time.
+                  <Trans
+                    components={{
+                      Link: (
+                        <Link
+                          className="mx-1 inline-block cursor-pointer text-white underline"
+                          to={'/settings/export-connection'}
+                        />
+                      ),
+                    }}
+                    i18nKey="disconnect.exportConnection"
+                  />
                 </div>
               </div>
             </AlertDialogDescription>

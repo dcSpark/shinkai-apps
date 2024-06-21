@@ -51,6 +51,7 @@ export default {
       setContext: 'Set Chat Context',
       setContextText:
         'Add files or folders for your AI to use as context during your conversation.',
+      selectedText: 'Your selected text',
     },
     context: {
       title: 'Conversation Context',
@@ -76,7 +77,7 @@ export default {
     label: 'AI Files Content Search',
     description:
       'Search to find content across all files in your AI Files easily',
-    foundResults: 'Found {{count}} result',
+    foundResults: 'Found {{count}} results',
     filesSelected: 'Selected {{count}} files',
   },
   vectorFs: {

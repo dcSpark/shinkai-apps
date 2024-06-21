@@ -8,7 +8,7 @@ import { srcUrlResolver } from '../../helpers/src-url-resolver';
 
 export default function Welcome() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, Trans } = useTranslation();
   const [acceptedTermsAndContidions, setAcceptedTermsAndContidions] = useState<
     boolean | 'indeterminate'
   >(false);
@@ -47,26 +47,29 @@ export default function Welcome() {
           htmlFor="terms"
         >
           <span className={'leading-4 tracking-wide'}>
-            By continuing, you agree to our{' '}
-            <a
-              className={'text-blue-400 underline'}
-              data-testid="terms-of-service-link"
-              href={'https://www.shinkai.com/terms-of-service'}
-              rel="noreferrer"
-              target={'_blank'}
-            >
-              Terms of Service
-            </a>{' '}
-            and{' '}
-            <a
-              className={'text-blue-400 underline'}
-              data-testid="privacy-policy-link"
-              href={'https://www.shinkai.com/privacy-policy'}
-              rel="noreferrer"
-              target={'_blank'}
-            >
-              Privacy Policy
-            </a>
+            <Trans
+              components={{
+                a: (
+                  // eslint-disable-next-line jsx-a11y/anchor-has-content
+                  <a
+                    className={'text-white underline'}
+                    href={'https://www.shinkai.com/terms-of-service'}
+                    rel="noreferrer"
+                    target={'_blank'}
+                  />
+                ),
+                b: (
+                  // eslint-disable-next-line jsx-a11y/anchor-has-content
+                  <a
+                    className={'text-white underline'}
+                    href={'https://www.shinkai.com/privacy-policy'}
+                    rel="noreferrer"
+                    target={'_blank'}
+                  />
+                ),
+              }}
+              i18nKey="common.termsAndConditionsText"
+            />
           </span>
         </label>
       </div>

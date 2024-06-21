@@ -92,7 +92,7 @@ export const ConnectMethodRestoreConnection = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="sr-only">
-                    Encrypted connection
+                    {t('restoreConnection.form.encryptedConnectionFile')}
                   </FormLabel>
                   <FormControl>
                     <div className="flex flex-col space-y-1">
@@ -135,7 +135,7 @@ export const ConnectMethodRestoreConnection = () => {
           </div>
 
           <Button className="w-full" type="submit">
-            Restore connection
+            {t('restoreConnection.label')}
           </Button>
         </form>
       </Form>
