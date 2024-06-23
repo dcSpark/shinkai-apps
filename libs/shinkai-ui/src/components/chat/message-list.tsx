@@ -222,7 +222,11 @@ export const MessageList = ({
                         </span>
                       </div>
                       <div className="flex flex-col gap-10">
-                        {messages.map((message) => {
+                        {messages.map((message, messageIndex) => {
+                          const previousMessage = messages[messageIndex - 1];
+                          const grandparentHash = previousMessage
+                            ? previousMessage.parentHash
+                            : null;
                           return (
                             <div
                               className="relative bg-gray-400"
@@ -233,14 +237,13 @@ export const MessageList = ({
                             >
                               <Message
                                 message={message}
-                                previousMessage={
-                                  messages[messages.indexOf(message) - 1]
-                                }
+                                previousMessage={previousMessage}
                                 regenerateLastMessage={regenerateLastMessage}
                               />
                               <p className="text-gray-80 absolute bottom-0 text-sm">
                                 hashMessage: {message.hash} <br />
-                                parentHash: {message.parentHash}
+                                parentHash: {message.parentHash} <br />
+                                grandparentHash: {grandparentHash}
                               </p>
                             </div>
                           );

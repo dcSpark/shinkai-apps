@@ -95,7 +95,7 @@ export const Message = ({
                   console.log('regenerateLastMessage', previousMessage.content);
                   regenerateLastMessage(
                     previousMessage.content,
-                    previousMessage.hash,
+                    previousMessage.parentHash,
                   );
                 }}
               >
