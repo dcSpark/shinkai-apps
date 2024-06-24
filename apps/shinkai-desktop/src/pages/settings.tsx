@@ -6,8 +6,8 @@ import {
 } from '@shinkai_network/shinkai-i18n';
 import { isShinkaiIdentityLocalhost } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useUpdateNodeName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateNodeName/useUpdateNodeName';
-import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
+import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
 import {
   Button,
   buttonVariants,
@@ -132,7 +132,7 @@ const SettingsPage = () => {
     setOptInExperimental(currentOptInExperimental);
   }, [currentOptInExperimental, setOptInExperimental]);
 
-  const { agents } = useAgents({
+  const { llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
     sender: auth?.shinkai_identity ?? '',
     senderSubidentity: `${auth?.profile}`,
@@ -220,7 +220,8 @@ const SettingsPage = () => {
                     form.setValue('defaultAgentId', value);
                   }}
                   value={
-                    agents?.find((agent) => agent.id === defaultAgentId)?.id
+                    llmProviders?.find((agent) => agent.id === defaultAgentId)
+                      ?.id
                   }
                 >
                   <FormControl>
@@ -230,7 +231,7 @@ const SettingsPage = () => {
                   </FormControl>
                   <FormLabel>{t('settings.defaultAgent')}</FormLabel>
                   <SelectContent>
-                    {agents?.map((agent) => (
+                    {llmProviders?.map((agent) => (
                       <SelectItem key={agent.id} value={agent.id}>
                         {agent.id}
                       </SelectItem>

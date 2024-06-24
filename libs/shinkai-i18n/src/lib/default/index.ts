@@ -368,7 +368,7 @@ export default {
     moreInfo:
       'Fore more information in relation to our privacy practices, please see our <a>Privacy Policy</a>',
   },
-  agents: {
+  llmProviders: {
     label: 'AIs',
     add: 'Add AI',
     addManually: 'Manually Add AI',

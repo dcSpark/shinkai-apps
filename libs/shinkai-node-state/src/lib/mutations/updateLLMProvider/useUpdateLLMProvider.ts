@@ -2,15 +2,19 @@ import { UseMutationOptions, useQueryClient } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 
 import { FunctionKey } from '../../constants';
-import { updateAgent } from '.';
-import { UpdateAgentInput, UpdateAgentOutput } from './types';
+import { updateLLMProvider } from '.';
+import { UpdateLLMProviderInput, UpdateLLMProviderOutput } from './types';
 
-type Options = UseMutationOptions<UpdateAgentOutput, Error, UpdateAgentInput>;
+type Options = UseMutationOptions<
+  UpdateLLMProviderOutput,
+  Error,
+  UpdateLLMProviderInput
+>;
 
-export const useUpdateAgent = (options?: Options) => {
+export const useUpdateLLMProvider = (options?: Options) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: updateAgent,
+    mutationFn: updateLLMProvider,
     ...options,
     onSuccess: (response, variables, context) => {
       queryClient.invalidateQueries({

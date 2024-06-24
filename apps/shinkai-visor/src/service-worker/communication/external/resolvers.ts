@@ -1,6 +1,6 @@
 import {
   getAllInboxesForProfile,
-  getProfileAgents,
+  getLLMProviders,
   health,
 } from '@shinkai_network/shinkai-message-ts/api';
 
@@ -53,7 +53,7 @@ export const getProfileAgentsResolver =
     if (!auth) {
       throw new Error('visor is not connected to a node');
     }
-    const agents = await getProfileAgents(
+    const llmProviders = await getLLMProviders(
       auth.node_address,
       auth.shinkai_identity,
       auth.profile,
@@ -67,7 +67,7 @@ export const getProfileAgentsResolver =
       },
     );
     return {
-      agents,
+      agents: llmProviders,
     };
   };
 

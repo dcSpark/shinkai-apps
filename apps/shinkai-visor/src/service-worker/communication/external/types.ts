@@ -1,4 +1,7 @@
-import { Agent, SmartInbox } from '@shinkai_network/shinkai-message-ts/models';
+import {
+  LLMProvider,
+  SmartInbox,
+} from '@shinkai_network/shinkai-message-ts/models';
 import { ZodSchema } from 'zod';
 
 import { ACTIONS_MAP } from './actions';
@@ -50,7 +53,7 @@ export interface ServiceWorkerExternalMessageIsNodePristineResponse {
 export type ServiceWorkerExternalMessageGetProfileAgents = never;
 
 export interface ServiceWorkerExternalMessageGetProfileAgentsResponse {
-  agents: Agent[];
+  agents: LLMProvider[];
 }
 
 export type ServiceWorkerExternalMessageGetProfileInboxes = never;

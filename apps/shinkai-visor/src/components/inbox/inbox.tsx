@@ -14,8 +14,8 @@ import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mut
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
 import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageWithFilesToInbox/useSendMessageWithFilesToInbox';
 import { useUpdateAgentInJob } from '@shinkai_network/shinkai-node-state/lib/mutations/updateAgentInJob/useUpdateAgentInJob';
-import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
+import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
 import {
   Alert,
   AlertDescription,
@@ -69,7 +69,7 @@ enum ErrorCodes {
 function AgentSelection() {
   const auth = useAuth((state) => state.auth);
   const currentInbox = useGetCurrentInbox();
-  const { agents } = useAgents({
+  const { llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
     sender: auth?.shinkai_identity ?? '',
     senderSubidentity: `${auth?.profile}`,
@@ -133,7 +133,7 @@ function AgentSelection() {
               }}
               value={currentInbox?.agent?.id ?? ''}
             >
-              {agents.map((agent) => (
+              {llmProviders.map((agent) => (
                 <DropdownMenuRadioItem
                   className="flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-2 text-white transition-colors hover:bg-gray-200 aria-checked:bg-gray-200"
                   key={agent.id}

@@ -1,8 +1,8 @@
-import { getProfileAgents } from '@shinkai_network/shinkai-message-ts/api';
+import { getLLMProviders as getLLMProvidersAPI } from '@shinkai_network/shinkai-message-ts/api';
 
-import type { GetAgentsInput } from './types';
+import type { GetLLMProvidersInput } from './types';
 
-export const getAgents = async ({
+export const getLLMProviders = async ({
   nodeAddress,
   sender,
   senderSubidentity,
@@ -12,8 +12,8 @@ export const getAgents = async ({
   node_encryption_pk,
   profile_encryption_sk,
   profile_identity_sk,
-}: GetAgentsInput) => {
-  const result = await getProfileAgents(
+}: GetLLMProvidersInput) => {
+  const result = await getLLMProvidersAPI(
     nodeAddress,
     sender,
     senderSubidentity,

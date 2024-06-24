@@ -6,7 +6,7 @@ import {
   AddAgentFormSchema,
   addAgentSchema,
 } from '@shinkai_network/shinkai-node-state/forms/agents/add-agent';
-import { useCreateAgent } from '@shinkai_network/shinkai-node-state/lib/mutations/createAgent/useCreateAgent';
+import { useAddLLMProvider } from '@shinkai_network/shinkai-node-state/lib/mutations/addLLMProvider/useAddLLMProvider';
 import { useScanOllamaModels } from '@shinkai_network/shinkai-node-state/lib/queries/scanOllamaModels/useScanOllamaModels';
 import {
   Models,
@@ -79,11 +79,11 @@ const CreateAgentPage = () => {
     defaultValues: addAgentFormDefault,
   });
   const {
-    mutateAsync: createAgent,
+    mutateAsync: addLLMProvider,
     isPending,
     isError,
     error,
-  } = useCreateAgent({
+  } = useAddLLMProvider({
     onSuccess: (_, variables) => {
       navigate(CREATE_JOB_PATH, {
         state: {
@@ -92,7 +92,7 @@ const CreateAgentPage = () => {
       });
     },
     onError: (error) => {
-      toast.error(t('agents.errors.createAgent'), {
+      toast.error(t('llmProviders.errors.createAgent'), {
         description: error instanceof Error ? error.message : error,
       });
     },
@@ -184,7 +184,7 @@ const CreateAgentPage = () => {
     if (isCustomModelMode && data.modelCustom && data.modelTypeCustom) {
       model = getModelObject(data.modelCustom, data.modelTypeCustom);
     }
-    await createAgent({
+    await addLLMProvider({
       nodeAddress: auth?.node_address ?? '',
       sender_subidentity: auth.profile,
       node_name: auth.shinkai_identity,
@@ -210,7 +210,7 @@ const CreateAgentPage = () => {
   };
 
   return (
-    <SubpageLayout title={t('agents.add')}>
+    <SubpageLayout title={t('llmProviders.add')}>
       <Form {...addAgentForm}>
         <form
           className="space-y-10"
@@ -236,7 +236,7 @@ const CreateAgentPage = () => {
                     )}
                   >
                     <label htmlFor="custom-model">
-                      {t('agents.form.toggleCustomModel')}
+                      {t('llmProviders.form.toggleCustomModel')}
                     </label>
                   </div>
                 </FormItem>
@@ -248,7 +248,7 @@ const CreateAgentPage = () => {
                 name="model"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('agents.form.selectModel')}</FormLabel>
+                    <FormLabel>{t('llmProviders.form.selectModel')}</FormLabel>
                     <Select
                       defaultValue={field.value}
                       onValueChange={field.onChange}
@@ -280,7 +280,7 @@ const CreateAgentPage = () => {
                 name="modelType"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('agents.form.modelType')}</FormLabel>
+                    <FormLabel>{t('llmProviders.form.modelType')}</FormLabel>
                     <Select
                       defaultValue={field.value as unknown as string}
                       onValueChange={field.onChange}
@@ -315,7 +315,7 @@ const CreateAgentPage = () => {
                   render={({ field }) => (
                     <TextField
                       field={field}
-                      label={t('agents.form.modelName')}
+                      label={t('llmProviders.form.modelName')}
                     />
                   )}
                 />
@@ -323,7 +323,10 @@ const CreateAgentPage = () => {
                   control={addAgentForm.control}
                   name="modelTypeCustom"
                   render={({ field }) => (
-                    <TextField field={field} label={t('agents.form.modelId')} />
+                    <TextField
+                      field={field}
+                      label={t('llmProviders.form.modelId')}
+                    />
                   )}
                 />
               </>
@@ -336,7 +339,7 @@ const CreateAgentPage = () => {
                 <TextField
                   autoFocus
                   field={field}
-                  label={t('agents.form.agentName')}
+                  label={t('llmProviders.form.agentName')}
                 />
               )}
             />
@@ -344,14 +347,20 @@ const CreateAgentPage = () => {
               control={addAgentForm.control}
               name="externalUrl"
               render={({ field }) => (
-                <TextField field={field} label={t('agents.form.externalUrl')} />
+                <TextField
+                  field={field}
+                  label={t('llmProviders.form.externalUrl')}
+                />
               )}
             />
             <FormField
               control={addAgentForm.control}
               name="apikey"
               render={({ field }) => (
-                <TextField field={field} label={t('agents.form.apiKey')} />
+                <TextField
+                  field={field}
+                  label={t('llmProviders.form.apiKey')}
+                />
               )}
             />
           </div>
@@ -364,7 +373,7 @@ const CreateAgentPage = () => {
             isLoading={isPending}
             type="submit"
           >
-            {t('agents.add')}
+            {t('llmProviders.add')}
           </Button>
         </form>
       </Form>

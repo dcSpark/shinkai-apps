@@ -6,7 +6,7 @@ import {
   createJobFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
-import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
+import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
 import {
   VRFolder,
   VRItem,
@@ -95,7 +95,7 @@ export const CreateJob = () => {
       files: [],
     },
   });
-  const { agents } = useAgents({
+  const { llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
     sender: auth?.shinkai_identity ?? '',
     senderSubidentity: `${auth?.profile}`,
@@ -128,11 +128,13 @@ export const CreateJob = () => {
     if (!location?.state?.agentName) {
       return;
     }
-    const agent = agents.find((agent) => agent.id === location.state.agentName);
+    const agent = llmProviders.find(
+      (agent) => agent.id === location.state.agentName,
+    );
     if (agent) {
       form.setValue('agent', agent.id);
     }
-  }, [form, location, agents]);
+  }, [form, location, llmProviders]);
   useEffect(() => {
     if (form.getValues().agent) {
       return;
@@ -141,12 +143,13 @@ export const CreateJob = () => {
     defaultAgentId =
       defaultAgentId ||
       (currentDefaultAgentId &&
-      agents.find((agent) => agent.id === currentDefaultAgentId)
+      llmProviders.find((agent) => agent.id === currentDefaultAgentId)
         ? currentDefaultAgentId
         : '');
-    defaultAgentId = defaultAgentId || (agents?.length ? agents[0].id : '');
+    defaultAgentId =
+      defaultAgentId || (llmProviders?.length ? llmProviders[0].id : '');
     form.setValue('agent', defaultAgentId);
-  }, [form, location, agents, currentDefaultAgentId]);
+  }, [form, location, llmProviders, currentDefaultAgentId]);
 
   useEffect(() => {
     if (query.get('initialText')) {
@@ -255,7 +258,7 @@ export const CreateJob = () => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {agents?.map((agent) => (
+                      {llmProviders?.map((agent) => (
                         <SelectItem key={agent.id} value={agent.id}>
                           {agent.id}
                         </SelectItem>

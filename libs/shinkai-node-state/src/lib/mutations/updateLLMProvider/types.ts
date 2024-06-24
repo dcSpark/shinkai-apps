@@ -1,15 +1,15 @@
 import type {
   CredentialsPayload,
-  SerializedAgent,
+  SerializedLLMProvider,
 } from '@shinkai_network/shinkai-message-ts/models';
 
-export type UpdateAgentOutput = {
+export type UpdateLLMProviderOutput = {
   status: string;
 };
 
-export type UpdateAgentInput = CredentialsPayload & {
+export type UpdateLLMProviderInput = CredentialsPayload & {
   nodeAddress: string;
   shinkaiIdentity: string;
   profile: string;
-  agent: SerializedAgent;
+  agent: SerializedLLMProvider;
 };

@@ -5,9 +5,9 @@ import {
   EditAgentFormSchema,
   editAgentSchema,
 } from '@shinkai_network/shinkai-node-state/forms/agents/edit-agent';
-import { useDeleteAgent } from '@shinkai_network/shinkai-node-state/lib/mutations/deleteAgent/useDeleteAgent';
-import { useUpdateAgent } from '@shinkai_network/shinkai-node-state/lib/mutations/updateAgent/useUpdateAgent';
-import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
+import { useDeleteLLMProvider } from '@shinkai_network/shinkai-node-state/lib/mutations/deleteLLMProvider/useDeleteLLMProvider';
+import { useUpdateLLMProvider } from '@shinkai_network/shinkai-node-state/lib/mutations/updateLLMProvider/useUpdateLLMProvider';
+import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
 import {
   Badge,
   Button,
@@ -43,7 +43,7 @@ const AgentsPage = () => {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
-  const { agents } = useAgents({
+  const { llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
     sender: auth?.shinkai_identity ?? '',
     senderSubidentity: `${auth?.profile}`,
@@ -65,7 +65,7 @@ const AgentsPage = () => {
     navigate('/add-agent');
   };
   return (
-    <SimpleLayout classname="relative" title={t('agents.label')}>
+    <SimpleLayout classname="relative" title={t('llmProviders.label')}>
       <div className="absolute right-3 top-[36px]">
         <Button
           className="h-[40px] gap-2"
@@ -73,30 +73,30 @@ const AgentsPage = () => {
           size="auto"
         >
           <Plus className="h-4 w-4" />
-          <span>{t('agents.add')}</span>
+          <span>{t('llmProviders.add')}</span>
         </Button>
       </div>
       <div className="flex h-full flex-col space-y-3">
-        {!agents?.length ? (
+        {!llmProviders?.length ? (
           <div className="flex grow flex-col items-center justify-center">
             <div className="mb-8 space-y-3 text-center">
               <span aria-hidden className="text-5xl">
                 🤖
               </span>
               <p className="text-2xl font-semibold">
-                {t('agents.notFound.title')}
+                {t('llmProviders.notFound.title')}
               </p>
               <p className="text-center text-sm font-medium text-gray-100">
-                {t('agents.notFound.description')}
+                {t('llmProviders.notFound.description')}
               </p>
             </div>
 
-            <Button onClick={onAddAgentClick}>{t('agents.add')}</Button>
+            <Button onClick={onAddAgentClick}>{t('llmProviders.add')}</Button>
           </div>
         ) : (
           <ScrollArea className="flex h-full flex-col justify-between [&>div>div]:!block">
             <div className="divide-y divide-gray-400">
-              {agents?.map((agent) => (
+              {llmProviders?.map((agent) => (
                 <AgentCard
                   agentApiKey={agent.api_key ?? ''}
                   agentId={agent.id}
@@ -274,13 +274,13 @@ const EditAgentDrawer = ({
     agentApiKey,
   ]);
 
-  const { mutateAsync: updateAgent, isPending } = useUpdateAgent({
+  const { mutateAsync: updateLLMProvider, isPending } = useUpdateLLMProvider({
     onSuccess: () => {
       onOpenChange(false);
-      toast.success(t('agents.success.updateAgent'));
+      toast.success(t('llmProviders.success.updateAgent'));
     },
     onError: (error) => {
-      toast.error(t('agents.errors.updateAgent'), {
+      toast.error(t('llmProviders.errors.updateAgent'), {
         description: typeof error === 'string' ? error : error.message,
       });
     },
@@ -290,7 +290,7 @@ const EditAgentDrawer = ({
     if (!auth) return;
     const model = getModelObject(values.modelCustom, values.modelTypeCustom);
 
-    await updateAgent({
+    await updateLLMProvider({
       nodeAddress: auth?.node_address ?? '',
       shinkaiIdentity: auth?.shinkai_identity ?? '',
       profile: auth?.profile ?? '',
@@ -332,7 +332,10 @@ const EditAgentDrawer = ({
                 disabled
                 name="agentName"
                 render={({ field }) => (
-                  <TextField field={field} label={t('agents.form.agentName')} />
+                  <TextField
+                    field={field}
+                    label={t('llmProviders.form.agentName')}
+                  />
                 )}
               />
 
@@ -342,7 +345,7 @@ const EditAgentDrawer = ({
                 render={({ field }) => (
                   <TextField
                     field={field}
-                    label={t('agents.form.externalUrl')}
+                    label={t('llmProviders.form.externalUrl')}
                   />
                 )}
               />
@@ -351,7 +354,10 @@ const EditAgentDrawer = ({
                 control={form.control}
                 name="apikey"
                 render={({ field }) => (
-                  <TextField field={field} label={t('agents.form.apiKey')} />
+                  <TextField
+                    field={field}
+                    label={t('llmProviders.form.apiKey')}
+                  />
                 )}
               />
 
@@ -359,14 +365,20 @@ const EditAgentDrawer = ({
                 control={form.control}
                 name="modelCustom"
                 render={({ field }) => (
-                  <TextField field={field} label={t('agents.form.modelName')} />
+                  <TextField
+                    field={field}
+                    label={t('llmProviders.form.modelName')}
+                  />
                 )}
               />
               <FormField
                 control={form.control}
                 name="modelTypeCustom"
                 render={({ field }) => (
-                  <TextField field={field} label={t('agents.form.modelId')} />
+                  <TextField
+                    field={field}
+                    label={t('llmProviders.form.modelId')}
+                  />
                 )}
               />
             </div>
@@ -395,13 +407,13 @@ const RemoveAgentDrawer = ({
 }) => {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
-  const { mutateAsync: deleteAgent, isPending } = useDeleteAgent({
+  const { mutateAsync: deleteLLMProvider, isPending } = useDeleteLLMProvider({
     onSuccess: () => {
       onOpenChange(false);
-      toast.success(t('agents.success.deleteAgent'));
+      toast.success(t('llmProviders.success.deleteAgent'));
     },
     onError: (error) => {
-      toast.error(t('agents.errors.deleteAgent'), {
+      toast.error(t('llmProviders.errors.deleteAgent'), {
         description: typeof error === 'string' ? error : error.message,
       });
     },
@@ -412,12 +424,12 @@ const RemoveAgentDrawer = ({
       <SheetContent>
         <SheetHeader>
           <SheetTitle className="font-normal">
-            {t('agents.delete.label')}
+            {t('llmProviders.delete.label')}
             <span className="font-medium">{agentId}</span>{' '}
           </SheetTitle>
         </SheetHeader>
         <p className="text-gray-80 my-3 text-base">
-          {t('agents.delete.description')}
+          {t('llmProviders.delete.description')}
         </p>
         <SheetFooter>
           <Button
@@ -425,7 +437,7 @@ const RemoveAgentDrawer = ({
             isLoading={isPending}
             onClick={async () => {
               if (!auth) return;
-              await deleteAgent({
+              await deleteLLMProvider({
                 nodeAddress: auth?.node_address ?? '',
                 shinkaiIdentity: auth?.shinkai_identity ?? '',
                 profile: auth?.profile ?? '',

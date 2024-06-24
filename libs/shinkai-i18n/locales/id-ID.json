@@ -1,42 +1,4 @@
 {
-  "agents": {
-    "add": "Tambahkan AI",
-    "addManually": "Tambahkan AI Secara Manual",
-    "delete": {
-      "description": "Apakah Anda yakin ingin menghapus AI ini? Tindakan ini tidak dapat dibatalkan.",
-      "label": "Hapus AI"
-    },
-    "errors": {
-      "createAgent": "Kesalahan menambahkan AI",
-      "deleteAgent": "Kesalahan menghapus AI",
-      "updateAgent": "Kesalahan memperbarui AI"
-    },
-    "form": {
-      "agentName": "Nama AI",
-      "apiKey": "Kunci API",
-      "externalUrl": "URL Eksternal",
-      "modelId": "ID Model",
-      "modelName": "Nama Model",
-      "modelType": "Tipe Model",
-      "selectModel": "Pilih Model Anda",
-      "toggleCustomModel": "Tambahkan model kustom"
-    },
-    "label": "AI",
-    "localAI": {
-      "installText": "Setelah memasang model AI di mesin lokal Anda, mereka akan menjadi tersedia sebagai AI",
-      "installTitle": "Pasang Model AI"
-    },
-    "notFound": {
-      "description": "Hubungkan AI pertama Anda untuk mulai bertanya kepada Shinkai AI. Coba hubungkan OpenAI",
-      "title": "Tidak ada AI tersedia"
-    },
-    "success": {
-      "createAgent": "AI berhasil dibuat",
-      "deleteAgent": "AI berhasil dihapus",
-      "updateAgent": "AI berhasil diperbarui"
-    },
-    "switch": "Alihkan AI"
-  },
   "aiFilesSearch": {
     "description": "Cari untuk menemukan konten di semua file AI Anda dengan mudah",
     "filesSelected": "Dipilih {{count}} file",
@@ -214,6 +176,44 @@
     "sidebar": {
       "toggle": "Alihkan Sidebar"
     }
+  },
+  "llmProviders": {
+    "add": "Tambahkan AI",
+    "addManually": "Tambahkan AI Secara Manual",
+    "delete": {
+      "description": "Apakah Anda yakin ingin menghapus AI ini? Tindakan ini tidak dapat dibatalkan.",
+      "label": "Hapus AI"
+    },
+    "errors": {
+      "createAgent": "Kesalahan menambahkan AI",
+      "deleteAgent": "Kesalahan menghapus AI",
+      "updateAgent": "Kesalahan memperbarui AI"
+    },
+    "form": {
+      "agentName": "Nama AI",
+      "apiKey": "Kunci API",
+      "externalUrl": "URL Eksternal",
+      "modelId": "ID Model",
+      "modelName": "Nama Model",
+      "modelType": "Tipe Model",
+      "selectModel": "Pilih Model Anda",
+      "toggleCustomModel": "Tambahkan model kustom"
+    },
+    "label": "AI",
+    "localAI": {
+      "installText": "Setelah memasang model AI di mesin lokal Anda, mereka akan menjadi tersedia sebagai AI",
+      "installTitle": "Pasang Model AI"
+    },
+    "notFound": {
+      "description": "Sambungkan AI pertama Anda untuk mulai bertanya kepada Shinkai AI. Coba sambungkan OpenAI",
+      "title": "Tidak Ada AI Tersedia"
+    },
+    "success": {
+      "createAgent": "AI berhasil dibuat",
+      "deleteAgent": "AI berhasil dihapus",
+      "updateAgent": "AI berhasil diperbarui"
+    },
+    "switch": "Ganti AI"
   },
   "notifications": {
     "messageReceived": {

@@ -1,6 +1,6 @@
-import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
+import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
 // import { useGetMySharedFolders } from '@shinkai_network/shinkai-node-state/lib/queries/getMySharedFolders/useGetMySharedFolders';
 // import { useGetMySubscriptions } from '@shinkai_network/shinkai-node-state/lib/queries/getMySubscriptions/useGetMySubscriptions';
 import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
@@ -24,7 +24,7 @@ export const useOnboardingSteps = () => {
     { enabled: !!auth },
   );
 
-  const { agents } = useAgents({
+  const { llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
     sender: auth?.shinkai_identity ?? '',
     senderSubidentity: `${auth?.profile}`,
@@ -97,10 +97,10 @@ export const useOnboardingSteps = () => {
 
   useEffect(() => {
     // const defaultAgentsCount = isLocalShinkaiNodeInUse ? 0 : 3;
-    if (agents.length > 0) {
+    if (llmProviders.length > 0) {
       currentStepsMap.set(GetStartedSteps.CreateAI, GetStartedStatus.Done);
     }
-  }, [agents, isLocalShinkaiNodeInUse]);
+  }, [llmProviders, isLocalShinkaiNodeInUse]);
 
   useEffect(() => {
     const currentFiles = VRFiles ? getFlatChildItems(VRFiles) : [];

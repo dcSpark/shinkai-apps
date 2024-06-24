@@ -1,42 +1,4 @@
 {
-  "agents": {
-    "add": "添加 AI",
-    "addManually": "手动添加 AI",
-    "delete": {
-      "description": "您确定要删除此 AI 吗？此操作无法撤消。",
-      "label": "删除 AI"
-    },
-    "errors": {
-      "createAgent": "添加 AI 时出错",
-      "deleteAgent": "删除 AI 时出错",
-      "updateAgent": "更新 AI 时出错"
-    },
-    "form": {
-      "agentName": "AI 名称",
-      "apiKey": "API 密钥",
-      "externalUrl": "外部 URL",
-      "modelId": "模型 ID",
-      "modelName": "模型名称",
-      "modelType": "模型类型",
-      "selectModel": "选择您的模型",
-      "toggleCustomModel": "添加自定义模型"
-    },
-    "label": "AI",
-    "localAI": {
-      "installText": "在本地机器上安装 AI 模型后，它们将作为 AI 可用",
-      "installTitle": "安装 AI 模型"
-    },
-    "notFound": {
-      "description": "连接您的第一个 AI 以开始询问 Shinkai AI。尝试连接 OpenAI",
-      "title": "没有可用的 AI"
-    },
-    "success": {
-      "createAgent": "AI 创建成功",
-      "deleteAgent": "AI 删除成功",
-      "updateAgent": "AI 更新成功"
-    },
-    "switch": "切换 AI"
-  },
   "aiFilesSearch": {
     "description": "搜索以轻松查找 AI 文件中的所有文件内容",
     "filesSelected": "已选择 {{count}} 个文件",
@@ -214,6 +176,44 @@
     "sidebar": {
       "toggle": "切换侧边栏"
     }
+  },
+  "llmProviders": {
+    "add": "添加人工智能",
+    "addManually": "手动添加人工智能",
+    "delete": {
+      "description": "您确定要删除此人工智能吗？此操作无法撤销。",
+      "label": "删除人工智能"
+    },
+    "errors": {
+      "createAgent": "添加人工智能时出错",
+      "deleteAgent": "删除人工智能时出错",
+      "updateAgent": "更新人工智能时出错"
+    },
+    "form": {
+      "agentName": "人工智能名称",
+      "apiKey": "API密钥",
+      "externalUrl": "外部URL",
+      "modelId": "模型ID",
+      "modelName": "模型名称",
+      "modelType": "模型类型",
+      "selectModel": "选择您的模型",
+      "toggleCustomModel": "添加自定义模型"
+    },
+    "label": "人工智能",
+    "localAI": {
+      "installText": "在本地计算机上安装人工智能模型后，它们将作为人工智能可用。",
+      "installTitle": "安装人工智能模型"
+    },
+    "notFound": {
+      "description": "连接您的第一个人工智能以开始向Shinkai AI提问。尝试连接OpenAI",
+      "title": "没有可用的人工智能"
+    },
+    "success": {
+      "createAgent": "成功创建人工智能",
+      "deleteAgent": "成功删除人工智能",
+      "updateAgent": "成功更新人工智能"
+    },
+    "switch": "切换人工智能"
   },
   "notifications": {
     "messageReceived": {

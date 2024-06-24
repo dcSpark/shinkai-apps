@@ -1,13 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { SerializedAgent } from '../models/SchemaTypes';
-import { SerializedAgentWrapper as SerializedAgentWrapperWASM } from '../pkg/shinkai_message_wasm';
+import { SerializedLLMProvider } from '../models/SchemaTypes';
+import { SerializedLLMProviderWrapper as SerializedLLMProviderWrapperWASM } from '../pkg/shinkai_message_wasm';
 
-export class SerializedAgentWrapper {
-  private wasmWrapper: SerializedAgentWrapperWASM;
+export class SerializedLLMProviderWrapper {
+  private wasmWrapper: SerializedLLMProviderWrapperWASM;
 
   constructor(serialized_agent_js: any) {
-    this.wasmWrapper = new SerializedAgentWrapperWASM(serialized_agent_js);
+    this.wasmWrapper = new SerializedLLMProviderWrapperWASM(
+      serialized_agent_js,
+    );
   }
 
   free(): void {
@@ -22,7 +24,9 @@ export class SerializedAgentWrapper {
     return this.wasmWrapper.to_json_str();
   }
 
-  static fromSerializedAgent(agent: SerializedAgent): SerializedAgentWrapper {
+  static fromSerializedAgent(
+    agent: SerializedLLMProvider,
+  ): SerializedLLMProviderWrapper {
     let modelStr = '';
     if (agent.model && agent.model.OpenAI && agent.model.OpenAI.model_type) {
       modelStr = 'openai:' + agent.model.OpenAI.model_type;
@@ -53,7 +57,7 @@ export class SerializedAgentWrapper {
         ? agent.allowed_message_senders.join(',')
         : '';
 
-    const wasmWrapper = SerializedAgentWrapperWASM.fromStrings(
+    const wasmWrapper = SerializedLLMProviderWrapperWASM.fromStrings(
       agent.id,
       agent.full_identity_name,
       agent.perform_locally.toString(),
@@ -64,7 +68,7 @@ export class SerializedAgentWrapper {
       storageBucketPermissionsStr,
       allowedMessageSendersStr,
     );
-    return new SerializedAgentWrapper(wasmWrapper.to_jsvalue());
+    return new SerializedLLMProviderWrapper(wasmWrapper.to_jsvalue());
   }
 
   static fromStrings(
@@ -77,8 +81,8 @@ export class SerializedAgentWrapper {
     toolkit_permissions: string,
     storage_bucket_permissions: string,
     allowed_message_senders: string,
-  ): SerializedAgentWrapper {
-    const wasmWrapper = SerializedAgentWrapperWASM.fromStrings(
+  ): SerializedLLMProviderWrapper {
+    const wasmWrapper = SerializedLLMProviderWrapperWASM.fromStrings(
       id,
       full_identity_name,
       perform_locally,
@@ -89,17 +93,17 @@ export class SerializedAgentWrapper {
       storage_bucket_permissions,
       allowed_message_senders,
     );
-    return new SerializedAgentWrapper(wasmWrapper.to_jsvalue());
+    return new SerializedLLMProviderWrapper(wasmWrapper.to_jsvalue());
   }
 
-  static fromJsValue(j: any): SerializedAgentWrapper {
-    const wasmWrapper = SerializedAgentWrapperWASM.fromJsValue(j);
-    return new SerializedAgentWrapper(wasmWrapper.to_jsvalue());
+  static fromJsValue(j: any): SerializedLLMProviderWrapper {
+    const wasmWrapper = SerializedLLMProviderWrapperWASM.fromJsValue(j);
+    return new SerializedLLMProviderWrapper(wasmWrapper.to_jsvalue());
   }
 
-  static from_json_str(s: string): SerializedAgentWrapper {
-    const wasmWrapper = SerializedAgentWrapperWASM.from_json_str(s);
-    return new SerializedAgentWrapper(wasmWrapper.to_jsvalue());
+  static from_json_str(s: string): SerializedLLMProviderWrapper {
+    const wasmWrapper = SerializedLLMProviderWrapperWASM.from_json_str(s);
+    return new SerializedLLMProviderWrapper(wasmWrapper.to_jsvalue());
   }
 
   get inner(): any {

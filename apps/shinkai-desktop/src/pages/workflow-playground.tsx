@@ -6,7 +6,7 @@ import {
   createJobFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
-import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
+import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
 import {
   VRFolder,
   VRItem,
@@ -112,7 +112,7 @@ const WorkflowPlayground = () => {
     },
   });
 
-  const { agents, isSuccess } = useAgents({
+  const { llmProviders, isSuccess } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
     sender: auth?.shinkai_identity ?? '',
     senderSubidentity: `${auth?.profile}`,
@@ -125,22 +125,24 @@ const WorkflowPlayground = () => {
   });
 
   useEffect(() => {
-    if (isSuccess && agents?.length && !defaulAgentId) {
-      createJobForm.setValue('agent', agents[0].id);
+    if (isSuccess && llmProviders?.length && !defaulAgentId) {
+      createJobForm.setValue('agent', llmProviders[0].id);
     } else {
       createJobForm.setValue('agent', defaulAgentId);
     }
-  }, [agents, createJobForm, defaulAgentId, isSuccess]);
+  }, [llmProviders, createJobForm, defaulAgentId, isSuccess]);
 
   useEffect(() => {
     if (!locationState?.agentName) {
       return;
     }
-    const agent = agents.find((agent) => agent.id === locationState.agentName);
+    const agent = llmProviders.find(
+      (agent) => agent.id === locationState.agentName,
+    );
     if (agent) {
       createJobForm.setValue('agent', agent.id);
     }
-  }, [createJobForm, locationState, agents]);
+  }, [createJobForm, locationState, llmProviders]);
 
   const { isPending, mutateAsync: createJob } = useCreateJob({
     onSuccess: (data, variables) => {
@@ -309,8 +311,8 @@ const WorkflowPlayground = () => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {agents?.length ? (
-                          agents.map((agent) => (
+                        {llmProviders?.length ? (
+                          llmProviders.map((agent) => (
                             <SelectItem key={agent.id} value={agent.id}>
                               <span>{agent.id} </span>
                             </SelectItem>
@@ -323,7 +325,7 @@ const WorkflowPlayground = () => {
                             variant="ghost"
                           >
                             <PlusIcon className="mr-2" />
-                            {t('agents.add')}
+                            {t('llmProviders.add')}
                           </Button>
                         )}
                       </SelectContent>

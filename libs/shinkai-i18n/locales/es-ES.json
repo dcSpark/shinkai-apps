@@ -1,42 +1,4 @@
 {
-  "agents": {
-    "add": "Añadir IA",
-    "addManually": "Añadir IA Manualmente",
-    "delete": {
-      "description": "¿Estás seguro de que deseas eliminar esta IA? Esta acción no se puede deshacer.",
-      "label": "Eliminar IA"
-    },
-    "errors": {
-      "createAgent": "Error al añadir IA",
-      "deleteAgent": "Error al eliminar IA",
-      "updateAgent": "Error al actualizar IA"
-    },
-    "form": {
-      "agentName": "Nombre de la IA",
-      "apiKey": "Clave API",
-      "externalUrl": "URL Externa",
-      "modelId": "ID del Modelo",
-      "modelName": "Nombre del Modelo",
-      "modelType": "Tipo de Modelo",
-      "selectModel": "Selecciona tu Modelo",
-      "toggleCustomModel": "Agregar un modelo personalizado"
-    },
-    "label": "IAs",
-    "localAI": {
-      "installText": "Después de instalar modelos de IA en tu máquina local, estarán disponibles como IA",
-      "installTitle": "Instalar Modelos de IA"
-    },
-    "notFound": {
-      "description": "Conecta tu primera IA para empezar a preguntar a Shinkai IA. Prueba conectando OpenAI",
-      "title": "No hay IAs disponibles"
-    },
-    "success": {
-      "createAgent": "IA creada con éxito",
-      "deleteAgent": "IA eliminada con éxito",
-      "updateAgent": "IA actualizada con éxito"
-    },
-    "switch": "Cambiar IA"
-  },
   "aiFilesSearch": {
     "description": "Busca para encontrar contenido en todos los archivos de tus archivos AI fácilmente",
     "filesSelected": "Seleccionados {{count}} archivos",
@@ -214,6 +176,44 @@
     "sidebar": {
       "toggle": "Alternar barra lateral"
     }
+  },
+  "llmProviders": {
+    "add": "Añadir IA",
+    "addManually": "Añadir IA Manualmente",
+    "delete": {
+      "description": "¿Estás seguro de que quieres eliminar esta IA? Esta acción no se puede deshacer.",
+      "label": "Eliminar IA"
+    },
+    "errors": {
+      "createAgent": "Error al añadir IA",
+      "deleteAgent": "Error al eliminar IA",
+      "updateAgent": "Error al actualizar IA"
+    },
+    "form": {
+      "agentName": "Nombre de la IA",
+      "apiKey": "Clave API",
+      "externalUrl": "URL Externa",
+      "modelId": "ID del Modelo",
+      "modelName": "Nombre del Modelo",
+      "modelType": "Tipo de Modelo",
+      "selectModel": "Selecciona tu Modelo",
+      "toggleCustomModel": "Añadir un modelo personalizado"
+    },
+    "label": "IA",
+    "localAI": {
+      "installText": "Después de instalar modelos de IA en tu máquina local, estarán disponibles como IA",
+      "installTitle": "Instalar Modelos de IA"
+    },
+    "notFound": {
+      "description": "Conecta tu primera IA para empezar a preguntar a Shinkai IA. Intenta conectar OpenAI",
+      "title": "No hay IA disponibles"
+    },
+    "success": {
+      "createAgent": "IA creada exitosamente",
+      "deleteAgent": "IA eliminada exitosamente",
+      "updateAgent": "IA actualizada exitosamente"
+    },
+    "switch": "Cambiar IA"
   },
   "notifications": {
     "messageReceived": {

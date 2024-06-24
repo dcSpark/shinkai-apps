@@ -1,6 +1,6 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
+import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
 import {
   Button,
   // ChatBubbleIcon,
@@ -59,7 +59,7 @@ export const Inboxes = () => {
     profile_encryption_sk: auth?.profile_encryption_sk ?? '',
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
-  const { agents, isSuccess: isAgentsSuccess } = useAgents({
+  const { llmProviders, isSuccess: isAgentsSuccess } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
     sender: auth?.shinkai_identity ?? '',
     senderSubidentity: `${auth?.profile}`,
@@ -113,13 +113,15 @@ export const Inboxes = () => {
     <div className="flex h-full flex-col justify-between space-y-3 overflow-hidden">
       {isAgentsSuccess &&
         isInboxesSuccess &&
-        !agents?.length &&
+        !llmProviders?.length &&
         !inboxes.length && <EmptyAgents data-testid="empty-agents" />}
 
       {isInboxesSuccess &&
         isAgentsSuccess &&
         !inboxes?.length &&
-        agents?.length > 0 && <EmptyInboxes data-testid="empty-inboxes" />}
+        llmProviders?.length > 0 && (
+          <EmptyInboxes data-testid="empty-inboxes" />
+        )}
 
       {isInboxesPending && (
         <div className="flex flex-col gap-2">

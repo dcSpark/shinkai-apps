@@ -15,7 +15,7 @@ import {
 } from '@ionic/react';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
-import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
+import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
 import { Controller, useForm } from 'react-hook-form';
 import { useHistory } from 'react-router';
 import z from 'zod';
@@ -31,7 +31,7 @@ const createJobSchema = z.object({
 
 const CreateJob: React.FC = () => {
   const auth = useAuth((state) => state.auth);
-  const { agents } = useAgents({
+  const { llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
     sender: auth?.shinkai_identity ?? '',
     senderSubidentity: `${auth?.profile}`,
@@ -112,7 +112,7 @@ const CreateJob: React.FC = () => {
                           placeholder="Select One"
                           value={field.value}
                         >
-                          {agents.map((agent, index) => (
+                          {llmProviders.map((agent, index) => (
                             <IonSelectOption key={index} value={agent.id}>
                               {agent.id}
                             </IonSelectOption>

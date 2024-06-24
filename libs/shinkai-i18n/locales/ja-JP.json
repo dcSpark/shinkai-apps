@@ -1,42 +1,4 @@
 {
-  "agents": {
-    "add": "AIを追加",
-    "addManually": "AIを手動で追加",
-    "delete": {
-      "description": "このAIを削除してもよろしいですか？この操作は元に戻すことができません",
-      "label": "AIを削除"
-    },
-    "errors": {
-      "createAgent": "AIの追加中にエラーが発生しました",
-      "deleteAgent": "AIの削除中にエラーが発生しました",
-      "updateAgent": "AIの更新中にエラーが発生しました"
-    },
-    "form": {
-      "agentName": "AI名",
-      "apiKey": "APIキー",
-      "externalUrl": "外部URL",
-      "modelId": "モデルID",
-      "modelName": "モデル名",
-      "modelType": "モデルタイプ",
-      "selectModel": "モデルを選択",
-      "toggleCustomModel": "カスタムモデルを追加"
-    },
-    "label": "AI",
-    "localAI": {
-      "installText": "ローカルマシンにAIモデルをインストールすると、AIとして利用できるようになります",
-      "installTitle": "AIモデルをインストール"
-    },
-    "notFound": {
-      "description": "最初のAIを接続してShinkai AIに質問を始めてください。OpenAIを接続してみてください",
-      "title": "利用可能なAIがありません"
-    },
-    "success": {
-      "createAgent": "AIが正常に作成されました",
-      "deleteAgent": "AIが正常に削除されました",
-      "updateAgent": "AIが正常に更新されました"
-    },
-    "switch": "AIを切り替え"
-  },
   "aiFilesSearch": {
     "description": "AIファイル全体を簡単に検索してコンテンツを見つける",
     "filesSelected": "{{count}} 個のファイルが選択されました",
@@ -214,6 +176,44 @@
     "sidebar": {
       "toggle": "サイドバーの切り替え"
     }
+  },
+  "llmProviders": {
+    "add": "AIを追加",
+    "addManually": "AIを手動で追加",
+    "delete": {
+      "description": "このAIを削除してもよろしいですか？この操作は元に戻すことはできません。",
+      "label": "AIを削除"
+    },
+    "errors": {
+      "createAgent": "AIの追加中にエラーが発生しました",
+      "deleteAgent": "AIの削除中にエラーが発生しました",
+      "updateAgent": "AIの更新中にエラーが発生しました"
+    },
+    "form": {
+      "agentName": "AI名",
+      "apiKey": "APIキー",
+      "externalUrl": "外部URL",
+      "modelId": "モデルID",
+      "modelName": "モデル名",
+      "modelType": "モデルタイプ",
+      "selectModel": "モデルを選択",
+      "toggleCustomModel": "カスタムモデルを追加"
+    },
+    "label": "AI",
+    "localAI": {
+      "installText": "ローカルマシンにAIモデルをインストールすると、AIとして利用できるようになります。",
+      "installTitle": "AIモデルをインストール"
+    },
+    "notFound": {
+      "description": "最初のAIを接続して、Shinkai AIに質問を始めてください。OpenAIを接続してみてください。",
+      "title": "利用可能なAIがありません"
+    },
+    "success": {
+      "createAgent": "AIが正常に作成されました",
+      "deleteAgent": "AIが正常に削除されました",
+      "updateAgent": "AIが正常に更新されました"
+    },
+    "switch": "AIを切り替え"
   },
   "notifications": {
     "messageReceived": {

@@ -1,5 +1,5 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
+import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
 import { buttonVariants } from '@shinkai_network/shinkai-ui';
 import { Link } from 'react-router-dom';
 
@@ -10,7 +10,7 @@ import { useShinkaiNodeManager } from '../../store/shinkai-node-manager';
 const EmptyMessage = () => {
   const auth = useAuth((state) => state.auth);
 
-  const { agents } = useAgents({
+  const { llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
     sender: auth?.shinkai_identity ?? '',
     senderSubidentity: `${auth?.profile}`,
@@ -41,14 +41,14 @@ const EmptyMessage = () => {
         </p>
 
         <div className="mt-4">
-          {agents.length === 0 ? (
+          {llmProviders.length === 0 ? (
             <Link
               className={buttonVariants({
                 variant: 'default',
               })}
               to={isLocalShinkaiNodeIsUse ? '/agents-locally' : '/add-agent'}
             >
-              <span>{t('agents.add')}</span>
+              <span>{t('llmProviders.add')}</span>
             </Link>
           ) : (
             <Link

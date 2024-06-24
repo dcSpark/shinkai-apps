@@ -1,12 +1,12 @@
 import type {
   AgentCredentialsPayload,
-  SerializedAgent,
+  SerializedLLMProvider,
 } from '@shinkai_network/shinkai-message-ts/models';
 
-export type CreateAgentInput = {
+export type AddLLMProviderInput = {
   nodeAddress: string;
   sender_subidentity: string;
   node_name: string;
-  agent: SerializedAgent;
+  agent: SerializedLLMProvider;
   setupDetailsState: AgentCredentialsPayload;
 };

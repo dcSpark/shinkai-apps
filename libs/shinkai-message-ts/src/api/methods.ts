@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { httpClient } from '../http-client';
 import {
-  Agent,
   AgentCredentialsPayload,
   CreateChatInboxResponse,
   CredentialsPayload,
   JobCredentialsPayload,
   LastMessagesFromInboxCredentialsPayload,
+  LLMProvider,
   SetupPayload,
   ShinkaiMessage,
   SmartInbox,
@@ -15,12 +15,12 @@ import {
   APIUseRegistrationCodeSuccessResponse,
   SubmitInitialRegistrationNoCodePayload,
 } from '../models/Payloads';
-import { SerializedAgent } from '../models/SchemaTypes';
+import { SerializedLLMProvider } from '../models/SchemaTypes';
 import { InboxNameWrapper } from '../pkg/shinkai_message_wasm';
 // import { calculateMessageHash } from '../utils';
 import { urlJoin } from '../utils/url-join';
 import { FileUploader } from '../wasm/FileUploaderUsingSymmetricKeyManager';
-import { SerializedAgentWrapper } from '../wasm/SerializedAgentWrapper';
+import { SerializedLLMProviderWrapper } from '../wasm/SerializedLLMProviderWrapper';
 import { ShinkaiMessageBuilderWrapper } from '../wasm/ShinkaiMessageBuilderWrapper';
 import { ShinkaiNameWrapper } from '../wasm/ShinkaiNameWrapper';
 
@@ -548,13 +548,13 @@ export const sendMessageToJob = async (
   return data.data;
 };
 
-export const getProfileAgents = async (
+export const getLLMProviders = async (
   nodeAddress: string,
   sender: string,
   sender_subidentity: string,
   receiver: string,
   setupDetailsState: CredentialsPayload,
-): Promise<Agent[]> => {
+): Promise<LLMProvider[]> => {
   const messageStr = ShinkaiMessageBuilderWrapper.get_profile_agents(
     setupDetailsState.profile_encryption_sk,
     setupDetailsState.profile_identity_sk,
@@ -578,14 +578,15 @@ export const getProfileAgents = async (
   return data.data;
 };
 
-export const addAgent = async (
+export const addLLMProvider = async (
   nodeAddress: string,
   sender_subidentity: string,
   node_name: string,
-  agent: SerializedAgent,
+  agent: SerializedLLMProvider,
   setupDetailsState: AgentCredentialsPayload,
 ) => {
-  const agent_wrapped = SerializedAgentWrapper.fromSerializedAgent(agent);
+  const llmProvider_wrapped =
+    SerializedLLMProviderWrapper.fromSerializedAgent(agent);
   const messageStr = ShinkaiMessageBuilderWrapper.request_add_agent(
     setupDetailsState.profile_encryption_sk,
     setupDetailsState.profile_identity_sk,
@@ -593,7 +594,7 @@ export const addAgent = async (
     node_name,
     sender_subidentity,
     node_name,
-    agent_wrapped,
+    llmProvider_wrapped,
   );
 
   const message = JSON.parse(messageStr);
@@ -1440,22 +1441,23 @@ export const downloadVectorResource = async (
   const data = response.data;
   return data;
 };
-export const updateAgent = async (
+export const updateLLMProvider = async (
   nodeAddress: string,
-  agent: SerializedAgent,
+  agent: SerializedLLMProvider,
   sender: string,
   sender_subidentity: string,
   receiver: string,
   receiver_subidentity: string,
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
-  const agent_wrapped = SerializedAgentWrapper.fromSerializedAgent(agent);
+  const llmProvider_wrapped =
+    SerializedLLMProviderWrapper.fromSerializedAgent(agent);
 
-  const messageStr = ShinkaiMessageBuilderWrapper.modifyAgent(
+  const messageStr = ShinkaiMessageBuilderWrapper.updateLLMProvider(
     setupDetailsState.profile_encryption_sk,
     setupDetailsState.profile_identity_sk,
     setupDetailsState.node_encryption_pk,
-    agent_wrapped,
+    llmProvider_wrapped,
     sender,
     sender_subidentity,
     receiver,
@@ -1475,7 +1477,7 @@ export const updateAgent = async (
   const data = response.data;
   return data;
 };
-export const deleteAgent = async (
+export const deleteLLMProvider = async (
   nodeAddress: string,
   agentId: string,
   sender: string,
@@ -1484,7 +1486,7 @@ export const deleteAgent = async (
   receiver_subidentity: string,
   setupDetailsState: CredentialsPayload,
 ): Promise<{ data: any; status: string }> => {
-  const messageStr = ShinkaiMessageBuilderWrapper.deleteAgent(
+  const messageStr = ShinkaiMessageBuilderWrapper.deleteLLMProvider(
     setupDetailsState.profile_encryption_sk,
     setupDetailsState.profile_identity_sk,
     setupDetailsState.node_encryption_pk,

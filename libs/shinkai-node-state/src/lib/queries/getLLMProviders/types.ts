@@ -1,6 +1,6 @@
 import type { CredentialsPayload } from '@shinkai_network/shinkai-message-ts/models';
 
-export type GetAgentsInput = CredentialsPayload & {
+export type GetLLMProvidersInput = CredentialsPayload & {
   nodeAddress: string;
   sender: string;
   senderSubidentity: string;

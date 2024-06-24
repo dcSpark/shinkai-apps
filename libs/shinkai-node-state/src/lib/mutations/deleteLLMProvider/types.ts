@@ -1,10 +1,10 @@
 import type { CredentialsPayload } from '@shinkai_network/shinkai-message-ts/models';
 
-export type DeleteAgentOutput = {
+export type DeleteLLMProviderOutput = {
   status: string;
 };
 
-export type DeleteAgentInput = CredentialsPayload & {
+export type DeleteLLMProviderInput = CredentialsPayload & {
   nodeAddress: string;
   shinkaiIdentity: string;
   profile: string;

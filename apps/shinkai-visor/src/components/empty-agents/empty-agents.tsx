@@ -14,13 +14,17 @@ export const EmptyAgents = ({ ...props }: EmptyAgentsProps) => {
         <span aria-hidden className="text-5xl">
           🤖
         </span>
-        <p className="text-2xl font-semibold">{t('agents.notFound.title')}</p>
+        <p className="text-2xl font-semibold">
+          {t('llmProviders.notFound.title')}
+        </p>
         <p className="text-center text-sm font-medium text-gray-100">
-          {t('agents.notFound.description')}
+          {t('llmProviders.notFound.description')}
         </p>
       </div>
 
-      <Button onClick={() => navigate('/agents/add')}>{t('agents.add')}</Button>
+      <Button onClick={() => navigate('/agents/add')}>
+        {t('llmProviders.add')}
+      </Button>
     </div>
   );
 };

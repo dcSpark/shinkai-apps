@@ -5,15 +5,19 @@ import {
 } from '@tanstack/react-query';
 
 import { FunctionKey } from '../../constants';
-import { deleteAgent } from './index';
-import { DeleteAgentInput, DeleteAgentOutput } from './types';
+import { deleteLLMProvider } from './index';
+import { DeleteLLMProviderInput, DeleteLLMProviderOutput } from './types';
 
-type Options = UseMutationOptions<DeleteAgentOutput, Error, DeleteAgentInput>;
+type Options = UseMutationOptions<
+  DeleteLLMProviderOutput,
+  Error,
+  DeleteLLMProviderInput
+>;
 
-export const useDeleteAgent = (options?: Options) => {
+export const useDeleteLLMProvider = (options?: Options) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: deleteAgent,
+    mutationFn: deleteLLMProvider,
     ...options,
     onSuccess: (response, variables, context) => {
       queryClient.invalidateQueries({

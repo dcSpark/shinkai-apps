@@ -7,7 +7,7 @@ import {
   ShinkaiMessageBuilderWrapper as ShinkaiMessageBuilderWrapperWASM,
   ShinkaiMessageWrapper,
 } from '../pkg/shinkai_message_wasm.js';
-import { SerializedAgentWrapper } from './SerializedAgentWrapper';
+import { SerializedLLMProviderWrapper } from './SerializedLLMProviderWrapper';
 
 export class ShinkaiMessageBuilderWrapper {
   private wasmBuilder: ShinkaiMessageBuilderWrapperWASM;
@@ -413,7 +413,7 @@ export class ShinkaiMessageBuilderWrapper {
     sender: string,
     sender_subidentity: string,
     recipient: string,
-    agent: SerializedAgentWrapper,
+    agent: SerializedLLMProviderWrapper,
   ): string {
     const agentJson = agent.to_json_str();
     return ShinkaiMessageBuilderWrapperWASM.request_add_agent(
@@ -1451,11 +1451,11 @@ export class ShinkaiMessageBuilderWrapper {
     return message;
   }
 
-  static modifyAgent(
+  static updateLLMProvider(
     my_encryption_secret_key: string,
     my_signature_secret_key: string,
     receiver_public_key: string,
-    agent: SerializedAgentWrapper,
+    agent: SerializedLLMProviderWrapper,
     sender: string,
     sender_subidentity: string,
     receiver: string,
@@ -1486,7 +1486,7 @@ export class ShinkaiMessageBuilderWrapper {
     return message;
   }
 
-  static deleteAgent(
+  static deleteLLMProvider(
     my_encryption_secret_key: string,
     my_signature_secret_key: string,
     receiver_public_key: string,
