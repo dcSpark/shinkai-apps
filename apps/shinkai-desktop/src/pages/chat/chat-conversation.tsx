@@ -93,7 +93,24 @@ const WSTemp = () => {
     setMessages((prevMessages) => [...prevMessages, newMessage]);
   }, []);
 
-  const subscribeToTopic = () => {
+  const subscribeToTopic = async () => {
+    const keyData = window.crypto.getRandomValues(new Uint8Array(32));
+    const symmetric_key = await window.crypto.subtle.importKey(
+      'raw',
+      keyData,
+      'AES-GCM',
+      true,
+      ['encrypt', 'decrypt'],
+    );
+    const sharedKey = await window.crypto.subtle.exportKey(
+      'raw',
+      symmetric_key,
+    );
+    const exportedKeyArray = new Uint8Array(sharedKey);
+    const sharedKeyString = Array.from(exportedKeyArray)
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('');
+
     const wsMessage = {
       subscriptions: [
         // topic can be `inbox` or `smartinboxes`
@@ -101,14 +118,14 @@ const WSTemp = () => {
         { topic: 'inbox', subtopic: buildInboxIdFromJobId(jobId) },
       ],
       unsubscriptions: [],
-      shared_key: 'shared_key',
+      shared_key: sharedKeyString,
     };
     const wsMessageString = JSON.stringify(wsMessage);
     console.log('wsMessageString: ', wsMessageString);
 
     const shinkaiMessage = ShinkaiMessageBuilderWrapper.ws_message(
       wsMessageString,
-      '', //jobId
+      '',
       '',
       '',
       undefined,
@@ -117,7 +134,26 @@ const WSTemp = () => {
       auth?.node_encryption_pk ?? '',
       auth?.shinkai_identity ?? '',
       auth?.profile ?? '',
+      '',
+      '',
+    );
+
+    sendMessage(shinkaiMessage);
+  };
+
+  const sendMessageChat = async () => {
+    const shinkaiMessage = ShinkaiMessageBuilderWrapper.ws_message(
+      'Hi there!', //message content
+      jobId, //jobId
+      '',
+      '',
+      undefined,
+      auth?.profile_encryption_sk ?? '',
+      auth?.profile_identity_sk ?? '',
+      auth?.node_encryption_pk ?? '',
       auth?.shinkai_identity ?? '',
+      auth?.profile ?? '',
+      '',
       '',
     );
 
@@ -126,6 +162,9 @@ const WSTemp = () => {
 
   return (
     <div>
+      <button className="bg-gray-900" onClick={sendMessageChat}>
+        Send Message Chat
+      </button>
       <button className="bg-gray-900" onClick={subscribeToTopic}>
         Sub Topic
       </button>
