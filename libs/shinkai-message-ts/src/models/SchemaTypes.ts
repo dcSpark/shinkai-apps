@@ -47,6 +47,8 @@ export enum MessageSchemaType {
   // ollama
   APIScanOllamaModels = 'APIScanOllamaModels',
   APIAddOllamaModels = 'APIAddOllamaModels',
+  // ws
+  WSMessage = 'WSMessage',
 }
 
 export interface LocalScopeVRKaiEntry {

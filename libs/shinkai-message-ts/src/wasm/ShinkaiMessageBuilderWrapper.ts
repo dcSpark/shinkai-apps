@@ -367,6 +367,44 @@ export class ShinkaiMessageBuilderWrapper {
       receiver_subidentity,
     );
   }
+  static ws_message(
+    ws_content: string,
+    job_id: string,
+    files_inbox: string,
+    parent: string | null,
+    workflow: string | undefined,
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+    receiver_subidentity: string,
+  ): string {
+    const builder = new ShinkaiMessageBuilderWrapperWASM(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key,
+    );
+
+    builder.message_raw_content(ws_content);
+    builder.message_schema_type(MessageSchemaType.WSMessage.toString());
+    builder.internal_metadata_with_inbox(
+      sender_subidentity,
+      sender_subidentity,
+      job_id,
+      'None',
+    );
+    builder.external_metadata_with_schedule(
+      sender,
+      sender,
+      new Date().toISOString(),
+    );
+    builder.body_encryption('None');
+
+    const message = builder.build_to_string();
+    return message;
+  }
 
   static terminate_message(
     my_encryption_secret_key: string,

@@ -1,11 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
+  buildInboxIdFromJobId,
   extractErrorPropertyOrContent,
   extractJobIdFromInbox,
   extractReceiverShinkaiName,
   isJobInbox,
 } from '@shinkai_network/shinkai-message-ts/utils';
+import { ShinkaiMessageBuilderWrapper } from '@shinkai_network/shinkai-message-ts/wasm/ShinkaiMessageBuilderWrapper';
 import {
   ChatMessageFormSchema,
   chatMessageFormSchema,
@@ -61,21 +63,80 @@ import {
   SendIcon,
   X,
 } from 'lucide-react';
-import { useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { toast } from 'sonner';
 
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAnalytics } from '../../lib/posthog-provider';
 import { useAuth } from '../../store/auth';
-
 enum ErrorCodes {
   VectorResource = 'VectorResource',
   ShinkaiBackendInferenceLimitReached = 'ShinkaiBackendInferenceLimitReached',
 }
+const WSTemp = () => {
+  const auth = useAuth((state) => state.auth);
+  const socketUrl = 'ws://127.0.0.1:9851/ws';
+  const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl);
+  const { inboxId: encodedInboxId = '' } = useParams();
+  const inboxId = decodeURIComponent(encodedInboxId);
+  const jobId = extractJobIdFromInbox(inboxId);
 
+  const [messages, setMessages] = useState<string[]>([]);
+
+  // @ts-expect-error temp
+  const handleMessage = useCallback((event: any) => {
+    const newMessage = JSON.parse(event.data);
+    setMessages((prevMessages) => [...prevMessages, newMessage]);
+  }, []);
+
+  const subscribeToTopic = () => {
+    const wsMessage = {
+      subscriptions: [
+        // topic can be `inbox` or `smartinboxes`
+        { topic: 'smartinboxes', subtopic: null },
+        // { topic: 'inbox', subtopic: buildInboxIdFromJobId(jobId) },
+      ],
+      unsubscriptions: [],
+      shared_key: 'shared_key',
+    };
+    const wsMessageString = JSON.stringify(wsMessage);
+
+    const shinkaiMessage = ShinkaiMessageBuilderWrapper.ws_message(
+      wsMessageString,
+      '',
+      '',
+      '',
+      undefined,
+      auth?.profile_encryption_sk ?? '',
+      auth?.profile_identity_sk ?? '',
+      auth?.node_encryption_pk ?? '',
+      auth?.shinkai_identity ?? '',
+      auth?.profile ?? '',
+      auth?.shinkai_identity ?? '',
+      '',
+    );
+
+    sendMessage(shinkaiMessage);
+  };
+
+  return (
+    <div>
+      <button className="bg-gray-900" onClick={subscribeToTopic}>
+        Sub Topic
+      </button>
+      <p>ReadyState: {ReadyState[readyState]}</p>
+      <ul>
+        {messages.map((message, index) => (
+          <li key={index}>{message}</li>
+        ))}
+      </ul>
+    </div>
+  );
+};
 const ChatConversation = () => {
   const { captureAnalyticEvent } = useAnalytics();
   const { t } = useTranslation();
@@ -217,17 +278,18 @@ const ChatConversation = () => {
   return (
     <div className="flex max-h-screen flex-1 flex-col overflow-hidden pt-2">
       <ConversationHeader />
-      <MessageList
-        containerClassName="px-5"
-        fetchPreviousPage={fetchPreviousPage}
-        fromPreviousMessagesRef={fromPreviousMessagesRef}
-        hasPreviousPage={hasPreviousPage}
-        isFetchingPreviousPage={isFetchingPreviousPage}
-        isLoading={isChatConversationLoading}
-        isSuccess={isChatConversationSuccess}
-        noMoreMessageLabel={t('chat.allMessagesLoaded')}
-        paginatedMessages={data}
-      />
+      <WSTemp />
+      {/*<MessageList*/}
+      {/*  containerClassName="px-5"*/}
+      {/*  fetchPreviousPage={fetchPreviousPage}*/}
+      {/*  fromPreviousMessagesRef={fromPreviousMessagesRef}*/}
+      {/*  hasPreviousPage={hasPreviousPage}*/}
+      {/*  isFetchingPreviousPage={isFetchingPreviousPage}*/}
+      {/*  isLoading={isChatConversationLoading}*/}
+      {/*  isSuccess={isChatConversationSuccess}*/}
+      {/*  noMoreMessageLabel={t('chat.allMessagesLoaded')}*/}
+      {/*  paginatedMessages={data}*/}
+      {/*/>*/}
       {isLimitReachedErrorLastMessage && (
         <Alert className="mx-auto w-[98%] shadow-lg" variant="destructive">
           <AlertCircle className="h-4 w-4" />
