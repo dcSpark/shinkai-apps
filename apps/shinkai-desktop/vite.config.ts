@@ -11,7 +11,9 @@ export default defineConfig(() => ({
     nxViteTsPaths(),
     wasm(),
     legacy({
-      targets: ['defaults', 'not IE 11'],
+      targets: ['>0.3%', 'not dead', 'safari>=14'],
+      polyfills: ['es.array.at', 'es.object.has-own'],
+      modernPolyfills: ['es.array.at', 'es.object.has-own'],
     }),
   ],
 
