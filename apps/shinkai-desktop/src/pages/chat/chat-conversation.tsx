@@ -97,7 +97,7 @@ const WSTemp = () => {
     const wsMessage = {
       subscriptions: [
         // topic can be `inbox` or `smartinboxes`
-        { topic: 'smartinboxes', subtopic: null },
+        { topic: 'inbox', subtopic: null },
         // { topic: 'inbox', subtopic: buildInboxIdFromJobId(jobId) },
       ],
       unsubscriptions: [],
@@ -107,7 +107,7 @@ const WSTemp = () => {
 
     const shinkaiMessage = ShinkaiMessageBuilderWrapper.ws_message(
       wsMessageString,
-      '',
+      '', //jobId
       '',
       '',
       undefined,
