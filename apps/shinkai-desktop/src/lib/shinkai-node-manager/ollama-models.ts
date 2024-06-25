@@ -45,9 +45,9 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     tag: '7b-instruct-q4_K_M',
     name: 'Qwen2 7B',
     description:
-      "Qwen2 is trained on data in 29 languages, including English and Chinese. It is available in 4 parameter sizes: 0.5B, 1.5B, 7B, 72B. Last Update June 7th.",
+      "Qwen2 is trained on data in 29 languages, including English and Chinese. It is available in 4 parameter sizes: 0.5B, 1.5B, 7B, 72B. Last Updated June 7th.",
     contextLength: 128000,
-    quality: OllamaModelQuality.Good,
+    quality: OllamaModelQuality.Medium,
     speed: OllamaModelSpeed.Average,
     size: 4.7, // Size in GB
     requiredRAM: 16, // Size in GB
@@ -71,7 +71,7 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     tag: '1.5b-instruct-q4_K_M',
     name: 'Qwen2 1.5B',
     description:
-      "Qwen2 is trained on data in 29 languages, including English and Chinese. It is available in 4 parameter sizes: 0.5B, 1.5B, 7B, 72B. Last Update June 7th.",
+      "Qwen2 is trained on data in 29 languages, including English and Chinese. It is available in 4 parameter sizes: 0.5B, 1.5B, 7B, 72B. Last Updated June 7th.",
     contextLength: 32000,
     quality: OllamaModelQuality.Low,
     speed: OllamaModelSpeed.Fast,
@@ -84,7 +84,7 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     tag: '0.5b-instruct-q4_K_M',
     name: 'Qwen2 0.5B',
     description:
-      "Qwen2 is trained on data in 29 languages, including English and Chinese. It is available in 4 parameter sizes: 0.5B, 1.5B, 7B, 72B. Last Update June 7th.",
+      "Qwen2 is trained on data in 29 languages, including English and Chinese. It is available in 4 parameter sizes: 0.5B, 1.5B, 7B, 72B. Last Updated June 7th.",
     contextLength: 32000,
     quality: OllamaModelQuality.Bad,
     speed: OllamaModelSpeed.VeryFast,
@@ -138,7 +138,7 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     description:
       'Falcon2 is an 11B parameters causal decoder-only model built by TII and trained over 5T tokens.',
     contextLength: 8192,
-    quality: OllamaModelQuality.Good,
+    quality: OllamaModelQuality.Medium,
     speed: OllamaModelSpeed.Average,
     size: 7.1,
     requiredRAM: 16,
@@ -197,6 +197,33 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     fullName: '',
   },
   {
+    model: 'codestral',
+    tag: '22b-v0.1-q4_1',
+    name: 'Codestral',
+    description:
+      "Codestral is Mistral AI’s first-ever code model designed for code generation tasks. Fluent in 80+ programming languages. Last updated June 4th.",
+    contextLength: 8000,
+    quality: OllamaModelQuality.Good,
+    speed: OllamaModelSpeed.Average,
+    size: 14,
+    requiredRAM: 32,
+    fullName: '',
+  },
+  // Add later once we update the Node
+  // {
+  //   model: 'deepseek-coder-v2',
+  //   tag: '16b-lite-instruct-q4_1',
+  //   name: 'DeepSeek Coder V2',
+  //   description:
+  //     "An open-source Mixture-of-Experts code language model that achieves performance comparable to GPT4-Turbo in code-specific tasks. Last updated June 22nd.",
+  //   contextLength: 8000,
+  //   quality: OllamaModelQuality.Great,
+  //   speed: OllamaModelSpeed.Fast,
+  //   size: 10, // Size in GB
+  //   requiredRAM: 32,
+  //   fullName: '',
+  // },
+  {
     model: 'llama3',
     tag: '70b-instruct-q4_K_M',
     name: 'Llama-3 70B',
@@ -213,7 +240,7 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     tag: '72b-instruct-q4_K_M',
     name: 'Qwen2 72B',
     description:
-      "Qwen2 is trained on data in 29 languages, including English and Chinese. It is available in 4 parameter sizes: 0.5B, 1.5B, 7B, 72B. Last Update June 7th.",
+      "Qwen2 is trained on data in 29 languages, including English and Chinese. It is available in 4 parameter sizes: 0.5B, 1.5B, 7B, 72B. Last Updated June 7th.",
     contextLength: 128000,
     quality: OllamaModelQuality.Good,
     speed: OllamaModelSpeed.Slow,
