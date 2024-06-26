@@ -87,6 +87,7 @@ const WSTemp = () => {
 
   const [messages, setMessages] = useState<string[]>([]);
 
+  console.log(lastMessage, '=====', readyState);
   // @ts-expect-error temp
   const handleMessage = useCallback((event: any) => {
     const newMessage = JSON.parse(event.data);
@@ -113,15 +114,12 @@ const WSTemp = () => {
 
     const wsMessage = {
       subscriptions: [
-        // topic can be `inbox` or `smartinboxes`
-        // { topic: 'inbox', subtopic: null },
         { topic: 'inbox', subtopic: buildInboxIdFromJobId(jobId) },
       ],
       unsubscriptions: [],
       shared_key: sharedKeyString,
     };
     const wsMessageString = JSON.stringify(wsMessage);
-    console.log('wsMessageString: ', wsMessageString);
 
     const shinkaiMessage = ShinkaiMessageBuilderWrapper.ws_message(
       wsMessageString,
@@ -141,35 +139,14 @@ const WSTemp = () => {
     sendMessage(shinkaiMessage);
   };
 
-  const sendMessageChat = async () => {
-    const shinkaiMessage = ShinkaiMessageBuilderWrapper.ws_message(
-      'Hi there!', //message content
-      jobId, //jobId
-      '',
-      '',
-      undefined,
-      auth?.profile_encryption_sk ?? '',
-      auth?.profile_identity_sk ?? '',
-      auth?.node_encryption_pk ?? '',
-      auth?.shinkai_identity ?? '',
-      auth?.profile ?? '',
-      '',
-      '',
-    );
-
-    sendMessage(shinkaiMessage);
-  };
-
   return (
     <div>
-      <button className="bg-gray-900" onClick={sendMessageChat}>
-        Send Message Chat
-      </button>
       <button className="bg-gray-900" onClick={subscribeToTopic}>
         Sub Topic
       </button>
       <p>ReadyState: {ReadyState[readyState]}</p>
       <ul>
+        {lastMessage && <li>Last message: {JSON.stringify(lastMessage)}</li>}
         {messages.map((message, index) => (
           <li key={index}>{message}</li>
         ))}
@@ -319,17 +296,17 @@ const ChatConversation = () => {
     <div className="flex max-h-screen flex-1 flex-col overflow-hidden pt-2">
       <ConversationHeader />
       <WSTemp />
-      {/*<MessageList*/}
-      {/*  containerClassName="px-5"*/}
-      {/*  fetchPreviousPage={fetchPreviousPage}*/}
-      {/*  fromPreviousMessagesRef={fromPreviousMessagesRef}*/}
-      {/*  hasPreviousPage={hasPreviousPage}*/}
-      {/*  isFetchingPreviousPage={isFetchingPreviousPage}*/}
-      {/*  isLoading={isChatConversationLoading}*/}
-      {/*  isSuccess={isChatConversationSuccess}*/}
-      {/*  noMoreMessageLabel={t('chat.allMessagesLoaded')}*/}
-      {/*  paginatedMessages={data}*/}
-      {/*/>*/}
+      <MessageList
+        containerClassName="px-5"
+        fetchPreviousPage={fetchPreviousPage}
+        fromPreviousMessagesRef={fromPreviousMessagesRef}
+        hasPreviousPage={hasPreviousPage}
+        isFetchingPreviousPage={isFetchingPreviousPage}
+        isLoading={isChatConversationLoading}
+        isSuccess={isChatConversationSuccess}
+        noMoreMessageLabel={t('chat.allMessagesLoaded')}
+        paginatedMessages={data}
+      />
       {isLimitReachedErrorLastMessage && (
         <Alert className="mx-auto w-[98%] shadow-lg" variant="destructive">
           <AlertCircle className="h-4 w-4" />
