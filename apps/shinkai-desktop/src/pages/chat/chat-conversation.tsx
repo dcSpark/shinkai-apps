@@ -115,6 +115,7 @@ const useWebSocketMessage = () => {
             message: string;
             inbox: string;
           } = JSON.parse(decryptedText);
+
           try {
             const parseText = JSON.parse(decryptedTextJson.message ?? '');
             // check if its a shinkai message
@@ -182,7 +183,6 @@ const useWebSocketMessage = () => {
 
       sendMessage(shinkaiMessage);
     };
-
     subscribeToWs();
   }, [
     auth?.node_encryption_pk,
@@ -191,7 +191,6 @@ const useWebSocketMessage = () => {
     auth?.profile_identity_sk,
     auth?.shinkai_identity,
     jobId,
-    sendMessage,
   ]);
 
   return { messageContent, readyState };
@@ -246,6 +245,12 @@ const ChatConversation = () => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
     return isJobInbox(inboxId) && lastMessage?.isLocal;
   }, [data?.pages, inboxId]);
+
+  // useEffect(() => {
+  //   if (!isLoadingMessage) {
+  //     shouldWSConnect.current = false;
+  //   }
+  // }, [isLoadingMessage]);
 
   const { messageContent } = useWebSocketMessage();
 

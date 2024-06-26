@@ -235,6 +235,7 @@ export const MessageList = ({
               )}
               {isLoadingMessage && (
                 <Message
+                  isPending={isLoadingMessage}
                   message={{
                     inboxId: '',
                     hash: '',
