@@ -1,10 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { ShinkaiMessage } from '@shinkai_network/shinkai-message-ts/models/ShinkaiMessage';
 import {
   buildInboxIdFromJobId,
   extractErrorPropertyOrContent,
   extractJobIdFromInbox,
   extractReceiverShinkaiName,
+  getMessageContent,
   isJobInbox,
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { ShinkaiMessageBuilderWrapper } from '@shinkai_network/shinkai-message-ts/wasm/ShinkaiMessageBuilderWrapper';
@@ -16,6 +18,7 @@ import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mut
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
 import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageWithFilesToInbox/useSendMessageWithFilesToInbox';
 import { useUpdateAgentInJob } from '@shinkai_network/shinkai-node-state/lib/mutations/updateAgentInJob/useUpdateAgentInJob';
+import { ChatConversationMessage } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
 import {
@@ -63,7 +66,7 @@ import {
   SendIcon,
   X,
 } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
@@ -77,6 +80,19 @@ enum ErrorCodes {
   VectorResource = 'VectorResource',
   ShinkaiBackendInferenceLimitReached = 'ShinkaiBackendInferenceLimitReached',
 }
+
+const hexToUint8Array = (hex: string): Uint8Array => {
+  return new Uint8Array(
+    (hex.match(/.{1,2}/g) ?? []).map((byte) => parseInt(byte, 16)),
+  );
+};
+
+const uint8ArrayToHex = (array: Uint8Array): string => {
+  return Array.from(array)
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+};
+
 const WSTemp = () => {
   const auth = useAuth((state) => state.auth);
   const socketUrl = 'ws://127.0.0.1:9851/ws';
@@ -84,69 +100,118 @@ const WSTemp = () => {
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = decodeURIComponent(encodedInboxId);
   const jobId = extractJobIdFromInbox(inboxId);
-
+  const sharedKeyRef = useRef<CryptoKey | null>(null);
   const [messages, setMessages] = useState<string[]>([]);
 
-  console.log(lastMessage, '=====', readyState);
-  // @ts-expect-error temp
-  const handleMessage = useCallback((event: any) => {
-    const newMessage = JSON.parse(event.data);
-    setMessages((prevMessages) => [...prevMessages, newMessage]);
-  }, []);
-
-  const subscribeToTopic = async () => {
-    const keyData = window.crypto.getRandomValues(new Uint8Array(32));
-    const symmetric_key = await window.crypto.subtle.importKey(
-      'raw',
-      keyData,
-      'AES-GCM',
-      true,
-      ['encrypt', 'decrypt'],
-    );
-    const sharedKey = await window.crypto.subtle.exportKey(
-      'raw',
-      symmetric_key,
-    );
-    const exportedKeyArray = new Uint8Array(sharedKey);
-    const sharedKeyString = Array.from(exportedKeyArray)
-      .map((b) => b.toString(16).padStart(2, '0'))
-      .join('');
-
-    const wsMessage = {
-      subscriptions: [
-        { topic: 'inbox', subtopic: buildInboxIdFromJobId(jobId) },
-      ],
-      unsubscriptions: [],
-      shared_key: sharedKeyString,
+  useEffect(() => {
+    const decryptMessage = async () => {
+      if (lastMessage?.data && sharedKeyRef.current) {
+        try {
+          const encryptedData = hexToUint8Array(lastMessage.data);
+          const nonce = new Uint8Array(12); // AES-GCM uses a 12-byte nonce
+          const decryptedData = await window.crypto.subtle.decrypt(
+            { name: 'AES-GCM', iv: nonce },
+            sharedKeyRef.current,
+            encryptedData,
+          );
+          const decryptedText = new TextDecoder().decode(decryptedData);
+          const decryptedTextJson: {
+            message: string;
+            inbox: string;
+          } = JSON.parse(decryptedText);
+          const shinkaiMessage: ShinkaiMessage = JSON.parse(
+            decryptedTextJson.message ?? '',
+          );
+          const content = getMessageContent(shinkaiMessage);
+          const isLocal = false;
+          const message: ChatConversationMessage = {
+            hash:
+              shinkaiMessage.body && 'unencrypted' in shinkaiMessage.body
+                ? shinkaiMessage.body.unencrypted.internal_metadata
+                    ?.node_api_data?.node_message_hash
+                : '',
+            inboxId,
+            content,
+            sender: {
+              avatar: isLocal
+                ? 'https://ui-avatars.com/api/?name=Me&background=313336&color=b0b0b0'
+                : 'https://ui-avatars.com/api/?name=S&background=FF7E7F&color=ffffff',
+            },
+            isLocal,
+            scheduledTime:
+              shinkaiMessage.body && 'unencrypted' in shinkaiMessage.body
+                ? shinkaiMessage.body.unencrypted.internal_metadata
+                    ?.node_api_data?.node_timestamp
+                : '',
+          };
+          setMessages((prev) => [...prev, message.content]);
+        } catch (error) {
+          console.error('Decryption failed:', error);
+        }
+      }
     };
-    const wsMessageString = JSON.stringify(wsMessage);
 
-    const shinkaiMessage = ShinkaiMessageBuilderWrapper.ws_message(
-      wsMessageString,
-      '',
-      '',
-      '',
-      undefined,
-      auth?.profile_encryption_sk ?? '',
-      auth?.profile_identity_sk ?? '',
-      auth?.node_encryption_pk ?? '',
-      auth?.shinkai_identity ?? '',
-      auth?.profile ?? '',
-      '',
-      '',
-    );
+    decryptMessage();
+  }, [inboxId, lastMessage?.data]);
 
-    sendMessage(shinkaiMessage);
-  };
+  useEffect(() => {
+    const subscribeToWs = async () => {
+      const keyData = window.crypto.getRandomValues(new Uint8Array(32));
+      const symmetricKey = await window.crypto.subtle.importKey(
+        'raw',
+        keyData,
+        'AES-GCM',
+        true,
+        ['encrypt', 'decrypt'],
+      );
+      sharedKeyRef.current = symmetricKey;
+      const exportedKey = await window.crypto.subtle.exportKey(
+        'raw',
+        symmetricKey,
+      );
+      const sharedKeyHex = uint8ArrayToHex(new Uint8Array(exportedKey));
+
+      const wsMessage = {
+        subscriptions: [
+          { topic: 'inbox', subtopic: buildInboxIdFromJobId(jobId) },
+        ],
+        unsubscriptions: [],
+        shared_key: sharedKeyHex,
+      };
+      const wsMessageString = JSON.stringify(wsMessage);
+
+      const shinkaiMessage = ShinkaiMessageBuilderWrapper.ws_message(
+        wsMessageString,
+        '',
+        '',
+        '',
+        undefined,
+        auth?.profile_encryption_sk ?? '',
+        auth?.profile_identity_sk ?? '',
+        auth?.node_encryption_pk ?? '',
+        auth?.shinkai_identity ?? '',
+        auth?.profile ?? '',
+        '',
+        '',
+      );
+
+      sendMessage(shinkaiMessage);
+    };
+
+    subscribeToWs();
+  }, [
+    auth?.node_encryption_pk,
+    auth?.profile,
+    auth?.profile_encryption_sk,
+    auth?.profile_identity_sk,
+    auth?.shinkai_identity,
+    jobId,
+  ]);
 
   return (
     <div>
-      <button className="bg-gray-900" onClick={subscribeToTopic}>
-        Sub Topic
-      </button>
       <p>ReadyState: {ReadyState[readyState]}</p>
       <ul>
-        {lastMessage && <li>Last message: {JSON.stringify(lastMessage)}</li>}
         {messages.map((message, index) => (
           <li key={index}>{message}</li>
         ))}
