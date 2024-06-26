@@ -31,6 +31,8 @@ export const MessageList = ({
   fetchPreviousPage,
   fromPreviousMessagesRef,
   containerClassName,
+  lastMessageContent,
+  isLoadingMessage,
 }: {
   noMoreMessageLabel: string;
   isSuccess: boolean;
@@ -50,6 +52,8 @@ export const MessageList = ({
     >
   >;
   containerClassName?: string;
+  lastMessageContent: string;
+  isLoadingMessage: boolean | undefined;
 }) => {
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const previousChatHeightRef = useRef<number>(0);
@@ -117,7 +121,7 @@ export const MessageList = ({
 
   useEffect(() => {
     scrollToBottom();
-  }, [isSuccess]);
+  }, [isSuccess, lastMessageContent]);
 
   return (
     <div
@@ -228,6 +232,21 @@ export const MessageList = ({
                     </div>
                   );
                 },
+              )}
+              {isLoadingMessage && (
+                <Message
+                  message={{
+                    inboxId: '',
+                    hash: '',
+                    content: lastMessageContent,
+                    scheduledTime: '',
+                    isLocal: false,
+                    sender: {
+                      avatar:
+                        'https://ui-avatars.com/api/?name=S&background=FF7E7F&color=ffffff',
+                    },
+                  }}
+                />
               )}
             </Fragment>
           ))}
