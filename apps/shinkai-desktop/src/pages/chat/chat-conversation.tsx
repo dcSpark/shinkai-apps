@@ -209,11 +209,13 @@ const WSTemp = () => {
   ]);
 
   return (
-    <div className="bg-gray-700 p-4 text-white">
-      <p>WS Connection: {ReadyState[readyState]}</p>
+    <div className="max-h-[50vh] overflow-y-auto bg-gray-700 p-4 text-white">
+      <p className="text-sm">WS Connection: {ReadyState[readyState]}</p>
       <ul>
         {messages.map((message, index) => (
-          <li key={index}>{message}</li>
+          <li className="text-xs" key={index}>
+            {message}
+          </li>
         ))}
       </ul>
     </div>
