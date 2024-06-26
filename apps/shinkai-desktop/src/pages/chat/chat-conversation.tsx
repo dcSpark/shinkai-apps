@@ -77,18 +77,6 @@ enum ErrorCodes {
   VectorResource = 'VectorResource',
   ShinkaiBackendInferenceLimitReached = 'ShinkaiBackendInferenceLimitReached',
 }
-
-const hexToUint8Array = (hex: string): Uint8Array => {
-  return new Uint8Array(
-    (hex.match(/.{1,2}/g) ?? []).map((byte) => parseInt(byte, 16)),
-  );
-};
-
-const uint8ArrayToHex = (array: Uint8Array): string => {
-  return Array.from(array)
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('');
-};
 const useWebSocketMessage = () => {
   const auth = useAuth((state) => state.auth);
   const socketUrl = 'ws://127.0.0.1:9851/ws';
@@ -96,73 +84,36 @@ const useWebSocketMessage = () => {
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = decodeURIComponent(encodedInboxId);
   const jobId = extractJobIdFromInbox(inboxId);
-  const sharedKeyRef = useRef<CryptoKey | null>(null);
   const [messageContent, setMessageContent] = useState('');
 
   useEffect(() => {
-    const decryptMessage = async () => {
-      if (lastMessage?.data && sharedKeyRef.current) {
-        try {
-          const encryptedData = hexToUint8Array(lastMessage.data);
-          const nonce = new Uint8Array(12); // AES-GCM uses a 12-byte nonce
-          const decryptedData = await window.crypto.subtle.decrypt(
-            { name: 'AES-GCM', iv: nonce },
-            sharedKeyRef.current,
-            encryptedData,
-          );
-          const decryptedText = new TextDecoder().decode(decryptedData);
-          const decryptedTextJson: {
-            message: string;
-            inbox: string;
-          } = JSON.parse(decryptedText);
-
-          try {
-            const parseText = JSON.parse(decryptedTextJson.message ?? '');
-            // check if its a shinkai message
-            if (typeof parseText === 'object' && 'body' in parseText) {
-              setMessageContent('');
-            } else {
-              setMessageContent(
-                (prevContent) => prevContent + decryptedTextJson.message,
-              );
-            }
-          } catch (error) {
-            setMessageContent(
-              (prevContent) => prevContent + decryptedTextJson.message,
-            );
-          }
-        } catch (error) {
-          console.error('Decryption WS failed:', error);
+    if (lastMessage?.data) {
+      try {
+        const parseData: {
+          message_type: 'Stream' | 'ShinkaiMessage';
+          inbox: string;
+          message: string;
+          error_message: string;
+        } = JSON.parse(lastMessage.data);
+        if (parseData.message_type === 'Stream') {
+          setMessageContent((prevContent) => prevContent + parseData.message);
         }
+        if (parseData.message_type === 'ShinkaiMessage') {
+          setMessageContent('');
+        }
+      } catch (error) {
+        console.error('Decryption WS failed:', error);
       }
-    };
-
-    decryptMessage();
+    }
   }, [inboxId, lastMessage?.data]);
 
   useEffect(() => {
     const subscribeToWs = async () => {
-      const keyData = window.crypto.getRandomValues(new Uint8Array(32));
-      const symmetricKey = await window.crypto.subtle.importKey(
-        'raw',
-        keyData,
-        'AES-GCM',
-        true,
-        ['encrypt', 'decrypt'],
-      );
-      sharedKeyRef.current = symmetricKey;
-      const exportedKey = await window.crypto.subtle.exportKey(
-        'raw',
-        symmetricKey,
-      );
-      const sharedKeyHex = uint8ArrayToHex(new Uint8Array(exportedKey));
-
       const wsMessage = {
         subscriptions: [
           { topic: 'inbox', subtopic: buildInboxIdFromJobId(jobId) },
         ],
         unsubscriptions: [],
-        shared_key: sharedKeyHex,
       };
       const wsMessageString = JSON.stringify(wsMessage);
 
@@ -245,12 +196,6 @@ const ChatConversation = () => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
     return isJobInbox(inboxId) && lastMessage?.isLocal;
   }, [data?.pages, inboxId]);
-
-  // useEffect(() => {
-  //   if (!isLoadingMessage) {
-  //     shouldWSConnect.current = false;
-  //   }
-  // }, [isLoadingMessage]);
 
   const { messageContent } = useWebSocketMessage();
 
