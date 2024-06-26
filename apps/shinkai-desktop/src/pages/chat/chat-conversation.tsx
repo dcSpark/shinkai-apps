@@ -89,26 +89,15 @@ const uint8ArrayToHex = (array: Uint8Array): string => {
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('');
 };
-
-const useWebSocketMessage = ({ enabled }: { enabled: boolean }) => {
+const useWebSocketMessage = () => {
   const auth = useAuth((state) => state.auth);
   const socketUrl = 'ws://127.0.0.1:9851/ws';
-  const { sendMessage, lastMessage, readyState } = useWebSocket(
-    socketUrl,
-    {},
-    enabled,
-  );
+  const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {});
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = decodeURIComponent(encodedInboxId);
   const jobId = extractJobIdFromInbox(inboxId);
   const sharedKeyRef = useRef<CryptoKey | null>(null);
   const [messageContent, setMessageContent] = useState('');
-
-  useEffect(() => {
-    if (!enabled) {
-      setMessageContent('');
-    }
-  }, [enabled]);
 
   useEffect(() => {
     const decryptMessage = async () => {
@@ -151,7 +140,6 @@ const useWebSocketMessage = ({ enabled }: { enabled: boolean }) => {
   }, [inboxId, lastMessage?.data]);
 
   useEffect(() => {
-    if (!enabled) return;
     const subscribeToWs = async () => {
       const keyData = window.crypto.getRandomValues(new Uint8Array(32));
       const symmetricKey = await window.crypto.subtle.importKey(
@@ -197,7 +185,6 @@ const useWebSocketMessage = ({ enabled }: { enabled: boolean }) => {
 
     subscribeToWs();
   }, [
-    enabled,
     auth?.node_encryption_pk,
     auth?.profile,
     auth?.profile_encryption_sk,
@@ -260,9 +247,7 @@ const ChatConversation = () => {
     return isJobInbox(inboxId) && lastMessage?.isLocal;
   }, [data?.pages, inboxId]);
 
-  const { messageContent } = useWebSocketMessage({
-    enabled: !!isLoadingMessage,
-  });
+  const { messageContent } = useWebSocketMessage();
 
   const { mutateAsync: sendMessageToInbox } = useSendMessageToInbox();
   const { mutateAsync: sendMessageToJob } = useSendMessageToJob({
