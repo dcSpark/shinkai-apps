@@ -1,12 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { ShinkaiMessage } from '@shinkai_network/shinkai-message-ts/models/ShinkaiMessage';
 import {
   buildInboxIdFromJobId,
   extractErrorPropertyOrContent,
   extractJobIdFromInbox,
   extractReceiverShinkaiName,
-  getMessageContent,
   isJobInbox,
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { ShinkaiMessageBuilderWrapper } from '@shinkai_network/shinkai-message-ts/wasm/ShinkaiMessageBuilderWrapper';
@@ -18,7 +16,6 @@ import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mut
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
 import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageWithFilesToInbox/useSendMessageWithFilesToInbox';
 import { useUpdateAgentInJob } from '@shinkai_network/shinkai-node-state/lib/mutations/updateAgentInJob/useUpdateAgentInJob';
-import { ChatConversationMessage } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
 import {
@@ -70,7 +67,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
-import useWebSocket, { ReadyState } from 'react-use-websocket';
+import useWebSocket from 'react-use-websocket';
 import { toast } from 'sonner';
 
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
@@ -93,15 +90,25 @@ const uint8ArrayToHex = (array: Uint8Array): string => {
     .join('');
 };
 
-const WSTemp = () => {
+const useWebSocketMessage = ({ enabled }: { enabled: boolean }) => {
   const auth = useAuth((state) => state.auth);
   const socketUrl = 'ws://127.0.0.1:9851/ws';
-  const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl);
+  const { sendMessage, lastMessage, readyState } = useWebSocket(
+    socketUrl,
+    {},
+    enabled,
+  );
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = decodeURIComponent(encodedInboxId);
   const jobId = extractJobIdFromInbox(inboxId);
   const sharedKeyRef = useRef<CryptoKey | null>(null);
-  const [messages, setMessages] = useState<string[]>([]);
+  const [messageContent, setMessageContent] = useState('');
+
+  useEffect(() => {
+    if (!enabled) {
+      setMessageContent('');
+    }
+  }, [enabled]);
 
   useEffect(() => {
     const decryptMessage = async () => {
@@ -119,34 +126,23 @@ const WSTemp = () => {
             message: string;
             inbox: string;
           } = JSON.parse(decryptedText);
-          const shinkaiMessage: ShinkaiMessage = JSON.parse(
-            decryptedTextJson.message ?? '',
-          );
-          const content = getMessageContent(shinkaiMessage);
-          const isLocal = false;
-          const message: ChatConversationMessage = {
-            hash:
-              shinkaiMessage.body && 'unencrypted' in shinkaiMessage.body
-                ? shinkaiMessage.body.unencrypted.internal_metadata
-                    ?.node_api_data?.node_message_hash
-                : '',
-            inboxId,
-            content,
-            sender: {
-              avatar: isLocal
-                ? 'https://ui-avatars.com/api/?name=Me&background=313336&color=b0b0b0'
-                : 'https://ui-avatars.com/api/?name=S&background=FF7E7F&color=ffffff',
-            },
-            isLocal,
-            scheduledTime:
-              shinkaiMessage.body && 'unencrypted' in shinkaiMessage.body
-                ? shinkaiMessage.body.unencrypted.internal_metadata
-                    ?.node_api_data?.node_timestamp
-                : '',
-          };
-          setMessages((prev) => [...prev, message.content]);
+          try {
+            const parseText = JSON.parse(decryptedTextJson.message ?? '');
+            // check if its a shinkai message
+            if (typeof parseText === 'object' && 'body' in parseText) {
+              setMessageContent('');
+            } else {
+              setMessageContent(
+                (prevContent) => prevContent + decryptedTextJson.message,
+              );
+            }
+          } catch (error) {
+            setMessageContent(
+              (prevContent) => prevContent + decryptedTextJson.message,
+            );
+          }
         } catch (error) {
-          console.error('Decryption failed:', error);
+          console.error('Decryption WS failed:', error);
         }
       }
     };
@@ -155,6 +151,7 @@ const WSTemp = () => {
   }, [inboxId, lastMessage?.data]);
 
   useEffect(() => {
+    if (!enabled) return;
     const subscribeToWs = async () => {
       const keyData = window.crypto.getRandomValues(new Uint8Array(32));
       const symmetricKey = await window.crypto.subtle.importKey(
@@ -200,26 +197,17 @@ const WSTemp = () => {
 
     subscribeToWs();
   }, [
+    enabled,
     auth?.node_encryption_pk,
     auth?.profile,
     auth?.profile_encryption_sk,
     auth?.profile_identity_sk,
     auth?.shinkai_identity,
     jobId,
+    sendMessage,
   ]);
 
-  return (
-    <div className="max-h-[50vh] overflow-y-auto bg-gray-700 p-4 text-white">
-      <p className="text-sm">WS Connection: {ReadyState[readyState]}</p>
-      <ul>
-        {messages.map((message, index) => (
-          <li className="text-xs" key={index}>
-            {message}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+  return { messageContent, readyState };
 };
 const ChatConversation = () => {
   const { captureAnalyticEvent } = useAnalytics();
@@ -265,6 +253,15 @@ const ChatConversation = () => {
     node_encryption_pk: auth?.node_encryption_pk ?? '',
     profile_encryption_sk: auth?.profile_encryption_sk ?? '',
     profile_identity_sk: auth?.profile_identity_sk ?? '',
+  });
+
+  const isLoadingMessage = useMemo(() => {
+    const lastMessage = data?.pages?.at(-1)?.at(-1);
+    return isJobInbox(inboxId) && lastMessage?.isLocal;
+  }, [data?.pages, inboxId]);
+
+  const { messageContent } = useWebSocketMessage({
+    enabled: !!isLoadingMessage,
   });
 
   const { mutateAsync: sendMessageToInbox } = useSendMessageToInbox();
@@ -340,11 +337,6 @@ const ChatConversation = () => {
     chatForm.reset();
   };
 
-  const isLoadingMessage = useMemo(() => {
-    const lastMessage = data?.pages?.at(-1)?.at(-1);
-    return isJobInbox(inboxId) && lastMessage?.isLocal;
-  }, [data?.pages, inboxId]);
-
   useEffect(() => {
     chatForm.reset();
   }, [chatForm, inboxId]);
@@ -362,7 +354,6 @@ const ChatConversation = () => {
   return (
     <div className="flex max-h-screen flex-1 flex-col overflow-hidden pt-2">
       <ConversationHeader />
-      <WSTemp />
       <MessageList
         containerClassName="px-5"
         fetchPreviousPage={fetchPreviousPage}
@@ -370,7 +361,9 @@ const ChatConversation = () => {
         hasPreviousPage={hasPreviousPage}
         isFetchingPreviousPage={isFetchingPreviousPage}
         isLoading={isChatConversationLoading}
+        isLoadingMessage={isLoadingMessage}
         isSuccess={isChatConversationSuccess}
+        lastMessageContent={messageContent}
         noMoreMessageLabel={t('chat.allMessagesLoaded')}
         paginatedMessages={data}
       />
