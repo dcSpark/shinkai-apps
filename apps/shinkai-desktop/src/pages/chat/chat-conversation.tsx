@@ -147,6 +147,7 @@ const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
     auth?.profile_encryption_sk,
     auth?.profile_identity_sk,
     auth?.shinkai_identity,
+    enabled,
     inboxId,
     lastMessage?.data,
     queryClient,
@@ -176,7 +177,9 @@ const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
     auth?.profile_encryption_sk,
     auth?.profile_identity_sk,
     auth?.shinkai_identity,
+    enabled,
     inboxId,
+    sendMessage,
   ]);
 
   return { messageContent, readyState, setMessageContent };
