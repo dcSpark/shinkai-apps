@@ -1,21 +1,21 @@
-import { deleteAgent as deleteAgentAPI } from '@shinkai_network/shinkai-message-ts/api';
+import { updateLLMProvider as updateLLMProviderAPI } from '@shinkai_network/shinkai-message-ts/api';
 
-import { DeleteAgentInput } from './types';
+import { UpdateLLMProviderInput } from './types';
 
-export const deleteAgent = async ({
+export const updateLLMProvider = async ({
   nodeAddress,
   shinkaiIdentity,
   profile,
-  agentId,
+  agent,
   my_device_encryption_sk,
   my_device_identity_sk,
   node_encryption_pk,
   profile_encryption_sk,
   profile_identity_sk,
-}: DeleteAgentInput) => {
-  return await deleteAgentAPI(
+}: UpdateLLMProviderInput) => {
+  return await updateLLMProviderAPI(
     nodeAddress,
-    agentId,
+    agent,
     shinkaiIdentity,
     profile,
     shinkaiIdentity,

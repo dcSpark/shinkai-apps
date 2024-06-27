@@ -5,6 +5,7 @@ import { ChatConversationMessage, copyToClipboard } from '../../helpers';
 import { cn } from '../../utils';
 import { Avatar, AvatarFallback, AvatarImage } from '../avatar';
 import { CopyToClipboardIcon } from '../copy-to-clipboard-icon';
+import { DotsLoader } from '../dots-loader';
 import { MarkdownPreview } from '../markdown-preview';
 import { FileList } from './files-preview';
 
@@ -24,10 +25,11 @@ export const extractErrorPropertyOrContent = (
 };
 
 type MessageProps = {
+  isPending?: boolean;
   message: ChatConversationMessage;
 };
 
-export const Message = ({ message }: MessageProps) => {
+export const Message = ({ message, isPending }: MessageProps) => {
   return (
     <div className="group pb-10">
       <div
@@ -57,7 +59,6 @@ export const Message = ({ message }: MessageProps) => {
           <div
             className={cn(
               'duration-30 absolute -bottom-8 right-0 flex items-center gap-2 opacity-0 group-hover:opacity-100 group-hover:transition-opacity',
-              '',
             )}
           >
             <CopyToClipboardIcon
@@ -78,18 +79,22 @@ export const Message = ({ message }: MessageProps) => {
               )}
             />
           </div>
-          <MarkdownPreview
-            components={{
-              a: ({ node, ...props }) => (
-                // eslint-disable-next-line jsx-a11y/anchor-has-content
-                <a {...props} target="_blank" />
-              ),
-            }}
-            source={extractErrorPropertyOrContent(
-              message.content,
-              'error_message',
-            )}
-          />
+          {message.content ? (
+            <MarkdownPreview
+              components={{
+                a: ({ node, ...props }) => (
+                  // eslint-disable-next-line jsx-a11y/anchor-has-content
+                  <a {...props} target="_blank" />
+                ),
+              }}
+              source={extractErrorPropertyOrContent(
+                isPending ? message.content + ' ...' : message.content,
+                'error_message',
+              )}
+            />
+          ) : (
+            <DotsLoader className="pt-2" />
+          )}
           {!!message.fileInbox?.files?.length && (
             <FileList
               className="mt-2 min-w-[200px] max-w-[400px]"

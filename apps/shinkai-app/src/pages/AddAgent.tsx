@@ -13,7 +13,7 @@ import {
   IonSelectOption,
   IonTitle,
 } from '@ionic/react';
-import { useCreateAgent } from '@shinkai_network/shinkai-node-state/lib/mutations/createAgent/useCreateAgent';
+import { useAddLLMProvider } from '@shinkai_network/shinkai-node-state/lib/mutations/addLLMProvider/useAddLLMProvider';
 import { Controller, useForm } from 'react-hook-form';
 import { useHistory } from 'react-router';
 import z from 'zod';
@@ -41,11 +41,11 @@ const AddAgent: React.FC = () => {
   });
 
   const {
-    mutateAsync: createAgent,
+    mutateAsync: addLLMProvider,
     isPending,
     isError,
     error,
-  } = useCreateAgent({
+  } = useAddLLMProvider({
     onSuccess: () => {
       history.push('/create-job');
     },
@@ -58,7 +58,7 @@ const AddAgent: React.FC = () => {
     };
 
     if (!auth) return;
-    createAgent({
+    addLLMProvider({
       nodeAddress: auth.node_address,
       sender_subidentity: auth.profile,
       node_name: auth.shinkai_identity,

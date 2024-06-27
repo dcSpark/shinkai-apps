@@ -17,7 +17,7 @@ const AIModelInstallation = () => {
     <QueryClientProvider client={shinkaiNodeQueryClient}>
       <FixedHeaderLayout
         className="relative flex w-full max-w-6xl flex-col gap-2 px-4"
-        title={t('agents.localAI.installTitle')}
+        title={t('llmProviders.localAI.installTitle')}
       >
         <ResourcesBanner />
         <OllamaModels />

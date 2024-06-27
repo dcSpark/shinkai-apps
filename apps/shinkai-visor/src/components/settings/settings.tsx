@@ -2,8 +2,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { isShinkaiIdentityLocalhost } from '@shinkai_network/shinkai-message-ts/utils';
 import { useUpdateNodeName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateNodeName/useUpdateNodeName';
-import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
+import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
 import {
   Button,
   buttonVariants,
@@ -148,7 +148,7 @@ export const Settings = () => {
     name: 'shinkaiIdentity',
   });
 
-  const { agents } = useAgents({
+  const { llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
     sender: auth?.shinkai_identity ?? '',
     senderSubidentity: `${auth?.profile}`,
@@ -245,7 +245,9 @@ export const Settings = () => {
                 onValueChange={(value) => {
                   form.setValue('defaultAgentId', value);
                 }}
-                value={agents?.find((agent) => agent.id === defaultAgentId)?.id}
+                value={
+                  llmProviders?.find((agent) => agent.id === defaultAgentId)?.id
+                }
               >
                 <FormControl>
                   <SelectTrigger>
@@ -254,7 +256,7 @@ export const Settings = () => {
                 </FormControl>
                 <FormLabel>{t('settings.defaultAgent')}</FormLabel>
                 <SelectContent>
-                  {agents?.map((agent) => (
+                  {llmProviders?.map((agent) => (
                     <SelectItem key={agent.id} value={agent.id}>
                       {agent.id}
                     </SelectItem>

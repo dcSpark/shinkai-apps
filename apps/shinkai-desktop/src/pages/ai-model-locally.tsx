@@ -15,10 +15,10 @@ const AgentsLocally = () => {
     <QueryClientProvider client={shinkaiNodeQueryClient}>
       <SubpageLayout
         className="relative flex w-full max-w-6xl flex-col gap-2 px-4"
-        title={t('agents.localAI.installTitle')}
+        title={t('llmProviders.localAI.installTitle')}
       >
         <p className="text-gray-80 pb-2 text-sm">
-          {t('agents.localAI.installText')}
+          {t('llmProviders.localAI.installText')}
         </p>
         <OllamaModels />
         <div className="absolute right-4 top-6 flex justify-center pt-3">
@@ -32,7 +32,7 @@ const AgentsLocally = () => {
             to={{ pathname: '/add-agent' }}
           >
             <Plus className="h-4 w-4" />
-            {t('agents.addManually')}
+            {t('llmProviders.addManually')}
           </Link>
         </div>
       </SubpageLayout>

@@ -32,6 +32,7 @@ export const useGetChatConversationWithPagination = (
       return { lastKey: firstMessage.hash };
     },
     refetchInterval: ({ state }) => {
+      if (!input?.refetchIntervalEnabled) return 0;
       const lastMessage = state.data?.pages?.at(-1)?.at(-1);
       if (!lastMessage) return 0;
       if (isJobInbox(input.inboxId) && lastMessage.isLocal)

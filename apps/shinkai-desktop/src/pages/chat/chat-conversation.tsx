@@ -6,16 +6,19 @@ import {
   extractReceiverShinkaiName,
   isJobInbox,
 } from '@shinkai_network/shinkai-message-ts/utils';
+import { ShinkaiMessageBuilderWrapper } from '@shinkai_network/shinkai-message-ts/wasm/ShinkaiMessageBuilderWrapper';
 import {
   ChatMessageFormSchema,
   chatMessageFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/chat-message';
+import { FunctionKey } from '@shinkai_network/shinkai-node-state/lib/constants';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMessageToJob/useSendMessageToJob';
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
 import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageWithFilesToInbox/useSendMessageWithFilesToInbox';
 import { useUpdateAgentInJob } from '@shinkai_network/shinkai-node-state/lib/mutations/updateAgentInJob/useUpdateAgentInJob';
-import { useAgents } from '@shinkai_network/shinkai-node-state/lib/queries/getAgents/useGetAgents';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
+import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
+import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import {
   Alert,
   AlertDescription,
@@ -52,6 +55,7 @@ import {
 } from '@shinkai_network/shinkai-ui/assets';
 import { getFileExt } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { useQueryClient } from '@tanstack/react-query';
 import { partial } from 'filesize';
 import {
   AlertCircle,
@@ -61,21 +65,125 @@ import {
   SendIcon,
   X,
 } from 'lucide-react';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
+import useWebSocket from 'react-use-websocket';
 import { toast } from 'sonner';
 
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAnalytics } from '../../lib/posthog-provider';
 import { useAuth } from '../../store/auth';
-
 enum ErrorCodes {
   VectorResource = 'VectorResource',
   ShinkaiBackendInferenceLimitReached = 'ShinkaiBackendInferenceLimitReached',
 }
+type UseWebSocketMessage = {
+  enabled?: boolean;
+};
+const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
+  const auth = useAuth((state) => state.auth);
+  const nodeAddressUrl = new URL(auth?.node_address ?? 'http://localhost:9850');
+  const socketUrl = `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`;
+  const queryClient = useQueryClient();
 
+  const { sendMessage, lastMessage, readyState } = useWebSocket(
+    socketUrl,
+    { share: true },
+    enabled,
+  );
+  const { inboxId: encodedInboxId = '' } = useParams();
+  const inboxId = decodeURIComponent(encodedInboxId);
+  const [messageContent, setMessageContent] = useState('');
+  useEffect(() => {
+    if (!enabled) return;
+    if (lastMessage?.data) {
+      try {
+        const parseData: {
+          message_type: 'Stream' | 'ShinkaiMessage';
+          inbox: string;
+          message: string;
+          error_message: string;
+          metadata?: {
+            id: string;
+            is_done: boolean;
+            done_reason: string;
+            total_duration: number;
+            eval_count: number;
+          };
+        } = JSON.parse(lastMessage.data);
+        if (parseData.message_type !== 'Stream') return;
+        if (parseData.metadata?.is_done) {
+          const paginationKey = [
+            FunctionKey.GET_CHAT_CONVERSATION_PAGINATION,
+            {
+              nodeAddress: auth?.node_address ?? '',
+              inboxId: inboxId as string,
+              shinkaiIdentity: auth?.shinkai_identity ?? '',
+              profile: auth?.profile ?? '',
+              my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+              my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+              node_encryption_pk: auth?.node_encryption_pk ?? '',
+              profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+              profile_identity_sk: auth?.profile_identity_sk ?? '',
+            },
+          ];
+          queryClient.invalidateQueries({ queryKey: paginationKey });
+        }
+
+        setMessageContent((prev) => prev + parseData.message);
+        return;
+      } catch (error) {
+        console.error('Failed to parse ws message', error);
+      }
+    }
+  }, [
+    auth?.my_device_encryption_sk,
+    auth?.my_device_identity_sk,
+    auth?.node_address,
+    auth?.node_encryption_pk,
+    auth?.profile,
+    auth?.profile_encryption_sk,
+    auth?.profile_identity_sk,
+    auth?.shinkai_identity,
+    enabled,
+    inboxId,
+    lastMessage?.data,
+    queryClient,
+  ]);
+
+  useEffect(() => {
+    if (!enabled) return;
+    const wsMessage = {
+      subscriptions: [{ topic: 'inbox', subtopic: inboxId }],
+      unsubscriptions: [],
+    };
+    const wsMessageString = JSON.stringify(wsMessage);
+    const shinkaiMessage = ShinkaiMessageBuilderWrapper.ws_connection(
+      wsMessageString,
+      auth?.profile_encryption_sk ?? '',
+      auth?.profile_identity_sk ?? '',
+      auth?.node_encryption_pk ?? '',
+      auth?.shinkai_identity ?? '',
+      auth?.profile ?? '',
+      '',
+      '',
+    );
+    sendMessage(shinkaiMessage);
+  }, [
+    auth?.node_encryption_pk,
+    auth?.profile,
+    auth?.profile_encryption_sk,
+    auth?.profile_identity_sk,
+    auth?.shinkai_identity,
+    enabled,
+    inboxId,
+    sendMessage,
+  ]);
+
+  return { messageContent, readyState, setMessageContent };
+};
 const ChatConversation = () => {
   const { captureAnalyticEvent } = useAnalytics();
   const { t } = useTranslation();
@@ -84,6 +192,9 @@ const ChatConversation = () => {
   const auth = useAuth((state) => state.auth);
   const fromPreviousMessagesRef = useRef<boolean>(false);
   const inboxId = decodeURIComponent(encodedInboxId);
+  const currentInbox = useGetCurrentInbox();
+  const isOllamaProvider =
+    currentInbox?.agent?.model.split(':')?.[0] === Models.Ollama;
 
   const chatForm = useForm<ChatMessageFormSchema>({
     resolver: zodResolver(chatMessageFormSchema),
@@ -120,6 +231,16 @@ const ChatConversation = () => {
     node_encryption_pk: auth?.node_encryption_pk ?? '',
     profile_encryption_sk: auth?.profile_encryption_sk ?? '',
     profile_identity_sk: auth?.profile_identity_sk ?? '',
+    refetchIntervalEnabled: !isOllamaProvider,
+  });
+
+  const isLoadingMessage = useMemo(() => {
+    const lastMessage = data?.pages?.at(-1)?.at(-1);
+    return isJobInbox(inboxId) && lastMessage?.isLocal;
+  }, [data?.pages, inboxId]);
+
+  const { messageContent, setMessageContent } = useWebSocketMessage({
+    enabled: isOllamaProvider,
   });
 
   const { mutateAsync: sendMessageToInbox } = useSendMessageToInbox();
@@ -138,6 +259,7 @@ const ChatConversation = () => {
     });
 
   const onSubmit = async (data: ChatMessageFormSchema) => {
+    setMessageContent(''); // trick to clear the ws stream message
     if (!auth || data.message.trim() === '') return;
     fromPreviousMessagesRef.current = false;
     if (data.file) {
@@ -195,11 +317,6 @@ const ChatConversation = () => {
     chatForm.reset();
   };
 
-  const isLoadingMessage = useMemo(() => {
-    const lastMessage = data?.pages?.at(-1)?.at(-1);
-    return isJobInbox(inboxId) && lastMessage?.isLocal;
-  }, [data?.pages, inboxId]);
-
   useEffect(() => {
     chatForm.reset();
   }, [chatForm, inboxId]);
@@ -224,7 +341,9 @@ const ChatConversation = () => {
         hasPreviousPage={hasPreviousPage}
         isFetchingPreviousPage={isFetchingPreviousPage}
         isLoading={isChatConversationLoading}
+        isLoadingMessage={isLoadingMessage}
         isSuccess={isChatConversationSuccess}
+        lastMessageContent={messageContent}
         noMoreMessageLabel={t('chat.allMessagesLoaded')}
         paginatedMessages={data}
       />
@@ -306,7 +425,7 @@ const ChatConversation = () => {
                             </Button>
                           }
                           disabled={isLoadingMessage}
-                          isLoading={isLoadingMessage}
+                          // isLoading={isLoadingMessage}
                           onChange={field.onChange}
                           onSubmit={chatForm.handleSubmit(onSubmit)}
                           topAddons={
@@ -366,7 +485,7 @@ function AgentSelection() {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const currentInbox = useGetCurrentInbox();
-  const { agents } = useAgents({
+  const { llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
     sender: auth?.shinkai_identity ?? '',
     senderSubidentity: `${auth?.profile}`,
@@ -380,7 +499,7 @@ function AgentSelection() {
 
   const { mutateAsync: updateAgentInJob } = useUpdateAgentInJob({
     onError: (error) => {
-      toast.error(t('agents.errors.updateAgent'), {
+      toast.error(t('llmProviders.errors.updateAgent'), {
         description: error.message,
       });
     },
@@ -402,7 +521,7 @@ function AgentSelection() {
               className="bg-neutral-900"
               side="top"
             >
-              {t('agents.switch')}
+              {t('llmProviders.switch')}
             </TooltipContent>
           </TooltipPortal>
           <DropdownMenuContent
@@ -430,7 +549,7 @@ function AgentSelection() {
               }}
               value={currentInbox?.agent?.id ?? ''}
             >
-              {agents.map((agent) => (
+              {llmProviders.map((agent) => (
                 <DropdownMenuRadioItem
                   className="flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-2 text-white transition-colors hover:bg-gray-200 aria-checked:bg-gray-200"
                   key={agent.id}

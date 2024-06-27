@@ -7,7 +7,7 @@ import {
   ShinkaiMessageBuilderWrapper as ShinkaiMessageBuilderWrapperWASM,
   ShinkaiMessageWrapper,
 } from '../pkg/shinkai_message_wasm.js';
-import { SerializedAgentWrapper } from './SerializedAgentWrapper';
+import { SerializedLLMProviderWrapper } from './SerializedLLMProviderWrapper';
 
 export class ShinkaiMessageBuilderWrapper {
   private wasmBuilder: ShinkaiMessageBuilderWrapperWASM;
@@ -367,6 +367,37 @@ export class ShinkaiMessageBuilderWrapper {
       receiver_subidentity,
     );
   }
+  static ws_connection(
+    ws_content: string,
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+    receiver_subidentity: string,
+  ): string {
+    const builder = new ShinkaiMessageBuilderWrapper(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key,
+    );
+
+    builder.message_raw_content(ws_content);
+    builder.message_schema_type(MessageSchemaType.WSMessage.toString());
+    builder.internal_metadata(
+      sender_subidentity,
+      receiver_subidentity,
+      '',
+      'None',
+    );
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
+
+    const message = builder.build_to_string();
+    return message;
+  }
 
   static terminate_message(
     my_encryption_secret_key: string,
@@ -413,7 +444,7 @@ export class ShinkaiMessageBuilderWrapper {
     sender: string,
     sender_subidentity: string,
     recipient: string,
-    agent: SerializedAgentWrapper,
+    agent: SerializedLLMProviderWrapper,
   ): string {
     const agentJson = agent.to_json_str();
     return ShinkaiMessageBuilderWrapperWASM.request_add_agent(
@@ -1451,11 +1482,11 @@ export class ShinkaiMessageBuilderWrapper {
     return message;
   }
 
-  static modifyAgent(
+  static updateLLMProvider(
     my_encryption_secret_key: string,
     my_signature_secret_key: string,
     receiver_public_key: string,
-    agent: SerializedAgentWrapper,
+    agent: SerializedLLMProviderWrapper,
     sender: string,
     sender_subidentity: string,
     receiver: string,
@@ -1486,7 +1517,7 @@ export class ShinkaiMessageBuilderWrapper {
     return message;
   }
 
-  static deleteAgent(
+  static deleteLLMProvider(
     my_encryption_secret_key: string,
     my_signature_secret_key: string,
     receiver_public_key: string,

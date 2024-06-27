@@ -6,7 +6,7 @@ import {
   AddAgentFormSchema,
   addAgentSchema,
 } from '@shinkai_network/shinkai-node-state/forms/agents/add-agent';
-import { useCreateAgent } from '@shinkai_network/shinkai-node-state/lib/mutations/createAgent/useCreateAgent';
+import { useAddLLMProvider } from '@shinkai_network/shinkai-node-state/lib/mutations/addLLMProvider/useAddLLMProvider';
 import { useScanOllamaModels } from '@shinkai_network/shinkai-node-state/lib/queries/scanOllamaModels/useScanOllamaModels';
 import {
   Models,
@@ -102,7 +102,7 @@ export const AddAgent = () => {
     }
   }, [isOllamaModelsError, ollamaModelsError?.message]);
 
-  const { mutateAsync: createAgent, isPending } = useCreateAgent({
+  const { mutateAsync: addLLMProvider, isPending } = useAddLLMProvider({
     onSuccess: () => {
       navigate(
         { pathname: '/inboxes/create-job' },
@@ -135,7 +135,7 @@ export const AddAgent = () => {
     if (isCustomModelMode && values.modelCustom && values.modelTypeCustom) {
       model = getModelObject(values.modelCustom, values.modelTypeCustom);
     }
-    await createAgent({
+    await addLLMProvider({
       nodeAddress: auth?.node_address ?? '',
       sender_subidentity: auth.profile,
       node_name: auth.shinkai_identity,
@@ -309,7 +309,7 @@ export const AddAgent = () => {
                   render={({ field }) => (
                     <TextField
                       field={field}
-                      label={t('agents.form.modelName')}
+                      label={t('llmProviders.form.modelName')}
                     />
                   )}
                 />
@@ -317,7 +317,10 @@ export const AddAgent = () => {
                   control={form.control}
                   name="modelTypeCustom"
                   render={({ field }) => (
-                    <TextField field={field} label={t('agents.form.modelId')} />
+                    <TextField
+                      field={field}
+                      label={t('llmProviders.form.modelId')}
+                    />
                   )}
                 />
               </>
@@ -331,7 +334,7 @@ export const AddAgent = () => {
                   autoFocus
                   data-testid="agent-name-input"
                   field={field}
-                  label={t('agents.form.agentName')}
+                  label={t('llmProviders.form.agentName')}
                 />
               )}
             />
@@ -340,7 +343,10 @@ export const AddAgent = () => {
               control={form.control}
               name="externalUrl"
               render={({ field }) => (
-                <TextField field={field} label={t('agents.form.externalUrl')} />
+                <TextField
+                  field={field}
+                  label={t('llmProviders.form.externalUrl')}
+                />
               )}
             />
 
@@ -348,7 +354,10 @@ export const AddAgent = () => {
               control={form.control}
               name="apikey"
               render={({ field }) => (
-                <TextField field={field} label={t('agents.form.apiKey')} />
+                <TextField
+                  field={field}
+                  label={t('llmProviders.form.apiKey')}
+                />
               )}
             />
           </div>
@@ -359,7 +368,7 @@ export const AddAgent = () => {
             isLoading={isPending}
             type="submit"
           >
-            {t('agents.add')}
+            {t('llmProviders.add')}
           </Button>
         </form>
       </Form>

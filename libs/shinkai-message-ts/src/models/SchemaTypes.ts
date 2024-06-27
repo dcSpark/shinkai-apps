@@ -47,6 +47,8 @@ export enum MessageSchemaType {
   // ollama
   APIScanOllamaModels = 'APIScanOllamaModels',
   APIAddOllamaModels = 'APIAddOllamaModels',
+  // ws
+  WSMessage = 'WSMessage',
 }
 
 export interface LocalScopeVRKaiEntry {
@@ -213,7 +215,7 @@ export interface APIReadUpToTimeRequest {
   up_to_time: string;
 }
 
-export interface SerializedAgent {
+export interface SerializedLLMProvider {
   id: string;
   full_identity_name: string; // ShinkaiName
   perform_locally: boolean;
@@ -225,7 +227,7 @@ export interface SerializedAgent {
   allowed_message_senders: string[];
 }
 
-export type Agent = {
+export type LLMProvider = {
   id: string;
   full_identity_name: string; // ShinkaiName
   perform_locally: boolean;
@@ -261,5 +263,5 @@ export interface GenericAPI {
 }
 
 export interface APIAddAgentRequest {
-  agent: SerializedAgent;
+  agent: SerializedLLMProvider;
 }

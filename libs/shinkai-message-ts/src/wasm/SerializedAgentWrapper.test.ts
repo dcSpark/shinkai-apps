@@ -1,12 +1,12 @@
 import { test } from 'vitest';
 
-import { SerializedAgent } from '../models/SchemaTypes';
-import { SerializedAgentWrapper } from './SerializedAgentWrapper';
+import { SerializedLLMProvider } from '../models/SchemaTypes';
+import { SerializedLLMProviderWrapper } from './SerializedLLMProviderWrapper';
 import { ShinkaiNameWrapper } from './ShinkaiNameWrapper';
 
-test('SerializedAgentWrapper conversion', async () => {
+test('serializedLLMProviderWrapper conversion', async () => {
   // Create a SerializedAgentWrapper using fromStrings
-  const serializedAgentWrapper = SerializedAgentWrapper.fromStrings(
+  const serializedLLMProviderWrapper = SerializedLLMProviderWrapper.fromStrings(
     'test_agent',
     '@@node.shinkai/main/agent/test_agent',
     'false',
@@ -19,7 +19,7 @@ test('SerializedAgentWrapper conversion', async () => {
   );
 
   // Get the inner SerializedAgent
-  const agent = serializedAgentWrapper.inner;
+  const agent = serializedLLMProviderWrapper.inner;
 
   // Create a ShinkaiNameWrapper from the full_identity_name
   const fullIdentityNameWrapper = new ShinkaiNameWrapper(
@@ -42,7 +42,7 @@ test('SerializedAgentWrapper conversion', async () => {
 
 test('SerializedAgent to SerializedAgentWrapper conversion', async () => {
   // Create a SerializedAgent
-  const serializedAgent: SerializedAgent = {
+  const serializedAgent: SerializedLLMProvider = {
     id: 'test_agent',
     full_identity_name: '@@node.shinkai/main/agent/test_agent',
     perform_locally: false,
@@ -56,7 +56,7 @@ test('SerializedAgent to SerializedAgentWrapper conversion', async () => {
 
   // Convert the SerializedAgent to a SerializedAgentWrapper
   const serializedAgentWrapper =
-    SerializedAgentWrapper.fromSerializedAgent(serializedAgent);
+    SerializedLLMProviderWrapper.fromSerializedAgent(serializedAgent);
 
   // Get the inner SerializedAgent
   const agent = serializedAgentWrapper.inner;
@@ -86,7 +86,7 @@ test('SerializedAgent to SerializedAgentWrapper conversion', async () => {
 
 test('SerializedAgentWrapper serialization to string', async () => {
   // Create a SerializedAgent
-  const serializedAgent: SerializedAgent = {
+  const serializedAgent: SerializedLLMProvider = {
     id: 'test_agent',
     full_identity_name: '@@node.shinkai/main/agent/test_agent',
     perform_locally: false,
@@ -100,7 +100,7 @@ test('SerializedAgentWrapper serialization to string', async () => {
 
   // Convert the SerializedAgent to a SerializedAgentWrapper
   const serializedAgentWrapper =
-    SerializedAgentWrapper.fromSerializedAgent(serializedAgent);
+    SerializedLLMProviderWrapper.fromSerializedAgent(serializedAgent);
 
   // Serialize the SerializedAgentWrapper to a string
   const serializedString = serializedAgentWrapper.to_json_str();
@@ -135,7 +135,7 @@ test('SerializedAgentWrapper serialization to string', async () => {
 // Additional tests for a new model type not defined in the context
 test('SerializedAgentWrapper with Groq model type', async () => {
   // Create a SerializedAgent with a Groq model type
-  const serializedAgent: SerializedAgent = {
+  const serializedAgent: SerializedLLMProvider = {
     id: 'groq_model_agent',
     full_identity_name: '@@node.shinkai/main/agent/groq_model_agent',
     perform_locally: true,
@@ -149,7 +149,7 @@ test('SerializedAgentWrapper with Groq model type', async () => {
 
   // Convert the SerializedAgent to a SerializedAgentWrapper
   const serializedAgentWrapper =
-    SerializedAgentWrapper.fromSerializedAgent(serializedAgent);
+    SerializedLLMProviderWrapper.fromSerializedAgent(serializedAgent);
 
   // Get the inner SerializedAgent
   const agent = serializedAgentWrapper.inner;
@@ -180,7 +180,7 @@ test('SerializedAgentWrapper with Groq model type', async () => {
 
 test('SerializedAgentWrapper serialization to string for Groq model', async () => {
   // Create a SerializedAgent with a Groq model type
-  const serializedAgent: SerializedAgent = {
+  const serializedAgent: SerializedLLMProvider = {
     id: 'groq_model_agent',
     full_identity_name: '@@node.shinkai/main/agent/groq_model_agent',
     perform_locally: true,
@@ -194,7 +194,7 @@ test('SerializedAgentWrapper serialization to string for Groq model', async () =
 
   // Convert the SerializedAgent to a SerializedAgentWrapper
   const serializedAgentWrapper =
-    SerializedAgentWrapper.fromSerializedAgent(serializedAgent);
+    SerializedLLMProviderWrapper.fromSerializedAgent(serializedAgent);
 
   // Serialize the SerializedAgentWrapper to a string
   const serializedString = serializedAgentWrapper.to_json_str();
