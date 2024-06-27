@@ -31,13 +31,14 @@ export const useGetChatConversationWithPagination = (
       if (!firstMessage) return;
       return { lastKey: firstMessage.hash };
     },
-    // refetchInterval: ({ state }) => {
-    //   const lastMessage = state.data?.pages?.at(-1)?.at(-1);
-    //   if (!lastMessage) return 0;
-    //   if (isJobInbox(input.inboxId) && lastMessage.isLocal)
-    //     return CONVERSATION_PAGINATION_REFETCH;
-    //   return 0;
-    // },
+    refetchInterval: ({ state }) => {
+      if (!input?.refetchIntervalEnabled) return 0;
+      const lastMessage = state.data?.pages?.at(-1)?.at(-1);
+      if (!lastMessage) return 0;
+      if (isJobInbox(input.inboxId) && lastMessage.isLocal)
+        return CONVERSATION_PAGINATION_REFETCH;
+      return 0;
+    },
     initialPageParam: { lastKey: null },
     getNextPageParam: () => {
       return { lastKey: null };

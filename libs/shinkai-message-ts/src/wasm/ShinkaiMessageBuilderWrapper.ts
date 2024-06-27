@@ -367,12 +367,8 @@ export class ShinkaiMessageBuilderWrapper {
       receiver_subidentity,
     );
   }
-  static ws_message(
+  static ws_connection(
     ws_content: string,
-    job_id: string,
-    files_inbox: string,
-    parent: string | null,
-    workflow: string | undefined,
     my_encryption_secret_key: string,
     my_signature_secret_key: string,
     receiver_public_key: string,
@@ -392,7 +388,7 @@ export class ShinkaiMessageBuilderWrapper {
     builder.internal_metadata(
       sender_subidentity,
       receiver_subidentity,
-      job_id,
+      '',
       'None',
     );
     builder.external_metadata_with_intra(receiver, sender, sender_subidentity);

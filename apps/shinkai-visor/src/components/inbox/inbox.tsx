@@ -18,6 +18,7 @@ import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-st
 import { useUpdateAgentInJob } from '@shinkai_network/shinkai-node-state/lib/mutations/updateAgentInJob/useUpdateAgentInJob';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
+import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import {
   Alert,
   AlertDescription,
@@ -92,6 +93,7 @@ function AgentSelection() {
       });
     },
   });
+
   return (
     <DropdownMenu>
       <TooltipProvider delayDuration={0}>
@@ -157,16 +159,26 @@ function AgentSelection() {
     </DropdownMenu>
   );
 }
-const useWebSocketMessage = () => {
+type UseWebSocketMessage = {
+  enabled?: boolean;
+};
+const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
   const auth = useAuth((state) => state.auth);
-  const nodeAddressUrl = new URL(auth?.node_address ?? 'http://localhost:9550');
+  const nodeAddressUrl = new URL(auth?.node_address ?? 'http://localhost:9850');
   const socketUrl = `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`;
   const queryClient = useQueryClient();
-  const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {});
+  const { sendMessage, lastMessage, readyState } = useWebSocket(
+    socketUrl,
+    {
+      share: true,
+    },
+    enabled,
+  );
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = decodeURIComponent(encodedInboxId);
   const [messageContent, setMessageContent] = useState('');
   useEffect(() => {
+    if (!enabled) return;
     if (lastMessage?.data) {
       try {
         const parseData: {
@@ -222,30 +234,23 @@ const useWebSocketMessage = () => {
   ]);
 
   useEffect(() => {
-    const subscribeToWs = async () => {
-      const wsMessage = {
-        subscriptions: [{ topic: 'inbox', subtopic: inboxId }],
-        unsubscriptions: [],
-      };
-      const wsMessageString = JSON.stringify(wsMessage);
-      const shinkaiMessage = ShinkaiMessageBuilderWrapper.ws_message(
-        wsMessageString,
-        '',
-        '',
-        '',
-        undefined,
-        auth?.profile_encryption_sk ?? '',
-        auth?.profile_identity_sk ?? '',
-        auth?.node_encryption_pk ?? '',
-        auth?.shinkai_identity ?? '',
-        auth?.profile ?? '',
-        '',
-        '',
-      );
-
-      sendMessage(shinkaiMessage);
+    if (!enabled) return;
+    const wsMessage = {
+      subscriptions: [{ topic: 'inbox', subtopic: inboxId }],
+      unsubscriptions: [],
     };
-    subscribeToWs();
+    const wsMessageString = JSON.stringify(wsMessage);
+    const shinkaiMessage = ShinkaiMessageBuilderWrapper.ws_connection(
+      wsMessageString,
+      auth?.profile_encryption_sk ?? '',
+      auth?.profile_identity_sk ?? '',
+      auth?.node_encryption_pk ?? '',
+      auth?.shinkai_identity ?? '',
+      auth?.profile ?? '',
+      '',
+      '',
+    );
+    sendMessage(shinkaiMessage);
   }, [
     auth?.node_encryption_pk,
     auth?.profile,
@@ -253,7 +258,6 @@ const useWebSocketMessage = () => {
     auth?.profile_identity_sk,
     auth?.shinkai_identity,
     inboxId,
-    sendMessage,
   ]);
 
   return { messageContent, readyState, setMessageContent };
@@ -284,6 +288,10 @@ export const Inbox = () => {
 
   const { file } = chatForm.watch();
 
+  const currentInbox = useGetCurrentInbox();
+  const isOllamaProvider =
+    currentInbox?.agent?.model.split(':')?.[0] === Models.Ollama;
+
   const {
     data,
     fetchPreviousPage,
@@ -301,10 +309,12 @@ export const Inbox = () => {
     node_encryption_pk: auth?.node_encryption_pk ?? '',
     profile_encryption_sk: auth?.profile_encryption_sk ?? '',
     profile_identity_sk: auth?.profile_identity_sk ?? '',
-    refetchInterval: 5000,
+    refetchIntervalEnabled: !isOllamaProvider,
   });
 
-  const { messageContent, setMessageContent } = useWebSocketMessage();
+  const { messageContent, setMessageContent } = useWebSocketMessage({
+    enabled: isOllamaProvider,
+  });
 
   const { mutateAsync: sendMessageToInbox } = useSendMessageToInbox();
   const { mutateAsync: sendMessageToJob } = useSendMessageToJob();
