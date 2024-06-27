@@ -94,18 +94,25 @@ const useWebSocketMessage = () => {
           inbox: string;
           message: string;
           error_message: string;
+          metadata?: {
+            id: string;
+            is_done: boolean;
+            done_reason: string;
+            total_duration: number;
+            eval_count: number;
+          };
         } = JSON.parse(lastMessage.data);
-        if (parseData.message_type === 'Stream') {
-          setMessageContent((prevContent) => prevContent + parseData.message);
-        }
-        if (parseData.message_type === 'ShinkaiMessage') {
+        if (parseData.message_type !== 'Stream') return;
+        if (parseData.metadata?.is_done) {
           setMessageContent('');
         }
+        setMessageContent((prev) => prev + parseData.message);
+        return;
       } catch (error) {
         console.error('Decryption WS failed:', error);
       }
     }
-  }, [inboxId, lastMessage?.data]);
+  }, [lastMessage?.data]);
 
   useEffect(() => {
     const subscribeToWs = async () => {
@@ -116,7 +123,6 @@ const useWebSocketMessage = () => {
         unsubscriptions: [],
       };
       const wsMessageString = JSON.stringify(wsMessage);
-
       const shinkaiMessage = ShinkaiMessageBuilderWrapper.ws_message(
         wsMessageString,
         '',

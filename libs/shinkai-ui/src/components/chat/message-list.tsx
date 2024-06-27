@@ -233,9 +233,9 @@ export const MessageList = ({
                   );
                 },
               )}
-              {!!lastMessageContent && (
+              {(isLoadingMessage || !!lastMessageContent) && (
                 <Message
-                  isPending={!!lastMessageContent}
+                  isPending={!!lastMessageContent || isLoadingMessage}
                   message={{
                     inboxId: '',
                     hash: '',
