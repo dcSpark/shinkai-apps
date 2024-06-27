@@ -125,7 +125,7 @@ const useWebSocketMessage = () => {
         setMessageContent((prev) => prev + parseData.message);
         return;
       } catch (error) {
-        console.error('Decryption WS failed:', error);
+        console.error('Failed to parse ws message', error);
       }
     }
   }, [
