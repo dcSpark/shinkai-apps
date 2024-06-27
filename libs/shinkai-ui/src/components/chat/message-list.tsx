@@ -233,7 +233,7 @@ export const MessageList = ({
                   );
                 },
               )}
-              {lastMessageContent && (
+              {isLoadingMessage && (
                 <Message
                   isPending={!!lastMessageContent}
                   message={{

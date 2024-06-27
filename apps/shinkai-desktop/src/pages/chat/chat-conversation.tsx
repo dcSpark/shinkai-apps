@@ -16,7 +16,6 @@ import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mut
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
 import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageWithFilesToInbox/useSendMessageWithFilesToInbox';
 import { useUpdateAgentInJob } from '@shinkai_network/shinkai-node-state/lib/mutations/updateAgentInJob/useUpdateAgentInJob';
-import { GetChatConversationOutput } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
 import {
@@ -55,7 +54,7 @@ import {
 } from '@shinkai_network/shinkai-ui/assets';
 import { getFileExt } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { InfiniteData, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { partial } from 'filesize';
 import {
   AlertCircle,
@@ -87,7 +86,6 @@ const useWebSocketMessage = () => {
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = decodeURIComponent(encodedInboxId);
   const [messageContent, setMessageContent] = useState('');
-
   useEffect(() => {
     if (lastMessage?.data) {
       try {
@@ -106,35 +104,42 @@ const useWebSocketMessage = () => {
         } = JSON.parse(lastMessage.data);
         if (parseData.message_type !== 'Stream') return;
         if (parseData.metadata?.is_done) {
-          setMessageContent('');
+          const paginationKey = [
+            FunctionKey.GET_CHAT_CONVERSATION_PAGINATION,
+            {
+              nodeAddress: auth?.node_address ?? '',
+              inboxId: inboxId as string,
+              shinkaiIdentity: auth?.shinkai_identity ?? '',
+              profile: auth?.profile ?? '',
+              my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+              my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+              node_encryption_pk: auth?.node_encryption_pk ?? '',
+              profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+              profile_identity_sk: auth?.profile_identity_sk ?? '',
+            },
+          ];
+          queryClient.invalidateQueries({ queryKey: paginationKey });
         }
-        const paginationKey = [
-          FunctionKey.GET_CHAT_CONVERSATION_PAGINATION,
-          {
-            nodeAddress: auth?.node_address ?? '',
-            inboxId: inboxId as string,
-            shinkaiIdentity: auth?.shinkai_identity ?? '',
-            profile: auth?.profile ?? '',
-            my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-            my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-            node_encryption_pk: auth?.node_encryption_pk ?? '',
-            profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-            profile_identity_sk: auth?.profile_identity_sk ?? '',
-          },
-        ];
-        const lastPage =
-          queryClient.getQueryData<InfiniteData<GetChatConversationOutput>>(
-            paginationKey,
-          );
 
-        queryClient.invalidateQueries({ queryKey: paginationKey });
         setMessageContent((prev) => prev + parseData.message);
         return;
       } catch (error) {
         console.error('Decryption WS failed:', error);
       }
     }
-  }, [lastMessage?.data]);
+  }, [
+    auth?.my_device_encryption_sk,
+    auth?.my_device_identity_sk,
+    auth?.node_address,
+    auth?.node_encryption_pk,
+    auth?.profile,
+    auth?.profile_encryption_sk,
+    auth?.profile_identity_sk,
+    auth?.shinkai_identity,
+    inboxId,
+    lastMessage?.data,
+    queryClient,
+  ]);
 
   useEffect(() => {
     const subscribeToWs = async () => {
@@ -171,7 +176,7 @@ const useWebSocketMessage = () => {
     sendMessage,
   ]);
 
-  return { messageContent, readyState };
+  return { messageContent, readyState, setMessageContent };
 };
 const ChatConversation = () => {
   const { captureAnalyticEvent } = useAnalytics();
@@ -224,7 +229,7 @@ const ChatConversation = () => {
     return isJobInbox(inboxId) && lastMessage?.isLocal;
   }, [data?.pages, inboxId]);
 
-  const { messageContent } = useWebSocketMessage();
+  const { messageContent, setMessageContent } = useWebSocketMessage();
 
   const { mutateAsync: sendMessageToInbox } = useSendMessageToInbox();
   const { mutateAsync: sendMessageToJob } = useSendMessageToJob({
@@ -242,6 +247,7 @@ const ChatConversation = () => {
     });
 
   const onSubmit = async (data: ChatMessageFormSchema) => {
+    setMessageContent(''); // trick to clear the ws stream message
     if (!auth || data.message.trim() === '') return;
     fromPreviousMessagesRef.current = false;
     if (data.file) {
