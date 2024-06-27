@@ -6,10 +6,12 @@ import {
   extractReceiverShinkaiName,
   isJobInbox,
 } from '@shinkai_network/shinkai-message-ts/utils';
+import { ShinkaiMessageBuilderWrapper } from '@shinkai_network/shinkai-message-ts/wasm/ShinkaiMessageBuilderWrapper';
 import {
   ChatMessageFormSchema,
   chatMessageFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/chat-message';
+import { FunctionKey } from '@shinkai_network/shinkai-node-state/lib/constants';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMessageToJob/useSendMessageToJob';
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
 import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageWithFilesToInbox/useSendMessageWithFilesToInbox';
@@ -42,6 +44,7 @@ import {
 import { fileIconMap, FileTypeIcon } from '@shinkai_network/shinkai-ui/assets';
 import { getFileExt } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { useQueryClient } from '@tanstack/react-query';
 import { partial } from 'filesize';
 import {
   AlertCircle,
@@ -56,6 +59,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
+import useWebSocket from 'react-use-websocket';
 import { toast } from 'sonner';
 
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
@@ -153,6 +157,107 @@ function AgentSelection() {
     </DropdownMenu>
   );
 }
+const useWebSocketMessage = () => {
+  const auth = useAuth((state) => state.auth);
+  const nodeAddressUrl = new URL(auth?.node_address ?? 'http://localhost:9550');
+  const socketUrl = `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`;
+  const queryClient = useQueryClient();
+  const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {});
+  const { inboxId: encodedInboxId = '' } = useParams();
+  const inboxId = decodeURIComponent(encodedInboxId);
+  const [messageContent, setMessageContent] = useState('');
+  useEffect(() => {
+    if (lastMessage?.data) {
+      try {
+        const parseData: {
+          message_type: 'Stream' | 'ShinkaiMessage';
+          inbox: string;
+          message: string;
+          error_message: string;
+          metadata?: {
+            id: string;
+            is_done: boolean;
+            done_reason: string;
+            total_duration: number;
+            eval_count: number;
+          };
+        } = JSON.parse(lastMessage.data);
+        if (parseData.message_type !== 'Stream') return;
+        if (parseData.metadata?.is_done) {
+          const paginationKey = [
+            FunctionKey.GET_CHAT_CONVERSATION_PAGINATION,
+            {
+              nodeAddress: auth?.node_address ?? '',
+              inboxId: inboxId as string,
+              shinkaiIdentity: auth?.shinkai_identity ?? '',
+              profile: auth?.profile ?? '',
+              my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+              my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+              node_encryption_pk: auth?.node_encryption_pk ?? '',
+              profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+              profile_identity_sk: auth?.profile_identity_sk ?? '',
+            },
+          ];
+          queryClient.invalidateQueries({ queryKey: paginationKey });
+        }
+
+        setMessageContent((prev) => prev + parseData.message);
+        return;
+      } catch (error) {
+        console.error('Decryption WS failed:', error);
+      }
+    }
+  }, [
+    auth?.my_device_encryption_sk,
+    auth?.my_device_identity_sk,
+    auth?.node_address,
+    auth?.node_encryption_pk,
+    auth?.profile,
+    auth?.profile_encryption_sk,
+    auth?.profile_identity_sk,
+    auth?.shinkai_identity,
+    inboxId,
+    lastMessage?.data,
+    queryClient,
+  ]);
+
+  useEffect(() => {
+    const subscribeToWs = async () => {
+      const wsMessage = {
+        subscriptions: [{ topic: 'inbox', subtopic: inboxId }],
+        unsubscriptions: [],
+      };
+      const wsMessageString = JSON.stringify(wsMessage);
+      const shinkaiMessage = ShinkaiMessageBuilderWrapper.ws_message(
+        wsMessageString,
+        '',
+        '',
+        '',
+        undefined,
+        auth?.profile_encryption_sk ?? '',
+        auth?.profile_identity_sk ?? '',
+        auth?.node_encryption_pk ?? '',
+        auth?.shinkai_identity ?? '',
+        auth?.profile ?? '',
+        '',
+        '',
+      );
+
+      sendMessage(shinkaiMessage);
+    };
+    subscribeToWs();
+  }, [
+    auth?.node_encryption_pk,
+    auth?.profile,
+    auth?.profile_encryption_sk,
+    auth?.profile_identity_sk,
+    auth?.shinkai_identity,
+    inboxId,
+    sendMessage,
+  ]);
+
+  return { messageContent, readyState, setMessageContent };
+};
 
 export const Inbox = () => {
   const size = partial({ standard: 'jedec' });
@@ -199,6 +304,8 @@ export const Inbox = () => {
     refetchInterval: 5000,
   });
 
+  const { messageContent, setMessageContent } = useWebSocketMessage();
+
   const { mutateAsync: sendMessageToInbox } = useSendMessageToInbox();
   const { mutateAsync: sendMessageToJob } = useSendMessageToJob();
   const { mutateAsync: sendTextMessageWithFilesForInbox } =
@@ -209,6 +316,7 @@ export const Inbox = () => {
     useState<boolean>(false);
 
   const onSubmit = async (data: ChatMessageFormSchema) => {
+    setMessageContent(''); // trick to clear the ws stream message
     if (!auth || data.message.trim() === '') return;
     fromPreviousMessagesRef.current = false;
 
@@ -303,7 +411,9 @@ export const Inbox = () => {
         hasPreviousPage={hasPreviousPage}
         isFetchingPreviousPage={isFetchingPreviousPage}
         isLoading={isChatConversationLoading}
+        isLoadingMessage={isLoadingMessage}
         isSuccess={isChatConversationSuccess}
+        lastMessageContent={messageContent}
         noMoreMessageLabel="All previous messages have been loaded ✅"
         paginatedMessages={data}
       />
