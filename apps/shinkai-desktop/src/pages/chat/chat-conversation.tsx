@@ -1,7 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
-  buildInboxIdFromJobId,
   extractErrorPropertyOrContent,
   extractJobIdFromInbox,
   extractReceiverShinkaiName,
@@ -12,10 +11,12 @@ import {
   ChatMessageFormSchema,
   chatMessageFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/chat-message';
+import { FunctionKey } from '@shinkai_network/shinkai-node-state/lib/constants';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMessageToJob/useSendMessageToJob';
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
 import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageWithFilesToInbox/useSendMessageWithFilesToInbox';
 import { useUpdateAgentInJob } from '@shinkai_network/shinkai-node-state/lib/mutations/updateAgentInJob/useUpdateAgentInJob';
+import { GetChatConversationOutput } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
 import {
@@ -54,6 +55,7 @@ import {
 } from '@shinkai_network/shinkai-ui/assets';
 import { getFileExt } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { InfiniteData, useQueryClient } from '@tanstack/react-query';
 import { partial } from 'filesize';
 import {
   AlertCircle,
@@ -80,10 +82,10 @@ enum ErrorCodes {
 const useWebSocketMessage = () => {
   const auth = useAuth((state) => state.auth);
   const socketUrl = 'ws://127.0.0.1:9851/ws';
+  const queryClient = useQueryClient();
   const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {});
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = decodeURIComponent(encodedInboxId);
-  const jobId = extractJobIdFromInbox(inboxId);
   const [messageContent, setMessageContent] = useState('');
 
   useEffect(() => {
@@ -106,6 +108,26 @@ const useWebSocketMessage = () => {
         if (parseData.metadata?.is_done) {
           setMessageContent('');
         }
+        const paginationKey = [
+          FunctionKey.GET_CHAT_CONVERSATION_PAGINATION,
+          {
+            nodeAddress: auth?.node_address ?? '',
+            inboxId: inboxId as string,
+            shinkaiIdentity: auth?.shinkai_identity ?? '',
+            profile: auth?.profile ?? '',
+            my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+            my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+            node_encryption_pk: auth?.node_encryption_pk ?? '',
+            profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+            profile_identity_sk: auth?.profile_identity_sk ?? '',
+          },
+        ];
+        const lastPage =
+          queryClient.getQueryData<InfiniteData<GetChatConversationOutput>>(
+            paginationKey,
+          );
+
+        queryClient.invalidateQueries({ queryKey: paginationKey });
         setMessageContent((prev) => prev + parseData.message);
         return;
       } catch (error) {
@@ -117,9 +139,7 @@ const useWebSocketMessage = () => {
   useEffect(() => {
     const subscribeToWs = async () => {
       const wsMessage = {
-        subscriptions: [
-          { topic: 'inbox', subtopic: buildInboxIdFromJobId(jobId) },
-        ],
+        subscriptions: [{ topic: 'inbox', subtopic: inboxId }],
         unsubscriptions: [],
       };
       const wsMessageString = JSON.stringify(wsMessage);
@@ -147,7 +167,8 @@ const useWebSocketMessage = () => {
     auth?.profile_encryption_sk,
     auth?.profile_identity_sk,
     auth?.shinkai_identity,
-    jobId,
+    inboxId,
+    sendMessage,
   ]);
 
   return { messageContent, readyState };
@@ -386,7 +407,7 @@ const ChatConversation = () => {
                             </Button>
                           }
                           disabled={isLoadingMessage}
-                          isLoading={isLoadingMessage}
+                          // isLoading={isLoadingMessage}
                           onChange={field.onChange}
                           onSubmit={chatForm.handleSubmit(onSubmit)}
                           topAddons={
