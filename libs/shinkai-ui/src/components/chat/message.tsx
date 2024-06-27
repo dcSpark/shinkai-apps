@@ -88,7 +88,7 @@ export const Message = ({ message, isPending }: MessageProps) => {
                 ),
               }}
               source={extractErrorPropertyOrContent(
-                isPending ? message.content + ' ⊙⊙⊙' : message.content,
+                isPending ? message.content + ' ...' : message.content,
                 'error_message',
               )}
             />

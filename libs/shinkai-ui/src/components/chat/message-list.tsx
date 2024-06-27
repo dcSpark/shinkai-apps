@@ -121,7 +121,11 @@ export const MessageList = ({
 
   useEffect(() => {
     scrollToBottom();
-  }, [isSuccess, lastMessageContent]);
+  }, [isSuccess]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [lastMessageContent]);
 
   return (
     <div
@@ -235,7 +239,7 @@ export const MessageList = ({
               )}
               {isLoadingMessage && (
                 <Message
-                  isPending={!!lastMessageContent}
+                  isPending={isLoadingMessage}
                   message={{
                     inboxId: '',
                     hash: '',
