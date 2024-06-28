@@ -296,6 +296,8 @@ export default {
     search: 'Search',
     next: 'Next',
     restore: 'Restore',
+    retry: 'Retry',
+    copy: 'Copy',
     reset: 'Reset',
     clickToUpload: 'Click to upload or drag and drop',
     upload: 'Upload',

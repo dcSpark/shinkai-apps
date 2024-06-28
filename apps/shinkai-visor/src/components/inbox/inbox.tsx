@@ -329,6 +329,7 @@ export const Inbox = () => {
     useState<boolean>(false);
 
   const regenerateLastMessage = async (content: string, parentHash: string) => {
+    setMessageContent(''); // trick to clear the ws stream message
     if (!auth) return;
     const decodedInboxId = decodeURIComponent(inboxId);
     const jobId = extractJobIdFromInbox(decodedInboxId);

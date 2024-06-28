@@ -221,7 +221,7 @@ export const MessageList = ({
                           )}
                         </span>
                       </div>
-                      <div className="flex flex-col gap-10">
+                      <div className="flex flex-col">
                         {messages.map((message, messageIndex) => {
                           const previousMessage = messages[messageIndex - 1];
                           const grandparentHash = previousMessage
