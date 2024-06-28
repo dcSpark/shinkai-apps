@@ -33,7 +33,7 @@ export const MessageList = ({
   containerClassName,
   lastMessageContent,
   isLoadingMessage,
-  regenerateLastMessage
+  regenerateLastMessage,
 }: {
   noMoreMessageLabel: string;
   isSuccess: boolean;
@@ -227,24 +227,24 @@ export const MessageList = ({
                           const grandparentHash = previousMessage
                             ? previousMessage.parentHash
                             : null;
+
+                          const handleRegenerate = () => {
+                            regenerateLastMessage(
+                              previousMessage.content,
+                              grandparentHash ?? '',
+                            );
+                          };
                           return (
                             <div
-                              className="relative bg-gray-400"
                               data-testid={`message-${
                                 message.isLocal ? 'local' : 'remote'
                               }-${message.hash}`}
                               key={`${index}-${message.scheduledTime}`}
                             >
                               <Message
+                                handleRegenerate={handleRegenerate}
                                 message={message}
-                                previousMessage={previousMessage}
-                                regenerateLastMessage={regenerateLastMessage}
                               />
-                              <p className="text-gray-80 absolute bottom-0 text-sm">
-                                hashMessage: {message.hash} <br />
-                                parentHash: {message.parentHash} <br />
-                                grandparentHash: {grandparentHash}
-                              </p>
                             </div>
                           );
                         })}
@@ -257,6 +257,7 @@ export const MessageList = ({
                 <Message
                   isPending={isLoadingMessage}
                   message={{
+                    parentHash: '',
                     inboxId: '',
                     hash: '',
                     content: lastMessageContent,
