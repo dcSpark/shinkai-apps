@@ -1,4 +1,5 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { Edit3, RotateCcw } from 'lucide-react';
 import React from 'react';
@@ -81,7 +82,15 @@ export const Message = ({
           >
             <div
               className={cn(
-                'duration-30 absolute -bottom-[34px] right-0 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 group-hover:transition-opacity',
+                'duration-30 absolute -top-[22px] right-1 flex items-center gap-1.5 text-xs text-gray-100 opacity-0 group-hover:opacity-100 group-hover:transition-opacity',
+                isPending ? 'hidden' : 'flex',
+              )}
+            >
+              {format(new Date(message?.scheduledTime ?? ''), 'p')}
+            </div>
+            <div
+              className={cn(
+                'duration-30 absolute -bottom-[34px] right-1 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 group-hover:transition-opacity',
                 isPending ? 'hidden' : 'flex',
               )}
             >
