@@ -87,6 +87,9 @@ export const Message = ({
   const [editing, setEditing] = useState(false);
   const editMessageForm = useForm<EditMessageFormSchema>({
     resolver: zodResolver(editMessageFormSchema),
+    defaultValues: {
+      message: message.content,
+    },
   });
 
   const { message: currentMessage } = editMessageForm.watch();
