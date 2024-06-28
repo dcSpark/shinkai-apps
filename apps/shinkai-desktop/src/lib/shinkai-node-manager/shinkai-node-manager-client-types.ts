@@ -94,6 +94,7 @@ export type ShinkaiNodeManagerEventMap =
 
 export type ShinkaiNodeOptions = {
   port?: number;
+  ws_port?: number;
   unstructured_server_url?: string;
   embeddings_server_url?: string;
   first_device_needs_registration_code?: string;
