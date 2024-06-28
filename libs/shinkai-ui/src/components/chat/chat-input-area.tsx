@@ -13,7 +13,6 @@ export const ChatInputArea = ({
   onSubmit,
   setInitialValue,
   disabled,
-  autoFocus,
   isLoading,
   placeholder,
   topAddons,

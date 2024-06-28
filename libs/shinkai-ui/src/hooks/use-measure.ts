@@ -1,4 +1,4 @@
-import React, { LegacyRef } from 'react';
+import React from 'react';
 
 export function useMeasure<T extends Element>(): [
   React.RefCallback<T>,
