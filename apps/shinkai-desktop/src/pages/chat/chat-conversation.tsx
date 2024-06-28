@@ -258,16 +258,16 @@ const ChatConversation = () => {
       },
     });
 
-  const regenerateLastMessage = (content: string, parentHash: string) => {
+  const regenerateLastMessage = async (content: string, parentHash: string) => {
     if (!auth) return;
     const decodedInboxId = decodeURIComponent(inboxId);
     const jobId = extractJobIdFromInbox(decodedInboxId);
-    sendMessageToJob({
+    await sendMessageToJob({
       nodeAddress: auth.node_address,
       jobId,
-      message: content!,
+      message: content,
       files_inbox: '',
-      parent: parentHash!,
+      parent: parentHash,
       shinkaiIdentity: auth.shinkai_identity,
       profile: auth.profile,
       my_device_encryption_sk: auth.my_device_encryption_sk,

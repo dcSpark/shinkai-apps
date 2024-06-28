@@ -328,6 +328,26 @@ export const Inbox = () => {
   const [isJobProcessingFile, setIsJobProcessingFile] =
     useState<boolean>(false);
 
+  const regenerateLastMessage = async (content: string, parentHash: string) => {
+    if (!auth) return;
+    const decodedInboxId = decodeURIComponent(inboxId);
+    const jobId = extractJobIdFromInbox(decodedInboxId);
+    await sendMessageToJob({
+      nodeAddress: auth.node_address,
+      jobId,
+      message: content,
+      files_inbox: '',
+      parent: parentHash,
+      shinkaiIdentity: auth.shinkai_identity,
+      profile: auth.profile,
+      my_device_encryption_sk: auth.my_device_encryption_sk,
+      my_device_identity_sk: auth.my_device_identity_sk,
+      node_encryption_pk: auth.node_encryption_pk,
+      profile_encryption_sk: auth.profile_encryption_sk,
+      profile_identity_sk: auth.profile_identity_sk,
+    });
+  };
+
   const onSubmit = async (data: ChatMessageFormSchema) => {
     setMessageContent(''); // trick to clear the ws stream message
     if (!auth || data.message.trim() === '') return;
@@ -429,6 +449,7 @@ export const Inbox = () => {
         lastMessageContent={messageContent}
         noMoreMessageLabel="All previous messages have been loaded ✅"
         paginatedMessages={data}
+        regenerateLastMessage={regenerateLastMessage}
       />
       {isJobProcessingFile && (
         <Alert className="shadow-lg">
