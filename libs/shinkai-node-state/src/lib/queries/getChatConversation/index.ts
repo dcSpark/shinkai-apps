@@ -1,6 +1,6 @@
 import {
   getFileNames,
-  getLastMessagesFromInbox,
+  getLastMessagesFromInboxWithBranches,
 } from '@shinkai_network/shinkai-message-ts/api';
 import type { ShinkaiMessage } from '@shinkai_network/shinkai-message-ts/models';
 import {
@@ -27,7 +27,7 @@ export const getChatConversation = async ({
   profile_identity_sk,
   node_encryption_pk,
 }: GetChatConversationInput): Promise<GetChatConversationOutput> => {
-  const data: ShinkaiMessage[] = await getLastMessagesFromInbox(
+  const data: ShinkaiMessage[][] = await getLastMessagesFromInboxWithBranches(
     nodeAddress,
     inboxId,
     count,
@@ -40,8 +40,10 @@ export const getChatConversation = async ({
       node_encryption_pk,
     },
   );
+  const flattenMessages: ShinkaiMessage[] = data.flat(1);
+
   const transformedMessagePromises: Promise<ChatConversationMessage>[] =
-    data.map(async (shinkaiMessage) => {
+    flattenMessages.map(async (shinkaiMessage) => {
       const filesInbox = getMessageFilesInbox(shinkaiMessage);
       const content = getMessageContent(shinkaiMessage);
       const isLocal = isLocalMessage(shinkaiMessage, shinkaiIdentity, profile);
@@ -50,6 +52,11 @@ export const getChatConversation = async ({
           shinkaiMessage.body && 'unencrypted' in shinkaiMessage.body
             ? shinkaiMessage.body.unencrypted.internal_metadata?.node_api_data
                 ?.node_message_hash
+            : '',
+        parentHash:
+          shinkaiMessage.body && 'unencrypted' in shinkaiMessage.body
+            ? shinkaiMessage.body.unencrypted.internal_metadata?.node_api_data
+                ?.parent_hash
             : '',
         inboxId,
         content,
@@ -86,5 +93,12 @@ export const getChatConversation = async ({
       }
       return message;
     });
-  return Promise.all(transformedMessagePromises);
+
+  const messages = await Promise.all(transformedMessagePromises);
+  // filter out messages if a message is repeated by its parent-hash
+  const uniqueMessages = messages.filter(
+    (message, index, self) =>
+      index === self.findIndex((t) => t.parentHash === message.parentHash),
+  );
+  return uniqueMessages;
 };

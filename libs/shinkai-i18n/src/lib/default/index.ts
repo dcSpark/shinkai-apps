@@ -68,6 +68,9 @@ export default {
       success: 'Your conversation has been archived',
       error: 'Error archiving job',
     },
+    editMessage: {
+      warning: 'This will restart your conversation from here.',
+    },
   },
   aiFilesSearch: {
     label: 'AI Files Content Search',
@@ -296,6 +299,8 @@ export default {
     search: 'Search',
     next: 'Next',
     restore: 'Restore',
+    retry: 'Retry',
+    copy: 'Copy',
     reset: 'Reset',
     clickToUpload: 'Click to upload or drag and drop',
     upload: 'Upload',
@@ -318,6 +323,8 @@ export default {
     soon: 'soon',
     back: 'Back',
     edit: 'Edit',
+    send: 'Send',
+    editMessage: 'Edit Message',
     delete: 'Delete',
     update: 'Update',
     moreOptions: 'More Options',

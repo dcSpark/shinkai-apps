@@ -258,6 +258,27 @@ const ChatConversation = () => {
       },
     });
 
+  const regenerateMessage = async (content: string, parentHash: string) => {
+    setMessageContent(''); // trick to clear the ws stream message
+    if (!auth) return;
+    const decodedInboxId = decodeURIComponent(inboxId);
+    const jobId = extractJobIdFromInbox(decodedInboxId);
+    await sendMessageToJob({
+      nodeAddress: auth.node_address,
+      jobId,
+      message: content,
+      files_inbox: '',
+      parent: parentHash,
+      shinkaiIdentity: auth.shinkai_identity,
+      profile: auth.profile,
+      my_device_encryption_sk: auth.my_device_encryption_sk,
+      my_device_identity_sk: auth.my_device_identity_sk,
+      node_encryption_pk: auth.node_encryption_pk,
+      profile_encryption_sk: auth.profile_encryption_sk,
+      profile_identity_sk: auth.profile_identity_sk,
+    });
+  };
+
   const onSubmit = async (data: ChatMessageFormSchema) => {
     setMessageContent(''); // trick to clear the ws stream message
     if (!auth || data.message.trim() === '') return;
@@ -346,6 +367,7 @@ const ChatConversation = () => {
         lastMessageContent={messageContent}
         noMoreMessageLabel={t('chat.allMessagesLoaded')}
         paginatedMessages={data}
+        regenerateMessage={regenerateMessage}
       />
       {isLimitReachedErrorLastMessage && (
         <Alert className="mx-auto w-[98%] shadow-lg" variant="destructive">
@@ -410,6 +432,7 @@ const ChatConversation = () => {
                           </TooltipProvider>
                         </div>
                         <ChatInputArea
+                          autoFocus
                           bottomAddons={
                             <Button
                               className="h-[40px] w-[40px] self-end rounded-xl p-3"

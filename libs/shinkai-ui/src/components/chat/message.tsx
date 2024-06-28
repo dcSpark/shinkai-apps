@@ -1,12 +1,30 @@
-import React from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { format } from 'date-fns';
+import { motion } from 'framer-motion';
+import { Edit3, RotateCcw } from 'lucide-react';
+import { InfoCircleIcon } from 'primereact/icons/infocircle';
+import React, { Fragment, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 import { appIcon } from '../../assets';
 import { ChatConversationMessage, copyToClipboard } from '../../helpers';
 import { cn } from '../../utils';
 import { Avatar, AvatarFallback, AvatarImage } from '../avatar';
+import { Button } from '../button';
 import { CopyToClipboardIcon } from '../copy-to-clipboard-icon';
 import { DotsLoader } from '../dots-loader';
+import { Form, FormField } from '../form';
 import { MarkdownPreview } from '../markdown-preview';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipPortal,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../tooltip';
+import { ChatInputArea } from './chat-input-area';
 import { FileList } from './files-preview';
 
 export const extractErrorPropertyOrContent = (
@@ -27,14 +45,70 @@ export const extractErrorPropertyOrContent = (
 type MessageProps = {
   isPending?: boolean;
   message: ChatConversationMessage;
+  handleRetryMessage?: () => void;
+  handleEditMessage?: (message: string) => void;
 };
 
-export const Message = ({ message, isPending }: MessageProps) => {
+const actionBar = {
+  rest: {
+    opacity: 0,
+    scale: 0.8,
+    transition: {
+      type: 'spring',
+      bounce: 0,
+      duration: 0.3,
+    },
+  },
+  hover: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      type: 'spring',
+      duration: 0.3,
+      bounce: 0,
+    },
+  },
+};
+
+export const editMessageFormSchema = z.object({
+  message: z.string().min(1),
+});
+
+type EditMessageFormSchema = z.infer<typeof editMessageFormSchema>;
+
+export const Message = ({
+  message,
+  isPending,
+  handleRetryMessage,
+  handleEditMessage,
+}: MessageProps) => {
+  const { t } = useTranslation();
+
+  const [editing, setEditing] = useState(false);
+  const editMessageForm = useForm<EditMessageFormSchema>({
+    resolver: zodResolver(editMessageFormSchema),
+    defaultValues: {
+      message: message.content,
+    },
+  });
+
+  const { message: currentMessage } = editMessageForm.watch();
+
+  const onSubmit = async (data: z.infer<typeof editMessageFormSchema>) => {
+    handleEditMessage?.(data.message);
+    setEditing(false);
+  };
+
   return (
-    <div className="group pb-10">
+    <motion.div
+      animate="rest"
+      className="pb-10"
+      initial="rest"
+      whileHover="hover"
+    >
       <div
         className={cn(
-          'group flex flex-row space-x-2',
+          'flex flex-row space-x-2',
           message.isLocal
             ? 'ml-auto mr-0 flex-row-reverse space-x-reverse'
             : 'ml-0 mr-auto flex-row items-end',
@@ -48,61 +122,186 @@ export const Message = ({ message, isPending }: MessageProps) => {
           )}
           <AvatarFallback className="h-8 w-8" />
         </Avatar>
-        <div
+        <motion.div
           className={cn(
-            'relative mt-1 flex flex-col rounded-lg bg-black/40 px-3 py-2 text-sm text-white',
+            'relative mt-1 flex flex-col rounded-lg bg-black/40 px-3.5 pt-3 text-sm text-white',
             message.isLocal
               ? 'rounded-tr-none bg-gray-300'
               : 'rounded-bl-none border-none bg-gray-200',
+            !message.content ? 'pb-3' : 'pb-4',
+            editing && 'w-full py-1',
           )}
         >
-          <div
-            className={cn(
-              'duration-30 absolute -bottom-8 right-0 flex items-center gap-2 opacity-0 group-hover:opacity-100 group-hover:transition-opacity',
-            )}
-          >
-            <CopyToClipboardIcon
-              className={cn(
-                'text-gray-80 h-7 w-7 border border-gray-200 bg-transparent [&>svg]:h-3 [&>svg]:w-3',
-              )}
-              onCopyClipboard={() => {
-                copyToClipboard(
-                  extractErrorPropertyOrContent(
-                    message.content,
-                    'error_message',
-                  ),
-                );
-              }}
-              string={extractErrorPropertyOrContent(
-                message.content,
-                'error_message',
-              )}
-            />
-          </div>
-          {message.content ? (
-            <MarkdownPreview
-              components={{
-                a: ({ node, ...props }) => (
-                  // eslint-disable-next-line jsx-a11y/anchor-has-content
-                  <a {...props} target="_blank" />
-                ),
-              }}
-              source={extractErrorPropertyOrContent(
-                isPending ? message.content + ' ...' : message.content,
-                'error_message',
-              )}
-            />
+          {editing ? (
+            <Form {...editMessageForm}>
+              <form
+                className="relative flex items-center"
+                onSubmit={editMessageForm.handleSubmit(onSubmit)}
+              >
+                <div className="w-full">
+                  <FormField
+                    control={editMessageForm.control}
+                    name="message"
+                    render={({ field }) => (
+                      <ChatInputArea
+                        bottomAddons={
+                          <div className="flex w-full items-center justify-between px-1">
+                            <div className="flex items-center gap-1 text-xs text-gray-100">
+                              <InfoCircleIcon className="h-3 w-3 text-gray-100" />
+                              <span>{t('chat.editMessage.warning')}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Button
+                                className="min-w-[90px] rounded-lg"
+                                onClick={() => setEditing(false)}
+                                size="sm"
+                                variant="outline"
+                              >
+                                {t('common.cancel')}
+                              </Button>
+                              <Button
+                                className="min-w-[90px] rounded-lg"
+                                disabled={!currentMessage}
+                                onClick={editMessageForm.handleSubmit(onSubmit)}
+                                size="sm"
+                              >
+                                {t('common.send')}
+                              </Button>
+                            </div>
+                          </div>
+                        }
+                        onChange={field.onChange}
+                        onSubmit={editMessageForm.handleSubmit(onSubmit)}
+                        value={field.value}
+                      />
+                    )}
+                  />
+                </div>
+              </form>
+            </Form>
           ) : (
-            <DotsLoader className="pt-2" />
+            <Fragment>
+              <motion.div
+                className={cn(
+                  'duration-30 absolute -top-[22px] right-1 flex items-center gap-1.5 text-xs text-gray-100 opacity-0 group-hover:opacity-100 group-hover:transition-opacity',
+                  isPending ? 'hidden' : 'flex',
+                )}
+                variants={actionBar}
+              >
+                {format(new Date(message?.scheduledTime ?? ''), 'p')}
+              </motion.div>
+              <motion.div
+                className={cn(
+                  'duration-30 absolute -bottom-[34px] right-1 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 group-hover:transition-opacity',
+                  isPending ? 'hidden' : 'flex',
+                )}
+                variants={actionBar}
+              >
+                {message.isLocal ? (
+                  <TooltipProvider delayDuration={0}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          className={cn(
+                            'text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                          )}
+                          onClick={() => {
+                            setEditing(true);
+                          }}
+                        >
+                          <Edit3 />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipPortal>
+                        <TooltipContent>
+                          <p>{t('common.editMessage')}</p>
+                        </TooltipContent>
+                      </TooltipPortal>
+                    </Tooltip>
+                  </TooltipProvider>
+                ) : (
+                  <TooltipProvider delayDuration={0}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          className={cn(
+                            'text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                          )}
+                          onClick={handleRetryMessage}
+                        >
+                          <RotateCcw />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipPortal>
+                        <TooltipContent>
+                          <p>{t('common.retry')}</p>
+                        </TooltipContent>
+                      </TooltipPortal>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+                <TooltipProvider delayDuration={0}>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <CopyToClipboardIcon
+                        className={cn(
+                          'text-gray-80 h-7 w-7 border border-gray-200 bg-transparent hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
+                        )}
+                        onCopyClipboard={() => {
+                          copyToClipboard(
+                            extractErrorPropertyOrContent(
+                              message.content,
+                              'error_message',
+                            ),
+                          );
+                        }}
+                        string={extractErrorPropertyOrContent(
+                          message.content,
+                          'error_message',
+                        )}
+                      />
+                    </TooltipTrigger>
+                    <TooltipPortal>
+                      <TooltipContent>
+                        <p>{t('common.copy')}</p>
+                      </TooltipContent>
+                    </TooltipPortal>
+                  </Tooltip>
+                </TooltipProvider>
+              </motion.div>
+              {message.content ? (
+                <MarkdownPreview
+                  components={{
+                    a: ({ node, ...props }) => (
+                      // eslint-disable-next-line jsx-a11y/anchor-has-content
+                      <a {...props} target="_blank" />
+                    ),
+                  }}
+                  source={
+                    isPending
+                      ? extractErrorPropertyOrContent(
+                          message.content,
+                          'error_message',
+                        ) + ' ...'
+                      : extractErrorPropertyOrContent(
+                          message.content,
+                          'error_message',
+                        )
+                  }
+                />
+              ) : (
+                <DotsLoader className="pt-1" />
+              )}
+              {!!message.fileInbox?.files?.length && (
+                <FileList
+                  className="mt-2 min-w-[200px] max-w-[400px]"
+                  files={message.fileInbox?.files}
+                />
+              )}
+            </Fragment>
           )}
-          {!!message.fileInbox?.files?.length && (
-            <FileList
-              className="mt-2 min-w-[200px] max-w-[400px]"
-              files={message.fileInbox?.files}
-            />
-          )}
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 };

@@ -12,6 +12,7 @@ export type GetChatConversationInput = JobCredentialsPayload & {
 
 export type ChatConversationMessage = {
   hash: string;
+  parentHash: string;
   inboxId: string;
   scheduledTime: string | undefined;
   content: string;

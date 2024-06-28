@@ -33,6 +33,7 @@ export const MessageList = ({
   containerClassName,
   lastMessageContent,
   isLoadingMessage,
+  regenerateMessage,
 }: {
   noMoreMessageLabel: string;
   isSuccess: boolean;
@@ -51,6 +52,7 @@ export const MessageList = ({
       Error
     >
   >;
+  regenerateMessage: (content: string, messageHash: string) => void;
   containerClassName?: string;
   lastMessageContent: string;
   isLoadingMessage: boolean | undefined;
@@ -220,7 +222,24 @@ export const MessageList = ({
                         </span>
                       </div>
                       <div className="flex flex-col">
-                        {messages.map((message) => {
+                        {messages.map((message, messageIndex) => {
+                          const previousMessage = messages[messageIndex - 1];
+                          const grandparentHash = previousMessage
+                            ? previousMessage.parentHash
+                            : null;
+
+                          const handleRetryMessage = () => {
+                            regenerateMessage(
+                              previousMessage.content,
+                              grandparentHash ?? '',
+                            );
+                          };
+                          const handleEditMessage = (message: string) => {
+                            regenerateMessage(
+                              message,
+                              previousMessage?.hash ?? '',
+                            );
+                          };
                           return (
                             <div
                               data-testid={`message-${
@@ -228,7 +247,11 @@ export const MessageList = ({
                               }-${message.hash}`}
                               key={`${index}-${message.scheduledTime}`}
                             >
-                              <Message message={message} />
+                              <Message
+                                handleEditMessage={handleEditMessage}
+                                handleRetryMessage={handleRetryMessage}
+                                message={message}
+                              />
                             </div>
                           );
                         })}
@@ -241,10 +264,11 @@ export const MessageList = ({
                 <Message
                   isPending={isLoadingMessage}
                   message={{
+                    parentHash: '',
                     inboxId: '',
                     hash: '',
                     content: lastMessageContent,
-                    scheduledTime: '',
+                    scheduledTime: new Date().toISOString(),
                     isLocal: false,
                     sender: {
                       avatar:
