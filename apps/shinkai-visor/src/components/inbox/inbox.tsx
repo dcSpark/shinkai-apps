@@ -328,7 +328,7 @@ export const Inbox = () => {
   const [isJobProcessingFile, setIsJobProcessingFile] =
     useState<boolean>(false);
 
-  const regenerateLastMessage = async (content: string, parentHash: string) => {
+  const regenerateMessage = async (content: string, parentHash: string) => {
     setMessageContent(''); // trick to clear the ws stream message
     if (!auth) return;
     const decodedInboxId = decodeURIComponent(inboxId);
@@ -450,7 +450,7 @@ export const Inbox = () => {
         lastMessageContent={messageContent}
         noMoreMessageLabel="All previous messages have been loaded ✅"
         paginatedMessages={data}
-        regenerateLastMessage={regenerateLastMessage}
+        regenerateMessage={regenerateMessage}
       />
       {isJobProcessingFile && (
         <Alert className="shadow-lg">

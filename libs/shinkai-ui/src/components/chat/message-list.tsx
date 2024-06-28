@@ -33,7 +33,7 @@ export const MessageList = ({
   containerClassName,
   lastMessageContent,
   isLoadingMessage,
-  regenerateLastMessage,
+  regenerateMessage,
 }: {
   noMoreMessageLabel: string;
   isSuccess: boolean;
@@ -52,7 +52,7 @@ export const MessageList = ({
       Error
     >
   >;
-  regenerateLastMessage: (key1: string, key: string) => void;
+  regenerateMessage: (content: string, messageHash: string) => void;
   containerClassName?: string;
   lastMessageContent: string;
   isLoadingMessage: boolean | undefined;
@@ -228,10 +228,16 @@ export const MessageList = ({
                             ? previousMessage.parentHash
                             : null;
 
-                          const handleRegenerate = () => {
-                            regenerateLastMessage(
+                          const handleRetryMessage = () => {
+                            regenerateMessage(
                               previousMessage.content,
                               grandparentHash ?? '',
+                            );
+                          };
+                          const handleEditMessage = (message: string) => {
+                            regenerateMessage(
+                              message,
+                              previousMessage?.hash ?? '',
                             );
                           };
                           return (
@@ -242,7 +248,8 @@ export const MessageList = ({
                               key={`${index}-${message.scheduledTime}`}
                             >
                               <Message
-                                handleRegenerate={handleRegenerate}
+                                handleEditMessage={handleEditMessage}
+                                handleRetryMessage={handleRetryMessage}
                                 message={message}
                               />
                             </div>

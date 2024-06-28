@@ -258,7 +258,7 @@ const ChatConversation = () => {
       },
     });
 
-  const regenerateLastMessage = async (content: string, parentHash: string) => {
+  const regenerateMessage = async (content: string, parentHash: string) => {
     setMessageContent(''); // trick to clear the ws stream message
     if (!auth) return;
     const decodedInboxId = decodeURIComponent(inboxId);
@@ -367,7 +367,7 @@ const ChatConversation = () => {
         lastMessageContent={messageContent}
         noMoreMessageLabel={t('chat.allMessagesLoaded')}
         paginatedMessages={data}
-        regenerateLastMessage={regenerateLastMessage}
+        regenerateMessage={regenerateMessage}
       />
       {isLimitReachedErrorLastMessage && (
         <Alert className="mx-auto w-[98%] shadow-lg" variant="destructive">
@@ -432,6 +432,7 @@ const ChatConversation = () => {
                           </TooltipProvider>
                         </div>
                         <ChatInputArea
+                          autoFocus
                           bottomAddons={
                             <Button
                               className="h-[40px] w-[40px] self-end rounded-xl p-3"
