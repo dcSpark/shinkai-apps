@@ -1,15 +1,13 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
-import { Edit3, RotateCcw } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
 import React from 'react';
 
 import { appIcon } from '../../assets';
 import { ChatConversationMessage, copyToClipboard } from '../../helpers';
-import { useMeasure } from '../../hooks/use-measure';
 import { cn } from '../../utils';
 import { Avatar, AvatarFallback, AvatarImage } from '../avatar';
-import { Button } from '../button';
 import { CopyToClipboardIcon } from '../copy-to-clipboard-icon';
 import { DotsLoader } from '../dots-loader';
 import { MarkdownPreview } from '../markdown-preview';
@@ -71,7 +69,6 @@ export const Message = ({
 }: MessageProps) => {
   const { t } = useTranslation();
 
-  const [messageBoxRef, { height }] = useMeasure<HTMLDivElement>();
   return (
     <motion.div
       animate="rest"
@@ -180,10 +177,17 @@ export const Message = ({
                   <a {...props} target="_blank" />
                 ),
               }}
-              source={extractErrorPropertyOrContent(
-                isPending ? message.content + ' ...' : message.content,
-                'error_message',
-              )}
+              source={
+                isPending
+                  ? extractErrorPropertyOrContent(
+                      message.content,
+                      'error_message',
+                    ) + ' ...'
+                  : extractErrorPropertyOrContent(
+                      message.content,
+                      'error_message',
+                    )
+              }
             />
           ) : (
             <DotsLoader className="pt-1" />
