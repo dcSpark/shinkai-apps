@@ -37,6 +37,9 @@
       "title": "会話コンテキスト"
     },
     "create": "AIチャットを作成",
+    "editMessage": {
+      "warning": "ここから会話をやり直します。"
+    },
     "emptyStateDescription": "「JavaScriptでHTTPリクエストを作成する方法」、「80年代のロック音楽のトップ10を教えて」、「インターネットの仕組みを説明して」などをお試しください",
     "emptyStateTitle": "Shinkai AIに質問してみてください",
     "enterMessage": "メッセージを入力",
@@ -74,6 +77,7 @@
     "disconnect": "切断",
     "done": "完了",
     "edit": "編集",
+    "editMessage": "メッセージを編集",
     "file": "ファイル",
     "fileWithCount_one": "{{count}} ファイル",
     "fileWithCount_other": "{{count}} ファイル",
@@ -105,6 +109,7 @@
     "search": "検索",
     "searchPlaceholder": "検索...",
     "seeOptions": "オプションを表示",
+    "send": "送信",
     "shinkaiPrivate": "Shinkaiプライベート（ローカル）",
     "signUpShinkaiHosting": "Shinkai Hostingにサインアップ",
     "soon": "近日公開",
