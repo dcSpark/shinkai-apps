@@ -207,7 +207,6 @@ export const Message = ({
                           )}
                           onClick={() => {
                             setEditing(true);
-                            // handleEditMessage?.('what is css')
                           }}
                         >
                           <Edit3 />
