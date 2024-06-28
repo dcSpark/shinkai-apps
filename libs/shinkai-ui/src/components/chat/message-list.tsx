@@ -261,7 +261,7 @@ export const MessageList = ({
                     inboxId: '',
                     hash: '',
                     content: lastMessageContent,
-                    scheduledTime: '',
+                    scheduledTime: new Date().toISOString(),
                     isLocal: false,
                     sender: {
                       avatar:

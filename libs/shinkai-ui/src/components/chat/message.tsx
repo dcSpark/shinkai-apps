@@ -43,6 +43,27 @@ type MessageProps = {
   handleRegenerate?: () => void;
 };
 
+const actionBar = {
+  rest: {
+    opacity: 0,
+    scale: 0.8,
+    transition: {
+      type: 'spring',
+      bounce: 0,
+      duration: 0.3,
+    },
+  },
+  hover: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      type: 'spring',
+      duration: 0.3,
+      bounce: 0,
+    },
+  },
+};
+
 export const Message = ({
   message,
   isPending,
@@ -52,123 +73,128 @@ export const Message = ({
 
   const [messageBoxRef, { height }] = useMeasure<HTMLDivElement>();
   return (
-    <motion.div animate={{ height: height ?? 'auto' }}>
-      <div className="group pb-10" ref={messageBoxRef}>
-        <div
+    <motion.div
+      animate="rest"
+      className="pb-10"
+      initial="rest"
+      whileHover="hover"
+    >
+      <div
+        className={cn(
+          'flex flex-row space-x-2',
+          message.isLocal
+            ? 'ml-auto mr-0 flex-row-reverse space-x-reverse'
+            : 'ml-0 mr-auto flex-row items-end',
+        )}
+      >
+        <Avatar className="h-8 w-8">
+          {message.isLocal ? (
+            <AvatarImage alt={''} src={message.sender.avatar} />
+          ) : (
+            <img alt="Shinkai AI" src={appIcon} />
+          )}
+          <AvatarFallback className="h-8 w-8" />
+        </Avatar>
+
+        <motion.div
           className={cn(
-            'group flex flex-row space-x-2',
+            'relative mt-1 flex flex-col rounded-lg bg-black/40 px-3.5 pt-3 text-sm text-white',
             message.isLocal
-              ? 'ml-auto mr-0 flex-row-reverse space-x-reverse'
-              : 'ml-0 mr-auto flex-row items-end',
+              ? 'rounded-tr-none bg-gray-300'
+              : 'rounded-bl-none border-none bg-gray-200',
+            !message.content ? 'pb-3' : 'pb-4',
           )}
         >
-          <Avatar className="h-8 w-8">
-            {message.isLocal ? (
-              <AvatarImage alt={''} src={message.sender.avatar} />
-            ) : (
-              <img alt="Shinkai AI" src={appIcon} />
-            )}
-            <AvatarFallback className="h-8 w-8" />
-          </Avatar>
-
-          <div
+          <motion.div
             className={cn(
-              'relative mt-1 flex flex-col rounded-lg bg-black/40 px-3.5 pt-3 text-sm text-white',
-              message.isLocal
-                ? 'rounded-tr-none bg-gray-300'
-                : 'rounded-bl-none border-none bg-gray-200',
-              !message.content ? 'pb-3' : 'pb-4',
+              'duration-30 absolute -top-[22px] right-1 flex items-center gap-1.5 text-xs text-gray-100 opacity-0 group-hover:opacity-100 group-hover:transition-opacity',
+              isPending ? 'hidden' : 'flex',
             )}
+            variants={actionBar}
           >
-            <div
-              className={cn(
-                'duration-30 absolute -top-[22px] right-1 flex items-center gap-1.5 text-xs text-gray-100 opacity-0 group-hover:opacity-100 group-hover:transition-opacity',
-                isPending ? 'hidden' : 'flex',
-              )}
-            >
-              {format(new Date(message?.scheduledTime ?? ''), 'p')}
-            </div>
-            <div
-              className={cn(
-                'duration-30 absolute -bottom-[34px] right-1 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 group-hover:transition-opacity',
-                isPending ? 'hidden' : 'flex',
-              )}
-            >
+            {format(new Date(message?.scheduledTime ?? ''), 'p')}
+          </motion.div>
+          <motion.div
+            className={cn(
+              'duration-30 absolute -bottom-[34px] right-1 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 group-hover:transition-opacity',
+              isPending ? 'hidden' : 'flex',
+            )}
+            variants={actionBar}
+          >
+            <TooltipProvider delayDuration={0}>
+              <Tooltip>
+                <TooltipTrigger>
+                  <CopyToClipboardIcon
+                    className={cn(
+                      'text-gray-80 h-7 w-7 border border-gray-200 bg-transparent hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
+                    )}
+                    onCopyClipboard={() => {
+                      copyToClipboard(
+                        extractErrorPropertyOrContent(
+                          message.content,
+                          'error_message',
+                        ),
+                      );
+                    }}
+                    string={extractErrorPropertyOrContent(
+                      message.content,
+                      'error_message',
+                    )}
+                  />
+                </TooltipTrigger>
+                <TooltipPortal>
+                  <TooltipContent>
+                    <p>{t('common.copy')}</p>
+                  </TooltipContent>
+                </TooltipPortal>
+              </Tooltip>
+            </TooltipProvider>
+
+            {!message.isLocal && (
               <TooltipProvider delayDuration={0}>
                 <Tooltip>
-                  <TooltipTrigger>
-                    <CopyToClipboardIcon
+                  <TooltipTrigger asChild>
+                    <button
                       className={cn(
-                        'text-gray-80 h-7 w-7 border border-gray-200 bg-transparent hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
+                        'text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
                       )}
-                      onCopyClipboard={() => {
-                        copyToClipboard(
-                          extractErrorPropertyOrContent(
-                            message.content,
-                            'error_message',
-                          ),
-                        );
-                      }}
-                      string={extractErrorPropertyOrContent(
-                        message.content,
-                        'error_message',
-                      )}
-                    />
+                      onClick={handleRegenerate}
+                    >
+                      <RotateCcw />
+                    </button>
                   </TooltipTrigger>
                   <TooltipPortal>
                     <TooltipContent>
-                      <p>{t('common.copy')}</p>
+                      <p>{t('common.retry')}</p>
                     </TooltipContent>
                   </TooltipPortal>
                 </Tooltip>
               </TooltipProvider>
-
-              {!message.isLocal && (
-                <TooltipProvider delayDuration={0}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        className={cn(
-                          'text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
-                        )}
-                        onClick={handleRegenerate}
-                      >
-                        <RotateCcw />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipPortal>
-                      <TooltipContent>
-                        <p>{t('common.retry')}</p>
-                      </TooltipContent>
-                    </TooltipPortal>
-                  </Tooltip>
-                </TooltipProvider>
+            )}
+          </motion.div>
+          {message.content ? (
+            <MarkdownPreview
+              components={{
+                a: ({ node, ...props }) => (
+                  // eslint-disable-next-line jsx-a11y/anchor-has-content
+                  <a {...props} target="_blank" />
+                ),
+              }}
+              source={extractErrorPropertyOrContent(
+                isPending ? message.content + ' ...' : message.content,
+                'error_message',
               )}
-            </div>
-            {message.content ? (
-              <MarkdownPreview
-                components={{
-                  a: ({ node, ...props }) => (
-                    // eslint-disable-next-line jsx-a11y/anchor-has-content
-                    <a {...props} target="_blank" />
-                  ),
-                }}
-                source={extractErrorPropertyOrContent(
-                  isPending ? message.content + ' ...' : message.content,
-                  'error_message',
-                )}
-              />
-            ) : (
-              <DotsLoader className="pt-1" />
-            )}
-            {!!message.fileInbox?.files?.length && (
-              <FileList
-                className="mt-2 min-w-[200px] max-w-[400px]"
-                files={message.fileInbox?.files}
-              />
-            )}
-          </div>
-        </div>
+            />
+          ) : (
+            <DotsLoader className="pt-1" />
+          )}
+          {!!message.fileInbox?.files?.length && (
+            <FileList
+              className="mt-2 min-w-[200px] max-w-[400px]"
+              files={message.fileInbox?.files}
+            />
+          )}
+        </motion.div>
       </div>
     </motion.div>
   );
