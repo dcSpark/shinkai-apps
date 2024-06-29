@@ -52,7 +52,7 @@ impl ShinkaiNodeProcessHandler {
         let initial_agent_models = format!("ollama:{}", initial_model);
         let options = ShinkaiNodeOptions {
             port: Some("9550".to_string()),
-            ws_port: Some("9551".to_string()),
+            node_ws_port: Some("9551".to_string()),
             node_storage_path: Some(default_node_storage_path),
             unstructured_server_url: Some("https://public.shinkai.com/x-un".to_string()),
             embeddings_server_url: Some("http://127.0.0.1:11435".to_string()),
@@ -111,7 +111,7 @@ impl ShinkaiNodeProcessHandler {
         let base_options = self.options.clone();
         let merged_options = ShinkaiNodeOptions {
             port: Some(options.port.unwrap_or_else(|| base_options.port.unwrap())),
-            ws_port: Some(options.ws_port.unwrap_or_else(|| base_options.ws_port.unwrap())),
+            node_ws_port: Some(options.node_ws_port.unwrap_or_else(|| base_options.node_ws_port.unwrap())),
             node_storage_path: Some(
                 options
                     .node_storage_path
