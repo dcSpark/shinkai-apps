@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Clone)]
 pub struct ShinkaiNodeOptions {
     pub port: Option<String>,
-    pub ws_port: Option<String>,
+    pub node_ws_port: Option<String>,
     pub node_storage_path: Option<String>,
     pub unstructured_server_url: Option<String>,
     pub embeddings_server_url: Option<String>,
