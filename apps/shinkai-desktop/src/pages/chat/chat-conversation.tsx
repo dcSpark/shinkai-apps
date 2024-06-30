@@ -167,7 +167,7 @@ const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
       auth?.node_encryption_pk ?? '',
       auth?.shinkai_identity ?? '',
       auth?.profile ?? '',
-      '',
+      auth?.shinkai_identity ?? '',
       '',
     );
     sendMessage(shinkaiMessage);
