@@ -46,6 +46,8 @@ type MessageProps = {
   isPending?: boolean;
   message: ChatConversationMessage;
   handleRetryMessage?: () => void;
+  disabledRetry?: boolean;
+  disabledEdit?: boolean;
   handleEditMessage?: (message: string) => void;
 };
 
@@ -80,6 +82,8 @@ export const Message = ({
   message,
   isPending,
   handleRetryMessage,
+  disabledRetry,
+  disabledEdit,
   handleEditMessage,
 }: MessageProps) => {
   const { t } = useTranslation();
@@ -181,94 +185,97 @@ export const Message = ({
             </Form>
           ) : (
             <Fragment>
-              <motion.div
-                className={cn(
-                  'duration-30 absolute -top-[22px] right-1 flex items-center gap-1.5 text-xs text-gray-100 opacity-0 group-hover:opacity-100 group-hover:transition-opacity',
-                  isPending ? 'hidden' : 'flex',
-                )}
-                variants={actionBar}
-              >
-                {format(new Date(message?.scheduledTime ?? ''), 'p')}
-              </motion.div>
-              <motion.div
-                className={cn(
-                  'duration-30 absolute -bottom-[34px] right-1 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 group-hover:transition-opacity',
-                  isPending ? 'hidden' : 'flex',
-                )}
-                variants={actionBar}
-              >
-                {message.isLocal ? (
+              {!isPending && (
+                <motion.div
+                  className={cn(
+                    'duration-30 absolute -top-[18px] right-1 flex items-center gap-1.5 text-xs text-gray-100 opacity-0 group-hover:opacity-100 group-hover:transition-opacity',
+                  )}
+                  variants={actionBar}
+                >
+                  {format(new Date(message?.scheduledTime ?? ''), 'p')}
+                </motion.div>
+              )}
+              {!isPending && (
+                <motion.div
+                  className={cn(
+                    'duration-30 absolute -bottom-[34px] right-1 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 group-hover:transition-opacity',
+                  )}
+                  variants={actionBar}
+                >
+                  {message.isLocal && !disabledEdit && (
+                    <TooltipProvider delayDuration={0}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            className={cn(
+                              'text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                            )}
+                            onClick={() => {
+                              setEditing(true);
+                            }}
+                          >
+                            <Edit3 />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipPortal>
+                          <TooltipContent>
+                            <p>{t('common.editMessage')}</p>
+                          </TooltipContent>
+                        </TooltipPortal>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
+                  {!message.isLocal && !disabledRetry && (
+                    <TooltipProvider delayDuration={0}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            className={cn(
+                              'text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                            )}
+                            onClick={handleRetryMessage}
+                          >
+                            <RotateCcw />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipPortal>
+                          <TooltipContent>
+                            <p>{t('common.retry')}</p>
+                          </TooltipContent>
+                        </TooltipPortal>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
                   <TooltipProvider delayDuration={0}>
                     <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button
+                      <TooltipTrigger>
+                        <CopyToClipboardIcon
                           className={cn(
-                            'text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                            'text-gray-80 h-7 w-7 border border-gray-200 bg-transparent hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
                           )}
-                          onClick={() => {
-                            setEditing(true);
+                          onCopyClipboard={() => {
+                            copyToClipboard(
+                              extractErrorPropertyOrContent(
+                                message.content,
+                                'error_message',
+                              ),
+                            );
                           }}
-                        >
-                          <Edit3 />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipPortal>
-                        <TooltipContent>
-                          <p>{t('common.editMessage')}</p>
-                        </TooltipContent>
-                      </TooltipPortal>
-                    </Tooltip>
-                  </TooltipProvider>
-                ) : (
-                  <TooltipProvider delayDuration={0}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button
-                          className={cn(
-                            'text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                          string={extractErrorPropertyOrContent(
+                            message.content,
+                            'error_message',
                           )}
-                          onClick={handleRetryMessage}
-                        >
-                          <RotateCcw />
-                        </button>
+                        />
                       </TooltipTrigger>
                       <TooltipPortal>
                         <TooltipContent>
-                          <p>{t('common.retry')}</p>
+                          <p>{t('common.copy')}</p>
                         </TooltipContent>
                       </TooltipPortal>
                     </Tooltip>
                   </TooltipProvider>
-                )}
-                <TooltipProvider delayDuration={0}>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <CopyToClipboardIcon
-                        className={cn(
-                          'text-gray-80 h-7 w-7 border border-gray-200 bg-transparent hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
-                        )}
-                        onCopyClipboard={() => {
-                          copyToClipboard(
-                            extractErrorPropertyOrContent(
-                              message.content,
-                              'error_message',
-                            ),
-                          );
-                        }}
-                        string={extractErrorPropertyOrContent(
-                          message.content,
-                          'error_message',
-                        )}
-                      />
-                    </TooltipTrigger>
-                    <TooltipPortal>
-                      <TooltipContent>
-                        <p>{t('common.copy')}</p>
-                      </TooltipContent>
-                    </TooltipPortal>
-                  </Tooltip>
-                </TooltipProvider>
-              </motion.div>
+                </motion.div>
+              )}
               {message.content ? (
                 <MarkdownPreview
                   components={{
