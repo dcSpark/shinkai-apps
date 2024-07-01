@@ -224,9 +224,13 @@ export const MessageList = ({
                       <div className="flex flex-col">
                         {messages.map((message, messageIndex) => {
                           const previousMessage = messages[messageIndex - 1];
+
                           const grandparentHash = previousMessage
                             ? previousMessage.parentHash
                             : null;
+
+                          const disabledRetryAndEdit =
+                            grandparentHash === null || grandparentHash === '';
 
                           const handleRetryMessage = () => {
                             regenerateMessage(
@@ -248,6 +252,8 @@ export const MessageList = ({
                               key={`${index}-${message.scheduledTime}`}
                             >
                               <Message
+                                disabledEdit={disabledRetryAndEdit}
+                                disabledRetry={disabledRetryAndEdit}
                                 handleEditMessage={handleEditMessage}
                                 handleRetryMessage={handleRetryMessage}
                                 message={message}
