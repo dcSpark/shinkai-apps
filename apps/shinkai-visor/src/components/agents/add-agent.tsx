@@ -110,7 +110,7 @@ export const AddAgent = () => {
       );
     },
     onError: (error) => {
-      toast.error(t('agents.errors.createAgent'), {
+      toast.error(t('llmProviders.errors.createAgent'), {
         description: error instanceof Error ? error.message : error,
       });
     },
@@ -227,7 +227,7 @@ export const AddAgent = () => {
                     )}
                   >
                     <label htmlFor="custom-model">
-                      {t('agents.form.toggleCustomModel')}
+                      {t('llmProviders.form.toggleCustomModel')}
                     </label>
                   </div>
                 </FormItem>
@@ -245,7 +245,9 @@ export const AddAgent = () => {
                       onValueChange={field.onChange}
                       value={field.value}
                     >
-                      <FormLabel>{t('agents.form.selectModel')}</FormLabel>
+                      <FormLabel>
+                        {t('llmProviders.form.selectModel')}
+                      </FormLabel>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder={' '} />
@@ -274,7 +276,7 @@ export const AddAgent = () => {
                 name="modelType"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('agents.form.modelType')}</FormLabel>
+                    <FormLabel>{t('llmProviders.form.modelType')}</FormLabel>
                     <Select
                       defaultValue={field.value as unknown as string}
                       disabled={isCustomModelMode}

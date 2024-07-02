@@ -26,6 +26,7 @@
     "allMessagesLoaded": "すべての以前のメッセージが読み込まれました ✅",
     "archives": {
       "archive": "アーカイブ",
+      "archived": "アーカイブ済み",
       "error": "ジョブのアーカイブ中にエラーが発生しました",
       "label": "アーカイブ",
       "notFound": "アーカイブされた会話は見つかりませんでした",
@@ -43,6 +44,10 @@
     "emptyStateDescription": "「JavaScriptでHTTPリクエストを作成する方法」、「80年代のロック音楽のトップ10を教えて」、「インターネットの仕組みを説明して」などをお試しください",
     "emptyStateTitle": "Shinkai AIに質問してみてください",
     "enterMessage": "メッセージを入力",
+    "fileProcessing": {
+      "description": "数分かかる場合があります",
+      "title": "ファイルが処理中です"
+    },
     "form": {
       "message": "行いたい作業を教えてください",
       "messagePlaceholder": "例: インターネットの仕組みを説明して...",
@@ -369,6 +374,10 @@
     "restartNode": "Shinkaiノードを再起動してください",
     "unavailable": "Shinkaiノードが利用できません"
   },
+  "subscriptions": {
+    "browse": "パブリックサブスクリプションを閲覧",
+    "label": "マイサブスクリプション"
+  },
   "vectorFs": {
     "actions": {
       "addNew": "新規追加",
@@ -378,7 +387,9 @@
       "move": "移動",
       "searchWithinFolder": "フォルダ内を検索",
       "share": "共有",
+      "shareFolderText": "AI Filesに保存されているフォルダを誰とでも共有できます。",
       "unshare": "共有解除",
+      "unshareFolderText": "このフォルダからすべての人が削除されます。AI Filesにこのフォルダのコピーが残ります。<br />注意: 削除されたメンバーはこの共有フォルダのコピーを保持します。",
       "uploadFile": "ファイルをアップロード",
       "uploadFileText": "ファイルをアップロードすると、AIで使用できるように変換され、Shinkaiで利用可能になります。"
     },
@@ -405,6 +416,7 @@
     },
     "filesSelected": "{{count}} 個選択されました",
     "forms": {
+      "folderDescription": "フォルダの説明",
       "folderName": "フォルダ名"
     },
     "home": "ホーム",

@@ -26,6 +26,7 @@
     "allMessagesLoaded": "Semua pesan sebelumnya telah dimuat ✅",
     "archives": {
       "archive": "Arsip",
+      "archived": "Diarsipkan",
       "error": "Kesalahan saat mengarsipkan percakapan",
       "label": "Arsip",
       "notFound": "Tidak ditemukan percakapan yang diarsipkan.",
@@ -43,6 +44,10 @@
     "emptyStateDescription": "Coba “Bagaimana cara membuat permintaan HTTP dalam JavaScript”, “Beri saya 10 musik rock teratas di tahun 80an”, “Jelaskan bagaimana internet bekerja”",
     "emptyStateTitle": "Tanyakan kepada Shinkai AI",
     "enterMessage": "Masukkan Pesan",
+    "fileProcessing": {
+      "description": "Proses ini bisa memakan waktu beberapa menit",
+      "title": "File Anda sedang diproses"
+    },
     "form": {
       "message": "Beritahu kami pekerjaan yang ingin Anda lakukan",
       "messagePlaceholder": "Contoh: Jelaskan bagaimana internet bekerja...",
@@ -369,6 +374,10 @@
     "restartNode": "Harap restart Node Shinkai Anda",
     "unavailable": "Node Shinkai Anda tidak tersedia"
   },
+  "subscriptions": {
+    "browse": "Telusuri Langganan Publik",
+    "label": "Langganan Saya"
+  },
   "vectorFs": {
     "actions": {
       "addNew": "Tambah Baru",
@@ -378,7 +387,9 @@
       "move": "Pindah",
       "searchWithinFolder": "Cari dalam folder",
       "share": "Bagikan",
+      "shareFolderText": "Anda dapat berbagi folder yang Anda simpan di AI Files dengan siapa pun.",
       "unshare": "Batalkan Berbagi",
+      "unshareFolderText": "Semua orang akan dihapus dari folder ini. Anda masih akan menyimpan salinan folder ini di AI Files. <br /> Catatan: Anggota yang dihapus akan tetap memiliki salinan folder bersama ini.",
       "uploadFile": "Unggah File",
       "uploadFileText": "Mengunggah file Anda mengubahnya menjadi siap AI dan tersedia untuk digunakan di Shinkai."
     },
@@ -405,6 +416,7 @@
     },
     "filesSelected": "{{count}} dipilih",
     "forms": {
+      "folderDescription": "Deskripsi Folder",
       "folderName": "Nama Folder"
     },
     "home": "Beranda",

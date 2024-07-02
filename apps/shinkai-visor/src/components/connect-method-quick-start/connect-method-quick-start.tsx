@@ -104,7 +104,11 @@ export const ConnectMethodQuickStart = () => {
       <div>
         <Header
           description={'Use address to connect for first time'}
-          title={`${t('quickConnection.label')} <span aria-hidden>⚡</span>`}
+          title={
+            <>
+              {t('quickConnection.label')} <span aria-hidden>⚡</span>
+            </>
+          }
         />
         <Form {...form}>
           <form

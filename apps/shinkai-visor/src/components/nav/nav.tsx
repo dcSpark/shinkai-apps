@@ -77,21 +77,23 @@ enum MenuOption {
   Settings = 'settings',
   Logout = 'logout',
 }
-
-const routeTitleDescriptionMapping: Record<
+const useRouteTitleDescriptionMapping = (): Record<
   string,
   { title: ReactNode; description?: ReactNode }
-> = {
-  [routes.CreateJob]: { title: t('chat.create') },
-  [routes.CreateInbox]: { title: t('chatDM.create') },
-  [routes.Inboxes]: { title: t('chat.chats') },
-  [routes.VectorFs]: { title: t('vectorFs.label') },
-  [routes.Subscriptions]: { title: t('subscriptions.label') },
-  [routes.PublicFolders]: { title: t('subscriptions.browse') },
-  [routes.Settings]: { title: t('settings.label') },
-  [routes.Agents]: { title: t('llmProviders.label') },
-  [routes.AddAgent]: { title: t('llmProviders.add') },
-  [routes.PublicKeys]: { title: t('settings.publicKeys.label') },
+> => {
+  const { t } = useTranslation();
+  return {
+    [routes.CreateJob]: { title: t('chat.create') },
+    [routes.CreateInbox]: { title: t('chatDM.create') },
+    [routes.Inboxes]: { title: t('chat.chats') },
+    [routes.VectorFs]: { title: t('vectorFs.label') },
+    [routes.Subscriptions]: { title: t('subscriptions.label') },
+    [routes.PublicFolders]: { title: t('subscriptions.browse') },
+    [routes.Settings]: { title: t('settings.label') },
+    [routes.Agents]: { title: t('llmProviders.label') },
+    [routes.AddAgent]: { title: t('llmProviders.add') },
+    [routes.PublicKeys]: { title: t('settings.publicKeys.label') },
+  };
 };
 
 const DisplayInboxName = () => {
@@ -286,6 +288,7 @@ export default function NavBar() {
   const { t, Trans } = useTranslation();
   const location = useLocation();
   const setLastPage = useSettings((state) => state.setLastPage);
+  const routeTitleDescriptionMapping = useRouteTitleDescriptionMapping();
 
   const setAuth = useAuth((state) => state.setAuth);
   const auth = useAuth((state) => state.auth);

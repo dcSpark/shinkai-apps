@@ -253,10 +253,10 @@ const EditAgentDrawer = ({
   const { mutateAsync: updateLLMProvider, isPending } = useUpdateLLMProvider({
     onSuccess: () => {
       onOpenChange(false);
-      toast.success(t('agents.success.updateAgent'));
+      toast.success(t('llmProviders.success.updateAgent'));
     },
     onError: (error) => {
-      toast.error(t('agents.errors.updateAgent'), {
+      toast.error(t('llmProviders.errors.updateAgent'), {
         description: typeof error === 'string' ? error : error.message,
       });
     },
@@ -387,10 +387,10 @@ const RemoveAgentDrawer = ({
   const { mutateAsync: deleteLLMProvider, isPending } = useDeleteLLMProvider({
     onSuccess: () => {
       onOpenChange(false);
-      toast.success(t('agents.success.deleteAgent'));
+      toast.success(t('llmProviders.success.deleteAgent'));
     },
     onError: (error) => {
-      toast.error(t('agents.errors.deleteAgent'), {
+      toast.error(t('llmProviders.errors.deleteAgent'), {
         description: typeof error === 'string' ? error : error.message,
       });
     },
@@ -401,12 +401,12 @@ const RemoveAgentDrawer = ({
       <DrawerContent>
         <DrawerHeader>
           <DrawerTitle className="font-normal">
-            {t('agents.delete.label')}
+            {t('llmProviders.delete.label')}
             <span className="font-medium">{agentId}</span>{' '}
           </DrawerTitle>
         </DrawerHeader>
         <p className="text-gray-80 my-3 text-base">
-          {t('agents.delete.description')}
+          {t('llmProviders.delete.description')}
         </p>
         <DrawerFooter>
           <Button

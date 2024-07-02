@@ -1,5 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import {
+  LocaleMode,
+  localeOptions,
+  useTranslation,
+} from '@shinkai_network/shinkai-i18n';
 import { isShinkaiIdentityLocalhost } from '@shinkai_network/shinkai-message-ts/utils';
 import { useUpdateNodeName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateNodeName/useUpdateNodeName';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
@@ -57,6 +61,7 @@ const formSchema = z.object({
     shiftKey: z.boolean(),
     keyCode: z.number(),
   }),
+  language: z.string(),
 });
 
 type FormSchemaType = z.infer<typeof formSchema>;
@@ -100,6 +105,9 @@ export const Settings = () => {
     (settingsStore) => settingsStore.setSidebarShortcut,
   );
 
+  const userLanguage = useSettings((state) => state.userLanguage);
+  const setUserLanguage = useSettings((state) => state.setUserLanguage);
+
   const { nodeInfo, isSuccess: isNodeInfoSuccess } = useGetHealth({
     node_address: auth?.node_address ?? '',
   });
@@ -120,6 +128,7 @@ export const Settings = () => {
       displaySummaryActionButton: displaySummaryActionButton,
       displayImageCaptureActionButton: displayImageCaptureActionButton,
       shinkaiIdentity: auth?.shinkai_identity,
+      language: userLanguage,
     },
   });
 
@@ -146,6 +155,10 @@ export const Settings = () => {
   const currentShinkaiIdentity = useWatch({
     control: form.control,
     name: 'shinkaiIdentity',
+  });
+  const currentLanguage = useWatch({
+    control: form.control,
+    name: 'language',
   });
 
   const { llmProviders } = useGetLLMProviders({
@@ -213,6 +226,10 @@ export const Settings = () => {
     currentDisplayImageCaptureActionButton,
     setDisplayImageCaptureActionButton,
   ]);
+
+  useEffect(() => {
+    setUserLanguage(currentLanguage as LocaleMode);
+  }, [currentLanguage, setUserLanguage]);
 
   const handleUpdateNodeName = async () => {
     if (!auth) return;
@@ -366,6 +383,40 @@ export const Settings = () => {
               name="nodeVersion"
               render={({ field }) => (
                 <TextField field={field} label={t('shinkaiNode.nodeVersion')} />
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="language"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('settings.language.label')}</FormLabel>
+                  <Select
+                    defaultValue={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue
+                          placeholder={t('settings.language.selectLanguage')}
+                        />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {[
+                        {
+                          label: 'Automatic',
+                          value: 'auto',
+                        },
+                        ...localeOptions,
+                      ].map((locale) => (
+                        <SelectItem key={locale.value} value={locale.value}>
+                          {locale.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
               )}
             />
             <h2 className="pt-4 text-lg font-medium">Sidebar</h2>
