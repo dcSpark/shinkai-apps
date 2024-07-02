@@ -65,12 +65,17 @@ export default {
     archives: {
       label: 'Archives',
       archive: 'Archive',
+      archived: 'Archived',
       notFound: 'No archived conversations found.',
       success: 'Your conversation has been archived',
       error: 'Error archiving job',
     },
     editMessage: {
       warning: 'This will restart your conversation from here.',
+    },
+    fileProcessing: {
+      title: 'Your file is being processed',
+      description: 'It can take a few minutes',
     },
   },
   aiFilesSearch: {
@@ -97,9 +102,14 @@ export default {
       searchWithinFolder: 'Search within folder',
       uploadFileText:
         'Uploading your files transforms them to be AI-ready and available to use in Shinkai.',
+      shareFolderText:
+        'You can share folders that you store in AI Files with anyone.',
+      unshareFolderText:
+        'Everyone will be removed from this folder. You’ll still keep a copy of this folder in your AI Files. <br /> Note: Removed members will keep a copy of this shared folder.',
     },
     forms: {
       folderName: 'Folder Name',
+      folderDescription: 'Folder Description',
     },
     pending: {
       filesUploading: 'Uploading files',
@@ -146,6 +156,10 @@ export default {
       text: 'You must register a Shinkai identity before you can share folders over the Shinkai Network.',
       action: 'Click Here to Learn How',
     },
+  },
+  subscriptions: {
+    label: 'My Subscriptions',
+    browse: 'Browse Public Subscriptions',
   },
   inboxes: {
     updateName: 'Update inbox name',

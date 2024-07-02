@@ -43,6 +43,7 @@ import {
 import { useVectorFsStore } from './node-file-context';
 
 export const AddNewFolderAction = () => {
+  const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const currentGlobalPath = useVectorFsStore(
     (state) => state.currentGlobalPath,
@@ -58,12 +59,12 @@ export const AddNewFolderAction = () => {
     isSuccess,
   } = useCreateVRFolder({
     onSuccess: () => {
-      toast.success('Folder created successfully');
+      toast.success(t('vectorFs.success.folderCreated'));
       createFolderForm.reset();
       closeDrawerMenu();
     },
     onError: () => {
-      toast.error('Error creating folder');
+      toast.error(t('vectorFs.errors.folderCreated'));
     },
   });
 
@@ -86,7 +87,7 @@ export const AddNewFolderAction = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      toast.success('Folder created successfully');
+      toast.success(t('vectorFs.success.folderCreated'));
       createFolderForm.reset();
     }
   }, [createFolderForm, isSuccess]);
@@ -96,7 +97,7 @@ export const AddNewFolderAction = () => {
       <DrawerHeader>
         <DrawerTitle className="flex flex-col items-start gap-1">
           <DirectoryTypeIcon className="h-10 w-10" />
-          Add New Folder
+          {t('vectorFs.actions.createFolder')}
         </DrawerTitle>
       </DrawerHeader>
       <Form {...createFolderForm}>
@@ -121,7 +122,7 @@ export const AddNewFolderAction = () => {
                     }
                   },
                 }}
-                label="Folder Name"
+                label={t('vectorFs.forms.folderName')}
               />
             )}
           />
@@ -131,7 +132,7 @@ export const AddNewFolderAction = () => {
             isLoading={isPending}
             type="submit"
           >
-            Create Folder
+            {t('vectorFs.actions.createFolder')}
           </Button>
         </form>
       </Form>
@@ -152,16 +153,16 @@ export const UploadVRFilesAction = () => {
 
   const { isPending, mutateAsync: uploadVRFiles } = useUploadVRFiles({
     onSuccess: () => {
-      toast.success('Files uploaded successfully', {
+      toast.success(t('vectorFs.success.filesUploaded'), {
         id: 'uploading-VR-files',
         description: '',
       });
       createFolderForm.reset();
     },
-    onError: () => {
-      toast.error('Error uploading files', {
+    onError: (error) => {
+      toast.error(t('vectorFs.errors.filesUploaded'), {
         id: 'uploading-VR-files',
-        description: '',
+        description: error.message,
       });
     },
   });
@@ -194,11 +195,10 @@ export const UploadVRFilesAction = () => {
       <DrawerHeader>
         <DrawerTitle className="mb-1 flex flex-col items-start gap-1">
           <FileTypeIcon className="h-10 w-10" />
-          File Upload
+          {t('vectorFs.actions.uploadFile')}
         </DrawerTitle>
         <DrawerDescription>
-          Uploading your files transforms them to be AI-ready and available to
-          use in Shinkai.
+          {t('vectorFs.actions.uploadFileText')}
         </DrawerDescription>
       </DrawerHeader>
       <Form {...createFolderForm}>
@@ -237,7 +237,7 @@ export const UploadVRFilesAction = () => {
             isLoading={isPending}
             type="submit"
           >
-            Upload
+            {t('common.upload')}
           </Button>
         </form>
       </Form>

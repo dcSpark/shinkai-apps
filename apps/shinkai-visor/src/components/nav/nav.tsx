@@ -1,4 +1,4 @@
-import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { t, useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useArchiveJob } from '@shinkai_network/shinkai-node-state/lib/mutations/archiveJob/useArchiveJob';
 import {
   AlertDialog,
@@ -82,16 +82,16 @@ const routeTitleDescriptionMapping: Record<
   string,
   { title: ReactNode; description?: ReactNode }
 > = {
-  [routes.CreateJob]: { title: 'Create AI Chat' },
-  [routes.CreateInbox]: { title: 'Create DM Chat' },
-  [routes.Inboxes]: { title: 'Chats' },
-  [routes.VectorFs]: { title: 'My AI Files Explorer' },
-  [routes.Subscriptions]: { title: 'My Subscriptions' },
-  [routes.PublicFolders]: { title: 'Browse Public Subscriptions' },
-  [routes.Settings]: { title: 'Settings' },
-  [routes.Agents]: { title: 'AIs' },
-  [routes.AddAgent]: { title: 'Add AI' },
-  [routes.PublicKeys]: { title: 'Public Keys' },
+  [routes.CreateJob]: { title: t('chat.create') },
+  [routes.CreateInbox]: { title: t('chatDM.create') },
+  [routes.Inboxes]: { title: t('chat.chats') },
+  [routes.VectorFs]: { title: t('vectorFs.label') },
+  [routes.Subscriptions]: { title: t('subscriptions.label') },
+  [routes.PublicFolders]: { title: t('subscriptions.browse') },
+  [routes.Settings]: { title: t('settings.label') },
+  [routes.Agents]: { title: t('llmProviders.label') },
+  [routes.AddAgent]: { title: t('llmProviders.add') },
+  [routes.PublicKeys]: { title: t('settings.publicKeys.label') },
 };
 
 const DisplayInboxName = () => {
@@ -269,7 +269,11 @@ const ArchiveJobButton = () => {
         </TooltipTrigger>
         <TooltipPortal>
           <TooltipContent sideOffset={0}>
-            <p>{currentInbox?.is_finished ? 'Archived' : 'Archive'}</p>
+            <p>
+              {currentInbox?.is_finished
+                ? t('chat.archives.archived')
+                : t('chat.archives.archive')}
+            </p>
           </TooltipContent>
         </TooltipPortal>
       </Tooltip>
