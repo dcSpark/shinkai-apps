@@ -110,7 +110,7 @@ export const AddAgent = () => {
       );
     },
     onError: (error) => {
-      toast.error('Error adding agent', {
+      toast.error(t('llmProviders.errors.createAgent'), {
         description: error instanceof Error ? error.message : error,
       });
     },
@@ -226,7 +226,9 @@ export const AddAgent = () => {
                       field.value && 'text-white',
                     )}
                   >
-                    <label htmlFor="custom-model">Add a custom model</label>
+                    <label htmlFor="custom-model">
+                      {t('llmProviders.form.toggleCustomModel')}
+                    </label>
                   </div>
                 </FormItem>
               )}
@@ -239,14 +241,16 @@ export const AddAgent = () => {
                   <FormItem>
                     <Select
                       defaultValue={field.value as unknown as string}
-                      disabled={!!isCustomModelMode}
+                      disabled={isCustomModelMode}
                       onValueChange={field.onChange}
                       value={field.value}
                     >
-                      <FormLabel>Model</FormLabel>
+                      <FormLabel>
+                        {t('llmProviders.form.selectModel')}
+                      </FormLabel>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Models place" />
+                          <SelectValue placeholder={' '} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -272,10 +276,10 @@ export const AddAgent = () => {
                 name="modelType"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Models</FormLabel>
+                    <FormLabel>{t('llmProviders.form.modelType')}</FormLabel>
                     <Select
                       defaultValue={field.value as unknown as string}
-                      disabled={!!isCustomModelMode}
+                      disabled={isCustomModelMode}
                       onValueChange={field.onChange}
                       value={field.value}
                     >

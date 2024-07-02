@@ -1,4 +1,5 @@
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useGetMySharedFolders } from '@shinkai_network/shinkai-node-state/lib/queries/getMySharedFolders/useGetMySharedFolders';
 import {
   buttonVariants,
@@ -20,6 +21,7 @@ import { VectorFsFolderAction } from './vector-fs-drawer';
 import VectorFsToggleLayout from './vector-fs-toggle-layout';
 
 export default function MySharedFolders() {
+  const { t } = useTranslation();
   const layout = useVectorFsStore((state) => state.layout);
   const auth = useAuth((state) => state.auth);
   const { data: sharedFolders, isSuccess } = useGetMySharedFolders({
@@ -40,7 +42,7 @@ export default function MySharedFolders() {
       </div>
       {isSuccess && !sharedFolders.length && (
         <p className="text-gray-80 text-center">
-          Your shared folders will be displayed here.
+          {t('vectorFs.emptyState.noSharedFolders')}
         </p>
       )}
       {isSuccess && !!sharedFolders.length && (
@@ -83,6 +85,7 @@ function SharedFolderItem({
   totalItems: number;
   path: string;
 }) {
+  const { t } = useTranslation();
   const setCurrentGlobalPath = useVectorFsStore(
     (state) => state.setCurrentGlobalPath,
   );
@@ -135,7 +138,7 @@ function SharedFolderItem({
             role="button"
             tabIndex={0}
           >
-            <span className="sr-only">More options</span>
+            <span className="sr-only">{t('common.moreOptions')}</span>
             <DotsVerticalIcon className="text-gray-100" />
           </div>
         </DropdownMenuTrigger>
@@ -145,7 +148,7 @@ function SharedFolderItem({
         >
           {[
             {
-              name: 'Unshare',
+              name: t('vectorFs.actions.unshare'),
               icon: <Link2Off className="mr-3 h-4 w-4" />,
               onClick: () => {
                 setActiveDrawerMenuOption(VectorFsFolderAction.Unshare);

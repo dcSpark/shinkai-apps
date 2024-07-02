@@ -245,7 +245,7 @@ export const CreateJob = () => {
               name="agent"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>AI</FormLabel>
+                  <FormLabel>{t('chat.form.selectAI')}</FormLabel>
                   <Select
                     defaultValue={field.value}
                     name={field.name}
@@ -274,7 +274,7 @@ export const CreateJob = () => {
               <div className="my-4">
                 <blockquote className="border-l-4 border-gray-200 bg-gray-300 py-2.5 pl-3 pr-3">
                   <span className="text-gray-80 font-medium">
-                    Your selected text
+                    {t('chat.form.selectedText')}
                   </span>
                   <p className="line-clamp-2 h-full text-white">
                     {query.get('context')}
@@ -288,7 +288,7 @@ export const CreateJob = () => {
               name="content"
               render={({ field }) => (
                 <FormItem className="mt-3">
-                  <FormLabel>Message</FormLabel>
+                  <FormLabel>{t('chat.form.message')}</FormLabel>
                   <FormControl>
                     <Textarea
                       autoFocus
@@ -314,11 +314,10 @@ export const CreateJob = () => {
               <div className="mb-5 flex items-start justify-between gap-4">
                 <div className="space-y-1">
                   <h2 className="text-sm font-medium text-gray-100">
-                    Set Chat Context
+                    {t('chat.form.setContext')}
                   </h2>
                   <p className="text-gray-80 text-xs">
-                    Add files or folders for your AI to use as context during
-                    your conversation.
+                    {t('chat.form.setContextText')}
                   </p>
                 </div>
                 <TooltipProvider delayDuration={0}>
@@ -333,13 +332,13 @@ export const CreateJob = () => {
                       >
                         <AISearchContentIcon className="h-5 w-5" />
                         <p className="sr-only text-xs text-white">
-                          AI Files Content Search
+                          {t('aiFilesSearch.label')}
                         </p>
                       </Button>
                     </TooltipTrigger>
                     <TooltipPortal>
                       <TooltipContent sideOffset={0}>
-                        Search AI Files Content
+                        {t('aiFilesSearch.label')}
                       </TooltipContent>
                     </TooltipPortal>
                   </Tooltip>
@@ -355,7 +354,9 @@ export const CreateJob = () => {
                 >
                   <div className="flex items-center gap-2">
                     <FilesIcon className="h-4 w-4" />
-                    <p className="text-sm text-white">Local AI Files</p>
+                    <p className="text-sm text-white">
+                      {t('vectorFs.localFiles')}
+                    </p>
                   </div>
                   {Object.keys(selectedKeys ?? {}).length > 0 && (
                     <Badge className="bg-brand text-white">

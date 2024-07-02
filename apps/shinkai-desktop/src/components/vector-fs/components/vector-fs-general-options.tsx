@@ -165,10 +165,10 @@ export const UploadVRFilesAction = () => {
       });
       createFolderForm.reset();
     },
-    onError: () => {
+    onError: (error) => {
       toast.error(t('vectorFs.errors.filesUploaded'), {
         id: 'uploading-VR-files',
-        description: '',
+        description: error.message,
       });
     },
   });

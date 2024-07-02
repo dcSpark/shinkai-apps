@@ -275,7 +275,7 @@ export const VectorFsFolderCreateShareableAction = () => {
           </span>{' '}
         </SheetTitle>
         <SheetDescription>
-          You can share folders that you store in AI Files with anyone.
+          {t('vectorFs.actions.shareFolderText')}
         </SheetDescription>
       </SheetHeader>
       <Form {...shareFolderForm}>
@@ -287,7 +287,11 @@ export const VectorFsFolderCreateShareableAction = () => {
             control={shareFolderForm.control}
             name="folderDescription"
             render={({ field }) => (
-              <TextField autoFocus field={field} label="Folder Description" />
+              <TextField
+                autoFocus
+                field={field}
+                label={t('vectorFs.forms.folderDescription')}
+              />
             )}
           />
           <Button
@@ -330,7 +334,7 @@ export const VectorFsFolderCreateShareableAction = () => {
   );
 };
 export const VectorFsFolderUnshareAction = () => {
-  const { t } = useTranslation();
+  const { t, Trans } = useTranslation();
   const selectedFolder = useVectorFsStore((state) => state.selectedFolder);
   const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
   const auth = useAuth((state) => state.auth);
@@ -360,9 +364,10 @@ export const VectorFsFolderUnshareAction = () => {
           ?
         </SheetTitle>
         <SheetDescription className="py-3">
-          Everyone will be removed from this folder. You’ll still keep a copy of
-          this folder in your AI Files. <br />
-          Note: Removed members will keep a copy of this shared folder.
+          <Trans
+            components={{ br: <br /> }}
+            i18nKey="vectorFs.actions.unshareFolderText"
+          />
         </SheetDescription>
       </SheetHeader>
 

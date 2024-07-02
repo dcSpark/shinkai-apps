@@ -1,3 +1,4 @@
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   ShinkaiMessage,
   SmartInbox,
@@ -39,7 +40,7 @@ const InboxItem = ({
   }[];
 }) => {
   const navigate = useNavigate();
-
+  const { t } = useTranslation();
   const navigateToInbox = (inbox: {
     inbox_id: string;
     custom_name: string;
@@ -105,7 +106,7 @@ const InboxItem = ({
                     </TooltipTrigger>
                     <TooltipPortal>
                       <TooltipContent>
-                        <p>Archive</p>
+                        <p>{t('chat.archives.archive')}</p>
                       </TooltipContent>
                     </TooltipPortal>
                   </Tooltip>
@@ -135,13 +136,13 @@ const InboxItem = ({
 
 const ActiveInboxItem = ({ inbox }: { inbox: SmartInbox }) => {
   const auth = useAuth((state) => state.auth);
-
+  const { t } = useTranslation();
   const { mutateAsync: archiveJob } = useArchiveJob({
     onSuccess: () => {
-      toast.success('Your conversation has been archived');
+      toast.success(t('chat.archives.success'));
     },
     onError: (error) => {
-      toast.error('Error archiving job', {
+      toast.error(t('chat.archives.error'), {
         description: error.message,
       });
     },
@@ -169,7 +170,7 @@ const ActiveInboxItem = ({ inbox }: { inbox: SmartInbox }) => {
     <InboxItem
       actions={[
         {
-          label: 'Archive',
+          label: t('chat.archives.archive'),
           onClick: (event, inbox) => {
             handleArchiveJob(event, inbox);
           },

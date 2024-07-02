@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { retrieveVectorResource } from '@shinkai_network/shinkai-message-ts/api';
 import {
   SearchVectorFormSchema,
@@ -51,6 +52,7 @@ export const VectorFsScopeDrawer = ({
   onSelectedKeysChange: (value: TreeCheckboxSelectionKeys | null) => void;
   nodes: TreeNode[];
 }) => {
+  const { t } = useTranslation();
   return (
     <Drawer onOpenChange={onVectorFSOpenChanges} open={isVectorFSOpen}>
       <DrawerContent>
@@ -59,7 +61,7 @@ export const VectorFsScopeDrawer = ({
         </DrawerClose>
         <DrawerHeader className="mb-3">
           <DrawerTitle className="flex h-[40px] items-center gap-4">
-            Set Context
+            {t('chat.form.setContext')}
             {Object.keys(selectedKeys ?? {}).length > 0 && (
               <Badge className="bg-brand text-sm text-white">
                 {Object.keys(selectedKeys ?? {}).length}
@@ -67,7 +69,7 @@ export const VectorFsScopeDrawer = ({
             )}
           </DrawerTitle>
           <p className="text-gray-80 text-sm">
-            Add local files and folders to use as context for your conversation
+            {t('chat.form.setContextText')}
           </p>
         </DrawerHeader>
 
@@ -110,7 +112,7 @@ export const VectorFsScopeDrawer = ({
             type="button"
             variant="outline"
           >
-            Deselect All
+            {t('common.unselectAll')}
           </Button>
           <Button
             onClick={() => {
@@ -118,7 +120,7 @@ export const VectorFsScopeDrawer = ({
             }}
             type="button"
           >
-            Done
+            {t('common.done')}
           </Button>
         </DrawerFooter>
       </DrawerContent>
@@ -139,6 +141,8 @@ export const KnowledgeSearchDrawer = ({
   onSelectedKeysChange: (value: TreeCheckboxSelectionKeys | null) => void;
   selectedFileKeysRef: React.MutableRefObject<Map<string, VRItem>>;
 }) => {
+  const { t } = useTranslation();
+
   const auth = useAuth((state) => state.auth);
   const [isSearchEntered, setIsSearchEntered] = useState(false);
   const [search, setSearch] = useState('');
@@ -204,7 +208,7 @@ export const KnowledgeSearchDrawer = ({
         </DrawerClose>
         <DrawerHeader className="mb-3">
           <DrawerTitle className="flex h-[40px] items-center gap-4">
-            AI Files Content Search
+            {t('aiFilesSearch.label')}
             {/*{Object.keys(selectedKeys ?? {}).length > 0 && (*/}
             {/*  <Badge className="bg-brand text-sm text-white">*/}
             {/*    {Object.keys(selectedKeys ?? {}).length}*/}
@@ -212,7 +216,7 @@ export const KnowledgeSearchDrawer = ({
             {/*)}*/}
           </DrawerTitle>
           <p className="text-gray-80 text-sm">
-            Search to find content across all files in your AI Files easily
+            {t('aiFilesSearch.description')}
           </p>
         </DrawerHeader>
 
@@ -230,7 +234,7 @@ export const KnowledgeSearchDrawer = ({
                     autoFocus
                     className="placeholder-gray-80 !h-[50px] bg-gray-200 py-2 pl-10"
                     onChange={field.onChange}
-                    placeholder="Search anything..."
+                    placeholder={t('common.search')}
                     value={field.value}
                   />
                   <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2 bg-gray-300" />
@@ -246,7 +250,7 @@ export const KnowledgeSearchDrawer = ({
                       variant="ghost"
                     >
                       <XIcon />
-                      <span className="sr-only">Clear Search</span>
+                      <span className="sr-only">{t('common.clearSearch')}</span>
                     </Button>
                   )}
                 </div>
@@ -260,11 +264,11 @@ export const KnowledgeSearchDrawer = ({
               type="submit"
             >
               <SearchIcon />
-              <span className="sr-only">Search</span>
+              <span className="sr-only">{t('common.search')}</span>
             </Button>
           </form>
         </Form>
-        <ScrollArea className="h-[50vh] pr-4  [&>div>div]:!block">
+        <ScrollArea className="h-[50vh] pr-4 [&>div>div]:!block">
           {isSearchEntered &&
             isPending &&
             Array.from({ length: 4 }).map((_, idx) => (
@@ -277,11 +281,15 @@ export const KnowledgeSearchDrawer = ({
             <div>
               <div className="flex items-center justify-between gap-4 p-2">
                 <h2 className="text-gray-80 font-medium">
-                  Found {data?.length} results
+                  {t('aiFilesSearch.foundResults', {
+                    count: data?.length,
+                  })}
                 </h2>
                 {selectedKeys && Object.keys(selectedKeys).length > 0 && (
                   <span className="text-brand font-medium">
-                    Selected {Object.keys(selectedKeys).length} files
+                    {t('aiFilesSearch.filesSelected', {
+                      count: Object.keys(selectedKeys).length,
+                    })}
                   </span>
                 )}
               </div>
@@ -373,7 +381,7 @@ export const KnowledgeSearchDrawer = ({
             type="button"
             variant="outline"
           >
-            Deselect All
+            {t('common.unselectAll')}
           </Button>
           <Button
             onClick={() => {
@@ -381,7 +389,7 @@ export const KnowledgeSearchDrawer = ({
             }}
             type="button"
           >
-            Done
+            {t('common.done')}
           </Button>
         </DrawerFooter>
       </DrawerContent>

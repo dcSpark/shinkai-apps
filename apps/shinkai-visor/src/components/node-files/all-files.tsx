@@ -1,4 +1,5 @@
 import { HomeIcon } from '@radix-ui/react-icons';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useGetMySharedFolders } from '@shinkai_network/shinkai-node-state/lib/queries/getMySharedFolders/useGetMySharedFolders';
 import { useGetSearchVRItems } from '@shinkai_network/shinkai-node-state/lib/queries/getSearchVRItems/useGetSearchVRItems';
 import {
@@ -47,7 +48,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import { useQuery } from '../../hooks/use-query';
 import { useAuth } from '../../store/auth/auth';
-import { useVectorFsStore,VectorFSLayout } from './node-file-context';
+import { useVectorFsStore, VectorFSLayout } from './node-file-context';
 import { VectorFsGlobalAction } from './vector-fs-drawer';
 import VectorFsFolder from './vector-fs-folder';
 import VectorFsItem from './vector-fs-item';
@@ -61,7 +62,7 @@ const AllFiles = () => {
   const navigate = useNavigate();
   const location = useLocation() as { state: { files: File[] } };
   const query = useQuery();
-
+  const { t } = useTranslation();
   const currentGlobalPath = useVectorFsStore(
     (state) => state.currentGlobalPath,
   );
@@ -184,14 +185,14 @@ const AllFiles = () => {
 
   const actionList = [
     {
-      name: 'Add New Folder',
+      name: t('vectorFs.actions.createFolder'),
       icon: <AddNewFolderIcon className="mr-2 h-4 w-4" />,
       onClick: () => {
         setActiveDrawerMenuOption(VectorFsGlobalAction.NewFolder);
       },
     },
     {
-      name: 'File Upload',
+      name: t('vectorFs.actions.uploadFile'),
       icon: <GenerateDocIcon className="mr-2 h-4 w-4" />,
       disabled: currentGlobalPath === '/',
       onClick: () => {
@@ -227,7 +228,7 @@ const AllFiles = () => {
             onChange={(e) => {
               setSearchQuery(e.target.value);
             }}
-            placeholder="Search..."
+            placeholder={t('common.searchPlaceholder')}
             value={searchQuery}
           />
           <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2" />
@@ -242,7 +243,7 @@ const AllFiles = () => {
               variant="ghost"
             >
               <XIcon />
-              <span className="sr-only">Clear Search</span>
+              <span className="sr-only">{t('common.clearSearch')}</span>
             </Button>
           )}
         </div>
@@ -304,7 +305,7 @@ const AllFiles = () => {
                     }}
                   >
                     <HomeIcon className="h-3.5 w-3.5" />
-                    Home
+                    {t('vectorFs.home')}
                   </button>
                 </BreadcrumbLink>
               </BreadcrumbItem>
@@ -405,10 +406,10 @@ const AllFiles = () => {
                 <FileEmptyStateIcon className="h-20 w-20" />
                 <div>
                   <h2 className="font-medium text-white">
-                    This will be the home for all your files.
+                    {t('vectorFs.emptyState.noFilesAndFolders')}
                   </h2>
                   <span>
-                    Use the &quot;+&quot; button to start uploading files.
+                    {t('vectorFs.emptyState.noFilesAndFoldersDescription')}
                   </span>
                 </div>
               </div>
@@ -418,14 +419,14 @@ const AllFiles = () => {
             VRFiles?.child_items?.length === 0 &&
             VRFiles.child_folders?.length === 0 && (
               <div className="flex h-20 items-center justify-center text-gray-100">
-                No files found
+                {t('vectorFs.emptyState.noFiles')}
               </div>
             )}
           {searchQuery &&
             isSearchVRItemsSuccess &&
             searchVRItems?.length === 0 && (
               <div className="flex h-20 items-center justify-center text-gray-100">
-                No files found
+                {t('vectorFs.emptyState.noFiles')}
               </div>
             )}
           {searchQuery &&
@@ -457,7 +458,7 @@ const AllFiles = () => {
       </ScrollArea>
       <ContextMenu>
         <ContextMenuTrigger className="flex-1">
-          <span className="sr-only">See options</span>
+          <span className="sr-only">{t('common.seeOptions')}</span>
         </ContextMenuTrigger>
         <ContextMenuContent className="p-2">
           {actionList.map((item, index) => (
@@ -515,10 +516,12 @@ const AllFiles = () => {
                 )}
                 layout
               >
-                <span>Create AI Chat</span>
+                <span>{t('chat.create')}</span>
                 {isVRSelectionActive && (
                   <span className="text-sm text-neutral-200">
-                    {selectedFiles.length + selectedFolders.length} selected
+                    {t('vectorFs.filesSelected', {
+                      count: selectedFiles.length + selectedFolders.length,
+                    })}
                   </span>
                 )}
               </motion.div>
@@ -526,7 +529,7 @@ const AllFiles = () => {
           </TooltipTrigger>
           <TooltipPortal>
             <TooltipContent side="left">
-              <p>Create AI Chat</p>
+              <p>{t('chat.create')}</p>
             </TooltipContent>
           </TooltipPortal>
         </Tooltip>
@@ -543,7 +546,7 @@ const AllFiles = () => {
           }}
           variant="outline"
         >
-          <span className="sr-only">Unselect All</span>
+          <span className="sr-only">{t('common.unselectAll')}</span>
           <XIcon />
         </MotionButton>
       )}

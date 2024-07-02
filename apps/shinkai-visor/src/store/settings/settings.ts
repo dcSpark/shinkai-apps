@@ -1,4 +1,5 @@
 import { Coordinates } from '@dnd-kit/utilities';
+import { LocaleMode, switchLanguage } from '@shinkai_network/shinkai-i18n';
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 
@@ -24,6 +25,8 @@ type SettingsStore = {
   setDisabledHosts: (disabledHosts: Record<string, boolean>) => void;
   lastPage: string | null;
   setLastPage: (lastPageOpen: string | null) => void;
+  userLanguage: LocaleMode;
+  setUserLanguage: (userLanguage: LocaleMode) => void;
 };
 
 export const useSettings = create<SettingsStore>()(
@@ -89,6 +92,12 @@ export const useSettings = create<SettingsStore>()(
         lastPage: null,
         setLastPage: (lastPage) => {
           set({ lastPage });
+        },
+
+        userLanguage: 'auto',
+        setUserLanguage: (userLanguage) => {
+          set({ userLanguage });
+          switchLanguage(userLanguage);
         },
       }),
       {

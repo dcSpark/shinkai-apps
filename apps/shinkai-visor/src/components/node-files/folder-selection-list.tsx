@@ -1,4 +1,5 @@
 import { HomeIcon } from '@radix-ui/react-icons';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
 import {
   Breadcrumb,
@@ -69,6 +70,7 @@ export function useVectorFolderSelectionStore<T>(
 }
 
 export const FolderSelectionList = () => {
+  const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const destinationFolderPath = useVectorFolderSelectionStore(
     (state) => state.destinationFolderPath,
@@ -118,7 +120,7 @@ export const FolderSelectionList = () => {
                 type="button"
               >
                 <HomeIcon className="h-3.5 w-3.5" />
-                Home
+                {t('vectorFs.home')}
               </button>
             </BreadcrumbLink>
           </BreadcrumbItem>
