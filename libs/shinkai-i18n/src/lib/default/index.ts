@@ -249,6 +249,19 @@ export default {
       success: 'Shinkai Identity updated successfully',
       error: 'Error updating Shinkai Identity',
     },
+    general: 'General',
+    sidebar: {
+      label: 'Sidebar',
+      blacklistedWebsites: 'Blacklisted Websites',
+      includeClickSummary: {
+        title: 'Include 1-Click Summary Option',
+        text: 'Adds a Summary Button to the Quick Access hover menu.',
+      },
+      includeClickImageCapture: {
+        title: 'Include 1-Click Image Capture Option',
+        text: 'Adds an Image Capture Button to the Quick Access hover menu.',
+      },
+    },
     quickAccessButton: {
       label: 'Show Shinkai Quick Access Button',
       description:

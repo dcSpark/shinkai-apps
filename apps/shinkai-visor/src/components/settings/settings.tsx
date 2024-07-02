@@ -190,7 +190,7 @@ export const Settings = () => {
         });
       },
       onError: (error) => {
-        toast.error('Failed to update node name', {
+        toast.error(t('settings.shinkaiIdentity.error'), {
           description: error?.response?.data?.error ?? error.message,
         });
       },
@@ -254,7 +254,7 @@ export const Settings = () => {
       <div className="flex flex-col space-y-8">
         <Form {...form}>
           <form className="flex grow flex-col justify-between space-y-6 overflow-hidden">
-            <h2 className="text-lg font-medium">General</h2>
+            <h2 className="text-lg font-medium">{t('settings.general')}</h2>
             <FormItem>
               <Select
                 defaultValue={defaultAgentId}
@@ -419,7 +419,9 @@ export const Settings = () => {
                 </FormItem>
               )}
             />
-            <h2 className="pt-4 text-lg font-medium">Sidebar</h2>
+            <h2 className="pt-4 text-lg font-medium">
+              {t('settings.sidebar.label')}
+            </h2>
             <div>
               <FormField
                 control={form.control}
@@ -449,7 +451,7 @@ export const Settings = () => {
                     {Object.keys(disabledHosts).length > 0 && (
                       <div>
                         <h3 className="mb-2 pt-4 text-xs font-medium text-red-400">
-                          Blacklisted Websites
+                          {t('settings.sidebar.blacklistedWebsites')}
                         </h3>
                         <div className="space-y-2">
                           {Object.keys(disabledHosts).map((host) => (
@@ -510,10 +512,10 @@ export const Settings = () => {
                   </FormControl>
                   <div className="space-y-1 leading-none">
                     <FormLabel className="static space-y-1.5 text-sm text-white">
-                      Include 1-Click Summary Option
+                      {t('settings.sidebar.includeClickSummary.title')}
                     </FormLabel>
                     <FormDescription>
-                      Adds a Summary Button to the Quick Access hover menu.
+                      {t('settings.sidebar.includeClickSummary.text')}
                     </FormDescription>
                   </div>
                 </FormItem>
@@ -533,10 +535,10 @@ export const Settings = () => {
                   </FormControl>
                   <div className="space-y-1 leading-none">
                     <FormLabel className="static space-y-1.5 text-sm text-white">
-                      Include 1-Click Image Capture Option
+                      {t('settings.sidebar.includeClickImageCapture.title')}
                     </FormLabel>
                     <FormDescription>
-                      Adds an Image Capture Button to the Quick Access hover
+                      {t('settings.sidebar.includeClickImageCapture.text')}
                       menu.
                     </FormDescription>
                   </div>
