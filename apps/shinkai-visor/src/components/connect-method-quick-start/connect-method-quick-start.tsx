@@ -22,7 +22,7 @@ import {
   submitRegistrationNoCodeNonPristineError,
 } from '@shinkai_network/shinkai-ui/helpers';
 // import { QrCode } from 'lucide-react';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -104,7 +104,11 @@ export const ConnectMethodQuickStart = () => {
       <div>
         <Header
           description={'Use address to connect for first time'}
-          title={'Quick connection ⚡'}
+          title={
+            <>
+              {t('quickConnection.label')} <span aria-hidden>⚡</span>
+            </>
+          }
         />
         <Form {...form}>
           <form
@@ -208,14 +212,14 @@ export const ConnectMethodQuickStart = () => {
         {/*/>*/}
 
         <ConnectionMethodOption
-          description={'Use a connection file and passphrase'}
+          description={t('restoreConnection.description')}
           icon={
             <span aria-hidden className="text-base">
               🔑
             </span>
           }
           onClick={() => selectRestoreMethod()}
-          title={'Restore'}
+          title={t('restoreConnection.restore')}
         />
       </div>
     </div>

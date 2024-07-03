@@ -26,6 +26,7 @@
     "allMessagesLoaded": "所有先前的消息都已加载 ✅",
     "archives": {
       "archive": "存档",
+      "archived": "已归档",
       "error": "归档作业出错",
       "label": "档案",
       "notFound": "未找到存档对话。",
@@ -43,10 +44,15 @@
     "emptyStateDescription": "尝试 “如何在 JavaScript 中进行 HTTP 请求”, “给我 80 年代十大摇滚音乐”, “解释互联网的工作原理”",
     "emptyStateTitle": "询问 Shinkai AI",
     "enterMessage": "输入消息",
+    "fileProcessing": {
+      "description": "可能需要几分钟",
+      "title": "您的文件正在处理中"
+    },
     "form": {
       "message": "告诉我们您想做的工作",
       "messagePlaceholder": "例如：解释互联网的工作原理...",
       "selectAI": "选择您的 AI",
+      "selectedText": "您选择的文本",
       "setContext": "设置聊天上下文",
       "setContextText": "添加文件或文件夹，供您的 AI 在对话中使用。",
       "workflows": "工作流"
@@ -280,6 +286,7 @@
     "exportConnection": {
       "label": "导出连接"
     },
+    "general": "常规",
     "label": "设置",
     "language": {
       "label": "语言",
@@ -317,6 +324,18 @@
     "shortcutKey": {
       "description": "修改启动侧边栏的快捷键",
       "label": "快捷键"
+    },
+    "sidebar": {
+      "blacklistedWebsites": "黑名单网站",
+      "includeClickImageCapture": {
+        "text": "在快速访问悬停菜单中添加图像捕获按钮。",
+        "title": "包括一键图像捕获选项"
+      },
+      "includeClickSummary": {
+        "text": "在快速访问悬停菜单中添加摘要按钮。",
+        "title": "包括一键摘要选项"
+      },
+      "label": "侧边栏"
     }
   },
   "shinkaiNode": {
@@ -368,6 +387,10 @@
     "restartNode": "请重启您的 Shinkai 节点",
     "unavailable": "您的Shinkai节点不可用"
   },
+  "subscriptions": {
+    "browse": "浏览公共订阅",
+    "label": "我的订阅"
+  },
   "vectorFs": {
     "actions": {
       "addNew": "添加新文件",
@@ -377,7 +400,9 @@
       "move": "移动",
       "searchWithinFolder": "文件夹内搜索",
       "share": "分享",
+      "shareFolderText": "您可以与任何人共享存储在AI文件中的文件夹。",
       "unshare": "取消分享",
+      "unshareFolderText": "所有人将从此文件夹中移除。您仍将保留此文件夹的副本在您的AI文件中。<br />注意：被移除的成员将保留此共享文件夹的副本。",
       "uploadFile": "文件上传",
       "uploadFileText": "上传您的文件会使它们变得适用于 AI 并可在 Shinkai 中使用。"
     },
@@ -404,6 +429,7 @@
     },
     "filesSelected": "{{count}} 已选择",
     "forms": {
+      "folderDescription": "文件夹描述",
       "folderName": "文件夹名称"
     },
     "home": "主页",

@@ -140,7 +140,6 @@ export const VectorFsItemDeleteAction = () => {
 
 export const VectorFsItemCopyAction = () => {
   const { t } = useTranslation();
-
   const selectedFile = useVectorFsStore((state) => state.selectedFile);
   const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
   const auth = useAuth((state) => state.auth);

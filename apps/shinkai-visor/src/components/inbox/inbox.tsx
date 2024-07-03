@@ -72,6 +72,7 @@ enum ErrorCodes {
 }
 
 function AgentSelection() {
+  const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const currentInbox = useGetCurrentInbox();
   const { llmProviders } = useGetLLMProviders({
@@ -88,7 +89,7 @@ function AgentSelection() {
 
   const { mutateAsync: updateAgentInJob } = useUpdateAgentInJob({
     onError: (error) => {
-      toast.error('Failed to update agent', {
+      toast.error(t('llmProviders.errors.updateAgent'), {
         description: error.message,
       });
     },
@@ -111,7 +112,7 @@ function AgentSelection() {
               className="bg-neutral-900"
               side="top"
             >
-              Switch AI
+              {t('llmProviders.switch')}
             </TooltipContent>
           </TooltipPortal>
           <DropdownMenuContent
@@ -448,7 +449,7 @@ export const Inbox = () => {
         isLoadingMessage={isLoadingMessage}
         isSuccess={isChatConversationSuccess}
         lastMessageContent={messageContent}
-        noMoreMessageLabel="All previous messages have been loaded ✅"
+        noMoreMessageLabel={t('chat.allMessagesLoaded')}
         paginatedMessages={data}
         regenerateMessage={regenerateMessage}
       />
@@ -456,11 +457,11 @@ export const Inbox = () => {
         <Alert className="shadow-lg">
           <Terminal className="h-4 w-4" />
           <AlertTitle className="text-sm">
-            Your file is being processed
+            {t('chat.fileProcessing.title')}
           </AlertTitle>
           <AlertDescription className="text-xs">
             <div className="flex flex-row items-center space-x-2">
-              <span>It can take a few minutes</span>
+              <span>{t('chat.fileProcessing.description')}</span>
             </div>
           </AlertDescription>
           <Terminal className="h-4 w-4" />
@@ -488,7 +489,9 @@ export const Inbox = () => {
                 name="message"
                 render={({ field }) => (
                   <FormItem className="flex-1 space-y-0">
-                    <FormLabel className="sr-only">Enter message</FormLabel>
+                    <FormLabel className="sr-only">
+                      {t('chat.enterMessage')}
+                    </FormLabel>
                     <FormControl>
                       <div className="">
                         <div className="flex items-center gap-2.5 px-1 pb-2 pt-1">
@@ -520,7 +523,7 @@ export const Inbox = () => {
                                   className="bg-neutral-900"
                                   side="top"
                                 >
-                                  Upload a File
+                                  {t('common.uploadFile')}
                                 </TooltipContent>
                               </TooltipPortal>
                             </Tooltip>
@@ -537,7 +540,9 @@ export const Inbox = () => {
                               variant="tertiary"
                             >
                               <SendIcon className="h-full w-full" />
-                              <span className="sr-only">Send Message</span>
+                              <span className="sr-only">
+                                {t('chat.sendMessage')}
+                              </span>
                             </Button>
                           }
                           disabled={isLoadingMessage}

@@ -253,10 +253,10 @@ const EditAgentDrawer = ({
   const { mutateAsync: updateLLMProvider, isPending } = useUpdateLLMProvider({
     onSuccess: () => {
       onOpenChange(false);
-      toast.success('AI updated successfully');
+      toast.success(t('llmProviders.success.updateAgent'));
     },
     onError: (error) => {
-      toast.error('Error updating agent', {
+      toast.error(t('llmProviders.errors.updateAgent'), {
         description: typeof error === 'string' ? error : error.message,
       });
     },
@@ -294,7 +294,7 @@ const EditAgentDrawer = ({
       <DrawerContent>
         <DrawerHeader className="mb-6">
           <DrawerTitle className="font-normal">
-            Update <span className="font-medium">{agentId}</span>{' '}
+            {t('common.update')} <span className="font-medium">{agentId}</span>{' '}
           </DrawerTitle>
         </DrawerHeader>
         <Form {...form}>
@@ -381,14 +381,16 @@ const RemoveAgentDrawer = ({
   onOpenChange: (open: boolean) => void;
   agentId: string;
 }) => {
+  const { t } = useTranslation();
+
   const auth = useAuth((state) => state.auth);
   const { mutateAsync: deleteLLMProvider, isPending } = useDeleteLLMProvider({
     onSuccess: () => {
       onOpenChange(false);
-      toast.success('AI deleted successfully');
+      toast.success(t('llmProviders.success.deleteAgent'));
     },
     onError: (error) => {
-      toast.error('Error deleting agent', {
+      toast.error(t('llmProviders.errors.deleteAgent'), {
         description: typeof error === 'string' ? error : error.message,
       });
     },
@@ -399,13 +401,12 @@ const RemoveAgentDrawer = ({
       <DrawerContent>
         <DrawerHeader>
           <DrawerTitle className="font-normal">
-            Delete AI
+            {t('llmProviders.delete.label')}
             <span className="font-medium">{agentId}</span>{' '}
           </DrawerTitle>
         </DrawerHeader>
         <p className="text-gray-80 my-3 text-base">
-          Are you sure you want to delete this agent? This action cannot be
-          undone.
+          {t('llmProviders.delete.description')}
         </p>
         <DrawerFooter>
           <Button
@@ -427,7 +428,7 @@ const RemoveAgentDrawer = ({
             }}
             variant="destructive"
           >
-            Delete
+            {t('common.delete')}
           </Button>
         </DrawerFooter>
       </DrawerContent>

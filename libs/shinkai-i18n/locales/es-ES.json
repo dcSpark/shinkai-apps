@@ -26,6 +26,7 @@
     "allMessagesLoaded": "Todos los mensajes anteriores han sido cargados ✅",
     "archives": {
       "archive": "Archivo",
+      "archived": "Archivado",
       "error": "Error al archivar la conversación",
       "label": "Archivos",
       "notFound": "No se encontraron conversaciones archivadas.",
@@ -43,10 +44,15 @@
     "emptyStateDescription": "Prueba con “Cómo hacer una solicitud HTTP en JavaScript”, “Dame las 10 mejores canciones de rock de los 80”, “Explícame cómo funciona internet”",
     "emptyStateTitle": "Pregunta a Shinkai IA",
     "enterMessage": "Introducir Mensaje",
+    "fileProcessing": {
+      "description": "Puede tardar unos minutos",
+      "title": "Tu archivo se está procesando"
+    },
     "form": {
       "message": "Cuéntanos la tarea que deseas realizar",
       "messagePlaceholder": "Ej: Explícame cómo funciona internet...",
       "selectAI": "Selecciona tu IA",
+      "selectedText": "Tu texto seleccionado",
       "setContext": "Establecer Contexto del Chat",
       "setContextText": "Añade archivos o carpetas para que tu IA los utilice como contexto durante la conversación.",
       "workflows": "Procesos"
@@ -280,6 +286,7 @@
     "exportConnection": {
       "label": "Exportar conexión"
     },
+    "general": "General",
     "label": "Configuración",
     "language": {
       "label": "Idioma",
@@ -317,6 +324,18 @@
     "shortcutKey": {
       "description": "Modifica la tecla de acceso directo para abrir la barra lateral",
       "label": "Tecla de Acceso Directo"
+    },
+    "sidebar": {
+      "blacklistedWebsites": "Sitios web en lista negra",
+      "includeClickImageCapture": {
+        "text": "Agrega un botón de Captura de imagen al menú emergente de Acceso rápido.",
+        "title": "Incluir opción de Captura de imagen de 1 clic"
+      },
+      "includeClickSummary": {
+        "text": "Agrega un botón de Resumen al menú emergente de Acceso rápido.",
+        "title": "Incluir opción de Resumen de 1 clic"
+      },
+      "label": "Barra lateral"
     }
   },
   "shinkaiNode": {
@@ -368,6 +387,10 @@
     "restartNode": "Por favor, reinicia tu Nodo Shinkai",
     "unavailable": "Tu Nodo Shinkai no está disponible"
   },
+  "subscriptions": {
+    "browse": "Explorar Suscripciones Públicas",
+    "label": "Mis Suscripciones"
+  },
   "vectorFs": {
     "actions": {
       "addNew": "Añadir nuevo",
@@ -377,7 +400,9 @@
       "move": "Mover",
       "searchWithinFolder": "Buscar dentro de la carpeta",
       "share": "Compartir",
+      "shareFolderText": "Puedes compartir carpetas que guardas en Archivos de IA con cualquier persona.",
       "unshare": "Dejar de compartir",
+      "unshareFolderText": "Todos serán eliminados de esta carpeta. Aún conservarás una copia de esta carpeta en tus Archivos de IA. <br /> Nota: Los miembros eliminados conservarán una copia de esta carpeta compartida.",
       "uploadFile": "Subir archivo",
       "uploadFileText": "Subir tus archivos los transforma para estar listos en AI y disponibles para usar en Shinkai."
     },
@@ -404,6 +429,7 @@
     },
     "filesSelected": "{{count}} seleccionados",
     "forms": {
+      "folderDescription": "Descripción de la carpeta",
       "folderName": "Nombre de la carpeta"
     },
     "home": "Inicio",

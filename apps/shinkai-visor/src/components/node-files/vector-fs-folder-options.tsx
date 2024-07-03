@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { isShinkaiIdentityLocalhost } from '@shinkai_network/shinkai-message-ts/utils';
 import {
   ShareFolderFormSchema,
@@ -35,6 +36,7 @@ import {
 import { useVectorFsStore } from './node-file-context';
 
 export const VectorFsFolderMoveAction = () => {
+  const { t } = useTranslation();
   const selectedFolder = useVectorFsStore((state) => state.selectedFolder);
   const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
   const auth = useAuth((state) => state.auth);
@@ -50,10 +52,10 @@ export const VectorFsFolderMoveAction = () => {
       onSuccess: () => {
         setCurrentGlobalPath(destinationFolderPath ?? '/');
         closeDrawerMenu();
-        toast.success('Folder moved successfully');
+        toast.success(t('vectorFs.success.folderMoved'));
       },
       onError: () => {
-        toast.error('Failed to move folder');
+        toast.error(t('vectorFs.errors.folderMoved'));
       },
     });
 
@@ -61,7 +63,7 @@ export const VectorFsFolderMoveAction = () => {
     <React.Fragment>
       <DrawerHeader>
         <DrawerTitle className="font-normal">
-          Move
+          {t('vectorFs.actions.move')}
           <span className="font-medium">
             {' '}
             &quot;{selectedFolder?.name}&quot;
@@ -90,13 +92,14 @@ export const VectorFsFolderMoveAction = () => {
             });
           }}
         >
-          Move
+          {t('vectorFs.actions.move')}
         </Button>
       </DrawerFooter>
     </React.Fragment>
   );
 };
 export const VectorFsFolderDeleteAction = () => {
+  const { t } = useTranslation();
   const selectedFolder = useVectorFsStore((state) => state.selectedFolder);
   const auth = useAuth((state) => state.auth);
   const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
@@ -104,10 +107,10 @@ export const VectorFsFolderDeleteAction = () => {
   const { mutateAsync: deleteVrFolder, isPending } = useDeleteVrFolder({
     onSuccess: () => {
       closeDrawerMenu();
-      toast.success('Folder has been deleted');
+      toast.success(t('vectorFs.success.folderDeleted'));
     },
     onError: () => {
-      toast.error('Failed to delete folder');
+      toast.error(t('vectorFs.errors.folderDeleted'));
     },
   });
 
@@ -115,7 +118,7 @@ export const VectorFsFolderDeleteAction = () => {
     <React.Fragment>
       <DrawerHeader>
         <DrawerTitle className="font-normal">
-          Delete
+          {t('vectorFs.actions.delete')}
           <span className="font-medium">
             {' '}
             &quot;{selectedFolder?.name}&quot;
@@ -123,8 +126,7 @@ export const VectorFsFolderDeleteAction = () => {
         </DrawerTitle>
       </DrawerHeader>
       <p className="text-gray-80 my-3 text-base">
-        Are you sure you want to delete this folder? This action cannot be
-        undone.
+        {t('vectorFs.deleteFolderConfirmation')}
       </p>
       <DrawerFooter>
         <Button
@@ -145,7 +147,7 @@ export const VectorFsFolderDeleteAction = () => {
           }}
           variant="destructive"
         >
-          Delete
+          {t('vectorFs.actions.delete')}
         </Button>
       </DrawerFooter>
     </React.Fragment>
@@ -153,6 +155,7 @@ export const VectorFsFolderDeleteAction = () => {
 };
 
 export const VectorFsFolderCopyAction = () => {
+  const { t } = useTranslation();
   const selectedFolder = useVectorFsStore((state) => state.selectedFolder);
   const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
   const auth = useAuth((state) => state.auth);
@@ -167,10 +170,10 @@ export const VectorFsFolderCopyAction = () => {
     onSuccess: () => {
       setCurrentGlobalPath(destinationFolderPath ?? '/');
       closeDrawerMenu();
-      toast.success('Folder copied successfully');
+      toast.success(t('vectorFs.success.folderCopied'));
     },
     onError: () => {
-      toast.error('Failed to copy folder');
+      toast.error(t('vectorFs.errors.folderCopied'));
     },
   });
 
@@ -178,7 +181,7 @@ export const VectorFsFolderCopyAction = () => {
     <React.Fragment>
       <DrawerHeader>
         <DrawerTitle className="font-normal">
-          Copy
+          {t('vectorFs.actions.copy')}
           <span className="font-medium">
             {' '}
             &quot;{selectedFolder?.name}&quot;
@@ -207,7 +210,7 @@ export const VectorFsFolderCopyAction = () => {
             });
           }}
         >
-          Copy
+          {t('vectorFs.actions.copy')}
         </Button>
       </DrawerFooter>
     </React.Fragment>
@@ -215,6 +218,7 @@ export const VectorFsFolderCopyAction = () => {
 };
 
 export const VectorFsFolderCreateShareableAction = () => {
+  const { t } = useTranslation();
   const selectedFolder = useVectorFsStore((state) => state.selectedFolder);
   const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
   const auth = useAuth((state) => state.auth);
@@ -232,11 +236,11 @@ export const VectorFsFolderCreateShareableAction = () => {
     useCreateShareableFolder({
       onSuccess: () => {
         closeDrawerMenu();
-        toast.success('Folder shared successfully');
+        toast.success(t('vectorFs.success.folderShared'));
         setSelectedVectorFsTab('shared-folders');
       },
       onError: () => {
-        toast.error('Failed to shared folder');
+        toast.error(t('vectorFs.errors.folderShared'));
       },
     });
 
@@ -262,14 +266,14 @@ export const VectorFsFolderCreateShareableAction = () => {
     <React.Fragment>
       <DrawerHeader>
         <DrawerTitle className="line-clamp-1 font-normal">
-          Share
+          {t('vectorFs.actions.share')}
           <span className="font-medium">
             {' '}
             &quot;{selectedFolder?.name}&quot;
           </span>{' '}
         </DrawerTitle>
         <DrawerDescription>
-          You can share folders that you store in AI Files with anyone.
+          {t('vectorFs.actions.shareFolderText')}
         </DrawerDescription>
       </DrawerHeader>
       <Form {...shareFolderForm}>
@@ -281,7 +285,11 @@ export const VectorFsFolderCreateShareableAction = () => {
             control={shareFolderForm.control}
             name="folderDescription"
             render={({ field }) => (
-              <TextField autoFocus field={field} label="Folder Description" />
+              <TextField
+                autoFocus
+                field={field}
+                label={t('vectorFs.forms.folderDescription')}
+              />
             )}
           />
           <Button
@@ -293,24 +301,25 @@ export const VectorFsFolderCreateShareableAction = () => {
             isLoading={isPending}
             type="submit"
           >
-            Share Folder
+            {t('vectorFs.actions.share')}
           </Button>
 
           {isIdentityLocalhost && (
             <Alert className="mx-auto w-[98%] shadow-lg" variant="warning">
               <AlertCircle className="h-4 w-4" />
-              <AlertTitle className="text-sm">Enable Folder Sharing</AlertTitle>
+              <AlertTitle className="text-sm">
+                {t('vectorFs.shareFolderWarning.title')}
+              </AlertTitle>
               <AlertDescription className="text-xs">
                 <div className="">
-                  You must register a Shinkai identity before you can share
-                  folders over the Shinkai Network.{' '}
+                  {t('vectorFs.shareFolderWarning.text')}
                   <a
                     className="underline"
                     href="https://docs.shinkai.com/for-end-users/register-identity-onchain/"
                     rel="noreferrer"
                     target="_blank"
                   >
-                    Click Here To Learn How
+                    {t('vectorFs.shareFolderWarning.action')}{' '}
                   </a>
                 </div>
               </AlertDescription>
@@ -322,6 +331,7 @@ export const VectorFsFolderCreateShareableAction = () => {
   );
 };
 export const VectorFsFolderUnshareAction = () => {
+  const { t, Trans } = useTranslation();
   const selectedFolder = useVectorFsStore((state) => state.selectedFolder);
   const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
   const auth = useAuth((state) => state.auth);
@@ -332,10 +342,10 @@ export const VectorFsFolderUnshareAction = () => {
   const { mutateAsync: unshareFolder, isPending } = useUnshareFolder({
     onSuccess: () => {
       closeDrawerMenu();
-      toast.success('Unshared folder successfully');
+      toast.success(t('vectorFs.success.folderUnshared'));
     },
     onError: () => {
-      toast.error('Failed to unshared folder');
+      toast.error(t('vectorFs.errors.folderUnshared'));
     },
   });
 
@@ -343,7 +353,7 @@ export const VectorFsFolderUnshareAction = () => {
     <React.Fragment>
       <DrawerHeader>
         <DrawerTitle className="line-clamp-1 font-normal">
-          Unshare
+          {t('vectorFs.actions.unshare')}
           <span className="font-medium">
             {' '}
             &quot;{selectedFolder?.name}&quot;
@@ -351,9 +361,10 @@ export const VectorFsFolderUnshareAction = () => {
           ?
         </DrawerTitle>
         <DrawerDescription className="py-3">
-          Everyone will be removed from this folder. You’ll still keep a copy of
-          this folder in your AI Files. <br />
-          Note: Removed members will keep a copy of this shared folder.
+          <Trans
+            components={{ br: <br /> }}
+            i18nKey="vectorFs.actions.unshareFolderText"
+          />
         </DrawerDescription>
       </DrawerHeader>
 
@@ -376,7 +387,7 @@ export const VectorFsFolderUnshareAction = () => {
             });
           }}
         >
-          Unshare Folder
+          {t('vectorFs.actions.unshare')}
         </Button>
       </DrawerFooter>
     </React.Fragment>

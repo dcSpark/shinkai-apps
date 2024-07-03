@@ -46,7 +46,8 @@
       "workflows": "Workflows",
       "selectAI": "Select your AI",
       "setContext": "Set Chat Context",
-      "setContextText": "Add files or folders for your AI to use as context during your conversation."
+      "setContextText": "Add files or folders for your AI to use as context during your conversation.",
+      "selectedText": "Your selected text"
     },
     "context": {
       "title": "Conversation Context",
@@ -59,18 +60,23 @@
     "archives": {
       "label": "Archives",
       "archive": "Archive",
+      "archived": "Archived",
       "notFound": "No archived conversations found.",
       "success": "Your conversation has been archived",
       "error": "Error archiving job"
     },
     "editMessage": {
       "warning": "This will restart your conversation from here."
+    },
+    "fileProcessing": {
+      "title": "Your file is being processed",
+      "description": "It can take a few minutes"
     }
   },
   "aiFilesSearch": {
     "label": "AI Files Content Search",
     "description": "Search to find content across all files in your AI Files easily",
-    "foundResults": "Found {{count}} result",
+    "foundResults": "Found {{count}} results",
     "filesSelected": "Selected {{count}} files"
   },
   "vectorFs": {
@@ -88,10 +94,13 @@
       "copy": "Copy",
       "delete": "Delete",
       "searchWithinFolder": "Search within folder",
-      "uploadFileText": "Uploading your files transforms them to be AI-ready and available to use in Shinkai."
+      "uploadFileText": "Uploading your files transforms them to be AI-ready and available to use in Shinkai.",
+      "shareFolderText": "You can share folders that you store in AI Files with anyone.",
+      "unshareFolderText": "Everyone will be removed from this folder. You’ll still keep a copy of this folder in your AI Files. <br /> Note: Removed members will keep a copy of this shared folder."
     },
     "forms": {
-      "folderName": "Folder Name"
+      "folderName": "Folder Name",
+      "folderDescription": "Folder Description"
     },
     "pending": {
       "filesUploading": "Uploading files"
@@ -135,6 +144,10 @@
       "text": "You must register a Shinkai identity before you can share folders over the Shinkai Network.",
       "action": "Click Here to Learn How"
     }
+  },
+  "subscriptions": {
+    "label": "My Subscriptions",
+    "browse": "Browse Public Subscriptions"
   },
   "inboxes": {
     "updateName": "Update inbox name",
@@ -217,6 +230,19 @@
       "goToShinkaiIdentity": "Go to My Shinkai Identity",
       "success": "Shinkai Identity updated successfully",
       "error": "Error updating Shinkai Identity"
+    },
+    "general": "General",
+    "sidebar": {
+      "label": "Sidebar",
+      "blacklistedWebsites": "Blacklisted Websites",
+      "includeClickSummary": {
+        "title": "Include 1-Click Summary Option",
+        "text": "Adds a Summary Button to the Quick Access hover menu."
+      },
+      "includeClickImageCapture": {
+        "title": "Include 1-Click Image Capture Option",
+        "text": "Adds an Image Capture Button to the Quick Access hover menu."
+      }
     },
     "quickAccessButton": {
       "label": "Show Shinkai Quick Access Button",

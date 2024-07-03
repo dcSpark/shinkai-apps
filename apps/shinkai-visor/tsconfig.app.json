@@ -20,6 +20,7 @@
     "src/**/*.jsx",
     "src/**/*.ts",
     "src/**/*.tsx",
+    "index.d.ts",
     "@nx/react/typings/cssmodule.d.ts",
     "@nx/react/typings/image.d.ts",
     "vite.config.ts"
