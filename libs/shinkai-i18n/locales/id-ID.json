@@ -286,6 +286,7 @@
     "exportConnection": {
       "label": "Ekspor koneksi"
     },
+    "general": "Umum",
     "label": "Pengaturan",
     "language": {
       "label": "Bahasa",
@@ -323,6 +324,18 @@
     "shortcutKey": {
       "description": "Ubah tombol pintas untuk meluncurkan sidebar",
       "label": "Tombol Pintas"
+    },
+    "sidebar": {
+      "blacklistedWebsites": "Situs Web yang Diblacklist",
+      "includeClickImageCapture": {
+        "text": "Menambahkan Tombol Tangkapan Gambar ke menu hover Akses Cepat.",
+        "title": "Sertakan Opsi Tangkapan Gambar 1-Klik"
+      },
+      "includeClickSummary": {
+        "text": "Menambahkan Tombol Ringkasan ke menu hover Akses Cepat.",
+        "title": "Sertakan Opsi Ringkasan 1-Klik"
+      },
+      "label": "Sidebar"
     }
   },
   "shinkaiNode": {

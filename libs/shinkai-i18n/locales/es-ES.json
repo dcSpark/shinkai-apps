@@ -286,6 +286,7 @@
     "exportConnection": {
       "label": "Exportar conexión"
     },
+    "general": "General",
     "label": "Configuración",
     "language": {
       "label": "Idioma",
@@ -323,6 +324,18 @@
     "shortcutKey": {
       "description": "Modifica la tecla de acceso directo para abrir la barra lateral",
       "label": "Tecla de Acceso Directo"
+    },
+    "sidebar": {
+      "blacklistedWebsites": "Sitios web en lista negra",
+      "includeClickImageCapture": {
+        "text": "Agrega un botón de Captura de imagen al menú emergente de Acceso rápido.",
+        "title": "Incluir opción de Captura de imagen de 1 clic"
+      },
+      "includeClickSummary": {
+        "text": "Agrega un botón de Resumen al menú emergente de Acceso rápido.",
+        "title": "Incluir opción de Resumen de 1 clic"
+      },
+      "label": "Barra lateral"
     }
   },
   "shinkaiNode": {

@@ -286,6 +286,7 @@
     "exportConnection": {
       "label": "接続をエクスポート"
     },
+    "general": "一般",
     "label": "設定",
     "language": {
       "label": "言語",
@@ -323,6 +324,18 @@
     "shortcutKey": {
       "description": "サイドバーを起動するショートカットキーを変更します",
       "label": "ショートカットキー"
+    },
+    "sidebar": {
+      "blacklistedWebsites": "ブラックリストに登録されたウェブサイト",
+      "includeClickImageCapture": {
+        "text": "クイックアクセスホバーメニューに画像キャプチャーボタンを追加します。",
+        "title": "1-クリック画像キャプチャーオプションを含める"
+      },
+      "includeClickSummary": {
+        "text": "クイックアクセスホバーメニューにサマリーボタンを追加します。",
+        "title": "1-クリックサマリーオプションを含める"
+      },
+      "label": "サイドバー"
     }
   },
   "shinkaiNode": {

@@ -1,4 +1,4 @@
-import { t, useTranslation } from '@shinkai_network/shinkai-i18n';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useArchiveJob } from '@shinkai_network/shinkai-node-state/lib/mutations/archiveJob/useArchiveJob';
 import {
   AlertDialog,

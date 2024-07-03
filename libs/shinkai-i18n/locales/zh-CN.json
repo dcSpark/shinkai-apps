@@ -286,6 +286,7 @@
     "exportConnection": {
       "label": "导出连接"
     },
+    "general": "常规",
     "label": "设置",
     "language": {
       "label": "语言",
@@ -323,6 +324,18 @@
     "shortcutKey": {
       "description": "修改启动侧边栏的快捷键",
       "label": "快捷键"
+    },
+    "sidebar": {
+      "blacklistedWebsites": "黑名单网站",
+      "includeClickImageCapture": {
+        "text": "在快速访问悬停菜单中添加图像捕获按钮。",
+        "title": "包括一键图像捕获选项"
+      },
+      "includeClickSummary": {
+        "text": "在快速访问悬停菜单中添加摘要按钮。",
+        "title": "包括一键摘要选项"
+      },
+      "label": "侧边栏"
     }
   },
   "shinkaiNode": {
