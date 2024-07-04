@@ -73,8 +73,8 @@ export type SmartInbox = {
   inbox_id: string;
   last_message?: ShinkaiMessage;
   is_finished: boolean;
-  job_scope: JobScope;
-  agent: AgentInbox;
+  job_scope?: JobScope;
+  agent?: AgentInbox;
 };
 
 export type CreateChatInboxResponse = {

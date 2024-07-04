@@ -114,11 +114,13 @@ export const useOnboardingSteps = () => {
       currentStepsMap.set(GetStartedSteps.CreateAIChat, GetStartedStatus.Done);
     }
     const hasMoreThan1Folder =
-      inboxes.filter((inbox) => inbox.job_scope.vector_fs_folders.length > 1)
-        .length > 1;
+      inboxes.filter(
+        (inbox) => (inbox?.job_scope?.vector_fs_folders ?? []).length > 1,
+      ).length > 1;
     const hasMoreThanZeroItem =
-      inboxes.filter((inbox) => inbox.job_scope.vector_fs_items.length > 0)
-        .length > 0;
+      inboxes.filter(
+        (inbox) => (inbox?.job_scope?.vector_fs_items ?? []).length > 0,
+      ).length > 0;
 
     if (hasMoreThanZeroItem || hasMoreThan1Folder) {
       currentStepsMap.set(
