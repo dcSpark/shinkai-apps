@@ -130,7 +130,8 @@ const DisplayInboxName = () => {
                 <span className="text-gray-80 flex items-center gap-1 text-xs font-medium">
                   <DirectoryTypeIcon className="ml-1 h-4 w-4" />
                   {t('common.folderWithCount', {
-                    count: currentInbox?.job_scope.vector_fs_folders.length,
+                    count: (currentInbox?.job_scope?.vector_fs_folders ?? [])
+                      .length,
                   })}
                 </span>
               )}
@@ -138,7 +139,8 @@ const DisplayInboxName = () => {
                 <span className="text-gray-80 flex items-center gap-1 text-xs font-medium">
                   <FileTypeIcon className="ml-1 h-4 w-4" />
                   {t('common.fileWithCount', {
-                    count: currentInbox?.job_scope.vector_fs_folders.length,
+                    count: (currentInbox?.job_scope?.vector_fs_folders ?? [])
+                      .length,
                   })}
                 </span>
               )}

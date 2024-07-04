@@ -619,7 +619,8 @@ export const ConversationHeader = () => {
                 <span className="text-gray-80 flex items-center gap-1 text-xs font-medium">
                   <DirectoryTypeIcon className="ml-1 h-4 w-4" />
                   {t('common.folderWithCount', {
-                    count: currentInbox?.job_scope.vector_fs_folders.length,
+                    count: (currentInbox?.job_scope?.vector_fs_folders ?? [])
+                      .length,
                   })}
                 </span>
               )}
@@ -627,7 +628,8 @@ export const ConversationHeader = () => {
                 <span className="text-gray-80 flex items-center gap-1 truncate text-xs font-medium">
                   <FileTypeIcon className="ml-1 h-4 w-4" />
                   {t('common.fileWithCount', {
-                    count: currentInbox?.job_scope.vector_fs_items.length,
+                    count: (currentInbox?.job_scope?.vector_fs_items ?? [])
+                      .length,
                   })}
                 </span>
               )}
