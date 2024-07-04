@@ -42,7 +42,7 @@ import {
 import { PlusIcon } from 'lucide-react';
 import { TreeCheckboxSelectionKeys } from 'primereact/tree';
 import { TreeNode } from 'primereact/treenode';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
@@ -224,7 +224,7 @@ const WorkflowPlayground = () => {
       files_inbox: '',
       files: data.files,
       workflow: data.workflow,
-      is_hidden: false,
+      is_hidden: true,
       selectedVRFiles,
       selectedVRFolders,
       my_device_encryption_sk: auth.my_device_encryption_sk,
@@ -235,12 +235,48 @@ const WorkflowPlayground = () => {
     });
   };
 
-  // useEffect(() => {
-  //   return () => {
-  //     file && URL.revokeObjectURL(file.preview);
-  //   };
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
+  const onWorkflowChange = useCallback(
+    (value: string) => {
+      createJobForm.setValue('workflow', value);
+    },
+    [createJobForm],
+  );
+
+  const handleWorkflowKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+
+        const textarea = e.currentTarget;
+        const { selectionStart, selectionEnd } = textarea;
+        const currentValue = textarea.value;
+
+        const lineStart =
+          currentValue.lastIndexOf('\n', selectionStart - 1) + 1;
+        const lineEnd = currentValue.indexOf('\n', selectionStart);
+        const currentLine = currentValue.substring(
+          lineStart,
+          lineEnd === -1 ? currentValue.length : lineEnd,
+        );
+        const indent = currentLine?.match(/^\s*/)?.[0];
+
+        const newValue =
+          currentValue.substring(0, selectionStart) +
+          '\n' +
+          indent +
+          currentValue.substring(selectionEnd);
+
+        onWorkflowChange(newValue);
+
+        // wait update before we can set the selection
+        setTimeout(() => {
+          textarea.selectionStart = textarea.selectionEnd =
+            selectionStart + (indent ?? '').length + 1;
+        }, 0);
+      }
+    },
+    [onWorkflowChange],
+  );
 
   return (
     <SubpageLayout
@@ -289,7 +325,8 @@ const WorkflowPlayground = () => {
                     <FormControl>
                       <Textarea
                         autoFocus={true}
-                        className="resize-none"
+                        className="resize-none text-sm"
+                        onKeyDown={handleWorkflowKeyDown}
                         placeholder="Workflow"
                         {...field}
                       />
