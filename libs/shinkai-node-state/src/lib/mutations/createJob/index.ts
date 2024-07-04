@@ -36,7 +36,7 @@ export const createJob = async ({
   let scope = new JobScopeWrapper(job_creation.buckets, job_creation.documents);
   if (selectedVRFiles.length > 0 || selectedVRFolders.length > 0) {
     scope = JobCreationWrapper.from_jsvalue({
-      is_hidden: false,
+      is_hidden: is_hidden,
       scope: {
         local_vrkai: [],
         local_vrpack: [],
@@ -60,7 +60,7 @@ export const createJob = async ({
   const jobId = await createJobApi(
     nodeAddress,
     hasVRFiles ? scope : scope.to_jsvalue(),
-    is_hidden == null ? false : is_hidden,
+    !!is_hidden,
     shinkaiIdentity,
     profile,
     receiver,
