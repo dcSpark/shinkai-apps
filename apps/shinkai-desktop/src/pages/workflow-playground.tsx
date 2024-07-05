@@ -39,7 +39,7 @@ import {
   AISearchContentIcon,
   FilesIcon,
 } from '@shinkai_network/shinkai-ui/assets';
-import { PlusIcon } from 'lucide-react';
+import { MoveLeft, MoveRight, PlusIcon, TrashIcon } from 'lucide-react';
 import { TreeCheckboxSelectionKeys } from 'primereact/tree';
 import { TreeNode } from 'primereact/treenode';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -54,16 +54,25 @@ import { allowedFileExtensions } from '../lib/constants';
 import { useAnalytics } from '../lib/posthog-provider';
 import { ADD_AGENT_PATH } from '../routes/name';
 import { useAuth } from '../store/auth';
+import { useExperimental } from '../store/experimental';
 import { useSettings } from '../store/settings';
 import { SubpageLayout } from './layout/simple-layout';
 
 const WorkflowPlayground = () => {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
+  const workflowHistory = useExperimental((state) => state.workflowHistory);
+  const addWorkflowHistory = useExperimental(
+    (state) => state.addWorkflowHistory,
+  );
+  const clearWorkflowHistory = useExperimental(
+    (state) => state.clearWorkflowHistory,
+  );
   const defaulAgentId = useSettings((state) => state.defaultAgentId);
   const navigate = useNavigate();
   const location = useLocation();
   const { captureAnalyticEvent } = useAnalytics();
+  const [currentWorkflowIndex, setCurrentWorkflowIndex] = useState(-1);
 
   const locationState = location.state as {
     files: File[];
@@ -146,10 +155,12 @@ const WorkflowPlayground = () => {
 
   const { isPending, mutateAsync: createJob } = useCreateJob({
     onSuccess: (data, variables) => {
-      // TODO: job_inbox, false is hardcoded
       navigate(
         `/workflow-playground/${encodeURIComponent(buildInboxIdFromJobId(data.jobId))}`,
       );
+
+      addWorkflowHistory(variables.workflow as string);
+
       const files = variables?.files ?? [];
       const localFilesCount = (variables.selectedVRFiles ?? [])?.length;
       const localFoldersCount = (variables.selectedVRFolders ?? [])?.length;
@@ -169,6 +180,9 @@ const WorkflowPlayground = () => {
       }
     },
   });
+  useEffect(() => {
+    setCurrentWorkflowIndex(workflowHistory.size - 1);
+  }, []);
 
   useEffect(() => {
     if (
@@ -286,7 +300,7 @@ const WorkflowPlayground = () => {
       <div className="flex h-[calc(100vh_-_150px)] gap-6 overflow-hidden">
         <Form {...createJobForm}>
           <form
-            className="flex-1 space-y-8 overflow-y-auto"
+            className="flex-1 space-y-8 overflow-y-auto pr-2"
             onSubmit={createJobForm.handleSubmit(onSubmit)}
           >
             <div className="space-y-6">
@@ -320,17 +334,89 @@ const WorkflowPlayground = () => {
                 control={createJobForm.control}
                 name="workflow"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="relative">
                     <FormLabel>{t('chat.form.workflows')}</FormLabel>
                     <FormControl>
                       <Textarea
                         autoFocus={true}
-                        className="resize-none text-sm"
+                        className="!min-h-[100px] resize-none text-sm"
                         onKeyDown={handleWorkflowKeyDown}
                         placeholder="Workflow"
+                        spellCheck={false}
                         {...field}
                       />
                     </FormControl>
+                    {Array.from(workflowHistory).length > 0 && (
+                      <>
+                        <div className="absolute right-3 top-3 flex items-center gap-2">
+                          <Button
+                            className="h-6 w-6"
+                            disabled={currentWorkflowIndex <= 0}
+                            onClick={() => {
+                              if (currentWorkflowIndex > 0) {
+                                setCurrentWorkflowIndex(
+                                  (prevIndex) => prevIndex - 1,
+                                );
+                                createJobForm.setValue(
+                                  'workflow',
+                                  Array.from(workflowHistory)[
+                                    currentWorkflowIndex - 1
+                                  ],
+                                );
+                              }
+                            }}
+                            size="icon"
+                            type="button"
+                            variant="outline"
+                          >
+                            <MoveLeft className="h-3 w-3" />
+                          </Button>
+
+                          <Button
+                            className="h-6 w-6"
+                            disabled={
+                              currentWorkflowIndex >= workflowHistory.size - 1
+                            }
+                            onClick={() => {
+                              if (
+                                currentWorkflowIndex <
+                                workflowHistory.size - 1
+                              ) {
+                                setCurrentWorkflowIndex(
+                                  (prevIndex) => prevIndex + 1,
+                                );
+                                createJobForm.setValue(
+                                  'workflow',
+                                  Array.from(workflowHistory)[
+                                    currentWorkflowIndex + 1
+                                  ],
+                                );
+                              }
+                            }}
+                            size="icon"
+                            type="button"
+                            variant="outline"
+                          >
+                            <MoveRight className="h-3 w-3" />
+                          </Button>
+                        </div>
+                        <div className="absolute bottom-3 right-3">
+                          <Button
+                            className="h-6 w-6"
+                            onClick={() => {
+                              setCurrentWorkflowIndex(-1);
+                              createJobForm.setValue('workflow', '');
+                              clearWorkflowHistory();
+                            }}
+                            size="icon"
+                            type="button"
+                            variant="outline"
+                          >
+                            <TrashIcon className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}
