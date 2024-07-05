@@ -328,6 +328,7 @@ const WorkflowPlayground = () => {
                         className="resize-none text-sm"
                         onKeyDown={handleWorkflowKeyDown}
                         placeholder="Workflow"
+                        spellCheck={false}
                         {...field}
                       />
                     </FormControl>
