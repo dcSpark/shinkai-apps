@@ -559,7 +559,11 @@ const MainLayout = () => {
     !!auth && !disabledSidebarRoutes.includes(location.pathname);
 
   return (
-    <div className="flex min-h-full flex-col bg-gray-500 text-white">
+    <div className="relative flex min-h-full flex-col bg-gray-500 text-white">
+      <div
+        className="absolute top-0 z-50 h-8 w-full"
+        data-tauri-drag-region={true}
+      />
       <div className={cn('flex flex-1', !!auth && '')}>
         {displaySidebar && <MainNav />}
         <motion.div

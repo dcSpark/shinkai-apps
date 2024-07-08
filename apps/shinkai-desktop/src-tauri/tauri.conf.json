@@ -97,7 +97,9 @@
         "width": 1080,
         "height": 820,
         "resizable": true,
-        "fileDropEnabled": false
+        "fileDropEnabled": false,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true
       }
     ],
     "macOSPrivateApi": true,
