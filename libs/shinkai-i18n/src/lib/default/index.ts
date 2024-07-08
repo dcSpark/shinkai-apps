@@ -184,9 +184,9 @@ export default {
       errorSyncOllama:
         'Error synchronizing your local Ollama models with your Shinkai Node',
       optionsRestored: 'Options restored to default values',
-      startingDownload: 'Starting download for AI model {{modeName}}',
-      downloadingModel: 'Downloading AI model {{modeName}} - {{progress}}%',
-      downloadedModel: 'AI model {{modeName}} downloaded successfully',
+      startingDownload: 'Starting download for AI model {{modelName}}',
+      downloadingModel: 'Downloading AI model {{modelName}} - {{progress}}%',
+      downloadedModel: 'AI model {{modelName}} downloaded successfully',
     },
     manager: 'Shinkai Node Manager',
     resetNodeWarning: {
