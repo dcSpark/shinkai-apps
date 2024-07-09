@@ -307,7 +307,7 @@ export function MainNav() {
         width: sidebarExpanded ? '230px' : '70px',
         transition: sidebarTransition,
       }}
-      className="fixed inset-0 z-30 flex w-auto shrink-0 flex-col gap-2 overflow-y-auto overflow-x-hidden border-r border-gray-400/30 bg-gradient-to-b from-gray-300 to-gray-400/70 px-2 py-6 shadow-xl"
+      className="fixed inset-0 z-30 flex w-auto shrink-0 flex-col gap-2 overflow-y-auto overflow-x-hidden border-r border-gray-400/30 bg-gradient-to-b from-gray-300 to-gray-400/70 px-2 py-6 pt-9 shadow-xl"
       initial={{
         width: sidebarExpanded ? '230px' : '70px',
       }}
