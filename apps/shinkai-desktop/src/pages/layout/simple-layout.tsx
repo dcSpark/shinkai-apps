@@ -58,9 +58,11 @@ export const SimpleLayout = ({
   title,
   children,
   classname,
+  headerRightElement,
 }: {
   title?: React.ReactNode;
   children: React.ReactNode;
+  headerRightElement?: React.ReactNode;
   classname?: string;
 }) => {
   return (
@@ -70,9 +72,12 @@ export const SimpleLayout = ({
         classname,
       )}
     >
-      {title ? (
-        <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
-      ) : null}
+      <div className="flex items-center justify-between gap-4">
+        {title ? (
+          <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
+        ) : null}
+        {headerRightElement}
+      </div>
       <div className="flex-1">{children}</div>
     </div>
   );

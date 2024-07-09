@@ -49,6 +49,7 @@ export enum MessageSchemaType {
   APIAddOllamaModels = 'APIAddOllamaModels',
   // ws
   WSMessage = 'WSMessage',
+  GetLastNotifications = 'GetLastNotifications',
 }
 
 export interface LocalScopeVRKaiEntry {
