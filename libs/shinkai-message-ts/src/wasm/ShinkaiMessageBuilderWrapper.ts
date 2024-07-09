@@ -1272,6 +1272,7 @@ export class ShinkaiMessageBuilderWrapper {
       streamer_node_name,
       streamer_profile_name,
       payment: 'Free',
+      http_preferred: true,
     };
     const body = JSON.stringify(payload);
 
