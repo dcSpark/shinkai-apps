@@ -2,7 +2,6 @@ import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { VRItem } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import {
-  Button,
   buttonVariants,
   Checkbox,
   DropdownMenu,
@@ -128,21 +127,27 @@ const VectorFsItem = ({
       <TooltipProvider delayDuration={0}>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button
-              className="border p-2"
+            <div
+              className={cn(
+                buttonVariants({
+                  variant: 'gradient',
+                  size: 'icon',
+                }),
+                'border p-2',
+              )}
               onClick={(event) => {
                 event.stopPropagation();
                 navigate('/create-job', {
                   state: {
-                    selectedVRFiles: [file],
+                    selectedVRFolders: [file],
                   },
                 });
               }}
-              size="icon"
-              variant="gradient"
+              role="button"
+              tabIndex={0}
             >
               <CreateAIIcon className="w-full" />
-            </Button>
+            </div>
           </TooltipTrigger>
           <TooltipPortal>
             <TooltipContent side="top">
