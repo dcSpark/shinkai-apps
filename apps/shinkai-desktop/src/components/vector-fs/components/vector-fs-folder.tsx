@@ -134,7 +134,7 @@ const VectorFsFolder = ({
             <div
               className={cn(
                 buttonVariants({
-                  variant: 'gradient',
+                  variant: 'outline',
                   size: 'icon',
                 }),
                 'border p-2',
