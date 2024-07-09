@@ -53,6 +53,8 @@ module.exports = {
         inter: ['Inter', ...defaultTheme.fontFamily.sans],
       },
       backgroundImage: {
+        'brand-gradient':
+          'linear-gradient(180deg, rgba(249, 97, 98, 0) 0%, rgba(249, 97, 98, 0.20) 100%)',
         'app-gradient':
           'linear-gradient(90deg, rgba(0, 0, 0, 0.30) 0%, rgba(0, 0, 0, 0.20) 100%)',
       },

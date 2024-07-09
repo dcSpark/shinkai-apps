@@ -2,6 +2,7 @@ import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { VRFolder } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import {
+  Button,
   buttonVariants,
   Checkbox,
   DropdownMenu,
@@ -9,9 +10,15 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipPortal,
+  TooltipProvider,
+  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import {
   AISearchContentIcon,
+  CreateAIIcon,
   DirectoryTypeIcon,
   SharedFolderIcon,
 } from '@shinkai_network/shinkai-ui/assets';
@@ -122,6 +129,32 @@ const VectorFsFolder = ({
         layout={layout}
         totalItem={totalItem}
       />
+      <TooltipProvider delayDuration={0}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              className="border p-2"
+              onClick={(event) => {
+                event.stopPropagation();
+                navigate('/create-job', {
+                  state: {
+                    selectedVRFolders: [folder],
+                  },
+                });
+              }}
+              size="icon"
+              variant="gradient"
+            >
+              <CreateAIIcon className="w-full" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipPortal>
+            <TooltipContent side="top">
+              <p>{t('chat.create')}</p>
+            </TooltipContent>
+          </TooltipPortal>
+        </Tooltip>
+      </TooltipProvider>
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <div
