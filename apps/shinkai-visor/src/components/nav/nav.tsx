@@ -166,12 +166,12 @@ const DisplayInboxName = () => {
                         (folder) => (
                           <li
                             className="flex items-center gap-2 py-1.5"
-                            key={folder.path}
+                            key={folder}
                           >
                             <DirectoryTypeIcon />
-                            <div className="text-gray-80 text-sm">
-                              {folder.name}
-                            </div>
+                            <span className="text-gray-80 text-xs text-white">
+                              {folder}
+                            </span>
                           </li>
                         ),
                       )}
@@ -187,16 +187,11 @@ const DisplayInboxName = () => {
                       {currentInbox?.job_scope?.vector_fs_items?.map((file) => (
                         <li
                           className="flex items-center gap-2 py-1.5"
-                          key={file.path}
+                          key={file}
                         >
-                          <FileTypeIcon
-                            type={
-                              file?.source?.Standard?.FileRef?.file_type
-                                ?.Document
-                            }
-                          />
-                          <span className="text-gray-80 text-sm">
-                            {file.name}
+                          <FileTypeIcon />
+                          <span className="text-gray-80 text-xs text-white">
+                            {file}
                           </span>
                         </li>
                       ))}
