@@ -489,7 +489,7 @@ const AllFiles = () => {
           <TooltipTrigger asChild>
             <MotionButton
               className={cn(
-                'fixed bottom-3 right-4 h-[60px] w-[60px]',
+                'fixed bottom-8 right-8 h-[60px] w-[60px]',
                 isVRSelectionActive && 'w-[210px]',
               )}
               layout
@@ -507,6 +507,7 @@ const AllFiles = () => {
               }}
               size={isVRSelectionActive ? 'lg' : 'icon'}
               transition={{ duration: 0.2 }}
+              variant="gradient"
             >
               {!isVRSelectionActive && <CreateAIIcon />}
               <motion.div
@@ -537,7 +538,7 @@ const AllFiles = () => {
       {isVRSelectionActive && (
         <MotionButton
           animate={{ opacity: 1 }}
-          className="fixed bottom-7 right-[230px] h-[24px] w-[24px] border border-gray-100 bg-gray-300 p-1 text-gray-50 hover:bg-gray-500 hover:text-white"
+          className="fixed bottom-12 right-[230px] h-[24px] w-[24px] border border-gray-100 bg-gray-300 p-1 text-gray-50 hover:bg-gray-500 hover:text-white"
           initial={{ opacity: 0 }}
           onClick={() => setVRSelectionActive(false)}
           size="icon"

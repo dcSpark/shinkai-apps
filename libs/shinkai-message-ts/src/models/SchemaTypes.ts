@@ -49,6 +49,7 @@ export enum MessageSchemaType {
   APIAddOllamaModels = 'APIAddOllamaModels',
   // ws
   WSMessage = 'WSMessage',
+  GetLastNotifications = 'GetLastNotifications',
 }
 
 export interface LocalScopeVRKaiEntry {
@@ -173,8 +174,8 @@ export interface NetworkFolderScopeEntry {}
 export interface JobScope {
   local_vrkai: LocalScopeVRKaiEntry[];
   local_vrpack: LocalScopeVRPackEntry[];
-  vector_fs_items: VectorFSItemScopeEntry[];
-  vector_fs_folders: VectorFSFolderScopeEntry[];
+  vector_fs_items: string[];
+  vector_fs_folders: string[];
   network_folders: [];
 }
 

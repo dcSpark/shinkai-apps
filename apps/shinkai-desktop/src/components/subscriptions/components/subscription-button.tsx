@@ -4,6 +4,7 @@ import { Button } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';
@@ -83,10 +84,21 @@ export const SubscribeButton = ({
   fullWidth?: boolean;
 }) => {
   const auth = useAuth((state) => state.auth);
+  const navigate = useNavigate();
   const { mutateAsync: subscribeSharedFolder, isPending } =
     useSubscribeToSharedFolder({
       onSuccess: () => {
-        toast.success('Subscription added');
+        toast.success('Subscription confirmed', {
+          duration: 5000,
+          description:
+            'Your knowledge content is on its way to your AI File Explorer. You can see updates in My Subscriptions.',
+          action: {
+            label: 'View',
+            onClick: () => {
+              navigate('/my-subscriptions');
+            },
+          },
+        });
       },
       onError: (error) => {
         toast.error('Error adding subscription', {

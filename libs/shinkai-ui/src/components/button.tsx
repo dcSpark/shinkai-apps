@@ -1,5 +1,5 @@
 import { Slot } from '@radix-ui/react-slot';
-import { cva,type VariantProps } from 'class-variance-authority';
+import { cva, type VariantProps } from 'class-variance-authority';
 import { Loader2 } from 'lucide-react';
 import * as React from 'react';
 
@@ -21,6 +21,8 @@ const buttonVariants = cva(
         tertiary: 'bg-transparent hover:bg-gray-400/60',
         ghost: 'bg-gray-400 hover:bg-gray-400/60',
         link: 'text-white underline-offset-4 hover:underline dark:text-gray-50',
+        gradient:
+          'bg-brand-gradient border-brand border-[1px] text-white transition-colors hover:bg-[#201F1F]',
       },
       size: {
         default: 'h-[54px] px-8 py-4 text-base',

@@ -9,9 +9,15 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipPortal,
+  TooltipProvider,
+  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import {
   AISearchContentIcon,
+  CreateAIIcon,
   DirectoryTypeIcon,
   SharedFolderIcon,
 } from '@shinkai_network/shinkai-ui/assets';
@@ -122,6 +128,38 @@ const VectorFsFolder = ({
         layout={layout}
         totalItem={totalItem}
       />
+      <TooltipProvider delayDuration={0}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div
+              className={cn(
+                buttonVariants({
+                  variant: 'outline',
+                  size: 'icon',
+                }),
+                'border p-2',
+              )}
+              onClick={(event) => {
+                event.stopPropagation();
+                navigate('/create-job', {
+                  state: {
+                    selectedVRFolders: [folder],
+                  },
+                });
+              }}
+              role="button"
+              tabIndex={0}
+            >
+              <CreateAIIcon className="w-full" />
+            </div>
+          </TooltipTrigger>
+          <TooltipPortal>
+            <TooltipContent side="top">
+              <p>{t('chat.create')}</p>
+            </TooltipContent>
+          </TooltipPortal>
+        </Tooltip>
+      </TooltipProvider>
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <div

@@ -9,13 +9,19 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipPortal,
+  TooltipProvider,
+  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { FileTypeIcon } from '@shinkai_network/shinkai-ui/assets';
+import { CreateAIIcon, FileTypeIcon } from '@shinkai_network/shinkai-ui/assets';
 import { formatDateToUSLocaleString } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { partial } from 'filesize';
 import { CopyIcon, FileInputIcon, TrashIcon } from 'lucide-react';
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { useVectorFsStore, VectorFSLayout } from '../context/vector-fs-context';
 import { VectorFsItemAction } from './vector-fs-drawer';
@@ -55,7 +61,7 @@ const VectorFsItem = ({
   isSelectedFile: boolean;
 }) => {
   const { t } = useTranslation();
-
+  const navigate = useNavigate();
   const layout = useVectorFsStore((state) => state.layout);
   const isVRSelectionActive = useVectorFsStore(
     (state) => state.isVRSelectionActive,
@@ -117,6 +123,39 @@ const VectorFsItem = ({
         file={file}
         fileSize={fileSize}
       />
+
+      <TooltipProvider delayDuration={0}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div
+              className={cn(
+                buttonVariants({
+                  variant: 'outline',
+                  size: 'icon',
+                }),
+                'border p-2',
+              )}
+              onClick={(event) => {
+                event.stopPropagation();
+                navigate('/create-job', {
+                  state: {
+                    selectedVRFolders: [file],
+                  },
+                });
+              }}
+              role="button"
+              tabIndex={0}
+            >
+              <CreateAIIcon className="w-full" />
+            </div>
+          </TooltipTrigger>
+          <TooltipPortal>
+            <TooltipContent side="top">
+              <p>{t('chat.create')}</p>
+            </TooltipContent>
+          </TooltipPortal>
+        </Tooltip>
+      </TooltipProvider>
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <div

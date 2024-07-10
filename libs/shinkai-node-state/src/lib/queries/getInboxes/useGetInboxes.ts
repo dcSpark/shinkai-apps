@@ -11,6 +11,9 @@ export const useGetInboxes = (
   const response = useQuery({
     queryKey: [FunctionKey.GET_INBOXES, input],
     queryFn: async () => getInboxes(input),
+    select: (data) =>
+      // display only job inboxes
+      data.filter((inbox) => inbox?.inbox_id?.split('::')?.[0] === 'job_inbox'),
     ...options,
   });
   return {
