@@ -46,7 +46,7 @@ const MySubscriptions = () => {
 
   return (
     <SimpleLayout title="My Subscriptions">
-      <div className="grid h-full grid-cols-[1fr_360px] gap-8">
+      <div className="grid h-full grid-cols-[1fr_360px] gap-10">
         <div className="flex flex-col gap-4">
           {isPending &&
             Array.from({ length: 4 }).map((_, idx) => (
@@ -76,7 +76,7 @@ const MySubscriptions = () => {
           )}
         </div>
         {isNotificationsSuccess && notifications.length && (
-          <div className="mt-4 max-h-full w-full max-w-md overflow-y-auto rounded-lg bg-gray-400 p-4">
+          <div className="-mt-14 w-full max-w-md overflow-y-auto rounded-lg bg-gray-400 p-4">
             <h2 className="mb-4 font-medium text-white">Activity</h2>
             {/*{isNotificationsSuccess && notifications.length && (*/}
             {/*  <div className="space-y-3 text-center text-sm">*/}
