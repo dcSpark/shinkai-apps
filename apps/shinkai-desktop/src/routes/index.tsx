@@ -40,6 +40,7 @@ import SettingsPage from '../pages/settings';
 import ShinkaiPrivatePage from '../pages/shinkai-private';
 import TermsAndConditionsPage from '../pages/welcome';
 import WorkflowPlayground from '../pages/workflow-playground';
+import WorkflowTable from '../pages/workflow-table';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
@@ -216,6 +217,14 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
           path={'/create-job'}
+        />
+        <Route
+          element={
+            <ProtectedRoute>
+              <WorkflowTable />
+            </ProtectedRoute>
+          }
+          path={'/workflow-table'}
         />
         <Route
           element={
