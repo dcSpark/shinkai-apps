@@ -71,12 +71,11 @@ const MySubscriptions = () => {
               <Link
                 className={cn(
                   buttonVariants({
-                    // variant: 'primary',
-                    size: 'auto',
+                    size: 'sm',
                   }),
                   'flex min-w-[120px] items-center gap-2',
                 )}
-                to="/my-subscriptions"
+                to="/public-subscriptions"
               >
                 <MySubscriptionsIcon className="h-5 w-5" />
                 Explore Knowledge Sources
