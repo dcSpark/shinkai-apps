@@ -1,6 +1,5 @@
 use crate::globals::SHINKAI_NODE_MANAGER_INSTANCE;
 use crate::local_shinkai_node::process_handlers::logger::LogEntry;
-use crate::local_shinkai_node::process_handlers::shinkai_node_process_handler::ShinkaiNodeProcessHandler;
 use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
 
 #[tauri::command]
@@ -81,6 +80,6 @@ pub async fn shinkai_node_get_ollama_api_url() -> Result<String, String> {
 
 #[tauri::command]
 pub async fn shinkai_node_get_default_model() -> Result<String, String> {
-    let model = ShinkaiNodeProcessHandler::default_initial_model();
+    let model = ShinkaiNodeOptions::default_initial_model();
     Ok(model)
 }
