@@ -1,6 +1,5 @@
 use crate::globals::SHINKAI_NODE_MANAGER_INSTANCE;
 use crate::local_shinkai_node::process_handlers::logger::LogEntry;
-use crate::local_shinkai_node::process_handlers::shinkai_node_process_handler::ShinkaiNodeProcessHandler;
 use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
 
 #[tauri::command]

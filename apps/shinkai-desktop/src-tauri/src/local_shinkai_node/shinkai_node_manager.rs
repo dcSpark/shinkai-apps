@@ -34,7 +34,6 @@ pub enum ShinkaiNodeManagerEvent {
 }
 
 pub struct ShinkaiNodeManager {
-    default_node_storage_path: String,
     ollama_process: OllamaProcessHandler,
     shinkai_node_process: ShinkaiNodeProcessHandler,
     event_broadcaster: broadcast::Sender<ShinkaiNodeManagerEvent>,
@@ -47,7 +46,6 @@ impl ShinkaiNodeManager {
         let (event_broadcaster, _) = broadcast::channel(10);
 
         ShinkaiNodeManager {
-            default_node_storage_path: default_node_storage_path.clone(),
             ollama_process: OllamaProcessHandler::new(
                 None,
                 ollama_sender,
