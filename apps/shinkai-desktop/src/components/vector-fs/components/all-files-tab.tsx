@@ -344,7 +344,7 @@ const AllFiles = () => {
           className={cn(
             'grid flex-1',
             layout === VectorFSLayout.Grid &&
-              'grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5',
+              'grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-5',
             layout === VectorFSLayout.List &&
               'grid-cols-1 divide-y divide-gray-400',
             searchQuery && 'pt-4',
