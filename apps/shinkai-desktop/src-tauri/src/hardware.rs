@@ -1,5 +1,3 @@
-use std::ptr::null;
-
 use serde::Serialize;
 use sysinfo::System;
 use wgpu::DeviceType;
@@ -90,7 +88,9 @@ fn get_total_vram(adapter: &wgpu::Adapter) -> u64 {
 pub fn hardware_get_summary() -> HardwareSummary {
     let instance = wgpu::Instance::default();
     let adapters = instance.enumerate_adapters(wgpu::Backends::all());
-    let adapter = adapters.iter().find(|adapter| adapter.get_info().device_type == wgpu::DeviceType::DiscreteGpu)
+    let adapter = adapters
+        .iter()
+        .find(|adapter| adapter.get_info().device_type == wgpu::DeviceType::DiscreteGpu)
         .unwrap_or_else(|| adapters.first().expect("no gpu adapter found"));
 
     let discrete_gpu = adapter.get_info().device_type == DeviceType::DiscreteGpu;
