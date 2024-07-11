@@ -38,8 +38,9 @@ impl ShinkaiNodeProcessHandler {
     }
 
     fn get_base_url(&self) -> String {
-        let port = self.options.clone().node_port.unwrap();
-        let base_url = format!("http://127.0.0.1:{}", port);
+        let ip = self.options.clone().node_api_ip.unwrap();
+        let port = self.options.clone().node_api_port.unwrap();
+        let base_url = format!("http://{}:{}", ip, port);
         base_url
     }
 
