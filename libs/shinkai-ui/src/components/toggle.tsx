@@ -1,5 +1,5 @@
 import * as TogglePrimitive from '@radix-ui/react-toggle';
-import { cva,type VariantProps } from 'class-variance-authority';
+import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
 
 import { cn } from '../utils';
@@ -9,7 +9,7 @@ const toggleVariants = cva(
   {
     variants: {
       variant: {
-        default: ' bg-[#27252B]',
+        default: 'bg-[#27252B]',
         outline:
           'border-input hover:bg-accent hover:text-accent-foreground border bg-transparent',
       },

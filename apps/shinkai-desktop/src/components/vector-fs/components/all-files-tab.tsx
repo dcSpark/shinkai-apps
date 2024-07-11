@@ -101,6 +101,17 @@ const AllFiles = () => {
       profile_identity_sk: auth?.profile_identity_sk ?? '',
     },
     {
+      select: (data) => {
+        return {
+          ...data,
+          child_folders: data?.child_folders?.sort((a, b) =>
+            a.name.localeCompare(b.name),
+          ),
+          child_items: data?.child_items?.sort((a, b) =>
+            a.name.localeCompare(b.name),
+          ),
+        };
+      },
       refetchInterval: 6000,
     },
   );
@@ -204,20 +215,18 @@ const AllFiles = () => {
   const splitCurrentPath = VRFiles?.path?.split('/').filter(Boolean) ?? [];
 
   const folderList = React.useMemo(() => {
-    return isSortByName
-      ? [...(VRFiles?.child_folders ?? [])].sort((a, b) =>
-          a.name.localeCompare(b.name),
-        )
+    return !isSortByName
+      ? [...(VRFiles?.child_folders ?? [])].reverse()
       : VRFiles?.child_folders;
   }, [VRFiles?.child_folders, isSortByName]);
 
   const itemList = React.useMemo(() => {
-    return isSortByName
-      ? [...(VRFiles?.child_items ?? [])].sort((a, b) =>
-          a.name.localeCompare(b.name),
-        )
+    return !isSortByName
+      ? [...(VRFiles?.child_items ?? [])].reverse()
       : VRFiles?.child_items;
   }, [VRFiles?.child_items, isSortByName]);
+
+  console.log('VRFiles', VRFiles);
 
   return (
     <div className="flex h-full flex-col">
