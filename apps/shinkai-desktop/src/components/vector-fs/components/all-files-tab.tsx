@@ -226,8 +226,6 @@ const AllFiles = () => {
       : VRFiles?.child_items;
   }, [VRFiles?.child_items, isSortByName]);
 
-  console.log('VRFiles', VRFiles);
-
   return (
     <div className="flex h-full flex-col">
       <DropdownMenu
@@ -239,7 +237,6 @@ const AllFiles = () => {
           <Button
             className="absolute left-auto right-0 top-0 flex gap-2 self-end px-6"
             size="sm"
-            // variant=""
           >
             <PlusIcon className="h-4 w-4" /> {t('vectorFs.actions.addNew')}
           </Button>
