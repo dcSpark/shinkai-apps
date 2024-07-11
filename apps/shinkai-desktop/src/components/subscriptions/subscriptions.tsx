@@ -1,8 +1,10 @@
 import { useGetMySubscriptions } from '@shinkai_network/shinkai-node-state/lib/queries/getMySubscriptions/useGetMySubscriptions';
 import { useGetSubscriptionNotifications } from '@shinkai_network/shinkai-node-state/lib/queries/getSubscriptionNotifications/useGetSubscriptionNotifications';
+import { buttonVariants } from '@shinkai_network/shinkai-ui';
+import { MySubscriptionsIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { formatDistance } from 'date-fns';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { SimpleLayout } from '../../pages/layout/simple-layout';
 import { useAuth } from '../../store/auth';
@@ -46,7 +48,12 @@ const MySubscriptions = () => {
 
   return (
     <SimpleLayout title="My Subscriptions">
-      <div className="grid h-full grid-cols-[1fr_360px] gap-10">
+      <div
+        className={cn(
+          'grid h-full grid-cols-[1fr_360px] gap-10',
+          !notifications?.length && 'grid-cols-1',
+        )}
+      >
         <div className="flex flex-col gap-4">
           {isPending &&
             Array.from({ length: 4 }).map((_, idx) => (
@@ -56,10 +63,24 @@ const MySubscriptions = () => {
               />
             ))}
           {isSuccess && !subscriptions.length && (
-            <p className="text-gray-80 text-left">
-              You have no subscriptions. You can subscribe to shared folders
-              from other nodes.
-            </p>
+            <div className="mx-auto flex flex-col items-center gap-3">
+              <p className="text-gray-80 text-left text-sm">
+                You have no subscriptions. You can subscribe to shared folders
+                from other nodes.
+              </p>
+              <Link
+                className={cn(
+                  buttonVariants({
+                    size: 'sm',
+                  }),
+                  'flex min-w-[120px] items-center gap-2',
+                )}
+                to="/public-subscriptions"
+              >
+                <MySubscriptionsIcon className="h-5 w-5" />
+                Explore Knowledge Sources
+              </Link>
+            </div>
           )}
           {isSuccess && !!subscriptions.length && (
             <div className="">
@@ -75,7 +96,7 @@ const MySubscriptions = () => {
             </div>
           )}
         </div>
-        {isNotificationsSuccess && notifications.length && (
+        {isNotificationsSuccess && !!notifications.length && (
           <div className="-mt-14 w-full max-w-md overflow-y-auto rounded-lg bg-gray-400 p-4">
             <h2 className="mb-4 font-medium text-white">Activity</h2>
             {/*{isNotificationsSuccess && notifications.length && (*/}

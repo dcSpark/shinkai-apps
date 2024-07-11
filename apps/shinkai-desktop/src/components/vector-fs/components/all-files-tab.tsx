@@ -101,6 +101,17 @@ const AllFiles = () => {
       profile_identity_sk: auth?.profile_identity_sk ?? '',
     },
     {
+      select: (data) => {
+        return {
+          ...data,
+          child_folders: data?.child_folders?.sort((a, b) =>
+            a.name.localeCompare(b.name),
+          ),
+          child_items: data?.child_items?.sort((a, b) =>
+            a.name.localeCompare(b.name),
+          ),
+        };
+      },
       refetchInterval: 6000,
     },
   );
@@ -204,18 +215,14 @@ const AllFiles = () => {
   const splitCurrentPath = VRFiles?.path?.split('/').filter(Boolean) ?? [];
 
   const folderList = React.useMemo(() => {
-    return isSortByName
-      ? [...(VRFiles?.child_folders ?? [])].sort((a, b) =>
-          a.name.localeCompare(b.name),
-        )
+    return !isSortByName
+      ? [...(VRFiles?.child_folders ?? [])].reverse()
       : VRFiles?.child_folders;
   }, [VRFiles?.child_folders, isSortByName]);
 
   const itemList = React.useMemo(() => {
-    return isSortByName
-      ? [...(VRFiles?.child_items ?? [])].sort((a, b) =>
-          a.name.localeCompare(b.name),
-        )
+    return !isSortByName
+      ? [...(VRFiles?.child_items ?? [])].reverse()
       : VRFiles?.child_items;
   }, [VRFiles?.child_items, isSortByName]);
 
@@ -230,7 +237,6 @@ const AllFiles = () => {
           <Button
             className="absolute left-auto right-0 top-0 flex gap-2 self-end px-6"
             size="sm"
-            // variant=""
           >
             <PlusIcon className="h-4 w-4" /> {t('vectorFs.actions.addNew')}
           </Button>
@@ -344,7 +350,7 @@ const AllFiles = () => {
           className={cn(
             'grid flex-1',
             layout === VectorFSLayout.Grid &&
-              'grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5',
+              'grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-5',
             layout === VectorFSLayout.List &&
               'grid-cols-1 divide-y divide-gray-400',
             searchQuery && 'pt-4',

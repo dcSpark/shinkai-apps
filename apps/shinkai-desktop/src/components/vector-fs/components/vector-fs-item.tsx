@@ -139,7 +139,7 @@ const VectorFsItem = ({
                 event.stopPropagation();
                 navigate('/create-job', {
                   state: {
-                    selectedVRFolders: [file],
+                    selectedVRFiles: [file],
                   },
                 });
               }}
