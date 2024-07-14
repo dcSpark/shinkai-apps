@@ -10,14 +10,15 @@ export class JobMessageWrapper {
     content_js: any,
     files_inbox_js: any,
     parent: any,
-    workflow: any,
+    workflow_code: any,
   ) {
     this.wasmWrapper = new JobMessageWrapperWASM(
       job_id_js,
       content_js,
       files_inbox_js,
       parent,
-      workflow,
+      workflow_code,
+      undefined, // workflow_name
     );
   }
 
