@@ -28,9 +28,6 @@ import {
   FolderInputIcon,
   Link2Off,
   Share2,
-  // Share2,
-  // Share2,
-  // Share2Icon,
   TrashIcon,
 } from 'lucide-react';
 import React from 'react';
