@@ -172,13 +172,23 @@ const VectorFsFolder = ({
                 });
               },
             },
-            // {
-            //   name: t('vectorFs.actions.share'),
-            //   icon: <Share2 className="mr-3 h-4 w-4" />,
-            //   onClick: () => {
-            //     setActiveDrawerMenuOption(VectorFsFolderAction.CreateShareable);
-            //   },
-            // },
+            // isSharedFolder
+            //   ? {
+            //       name: t('vectorFs.actions.unshare'),
+            //       icon: <Share2 className="mr-3 h-4 w-4" />,
+            //       onClick: () => {
+            //         setActiveDrawerMenuOption(VectorFsFolderAction.Unshare);
+            //       },
+            //     }
+            //   : {
+            //       name: t('vectorFs.actions.share'),
+            //       icon: <Share2 className="mr-3 h-4 w-4" />,
+            //       onClick: () => {
+            //         setActiveDrawerMenuOption(
+            //           VectorFsFolderAction.CreateShareable,
+            //         );
+            //       },
+            //     },
             {
               name: t('vectorFs.actions.delete'),
               icon: <TrashIcon className="mr-3 h-4 w-4" />,
