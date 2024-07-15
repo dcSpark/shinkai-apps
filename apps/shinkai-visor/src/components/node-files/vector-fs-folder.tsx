@@ -20,6 +20,8 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
   CopyIcon,
   FolderInputIcon,
+  Link2Off,
+  Share2,
   // Share2,
   // Share2Icon,
   TrashIcon,
@@ -27,6 +29,7 @@ import {
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import config from '../../config';
 import { useVectorFsStore, VectorFSLayout } from './node-file-context';
 import { VectorFsFolderAction } from './vector-fs-drawer';
 
@@ -172,23 +175,24 @@ const VectorFsFolder = ({
                 });
               },
             },
-            // isSharedFolder
-            //   ? {
-            //       name: t('vectorFs.actions.unshare'),
-            //       icon: <Share2 className="mr-3 h-4 w-4" />,
-            //       onClick: () => {
-            //         setActiveDrawerMenuOption(VectorFsFolderAction.Unshare);
-            //       },
-            //     }
-            //   : {
-            //       name: t('vectorFs.actions.share'),
-            //       icon: <Share2 className="mr-3 h-4 w-4" />,
-            //       onClick: () => {
-            //         setActiveDrawerMenuOption(
-            //           VectorFsFolderAction.CreateShareable,
-            //         );
-            //       },
-            //     },
+            config.isDev &&
+              (isSharedFolder
+                ? {
+                    name: t('vectorFs.actions.unshare'),
+                    icon: <Link2Off className="mr-3 h-4 w-4" />,
+                    onClick: () => {
+                      setActiveDrawerMenuOption(VectorFsFolderAction.Unshare);
+                    },
+                  }
+                : {
+                    name: t('vectorFs.actions.share'),
+                    icon: <Share2 className="mr-3 h-4 w-4" />,
+                    onClick: () => {
+                      setActiveDrawerMenuOption(
+                        VectorFsFolderAction.CreateShareable,
+                      );
+                    },
+                  }),
             {
               name: t('vectorFs.actions.delete'),
               icon: <TrashIcon className="mr-3 h-4 w-4" />,
@@ -196,24 +200,26 @@ const VectorFsFolder = ({
                 setActiveDrawerMenuOption(VectorFsFolderAction.Delete);
               },
             },
-          ].map((option, idx) => (
-            <React.Fragment key={option.name}>
-              {(idx === 3 || idx === 5 || idx === 2) && (
-                <DropdownMenuSeparator className="bg-gray-300" />
-              )}
-              <DropdownMenuItem
-                key={option.name}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  option.onClick();
-                  setSelectedFolder(folder);
-                }}
-              >
-                {option.icon}
-                {option.name}
-              </DropdownMenuItem>
-            </React.Fragment>
-          ))}
+          ]
+            .filter((item) => item !== false)
+            .map((option, idx) => (
+              <React.Fragment key={option.name}>
+                {(idx === 3 || idx === 5 || idx === 2) && (
+                  <DropdownMenuSeparator className="bg-gray-300" />
+                )}
+                <DropdownMenuItem
+                  key={option.name}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    option.onClick();
+                    setSelectedFolder(folder);
+                  }}
+                >
+                  {option.icon}
+                  {option.name}
+                </DropdownMenuItem>
+              </React.Fragment>
+            ))}
         </DropdownMenuContent>
       </DropdownMenu>
     </button>
