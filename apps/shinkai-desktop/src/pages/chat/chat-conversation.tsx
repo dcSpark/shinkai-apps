@@ -193,6 +193,9 @@ const ChatConversation = () => {
   const { inboxId: encodedInboxId = '' } = useParams();
   const auth = useAuth((state) => state.auth);
   const fromPreviousMessagesRef = useRef<boolean>(false);
+  const [selectedWorkflow, setSelectedWorkflow] = useState<string | undefined>(
+    undefined,
+  );
   const inboxId = decodeURIComponent(encodedInboxId);
   const currentInbox = useGetCurrentInbox();
   const isOllamaProvider =
@@ -248,6 +251,8 @@ const ChatConversation = () => {
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
 
+  console.log(workflowRecommendations, 'workflowRecommendations');
+
   console.log('workflowRecommendations', workflowRecommendations);
 
   const isLoadingMessage = useMemo(() => {
@@ -283,6 +288,7 @@ const ChatConversation = () => {
       nodeAddress: auth.node_address,
       jobId,
       message: content,
+      workflowName: selectedWorkflow,
       files_inbox: '',
       parent: parentHash,
       shinkaiIdentity: auth.shinkai_identity,
@@ -506,12 +512,44 @@ const ChatConversation = () => {
                           value={field.value}
                         />
                         <div className="bg-gray-500 px-2 py-3">
-                          <Badge
-                            className="text-xs font-normal"
-                            variant="gradient"
-                          >
-                            Suggestions
-                          </Badge>
+                          {workflowRecommendations?.map((workflow) => (
+                            <TooltipProvider
+                              delayDuration={0}
+                              key={workflow.Workflow.workflow.name}
+                            >
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <button
+                                    onClick={() => {
+                                      setSelectedWorkflow(
+                                        workflow.Workflow.workflow.name,
+                                      );
+                                    }}
+                                    type="button"
+                                  >
+                                    <Badge
+                                      className="text-xs font-normal"
+                                      variant={
+                                        selectedWorkflow ===
+                                        workflow.Workflow.workflow.name
+                                          ? 'gradient'
+                                          : 'outline'
+                                      }
+                                    >
+                                      {workflow.Workflow.workflow.name}
+                                    </Badge>
+                                  </button>
+                                </TooltipTrigger>
+                                <TooltipPortal>
+                                  <TooltipContent>
+                                    <p>
+                                      {workflow.Workflow.workflow.description}
+                                    </p>
+                                  </TooltipContent>
+                                </TooltipPortal>
+                              </Tooltip>
+                            </TooltipProvider>
+                          ))}
                         </div>
                       </div>
                     </FormControl>

@@ -344,6 +344,7 @@ export class ShinkaiMessageBuilderWrapper {
     files_inbox: string,
     parent: string | null,
     workflow_code: string | undefined,
+    workflow_name: string | undefined,
     my_encryption_secret_key: string,
     my_signature_secret_key: string,
     receiver_public_key: string,
@@ -358,7 +359,7 @@ export class ShinkaiMessageBuilderWrapper {
       files_inbox,
       parent === null ? '' : parent,
       workflow_code,
-      undefined, // workflow_name
+      workflow_name,
       my_encryption_secret_key,
       my_signature_secret_key,
       receiver_public_key,

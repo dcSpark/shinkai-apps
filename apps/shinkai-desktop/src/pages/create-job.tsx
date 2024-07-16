@@ -12,6 +12,7 @@ import {
   VRItem,
 } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
+import { useGetWorkflowSearch } from '@shinkai_network/shinkai-node-state/lib/queries/getWorkflowSearch/useGetWorkflowSearch';
 import { transformDataToTreeNodes } from '@shinkai_network/shinkai-node-state/lib/utils/files';
 import {
   Badge,
@@ -75,7 +76,9 @@ const CreateJobPage = () => {
   const [isVectorFSOpen, setIsVectorFSOpen] = React.useState(false);
   const [isKnowledgeSearchOpen, setIsKnowledgeSearchOpen] =
     React.useState(false);
-
+  const [selectedWorkflow, setSelectedWorkflow] = useState<string | undefined>(
+    undefined,
+  );
   const [nodes, setNodes] = useState<TreeNode[]>([]);
   const [selectedKeys, setSelectedKeys] =
     useState<TreeCheckboxSelectionKeys | null>(null);
@@ -94,6 +97,18 @@ const CreateJobPage = () => {
     path: '/',
     my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
     my_device_identity_sk: auth?.profile_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+  });
+
+  const { data: workflowRecommendations } = useGetWorkflowSearch({
+    nodeAddress: auth?.node_address ?? '',
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    profile: auth?.profile ?? '',
+    search: 'summarize',
+    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
     node_encryption_pk: auth?.node_encryption_pk ?? '',
     profile_encryption_sk: auth?.profile_encryption_sk ?? '',
     profile_identity_sk: auth?.profile_identity_sk ?? '',
@@ -224,6 +239,7 @@ const CreateJobPage = () => {
       files_inbox: '',
       files: data.files,
       workflow: data.workflow,
+      workflowName: selectedWorkflow,
       is_hidden: false,
       selectedVRFiles,
       selectedVRFolders,
@@ -257,20 +273,62 @@ const CreateJobPage = () => {
                 <FormItem>
                   <FormLabel>{t('chat.form.message')}</FormLabel>
                   <FormControl>
-                    <Textarea
-                      autoFocus={true}
-                      className="resize-none"
-                      onKeyDown={(event) => {
-                        if (
-                          event.key === 'Enter' &&
-                          (event.metaKey || event.ctrlKey)
-                        ) {
-                          createJobForm.handleSubmit(onSubmit)();
-                        }
-                      }}
-                      placeholder={t('chat.form.messagePlaceholder')}
-                      {...field}
-                    />
+                    <div>
+                      <Textarea
+                        autoFocus={true}
+                        className="resize-none"
+                        onKeyDown={(event) => {
+                          if (
+                            event.key === 'Enter' &&
+                            (event.metaKey || event.ctrlKey)
+                          ) {
+                            createJobForm.handleSubmit(onSubmit)();
+                          }
+                        }}
+                        placeholder={t('chat.form.messagePlaceholder')}
+                        {...field}
+                      />
+                      <div className="bg-gray-500 px-2 py-3">
+                        {workflowRecommendations?.map((workflow) => (
+                          <TooltipProvider
+                            delayDuration={0}
+                            key={workflow.Workflow.workflow.name}
+                          >
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button
+                                  onClick={() => {
+                                    setSelectedWorkflow(
+                                      workflow.Workflow.workflow.name,
+                                    );
+                                  }}
+                                  type="button"
+                                >
+                                  <Badge
+                                    className="text-xs font-normal"
+                                    variant={
+                                      selectedWorkflow ===
+                                      workflow.Workflow.workflow.name
+                                        ? 'gradient'
+                                        : 'outline'
+                                    }
+                                  >
+                                    {workflow.Workflow.workflow.name}
+                                  </Badge>
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipPortal>
+                                <TooltipContent>
+                                  <p>
+                                    {workflow.Workflow.workflow.description}
+                                  </p>
+                                </TooltipContent>
+                              </TooltipPortal>
+                            </Tooltip>
+                          </TooltipProvider>
+                        ))}
+                      </div>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

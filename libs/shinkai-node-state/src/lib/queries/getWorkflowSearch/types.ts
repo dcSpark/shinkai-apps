@@ -7,5 +7,17 @@ export type GetWorkflowSearchInput = JobCredentialsPayload & {
   search: string;
 };
 
-export type SearchResult = [string, string[], number];
-export type GetWorkflowSearchOutput = SearchResult[];
+interface Workflow {
+  description: string;
+  name: string;
+  raw: string;
+  // steps: ;
+  version: string;
+}
+
+export type GetWorkflowSearchOutput = {
+  Workflow: {
+    embedding: null;
+    workflow: Workflow;
+  };
+}[];

@@ -508,6 +508,7 @@ export const sendMessageToJob = async (
   files_inbox: string,
   parent: string | null,
   workflow: string | undefined,
+  workflowName: string | undefined,
   sender: string,
   sender_subidentity: string,
   receiver: string,
@@ -525,6 +526,7 @@ export const sendMessageToJob = async (
     files_inbox,
     parent || '',
     workflow,
+    workflowName,
     setupDetailsState.profile_encryption_sk,
     setupDetailsState.profile_identity_sk,
     setupDetailsState.node_encryption_pk,
@@ -767,7 +769,7 @@ export const getWorkflowSearch = async (
   receiver_subidentity: string,
   searchQuery: string,
   setupDetailsState: CredentialsPayload,
-): Promise<{ data: any; status: string }> => {
+) => {
   const messageStr = ShinkaiMessageBuilderWrapper.getWorkflowSearch(
     setupDetailsState.profile_encryption_sk,
     setupDetailsState.profile_identity_sk,
