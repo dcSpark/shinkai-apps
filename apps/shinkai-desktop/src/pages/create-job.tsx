@@ -230,6 +230,12 @@ const CreateJobPage = () => {
         ? Array.from(selectedFolderKeysRef.current.values())
         : [];
 
+    // Find the selected workflow and its version
+    const selectedWorkflowObj = workflowRecommendations?.find(
+      (workflow) => workflow.Workflow.workflow.name === selectedWorkflow,
+    );
+    const workflowVersion = selectedWorkflowObj?.Workflow.workflow.version;
+
     await createJob({
       nodeAddress: auth?.node_address ?? '',
       shinkaiIdentity: auth.shinkai_identity,
@@ -239,7 +245,7 @@ const CreateJobPage = () => {
       files_inbox: '',
       files: data.files,
       workflow: data.workflow,
-      workflowName: selectedWorkflow,
+      workflowName: `${selectedWorkflow}:::${workflowVersion}`,
       is_hidden: false,
       selectedVRFiles,
       selectedVRFolders,
