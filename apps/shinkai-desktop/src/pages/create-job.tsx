@@ -298,6 +298,14 @@ const CreateJobPage = () => {
                               <TooltipTrigger asChild>
                                 <button
                                   onClick={() => {
+                                    if (
+                                      selectedWorkflow ===
+                                      workflow.Workflow.workflow.name
+                                    ) {
+                                      setSelectedWorkflow(undefined);
+                                      return;
+                                    }
+
                                     setSelectedWorkflow(
                                       workflow.Workflow.workflow.name,
                                     );
