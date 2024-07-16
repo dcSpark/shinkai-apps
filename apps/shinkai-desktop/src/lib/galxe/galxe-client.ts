@@ -12,7 +12,7 @@ import axios, { AxiosError } from 'axios';
 // Queries
 export const useGalxeGenerateDesktopInstallationProofQuery = (
   nodeSignature: string,
-  options?: QueryObserverOptions,
+  options?: Omit<QueryObserverOptions, 'queryKey'>,
 ): UseQueryResult<[string, string], Error> => {
   const query = useQuery({
     ...options,
@@ -20,6 +20,24 @@ export const useGalxeGenerateDesktopInstallationProofQuery = (
     queryFn: async (): Promise<[string, string]> => {
       return invoke('galxe_generate_desktop_installation_proof', {
         nodeSignature,
+      });
+    },
+  });
+  return { ...query } as UseQueryResult<[string, string], Error>;
+};
+
+export const useGalxeGenerateProofQuery = (
+  nodeSignature: string,
+  jsonString: string,
+  options?: Omit<QueryObserverOptions, 'queryKey'>,
+): UseQueryResult<[string, string], Error> => {
+  const query = useQuery({
+    ...options,
+    queryKey: ['galxe_generate_proof'],
+    queryFn: async (): Promise<[string, string]> => {
+      return invoke('galxe_generate_proof', {
+        nodeSignature,
+        jsonString,
       });
     },
   });
