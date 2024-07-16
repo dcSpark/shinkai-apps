@@ -759,6 +759,41 @@ export const retrieveVRPathSimplified = async (
       }
     : data;
 };
+export const getWorkflowSearch = async (
+  nodeAddress: string,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  searchQuery: string,
+  setupDetailsState: CredentialsPayload,
+): Promise<{ data: any; status: string }> => {
+  const messageStr = ShinkaiMessageBuilderWrapper.getWorkflowSearch(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    searchQuery,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
+
+  const message = JSON.parse(messageStr);
+
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/search_workflows'),
+    message,
+
+    {
+      responseType: 'json',
+    },
+  );
+
+  const data = response.data;
+  return data;
+};
+
 export const retrieveVectorSearchSimplified = async (
   nodeAddress: string,
   sender: string,

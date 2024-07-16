@@ -18,11 +18,13 @@ import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-st
 import { useUpdateAgentInJob } from '@shinkai_network/shinkai-node-state/lib/mutations/updateAgentInJob/useUpdateAgentInJob';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
+import { useGetWorkflowSearch } from '@shinkai_network/shinkai-node-state/lib/queries/getWorkflowSearch/useGetWorkflowSearch';
 import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import {
   Alert,
   AlertDescription,
   AlertTitle,
+  Badge,
   Button,
   ChatInputArea,
   DropdownMenu,
@@ -65,7 +67,7 @@ import {
   SendIcon,
   X,
 } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
@@ -233,6 +235,20 @@ const ChatConversation = () => {
     profile_identity_sk: auth?.profile_identity_sk ?? '',
     refetchIntervalEnabled: !isOllamaProvider,
   });
+
+  const { data: workflowRecommendations } = useGetWorkflowSearch({
+    nodeAddress: auth?.node_address ?? '',
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    profile: auth?.profile ?? '',
+    search: 'summarize',
+    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+  });
+
+  console.log('workflowRecommendations', workflowRecommendations);
 
   const isLoadingMessage = useMemo(() => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
@@ -489,6 +505,14 @@ const ChatConversation = () => {
                           }
                           value={field.value}
                         />
+                        <div className="bg-gray-500 px-2 py-3">
+                          <Badge
+                            className="text-xs font-normal"
+                            variant="gradient"
+                          >
+                            Suggestions
+                          </Badge>
+                        </div>
                       </div>
                     </FormControl>
                   </FormItem>

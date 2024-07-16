@@ -50,6 +50,8 @@ export enum MessageSchemaType {
   // ws
   WSMessage = 'WSMessage',
   GetLastNotifications = 'GetLastNotifications',
+  // workflows
+  SearchWorkflows = 'SearchWorkflows',
 }
 
 export interface LocalScopeVRKaiEntry {
