@@ -68,7 +68,7 @@ export const GalxeRegisterShinkaiDesktop = () => {
   }, [installationProof, form]);
 
   return (
-    <div className="flex grow flex-col space-y-2">
+    <div className="flex grow flex-col space-y-4">
       <span className="text-gray-80 inline-flex items-center gap-1 px-1 py-2.5 hover:text-white">
         <a
           className={cn(
