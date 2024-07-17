@@ -10,22 +10,6 @@ import { getName } from '@tauri-apps/api/app';
 import axios, { AxiosError } from 'axios';
 
 // Queries
-export const useGalxeGenerateDesktopInstallationProofQuery = (
-  nodeSignature: string,
-  options?: Omit<QueryObserverOptions, 'queryKey'>,
-): UseQueryResult<[string, string], Error> => {
-  const query = useQuery({
-    ...options,
-    queryKey: ['galxe_generate_desktop_installation_proof'],
-    queryFn: async (): Promise<[string, string]> => {
-      return invoke('galxe_generate_desktop_installation_proof', {
-        nodeSignature,
-      });
-    },
-  });
-  return { ...query } as UseQueryResult<[string, string], Error>;
-};
-
 export const useGalxeGenerateProofQuery = (
   nodeSignature: string,
   jsonString: string,
