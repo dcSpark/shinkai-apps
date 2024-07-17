@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
 import { useGetMySubscriptions } from '@shinkai_network/shinkai-node-state/lib/queries/getMySubscriptions/useGetMySubscriptions';
+import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
 import {
   Alert,
   AlertDescription,
@@ -64,7 +65,23 @@ export const GalxeSusbcriptions = () => {
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
 
-  const isUserSubscribeToKnowledge = (subscriptions ?? [])?.length > 0;
+  const { data: subscriptionFolder } = useGetVRPathSimplified({
+    nodeAddress: auth?.node_address ?? '',
+    profile: auth?.profile ?? '',
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    path: '/My Subscriptions',
+    my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+    my_device_identity_sk: auth?.profile_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+  });
+
+  const isUserSubscribeToKnowledge =
+    (subscriptions ?? [])?.length > 0 &&
+    ((subscriptionFolder?.child_folders ?? [])?.length > 0 ||
+      (subscriptionFolder?.child_folders ?? [])?.length > 0);
+
   const isUserAskQuestions = inboxes.some(
     (inbox) =>
       (inbox?.job_scope?.vector_fs_folders ?? []).length > 0 ||
