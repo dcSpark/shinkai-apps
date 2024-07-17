@@ -2,7 +2,6 @@ import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/ge
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
 // import { useGetMySharedFolders } from '@shinkai_network/shinkai-node-state/lib/queries/getMySharedFolders/useGetMySharedFolders';
-import { useGetMySubscriptions } from '@shinkai_network/shinkai-node-state/lib/queries/getMySubscriptions/useGetMySubscriptions';
 import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
 import { getFlatChildItems } from '@shinkai_network/shinkai-node-state/lib/utils/files';
 import { useMap } from '@shinkai_network/shinkai-ui/hooks';
@@ -61,12 +60,13 @@ export const useOnboardingSteps = () => {
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
 
-  const { data: subscriptions } = useGetMySubscriptions({
+  const { data: subscriptionFolder } = useGetVRPathSimplified({
     nodeAddress: auth?.node_address ?? '',
-    shinkaiIdentity: auth?.shinkai_identity ?? '',
     profile: auth?.profile ?? '',
-    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    path: '/My Subscriptions',
+    my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+    my_device_identity_sk: auth?.profile_identity_sk ?? '',
     node_encryption_pk: auth?.node_encryption_pk ?? '',
     profile_encryption_sk: auth?.profile_encryption_sk ?? '',
     profile_identity_sk: auth?.profile_identity_sk ?? '',
@@ -128,13 +128,13 @@ export const useOnboardingSteps = () => {
   }, [inboxes]);
 
   useEffect(() => {
-    if ((subscriptions ?? [])?.length > 0) {
+    if ((subscriptionFolder?.child_folders ?? [])?.length > 0) {
       currentStepsMap.set(
         GetStartedSteps.SubscribeToKnowledge,
         GetStartedStatus.Done,
       );
     }
-  }, [subscriptions]);
+  }, [subscriptionFolder?.child_folders]);
   //
   // useEffect(() => {
   //   if ((mySharedFolders ?? [])?.length > 0) {

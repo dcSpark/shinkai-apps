@@ -1,14 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  BoxIcon,
-  CheckCircledIcon,
-  CheckIcon,
-  CircleIcon,
-} from '@radix-ui/react-icons';
+import { CheckCircledIcon, CircleIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { SmartInbox } from '@shinkai_network/shinkai-message-ts/models/ShinkaiMessage';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
-import { useGetMySubscriptions } from '@shinkai_network/shinkai-node-state/lib/queries/getMySubscriptions/useGetMySubscriptions';
 import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
 import {
   Button,
@@ -73,8 +67,7 @@ export const GalxeSusbcriptions = () => {
   });
 
   const isUserSubscribedToKnowledge =
-    (subscriptionFolder?.child_folders ?? [])?.length > 0 ||
-    (subscriptionFolder?.child_items ?? [])?.length > 0;
+    (subscriptionFolder?.child_folders ?? [])?.length > 0;
 
   const inboxesWithSubscriptions: SmartInbox[] = inboxes.filter(
     (inbox) =>
@@ -98,7 +91,7 @@ export const GalxeSusbcriptions = () => {
           createdAt: folder.created_datetime,
           folder: folder.path,
           inboxes: inboxesWithSubscriptions.map((inbox) => ({
-            createdAt: inbox.last_message?.external_metadata?.scheduled_time, // to fix once node returns date
+            createdAt: inbox.datetime_created,
           })),
         };
       }),

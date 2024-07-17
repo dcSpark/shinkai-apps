@@ -75,6 +75,7 @@ export type SmartInbox = {
   is_finished: boolean;
   job_scope?: JobScope;
   agent?: AgentInbox;
+  datetime_created: string;
 };
 
 export type CreateChatInboxResponse = {
