@@ -173,10 +173,7 @@ export const GalxeSusbcriptions = () => {
       <div className="flex flex-col gap-3 rounded-lg border p-4 text-xs">
         <p>
           {isValidSubscriptions ? (
-            <>
-              You have successfully subscribed to Knowledge Sources and asked
-              Questions to Subscription Knowledge. You can now validate Quest 🎉
-            </>
+            <>You can now validate Quest 🎉</>
           ) : (
             <>
               Make sure you have subscribed to Knowledge Sources and Ask
