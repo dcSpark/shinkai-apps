@@ -1,4 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  BoxIcon,
+  CheckCircledIcon,
+  CheckIcon,
+  CircleIcon,
+} from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
 import { useGetMySubscriptions } from '@shinkai_network/shinkai-node-state/lib/queries/getMySubscriptions/useGetMySubscriptions';
@@ -16,6 +22,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AlertTriangle, ExternalLinkIcon } from 'lucide-react';
+import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
@@ -163,6 +170,44 @@ export const GalxeSusbcriptions = () => {
         </a>
         <ExternalLinkIcon className="h-4 w-4" />
       </span>
+      <div className="flex flex-col gap-3 rounded-lg border p-4 text-xs">
+        <p>
+          {isValidSubscriptions ? (
+            <>
+              You have successfully subscribed to Knowledge Sources and asked
+              Questions to Subscription Knowledge. You can now validate Quest 🎉
+            </>
+          ) : (
+            <>
+              Make sure you have subscribed to Knowledge Sources and Ask
+              Questions to validate Quest. You can do this by exploring the{' '}
+              <Link className="underline" to="/public-subscriptions">
+                Subscription Knowledge
+              </Link>
+              .
+            </>
+          )}
+        </p>
+        <div className="text-gray-50">
+          <div className="flex items-center gap-2">
+            {isUserSubscribeToKnowledge ? (
+              <CheckCircledIcon className="text-green-400" />
+            ) : (
+              <CircleIcon className="text-green-400" />
+            )}
+            Subscribe to Knowledge Sources
+          </div>
+
+          <div className="flex items-center gap-2 pt-2">
+            {isUserAskQuestions ? (
+              <CheckCircledIcon className="text-green-400" />
+            ) : (
+              <CircleIcon className="text-green-400" />
+            )}
+            Ask Questions to Subscription Knowledge
+          </div>
+        </div>
+      </div>
       {isValidSubscriptions ? (
         <Form {...form}>
           <form
@@ -248,24 +293,7 @@ export const GalxeSusbcriptions = () => {
             </div>
           </form>
         </Form>
-      ) : (
-        <Alert className="shadow-lg" variant="warning">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertTitle className="text-sm font-medium">
-            Subscription Quest
-          </AlertTitle>
-          <AlertDescription className="text-xs">
-            <p>
-              Please make sure you have subscribed to Knowledge Sources and Ask
-              Questions. You can do this by exploring the{' '}
-              <Link className="underline" to="/public-subscriptions">
-                Subscription Knowledge
-              </Link>
-              .
-            </p>
-          </AlertDescription>
-        </Alert>
-      )}
+      ) : null}
     </div>
   );
 };
