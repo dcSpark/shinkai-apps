@@ -44,7 +44,7 @@ export const useGalxeRegisterShinkaiDesktopInstallationMutation = (
           ? 'https://backend-hosting.shinkai.com'
           : 'https://dev-backend-hosting.shinkai.com';
       await axios.post(
-        `${baseUrl}/galxe/register-shinkai-desktop-installation`,
+        `${baseUrl}/galxe/shinkai-desktop-installation`,
         {
           address,
           signature,
