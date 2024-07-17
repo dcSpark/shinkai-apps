@@ -147,7 +147,7 @@ export const GalxeSusbcriptions = () => {
             }),
             'rounded-lg p-0 text-xs text-inherit underline',
           )}
-          href={`#`}
+          href="https://app.galxe.com/quest/shinkai/GCfpWtkAN1"
           rel="noreferrer"
           target="_blank"
         >
