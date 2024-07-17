@@ -37,6 +37,8 @@ export type RegisterShinkaiDesktopInstallationForm = z.infer<
   typeof RegisterShinkaiDesktopInstallationFormSchema
 >;
 
+const SUBSCRIPTION_PATH = '/My Subscriptions';
+
 export const GalxeSusbcriptions = () => {
   const { t } = useTranslation();
   const auth = useAuth((store) => store.auth);
@@ -69,7 +71,7 @@ export const GalxeSusbcriptions = () => {
     nodeAddress: auth?.node_address ?? '',
     profile: auth?.profile ?? '',
     shinkaiIdentity: auth?.shinkai_identity ?? '',
-    path: '/My Subscriptions',
+    path: SUBSCRIPTION_PATH,
     my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
     my_device_identity_sk: auth?.profile_identity_sk ?? '',
     node_encryption_pk: auth?.node_encryption_pk ?? '',
@@ -80,19 +82,29 @@ export const GalxeSusbcriptions = () => {
   const isUserSubscribeToKnowledge =
     (subscriptions ?? [])?.length > 0 &&
     ((subscriptionFolder?.child_folders ?? [])?.length > 0 ||
-      (subscriptionFolder?.child_folders ?? [])?.length > 0);
+      (subscriptionFolder?.child_items ?? [])?.length > 0);
 
   const isUserAskQuestions = inboxes.some(
     (inbox) =>
-      (inbox?.job_scope?.vector_fs_folders ?? []).length > 0 ||
-      (inbox?.job_scope?.vector_fs_items ?? []).length > 0,
+      (inbox?.job_scope?.vector_fs_folders ?? []).some((folder) =>
+        folder?.includes(SUBSCRIPTION_PATH),
+      ) ||
+      (inbox?.job_scope?.vector_fs_items ?? []).some((item) =>
+        item?.includes(SUBSCRIPTION_PATH),
+      ),
   );
 
   const { data: subscriptionsProof } = useGalxeGenerateProofQuery(
     auth?.node_signature_pk || '',
     JSON.stringify({
-      number_of_qa_subscriptions: inboxes.some(
-        (inbox) => inbox?.job_scope?.vector_fs_folders,
+      number_of_qa_subscriptions: inboxes.filter(
+        (inbox) =>
+          (inbox?.job_scope?.vector_fs_folders ?? []).some((folder) =>
+            folder.includes(SUBSCRIPTION_PATH),
+          ) ||
+          (inbox?.job_scope?.vector_fs_items ?? []).some((item) =>
+            item.includes(SUBSCRIPTION_PATH),
+          ),
       ),
       number_of_subscriptions: subscriptions?.length,
     }),
