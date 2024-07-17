@@ -6,13 +6,11 @@ import {
   CircleIcon,
 } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { SmartInbox } from '@shinkai_network/shinkai-message-ts/models/ShinkaiMessage';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
 import { useGetMySubscriptions } from '@shinkai_network/shinkai-node-state/lib/queries/getMySubscriptions/useGetMySubscriptions';
 import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
 import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
   Button,
   buttonVariants,
   CopyToClipboardIcon,
@@ -21,8 +19,7 @@ import {
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { AlertTriangle, ExternalLinkIcon } from 'lucide-react';
-import { InfoCircleIcon } from 'primereact/icons/infocircle';
+import { ExternalLinkIcon } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
@@ -50,17 +47,6 @@ export const GalxeSusbcriptions = () => {
   const { t } = useTranslation();
   const auth = useAuth((store) => store.auth);
 
-  const { data: subscriptions } = useGetMySubscriptions({
-    nodeAddress: auth?.node_address ?? '',
-    shinkaiIdentity: auth?.shinkai_identity ?? '',
-    profile: auth?.profile ?? '',
-    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-    node_encryption_pk: auth?.node_encryption_pk ?? '',
-    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-    profile_identity_sk: auth?.profile_identity_sk ?? '',
-  });
-
   const { inboxes } = useGetInboxes({
     nodeAddress: auth?.node_address ?? '',
     sender: auth?.shinkai_identity ?? '',
@@ -86,12 +72,11 @@ export const GalxeSusbcriptions = () => {
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
 
-  const isUserSubscribeToKnowledge =
-    (subscriptions ?? [])?.length > 0 &&
-    ((subscriptionFolder?.child_folders ?? [])?.length > 0 ||
-      (subscriptionFolder?.child_items ?? [])?.length > 0);
+  const isUserSubscribedToKnowledge =
+    (subscriptionFolder?.child_folders ?? [])?.length > 0 ||
+    (subscriptionFolder?.child_items ?? [])?.length > 0;
 
-  const isUserAskQuestions = inboxes.some(
+  const inboxesWithSubscriptions: SmartInbox[] = inboxes.filter(
     (inbox) =>
       (inbox?.job_scope?.vector_fs_folders ?? []).some((folder) =>
         folder?.includes(SUBSCRIPTION_PATH),
@@ -101,22 +86,28 @@ export const GalxeSusbcriptions = () => {
       ),
   );
 
+  const hasUserAskedQuestionsSubscriptions =
+    inboxesWithSubscriptions.length > 0;
+
   const { data: subscriptionsProof } = useGalxeGenerateProofQuery(
     auth?.node_signature_pk || '',
     JSON.stringify({
-      number_of_qa_subscriptions: inboxes.filter(
-        (inbox) =>
-          (inbox?.job_scope?.vector_fs_folders ?? []).some((folder) =>
-            folder.includes(SUBSCRIPTION_PATH),
-          ) ||
-          (inbox?.job_scope?.vector_fs_items ?? []).some((item) =>
-            item.includes(SUBSCRIPTION_PATH),
-          ),
-      ),
-      number_of_subscriptions: subscriptions?.length,
+      subscriptions: subscriptionFolder?.child_folders?.map((folder) => {
+        return {
+          identity: auth?.shinkai_identity,
+          createdAt: folder.created_datetime,
+          folder: folder.path,
+          inboxes: inboxesWithSubscriptions.map((inbox) => ({
+            createdAt: inbox.last_message?.external_metadata?.scheduled_time, // to fix once node returns date
+          })),
+        };
+      }),
     }),
     {
-      enabled: !!auth && isUserSubscribeToKnowledge && isUserAskQuestions,
+      enabled:
+        !!auth &&
+        isUserSubscribedToKnowledge &&
+        hasUserAskedQuestionsSubscriptions,
     },
   );
   const form = useForm<RegisterShinkaiDesktopInstallationForm>({
@@ -128,20 +119,20 @@ export const GalxeSusbcriptions = () => {
     },
   });
 
-  const { mutateAsync: registerShinkaiDesktopInstallation, isPending } =
+  const { mutateAsync: validateQuest, isPending } =
     useGalxeRegisterShinkaiDesktopInstallationMutation({
       onSuccess: () => {
-        toast.success(t('galxe.success.registerDesktopInstallation'));
+        toast.success('Your Quest has been validated');
       },
       onError: (error) => {
-        toast.error(t('galxe.errors.registerDesktopInstallation'), {
+        toast.error('Error validating Quest', {
           description: error?.response?.data?.message ?? error.message,
         });
       },
     });
 
   const register = (values: RegisterShinkaiDesktopInstallationForm) => {
-    registerShinkaiDesktopInstallation({ ...values });
+    validateQuest({ ...values });
   };
 
   useEffect(() => {
@@ -149,7 +140,8 @@ export const GalxeSusbcriptions = () => {
     form.setValue('combined', subscriptionsProof?.[1] ?? '');
   }, [subscriptionsProof, form]);
 
-  const isValidSubscriptions = isUserSubscribeToKnowledge && isUserAskQuestions;
+  const isValidSubscriptions =
+    isUserSubscribedToKnowledge && hasUserAskedQuestionsSubscriptions;
 
   return (
     <div className="flex grow flex-col space-y-4">
@@ -187,7 +179,7 @@ export const GalxeSusbcriptions = () => {
         </p>
         <div className="text-gray-50">
           <div className="flex items-center gap-2">
-            {isUserSubscribeToKnowledge ? (
+            {isUserSubscribedToKnowledge ? (
               <CheckCircledIcon className="text-green-400" />
             ) : (
               <CircleIcon className="text-green-400" />
@@ -196,7 +188,7 @@ export const GalxeSusbcriptions = () => {
           </div>
 
           <div className="flex items-center gap-2 pt-2">
-            {isUserAskQuestions ? (
+            {hasUserAskedQuestionsSubscriptions ? (
               <CheckCircledIcon className="text-green-400" />
             ) : (
               <CircleIcon className="text-green-400" />
