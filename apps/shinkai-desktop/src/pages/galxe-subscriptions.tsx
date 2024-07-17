@@ -142,6 +142,8 @@ export const GalxeSusbcriptions = () => {
     form.setValue('combined', subscriptionsProof?.[1] ?? '');
   }, [subscriptionsProof, form]);
 
+  const isValidSubscriptions = isUserSubscribeToKnowledge && isUserAskQuestions;
+
   return (
     <div className="flex grow flex-col space-y-4">
       <span className="text-gray-80 inline-flex items-center gap-1 px-1 py-2.5 hover:text-white">
@@ -161,7 +163,92 @@ export const GalxeSusbcriptions = () => {
         </a>
         <ExternalLinkIcon className="h-4 w-4" />
       </span>
-      {(!isUserSubscribeToKnowledge || !isUserAskQuestions) && (
+      {isValidSubscriptions ? (
+        <Form {...form}>
+          <form
+            className="flex flex-col justify-between space-y-8"
+            onSubmit={form.handleSubmit(register)}
+          >
+            <div className="flex grow flex-col space-y-5">
+              <FormField
+                control={form.control}
+                name="address"
+                render={({ field }) => (
+                  <TextField
+                    classes={{
+                      input: 'font-mono',
+                    }}
+                    endAdornment={
+                      <div className="w-8">
+                        <CopyToClipboardIcon
+                          className="peer/adornment adornment absolute right-1 top-4 rounded-md border border-gray-200 bg-gray-300 px-2"
+                          string={field.value}
+                        />
+                      </div>
+                    }
+                    field={{ ...field }}
+                    helperMessage={t('galxe.form.evmAddressHelper')}
+                    label={t('galxe.form.evmAddress')}
+                  />
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="signature"
+                render={({ field }) => (
+                  <TextField
+                    classes={{
+                      input: 'font-mono',
+                    }}
+                    endAdornment={
+                      <div className="w-8">
+                        <CopyToClipboardIcon
+                          className="peer/adornment adornment absolute right-1 top-4 rounded-md border border-gray-200 bg-gray-300 px-2"
+                          string={field.value}
+                        />
+                      </div>
+                    }
+                    field={{ ...field, readOnly: true }}
+                    label={t('galxe.form.signature')}
+                  />
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="combined"
+                render={({ field }) => (
+                  <TextField
+                    classes={{
+                      input: 'font-mono',
+                    }}
+                    endAdornment={
+                      <div className="w-8">
+                        <CopyToClipboardIcon
+                          className="peer/adornment adornment absolute right-1 top-4 rounded-md border border-gray-200 bg-gray-300 px-2"
+                          string={field.value}
+                        />
+                      </div>
+                    }
+                    field={{ ...field, readOnly: true }}
+                    label={t('galxe.form.proof')}
+                  />
+                )}
+              />
+
+              <Button
+                className="w-full"
+                disabled={isPending}
+                isLoading={isPending}
+                type="submit"
+              >
+                Validate
+              </Button>
+            </div>
+          </form>
+        </Form>
+      ) : (
         <Alert className="shadow-lg" variant="warning">
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle className="text-sm font-medium">
@@ -171,95 +258,14 @@ export const GalxeSusbcriptions = () => {
             <p>
               Please make sure you have subscribed to Knowledge Sources and Ask
               Questions. You can do this by exploring the{' '}
-              <Link to="/public-subscriptions">Subscription Knowledge</Link>.
+              <Link className="underline" to="/public-subscriptions">
+                Subscription Knowledge
+              </Link>
+              .
             </p>
           </AlertDescription>
         </Alert>
       )}
-      <Form {...form}>
-        <form
-          className="flex flex-col justify-between space-y-8"
-          onSubmit={form.handleSubmit(register)}
-        >
-          <div className="flex grow flex-col space-y-5">
-            <FormField
-              control={form.control}
-              name="address"
-              render={({ field }) => (
-                <TextField
-                  classes={{
-                    input: 'font-mono',
-                  }}
-                  endAdornment={
-                    <div className="w-8">
-                      <CopyToClipboardIcon
-                        className="peer/adornment adornment absolute right-1 top-4 rounded-md border border-gray-200 bg-gray-300 px-2"
-                        string={field.value}
-                      />
-                    </div>
-                  }
-                  field={{ ...field }}
-                  helperMessage={t('galxe.form.evmAddressHelper')}
-                  label={t('galxe.form.evmAddress')}
-                />
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="signature"
-              render={({ field }) => (
-                <TextField
-                  classes={{
-                    input: 'font-mono',
-                  }}
-                  endAdornment={
-                    <div className="w-8">
-                      <CopyToClipboardIcon
-                        className="peer/adornment adornment absolute right-1 top-4 rounded-md border border-gray-200 bg-gray-300 px-2"
-                        string={field.value}
-                      />
-                    </div>
-                  }
-                  field={{ ...field, readOnly: true }}
-                  label={t('galxe.form.signature')}
-                />
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="combined"
-              render={({ field }) => (
-                <TextField
-                  classes={{
-                    input: 'font-mono',
-                  }}
-                  endAdornment={
-                    <div className="w-8">
-                      <CopyToClipboardIcon
-                        className="peer/adornment adornment absolute right-1 top-4 rounded-md border border-gray-200 bg-gray-300 px-2"
-                        string={field.value}
-                      />
-                    </div>
-                  }
-                  field={{ ...field, readOnly: true }}
-                  label={t('galxe.form.proof')}
-                />
-              )}
-            />
-
-            <Button
-              className="w-full"
-              disabled={isPending}
-              isLoading={isPending}
-              type="submit"
-            >
-              Validate
-            </Button>
-          </div>
-        </form>
-      </Form>
     </div>
   );
 };
