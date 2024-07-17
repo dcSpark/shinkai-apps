@@ -174,17 +174,17 @@ export const ConnectMethodQuickStart = () => {
           </form>
         </Form>
         <div className="text-gray-80 space-y-4 py-8 pt-12 text-center text-sm">
-          <p>
-            Don’t have an account?{' '}
-            <a
-              className="font-semibold text-white underline"
-              href="https://www.shinkai.com/sign-up"
-              rel="noreferrer"
-              target={'_blank'}
-            >
-              Sign up
-            </a>
-          </p>
+          {/*<p>*/}
+          {/*  Don’t have an account?{' '}*/}
+          {/*  <a*/}
+          {/*    className="font-semibold text-white underline"*/}
+          {/*    href="https://www.shinkai.com/sign-up"*/}
+          {/*    rel="noreferrer"*/}
+          {/*    target={'_blank'}*/}
+          {/*  >*/}
+          {/*    Sign up*/}
+          {/*  </a>*/}
+          {/*</p>*/}
           <p>
             Already have an account?{' '}
             <a
