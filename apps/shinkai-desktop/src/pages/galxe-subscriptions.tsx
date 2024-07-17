@@ -97,10 +97,7 @@ export const GalxeSusbcriptions = () => {
       }),
     }),
     {
-      enabled:
-        !!auth &&
-        isUserSubscribedToKnowledge &&
-        hasUserAskedQuestionsSubscriptions,
+      enabled: isUserSubscribedToKnowledge,
     },
   );
   const form = useForm<RegisterShinkaiDesktopInstallationForm>({
@@ -133,9 +130,6 @@ export const GalxeSusbcriptions = () => {
     form.setValue('combined', subscriptionsProof?.[1] ?? '');
   }, [subscriptionsProof, form]);
 
-  const isValidSubscriptions =
-    isUserSubscribedToKnowledge && hasUserAskedQuestionsSubscriptions;
-
   return (
     <div className="flex grow flex-col space-y-4">
       <span className="text-gray-80 inline-flex items-center gap-1 px-1 py-2.5 hover:text-white">
@@ -157,7 +151,7 @@ export const GalxeSusbcriptions = () => {
       </span>
       <div className="flex flex-col gap-3 rounded-lg border p-4 text-xs">
         <p>
-          {isValidSubscriptions ? (
+          {isUserSubscribedToKnowledge ? (
             <>You can now validate Quest 🎉</>
           ) : (
             <>
@@ -190,7 +184,7 @@ export const GalxeSusbcriptions = () => {
           </div>
         </div>
       </div>
-      {isValidSubscriptions ? (
+      {isUserSubscribedToKnowledge ? (
         <Form {...form}>
           <form
             className="flex flex-col justify-between space-y-8"

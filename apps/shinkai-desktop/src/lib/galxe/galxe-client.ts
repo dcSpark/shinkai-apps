@@ -12,7 +12,7 @@ import axios, { AxiosError } from 'axios';
 // Queries
 export const useGalxeGenerateProofQuery = (
   nodeSignature: string,
-  jsonString: string,
+  payload: string,
   options?: Omit<QueryObserverOptions, 'queryKey'>,
 ): UseQueryResult<[string, string], Error> => {
   const query = useQuery({
@@ -21,7 +21,7 @@ export const useGalxeGenerateProofQuery = (
     queryFn: async (): Promise<[string, string]> => {
       return invoke('galxe_generate_proof', {
         nodeSignature,
-        jsonString,
+        payload,
       });
     },
   });
