@@ -18,6 +18,8 @@ type SettingsStore = {
   setOptInExperimental: (optInExperimental: boolean) => void;
   userLanguage: LocaleMode;
   setUserLanguage: (userLanguage: LocaleMode) => void;
+  evmAddress: string;
+  setEvmAddress: (evmAddress: string) => void;
 };
 
 export const useSettings = create<SettingsStore>()(
@@ -61,6 +63,11 @@ export const useSettings = create<SettingsStore>()(
         setUserLanguage: (userLanguage) => {
           set({ userLanguage });
           switchLanguage(userLanguage);
+        },
+
+        evmAddress: '',
+        setEvmAddress: (evmAddress) => {
+          set({ evmAddress });
         },
       }),
       {

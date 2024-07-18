@@ -15,7 +15,7 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { ExternalLinkIcon } from 'lucide-react';
 import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -25,6 +25,7 @@ import {
   useGalxeRegisterShinkaiDesktopInstallationMutation,
 } from '../lib/galxe/galxe-client';
 import { useAuth } from '../store/auth';
+import { useSettings } from '../store/settings';
 
 export const RegisterShinkaiDesktopInstallationFormSchema = z.object({
   address: z.string().min(42),
@@ -40,6 +41,8 @@ const SUBSCRIPTION_PATH = '/My Subscriptions';
 export const GalxeSusbcriptions = () => {
   const { t } = useTranslation();
   const auth = useAuth((store) => store.auth);
+  const evmAddress = useSettings((store) => store.evmAddress);
+  const setEvmAddress = useSettings((store) => store.setEvmAddress);
 
   const { inboxes } = useGetInboxes({
     nodeAddress: auth?.node_address ?? '',
@@ -103,7 +106,7 @@ export const GalxeSusbcriptions = () => {
   const form = useForm<RegisterShinkaiDesktopInstallationForm>({
     resolver: zodResolver(RegisterShinkaiDesktopInstallationFormSchema),
     defaultValues: {
-      address: '',
+      address: evmAddress,
       signature: subscriptionsProof?.[0],
       combined: subscriptionsProof?.[1],
     },
@@ -124,6 +127,17 @@ export const GalxeSusbcriptions = () => {
   const register = (values: RegisterShinkaiDesktopInstallationForm) => {
     validateQuest({ ...values });
   };
+
+  const currentEvmAddress = useWatch({
+    control: form.control,
+    name: 'address',
+  });
+
+  useEffect(() => {
+    if (currentEvmAddress) {
+      setEvmAddress(currentEvmAddress);
+    }
+  }, [currentEvmAddress]);
 
   useEffect(() => {
     form.setValue('signature', subscriptionsProof?.[0] ?? '');
@@ -196,9 +210,7 @@ export const GalxeSusbcriptions = () => {
                 name="address"
                 render={({ field }) => (
                   <TextField
-                    classes={{
-                      input: 'font-mono',
-                    }}
+                    classes={{ input: 'font-mono' }}
                     endAdornment={
                       <div className="w-8">
                         <CopyToClipboardIcon
