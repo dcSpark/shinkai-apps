@@ -454,7 +454,7 @@ export default {
     },
   },
   galxe: {
-    label: 'Galxe Validation',
+    label: 'Galxe Quest',
     goToGalxeQuest: 'Check our Galxe Quest',
     form: {
       evmAddress: 'EVM Address',

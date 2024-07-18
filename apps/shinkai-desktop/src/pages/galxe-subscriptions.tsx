@@ -112,10 +112,10 @@ export const GalxeSusbcriptions = () => {
   const { mutateAsync: validateQuest, isPending } =
     useGalxeRegisterShinkaiDesktopInstallationMutation({
       onSuccess: () => {
-        toast.success('Your Quest has been validated');
+        toast.success('Your Quest has been updated');
       },
       onError: (error) => {
-        toast.error('Error validating Quest', {
+        toast.error('Error updating Quest', {
           description: error?.response?.data?.message ?? error.message,
         });
       },

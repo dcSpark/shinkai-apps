@@ -164,7 +164,7 @@
       "signature": "签名"
     },
     "goToGalxeQuest": "查看我们的Galxe任务",
-    "label": "Galxe验证",
+    "label": "Galxe 任务",
     "success": {
       "registerDesktopInstallation": "您的Shinkai Desktop安装已成功注册。可能需要几个小时才能在Galxe任务中注册。"
     }
