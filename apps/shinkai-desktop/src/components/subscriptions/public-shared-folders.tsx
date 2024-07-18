@@ -190,6 +190,7 @@ const PublicSharedFolderSubscription = () => {
                             subscription.shared_folder === sharedFolder.path,
                         )}
                         isFree={sharedFolder?.isFree}
+                        isOfficial={!!sharedFolder?.identity?.official}
                         key={`${sharedFolder?.identity?.identityRaw}::${sharedFolder.path}`}
                         nodeName={sharedFolder?.identity?.identityRaw ?? '-'}
                       />
@@ -252,6 +253,7 @@ export const PublicSharedFolder = ({
   folderDescription,
   folderTree,
   isAlreadySubscribed,
+  isOfficial,
 }: {
   folderName: string;
   folderPath: string;
@@ -260,6 +262,7 @@ export const PublicSharedFolder = ({
   isFree: boolean;
   folderTree: FolderTreeNode;
   isAlreadySubscribed?: boolean;
+  isOfficial?: boolean;
 }) => {
   const nodeNameWithPrefix = '@@' + nodeName;
 
@@ -271,6 +274,7 @@ export const PublicSharedFolder = ({
             folderDescription={folderDescription}
             folderName={folderName.replace(/\//g, '')}
             isFree={isFree}
+            isOfficial={isOfficial}
             nodeName={nodeNameWithPrefix}
           />
           {isAlreadySubscribed ? (
@@ -290,6 +294,7 @@ export const PublicSharedFolder = ({
       <FolderDetailsDrawerContent
         folderPath={folderPath}
         isAlreadySubscribed={isAlreadySubscribed}
+        isOfficial={isOfficial}
         nodes={[transformTreeNode(folderTree, '')]}
         streamerNodeName={nodeNameWithPrefix}
         streamerNodeProfile="main"
@@ -307,6 +312,7 @@ const FolderDetailsDrawerContent = ({
 }: {
   nodes: PrimeTreeNode[];
   isAlreadySubscribed?: boolean;
+  isOfficial?: boolean;
   folderPath: string;
   streamerNodeName?: string;
   streamerNodeProfile?: string;
@@ -396,14 +402,16 @@ export const SubscriptionInfo = ({
   nodeName,
   isFree,
   folderDescription,
+  isOfficial,
 }: {
   folderName: string;
   folderDescription: string;
   nodeName: string;
   isFree: boolean;
+  isOfficial?: boolean;
 }) => (
   <div className="flex items-center gap-3">
-    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-300/50 ">
+    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-300/50">
       <SharedFolderIcon className="h-6 w-6" />
     </div>
     <div className="space-y-3">
@@ -438,7 +446,12 @@ export const SubscriptionInfo = ({
         >
           <span>{nodeName} </span>
         </a>
-        ⋅ <span>{isFree ? 'Free' : 'Paid'} </span>{' '}
+        ⋅ <span>{isFree ? 'Free' : 'Paid'} </span>
+        {isOfficial && (
+          <>
+            ⋅ <span>Official</span>
+          </>
+        )}
       </div>
     </div>
   </div>

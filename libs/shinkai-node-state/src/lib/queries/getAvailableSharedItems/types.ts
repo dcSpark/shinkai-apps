@@ -39,6 +39,7 @@ type SharedFolderItem = {
     updatedAt: string;
     identityRaw: string;
     identity: string;
+    official?: boolean;
   };
 };
 export type GetAvailableSharedItemsOutput = {
