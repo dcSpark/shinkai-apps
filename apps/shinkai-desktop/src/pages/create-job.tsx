@@ -106,7 +106,7 @@ const CreateJobPage = () => {
     nodeAddress: auth?.node_address ?? '',
     shinkaiIdentity: auth?.shinkai_identity ?? '',
     profile: auth?.profile ?? '',
-    search: 'summarize',
+    search: '',
     my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
     my_device_identity_sk: auth?.my_device_identity_sk ?? '',
     node_encryption_pk: auth?.node_encryption_pk ?? '',
@@ -245,7 +245,9 @@ const CreateJobPage = () => {
       files_inbox: '',
       files: data.files,
       workflow: data.workflow,
-      workflowName: `${selectedWorkflow}:::${workflowVersion}`,
+      workflowName: selectedWorkflow
+        ? `${selectedWorkflow}:::${workflowVersion}`
+        : undefined,
       is_hidden: false,
       selectedVRFiles,
       selectedVRFolders,
