@@ -59,7 +59,7 @@ export const VectorFileDetails = () => {
               }
             />
           </div>
-          <p className="text-lg font-medium text-white">
+          <p className="text-lg font-medium text-white break-words">
             {selectedFile?.name}
             <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
               {selectedFile?.vr_header?.resource_source?.Standard?.FileRef
