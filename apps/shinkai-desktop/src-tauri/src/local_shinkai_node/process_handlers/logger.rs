@@ -27,7 +27,7 @@ impl Logger {
         LogEntry {
             timestamp: current_timestamp,
             process: self.process_name.clone(),
-            message,
+            message: message.chars().filter(|&c| !c.is_control()).collect(),
         }
     }
 
