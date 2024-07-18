@@ -557,35 +557,21 @@ export default function NavBar() {
                 <DropdownMenuSeparator className="bg-gray-200" />
                 <DropdownMenuItem
                   className="py-0.5"
-                  disabled={true}
                   onClick={() => onClickMenuOption(MenuOption.PublicItems)}
                 >
                   <BrowseSubscriptionIcon className="mr-2 h-4 w-4" />
                   <span className="mr-3">
                     {t('layout.menuItems.subscriptions')}
                   </span>
-                  <Badge
-                    className="text-[10px] uppercase"
-                    variant="inputAdornment"
-                  >
-                    {t('common.soon')}
-                  </Badge>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="py-0.5"
-                  disabled={true}
                   onClick={() => onClickMenuOption(MenuOption.MySubscriptions)}
                 >
                   <MySubscriptionsIcon className="mr-2 h-4 w-4" />
                   <span className="mr-3">
                     {t('layout.menuItems.mySubscriptions')}
                   </span>
-                  <Badge
-                    className="text-[10px] uppercase"
-                    variant="inputAdornment"
-                  >
-                    {t('common.soon')}
-                  </Badge>
                 </DropdownMenuItem>
 
                 <DropdownMenuSeparator className="bg-gray-200" />

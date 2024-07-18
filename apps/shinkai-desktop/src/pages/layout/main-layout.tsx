@@ -45,7 +45,6 @@ import { toast } from 'sonner';
 import { ResourcesBanner } from '../../components/hardware-capabilities/resources-banner';
 import { UpdateBanner } from '../../components/hardware-capabilities/update-banner';
 import OnboardingStepper from '../../components/onboarding/onboarding';
-import config from '../../config';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
 
@@ -267,13 +266,11 @@ export function MainNav() {
       title: t('layout.menuItems.subscriptions'),
       href: '/public-subscriptions',
       icon: <BrowseSubscriptionIcon className="h-5 w-5" />,
-      disabled: config.isProduction,
     },
     {
       title: t('layout.menuItems.mySubscriptions'),
       href: '/my-subscriptions',
       icon: <MySubscriptionsIcon className="h-5 w-5" />,
-      disabled: config.isProduction,
     },
     optInExperimental && {
       title: t('layout.menuItems.workflowPlayground'),
