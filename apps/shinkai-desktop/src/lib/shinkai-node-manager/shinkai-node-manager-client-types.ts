@@ -93,16 +93,24 @@ export type ShinkaiNodeManagerEventMap =
     };
 
 export type ShinkaiNodeOptions = {
-  port?: number;
-  ws_port?: number;
-  unstructured_server_url?: string;
-  embeddings_server_url?: string;
-  first_device_needs_registration_code?: string;
-  initial_agent_names?: string;
-  initial_agent_urls?: string;
-  initial_agent_models?: string;
-  initial_agent_api_keys?: string;
-  starting_num_qr_devices?: number;
+   node_api_ip?: string,
+   node_api_port?: string,
+   node_ws_port?: string,
+   node_ip?: string,
+   node_port?: string,
+   global_identity_name?: string,
+   node_storage_path?: string,
+   unstructured_server_url?: string,
+   embeddings_server_url?: string,
+   first_device_needs_registration_code?: string,
+   initial_agent_names?: string,
+   initial_agent_urls?: string,
+   initial_agent_models?: string,
+   initial_agent_api_keys?: string,
+   starting_num_qr_devices?: string,
+   log_all?: string,
+   proxy_identity?: string,
+   rpc_url?: string,
 };
 
 export type LogEntry = {
