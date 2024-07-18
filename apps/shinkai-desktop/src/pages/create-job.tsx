@@ -24,14 +24,18 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
   Textarea,
   Tooltip,
   TooltipContent,
@@ -43,7 +47,8 @@ import {
   AISearchContentIcon,
   FilesIcon,
 } from '@shinkai_network/shinkai-ui/assets';
-import { InfoIcon, PlusIcon } from 'lucide-react';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { PlusIcon, SquareSlash, XIcon } from 'lucide-react';
 import { TreeCheckboxSelectionKeys } from 'primereact/tree';
 import { TreeNode } from 'primereact/treenode';
 import React, { useEffect, useRef, useState } from 'react';
@@ -284,15 +289,11 @@ const CreateJobPage = () => {
                 <FormItem>
                   <FormLabel>{t('chat.form.message')}</FormLabel>
                   <FormControl>
-                    <div>
+                    <div className="">
                       <Textarea
                         autoFocus={true}
-                        className="resize-none"
+                        className="!min-h-[200px] resize-none pb-[40px] text-sm"
                         onKeyDown={(event) => {
-                          if (event.key === '/' && field.value === '') {
-                            setSelectedWorkflow('qq');
-                          }
-
                           if (
                             event.key === 'Enter' &&
                             (event.metaKey || event.ctrlKey)
@@ -301,57 +302,84 @@ const CreateJobPage = () => {
                           }
                         }}
                         placeholder={t('chat.form.messagePlaceholder')}
+                        spellCheck={false}
                         {...field}
                       />
+                      <Sheet>
+                        <SheetTrigger className="absolute bottom-2.5 right-2.5">
+                          <Button
+                            className="gap-3 rounded-lg bg-gray-500 text-white hover:bg-gray-500"
+                            size="sm"
+                            type="button"
+                            variant={selectedWorkflow ? 'gradient' : 'ghost'}
+                          >
+                            <div className="flex items-center gap-1">
+                              <SquareSlash className="h-4 w-4" />
+                              <span>
+                                {selectedWorkflow ?? 'Workflow Library'}
+                              </span>
+                            </div>
+                            {selectedWorkflow && (
+                              <button
+                                className="rounded-full bg-gray-200 p-1"
+                                onClick={(e) => {
+                                  setSelectedWorkflow(undefined);
+                                  e.stopPropagation();
+                                }}
+                                type="button"
+                              >
+                                <XIcon className="h-4 w-4" />
+                              </button>
+                            )}
+                          </Button>
+                        </SheetTrigger>
 
-                      <Popover
-                        onOpenChange={(isOpen) => {
-                          if (!isOpen) {
-                            setSelectedWorkflow(undefined);
-                          }
-                        }}
-                        open={!!selectedWorkflow}
-                      >
-                        {/*<PopoverTrigger>*/}
-                        {/*  <Button size="sm" type="button" variant="gradient">*/}
-                        {/*    Workflow*/}
-                        {/*  </Button>*/}
-                        {/*</PopoverTrigger>*/}
-                        <PopoverContent className="absolute bg-gray-500 p-0 py-1">
-                          {workflowRecommendations?.map((workflow) => (
-                            <button
-                              className="flex w-full items-center justify-between gap-3 px-4 py-2 text-left text-sm hover:bg-gray-300"
-                              key={workflow.Workflow.workflow.name}
-                              onClick={() => {
-                                setSelectedWorkflow(
-                                  workflow.Workflow.workflow.name,
-                                );
-                              }}
-                              type="button"
-                            >
-                              {workflow.Workflow.workflow.name}
-
-                              <TooltipProvider
-                                delayDuration={0}
+                        <SheetContent side="right">
+                          <SheetHeader className="mb-4">
+                            <SheetTitle>Workflow Library</SheetTitle>
+                            <SheetDescription>
+                              <p>
+                                Choose a workflow from the library to get
+                                started.
+                              </p>
+                            </SheetDescription>
+                          </SheetHeader>
+                          <div className="divide-y divide-gray-200 py-3">
+                            {workflowRecommendations?.map((workflow) => (
+                              <SheetClose
+                                asChild
                                 key={workflow.Workflow.workflow.name}
                               >
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <InfoIcon className="h-4 w-4" />
-                                  </TooltipTrigger>
-                                  <TooltipPortal>
-                                    <TooltipContent>
-                                      <p>
-                                        {workflow.Workflow.workflow.description}
-                                      </p>
-                                    </TooltipContent>
-                                  </TooltipPortal>
-                                </Tooltip>
-                              </TooltipProvider>
-                            </button>
-                          ))}
-                        </PopoverContent>
-                      </Popover>
+                                <button
+                                  className={cn(
+                                    'flex w-full flex-col gap-1 rounded-lg px-3 py-2 text-left text-sm hover:bg-gray-300',
+
+                                    selectedWorkflow ===
+                                      workflow.Workflow.workflow.name
+                                      ? 'border-brand border'
+                                      : 'bg-transparent',
+                                  )}
+                                  key={workflow.Workflow.workflow.name}
+                                  onClick={() => {
+                                    setSelectedWorkflow(
+                                      workflow.Workflow.workflow.name,
+                                    );
+                                  }}
+                                  type="button"
+                                >
+                                  <span className="text-sm font-medium">
+                                    {workflow.Workflow.workflow.name}
+                                  </span>
+                                  <p className="text-gray-80 text-sm">
+                                    {' '}
+                                    {workflow.Workflow.workflow.description}
+                                  </p>
+                                </button>
+                              </SheetClose>
+                            ))}
+                          </div>
+                        </SheetContent>
+                      </Sheet>
                     </div>
                   </FormControl>
                   <FormMessage />

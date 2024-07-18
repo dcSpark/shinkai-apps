@@ -82,7 +82,7 @@ const CreateChatPage = () => {
                   <FormLabel>{t('chatDM.form.message')}</FormLabel>
                   <FormControl>
                     <Textarea
-                      className="resize-nonee"
+                      className="resize-none"
                       onKeyDown={(event) => {
                         if (
                           event.key === 'Enter' &&
