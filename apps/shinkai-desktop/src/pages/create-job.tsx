@@ -24,6 +24,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
   Select,
   SelectContent,
   SelectItem,
@@ -40,7 +43,7 @@ import {
   AISearchContentIcon,
   FilesIcon,
 } from '@shinkai_network/shinkai-ui/assets';
-import { PlusIcon } from 'lucide-react';
+import { InfoIcon, PlusIcon } from 'lucide-react';
 import { TreeCheckboxSelectionKeys } from 'primereact/tree';
 import { TreeNode } from 'primereact/treenode';
 import React, { useEffect, useRef, useState } from 'react';
@@ -106,7 +109,7 @@ const CreateJobPage = () => {
     nodeAddress: auth?.node_address ?? '',
     shinkaiIdentity: auth?.shinkai_identity ?? '',
     profile: auth?.profile ?? '',
-    search: '',
+    search: 'sum',
     my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
     my_device_identity_sk: auth?.my_device_identity_sk ?? '',
     node_encryption_pk: auth?.node_encryption_pk ?? '',
@@ -286,6 +289,10 @@ const CreateJobPage = () => {
                         autoFocus={true}
                         className="resize-none"
                         onKeyDown={(event) => {
+                          if (event.key === '/' && field.value === '') {
+                            setSelectedWorkflow('qq');
+                          }
+
                           if (
                             event.key === 'Enter' &&
                             (event.metaKey || event.ctrlKey)
@@ -296,54 +303,55 @@ const CreateJobPage = () => {
                         placeholder={t('chat.form.messagePlaceholder')}
                         {...field}
                       />
-                      <div className="bg-gray-500 px-2 py-3">
-                        {workflowRecommendations?.map((workflow) => (
-                          <TooltipProvider
-                            delayDuration={0}
-                            key={workflow.Workflow.workflow.name}
-                          >
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <button
-                                  onClick={() => {
-                                    if (
-                                      selectedWorkflow ===
-                                      workflow.Workflow.workflow.name
-                                    ) {
-                                      setSelectedWorkflow(undefined);
-                                      return;
-                                    }
 
-                                    setSelectedWorkflow(
-                                      workflow.Workflow.workflow.name,
-                                    );
-                                  }}
-                                  type="button"
-                                >
-                                  <Badge
-                                    className="text-xs font-normal"
-                                    variant={
-                                      selectedWorkflow ===
-                                      workflow.Workflow.workflow.name
-                                        ? 'gradient'
-                                        : 'outline'
-                                    }
-                                  >
-                                    {workflow.Workflow.workflow.name}
-                                  </Badge>
-                                </button>
-                              </TooltipTrigger>
-                              <TooltipPortal>
-                                <TooltipContent>
-                                  <p>
-                                    {workflow.Workflow.workflow.description}
-                                  </p>
-                                </TooltipContent>
-                              </TooltipPortal>
-                            </Tooltip>
-                          </TooltipProvider>
-                        ))}
-                      </div>
+                      <Popover
+                        onOpenChange={(isOpen) => {
+                          if (!isOpen) {
+                            setSelectedWorkflow(undefined);
+                          }
+                        }}
+                        open={!!selectedWorkflow}
+                      >
+                        {/*<PopoverTrigger>*/}
+                        {/*  <Button size="sm" type="button" variant="gradient">*/}
+                        {/*    Workflow*/}
+                        {/*  </Button>*/}
+                        {/*</PopoverTrigger>*/}
+                        <PopoverContent className="absolute bg-gray-500 p-0 py-1">
+                          {workflowRecommendations?.map((workflow) => (
+                            <button
+                              className="flex w-full items-center justify-between gap-3 px-4 py-2 text-left text-sm hover:bg-gray-300"
+                              key={workflow.Workflow.workflow.name}
+                              onClick={() => {
+                                setSelectedWorkflow(
+                                  workflow.Workflow.workflow.name,
+                                );
+                              }}
+                              type="button"
+                            >
+                              {workflow.Workflow.workflow.name}
+
+                              <TooltipProvider
+                                delayDuration={0}
+                                key={workflow.Workflow.workflow.name}
+                              >
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <InfoIcon className="h-4 w-4" />
+                                  </TooltipTrigger>
+                                  <TooltipPortal>
+                                    <TooltipContent>
+                                      <p>
+                                        {workflow.Workflow.workflow.description}
+                                      </p>
+                                    </TooltipContent>
+                                  </TooltipPortal>
+                                </Tooltip>
+                              </TooltipProvider>
+                            </button>
+                          ))}
+                        </PopoverContent>
+                      </Popover>
                     </div>
                   </FormControl>
                   <FormMessage />
