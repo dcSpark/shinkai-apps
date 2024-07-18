@@ -10,16 +10,18 @@ import { getName } from '@tauri-apps/api/app';
 import axios, { AxiosError } from 'axios';
 
 // Queries
-export const useGalxeGenerateDesktopInstallationProofQuery = (
+export const useGalxeGenerateProofQuery = (
   nodeSignature: string,
-  options?: QueryObserverOptions,
+  payload: string,
+  options?: Omit<QueryObserverOptions, 'queryKey'>,
 ): UseQueryResult<[string, string], Error> => {
   const query = useQuery({
     ...options,
-    queryKey: ['galxe_generate_desktop_installation_proof'],
+    queryKey: ['galxe_generate_proof'],
     queryFn: async (): Promise<[string, string]> => {
-      return invoke('galxe_generate_desktop_installation_proof', {
+      return invoke('galxe_generate_proof', {
         nodeSignature,
+        payload,
       });
     },
   });
@@ -42,7 +44,7 @@ export const useGalxeRegisterShinkaiDesktopInstallationMutation = (
           ? 'https://backend-hosting.shinkai.com'
           : 'https://dev-backend-hosting.shinkai.com';
       await axios.post(
-        `${baseUrl}/galxe/register-shinkai-desktop-installation`,
+        `${baseUrl}/galxe/shinkai-desktop-installation`,
         {
           address,
           signature,

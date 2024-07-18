@@ -153,20 +153,20 @@ const GetStartedPage = () => {
             >
               {t('common.logInShinkaiHosting')}
             </a>
-            <a
-              className={cn(
-                buttonVariants({
-                  variant: 'ghost',
-                  size: 'lg',
-                }),
-                'w-full',
-              )}
-              href="https://www.shinkai.com/sign-up?plan=starter"
-              rel="noreferrer"
-              target="_blank"
-            >
-              {t('common.signUpShinkaiHosting')}
-            </a>
+            {/*<a*/}
+            {/*  className={cn(*/}
+            {/*    buttonVariants({*/}
+            {/*      variant: 'ghost',*/}
+            {/*      size: 'lg',*/}
+            {/*    }),*/}
+            {/*    'w-full',*/}
+            {/*  )}*/}
+            {/*  href="https://www.shinkai.com/sign-up?plan=starter"*/}
+            {/*  rel="noreferrer"*/}
+            {/*  target="_blank"*/}
+            {/*>*/}
+            {/*  {t('common.signUpShinkaiHosting')}*/}
+            {/*</a>*/}
             <div className="text-gray-80 items-center space-x-2 text-center text-base">
               <span>{t('common.alreadyHaveNode')}</span>
               <Link

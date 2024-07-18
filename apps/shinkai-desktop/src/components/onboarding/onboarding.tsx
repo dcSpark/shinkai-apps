@@ -11,14 +11,11 @@ import {
   PopoverTrigger,
   Progress,
 } from '@shinkai_network/shinkai-ui';
-import {
-  CreateAIIcon,
-  // FilesIcon
-} from '@shinkai_network/shinkai-ui/assets';
+import { CreateAIIcon, FilesIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown, PlusIcon, Sparkles, XIcon } from 'lucide-react';
-import React, { ReactNode, useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { showAnimation } from '../../pages/layout/main-layout';
@@ -147,29 +144,29 @@ export default function OnboardingStepper() {
             </div>
           ),
         },
-        // {
-        //   label: GetStartedSteps.SubscribeToKnowledge,
-        //   status:
-        //     currentStepsMap.get(GetStartedSteps.SubscribeToKnowledge) ??
-        //     GetStartedStatus.NotStarted,
-        //   title: 'Subscribe to knowledge',
-        //   body: (
-        //     <div className="flex flex-col items-start gap-2">
-        //       <span>Subscribe to knowledge to get up-to-date information</span>
-        //       <Button
-        //         className="h-auto gap-1 px-3 py-2"
-        //         onClick={() => {
-        //           navigate('/public-subscriptions');
-        //         }}
-        //         size="sm"
-        //         variant="outline"
-        //       >
-        //         <FilesIcon className="h-4 w-4" />
-        //         Subscribe to Knowledge
-        //       </Button>
-        //     </div>
-        //   ),
-        // },
+        {
+          label: GetStartedSteps.SubscribeToKnowledge,
+          status:
+            currentStepsMap.get(GetStartedSteps.SubscribeToKnowledge) ??
+            GetStartedStatus.NotStarted,
+          title: 'Subscribe to knowledge',
+          body: (
+            <div className="flex flex-col items-start gap-2">
+              <span>Subscribe to knowledge to get up-to-date information</span>
+              <Button
+                className="h-auto gap-1 px-3 py-2"
+                onClick={() => {
+                  navigate('/public-subscriptions');
+                }}
+                size="sm"
+                variant="outline"
+              >
+                <FilesIcon className="h-4 w-4" />
+                Subscribe to Knowledge
+              </Button>
+            </div>
+          ),
+        },
         // {
         //   label: GetStartedSteps.ShareFolder,
         //   status:
