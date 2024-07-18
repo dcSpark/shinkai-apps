@@ -75,7 +75,7 @@
     "cancel": "キャンセル",
     "clearSearch": "検索をクリア",
     "clickToUpload": "クリックしてアップロードするか、ドラッグアンドドロップ",
-    "comingSoon": "近日公開 - 7月上旬",
+    "comingSoon": "近日公開 - 8月末",
     "connect": "接続",
     "continue": "続行",
     "copy": "コピー",
@@ -164,7 +164,7 @@
       "signature": "署名"
     },
     "goToGalxeQuest": "Galxeクエストを確認",
-    "label": "Galxe検証",
+    "label": "Galxeクエスト",
     "success": {
       "registerDesktopInstallation": "Shinkai Desktopのインストールが正常に登録されました。Galxeクエストに登録されるまで数時間かかる場合があります。"
     }

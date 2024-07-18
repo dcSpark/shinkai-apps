@@ -356,7 +356,7 @@ export default {
     delete: 'Delete',
     update: 'Update',
     moreOptions: 'More Options',
-    comingSoon: 'Coming soon - Early July',
+    comingSoon: 'Coming soon - Late August',
     noThanks: 'No, Thanks',
     iAgree: 'I Agree',
     getStarted: 'Get Started',
@@ -454,7 +454,7 @@ export default {
     },
   },
   galxe: {
-    label: 'Galxe Validation',
+    label: 'Galxe Quest',
     goToGalxeQuest: 'Check our Galxe Quest',
     form: {
       evmAddress: 'EVM Address',

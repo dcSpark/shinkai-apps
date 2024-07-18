@@ -75,7 +75,7 @@
     "cancel": "Cancelar",
     "clearSearch": "Limpiar búsqueda",
     "clickToUpload": "Haz clic para subir o arrastra y suelta",
-    "comingSoon": "Próximamente - Principios de Julio",
+    "comingSoon": "Próximamente - Finales de Agosto",
     "connect": "Conectar",
     "continue": "Continuar",
     "copy": "Copiar",
@@ -164,7 +164,7 @@
       "signature": "Firma"
     },
     "goToGalxeQuest": "Ver nuestra Búsqueda Galxe",
-    "label": "Validación Galxe",
+    "label": "Quest de Galxe",
     "success": {
       "registerDesktopInstallation": "Tu instalación de Shinkai Desktop se registró exitosamente. Puede tardar algunas horas en registrarse en la búsqueda Galxe."
     }
