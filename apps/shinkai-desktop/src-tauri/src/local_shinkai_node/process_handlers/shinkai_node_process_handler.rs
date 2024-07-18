@@ -1,7 +1,7 @@
-use std::fs;
+use std::{fs, time::Duration};
 
 use regex::Regex;
-use tokio::sync::mpsc::Sender;
+use tokio::{sync::mpsc::Sender};
 
 use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
 
@@ -18,7 +18,8 @@ pub struct ShinkaiNodeProcessHandler {
 }
 
 impl ShinkaiNodeProcessHandler {
-    const HEALTH_TIMEOUT_MS: u64 = 500;
+    const HEALTH_REQUEST_TIMEOUT_MS: u64 = 250;
+    const HEALTH_TIMEOUT_MS: u64 = 5000;
     const PROCESS_NAME: &'static str = "shinkai-node";
     const READY_MATCHER: &'static str = "listening on ";
 
@@ -44,12 +45,12 @@ impl ShinkaiNodeProcessHandler {
         base_url
     }
 
-    async fn health(&self) -> Result<bool, ()> {
-        let url = format!("{}/v1/shinkai_health", self.get_base_url());
+    async fn health(base_url: &str, timeout_ms: u64) -> Result<bool, ()> {
+        let url = format!("{}/v1/shinkai_health", base_url);
         let client = reqwest::Client::new();
         if let Ok(response) = client
             .get(&url)
-            .timeout(std::time::Duration::from_millis(400))
+            .timeout(std::time::Duration::from_millis(timeout_ms))
             .send()
             .await
         {
@@ -60,22 +61,25 @@ impl ShinkaiNodeProcessHandler {
     }
 
     async fn wait_shinkai_node_server(&self) -> Result<(), String> {
+        let timeout = Duration::from_millis(Self::HEALTH_TIMEOUT_MS);
         let start_time = std::time::Instant::now();
-        let mut success = false;
-        while std::time::Instant::now().duration_since(start_time)
-            < std::time::Duration::from_millis(Self::HEALTH_TIMEOUT_MS)
-        {
-            let status = self.health().await.unwrap();
-            if status {
-                success = true;
-                break;
+        let base_url = self.get_base_url();
+        tokio::select! {
+            _ = tokio::time::sleep(timeout) => {
+                let elapsed = start_time.elapsed();
+                Err(format!("wait shinkai-node server timeout after {}ms", elapsed.as_millis()))
             }
-            std::thread::sleep(std::time::Duration::from_millis(500));
+            _ = tokio::spawn(async move {
+                loop {
+                    match Self::health(base_url.as_str(), Self::HEALTH_REQUEST_TIMEOUT_MS).await {
+                        Ok(true) => break,
+                        Ok(false) | Err(_) => tokio::time::sleep(Duration::from_millis(50)).await
+                    }
+                }
+            }) => {
+                Ok(())
+            }
         }
-        if !success {
-            return Err("wait shinkai-node server timeout".to_string());
-        }
-        Ok(())
     }
 
     pub fn set_options(&mut self, options: ShinkaiNodeOptions) -> ShinkaiNodeOptions {

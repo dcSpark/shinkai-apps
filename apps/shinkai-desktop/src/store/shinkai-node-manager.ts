@@ -4,7 +4,7 @@ import { devtools, persist } from 'zustand/middleware';
 
 import { ShinkaiNodeOptions } from '../lib/shinkai-node-manager/shinkai-node-manager-client-types';
 import { isLocalShinkaiNode } from '../lib/shinkai-node-manager/shinkai-node-manager-windows-utils';
-import { useAuth } from './auth';
+import { SetupData, useAuth } from './auth';
 
 type ShinkaiNodeManagerStore = {
   isInUse: boolean | null;
@@ -35,12 +35,20 @@ export const useShinkaiNodeManager = create<ShinkaiNodeManagerStore>()(
   ),
 );
 
-useAuth.subscribe((state) => {
-  handleAuthSideEffect(state.auth?.node_address || '');
+useAuth.subscribe((state, prevState) => {
+  handleAuthSideEffect(state.auth, prevState.auth);
 });
 
-const handleAuthSideEffect = async (nodeAddress: string) => {
-  const isLocal = isLocalShinkaiNode(nodeAddress);
-  const isRunning: boolean = await invoke('shinkai_node_is_running');
-  useShinkaiNodeManager.getState().setIsInUse(isLocal && isRunning);
+const handleAuthSideEffect = async (auth: SetupData | null, prevAuth: SetupData | null) => {
+  // SignOut case
+  if (prevAuth && !auth) {
+    useShinkaiNodeManager.getState().setIsInUse(false);
+    return;
+  }
+  // SignIn
+  if (!prevAuth) {
+    const isLocal = isLocalShinkaiNode(auth?.node_address || '');
+    const isRunning: boolean = await invoke('shinkai_node_is_running');
+    useShinkaiNodeManager.getState().setIsInUse(isLocal && isRunning);
+  }
 };

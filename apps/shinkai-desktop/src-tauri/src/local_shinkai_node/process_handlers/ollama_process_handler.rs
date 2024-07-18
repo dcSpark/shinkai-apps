@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use regex::Regex;
 use serde::Serialize;
 use tokio::sync::mpsc::Sender;
@@ -24,7 +26,7 @@ pub struct OllamaProcessHandler {
 }
 
 impl OllamaProcessHandler {
-    const HEALTH_TIMEOUT_MS: u64 = 500;
+    const HEALTH_TIMEOUT_MS: u64 = 5000;
     const PROCESS_NAME: &'static str = "ollama";
     const READY_MATCHER: &'static str = "Listening on ";
 
@@ -58,23 +60,25 @@ impl OllamaProcessHandler {
     }
 
     async fn wait_ollama_server(&self) -> Result<(), String> {
+        let timeout = Duration::from_millis(Self::HEALTH_TIMEOUT_MS);
         let start_time = std::time::Instant::now();
-        let mut success = false;
         let ollama_api = OllamaApiClient::new(self.get_ollama_api_base_url());
-        while std::time::Instant::now().duration_since(start_time)
-            < std::time::Duration::from_millis(Self::HEALTH_TIMEOUT_MS)
-        {
-            let status = ollama_api.health().await;
-            if status.is_ok() && status.unwrap() {
-                success = true;
-                break;
+        tokio::select! {
+            _ = tokio::time::sleep(timeout) => {
+                let elapsed = start_time.elapsed();
+                Err(format!("wait ollama server timeout after {}ms", elapsed.as_millis()))
             }
-            std::thread::sleep(std::time::Duration::from_millis(500));
+            _ = tokio::spawn(async move {
+                loop {
+                    match ollama_api.health().await {
+                        Ok(true) => break,
+                        Ok(false) | Err(_) => tokio::time::sleep(Duration::from_millis(50)).await
+                    }
+                }
+            }) => {
+                Ok(())
+            }
         }
-        if !success {
-            return Err("wait ollama server timeout".to_string());
-        }
-        Ok(())
     }
 
     pub async fn spawn(&self, ensure_model: Option<&str>) -> Result<(), String> {
