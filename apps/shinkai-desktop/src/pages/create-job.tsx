@@ -5,6 +5,10 @@ import {
   CreateJobFormSchema,
   createJobFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
+import {
+  SearchVectorFormSchema,
+  searchVectorFormSchema,
+} from '@shinkai_network/shinkai-node-state/forms/vector-fs/vector-search';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
 import {
@@ -25,18 +29,18 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  Input,
+  ScrollArea,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
   Sheet,
-  SheetClose,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
   Textarea,
   Tooltip,
   TooltipContent,
@@ -50,7 +54,14 @@ import {
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { PlusIcon, SquareSlash, XIcon } from 'lucide-react';
+import {
+  PlusIcon,
+  SearchIcon,
+  SparkleIcon,
+  Sparkles,
+  SquareSlash,
+  XIcon,
+} from 'lucide-react';
 import { TreeCheckboxSelectionKeys } from 'primereact/tree';
 import { TreeNode } from 'primereact/treenode';
 import React, { useEffect, useRef, useState } from 'react';
@@ -61,6 +72,7 @@ import {
   KnowledgeSearchDrawer,
   VectorFsScopeDrawer,
 } from '../components/vector-fs/components/vector-fs-context-drawer';
+import { useDebounce } from '../hooks/use-debounce';
 import { allowedFileExtensions } from '../lib/constants';
 import { useAnalytics } from '../lib/posthog-provider';
 import { ADD_AGENT_PATH } from '../routes/name';
@@ -75,7 +87,8 @@ const CreateJobPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { captureAnalyticEvent } = useAnalytics();
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isWorkflowSearchDrawerOpen, setWorkflowSearchDrawerOpen] =
+    useState(false);
 
   const locationState = location.state as {
     files: File[];
@@ -108,18 +121,6 @@ const CreateJobPage = () => {
     path: '/',
     my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
     my_device_identity_sk: auth?.profile_identity_sk ?? '',
-    node_encryption_pk: auth?.node_encryption_pk ?? '',
-    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-    profile_identity_sk: auth?.profile_identity_sk ?? '',
-  });
-
-  const { data: workflowRecommendations } = useGetWorkflowSearch({
-    nodeAddress: auth?.node_address ?? '',
-    shinkaiIdentity: auth?.shinkai_identity ?? '',
-    profile: auth?.profile ?? '',
-    search: 'sum',
-    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
     node_encryption_pk: auth?.node_encryption_pk ?? '',
     profile_encryption_sk: auth?.profile_encryption_sk ?? '',
     profile_identity_sk: auth?.profile_identity_sk ?? '',
@@ -272,14 +273,32 @@ const CreateJobPage = () => {
     name: 'content',
   });
 
+  const debounceMessage = useDebounce(currentMessage, 500);
+
+  const {
+    data: workflowRecommendations,
+    isSuccess: isWorkflowRecommendationsSuccess,
+  } = useGetWorkflowSearch(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      profile: auth?.profile ?? '',
+      search: debounceMessage,
+      my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+      my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+    },
+    {
+      enabled: !!debounceMessage && !!currentMessage,
+      select: (data) => data.slice(0, 3),
+    },
+  );
+
   useEffect(() => {
-    console.log(
-      currentMessage,
-      'currentMessage',
-      currentMessage?.endsWith('/'),
-    );
     if (currentMessage?.endsWith('/')) {
-      setIsSheetOpen(true);
+      setWorkflowSearchDrawerOpen(true);
     }
   }, [currentMessage]);
 
@@ -291,135 +310,179 @@ const CreateJobPage = () => {
           onSubmit={createJobForm.handleSubmit(onSubmit)}
         >
           <div className="space-y-6">
-            <AnimatePresence>
-              {!!selectedWorkflow && (
-                <motion.div
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center justify-between gap-3 px-2 text-xs"
-                  exit={{
-                    y: -5,
-                    transition: { duration: 0.2, ease: 'easeOut' },
-                  }}
-                  initial={{ opacity: 0, y: -10 }}
-                >
-                  <div>
-                    <h1 className="font-medium text-white">
-                      {selectedWorkflow.Workflow.workflow.name}
-                    </h1>
-                    <p className="text-gray-80 font-medium">
-                      {selectedWorkflow.Workflow.workflow.description}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {/*<button>View Workflow</button>*/}
-                    <button
-                      onClick={() => {
-                        setSelectedWorkflow(undefined);
-                      }}
-                      type="button"
-                    >
-                      <XIcon className="h-4 w-4" />
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <FormField
-              control={createJobForm.control}
-              name="content"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Message</FormLabel>
-                  <FormControl>
-                    <div className="">
-                      <Textarea
-                        autoFocus={true}
-                        className="placeholder-gray-80 !min-h-[170px] resize-none pb-[40px] text-sm"
-                        onKeyDown={(event) => {
-                          if (
-                            event.key === 'Enter' &&
-                            (event.metaKey || event.ctrlKey)
-                          ) {
-                            createJobForm.handleSubmit(onSubmit)();
-                            return;
-                          }
-                        }}
-                        spellCheck={false}
-                        {...field}
-                        placeholder={
-                          selectedWorkflow
-                            ? ''
-                            : "Ask anything or press '/' for workflow commands"
-                        }
-                      />
-                      <Sheet
-                        onOpenChange={(isOpen) => setIsSheetOpen(isOpen)}
-                        open={isSheetOpen}
-                      >
-                        <SheetTrigger className="absolute bottom-2.5 right-2.5">
-                          <Button
-                            className="gap-3 rounded-lg bg-gray-500 text-white hover:bg-gray-500"
-                            size="sm"
-                            type="button"
-                            variant={'ghost'}
-                          >
-                            <div className="flex items-center gap-1">
-                              <SquareSlash className="h-4 w-4" />
-                              <span>Workflow Library</span>
-                            </div>
-                          </Button>
-                        </SheetTrigger>
-
-                        <SheetContent side="right">
-                          <SheetHeader className="mb-4">
-                            <SheetTitle>Workflow Library</SheetTitle>
-                            <SheetDescription>
-                              <p>
-                                Choose a workflow from the library to get
-                                started.
-                              </p>
-                            </SheetDescription>
-                          </SheetHeader>
-                          <div className="divide-y divide-gray-200 py-3">
-                            {workflowRecommendations?.map((workflow) => (
-                              <SheetClose
-                                asChild
-                                key={workflow.Workflow.workflow.name}
-                              >
-                                <button
-                                  className={cn(
-                                    'flex w-full flex-col gap-1 rounded-lg px-3 py-2 text-left text-sm hover:bg-gray-300',
-                                    selectedWorkflow?.Workflow?.workflow
-                                      ?.name === workflow.Workflow.workflow.name
-                                      ? 'border-brand border'
-                                      : 'bg-transparent',
-                                  )}
-                                  key={workflow.Workflow.workflow.name}
-                                  onClick={() => {
-                                    setSelectedWorkflow(workflow);
-                                  }}
-                                  type="button"
-                                >
-                                  <span className="text-sm font-medium">
-                                    {workflow.Workflow.workflow.name}
-                                  </span>
-                                  <p className="text-gray-80 text-sm">
-                                    {' '}
-                                    {workflow.Workflow.workflow.description}
-                                  </p>
-                                </button>
-                              </SheetClose>
-                            ))}
-                          </div>
-                        </SheetContent>
-                      </Sheet>
+            <div>
+              <AnimatePresence>
+                {!!selectedWorkflow && (
+                  <motion.div
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex items-center justify-between gap-3 rounded-lg rounded-b-none border border-b-0 px-2.5 py-2 text-xs"
+                    exit={{
+                      y: -2,
+                      transition: { duration: 0.2, ease: 'easeOut' },
+                    }}
+                    initial={{ opacity: 0, y: -2 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <div className="space-y-1">
+                      <h1 className="font-medium text-white">
+                        {selectedWorkflow.Workflow.workflow.name}
+                      </h1>
+                      <p className="text-gray-80 font-medium">
+                        {selectedWorkflow.Workflow.workflow.description}
+                      </p>
                     </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => {
+                          setSelectedWorkflow(undefined);
+                        }}
+                        type="button"
+                      >
+                        <XIcon className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <FormField
+                control={createJobForm.control}
+                name="content"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Message</FormLabel>
+                    <FormControl>
+                      <div className="space-y-2">
+                        <div className="relative">
+                          <Textarea
+                            autoFocus={true}
+                            className="placeholder-gray-80 !min-h-[140px] resize-none pb-[40px] text-sm"
+                            onKeyDown={(event) => {
+                              if (
+                                event.key === 'Enter' &&
+                                (event.metaKey || event.ctrlKey)
+                              ) {
+                                createJobForm.handleSubmit(onSubmit)();
+                                return;
+                              }
+                            }}
+                            spellCheck={false}
+                            {...field}
+                            placeholder={
+                              selectedWorkflow
+                                ? ''
+                                : "Ask anything or press '/' for workflow commands"
+                            }
+                          />
+                          <motion.div
+                            animate={{ opacity: 1 }}
+                            className="absolute inset-x-2 bottom-1 flex items-center justify-between gap-2"
+                            exit={{
+                              opacity: 0,
+                            }}
+                            initial={{ opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            {!!debounceMessage &&
+                              isWorkflowRecommendationsSuccess &&
+                              workflowRecommendations?.length > 0 && (
+                                <div className="flex gap-2">
+                                  {workflowRecommendations?.map((workflow) => (
+                                    <button
+                                      className={cn(
+                                        'hover:bg-brand-gradient flex items-center gap-2 rounded-lg border bg-gray-400 px-2 py-1 text-xs text-white',
+
+                                        selectedWorkflow?.Workflow?.workflow
+                                          ?.name ===
+                                          workflow.Workflow.workflow.name &&
+                                          'bg-brand-gradient border-brand border',
+                                      )}
+                                      key={workflow.Workflow.workflow.name}
+                                      onClick={() => {
+                                        if (
+                                          selectedWorkflow?.Workflow?.workflow
+                                            ?.name ===
+                                          workflow.Workflow.workflow.name
+                                        ) {
+                                          setSelectedWorkflow(undefined);
+                                          return;
+                                        }
+                                        setSelectedWorkflow(workflow);
+                                      }}
+                                      type="button"
+                                    >
+                                      <Sparkles className="h-3 w-3" />
+                                      {workflow.Workflow.workflow.name}
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
+                            <Button
+                              className="rounded-lg bg-gray-400 text-white hover:bg-gray-500"
+                              onClick={() => setWorkflowSearchDrawerOpen(true)}
+                              size="sm"
+                              type="button"
+                              variant={'ghost'}
+                            >
+                              <div className="flex items-center gap-1">
+                                <SquareSlash className="h-4 w-4" />
+                                <span>Explore</span>
+                              </div>
+                            </Button>
+                          </motion.div>
+                        </div>
+                        <AnimatePresence>
+                          {!!debounceMessage &&
+                            isWorkflowRecommendationsSuccess &&
+                            workflowRecommendations?.length > 0 && (
+                              <motion.div
+                                animate={{ opacity: 1 }}
+                                className="flex gap-2"
+                                exit={{
+                                  opacity: 0,
+                                }}
+                                initial={{ opacity: 0 }}
+                                transition={{ duration: 0.2 }}
+                              >
+                                {workflowRecommendations.map((workflow) => (
+                                  <button
+                                    className={cn(
+                                      'hover:bg-brand-gradient flex items-center gap-2 rounded-lg bg-gray-400 px-2 py-1 text-xs text-white',
+
+                                      selectedWorkflow?.Workflow?.workflow
+                                        ?.name ===
+                                        workflow.Workflow.workflow.name &&
+                                        'bg-brand-gradient border-brand border',
+                                    )}
+                                    key={workflow.Workflow.workflow.name}
+                                    onClick={() => {
+                                      if (
+                                        selectedWorkflow?.Workflow?.workflow
+                                          ?.name ===
+                                        workflow.Workflow.workflow.name
+                                      ) {
+                                        setSelectedWorkflow(undefined);
+                                        return;
+                                      }
+                                      setSelectedWorkflow(workflow);
+                                    }}
+                                    type="button"
+                                  >
+                                    <Sparkles className="h-3 w-3" />
+                                    {workflow.Workflow.workflow.name}
+                                  </button>
+                                ))}
+                              </motion.div>
+                            )}
+                        </AnimatePresence>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
             <FormField
               control={createJobForm.control}
               name="agent"
@@ -562,7 +625,129 @@ const CreateJobPage = () => {
         selectedKeys={selectedKeys}
         setIsKnowledgeSearchOpen={setIsKnowledgeSearchOpen}
       />
+      <WorkflowSearchDrawer
+        isWorkflowSearchDrawerOpen={isWorkflowSearchDrawerOpen}
+        selectedWorkflow={selectedWorkflow}
+        setIsWorkflowSearchDrawerOpen={setWorkflowSearchDrawerOpen}
+        setSelectedWorkflow={setSelectedWorkflow}
+      />
     </SubpageLayout>
   );
 };
 export default CreateJobPage;
+
+const WorkflowSearchDrawer = ({
+  selectedWorkflow,
+  setSelectedWorkflow,
+  isWorkflowSearchDrawerOpen,
+  setIsWorkflowSearchDrawerOpen,
+}: {
+  selectedWorkflow: Workflow | undefined;
+  setSelectedWorkflow: (workflow: Workflow) => void;
+  isWorkflowSearchDrawerOpen: boolean;
+  setIsWorkflowSearchDrawerOpen: (isOpen: boolean) => void;
+}) => {
+  const auth = useAuth((state) => state.auth);
+  const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearchQuery = useDebounce(searchQuery, 600);
+  const isSearchQuerySynced = searchQuery === debouncedSearchQuery;
+
+  const { isPending, data: workflowRecommendations } = useGetWorkflowSearch(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      profile: auth?.profile ?? '',
+      search: debouncedSearchQuery,
+      my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+      my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+    },
+    {
+      enabled: !!isSearchQuerySynced,
+    },
+  );
+
+  return (
+    <Sheet
+      onOpenChange={setIsWorkflowSearchDrawerOpen}
+      open={isWorkflowSearchDrawerOpen}
+    >
+      <SheetContent side="right">
+        <SheetHeader className="mb-4">
+          <SheetTitle>Workflow Library</SheetTitle>
+          <SheetDescription>
+            <p>Choose a workflow from the library to get started.</p>
+          </SheetDescription>
+        </SheetHeader>
+        <div className="relative flex h-10 w-full items-center">
+          <Input
+            className="placeholder-gray-80 !h-full bg-transparent py-2 pl-10"
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+            }}
+            placeholder="Search..."
+            value={searchQuery}
+          />
+          <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2" />
+          {searchQuery && (
+            <Button
+              className="absolute right-1 h-8 w-8 bg-gray-200 p-2"
+              onClick={() => {
+                setSearchQuery('');
+              }}
+              size="auto"
+              type="button"
+              variant="ghost"
+            >
+              <XIcon />
+              <span className="sr-only">Clear Search</span>
+            </Button>
+          )}
+        </div>
+        <ScrollArea className="pr-4 [&>div>div]:!block">
+          <div className="divide-y divide-gray-200 py-5">
+            {(isPending || !isSearchQuerySynced) &&
+              Array.from({ length: 4 }).map((_, idx) => (
+                <div
+                  className="mb-2 flex h-[70px] items-center justify-between gap-2 rounded-lg bg-gray-300 py-3"
+                  key={idx}
+                />
+              ))}
+            {isSearchQuerySynced &&
+              workflowRecommendations?.map((workflow) => (
+                <button
+                  className={cn(
+                    'flex w-full flex-col gap-1 rounded-sm px-3 py-2 text-left text-sm hover:bg-gray-300',
+                  )}
+                  key={workflow.Workflow.workflow.name}
+                  onClick={() => {
+                    setSelectedWorkflow(workflow);
+                    setIsWorkflowSearchDrawerOpen(false);
+                  }}
+                  type="button"
+                >
+                  <span className="text-sm font-medium">
+                    {workflow.Workflow.workflow.name}{' '}
+                    {selectedWorkflow?.Workflow?.workflow?.name ===
+                      workflow.Workflow.workflow.name && (
+                      <Badge
+                        className="bg-brand ml-2 text-gray-50"
+                        variant="default"
+                      >
+                        Selected
+                      </Badge>
+                    )}
+                  </span>
+                  <p className="text-gray-80 text-sm">
+                    {workflow.Workflow.workflow.description}
+                  </p>
+                </button>
+              ))}
+          </div>
+        </ScrollArea>
+      </SheetContent>
+    </Sheet>
+  );
+};
