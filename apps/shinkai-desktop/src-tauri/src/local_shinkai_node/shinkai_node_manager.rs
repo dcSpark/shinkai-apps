@@ -97,12 +97,12 @@ impl ShinkaiNodeManager {
             return Err(e.to_string());
         }
         let installed_models: Vec<String> = installed_models_response.unwrap().models.iter().map(|m| m.model.clone()).collect();
-        let default_embeddings_model = "snowflake-arctic-embed:xs";
-        if !installed_models.contains(&default_embeddings_model.to_string()) {
+        let default_embedding_model = ShinkaiNodeOptions::default().default_embedding_model.unwrap();
+        if !installed_models.contains(&default_embedding_model.to_string()) {
             self.emit_event(ShinkaiNodeManagerEvent::PullingModelStart {
-                model: default_embeddings_model.to_string(),
+                model: default_embedding_model.to_string(),
             });
-            match ollama_api.pull_stream(default_embeddings_model).await {
+            match ollama_api.pull_stream(&default_embedding_model).await {
                 Ok(mut stream) => {
                     while let Some(stream_value) = stream.next().await {
                         match stream_value {
@@ -115,7 +115,7 @@ impl ShinkaiNodeManager {
                                 } = value
                                 {
                                     self.emit_event(ShinkaiNodeManagerEvent::PullingModelProgress {
-                                        model: default_embeddings_model.to_string(),
+                                        model: default_embedding_model.to_string(),
                                         progress: (completed as f32 / total as f32 * 100.0) as u32,
                                     });
                                 }
@@ -123,7 +123,7 @@ impl ShinkaiNodeManager {
                             Err(e) => {
                                 self.kill().await;
                                 self.emit_event(ShinkaiNodeManagerEvent::PullingModelError {
-                                    model: default_embeddings_model.to_string(),
+                                    model: default_embedding_model.to_string(),
                                     error: e.to_string(),
                                 });
                                 return Err(e.to_string())
@@ -134,14 +134,14 @@ impl ShinkaiNodeManager {
                 Err(e) => {
                     self.kill().await;
                     self.emit_event(ShinkaiNodeManagerEvent::PullingModelError {
-                        model: default_embeddings_model.to_string(),
+                        model: default_embedding_model.to_string(),
                         error: e.to_string(),
                     });
                     return Err(e.to_string());
                 }
             }
             self.emit_event(ShinkaiNodeManagerEvent::PullingModelDone {
-                model: default_embeddings_model.to_string(),
+                model: default_embedding_model.to_string(),
             });
         }
         

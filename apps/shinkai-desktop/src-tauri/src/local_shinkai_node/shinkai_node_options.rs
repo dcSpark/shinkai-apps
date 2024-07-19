@@ -23,6 +23,8 @@ pub struct ShinkaiNodeOptions {
     pub log_all: Option<String>,
     pub proxy_identity: Option<String>,
     pub rpc_url: Option<String>,
+    pub default_embedding_model: Option<String>,
+    pub supported_embedding_models: Option<String>,
 }
 
 impl ShinkaiNodeOptions {
@@ -143,6 +145,16 @@ impl ShinkaiNodeOptions {
                     .rpc_url
                     .unwrap_or_else(|| base_options.rpc_url.unwrap()),
             ),
+            default_embedding_model: Some(
+                options
+                    .default_embedding_model
+                    .unwrap_or_else(|| base_options.default_embedding_model.unwrap()),
+            ),
+            supported_embedding_models: Some(
+                options
+                    .supported_embedding_models
+                    .unwrap_or_else(|| base_options.supported_embedding_models.unwrap()),
+            ),
         }
     }
 }
@@ -174,6 +186,8 @@ impl Default for ShinkaiNodeOptions {
             log_all: Some("1".to_string()),
             proxy_identity: Some("@@relayer_pub_01.arb-sep-shinkai".to_string()),
             rpc_url: Some("https://public.stackup.sh/api/v1/node/arbitrum-sepolia".to_string()),
+            default_embedding_model: Some("snowflake-arctic-embed:xs".to_string()),
+            supported_embedding_models: Some("snowflake-arctic-embed:xs".to_string()),
         }
     }
 }

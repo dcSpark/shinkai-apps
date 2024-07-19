@@ -13,7 +13,7 @@ edition = "2021"
 tauri-build = { version = "1.4", features = [] }
 
 [dependencies]
-tauri = { version = "1.4", features = [ "process-relaunch", "updater", "window-set-focus", "http-request", "window-create", "shell-sidecar", "os-all", "notification-all", "path-all", "dialog-all", "window-close", "window-start-dragging", "macos-private-api", "fs-all", "global-shortcut-all", "system-tray", "shell-open", "process-command-api"] }
+tauri = { version = "1.4", features = [ "updater", "process-relaunch", "window-set-focus", "http-request", "window-create", "shell-sidecar", "os-all", "notification-all", "path-all", "dialog-all", "window-close", "window-start-dragging", "macos-private-api", "fs-all", "global-shortcut-all", "system-tray", "shell-open", "process-command-api"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 whisper-rs = "0.8.0"
