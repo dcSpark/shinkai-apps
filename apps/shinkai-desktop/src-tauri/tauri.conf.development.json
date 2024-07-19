@@ -7,6 +7,7 @@
       "identifier": "com.shinkai.desktop.dev"
     },
     "updater": {
+      "active": false,
       "endpoints": [
         "https://download.shinkai.com/shinkai-desktop/binaries/development/updates.json"
       ],

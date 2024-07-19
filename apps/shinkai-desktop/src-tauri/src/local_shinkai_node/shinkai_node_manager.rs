@@ -97,7 +97,7 @@ impl ShinkaiNodeManager {
             return Err(e.to_string());
         }
         let installed_models: Vec<String> = installed_models_response.unwrap().models.iter().map(|m| m.model.clone()).collect();
-        let default_embeddings_model = "snowflake-arctic-embed:xs";
+        let default_embeddings_model = "jina/jina-embeddings-v2-base-es";
         if !installed_models.contains(&default_embeddings_model.to_string()) {
             self.emit_event(ShinkaiNodeManagerEvent::PullingModelStart {
                 model: default_embeddings_model.to_string(),
