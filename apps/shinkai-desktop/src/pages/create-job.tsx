@@ -12,6 +12,7 @@ import {
   VRItem,
 } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
+import { Workflow } from '@shinkai_network/shinkai-node-state/lib/queries/getWorkflowSearch/types';
 import { useGetWorkflowSearch } from '@shinkai_network/shinkai-node-state/lib/queries/getWorkflowSearch/useGetWorkflowSearch';
 import { transformDataToTreeNodes } from '@shinkai_network/shinkai-node-state/lib/utils/files';
 import {
@@ -48,11 +49,12 @@ import {
   FilesIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { AnimatePresence, motion } from 'framer-motion';
 import { PlusIcon, SquareSlash, XIcon } from 'lucide-react';
 import { TreeCheckboxSelectionKeys } from 'primereact/tree';
 import { TreeNode } from 'primereact/treenode';
 import React, { useEffect, useRef, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import {
@@ -73,6 +75,7 @@ const CreateJobPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { captureAnalyticEvent } = useAnalytics();
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const locationState = location.state as {
     files: File[];
@@ -84,9 +87,9 @@ const CreateJobPage = () => {
   const [isVectorFSOpen, setIsVectorFSOpen] = React.useState(false);
   const [isKnowledgeSearchOpen, setIsKnowledgeSearchOpen] =
     React.useState(false);
-  const [selectedWorkflow, setSelectedWorkflow] = useState<string | undefined>(
-    undefined,
-  );
+  const [selectedWorkflow, setSelectedWorkflow] = useState<
+    Workflow | undefined
+  >(undefined);
   const [nodes, setNodes] = useState<TreeNode[]>([]);
   const [selectedKeys, setSelectedKeys] =
     useState<TreeCheckboxSelectionKeys | null>(null);
@@ -238,11 +241,8 @@ const CreateJobPage = () => {
         ? Array.from(selectedFolderKeysRef.current.values())
         : [];
 
-    // Find the selected workflow and its version
-    const selectedWorkflowObj = workflowRecommendations?.find(
-      (workflow) => workflow.Workflow.workflow.name === selectedWorkflow,
-    );
-    const workflowVersion = selectedWorkflowObj?.Workflow.workflow.version;
+    const workflowVersion = selectedWorkflow?.Workflow?.workflow?.version;
+    const workflowName = selectedWorkflow?.Workflow?.workflow?.name;
 
     await createJob({
       nodeAddress: auth?.node_address ?? '',
@@ -254,7 +254,7 @@ const CreateJobPage = () => {
       files: data.files,
       workflow: data.workflow,
       workflowName: selectedWorkflow
-        ? `${selectedWorkflow}:::${workflowVersion}`
+        ? `${workflowName}:::${workflowVersion}`
         : undefined,
       is_hidden: false,
       selectedVRFiles,
@@ -267,12 +267,21 @@ const CreateJobPage = () => {
     });
   };
 
-  // useEffect(() => {
-  //   return () => {
-  //     file && URL.revokeObjectURL(file.preview);
-  //   };
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
+  const currentMessage = useWatch({
+    control: createJobForm.control,
+    name: 'content',
+  });
+
+  useEffect(() => {
+    console.log(
+      currentMessage,
+      'currentMessage',
+      currentMessage?.endsWith('/'),
+    );
+    if (currentMessage?.endsWith('/')) {
+      setIsSheetOpen(true);
+    }
+  }, [currentMessage]);
 
   return (
     <SubpageLayout title={t('chat.create')}>
@@ -282,55 +291,83 @@ const CreateJobPage = () => {
           onSubmit={createJobForm.handleSubmit(onSubmit)}
         >
           <div className="space-y-6">
+            <AnimatePresence>
+              {!!selectedWorkflow && (
+                <motion.div
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center justify-between gap-3 px-2 text-xs"
+                  exit={{
+                    y: -5,
+                    transition: { duration: 0.2, ease: 'easeOut' },
+                  }}
+                  initial={{ opacity: 0, y: -10 }}
+                >
+                  <div>
+                    <h1 className="font-medium text-white">
+                      {selectedWorkflow.Workflow.workflow.name}
+                    </h1>
+                    <p className="text-gray-80 font-medium">
+                      {selectedWorkflow.Workflow.workflow.description}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {/*<button>View Workflow</button>*/}
+                    <button
+                      onClick={() => {
+                        setSelectedWorkflow(undefined);
+                      }}
+                      type="button"
+                    >
+                      <XIcon className="h-4 w-4" />
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             <FormField
               control={createJobForm.control}
               name="content"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('chat.form.message')}</FormLabel>
+                  <FormLabel>Message</FormLabel>
                   <FormControl>
                     <div className="">
                       <Textarea
                         autoFocus={true}
-                        className="!min-h-[200px] resize-none pb-[40px] text-sm"
+                        className="placeholder-gray-80 !min-h-[170px] resize-none pb-[40px] text-sm"
                         onKeyDown={(event) => {
                           if (
                             event.key === 'Enter' &&
                             (event.metaKey || event.ctrlKey)
                           ) {
                             createJobForm.handleSubmit(onSubmit)();
+                            return;
                           }
                         }}
-                        placeholder={t('chat.form.messagePlaceholder')}
                         spellCheck={false}
                         {...field}
+                        placeholder={
+                          selectedWorkflow
+                            ? ''
+                            : "Ask anything or press '/' for workflow commands"
+                        }
                       />
-                      <Sheet>
+                      <Sheet
+                        onOpenChange={(isOpen) => setIsSheetOpen(isOpen)}
+                        open={isSheetOpen}
+                      >
                         <SheetTrigger className="absolute bottom-2.5 right-2.5">
                           <Button
                             className="gap-3 rounded-lg bg-gray-500 text-white hover:bg-gray-500"
                             size="sm"
                             type="button"
-                            variant={selectedWorkflow ? 'gradient' : 'ghost'}
+                            variant={'ghost'}
                           >
                             <div className="flex items-center gap-1">
                               <SquareSlash className="h-4 w-4" />
-                              <span>
-                                {selectedWorkflow ?? 'Workflow Library'}
-                              </span>
+                              <span>Workflow Library</span>
                             </div>
-                            {selectedWorkflow && (
-                              <button
-                                className="rounded-full bg-gray-200 p-1"
-                                onClick={(e) => {
-                                  setSelectedWorkflow(undefined);
-                                  e.stopPropagation();
-                                }}
-                                type="button"
-                              >
-                                <XIcon className="h-4 w-4" />
-                              </button>
-                            )}
                           </Button>
                         </SheetTrigger>
 
@@ -353,17 +390,14 @@ const CreateJobPage = () => {
                                 <button
                                   className={cn(
                                     'flex w-full flex-col gap-1 rounded-lg px-3 py-2 text-left text-sm hover:bg-gray-300',
-
-                                    selectedWorkflow ===
-                                      workflow.Workflow.workflow.name
+                                    selectedWorkflow?.Workflow?.workflow
+                                      ?.name === workflow.Workflow.workflow.name
                                       ? 'border-brand border'
                                       : 'bg-transparent',
                                   )}
                                   key={workflow.Workflow.workflow.name}
                                   onClick={() => {
-                                    setSelectedWorkflow(
-                                      workflow.Workflow.workflow.name,
-                                    );
+                                    setSelectedWorkflow(workflow);
                                   }}
                                   type="button"
                                 >
