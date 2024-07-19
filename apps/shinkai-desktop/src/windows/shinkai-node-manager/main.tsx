@@ -181,7 +181,7 @@ const App = () => {
 
   const handleReset = (): void => {
     setIsConfirmResetDialogOpened(false);
-    shinkaiNodeRemoveStorage();
+    shinkaiNodeRemoveStorage({ preserveKeys: true });
   };
 
   const startSyncOllamaModels = (): void => {
