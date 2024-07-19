@@ -186,8 +186,8 @@ impl Default for ShinkaiNodeOptions {
             log_all: Some("1".to_string()),
             proxy_identity: Some("@@relayer_pub_01.arb-sep-shinkai".to_string()),
             rpc_url: Some("https://public.stackup.sh/api/v1/node/arbitrum-sepolia".to_string()),
-            default_embedding_model: Some("jina/jina-embeddings-v2-base-es:latest".to_string()),
-            supported_embedding_models: Some("jina/jina-embeddings-v2-base-es:latest".to_string()),
+            default_embedding_model: Some("snowflake-arctic-embed:xs".to_string()),
+            supported_embedding_models: Some("snowflake-arctic-embed:xs".to_string()),
         }
     }
 }
