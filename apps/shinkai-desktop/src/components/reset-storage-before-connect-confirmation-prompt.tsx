@@ -48,9 +48,9 @@ export const ResetStorageBeforeConnectConfirmationPrompt = ({
     }
   };
 
-  const reset = async () => {
+  const reset = async (preserveKeys: boolean) => {
     await shinkaiNodeKill();
-    await shinkaiNodeRemoveStorage();
+    await shinkaiNodeRemoveStorage({ preserveKeys });
     await shinkaiNodeSpawn();
     if (typeof onReset === 'function') {
       onReset();
@@ -59,7 +59,7 @@ export const ResetStorageBeforeConnectConfirmationPrompt = ({
 
   return (
     <AlertDialog {...props}>
-      <AlertDialogContent className="w-[75%]">
+      <AlertDialogContent className="w-[100%]">
         <AlertDialogHeader>
           <AlertDialogTitle>
             {t('shinkaiNode.resetNodeWarning.title')}
@@ -83,7 +83,7 @@ export const ResetStorageBeforeConnectConfirmationPrompt = ({
                     />
                   </span>
                   <span className="text-xs">
-                    <span aria-label="reset" className="emoji" role="img">
+                    <span aria-label="reset data" className="emoji" role="img">
                       🗑️
                     </span>
                     <Trans
@@ -93,32 +93,52 @@ export const ResetStorageBeforeConnectConfirmationPrompt = ({
                       i18nKey="shinkaiNode.resetNodeWarning.option2"
                     />
                   </span>
+                  <span className="text-xs">
+                    <span aria-label="reset all" className="emoji" role="img">
+                      💣
+                    </span>
+                    <Trans
+                      components={{
+                        b: <b className="ml-1" />,
+                      }}
+                      i18nKey="shinkaiNode.resetNodeWarning.option3"
+                    />
+                  </span>
                 </div>
               </div>
             </div>
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter className="mt-4 flex gap-2">
+        <AlertDialogFooter className="mt-4 grid gap-2">
+          <Button className="mt-0 flex-1 text-sm" onClick={() => restore()}>
+            <span aria-label="restore" className="emoji" role="img">
+              🔑 {t('common.restore')}
+            </span>
+          </Button>
+          <Button
+            className="mt-0 flex-1 text-sm"
+            onClick={() => reset(true)}
+            variant={'ghost'}
+          >
+            <span aria-label="reset" className="emoji" role="img">
+              🗑️ {t('common.resetData')}
+            </span>
+          </Button>
+          <Button
+            className="mt-0 flex-1 text-sm"
+            onClick={() => reset(false)}
+            variant={'ghost'}
+          >
+            <span aria-label="reset all" className="emoji" role="img">
+              💣 {t('common.resetAll')}
+            </span>
+          </Button>
           <Button
             className="mt-0 flex-1 text-sm"
             onClick={() => cancel()}
             variant={'outline'}
           >
             {t('common.cancel')}
-          </Button>
-          <Button
-            className="mt-0 flex-1 text-sm"
-            onClick={() => restore()}
-            variant={'ghost'}
-          >
-            <span aria-label="restore" className="emoji" role="img">
-              🔑 {t('common.restore')}
-            </span>
-          </Button>
-          <Button className="mt-0 flex-1 text-sm" onClick={() => reset()}>
-            <span aria-label="reset" className="emoji" role="img">
-              🗑️ {t('common.reset')}
-            </span>
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -53,9 +53,9 @@ pub async fn shinkai_node_kill() -> Result<(), String> {
 }
 
 #[tauri::command]
-pub async fn shinkai_node_remove_storage() -> Result<(), String> {
+pub async fn shinkai_node_remove_storage(preserve_keys: bool) -> Result<(), String> {
     let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
-    match shinkai_node_manager_guard.remove_storage().await {
+    match shinkai_node_manager_guard.remove_storage(preserve_keys).await {
         Ok(_) => Ok(()),
         Err(_) => Ok(()),
     }

@@ -192,11 +192,13 @@ export default {
     resetNodeWarning: {
       title: 'Unable to connect',
       description:
-        'Your Shinkai Node is currently locked by existing keys. To connect again you have two options:',
+        'Your Shinkai Node is currently locked by existing keys. To connect again you have three options:',
       option1:
         '<b>Restore:</b> Try to restore your connection using a backed up keys.',
       option2:
-        '<b>Reset:</b> Delete your Shinkai Node Storage (this will permanently delete all your data).',
+        '<b>Reset Data:</b> Permanently delete all your Shinkai Node data.',
+      option3:
+        '<b>Reset All:</b> Permanently delete all your Shinkai Node data including the encryption and signing keys.',
     },
     models: {
       table: {
@@ -329,7 +331,8 @@ export default {
     restore: 'Restore',
     retry: 'Retry',
     copy: 'Copy',
-    reset: 'Reset',
+    resetData: 'Reset Data',
+    resetAll: 'Reset All',
     clickToUpload: 'Click to upload or drag and drop',
     upload: 'Upload',
     clearSearch: 'Clear Search',

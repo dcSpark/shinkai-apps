@@ -107,7 +107,8 @@
     "remove": "Eliminar",
     "rename": "Renombrar",
     "repeatPassphrase": "Confirmar frase de paso",
-    "reset": "Restablecer",
+    "resetData": "Restablecer Datos",
+    "resetAll": "Restablecer Todo",
     "resetFilters": "Restablecer filtros",
     "restore": "Restaurar",
     "retry": "Reintentar",
@@ -379,9 +380,10 @@
       "syncedOllama": "Los modelos locales de Ollama se han sincronizado con tu Nodo Shinkai"
     },
     "resetNodeWarning": {
-      "description": "Su nodo Shinkai está actualmente bloqueado por claves existentes. Para volver a conectarse, tiene dos opciones:",
+      "description": "Su nodo Shinkai está actualmente bloqueado por claves existentes. Para volver a conectarse, tiene tres opciones:",
       "option1": "<b>Restaurar:</b> Intente restaurar su conexión utilizando las claves respaldadas.",
-      "option2": "<b>Restablecer:</b> Elimine el almacenamiento de su nodo Shinkai (esto eliminará permanentemente todos sus datos).",
+      "option2": "<b>Restablecer datos:</b> Eliminar permanentemente todos los datos de tu Nodo Shinkai.",
+      "option3": "<b>Restablecer todo:</b> Eliminar permanentemente todos los datos de tu Nodo Shinkai, incluyendo las claves de encriptación y firma.",
       "title": "No se puede conectar"
     },
     "restartNode": "Por favor, reinicia tu Nodo Shinkai",

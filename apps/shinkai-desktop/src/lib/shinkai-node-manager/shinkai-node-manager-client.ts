@@ -113,12 +113,23 @@ export const useShinkaiNodeKillMutation = (options?: UseMutationOptions) => {
   return { ...response };
 };
 
+export type ShinkaiNodeRemoveStorageOptions = {
+  preserveKeys: boolean;
+};
 export const useShinkaiNodeRemoveStorageMutation = (
-  options?: UseMutationOptions,
+  options?: UseMutationOptions<
+    void,
+    Error,
+    Partial<ShinkaiNodeRemoveStorageOptions>
+  >,
 ) => {
   const response = useMutation({
-    mutationFn: () => {
-      return invoke('shinkai_node_remove_storage');
+    mutationFn: (
+      options: Partial<ShinkaiNodeRemoveStorageOptions>,
+    ): Promise<void> => {
+      return invoke('shinkai_node_remove_storage', {
+        preserveKeys: options?.preserveKeys,
+      });
     },
     ...options,
   });

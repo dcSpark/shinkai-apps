@@ -87,18 +87,25 @@ impl ShinkaiNodeProcessHandler {
         self.options.clone()
     }
 
-    pub async fn remove_storage(&self) -> Result<(), String> {
+    pub async fn remove_storage(&self, preserve_keys: bool) -> Result<(), String> {
         if self.process_handler.is_running().await {
             return Err("can't remove node storage while it's running".to_string());
         }
         let options = self.options.clone();
-        match fs::remove_dir_all(options.node_storage_path.unwrap()) {
-            Ok(_) => Ok(()),
-            Err(message) => Err(format!(
-                "failed to remove Shinkai Node storage error:{}",
-                message
-            )),
+        let storage_path = options.node_storage_path.unwrap();
+        for entry in fs::read_dir(storage_path).map_err(|e| format!("Failed to read storage directory: {}", e))? {
+            let entry = entry.map_err(|e| format!("Failed to read directory entry: {}", e))?;
+            let path = entry.path();
+            if path.is_dir() {
+                fs::remove_dir_all(path).map_err(|e| format!("Failed to remove directory: {}", e))?;
+            } else {
+                if preserve_keys && path.ends_with(".secret") {
+                    continue;
+                }
+                fs::remove_file(path).map_err(|e| format!("Failed to remove file: {}", e))?;
+            }
         }
+        Ok(())
     }
 
     pub async fn spawn(&self) -> Result<(), String> {

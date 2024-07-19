@@ -107,7 +107,8 @@
     "remove": "Hapus",
     "rename": "Ganti Nama",
     "repeatPassphrase": "Konfirmasi frasa sandi",
-    "reset": "Reset",
+    "resetData": "Atur Ulang Data",
+    "resetAll": "Atur Ulang Semua",
     "resetFilters": "Reset Filter",
     "restore": "Pulihkan",
     "retry": "Coba lagi",
@@ -379,9 +380,10 @@
       "syncedOllama": "Model Ollama lokal disinkronkan dengan Node Shinkai Anda"
     },
     "resetNodeWarning": {
-      "description": "Node Shinkai Anda saat ini terkunci oleh kunci yang ada. Untuk terhubung kembali, Anda memiliki dua pilihan:",
+      "description": "Node Shinkai Anda saat ini terkunci oleh kunci yang ada. Untuk terhubung kembali, Anda memiliki tiga pilihan:",
       "option1": "<b>Pulihkan:</b> Coba pulihkan koneksi Anda menggunakan kunci yang telah dibackup.",
-      "option2": "<b>Reset:</b> Hapus Penyimpanan Node Shinkai Anda (ini akan menghapus semua data Anda secara permanen).",
+      "option2": "<b>Reset Data:</b> Hapus secara permanen semua data Node Shinkai Anda.",
+      "option3": "<b>Reset Semua:</b> Hapus secara permanen semua data Node Shinkai Anda termasuk kunci enkripsi dan penandatanganan.",
       "title": "Tidak dapat terhubung"
     },
     "restartNode": "Harap restart Node Shinkai Anda",
