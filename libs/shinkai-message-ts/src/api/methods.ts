@@ -160,6 +160,7 @@ export const sendTextMessageWithFilesForInbox = async (
     sender_subidentity,
     receiver,
     workflow,
+    undefined,
   );
 
   await fileUploader.createFolder();
@@ -855,6 +856,7 @@ export const uploadFilesToVR = async (
       sender,
       sender_subidentity,
       receiver,
+      undefined,
       undefined,
     );
 
