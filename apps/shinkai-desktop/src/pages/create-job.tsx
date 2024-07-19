@@ -5,10 +5,6 @@ import {
   CreateJobFormSchema,
   createJobFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
-import {
-  SearchVectorFormSchema,
-  searchVectorFormSchema,
-} from '@shinkai_network/shinkai-node-state/forms/vector-fs/vector-search';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
 import {
@@ -54,14 +50,7 @@ import {
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import {
-  PlusIcon,
-  SearchIcon,
-  SparkleIcon,
-  Sparkles,
-  SquareSlash,
-  XIcon,
-} from 'lucide-react';
+import { PlusIcon, SearchIcon, Sparkles, XIcon } from 'lucide-react';
 import { TreeCheckboxSelectionKeys } from 'primereact/tree';
 import { TreeNode } from 'primereact/treenode';
 import React, { useEffect, useRef, useState } from 'react';
@@ -356,7 +345,7 @@ const CreateJobPage = () => {
                         <div className="relative">
                           <Textarea
                             autoFocus={true}
-                            className="placeholder-gray-80 !min-h-[140px] resize-none pb-[40px] text-sm"
+                            className="placeholder-gray-80 !min-h-[130px] resize-none pb-[40px] text-sm"
                             onKeyDown={(event) => {
                               if (
                                 event.key === 'Enter' &&
@@ -376,59 +365,48 @@ const CreateJobPage = () => {
                           />
                           <motion.div
                             animate={{ opacity: 1 }}
-                            className="absolute inset-x-2 bottom-1 flex items-center justify-between gap-2"
+                            className="absolute inset-x-3 bottom-2 flex items-center justify-between gap-2"
                             exit={{
                               opacity: 0,
                             }}
                             initial={{ opacity: 0 }}
                             transition={{ duration: 0.2 }}
                           >
-                            {!!debounceMessage &&
-                              isWorkflowRecommendationsSuccess &&
-                              workflowRecommendations?.length > 0 && (
-                                <div className="flex gap-2">
-                                  {workflowRecommendations?.map((workflow) => (
-                                    <button
-                                      className={cn(
-                                        'hover:bg-brand-gradient flex items-center gap-2 rounded-lg border bg-gray-400 px-2 py-1 text-xs text-white',
-
-                                        selectedWorkflow?.Workflow?.workflow
-                                          ?.name ===
-                                          workflow.Workflow.workflow.name &&
-                                          'bg-brand-gradient border-brand border',
-                                      )}
-                                      key={workflow.Workflow.workflow.name}
-                                      onClick={() => {
-                                        if (
-                                          selectedWorkflow?.Workflow?.workflow
-                                            ?.name ===
-                                          workflow.Workflow.workflow.name
-                                        ) {
-                                          setSelectedWorkflow(undefined);
-                                          return;
-                                        }
-                                        setSelectedWorkflow(workflow);
-                                      }}
-                                      type="button"
-                                    >
-                                      <Sparkles className="h-3 w-3" />
-                                      {workflow.Workflow.workflow.name}
-                                    </button>
-                                  ))}
-                                </div>
-                              )}
-                            <Button
-                              className="rounded-lg bg-gray-400 text-white hover:bg-gray-500"
+                            <div className="flex gap-2">
+                              {!!debounceMessage &&
+                                !selectedWorkflow &&
+                                isWorkflowRecommendationsSuccess &&
+                                workflowRecommendations?.length > 0 &&
+                                workflowRecommendations?.map((workflow) => (
+                                  <motion.button
+                                    animate={{ opacity: 1, x: 0 }}
+                                    className={cn(
+                                      'hover:bg-brand-gradient flex items-center gap-2 rounded-lg border bg-gray-400 px-2 py-1 text-xs text-white',
+                                      'border border-gray-100',
+                                    )}
+                                    exit={{ opacity: 0, x: -10 }}
+                                    initial={{ opacity: 0, x: -10 }}
+                                    key={workflow.Workflow.workflow.name}
+                                    onClick={() => {
+                                      setSelectedWorkflow(workflow);
+                                    }}
+                                    type="button"
+                                  >
+                                    <Sparkles className="h-3 w-3" />
+                                    {workflow.Workflow.workflow.name}
+                                  </motion.button>
+                                ))}
+                            </div>
+                            <button
+                              className="hover:bg-brand-gradient flex items-center gap-2 rounded-lg border px-2 py-1 text-xs text-white"
                               onClick={() => setWorkflowSearchDrawerOpen(true)}
-                              size="sm"
                               type="button"
-                              variant={'ghost'}
                             >
                               <div className="flex items-center gap-1">
-                                <SquareSlash className="h-4 w-4" />
-                                <span>Explore</span>
+                                <PlusIcon className="h-4 w-4" />
+                                <span>Workflows</span>
                               </div>
-                            </Button>
+                            </button>
                           </motion.div>
                         </div>
                       </div>
