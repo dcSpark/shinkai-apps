@@ -72,7 +72,8 @@ export const ResourcesBanner = ({
               <span>- Your computer doesn&apos;t have a discrete GPU.</span>
             )}
           </div>
-          <div className="mt-2">
+          {/* In Coinlist Testnet 2, We disabled Shinkai Hosting so we can skip this message until we enable it again */}
+          {/* <div className="mt-2">
             <span aria-label="lightbulb" role="img">
               💡
             </span>{' '}
@@ -82,7 +83,7 @@ export const ResourcesBanner = ({
               label={'Shinkai Hosting'}
               url={'https://www.shinkai.com/get-shinkai'}
             />
-          </div>
+          </div> */}
         </div>
       </AlertDescription>
     </Alert>
