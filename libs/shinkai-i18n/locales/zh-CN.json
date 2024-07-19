@@ -107,7 +107,8 @@
     "remove": "移除",
     "rename": "重命名",
     "repeatPassphrase": "确认密码短语",
-    "reset": "重置",
+    "resetData": "重置数据",
+    "resetAll": "重置全部",
     "resetFilters": "重置筛选器",
     "restore": "恢复",
     "retry": "重试",
@@ -379,9 +380,10 @@
       "syncedOllama": "本地 Ollama 模型已与您的 Shinkai 节点同步"
     },
     "resetNodeWarning": {
-      "description": "您的深海节点当前被现有密钥锁定。要重新连接，您有两个选项：",
+      "description": "您的 Shinkai 节点当前被现有密钥锁定。要重新连接，您有三个选项：",
       "option1": "<b>恢复：</b> 尝试使用备份密钥恢复连接。",
-      "option2": "<b>重置：</b> 删除您的深海节点存储（这将永久删除所有数据）。",
+      "option2": "<b>重置数据：</b>永久删除您所有的深海节点数据。",
+      "option3": "<b>全部重置：</b>永久删除您所有的深海节点数据，包括加密和签名密钥。",
       "title": "无法连接"
     },
     "restartNode": "请重启您的 Shinkai 节点",

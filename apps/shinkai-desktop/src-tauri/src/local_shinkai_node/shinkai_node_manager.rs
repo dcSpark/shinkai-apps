@@ -221,8 +221,8 @@ impl ShinkaiNodeManager {
         self.emit_event(ShinkaiNodeManagerEvent::OllamaStopped);
     }
 
-    pub async fn remove_storage(&self) -> Result<(), String> {
-        self.shinkai_node_process.remove_storage().await
+    pub async fn remove_storage(&self, preserve_keys: bool) -> Result<(), String> {
+        self.shinkai_node_process.remove_storage(preserve_keys).await
     }
 
     pub async fn set_default_shinkai_node_options(&mut self) -> ShinkaiNodeOptions {
