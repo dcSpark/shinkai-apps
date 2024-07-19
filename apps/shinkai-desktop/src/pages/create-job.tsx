@@ -431,50 +431,6 @@ const CreateJobPage = () => {
                             </Button>
                           </motion.div>
                         </div>
-                        <AnimatePresence>
-                          {!!debounceMessage &&
-                            isWorkflowRecommendationsSuccess &&
-                            workflowRecommendations?.length > 0 && (
-                              <motion.div
-                                animate={{ opacity: 1 }}
-                                className="flex gap-2"
-                                exit={{
-                                  opacity: 0,
-                                }}
-                                initial={{ opacity: 0 }}
-                                transition={{ duration: 0.2 }}
-                              >
-                                {workflowRecommendations.map((workflow) => (
-                                  <button
-                                    className={cn(
-                                      'hover:bg-brand-gradient flex items-center gap-2 rounded-lg bg-gray-400 px-2 py-1 text-xs text-white',
-
-                                      selectedWorkflow?.Workflow?.workflow
-                                        ?.name ===
-                                        workflow.Workflow.workflow.name &&
-                                        'bg-brand-gradient border-brand border',
-                                    )}
-                                    key={workflow.Workflow.workflow.name}
-                                    onClick={() => {
-                                      if (
-                                        selectedWorkflow?.Workflow?.workflow
-                                          ?.name ===
-                                        workflow.Workflow.workflow.name
-                                      ) {
-                                        setSelectedWorkflow(undefined);
-                                        return;
-                                      }
-                                      setSelectedWorkflow(workflow);
-                                    }}
-                                    type="button"
-                                  >
-                                    <Sparkles className="h-3 w-3" />
-                                    {workflow.Workflow.workflow.name}
-                                  </button>
-                                ))}
-                              </motion.div>
-                            )}
-                        </AnimatePresence>
                       </div>
                     </FormControl>
                     <FormMessage />
