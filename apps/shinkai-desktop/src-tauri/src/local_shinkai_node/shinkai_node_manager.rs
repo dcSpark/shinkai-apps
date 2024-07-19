@@ -97,7 +97,7 @@ impl ShinkaiNodeManager {
             return Err(e.to_string());
         }
         let installed_models: Vec<String> = installed_models_response.unwrap().models.iter().map(|m| m.model.clone()).collect();
-        let default_embedding_model = ShinkaiNodeOptions::default().default_embedding_model.unwrap();
+        let default_embedding_model = self.shinkai_node_process.get_options().default_embedding_model.unwrap();
         if !installed_models.contains(&default_embedding_model.to_string()) {
             self.emit_event(ShinkaiNodeManagerEvent::PullingModelStart {
                 model: default_embedding_model.to_string(),
