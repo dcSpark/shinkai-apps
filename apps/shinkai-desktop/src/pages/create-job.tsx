@@ -7,6 +7,7 @@ import {
 } from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
 import { useCreateWorkflow } from '@shinkai_network/shinkai-node-state/lib/mutations/createWorkflow/useCreateWorkflow';
+import { useRemoveWorkflow } from '@shinkai_network/shinkai-node-state/lib/mutations/removeWorkflow/useRemoveWorkflow';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
 import {
   VRFolder,
@@ -58,7 +59,14 @@ import {
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { PlusIcon, SearchIcon, Sparkles, XIcon } from 'lucide-react';
+import {
+  Edit3Icon,
+  PlusIcon,
+  SearchIcon,
+  Sparkles,
+  Trash2Icon,
+  XIcon,
+} from 'lucide-react';
 import { TreeCheckboxSelectionKeys } from 'primereact/tree';
 import { TreeNode } from 'primereact/treenode';
 import React, { useEffect, useRef, useState } from 'react';
@@ -632,6 +640,17 @@ const WorkflowSearchDrawer = ({
     },
   );
 
+  const { mutateAsync: removeWorkflow } = useRemoveWorkflow({
+    onSuccess: () => {
+      toast.success('Workflow removed successfully');
+    },
+    onError: (error) => {
+      toast.error('Failed to remove workflow', {
+        description: error.message,
+      });
+    },
+  });
+
   return (
     <Sheet
       onOpenChange={setIsWorkflowSearchDrawerOpen}
@@ -682,17 +701,45 @@ const WorkflowSearchDrawer = ({
             {!searchQuery &&
               isSearchQuerySynced &&
               workflowList?.map((workflow) => (
-                <button
+                <div
                   className={cn(
-                    'flex w-full flex-col gap-1 rounded-sm px-3 py-2 text-left text-sm hover:bg-gray-300',
+                    'relative flex min-h-[70px] w-full flex-col gap-1 rounded-sm px-3 py-2.5 pr-8 text-left text-sm hover:bg-gray-300',
                   )}
                   key={workflow.name}
                   onClick={() => {
                     setSelectedWorkflow(workflow);
                     setIsWorkflowSearchDrawerOpen(false);
                   }}
-                  type="button"
+                  role="button"
+                  tabIndex={0}
                 >
+                  <div className="absolute right-4 top-3 flex items-center gap-2">
+                    <button type="button">
+                      <Edit3Icon className="text-gray-80 h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={async (event) => {
+                        event.stopPropagation();
+                        await removeWorkflow({
+                          profile: auth?.profile ?? '',
+                          nodeAddress: auth?.node_address ?? '',
+                          shinkaiIdentity: auth?.shinkai_identity ?? '',
+                          workflowKey: workflow.name,
+                          my_device_encryption_sk:
+                            auth?.profile_encryption_sk ?? '',
+                          my_device_identity_sk:
+                            auth?.profile_identity_sk ?? '',
+                          node_encryption_pk: auth?.node_encryption_pk ?? '',
+                          profile_encryption_sk:
+                            auth?.profile_encryption_sk ?? '',
+                          profile_identity_sk: auth?.profile_identity_sk ?? '',
+                        });
+                      }}
+                      type="button"
+                    >
+                      <Trash2Icon className="text-gray-80 h-4 w-4" />
+                    </button>
+                  </div>
                   <span className="text-sm font-medium">
                     {workflow.name}{' '}
                     {selectedWorkflow?.name === workflow.name && (
@@ -704,8 +751,8 @@ const WorkflowSearchDrawer = ({
                       </Badge>
                     )}
                   </span>
-                  <p className="text-gray-80 text-sm">{workflow.description}</p>
-                </button>
+                  <p className="text-gray-80 text-xs">{workflow.description}</p>
+                </div>
               ))}
             {searchQuery &&
               isSearchQuerySynced &&
@@ -731,10 +778,10 @@ const WorkflowSearchDrawer = ({
                     {selectedWorkflow?.name ===
                       workflow.Workflow.workflow.name && (
                       <Badge
-                        className="bg-brand ml-2 text-gray-50"
+                        className="bg-brand ml-2 font-light text-gray-50 shadow-none"
                         variant="default"
                       >
-                        Selected
+                        Current
                       </Badge>
                     )}
                   </span>
