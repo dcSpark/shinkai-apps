@@ -8,10 +8,16 @@
 There is a companion repo called Shinkai Node, that allows you to set up the node anywhere as the central unit of the Shinkai Network, handling tasks such as agent management, job processing, and secure communications. 
 You can find it <a href="https://github.com/dcSpark/shinkai-node">here</a>.</p><br/>
 
+[![Mutable.ai Auto Wiki](https://img.shields.io/badge/Auto_Wiki-Mutable.ai-blue)](https://wiki.mutable.ai/dcSpark/shinkai-apps)
+
 
 https://github.com/dcSpark/shinkai-apps/assets/46382556/010114fb-0ed4-449a-9f27-a266b22b7bdb
 
+## Documentation
 
+General Documentation: [https://docs.shinkai.com](https://docs.shinkai.com)
+
+More In Depth Codebase Documentation (Mutable.ai): [https://wiki.mutable.ai/dcSpark/shinkai-apps](https://wiki.mutable.ai/dcSpark/shinkai-apps)
 
 ## Projects
 
