@@ -1799,7 +1799,12 @@ export class ShinkaiMessageBuilderWrapper {
     receiver: string,
     receiver_subidentity: string,
   ): string {
-    const body = JSON.stringify(workflow_key);
+    const workflowName = workflow_key.split(':::')[0];
+    const workflowVersion = workflow_key.split(':::')[1];
+    const body = JSON.stringify({
+      name: workflowName,
+      version: workflowVersion,
+    });
 
     const builder = new ShinkaiMessageBuilderWrapper(
       my_encryption_secret_key,
