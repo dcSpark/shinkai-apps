@@ -6,18 +6,25 @@ import {
   createJobFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
+import { useCreateWorkflow } from '@shinkai_network/shinkai-node-state/lib/mutations/createWorkflow/useCreateWorkflow';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
 import {
   VRFolder,
   VRItem,
 } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
-import { Workflow } from '@shinkai_network/shinkai-node-state/lib/queries/getWorkflowSearch/types';
+import { Workflow } from '@shinkai_network/shinkai-node-state/lib/queries/getWorkflowList/types';
+import { useGetWorkflowList } from '@shinkai_network/shinkai-node-state/lib/queries/getWorkflowList/useGetWorkflowList';
 import { useGetWorkflowSearch } from '@shinkai_network/shinkai-node-state/lib/queries/getWorkflowSearch/useGetWorkflowSearch';
 import { transformDataToTreeNodes } from '@shinkai_network/shinkai-node-state/lib/utils/files';
 import {
   Badge,
   Button,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
   FileUploader,
   Form,
   FormControl,
@@ -38,6 +45,7 @@ import {
   SheetHeader,
   SheetTitle,
   Textarea,
+  TextField,
   Tooltip,
   TooltipContent,
   TooltipPortal,
@@ -56,6 +64,8 @@ import { TreeNode } from 'primereact/treenode';
 import React, { useEffect, useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import { z } from 'zod';
 
 import {
   KnowledgeSearchDrawer,
@@ -231,8 +241,8 @@ const CreateJobPage = () => {
         ? Array.from(selectedFolderKeysRef.current.values())
         : [];
 
-    const workflowVersion = selectedWorkflow?.Workflow?.workflow?.version;
-    const workflowName = selectedWorkflow?.Workflow?.workflow?.name;
+    const workflowVersion = selectedWorkflow?.version;
+    const workflowName = selectedWorkflow?.name;
 
     await createJob({
       nodeAddress: auth?.node_address ?? '',
@@ -314,10 +324,10 @@ const CreateJobPage = () => {
                   >
                     <div className="space-y-1">
                       <h1 className="font-medium text-white">
-                        {selectedWorkflow.Workflow.workflow.name}
+                        {selectedWorkflow.name}
                       </h1>
                       <p className="text-gray-80 font-medium">
-                        {selectedWorkflow.Workflow.workflow.description}
+                        {selectedWorkflow.description}
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -388,7 +398,15 @@ const CreateJobPage = () => {
                                     initial={{ opacity: 0, x: -10 }}
                                     key={workflow.Workflow.workflow.name}
                                     onClick={() => {
-                                      setSelectedWorkflow(workflow);
+                                      setSelectedWorkflow({
+                                        description:
+                                          workflow.Workflow.workflow
+                                            .description,
+                                        name: workflow.Workflow.workflow.name,
+                                        raw: workflow.Workflow.workflow.raw,
+                                        version:
+                                          workflow.Workflow.workflow.version,
+                                      });
                                     }}
                                     type="button"
                                   >
@@ -586,7 +604,18 @@ const WorkflowSearchDrawer = ({
   const debouncedSearchQuery = useDebounce(searchQuery, 600);
   const isSearchQuerySynced = searchQuery === debouncedSearchQuery;
 
-  const { isPending, data: workflowRecommendations } = useGetWorkflowSearch(
+  const { isPending, data: workflowList } = useGetWorkflowList({
+    nodeAddress: auth?.node_address ?? '',
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    profile: auth?.profile ?? '',
+    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+  });
+
+  const { data: searchWorkflowList } = useGetWorkflowSearch(
     {
       nodeAddress: auth?.node_address ?? '',
       shinkaiIdentity: auth?.shinkai_identity ?? '',
@@ -609,7 +638,8 @@ const WorkflowSearchDrawer = ({
       open={isWorkflowSearchDrawerOpen}
     >
       <SheetContent side="right">
-        <SheetHeader className="mb-4">
+        <CreateWorkflowDrawer />
+        <SheetHeader className="mb-4 p-0">
           <SheetTitle>Workflow Library</SheetTitle>
           <SheetDescription>
             <p>Choose a workflow from the library to get started.</p>
@@ -649,13 +679,14 @@ const WorkflowSearchDrawer = ({
                   key={idx}
                 />
               ))}
-            {isSearchQuerySynced &&
-              workflowRecommendations?.map((workflow) => (
+            {!searchQuery &&
+              isSearchQuerySynced &&
+              workflowList?.map((workflow) => (
                 <button
                   className={cn(
                     'flex w-full flex-col gap-1 rounded-sm px-3 py-2 text-left text-sm hover:bg-gray-300',
                   )}
-                  key={workflow.Workflow.workflow.name}
+                  key={workflow.name}
                   onClick={() => {
                     setSelectedWorkflow(workflow);
                     setIsWorkflowSearchDrawerOpen(false);
@@ -663,8 +694,41 @@ const WorkflowSearchDrawer = ({
                   type="button"
                 >
                   <span className="text-sm font-medium">
+                    {workflow.name}{' '}
+                    {selectedWorkflow?.name === workflow.name && (
+                      <Badge
+                        className="bg-brand ml-2 text-gray-50"
+                        variant="default"
+                      >
+                        Selected
+                      </Badge>
+                    )}
+                  </span>
+                  <p className="text-gray-80 text-sm">{workflow.description}</p>
+                </button>
+              ))}
+            {searchQuery &&
+              isSearchQuerySynced &&
+              searchWorkflowList?.map((workflow) => (
+                <button
+                  className={cn(
+                    'flex w-full flex-col gap-1 rounded-sm px-3 py-2 text-left text-sm hover:bg-gray-300',
+                  )}
+                  key={workflow.Workflow.workflow.name}
+                  onClick={() => {
+                    setSelectedWorkflow({
+                      description: workflow.Workflow.workflow.description,
+                      name: workflow.Workflow.workflow.name,
+                      raw: workflow.Workflow.workflow.raw,
+                      version: workflow.Workflow.workflow.version,
+                    });
+                    setIsWorkflowSearchDrawerOpen(false);
+                  }}
+                  type="button"
+                >
+                  <span className="text-sm font-medium">
                     {workflow.Workflow.workflow.name}{' '}
-                    {selectedWorkflow?.Workflow?.workflow?.name ===
+                    {selectedWorkflow?.name ===
                       workflow.Workflow.workflow.name && (
                       <Badge
                         className="bg-brand ml-2 text-gray-50"
@@ -679,9 +743,135 @@ const WorkflowSearchDrawer = ({
                   </p>
                 </button>
               ))}
+            {searchQuery &&
+              isSearchQuerySynced &&
+              searchWorkflowList?.length === 0 && (
+                <div className="flex h-20 items-center justify-center">
+                  <p className="text-gray-80 text-sm">
+                    No workflows found for the search query
+                  </p>
+                </div>
+              )}
           </div>
         </ScrollArea>
       </SheetContent>
     </Sheet>
   );
 };
+
+const createWorkflowFormSchema = z.object({
+  workflowRaw: z.string().min(1, 'Workflow code is required'),
+  workflowDescription: z.string().min(1, 'Workflow description is required'),
+});
+
+type CreateWorkflowFormSchema = z.infer<typeof createWorkflowFormSchema>;
+
+function CreateWorkflowDrawer() {
+  const auth = useAuth((state) => state.auth);
+  const createWorkflowForm = useForm<CreateWorkflowFormSchema>({
+    resolver: zodResolver(createWorkflowFormSchema),
+  });
+  const [isWorkflowDrawerOpen, setIsWorkflowDrawerOpen] = useState(false);
+
+  const { mutateAsync: createWorkflow, isPending } = useCreateWorkflow({
+    onSuccess: () => {
+      toast.success('Workflow created successfully');
+      setIsWorkflowDrawerOpen(false);
+    },
+    onError: (error) => {
+      toast.error('Failed to create workflow', {
+        description: error.message,
+      });
+    },
+  });
+
+  const onSubmit = async (data: CreateWorkflowFormSchema) => {
+    await createWorkflow({
+      nodeAddress: auth?.node_address ?? '',
+      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      profile: auth?.profile ?? '',
+      workflowRaw: data.workflowRaw,
+      workflowDescription: data.workflowDescription ?? '',
+      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+      my_device_identity_sk: auth?.profile_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+    });
+  };
+  return (
+    <Dialog onOpenChange={setIsWorkflowDrawerOpen} open={isWorkflowDrawerOpen}>
+      <DialogTrigger asChild>
+        <button
+          className="bg-brand absolute right-12 top-2 rounded-full p-2"
+          type="submit"
+        >
+          <PlusIcon className="h-4 w-4" />
+        </button>
+      </DialogTrigger>
+      <DialogContent className="bg-gray-500">
+        <DialogHeader>
+          <DialogTitle>Create custom workflow</DialogTitle>
+
+          <div>
+            <Form {...createWorkflowForm}>
+              <form
+                className="mt-5 flex flex-col gap-3"
+                onSubmit={createWorkflowForm.handleSubmit(onSubmit)}
+              >
+                <FormField
+                  control={createWorkflowForm.control}
+                  name="workflowRaw"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Workflow Code</FormLabel>
+                      <FormControl>
+                        <div className="space-y-2">
+                          <Textarea
+                            autoFocus={true}
+                            className="!min-h-[130px] resize-none text-sm"
+                            onKeyDown={(event) => {
+                              if (
+                                event.key === 'Enter' &&
+                                (event.metaKey || event.ctrlKey)
+                              ) {
+                                createWorkflowForm.handleSubmit(onSubmit)();
+                                return;
+                              }
+                            }}
+                            spellCheck={false}
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={createWorkflowForm.control}
+                  name="workflowDescription"
+                  render={({ field }) => (
+                    <TextField
+                      autoFocus
+                      field={field}
+                      label="Workflow Description"
+                    />
+                  )}
+                />
+                <Button
+                  className="mt-4"
+                  disabled={isPending}
+                  isLoading={isPending}
+                  type="submit"
+                >
+                  Create Workflow
+                </Button>
+              </form>
+            </Form>
+          </div>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
+  );
+}

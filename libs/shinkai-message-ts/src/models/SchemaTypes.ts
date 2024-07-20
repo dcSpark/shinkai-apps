@@ -52,6 +52,10 @@ export enum MessageSchemaType {
   GetLastNotifications = 'GetLastNotifications',
   // workflows
   SearchWorkflows = 'SearchWorkflows',
+  ListWorkflows = 'ListWorkflows',
+  AddWorkflow = 'AddWorkflow',
+  UpdateWorkflow = 'UpdateWorkflow',
+  RemoveWorkflow = 'RemoveWorkflow',
 }
 
 export interface LocalScopeVRKaiEntry {
