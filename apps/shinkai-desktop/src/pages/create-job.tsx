@@ -724,7 +724,7 @@ const WorkflowSearchDrawer = ({
                           profile: auth?.profile ?? '',
                           nodeAddress: auth?.node_address ?? '',
                           shinkaiIdentity: auth?.shinkai_identity ?? '',
-                          workflowKey: workflow.name,
+                          workflowKey: `${workflow.name}:::${workflow.version}`,
                           my_device_encryption_sk:
                             auth?.profile_encryption_sk ?? '',
                           my_device_identity_sk:
