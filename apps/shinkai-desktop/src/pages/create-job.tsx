@@ -87,6 +87,22 @@ import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { SubpageLayout } from './layout/simple-layout';
 
+const formatWorkflowName = (text) => {
+  const words = text.split('_');
+
+  const formattedWords = words.map((word) => {
+    return word
+      .split(/(?=[A-Z])/)
+      .map((part, index) => {
+        return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+      })
+      .join(' ');
+  });
+
+  // Join all the processed words
+  return formattedWords.join(' ');
+};
+
 const CreateJobPage = () => {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
@@ -332,7 +348,7 @@ const CreateJobPage = () => {
                   >
                     <div className="space-y-1">
                       <h1 className="font-medium text-white">
-                        {selectedWorkflow.name}
+                        {formatWorkflowName(selectedWorkflow.name)}
                       </h1>
                       <p className="text-gray-80 font-medium">
                         {selectedWorkflow.description}
@@ -689,7 +705,7 @@ const WorkflowSearchDrawer = ({
             </Button>
           )}
         </div>
-        <ScrollArea className="pr-4 [&>div>div]:!block">
+        <ScrollArea className="h-[calc(100vh-140px)] pr-4 [&>div>div]:!block">
           <div className="divide-y divide-gray-200 py-5">
             {(isPending || !isSearchQuerySynced) &&
               Array.from({ length: 4 }).map((_, idx) => (
@@ -741,7 +757,7 @@ const WorkflowSearchDrawer = ({
                     </button>
                   </div>
                   <span className="text-sm font-medium">
-                    {workflow.name}{' '}
+                    {formatWorkflowName(workflow.name)}{' '}
                     {selectedWorkflow?.name === workflow.name && (
                       <Badge
                         className="bg-brand ml-2 text-gray-50"
@@ -774,7 +790,7 @@ const WorkflowSearchDrawer = ({
                   type="button"
                 >
                   <span className="text-sm font-medium">
-                    {workflow.Workflow.workflow.name}{' '}
+                    {formatWorkflowName(workflow.Workflow.workflow.name)}{' '}
                     {selectedWorkflow?.name ===
                       workflow.Workflow.workflow.name && (
                       <Badge
