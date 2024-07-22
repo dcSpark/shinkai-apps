@@ -193,8 +193,9 @@ const ChatConversation = () => {
   const fromPreviousMessagesRef = useRef<boolean>(false);
   const inboxId = decodeURIComponent(encodedInboxId);
   const currentInbox = useGetCurrentInbox();
-  const isOllamaProvider =
-    currentInbox?.agent?.model.split(':')?.[0] === Models.Ollama;
+  const hasProviderEnableStreaming =
+    currentInbox?.agent?.model.split(':')?.[0] === Models.Ollama ||
+    currentInbox?.agent?.model.split(':')?.[0] === Models.Gemini;
 
   const chatForm = useForm<ChatMessageFormSchema>({
     resolver: zodResolver(chatMessageFormSchema),
@@ -231,7 +232,7 @@ const ChatConversation = () => {
     node_encryption_pk: auth?.node_encryption_pk ?? '',
     profile_encryption_sk: auth?.profile_encryption_sk ?? '',
     profile_identity_sk: auth?.profile_identity_sk ?? '',
-    refetchIntervalEnabled: !isOllamaProvider,
+    refetchIntervalEnabled: !hasProviderEnableStreaming,
   });
 
   const isLoadingMessage = useMemo(() => {
@@ -240,7 +241,7 @@ const ChatConversation = () => {
   }, [data?.pages, inboxId]);
 
   const { messageContent, setMessageContent } = useWebSocketMessage({
-    enabled: isOllamaProvider,
+    enabled: hasProviderEnableStreaming,
   });
 
   const { mutateAsync: sendMessageToInbox } = useSendMessageToInbox();
