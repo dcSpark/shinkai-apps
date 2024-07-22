@@ -21,7 +21,7 @@ export const useCreateWorkflow = (options?: Options) => {
     ...options,
     onSuccess: (response, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: [FunctionKey.GET_SEARCH_WORKFLOW],
+        queryKey: [FunctionKey.GET_LIST_WORKFLOW],
       });
 
       if (options?.onSuccess) {

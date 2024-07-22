@@ -8,6 +8,7 @@ import {
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
 import { useCreateWorkflow } from '@shinkai_network/shinkai-node-state/lib/mutations/createWorkflow/useCreateWorkflow';
 import { useRemoveWorkflow } from '@shinkai_network/shinkai-node-state/lib/mutations/removeWorkflow/useRemoveWorkflow';
+import { useUpdateWorkflow } from '@shinkai_network/shinkai-node-state/lib/mutations/updateWorkflow/useUpdateWorkflow';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
 import {
   VRFolder,
@@ -56,6 +57,7 @@ import {
 import {
   AISearchContentIcon,
   FilesIcon,
+  WorkflowPlaygroundIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -87,13 +89,13 @@ import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { SubpageLayout } from './layout/simple-layout';
 
-const formatWorkflowName = (text) => {
+const formatWorkflowName = (text: string) => {
   const words = text.split('_');
 
   const formattedWords = words.map((word) => {
     return word
       .split(/(?=[A-Z])/)
-      .map((part, index) => {
+      .map((part) => {
         return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
       })
       .join(' ');
@@ -298,6 +300,9 @@ const CreateJobPage = () => {
 
   const debounceMessage = useDebounce(currentMessage, 500);
 
+  const isWorkflowSelectedAndFilesPresent =
+    selectedWorkflow && Object.keys(selectedKeys ?? {}).length > 0;
+
   const {
     data: workflowRecommendations,
     isSuccess: isWorkflowRecommendationsSuccess,
@@ -325,6 +330,20 @@ const CreateJobPage = () => {
     }
   }, [currentMessage]);
 
+  useEffect(() => {
+    if (isWorkflowSelectedAndFilesPresent) {
+      createJobForm.setValue(
+        'content',
+        `${formatWorkflowName(selectedWorkflow.name)} - ${selectedWorkflow.description}`,
+      );
+    }
+  }, [
+    createJobForm,
+    isWorkflowSelectedAndFilesPresent,
+    selectedKeys,
+    selectedWorkflow,
+  ]);
+
   return (
     <SubpageLayout title={t('chat.create')}>
       <Form {...createJobForm}>
@@ -334,40 +353,6 @@ const CreateJobPage = () => {
         >
           <div className="space-y-6">
             <div>
-              <AnimatePresence>
-                {!!selectedWorkflow && (
-                  <motion.div
-                    animate={{ opacity: 1, y: 0 }}
-                    className="flex items-center justify-between gap-3 rounded-lg rounded-b-none border border-b-0 px-2.5 py-2 text-xs"
-                    exit={{
-                      y: -2,
-                      transition: { duration: 0.2, ease: 'easeOut' },
-                    }}
-                    initial={{ opacity: 0, y: -2 }}
-                    transition={{ duration: 0.5 }}
-                  >
-                    <div className="space-y-1">
-                      <h1 className="font-medium text-white">
-                        {formatWorkflowName(selectedWorkflow.name)}
-                      </h1>
-                      <p className="text-gray-80 font-medium">
-                        {selectedWorkflow.description}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => {
-                          setSelectedWorkflow(undefined);
-                        }}
-                        type="button"
-                      >
-                        <XIcon className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
               <FormField
                 control={createJobForm.control}
                 name="content"
@@ -379,7 +364,12 @@ const CreateJobPage = () => {
                         <div className="relative">
                           <Textarea
                             autoFocus={true}
-                            className="placeholder-gray-80 !min-h-[130px] resize-none pb-[40px] text-sm"
+                            className={cn(
+                              'placeholder-gray-80 resize-none pb-[40px] text-sm',
+                              isWorkflowSelectedAndFilesPresent &&
+                                'w-full overflow-hidden truncate pb-0 text-xs',
+                            )}
+                            disabled={isWorkflowSelectedAndFilesPresent}
                             onKeyDown={(event) => {
                               if (
                                 event.key === 'Enter' &&
@@ -400,9 +390,7 @@ const CreateJobPage = () => {
                           <motion.div
                             animate={{ opacity: 1 }}
                             className="absolute inset-x-3 bottom-2 flex items-center justify-between gap-2"
-                            exit={{
-                              opacity: 0,
-                            }}
+                            exit={{ opacity: 0 }}
                             initial={{ opacity: 0 }}
                             transition={{ duration: 0.2 }}
                           >
@@ -431,6 +419,7 @@ const CreateJobPage = () => {
                                         version:
                                           workflow.Workflow.workflow.version,
                                       });
+                                      createJobForm.setValue('content', '');
                                     }}
                                     type="button"
                                   >
@@ -439,16 +428,6 @@ const CreateJobPage = () => {
                                   </motion.button>
                                 ))}
                             </div>
-                            <button
-                              className="hover:bg-brand-gradient flex items-center gap-2 rounded-lg border px-2 py-1 text-xs text-white"
-                              onClick={() => setWorkflowSearchDrawerOpen(true)}
-                              type="button"
-                            >
-                              <div className="flex items-center gap-1">
-                                <PlusIcon className="h-4 w-4" />
-                                <span>Workflows</span>
-                              </div>
-                            </button>
                           </motion.div>
                         </div>
                       </div>
@@ -459,6 +438,62 @@ const CreateJobPage = () => {
               />
             </div>
 
+            <div>
+              <div className="relative flex flex-col gap-1 rounded-lg bg-gray-400 px-3.5 py-2.5 text-xs">
+                <span className="mb-2 text-xs font-medium leading-tight text-gray-100">
+                  Workflow (optional)
+                </span>
+                <AnimatePresence>
+                  {selectedWorkflow ? (
+                    <motion.button
+                      animate={{ opacity: 1, y: 0 }}
+                      className="hover:bg-gray-350 relative mb-2 flex flex-col gap-3 rounded-lg border p-2 text-left transition-colors"
+                      exit={{ opacity: 0, y: -2 }}
+                      initial={{ opacity: 0, y: -2 }}
+                      onClick={() => setWorkflowSearchDrawerOpen(true)}
+                      transition={{ duration: 0.3 }}
+                      type="button"
+                    >
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <WorkflowPlaygroundIcon className="h-3 w-3" />
+                          <span className="font-medium text-white">
+                            {formatWorkflowName(selectedWorkflow.name)}
+                          </span>
+                        </div>
+                        <p className="text-gray-80 font-medium">
+                          {selectedWorkflow.description}
+                        </p>
+                      </div>
+                      <button
+                        className="absolute right-2 top-2"
+                        onClick={(event) => {
+                          setSelectedWorkflow(undefined);
+                          if (Object.keys(selectedKeys ?? {}).length > 0) {
+                            createJobForm.setValue('content', '');
+                          }
+                          event.stopPropagation();
+                        }}
+                        type="button"
+                      >
+                        <XIcon className="h-4 w-4" />
+                      </button>
+                    </motion.button>
+                  ) : (
+                    <Button
+                      className="hover:bg-gray-350 flex h-[40px] items-center justify-start gap-2 rounded-lg p-2.5 text-left"
+                      onClick={() => setWorkflowSearchDrawerOpen(true)}
+                      size="auto"
+                      type="button"
+                      variant="outline"
+                    >
+                      <WorkflowPlaygroundIcon className="h-4 w-4" />
+                      <p className="text-sm text-white">Workflow Library</p>
+                    </Button>
+                  )}
+                </AnimatePresence>
+              </div>
+            </div>
             <FormField
               control={createJobForm.control}
               name="agent"
@@ -719,7 +754,7 @@ const WorkflowSearchDrawer = ({
               workflowList?.map((workflow) => (
                 <div
                   className={cn(
-                    'relative flex min-h-[70px] w-full flex-col gap-1 rounded-sm px-3 py-2.5 pr-8 text-left text-sm hover:bg-gray-300',
+                    'group relative flex min-h-[70px] w-full flex-col gap-1 rounded-sm px-3 py-2.5 pr-8 text-left text-sm hover:bg-gray-300',
                   )}
                   key={workflow.name}
                   onClick={() => {
@@ -729,11 +764,13 @@ const WorkflowSearchDrawer = ({
                   role="button"
                   tabIndex={0}
                 >
-                  <div className="absolute right-4 top-3 flex items-center gap-2">
-                    <button type="button">
-                      <Edit3Icon className="text-gray-80 h-4 w-4" />
-                    </button>
+                  <div className="absolute right-1 top-1 flex translate-x-[150%] items-center gap-0.5 transition duration-200 group-hover:translate-x-0">
+                    <UpdateWorkflowDrawer
+                      workflowDescription={workflow.description}
+                      workflowRaw={workflow.raw}
+                    />
                     <button
+                      className="text-gray-80 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"
                       onClick={async (event) => {
                         event.stopPropagation();
                         await removeWorkflow({
@@ -753,7 +790,7 @@ const WorkflowSearchDrawer = ({
                       }}
                       type="button"
                     >
-                      <Trash2Icon className="text-gray-80 h-4 w-4" />
+                      <Trash2Icon className="h-4 w-4" />
                     </button>
                   </div>
                   <span className="text-sm font-medium">
@@ -867,7 +904,7 @@ function CreateWorkflowDrawer() {
       <DialogTrigger asChild>
         <button
           className="bg-brand absolute right-12 top-2 rounded-full p-2"
-          type="submit"
+          type="button"
         >
           <PlusIcon className="h-4 w-4" />
         </button>
@@ -929,6 +966,126 @@ function CreateWorkflowDrawer() {
                   type="submit"
                 >
                   Create Workflow
+                </Button>
+              </form>
+            </Form>
+          </div>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
+  );
+}
+function UpdateWorkflowDrawer({
+  workflowRaw,
+  workflowDescription,
+}: {
+  workflowRaw: string;
+  workflowDescription: string;
+}) {
+  const auth = useAuth((state) => state.auth);
+  const createWorkflowForm = useForm<CreateWorkflowFormSchema>({
+    resolver: zodResolver(createWorkflowFormSchema),
+    defaultValues: {
+      workflowDescription,
+      workflowRaw,
+    },
+  });
+  const [isWorkflowDrawerOpen, setIsWorkflowDrawerOpen] = useState(false);
+
+  const { mutateAsync: updateWorkflow, isPending } = useUpdateWorkflow({
+    onSuccess: () => {
+      toast.success('Workflow created successfully');
+      setIsWorkflowDrawerOpen(false);
+    },
+    onError: (error) => {
+      toast.error('Failed to create workflow', {
+        description: error.message,
+      });
+    },
+  });
+
+  const onSubmit = async (data: CreateWorkflowFormSchema) => {
+    await updateWorkflow({
+      nodeAddress: auth?.node_address ?? '',
+      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      profile: auth?.profile ?? '',
+      workflowRaw: data.workflowRaw,
+      workflowDescription: data.workflowDescription ?? '',
+      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+      my_device_identity_sk: auth?.profile_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+    });
+  };
+  return (
+    <Dialog onOpenChange={setIsWorkflowDrawerOpen} open={isWorkflowDrawerOpen}>
+      <DialogTrigger asChild>
+        <button
+          className="text-gray-80 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"
+          onClick={(event) => {
+            event.stopPropagation();
+          }}
+          type="button"
+        >
+          <Edit3Icon className="h-4 w-4" />
+        </button>
+      </DialogTrigger>
+      <DialogContent className="bg-gray-500">
+        <DialogHeader>
+          <DialogTitle>Update workflow</DialogTitle>
+          <div>
+            <Form {...createWorkflowForm}>
+              <form
+                className="mt-5 flex flex-col gap-3"
+                onSubmit={createWorkflowForm.handleSubmit(onSubmit)}
+              >
+                <FormField
+                  control={createWorkflowForm.control}
+                  name="workflowRaw"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Workflow Code</FormLabel>
+                      <FormControl>
+                        <div className="space-y-2">
+                          <Textarea
+                            className="!min-h-[130px] resize-none text-sm"
+                            onKeyDown={(event) => {
+                              if (
+                                event.key === 'Enter' &&
+                                (event.metaKey || event.ctrlKey)
+                              ) {
+                                createWorkflowForm.handleSubmit(onSubmit)();
+                                return;
+                              }
+                            }}
+                            spellCheck={false}
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={createWorkflowForm.control}
+                  name="workflowDescription"
+                  render={({ field }) => (
+                    <TextField
+                      autoFocus
+                      field={field}
+                      label="Workflow Description"
+                    />
+                  )}
+                />
+                <Button
+                  className="mt-4"
+                  disabled={isPending}
+                  isLoading={isPending}
+                  type="submit"
+                >
+                  Update Workflow
                 </Button>
               </form>
             </Form>
