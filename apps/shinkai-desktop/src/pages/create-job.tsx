@@ -994,11 +994,11 @@ function UpdateWorkflowDrawer({
 
   const { mutateAsync: updateWorkflow, isPending } = useUpdateWorkflow({
     onSuccess: () => {
-      toast.success('Workflow created successfully');
+      toast.success('Workflow updated successfully');
       setIsWorkflowDrawerOpen(false);
     },
     onError: (error) => {
-      toast.error('Failed to create workflow', {
+      toast.error('Failed to update workflow', {
         description: error.message,
       });
     },
