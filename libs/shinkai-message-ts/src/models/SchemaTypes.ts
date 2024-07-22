@@ -243,6 +243,7 @@ export type AgentAPIModel = {
   OpenAI?: OpenAI;
   GenericAPI?: GenericAPI;
   Ollama?: Ollama;
+  Gemini?: Gemini;
 } & {
   [model: string]: ModelType;
 };
@@ -252,6 +253,9 @@ export interface ModelType {
 }
 
 export interface Ollama {
+  model_type: string;
+}
+export interface Gemini {
   model_type: string;
 }
 

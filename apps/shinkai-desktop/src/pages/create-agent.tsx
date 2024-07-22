@@ -52,6 +52,10 @@ const modelOptions: { value: Models; label: string }[] = [
     value: Models.Ollama,
     label: 'Ollama',
   },
+  {
+    value: Models.Gemini,
+    label: 'Gemini',
+  },
 ];
 
 export const getModelObject = (
@@ -65,6 +69,8 @@ export const getModelObject = (
       return { GenericAPI: { model_type: modelType } };
     case Models.Ollama:
       return { Ollama: { model_type: modelType } };
+    case Models.Gemini:
+      return { Gemini: { model_type: modelType } };
     default:
       return { [model]: { model_type: modelType } };
   }
