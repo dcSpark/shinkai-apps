@@ -676,22 +676,23 @@ const WorkflowSearchDrawer = ({
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
 
-  const { data: searchWorkflowList } = useGetWorkflowSearch(
-    {
-      nodeAddress: auth?.node_address ?? '',
-      shinkaiIdentity: auth?.shinkai_identity ?? '',
-      profile: auth?.profile ?? '',
-      search: debouncedSearchQuery,
-      my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-      my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-      node_encryption_pk: auth?.node_encryption_pk ?? '',
-      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-      profile_identity_sk: auth?.profile_identity_sk ?? '',
-    },
-    {
-      enabled: !!isSearchQuerySynced,
-    },
-  );
+  const { data: searchWorkflowList, isPending: isSearchWorkflowListPending } =
+    useGetWorkflowSearch(
+      {
+        nodeAddress: auth?.node_address ?? '',
+        shinkaiIdentity: auth?.shinkai_identity ?? '',
+        profile: auth?.profile ?? '',
+        search: debouncedSearchQuery,
+        my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+        my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+        node_encryption_pk: auth?.node_encryption_pk ?? '',
+        profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+        profile_identity_sk: auth?.profile_identity_sk ?? '',
+      },
+      {
+        enabled: !!isSearchQuerySynced,
+      },
+    );
 
   const { mutateAsync: removeWorkflow } = useRemoveWorkflow({
     onSuccess: () => {
@@ -724,6 +725,7 @@ const WorkflowSearchDrawer = ({
               setSearchQuery(e.target.value);
             }}
             placeholder="Search..."
+            spellCheck={false}
             value={searchQuery}
           />
           <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2" />
@@ -744,7 +746,9 @@ const WorkflowSearchDrawer = ({
         </div>
         <ScrollArea className="h-[calc(100vh-140px)] pr-4 [&>div>div]:!block">
           <div className="divide-y divide-gray-200 py-5">
-            {(isPending || !isSearchQuerySynced) &&
+            {(isPending ||
+              !isSearchQuerySynced ||
+              isSearchWorkflowListPending) &&
               Array.from({ length: 4 }).map((_, idx) => (
                 <div
                   className="mb-2 flex h-[70px] items-center justify-between gap-2 rounded-lg bg-gray-300 py-3"
