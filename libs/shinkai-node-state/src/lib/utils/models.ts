@@ -62,7 +62,7 @@ export const modelsConfig = {
     ],
   },
   [Models.Gemini]: {
-    apiUrl: 'https://generativelanguage.googleapis.com',
+    apiUrl: 'https://generativelanguage.googleapis.com/v1beta/models',
     modelTypes: [
       {
         name: 'Gemini 1.5 Flash',
