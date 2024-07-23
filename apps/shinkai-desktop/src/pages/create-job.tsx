@@ -419,7 +419,13 @@ const CreateJobPage = () => {
                                         version:
                                           workflow.Workflow.workflow.version,
                                       });
-                                      createJobForm.setValue('content', '');
+                                      if (
+                                        Object.keys(selectedKeys ?? {}).length >
+                                          0 ||
+                                        currentMessage.endsWith('/')
+                                      ) {
+                                        createJobForm.setValue('content', '');
+                                      }
                                     }}
                                     type="button"
                                   >
@@ -447,26 +453,49 @@ const CreateJobPage = () => {
                   {selectedWorkflow ? (
                     <motion.button
                       animate={{ opacity: 1, y: 0 }}
-                      className="hover:bg-gray-350 relative mb-2 flex flex-col gap-3 rounded-lg border p-2 text-left transition-colors"
+                      className="hover:bg-gray-350 relative mb-2 flex flex-col gap-3 rounded-lg border p-2 py-2.5 text-left transition-colors"
                       exit={{ opacity: 0, y: -2 }}
                       initial={{ opacity: 0, y: -2 }}
                       onClick={() => setWorkflowSearchDrawerOpen(true)}
                       transition={{ duration: 0.3 }}
                       type="button"
                     >
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <WorkflowPlaygroundIcon className="h-3 w-3" />
-                          <span className="font-medium text-white">
-                            {formatWorkflowName(selectedWorkflow.name)}
-                          </span>
-                        </div>
-                        <p className="text-gray-80 font-medium">
-                          {selectedWorkflow.description}
-                        </p>
-                      </div>
+                      <TooltipProvider delayDuration={0}>
+                        <Tooltip>
+                          <TooltipTrigger
+                            className="flex text-left"
+                            type="button"
+                          >
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2 pr-6">
+                                <WorkflowPlaygroundIcon className="h-3.5 w-3.5" />
+                                <span className="text-gray-80 line-clamp-1 font-medium">
+                                  <span className="text-sm text-white">
+                                    {formatWorkflowName(selectedWorkflow.name)}:{' '}
+                                  </span>
+                                  <span className="">
+                                    {selectedWorkflow.description}
+                                  </span>
+                                </span>
+                              </div>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipPortal>
+                            <TooltipContent
+                              align="start"
+                              alignOffset={-10}
+                              className="max-w-[200px]"
+                              side="right"
+                              sideOffset={18}
+                            >
+                              {selectedWorkflow.description}
+                            </TooltipContent>
+                          </TooltipPortal>
+                        </Tooltip>
+                      </TooltipProvider>
+
                       <button
-                        className="absolute right-2 top-2"
+                        className="absolute right-2 top-2.5"
                         onClick={(event) => {
                           setSelectedWorkflow(undefined);
                           if (Object.keys(selectedKeys ?? {}).length > 0) {
@@ -639,7 +668,12 @@ const CreateJobPage = () => {
       <WorkflowSearchDrawer
         isWorkflowSearchDrawerOpen={isWorkflowSearchDrawerOpen}
         onSelectWorkflow={() => {
-          createJobForm.setValue('content', '');
+          if (
+            Object.keys(selectedKeys ?? {}).length > 0 ||
+            currentMessage.endsWith('/')
+          ) {
+            createJobForm.setValue('content', '');
+          }
         }}
         selectedWorkflow={selectedWorkflow}
         setIsWorkflowSearchDrawerOpen={setWorkflowSearchDrawerOpen}
