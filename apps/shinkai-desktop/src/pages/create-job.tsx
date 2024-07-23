@@ -717,7 +717,7 @@ const WorkflowSearchDrawer = ({
             <p>Choose a workflow from the library to get started.</p>
           </SheetDescription>
         </SheetHeader>
-        <div className="relative flex h-10 w-full items-center">
+        <div className="relative mb-4 flex h-10 w-full items-center">
           <Input
             className="placeholder-gray-80 !h-full bg-transparent py-2 pl-10"
             onChange={(e) => {
