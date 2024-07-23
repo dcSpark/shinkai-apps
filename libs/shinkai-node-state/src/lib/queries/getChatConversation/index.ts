@@ -62,7 +62,7 @@ export const getChatConversation = async ({
             : '',
         inboxId,
         content,
-        workflow: { name: workflowName },
+        workflowName,
         sender: {
           avatar: isLocal
             ? 'https://ui-avatars.com/api/?name=Me&background=313336&color=b0b0b0'
