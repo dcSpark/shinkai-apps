@@ -251,10 +251,6 @@ const ChatConversation = () => {
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
 
-  console.log(workflowRecommendations, 'workflowRecommendations');
-
-  console.log('workflowRecommendations', workflowRecommendations);
-
   const isLoadingMessage = useMemo(() => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
     return isJobInbox(inboxId) && lastMessage?.isLocal;

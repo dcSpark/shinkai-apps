@@ -276,6 +276,7 @@ export const MessageList = ({
                     content: lastMessageContent,
                     scheduledTime: new Date().toISOString(),
                     isLocal: false,
+                    workflowName: undefined,
                     sender: {
                       avatar:
                         'https://ui-avatars.com/api/?name=S&background=FF7E7F&color=ffffff',

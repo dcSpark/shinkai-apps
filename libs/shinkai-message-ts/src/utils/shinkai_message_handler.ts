@@ -76,6 +76,31 @@ export const getMessageFilesInbox = (
   }
   return undefined;
 };
+export const getWorkflowNameJobMessage = (
+  message: ShinkaiMessage,
+): string | undefined => {
+  // unnencrypted content
+  if (message.body && 'unencrypted' in message.body) {
+    if ('unencrypted' in message.body.unencrypted.message_data) {
+      const isJobMessage =
+        message.body.unencrypted.message_data.unencrypted
+          .message_content_schema === MessageSchemaType.JobMessageSchema;
+      // job message
+      if (isJobMessage) {
+        try {
+          const parsedMessage = JSON.parse(
+            message.body.unencrypted.message_data.unencrypted
+              .message_raw_content,
+          );
+          return parsedMessage?.workflow_name;
+        } catch (e) {
+          console.log('error parsing message raw content', e);
+        }
+      }
+    }
+  }
+  return undefined;
+};
 
 export const isLocalMessage = (
   message: ShinkaiMessage,

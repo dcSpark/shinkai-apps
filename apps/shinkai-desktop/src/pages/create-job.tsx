@@ -363,7 +363,7 @@ const CreateJobPage = () => {
                       <div className="space-y-2">
                         <div className="relative">
                           <Textarea
-                            autoFocus={true}
+                            autoFocus
                             className={cn(
                               'placeholder-gray-80 resize-none pb-[40px] text-sm',
                               isWorkflowSelectedAndFilesPresent &&
@@ -383,7 +383,7 @@ const CreateJobPage = () => {
                             {...field}
                             placeholder={
                               selectedWorkflow
-                                ? ''
+                                ? 'Enter your prompt'
                                 : "Ask anything or press '/' for workflow commands"
                             }
                           />
@@ -638,6 +638,9 @@ const CreateJobPage = () => {
       />
       <WorkflowSearchDrawer
         isWorkflowSearchDrawerOpen={isWorkflowSearchDrawerOpen}
+        onSelectWorkflow={() => {
+          createJobForm.setValue('content', '');
+        }}
         selectedWorkflow={selectedWorkflow}
         setIsWorkflowSearchDrawerOpen={setWorkflowSearchDrawerOpen}
         setSelectedWorkflow={setSelectedWorkflow}
@@ -652,11 +655,13 @@ const WorkflowSearchDrawer = ({
   setSelectedWorkflow,
   isWorkflowSearchDrawerOpen,
   setIsWorkflowSearchDrawerOpen,
+  onSelectWorkflow,
 }: {
   selectedWorkflow: Workflow | undefined;
   setSelectedWorkflow: (workflow: Workflow) => void;
   isWorkflowSearchDrawerOpen: boolean;
   setIsWorkflowSearchDrawerOpen: (isOpen: boolean) => void;
+  onSelectWorkflow?: (workflow: Workflow) => void;
 }) => {
   const auth = useAuth((state) => state.auth);
   const [searchQuery, setSearchQuery] = useState('');
@@ -766,6 +771,7 @@ const WorkflowSearchDrawer = ({
                   onClick={() => {
                     setSelectedWorkflow(workflow);
                     setIsWorkflowSearchDrawerOpen(false);
+                    onSelectWorkflow?.(workflow);
                   }}
                   role="button"
                   tabIndex={0}

@@ -16,6 +16,7 @@ export type ChatConversationMessage = {
   inboxId: string;
   scheduledTime: string | undefined;
   content: string;
+  workflowName: string | undefined;
   isLocal: boolean;
   sender: {
     avatar: string;
