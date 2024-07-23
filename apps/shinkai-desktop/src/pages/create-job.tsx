@@ -394,7 +394,7 @@ const CreateJobPage = () => {
                             initial={{ opacity: 0 }}
                             transition={{ duration: 0.2 }}
                           >
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 bg-gray-400">
                               {!!debounceMessage &&
                                 !selectedWorkflow &&
                                 isWorkflowRecommendationsSuccess &&
