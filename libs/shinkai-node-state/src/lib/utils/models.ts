@@ -2,6 +2,7 @@ export enum Models {
   OpenAI = 'open-ai',
   TogetherComputer = 'togethercomputer',
   Ollama = 'ollama',
+  Gemini = 'gemini',
 }
 
 export const modelsConfig = {
@@ -58,9 +59,18 @@ export const modelsConfig = {
         name: 'Mixtral',
         value: 'mixtral',
       },
+    ],
+  },
+  [Models.Gemini]: {
+    apiUrl: 'https://generativelanguage.googleapis.com/v1beta/models',
+    modelTypes: [
       {
-        name: 'LLaVA',
-        value: 'llava',
+        name: 'Gemini 1.5 Flash',
+        value: 'gemini-1.5-flash',
+      },
+      {
+        name: 'Gemini 1.5 Pro',
+        value: 'gemini-1.5-pro',
       },
     ],
   },
