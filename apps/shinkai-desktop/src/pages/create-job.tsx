@@ -89,7 +89,7 @@ import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { SubpageLayout } from './layout/simple-layout';
 
-const formatWorkflowName = (text: string) => {
+export const formatWorkflowName = (text: string) => {
   const words = text.split('_');
 
   const formattedWords = words.map((word) => {
