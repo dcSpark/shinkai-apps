@@ -662,6 +662,8 @@ const WorkflowSearchDrawer = ({
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounce(searchQuery, 600);
   const isSearchQuerySynced = searchQuery === debouncedSearchQuery;
+  const [selectedWorkflowEdit, setSelectedWorkflowEdit] =
+    useState<Workflow | null>(null);
 
   const { isPending, data: workflowList } = useGetWorkflowList({
     nodeAddress: auth?.node_address ?? '',
@@ -765,10 +767,17 @@ const WorkflowSearchDrawer = ({
                   tabIndex={0}
                 >
                   <div className="absolute right-1 top-1 flex translate-x-[150%] items-center gap-0.5 transition duration-200 group-hover:translate-x-0">
-                    <UpdateWorkflowDrawer
-                      workflowDescription={workflow.description}
-                      workflowRaw={workflow.raw}
-                    />
+                    <button
+                      className="text-gray-80 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setSelectedWorkflowEdit(workflow);
+                      }}
+                      type="button"
+                    >
+                      <Edit3Icon className="h-4 w-4" />
+                    </button>
+
                     <button
                       className="text-gray-80 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"
                       onClick={async (event) => {
@@ -854,6 +863,18 @@ const WorkflowSearchDrawer = ({
               )}
           </div>
         </ScrollArea>
+        {selectedWorkflowEdit && (
+          <UpdateWorkflowDrawer
+            open={!!selectedWorkflowEdit}
+            setOpen={(open) => {
+              if (!open) {
+                setSelectedWorkflowEdit(null);
+              }
+            }}
+            workflowDescription={selectedWorkflowEdit.description}
+            workflowRaw={selectedWorkflowEdit.raw}
+          />
+        )}
       </SheetContent>
     </Sheet>
   );
@@ -978,9 +999,13 @@ function CreateWorkflowDrawer() {
 function UpdateWorkflowDrawer({
   workflowRaw,
   workflowDescription,
+  open,
+  setOpen,
 }: {
   workflowRaw: string;
   workflowDescription: string;
+  open: boolean;
+  setOpen: (isOpen: boolean) => void;
 }) {
   const auth = useAuth((state) => state.auth);
   const createWorkflowForm = useForm<CreateWorkflowFormSchema>({
@@ -990,12 +1015,11 @@ function UpdateWorkflowDrawer({
       workflowRaw,
     },
   });
-  const [isWorkflowDrawerOpen, setIsWorkflowDrawerOpen] = useState(false);
 
   const { mutateAsync: updateWorkflow, isPending } = useUpdateWorkflow({
     onSuccess: () => {
       toast.success('Workflow updated successfully');
-      setIsWorkflowDrawerOpen(false);
+      setOpen(false);
     },
     onError: (error) => {
       toast.error('Failed to update workflow', {
@@ -1019,18 +1043,7 @@ function UpdateWorkflowDrawer({
     });
   };
   return (
-    <Dialog onOpenChange={setIsWorkflowDrawerOpen} open={isWorkflowDrawerOpen}>
-      <DialogTrigger asChild>
-        <button
-          className="text-gray-80 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"
-          onClick={(event) => {
-            event.stopPropagation();
-          }}
-          type="button"
-        >
-          <Edit3Icon className="h-4 w-4" />
-        </button>
-      </DialogTrigger>
+    <Dialog onOpenChange={setOpen} open={open}>
       <DialogContent className="bg-gray-500">
         <DialogHeader>
           <DialogTitle>Update workflow</DialogTitle>
