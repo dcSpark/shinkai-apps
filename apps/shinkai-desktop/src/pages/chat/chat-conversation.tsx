@@ -704,6 +704,27 @@ function AgentSelection() {
   );
 }
 
+// function WorkflowSelection() {
+//   return (
+//     <TooltipProvider delayDuration={0}>
+//       <Tooltip>
+//         <TooltipTrigger asChild>
+//           <button className="bg-gray-350 inline-flex cursor-pointer items-center justify-between gap-1 truncate rounded-xl px-2.5 py-1.5 text-start text-xs font-normal text-gray-50 hover:text-white [&[data-state=open]>.icon]:rotate-180">
+//             <BotIcon className="mr-1 h-4 w-4" />
+//             <span>{currentInbox?.agent?.id}</span>
+//             <ChevronDownIcon className="icon h-3 w-3" />
+//           </button>
+//         </TooltipTrigger>
+//         <TooltipPortal>
+//           <TooltipContent align="center" className="bg-neutral-900" side="top">
+//             {t('llmProviders.switch')}
+//           </TooltipContent>
+//         </TooltipPortal>
+//       </Tooltip>
+//     </TooltipProvider>
+//   );
+// }
+
 export const ConversationHeader = () => {
   const currentInbox = useGetCurrentInbox();
   const { t } = useTranslation();

@@ -6,27 +6,17 @@ import {
   createJobFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
-import { useCreateWorkflow } from '@shinkai_network/shinkai-node-state/lib/mutations/createWorkflow/useCreateWorkflow';
-import { useRemoveWorkflow } from '@shinkai_network/shinkai-node-state/lib/mutations/removeWorkflow/useRemoveWorkflow';
-import { useUpdateWorkflow } from '@shinkai_network/shinkai-node-state/lib/mutations/updateWorkflow/useUpdateWorkflow';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
 import {
   VRFolder,
   VRItem,
 } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
-import { Workflow } from '@shinkai_network/shinkai-node-state/lib/queries/getWorkflowList/types';
-import { useGetWorkflowList } from '@shinkai_network/shinkai-node-state/lib/queries/getWorkflowList/useGetWorkflowList';
 import { useGetWorkflowSearch } from '@shinkai_network/shinkai-node-state/lib/queries/getWorkflowSearch/useGetWorkflowSearch';
 import { transformDataToTreeNodes } from '@shinkai_network/shinkai-node-state/lib/utils/files';
 import {
   Badge,
   Button,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
   FileUploader,
   Form,
   FormControl,
@@ -34,20 +24,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  Input,
-  ScrollArea,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
   Textarea,
-  TextField,
   Tooltip,
   TooltipContent,
   TooltipPortal,
@@ -61,26 +43,18 @@ import {
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import {
-  Edit3Icon,
-  PlusIcon,
-  SearchIcon,
-  Sparkles,
-  Trash2Icon,
-  XIcon,
-} from 'lucide-react';
+import { PlusIcon, Sparkles, XIcon } from 'lucide-react';
 import { TreeCheckboxSelectionKeys } from 'primereact/tree';
 import { TreeNode } from 'primereact/treenode';
 import React, { useEffect, useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
-import { z } from 'zod';
 
 import {
   KnowledgeSearchDrawer,
   VectorFsScopeDrawer,
 } from '../components/vector-fs/components/vector-fs-context-drawer';
+import { useWorkflowSelectionStore } from '../components/workflow/context/workflow-selection-context';
 import { useDebounce } from '../hooks/use-debounce';
 import { allowedFileExtensions } from '../lib/constants';
 import { useAnalytics } from '../lib/posthog-provider';
@@ -107,13 +81,20 @@ export const formatWorkflowName = (text: string) => {
 
 const CreateJobPage = () => {
   const { t } = useTranslation();
+  const workflowSelected = useWorkflowSelectionStore(
+    (state) => state.workflowSelected,
+  );
+  const setWorkflowSelected = useWorkflowSelectionStore(
+    (state) => state.setWorkflowSelected,
+  );
+  const setWorkflowSelectionDrawerOpen = useWorkflowSelectionStore(
+    (state) => state.setWorkflowSelectionDrawerOpen,
+  );
   const auth = useAuth((state) => state.auth);
   const defaulAgentId = useSettings((state) => state.defaultAgentId);
   const navigate = useNavigate();
   const location = useLocation();
   const { captureAnalyticEvent } = useAnalytics();
-  const [isWorkflowSearchDrawerOpen, setWorkflowSearchDrawerOpen] =
-    useState(false);
 
   const locationState = location.state as {
     files: File[];
@@ -125,9 +106,6 @@ const CreateJobPage = () => {
   const [isVectorFSOpen, setIsVectorFSOpen] = React.useState(false);
   const [isKnowledgeSearchOpen, setIsKnowledgeSearchOpen] =
     React.useState(false);
-  const [selectedWorkflow, setSelectedWorkflow] = useState<
-    Workflow | undefined
-  >(undefined);
   const [nodes, setNodes] = useState<TreeNode[]>([]);
   const [selectedKeys, setSelectedKeys] =
     useState<TreeCheckboxSelectionKeys | null>(null);
@@ -267,8 +245,8 @@ const CreateJobPage = () => {
         ? Array.from(selectedFolderKeysRef.current.values())
         : [];
 
-    const workflowVersion = selectedWorkflow?.version;
-    const workflowName = selectedWorkflow?.name;
+    const workflowVersion = workflowSelected?.version;
+    const workflowName = workflowSelected?.name;
 
     await createJob({
       nodeAddress: auth?.node_address ?? '',
@@ -279,7 +257,7 @@ const CreateJobPage = () => {
       files_inbox: '',
       files: data.files,
       workflow: data.workflow,
-      workflowName: selectedWorkflow
+      workflowName: workflowSelected
         ? `${workflowName}:::${workflowVersion}`
         : undefined,
       is_hidden: false,
@@ -301,7 +279,7 @@ const CreateJobPage = () => {
   const debounceMessage = useDebounce(currentMessage, 500);
 
   const isWorkflowSelectedAndFilesPresent =
-    selectedWorkflow && Object.keys(selectedKeys ?? {}).length > 0;
+    workflowSelected && Object.keys(selectedKeys ?? {}).length > 0;
 
   const {
     data: workflowRecommendations,
@@ -326,22 +304,31 @@ const CreateJobPage = () => {
 
   useEffect(() => {
     if (currentMessage?.endsWith('/')) {
-      setWorkflowSearchDrawerOpen(true);
+      setWorkflowSelectionDrawerOpen(true);
     }
   }, [currentMessage]);
+
+  useEffect(() => {
+    if (
+      Object.keys(selectedKeys ?? {}).length > 0 ||
+      currentMessage?.endsWith('/')
+    ) {
+      createJobForm.setValue('content', '');
+    }
+  }, [workflowSelected]);
 
   useEffect(() => {
     if (isWorkflowSelectedAndFilesPresent) {
       createJobForm.setValue(
         'content',
-        `${formatWorkflowName(selectedWorkflow.name)} - ${selectedWorkflow.description}`,
+        `${formatWorkflowName(workflowSelected.name)} - ${workflowSelected.description}`,
       );
     }
   }, [
     createJobForm,
     isWorkflowSelectedAndFilesPresent,
     selectedKeys,
-    selectedWorkflow,
+    workflowSelected,
   ]);
 
   return (
@@ -382,7 +369,7 @@ const CreateJobPage = () => {
                             spellCheck={false}
                             {...field}
                             placeholder={
-                              selectedWorkflow
+                              workflowSelected
                                 ? 'Enter your prompt'
                                 : "Ask anything or press '/' for workflow commands"
                             }
@@ -396,21 +383,20 @@ const CreateJobPage = () => {
                           >
                             <div className="flex gap-2 bg-gray-400">
                               {!!debounceMessage &&
-                                !selectedWorkflow &&
+                                !workflowSelected &&
                                 isWorkflowRecommendationsSuccess &&
                                 workflowRecommendations?.length > 0 &&
                                 workflowRecommendations?.map((workflow) => (
                                   <motion.button
                                     animate={{ opacity: 1, x: 0 }}
                                     className={cn(
-                                      'hover:bg-brand-gradient flex items-center gap-2 rounded-lg border bg-gray-400 px-2 py-1 text-xs text-white',
-                                      'border border-gray-100',
+                                      'hover:bg-brand-gradient bg-gray-350 flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-white',
                                     )}
                                     exit={{ opacity: 0, x: -10 }}
                                     initial={{ opacity: 0, x: -10 }}
                                     key={workflow.Workflow.workflow.name}
                                     onClick={() => {
-                                      setSelectedWorkflow({
+                                      setWorkflowSelected({
                                         description:
                                           workflow.Workflow.workflow
                                             .description,
@@ -430,7 +416,9 @@ const CreateJobPage = () => {
                                     type="button"
                                   >
                                     <Sparkles className="h-3 w-3" />
-                                    {workflow.Workflow.workflow.name}
+                                    {formatWorkflowName(
+                                      workflow.Workflow.workflow.name,
+                                    )}
                                   </motion.button>
                                 ))}
                             </div>
@@ -450,13 +438,13 @@ const CreateJobPage = () => {
                   Workflow (optional)
                 </span>
                 <AnimatePresence>
-                  {selectedWorkflow ? (
+                  {workflowSelected ? (
                     <motion.button
                       animate={{ opacity: 1, y: 0 }}
-                      className="hover:bg-gray-350 relative mb-2 flex flex-col gap-3 rounded-lg border p-2 py-2.5 text-left transition-colors"
+                      className="hover:bg-gray-350 relative flex flex-col gap-3 rounded-lg border p-2 py-2.5 text-left transition-colors"
                       exit={{ opacity: 0, y: -2 }}
                       initial={{ opacity: 0, y: -2 }}
-                      onClick={() => setWorkflowSearchDrawerOpen(true)}
+                      onClick={() => setWorkflowSelectionDrawerOpen(true)}
                       transition={{ duration: 0.3 }}
                       type="button"
                     >
@@ -471,10 +459,10 @@ const CreateJobPage = () => {
                                 <WorkflowPlaygroundIcon className="h-3.5 w-3.5" />
                                 <span className="text-gray-80 line-clamp-1 font-medium">
                                   <span className="text-sm text-white">
-                                    {formatWorkflowName(selectedWorkflow.name)}:{' '}
+                                    {formatWorkflowName(workflowSelected.name)}:{' '}
                                   </span>
                                   <span className="">
-                                    {selectedWorkflow.description}
+                                    {workflowSelected.description}
                                   </span>
                                 </span>
                               </div>
@@ -488,16 +476,16 @@ const CreateJobPage = () => {
                               side="right"
                               sideOffset={18}
                             >
-                              {selectedWorkflow.description}
+                              {workflowSelected.description}
                             </TooltipContent>
                           </TooltipPortal>
                         </Tooltip>
                       </TooltipProvider>
 
                       <button
-                        className="absolute right-2 top-2.5"
+                        className="absolute right-2 top-2 p-1"
                         onClick={(event) => {
-                          setSelectedWorkflow(undefined);
+                          setWorkflowSelected(undefined);
                           if (Object.keys(selectedKeys ?? {}).length > 0) {
                             createJobForm.setValue('content', '');
                           }
@@ -511,7 +499,7 @@ const CreateJobPage = () => {
                   ) : (
                     <Button
                       className="hover:bg-gray-350 flex h-[40px] items-center justify-start gap-2 rounded-lg p-2.5 text-left"
-                      onClick={() => setWorkflowSearchDrawerOpen(true)}
+                      onClick={() => setWorkflowSelectionDrawerOpen(true)}
                       size="auto"
                       type="button"
                       variant="outline"
@@ -665,490 +653,21 @@ const CreateJobPage = () => {
         selectedKeys={selectedKeys}
         setIsKnowledgeSearchOpen={setIsKnowledgeSearchOpen}
       />
-      <WorkflowSearchDrawer
-        isWorkflowSearchDrawerOpen={isWorkflowSearchDrawerOpen}
-        onSelectWorkflow={() => {
-          if (
-            Object.keys(selectedKeys ?? {}).length > 0 ||
-            currentMessage.endsWith('/')
-          ) {
-            createJobForm.setValue('content', '');
-          }
-        }}
-        selectedWorkflow={selectedWorkflow}
-        setIsWorkflowSearchDrawerOpen={setWorkflowSearchDrawerOpen}
-        setSelectedWorkflow={setSelectedWorkflow}
-      />
+      {/*<WorkflowSearchDrawer*/}
+      {/*  isWorkflowSearchDrawerOpen={isWorkflowSearchDrawerOpen}*/}
+      {/*  onSelectWorkflow={() => {*/}
+      {/*    if (*/}
+      {/*      Object.keys(selectedKeys ?? {}).length > 0 ||*/}
+      {/*      currentMessage.endsWith('/')*/}
+      {/*    ) {*/}
+      {/*      createJobForm.setValue('content', '');*/}
+      {/*    }*/}
+      {/*  }}*/}
+      {/*  selectedWorkflow={selectedWorkflow}*/}
+      {/*  setIsWorkflowSearchDrawerOpen={setWorkflowSearchDrawerOpen}*/}
+      {/*  setSelectedWorkflow={setSelectedWorkflow}*/}
+      {/*/>*/}
     </SubpageLayout>
   );
 };
 export default CreateJobPage;
-
-const WorkflowSearchDrawer = ({
-  selectedWorkflow,
-  setSelectedWorkflow,
-  isWorkflowSearchDrawerOpen,
-  setIsWorkflowSearchDrawerOpen,
-  onSelectWorkflow,
-}: {
-  selectedWorkflow: Workflow | undefined;
-  setSelectedWorkflow: (workflow: Workflow) => void;
-  isWorkflowSearchDrawerOpen: boolean;
-  setIsWorkflowSearchDrawerOpen: (isOpen: boolean) => void;
-  onSelectWorkflow?: (workflow: Workflow) => void;
-}) => {
-  const auth = useAuth((state) => state.auth);
-  const [searchQuery, setSearchQuery] = useState('');
-  const debouncedSearchQuery = useDebounce(searchQuery, 600);
-  const isSearchQuerySynced = searchQuery === debouncedSearchQuery;
-  const [selectedWorkflowEdit, setSelectedWorkflowEdit] =
-    useState<Workflow | null>(null);
-
-  const { isPending, data: workflowList } = useGetWorkflowList({
-    nodeAddress: auth?.node_address ?? '',
-    shinkaiIdentity: auth?.shinkai_identity ?? '',
-    profile: auth?.profile ?? '',
-    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-    node_encryption_pk: auth?.node_encryption_pk ?? '',
-    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-    profile_identity_sk: auth?.profile_identity_sk ?? '',
-  });
-
-  const { data: searchWorkflowList, isPending: isSearchWorkflowListPending } =
-    useGetWorkflowSearch(
-      {
-        nodeAddress: auth?.node_address ?? '',
-        shinkaiIdentity: auth?.shinkai_identity ?? '',
-        profile: auth?.profile ?? '',
-        search: debouncedSearchQuery,
-        my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-        my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-        node_encryption_pk: auth?.node_encryption_pk ?? '',
-        profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-        profile_identity_sk: auth?.profile_identity_sk ?? '',
-      },
-      {
-        enabled: !!isSearchQuerySynced,
-      },
-    );
-
-  const { mutateAsync: removeWorkflow } = useRemoveWorkflow({
-    onSuccess: () => {
-      toast.success('Workflow removed successfully');
-    },
-    onError: (error) => {
-      toast.error('Failed to remove workflow', {
-        description: error.message,
-      });
-    },
-  });
-
-  return (
-    <Sheet
-      onOpenChange={setIsWorkflowSearchDrawerOpen}
-      open={isWorkflowSearchDrawerOpen}
-    >
-      <SheetContent side="right">
-        <CreateWorkflowDrawer />
-        <SheetHeader className="mb-4 p-0">
-          <SheetTitle>Workflow Library</SheetTitle>
-          <SheetDescription>
-            <p>Choose a workflow from the library to get started.</p>
-          </SheetDescription>
-        </SheetHeader>
-        <div className="relative mb-4 flex h-10 w-full items-center">
-          <Input
-            className="placeholder-gray-80 !h-full bg-transparent py-2 pl-10"
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-            }}
-            placeholder="Search..."
-            spellCheck={false}
-            value={searchQuery}
-          />
-          <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2" />
-          {searchQuery && (
-            <Button
-              className="absolute right-1 h-8 w-8 bg-gray-200 p-2"
-              onClick={() => {
-                setSearchQuery('');
-              }}
-              size="auto"
-              type="button"
-              variant="ghost"
-            >
-              <XIcon />
-              <span className="sr-only">Clear Search</span>
-            </Button>
-          )}
-        </div>
-        <ScrollArea className="h-[calc(100vh-140px)] pr-4 [&>div>div]:!block">
-          <div className="divide-y divide-gray-200 py-5">
-            {(isPending ||
-              !isSearchQuerySynced ||
-              isSearchWorkflowListPending) &&
-              Array.from({ length: 4 }).map((_, idx) => (
-                <div
-                  className="mb-2 flex h-[70px] items-center justify-between gap-2 rounded-lg bg-gray-300 py-3"
-                  key={idx}
-                />
-              ))}
-            {!searchQuery &&
-              isSearchQuerySynced &&
-              workflowList?.map((workflow) => (
-                <div
-                  className={cn(
-                    'group relative flex min-h-[70px] w-full flex-col gap-1 rounded-sm px-3 py-2.5 pr-8 text-left text-sm hover:bg-gray-300',
-                  )}
-                  key={workflow.name}
-                  onClick={() => {
-                    setSelectedWorkflow(workflow);
-                    setIsWorkflowSearchDrawerOpen(false);
-                    onSelectWorkflow?.(workflow);
-                  }}
-                  role="button"
-                  tabIndex={0}
-                >
-                  <div className="absolute right-1 top-1 flex translate-x-[150%] items-center gap-0.5 transition duration-200 group-hover:translate-x-0">
-                    <button
-                      className="text-gray-80 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        setSelectedWorkflowEdit(workflow);
-                      }}
-                      type="button"
-                    >
-                      <Edit3Icon className="h-4 w-4" />
-                    </button>
-
-                    <button
-                      className="text-gray-80 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"
-                      onClick={async (event) => {
-                        event.stopPropagation();
-                        await removeWorkflow({
-                          profile: auth?.profile ?? '',
-                          nodeAddress: auth?.node_address ?? '',
-                          shinkaiIdentity: auth?.shinkai_identity ?? '',
-                          workflowKey: `${workflow.name}:::${workflow.version}`,
-                          my_device_encryption_sk:
-                            auth?.profile_encryption_sk ?? '',
-                          my_device_identity_sk:
-                            auth?.profile_identity_sk ?? '',
-                          node_encryption_pk: auth?.node_encryption_pk ?? '',
-                          profile_encryption_sk:
-                            auth?.profile_encryption_sk ?? '',
-                          profile_identity_sk: auth?.profile_identity_sk ?? '',
-                        });
-                      }}
-                      type="button"
-                    >
-                      <Trash2Icon className="h-4 w-4" />
-                    </button>
-                  </div>
-                  <span className="text-sm font-medium">
-                    {formatWorkflowName(workflow.name)}{' '}
-                    {selectedWorkflow?.name === workflow.name && (
-                      <Badge
-                        className="bg-brand ml-2 text-gray-50"
-                        variant="default"
-                      >
-                        Selected
-                      </Badge>
-                    )}
-                  </span>
-                  <p className="text-gray-80 text-xs">{workflow.description}</p>
-                </div>
-              ))}
-            {searchQuery &&
-              isSearchQuerySynced &&
-              searchWorkflowList?.map((workflow) => (
-                <button
-                  className={cn(
-                    'flex w-full flex-col gap-1 rounded-sm px-3 py-2 text-left text-sm hover:bg-gray-300',
-                  )}
-                  key={workflow.Workflow.workflow.name}
-                  onClick={() => {
-                    setSelectedWorkflow({
-                      description: workflow.Workflow.workflow.description,
-                      name: workflow.Workflow.workflow.name,
-                      raw: workflow.Workflow.workflow.raw,
-                      version: workflow.Workflow.workflow.version,
-                    });
-                    setIsWorkflowSearchDrawerOpen(false);
-                  }}
-                  type="button"
-                >
-                  <span className="text-sm font-medium">
-                    {formatWorkflowName(workflow.Workflow.workflow.name)}{' '}
-                    {selectedWorkflow?.name ===
-                      workflow.Workflow.workflow.name && (
-                      <Badge
-                        className="bg-brand ml-2 font-light text-gray-50 shadow-none"
-                        variant="default"
-                      >
-                        Current
-                      </Badge>
-                    )}
-                  </span>
-                  <p className="text-gray-80 text-sm">
-                    {workflow.Workflow.workflow.description}
-                  </p>
-                </button>
-              ))}
-            {searchQuery &&
-              isSearchQuerySynced &&
-              searchWorkflowList?.length === 0 && (
-                <div className="flex h-20 items-center justify-center">
-                  <p className="text-gray-80 text-sm">
-                    No workflows found for the search query
-                  </p>
-                </div>
-              )}
-          </div>
-        </ScrollArea>
-        {selectedWorkflowEdit && (
-          <UpdateWorkflowDrawer
-            open={!!selectedWorkflowEdit}
-            setOpen={(open) => {
-              if (!open) {
-                setSelectedWorkflowEdit(null);
-              }
-            }}
-            workflowDescription={selectedWorkflowEdit.description}
-            workflowRaw={selectedWorkflowEdit.raw}
-          />
-        )}
-      </SheetContent>
-    </Sheet>
-  );
-};
-
-const createWorkflowFormSchema = z.object({
-  workflowRaw: z.string().min(1, 'Workflow code is required'),
-  workflowDescription: z.string().min(1, 'Workflow description is required'),
-});
-
-type CreateWorkflowFormSchema = z.infer<typeof createWorkflowFormSchema>;
-
-function CreateWorkflowDrawer() {
-  const auth = useAuth((state) => state.auth);
-  const createWorkflowForm = useForm<CreateWorkflowFormSchema>({
-    resolver: zodResolver(createWorkflowFormSchema),
-  });
-  const [isWorkflowDrawerOpen, setIsWorkflowDrawerOpen] = useState(false);
-
-  const { mutateAsync: createWorkflow, isPending } = useCreateWorkflow({
-    onSuccess: () => {
-      toast.success('Workflow created successfully');
-      setIsWorkflowDrawerOpen(false);
-    },
-    onError: (error) => {
-      toast.error('Failed to create workflow', {
-        description: error.message,
-      });
-    },
-  });
-
-  const onSubmit = async (data: CreateWorkflowFormSchema) => {
-    await createWorkflow({
-      nodeAddress: auth?.node_address ?? '',
-      shinkaiIdentity: auth?.shinkai_identity ?? '',
-      profile: auth?.profile ?? '',
-      workflowRaw: data.workflowRaw,
-      workflowDescription: data.workflowDescription ?? '',
-      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-      my_device_identity_sk: auth?.profile_identity_sk ?? '',
-      node_encryption_pk: auth?.node_encryption_pk ?? '',
-      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-      profile_identity_sk: auth?.profile_identity_sk ?? '',
-    });
-  };
-  return (
-    <Dialog onOpenChange={setIsWorkflowDrawerOpen} open={isWorkflowDrawerOpen}>
-      <DialogTrigger asChild>
-        <button
-          className="bg-brand absolute right-12 top-2 rounded-full p-2"
-          type="button"
-        >
-          <PlusIcon className="h-4 w-4" />
-        </button>
-      </DialogTrigger>
-      <DialogContent className="bg-gray-500">
-        <DialogHeader>
-          <DialogTitle>Create custom workflow</DialogTitle>
-
-          <div>
-            <Form {...createWorkflowForm}>
-              <form
-                className="mt-5 flex flex-col gap-3"
-                onSubmit={createWorkflowForm.handleSubmit(onSubmit)}
-              >
-                <FormField
-                  control={createWorkflowForm.control}
-                  name="workflowRaw"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Workflow Code</FormLabel>
-                      <FormControl>
-                        <div className="space-y-2">
-                          <Textarea
-                            autoFocus={true}
-                            className="!min-h-[130px] resize-none text-sm"
-                            onKeyDown={(event) => {
-                              if (
-                                event.key === 'Enter' &&
-                                (event.metaKey || event.ctrlKey)
-                              ) {
-                                createWorkflowForm.handleSubmit(onSubmit)();
-                                return;
-                              }
-                            }}
-                            spellCheck={false}
-                            {...field}
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={createWorkflowForm.control}
-                  name="workflowDescription"
-                  render={({ field }) => (
-                    <TextField
-                      autoFocus
-                      field={field}
-                      label="Workflow Description"
-                    />
-                  )}
-                />
-                <Button
-                  className="mt-4"
-                  disabled={isPending}
-                  isLoading={isPending}
-                  type="submit"
-                >
-                  Create Workflow
-                </Button>
-              </form>
-            </Form>
-          </div>
-        </DialogHeader>
-      </DialogContent>
-    </Dialog>
-  );
-}
-function UpdateWorkflowDrawer({
-  workflowRaw,
-  workflowDescription,
-  open,
-  setOpen,
-}: {
-  workflowRaw: string;
-  workflowDescription: string;
-  open: boolean;
-  setOpen: (isOpen: boolean) => void;
-}) {
-  const auth = useAuth((state) => state.auth);
-  const createWorkflowForm = useForm<CreateWorkflowFormSchema>({
-    resolver: zodResolver(createWorkflowFormSchema),
-    defaultValues: {
-      workflowDescription,
-      workflowRaw,
-    },
-  });
-
-  const { mutateAsync: updateWorkflow, isPending } = useUpdateWorkflow({
-    onSuccess: () => {
-      toast.success('Workflow updated successfully');
-      setOpen(false);
-    },
-    onError: (error) => {
-      toast.error('Failed to update workflow', {
-        description: error.message,
-      });
-    },
-  });
-
-  const onSubmit = async (data: CreateWorkflowFormSchema) => {
-    await updateWorkflow({
-      nodeAddress: auth?.node_address ?? '',
-      shinkaiIdentity: auth?.shinkai_identity ?? '',
-      profile: auth?.profile ?? '',
-      workflowRaw: data.workflowRaw,
-      workflowDescription: data.workflowDescription ?? '',
-      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-      my_device_identity_sk: auth?.profile_identity_sk ?? '',
-      node_encryption_pk: auth?.node_encryption_pk ?? '',
-      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-      profile_identity_sk: auth?.profile_identity_sk ?? '',
-    });
-  };
-  return (
-    <Dialog onOpenChange={setOpen} open={open}>
-      <DialogContent className="bg-gray-500">
-        <DialogHeader>
-          <DialogTitle>Update workflow</DialogTitle>
-          <div>
-            <Form {...createWorkflowForm}>
-              <form
-                className="mt-5 flex flex-col gap-3"
-                onSubmit={createWorkflowForm.handleSubmit(onSubmit)}
-              >
-                <FormField
-                  control={createWorkflowForm.control}
-                  name="workflowRaw"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Workflow Code</FormLabel>
-                      <FormControl>
-                        <div className="space-y-2">
-                          <Textarea
-                            className="!min-h-[130px] resize-none text-sm"
-                            onKeyDown={(event) => {
-                              if (
-                                event.key === 'Enter' &&
-                                (event.metaKey || event.ctrlKey)
-                              ) {
-                                createWorkflowForm.handleSubmit(onSubmit)();
-                                return;
-                              }
-                            }}
-                            spellCheck={false}
-                            {...field}
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={createWorkflowForm.control}
-                  name="workflowDescription"
-                  render={({ field }) => (
-                    <TextField
-                      autoFocus
-                      field={field}
-                      label="Workflow Description"
-                    />
-                  )}
-                />
-                <Button
-                  className="mt-4"
-                  disabled={isPending}
-                  isLoading={isPending}
-                  type="submit"
-                >
-                  Update Workflow
-                </Button>
-              </form>
-            </Form>
-          </div>
-        </DialogHeader>
-      </DialogContent>
-    </Dialog>
-  );
-}
