@@ -305,6 +305,14 @@ export const Message = ({
                   files={message.fileInbox?.files}
                 />
               )}
+              {!!message.workflowName && (
+                <div className="mt-2 flex items-center gap-1.5 border-t pt-2">
+                  <span className="text-gray-80 text-xs">Workflow:</span>
+                  <span className="text-gray-80 text-xs">
+                    {message.workflowName}
+                  </span>
+                </div>
+              )}
             </Fragment>
           )}
         </motion.div>

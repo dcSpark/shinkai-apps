@@ -160,6 +160,7 @@ export const sendTextMessageWithFilesForInbox = async (
     sender_subidentity,
     receiver,
     workflow,
+    undefined,
   );
 
   await fileUploader.createFolder();
@@ -508,6 +509,7 @@ export const sendMessageToJob = async (
   files_inbox: string,
   parent: string | null,
   workflow: string | undefined,
+  workflowName: string | undefined,
   sender: string,
   sender_subidentity: string,
   receiver: string,
@@ -525,6 +527,7 @@ export const sendMessageToJob = async (
     files_inbox,
     parent || '',
     workflow,
+    workflowName,
     setupDetailsState.profile_encryption_sk,
     setupDetailsState.profile_identity_sk,
     setupDetailsState.node_encryption_pk,
@@ -759,6 +762,179 @@ export const retrieveVRPathSimplified = async (
       }
     : data;
 };
+export const getWorkflowSearch = async (
+  nodeAddress: string,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  searchQuery: string,
+  setupDetailsState: CredentialsPayload,
+) => {
+  const messageStr = ShinkaiMessageBuilderWrapper.getWorkflowSearch(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    searchQuery,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
+
+  const message = JSON.parse(messageStr);
+
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/search_workflows'),
+    message,
+
+    {
+      responseType: 'json',
+    },
+  );
+
+  const data = response.data;
+  return data;
+};
+export const getWorkflowList = async (
+  nodeAddress: string,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  setupDetailsState: CredentialsPayload,
+) => {
+  const messageStr = ShinkaiMessageBuilderWrapper.getWorkflowList(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
+
+  const message = JSON.parse(messageStr);
+
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/list_all_workflows'),
+    message,
+
+    {
+      responseType: 'json',
+    },
+  );
+
+  const data = response.data;
+  return data;
+};
+export const createWorkflow = async (
+  nodeAddress: string,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  workflowRaw: string,
+  workflowDescription: string,
+  setupDetailsState: CredentialsPayload,
+) => {
+  const messageStr = ShinkaiMessageBuilderWrapper.createWorkflow(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    workflowRaw,
+    workflowDescription,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
+
+  const message = JSON.parse(messageStr);
+
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/add_workflow'),
+    message,
+
+    {
+      responseType: 'json',
+    },
+  );
+
+  const data = response.data;
+  return data;
+};
+export const updateWorkflow = async (
+  nodeAddress: string,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  workflowRaw: string,
+  workflowDescription: string,
+  setupDetailsState: CredentialsPayload,
+) => {
+  const messageStr = ShinkaiMessageBuilderWrapper.updateWorkflow(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    workflowRaw,
+    workflowDescription,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
+
+  const message = JSON.parse(messageStr);
+
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/update_workflow'),
+    message,
+
+    {
+      responseType: 'json',
+    },
+  );
+
+  const data = response.data;
+  return data;
+};
+export const removeWorkflow = async (
+  nodeAddress: string,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  workflowKey: string,
+  setupDetailsState: CredentialsPayload,
+) => {
+  const messageStr = ShinkaiMessageBuilderWrapper.removeWorkflow(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    workflowKey,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
+
+  const message = JSON.parse(messageStr);
+
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/delete_workflow'),
+    message,
+
+    {
+      responseType: 'json',
+    },
+  );
+
+  const data = response.data;
+  return data;
+};
+
 export const retrieveVectorSearchSimplified = async (
   nodeAddress: string,
   sender: string,
@@ -818,6 +994,7 @@ export const uploadFilesToVR = async (
       sender,
       sender_subidentity,
       receiver,
+      undefined,
       undefined,
     );
 

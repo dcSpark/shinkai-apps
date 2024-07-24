@@ -7,6 +7,7 @@ import { VectorFolderSelectionProvider } from '../components/vector-fs/component
 import { VectorFsProvider } from '../components/vector-fs/context/vector-fs-context';
 import VectorFs from '../components/vector-fs/vector-fs';
 import SearchNodeFiles from '../components/vector-search/search-node-files';
+import { WorkflowSelectionProvider } from '../components/workflow/context/workflow-selection-context';
 import {
   useShinkaiNodeIsRunningQuery,
   useShinkaiNodeSetOptionsMutation,
@@ -143,7 +144,14 @@ const AppRoutes = () => {
           path="inboxes"
         >
           <Route element={<EmptyMessage />} index />
-          <Route element={<ChatConversation />} path=":inboxId" />
+          <Route
+            element={
+              <WorkflowSelectionProvider>
+                <ChatConversation />
+              </WorkflowSelectionProvider>
+            }
+            path=":inboxId"
+          />
         </Route>
 
         <Route
@@ -202,7 +210,9 @@ const AppRoutes = () => {
         <Route
           element={
             <ProtectedRoute>
-              <CreateJobPage />
+              <WorkflowSelectionProvider>
+                <CreateJobPage />
+              </WorkflowSelectionProvider>
             </ProtectedRoute>
           }
           path={'/create-job'}
@@ -223,7 +233,14 @@ const AppRoutes = () => {
             }
             index
           />
-          <Route element={<ChatConversation />} path=":inboxId" />
+          <Route
+            element={
+              <WorkflowSelectionProvider>
+                <ChatConversation />
+              </WorkflowSelectionProvider>
+            }
+            path=":inboxId"
+          />
         </Route>
         <Route
           element={

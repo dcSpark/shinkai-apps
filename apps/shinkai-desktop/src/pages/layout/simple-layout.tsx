@@ -15,7 +15,7 @@ export const SubpageLayout = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <div className={cn('relative mx-auto max-w-lg py-10', className)}>
+    <div className={cn('relative mx-auto max-w-xl py-10', className)}>
       <Link className="absolute left-4" to={-1 as To}>
         <LucideArrowLeft />
         <span className="sr-only">{t('common.back')}</span>

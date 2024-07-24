@@ -6,6 +6,7 @@ import type { ShinkaiMessage } from '@shinkai_network/shinkai-message-ts/models'
 import {
   getMessageContent,
   getMessageFilesInbox,
+  getWorkflowNameJobMessage,
   isLocalMessage,
 } from '@shinkai_network/shinkai-message-ts/utils';
 
@@ -45,6 +46,7 @@ export const getChatConversation = async ({
   const transformedMessagePromises: Promise<ChatConversationMessage>[] =
     flattenMessages.map(async (shinkaiMessage) => {
       const filesInbox = getMessageFilesInbox(shinkaiMessage);
+      const workflowName = getWorkflowNameJobMessage(shinkaiMessage);
       const content = getMessageContent(shinkaiMessage);
       const isLocal = isLocalMessage(shinkaiMessage, shinkaiIdentity, profile);
       const message: ChatConversationMessage = {
@@ -60,6 +62,7 @@ export const getChatConversation = async ({
             : '',
         inboxId,
         content,
+        workflowName,
         sender: {
           avatar: isLocal
             ? 'https://ui-avatars.com/api/?name=Me&background=313336&color=b0b0b0'

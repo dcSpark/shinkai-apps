@@ -18,6 +18,7 @@ import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-st
 import { useUpdateAgentInJob } from '@shinkai_network/shinkai-node-state/lib/mutations/updateAgentInJob/useUpdateAgentInJob';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
+import { useGetWorkflowSearch } from '@shinkai_network/shinkai-node-state/lib/queries/getWorkflowSearch/useGetWorkflowSearch';
 import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import {
   Alert,
@@ -52,11 +53,13 @@ import {
   DirectoryTypeIcon,
   fileIconMap,
   FileTypeIcon,
+  WorkflowPlaygroundIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { getFileExt } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { partial } from 'filesize';
+import { motion } from 'framer-motion';
 import {
   AlertCircle,
   BotIcon,
@@ -64,17 +67,21 @@ import {
   Paperclip,
   SendIcon,
   X,
+  XIcon,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';
 import { toast } from 'sonner';
 
+import { useWorkflowSelectionStore } from '../../components/workflow/context/workflow-selection-context';
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
+import { useDebounce } from '../../hooks/use-debounce';
 import { useAnalytics } from '../../lib/posthog-provider';
 import { useAuth } from '../../store/auth';
+import { formatWorkflowName } from '../create-job';
 enum ErrorCodes {
   VectorResource = 'VectorResource',
   ShinkaiBackendInferenceLimitReached = 'ShinkaiBackendInferenceLimitReached',
@@ -191,6 +198,7 @@ const ChatConversation = () => {
   const { inboxId: encodedInboxId = '' } = useParams();
   const auth = useAuth((state) => state.auth);
   const fromPreviousMessagesRef = useRef<boolean>(false);
+
   const inboxId = decodeURIComponent(encodedInboxId);
   const currentInbox = useGetCurrentInbox();
   const hasProviderEnableStreaming =
@@ -203,6 +211,19 @@ const ChatConversation = () => {
       message: '',
     },
   });
+
+  const workflowSelected = useWorkflowSelectionStore(
+    (state) => state.workflowSelected,
+  );
+  const setWorkflowSelected = useWorkflowSelectionStore(
+    (state) => state.setWorkflowSelected,
+  );
+
+  const currentMessage = useWatch({
+    control: chatForm.control,
+    name: 'message',
+  });
+  const debounceMessage = useDebounce(currentMessage, 500);
 
   const { getRootProps: getRootFileProps, getInputProps: getInputFileProps } =
     useDropzone({
@@ -235,6 +256,27 @@ const ChatConversation = () => {
     refetchIntervalEnabled: !hasProviderEnableStreaming,
   });
 
+  const {
+    data: workflowRecommendations,
+    isSuccess: isWorkflowRecommendationsSuccess,
+  } = useGetWorkflowSearch(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      profile: auth?.profile ?? '',
+      search: debounceMessage,
+      my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+      my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+    },
+    {
+      enabled: !!debounceMessage && !!currentMessage,
+      select: (data) => data.slice(0, 3),
+    },
+  );
+
   const isLoadingMessage = useMemo(() => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
     return isJobInbox(inboxId) && lastMessage?.isLocal;
@@ -264,6 +306,7 @@ const ChatConversation = () => {
     if (!auth) return;
     const decodedInboxId = decodeURIComponent(inboxId);
     const jobId = extractJobIdFromInbox(decodedInboxId);
+
     await sendMessageToJob({
       nodeAddress: auth.node_address,
       jobId,
@@ -305,6 +348,8 @@ const ChatConversation = () => {
 
     if (isJobInbox(inboxId)) {
       const jobId = extractJobIdFromInbox(inboxId);
+      const workflowVersion = workflowSelected?.version;
+      const workflowName = workflowSelected?.name;
       await sendMessageToJob({
         nodeAddress: auth.node_address,
         jobId: jobId,
@@ -313,6 +358,9 @@ const ChatConversation = () => {
         parent: '', // Note: we should set the parent if we want to retry or branch out
         shinkaiIdentity: auth.shinkai_identity,
         profile: auth.profile,
+        workflowName: workflowSelected
+          ? `${workflowName}:::${workflowVersion}`
+          : undefined,
         my_device_encryption_sk: auth.my_device_encryption_sk,
         my_device_identity_sk: auth.my_device_identity_sk,
         node_encryption_pk: auth.node_encryption_pk,
@@ -337,6 +385,7 @@ const ChatConversation = () => {
       });
     }
     chatForm.reset();
+    setWorkflowSelected(undefined);
   };
 
   useEffect(() => {
@@ -421,16 +470,13 @@ const ChatConversation = () => {
                                 </div>
                               </TooltipTrigger>
                               <TooltipPortal>
-                                <TooltipContent
-                                  align="center"
-                                  className="bg-neutral-900"
-                                  side="top"
-                                >
+                                <TooltipContent align="center" side="top">
                                   {t('common.uploadFile')}
                                 </TooltipContent>
                               </TooltipPortal>
                             </Tooltip>
                           </TooltipProvider>
+                          <WorkflowSelection />
                         </div>
                         <ChatInputArea
                           autoFocus
@@ -453,43 +499,130 @@ const ChatConversation = () => {
                           onChange={field.onChange}
                           onSubmit={chatForm.handleSubmit(onSubmit)}
                           topAddons={
-                            file && (
-                              <div className="relative mt-1 flex min-w-[180px] max-w-[220px] items-center gap-2 self-start rounded-lg border border-gray-200 px-2 py-2.5">
-                                {getFileExt(file?.name) &&
-                                fileIconMap[getFileExt(file?.name)] ? (
-                                  <FileTypeIcon
-                                    className="text-gray-80 h-7 w-7 shrink-0"
-                                    type={getFileExt(file?.name)}
-                                  />
-                                ) : (
-                                  <Paperclip className="text-gray-80 h-4 w-4 shrink-0" />
-                                )}
-                                <div className="space-y-1">
-                                  <span className="line-clamp-1 break-all text-left text-xs">
-                                    {file?.name}
-                                  </span>
-                                  <span className="line-clamp-1 break-all text-left text-xs text-gray-100">
-                                    {size(file?.size)}
-                                  </span>
+                            <>
+                              {workflowSelected && (
+                                <div className="relative max-w-full rounded-lg border border-gray-200 p-1.5 px-2">
+                                  <TooltipProvider delayDuration={0}>
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <div className="flex items-center gap-2 pr-6">
+                                          <WorkflowPlaygroundIcon className="h-3.5 w-3.5" />
+                                          <div className="text-gray-80 line-clamp-1 text-xs">
+                                            <span className="text-white">
+                                              {formatWorkflowName(
+                                                workflowSelected.name,
+                                              )}{' '}
+                                            </span>
+                                            -{' '}
+                                            <span className="">
+                                              {workflowSelected.description}
+                                            </span>
+                                          </div>
+                                        </div>
+                                      </TooltipTrigger>
+                                      <TooltipPortal>
+                                        <TooltipContent
+                                          align="start"
+                                          alignOffset={-10}
+                                          className="max-w-[600px]"
+                                          side="top"
+                                          sideOffset={10}
+                                        >
+                                          {workflowSelected.description}
+                                        </TooltipContent>
+                                      </TooltipPortal>
+                                    </Tooltip>
+                                  </TooltipProvider>
+                                  <button
+                                    className="absolute right-2 top-1.5 text-gray-100 hover:text-white"
+                                    onClick={() => {
+                                      setWorkflowSelected(undefined);
+                                    }}
+                                    type="button"
+                                  >
+                                    <XIcon className="h-4 w-4" />
+                                  </button>
                                 </div>
-                                <button
-                                  className={cn(
-                                    'absolute -right-2 -top-2 h-5 w-5 cursor-pointer rounded-full bg-gray-500 p-1 text-gray-100 hover:text-white',
+                              )}
+                              {file && (
+                                <div className="relative mt-1 flex min-w-[180px] max-w-[220px] items-center gap-2 self-start rounded-lg border border-gray-200 px-2 py-2.5">
+                                  {getFileExt(file?.name) &&
+                                  fileIconMap[getFileExt(file?.name)] ? (
+                                    <FileTypeIcon
+                                      className="text-gray-80 h-7 w-7 shrink-0"
+                                      type={getFileExt(file?.name)}
+                                    />
+                                  ) : (
+                                    <Paperclip className="text-gray-80 h-4 w-4 shrink-0" />
                                   )}
-                                  onClick={(event) => {
-                                    event.stopPropagation();
-                                    chatForm.setValue('file', undefined, {
-                                      shouldValidate: true,
-                                    });
-                                  }}
-                                >
-                                  <X className="h-full w-full" />
-                                </button>
-                              </div>
-                            )
+                                  <div className="space-y-1">
+                                    <span className="line-clamp-1 break-all text-left text-xs">
+                                      {file?.name}
+                                    </span>
+                                    <span className="line-clamp-1 break-all text-left text-xs text-gray-100">
+                                      {size(file?.size)}
+                                    </span>
+                                  </div>
+                                  <button
+                                    className={cn(
+                                      'absolute -right-2 -top-2 h-5 w-5 cursor-pointer rounded-full bg-gray-500 p-1 text-gray-100 hover:text-white',
+                                    )}
+                                    onClick={(event) => {
+                                      event.stopPropagation();
+                                      chatForm.setValue('file', undefined, {
+                                        shouldValidate: true,
+                                      });
+                                    }}
+                                  >
+                                    <X className="h-full w-full" />
+                                  </button>
+                                </div>
+                              )}
+                            </>
                           }
                           value={field.value}
                         />
+                        <motion.div
+                          animate={{ opacity: 1 }}
+                          className="absolute inset-x-3 bottom-2 flex items-center justify-between gap-2"
+                          exit={{ opacity: 0 }}
+                          initial={{ opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <div className="flex gap-2">
+                            {!!debounceMessage &&
+                              !workflowSelected &&
+                              isWorkflowRecommendationsSuccess &&
+                              workflowRecommendations?.length > 0 &&
+                              workflowRecommendations?.map((workflow) => (
+                                <motion.button
+                                  animate={{ opacity: 1, x: 0 }}
+                                  className={cn(
+                                    'hover:bg-brand-gradient bg-gray-350 flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-white',
+                                  )}
+                                  exit={{ opacity: 0, x: -10 }}
+                                  initial={{ opacity: 0, x: -10 }}
+                                  key={workflow.Workflow.workflow.name}
+                                  onClick={() => {
+                                    setWorkflowSelected({
+                                      description:
+                                        workflow.Workflow.workflow.description,
+                                      name: workflow.Workflow.workflow.name,
+                                      raw: workflow.Workflow.workflow.raw,
+                                      version:
+                                        workflow.Workflow.workflow.version,
+                                    });
+                                  }}
+                                  type="button"
+                                >
+                                  <WorkflowPlaygroundIcon className="h-3 w-3" />
+                                  {formatWorkflowName(
+                                    workflow.Workflow.workflow.name,
+                                  )}
+                                </motion.button>
+                              ))}
+                          </div>
+                        </motion.div>
                       </div>
                     </FormControl>
                   </FormItem>
@@ -533,18 +666,14 @@ function AgentSelection() {
       <TooltipProvider delayDuration={0}>
         <Tooltip>
           <TooltipTrigger asChild>
-            <DropdownMenuTrigger className="bg-gray-350 inline-flex cursor-pointer items-center justify-between gap-1 truncate rounded-xl px-2.5 py-1.5 text-start text-xs font-normal text-gray-50 hover:text-white [&[data-state=open]>.icon]:rotate-180">
+            <DropdownMenuTrigger className="bg-gray-350 inline-flex cursor-pointer items-center justify-between gap-1.5 truncate rounded-xl px-2.5 py-1.5 text-start text-xs font-normal text-gray-50 hover:text-white [&[data-state=open]>.icon]:rotate-180">
               <BotIcon className="mr-1 h-4 w-4" />
               <span>{currentInbox?.agent?.id}</span>
               <ChevronDownIcon className="icon h-3 w-3" />
             </DropdownMenuTrigger>
           </TooltipTrigger>
           <TooltipPortal>
-            <TooltipContent
-              align="center"
-              className="bg-neutral-900"
-              side="top"
-            >
+            <TooltipContent align="center" side="top">
               {t('llmProviders.switch')}
             </TooltipContent>
           </TooltipPortal>
@@ -590,6 +719,34 @@ function AgentSelection() {
         </Tooltip>
       </TooltipProvider>
     </DropdownMenu>
+  );
+}
+
+function WorkflowSelection() {
+  const setWorkflowSelectionDrawerOpen = useWorkflowSelectionStore(
+    (state) => state.setWorkflowSelectionDrawerOpen,
+  );
+
+  return (
+    <TooltipProvider delayDuration={0}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            className="hover:bg-gray-350 flex h-7 w-7 cursor-pointer items-center justify-center gap-1.5 truncate rounded-lg px-2.5 py-1.5 text-left text-xs font-normal text-white hover:text-white [&[data-state=open]>.icon]:rotate-180"
+            onClick={() => {
+              setWorkflowSelectionDrawerOpen(true);
+            }}
+          >
+            <WorkflowPlaygroundIcon className="h-4 w-4" />
+          </button>
+        </TooltipTrigger>
+        <TooltipPortal>
+          <TooltipContent align="center" side="top">
+            Add Workflow
+          </TooltipContent>
+        </TooltipPortal>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
 

@@ -12,6 +12,7 @@ export type CreateJobInput = JobCredentialsPayload & {
   files?: File[];
   is_hidden?: boolean;
   workflow?: string;
+  workflowName?: string;
   selectedVRFiles?: VRItem[];
   selectedVRFolders?: VRFolder[];
 };

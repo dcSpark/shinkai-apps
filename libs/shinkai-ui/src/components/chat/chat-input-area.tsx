@@ -97,7 +97,7 @@ export const ChatInputArea = ({
   }, [editor]);
 
   return (
-    <div className="flex min-h-[60px] w-full max-w-full flex-col rounded-md border border-gray-200 bg-gray-400 px-1 py-1 text-sm shadow-sm aria-disabled:cursor-not-allowed aria-disabled:opacity-50">
+    <div className="flex w-full max-w-full flex-col rounded-md border border-gray-200 bg-gray-400 px-1 py-1 text-sm shadow-sm aria-disabled:cursor-not-allowed aria-disabled:opacity-50">
       {topAddons}
       <div
         aria-disabled={disabled}

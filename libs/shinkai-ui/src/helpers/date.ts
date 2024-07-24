@@ -14,6 +14,7 @@ export type ChatConversationMessage = {
       name: string;
     }[];
   };
+  workflowName: string | undefined;
 };
 export type GetChatConversationOutput = ChatConversationMessage[];
 

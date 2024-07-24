@@ -62,6 +62,9 @@
 }
 
 /* prose styling for chat editor */
+.ProseMirror {
+  @apply max-h-[200px] min-h-[60px] overflow-y-auto;
+}
 .prose :where(p):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
   @apply my-2;
 }
@@ -74,7 +77,7 @@
   @apply pointer-events-none float-left h-0 text-gray-100;
 }
 .tiptap {
-  @apply max-w-full placeholder:text-gray-80 px-2 py-1 text-sm text-white shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-transparent disabled:cursor-not-allowed disabled:opacity-50;
+  @apply placeholder:text-gray-80 max-w-full px-2 py-1 text-sm text-white shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-transparent disabled:cursor-not-allowed disabled:opacity-50;
 }
 .tiptap[contenteditable='false'] {
   @apply opacity-40;
