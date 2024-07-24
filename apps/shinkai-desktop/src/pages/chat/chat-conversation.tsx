@@ -18,7 +18,6 @@ import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-st
 import { useUpdateAgentInJob } from '@shinkai_network/shinkai-node-state/lib/mutations/updateAgentInJob/useUpdateAgentInJob';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
-import { Workflow } from '@shinkai_network/shinkai-node-state/lib/queries/getWorkflowList/types';
 import { useGetWorkflowSearch } from '@shinkai_network/shinkai-node-state/lib/queries/getWorkflowSearch/useGetWorkflowSearch';
 import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import {
@@ -67,7 +66,6 @@ import {
   ChevronDownIcon,
   Paperclip,
   SendIcon,
-  Sparkles,
   X,
   XIcon,
 } from 'lucide-react';
@@ -78,6 +76,7 @@ import { useParams } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';
 import { toast } from 'sonner';
 
+import { useWorkflowSelectionStore } from '../../components/workflow/context/workflow-selection-context';
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useDebounce } from '../../hooks/use-debounce';
 import { useAnalytics } from '../../lib/posthog-provider';
@@ -212,9 +211,12 @@ const ChatConversation = () => {
     },
   });
 
-  const [selectedWorkflow, setSelectedWorkflow] = useState<
-    Workflow | undefined
-  >(undefined);
+  const workflowSelected = useWorkflowSelectionStore(
+    (state) => state.workflowSelected,
+  );
+  const setWorkflowSelected = useWorkflowSelectionStore(
+    (state) => state.setWorkflowSelected,
+  );
 
   const currentMessage = useWatch({
     control: chatForm.control,
@@ -345,8 +347,8 @@ const ChatConversation = () => {
 
     if (isJobInbox(inboxId)) {
       const jobId = extractJobIdFromInbox(inboxId);
-      const workflowVersion = selectedWorkflow?.version;
-      const workflowName = selectedWorkflow?.name;
+      const workflowVersion = workflowSelected?.version;
+      const workflowName = workflowSelected?.name;
       await sendMessageToJob({
         nodeAddress: auth.node_address,
         jobId: jobId,
@@ -355,7 +357,7 @@ const ChatConversation = () => {
         parent: '', // Note: we should set the parent if we want to retry or branch out
         shinkaiIdentity: auth.shinkai_identity,
         profile: auth.profile,
-        workflowName: selectedWorkflow
+        workflowName: workflowSelected
           ? `${workflowName}:::${workflowVersion}`
           : undefined,
         my_device_encryption_sk: auth.my_device_encryption_sk,
@@ -364,7 +366,6 @@ const ChatConversation = () => {
         profile_encryption_sk: auth.profile_encryption_sk,
         profile_identity_sk: auth.profile_identity_sk,
       });
-      setSelectedWorkflow(undefined);
     } else {
       const sender = `${auth.shinkai_identity}/${auth.profile}/device/${auth.registration_name}`;
       const receiver = extractReceiverShinkaiName(inboxId, sender);
@@ -383,6 +384,7 @@ const ChatConversation = () => {
       });
     }
     chatForm.reset();
+    setWorkflowSelected(undefined);
   };
 
   useEffect(() => {
@@ -477,6 +479,7 @@ const ChatConversation = () => {
                               </TooltipPortal>
                             </Tooltip>
                           </TooltipProvider>
+                          <WorkflowSelection />
                         </div>
                         <ChatInputArea
                           autoFocus
@@ -500,20 +503,43 @@ const ChatConversation = () => {
                           onSubmit={chatForm.handleSubmit(onSubmit)}
                           topAddons={
                             <>
-                              {selectedWorkflow && (
-                                <div className="relative max-w-[220px] rounded-full border border-gray-200 p-1.5 px-2">
-                                  <div className="flex items-center gap-2 pr-6">
-                                    <WorkflowPlaygroundIcon className="h-3.5 w-3.5" />
-                                    <span className="text-xs text-white">
-                                      {formatWorkflowName(
-                                        selectedWorkflow.name,
-                                      )}
-                                    </span>
-                                  </div>
+                              {workflowSelected && (
+                                <div className="relative max-w-full rounded-lg border border-gray-200 p-1.5 px-2">
+                                  <TooltipProvider delayDuration={0}>
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <div className="flex items-center gap-2 pr-6">
+                                          <WorkflowPlaygroundIcon className="h-3.5 w-3.5" />
+                                          <div className="text-gray-80 line-clamp-1 text-xs">
+                                            <span className="text-white">
+                                              {formatWorkflowName(
+                                                workflowSelected.name,
+                                              )}{' '}
+                                            </span>
+                                            -{' '}
+                                            <span className="">
+                                              {workflowSelected.description}
+                                            </span>
+                                          </div>
+                                        </div>
+                                      </TooltipTrigger>
+                                      <TooltipPortal>
+                                        <TooltipContent
+                                          align="start"
+                                          alignOffset={-10}
+                                          className="max-w-[600px] bg-neutral-900"
+                                          side="top"
+                                          sideOffset={10}
+                                        >
+                                          {workflowSelected.description}
+                                        </TooltipContent>
+                                      </TooltipPortal>
+                                    </Tooltip>
+                                  </TooltipProvider>
                                   <button
                                     className="absolute right-2 top-1.5 text-gray-100 hover:text-white"
                                     onClick={() => {
-                                      setSelectedWorkflow(undefined);
+                                      setWorkflowSelected(undefined);
                                     }}
                                     type="button"
                                   >
@@ -568,21 +594,20 @@ const ChatConversation = () => {
                         >
                           <div className="flex gap-2">
                             {!!debounceMessage &&
-                              !selectedWorkflow &&
+                              !workflowSelected &&
                               isWorkflowRecommendationsSuccess &&
                               workflowRecommendations?.length > 0 &&
                               workflowRecommendations?.map((workflow) => (
                                 <motion.button
                                   animate={{ opacity: 1, x: 0 }}
                                   className={cn(
-                                    'hover:bg-brand-gradient flex items-center gap-2 rounded-lg border bg-gray-400 px-2 py-1 text-xs text-white',
-                                    'border border-gray-100',
+                                    'hover:bg-brand-gradient bg-gray-350 flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-white',
                                   )}
                                   exit={{ opacity: 0, x: -10 }}
                                   initial={{ opacity: 0, x: -10 }}
                                   key={workflow.Workflow.workflow.name}
                                   onClick={() => {
-                                    setSelectedWorkflow({
+                                    setWorkflowSelected({
                                       description:
                                         workflow.Workflow.workflow.description,
                                       name: workflow.Workflow.workflow.name,
@@ -593,7 +618,7 @@ const ChatConversation = () => {
                                   }}
                                   type="button"
                                 >
-                                  <Sparkles className="h-3 w-3" />
+                                  <WorkflowPlaygroundIcon className="h-3 w-3" />
                                   {formatWorkflowName(
                                     workflow.Workflow.workflow.name,
                                   )}
@@ -644,7 +669,7 @@ function AgentSelection() {
       <TooltipProvider delayDuration={0}>
         <Tooltip>
           <TooltipTrigger asChild>
-            <DropdownMenuTrigger className="bg-gray-350 inline-flex cursor-pointer items-center justify-between gap-1 truncate rounded-xl px-2.5 py-1.5 text-start text-xs font-normal text-gray-50 hover:text-white [&[data-state=open]>.icon]:rotate-180">
+            <DropdownMenuTrigger className="bg-gray-350 inline-flex cursor-pointer items-center justify-between gap-1.5 truncate rounded-xl px-2.5 py-1.5 text-start text-xs font-normal text-gray-50 hover:text-white [&[data-state=open]>.icon]:rotate-180">
               <BotIcon className="mr-1 h-4 w-4" />
               <span>{currentInbox?.agent?.id}</span>
               <ChevronDownIcon className="icon h-3 w-3" />
@@ -704,26 +729,33 @@ function AgentSelection() {
   );
 }
 
-// function WorkflowSelection() {
-//   return (
-//     <TooltipProvider delayDuration={0}>
-//       <Tooltip>
-//         <TooltipTrigger asChild>
-//           <button className="bg-gray-350 inline-flex cursor-pointer items-center justify-between gap-1 truncate rounded-xl px-2.5 py-1.5 text-start text-xs font-normal text-gray-50 hover:text-white [&[data-state=open]>.icon]:rotate-180">
-//             <BotIcon className="mr-1 h-4 w-4" />
-//             <span>{currentInbox?.agent?.id}</span>
-//             <ChevronDownIcon className="icon h-3 w-3" />
-//           </button>
-//         </TooltipTrigger>
-//         <TooltipPortal>
-//           <TooltipContent align="center" className="bg-neutral-900" side="top">
-//             {t('llmProviders.switch')}
-//           </TooltipContent>
-//         </TooltipPortal>
-//       </Tooltip>
-//     </TooltipProvider>
-//   );
-// }
+function WorkflowSelection() {
+  const setWorkflowSelectionDrawerOpen = useWorkflowSelectionStore(
+    (state) => state.setWorkflowSelectionDrawerOpen,
+  );
+
+  return (
+    <TooltipProvider delayDuration={0}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            className="hover:bg-gray-350 flex h-7 w-7 cursor-pointer items-center justify-center gap-1.5 truncate rounded-lg px-2.5 py-1.5 text-left text-xs font-normal text-white hover:text-white [&[data-state=open]>.icon]:rotate-180"
+            onClick={() => {
+              setWorkflowSelectionDrawerOpen(true);
+            }}
+          >
+            <WorkflowPlaygroundIcon className="h-4 w-4" />
+          </button>
+        </TooltipTrigger>
+        <TooltipPortal>
+          <TooltipContent align="center" className="bg-neutral-900" side="top">
+            Add Workflow
+          </TooltipContent>
+        </TooltipPortal>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
 
 export const ConversationHeader = () => {
   const currentInbox = useGetCurrentInbox();

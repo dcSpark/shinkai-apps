@@ -43,7 +43,7 @@ import {
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { PlusIcon, Sparkles, XIcon } from 'lucide-react';
+import { PlusIcon, XIcon } from 'lucide-react';
 import { TreeCheckboxSelectionKeys } from 'primereact/tree';
 import { TreeNode } from 'primereact/treenode';
 import React, { useEffect, useRef, useState } from 'react';
@@ -415,7 +415,7 @@ const CreateJobPage = () => {
                                     }}
                                     type="button"
                                   >
-                                    <Sparkles className="h-3 w-3" />
+                                    <WorkflowPlaygroundIcon className="h-3 w-3" />
                                     {formatWorkflowName(
                                       workflow.Workflow.workflow.name,
                                     )}
@@ -456,7 +456,7 @@ const CreateJobPage = () => {
                           >
                             <div className="space-y-1">
                               <div className="flex items-center gap-2 pr-6">
-                                <WorkflowPlaygroundIcon className="h-3.5 w-3.5" />
+                                <WorkflowPlaygroundIcon className="h-4 w-4" />
                                 <span className="text-gray-80 line-clamp-1 font-medium">
                                   <span className="text-sm text-white">
                                     {formatWorkflowName(workflowSelected.name)}:{' '}
