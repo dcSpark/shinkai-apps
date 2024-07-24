@@ -469,11 +469,7 @@ const ChatConversation = () => {
                                 </div>
                               </TooltipTrigger>
                               <TooltipPortal>
-                                <TooltipContent
-                                  align="center"
-                                  className="bg-neutral-900"
-                                  side="top"
-                                >
+                                <TooltipContent align="center" side="top">
                                   {t('common.uploadFile')}
                                 </TooltipContent>
                               </TooltipPortal>
@@ -527,7 +523,7 @@ const ChatConversation = () => {
                                         <TooltipContent
                                           align="start"
                                           alignOffset={-10}
-                                          className="max-w-[600px] bg-neutral-900"
+                                          className="max-w-[600px]"
                                           side="top"
                                           sideOffset={10}
                                         >
@@ -676,11 +672,7 @@ function AgentSelection() {
             </DropdownMenuTrigger>
           </TooltipTrigger>
           <TooltipPortal>
-            <TooltipContent
-              align="center"
-              className="bg-neutral-900"
-              side="top"
-            >
+            <TooltipContent align="center" side="top">
               {t('llmProviders.switch')}
             </TooltipContent>
           </TooltipPortal>
@@ -748,7 +740,7 @@ function WorkflowSelection() {
           </button>
         </TooltipTrigger>
         <TooltipPortal>
-          <TooltipContent align="center" className="bg-neutral-900" side="top">
+          <TooltipContent align="center" side="top">
             Add Workflow
           </TooltipContent>
         </TooltipPortal>

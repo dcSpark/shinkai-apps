@@ -470,10 +470,10 @@ const CreateJobPage = () => {
                           </TooltipTrigger>
                           <TooltipPortal>
                             <TooltipContent
-                              align="start"
+                              align="end"
                               alignOffset={-10}
-                              className="max-w-[200px]"
-                              side="right"
+                              className="max-w-[420px]"
+                              side="top"
                               sideOffset={18}
                             >
                               {workflowSelected.description}
