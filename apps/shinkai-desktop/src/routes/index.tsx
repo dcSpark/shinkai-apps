@@ -144,7 +144,14 @@ const AppRoutes = () => {
           path="inboxes"
         >
           <Route element={<EmptyMessage />} index />
-          <Route element={<ChatConversation />} path=":inboxId" />
+          <Route
+            element={
+              <WorkflowSelectionProvider>
+                <ChatConversation />
+              </WorkflowSelectionProvider>
+            }
+            path=":inboxId"
+          />
         </Route>
 
         <Route
@@ -226,7 +233,14 @@ const AppRoutes = () => {
             }
             index
           />
-          <Route element={<ChatConversation />} path=":inboxId" />
+          <Route
+            element={
+              <WorkflowSelectionProvider>
+                <ChatConversation />
+              </WorkflowSelectionProvider>
+            }
+            path=":inboxId"
+          />
         </Route>
         <Route
           element={
