@@ -11,6 +11,7 @@ export type SendMessageWithFilesToInboxInput = CredentialsPayload & {
   message: string;
   inboxId: string;
   workflow?: string;
+  workflowName?: string;
   files: File[];
 };
 export type SendMessageWithFilesToInboxOutput = {

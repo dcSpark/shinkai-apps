@@ -149,6 +149,7 @@ export const sendTextMessageWithFilesForInbox = async (
   files: File[],
   setupDetailsState: CredentialsPayload,
   workflow: string | undefined,
+  workflowName: string | undefined,
 ): Promise<{ inboxId: string; message: ShinkaiMessage }> => {
   const fileUploader = new FileUploader(
     nodeAddress,
@@ -160,7 +161,7 @@ export const sendTextMessageWithFilesForInbox = async (
     sender_subidentity,
     receiver,
     workflow,
-    undefined,
+    workflowName,
   );
 
   await fileUploader.createFolder();
