@@ -92,6 +92,7 @@ export const createJob = async ({
           profile_identity_sk,
         },
         workflow,
+        workflowName,
       )
     : await sendMessageToJob(
         nodeAddress,

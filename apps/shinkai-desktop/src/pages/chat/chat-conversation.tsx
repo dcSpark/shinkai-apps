@@ -234,7 +234,10 @@ const ChatConversation = () => {
       },
     });
 
-  const { file } = chatForm.watch();
+  const currentFile = useWatch({
+    control: chatForm.control,
+    name: 'file',
+  });
 
   const {
     data,
@@ -327,6 +330,9 @@ const ChatConversation = () => {
     setMessageContent(''); // trick to clear the ws stream message
     if (!auth || data.message.trim() === '') return;
     fromPreviousMessagesRef.current = false;
+    const workflowVersion = workflowSelected?.version;
+    const workflowName = workflowSelected?.name;
+
     if (data.file) {
       await sendTextMessageWithFilesForInbox({
         nodeAddress: auth?.node_address ?? '',
@@ -335,7 +341,10 @@ const ChatConversation = () => {
         receiver: auth.shinkai_identity,
         message: data.message,
         inboxId: inboxId,
-        files: [file],
+        files: [currentFile],
+        workflowName: workflowSelected
+          ? `${workflowName}:::${workflowVersion}`
+          : undefined,
         my_device_encryption_sk: auth.my_device_encryption_sk,
         my_device_identity_sk: auth.my_device_identity_sk,
         node_encryption_pk: auth.node_encryption_pk,
@@ -348,8 +357,7 @@ const ChatConversation = () => {
 
     if (isJobInbox(inboxId)) {
       const jobId = extractJobIdFromInbox(inboxId);
-      const workflowVersion = workflowSelected?.version;
-      const workflowName = workflowSelected?.name;
+
       await sendMessageToJob({
         nodeAddress: auth.node_address,
         jobId: jobId,
@@ -390,6 +398,7 @@ const ChatConversation = () => {
 
   useEffect(() => {
     chatForm.reset();
+    setWorkflowSelected(undefined);
   }, [chatForm, inboxId]);
 
   const isLimitReachedErrorLastMessage = useMemo(() => {
@@ -401,6 +410,18 @@ const ChatConversation = () => {
     );
     return errorCode === ErrorCodes.ShinkaiBackendInferenceLimitReached;
   }, [data?.pages]);
+
+  const isWorkflowSelectedAndFilesPresent =
+    workflowSelected && currentFile !== undefined;
+
+  useEffect(() => {
+    if (isWorkflowSelectedAndFilesPresent) {
+      chatForm.setValue(
+        'message',
+        `${formatWorkflowName(workflowSelected.name)} - ${workflowSelected.description}`,
+      );
+    }
+  }, [chatForm, isWorkflowSelectedAndFilesPresent, workflowSelected]);
 
   return (
     <div className="flex max-h-screen flex-1 flex-col overflow-hidden pt-2">
@@ -482,7 +503,7 @@ const ChatConversation = () => {
                           autoFocus
                           bottomAddons={
                             <Button
-                              className="h-[40px] w-[40px] self-end rounded-xl p-3"
+                              className="hover:bg-app-gradient h-[40px] w-[40px] self-end rounded-xl bg-gray-500 p-3 disabled:bg-gray-100"
                               disabled={isLoadingMessage}
                               onClick={chatForm.handleSubmit(onSubmit)}
                               size="icon"
@@ -494,7 +515,10 @@ const ChatConversation = () => {
                               </span>
                             </Button>
                           }
-                          disabled={isLoadingMessage}
+                          disabled={
+                            isLoadingMessage ||
+                            isWorkflowSelectedAndFilesPresent
+                          }
                           // isLoading={isLoadingMessage}
                           onChange={field.onChange}
                           onSubmit={chatForm.handleSubmit(onSubmit)}
@@ -522,9 +546,9 @@ const ChatConversation = () => {
                                       </TooltipTrigger>
                                       <TooltipPortal>
                                         <TooltipContent
-                                          align="start"
+                                          align="end"
                                           alignOffset={-10}
-                                          className="max-w-[600px]"
+                                          className="max-w-[400px]"
                                           side="top"
                                           sideOffset={10}
                                         >
@@ -544,23 +568,23 @@ const ChatConversation = () => {
                                   </button>
                                 </div>
                               )}
-                              {file && (
+                              {currentFile && (
                                 <div className="relative mt-1 flex min-w-[180px] max-w-[220px] items-center gap-2 self-start rounded-lg border border-gray-200 px-2 py-2.5">
-                                  {getFileExt(file?.name) &&
-                                  fileIconMap[getFileExt(file?.name)] ? (
+                                  {getFileExt(currentFile?.name) &&
+                                  fileIconMap[getFileExt(currentFile?.name)] ? (
                                     <FileTypeIcon
                                       className="text-gray-80 h-7 w-7 shrink-0"
-                                      type={getFileExt(file?.name)}
+                                      type={getFileExt(currentFile?.name)}
                                     />
                                   ) : (
                                     <Paperclip className="text-gray-80 h-4 w-4 shrink-0" />
                                   )}
                                   <div className="space-y-1">
                                     <span className="line-clamp-1 break-all text-left text-xs">
-                                      {file?.name}
+                                      {currentFile?.name}
                                     </span>
                                     <span className="line-clamp-1 break-all text-left text-xs text-gray-100">
-                                      {size(file?.size)}
+                                      {size(currentFile?.size)}
                                     </span>
                                   </div>
                                   <button
