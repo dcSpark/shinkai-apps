@@ -229,7 +229,7 @@ const AppRoutes = () => {
         <Route
           element={
             <ProtectedRoute>
-              <WorkflowPlayground />
+              <WorkflowTable />
             </ProtectedRoute>
           }
           path="workflow-playground"
