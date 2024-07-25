@@ -275,11 +275,16 @@ const CreateJobPage = () => {
     control: createJobForm.control,
     name: 'content',
   });
+  const currentFiles = useWatch({
+    control: createJobForm.control,
+    name: 'files',
+  });
 
   const debounceMessage = useDebounce(currentMessage, 500);
 
   const isWorkflowSelectedAndFilesPresent =
-    workflowSelected && Object.keys(selectedKeys ?? {}).length > 0;
+    workflowSelected &&
+    (Object.keys(selectedKeys ?? {}).length > 0 || currentFiles?.length > 0);
 
   const {
     data: workflowRecommendations,
