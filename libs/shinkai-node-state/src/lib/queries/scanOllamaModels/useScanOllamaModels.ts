@@ -38,7 +38,14 @@ export const useScanOllamaModels = (
         shinkaiIdentity,
         credentials,
       );
-      return response;
+
+      // TODO: temporary fix until shinkai node is updated
+      const uniqueModels = response.filter(
+        (model, index, self) =>
+          index === self.findIndex((t) => t.model === model.model),
+      );
+
+      return uniqueModels;
     },
     ...options,
   });
