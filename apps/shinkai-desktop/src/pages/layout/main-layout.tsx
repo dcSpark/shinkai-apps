@@ -27,7 +27,6 @@ import {
   FilesIcon,
   InboxIcon,
   MySubscriptionsIcon,
-  WorkflowPlaygroundIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion, TargetAndTransition } from 'framer-motion';
@@ -273,9 +272,40 @@ export function MainNav() {
       icon: <MySubscriptionsIcon className="h-5 w-5" />,
     },
     optInExperimental && {
-      title: t('layout.menuItems.workflowPlayground'),
+      title: 'Shinkai Sheet',
       href: '/workflow-playground',
-      icon: <WorkflowPlaygroundIcon className="h-5 w-5" />,
+      icon: (
+        <svg
+          className="h-5 w-5"
+          color="currentColor"
+          fill="none"
+          height="24"
+          viewBox="0 0 24 24"
+          width="24"
+        >
+          <path
+            d="M11.0343 2.24513L3.68134 6.11508C2.96901 6.49 2.96901 7.51 3.68134 7.88492L11.0343 11.7549C11.3258 11.9083 11.6742 11.9083 11.9657 11.7549L19.3187 7.88492C20.031 7.51 20.031 6.49 19.3187 6.11508L11.9657 2.24513C11.6742 2.09169 11.3258 2.09169 11.0343 2.24513Z"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="1.5"
+          />
+          <path
+            d="M3 11L2.95978 11.0402C2.48334 11.5167 2.60489 12.3184 3.20116 12.6322L11.0343 16.7549C11.3258 16.9084 11.6742 16.9084 11.9657 16.7549L19.7988 12.6322C20.3951 12.3184 20.5167 11.5167 20.0402 11.0402L20 11"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="1.5"
+          />
+          <path
+            d="M3 16L2.95978 16.0402C2.48334 16.5167 2.60489 17.3184 3.20116 17.6322L11.0343 21.7549C11.3258 21.9084 11.6742 21.9084 11.9657 21.7549L19.7988 17.6322C20.3951 17.3184 20.5167 16.5167 20.0402 16.0402L20 16"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="1.5"
+          />
+        </svg>
+      ),
     },
   ].filter(Boolean) as NavigationLink[];
 

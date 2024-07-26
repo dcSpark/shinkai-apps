@@ -6,19 +6,17 @@ import {
   Textarea,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-// import { Row } from '@tanstack/react-table';
-import { TextIcon } from 'lucide-react';
+import { Row } from '@tanstack/react-table';
 import React from 'react';
 
 interface DataTableCellProps<TData>
   extends React.HTMLAttributes<HTMLDivElement> {
-  // row: Row<TData>;
+  row: Row<TData>;
   title: string;
   value: string;
 }
 
 export function DataTableCell<TData>({
-  // row,
   value,
   className,
 }: DataTableCellProps<TData>) {
@@ -27,19 +25,27 @@ export function DataTableCell<TData>({
       <Popover>
         <PopoverTrigger asChild>
           <Button
-            className="-ml-1.5 flex h-8 w-full justify-start gap-1.5 truncate rounded-lg bg-transparent px-2 pr-0 hover:bg-gray-300 data-[state=open]:bg-gray-300"
+            className="-ml-1.5 flex h-8 w-full justify-start gap-1.5 rounded-lg bg-transparent px-2 py-1 pr-0 hover:bg-gray-300"
             size="sm"
             variant="ghost"
           >
-            <TextIcon className="h-3.5 w-3.5 shrink-0" />
-            <span className="flex-1 truncate text-left">{value}</span>
+            <span className="line-clamp-1 flex-1 text-left text-gray-50">
+              {value}
+            </span>
           </Button>
         </PopoverTrigger>
         <PopoverContent
           align="start"
-          className="flex flex-col bg-gray-300 px-0 py-2 text-xs"
+          className="flex flex-col bg-gray-300 p-0 text-xs"
+          side="bottom"
+          sideOffset={-32}
         >
-          <Textarea value={value} />
+          <Textarea
+            autoFocus
+            className="placeholder-gray-80 border-brand focus-visible:ring-brand !min-h-[80px] resize-none bg-gray-500 pl-2 pt-2 text-xs"
+            placeholder="Enter prompt"
+            value={value}
+          />
         </PopoverContent>
       </Popover>
     </div>

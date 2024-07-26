@@ -5,7 +5,7 @@ import { SubpageLayout } from './layout/simple-layout';
 
 const WorkflowTable = () => {
   return (
-    <SubpageLayout className="max-w-6xl px-3 pb-0" title={'Workflow AI Table'}>
+    <SubpageLayout className="max-w-6xl px-3 pb-0" title={'Shinkai Sheet'}>
       <DataTable columns={columns} data={topProductivityBooks} />
     </SubpageLayout>
   );

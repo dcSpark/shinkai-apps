@@ -76,10 +76,10 @@ export function DataTableColumnHeader<TData, TValue>({
               <ChevronRight className="text-gray-80 h-3.5 w-3.5" />
             </div>
           </button>
-          <div className="flex justify-between gap-2 px-3 py-2">
+          <div className="flex justify-between gap-2 px-2 py-2">
             <Textarea
               autoFocus
-              className="placeholder-gray-80 !min-h-[100px] resize-none bg-gray-500 pl-2 pt-2 text-xs"
+              className="placeholder-gray-80 !min-h-[100px] resize-none bg-gray-200 pl-2 pt-2 text-xs"
               placeholder="Enter prompt"
             />
           </div>
@@ -88,7 +88,7 @@ export function DataTableColumnHeader<TData, TValue>({
             <EyeOff className="h-3.5 w-3.5" />
             <span className="">Hide Property</span>
           </button>
-          <button className="flex justify-start gap-2 rounded-lg px-3 py-2 text-white transition-colors hover:bg-gray-500">
+          <button className="flex justify-start gap-2 rounded-lg px-3 py-2 text-red-400 transition-colors hover:bg-gray-500">
             <Trash className="h-3.5 w-3.5" />
             <span className="">Delete Property</span>
           </button>

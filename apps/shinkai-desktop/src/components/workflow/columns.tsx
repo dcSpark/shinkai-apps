@@ -1,4 +1,5 @@
 import { Checkbox } from '@shinkai_network/shinkai-ui';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { ColumnDef } from '@tanstack/react-table';
 
 import { DataTableCell } from './data-table-cell';
@@ -11,7 +12,7 @@ export const columns: ColumnDef<Book>[] = [
     id: 'select',
     maxSize: 50,
     header: ({ table }) => (
-      <div className="h-full py-1.5">
+      <div className="flex items-center justify-center" py-2>
         <Checkbox
           aria-label="Select all"
           checked={
@@ -23,11 +24,25 @@ export const columns: ColumnDef<Book>[] = [
       </div>
     ),
     cell: ({ row }) => (
-      <Checkbox
-        aria-label="Select row"
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-      />
+      <div className="group flex items-center justify-center py-2">
+        <Checkbox
+          aria-label="Select row"
+          checked={row.getIsSelected()}
+          className={cn(
+            'hidden group-hover:block',
+            row.getIsSelected() && 'block',
+          )}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+        />
+        <span
+          className={cn(
+            'text-gray-80 block group-hover:hidden',
+            row.getIsSelected() && 'hidden',
+          )}
+        >
+          {row.index + 1}
+        </span>
+      </div>
     ),
     enableHiding: false,
   },
