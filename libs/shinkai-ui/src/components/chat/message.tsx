@@ -10,6 +10,7 @@ import { z } from 'zod';
 
 import { appIcon } from '../../assets';
 import { ChatConversationMessage, copyToClipboard } from '../../helpers';
+import { useMeasure } from '../../hooks/use-measure';
 import { cn } from '../../utils';
 import { Avatar, AvatarFallback, AvatarImage } from '../avatar';
 import { Button } from '../button';
@@ -87,6 +88,7 @@ export const Message = ({
   handleEditMessage,
 }: MessageProps) => {
   const { t } = useTranslation();
+  const [rowElementRef, { width: rowWidth }] = useMeasure();
 
   const [editing, setEditing] = useState(false);
   const editMessageForm = useForm<EditMessageFormSchema>({
@@ -117,6 +119,7 @@ export const Message = ({
             ? 'ml-auto mr-0 flex-row-reverse space-x-reverse'
             : 'ml-0 mr-auto flex-row items-end',
         )}
+        ref={rowElementRef}
       >
         <Avatar className="h-8 w-8">
           {message.isLocal ? (
@@ -277,25 +280,37 @@ export const Message = ({
                 </motion.div>
               )}
               {message.content ? (
-                <MarkdownPreview
-                  components={{
-                    a: ({ node, ...props }) => (
-                      // eslint-disable-next-line jsx-a11y/anchor-has-content
-                      <a {...props} target="_blank" />
-                    ),
+                <div
+                  style={{
+                    maxWidth: rowWidth ? `${rowWidth - 64}px` : 'auto', // 32 (avatar) + 32 (inner/outer padding)
+                    overflow: 'hidden',
                   }}
-                  source={
-                    isPending
-                      ? extractErrorPropertyOrContent(
-                          message.content,
-                          'error_message',
-                        ) + ' ...'
-                      : extractErrorPropertyOrContent(
-                          message.content,
-                          'error_message',
-                        )
-                  }
-                />
+                >
+                  <MarkdownPreview
+                    components={{
+                      a: ({ node, ...props }) => (
+                        // eslint-disable-next-line jsx-a11y/anchor-has-content
+                        <a {...props} target="_blank" />
+                      ),
+                      table: ({ node, ...props }) => (
+                        <div className="size-full overflow-x-auto">
+                          <table className="w-full" {...props} />
+                        </div>
+                      ),
+                    }}
+                    source={
+                      isPending
+                        ? extractErrorPropertyOrContent(
+                            message.content,
+                            'error_message',
+                          ) + ' ...'
+                        : extractErrorPropertyOrContent(
+                            message.content,
+                            'error_message',
+                          )
+                    }
+                  />
+                </div>
               ) : (
                 <DotsLoader className="pt-1" />
               )}
