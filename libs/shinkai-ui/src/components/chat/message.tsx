@@ -4,12 +4,13 @@ import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { Edit3, RotateCcw } from 'lucide-react';
 import { InfoCircleIcon } from 'primereact/icons/infocircle';
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { appIcon } from '../../assets';
 import { ChatConversationMessage, copyToClipboard } from '../../helpers';
+import { useMeasure } from '../../hooks/use-measure';
 import { cn } from '../../utils';
 import { Avatar, AvatarFallback, AvatarImage } from '../avatar';
 import { Button } from '../button';
@@ -48,7 +49,7 @@ type MessageProps = {
   handleRetryMessage?: () => void;
   disabledRetry?: boolean;
   disabledEdit?: boolean;
-  handleEditMessage?: (message: string) => void;
+  handleEditMessage?: (message: string, workflowName?: string) => void;
 };
 
 const actionBar = {
@@ -87,6 +88,7 @@ export const Message = ({
   handleEditMessage,
 }: MessageProps) => {
   const { t } = useTranslation();
+  const [rowElementRef, { width: rowWidth }] = useMeasure();
 
   const [editing, setEditing] = useState(false);
   const editMessageForm = useForm<EditMessageFormSchema>({
@@ -99,9 +101,13 @@ export const Message = ({
   const { message: currentMessage } = editMessageForm.watch();
 
   const onSubmit = async (data: z.infer<typeof editMessageFormSchema>) => {
-    handleEditMessage?.(data.message);
+    handleEditMessage?.(data.message, message.workflowName);
     setEditing(false);
   };
+
+  useEffect(() => {
+    editMessageForm.reset({ message: message.content });
+  }, [editMessageForm, message.content]);
 
   return (
     <motion.div
@@ -117,6 +123,7 @@ export const Message = ({
             ? 'ml-auto mr-0 flex-row-reverse space-x-reverse'
             : 'ml-0 mr-auto flex-row items-end',
         )}
+        ref={rowElementRef}
       >
         <Avatar className="h-8 w-8">
           {message.isLocal ? (
@@ -176,6 +183,7 @@ export const Message = ({
                         }
                         onChange={field.onChange}
                         onSubmit={editMessageForm.handleSubmit(onSubmit)}
+                        setInitialValue={message.content}
                         value={field.value}
                       />
                     )}
@@ -277,25 +285,37 @@ export const Message = ({
                 </motion.div>
               )}
               {message.content ? (
-                <MarkdownPreview
-                  components={{
-                    a: ({ node, ...props }) => (
-                      // eslint-disable-next-line jsx-a11y/anchor-has-content
-                      <a {...props} target="_blank" />
-                    ),
+                <div
+                  style={{
+                    maxWidth: rowWidth ? `${rowWidth - 64}px` : 'auto', // 32 (avatar) + 32 (inner/outer padding)
+                    overflow: 'hidden',
                   }}
-                  source={
-                    isPending
-                      ? extractErrorPropertyOrContent(
-                          message.content,
-                          'error_message',
-                        ) + ' ...'
-                      : extractErrorPropertyOrContent(
-                          message.content,
-                          'error_message',
-                        )
-                  }
-                />
+                >
+                  <MarkdownPreview
+                    components={{
+                      a: ({ node, ...props }) => (
+                        // eslint-disable-next-line jsx-a11y/anchor-has-content
+                        <a {...props} target="_blank" />
+                      ),
+                      table: ({ node, ...props }) => (
+                        <div className="size-full overflow-x-auto">
+                          <table className="w-full" {...props} />
+                        </div>
+                      ),
+                    }}
+                    source={
+                      isPending
+                        ? extractErrorPropertyOrContent(
+                            message.content,
+                            'error_message',
+                          ) + ' ...'
+                        : extractErrorPropertyOrContent(
+                            message.content,
+                            'error_message',
+                          )
+                    }
+                  />
+                </div>
               ) : (
                 <DotsLoader className="pt-1" />
               )}
@@ -306,7 +326,7 @@ export const Message = ({
                 />
               )}
               {!!message.workflowName && (
-                <div className="mt-2 flex items-center gap-1.5 border-t pt-2">
+                <div className="mt-2 flex items-center gap-1.5 border-t pt-1.5">
                   <span className="text-gray-80 text-xs">Workflow:</span>
                   <span className="text-gray-80 text-xs">
                     {message.workflowName}

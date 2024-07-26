@@ -199,22 +199,22 @@ const VectorFsFolder = ({
               },
             },
           ]
-            .filter((item) => item !== false)
+            .filter((item) => !!item)
             .map((option, idx) => (
-              <React.Fragment key={option.name}>
+              <React.Fragment key={option?.name}>
                 {(idx === 3 || idx === 5 || idx === 2) && (
                   <DropdownMenuSeparator className="bg-gray-300" />
                 )}
                 <DropdownMenuItem
-                  key={option.name}
+                  key={option?.name}
                   onClick={(event) => {
                     event.stopPropagation();
-                    option.onClick();
+                    option?.onClick();
                     setSelectedFolder(folder);
                   }}
                 >
-                  {option.icon}
-                  {option.name}
+                  {option?.icon}
+                  {option?.name}
                 </DropdownMenuItem>
               </React.Fragment>
             ))}
