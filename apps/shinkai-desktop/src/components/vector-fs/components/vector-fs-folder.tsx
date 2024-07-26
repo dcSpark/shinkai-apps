@@ -237,7 +237,7 @@ const VectorFsFolder = ({
               },
             },
           ]
-            .filter((item) => item !== false)
+            .filter((item) => !!item)
             .map((option, idx) => (
               <React.Fragment key={option.name}>
                 {(idx === 3 || idx === 5 || idx === 2) && (
