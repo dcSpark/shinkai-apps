@@ -508,7 +508,7 @@ const ChatConversation = () => {
                           autoFocus
                           bottomAddons={
                             <Button
-                              className="hover:bg-app-gradient h-[40px] w-[40px] self-end rounded-xl bg-gray-500 p-3 disabled:bg-gray-100"
+                              className="hover:bg-app-gradient h-[40px] w-[40px] self-end rounded-xl bg-gray-500 p-3 disabled:cursor-not-allowed"
                               disabled={isLoadingMessage}
                               onClick={chatForm.handleSubmit(onSubmit)}
                               size="icon"
