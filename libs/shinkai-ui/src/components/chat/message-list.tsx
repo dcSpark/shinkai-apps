@@ -52,7 +52,11 @@ export const MessageList = ({
       Error
     >
   >;
-  regenerateMessage: (content: string, messageHash: string) => void;
+  regenerateMessage: (
+    content: string,
+    messageHash: string,
+    workflowName?: string,
+  ) => void;
   containerClassName?: string;
   lastMessageContent: string;
   isLoadingMessage: boolean | undefined;
@@ -236,12 +240,17 @@ export const MessageList = ({
                             regenerateMessage(
                               previousMessage.content,
                               grandparentHash ?? '',
+                              previousMessage.workflowName,
                             );
                           };
-                          const handleEditMessage = (message: string) => {
+                          const handleEditMessage = (
+                            message: string,
+                            workflowName?: string,
+                          ) => {
                             regenerateMessage(
                               message,
                               previousMessage?.hash ?? '',
+                              workflowName,
                             );
                           };
                           return (

@@ -304,7 +304,11 @@ const ChatConversation = () => {
       },
     });
 
-  const regenerateMessage = async (content: string, parentHash: string) => {
+  const regenerateMessage = async (
+    content: string,
+    parentHash: string,
+    workflowName?: string,
+  ) => {
     setMessageContent(''); // trick to clear the ws stream message
     if (!auth) return;
     const decodedInboxId = decodeURIComponent(inboxId);
@@ -316,6 +320,7 @@ const ChatConversation = () => {
       message: content,
       files_inbox: '',
       parent: parentHash,
+      workflowName,
       shinkaiIdentity: auth.shinkai_identity,
       profile: auth.profile,
       my_device_encryption_sk: auth.my_device_encryption_sk,

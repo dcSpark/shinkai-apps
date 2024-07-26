@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { Edit3, RotateCcw } from 'lucide-react';
 import { InfoCircleIcon } from 'primereact/icons/infocircle';
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -49,7 +49,7 @@ type MessageProps = {
   handleRetryMessage?: () => void;
   disabledRetry?: boolean;
   disabledEdit?: boolean;
-  handleEditMessage?: (message: string) => void;
+  handleEditMessage?: (message: string, workflowName?: string) => void;
 };
 
 const actionBar = {
@@ -101,9 +101,13 @@ export const Message = ({
   const { message: currentMessage } = editMessageForm.watch();
 
   const onSubmit = async (data: z.infer<typeof editMessageFormSchema>) => {
-    handleEditMessage?.(data.message);
+    handleEditMessage?.(data.message, message.workflowName);
     setEditing(false);
   };
+
+  useEffect(() => {
+    editMessageForm.reset({ message: message.content });
+  }, [editMessageForm, message.content]);
 
   return (
     <motion.div
@@ -179,6 +183,7 @@ export const Message = ({
                         }
                         onChange={field.onChange}
                         onSubmit={editMessageForm.handleSubmit(onSubmit)}
+                        setInitialValue={message.content}
                         value={field.value}
                       />
                     )}
@@ -321,7 +326,7 @@ export const Message = ({
                 />
               )}
               {!!message.workflowName && (
-                <div className="mt-2 flex items-center gap-1.5 border-t pt-2">
+                <div className="mt-2 flex items-center gap-1.5 border-t pt-1.5">
                   <span className="text-gray-80 text-xs">Workflow:</span>
                   <span className="text-gray-80 text-xs">
                     {message.workflowName}
