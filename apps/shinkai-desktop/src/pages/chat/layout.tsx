@@ -23,6 +23,7 @@ import {
   Input,
   ScrollArea,
   Separator,
+  Skeleton,
   Tabs,
   TabsContent,
   TabsList,
@@ -306,7 +307,7 @@ const ChatLayout = () => {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
-  const { inboxes } = useGetInboxes(
+  const { inboxes, isPending, isSuccess } = useGetInboxes(
     {
       nodeAddress: auth?.node_address ?? '',
       sender: auth?.shinkai_identity ?? '',
@@ -347,94 +348,107 @@ const ChatLayout = () => {
   }, [inboxes]);
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      {inboxes.length > 0 ? (
-        <>
-          <div className="flex h-full max-w-[280px] flex-[280px] shrink-0 flex-col px-2 py-4">
-            <div className="mb-4 flex items-center justify-between gap-2 px-2">
-              <h2>{t('chat.chats')}</h2>
-              <TooltipProvider delayDuration={0}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      className="h-8 w-8"
-                      onClick={() => {
-                        navigate('/create-job');
-                      }}
-                      size="icon"
-                      variant="ghost"
-                    >
-                      <CreateAIIcon className="h-4 w-4 shrink-0" />
-                      <span className="sr-only">{t('chat.create')}</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipPortal>
-                    <TooltipContent>
-                      <p>{t('chat.create')}</p>
-                    </TooltipContent>
-                  </TooltipPortal>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-            <ScrollArea>
-              <Tabs defaultValue="actives">
-                <TabsList className="grid w-full grid-cols-2 bg-transparent">
-                  <TabsTrigger
-                    className="flex items-center gap-1.5"
-                    value="actives"
-                  >
-                    <ActiveIcon className="h-4 w-4" />
-                    {t('chat.actives.label')}
-                  </TabsTrigger>
-                  <TabsTrigger
-                    className="flex items-center gap-1.5"
-                    value="archives"
-                  >
-                    <ArchiveIcon className="h-4 w-4" />
-                    {t('chat.archives.label')}
-                  </TabsTrigger>
-                </TabsList>
-                <TabsContent value="actives">
-                  <div className="space-y-1">
-                    {activesInboxes?.length > 0 ? (
-                      activesInboxes.map((inbox) => (
-                        <MessageButton
-                          inbox={inbox}
-                          key={inbox.inbox_id}
-                          to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
-                        />
-                      ))
-                    ) : (
-                      <p className="text-gray-80 py-3 text-center text-sm">
-                        {t('chat.actives.notFound')}{' '}
-                      </p>
-                    )}
-                  </div>
-                </TabsContent>
-                <TabsContent value="archives">
-                  <div className="space-y-1">
-                    {archivesInboxes.length > 0 ? (
-                      archivesInboxes.map((inbox) => (
-                        <MessageButton
-                          inbox={inbox}
-                          isArchivedMessage
-                          key={inbox.inbox_id}
-                          to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
-                        />
-                      ))
-                    ) : (
-                      <p className="text-gray-80 py-3 text-center text-sm">
-                        {t('chat.archives.notFound')}{' '}
-                      </p>
-                    )}
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </ScrollArea>
-          </div>
-          <Separator orientation="vertical" />
-        </>
-      ) : null}
+    <div className={cn('grid h-screen w-full grid-cols-[280px_1px_1fr]')}>
+      <div className="flex h-full flex-col px-2 py-4">
+        <div className="mb-4 flex items-center justify-between gap-2 px-2">
+          <h2>{t('chat.chats')}</h2>
+          <TooltipProvider delayDuration={0}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  className="h-8 w-8"
+                  onClick={() => {
+                    navigate('/create-job');
+                  }}
+                  size="icon"
+                  variant="ghost"
+                >
+                  <CreateAIIcon className="h-4 w-4 shrink-0" />
+                  <span className="sr-only">{t('chat.create')}</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipPortal>
+                <TooltipContent>
+                  <p>{t('chat.create')}</p>
+                </TooltipContent>
+              </TooltipPortal>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+        <ScrollArea>
+          <Tabs defaultValue="actives">
+            <TabsList className="grid w-full grid-cols-2 bg-transparent">
+              <TabsTrigger
+                className="flex items-center gap-1.5"
+                value="actives"
+              >
+                <ActiveIcon className="h-4 w-4" />
+                {t('chat.actives.label')}
+              </TabsTrigger>
+              <TabsTrigger
+                className="flex items-center gap-1.5"
+                value="archives"
+              >
+                <ArchiveIcon className="h-4 w-4" />
+                {t('chat.archives.label')}
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="actives">
+              <div className="space-y-1">
+                {isPending &&
+                  Array.from({ length: 5 }).map((_, index) => (
+                    <Skeleton
+                      className="h-11 w-full shrink-0 rounded-md bg-gray-300"
+                      key={index}
+                    />
+                  ))}
+
+                {isSuccess &&
+                  activesInboxes?.length > 0 &&
+                  activesInboxes.map((inbox) => (
+                    <MessageButton
+                      inbox={inbox}
+                      key={inbox.inbox_id}
+                      to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
+                    />
+                  ))}
+                {isSuccess && activesInboxes?.length === 0 && (
+                  <p className="text-gray-80 py-3 text-center text-xs">
+                    {t('chat.actives.notFound')}{' '}
+                  </p>
+                )}
+              </div>
+            </TabsContent>
+            <TabsContent value="archives">
+              <div className="space-y-1">
+                {isPending &&
+                  Array.from({ length: 5 }).map((_, index) => (
+                    <Skeleton
+                      className="h-11 w-full shrink-0 rounded-md bg-gray-300"
+                      key={index}
+                    />
+                  ))}
+                {isSuccess &&
+                  archivesInboxes.length > 0 &&
+                  archivesInboxes.map((inbox) => (
+                    <MessageButton
+                      inbox={inbox}
+                      isArchivedMessage
+                      key={inbox.inbox_id}
+                      to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
+                    />
+                  ))}
+                {isSuccess && archivesInboxes?.length === 0 && (
+                  <p className="text-gray-80 py-3 text-center text-xs">
+                    {t('chat.archives.notFound')}{' '}
+                  </p>
+                )}
+              </div>
+            </TabsContent>
+          </Tabs>
+        </ScrollArea>
+      </div>
+      <Separator orientation="vertical" />
       <Outlet />
     </div>
   );
