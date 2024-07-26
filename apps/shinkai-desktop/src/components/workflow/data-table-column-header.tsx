@@ -32,12 +32,12 @@ export function DataTableColumnHeader<TData, TValue>({
       <Popover>
         <PopoverTrigger asChild>
           <Button
-            className="-ml-1.5 flex h-8 w-full justify-start gap-1.5 truncate rounded-lg bg-transparent px-2 pr-0 hover:bg-gray-300 data-[state=open]:bg-gray-300"
+            className="-ml-1.5 line-clamp-1 flex h-8 w-full justify-start gap-1.5 rounded-lg bg-transparent px-2 pr-0 hover:bg-gray-300 data-[state=open]:bg-gray-300"
             size="sm"
             variant="ghost"
           >
             <TextIcon className="h-3.5 w-3.5 shrink-0" />
-            <span className="flex-1 truncate text-left">{title}</span>
+            <span className="flex-1 text-left">{title}</span>
           </Button>
         </PopoverTrigger>
         <PopoverContent
