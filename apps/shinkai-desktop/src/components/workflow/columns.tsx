@@ -12,7 +12,7 @@ export const columns: ColumnDef<Book>[] = [
     id: 'select',
     maxSize: 50,
     header: ({ table }) => (
-      <div className="flex items-center justify-center" py-2>
+      <div className="flex items-center justify-center">
         <Checkbox
           aria-label="Select all"
           checked={

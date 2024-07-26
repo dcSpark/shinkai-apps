@@ -73,7 +73,7 @@ export default function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="user-none relative h-[calc(100dvh-120px)] overflow-hidden rounded-lg shadow-sm">
+    <div className="relative h-[calc(100dvh-120px)] overflow-hidden rounded-lg shadow-sm">
       <div className="flex size-full max-w-[calc(100vw-100px)] flex-col space-y-4 overflow-hidden">
         <DataTableToolbar table={table} />
         <div className="scrollbar-thin relative flex size-full h-full flex-col overflow-auto">
@@ -114,7 +114,7 @@ export default function DataTable<TData, TValue>({
                               className={cn(
                                 'user-none hover:bg-gray-80 invisible absolute right-1 top-2.5 h-[20px] min-w-1 shrink-0 cursor-col-resize touch-none rounded-lg bg-gray-100 hover:bg-gray-100 group-hover:visible',
                                 header.column.getIsResizing() &&
-                                  'bg-brand-500 visible top-0 h-[calc(100dvh-240px)] min-w-[3px]',
+                                  'bg-brand-500 visible top-0 h-[calc(100dvh-250px)] min-w-[3px]',
                               )}
                               {...{
                                 onDoubleClick: () => header.column.resetSize(),
