@@ -6,7 +6,6 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
 } from '@shinkai_network/shinkai-ui';
 import { Table } from '@tanstack/react-table';
 
@@ -26,17 +25,16 @@ export function DataTableViewOptions<TData>({
           variant="outline"
         >
           <MixerHorizontalIcon className="mr-2 h-4 w-4" />
-          {'See Columns'}
+          View
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
-        className="w-[160px] bg-gray-300 text-gray-50"
+        className="w-[160px] bg-gray-300 p-0 px-2 py-2.5 text-gray-50"
       >
-        <DropdownMenuLabel className="text-gray-80 text-xs">
-          {'Edit Columns'}
+        <DropdownMenuLabel className="text-gray-80 mb-2 px-2 text-xs">
+          Visible
         </DropdownMenuLabel>
-        <DropdownMenuSeparator className="bg-gray-300" />
         {table
           .getAllColumns()
           .filter(
@@ -47,7 +45,7 @@ export function DataTableViewOptions<TData>({
             return (
               <DropdownMenuCheckboxItem
                 checked={column.getIsVisible()}
-                className="capitalize"
+                className="text-xs capitalize"
                 key={column.id}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
               >

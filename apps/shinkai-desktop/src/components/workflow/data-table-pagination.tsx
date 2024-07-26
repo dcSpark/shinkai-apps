@@ -36,7 +36,7 @@ export function DataTablePagination<TData>({
             }}
             value={`${table.getState().pagination.pageSize}`}
           >
-            <SelectTrigger className="h-8 w-[70px]">
+            <SelectTrigger className="flex !h-[40px] h-8 w-[70px] items-center px-2.5 py-0 [&>svg]:top-3">
               <SelectValue placeholder={table.getState().pagination.pageSize} />
             </SelectTrigger>
             <SelectContent side="top">
