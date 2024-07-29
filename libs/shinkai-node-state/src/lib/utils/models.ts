@@ -3,6 +3,7 @@ export enum Models {
   TogetherComputer = 'togethercomputer',
   Ollama = 'ollama',
   Gemini = 'gemini',
+  Exo = 'exo',
 }
 
 export const modelsConfig = {
@@ -71,6 +72,15 @@ export const modelsConfig = {
       {
         name: 'Gemini 1.5 Pro',
         value: 'gemini-1.5-pro',
+      },
+    ],
+  },
+  [Models.Exo]: {
+    apiUrl: 'http://localhost:8000',
+    modelTypes: [
+      {
+        name: 'Llama3.1-8b',
+        value: 'llama3.1-8b',
       },
     ],
   },
