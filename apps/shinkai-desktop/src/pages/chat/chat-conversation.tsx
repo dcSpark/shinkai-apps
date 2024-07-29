@@ -203,7 +203,8 @@ const ChatConversation = () => {
   const currentInbox = useGetCurrentInbox();
   const hasProviderEnableStreaming =
     currentInbox?.agent?.model.split(':')?.[0] === Models.Ollama ||
-    currentInbox?.agent?.model.split(':')?.[0] === Models.Gemini;
+    currentInbox?.agent?.model.split(':')?.[0] === Models.Gemini ||
+    currentInbox?.agent?.model.split(':')?.[0] === Models.Exo;
 
   const chatForm = useForm<ChatMessageFormSchema>({
     resolver: zodResolver(chatMessageFormSchema),

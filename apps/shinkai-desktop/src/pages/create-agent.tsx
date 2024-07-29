@@ -56,6 +56,10 @@ const modelOptions: { value: Models; label: string }[] = [
     value: Models.Gemini,
     label: 'Gemini',
   },
+  {
+    value: Models.Exo,
+    label: 'Exo',
+  },
 ];
 
 export const getModelObject = (
@@ -71,6 +75,8 @@ export const getModelObject = (
       return { Ollama: { model_type: modelType } };
     case Models.Gemini:
       return { Gemini: { model_type: modelType } };
+    case Models.Exo:
+      return { Exo: { model_type: modelType } };
     default:
       return { [model]: { model_type: modelType } };
   }
