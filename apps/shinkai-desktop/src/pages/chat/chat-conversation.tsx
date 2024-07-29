@@ -281,6 +281,23 @@ const ChatConversation = () => {
     },
   );
 
+  const [firstMessageWorkflow, setFirstMessageWorkflow] = useState<{
+    name: string;
+    version: string;
+  } | null>(null);
+
+  useEffect(() => {
+    console.log('data: ', data);
+    if (data?.pages && data.pages.length > 0 && data.pages[0].length > 0) {
+      const firstMessage = data.pages[0][0];
+      console.log('firstMessage: ', firstMessage);
+      if (firstMessage.workflowName) {
+        const [name, version] = firstMessage.workflowName.split(':::');
+        setFirstMessageWorkflow({ name, version });
+      }
+    }
+  }, [data?.pages]);
+
   const isLoadingMessage = useMemo(() => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
     return isJobInbox(inboxId) && lastMessage?.isLocal;
@@ -336,8 +353,19 @@ const ChatConversation = () => {
     setMessageContent(''); // trick to clear the ws stream message
     if (!auth || data.message.trim() === '') return;
     fromPreviousMessagesRef.current = false;
-    const workflowVersion = workflowSelected?.version;
-    const workflowName = workflowSelected?.name;
+
+    let workflowToUse = workflowSelected;
+    if (!workflowToUse && firstMessageWorkflow) {
+      workflowToUse = {
+        name: firstMessageWorkflow.name,
+        version: firstMessageWorkflow.version,
+        description: '', // We don't have this information from the first message
+        raw: '', // We don't have this information from the first message
+      };
+    }
+
+    const workflowVersion = workflowToUse?.version;
+    const workflowName = workflowToUse?.name;
 
     if (data.file) {
       await sendTextMessageWithFilesForInbox({
@@ -348,7 +376,7 @@ const ChatConversation = () => {
         message: data.message,
         inboxId: inboxId,
         files: [currentFile],
-        workflowName: workflowSelected
+        workflowName: workflowToUse
           ? `${workflowName}:::${workflowVersion}`
           : undefined,
         my_device_encryption_sk: auth.my_device_encryption_sk,
@@ -372,7 +400,7 @@ const ChatConversation = () => {
         parent: '', // Note: we should set the parent if we want to retry or branch out
         shinkaiIdentity: auth.shinkai_identity,
         profile: auth.profile,
-        workflowName: workflowSelected
+        workflowName: workflowToUse
           ? `${workflowName}:::${workflowVersion}`
           : undefined,
         my_device_encryption_sk: auth.my_device_encryption_sk,
