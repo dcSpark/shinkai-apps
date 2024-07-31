@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" Name="Shinkai Desktop" UpgradeCode="53d8c93d-f9f3-5929-89de-938ff9490072" Language="!(loc.TauriLanguage)" Manufacturer="shinkai" Version="0.7.26">
+    <Package Id="*" Keywords="Installer" InstallerVersion="450" Languages="0" Compressed="yes" InstallScope="perMachine" SummaryCodepage="!(loc.TauriCodepage)"/>
+  </Product>
+</Wix>

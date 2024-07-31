@@ -9,6 +9,9 @@
       "windows": {
         "nsis": {
           "installerIcon": "icons/icon.ico"
+        },
+        "wix": {
+          "template": "./dummy.wxs"
         }
       }
     }
