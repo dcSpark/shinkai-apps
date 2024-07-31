@@ -1,7 +1,6 @@
 import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
 import {
   FetchPreviousPageOptions,
-  InfiniteData,
   InfiniteQueryObserverResult,
 } from '@tanstack/react-query';
 import React, {
@@ -13,12 +12,7 @@ import React, {
 } from 'react';
 import { useInView } from 'react-intersection-observer';
 
-import {
-  ChatConversationMessage,
-  GetChatConversationOutput,
-  getRelativeDateLabel,
-  groupMessagesByDate,
-} from '../../helpers';
+import { getRelativeDateLabel, groupMessagesByDate } from '../../helpers';
 import { cn } from '../../utils';
 import { Skeleton } from '../skeleton';
 import { Message } from './message';
@@ -214,7 +208,7 @@ export const MessageList = ({
                     <div
                       className={cn(
                         'relative z-10 m-auto my-2 flex h-[26px] w-fit min-w-[100px] items-center justify-center rounded-xl bg-gray-400 px-2.5 capitalize',
-                        true && 'sticky top-5',
+                        'sticky top-5',
                       )}
                     >
                       <span className="text-gray-80 text-xs font-medium">

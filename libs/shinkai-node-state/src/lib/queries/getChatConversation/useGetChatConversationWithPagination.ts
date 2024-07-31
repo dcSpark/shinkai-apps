@@ -1,11 +1,10 @@
 import { isJobInbox } from '@shinkai_network/shinkai-message-ts/utils';
-import { InfiniteData, useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 
 import { FunctionKey } from '../../constants';
 import { getChatConversation } from '.';
 import {
   ChatConversationInfiniteData,
-  ChatConversationMessage,
   GetChatConversationInput,
   GetChatConversationOutput,
 } from './types';
