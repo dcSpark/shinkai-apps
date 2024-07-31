@@ -256,24 +256,26 @@ export const Message = ({
                   )}
                   <TooltipProvider delayDuration={0}>
                     <Tooltip>
-                      <TooltipTrigger>
-                        <CopyToClipboardIcon
-                          className={cn(
-                            'text-gray-80 h-7 w-7 border border-gray-200 bg-transparent hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
-                          )}
-                          onCopyClipboard={() => {
-                            copyToClipboard(
-                              extractErrorPropertyOrContent(
-                                message.content,
-                                'error_message',
-                              ),
-                            );
-                          }}
-                          string={extractErrorPropertyOrContent(
-                            message.content,
-                            'error_message',
-                          )}
-                        />
+                      <TooltipTrigger asChild>
+                        <div>
+                          <CopyToClipboardIcon
+                            className={cn(
+                              'text-gray-80 h-7 w-7 border border-gray-200 bg-transparent hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
+                            )}
+                            onCopyClipboard={() => {
+                              copyToClipboard(
+                                extractErrorPropertyOrContent(
+                                  message.content,
+                                  'error_message',
+                                ),
+                              );
+                            }}
+                            string={extractErrorPropertyOrContent(
+                              message.content,
+                              'error_message',
+                            )}
+                          />
+                        </div>
                       </TooltipTrigger>
                       <TooltipPortal>
                         <TooltipContent>
