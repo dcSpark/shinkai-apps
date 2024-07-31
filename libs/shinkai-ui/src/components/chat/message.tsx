@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { appIcon } from '../../assets';
-import { ChatConversationMessage, copyToClipboard } from '../../helpers';
+import { ChatConversationMessage } from '../../helpers';
 import { cn } from '../../utils';
 import { Avatar, AvatarFallback, AvatarImage } from '../avatar';
 import { Button } from '../button';
@@ -313,14 +313,6 @@ export const Message = ({
                             className={cn(
                               'text-gray-80 h-7 w-7 border border-gray-200 bg-transparent hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
                             )}
-                            onCopyClipboard={() => {
-                              copyToClipboard(
-                                extractErrorPropertyOrContent(
-                                  message.content,
-                                  'error_message',
-                                ),
-                              );
-                            }}
                             string={extractErrorPropertyOrContent(
                               message.content,
                               'error_message',
