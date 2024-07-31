@@ -9,7 +9,7 @@ import {
   GetChatConversationOutput,
 } from './types';
 
-export const CONVERSATION_PAGINATION_LIMIT = 2;
+export const CONVERSATION_PAGINATION_LIMIT = 12;
 export const CONVERSATION_PAGINATION_REFETCH = 5000;
 
 export const useGetChatConversationWithPagination = (
