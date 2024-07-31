@@ -362,9 +362,11 @@ const SettingsPage = () => {
                 >
                   <ShieldCheck className="h-5 w-5" />
                   <span className="flex flex-col gap-0.5">
-                    <span>Verify my keys</span>
+                    <span className="capitalize">
+                      {t('settings.shinkaiIdentity.verifyKeys')}
+                    </span>
                     <span className="text-gray-80">
-                      Make sure your encryption and signature keys are correct.
+                      {t('settings.shinkaiIdentity.verifyKeysDescription')}
                     </span>
                   </span>
                 </a>

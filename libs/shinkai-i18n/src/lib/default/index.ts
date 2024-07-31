@@ -250,6 +250,9 @@ export default {
       goToShinkaiIdentity: 'Go to My Shinkai Identity',
       success: 'Shinkai Identity updated successfully',
       error: 'Error updating Shinkai Identity',
+      verifyKeys: 'Verify my keys',
+      verifyKeysDescription:
+        'Check that your keys are accurately in sync with your shinkai identity',
     },
     general: 'General',
     sidebar: {
