@@ -132,7 +132,7 @@ export const Message = ({
         </Avatar>
         <div
           className={cn(
-            'flex flex-col overflow-hidden rounded-lg bg-transparent text-sm text-white',
+            'flex flex-col overflow-hidden bg-transparent text-sm text-white',
             editing && 'w-full py-1',
           )}
         >
