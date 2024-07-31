@@ -287,10 +287,8 @@ const ChatConversation = () => {
   } | null>(null);
 
   useEffect(() => {
-    console.log('data: ', data);
     if (data?.pages && data.pages.length > 0 && data.pages[0].length > 0) {
       const firstMessage = data.pages[0][0];
-      console.log('firstMessage: ', firstMessage);
       if (firstMessage.workflowName) {
         const [name, version] = firstMessage.workflowName.split(':::');
         setFirstMessageWorkflow({ name, version });

@@ -308,7 +308,7 @@ const CreateJobPage = () => {
   );
 
   useEffect(() => {
-    if (currentMessage?.endsWith('/')) {
+    if (currentMessage?.length === 1 && currentMessage === '/') {
       setWorkflowSelectionDrawerOpen(true);
     }
   }, [currentMessage]);
@@ -658,20 +658,6 @@ const CreateJobPage = () => {
         selectedKeys={selectedKeys}
         setIsKnowledgeSearchOpen={setIsKnowledgeSearchOpen}
       />
-      {/*<WorkflowSearchDrawer*/}
-      {/*  isWorkflowSearchDrawerOpen={isWorkflowSearchDrawerOpen}*/}
-      {/*  onSelectWorkflow={() => {*/}
-      {/*    if (*/}
-      {/*      Object.keys(selectedKeys ?? {}).length > 0 ||*/}
-      {/*      currentMessage.endsWith('/')*/}
-      {/*    ) {*/}
-      {/*      createJobForm.setValue('content', '');*/}
-      {/*    }*/}
-      {/*  }}*/}
-      {/*  selectedWorkflow={selectedWorkflow}*/}
-      {/*  setIsWorkflowSearchDrawerOpen={setWorkflowSearchDrawerOpen}*/}
-      {/*  setSelectedWorkflow={setSelectedWorkflow}*/}
-      {/*/>*/}
     </SubpageLayout>
   );
 };

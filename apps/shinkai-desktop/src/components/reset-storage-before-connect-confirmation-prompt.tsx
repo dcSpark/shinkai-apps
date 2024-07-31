@@ -7,9 +7,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  // AlertTitle,
   Button,
 } from '@shinkai_network/shinkai-ui';
-import { useNavigate } from 'react-router-dom';
 
 import {
   useShinkaiNodeKillMutation,
@@ -27,8 +27,8 @@ export const ResetStorageBeforeConnectConfirmationPrompt = ({
   onRestore?: () => void;
   onReset?: () => void;
 } & AlertDialogProps) => {
-  const navigate = useNavigate();
-  const { t, Trans } = useTranslation();
+  // const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const { mutateAsync: shinkaiNodeKill } = useShinkaiNodeKillMutation();
   const { mutateAsync: shinkaiNodeSpawn } = useShinkaiNodeSpawnMutation();
@@ -41,12 +41,12 @@ export const ResetStorageBeforeConnectConfirmationPrompt = ({
     }
   };
 
-  const restore = async () => {
-    navigate('/restore');
-    if (typeof onRestore === 'function') {
-      onRestore();
-    }
-  };
+  // const restore = async () => {
+  //   navigate('/restore');
+  //   if (typeof onRestore === 'function') {
+  //     onRestore();
+  //   }
+  // };
 
   const reset = async (preserveKeys: boolean) => {
     await shinkaiNodeKill();
@@ -70,71 +70,35 @@ export const ResetStorageBeforeConnectConfirmationPrompt = ({
                 <span className="text-sm">
                   {t('shinkaiNode.resetNodeWarning.description')}
                 </span>
-                <div className="flex flex-col space-y-1">
-                  <span className="text-xs">
-                    <span aria-label="restore" className="emoji" role="img">
-                      🔑
-                    </span>
-                    <Trans
-                      components={{
-                        b: <b className="ml-1" />,
-                      }}
-                      i18nKey="shinkaiNode.resetNodeWarning.option1"
-                    />
-                  </span>
-                  <span className="text-xs">
-                    <span aria-label="reset data" className="emoji" role="img">
-                      🗑️
-                    </span>
-                    <Trans
-                      components={{
-                        b: <b className="ml-1" />,
-                      }}
-                      i18nKey="shinkaiNode.resetNodeWarning.option2"
-                    />
-                  </span>
-                  <span className="text-xs">
-                    <span aria-label="reset all" className="emoji" role="img">
-                      💣
-                    </span>
-                    <Trans
-                      components={{
-                        b: <b className="ml-1" />,
-                      }}
-                      i18nKey="shinkaiNode.resetNodeWarning.option3"
-                    />
-                  </span>
-                </div>
+                <div className="flex flex-col space-y-1" />
               </div>
             </div>
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter className="mt-4 grid gap-2">
-          <Button className="mt-0 flex-1 text-sm" onClick={() => restore()}>
-            <span aria-label="restore" className="emoji" role="img">
-              🔑 {t('common.restore')}
-            </span>
-          </Button>
+        <AlertDialogFooter className="mt-4 grid gap-2.5">
+          {/*<Button className="mt-0 flex-1 text-sm" onClick={() => restore()}>*/}
+          {/*  <span aria-label="restore" className="emoji" role="img">*/}
+          {/*    🔑 {t('common.restore')}*/}
+          {/*  </span>*/}
+          {/*</Button>*/}
           <Button
-            className="mt-0 flex-1 text-sm"
+            className="flex-1 text-sm"
             onClick={() => reset(true)}
-            variant={'ghost'}
+            variant={'destructive'}
           >
-            <span aria-label="reset" className="emoji" role="img">
-              🗑️ {t('common.resetData')}
-            </span>
+            <span>{t('common.resetData')}</span>
           </Button>
+          {/*<Button*/}
+          {/*  className="mt-0 flex-1 text-sm"*/}
+          {/*  onClick={() => reset(false)}*/}
+          {/*  variant={'ghost'}*/}
+          {/*>*/}
+          {/*  <span aria-label="reset all" className="emoji" role="img">*/}
+          {/*    💣 {t('common.resetAll')}*/}
+          {/*  </span>*/}
+          {/*</Button>*/}
           <Button
-            className="mt-0 flex-1 text-sm"
-            onClick={() => reset(false)}
-            variant={'ghost'}
-          >
-            <span aria-label="reset all" className="emoji" role="img">
-              💣 {t('common.resetAll')}
-            </span>
-          </Button>
-          <Button
-            className="mt-0 flex-1 text-sm"
+            className="flex-1 text-sm"
             onClick={() => cancel()}
             variant={'outline'}
           >

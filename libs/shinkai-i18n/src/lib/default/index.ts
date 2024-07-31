@@ -192,7 +192,7 @@ export default {
     resetNodeWarning: {
       title: 'Unable to connect',
       description:
-        'Your Shinkai Node is currently locked by existing keys. To connect again you have three options:',
+        'Your Shinkai Node is currently locked by existing keys. To connect again, you can reset all your Shinkai Node data.',
       option1:
         '<b>Restore:</b> Try to restore your connection using a backed up keys.',
       option2:

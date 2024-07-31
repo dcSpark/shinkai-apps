@@ -1,6 +1,7 @@
 import { CheckCircle2, CopyIcon } from 'lucide-react';
 import React, { useState } from 'react';
 
+import { copyToClipboard } from '../helpers/copy-to-clipboard';
 import { cn } from '../utils';
 import { Button } from './button';
 
@@ -20,13 +21,13 @@ const CopyToClipboardIcon = ({
   const [clipboard, setClipboard] = useState(false);
 
   let timeout: ReturnType<typeof setTimeout>;
-  const onCopy = () => {
+  const onCopy = async () => {
     if (!string) return;
     const string_ = string.trim();
     if (onCopyClipboard && typeof onCopyClipboard === 'function') {
       onCopyClipboard();
     } else {
-      navigator.clipboard.writeText(string_);
+      await copyToClipboard(string_);
     }
     setClipboard(true);
     clearTimeout(timeout);

@@ -9,8 +9,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { appIcon } from '../../assets';
-import { ChatConversationMessage, copyToClipboard } from '../../helpers';
-import { useMeasure } from '../../hooks/use-measure';
+import { ChatConversationMessage } from '../../helpers';
 import { cn } from '../../utils';
 import { Avatar, AvatarFallback, AvatarImage } from '../avatar';
 import { Button } from '../button';
@@ -88,7 +87,6 @@ export const Message = ({
   handleEditMessage,
 }: MessageProps) => {
   const { t } = useTranslation();
-  const [rowElementRef, { width: rowWidth }] = useMeasure();
 
   const [editing, setEditing] = useState(false);
   const editMessageForm = useForm<EditMessageFormSchema>({
@@ -118,14 +116,13 @@ export const Message = ({
     >
       <div
         className={cn(
-          'flex flex-row space-x-2',
+          'relative flex flex-row space-x-2',
           message.isLocal
             ? 'ml-auto mr-0 flex-row-reverse space-x-reverse'
             : 'ml-0 mr-auto flex-row items-end',
         )}
-        ref={rowElementRef}
       >
-        <Avatar className="h-8 w-8">
+        <Avatar className={cn('mt-1 h-8 w-8')}>
           {message.isLocal ? (
             <AvatarImage alt={''} src={message.sender.avatar} />
           ) : (
@@ -133,13 +130,9 @@ export const Message = ({
           )}
           <AvatarFallback className="h-8 w-8" />
         </Avatar>
-        <motion.div
+        <div
           className={cn(
-            'relative mt-1 flex flex-col rounded-lg bg-black/40 px-3.5 pt-3 text-sm text-white',
-            message.isLocal
-              ? 'rounded-tr-none bg-gray-300'
-              : 'rounded-bl-none border-none bg-gray-200',
-            !message.content ? 'pb-3' : 'pb-4',
+            'flex flex-col overflow-hidden bg-transparent text-sm text-white',
             editing && 'w-full py-1',
           )}
         >
@@ -196,17 +189,75 @@ export const Message = ({
               {!isPending && (
                 <motion.div
                   className={cn(
-                    'duration-30 absolute -top-[18px] right-1 flex items-center gap-1.5 text-xs text-gray-100 opacity-0 group-hover:opacity-100 group-hover:transition-opacity',
+                    'absolute -top-[14px] flex items-center justify-end gap-1.5 text-xs text-gray-100',
+                    message.isLocal ? 'right-10' : 'right-1',
                   )}
                   variants={actionBar}
                 >
                   {format(new Date(message?.scheduledTime ?? ''), 'p')}
                 </motion.div>
               )}
+
+              <div
+                className={cn(
+                  'relative mt-1 flex flex-col rounded-lg bg-black/40 px-3.5 pt-3 text-sm text-white',
+                  message.isLocal
+                    ? 'rounded-tr-none bg-gray-300'
+                    : 'rounded-bl-none border-none bg-gray-200',
+                  !message.content ? 'pb-3' : 'pb-4',
+                  editing && 'w-full py-1',
+                )}
+              >
+                {message.content ? (
+                  <Fragment>
+                    <MarkdownPreview
+                      components={{
+                        a: ({ node, ...props }) => (
+                          // eslint-disable-next-line jsx-a11y/anchor-has-content
+                          <a {...props} target="_blank" />
+                        ),
+                        table: ({ node, ...props }) => (
+                          <div className="mb-2 size-full overflow-x-auto">
+                            <table className="w-full" {...props} />
+                          </div>
+                        ),
+                      }}
+                      source={
+                        isPending
+                          ? extractErrorPropertyOrContent(
+                              message.content,
+                              'error_message',
+                            ) + ' ...'
+                          : extractErrorPropertyOrContent(
+                              message.content,
+                              'error_message',
+                            )
+                      }
+                    />
+                    {!!message.fileInbox?.files?.length && (
+                      <FileList
+                        className="mt-2 min-w-[200px] max-w-[400px]"
+                        files={message.fileInbox?.files}
+                      />
+                    )}
+                    {!!message.workflowName && (
+                      <div className="mt-2 flex items-center gap-1.5 border-t pt-1.5">
+                        <span className="text-gray-80 text-xs">Workflow:</span>
+                        <span className="text-gray-80 text-xs">
+                          {message.workflowName}
+                        </span>
+                      </div>
+                    )}
+                  </Fragment>
+                ) : (
+                  <DotsLoader className="pt-1" />
+                )}
+              </div>
               {!isPending && (
                 <motion.div
                   className={cn(
-                    'duration-30 absolute -bottom-[34px] right-1 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 group-hover:transition-opacity',
+                    'absolute -bottom-[34px] flex items-end justify-end gap-1.5',
+                    message.isLocal ? 'right-10' : 'right-1',
                   )}
                   variants={actionBar}
                 >
@@ -256,24 +307,18 @@ export const Message = ({
                   )}
                   <TooltipProvider delayDuration={0}>
                     <Tooltip>
-                      <TooltipTrigger>
-                        <CopyToClipboardIcon
-                          className={cn(
-                            'text-gray-80 h-7 w-7 border border-gray-200 bg-transparent hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
-                          )}
-                          onCopyClipboard={() => {
-                            copyToClipboard(
-                              extractErrorPropertyOrContent(
-                                message.content,
-                                'error_message',
-                              ),
-                            );
-                          }}
-                          string={extractErrorPropertyOrContent(
-                            message.content,
-                            'error_message',
-                          )}
-                        />
+                      <TooltipTrigger asChild>
+                        <div>
+                          <CopyToClipboardIcon
+                            className={cn(
+                              'text-gray-80 h-7 w-7 border border-gray-200 bg-transparent hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
+                            )}
+                            string={extractErrorPropertyOrContent(
+                              message.content,
+                              'error_message',
+                            )}
+                          />
+                        </div>
                       </TooltipTrigger>
                       <TooltipPortal>
                         <TooltipContent>
@@ -284,58 +329,9 @@ export const Message = ({
                   </TooltipProvider>
                 </motion.div>
               )}
-              {message.content ? (
-                <div
-                  style={{
-                    maxWidth: rowWidth ? `${rowWidth - 64}px` : 'auto', // 32 (avatar) + 32 (inner/outer padding)
-                    overflow: 'hidden',
-                  }}
-                >
-                  <MarkdownPreview
-                    components={{
-                      a: ({ node, ...props }) => (
-                        // eslint-disable-next-line jsx-a11y/anchor-has-content
-                        <a {...props} target="_blank" />
-                      ),
-                      table: ({ node, ...props }) => (
-                        <div className="size-full overflow-x-auto">
-                          <table className="w-full" {...props} />
-                        </div>
-                      ),
-                    }}
-                    source={
-                      isPending
-                        ? extractErrorPropertyOrContent(
-                            message.content,
-                            'error_message',
-                          ) + ' ...'
-                        : extractErrorPropertyOrContent(
-                            message.content,
-                            'error_message',
-                          )
-                    }
-                  />
-                </div>
-              ) : (
-                <DotsLoader className="pt-1" />
-              )}
-              {!!message.fileInbox?.files?.length && (
-                <FileList
-                  className="mt-2 min-w-[200px] max-w-[400px]"
-                  files={message.fileInbox?.files}
-                />
-              )}
-              {!!message.workflowName && (
-                <div className="mt-2 flex items-center gap-1.5 border-t pt-1.5">
-                  <span className="text-gray-80 text-xs">Workflow:</span>
-                  <span className="text-gray-80 text-xs">
-                    {message.workflowName}
-                  </span>
-                </div>
-              )}
             </Fragment>
           )}
-        </motion.div>
+        </div>
       </div>
     </motion.div>
   );

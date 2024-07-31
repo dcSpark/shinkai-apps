@@ -1,6 +1,6 @@
+import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
 import {
   FetchPreviousPageOptions,
-  InfiniteData,
   InfiniteQueryObserverResult,
 } from '@tanstack/react-query';
 import React, {
@@ -12,11 +12,7 @@ import React, {
 } from 'react';
 import { useInView } from 'react-intersection-observer';
 
-import {
-  GetChatConversationOutput,
-  getRelativeDateLabel,
-  groupMessagesByDate,
-} from '../../helpers';
+import { getRelativeDateLabel, groupMessagesByDate } from '../../helpers';
 import { cn } from '../../utils';
 import { Skeleton } from '../skeleton';
 import { Message } from './message';
@@ -41,16 +37,11 @@ export const MessageList = ({
   isFetchingPreviousPage: boolean;
   hasPreviousPage: boolean;
   fromPreviousMessagesRef: React.MutableRefObject<boolean>;
-  paginatedMessages:
-    | InfiniteData<GetChatConversationOutput, unknown>
-    | undefined;
+  paginatedMessages: ChatConversationInfiniteData | undefined;
   fetchPreviousPage: (
     options?: FetchPreviousPageOptions | undefined,
   ) => Promise<
-    InfiniteQueryObserverResult<
-      InfiniteData<GetChatConversationOutput, unknown>,
-      Error
-    >
+    InfiniteQueryObserverResult<ChatConversationInfiniteData, Error>
   >;
   regenerateMessage: (
     content: string,
@@ -133,6 +124,8 @@ export const MessageList = ({
     scrollToBottom();
   }, [lastMessageContent]);
 
+  const messageList = paginatedMessages?.content ?? [];
+
   return (
     <div
       className={cn(
@@ -206,95 +199,94 @@ export const MessageList = ({
             ))}
           </div>
         )}
-        {isSuccess &&
-          paginatedMessages?.pages?.map((group, index) => (
-            <Fragment key={index}>
-              {Object.entries(groupMessagesByDate(group)).map(
-                ([date, messages]) => {
-                  return (
-                    <div key={date}>
-                      <div
-                        className={cn(
-                          'relative z-10 m-auto my-2 flex h-[26px] w-fit min-w-[100px] items-center justify-center rounded-xl bg-gray-400 px-2.5 capitalize',
-                          true && 'sticky top-5',
+        {isSuccess && messageList?.length > 0 && (
+          <Fragment>
+            {Object.entries(groupMessagesByDate(messageList)).map(
+              ([date, messages]) => {
+                return (
+                  <div key={date}>
+                    <div
+                      className={cn(
+                        'relative z-10 m-auto my-2 flex h-[26px] w-fit min-w-[100px] items-center justify-center rounded-xl bg-gray-400 px-2.5 capitalize',
+                        'sticky top-5',
+                      )}
+                    >
+                      <span className="text-gray-80 text-xs font-medium">
+                        {getRelativeDateLabel(
+                          new Date(messages[0].scheduledTime || ''),
                         )}
-                      >
-                        <span className="text-gray-80 text-xs font-medium">
-                          {getRelativeDateLabel(
-                            new Date(messages[0].scheduledTime || ''),
-                          )}
-                        </span>
-                      </div>
-                      <div className="flex flex-col">
-                        {messages.map((message, messageIndex) => {
-                          const previousMessage = messages[messageIndex - 1];
-
-                          const grandparentHash = previousMessage
-                            ? previousMessage.parentHash
-                            : null;
-
-                          const disabledRetryAndEdit =
-                            grandparentHash === null || grandparentHash === '';
-
-                          const handleRetryMessage = () => {
-                            regenerateMessage(
-                              previousMessage.content,
-                              grandparentHash ?? '',
-                              previousMessage.workflowName,
-                            );
-                          };
-                          const handleEditMessage = (
-                            message: string,
-                            workflowName?: string,
-                          ) => {
-                            regenerateMessage(
-                              message,
-                              previousMessage?.hash ?? '',
-                              workflowName,
-                            );
-                          };
-                          return (
-                            <div
-                              data-testid={`message-${
-                                message.isLocal ? 'local' : 'remote'
-                              }-${message.hash}`}
-                              key={`${index}-${message.scheduledTime}`}
-                            >
-                              <Message
-                                disabledEdit={disabledRetryAndEdit}
-                                disabledRetry={disabledRetryAndEdit}
-                                handleEditMessage={handleEditMessage}
-                                handleRetryMessage={handleRetryMessage}
-                                message={message}
-                              />
-                            </div>
-                          );
-                        })}
-                      </div>
+                      </span>
                     </div>
-                  );
-                },
-              )}
-              {isLoadingMessage && (
-                <Message
-                  isPending={isLoadingMessage}
-                  message={{
-                    parentHash: '',
-                    inboxId: '',
-                    hash: '',
-                    content: lastMessageContent,
-                    scheduledTime: new Date().toISOString(),
-                    isLocal: false,
-                    workflowName: undefined,
-                    sender: {
-                      avatar:
-                        'https://ui-avatars.com/api/?name=S&background=FF7E7F&color=ffffff',
-                    },
-                  }}
-                />
-              )}
-            </Fragment>
-          ))}
+                    <div className="flex flex-col">
+                      {messages.map((message, messageIndex) => {
+                        const previousMessage = messages[messageIndex - 1];
+
+                        const grandparentHash = previousMessage
+                          ? previousMessage.parentHash
+                          : null;
+
+                        const disabledRetryAndEdit =
+                          grandparentHash === null || grandparentHash === '';
+
+                        const handleRetryMessage = () => {
+                          regenerateMessage(
+                            previousMessage.content,
+                            grandparentHash ?? '',
+                            previousMessage.workflowName,
+                          );
+                        };
+                        const handleEditMessage = (
+                          message: string,
+                          workflowName?: string,
+                        ) => {
+                          regenerateMessage(
+                            message,
+                            previousMessage?.hash ?? '',
+                            workflowName,
+                          );
+                        };
+                        return (
+                          <div
+                            data-testid={`message-${
+                              message.isLocal ? 'local' : 'remote'
+                            }-${message.hash}`}
+                            key={`${message.hash}`}
+                          >
+                            <Message
+                              disabledEdit={disabledRetryAndEdit}
+                              disabledRetry={disabledRetryAndEdit}
+                              handleEditMessage={handleEditMessage}
+                              handleRetryMessage={handleRetryMessage}
+                              message={message}
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              },
+            )}
+            {isLoadingMessage && (
+              <Message
+                isPending={isLoadingMessage}
+                message={{
+                  parentHash: '',
+                  inboxId: '',
+                  hash: '',
+                  content: lastMessageContent,
+                  scheduledTime: new Date().toISOString(),
+                  isLocal: false,
+                  workflowName: undefined,
+                  sender: {
+                    avatar:
+                      'https://ui-avatars.com/api/?name=S&background=FF7E7F&color=ffffff',
+                  },
+                }}
+              />
+            )}
+          </Fragment>
+        )}
       </div>
     </div>
   );
