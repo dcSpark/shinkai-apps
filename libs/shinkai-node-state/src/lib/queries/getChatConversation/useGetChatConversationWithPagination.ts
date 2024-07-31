@@ -3,9 +3,14 @@ import { InfiniteData, useInfiniteQuery } from '@tanstack/react-query';
 
 import { FunctionKey } from '../../constants';
 import { getChatConversation } from '.';
-import { GetChatConversationInput, GetChatConversationOutput } from './types';
+import {
+  ChatConversationInfiniteData,
+  ChatConversationMessage,
+  GetChatConversationInput,
+  GetChatConversationOutput,
+} from './types';
 
-export const CONVERSATION_PAGINATION_LIMIT = 12;
+export const CONVERSATION_PAGINATION_LIMIT = 2;
 export const CONVERSATION_PAGINATION_REFETCH = 5000;
 
 export const useGetChatConversationWithPagination = (
@@ -14,7 +19,7 @@ export const useGetChatConversationWithPagination = (
   const response = useInfiniteQuery<
     GetChatConversationOutput,
     Error,
-    InfiniteData<GetChatConversationOutput>,
+    ChatConversationInfiniteData,
     [string, GetChatConversationInput],
     { lastKey: string | null }
   >({
@@ -42,6 +47,13 @@ export const useGetChatConversationWithPagination = (
     initialPageParam: { lastKey: null },
     getNextPageParam: () => {
       return { lastKey: null };
+    },
+    select: (data) => {
+      const allMessages = data.pages.flat();
+      return {
+        ...data,
+        content: allMessages,
+      };
     },
   });
   return response;

@@ -1,4 +1,5 @@
 import type { JobCredentialsPayload } from '@shinkai_network/shinkai-message-ts/models';
+import { InfiniteData } from '@tanstack/react-query';
 
 export type GetChatConversationInput = JobCredentialsPayload & {
   nodeAddress: string;
@@ -30,3 +31,8 @@ export type ChatConversationMessage = {
 };
 
 export type GetChatConversationOutput = ChatConversationMessage[];
+
+export type ChatConversationInfiniteData =
+  InfiniteData<GetChatConversationOutput> & {
+    content: ChatConversationMessage[];
+  };
