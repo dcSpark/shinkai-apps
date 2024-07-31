@@ -173,7 +173,7 @@ impl Default for ShinkaiNodeOptions {
             node_ws_port: Some("9551".to_string()),
             node_ip: Some("127.0.0.1".to_string()),
             node_port: Some("9552".to_string()),
-            global_identity_name: Some("@@localhost.arb-sep-shinkai".to_string()),
+            global_identity_name: None,
             node_storage_path: Some("./".to_string()),
             unstructured_server_url: Some("https://public.shinkai.com/x-un".to_string()),
             embeddings_server_url: Some("http://127.0.0.1:11435".to_string()),
