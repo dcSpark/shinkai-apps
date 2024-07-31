@@ -1,11 +1,13 @@
 const FullPageErrorFallback = ({ error }: { error: Error }) => {
   return (
     <div
-      className="flex h-screen flex-col items-center justify-center text-red-400"
+      className="flex h-screen flex-col items-center justify-center px-8 text-red-400"
       role="alert"
     >
       <p>Something went wrong. Try refreshing the app.</p>
-      <pre>{error.message}</pre>
+      <pre className="whitespace-pre-wrap text-balance break-all text-center">
+        {error.message}
+      </pre>
     </div>
   );
 };
