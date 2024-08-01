@@ -56,6 +56,8 @@ export enum MessageSchemaType {
   AddWorkflow = 'AddWorkflow',
   UpdateWorkflow = 'UpdateWorkflow',
   RemoveWorkflow = 'RemoveWorkflow',
+  // sheet
+  UserSheets = 'UserSheets',
 }
 
 export interface LocalScopeVRKaiEntry {

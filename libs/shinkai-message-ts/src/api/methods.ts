@@ -1815,3 +1815,40 @@ export const getLastMessagesFromInboxWithBranches = async (
   const data = response.data.data;
   return data;
 };
+export const getUserSheets = async (
+  nodeAddress: string,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  setupDetailsState: CredentialsPayload,
+) => {
+  try {
+    console.log('getUserSheets');
+
+    const messageStr = ShinkaiMessageBuilderWrapper.getUserSheets(
+      setupDetailsState.profile_encryption_sk,
+      setupDetailsState.profile_identity_sk,
+      setupDetailsState.node_encryption_pk,
+      sender,
+      sender_subidentity,
+      receiver,
+      receiver_subidentity,
+    );
+
+    const message = JSON.parse(messageStr);
+
+    const response = await httpClient.post(
+      urlJoin(nodeAddress, '/v1/user_sheets'),
+      message,
+      {
+        responseType: 'json',
+      },
+    );
+
+    const data = response.data;
+    return data;
+  } catch (error) {
+    console.log('getUserSheets error:', error);
+  }
+};
