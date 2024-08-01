@@ -314,6 +314,8 @@
       "label": "新しいデバイスを登録"
     },
     "shinkaiIdentity": {
+      "checkIdentityInSync": "新海アイデンティティを確認",
+      "checkIdentityInSyncDescription": "新海のアイデンティティが正確に同期しているかを確認します。",
       "error": "Shinkai Identityの更新中にエラーが発生しました",
       "goToShinkaiIdentity": "私のShinkai Identityに移動",
       "label": "Shinkaiアイデンティティ",
