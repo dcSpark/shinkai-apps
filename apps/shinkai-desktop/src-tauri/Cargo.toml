@@ -34,6 +34,7 @@ ed25519-dalek = { version = "2.1.1", features = ["rand_core"] }
 blake3 = "1.5.1"
 hex = "0.4.3"
 base64 = "0.22.1"
+time = "^0.3.36"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
