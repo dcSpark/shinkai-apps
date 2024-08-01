@@ -36,7 +36,7 @@ impl ShinkaiNodeOptions {
     }
 
     pub fn default_initial_model() -> String {
-        let mut model = "llama3:8b-instruct-q4_1".to_string();
+        let mut model = "llama3.1:8b-instruct-q4_1".to_string();
         let hardware_summary = hardware_get_summary();
         match hardware_summary.requirements_status {
             RequirementsStatus::Minimum => {
