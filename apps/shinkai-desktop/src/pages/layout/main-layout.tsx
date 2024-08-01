@@ -273,7 +273,7 @@ export function MainNav() {
     },
     optInExperimental && {
       title: 'Shinkai Sheet',
-      href: '/workflow-playground',
+      href: '/sheets',
       icon: (
         <svg
           className="h-5 w-5"
