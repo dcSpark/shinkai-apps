@@ -152,7 +152,7 @@ export function DataTableColumnHeader<TData, TValue>({
                 <div className="flex items-center gap-2">
                   <span className="flex items-center gap-1.5 text-gray-50">
                     <BotIcon className="h-3.5 w-3.5" />
-                    {selectedAgent.id}
+                    {selectedAgent?.id}
                   </span>
                   <ChevronRight className="text-gray-80 h-3.5 w-3.5" />
                 </div>
@@ -166,7 +166,7 @@ export function DataTableColumnHeader<TData, TValue>({
               {llmProviders.map((option) => {
                 return (
                   <DropdownMenuCheckboxItem
-                    checked={option.id === selectedAgent.id}
+                    checked={option.id === selectedAgent?.id}
                     className="flex gap-2 text-xs capitalize hover:bg-gray-500 [&>svg]:bg-transparent"
                     key={option.id}
                     onCheckedChange={() => setSelectedAgent(option)}
