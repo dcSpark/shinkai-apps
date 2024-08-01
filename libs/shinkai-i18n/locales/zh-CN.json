@@ -314,6 +314,8 @@
       "label": "注册新设备"
     },
     "shinkaiIdentity": {
+      "checkIdentityInSync": "验证Shinkai身份",
+      "checkIdentityInSyncDescription": "检查您的Shinkai身份是否准确同步。",
       "error": "更新Shinkai身份时出错",
       "goToShinkaiIdentity": "前往我的Shinkai身份",
       "label": "Shinkai 身份",

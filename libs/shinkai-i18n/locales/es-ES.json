@@ -314,6 +314,8 @@
       "label": "Registrar nuevo dispositivo"
     },
     "shinkaiIdentity": {
+      "checkIdentityInSync": "Verificar Identidad de Shinkai",
+      "checkIdentityInSyncDescription": "Verifica que tu identidad de shinkai esté sincronizada correctamente.",
       "error": "Error al actualizar la Identidad Shinkai",
       "goToShinkaiIdentity": "Ir a Mi Identidad Shinkai",
       "label": "Identidad Shinkai",

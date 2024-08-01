@@ -314,6 +314,8 @@
       "label": "Daftarkan perangkat baru"
     },
     "shinkaiIdentity": {
+      "checkIdentityInSync": "Verifikasi Identitas Shinkai",
+      "checkIdentityInSyncDescription": "Periksa apakah identitas Shinkai Anda secara akurat disinkronkan.",
       "error": "Kesalahan saat memperbarui Identitas Shinkai",
       "goToShinkaiIdentity": "Pergi ke Identitas Shinkai Saya",
       "label": "Identitas Shinkai",
