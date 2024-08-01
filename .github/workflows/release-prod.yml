@@ -145,6 +145,7 @@ jobs:
           # Add tauri plugins
           Invoke-WebRequest -Uri "https://github.com/tauri-apps/nsis-tauri-utils/releases/download/nsis_tauri_utils-v0.4.1/nsis_tauri_utils.dll" -MaximumRedirection 5 -OutFile "nsis_tauri_utils.dll" -UserAgent "Wget"
           mv .\nsis_tauri_utils.dll .\nsis-binary-7423-1\Plugins\x86-unicode\
+          mkdir -p C:\Users\runneradmin\AppData\Local\tauri\NSIS
           mv .\nsis-binary-7423-1\* C:\Users\runneradmin\AppData\Local\tauri\NSIS\
 
       - name: (Linux) Install build dependencies
