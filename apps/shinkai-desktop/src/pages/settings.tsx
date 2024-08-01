@@ -363,10 +363,12 @@ const SettingsPage = () => {
                   <ShieldCheck className="h-5 w-5" />
                   <span className="flex flex-col gap-0.5">
                     <span className="capitalize">
-                      {t('settings.shinkaiIdentity.verifyKeys')}
+                      {t('settings.shinkaiIdentity.checkIdentityInSync')}
                     </span>
                     <span className="text-gray-80">
-                      {t('settings.shinkaiIdentity.verifyKeysDescription')}
+                      {t(
+                        'settings.shinkaiIdentity.checkIdentityInSyncDescription',
+                      )}
                     </span>
                   </span>
                 </a>
