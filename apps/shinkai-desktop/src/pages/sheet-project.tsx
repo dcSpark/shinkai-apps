@@ -1,3 +1,4 @@
+import { useGetSheet } from '@shinkai_network/shinkai-node-state/lib/queries/getSheet/useGetSheet';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -29,14 +30,30 @@ import {
 } from '@tanstack/react-table';
 import { PlusIcon } from 'lucide-react';
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import { columns } from '../components/sheet/columns';
 // import { DataTablePagination } from '../components/sheet/data-table-pagination';
 import { DataTableToolbar } from '../components/sheet/data-table-toolbar';
 import { topProductivityBooks } from '../components/sheet/sheet-data';
+import { useAuth } from '../store/auth';
 
 const SheetProject = () => {
+  const auth = useAuth((state) => state.auth);
+  const { sheetId } = useParams();
+  const { data } = useGetSheet({
+    nodeAddress: auth?.node_address ?? '',
+    sheetId: sheetId ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile: auth?.profile ?? '',
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+  });
+
+  console.log(data, 'data');
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({
       location: false,
@@ -85,7 +102,7 @@ const SheetProject = () => {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink>Components</BreadcrumbLink>
+              <BreadcrumbLink>{sheetId}</BreadcrumbLink>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -159,7 +176,7 @@ const SheetProject = () => {
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <button className="z-max text-gray-80 sticky right-0 top-[10px] flex h-10 w-10 items-center justify-center gap-2 border bg-gray-500 transition-colors hover:bg-gray-300">
+                            <button className="text-gray-80 sticky right-0 top-[10px] z-[100] flex h-10 w-10 items-center justify-center gap-2 border bg-gray-500 transition-colors hover:bg-gray-300">
                               <PlusIcon className="h-5 w-5" />
                             </button>
                           </TooltipTrigger>
@@ -214,7 +231,7 @@ const SheetProject = () => {
                       </TableCell>
                     </TableRow>
                   )}
-                  <button className="z-max text-gray-80 sticky bottom-0 right-0 flex w-[calc(100%-40px)] items-center justify-start gap-1 border border-t-0 bg-gray-500 transition-colors hover:bg-gray-300">
+                  <button className="text-gray-80 sticky bottom-0 right-0 z-[100] flex w-[calc(100%-40px)] items-center justify-start gap-1 border border-t-0 bg-gray-500 transition-colors hover:bg-gray-300">
                     <span className="flex h-8 w-[50px] items-center justify-center border-r p-1.5">
                       <PlusIcon className="h-full w-full" />
                     </span>

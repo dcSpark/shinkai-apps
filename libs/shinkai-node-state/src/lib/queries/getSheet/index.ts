@@ -1,19 +1,21 @@
-import { getUserSheets as getUserSheetsAPI } from '@shinkai_network/shinkai-message-ts/api';
+import { getSheet as getSheetAPI } from '@shinkai_network/shinkai-message-ts/api';
 
-import { GetUserSheetsInput, GetUserSheetsOutput } from './types';
+import { GetSheetInput, GetSheetOutput } from './types';
 
-export const getUserSheets = async ({
+export const getSheet = async ({
   nodeAddress,
   shinkaiIdentity,
   profile,
+  sheetId,
   my_device_encryption_sk,
   my_device_identity_sk,
   node_encryption_pk,
   profile_encryption_sk,
   profile_identity_sk,
-}: GetUserSheetsInput): Promise<GetUserSheetsOutput> => {
-  const response = await getUserSheetsAPI(
+}: GetSheetInput): Promise<GetSheetOutput> => {
+  const response = await getSheetAPI(
     nodeAddress,
+    sheetId,
     shinkaiIdentity,
     profile,
     shinkaiIdentity,
