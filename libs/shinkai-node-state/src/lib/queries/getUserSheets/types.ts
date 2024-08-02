@@ -6,11 +6,15 @@ export type GetUserSheetsInput = JobCredentialsPayload & {
   profile: string;
 };
 
-export type Workflow = {
-  description: string;
-  name: string;
-  raw: string;
-  version: string;
+export type Sheet = {
+  // column_dependency_manager: {
+  //   dependencies: {};
+  //   reverse_dependencies: {};
+  // };
+  // columns: {};
+  // rows: {};
+  sheet_name: string;
+  uuid: string;
 };
 
-export type GetUserSheetsOutput = Workflow[];
+export type GetUserSheetsOutput = Sheet[];

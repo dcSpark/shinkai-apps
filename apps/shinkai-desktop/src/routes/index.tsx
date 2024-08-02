@@ -37,10 +37,10 @@ import OnboardingPage from '../pages/onboarding';
 import { PublicKeys } from '../pages/public-keys';
 import RestoreConnectionPage from '../pages/restore-connection';
 import SettingsPage from '../pages/settings';
-import Sheet from '../pages/sheet';
+import SheetProject from '../pages/sheet-project';
+import SheetDashboard from '../pages/sheetDashboard';
 import ShinkaiPrivatePage from '../pages/shinkai-private';
 import TermsAndConditionsPage from '../pages/welcome';
-import WorkflowTable from '../pages/workflow-table';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
@@ -227,13 +227,13 @@ const AppRoutes = () => {
           }
           path="sheets"
         >
-          <Route element={<Sheet />} index />
-          <Route element={<WorkflowTable />} path=":sheetId" />
+          <Route element={<SheetDashboard />} index />
+          <Route element={<SheetProject />} path=":sheetId" />
         </Route>
         <Route
           element={
             <ProtectedRoute>
-              <WorkflowTable />
+              <SheetProject />
             </ProtectedRoute>
           }
           path="workflow-playground"

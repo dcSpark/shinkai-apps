@@ -58,6 +58,12 @@ export enum MessageSchemaType {
   RemoveWorkflow = 'RemoveWorkflow',
   // sheet
   UserSheets = 'UserSheets',
+  SetColumn = 'SetColumn',
+  RemoveColumn = 'RemoveColumn',
+  RemoveSheet = 'RemoveSheet',
+  CreateEmptySheet = 'CreateEmptySheet',
+  SetCellValue = 'SetCellValue',
+  GetSheet = 'GetSheet',
 }
 
 export interface LocalScopeVRKaiEntry {

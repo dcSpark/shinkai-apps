@@ -1823,32 +1823,92 @@ export const getUserSheets = async (
   receiver_subidentity: string,
   setupDetailsState: CredentialsPayload,
 ) => {
-  try {
-    console.log('getUserSheets');
+  const messageStr = ShinkaiMessageBuilderWrapper.getUserSheets(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
 
-    const messageStr = ShinkaiMessageBuilderWrapper.getUserSheets(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      sender,
-      sender_subidentity,
-      receiver,
-      receiver_subidentity,
-    );
+  const message = JSON.parse(messageStr);
 
-    const message = JSON.parse(messageStr);
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/user_sheets'),
+    message,
+    {
+      responseType: 'json',
+    },
+  );
 
-    const response = await httpClient.post(
-      urlJoin(nodeAddress, '/v1/user_sheets'),
-      message,
-      {
-        responseType: 'json',
-      },
-    );
+  const data = response.data;
+  return data;
+};
+export const createSheet = async (
+  nodeAddress: string,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  sheetName: string,
+  setupDetailsState: CredentialsPayload,
+) => {
+  const messageStr = ShinkaiMessageBuilderWrapper.createSheet(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    sheetName,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
 
-    const data = response.data;
-    return data;
-  } catch (error) {
-    console.log('getUserSheets error:', error);
-  }
+  const message = JSON.parse(messageStr);
+
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/create_sheet'),
+    message,
+    {
+      responseType: 'json',
+    },
+  );
+
+  const data = response.data;
+  return data;
+};
+export const removeSheet = async (
+  nodeAddress: string,
+  sheetId: string,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  setupDetailsState: CredentialsPayload,
+) => {
+  const messageStr = ShinkaiMessageBuilderWrapper.removeSheet(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    sheetId,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
+
+  const message = JSON.parse(messageStr);
+
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/remove_sheet'),
+    message,
+    {
+      responseType: 'json',
+    },
+  );
+
+  const data = response.data;
+  return data;
 };
