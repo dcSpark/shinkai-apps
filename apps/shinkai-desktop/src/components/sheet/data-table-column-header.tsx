@@ -1,4 +1,7 @@
 import { DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
+import { ColumnBehavior } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
+import { useRemoveSheetColumn } from '@shinkai_network/shinkai-node-state/lib/mutations/removeSheetColumn/useRemoveSheetColumn';
+import { useSetSheetColumn } from '@shinkai_network/shinkai-node-state/lib/mutations/setSheetColumn/useSetSheetColumn';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
 import { useGetWorkflowList } from '@shinkai_network/shinkai-node-state/lib/queries/getWorkflowList/useGetWorkflowList';
 import {
@@ -6,6 +9,7 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  Input,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -22,10 +26,12 @@ import {
   EyeOff,
   FileUpIcon,
   Link2Icon,
+  SigmaIcon,
   TextIcon,
   Trash,
 } from 'lucide-react';
 import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 import { useAuth } from '../../store/auth';
 
@@ -33,12 +39,18 @@ interface DataTableColumnHeaderProps<TData, TValue>
   extends React.HTMLAttributes<HTMLDivElement> {
   column: Column<TData, TValue>;
   title: string;
+  columnBehavior?: ColumnBehavior;
 }
-const fieldTypes = [
+export const fieldTypes = [
   {
-    id: 'text',
+    id: 'Text',
     label: 'Text',
     icon: TextIcon,
+  },
+  {
+    id: 'Number',
+    label: 'Number',
+    icon: SigmaIcon,
   },
   {
     id: 'file',
@@ -58,11 +70,13 @@ const fieldTypes = [
 ];
 
 export function DataTableColumnHeader<TData, TValue>({
-  // column,
+  column,
   title,
   className,
+  columnBehavior,
 }: DataTableColumnHeaderProps<TData, TValue>) {
   const auth = useAuth((state) => state.auth);
+  const { sheetId } = useParams();
 
   const [selectedType, setSelectedType] = useState(fieldTypes[0]);
   const { llmProviders } = useGetLLMProviders({
@@ -86,9 +100,14 @@ export function DataTableColumnHeader<TData, TValue>({
     profile_encryption_sk: auth?.profile_encryption_sk ?? '',
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
-
+  const [columnName, setColumnName] = useState(title);
   const [selectedAgent, setSelectedAgent] = useState(llmProviders[0]);
   const [selectedWorkflow, setSelectedWorkflow] = useState(workflowList?.[0]);
+  const currentType =
+    fieldTypes.find((type) => type.id === columnBehavior) ?? fieldTypes[0];
+
+  const { mutateAsync: setSheetColumn } = useSetSheetColumn();
+  const { mutateAsync: removeSheetColumn } = useRemoveSheetColumn();
 
   return (
     <div className={cn('w-full', className)}>
@@ -99,7 +118,7 @@ export function DataTableColumnHeader<TData, TValue>({
             size="sm"
             variant="ghost"
           >
-            <TextIcon className="h-3.5 w-3.5 shrink-0" />
+            <currentType.icon className="h-3.5 w-3.5 shrink-0" />
             <span className="flex-1 text-left">{title}</span>
           </Button>
         </PopoverTrigger>
@@ -107,7 +126,35 @@ export function DataTableColumnHeader<TData, TValue>({
           align="start"
           className="flex flex-col bg-gray-300 px-0 py-2 text-xs"
         >
-          <p className="px-3 py-1 text-left text-xs font-medium">{title}</p>
+          <div className="px-3 py-1 text-left text-xs font-medium">
+            <Input
+              autoFocus
+              className="!h-10 border-none bg-gray-200 py-0 text-xs caret-white placeholder:text-gray-100 focus-visible:ring-0 focus-visible:ring-white"
+              onChange={(e) => setColumnName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  if (!auth || !sheetId) return;
+                  setSheetColumn({
+                    profile: auth.profile,
+                    nodeAddress: auth.node_address,
+                    sheetId: sheetId,
+                    columnBehavior: currentType.id as ColumnBehavior,
+                    columnName: columnName.replace(/\//g, '_'),
+                    columnId: column.id as string,
+                    shinkaiIdentity: auth.shinkai_identity,
+                    my_device_encryption_sk: auth.my_device_encryption_sk,
+                    my_device_identity_sk: auth.my_device_identity_sk,
+                    node_encryption_pk: auth.node_encryption_pk,
+                    profile_encryption_sk: auth.profile_encryption_sk,
+                    profile_identity_sk: auth.profile_identity_sk,
+                  });
+                }
+              }}
+              placeholder={'Column Name'}
+              value={columnName}
+            />
+          </div>
           <Separator className="my-1 bg-gray-200" orientation="horizontal" />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -222,7 +269,24 @@ export function DataTableColumnHeader<TData, TValue>({
             <EyeOff className="h-3.5 w-3.5" />
             <span className="">Hide Property</span>
           </button>
-          <button className="flex justify-start gap-2 rounded-lg px-3 py-2 text-red-400 transition-colors hover:bg-gray-500">
+          <button
+            className="flex justify-start gap-2 rounded-lg px-3 py-2 text-red-400 transition-colors hover:bg-gray-500"
+            onClick={() => {
+              if (!auth || !sheetId) return;
+              removeSheetColumn({
+                profile: auth.profile,
+                nodeAddress: auth.node_address,
+                sheetId: sheetId,
+                columnId: column.id as string,
+                shinkaiIdentity: auth.shinkai_identity,
+                my_device_encryption_sk: auth.my_device_encryption_sk,
+                my_device_identity_sk: auth.my_device_identity_sk,
+                node_encryption_pk: auth.node_encryption_pk,
+                profile_encryption_sk: auth.profile_encryption_sk,
+                profile_identity_sk: auth.profile_identity_sk,
+              });
+            }}
+          >
             <Trash className="h-3.5 w-3.5" />
             <span className="">Delete Property</span>
           </button>

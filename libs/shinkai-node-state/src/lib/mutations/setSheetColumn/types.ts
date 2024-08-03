@@ -16,6 +16,7 @@ export type SetSheetColumnInput = CredentialsPayload & {
   shinkaiIdentity: string;
   profile: string;
   sheetId: string;
+  columnId: string | undefined;
   columnName: string;
   columnBehavior: ColumnBehavior;
 };

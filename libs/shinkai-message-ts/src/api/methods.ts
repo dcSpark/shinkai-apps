@@ -1949,6 +1949,7 @@ export const getSheet = async (
 export const setColumnSheet = async (
   nodeAddress: string,
   sheetId: string,
+  columnId: string | undefined,
   columnName: string,
   columnBehavior: ColumnBehavior,
   sender: string,
@@ -1962,6 +1963,7 @@ export const setColumnSheet = async (
     setupDetailsState.profile_identity_sk,
     setupDetailsState.node_encryption_pk,
     sheetId,
+    columnId,
     columnName,
     columnBehavior,
     sender,
@@ -1974,6 +1976,41 @@ export const setColumnSheet = async (
 
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v1/set_column'),
+    message,
+    {
+      responseType: 'json',
+    },
+  );
+
+  const data = response.data;
+  return data;
+};
+export const removeColumnSheet = async (
+  nodeAddress: string,
+  sheetId: string,
+  columnId: string,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  setupDetailsState: CredentialsPayload,
+) => {
+  const messageStr = ShinkaiMessageBuilderWrapper.removeColumnSheet(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    sheetId,
+    columnId,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
+
+  const message = JSON.parse(messageStr);
+
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/remove_column'),
     message,
     {
       responseType: 'json',

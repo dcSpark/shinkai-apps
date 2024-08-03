@@ -1,3 +1,4 @@
+import { ColumnBehavior } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
 import { useSetSheetColumn } from '@shinkai_network/shinkai-node-state/lib/mutations/setSheetColumn/useSetSheetColumn';
 import { useGetSheet } from '@shinkai_network/shinkai-node-state/lib/queries/getSheet/useGetSheet';
 import {
@@ -6,6 +7,9 @@ import {
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbSeparator,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
   Table,
   TableBody,
   TableCell,
@@ -34,6 +38,7 @@ import React, { useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import { generateColumns } from '../components/sheet/columns';
+import { fieldTypes } from '../components/sheet/data-table-column-header';
 // import { DataTablePagination } from '../components/sheet/data-table-pagination';
 // import { DataTableToolbar } from '../components/sheet/data-table-toolbar';
 import { generateData } from '../components/sheet/sheet-data';
@@ -188,86 +193,112 @@ const SheetProject = () => {
                           </TableHead>
                         );
                       })}
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <button
-                              className="text-gray-80 sticky right-0 top-[10px] z-[10] flex h-8 w-8 items-center justify-center gap-2 border border-b-0 bg-gray-500 transition-colors hover:bg-gray-300"
-                              onClick={() => {
-                                if (!auth || !sheetId) return;
-                                setSheetColumn({
-                                  profile: auth.profile,
-                                  nodeAddress: auth.node_address,
-                                  sheetId: sheetId,
-                                  columnBehavior: 'Text',
-                                  columnName: 'New Column',
-                                  shinkaiIdentity: auth.shinkai_identity,
-                                  my_device_encryption_sk:
-                                    auth.my_device_encryption_sk,
-                                  my_device_identity_sk:
-                                    auth.my_device_identity_sk,
-                                  node_encryption_pk: auth.node_encryption_pk,
-                                  profile_encryption_sk:
-                                    auth.profile_encryption_sk,
-                                  profile_identity_sk: auth.profile_identity_sk,
-                                });
-                              }}
+                      <DropdownMenu>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <DropdownMenuTrigger asChild>
+                              <TooltipTrigger asChild>
+                                <button className="text-gray-80 sticky right-0 top-[10px] z-[10] flex h-8 w-8 items-center justify-center gap-2 border border-b-0 bg-gray-500 transition-colors hover:bg-gray-300">
+                                  <PlusIcon className="h-5 w-5" />
+                                </button>
+                              </TooltipTrigger>
+                            </DropdownMenuTrigger>
+
+                            <DropdownMenuContent
+                              align="end"
+                              className="w-[160px] rounded-md bg-gray-300 p-0 px-2 py-2.5 text-gray-50"
+                              side="bottom"
                             >
-                              <PlusIcon className="h-5 w-5" />
-                            </button>
-                          </TooltipTrigger>
-                          <TooltipPortal>
-                            <TooltipContent side="bottom">
-                              <p>Add Property</p>
-                            </TooltipContent>
-                          </TooltipPortal>
-                        </Tooltip>
-                      </TooltipProvider>
+                              {fieldTypes.map((option) => {
+                                return (
+                                  <button
+                                    className="flex w-full gap-2 rounded-lg px-2.5 py-2 text-xs capitalize hover:bg-gray-500 [&>svg]:bg-transparent"
+                                    key={option.id}
+                                    onClick={() => {
+                                      if (!auth || !sheetId) return;
+                                      setSheetColumn({
+                                        profile: auth.profile,
+                                        nodeAddress: auth.node_address,
+                                        sheetId: sheetId,
+                                        columnBehavior:
+                                          option.id as ColumnBehavior,
+                                        columnName: 'New Column',
+                                        columnId: undefined,
+                                        shinkaiIdentity: auth.shinkai_identity,
+                                        my_device_encryption_sk:
+                                          auth.my_device_encryption_sk,
+                                        my_device_identity_sk:
+                                          auth.my_device_identity_sk,
+                                        node_encryption_pk:
+                                          auth.node_encryption_pk,
+                                        profile_encryption_sk:
+                                          auth.profile_encryption_sk,
+                                        profile_identity_sk:
+                                          auth.profile_identity_sk,
+                                      });
+                                    }}
+                                  >
+                                    <option.icon className="h-3.5 w-3.5 text-gray-50" />
+                                    {option.id}
+                                  </button>
+                                );
+                              })}
+                              {/*  */}
+                            </DropdownMenuContent>
+                            <TooltipPortal>
+                              <TooltipContent side="bottom">
+                                <p>Add Property</p>
+                              </TooltipContent>
+                            </TooltipPortal>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </DropdownMenu>
                     </TableRow>
                   ))}
                 </TableHeader>
                 <TableBody className="[&_tr:last-child]:border-0">
-                  {table.getRowModel().rows?.length
-                    ? table.getRowModel().rows.map((row) => (
-                        <TableRow
-                          className={cn(
-                            'hover:bg-accent group flex w-full border-b transition-colors [&_td:first-child]:border-l [&_td:last-child]:border-r',
-                          )}
-                          data-state={row.getIsSelected() && 'selected'}
-                          key={row.id}
-                        >
-                          {row.getVisibleCells().map((cell) => (
-                            <TableCell
-                              className={cn(
-                                'flex select-none items-start border-b border-l bg-gray-500 px-2 py-0 text-xs group-hover:bg-gray-300',
-                                '[&:has([role=checkbox])]:justify-center [&:has([role=checkbox])]:px-2.5',
-                              )}
-                              key={cell.id}
-                              style={{ width: cell.column.getSize() }}
-                            >
-                              <div className="w-full text-xs">
-                                <div className="line-clamp-1">
-                                  {flexRender(
-                                    cell.column.columnDef.cell,
-                                    cell.getContext(),
-                                  )}
+                  {
+                    table.getRowModel().rows?.length
+                      ? table.getRowModel().rows.map((row) => (
+                          <TableRow
+                            className={cn(
+                              'hover:bg-accent group flex w-full border-b transition-colors [&_td:first-child]:border-l [&_td:last-child]:border-r',
+                            )}
+                            data-state={row.getIsSelected() && 'selected'}
+                            key={row.id}
+                          >
+                            {row.getVisibleCells().map((cell) => (
+                              <TableCell
+                                className={cn(
+                                  'flex select-none items-start border-b border-l bg-gray-500 px-2 py-0 text-xs group-hover:bg-gray-300',
+                                  '[&:has([role=checkbox])]:justify-center [&:has([role=checkbox])]:px-2.5',
+                                )}
+                                key={cell.id}
+                                style={{ width: cell.column.getSize() }}
+                              >
+                                <div className="w-full text-xs">
+                                  <div className="line-clamp-1">
+                                    {flexRender(
+                                      cell.column.columnDef.cell,
+                                      cell.getContext(),
+                                    )}
+                                  </div>
                                 </div>
-                              </div>
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      ))
-                    : null
-                      // <TableRow>
-                      //   <TableCell
-                      //     className="h-24 text-center"
-                      //     colSpan={
-                      //       generateColumns(sheetInfo?.columns ?? {}).length
-                      //     }
-                      //   >
-                      //     {'No data results'}
-                      //   </TableCell>
-                      // </TableRow>
+                              </TableCell>
+                            ))}
+                          </TableRow>
+                        ))
+                      : null
+                    // <TableRow>
+                    //   <TableCell
+                    //     className="h-24 text-center"
+                    //     colSpan={
+                    //       generateColumns(sheetInfo?.columns ?? {}).length
+                    //     }
+                    //   >
+                    //     {'No data results'}
+                    //   </TableCell>
+                    // </TableRow>
                   }
                   <button className="text-gray-80 sticky bottom-0 right-0 z-[10] flex w-[calc(100%-40px)] items-center justify-start gap-1 border border-t-0 bg-gray-500 transition-colors hover:bg-gray-300">
                     <span className="flex h-8 w-[50px] items-center justify-center border-r p-1.5">

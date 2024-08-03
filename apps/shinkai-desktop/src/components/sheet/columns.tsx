@@ -13,6 +13,7 @@ import { DataTableColumnHeader } from './data-table-column-header';
 export const generateColumns = (columns: Columns): ColumnDef<Row>[] => {
   const formattedColumns = Object.entries(columns).map(([key, value]) => ({
     ...value,
+
     id: key,
   }));
 
@@ -62,7 +63,11 @@ export const generateColumns = (columns: Columns): ColumnDef<Row>[] => {
         accessorKey: columnItem.id,
         // @ts-expect-error to fix
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title={columnItem.name} />
+          <DataTableColumnHeader
+            column={column}
+            columnBehavior={columnItem.behavior}
+            title={columnItem.name}
+          />
         ),
         // @ts-expect-error to fix
         cell: ({ row }) => {
