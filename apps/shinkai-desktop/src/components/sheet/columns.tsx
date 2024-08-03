@@ -19,7 +19,6 @@ export const generateColumns = (columns: Columns): ColumnDef<Row>[] => {
   return [
     {
       id: 'select',
-
       maxSize: 50,
       header: ({ table }) => (
         <div className="flex items-center justify-center">
