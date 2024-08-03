@@ -95,7 +95,7 @@ export function DataTableColumnHeader<TData, TValue>({
       <Popover>
         <PopoverTrigger asChild>
           <Button
-            className="-ml-1.5 line-clamp-1 flex h-8 w-full justify-start gap-1.5 rounded-lg bg-transparent px-2 pr-0 hover:bg-gray-300 data-[state=open]:bg-gray-300"
+            className="-ml-1.5 line-clamp-1 flex size-full justify-start gap-1.5 rounded-md bg-transparent px-2 pr-0 hover:bg-gray-300 data-[state=open]:bg-gray-300"
             size="sm"
             variant="ghost"
           >

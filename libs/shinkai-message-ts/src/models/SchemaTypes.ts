@@ -1,3 +1,5 @@
+import { Workflow } from '@shinkai_network/shinkai-node-state/lib/queries/getWorkflowList/types';
+
 import { WasmEncryptionMethod } from '../pkg/shinkai_message_wasm';
 
 export const TSEncryptionMethod = {
@@ -284,3 +286,25 @@ export interface GenericAPI {
 export interface APIAddAgentRequest {
   agent: SerializedLLMProvider;
 }
+
+export type ColumnBehavior =
+  | 'Text'
+  | 'Number'
+  | { Formula: string }
+  | { UploadedFiles: { files: string[] } }
+  | {
+      LLMCall: {
+        input: string;
+        workflow: Workflow;
+        llm_provider_name: string;
+        input_hash: string;
+      };
+    };
+
+export type Columns = {
+  [key: string]: {
+    behavior?: ColumnBehavior;
+    id: string;
+    name: string;
+  };
+};

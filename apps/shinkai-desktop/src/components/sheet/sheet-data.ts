@@ -1,3 +1,8 @@
+import {
+  Row,
+  Rows,
+} from '@shinkai_network/shinkai-node-state/lib/queries/getSheet/types';
+
 export type Book = {
   title: string;
   author: string;
@@ -7,6 +12,24 @@ export type Book = {
   summary: string;
 };
 
+export const generateData = (rows: Rows, columnsLength: number): Row[] => {
+  // format from Row Object where you have many keys as rowId and then its value,  to Row array and make sure every array has a value
+  const processedRows = Object.entries(rows).map(([_, rowData]) => {
+    const row = {} as Row;
+    for (let i = 0; i <= columnsLength; i++) {
+      const cellData = rowData[i] || { value: null, status: 'Empty' };
+      // @ts-expect-error to fix
+      row[i] = {
+        value: cellData.value,
+        status: cellData.status || 'Empty',
+        last_updated: '',
+      };
+    }
+    return row;
+  });
+
+  return processedRows;
+};
 export const topProductivityBooks: Book[] = [
   {
     title: 'Getting Things Done: The Art of Stress-Free Productivity',

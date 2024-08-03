@@ -33,7 +33,6 @@ const SheetDashboard = () => {
 
   const { mutateAsync: createSheet } = useCreateSheet({
     onSuccess: (data) => {
-      console.log(data.data.sheet_id, '/sheets/${data.data.sheet_id}');
       navigate(`/sheets/${data.data.sheet_id}`);
     },
   });
@@ -80,7 +79,6 @@ const SheetDashboard = () => {
           >
             <SheetIcon className="transition-transform duration-200 group-hover:-translate-y-0.5" />
             <span>{sheet?.sheet_name ?? '-'}</span>
-            <span>{sheet?.uuid ?? '-'}</span>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button

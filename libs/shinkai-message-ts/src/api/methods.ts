@@ -2,6 +2,7 @@
 import { httpClient } from '../http-client';
 import {
   AgentCredentialsPayload,
+  ColumnBehavior,
   CreateChatInboxResponse,
   CredentialsPayload,
   JobCredentialsPayload,
@@ -1936,6 +1937,43 @@ export const getSheet = async (
 
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v1/get_sheet'),
+    message,
+    {
+      responseType: 'json',
+    },
+  );
+
+  const data = response.data;
+  return data;
+};
+export const setColumnSheet = async (
+  nodeAddress: string,
+  sheetId: string,
+  columnName: string,
+  columnBehavior: ColumnBehavior,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  setupDetailsState: CredentialsPayload,
+) => {
+  const messageStr = ShinkaiMessageBuilderWrapper.setColumnSheet(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    sheetId,
+    columnName,
+    columnBehavior,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
+
+  const message = JSON.parse(messageStr);
+
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/set_column'),
     message,
     {
       responseType: 'json',

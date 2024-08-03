@@ -1,4 +1,7 @@
-import type { JobCredentialsPayload } from '@shinkai_network/shinkai-message-ts/models';
+import type {
+  ColumnBehavior,
+  JobCredentialsPayload,
+} from '@shinkai_network/shinkai-message-ts/models';
 
 export type GetSheetInput = JobCredentialsPayload & {
   nodeAddress: string;
@@ -6,16 +9,34 @@ export type GetSheetInput = JobCredentialsPayload & {
   profile: string;
   sheetId: string;
 };
+export type Column = {
+  behavior?: ColumnBehavior;
+  id: string;
+  name: string;
+};
+export type Row = {
+  last_updated: string;
+  status: string;
+  value: string;
+};
+export type Columns = {
+  [key: string]: Column;
+};
+export type Rows = {
+  [rowId: string]: {
+    [columnId: string]: Row;
+  };
+};
 
 export type Sheet = {
   // column_dependency_manager: {
   //   dependencies: {};
   //   reverse_dependencies: {};
   // };
-  // columns: {};
-  // rows: {};
+  columns: Columns;
+  rows: Rows;
   sheet_name: string;
   uuid: string;
 };
 
-export type GetSheetOutput = Sheet[];
+export type GetSheetOutput = Sheet;
