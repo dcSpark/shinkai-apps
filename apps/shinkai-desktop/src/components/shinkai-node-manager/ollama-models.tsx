@@ -5,6 +5,11 @@ import {
   Button,
   Progress,
   ScrollArea,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   Table,
   TableBody,
   TableCell,
@@ -27,6 +32,7 @@ import {
   useOllamaRemoveMutation,
 } from '../../lib/shinkai-node-manager/ollama-client';
 import { OLLAMA_MODELS } from '../../lib/shinkai-node-manager/ollama-models';
+import OLLAMA_MODELS_REPOSITORY from '../../lib/shinkai-node-manager/ollama-models-repository.json';
 import {
   useShinkaiNodeGetDefaultModel,
   useShinkaiNodeGetOllamaApiUrlQuery,
@@ -45,6 +51,7 @@ export const OllamaModels = () => {
   const ollamaConfig = { host: ollamaApiUrl || 'http://127.0.0.1:11435' };
 
   const installedOllamaModelsMap = useMap<string, ModelResponse>();
+  const selectedTagMap = useMap<string, string>();
   const pullingModelsMap = useMap<string, ProgressResponse>();
 
   const { data: isShinkaiNodeRunning } = useShinkaiNodeIsRunningQuery();
@@ -143,12 +150,28 @@ export const OllamaModels = () => {
     return defaultModel === model;
   };
 
+  const getFullName = (model: string, tag: string): string => {
+    return `${model}:${tag}`;
+  };
+
   useEffect(() => {
     installedOllamaModels?.models &&
       installedOllamaModels.models.forEach((modelResponse) => {
         installedOllamaModelsMap.set(modelResponse.name, modelResponse);
       });
   }, [installedOllamaModels?.models, installedOllamaModelsMap]);
+
+  useEffect(() => {
+    OLLAMA_MODELS_REPOSITORY.forEach((model) => {
+      const defaultTag: string =
+        model.tags?.find((tag) =>
+          installedOllamaModelsMap.has(`${model.name}:${tag.name}`),
+        )?.name ||
+        model.tags?.find((tag) => tag.name === model.defaultTag)?.name ||
+        model.tags[0].name;
+      selectedTagMap.set(model.name, defaultTag);
+    });
+  }, [installedOllamaModelsMap, selectedTagMap]);
 
   const modelList = useMemo(() => {
     return OLLAMA_MODELS.sort((model) =>
@@ -217,10 +240,6 @@ export const OllamaModels = () => {
                         </Badge>
                       )}
                     </div>
-
-                    {/*<Badge className={cn('text-[8px]')} variant="outline">*/}
-                    {/*  {model.fullName}*/}
-                    {/*</Badge>*/}
                     <span className="text-gray-80 line-clamp-3 text-ellipsis text-xs">
                       {model.description}
                     </span>
@@ -283,6 +302,178 @@ export const OllamaModels = () => {
                       <Button
                         className="hover:border-brand py-1.5 text-sm hover:bg-transparent hover:text-white"
                         onClick={() => ollamaPull({ model: model.fullName })}
+                        size="auto"
+                        variant={'outline'}
+                      >
+                        <Download className="mr-2 h-4 w-4" />
+                        {t('common.install')}
+                      </Button>
+                    )}
+                  </motion.div>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+        <TableFooter className="text-right">
+          <TableRow>
+            <TableCell colSpan={6}>
+              <span className="text-gray-80 text-xs">
+                {t('shinkaiNode.models.poweredByOllama')}
+              </span>
+            </TableCell>
+          </TableRow>
+        </TableFooter>
+      </Table>
+
+      <Table className="w-full border-collapse text-[13px]">
+        <TableHeader className="bg-gray-400 text-xs">
+          <TableRow>
+            <TableHead className="md:w-[300px] lg:w-[480px]">
+              {t('shinkaiNode.models.table.models')}
+            </TableHead>
+            <TableHead> {t('shinkaiNode.models.table.quality')}</TableHead>
+            <TableHead className="w-[180px]" />
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {OLLAMA_MODELS_REPOSITORY.map((model) => {
+            return (
+              <TableRow
+                className="transition-colors hover:bg-gray-300/50"
+                key={model.name}
+              >
+                <TableCell>
+                  <div className="flex flex-col items-start gap-2">
+                    <div className="flex flex-row items-center gap-3">
+                      <span className="font-medium">{model.name}</span>
+                      {isDefaultModel(model.name) && (
+                        <Badge
+                          className={cn(
+                            'rounded-md border-0 px-2 py-1 font-normal capitalize',
+                            'bg-emerald-900 text-emerald-400',
+                          )}
+                          variant="outline"
+                        >
+                          {t('common.recommended')}
+                        </Badge>
+                      )}
+                    </div>
+
+                    <span className="text-gray-80 line-clamp-3 text-ellipsis text-xs">
+                      {model.description}
+                    </span>
+                  </div>
+                </TableCell>
+                <TableCell className="whitespace-nowrap">
+                  <Select
+                    defaultValue={
+                      model.tags?.find(
+                        (tag) =>
+                          installedOllamaModelsMap.has(
+                            `${model.name}:${tag.name}`,
+                          ) || tag.name === model.defaultTag,
+                      )?.name
+                    }
+                    name="defaultAgentId"
+                    onValueChange={(value) => {
+                      console.log('selecting default');
+                      selectedTagMap.set(model.name, value);
+                    }}
+                    value={selectedTagMap.get(model.name)}
+                  >
+                    <SelectTrigger className="p-2 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="h-72">
+                      {model.tags?.map((tag) => (
+                        <SelectItem
+                          className="text-xs"
+                          key={tag.name}
+                          value={tag.name}
+                        >
+                          {tag.name} - {tag.size}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </TableCell>
+                <TableCell>
+                  <motion.div
+                    className="flex items-center justify-center"
+                    layout
+                  >
+                    {isOllamaListLoading ? (
+                      <Loader2 className="animate-spin" />
+                    ) : installedOllamaModelsMap.has(
+                        `${model.name}:${selectedTagMap.get(model.name)}`,
+                      ) ? (
+                      <Button
+                        className="hover:border-brand py-1.5 text-sm hover:text-white"
+                        onClick={() => {
+                          ollamaRemove({
+                            model: getFullName(
+                              model.name,
+                              selectedTagMap.get(model.name)!,
+                            ),
+                          });
+                        }}
+                        size="auto"
+                        variant={'destructive'}
+                      >
+                        <Minus className="mr-2 h-3 w-3" />
+                        {t('common.remove')}
+                      </Button>
+                    ) : pullingModelsMap.get(
+                        getFullName(
+                          model.name,
+                          selectedTagMap.get(model.name)!,
+                        ),
+                      ) ? (
+                      <div className="flex flex-col items-center gap-1">
+                        <span className="text-xs text-gray-100">
+                          {getProgress(
+                            pullingModelsMap.get(
+                              getFullName(
+                                model.name,
+                                selectedTagMap.get(model.name)!,
+                              ),
+                            ) as ProgressResponse,
+                          ) + '%'}
+                        </span>
+                        <Progress
+                          className="h-2 w-full bg-gray-200 [&>*]:bg-gray-100"
+                          value={getProgress(
+                            pullingModelsMap.get(
+                              getFullName(
+                                model.name,
+                                selectedTagMap.get(model.name)!,
+                              ),
+                            ) as ProgressResponse,
+                          )}
+                        />
+                        <span className="text-xs text-gray-100">
+                          {
+                            pullingModelsMap.get(
+                              getFullName(
+                                model.name,
+                                selectedTagMap.get(model.name)!,
+                              ),
+                            )?.status
+                          }
+                        </span>
+                      </div>
+                    ) : (
+                      <Button
+                        className="hover:border-brand py-1.5 text-sm hover:bg-transparent hover:text-white"
+                        onClick={() =>
+                          ollamaPull({
+                            model: getFullName(
+                              model.name,
+                              selectedTagMap.get(model.name)!,
+                            ),
+                          })
+                        }
                         size="auto"
                         variant={'outline'}
                       >
