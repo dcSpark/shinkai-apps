@@ -3,8 +3,7 @@ import type { CredentialsPayload } from '@shinkai_network/shinkai-message-ts/mod
 export type AddRowsSheetOutput = {
   status: string;
   data: {
-    sheet_id: string;
-    status: string;
+    row_ids: string[];
   };
 };
 

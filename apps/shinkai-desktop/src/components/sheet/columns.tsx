@@ -11,11 +11,8 @@ import { DataTableColumnHeader } from './data-table-column-header';
 // import { DataTableRowActions } from './data-table-row-actions';
 
 export const generateColumns = (columns: Columns): ColumnDef<Row>[] => {
-  const formattedColumns = Object.entries(columns).map(([key, value]) => ({
-    ...value,
-
-    id: key,
-  }));
+  const formattedColumns = Object.entries(columns).map(([_, value]) => value);
+  console.log(formattedColumns, 'formattedColumns');
 
   return [
     {
@@ -71,7 +68,6 @@ export const generateColumns = (columns: Columns): ColumnDef<Row>[] => {
         ),
         // @ts-expect-error to fix
         cell: ({ row }) => {
-          console.log(row, 'row', row.original[columnItem.id]?.value);
           return (
             <DataTableCell
               row={row}

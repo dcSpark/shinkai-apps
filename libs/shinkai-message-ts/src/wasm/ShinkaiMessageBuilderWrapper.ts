@@ -2029,7 +2029,7 @@ export class ShinkaiMessageBuilderWrapper {
   ): string {
     const body = JSON.stringify({
       sheet_id: sheetId,
-      column_id: Number(columnId),
+      column_id: columnId,
     });
 
     const builder = new ShinkaiMessageBuilderWrapper(

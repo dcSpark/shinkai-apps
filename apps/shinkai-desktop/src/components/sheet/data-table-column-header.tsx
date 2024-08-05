@@ -1,6 +1,6 @@
 import { DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
 import { ColumnBehavior } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
-import { useRemoveSheetColumn } from '@shinkai_network/shinkai-node-state/lib/mutations/removeSheetColumn/useRemoveSheetColumn';
+import { useRemoveColumnSheet } from '@shinkai_network/shinkai-node-state/lib/mutations/removeColumnSheet/useRemoveColumnSheet';
 import { useSetSheetColumn } from '@shinkai_network/shinkai-node-state/lib/mutations/setSheetColumn/useSetSheetColumn';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
 import { useGetWorkflowList } from '@shinkai_network/shinkai-node-state/lib/queries/getWorkflowList/useGetWorkflowList';
@@ -72,7 +72,6 @@ export const fieldTypes = [
 export function DataTableColumnHeader<TData, TValue>({
   column,
   title,
-  className,
   columnBehavior,
 }: DataTableColumnHeaderProps<TData, TValue>) {
   const auth = useAuth((state) => state.auth);
@@ -107,10 +106,10 @@ export function DataTableColumnHeader<TData, TValue>({
     fieldTypes.find((type) => type.id === columnBehavior) ?? fieldTypes[0];
 
   const { mutateAsync: setSheetColumn } = useSetSheetColumn();
-  const { mutateAsync: removeSheetColumn } = useRemoveSheetColumn();
+  const { mutateAsync: removeSheetColumn } = useRemoveColumnSheet();
 
   return (
-    <div className={cn('w-full', className)}>
+    <div className={cn('w-full')}>
       <Popover>
         <PopoverTrigger asChild>
           <Button

@@ -1,4 +1,6 @@
 import { ColumnBehavior } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
+import { useAddRowsSheet } from '@shinkai_network/shinkai-node-state/lib/mutations/addRowsSheet/useAddRowsSheet';
+import { useRemoveRowsSheet } from '@shinkai_network/shinkai-node-state/lib/mutations/removeRowsSheet/useRemoveRowsSheet';
 import { useSetSheetColumn } from '@shinkai_network/shinkai-node-state/lib/mutations/setSheetColumn/useSetSheetColumn';
 import { useGetSheet } from '@shinkai_network/shinkai-node-state/lib/queries/getSheet/useGetSheet';
 import {
@@ -7,6 +9,7 @@ import {
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbSeparator,
+  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
@@ -30,6 +33,7 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  RowSelectionState,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
@@ -70,7 +74,7 @@ const SheetProject = () => {
     [],
   );
 
-  const [rowSelection, setRowSelection] = React.useState({});
+  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
 
   const data = useMemo(
     () =>
@@ -108,6 +112,7 @@ const SheetProject = () => {
       minSize: 50,
       maxSize: 500,
     },
+    getRowId: (row) => row.value,
   });
 
   return (
@@ -300,16 +305,12 @@ const SheetProject = () => {
                     //   </TableCell>
                     // </TableRow>
                   }
-                  <button className="text-gray-80 sticky bottom-0 right-0 z-[10] flex w-[calc(100%-40px)] items-center justify-start gap-1 border border-t-0 bg-gray-500 transition-colors hover:bg-gray-300">
-                    <span className="flex h-8 w-[50px] items-center justify-center border-r p-1.5">
-                      <PlusIcon className="h-full w-full" />
-                    </span>
-                    <span className="px-2 text-xs">New Entity</span>
-                  </button>
+                  <AddRowButton />
                 </TableBody>
               </Table>
             </div>
           </div>
+          <TableActions selectedRows={rowSelection} />
           {/*<DataTablePagination table={table} />*/}
         </div>
       </div>
@@ -317,3 +318,78 @@ const SheetProject = () => {
   );
 };
 export default SheetProject;
+
+function AddRowButton() {
+  const auth = useAuth((state) => state.auth);
+  const { mutateAsync: addRowsSheet } = useAddRowsSheet({});
+  const { sheetId } = useParams();
+  const handleAddRow = async () => {
+    addRowsSheet({
+      nodeAddress: auth?.node_address ?? '',
+      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      profile: auth?.profile ?? '',
+      sheetId: sheetId ?? '',
+      numberOfRows: 1,
+      startingRow: undefined,
+      my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+      my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+    });
+  };
+
+  return (
+    <button
+      className="text-gray-80 sticky bottom-0 right-0 z-[10] flex w-[calc(100%-40px)] items-center justify-start gap-1 border border-t-0 bg-gray-500 transition-colors hover:bg-gray-300"
+      onClick={handleAddRow}
+    >
+      <span className="flex h-8 w-[50px] items-center justify-center border-r p-1.5">
+        <PlusIcon className="h-full w-full" />
+      </span>
+      <span className="px-2 text-xs">New Entity</span>
+    </button>
+  );
+}
+interface DataTableActionsProps {
+  selectedRows: RowSelectionState;
+}
+function TableActions({ selectedRows }: DataTableActionsProps) {
+  const auth = useAuth((state) => state.auth);
+  const { sheetId } = useParams();
+  const { mutateAsync: removeRowsSheet } = useRemoveRowsSheet();
+
+  return (
+    <div className="outline-border z-5 absolute bottom-14 left-1/2 inline-flex -translate-x-1/2 items-center overflow-hidden rounded-xl bg-gray-400 px-2 py-2 shadow-lg outline outline-1 outline-gray-200">
+      <div className="rounded-lg pl-3 pr-4 pt-px text-xs">
+        {Object.keys(selectedRows).length} selected{' '}
+      </div>
+      <Button
+        className="!h-[32px] min-w-[80px] rounded-md"
+        onClick={() => {
+          removeRowsSheet({
+            nodeAddress: auth?.node_address ?? '',
+            shinkaiIdentity: auth?.shinkai_identity ?? '',
+            profile: auth?.profile ?? '',
+            sheetId: sheetId ?? '',
+            rowIds: [
+              '0a2a8b21-7abb-4638-b3e3-e925e3eb4be9',
+              '10d36d5f-628d-4837-958c-31a4d97b4e92',
+              'ba703142-74b1-465b-a271-239d9dea66d7',
+              'de8c0018-858f-4420-852a-d0ac6dda65e1',
+              'f0c4a46b-eab3-4b78-88ab-3749f7638628',
+            ],
+            my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+            my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+            node_encryption_pk: auth?.node_encryption_pk ?? '',
+            profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+            profile_identity_sk: auth?.profile_identity_sk ?? '',
+          });
+        }}
+        size="sm"
+      >
+        Delete
+      </Button>
+    </div>
+  );
+}
