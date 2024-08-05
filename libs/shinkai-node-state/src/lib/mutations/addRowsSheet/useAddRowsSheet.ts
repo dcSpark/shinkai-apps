@@ -5,15 +5,15 @@ import {
 } from '@tanstack/react-query';
 
 import { FunctionKey } from '../../constants';
-import { removeRowsSheet } from './index';
+import { addRowsSheet } from './index';
 import { AddRowsSheetInput, AddRowsSheetOutput } from './types';
 
 type Options = UseMutationOptions<AddRowsSheetOutput, Error, AddRowsSheetInput>;
 
-export const useRemoveRowsSheet = (options?: Options) => {
+export const useAddRowsSheet = (options?: Options) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: removeRowsSheet,
+    mutationFn: addRowsSheet,
     ...options,
     onSuccess: (response, variables, context) => {
       queryClient.invalidateQueries({

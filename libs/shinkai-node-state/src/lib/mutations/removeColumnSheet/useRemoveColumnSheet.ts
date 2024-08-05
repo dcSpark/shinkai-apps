@@ -14,7 +14,7 @@ type Options = UseMutationOptions<
   RemoveSheetColumnInput
 >;
 
-export const useRemoveSheetColumn = (options?: Options) => {
+export const useRemoveColumnSheet = (options?: Options) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: removeSheetColumn,

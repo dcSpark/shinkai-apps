@@ -2,7 +2,7 @@ import { addRowsSheet as addRowsSheetAPI } from '@shinkai_network/shinkai-messag
 
 import { AddRowsSheetInput } from './types';
 
-export const removeRowsSheet = async ({
+export const addRowsSheet = async ({
   nodeAddress,
   shinkaiIdentity,
   profile,
