@@ -125,8 +125,9 @@ const App = () => {
     isPending: shinkaiNodeRemoveStorageIsPending,
     mutateAsync: shinkaiNodeRemoveStorage,
   } = useShinkaiNodeRemoveStorageMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
       successRemovingShinkaiNodeStorageToast();
+      setShinkaiNodeOptions(null);
       setLogout();
     },
     onError: () => {

@@ -16,10 +16,10 @@ import {
   useShinkaiNodeRemoveStorageMutation,
   useShinkaiNodeSpawnMutation,
 } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
+import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
 
 export const ResetStorageBeforeConnectConfirmationPrompt = ({
   onCancel,
-  onRestore,
   onReset,
   ...props
 }: {
@@ -29,7 +29,7 @@ export const ResetStorageBeforeConnectConfirmationPrompt = ({
 } & AlertDialogProps) => {
   // const navigate = useNavigate();
   const { t } = useTranslation();
-
+  const { setShinkaiNodeOptions } = useShinkaiNodeManager();
   const { mutateAsync: shinkaiNodeKill } = useShinkaiNodeKillMutation();
   const { mutateAsync: shinkaiNodeSpawn } = useShinkaiNodeSpawnMutation();
   const { mutateAsync: shinkaiNodeRemoveStorage } =
@@ -51,6 +51,7 @@ export const ResetStorageBeforeConnectConfirmationPrompt = ({
   const reset = async (preserveKeys: boolean) => {
     await shinkaiNodeKill();
     await shinkaiNodeRemoveStorage({ preserveKeys });
+    setShinkaiNodeOptions(null);
     await shinkaiNodeSpawn();
     if (typeof onReset === 'function') {
       onReset();
