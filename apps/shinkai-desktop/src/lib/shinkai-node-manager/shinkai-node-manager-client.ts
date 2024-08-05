@@ -124,9 +124,10 @@ export const useShinkaiNodeRemoveStorageMutation = (
   >,
 ) => {
   const response = useMutation({
-    mutationFn: (
+    mutationFn: async (
       options: Partial<ShinkaiNodeRemoveStorageOptions>,
     ): Promise<void> => {
+      await invoke('shinkai_node_set_default_options');
       return invoke('shinkai_node_remove_storage', {
         preserveKeys: options?.preserveKeys,
       });
