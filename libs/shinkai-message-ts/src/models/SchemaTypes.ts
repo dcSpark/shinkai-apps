@@ -64,6 +64,8 @@ export enum MessageSchemaType {
   CreateEmptySheet = 'CreateEmptySheet',
   SetCellValue = 'SetCellValue',
   GetSheet = 'GetSheet',
+  AddRows = 'AddRows',
+  RemoveRows = 'RemoveRows',
 }
 
 export interface LocalScopeVRKaiEntry {

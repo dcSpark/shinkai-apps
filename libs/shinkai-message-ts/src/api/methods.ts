@@ -2020,3 +2020,75 @@ export const removeColumnSheet = async (
   const data = response.data;
   return data;
 };
+export const addRowsSheet = async (
+  nodeAddress: string,
+  sheetId: string,
+  numberOfRows: number,
+  startingRow: number | undefined,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  setupDetailsState: CredentialsPayload,
+) => {
+  const messageStr = ShinkaiMessageBuilderWrapper.addRowsSheet(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    sheetId,
+    numberOfRows,
+    startingRow,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
+
+  const message = JSON.parse(messageStr);
+
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/add_rows'),
+    message,
+    {
+      responseType: 'json',
+    },
+  );
+
+  const data = response.data;
+  return data;
+};
+export const removeRowsSheet = async (
+  nodeAddress: string,
+  sheetId: string,
+  rowIds: string[],
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  setupDetailsState: CredentialsPayload,
+) => {
+  const messageStr = ShinkaiMessageBuilderWrapper.removeRowsSheet(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    sheetId,
+    rowIds,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
+
+  const message = JSON.parse(messageStr);
+
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/remove_rows'),
+    message,
+    {
+      responseType: 'json',
+    },
+  );
+
+  const data = response.data;
+  return data;
+};
