@@ -1,5 +1,8 @@
 import { DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
-import { ColumnBehavior } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
+import {
+  ColumnBehavior,
+  ColumnType,
+} from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
 import { useRemoveColumnSheet } from '@shinkai_network/shinkai-node-state/lib/mutations/removeColumnSheet/useRemoveColumnSheet';
 import { useSetColumnSheet } from '@shinkai_network/shinkai-node-state/lib/mutations/setColumnSheet/useSetColumnSheet';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
@@ -16,16 +19,17 @@ import {
   Separator,
   Textarea,
 } from '@shinkai_network/shinkai-ui';
-import { WorkflowPlaygroundIcon } from '@shinkai_network/shinkai-ui/assets';
+import {
+  FilesIcon,
+  WorkflowPlaygroundIcon,
+} from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Column } from '@tanstack/react-table';
 import {
   BotIcon,
-  CheckCircle2Icon,
   ChevronRight,
   EyeOff,
   FileUpIcon,
-  Link2Icon,
   SigmaIcon,
   TextIcon,
   Trash,
@@ -43,29 +47,29 @@ interface DataTableColumnHeaderProps<TData, TValue>
 }
 export const fieldTypes = [
   {
-    id: 'Text',
+    id: ColumnType.Text,
     label: 'Text',
     icon: TextIcon,
   },
   {
-    id: 'Number',
+    id: ColumnType.Number,
     label: 'Number',
     icon: SigmaIcon,
   },
   {
-    id: 'file',
-    label: 'File',
+    id: ColumnType.LLMCall,
+    label: 'LLMCalls',
+    icon: BotIcon,
+  },
+  {
+    id: ColumnType.MultipleVRFiles,
+    label: 'VR Files',
+    icon: FilesIcon,
+  },
+  {
+    id: ColumnType.UploadedFiles,
+    label: 'Files',
     icon: FileUpIcon,
-  },
-  {
-    id: 'single-select',
-    label: 'Single Select',
-    icon: CheckCircle2Icon,
-  },
-  {
-    id: 'url',
-    label: 'URL',
-    icon: Link2Icon,
   },
 ];
 
@@ -173,7 +177,7 @@ export function DataTableColumnHeader<TData, TValue>({
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="start"
-              className="w-[160px] rounded-md bg-gray-300 p-0 px-2 py-2.5 text-gray-50"
+              className="w-[180px] rounded-md bg-gray-300 p-0 px-2 py-2.5 text-gray-50"
               side="right"
             >
               {fieldTypes.map((option) => {
@@ -191,78 +195,84 @@ export function DataTableColumnHeader<TData, TValue>({
               })}
             </DropdownMenuContent>
           </DropdownMenu>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="flex justify-between gap-2 rounded-lg px-3 py-2 transition-colors hover:bg-gray-500">
-                <span className="text-gray-80">AI</span>
-                <div className="flex items-center gap-2">
-                  <span className="flex items-center gap-1.5 text-gray-50">
-                    <BotIcon className="h-3.5 w-3.5" />
-                    {selectedAgent?.id}
-                  </span>
-                  <ChevronRight className="text-gray-80 h-3.5 w-3.5" />
-                </div>
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="start"
-              className="w-[160px] rounded-md bg-gray-300 p-0 px-2 py-2.5 text-gray-50"
-              side="right"
-            >
-              {llmProviders.map((option) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    checked={option.id === selectedAgent?.id}
-                    className="flex gap-2 text-xs capitalize hover:bg-gray-500 [&>svg]:bg-transparent"
-                    key={option.id}
-                    onCheckedChange={() => setSelectedAgent(option)}
-                  >
-                    {option.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="flex justify-between gap-2 rounded-lg px-3 py-2 transition-colors hover:bg-gray-500">
-                <span className="text-gray-80">Workflow</span>
-                <div className="flex items-center gap-2">
-                  <span className="flex items-center gap-1.5 text-gray-50">
-                    <WorkflowPlaygroundIcon className="h-3.5 w-3.5" />
-                    {selectedWorkflow?.name}
-                  </span>
-                  <ChevronRight className="text-gray-80 h-3.5 w-3.5" />
-                </div>
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="start"
-              className="max-h-[40vh] w-[240px] overflow-auto rounded-md bg-gray-300 p-0 px-2 py-2.5 text-gray-50"
-              side="right"
-            >
-              {workflowList?.map((option) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    checked={option.name === selectedWorkflow?.name}
-                    className="flex gap-2 truncate text-xs capitalize hover:bg-gray-500 [&>svg]:bg-transparent"
-                    key={option.name}
-                    onCheckedChange={() => setSelectedWorkflow(option)}
-                  >
-                    {option.name}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {selectedType.id === ColumnType.LLMCall && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex justify-between gap-2 rounded-lg px-3 py-2 transition-colors hover:bg-gray-500">
+                  <span className="text-gray-80">AI</span>
+                  <div className="flex items-center gap-2">
+                    <span className="flex items-center gap-1.5 text-gray-50">
+                      <BotIcon className="h-3.5 w-3.5" />
+                      {selectedAgent?.id}
+                    </span>
+                    <ChevronRight className="text-gray-80 h-3.5 w-3.5" />
+                  </div>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="start"
+                className="w-[160px] rounded-md bg-gray-300 p-0 px-2 py-2.5 text-gray-50"
+                side="right"
+              >
+                {llmProviders.map((option) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      checked={option.id === selectedAgent?.id}
+                      className="flex gap-2 text-xs capitalize hover:bg-gray-500 [&>svg]:bg-transparent"
+                      key={option.id}
+                      onCheckedChange={() => setSelectedAgent(option)}
+                    >
+                      {option.id}
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+          {selectedType.id === ColumnType.LLMCall && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex justify-between gap-2 rounded-lg px-3 py-2 transition-colors hover:bg-gray-500">
+                  <span className="text-gray-80">Workflow</span>
+                  <div className="flex items-center gap-2">
+                    <span className="flex items-center gap-1.5 text-gray-50">
+                      <WorkflowPlaygroundIcon className="h-3.5 w-3.5" />
+                      {selectedWorkflow?.name}
+                    </span>
+                    <ChevronRight className="text-gray-80 h-3.5 w-3.5" />
+                  </div>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="start"
+                className="max-h-[40vh] w-[240px] overflow-auto rounded-md bg-gray-300 p-0 px-2 py-2.5 text-gray-50"
+                side="right"
+              >
+                {workflowList?.map((option) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      checked={option.name === selectedWorkflow?.name}
+                      className="flex gap-2 truncate text-xs capitalize hover:bg-gray-500 [&>svg]:bg-transparent"
+                      key={option.name}
+                      onCheckedChange={() => setSelectedWorkflow(option)}
+                    >
+                      {option.name}
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
 
-          <div className="flex justify-between gap-2 px-2 py-2">
-            <Textarea
-              autoFocus
-              className="placeholder-gray-80 !min-h-[100px] resize-none bg-gray-200 pl-2 pt-2 text-xs"
-              placeholder="Enter prompt"
-            />
-          </div>
+          {selectedType.id === ColumnType.LLMCall && (
+            <div className="flex justify-between gap-2 px-2 py-2">
+              <Textarea
+                autoFocus
+                className="placeholder-gray-80 !min-h-[100px] resize-none bg-gray-200 pl-2 pt-2 text-xs"
+                placeholder="Enter prompt"
+              />
+            </div>
+          )}
           <Separator className="my-1 bg-gray-200" orientation="horizontal" />
           <button className="flex justify-start gap-2 rounded-lg px-3 py-2 text-white transition-colors hover:bg-gray-500">
             <EyeOff className="h-3.5 w-3.5" />

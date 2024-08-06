@@ -294,13 +294,30 @@ export type Workflow = {
   version: string;
 };
 
+export enum ColumnType {
+  Text = 'Text',
+  Number = 'Number',
+  Formula = 'Formula',
+  UploadedFiles = 'UploadedFiles',
+  LLMCall = 'LLMCall',
+  MultipleVRFiles = 'MultipleVRFiles',
+}
 export type ColumnBehavior =
-  | 'Text'
-  | 'Number'
-  | { Formula: string }
-  | { UploadedFiles: { files: string[] } }
+  | ColumnType.Text
+  | ColumnType.Number
+  | { [ColumnType.Formula]: string }
+  | { [ColumnType.UploadedFiles]: { files: string[] } }
   | {
-      LLMCall: {
+      [ColumnType.LLMCall]: {
+        input: string;
+        workflow: Workflow;
+        llm_provider_name: string;
+        input_hash: string;
+      };
+    }
+  | {
+      [ColumnType.MultipleVRFiles]: {
+        // todo
         input: string;
         workflow: Workflow;
         llm_provider_name: string;
