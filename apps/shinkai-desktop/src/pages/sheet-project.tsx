@@ -1,7 +1,3 @@
-import { ColumnBehavior } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
-import { useAddRowsSheet } from '@shinkai_network/shinkai-node-state/lib/mutations/addRowsSheet/useAddRowsSheet';
-import { useRemoveRowsSheet } from '@shinkai_network/shinkai-node-state/lib/mutations/removeRowsSheet/useRemoveRowsSheet';
-import { useSetColumnSheet } from '@shinkai_network/shinkai-node-state/lib/mutations/setColumnSheet/useSetColumnSheet';
 import { useGetSheet } from '@shinkai_network/shinkai-node-state/lib/queries/getSheet/useGetSheet';
 import {
   Breadcrumb,
@@ -9,21 +5,12 @@ import {
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbSeparator,
-  Button,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-  Tooltip,
-  TooltipContent,
-  TooltipPortal,
-  TooltipProvider,
-  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
@@ -37,12 +24,15 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
-import { PlusIcon } from 'lucide-react';
 import React, { useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import { generateColumns } from '../components/sheet/columns';
-import { fieldTypes } from '../components/sheet/data-table-column-header';
+import {
+  AddColumnAction,
+  AddRowsAction,
+  SelectedRowsActions,
+} from '../components/sheet/data-table-actions';
 import { generateRowsData } from '../components/sheet/sheet-data';
 // import { DataTablePagination } from '../components/sheet/data-table-pagination';
 // import { DataTableToolbar } from '../components/sheet/data-table-toolbar';
@@ -63,8 +53,6 @@ const SheetProject = () => {
     shinkaiIdentity: auth?.shinkai_identity ?? '',
   });
 
-  const { mutateAsync: setColumnSheet } = useSetColumnSheet();
-
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({
       location: false,
@@ -77,12 +65,8 @@ const SheetProject = () => {
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
 
   const data = useMemo(
-    () =>
-      generateRowsData(
-        sheetInfo?.rows ?? {},
-        // Object.keys(sheetInfo?.columns ?? {}).length,
-      ),
-    [sheetInfo?.columns, sheetInfo?.rows],
+    () => generateRowsData(sheetInfo?.rows ?? {}),
+    [sheetInfo?.rows],
   );
   const columns = useMemo(
     () => generateColumns(sheetInfo?.columns ?? {}),
@@ -121,18 +105,23 @@ const SheetProject = () => {
         <Breadcrumb>
           <BreadcrumbList className="text-xs">
             <BreadcrumbItem>
-              <BreadcrumbLink className="rounded-md px-2.5 py-1.5 hover:bg-gray-300">
-                <Link to="/sheets">Dashboard</Link>
+              <BreadcrumbLink
+                asChild
+                className="rounded-md px-2.5 py-1.5 hover:bg-gray-300"
+              >
+                <Link to="/sheets">Shinkai Dashboard</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink>{sheetInfo?.sheet_name}</BreadcrumbLink>
+              <BreadcrumbLink className="text-white">
+                {sheetInfo?.sheet_name}
+              </BreadcrumbLink>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
       </div>
-      <div className="relative h-[calc(100dvh-120px)] overflow-hidden rounded-lg shadow-sm">
+      <div className="relative h-[calc(100dvh-120px)] overflow-hidden shadow-sm">
         <div className="flex size-full max-w-[calc(100vw-100px)] flex-col space-y-4 overflow-hidden">
           {/*<DataTableToolbar table={table} />*/}
           <div className="scrollbar-thin relative flex size-full h-full flex-col overflow-auto">
@@ -198,66 +187,7 @@ const SheetProject = () => {
                           </TableHead>
                         );
                       })}
-                      <DropdownMenu>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <DropdownMenuTrigger asChild>
-                              <TooltipTrigger asChild>
-                                <button className="text-gray-80 sticky right-0 top-[10px] z-[10] flex h-8 w-8 items-center justify-center gap-2 border border-b-0 bg-gray-500 transition-colors hover:bg-gray-300">
-                                  <PlusIcon className="h-5 w-5" />
-                                </button>
-                              </TooltipTrigger>
-                            </DropdownMenuTrigger>
-
-                            <DropdownMenuContent
-                              align="end"
-                              className="w-[160px] rounded-md bg-gray-300 p-0 px-2 py-2.5 text-gray-50"
-                              side="bottom"
-                            >
-                              {fieldTypes.map((option) => {
-                                return (
-                                  <button
-                                    className="flex w-full gap-2 rounded-lg px-2.5 py-2 text-xs capitalize hover:bg-gray-500 [&>svg]:bg-transparent"
-                                    key={option.id}
-                                    onClick={() => {
-                                      if (!auth || !sheetId) return;
-                                      setColumnSheet({
-                                        profile: auth.profile,
-                                        nodeAddress: auth.node_address,
-                                        sheetId: sheetId,
-                                        columnBehavior:
-                                          option.id as ColumnBehavior,
-                                        columnName: 'New Column',
-                                        columnId: undefined,
-                                        shinkaiIdentity: auth.shinkai_identity,
-                                        my_device_encryption_sk:
-                                          auth.my_device_encryption_sk,
-                                        my_device_identity_sk:
-                                          auth.my_device_identity_sk,
-                                        node_encryption_pk:
-                                          auth.node_encryption_pk,
-                                        profile_encryption_sk:
-                                          auth.profile_encryption_sk,
-                                        profile_identity_sk:
-                                          auth.profile_identity_sk,
-                                      });
-                                    }}
-                                  >
-                                    <option.icon className="h-3.5 w-3.5 text-gray-50" />
-                                    {option.id}
-                                  </button>
-                                );
-                              })}
-                              {/*  */}
-                            </DropdownMenuContent>
-                            <TooltipPortal>
-                              <TooltipContent side="bottom">
-                                <p>Add Property</p>
-                              </TooltipContent>
-                            </TooltipPortal>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </DropdownMenu>
+                      <AddColumnAction />
                     </TableRow>
                   ))}
                 </TableHeader>
@@ -305,13 +235,13 @@ const SheetProject = () => {
                     //   </TableCell>
                     // </TableRow>
                   }
-                  <AddRowButton />
+                  <AddRowsAction />
                 </TableBody>
               </Table>
             </div>
           </div>
           {Object.keys(rowSelection).length > 0 ? (
-            <TableActions selectedRows={rowSelection} />
+            <SelectedRowsActions selectedRows={rowSelection} />
           ) : null}
           {/*<DataTablePagination table={table} />*/}
         </div>
@@ -320,72 +250,3 @@ const SheetProject = () => {
   );
 };
 export default SheetProject;
-
-function AddRowButton() {
-  const auth = useAuth((state) => state.auth);
-  const { mutateAsync: addRowsSheet } = useAddRowsSheet({});
-  const { sheetId } = useParams();
-  const handleAddRow = async () => {
-    await addRowsSheet({
-      nodeAddress: auth?.node_address ?? '',
-      shinkaiIdentity: auth?.shinkai_identity ?? '',
-      profile: auth?.profile ?? '',
-      sheetId: sheetId ?? '',
-      numberOfRows: 1,
-      startingRow: undefined,
-      my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-      my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-      node_encryption_pk: auth?.node_encryption_pk ?? '',
-      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-      profile_identity_sk: auth?.profile_identity_sk ?? '',
-    });
-  };
-
-  return (
-    <button
-      className="text-gray-80 sticky bottom-0 right-0 z-[10] flex w-[calc(100%-32px)] items-center justify-start gap-1 border border-t-0 bg-gray-500 transition-colors hover:bg-gray-300"
-      onClick={handleAddRow}
-    >
-      <span className="flex h-8 w-[50px] items-center justify-center border-r p-1.5">
-        <PlusIcon className="h-full w-full" />
-      </span>
-      <span className="px-2 text-xs">New Entity</span>
-    </button>
-  );
-}
-interface DataTableActionsProps {
-  selectedRows: RowSelectionState;
-}
-function TableActions({ selectedRows }: DataTableActionsProps) {
-  const auth = useAuth((state) => state.auth);
-  const { sheetId } = useParams();
-  const { mutateAsync: removeRowsSheet } = useRemoveRowsSheet();
-
-  return (
-    <div className="outline-border z-5 absolute bottom-0 left-1/2 inline-flex -translate-x-1/2 items-center overflow-hidden rounded-xl bg-gray-400 px-2 py-2 shadow-lg outline outline-1 outline-gray-200">
-      <div className="rounded-lg pl-3 pr-4 pt-px text-xs">
-        {Object.keys(selectedRows).length} selected{' '}
-      </div>
-      <Button
-        className="!h-[32px] min-w-[80px] rounded-md"
-        onClick={async () => {
-          await removeRowsSheet({
-            nodeAddress: auth?.node_address ?? '',
-            shinkaiIdentity: auth?.shinkai_identity ?? '',
-            profile: auth?.profile ?? '',
-            sheetId: sheetId ?? '',
-            rowIds: Object.keys(selectedRows),
-            my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-            my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-            node_encryption_pk: auth?.node_encryption_pk ?? '',
-            profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-            profile_identity_sk: auth?.profile_identity_sk ?? '',
-          });
-        }}
-        size="sm"
-      >
-        Delete
-      </Button>
-    </div>
-  );
-}

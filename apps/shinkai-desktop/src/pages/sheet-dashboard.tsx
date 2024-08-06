@@ -231,7 +231,8 @@ function RemoveSheetModal({
       <DialogContent className="sm:max-w-[425px]">
         <DialogTitle className="pb-0">Delete this Project?</DialogTitle>
         <DialogDescription>
-          This project will be deleted immediately. You can't undo this action.
+          This project will be deleted immediately. You can not undo this
+          action.
         </DialogDescription>
 
         <DialogFooter>
