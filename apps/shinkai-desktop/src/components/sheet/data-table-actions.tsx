@@ -31,17 +31,27 @@ import { RowSelectionState } from '@tanstack/react-table';
 import { BotIcon, ChevronRight, PlusIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import { useAuth } from '../../store/auth';
 import { fieldTypes } from './data-table-column-header';
 
 interface DataTableActionsProps {
   selectedRows: RowSelectionState;
+  setRowSelection: (selectedRows: RowSelectionState) => void;
 }
-export function SelectedRowsActions({ selectedRows }: DataTableActionsProps) {
+export function SelectedRowsActions({
+  selectedRows,
+  setRowSelection,
+}: DataTableActionsProps) {
   const auth = useAuth((state) => state.auth);
   const { sheetId } = useParams();
-  const { mutateAsync: removeRowsSheet } = useRemoveRowsSheet();
+  const { mutateAsync: removeRowsSheet } = useRemoveRowsSheet({
+    onSuccess: () => {
+      setRowSelection({});
+      toast.success('Rows deleted successfully');
+    },
+  });
 
   return (
     <div className="outline-border z-5 absolute bottom-0 left-1/2 inline-flex -translate-x-1/2 items-center overflow-hidden rounded-xl bg-gray-400 px-2 py-2 shadow-lg outline outline-1 outline-gray-200">
@@ -293,28 +303,30 @@ export function AddColumnAction() {
                   <span className="">Cancel</span>
                 </button>
               </PopoverClose>
-              <button
-                className="bg-brand hover:bg-brand-500 flex justify-start gap-2 rounded-lg px-3 py-2 transition-colors"
-                onClick={() => {
-                  if (!auth || !sheetId) return;
-                  setColumnSheet({
-                    profile: auth.profile,
-                    nodeAddress: auth.node_address,
-                    sheetId: sheetId,
-                    columnBehavior: selectedType.id as ColumnBehavior,
-                    columnName: columnName,
-                    columnId: undefined,
-                    shinkaiIdentity: auth.shinkai_identity,
-                    my_device_encryption_sk: auth.my_device_encryption_sk,
-                    my_device_identity_sk: auth.my_device_identity_sk,
-                    node_encryption_pk: auth.node_encryption_pk,
-                    profile_encryption_sk: auth.profile_encryption_sk,
-                    profile_identity_sk: auth.profile_identity_sk,
-                  });
-                }}
-              >
-                <span className="">Create Field</span>
-              </button>
+              <PopoverClose asChild>
+                <button
+                  className="bg-brand hover:bg-brand-500 flex justify-start gap-2 rounded-lg px-3 py-2 transition-colors"
+                  onClick={() => {
+                    if (!auth || !sheetId) return;
+                    setColumnSheet({
+                      profile: auth.profile,
+                      nodeAddress: auth.node_address,
+                      sheetId: sheetId,
+                      columnBehavior: selectedType.id as ColumnBehavior,
+                      columnName: columnName,
+                      columnId: undefined,
+                      shinkaiIdentity: auth.shinkai_identity,
+                      my_device_encryption_sk: auth.my_device_encryption_sk,
+                      my_device_identity_sk: auth.my_device_identity_sk,
+                      node_encryption_pk: auth.node_encryption_pk,
+                      profile_encryption_sk: auth.profile_encryption_sk,
+                      profile_identity_sk: auth.profile_identity_sk,
+                    });
+                  }}
+                >
+                  <span className="">Create Field</span>
+                </button>
+              </PopoverClose>
             </div>
           </PopoverContent>
           <TooltipPortal>

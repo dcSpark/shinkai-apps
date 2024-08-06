@@ -241,7 +241,10 @@ const SheetProject = () => {
             </div>
           </div>
           {Object.keys(rowSelection).length > 0 ? (
-            <SelectedRowsActions selectedRows={rowSelection} />
+            <SelectedRowsActions
+              selectedRows={rowSelection}
+              setRowSelection={setRowSelection}
+            />
           ) : null}
           {/*<DataTablePagination table={table} />*/}
         </div>
