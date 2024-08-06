@@ -353,13 +353,12 @@
         "modelInstalled": "Model {{modelName}} berhasil diinstal",
         "modelRemoved": "Model {{modelName}} berhasil dihapus"
       },
-      "table": {
-        "bookPages": "Halaman Buku",
-        "dataLimit": "Batas Data",
+      "labels": {
         "models": "Model",
         "quality": "Kualitas",
-        "size": "Ukuran",
-        "speed": "Kecepatan"
+        "tags": "Tag",
+        "bookPages": "Halaman Buku",
+        "showAll": "Tampilkan semua model"
       }
     },
     "nodeAddress": "Alamat Node",

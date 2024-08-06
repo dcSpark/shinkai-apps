@@ -1,5 +1,7 @@
+import { t } from '@shinkai_network/shinkai-i18n';
 import { Badge } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { Sparkle } from 'lucide-react';
 
 import { OllamaModelQuality } from '../../../lib/shinkai-node-manager/ollama-models';
 
@@ -9,21 +11,22 @@ export const ModelQuailityTag = ({
   quality: OllamaModelQuality;
 }) => {
   const colorMap: { [key in OllamaModelQuality]: string } = {
-    [OllamaModelQuality.Bad]: 'bg-red-900 text-red-400',
-    [OllamaModelQuality.Low]: 'bg-orange-900 text-orange-400',
+    [OllamaModelQuality.Low]: 'text-orange-400 bg-orange-900',
     [OllamaModelQuality.Medium]: 'text-yellow-400 bg-yellow-900',
     [OllamaModelQuality.Good]: 'text-green-400 bg-green-900',
-    [OllamaModelQuality.Great]: 'text-green-400 bg-green-900',
   };
   return (
     <Badge
       className={cn(
-        'rounded-full border-0 px-2 py-1 font-normal capitalize',
+        'items-center justify-center rounded-full border-0 px-2 py-1 font-normal capitalize',
         colorMap[quality],
       )}
       variant="outline"
     >
-      {quality}
+      <Sparkle className="h-4 w-4" />
+      <span className="ml-2">
+        {quality} {t('shinkaiNode.models.labels.quality')}
+      </span>
     </Badge>
   );
 };

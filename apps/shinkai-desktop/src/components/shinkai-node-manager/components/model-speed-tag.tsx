@@ -4,15 +4,24 @@ import { OllamaModelSpeed } from '../../../lib/shinkai-node-manager/ollama-model
 
 export const ModelSpeedTag = ({ speed }: { speed: OllamaModelSpeed }) => {
   const emojiMap: { [key in OllamaModelSpeed]: string } = {
-    [OllamaModelSpeed.VerySlow]: '🐌',
-    [OllamaModelSpeed.Slow]: '🐢',
     [OllamaModelSpeed.Average]: '🐕',
     [OllamaModelSpeed.Fast]: '🐎',
     [OllamaModelSpeed.VeryFast]: '🐆',
   };
+  const colorMap: { [key in OllamaModelSpeed]: string } = {
+    [OllamaModelSpeed.Average]: 'bg-orange-900 text-orange-400',
+    [OllamaModelSpeed.Fast]: 'text-yellow-400 bg-yellow-900',
+    [OllamaModelSpeed.VeryFast]: 'text-green-200 bg-green-900',
+  };
   return (
-    <div className={cn('bg-gray-900 text-gray-400 whitespace-nowrap rounded-full border-0 px-2 py-1 font-normal capitalize')}>
-      <span className='ml-2'>{emojiMap[speed]}</span> <span className='ml-2'>{speed}</span>
+    <div
+      className={cn(
+        'flex flex-row items-center justify-center whitespace-nowrap rounded-full border-0 bg-gray-900 px-2 py-1 font-normal capitalize text-gray-400',
+        colorMap[speed],
+      )}
+    >
+      <span>{emojiMap[speed]}</span>
+      <span className="ml-2">{speed}</span>
     </div>
   );
 };

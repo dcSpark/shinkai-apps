@@ -353,13 +353,12 @@
         "modelInstalled": "成功安装模型 {{modelName}}",
         "modelRemoved": "成功移除模型 {{modelName}}"
       },
-      "table": {
-        "bookPages": "书页",
-        "dataLimit": "数据限制",
+      "labels": {
         "models": "模型",
         "quality": "质量",
-        "size": "大小",
-        "speed": "速度"
+        "tags": "标签",
+        "bookPages": "书籍页数",
+        "showAll": "显示所有模型"
       }
     },
     "nodeAddress": "节点地址",
