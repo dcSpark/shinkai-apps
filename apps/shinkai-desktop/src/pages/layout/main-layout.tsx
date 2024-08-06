@@ -27,6 +27,7 @@ import {
   FilesIcon,
   InboxIcon,
   MySubscriptionsIcon,
+  WorkflowPlaygroundIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion, TargetAndTransition } from 'framer-motion';
@@ -270,6 +271,11 @@ export function MainNav() {
       title: t('layout.menuItems.mySubscriptions'),
       href: '/my-subscriptions',
       icon: <MySubscriptionsIcon className="h-5 w-5" />,
+    },
+    optInExperimental && {
+      title: 'Workflow Playground',
+      href: '/workflow-playground',
+      icon: <WorkflowPlaygroundIcon />,
     },
     optInExperimental && {
       title: 'Shinkai Sheet',

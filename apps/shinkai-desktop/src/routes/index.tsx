@@ -41,6 +41,7 @@ import SheetDashboard from '../pages/sheet-dashboard';
 import SheetProject from '../pages/sheet-project';
 import ShinkaiPrivatePage from '../pages/shinkai-private';
 import TermsAndConditionsPage from '../pages/welcome';
+import WorkflowPlayground from '../pages/workflow-playground';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
@@ -233,7 +234,7 @@ const AppRoutes = () => {
         <Route
           element={
             <ProtectedRoute>
-              <SheetProject />
+              <WorkflowPlayground />
             </ProtectedRoute>
           }
           path="workflow-playground"
