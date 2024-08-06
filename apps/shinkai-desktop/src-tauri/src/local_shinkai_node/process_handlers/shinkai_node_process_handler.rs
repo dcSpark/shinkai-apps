@@ -100,6 +100,18 @@ impl ShinkaiNodeProcessHandler {
                 fs::remove_dir_all(path).map_err(|e| format!("Failed to remove directory: {}", e))?;
             } else {
                 if preserve_keys && path.ends_with(".secret") {
+                    // Delete the line starting with 'GLOBAL_IDENTITY_NAME=' in .secret file
+                    if path.file_name().unwrap() == ".secret" {
+                        let content = fs::read_to_string(&path)
+                            .map_err(|e| format!("Failed to read .secret file: {}", e))?;
+                        let new_content: String = content
+                            .lines()
+                            .filter(|line| !line.starts_with("GLOBAL_IDENTITY_NAME="))
+                            .collect::<Vec<&str>>()
+                            .join("\n");
+                        fs::write(&path, new_content)
+                            .map_err(|e| format!("Failed to write updated .secret file: {}", e))?;
+                    }
                     continue;
                 }
                 fs::remove_file(path).map_err(|e| format!("Failed to remove file: {}", e))?;
