@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 import {
   ColumnBehavior,
   MessageSchemaType,
@@ -1942,6 +1943,46 @@ export class ShinkaiMessageBuilderWrapper {
 
     builder.message_raw_content(body);
     builder.message_schema_type(MessageSchemaType.GetSheet.toString());
+    builder.internal_metadata(
+      sender_subidentity,
+      receiver_subidentity,
+      '',
+      'None',
+    );
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
+
+    const message = builder.build_to_string();
+    return message;
+  }
+  static setCellSheet(
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    sheetId: string,
+    columnId: string,
+    rowId: string,
+    value: string,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+    receiver_subidentity: string,
+  ): string {
+    const body = JSON.stringify({
+      sheet_id: sheetId,
+      row: rowId,
+      col: columnId,
+      value,
+    });
+
+    const builder = new ShinkaiMessageBuilderWrapper(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key,
+    );
+
+    builder.message_raw_content(body);
+    builder.message_schema_type(MessageSchemaType.SetCellValue.toString());
     builder.internal_metadata(
       sender_subidentity,
       receiver_subidentity,

@@ -5,19 +5,15 @@ import {
 } from '@tanstack/react-query';
 
 import { FunctionKey } from '../../constants';
-import { setSheetColumn } from './index';
-import { SetSheetColumnInput, SetSheetColumnOutput } from './types';
+import { setCellSheet } from './index';
+import { SetCellSheetInput, SetCellSheetOutput } from './types';
 
-type Options = UseMutationOptions<
-  SetSheetColumnOutput,
-  Error,
-  SetSheetColumnInput
->;
+type Options = UseMutationOptions<SetCellSheetOutput, Error, SetCellSheetInput>;
 
-export const useSetSheetColumn = (options?: Options) => {
+export const useSetCellSheet = (options?: Options) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: setSheetColumn,
+    mutationFn: setCellSheet,
     ...options,
     onSuccess: (response, variables, context) => {
       queryClient.invalidateQueries({

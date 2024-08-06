@@ -1,7 +1,7 @@
 import { DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
 import { ColumnBehavior } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
 import { useRemoveColumnSheet } from '@shinkai_network/shinkai-node-state/lib/mutations/removeColumnSheet/useRemoveColumnSheet';
-import { useSetSheetColumn } from '@shinkai_network/shinkai-node-state/lib/mutations/setSheetColumn/useSetSheetColumn';
+import { useSetColumnSheet } from '@shinkai_network/shinkai-node-state/lib/mutations/setColumnSheet/useSetColumnSheet';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
 import { useGetWorkflowList } from '@shinkai_network/shinkai-node-state/lib/queries/getWorkflowList/useGetWorkflowList';
 import {
@@ -105,7 +105,7 @@ export function DataTableColumnHeader<TData, TValue>({
   const currentType =
     fieldTypes.find((type) => type.id === columnBehavior) ?? fieldTypes[0];
 
-  const { mutateAsync: setSheetColumn } = useSetSheetColumn();
+  const { mutateAsync: setColumnSheet } = useSetColumnSheet();
   const { mutateAsync: removeSheetColumn } = useRemoveColumnSheet();
 
   return (
@@ -134,7 +134,7 @@ export function DataTableColumnHeader<TData, TValue>({
                 if (e.key === 'Enter') {
                   e.preventDefault();
                   if (!auth || !sheetId) return;
-                  setSheetColumn({
+                  setColumnSheet({
                     profile: auth.profile,
                     nodeAddress: auth.node_address,
                     sheetId: sheetId,

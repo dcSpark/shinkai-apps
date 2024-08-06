@@ -1946,6 +1946,45 @@ export const getSheet = async (
   const data = response.data;
   return data;
 };
+export const setCellSheet = async (
+  nodeAddress: string,
+  sheetId: string,
+  columnId: string,
+  rowId: string,
+  value: string,
+  sender: string,
+  sender_subidentity: string,
+  receiver: string,
+  receiver_subidentity: string,
+  setupDetailsState: CredentialsPayload,
+) => {
+  const messageStr = ShinkaiMessageBuilderWrapper.setCellSheet(
+    setupDetailsState.profile_encryption_sk,
+    setupDetailsState.profile_identity_sk,
+    setupDetailsState.node_encryption_pk,
+    sheetId,
+    columnId,
+    rowId,
+    value,
+    sender,
+    sender_subidentity,
+    receiver,
+    receiver_subidentity,
+  );
+
+  const message = JSON.parse(messageStr);
+
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v1/set_cell_value'),
+    message,
+    {
+      responseType: 'json',
+    },
+  );
+
+  const data = response.data;
+  return data;
+};
 export const setColumnSheet = async (
   nodeAddress: string,
   sheetId: string,

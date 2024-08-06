@@ -19,6 +19,16 @@ export type Row = {
   status: string;
   value: string;
 };
+
+export type FormattedRow = {
+  rowId: string;
+  fields: {
+    [columnId: string]: Row & {
+      columnId: string;
+      rowId: string;
+    };
+  };
+};
 export type Columns = {
   [key: string]: Column;
 };

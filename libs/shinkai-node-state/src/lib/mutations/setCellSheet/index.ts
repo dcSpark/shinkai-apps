@@ -1,27 +1,27 @@
-import { setColumnSheet as setSheetColumnAPI } from '@shinkai_network/shinkai-message-ts/api';
+import { setCellSheet as setCellSheetAPI } from '@shinkai_network/shinkai-message-ts/api';
 
-import { SetSheetColumnInput } from './types';
+import { SetCellSheetInput } from './types';
 
-export const setSheetColumn = async ({
+export const setCellSheet = async ({
   nodeAddress,
   shinkaiIdentity,
   profile,
   sheetId,
   columnId,
-  columnName,
-  columnBehavior,
+  rowId,
+  value,
   my_device_encryption_sk,
   my_device_identity_sk,
   node_encryption_pk,
   profile_encryption_sk,
   profile_identity_sk,
-}: SetSheetColumnInput) => {
-  return await setSheetColumnAPI(
+}: SetCellSheetInput) => {
+  return await setCellSheetAPI(
     nodeAddress,
     sheetId,
     columnId,
-    columnName,
-    columnBehavior,
+    rowId,
+    value,
     shinkaiIdentity,
     profile,
     shinkaiIdentity,

@@ -1,6 +1,6 @@
 import {
   Columns,
-  Row,
+  FormattedRow,
 } from '@shinkai_network/shinkai-node-state/lib/queries/getSheet/types';
 import { Checkbox } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
@@ -10,9 +10,10 @@ import { DataTableCell } from './data-table-cell';
 import { DataTableColumnHeader } from './data-table-column-header';
 // import { DataTableRowActions } from './data-table-row-actions';
 
-export const generateColumns = (columns: Columns): ColumnDef<Row>[] => {
+export const generateColumns = (
+  columns: Columns,
+): ColumnDef<FormattedRow>[] => {
   const formattedColumns = Object.entries(columns).map(([_, value]) => value);
-  console.log(formattedColumns, 'formattedColumns');
 
   return [
     {
@@ -58,109 +59,24 @@ export const generateColumns = (columns: Columns): ColumnDef<Row>[] => {
     ...formattedColumns.map((columnItem) => {
       return {
         accessorKey: columnItem.id,
-        // @ts-expect-error to fix
-        header: ({ column }) => (
+        header: (info) => (
           <DataTableColumnHeader
-            column={column}
+            column={info.column}
             columnBehavior={columnItem.behavior}
             title={columnItem.name}
           />
         ),
-        // @ts-expect-error to fix
-        cell: ({ row }) => {
+        cell: ({ row, column }) => {
           return (
             <DataTableCell
+              column={column}
               row={row}
               title={columnItem.name}
-              value={row.original[columnItem.id]?.value ?? 'Waiting for ...'}
+              value={row.original.fields[column.id]?.value ?? ''}
             />
           );
         },
-      };
+      } as ColumnDef<FormattedRow>;
     }),
-    //////////////////////////////////
-    // {
-    //   accessorKey: 'title',
-    //   header: ({ column }) => (
-    //     <DataTableColumnHeader column={column} title={'Title'} />
-    //   ),
-    //   cell: ({ row }) => {
-    //     return (
-    //       <DataTableCell row={row} title={'Title'} value={row.original.title} />
-    //     );
-    //   },
-    // },
-    // {
-    //   accessorKey: 'author',
-    //   header: ({ column }) => (
-    //     <DataTableColumnHeader column={column} title={'Author'} />
-    //   ),
-    //   cell: ({ row }) => {
-    //     return (
-    //       <DataTableCell
-    //         row={row}
-    //         title={'Author'}
-    //         value={row.original.author}
-    //       />
-    //     );
-    //   },
-    // },
-    // {
-    //   accessorKey: 'yearReleased',
-    //   header: ({ column }) => (
-    //     <DataTableColumnHeader column={column} title={'Year'} />
-    //   ),
-    //   cell: ({ row }) => {
-    //     return (
-    //       <DataTableCell
-    //         row={row}
-    //         title={'Year'}
-    //         value={row.original.yearReleased.toString()}
-    //       />
-    //     );
-    //   },
-    // },
-    // {
-    //   accessorKey: 'pages',
-    //   header: ({ column }) => (
-    //     <DataTableColumnHeader column={column} title={'# Pages'} />
-    //   ),
-    //   cell: ({ row }) => {
-    //     return (
-    //       <DataTableCell
-    //         row={row}
-    //         title={'# Pages'}
-    //         value={row.original.pages.toString()}
-    //       />
-    //     );
-    //   },
-    // },
-    // {
-    //   accessorKey: 'genre',
-    //   header: ({ column }) => (
-    //     <DataTableColumnHeader column={column} title={'Genre'} />
-    //   ),
-    //   cell: ({ row }) => {
-    //     return (
-    //       <DataTableCell row={row} title={'Genre'} value={row.original.genre} />
-    //     );
-    //   },
-    // },
-    //
-    // {
-    //   accessorKey: 'summary',
-    //   header: ({ column }) => (
-    //     <DataTableColumnHeader column={column} title={'Summary'} />
-    //   ),
-    //   cell: ({ row }) => {
-    //     return (
-    //       <DataTableCell
-    //         row={row}
-    //         title={'Summary'}
-    //         value={row.original.summary}
-    //       />
-    //     );
-    //   },
-    // },
   ];
 };

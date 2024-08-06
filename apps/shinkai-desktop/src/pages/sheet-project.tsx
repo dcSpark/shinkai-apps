@@ -1,7 +1,7 @@
 import { ColumnBehavior } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
 import { useAddRowsSheet } from '@shinkai_network/shinkai-node-state/lib/mutations/addRowsSheet/useAddRowsSheet';
 import { useRemoveRowsSheet } from '@shinkai_network/shinkai-node-state/lib/mutations/removeRowsSheet/useRemoveRowsSheet';
-import { useSetSheetColumn } from '@shinkai_network/shinkai-node-state/lib/mutations/setSheetColumn/useSetSheetColumn';
+import { useSetColumnSheet } from '@shinkai_network/shinkai-node-state/lib/mutations/setColumnSheet/useSetColumnSheet';
 import { useGetSheet } from '@shinkai_network/shinkai-node-state/lib/queries/getSheet/useGetSheet';
 import {
   Breadcrumb,
@@ -31,7 +31,7 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
+  // getPaginationRowModel,
   getSortedRowModel,
   RowSelectionState,
   useReactTable,
@@ -43,9 +43,9 @@ import { Link, useParams } from 'react-router-dom';
 
 import { generateColumns } from '../components/sheet/columns';
 import { fieldTypes } from '../components/sheet/data-table-column-header';
+import { generateRowsData } from '../components/sheet/sheet-data';
 // import { DataTablePagination } from '../components/sheet/data-table-pagination';
 // import { DataTableToolbar } from '../components/sheet/data-table-toolbar';
-import { generateData } from '../components/sheet/sheet-data';
 import { useAuth } from '../store/auth';
 
 const SheetProject = () => {
@@ -63,7 +63,7 @@ const SheetProject = () => {
     shinkaiIdentity: auth?.shinkai_identity ?? '',
   });
 
-  const { mutateAsync: setSheetColumn } = useSetSheetColumn();
+  const { mutateAsync: setColumnSheet } = useSetColumnSheet();
 
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({
@@ -78,9 +78,9 @@ const SheetProject = () => {
 
   const data = useMemo(
     () =>
-      generateData(
+      generateRowsData(
         sheetInfo?.rows ?? {},
-        Object.keys(sheetInfo?.columns ?? {}).length,
+        // Object.keys(sheetInfo?.columns ?? {}).length,
       ),
     [sheetInfo?.columns, sheetInfo?.rows],
   );
@@ -104,7 +104,7 @@ const SheetProject = () => {
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    // getPaginationRowModel: getPaginationRowModel(), // enable if we have pagination
     onColumnFiltersChange: setColumnFilters,
     onRowSelectionChange: setRowSelection,
     defaultColumn: {
@@ -112,7 +112,7 @@ const SheetProject = () => {
       minSize: 50,
       maxSize: 500,
     },
-    getRowId: (row) => row.value,
+    getRowId: (row) => row.rowId,
   });
 
   return (
@@ -221,7 +221,7 @@ const SheetProject = () => {
                                     key={option.id}
                                     onClick={() => {
                                       if (!auth || !sheetId) return;
-                                      setSheetColumn({
+                                      setColumnSheet({
                                         profile: auth.profile,
                                         nodeAddress: auth.node_address,
                                         sheetId: sheetId,
@@ -310,7 +310,9 @@ const SheetProject = () => {
               </Table>
             </div>
           </div>
-          <TableActions selectedRows={rowSelection} />
+          {Object.keys(rowSelection).length > 0 ? (
+            <TableActions selectedRows={rowSelection} />
+          ) : null}
           {/*<DataTablePagination table={table} />*/}
         </div>
       </div>
@@ -324,7 +326,7 @@ function AddRowButton() {
   const { mutateAsync: addRowsSheet } = useAddRowsSheet({});
   const { sheetId } = useParams();
   const handleAddRow = async () => {
-    addRowsSheet({
+    await addRowsSheet({
       nodeAddress: auth?.node_address ?? '',
       shinkaiIdentity: auth?.shinkai_identity ?? '',
       profile: auth?.profile ?? '',
@@ -341,7 +343,7 @@ function AddRowButton() {
 
   return (
     <button
-      className="text-gray-80 sticky bottom-0 right-0 z-[10] flex w-[calc(100%-40px)] items-center justify-start gap-1 border border-t-0 bg-gray-500 transition-colors hover:bg-gray-300"
+      className="text-gray-80 sticky bottom-0 right-0 z-[10] flex w-[calc(100%-32px)] items-center justify-start gap-1 border border-t-0 bg-gray-500 transition-colors hover:bg-gray-300"
       onClick={handleAddRow}
     >
       <span className="flex h-8 w-[50px] items-center justify-center border-r p-1.5">
@@ -360,25 +362,19 @@ function TableActions({ selectedRows }: DataTableActionsProps) {
   const { mutateAsync: removeRowsSheet } = useRemoveRowsSheet();
 
   return (
-    <div className="outline-border z-5 absolute bottom-14 left-1/2 inline-flex -translate-x-1/2 items-center overflow-hidden rounded-xl bg-gray-400 px-2 py-2 shadow-lg outline outline-1 outline-gray-200">
+    <div className="outline-border z-5 absolute bottom-0 left-1/2 inline-flex -translate-x-1/2 items-center overflow-hidden rounded-xl bg-gray-400 px-2 py-2 shadow-lg outline outline-1 outline-gray-200">
       <div className="rounded-lg pl-3 pr-4 pt-px text-xs">
         {Object.keys(selectedRows).length} selected{' '}
       </div>
       <Button
         className="!h-[32px] min-w-[80px] rounded-md"
-        onClick={() => {
-          removeRowsSheet({
+        onClick={async () => {
+          await removeRowsSheet({
             nodeAddress: auth?.node_address ?? '',
             shinkaiIdentity: auth?.shinkai_identity ?? '',
             profile: auth?.profile ?? '',
             sheetId: sheetId ?? '',
-            rowIds: [
-              '0a2a8b21-7abb-4638-b3e3-e925e3eb4be9',
-              '10d36d5f-628d-4837-958c-31a4d97b4e92',
-              'ba703142-74b1-465b-a271-239d9dea66d7',
-              'de8c0018-858f-4420-852a-d0ac6dda65e1',
-              'f0c4a46b-eab3-4b78-88ab-3749f7638628',
-            ],
+            rowIds: Object.keys(selectedRows),
             my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
             my_device_identity_sk: auth?.my_device_identity_sk ?? '',
             node_encryption_pk: auth?.node_encryption_pk ?? '',
