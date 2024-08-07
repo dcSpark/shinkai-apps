@@ -40,8 +40,14 @@ import {
   FILTERED_OLLAMA_MODELS_REPOSITORY,
   OllamaModelDefinition,
 } from '../../..//lib/shinkai-node-manager/ollama-models';
-import { useOllamaPullingQuery } from '../../../lib/shinkai-node-manager/ollama-client';
-import { useShinkaiNodeGetDefaultModel } from '../../../lib/shinkai-node-manager/shinkai-node-manager-client';
+import {
+  useOllamaListQuery,
+  useOllamaPullingQuery,
+} from '../../../lib/shinkai-node-manager/ollama-client';
+import {
+  useShinkaiNodeGetDefaultModel,
+  useShinkaiNodeGetOllamaApiUrlQuery,
+} from '../../../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { OllamaModelInstallButton } from './ollama-model-install-button';
 
 export const OllamaModelsRepository = ({
@@ -51,6 +57,10 @@ export const OllamaModelsRepository = ({
   const { t } = useTranslation();
   const { data: defaultModel } = useShinkaiNodeGetDefaultModel();
   const { data: pullingModelsMap } = useOllamaPullingQuery();
+  const { data: ollamaApiUrl } = useShinkaiNodeGetOllamaApiUrlQuery();
+
+  const ollamaConfig = { host: ollamaApiUrl || 'http://127.0.0.1:11435' };
+  const { data: installedOllamaModels } = useOllamaListQuery(ollamaConfig);
   const installedOllamaModelsMap = useMap<string, ModelResponse>();
   const selectedTagMap = useMap<string, string>();
   const tableContainerRef = useRef<HTMLDivElement>(null);
@@ -220,7 +230,12 @@ export const OllamaModelsRepository = ({
       selectedTagMap.set(model.name, defaultTag);
     });
   }, [installedOllamaModelsMap, pullingModelsMap, selectedTagMap]);
-
+  useEffect(() => {
+    installedOllamaModels?.models &&
+      installedOllamaModels.models.forEach((modelResponse) => {
+        installedOllamaModelsMap.set(modelResponse.name, modelResponse);
+      });
+  }, [installedOllamaModels?.models, installedOllamaModelsMap]);
   const getFullName = (model: string, tag: string): string => {
     return `${model}:${tag}`;
   };
