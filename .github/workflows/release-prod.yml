@@ -213,6 +213,10 @@ jobs:
         run: |
           npx ts-node ./ci-scripts/download-side-binaries.ts
 
+      - name: Download ollama repository
+        run: |
+          npx ts-node ./ci-scripts/generate-ollama-models-repository.ts
+
       - name: (Linux) Run NX build on shinkai-desktop
         if: ${{ matrix.arch == 'x86_64-unknown-linux-gnu' }}
         run: npx nx build shinkai-desktop --skip-nx-cache
