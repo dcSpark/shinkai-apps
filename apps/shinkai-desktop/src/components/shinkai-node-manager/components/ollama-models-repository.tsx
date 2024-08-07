@@ -110,7 +110,10 @@ export const OllamaModelsRepository = ({
             <div className="flex flex-col items-start gap-2">
               <div className="flex flex-row items-center gap-3">
                 <span className="font-medium">{model.name}</span>
-                {isDefaultModel(model.name) && (
+                {isDefaultModel(
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  getFullName(model.name, selectedTagMap.get(model.name)!),
+                ) && (
                   <Badge
                     className={cn(
                       'rounded-md border-0 px-2 py-1 font-normal capitalize',
