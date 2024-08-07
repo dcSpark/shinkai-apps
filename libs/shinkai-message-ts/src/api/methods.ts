@@ -1988,7 +1988,7 @@ export const setCellSheet = async (
 export const setColumnSheet = async (
   nodeAddress: string,
   sheetId: string,
-  columnId: string,
+  columnId: string | undefined,
   columnName: string,
   columnBehavior: ColumnBehavior,
   sender: string,

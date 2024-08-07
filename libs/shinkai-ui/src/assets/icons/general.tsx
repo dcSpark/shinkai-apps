@@ -913,3 +913,37 @@ export const SheetIcon = ({ className }: { className?: string }) => (
     />
   </svg>
 );
+
+export const FormulaIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={cn('shrink-0', className)}
+    fill="none"
+    height="24"
+    viewBox="0 0 24 24"
+    width="24"
+  >
+    <path
+      d="M2 18.2222C2.18866 19.0724 2.56908 20 3.56235 20C5.28118 20 5.71088 18.2222 7 12C8.28912 5.77778 8.71882 4 10.4376 4C11.4309 4 11.8113 4.92763 12 5.77778M4.91667 9.77778H10.4376"
+      stroke="currentColor"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M21 12C22.3804 15.253 22.2854 16.9808 21 20"
+      stroke="currentColor"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M12 12C10.6196 15.253 10.7146 16.9808 12 20"
+      stroke="currentColor"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M18.7051 18.0052H17.9757C17.1222 17.8236 17.0632 17.1307 16.7853 16.6332C16.694 16.4203 16.5994 16.2039 16.5074 15.9966M16.5074 15.9966C16.2261 15.3622 15.9699 14.8119 15.9104 14.6998C15.6495 14.2089 15.5505 13.998 14.2815 13.998M16.5074 15.9966C16.6826 15.7631 16.8571 15.5296 17.0333 15.3087C17.6423 14.5845 18.2494 13.998 19.0146 13.998M16.5074 15.9966C15.7533 17.0013 14.9847 18.0052 13.998 18.0052"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    />
+  </svg>
+);

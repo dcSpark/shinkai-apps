@@ -21,6 +21,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import {
   FilesIcon,
+  FormulaIcon,
   WorkflowPlaygroundIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
@@ -30,7 +31,7 @@ import {
   ChevronRight,
   EyeOff,
   FileUpIcon,
-  SigmaIcon,
+  HashIcon,
   TextIcon,
   Trash,
 } from 'lucide-react';
@@ -54,7 +55,12 @@ export const fieldTypes = [
   {
     id: ColumnType.Number,
     label: 'Number',
-    icon: SigmaIcon,
+    icon: HashIcon,
+  },
+  {
+    id: ColumnType.Formula,
+    label: 'Formula',
+    icon: FormulaIcon,
   },
   {
     id: ColumnType.LLMCall,
@@ -81,7 +87,6 @@ export function DataTableColumnHeader<TData, TValue>({
   const auth = useAuth((state) => state.auth);
   const { sheetId } = useParams();
 
-  const [selectedType, setSelectedType] = useState(fieldTypes[0]);
   const { llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
     sender: auth?.shinkai_identity ?? '',
@@ -106,21 +111,91 @@ export function DataTableColumnHeader<TData, TValue>({
   const [columnName, setColumnName] = useState(title);
   const [selectedAgent, setSelectedAgent] = useState(llmProviders[0]);
   const [selectedWorkflow, setSelectedWorkflow] = useState(workflowList?.[0]);
+
+  const [formula, setFormula] = useState('');
+  const [promptInput, setPromptInput] = useState('');
+
+  const getColumnBehaviorName = (
+    columnBehavior?: ColumnBehavior,
+  ): ColumnType => {
+    if (typeof columnBehavior === 'string') {
+      return columnBehavior;
+    }
+    if (typeof columnBehavior === 'object') {
+      return Object.keys(columnBehavior)[0] as ColumnType;
+    }
+    return ColumnType.Text;
+  };
+
   const currentType =
-    fieldTypes.find((type) => type.id === columnBehavior) ?? fieldTypes[0];
+    fieldTypes.find(
+      (type) => type.id === getColumnBehaviorName(columnBehavior),
+    ) ?? fieldTypes[0];
+
+  const [selectedType, setSelectedType] = useState(currentType);
 
   const { mutateAsync: setColumnSheet } = useSetColumnSheet();
   const { mutateAsync: removeSheetColumn } = useRemoveColumnSheet();
 
-  console.log(column, 'column');
+  const generateColumnBehavior = (columnType: ColumnType): ColumnBehavior => {
+    switch (columnType) {
+      case ColumnType.Text:
+        return ColumnType.Text;
+      case ColumnType.Number:
+        return ColumnType.Number;
+      case ColumnType.Formula:
+        return { [ColumnType.Formula]: formula };
+      case ColumnType.LLMCall:
+        return {
+          [ColumnType.LLMCall]: {
+            input: promptInput,
+            workflow: {
+              description: selectedWorkflow?.description ?? '',
+              name: selectedWorkflow?.name ?? '',
+              raw: selectedWorkflow?.raw ?? '',
+              version: selectedWorkflow?.version ?? '',
+              steps: selectedWorkflow?.steps ?? [],
+              author: selectedWorkflow?.author ?? '',
+              sticky: selectedWorkflow?.sticky ?? false,
+            },
+            llm_provider_name: selectedAgent.id,
+          },
+        };
+      case ColumnType.MultipleVRFiles:
+        return {
+          [ColumnType.MultipleVRFiles]: {
+            input: promptInput,
+            workflow: {
+              description: selectedWorkflow?.description ?? '',
+              name: selectedWorkflow?.name ?? '',
+              raw: selectedWorkflow?.raw ?? '',
+              version: selectedWorkflow?.version ?? '',
+              steps: selectedWorkflow?.steps ?? [],
+              author: selectedWorkflow?.author ?? '',
+              sticky: selectedWorkflow?.sticky ?? false,
+            },
+            llm_provider_name: selectedAgent.id,
+          },
+        };
+      case ColumnType.UploadedFiles:
+        return {
+          [ColumnType.UploadedFiles]: {
+            files: [''],
+          },
+        };
+      default:
+        return ColumnType.Text;
+    }
+  };
 
   const handleUpdateColumn = async () => {
     if (!auth || !sheetId) return;
+
     await setColumnSheet({
       profile: auth.profile,
       nodeAddress: auth.node_address,
       sheetId: sheetId,
-      columnBehavior: currentType.id as ColumnBehavior,
+      columnBehavior: generateColumnBehavior(currentType.id),
       columnName: columnName.replace(/\//g, '_'),
       columnId: column.id,
       shinkaiIdentity: auth.shinkai_identity,
@@ -137,7 +212,7 @@ export function DataTableColumnHeader<TData, TValue>({
       <Popover
         onOpenChange={(open) => {
           if (!open) {
-            handleUpdateColumn();
+            void handleUpdateColumn();
           }
         }}
       >
@@ -201,7 +276,19 @@ export function DataTableColumnHeader<TData, TValue>({
               })}
             </DropdownMenuContent>
           </DropdownMenu>
-          {selectedType.id === ColumnType.LLMCall && (
+          {selectedType.id === ColumnType.Formula && (
+            <div className="px-3 py-1 text-left text-xs font-medium">
+              <Input
+                autoFocus
+                className="placeholder-gray-80 !h-[40px] resize-none border-none bg-gray-200 py-0 pl-2 pt-0 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
+                onChange={(e) => setFormula(e.target.value)}
+                placeholder={'Formula'}
+                value={formula}
+              />
+            </div>
+          )}
+          {(selectedType.id === ColumnType.LLMCall ||
+            selectedType.id === ColumnType.MultipleVRFiles) && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex justify-between gap-2 rounded-lg px-3 py-2 transition-colors hover:bg-gray-500">
@@ -235,7 +322,8 @@ export function DataTableColumnHeader<TData, TValue>({
               </DropdownMenuContent>
             </DropdownMenu>
           )}
-          {selectedType.id === ColumnType.LLMCall && (
+          {(selectedType.id === ColumnType.LLMCall ||
+            selectedType.id === ColumnType.MultipleVRFiles) && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex justify-between gap-2 rounded-lg px-3 py-2 transition-colors hover:bg-gray-500">
@@ -270,12 +358,15 @@ export function DataTableColumnHeader<TData, TValue>({
             </DropdownMenu>
           )}
 
-          {selectedType.id === ColumnType.LLMCall && (
+          {(selectedType.id === ColumnType.LLMCall ||
+            selectedType.id === ColumnType.MultipleVRFiles) && (
             <div className="flex justify-between gap-2 px-2 py-2">
               <Textarea
                 autoFocus
                 className="placeholder-gray-80 !min-h-[100px] resize-none bg-gray-200 pl-2 pt-2 text-xs"
+                onChange={(e) => setPromptInput(e.target.value)}
                 placeholder="Enter prompt"
+                value={promptInput}
               />
             </div>
           )}

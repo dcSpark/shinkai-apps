@@ -288,10 +288,16 @@ export interface APIAddAgentRequest {
 }
 
 export type Workflow = {
-  description: string;
+  description?: string;
   name: string;
   raw: string;
   version: string;
+  steps: {
+    name: string;
+    body: unknown;
+  }[];
+  author: string;
+  sticky: boolean;
 };
 
 export enum ColumnType {
@@ -312,7 +318,7 @@ export type ColumnBehavior =
         input: string;
         workflow: Workflow;
         llm_provider_name: string;
-        input_hash: string;
+        input_hash?: string;
       };
     }
   | {
@@ -321,7 +327,7 @@ export type ColumnBehavior =
         input: string;
         workflow: Workflow;
         llm_provider_name: string;
-        input_hash: string;
+        input_hash?: string;
       };
     };
 

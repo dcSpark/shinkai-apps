@@ -2000,7 +2000,7 @@ export class ShinkaiMessageBuilderWrapper {
     my_signature_secret_key: string,
     receiver_public_key: string,
     sheetId: string,
-    columnId: string,
+    columnId: string | undefined,
     columnName: string,
     columnBehavior: ColumnBehavior,
     sender: string,
@@ -2014,26 +2014,6 @@ export class ShinkaiMessageBuilderWrapper {
         name: columnName,
         behavior: columnBehavior,
         id: columnId,
-        // behavior: { Formula: '=A+B+C' },
-        // behavior: {
-        //   UploadedFiles: {
-        //     files: ['file1.txt', 'file2.txt'],
-        //   },
-        // },
-        // behavior: {
-        //   LLMCall: {
-        //     input: 'input data',
-        //     workflow: {
-        //       name: '',
-        //       version: '',
-        //       steps: '',
-        //       raw: '',
-        //       description: '',
-        //     },
-        //     llm_provider_name: 'provider',
-        //     input_hash: 'hash',
-        //   },
-        // },
       },
     });
 

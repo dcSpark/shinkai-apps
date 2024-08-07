@@ -13,7 +13,6 @@ export const useExperimental = create<ExperimentalStore>()(
       (set, get) => ({
         workflowHistory: new Set<string>(),
         addWorkflowHistory: (workflowId) => {
-          console.log(workflowId, 'workflowId');
           set({
             workflowHistory: new Set(get().workflowHistory).add(workflowId),
           });

@@ -2,6 +2,7 @@ import { PopoverClose } from '@radix-ui/react-popover';
 import {
   ColumnBehavior,
   ColumnType,
+  Workflow,
 } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
 import { useAddRowsSheet } from '@shinkai_network/shinkai-node-state/lib/mutations/addRowsSheet/useAddRowsSheet';
 import { useRemoveRowsSheet } from '@shinkai_network/shinkai-node-state/lib/mutations/removeRowsSheet/useRemoveRowsSheet';
@@ -119,6 +120,7 @@ export function AddColumnAction() {
   const auth = useAuth((state) => state.auth);
 
   const [selectedType, setSelectedType] = useState(fieldTypes[0]);
+
   const { llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
     sender: auth?.shinkai_identity ?? '',
@@ -130,6 +132,7 @@ export function AddColumnAction() {
     profile_encryption_sk: auth?.profile_encryption_sk ?? '',
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
+
   const { data: workflowList } = useGetWorkflowList({
     nodeAddress: auth?.node_address ?? '',
     shinkaiIdentity: auth?.shinkai_identity ?? '',
@@ -142,13 +145,87 @@ export function AddColumnAction() {
   });
   const [columnName, setColumnName] = useState('');
   const [selectedAgent, setSelectedAgent] = useState(llmProviders[0]);
-  const [selectedWorkflow, setSelectedWorkflow] = useState(workflowList?.[0]);
+  const [selectedWorkflow, setSelectedWorkflow] = useState<
+    Workflow | undefined
+  >(undefined);
+
+  const [formula, setFormula] = useState('');
+  const [promptInput, setPromptInput] = useState('');
 
   const { mutateAsync: setColumnSheet } = useSetColumnSheet({
     onSuccess: () => {
       resetState();
     },
   });
+
+  const generateColumnBehavior = (columnType: ColumnType): ColumnBehavior => {
+    switch (columnType) {
+      case ColumnType.Text:
+        return ColumnType.Text;
+      case ColumnType.Number:
+        return ColumnType.Number;
+      case ColumnType.Formula:
+        return { [ColumnType.Formula]: formula };
+      case ColumnType.LLMCall:
+        return {
+          [ColumnType.LLMCall]: {
+            input: promptInput,
+            workflow: {
+              description: selectedWorkflow?.description ?? '',
+              name: selectedWorkflow?.name ?? '',
+              raw: selectedWorkflow?.raw ?? '',
+              version: selectedWorkflow?.version ?? '',
+              steps: selectedWorkflow?.steps ?? [],
+              author: selectedWorkflow?.author ?? '',
+              sticky: selectedWorkflow?.sticky ?? false,
+            },
+            llm_provider_name: selectedAgent.id,
+          },
+        };
+      case ColumnType.MultipleVRFiles:
+        return {
+          [ColumnType.MultipleVRFiles]: {
+            input: promptInput,
+            workflow: {
+              description: selectedWorkflow?.description ?? '',
+              name: selectedWorkflow?.name ?? '',
+              raw: selectedWorkflow?.raw ?? '',
+              version: selectedWorkflow?.version ?? '',
+              steps: selectedWorkflow?.steps ?? [],
+              author: selectedWorkflow?.author ?? '',
+              sticky: selectedWorkflow?.sticky ?? false,
+            },
+            llm_provider_name: selectedAgent.id,
+          },
+        };
+      case ColumnType.UploadedFiles:
+        return {
+          [ColumnType.UploadedFiles]: {
+            files: [''],
+          },
+        };
+      default:
+        return ColumnType.Text;
+    }
+  };
+
+  const handleAddColumn = async () => {
+    if (!auth || !sheetId) return;
+    await setColumnSheet({
+      profile: auth.profile,
+      nodeAddress: auth.node_address,
+      sheetId: sheetId,
+      columnBehavior: generateColumnBehavior(selectedType.id),
+      columnName: columnName,
+      columnId: undefined,
+      shinkaiIdentity: auth.shinkai_identity,
+      my_device_encryption_sk: auth.my_device_encryption_sk,
+      my_device_identity_sk: auth.my_device_identity_sk,
+      node_encryption_pk: auth.node_encryption_pk,
+      profile_encryption_sk: auth.profile_encryption_sk,
+      profile_identity_sk: auth.profile_identity_sk,
+    });
+  };
 
   const resetState = () => {
     setColumnName('');
@@ -218,7 +295,8 @@ export function AddColumnAction() {
                 })}
               </DropdownMenuContent>
             </DropdownMenu>
-            {selectedType.id === ColumnType.LLMCall && (
+            {(selectedType.id === ColumnType.LLMCall ||
+              selectedType.id === ColumnType.MultipleVRFiles) && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex justify-between gap-2 rounded-lg px-3 py-2 transition-colors hover:bg-gray-500">
@@ -252,7 +330,19 @@ export function AddColumnAction() {
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
-            {selectedType.id === ColumnType.LLMCall && (
+            {selectedType.id === ColumnType.Formula && (
+              <div className="px-3 py-1 text-left text-xs font-medium">
+                <Input
+                  autoFocus
+                  className="placeholder-gray-80 !h-[40px] resize-none border-none bg-gray-200 py-0 pl-2 pt-0 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
+                  onChange={(e) => setFormula(e.target.value)}
+                  placeholder={'Formula'}
+                  value={formula}
+                />
+              </div>
+            )}
+            {(selectedType.id === ColumnType.LLMCall ||
+              selectedType.id === ColumnType.MultipleVRFiles) && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex justify-between gap-2 rounded-lg px-3 py-2 transition-colors hover:bg-gray-500">
@@ -287,12 +377,15 @@ export function AddColumnAction() {
               </DropdownMenu>
             )}
 
-            {selectedType.id === ColumnType.LLMCall && (
+            {(selectedType.id === ColumnType.LLMCall ||
+              selectedType.id === ColumnType.MultipleVRFiles) && (
               <div className="flex justify-between gap-2 px-2 py-2">
                 <Textarea
                   autoFocus
                   className="placeholder-gray-80 !min-h-[100px] resize-none bg-gray-200 pl-2 pt-2 text-xs"
+                  onChange={(e) => setPromptInput(e.target.value)}
                   placeholder="Enter prompt"
+                  value={promptInput}
                 />
               </div>
             )}
@@ -306,23 +399,7 @@ export function AddColumnAction() {
               <PopoverClose asChild>
                 <button
                   className="bg-brand hover:bg-brand-500 flex justify-start gap-2 rounded-lg px-3 py-2 transition-colors"
-                  onClick={() => {
-                    if (!auth || !sheetId) return;
-                    setColumnSheet({
-                      profile: auth.profile,
-                      nodeAddress: auth.node_address,
-                      sheetId: sheetId,
-                      columnBehavior: selectedType.id as ColumnBehavior,
-                      columnName: columnName,
-                      columnId: undefined,
-                      shinkaiIdentity: auth.shinkai_identity,
-                      my_device_encryption_sk: auth.my_device_encryption_sk,
-                      my_device_identity_sk: auth.my_device_identity_sk,
-                      node_encryption_pk: auth.node_encryption_pk,
-                      profile_encryption_sk: auth.profile_encryption_sk,
-                      profile_identity_sk: auth.profile_identity_sk,
-                    });
-                  }}
+                  onClick={handleAddColumn}
                 >
                   <span className="">Create Field</span>
                 </button>
