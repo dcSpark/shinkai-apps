@@ -2,7 +2,6 @@ import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useSyncOllamaModels } from '@shinkai_network/shinkai-node-state/lib/mutations/syncOllamaModels/useSyncOllamaModels';
 import { Button, Progress } from '@shinkai_network/shinkai-ui';
 import { useMap } from '@shinkai_network/shinkai-ui/hooks';
-import { motion } from 'framer-motion';
 import { Download, Loader2, Minus } from 'lucide-react';
 import { ModelResponse, ProgressResponse } from 'ollama/browser';
 import { useEffect } from 'react';
@@ -11,6 +10,7 @@ import { toast } from 'sonner';
 import { OLLAMA_MODELS } from '../../..//lib/shinkai-node-manager/ollama-models';
 import {
   useOllamaListQuery,
+  useOllamaPullingQuery,
   useOllamaPullMutation,
   useOllamaRemoveMutation,
 } from '../../../lib/shinkai-node-manager/ollama-client';
@@ -22,16 +22,14 @@ export const OllamaModelInstallButton = ({ model }: { model: string }) => {
   const ollamaConfig = { host: ollamaApiUrl || 'http://127.0.0.1:11435' };
   const auth = useAuth((auth) => auth.auth);
   const { t } = useTranslation();
-  const { isLoading: isOllamaListLoading } = useOllamaListQuery(ollamaConfig);
+  const { isLoading: isOllamaListLoading, data: installedOllamaModels } =
+    useOllamaListQuery(ollamaConfig);
+  const { data: pullingModelsMap } = useOllamaPullingQuery();
   const { mutateAsync: ollamaPull } = useOllamaPullMutation(ollamaConfig, {
     onSuccess: (data, input) => {
       handlePullProgress(input.model, data);
     },
-    onError: (_, input) => {
-      pullingModelsMap.delete(input.model);
-    },
   });
-  const { data: installedOllamaModels } = useOllamaListQuery(ollamaConfig);
   const { mutateAsync: syncOllamaModels } = useSyncOllamaModels(
     OLLAMA_MODELS.map((value) => value.fullName),
   );
@@ -56,7 +54,6 @@ export const OllamaModelInstallButton = ({ model }: { model: string }) => {
     },
   });
   const installedOllamaModelsMap = useMap<string, ModelResponse>();
-  const pullingModelsMap = useMap<string, ProgressResponse>();
   const handlePullProgress = async (
     model: string,
     progressIterator: AsyncGenerator<ProgressResponse>,
@@ -66,7 +63,6 @@ export const OllamaModelInstallButton = ({ model }: { model: string }) => {
         if (!progress) {
           continue;
         }
-        pullingModelsMap.set(model, progress);
         if (progress.status === 'success') {
           toast.success(
             t('shinkaiNode.models.success.modelInstalled', {
@@ -104,8 +100,6 @@ export const OllamaModelInstallButton = ({ model }: { model: string }) => {
           description: error?.toString(),
         },
       );
-    } finally {
-      pullingModelsMap.delete(model);
     }
   };
   const getProgress = (progress: ProgressResponse): number => {
@@ -118,7 +112,7 @@ export const OllamaModelInstallButton = ({ model }: { model: string }) => {
       });
   }, [installedOllamaModels?.models, installedOllamaModelsMap]);
   return (
-    <motion.div className="flex w-full items-center justify-center" layout>
+    <div className="flex w-full items-center justify-center">
       {isOllamaListLoading ? (
         <Loader2 className="animate-spin" />
       ) : installedOllamaModelsMap.has(model) ? (
@@ -133,7 +127,7 @@ export const OllamaModelInstallButton = ({ model }: { model: string }) => {
           <Minus className="mr-2 h-3 w-3" />
           {t('common.remove')}
         </Button>
-      ) : pullingModelsMap.get(model) ? (
+      ) : pullingModelsMap?.get(model) ? (
         <div className="flex flex-col items-center gap-1">
           <span className="text-xs text-gray-100">
             {getProgress(pullingModelsMap.get(model) as ProgressResponse) + '%'}
@@ -157,6 +151,6 @@ export const OllamaModelInstallButton = ({ model }: { model: string }) => {
           {t('common.install')}
         </Button>
       )}
-    </motion.div>
+    </div>
   );
 };

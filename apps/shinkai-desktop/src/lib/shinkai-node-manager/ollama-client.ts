@@ -1,4 +1,5 @@
 import { FunctionKey } from '@shinkai_network/shinkai-node-state/lib/constants';
+import { useMap } from '@shinkai_network/shinkai-ui/hooks';
 import {
   QueryObserverOptions,
   useMutation,
@@ -44,6 +45,20 @@ export const useOllamaListQuery = (
   return { ...query } as UseQueryResult<ListResponse, Error>;
 };
 
+const pullingModelsMap = new Map<string, ProgressResponse>();
+export const useOllamaPullingQuery = (
+  options?: QueryObserverOptions,
+): UseQueryResult<Map<string, ProgressResponse>, Error> => {
+  const query = useQuery({
+    ...options,
+    queryKey: ['ollama_pulling_models'],
+    queryFn: async (): Promise<Map<string, ProgressResponse>> => {
+      return pullingModelsMap;
+    },
+  });
+  return { ...query } as UseQueryResult<Map<string, ProgressResponse>, Error>;
+};
+
 // Mutations
 export const useOllamaPullMutation = (
   ollamaConfig: OllamaConfig,
@@ -60,18 +75,27 @@ export const useOllamaPullMutation = (
     ): Promise<AsyncGenerator<ProgressResponse, unknown, unknown>> => {
       const ollamaClient = new Ollama(ollamaConfig);
 
-      const pipeGenerator = async function* transformGenerator(
-        generator: AsyncGenerator<ProgressResponse, unknown, unknown>,
-      ) {
+      const pipeGenerator = async function* transformGenerator(generator: {
+        [Symbol.asyncIterator](): AsyncGenerator<
+          ProgressResponse,
+          void,
+          unknown
+        >;
+      }) {
         for await (const progress of generator) {
+          pullingModelsMap.set(input.model, progress);
           if (progress.status === 'success') {
             console.log(`completed invalidating`);
             queryClient.invalidateQueries({
               queryKey: ['ollama_list'],
             });
           }
+          queryClient.invalidateQueries({
+            queryKey: ['ollama_pulling_models'],
+          });
           yield progress;
         }
+        pullingModelsMap.delete(input.model);
       };
       return ollamaClient
         .pull({
@@ -86,7 +110,7 @@ export const useOllamaPullMutation = (
         queryKey: [FunctionKey.SCAN_OLLAMA_MODELS],
       });
       queryClient.invalidateQueries({
-        queryKey: ['shinkai_node_set_default_options'],
+        queryKey: ['shinkai_node_set_default_options', 'ollama_pulling_models'],
       });
       if (options?.onSuccess) {
         options.onSuccess(...onSuccessParameters);

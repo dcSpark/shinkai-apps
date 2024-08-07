@@ -30,16 +30,16 @@ export interface OllamaModel {
 
 export const OLLAMA_MODELS: OllamaModel[] = [
   {
-    model: 'qwen2',
-    tag: '1.5b-instruct-q4_K_M',
-    name: 'Qwen2 1.5B',
+    model: 'gemma2',
+    tag: '2b-instruct-q4_1',
+    name: 'Gemma 2 2b',
     description:
-      "Qwen 1.5 is a series of large language models by Alibaba Cloud spanning from 0.5B to 110B parameters",
+      "Google Gemma 2 is a high-performing and efficient model by now available in three sizes: 2B, 9B, and 27B.",
     contextLength: 32000,
     quality: OllamaModelQuality.Low,
     speed: OllamaModelSpeed.VeryFast,
     capabilities: [OllamaModelCapability.TextGeneration],
-    size: 0.986,
+    size: 1.8,
     fullName: '',
   },
   {
