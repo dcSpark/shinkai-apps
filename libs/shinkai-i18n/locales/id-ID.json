@@ -358,7 +358,10 @@
         "quality": "Kualitas",
         "tags": "Tag",
         "bookPages": "Halaman Buku",
-        "showAll": "Tampilkan semua model"
+        "showAll": "Tampilkan semua model",
+        "showRecommended": "Tampilkan model yang direkomendasikan",
+        "visionCapability": "Gambar ke Teks",
+        "textCapability": "Generasi Teks"
       }
     },
     "nodeAddress": "Alamat Node",

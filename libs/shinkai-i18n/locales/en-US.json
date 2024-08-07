@@ -189,7 +189,10 @@
         "quality": "Quality",
         "tags": "Tags",
         "bookPages": "Book Pages",
-        "showAll": "Show all models"
+        "showAll": "Show all models",
+        "showRecommended": "Show recommended models",
+        "visionCapability": "Image To Text",
+        "textCapability": "Text Generation"
       },
       "success": {
         "modelRemoved": "Model {{modelName}} removed successfully",

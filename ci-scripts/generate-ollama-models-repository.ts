@@ -14,6 +14,8 @@ const OllamaModelSchema = z.object({
   defaultTag: z.string().min(1),
   tags: z.array(OllamaModelTag).min(1),
   supportTools: z.boolean(),
+  embedding: z.boolean(),
+  vision: z.boolean(),
 });
 
 type OllamaModelTag = z.infer<typeof OllamaModelTag>;
@@ -43,6 +45,8 @@ const modelHtmlToObject = async (
     .toArray()
     .map((el) => $(el).text().trim());
   const supportTools = uiTags.includes('Tools');
+  const embedding = uiTags.includes('Embedding');
+  const vision = uiTags.includes('Vision');
   const modelHtml = await getOllamaModelHtml(name);
   const modelApi = cheerio.load(modelHtml);
 
@@ -70,13 +74,15 @@ const modelHtmlToObject = async (
   const secondaryTags = getTags('#secondary-tags');
 
   const tags = [...primaryTags.tags, ...secondaryTags.tags];
-  const defaultTag = primaryTags.defaultTag;
+  const defaultTag = primaryTags.defaultTag || tags[0]?.name;
   return {
     name,
     description,
     supportTools,
     defaultTag,
     tags,
+    embedding,
+    vision,
   };
 };
 const main = async () => {
@@ -89,8 +95,18 @@ const main = async () => {
       return model;
     }),
   );
-
-  const outputPath = path.join(__dirname, '../apps/shinkai-desktop/src/lib/shinkai-node-manager/ollama-models-repository.json');
+  models.forEach((model) => {
+    const result = OllamaModelSchema.safeParse(model);
+    if (result.error) {
+      throw new Error(
+        `Error in model ${model.name}\n${JSON.stringify(result.error, undefined, 2)}`,
+      );
+    }
+  });
+  const outputPath = path.join(
+    __dirname,
+    '../apps/shinkai-desktop/src/lib/shinkai-node-manager/ollama-models-repository.json',
+  );
   fs.writeFileSync(outputPath, JSON.stringify(models, null, 2), 'utf8');
   console.log(`Models data has been written to ${outputPath}`);
 };

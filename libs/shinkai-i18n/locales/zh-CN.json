@@ -358,7 +358,10 @@
         "quality": "质量",
         "tags": "标签",
         "bookPages": "书籍页数",
-        "showAll": "显示所有模型"
+        "showAll": "显示所有模型",
+        "showRecommended": "显示推荐模型",
+        "visionCapability": "图像转文本",
+        "textCapability": "文本生成"
       }
     },
     "nodeAddress": "节点地址",

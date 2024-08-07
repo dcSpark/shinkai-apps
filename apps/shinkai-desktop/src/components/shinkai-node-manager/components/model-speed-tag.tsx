@@ -9,8 +9,8 @@ export const ModelSpeedTag = ({ speed }: { speed: OllamaModelSpeed }) => {
     [OllamaModelSpeed.VeryFast]: '🐆',
   };
   const colorMap: { [key in OllamaModelSpeed]: string } = {
-    [OllamaModelSpeed.Average]: 'bg-orange-900 text-orange-400',
-    [OllamaModelSpeed.Fast]: 'text-yellow-400 bg-yellow-900',
+    [OllamaModelSpeed.Average]: 'text-orange-200 bg-orange-900',
+    [OllamaModelSpeed.Fast]: 'text-yellow-200 bg-yellow-900',
     [OllamaModelSpeed.VeryFast]: 'text-green-200 bg-green-900',
   };
   return (

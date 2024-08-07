@@ -205,8 +205,11 @@ export default {
         models: 'Models',
         quality: 'Quality',
         tags: 'Tags',
-        bookPages: 'Book Pages',
+        bookPages: 'Pages Content Limit',
         showAll: 'Show all models',
+        showRecommended: 'Show recommended models',
+        visionCapability: 'Image To Text',
+        textCapability: 'Text Generation',
       },
       success: {
         modelRemoved: 'Model {{modelName}} removed successfully',

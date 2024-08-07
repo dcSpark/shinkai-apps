@@ -7,13 +7,13 @@ import { ModelResponse, ProgressResponse } from 'ollama/browser';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 
-import { OLLAMA_MODELS } from '../../..//lib/shinkai-node-manager/ollama-models';
 import {
   useOllamaListQuery,
   useOllamaPullingQuery,
   useOllamaPullMutation,
   useOllamaRemoveMutation,
 } from '../../../lib/shinkai-node-manager/ollama-client';
+import { ALLOWED_OLLAMA_MODELS } from '../../../lib/shinkai-node-manager/ollama-models';
 import { useShinkaiNodeGetOllamaApiUrlQuery } from '../../../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { useAuth } from '../../../store/auth';
 export const OllamaModelInstallButton = ({ model }: { model: string }) => {
@@ -31,7 +31,7 @@ export const OllamaModelInstallButton = ({ model }: { model: string }) => {
     },
   });
   const { mutateAsync: syncOllamaModels } = useSyncOllamaModels(
-    OLLAMA_MODELS.map((value) => value.fullName),
+    ALLOWED_OLLAMA_MODELS,
   );
   const { mutateAsync: ollamaRemove } = useOllamaRemoveMutation(ollamaConfig, {
     onSuccess: (_, input) => {

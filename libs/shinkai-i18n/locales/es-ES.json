@@ -358,7 +358,10 @@
         "quality": "Calidad",
         "tags": "Etiquetas",
         "bookPages": "Páginas de libro",
-        "showAll": "Mostrar todos los modelos"
+        "showAll": "Mostrar todos los modelos",
+        "showRecommended": "Mostrar modelos recomendados",
+        "visionCapability": "Imagen a Texto",
+        "textCapability": "Generación de Texto"
       }
     },
     "nodeAddress": "Dirección del Nodo",

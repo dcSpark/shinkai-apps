@@ -1,6 +1,10 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   Badge,
+  Form,
+  FormField,
+  Input,
   Select,
   SelectContent,
   SelectItem,
@@ -12,6 +16,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  TextField,
 } from '@shinkai_network/shinkai-ui';
 import { useMap } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
@@ -28,12 +33,16 @@ import {
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { ModelResponse } from 'ollama/browser';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
-import OLLAMA_MODELS_REPOSITORY from '../../../lib/shinkai-node-manager/ollama-models-repository.json';
+import {
+  FILTERED_OLLAMA_MODELS_REPOSITORY,
+  OllamaModelDefinition,
+} from '../../..//lib/shinkai-node-manager/ollama-models';
+import { useOllamaPullingQuery } from '../../../lib/shinkai-node-manager/ollama-client';
 import { useShinkaiNodeGetDefaultModel } from '../../../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { OllamaModelInstallButton } from './ollama-model-install-button';
-
-export type OllamaModelDefinition = (typeof OLLAMA_MODELS_REPOSITORY)[0];
 
 export const OllamaModelsRepository = ({
   className,
@@ -41,26 +50,41 @@ export const OllamaModelsRepository = ({
 }: React.HTMLAttributes<HTMLDivElement>) => {
   const { t } = useTranslation();
   const { data: defaultModel } = useShinkaiNodeGetDefaultModel();
+  const { data: pullingModelsMap } = useOllamaPullingQuery();
   const installedOllamaModelsMap = useMap<string, ModelResponse>();
   const selectedTagMap = useMap<string, string>();
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'name', desc: false },
   ]);
-  const models = OLLAMA_MODELS_REPOSITORY as OllamaModelDefinition[];
+  const formSchema = z.object({
+    search: z.string(),
+  });
+  type FormSchemaType = z.infer<typeof formSchema>;
+  const form = useForm<FormSchemaType>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      search: '',
+    },
+  });
+  const search = form.watch('search');
   const flatData = useMemo(() => {
-    return (
-      [
-        ...models.sort((a, b) => {
-          if (!sorting[0]?.desc) {
-            return a.name > b.name ? 1 : -1;
-          } else {
-            return a.name < b.name ? 1 : -1;
-          }
-        }),
-      ] ?? []
-    );
-  }, [models, sorting]);
+    return [
+      ...FILTERED_OLLAMA_MODELS_REPOSITORY.sort((a, b) => {
+        if (!sorting[0]?.desc) {
+          return a.name > b.name ? 1 : -1;
+        } else {
+          return a.name < b.name ? 1 : -1;
+        }
+      }).filter((model) => {
+        const searchLower = search.toLowerCase();
+        return (
+          model.name.toLowerCase().includes(searchLower) ||
+          model.description.toLowerCase().includes(searchLower)
+        );
+      }),
+    ];
+  }, [sorting, search]);
   const columns = useMemo<ColumnDef<OllamaModelDefinition>[]>(
     () => [
       {
@@ -142,13 +166,15 @@ export const OllamaModelsRepository = ({
         cell: (info) => {
           const model = info.row.original;
           return (
-            <OllamaModelInstallButton
-              model={getFullName(
-                model.name,
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                selectedTagMap.get(model.name)!,
-              )}
-            />
+            <div className="w-[150px]">
+              <OllamaModelInstallButton
+                model={getFullName(
+                  model.name,
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  selectedTagMap.get(model.name)!,
+                )}
+              />
+            </div>
           );
         },
       },
@@ -181,16 +207,19 @@ export const OllamaModelsRepository = ({
     getScrollElement: () => tableContainerRef.current,
   });
   useEffect(() => {
-    models.forEach((model) => {
+    FILTERED_OLLAMA_MODELS_REPOSITORY.forEach((model) => {
       const defaultTag: string =
         model.tags?.find((tag) =>
           installedOllamaModelsMap.has(`${model.name}:${tag.name}`),
+        )?.name ||
+        model.tags?.find((tag) =>
+          pullingModelsMap?.has(`${model.name}:${tag.name}`),
         )?.name ||
         model.tags?.find((tag) => tag.name === model.defaultTag)?.name ||
         model.tags[0].name;
       selectedTagMap.set(model.name, defaultTag);
     });
-  }, [installedOllamaModelsMap, models, selectedTagMap]);
+  }, [installedOllamaModelsMap, pullingModelsMap, selectedTagMap]);
 
   const getFullName = (model: string, tag: string): string => {
     return `${model}:${tag}`;
@@ -198,11 +227,25 @@ export const OllamaModelsRepository = ({
 
   return (
     <div
-      className={cn('overflow-auto rounded', className)}
+      className={cn('w-full overflow-auto rounded', className)}
       ref={tableContainerRef}
       {...props}
     >
-      <div style={{ height: `${rowVirtualizer.getTotalSize()}px` }}>
+      <Form {...form}>
+        <form className="flex w-[300px] grow flex-col justify-between space-y-6 overflow-hidden">
+          <FormField
+            control={form.control}
+            name="search"
+            render={({ field }) => (
+              <TextField field={field} label={t('common.search')} />
+            )}
+          />
+        </form>
+      </Form>
+      <div
+        className="mt-2"
+        style={{ height: `${rowVirtualizer.getTotalSize()}px` }}
+      >
         <Table>
           <TableHeader className="bg-gray-400 text-xs">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -235,6 +278,18 @@ export const OllamaModelsRepository = ({
             ))}
           </TableHeader>
           <TableBody>
+            {!rowVirtualizer.getVirtualItems()?.length && (
+              <TableRow>
+                <TableCell
+                  className="h-24 text-center"
+                  colSpan={table.getAllColumns().length}
+                >
+                  <span className="text-white">
+                    {t('llmProviders.notFound.title')}
+                  </span>
+                </TableCell>
+              </TableRow>
+            )}
             {rowVirtualizer.getVirtualItems().map((virtualRow, index) => {
               const row = rows[virtualRow.index] as Row<OllamaModelDefinition>;
               return (

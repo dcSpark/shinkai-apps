@@ -43,7 +43,7 @@ import { z } from 'zod';
 
 import logo from '../../../src-tauri/icons/128x128@2x.png';
 import { OllamaModels } from '../../components/shinkai-node-manager/ollama-models';
-import { OLLAMA_MODELS } from '../../lib/shinkai-node-manager/ollama-models';
+import { ALLOWED_OLLAMA_MODELS, OLLAMA_MODELS } from '../../lib/shinkai-node-manager/ollama-models';
 import {
   shinkaiNodeQueryClient,
   useShinkaiNodeGetLastNLogsQuery,
@@ -156,17 +156,14 @@ const App = () => {
   const {
     mutateAsync: syncOllamaModels,
     isPending: syncOllamaModelsIsPending,
-  } = useSyncOllamaModels(
-    OLLAMA_MODELS.map((value) => value.fullName),
-    {
-      onSuccess: () => {
-        successOllamaModelsSyncToast();
-      },
-      onError: () => {
-        errorOllamaModelsSyncToast();
-      },
+  } = useSyncOllamaModels(ALLOWED_OLLAMA_MODELS, {
+    onSuccess: () => {
+      successOllamaModelsSyncToast();
     },
-  );
+    onError: () => {
+      errorOllamaModelsSyncToast();
+    },
+  });
 
   useShinkaiNodeEventsToast();
   useEffect(() => {
@@ -320,7 +317,7 @@ const App = () => {
           </TabsTrigger>
         </TabsList>
         <ScrollArea className="mt-2 flex h-full flex-1 flex-col overflow-auto [&>div>div]:!block">
-          <TabsContent className="flex flex-1 flex-col " value="logs">
+          <TabsContent className="flex flex-1 flex-col" value="logs">
             <div className="p-1" ref={logsScrollRef}>
               {lastNLogs?.length
                 ? lastNLogs?.map((log, index) => {
@@ -392,7 +389,7 @@ const App = () => {
             <AlertDialogTitle>Reset your Shinkai Node</AlertDialogTitle>
             <AlertDialogDescription>
               <div className="flex flex-col space-y-3 text-left text-white/70">
-                <div className="flex flex-col space-y-1 ">
+                <div className="flex flex-col space-y-1">
                   <span className="text-sm">
                     Are you sure you want to reset your Shinkai Node? This will
                     permanently delete all your data.

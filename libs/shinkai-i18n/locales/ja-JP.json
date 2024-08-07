@@ -358,7 +358,10 @@
         "quality": "品質",
         "tags": "タグ",
         "bookPages": "本のページ数",
-        "showAll": "すべてのモデルを表示"
+        "showAll": "すべてのモデルを表示",
+        "showRecommended": "おすすめのモデルを表示",
+        "visionCapability": "画像からテキストへ",
+        "textCapability": "テキスト生成"
       }
     },
     "nodeAddress": "ノードアドレス",

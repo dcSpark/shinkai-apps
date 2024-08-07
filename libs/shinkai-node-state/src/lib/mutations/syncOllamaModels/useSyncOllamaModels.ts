@@ -19,7 +19,7 @@ export type SyncOllamaModelsInput = CredentialsPayload & {
 };
 
 export const useSyncOllamaModels = (
-  allowedModels?: string[],
+  allowedModels: string[],
   options?: UseMutationOptions<void, Error, SyncOllamaModelsInput>,
 ) => {
   const queryClient = useQueryClient();
