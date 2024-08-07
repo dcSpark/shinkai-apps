@@ -33,6 +33,7 @@ import {
   AddRowsAction,
   SelectedRowsActions,
 } from '../components/sheet/data-table-actions';
+import { DataTableToolbar } from '../components/sheet/data-table-toolbar';
 import { generateRowsData } from '../components/sheet/sheet-data';
 // import { DataTablePagination } from '../components/sheet/data-table-pagination';
 // import { DataTableToolbar } from '../components/sheet/data-table-toolbar';
@@ -123,7 +124,7 @@ const SheetProject = () => {
       </div>
       <div className="relative h-[calc(100dvh-120px)] overflow-hidden shadow-sm">
         <div className="flex size-full max-w-[calc(100vw-100px)] flex-col space-y-4 overflow-hidden">
-          {/*<DataTableToolbar table={table} />*/}
+          <DataTableToolbar table={table} />
           <div className="scrollbar-thin relative flex size-full h-full flex-col overflow-auto">
             <div className="relative size-full">
               <Table

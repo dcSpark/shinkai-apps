@@ -112,9 +112,35 @@ export function DataTableColumnHeader<TData, TValue>({
   const { mutateAsync: setColumnSheet } = useSetColumnSheet();
   const { mutateAsync: removeSheetColumn } = useRemoveColumnSheet();
 
+  console.log(column, 'column');
+
+  const handleUpdateColumn = async () => {
+    if (!auth || !sheetId) return;
+    await setColumnSheet({
+      profile: auth.profile,
+      nodeAddress: auth.node_address,
+      sheetId: sheetId,
+      columnBehavior: currentType.id as ColumnBehavior,
+      columnName: columnName.replace(/\//g, '_'),
+      columnId: column.id,
+      shinkaiIdentity: auth.shinkai_identity,
+      my_device_encryption_sk: auth.my_device_encryption_sk,
+      my_device_identity_sk: auth.my_device_identity_sk,
+      node_encryption_pk: auth.node_encryption_pk,
+      profile_encryption_sk: auth.profile_encryption_sk,
+      profile_identity_sk: auth.profile_identity_sk,
+    });
+  };
+
   return (
     <div className={cn('w-full')}>
-      <Popover>
+      <Popover
+        onOpenChange={(open) => {
+          if (!open) {
+            handleUpdateColumn();
+          }
+        }}
+      >
         <PopoverTrigger asChild>
           <Button
             className="-ml-1.5 line-clamp-1 flex size-full justify-start gap-1.5 rounded-md bg-transparent px-2 pr-0 hover:bg-gray-300 data-[state=open]:bg-gray-300"
@@ -134,26 +160,6 @@ export function DataTableColumnHeader<TData, TValue>({
               autoFocus
               className="!h-10 border-none bg-gray-200 py-0 text-xs caret-white placeholder:text-gray-100 focus-visible:ring-0 focus-visible:ring-white"
               onChange={(e) => setColumnName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  if (!auth || !sheetId) return;
-                  setColumnSheet({
-                    profile: auth.profile,
-                    nodeAddress: auth.node_address,
-                    sheetId: sheetId,
-                    columnBehavior: currentType.id as ColumnBehavior,
-                    columnName: columnName.replace(/\//g, '_'),
-                    columnId: column.id as string,
-                    shinkaiIdentity: auth.shinkai_identity,
-                    my_device_encryption_sk: auth.my_device_encryption_sk,
-                    my_device_identity_sk: auth.my_device_identity_sk,
-                    node_encryption_pk: auth.node_encryption_pk,
-                    profile_encryption_sk: auth.profile_encryption_sk,
-                    profile_identity_sk: auth.profile_identity_sk,
-                  });
-                }
-              }}
               placeholder={'Column Name'}
               value={columnName}
             />

@@ -2000,7 +2000,7 @@ export class ShinkaiMessageBuilderWrapper {
     my_signature_secret_key: string,
     receiver_public_key: string,
     sheetId: string,
-    columnId: string | undefined,
+    columnId: string,
     columnName: string,
     columnBehavior: ColumnBehavior,
     sender: string,
@@ -2013,7 +2013,7 @@ export class ShinkaiMessageBuilderWrapper {
       column: {
         name: columnName,
         behavior: columnBehavior,
-        id: columnId ? Number(columnId) : undefined,
+        id: columnId,
         // behavior: { Formula: '=A+B+C' },
         // behavior: {
         //   UploadedFiles: {
