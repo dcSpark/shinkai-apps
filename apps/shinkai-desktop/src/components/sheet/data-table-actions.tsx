@@ -114,7 +114,7 @@ export function AddRowsAction() {
       className="text-gray-80 sticky bottom-0 right-0 z-[10] flex w-[calc(100%-32px)] min-w-[180px] items-center justify-start gap-1 border border-t-0 bg-gray-500 transition-colors hover:bg-gray-300"
       onClick={handleAddRow}
     >
-      <span className="flex h-8 w-[50px] shrink-0 items-center justify-center border-r p-1.5">
+      <span className="flex h-8 w-[74px] shrink-0 items-center justify-center border-r p-1.5">
         <PlusIcon className="h-full w-full" />
       </span>
       <span className="px-2 text-xs">New Row</span>

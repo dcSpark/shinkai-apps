@@ -72,11 +72,11 @@ export function DataTableCell<TData>({
       >
         <PopoverTrigger asChild>
           <div
-            className="relative -ml-1.5 flex h-8 w-full items-center justify-start gap-1.5 rounded-lg bg-transparent px-2 py-1 pr-0"
+            className="relative -ml-1.5 flex h-12 w-full items-center justify-start gap-1.5 rounded-lg bg-transparent px-2 py-1 pr-0"
             role="button"
             tabIndex={0}
           >
-            <span className="line-clamp-1 flex-1 text-left text-gray-50">
+            <span className="line-clamp-2 flex-1 text-left text-gray-50">
               {value}
             </span>
             {/*TODO: if its success, do not show anything*/}

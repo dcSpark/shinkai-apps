@@ -248,7 +248,7 @@ export function DataTableColumnHeader<TData, TValue>({
             variant="ghost"
           >
             <currentType.icon className="h-3.5 w-3.5 shrink-0" />
-            <span className="flex-1 text-left">{title}</span>
+            <span className="line-clamp-1 flex-1 text-left">{title}</span>
           </Button>
         </PopoverTrigger>
         <PopoverContent
@@ -489,7 +489,8 @@ export function DataTableColumnHeader<TData, TValue>({
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          align="start"
+          align="end"
+          alignOffset={-4}
           className="flex w-[200px] flex-col bg-gray-300 px-1 py-2 text-xs"
           onOpenAutoFocus={(e) => e.preventDefault()}
         >

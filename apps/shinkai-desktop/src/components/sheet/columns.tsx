@@ -8,6 +8,7 @@ import { ColumnDef } from '@tanstack/react-table';
 
 import { DataTableCell } from './data-table-cell';
 import { DataTableColumnHeader } from './data-table-column-header';
+import { DataTableRowDetails } from './data-table-row-details';
 // import { DataTableRowActions } from './data-table-row-actions';
 
 export const generateColumns = (
@@ -25,9 +26,9 @@ export const generateColumns = (
   return [
     {
       id: 'select',
-      maxSize: 50,
+      maxSize: 74,
       header: ({ table }) => (
-        <div className="flex items-center justify-center">
+        <div className="h-4 w-4 justify-self-start">
           <Checkbox
             aria-label="Select all"
             checked={
@@ -41,23 +42,28 @@ export const generateColumns = (
         </div>
       ),
       cell: ({ row }) => (
-        <div className="group flex items-center justify-center py-2">
-          <Checkbox
-            aria-label="Select row"
-            checked={row.getIsSelected()}
-            className={cn(
-              'hidden group-hover:block',
-              row.getIsSelected() && 'block',
-            )}
-            onCheckedChange={(value) => row.toggleSelected(!!value)}
-          />
-          <span
-            className={cn(
-              'text-gray-80 block group-hover:hidden',
-              row.getIsSelected() && 'hidden',
-            )}
-          >
-            {row.index + 1}
+        <div className="group flex h-12 items-center gap-2">
+          <div className="flex h-full w-8 items-center justify-center py-2">
+            <Checkbox
+              aria-label="Select row"
+              checked={row.getIsSelected()}
+              className={cn(
+                'hidden group-hover:block',
+                row.getIsSelected() && 'block',
+              )}
+              onCheckedChange={(value) => row.toggleSelected(!!value)}
+            />
+            <span
+              className={cn(
+                'text-gray-80 block group-hover:hidden',
+                row.getIsSelected() && 'hidden',
+              )}
+            >
+              {row.index + 1}
+            </span>
+          </div>
+          <span className="invisible group-hover:visible">
+            <DataTableRowDetails columns={columns} row={row} />
           </span>
         </div>
       ),
