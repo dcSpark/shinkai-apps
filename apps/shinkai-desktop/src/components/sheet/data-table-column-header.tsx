@@ -500,7 +500,7 @@ export function DataTableColumnHeader<TData, TValue>({
             }}
           >
             <EyeOff className="h-3.5 w-3.5" />
-            <span className="">Hide Property</span>
+            <span className="">Hide Column</span>
           </button>
           <button
             className="flex justify-start gap-2 rounded-lg px-3 py-2 text-red-400 transition-colors hover:bg-gray-500"
@@ -521,7 +521,7 @@ export function DataTableColumnHeader<TData, TValue>({
             }}
           >
             <Trash className="h-3.5 w-3.5" />
-            <span className="">Delete Property</span>
+            <span className="">Delete Column</span>
           </button>
         </PopoverContent>
       </Popover>

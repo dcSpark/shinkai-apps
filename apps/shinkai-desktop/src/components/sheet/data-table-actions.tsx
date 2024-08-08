@@ -117,7 +117,7 @@ export function AddRowsAction() {
       <span className="flex h-8 w-[50px] shrink-0 items-center justify-center border-r p-1.5">
         <PlusIcon className="h-full w-full" />
       </span>
-      <span className="px-2 text-xs">New Entity</span>
+      <span className="px-2 text-xs">New Row</span>
     </button>
   );
 }
@@ -489,7 +489,7 @@ export function AddColumnAction() {
           </PopoverContent>
           <TooltipPortal>
             <TooltipContent side="bottom">
-              <p>Add Property</p>
+              <p>Add Column</p>
             </TooltipContent>
           </TooltipPortal>
         </Tooltip>
