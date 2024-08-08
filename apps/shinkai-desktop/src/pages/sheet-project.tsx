@@ -129,7 +129,7 @@ const SheetProject = () => {
       </div>
       <div className="relative h-[calc(100dvh-120px)] overflow-hidden shadow-sm">
         <div className="flex size-full max-w-[calc(100vw-100px)] flex-col space-y-4 overflow-hidden">
-          <DataTableToolbar table={table} />
+          <DataTableToolbar columns={sheetInfo?.columns ?? {}} table={table} />
           <div className="scrollbar-thin relative flex size-full h-full flex-col overflow-auto">
             <div className="relative size-full">
               <Table

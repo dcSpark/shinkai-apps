@@ -1,15 +1,18 @@
 // import { Cross2Icon } from '@radix-ui/react-icons';
 // import { Button } from '@shinkai_network/shinkai-ui';
+import { Columns } from '@shinkai_network/shinkai-node-state/lib/queries/getSheet/types';
 import { Table } from '@tanstack/react-table';
 
 import { DataTableViewOptions } from './data-table-view-options';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
+  columns: Columns;
 }
 
 export function DataTableToolbar<TData>({
   table,
+  columns,
 }: DataTableToolbarProps<TData>) {
   // const isFiltered = table.getState().columnFilters.length > 0;
 
@@ -39,7 +42,7 @@ export function DataTableToolbar<TData>({
       {/*  </Button>*/}
       {/*)}*/}
       {/*</div>*/}
-      <DataTableViewOptions table={table} />
+      <DataTableViewOptions columns={columns} table={table} />
     </div>
   );
 }

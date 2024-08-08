@@ -1,5 +1,6 @@
 import { DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
 import { MixerHorizontalIcon } from '@radix-ui/react-icons';
+import { Columns } from '@shinkai_network/shinkai-node-state/lib/queries/getSheet/types';
 import {
   Button,
   DropdownMenu,
@@ -11,11 +12,14 @@ import { Table } from '@tanstack/react-table';
 
 interface DataTableViewOptionsProps<TData> {
   table: Table<TData>;
+  columns: Columns;
 }
 
 export function DataTableViewOptions<TData>({
   table,
+  columns,
 }: DataTableViewOptionsProps<TData>) {
+  console.log(columns, 'columns');
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -49,7 +53,7 @@ export function DataTableViewOptions<TData>({
                 key={column.id}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
               >
-                {column.id}
+                {columns?.[column.id]?.name ?? column.id}
               </DropdownMenuCheckboxItem>
             );
           })}
