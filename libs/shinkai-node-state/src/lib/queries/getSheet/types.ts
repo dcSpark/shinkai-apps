@@ -48,6 +48,8 @@ export type Sheet = {
   rows: Rows;
   sheet_name: string;
   uuid: string;
+  display_rows: string[];
+  display_columns: string[];
 };
 
 export type GetSheetOutput = Sheet;

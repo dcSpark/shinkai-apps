@@ -12,8 +12,9 @@ export type Book = {
   summary: string;
 };
 
-export const generateRowsData = (rows: Rows) => {
-  return Object.entries(rows).map(([rowId, columns]) => {
+export const generateRowsData = (rows: Rows, display_rows: string[]) => {
+  return display_rows.map((rowId) => {
+    const columns = rows[rowId];
     const formattedRow: FormattedRow = {
       rowId,
       fields: {},

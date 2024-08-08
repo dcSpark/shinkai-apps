@@ -66,12 +66,16 @@ const SheetProject = () => {
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
 
   const data = useMemo(
-    () => generateRowsData(sheetInfo?.rows ?? {}),
-    [sheetInfo?.rows],
+    () => generateRowsData(sheetInfo?.rows ?? {}, sheetInfo?.display_rows ?? []),
+    [sheetInfo?.rows, sheetInfo?.display_rows],
   );
   const columns = useMemo(
-    () => generateColumns(sheetInfo?.columns ?? {}),
-    [sheetInfo?.columns],
+    () =>
+      generateColumns(
+        sheetInfo?.columns ?? {},
+        sheetInfo?.display_columns ?? [],
+      ),
+    [sheetInfo?.columns, sheetInfo?.display_columns],
   );
 
   const table = useReactTable({

@@ -1,3 +1,4 @@
+import { ColumnType } from '@shinkai_network/shinkai-message-ts/models';
 import {
   Columns,
   FormattedRow,
@@ -12,8 +13,11 @@ import { DataTableColumnHeader } from './data-table-column-header';
 
 export const generateColumns = (
   columns: Columns,
+  display_columns: string[],
 ): ColumnDef<FormattedRow>[] => {
-  const formattedColumns = Object.entries(columns).map(([_, value]) => value);
+  // TODO: remove the following line after fixing the display_columns in the node api
+  const uniqueDisplayColumns = display_columns.filter((item, index) => display_columns.indexOf(item) === index);
+  const formattedColumns = uniqueDisplayColumns.map((id) => columns[id]);
 
   return [
     {
