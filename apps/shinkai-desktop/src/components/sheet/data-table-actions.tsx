@@ -195,15 +195,7 @@ export function AddColumnAction() {
       columnType: ColumnType.Text,
       promptInput: '',
       agentId: llmProviders[0]?.id,
-      workflow: {
-        description: '',
-        name: '',
-        raw: '',
-        version: '',
-        steps: [],
-        sticky: false,
-        author: '',
-      },
+      workflow: undefined,
     },
   });
 
@@ -451,7 +443,7 @@ export function AddColumnAction() {
                         <div className="flex items-center gap-2">
                           <span className="flex items-center gap-1.5 text-gray-50">
                             <WorkflowPlaygroundIcon className="h-3.5 w-3.5" />
-                            {currentWorkflow?.name || 'Select'}
+                            {currentWorkflow?.name || 'None'}
                           </span>
                           <ChevronRight className="text-gray-80 h-3.5 w-3.5" />
                         </div>
@@ -462,6 +454,16 @@ export function AddColumnAction() {
                       className="max-h-[40vh] w-[240px] overflow-auto rounded-md bg-gray-300 p-0 px-2 py-2.5 text-gray-50"
                       side="right"
                     >
+                      <DropdownMenuCheckboxItem
+                        checked={undefined === currentWorkflow?.name}
+                        className="flex gap-2 truncate text-xs capitalize hover:bg-gray-500 [&>svg]:bg-transparent"
+                        onCheckedChange={() =>
+                          setColumnForm.setValue('workflow', undefined)
+                        }
+                      >
+                        None
+                      </DropdownMenuCheckboxItem>
+
                       {workflowList?.map((option) => {
                         return (
                           <DropdownMenuCheckboxItem

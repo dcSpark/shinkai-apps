@@ -1,4 +1,3 @@
-import { ColumnType } from '@shinkai_network/shinkai-message-ts/models';
 import {
   Columns,
   FormattedRow,
@@ -16,8 +15,12 @@ export const generateColumns = (
   display_columns: string[],
 ): ColumnDef<FormattedRow>[] => {
   // TODO: remove the following line after fixing the display_columns in the node api
-  const uniqueDisplayColumns = display_columns.filter((item, index) => display_columns.indexOf(item) === index);
-  const formattedColumns = uniqueDisplayColumns.map((id) => columns[id]);
+  const uniqueDisplayColumns = display_columns.filter(
+    (item, index) => display_columns.indexOf(item) === index,
+  );
+  const formattedColumns = uniqueDisplayColumns
+    .map((id) => columns[id])
+    .filter(Boolean);
 
   return [
     {
