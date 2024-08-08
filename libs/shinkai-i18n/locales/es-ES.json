@@ -353,13 +353,15 @@
         "modelInstalled": "Modelo {{modelName}} instalado exitosamente",
         "modelRemoved": "Modelo {{modelName}} eliminado exitosamente"
       },
-      "table": {
-        "bookPages": "Páginas del libro",
-        "dataLimit": "Límite de datos",
+      "labels": {
         "models": "Modelos",
         "quality": "Calidad",
-        "size": "Tamaño",
-        "speed": "Velocidad"
+        "tags": "Etiquetas",
+        "bookPages": "Hasta {{pages}} páginas de contenido",
+        "showAll": "Mostrar todos los modelos",
+        "showRecommended": "Mostrar modelos recomendados",
+        "visionCapability": "Imagen a Texto",
+        "textCapability": "Generación de Texto"
       }
     },
     "nodeAddress": "Dirección del Nodo",

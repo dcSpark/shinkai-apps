@@ -3,27 +3,30 @@
 
 use std::sync::Arc;
 
+use crate::commands::galxe::galxe_generate_proof;
 use crate::commands::hardware::hardware_get_summary;
 use crate::commands::shinkai_node_manager_commands::{
-    shinkai_node_get_last_n_logs, shinkai_node_get_ollama_api_url, shinkai_node_get_options,
-    shinkai_node_is_running, shinkai_node_kill, shinkai_node_remove_storage,
-    shinkai_node_set_default_options, shinkai_node_set_options, shinkai_node_spawn, shinkai_node_get_default_model
+    shinkai_node_get_default_model, shinkai_node_get_last_n_logs, shinkai_node_get_ollama_api_url,
+    shinkai_node_get_options, shinkai_node_is_running, shinkai_node_kill,
+    shinkai_node_remove_storage, shinkai_node_set_default_options, shinkai_node_set_options,
+    shinkai_node_spawn,
 };
-use crate::commands::galxe::galxe_generate_proof;
 
 use globals::SHINKAI_NODE_MANAGER_INSTANCE;
 use local_shinkai_node::shinkai_node_manager::ShinkaiNodeManager;
-use tauri::GlobalShortcutManager;
-use tauri::SystemTrayMenuItem;
-use tauri::{CustomMenuItem, Manager, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMenu};
+use tauri::{
+    CustomMenuItem, LogicalSize, Manager, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMenu,
+};
+use tauri::{GlobalShortcutManager, Size};
+use tauri::{PhysicalSize, SystemTrayMenuItem};
 use tokio::sync::Mutex;
 
 mod audio;
 mod commands;
-mod globals;
-mod local_shinkai_node;
-mod hardware;
 mod galxe;
+mod globals;
+mod hardware;
+mod local_shinkai_node;
 
 fn main() {
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
@@ -163,6 +166,10 @@ fn main() {
                     .unwrap();
                     let _ = new_window.set_title("Shinkai Node Manager");
                     let _ = new_window.set_resizable(true);
+                    let _ = new_window.set_size(Size::Logical(LogicalSize {
+                        width: 1280.0,
+                        height: 820.0,
+                    }));
                 }
                 "quit" => {
                     tauri::async_runtime::spawn(async {

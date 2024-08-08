@@ -1,160 +1,57 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { useSyncOllamaModels } from '@shinkai_network/shinkai-node-state/lib/mutations/syncOllamaModels/useSyncOllamaModels';
 import {
   Badge,
   Button,
-  Progress,
   ScrollArea,
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
+  Separator,
 } from '@shinkai_network/shinkai-ui';
-import { useMap } from '@shinkai_network/shinkai-ui/hooks';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { motion } from 'framer-motion';
-import { Download, Loader2, Minus } from 'lucide-react';
-import { ModelResponse, ProgressResponse } from 'ollama/browser';
-import { useEffect, useMemo } from 'react';
-import { toast } from 'sonner';
+import {
+  ALargeSmall,
+  BookOpenText,
+  Database,
+  Images,
+  List,
+  Star,
+} from 'lucide-react';
+import { useState } from 'react';
+import AutoSizer from 'react-virtualized-auto-sizer';
 
 import {
-  useOllamaListQuery,
-  useOllamaPullMutation,
-  useOllamaRemoveMutation,
-} from '../../lib/shinkai-node-manager/ollama-client';
-import { OLLAMA_MODELS } from '../../lib/shinkai-node-manager/ollama-models';
+  OLLAMA_MODELS,
+  OllamaModelCapability,
+} from '../../lib/shinkai-node-manager/ollama-models';
 import {
   useShinkaiNodeGetDefaultModel,
-  useShinkaiNodeGetOllamaApiUrlQuery,
   useShinkaiNodeIsRunningQuery,
   useShinkaiNodeSpawnMutation,
 } from '../../lib/shinkai-node-manager/shinkai-node-manager-client';
-import { useAuth } from '../../store/auth';
+import { ModelCapabilityTag } from './components/model-capability-tag';
 import { ModelQuailityTag } from './components/model-quality-tag';
 import { ModelSpeedTag } from './components/model-speed-tag';
+import { OllamaModelInstallButton } from './components/ollama-model-install-button';
+import { OllamaModelsRepository } from './components/ollama-models-repository';
 
 export const OllamaModels = () => {
-  const auth = useAuth((auth) => auth.auth);
   const { t } = useTranslation();
-  const { data: ollamaApiUrl } = useShinkaiNodeGetOllamaApiUrlQuery();
   const { data: defaultModel } = useShinkaiNodeGetDefaultModel();
-  const ollamaConfig = { host: ollamaApiUrl || 'http://127.0.0.1:11435' };
-
-  const installedOllamaModelsMap = useMap<string, ModelResponse>();
-  const pullingModelsMap = useMap<string, ProgressResponse>();
 
   const { data: isShinkaiNodeRunning } = useShinkaiNodeIsRunningQuery();
   const { mutateAsync: shinkaiNodeSpawn } = useShinkaiNodeSpawnMutation({});
-  const { mutateAsync: syncOllamaModels } = useSyncOllamaModels(
-    OLLAMA_MODELS.map((value) => value.fullName),
-  );
-  const { isLoading: isOllamaListLoading, data: installedOllamaModels } =
-    useOllamaListQuery(ollamaConfig);
-  const { mutateAsync: ollamaPull } = useOllamaPullMutation(ollamaConfig, {
-    onSuccess: (data, input) => {
-      handlePullProgress(input.model, data);
-    },
-    onError: (_, input) => {
-      pullingModelsMap.delete(input.model);
-    },
-  });
-  const { mutateAsync: ollamaRemove } = useOllamaRemoveMutation(ollamaConfig, {
-    onSuccess: (_, input) => {
-      toast.success(
-        t('shinkaiNode.models.success.modelRemoved', {
-          modelName: input.model,
-        }),
-      );
-      installedOllamaModelsMap.delete(input.model);
-    },
-    onError: (error, input) => {
-      toast.error(
-        t('shinkaiNode.models.errors.modelRemoved', {
-          modelName: input.model,
-        }),
-        {
-          description: error.message,
-        },
-      );
-    },
-  });
 
-  const handlePullProgress = async (
-    model: string,
-    progressIterator: AsyncGenerator<ProgressResponse>,
-  ): Promise<void> => {
-    try {
-      for await (const progress of progressIterator) {
-        if (!progress) {
-          continue;
-        }
-        pullingModelsMap.set(model, progress);
-        if (progress.status === 'success') {
-          toast.success(
-            t('shinkaiNode.models.success.modelInstalled', {
-              modelName: model,
-            }),
-          );
-          if (auth) {
-            syncOllamaModels({
-              nodeAddress: auth?.node_address ?? '',
-              senderSubidentity: auth?.profile ?? '',
-              shinkaiIdentity: auth?.shinkai_identity ?? '',
-              sender: auth?.node_address ?? '',
-              my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-              my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-              node_encryption_pk: auth?.node_encryption_pk ?? '',
-              profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-              profile_identity_sk: auth?.profile_identity_sk ?? '',
-            });
-          }
-          break;
-        } else if (progress.status === 'error') {
-          toast.error(
-            t('shinkaiNode.models.errors.modelInstalled', {
-              modelName: model,
-            }),
-          );
-        }
-      }
-    } catch (error) {
-      toast.error(
-        t('shinkaiNode.models.errors.modelInstalled', {
-          modelName: model,
-        }),
-        {
-          description: error?.toString(),
-        },
-      );
-    } finally {
-      pullingModelsMap.delete(model);
-    }
-  };
-
-  const getProgress = (progress: ProgressResponse): number => {
-    return Math.ceil((100 * (progress.completed ?? 0)) / (progress.total ?? 1));
-  };
+  const [showAllOllamaModels, setShowAllOllamaModels] = useState(false);
 
   const isDefaultModel = (model: string): boolean => {
     return defaultModel === model;
   };
-
-  useEffect(() => {
-    installedOllamaModels?.models &&
-      installedOllamaModels.models.forEach((modelResponse) => {
-        installedOllamaModelsMap.set(modelResponse.name, modelResponse);
-      });
-  }, [installedOllamaModels?.models, installedOllamaModelsMap]);
-
-  const modelList = useMemo(() => {
-    return OLLAMA_MODELS.sort((model) =>
-      installedOllamaModelsMap.has(model.fullName) ? -1 : 1,
-    );
-  }, [installedOllamaModelsMap]);
 
   if (!isShinkaiNodeRunning) {
     return (
@@ -178,134 +75,117 @@ export const OllamaModels = () => {
   }
 
   return (
-    <ScrollArea className="h-full flex-1 rounded-md">
-      <Table className="w-full border-collapse text-[13px]">
-        <TableHeader className="bg-gray-400 text-xs">
-          <TableRow>
-            <TableHead className="md:w-[300px] lg:w-[480px]">
-              {t('shinkaiNode.models.table.models')}
-            </TableHead>
-            <TableHead> {t('shinkaiNode.models.table.dataLimit')}</TableHead>
-            <TableHead>{t('shinkaiNode.models.table.quality')}</TableHead>
-            <TableHead>{t('shinkaiNode.models.table.quality')}</TableHead>
-            <TableHead className="w-[80px]">
-              {t('shinkaiNode.models.table.size')}
-            </TableHead>
-            <TableHead className="w-[180px]" />
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {modelList.map((model) => {
-            return (
-              <TableRow
-                className="transition-colors hover:bg-gray-300/50"
-                key={model.fullName}
-              >
-                <TableCell>
-                  <div className="flex flex-col items-start gap-2">
-                    <div className="flex flex-row items-center gap-3">
-                      <span className="font-medium">{model.name}</span>
-                      {isDefaultModel(model.fullName) && (
-                        <Badge
-                          className={cn(
-                            'rounded-md border-0 px-2 py-1 font-normal capitalize',
-                            'bg-emerald-900 text-emerald-400',
-                          )}
-                          variant="outline"
-                        >
-                          {t('common.recommended')}
-                        </Badge>
-                      )}
-                    </div>
-
-                    {/*<Badge className={cn('text-[8px]')} variant="outline">*/}
-                    {/*  {model.fullName}*/}
-                    {/*</Badge>*/}
-                    <span className="text-gray-80 line-clamp-3 text-ellipsis text-xs">
-                      {model.description}
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell className="whitespace-nowrap">
-                  {Math.round((model.contextLength * 0.75) / 380)}{' '}
-                  {t('shinkaiNode.models.table.bookPages')}
-                </TableCell>
-                <TableCell>
-                  <ModelQuailityTag quality={model.quality} />
-                </TableCell>
-                <TableCell>
-                  <ModelSpeedTag speed={model.speed} />
-                </TableCell>
-                <TableCell className="whitespace-nowrap">
-                  {model.size} GB
-                </TableCell>
-                <TableCell>
-                  <motion.div
-                    className="flex items-center justify-center"
-                    layout
+    <div className="flex h-full flex-col items-center justify-center space-y-2 py-2">
+      {!showAllOllamaModels && (
+        <ScrollArea className="mt-2 flex h-full flex-1 flex-col overflow-auto [&>div>div]:!block">
+          <div className="flex w-full flex-row flex-wrap items-center justify-center gap-2">
+            {OLLAMA_MODELS.map((model) => {
+              return (
+                <>
+                  <Card
+                    className="grid h-[500px] w-[260px] grid-flow-row"
+                    key={model.fullName}
                   >
-                    {isOllamaListLoading ? (
-                      <Loader2 className="animate-spin" />
-                    ) : installedOllamaModelsMap.has(model.fullName) ? (
-                      <Button
-                        className="hover:border-brand py-1.5 text-sm hover:text-white"
-                        onClick={() => {
-                          ollamaRemove({ model: model.fullName });
-                        }}
-                        size="auto"
-                        variant={'destructive'}
-                      >
-                        <Minus className="mr-2 h-3 w-3" />
-                        {t('common.remove')}
-                      </Button>
-                    ) : pullingModelsMap.get(model.fullName) ? (
-                      <div className="flex flex-col items-center gap-1">
-                        <span className="text-xs text-gray-100">
-                          {getProgress(
-                            pullingModelsMap.get(
-                              model.fullName,
-                            ) as ProgressResponse,
-                          ) + '%'}
-                        </span>
-                        <Progress
-                          className="h-2 w-full bg-gray-200 [&>*]:bg-gray-100"
-                          value={getProgress(
-                            pullingModelsMap.get(
-                              model.fullName,
-                            ) as ProgressResponse,
-                          )}
-                        />
-                        <span className="text-xs text-gray-100">
-                          {pullingModelsMap.get(model.fullName)?.status}
-                        </span>
+                    <CardHeader className="">
+                      <CardTitle className="text-md">
+                        <span>{model.name}</span>
+                      </CardTitle>
+                      <div className="mt-2 h-[40px]">
+                        {isDefaultModel(model.fullName) && (
+                          <Badge
+                            className={cn(
+                              'rounded-md border-0 px-2 py-1 font-normal capitalize',
+                              'bg-emerald-900 text-emerald-400',
+                            )}
+                            variant="outline"
+                          >
+                            {t('common.recommended')}
+                          </Badge>
+                        )}
                       </div>
-                    ) : (
-                      <Button
-                        className="hover:border-brand py-1.5 text-sm hover:bg-transparent hover:text-white"
-                        onClick={() => ollamaPull({ model: model.fullName })}
-                        size="auto"
-                        variant={'outline'}
+                      <CardDescription className="h-full overflow-hidden text-ellipsis">
+                        {model.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex flex-col space-y-1 text-xs">
+                      <div className="flex h-[75px] flex-col space-y-1">
+                        {model.capabilities.map((capability) => (
+                          <ModelCapabilityTag
+                            capability={capability}
+                            key={capability}
+                          />
+                        ))}
+                      </div>
+                      <div className="pb-2 pt-0">
+                        <Separator />
+                      </div>
+                      <ModelQuailityTag quality={model.quality} />
+                      <ModelSpeedTag speed={model.speed} />
+                      <Badge
+                        className={cn(
+                          'justify-center rounded-full px-2 py-1 font-normal capitalize',
+                        )}
+                        variant="outline"
                       >
-                        <Download className="mr-2 h-4 w-4" />
-                        {t('common.install')}
-                      </Button>
-                    )}
-                  </motion.div>
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-        <TableFooter className="text-right">
-          <TableRow>
-            <TableCell colSpan={6}>
-              <span className="text-gray-80 text-xs">
-                {t('shinkaiNode.models.poweredByOllama')}
-              </span>
-            </TableCell>
-          </TableRow>
-        </TableFooter>
-      </Table>
-    </ScrollArea>
+                        <BookOpenText className="h-4 w-4" />
+                        <span className="ml-2 overflow-hidden text-ellipsis">
+                          {t('shinkaiNode.models.labels.bookPages', {
+                            pages: Math.round(
+                              (model.contextLength * 0.75) / 380,
+                            ),
+                          })}
+                        </span>
+                      </Badge>
+                      <Badge
+                        className={cn(
+                          'justify-center rounded-full px-2 py-1 font-normal capitalize',
+                        )}
+                        variant="outline"
+                      >
+                        <Database className="mr-2 h-4 w-4" />
+                        <span className="ml-2 overflow-hidden text-ellipsis">
+                          {model.size} GB
+                        </span>
+                      </Badge>
+                    </CardContent>
+                    <CardFooter className="flex h-[75px] flex-row items-center justify-center">
+                      <OllamaModelInstallButton model={model.fullName} />
+                    </CardFooter>
+                  </Card>
+                </>
+              );
+            })}
+          </div>
+        </ScrollArea>
+      )}
+
+      {showAllOllamaModels && (
+        <div className="h-full w-full">
+          <AutoSizer>
+            {({ height, width }) => (
+              <OllamaModelsRepository style={{ height, width }} />
+            )}
+          </AutoSizer>
+        </div>
+      )}
+
+      <Button
+        onClick={async () => setShowAllOllamaModels(!showAllOllamaModels)}
+        variant={'outline'}
+      >
+        {!showAllOllamaModels
+          ? t('shinkaiNode.models.labels.showAll')
+          : t('shinkaiNode.models.labels.showRecommended')}
+        {!showAllOllamaModels ? (
+          <List className="ml-2" />
+        ) : (
+          <Star className="ml-2" />
+        )}
+      </Button>
+
+      <span className="text-gray-80 justify-self-center text-xs">
+        {t('shinkaiNode.models.poweredByOllama')}
+      </span>
+    </div>
   );
 };

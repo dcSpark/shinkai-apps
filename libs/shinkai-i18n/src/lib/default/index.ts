@@ -201,13 +201,15 @@ export default {
         '<b>Reset All:</b> Permanently delete all your Shinkai Node data including the encryption and signing keys.',
     },
     models: {
-      table: {
+      labels: {
         models: 'Models',
-        dataLimit: 'Data Limit',
         quality: 'Quality',
-        speed: 'Speed',
-        size: 'Size',
-        bookPages: 'Book Pages',
+        tags: 'Tags',
+        bookPages: 'Up to {{pages}} Pages of Content',
+        showAll: 'Show all models',
+        showRecommended: 'Show recommended models',
+        visionCapability: 'Image To Text',
+        textCapability: 'Text Generation',
       },
       success: {
         modelRemoved: 'Model {{modelName}} removed successfully',

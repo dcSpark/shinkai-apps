@@ -211,9 +211,13 @@ jobs:
         env:
           ARCH: ${{ matrix.arch }}
           SHINKAI_NODE_VERSION: v0.7.28
-          OLLAMA_VERSION: v0.3.3
+          OLLAMA_VERSION: v0.3.4
         run: |
           npx ts-node ./ci-scripts/download-side-binaries.ts
+
+      - name: Download ollama repository
+        run: |
+          npx ts-node ./ci-scripts/generate-ollama-models-repository.ts
 
       - name: Adapt package version
         run: |

@@ -573,7 +573,7 @@ const MainLayout = () => {
                 : '70px',
             transition: sidebarTransition,
           }}
-          className={cn('flex-1')}
+          className={cn('flex-1 overflow-hidden')}
           initial={{
             paddingLeft: !displaySidebar
               ? '0px'

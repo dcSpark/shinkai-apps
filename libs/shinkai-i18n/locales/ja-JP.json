@@ -353,13 +353,15 @@
         "modelInstalled": "モデル {{modelName}} が正常にインストールされました",
         "modelRemoved": "モデル {{modelName}} が正常に削除されました"
       },
-      "table": {
-        "bookPages": "ページ数",
-        "dataLimit": "データ制限",
+      "labels": {
         "models": "モデル",
         "quality": "品質",
-        "size": "サイズ",
-        "speed": "速度"
+        "tags": "タグ",
+        "bookPages": "最大{{pages}}ページのコンテンツ",
+        "showAll": "すべてのモデルを表示",
+        "showRecommended": "おすすめのモデルを表示",
+        "visionCapability": "画像からテキストへ",
+        "textCapability": "テキスト生成"
       }
     },
     "nodeAddress": "ノードアドレス",

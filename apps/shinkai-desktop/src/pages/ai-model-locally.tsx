@@ -14,7 +14,7 @@ const AgentsLocally = () => {
   return (
     <QueryClientProvider client={shinkaiNodeQueryClient}>
       <SubpageLayout
-        className="relative flex w-full max-w-6xl flex-col gap-2 px-4"
+        className="h-full relative flex w-full max-w-6xl flex-col gap-2 px-4"
         title={t('llmProviders.localAI.installTitle')}
       >
         <p className="text-gray-80 pb-2 text-sm">
