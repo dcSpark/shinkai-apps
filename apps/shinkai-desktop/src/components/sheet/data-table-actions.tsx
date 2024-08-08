@@ -315,7 +315,7 @@ export function AddColumnAction() {
           >
             <Form {...setColumnForm}>
               <form
-                className="flex flex-1 shrink-0 flex-col gap-2"
+                className="flex flex-1 shrink-0 flex-col gap-1"
                 onSubmit={setColumnForm.handleSubmit(onSubmit)}
               >
                 <div className="px-3 py-1 text-left text-xs font-medium">
@@ -323,7 +323,7 @@ export function AddColumnAction() {
                     control={setColumnForm.control}
                     name="columnName"
                     render={({ field }) => (
-                      <div>
+                      <div className="space-y-1">
                         <Input
                           autoFocus
                           className="placeholder-gray-80 !h-[40px] resize-none border-none bg-gray-200 py-0 pl-2 pt-0 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
@@ -358,21 +358,21 @@ export function AddColumnAction() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     align="start"
-                    className="w-[180px] rounded-md bg-gray-300 p-0 px-2 py-2.5 text-gray-50"
+                    className="w-[200px] rounded-md bg-gray-300 p-0 px-2 py-2.5 text-gray-50"
                     side="right"
                   >
                     {fieldTypes.map((option) => {
                       return (
                         <DropdownMenuCheckboxItem
                           checked={selectedType?.id === option.id}
-                          className="flex gap-2 text-xs capitalize hover:bg-gray-500 [&>svg]:bg-transparent"
+                          className="flex gap-2 rounded-lg p-2 pl-8 text-xs capitalize hover:bg-gray-500 [&>span:first-child]:bg-transparent"
                           key={option.id}
                           onCheckedChange={() => {
                             setColumnForm.setValue('columnType', option.id);
                           }}
                         >
                           <option.icon className="h-3.5 w-3.5 shrink-0 text-gray-50" />
-                          {option.id}
+                          <span>{option.label}</span>
                         </DropdownMenuCheckboxItem>
                       );
                     })}
@@ -430,7 +430,7 @@ export function AddColumnAction() {
                       control={setColumnForm.control}
                       name="formula"
                       render={({ field }) => (
-                        <div>
+                        <div className="space-y-1">
                           <Input
                             className="placeholder-gray-80 !h-[40px] resize-none border-none bg-gray-200 py-0 pl-2 pt-0 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
                             onChange={field.onChange}
@@ -453,7 +453,7 @@ export function AddColumnAction() {
                         <div className="flex items-center gap-2">
                           <span className="flex items-center gap-1.5 text-gray-50">
                             <WorkflowPlaygroundIcon className="h-3.5 w-3.5" />
-                            {currentWorkflow?.name ?? 'select'}
+                            {currentWorkflow?.name || 'Select'}
                           </span>
                           <ChevronRight className="text-gray-80 h-3.5 w-3.5" />
                         </div>
@@ -489,7 +489,7 @@ export function AddColumnAction() {
                       control={setColumnForm.control}
                       name="promptInput"
                       render={({ field }) => (
-                        <div>
+                        <div className="w-full space-y-1">
                           <Textarea
                             className="placeholder-gray-80 !min-h-[100px] resize-none bg-gray-200 pl-2 pt-2 text-xs"
                             onChange={field.onChange}

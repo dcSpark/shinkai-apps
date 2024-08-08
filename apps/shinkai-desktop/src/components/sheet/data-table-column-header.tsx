@@ -32,6 +32,7 @@ import {
   EyeOff,
   FileUpIcon,
   HashIcon,
+  SparklesIcon,
   TextIcon,
   Trash,
 } from 'lucide-react';
@@ -64,17 +65,17 @@ export const fieldTypes = [
   },
   {
     id: ColumnType.LLMCall,
-    label: 'LLMCalls',
-    icon: BotIcon,
+    label: 'AI Generated',
+    icon: SparklesIcon,
   },
   {
     id: ColumnType.MultipleVRFiles,
-    label: 'VR Files',
+    label: 'AI Local Files',
     icon: FilesIcon,
   },
   {
     id: ColumnType.UploadedFiles,
-    label: 'Files',
+    label: 'Upload Files',
     icon: FileUpIcon,
   },
 ];
@@ -285,7 +286,7 @@ export function DataTableColumnHeader<TData, TValue>({
                     onCheckedChange={() => setSelectedType(option)}
                   >
                     <option.icon className="h-3.5 w-3.5 text-gray-50" />
-                    {option.id}
+                    {option.label}
                   </DropdownMenuCheckboxItem>
                 );
               })}
