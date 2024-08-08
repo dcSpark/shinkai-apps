@@ -1,3 +1,4 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { PopoverClose } from '@radix-ui/react-popover';
 import {
   ColumnBehavior,
@@ -31,8 +32,10 @@ import { WorkflowPlaygroundIcon } from '@shinkai_network/shinkai-ui/assets';
 import { RowSelectionState } from '@tanstack/react-table';
 import { BotIcon, ChevronRight, PlusIcon } from 'lucide-react';
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
+import { z } from 'zod';
 
 import { useAuth } from '../../store/auth';
 import { fieldTypes } from './data-table-column-header';
@@ -115,9 +118,29 @@ export function AddRowsAction() {
     </button>
   );
 }
+
+const setColumnFormSchema = z.object({
+  columnName: z.string(),
+  columnType: z.string(),
+  agent: z.string(),
+  workflow: z.object({
+    description: z.string(),
+    name: z.string(),
+    raw: z.string(),
+    version: z.string(),
+    steps: z.array(z.any()),
+  }),
+  formula: z.string(),
+  promptInput: z.string(),
+});
+export type SetColumnFormSchema = z.infer<typeof setColumnFormSchema>;
+
 export function AddColumnAction() {
   const { sheetId } = useParams();
   const auth = useAuth((state) => state.auth);
+  const setColumnForm = useForm<SetColumnFormSchema>({
+    resolver: zodResolver(setColumnFormSchema),
+  });
 
   const [selectedType, setSelectedType] = useState(fieldTypes[0]);
 
@@ -231,7 +254,6 @@ export function AddColumnAction() {
     setColumnName('');
     setSelectedType(fieldTypes[0]);
     setSelectedAgent(llmProviders[0]);
-    setSelectedWorkflow(workflowList?.[0]);
   };
 
   return (
@@ -333,10 +355,10 @@ export function AddColumnAction() {
             {selectedType.id === ColumnType.Formula && (
               <div className="px-3 py-1 text-left text-xs font-medium">
                 <Input
-                  autoFocus
                   className="placeholder-gray-80 !h-[40px] resize-none border-none bg-gray-200 py-0 pl-2 pt-0 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
                   onChange={(e) => setFormula(e.target.value)}
                   placeholder={'Formula'}
+                  spellCheck={false}
                   value={formula}
                 />
               </div>
@@ -381,10 +403,10 @@ export function AddColumnAction() {
               selectedType.id === ColumnType.MultipleVRFiles) && (
               <div className="flex justify-between gap-2 px-2 py-2">
                 <Textarea
-                  autoFocus
                   className="placeholder-gray-80 !min-h-[100px] resize-none bg-gray-200 pl-2 pt-2 text-xs"
                   onChange={(e) => setPromptInput(e.target.value)}
                   placeholder="Enter prompt"
+                  spellCheck={false}
                   value={promptInput}
                 />
               </div>

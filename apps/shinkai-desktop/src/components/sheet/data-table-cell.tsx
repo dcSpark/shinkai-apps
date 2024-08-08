@@ -1,10 +1,17 @@
 import { PopoverClose } from '@radix-ui/react-popover';
+import { Tooltip } from '@radix-ui/react-tooltip';
+import { ColumnStatus } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
 import { useSetCellSheet } from '@shinkai_network/shinkai-node-state/lib/mutations/setCellSheet/useSetCellSheet';
 import {
+  Badge,
   Popover,
   PopoverContent,
   PopoverTrigger,
   Textarea,
+  TooltipContent,
+  TooltipPortal,
+  TooltipProvider,
+  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { ColumnDef, Row } from '@tanstack/react-table';
@@ -14,25 +21,25 @@ import { useParams } from 'react-router-dom';
 
 import { useAuth } from '../../store/auth';
 
-interface DataTableCellProps<TData>
-  extends React.HTMLAttributes<HTMLDivElement> {
+interface DataTableCellProps<TData> {
   row: Row<TData>;
   column: ColumnDef<TData>;
   title: string;
   value: string;
+  status: ColumnStatus;
 }
 
 export function DataTableCell<TData>({
   row,
   value,
-  className,
   column,
+  status,
 }: DataTableCellProps<TData>) {
   const { sheetId } = useParams();
 
   const { mutateAsync: setCellSheet } = useSetCellSheet();
   const auth = useAuth((state) => state.auth);
-
+  console.log(status, 'status');
   const [cellValue, setCellValue] = React.useState(value);
 
   const handleUpdateCell = async () => {
@@ -56,7 +63,7 @@ export function DataTableCell<TData>({
   const isCellValueChanged = cellValue !== value;
 
   return (
-    <div className={cn('w-full', className)}>
+    <div className={cn('w-full')}>
       <Popover
         onOpenChange={async (open) => {
           if (!open) {
@@ -66,13 +73,36 @@ export function DataTableCell<TData>({
       >
         <PopoverTrigger asChild>
           <div
-            className="-ml-1.5 flex h-8 w-full items-center justify-start gap-1.5 rounded-lg bg-transparent px-2 py-1 pr-0"
+            className="relative -ml-1.5 flex h-8 w-full items-center justify-start gap-1.5 rounded-lg bg-transparent px-2 py-1 pr-0"
             role="button"
             tabIndex={0}
           >
             <span className="line-clamp-1 flex-1 text-left text-gray-50">
               {value}
             </span>
+            {/*TODO: if its success, do not show anything*/}
+            {status && (
+              <TooltipProvider delayDuration={0}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Badge className="absolute right-0 flex items-center justify-center p-0">
+                      <span
+                        className={cn(
+                          'h-1 w-1 rounded-full',
+                          status === ColumnStatus.Ready && 'bg-green-400',
+                          status === ColumnStatus.Pending && 'bg-orange-400',
+                        )}
+                      />
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipPortal>
+                    <TooltipContent>
+                      <p>{status}</p>
+                    </TooltipContent>
+                  </TooltipPortal>
+                </Tooltip>
+              </TooltipProvider>
+            )}
           </div>
         </PopoverTrigger>
         <PopoverContent

@@ -308,6 +308,11 @@ export enum ColumnType {
   LLMCall = 'LLMCall',
   MultipleVRFiles = 'MultipleVRFiles',
 }
+export enum ColumnStatus {
+  Ready = 'Ready',
+  Pending = 'Pending',
+  Error = 'Error',
+}
 export type ColumnBehavior =
   | ColumnType.Text
   | ColumnType.Number

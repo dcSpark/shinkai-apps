@@ -1,5 +1,6 @@
-import type {
+import {
   ColumnBehavior,
+  ColumnStatus,
   JobCredentialsPayload,
 } from '@shinkai_network/shinkai-message-ts/models';
 
@@ -16,7 +17,7 @@ export type Column = {
 };
 export type Row = {
   last_updated: string;
-  status: string;
+  status: ColumnStatus;
   value: string;
 };
 

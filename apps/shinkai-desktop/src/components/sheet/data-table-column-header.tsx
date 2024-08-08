@@ -35,7 +35,7 @@ import {
   TextIcon,
   Trash,
 } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { useAuth } from '../../store/auth';
@@ -112,9 +112,6 @@ export function DataTableColumnHeader<TData, TValue>({
   const [selectedAgent, setSelectedAgent] = useState(llmProviders[0]);
   const [selectedWorkflow, setSelectedWorkflow] = useState(workflowList?.[0]);
 
-  const [formula, setFormula] = useState('');
-  const [promptInput, setPromptInput] = useState('');
-
   const getColumnBehaviorName = (
     columnBehavior?: ColumnBehavior,
   ): ColumnType => {
@@ -126,6 +123,24 @@ export function DataTableColumnHeader<TData, TValue>({
     }
     return ColumnType.Text;
   };
+
+  const getFormula = (columnBehavior?: ColumnBehavior): string => {
+    if (
+      typeof columnBehavior === 'object' &&
+      ColumnType.Formula in columnBehavior
+    ) {
+      return Object.values(columnBehavior)[0] as string;
+    }
+    return '';
+  };
+  const [formula, setFormula] = useState('');
+  const [promptInput, setPromptInput] = useState('');
+
+  console.log(getFormula(columnBehavior), '======', formula);
+
+  useEffect(() => {
+    setFormula(getFormula(columnBehavior));
+  }, [columnBehavior]);
 
   const currentType =
     fieldTypes.find(
@@ -281,8 +296,11 @@ export function DataTableColumnHeader<TData, TValue>({
               <Input
                 autoFocus
                 className="placeholder-gray-80 !h-[40px] resize-none border-none bg-gray-200 py-0 pl-2 pt-0 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
-                onChange={(e) => setFormula(e.target.value)}
+                onChange={(e) => {
+                  setFormula(e.target.value);
+                }}
                 placeholder={'Formula'}
+                spellCheck={false}
                 value={formula}
               />
             </div>
@@ -366,6 +384,7 @@ export function DataTableColumnHeader<TData, TValue>({
                 className="placeholder-gray-80 !min-h-[100px] resize-none bg-gray-200 pl-2 pt-2 text-xs"
                 onChange={(e) => setPromptInput(e.target.value)}
                 placeholder="Enter prompt"
+                spellCheck={false}
                 value={promptInput}
               />
             </div>

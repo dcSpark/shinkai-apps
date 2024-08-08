@@ -71,6 +71,7 @@ export const generateColumns = (
             <DataTableCell
               column={column}
               row={row}
+              status={row.original.fields[column.id]?.status}
               title={columnItem.name}
               value={row.original.fields[column.id]?.value ?? ''}
             />
