@@ -357,7 +357,7 @@
         "models": "模型",
         "quality": "质量",
         "tags": "标签",
-        "bookPages": "书籍页数",
+        "bookPages": "最多 {{pages}} 页内容",
         "showAll": "显示所有模型",
         "showRecommended": "显示推荐模型",
         "visionCapability": "图像转文本",

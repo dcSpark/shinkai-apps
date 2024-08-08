@@ -43,7 +43,10 @@ import { z } from 'zod';
 
 import logo from '../../../src-tauri/icons/128x128@2x.png';
 import { OllamaModels } from '../../components/shinkai-node-manager/ollama-models';
-import { ALLOWED_OLLAMA_MODELS, OLLAMA_MODELS } from '../../lib/shinkai-node-manager/ollama-models';
+import {
+  ALLOWED_OLLAMA_MODELS,
+  OLLAMA_MODELS,
+} from '../../lib/shinkai-node-manager/ollama-models';
 import {
   shinkaiNodeQueryClient,
   useShinkaiNodeGetLastNLogsQuery,
@@ -302,7 +305,7 @@ const App = () => {
       </div>
 
       <Tabs
-        className="flex w-full flex-1 flex-col overflow-auto"
+        className="h-full flex w-full flex-col overflow-hidden"
         defaultValue="logs"
       >
         <TabsList className="w-full">
@@ -316,8 +319,8 @@ const App = () => {
             Models
           </TabsTrigger>
         </TabsList>
-        <ScrollArea className="mt-2 flex h-full flex-1 flex-col overflow-auto [&>div>div]:!block">
-          <TabsContent className="flex flex-1 flex-col" value="logs">
+        <TabsContent className="h-full overflow-hidden" value="logs">
+          <ScrollArea className="flex h-full flex-1 flex-col overflow-auto [&>div>div]:!block">
             <div className="p-1" ref={logsScrollRef}>
               {lastNLogs?.length
                 ? lastNLogs?.map((log, index) => {
@@ -333,8 +336,10 @@ const App = () => {
                   })
                 : undefined}
             </div>
-          </TabsContent>
-          <TabsContent className="flex flex-1 flex-col" value="options">
+          </ScrollArea>
+        </TabsContent>
+        <TabsContent className="h-full overflow-hidden" value="options">
+          <ScrollArea className="flex h-full flex-1 flex-col overflow-auto [&>div>div]:!block">
             <div className="flex flex-row justify-end pr-4">
               <Button
                 className=""
@@ -372,12 +377,12 @@ const App = () => {
                 </form>
               </Form>
             </div>
-          </TabsContent>
+          </ScrollArea>
+        </TabsContent>
 
-          <TabsContent className="flex flex-1 flex-col" value="models">
-            <OllamaModels />
-          </TabsContent>
-        </ScrollArea>
+        <TabsContent className="h-full overflow-hidden" value="models">
+          <OllamaModels />
+        </TabsContent>
       </Tabs>
 
       <AlertDialog

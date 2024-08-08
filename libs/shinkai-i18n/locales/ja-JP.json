@@ -357,7 +357,7 @@
         "models": "モデル",
         "quality": "品質",
         "tags": "タグ",
-        "bookPages": "本のページ数",
+        "bookPages": "最大{{pages}}ページのコンテンツ",
         "showAll": "すべてのモデルを表示",
         "showRecommended": "おすすめのモデルを表示",
         "visionCapability": "画像からテキストへ",

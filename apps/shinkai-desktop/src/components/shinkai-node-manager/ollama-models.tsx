@@ -1,5 +1,10 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { Badge, Button, Separator } from '@shinkai_network/shinkai-ui';
+import {
+  Badge,
+  Button,
+  ScrollArea,
+  Separator,
+} from '@shinkai_network/shinkai-ui';
 import {
   Card,
   CardContent,
@@ -18,6 +23,7 @@ import {
   Star,
 } from 'lucide-react';
 import { useState } from 'react';
+import AutoSizer from 'react-virtualized-auto-sizer';
 
 import {
   OLLAMA_MODELS,
@@ -28,6 +34,7 @@ import {
   useShinkaiNodeIsRunningQuery,
   useShinkaiNodeSpawnMutation,
 } from '../../lib/shinkai-node-manager/shinkai-node-manager-client';
+import { ModelCapabilityTag } from './components/model-capability-tag';
 import { ModelQuailityTag } from './components/model-quality-tag';
 import { ModelSpeedTag } from './components/model-speed-tag';
 import { OllamaModelInstallButton } from './components/ollama-model-install-button';
@@ -68,106 +75,99 @@ export const OllamaModels = () => {
   }
 
   return (
-    <div className="flex h-full flex-col items-center space-y-8 overflow-x-hidden">
+    <div className="flex h-full flex-col items-center justify-center space-y-2 py-2">
       {!showAllOllamaModels && (
-        <div className="flex h-[500px] flex-nowrap items-center space-x-4">
-          {OLLAMA_MODELS.map((model, index, values) => {
-            return (
-              <>
-                {values.length - 1 === index && (
-                  <div className="px/2 h-full">
-                    <Separator orientation="vertical" />
-                  </div>
-                )}
-                <Card
-                  className="grid h-full w-1/4 grid-flow-row"
-                  key={model.fullName}
-                >
-                  <CardHeader className="h-[240px]">
-                    <CardTitle className='text-md'>
-                      <span>{model.name}</span>
-                    </CardTitle>
-                    <div className="mt-2 h-[40px]">
-                      {isDefaultModel(model.fullName) && (
-                        <Badge
-                          className={cn(
-                            'rounded-md border-0 px-2 py-1 font-normal capitalize',
-                            'bg-emerald-900 text-emerald-400',
-                          )}
-                          variant="outline"
-                        >
-                          {t('common.recommended')}
-                        </Badge>
-                      )}
-                    </div>
-                    <CardDescription className="h-full overflow-hidden text-ellipsis">
-                      {model.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="flex flex-col space-y-1 text-xs">
-                    <Badge
-                      className={cn(
-                        'mb-2 justify-center rounded-full bg-blue-700 px-2 py-1 font-normal capitalize text-blue-200',
-                      )}
-                      variant="outline"
-                    >
-                      {model.capabilities.includes(
-                        OllamaModelCapability.ImageToText,
-                      ) ? (
-                        <>
-                          <Images className="h-4 w-4" />
-                          <span className="ml-2 overflow-hidden text-ellipsis">
-                            {t('shinkaiNode.models.labels.visionCapability')}
-                          </span>
-                        </>
-                      ) : (
-                        <>
-                          <ALargeSmall className="h-4 w-4" />
-                          <span className="ml-2 overflow-hidden text-ellipsis">
-                            {t('shinkaiNode.models.labels.textCapability')}
-                          </span>
-                        </>
-                      )}
-                    </Badge>
-                    <div className="pb-2 pt-0">
-                      <Separator />
-                    </div>
-                    <ModelQuailityTag quality={model.quality} />
-                    <ModelSpeedTag speed={model.speed} />
-                    <Badge
-                      className={cn(
-                        'justify-center rounded-full px-2 py-1 font-normal capitalize',
-                      )}
-                      variant="outline"
-                    >
-                      <BookOpenText className="h-4 w-4" />
-                      <span className="ml-2 overflow-hidden text-ellipsis">
-                        {Math.round((model.contextLength * 0.75) / 380)}{' '}
-                        {t('shinkaiNode.models.labels.bookPages')}
-                      </span>
-                    </Badge>
-                    <Badge
-                      className={cn(
-                        'justify-center rounded-full px-2 py-1 font-normal capitalize',
-                      )}
-                      variant="outline"
-                    >
-                      <Database className="mr-2 h-4 w-4" />
-                      <span className="ml-2 overflow-hidden text-ellipsis">
-                        {model.size} GB
-                      </span>
-                    </Badge>
-                  </CardContent>
-                  <CardFooter className="flex h-[75px] flex-row items-center justify-center">
-                    <OllamaModelInstallButton model={model.fullName} />
-                  </CardFooter>
-                </Card>
-              </>
-            );
-          })}
+        <ScrollArea className="mt-2 flex h-full flex-1 flex-col overflow-auto [&>div>div]:!block">
+          <div className="flex w-full flex-row flex-wrap items-center justify-center gap-2">
+            {OLLAMA_MODELS.map((model) => {
+              return (
+                <>
+                  <Card
+                    className="grid h-[500px] w-[260px] grid-flow-row"
+                    key={model.fullName}
+                  >
+                    <CardHeader className="">
+                      <CardTitle className="text-md">
+                        <span>{model.name}</span>
+                      </CardTitle>
+                      <div className="mt-2 h-[40px]">
+                        {isDefaultModel(model.fullName) && (
+                          <Badge
+                            className={cn(
+                              'rounded-md border-0 px-2 py-1 font-normal capitalize',
+                              'bg-emerald-900 text-emerald-400',
+                            )}
+                            variant="outline"
+                          >
+                            {t('common.recommended')}
+                          </Badge>
+                        )}
+                      </div>
+                      <CardDescription className="h-full overflow-hidden text-ellipsis">
+                        {model.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex flex-col space-y-1 text-xs">
+                      <div className="flex h-[75px] flex-col space-y-1">
+                        {model.capabilities.map((capability) => (
+                          <ModelCapabilityTag
+                            capability={capability}
+                            key={capability}
+                          />
+                        ))}
+                      </div>
+                      <div className="pb-2 pt-0">
+                        <Separator />
+                      </div>
+                      <ModelQuailityTag quality={model.quality} />
+                      <ModelSpeedTag speed={model.speed} />
+                      <Badge
+                        className={cn(
+                          'justify-center rounded-full px-2 py-1 font-normal capitalize',
+                        )}
+                        variant="outline"
+                      >
+                        <BookOpenText className="h-4 w-4" />
+                        <span className="ml-2 overflow-hidden text-ellipsis">
+                          {t('shinkaiNode.models.labels.bookPages', {
+                            pages: Math.round(
+                              (model.contextLength * 0.75) / 380,
+                            ),
+                          })}
+                        </span>
+                      </Badge>
+                      <Badge
+                        className={cn(
+                          'justify-center rounded-full px-2 py-1 font-normal capitalize',
+                        )}
+                        variant="outline"
+                      >
+                        <Database className="mr-2 h-4 w-4" />
+                        <span className="ml-2 overflow-hidden text-ellipsis">
+                          {model.size} GB
+                        </span>
+                      </Badge>
+                    </CardContent>
+                    <CardFooter className="flex h-[75px] flex-row items-center justify-center">
+                      <OllamaModelInstallButton model={model.fullName} />
+                    </CardFooter>
+                  </Card>
+                </>
+              );
+            })}
+          </div>
+        </ScrollArea>
+      )}
+
+      {showAllOllamaModels && (
+        <div className="h-full w-full">
+          <AutoSizer>
+            {({ height, width }) => (
+              <OllamaModelsRepository style={{ height, width }} />
+            )}
+          </AutoSizer>
         </div>
       )}
-      {showAllOllamaModels && <OllamaModelsRepository className="h-[500px]" />}
 
       <Button
         onClick={async () => setShowAllOllamaModels(!showAllOllamaModels)}
@@ -183,7 +183,7 @@ export const OllamaModels = () => {
         )}
       </Button>
 
-      <span className="text-gray-80 text-xs">
+      <span className="text-gray-80 justify-self-center text-xs">
         {t('shinkaiNode.models.poweredByOllama')}
       </span>
     </div>
