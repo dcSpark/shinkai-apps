@@ -321,7 +321,7 @@ export type ColumnBehavior =
   | {
       [ColumnType.LLMCall]: {
         input: string;
-        workflow: Workflow;
+        workflow: Workflow | undefined;
         llm_provider_name: string;
         input_hash?: string;
       };
@@ -330,7 +330,7 @@ export type ColumnBehavior =
       [ColumnType.MultipleVRFiles]: {
         // todo
         input: string;
-        workflow: Workflow;
+        workflow: Workflow | undefined;
         llm_provider_name: string;
         input_hash?: string;
       };
