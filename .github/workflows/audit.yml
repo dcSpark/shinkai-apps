@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Audit
         # must use login shell (-l) to have nvm preinstalled, -e exits shell on nonzero exit codes
