@@ -149,7 +149,7 @@ const SheetProject = () => {
                           <TableHead
                             className={cn(
                               'group relative flex size-full h-8 select-none border-l border-t bg-gray-500 p-1 pl-2.5 pr-1.5 text-left align-middle font-medium',
-                              '[&:has([role=checkbox])]:px-[14px] [&:has([role=checkbox])]:pt-2',
+                              '[&:has([role=checkbox])]:px-[12px] [&:has([role=checkbox])]:pt-2',
                             )}
                             key={header.id}
                             style={{ width: header.getSize() }}
