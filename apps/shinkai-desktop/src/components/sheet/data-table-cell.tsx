@@ -113,7 +113,7 @@ export function DataTableCell<TData>({
             }
           }}
           side="bottom"
-          sideOffset={-32}
+          sideOffset={-45}
         >
           <Textarea
             autoFocus
