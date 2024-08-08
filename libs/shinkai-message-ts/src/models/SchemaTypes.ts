@@ -328,11 +328,7 @@ export type ColumnBehavior =
     }
   | {
       [ColumnType.MultipleVRFiles]: {
-        // todo
-        input: string;
-        workflow: Workflow | undefined;
-        llm_provider_name: string;
-        input_hash?: string;
+        files: [string, string][];
       };
     };
 

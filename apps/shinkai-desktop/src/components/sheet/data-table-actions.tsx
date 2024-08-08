@@ -149,11 +149,7 @@ const setColumnFormSchema = z
       });
     }
 
-    if (
-      (columnType === ColumnType.LLMCall ||
-        columnType === ColumnType.MultipleVRFiles) &&
-      !agentId
-    ) {
+    if (columnType === ColumnType.LLMCall && !agentId) {
       ctx.addIssue({
         code: 'custom',
         message: 'AI is required',
@@ -260,15 +256,21 @@ export function AddColumnAction() {
       case ColumnType.MultipleVRFiles:
         return {
           [ColumnType.MultipleVRFiles]: {
-            input: currentPromptInput as string,
-            workflow: currentWorkflow,
-            llm_provider_name: currentAgentId ?? '',
+            files: [
+              [
+                '/My Files (Private)/Shinkai/Shinkai Whitepaper',
+                'Shinkai Whitepaper',
+              ],
+            ],
           },
         };
       case ColumnType.UploadedFiles:
         return {
           [ColumnType.UploadedFiles]: {
-            files: [''],
+            files: [
+              '/My Files (Private)/Shinkai/Shinkai Whitepaper',
+              '/My Files (Private)/Shinkai/Shinkai Whitepaper',
+            ],
           },
         };
       default:
@@ -376,8 +378,7 @@ export function AddColumnAction() {
                     })}
                   </DropdownMenuContent>
                 </DropdownMenu>
-                {(selectedType?.id === ColumnType.LLMCall ||
-                  selectedType?.id === ColumnType.MultipleVRFiles) && (
+                {selectedType?.id === ColumnType.LLMCall && (
                   <FormField
                     control={setColumnForm.control}
                     name="agentId"
@@ -442,8 +443,7 @@ export function AddColumnAction() {
                     />
                   </div>
                 )}
-                {(selectedType?.id === ColumnType.LLMCall ||
-                  selectedType?.id === ColumnType.MultipleVRFiles) && (
+                {selectedType?.id === ColumnType.LLMCall && (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button className="flex justify-between gap-2 rounded-lg px-3 py-2 transition-colors hover:bg-gray-500">
@@ -480,8 +480,7 @@ export function AddColumnAction() {
                   </DropdownMenu>
                 )}
 
-                {(selectedType?.id === ColumnType.LLMCall ||
-                  selectedType?.id === ColumnType.MultipleVRFiles) && (
+                {selectedType?.id === ColumnType.LLMCall && (
                   <div className="flex justify-between gap-2 px-2 py-2">
                     <FormField
                       control={setColumnForm.control}

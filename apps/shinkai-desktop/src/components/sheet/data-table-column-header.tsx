@@ -178,17 +178,7 @@ export function DataTableColumnHeader<TData, TValue>({
       case ColumnType.MultipleVRFiles:
         return {
           [ColumnType.MultipleVRFiles]: {
-            input: promptInput,
-            workflow: {
-              description: selectedWorkflow?.description ?? '',
-              name: selectedWorkflow?.name ?? '',
-              raw: selectedWorkflow?.raw ?? '',
-              version: selectedWorkflow?.version ?? '',
-              steps: selectedWorkflow?.steps ?? [],
-              author: selectedWorkflow?.author ?? '',
-              sticky: selectedWorkflow?.sticky ?? false,
-            },
-            llm_provider_name: selectedAgent.id,
+            files: [['', '']],
           },
         };
       case ColumnType.UploadedFiles:
@@ -304,8 +294,7 @@ export function DataTableColumnHeader<TData, TValue>({
               />
             </div>
           )}
-          {(selectedType.id === ColumnType.LLMCall ||
-            selectedType.id === ColumnType.MultipleVRFiles) && (
+          {selectedType.id === ColumnType.LLMCall && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex justify-between gap-2 rounded-lg px-3 py-2 transition-colors hover:bg-gray-500">
@@ -339,8 +328,7 @@ export function DataTableColumnHeader<TData, TValue>({
               </DropdownMenuContent>
             </DropdownMenu>
           )}
-          {(selectedType.id === ColumnType.LLMCall ||
-            selectedType.id === ColumnType.MultipleVRFiles) && (
+          {selectedType.id === ColumnType.LLMCall && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex justify-between gap-2 rounded-lg px-3 py-2 transition-colors hover:bg-gray-500">
@@ -375,8 +363,7 @@ export function DataTableColumnHeader<TData, TValue>({
             </DropdownMenu>
           )}
 
-          {(selectedType.id === ColumnType.LLMCall ||
-            selectedType.id === ColumnType.MultipleVRFiles) && (
+          {selectedType.id === ColumnType.LLMCall && (
             <div className="flex justify-between gap-2 px-2 py-2">
               <Textarea
                 autoFocus
@@ -395,9 +382,9 @@ export function DataTableColumnHeader<TData, TValue>({
           </button>
           <button
             className="flex justify-start gap-2 rounded-lg px-3 py-2 text-red-400 transition-colors hover:bg-gray-500"
-            onClick={() => {
+            onClick={async () => {
               if (!auth || !sheetId) return;
-              removeSheetColumn({
+              await removeSheetColumn({
                 profile: auth.profile,
                 nodeAddress: auth.node_address,
                 sheetId: sheetId,
