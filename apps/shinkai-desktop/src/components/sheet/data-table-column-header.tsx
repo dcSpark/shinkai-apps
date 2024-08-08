@@ -36,17 +36,17 @@ import {
   TextIcon,
   Trash,
 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { useAuth } from '../../store/auth';
 
-interface DataTableColumnHeaderProps<TData, TValue>
-  extends React.HTMLAttributes<HTMLDivElement> {
+interface DataTableColumnHeaderProps<TData, TValue> {
   column: Column<TData, TValue>;
   title: string;
   columnBehavior?: ColumnBehavior;
 }
+
 export const fieldTypes = [
   {
     id: ColumnType.Text,
@@ -136,8 +136,6 @@ export function DataTableColumnHeader<TData, TValue>({
   };
   const [formula, setFormula] = useState('');
   const [promptInput, setPromptInput] = useState('');
-
-  console.log(getFormula(columnBehavior), '======', formula);
 
   useEffect(() => {
     setFormula(getFormula(columnBehavior));

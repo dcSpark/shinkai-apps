@@ -279,8 +279,6 @@ export function AddColumnAction() {
   const selectedType = fieldTypes.find((type) => type.id === currentColumnType);
 
   const onSubmit = async (values: SetColumnFormSchema) => {
-    console.log(values, 'values');
-
     if (!auth || !sheetId || !selectedType) return;
     await setColumnSheet({
       profile: auth.profile,
@@ -419,7 +417,7 @@ export function AddColumnAction() {
                             })}
                           </DropdownMenuContent>
                         </DropdownMenu>
-                        <FormMessage className="px-2 text-right" />
+                        <FormMessage className="px-2 text-left" />
                       </Fragment>
                     )}
                   />

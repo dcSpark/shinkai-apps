@@ -36,10 +36,9 @@ export function DataTableCell<TData>({
   status,
 }: DataTableCellProps<TData>) {
   const { sheetId } = useParams();
-
   const { mutateAsync: setCellSheet } = useSetCellSheet();
   const auth = useAuth((state) => state.auth);
-  console.log(status, 'status');
+
   const [cellValue, setCellValue] = React.useState(value);
 
   const handleUpdateCell = async () => {
@@ -108,6 +107,11 @@ export function DataTableCell<TData>({
         <PopoverContent
           align="start"
           className="flex flex-col bg-gray-300 p-0 text-xs"
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              e.preventDefault();
+            }
+          }}
           side="bottom"
           sideOffset={-32}
         >
