@@ -66,7 +66,8 @@ const SheetProject = () => {
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
 
   const data = useMemo(
-    () => generateRowsData(sheetInfo?.rows ?? {}, sheetInfo?.display_rows ?? []),
+    () =>
+      generateRowsData(sheetInfo?.rows ?? {}, sheetInfo?.display_rows ?? []),
     [sheetInfo?.rows, sheetInfo?.display_rows],
   );
   const columns = useMemo(
@@ -86,7 +87,7 @@ const SheetProject = () => {
       columnFilters,
       rowSelection,
     },
-    columnResizeMode: 'onEnd',
+    columnResizeMode: 'onChange',
     columnResizeDirection: 'ltr',
     enableRowSelection: true,
     getCoreRowModel: getCoreRowModel(),
@@ -165,27 +166,15 @@ const SheetProject = () => {
                             {header.column.columnDef.id !== 'select' && (
                               <div
                                 className={cn(
-                                  'user-none invisible absolute right-1 top-1.5 h-[20px] min-w-1 shrink-0 cursor-col-resize touch-none rounded-lg bg-gray-100 hover:bg-gray-100 group-hover:visible',
+                                  'user-none invisible absolute right-0 top-1.5 h-[20px] min-w-1 shrink-0 cursor-col-resize touch-none rounded-lg bg-gray-100 hover:bg-gray-100 group-hover:visible',
                                   header.column.getIsResizing() &&
-                                    'bg-brand-500 visible top-0 h-[calc(100dvh-250px)] min-w-[3px]',
+                                    'bg-brand-500 visible top-0 h-[32px] min-w-[3px]',
                                 )}
                                 {...{
                                   onDoubleClick: () =>
                                     header.column.resetSize(),
                                   onMouseDown: header?.getResizeHandler(),
                                   onTouchStart: header?.getResizeHandler(),
-                                  style: {
-                                    transform: header.column.getIsResizing()
-                                      ? `translateX(${
-                                          (table.options
-                                            .columnResizeDirection === 'rtl'
-                                            ? -1
-                                            : 1) *
-                                          (table.getState().columnSizingInfo
-                                            .deltaOffset ?? 0)
-                                        }px)`
-                                      : '',
-                                  },
                                 }}
                               />
                             )}

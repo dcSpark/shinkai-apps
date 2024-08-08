@@ -37,15 +37,16 @@ import { Fragment, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
-import { z } from 'zod';
 
 import { useAuth } from '../../store/auth';
-import { fieldTypes } from './data-table-column-header';
+import { fieldTypes } from './constants';
+import { SetColumnFormSchema, setColumnFormSchema } from './forms';
 
 interface DataTableActionsProps {
   selectedRows: RowSelectionState;
   setRowSelection: (selectedRows: RowSelectionState) => void;
 }
+
 export function SelectedRowsActions({
   selectedRows,
   setRowSelection,
@@ -120,45 +121,6 @@ export function AddRowsAction() {
     </button>
   );
 }
-
-const setColumnFormSchema = z
-  .object({
-    columnName: z.string().min(1),
-    columnType: z.nativeEnum(ColumnType),
-    agentId: z.string().optional(),
-    workflow: z
-      .object({
-        description: z.string().optional(),
-        name: z.string(),
-        raw: z.string(),
-        version: z.string(),
-        steps: z.array(z.any()),
-        author: z.string(),
-        sticky: z.boolean(),
-      })
-      .optional(),
-    formula: z.string().optional(),
-    promptInput: z.string().optional(),
-  })
-  .superRefine(({ columnType, agentId, formula }, ctx) => {
-    if (columnType === ColumnType.Formula && !formula) {
-      ctx.addIssue({
-        code: 'custom',
-        message: 'Formula is required',
-        path: ['formula'],
-      });
-    }
-
-    if (columnType === ColumnType.LLMCall && !agentId) {
-      ctx.addIssue({
-        code: 'custom',
-        message: 'AI is required',
-        path: ['agentId'],
-      });
-    }
-  });
-
-export type SetColumnFormSchema = z.infer<typeof setColumnFormSchema>;
 
 export function AddColumnAction() {
   const { sheetId } = useParams();
@@ -357,7 +319,7 @@ export function AddColumnAction() {
                       return (
                         <DropdownMenuCheckboxItem
                           checked={selectedType?.id === option.id}
-                          className="flex gap-2 rounded-lg p-2 pl-8 text-xs capitalize hover:bg-gray-500 [&>span:first-child]:bg-transparent"
+                          className="line-clamp-1 flex gap-2 rounded-lg p-2 pl-8 text-xs capitalize hover:bg-gray-500 [&>span:first-child]:bg-transparent"
                           key={option.id}
                           onCheckedChange={() => {
                             setColumnForm.setValue('columnType', option.id);
@@ -391,14 +353,14 @@ export function AddColumnAction() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent
                             align="start"
-                            className="w-[160px] rounded-md bg-gray-300 p-0 px-2 py-2.5 text-gray-50"
+                            className="w-[200px] rounded-md bg-gray-300 p-0 px-2 py-2.5 text-gray-50"
                             side="right"
                           >
                             {llmProviders.map((option) => {
                               return (
                                 <DropdownMenuCheckboxItem
                                   checked={option.id === currentAgentId}
-                                  className="flex gap-2 text-xs capitalize hover:bg-gray-500 [&>svg]:bg-transparent"
+                                  className="line-clamp-1 flex gap-2 rounded-lg p-2 pl-8 text-xs capitalize hover:bg-gray-500 [&>span:first-child]:bg-transparent"
                                   key={option.id}
                                   onCheckedChange={() =>
                                     field.onChange(option.id)
