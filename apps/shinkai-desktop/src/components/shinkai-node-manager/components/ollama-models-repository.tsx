@@ -4,7 +4,6 @@ import {
   Badge,
   Form,
   FormField,
-  Input,
   Select,
   SelectContent,
   SelectItem,
@@ -18,7 +17,7 @@ import {
   TableRow,
   TextField,
 } from '@shinkai_network/shinkai-ui';
-import { useMap } from '@shinkai_network/shinkai-ui/hooks';
+import { useDebounce, useMap } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
   ColumnDef,
@@ -77,7 +76,7 @@ export const OllamaModelsRepository = ({
       search: '',
     },
   });
-  const search = form.watch('search');
+  const debouncedSearchTerm = useDebounce(form.watch('search'), 300);
   const flatData = useMemo(() => {
     return [
       ...FILTERED_OLLAMA_MODELS_REPOSITORY.sort((a, b) => {
@@ -87,14 +86,14 @@ export const OllamaModelsRepository = ({
           return a.name < b.name ? 1 : -1;
         }
       }).filter((model) => {
-        const searchLower = search.toLowerCase();
+        const searchLower = debouncedSearchTerm.toLowerCase();
         return (
           model.name.toLowerCase().includes(searchLower) ||
           model.description.toLowerCase().includes(searchLower)
         );
       }),
     ];
-  }, [sorting, search]);
+  }, [sorting, debouncedSearchTerm]);
   const columns = useMemo<ColumnDef<OllamaModelDefinition>[]>(
     () => [
       {
@@ -216,7 +215,7 @@ export const OllamaModelsRepository = ({
   const rowVirtualizer = useVirtualizer({
     count: flatData.length,
     estimateSize: () => 90,
-    overscan: 2,
+    overscan: 1,
     getScrollElement: () => tableContainerRef.current,
   });
   useEffect(() => {
@@ -250,7 +249,12 @@ export const OllamaModelsRepository = ({
       {...props}
     >
       <Form {...form}>
-        <form className="flex w-[300px] grow flex-col justify-between space-y-6 overflow-hidden">
+        <form
+          className="flex w-[300px] grow flex-col justify-between space-y-6 overflow-hidden"
+          onSubmit={(e) => {
+            e.preventDefault();
+          }}
+        >
           <FormField
             control={form.control}
             name="search"

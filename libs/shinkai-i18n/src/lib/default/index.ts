@@ -205,7 +205,7 @@ export default {
         models: 'Models',
         quality: 'Quality',
         tags: 'Tags',
-        bookPages: 'Pages Content Limit',
+        bookPages: 'Up to {{pages}} Pages of Content',
         showAll: 'Show all models',
         showRecommended: 'Show recommended models',
         visionCapability: 'Image To Text',

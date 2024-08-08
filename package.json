@@ -88,6 +88,7 @@
     "react-qrcode-logo": "^3.0.0",
     "react-router-dom": "^6.23.1",
     "react-use-websocket": "^4.8.1",
+    "react-virtualized-auto-sizer": "^1.0.24",
     "rxjs": "^7.8.1",
     "sonner": "^1.4.41",
     "tailwind-merge": "^2.3.0",
