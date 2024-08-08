@@ -152,9 +152,7 @@ const SheetProject = () => {
                               '[&:has([role=checkbox])]:justify-center [&:has([role=checkbox])]:px-2.5',
                             )}
                             key={header.id}
-                            style={{
-                              width: header.getSize(),
-                            }}
+                            style={{ width: header.getSize() }}
                           >
                             {header.isPlaceholder
                               ? null

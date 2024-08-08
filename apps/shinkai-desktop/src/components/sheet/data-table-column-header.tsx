@@ -270,7 +270,7 @@ export function DataTableColumnHeader<TData, TValue>({
                         autoFocus
                         className="placeholder-gray-80 !h-[40px] resize-none border-none bg-gray-200 py-0 pl-2 pt-0 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
                         onChange={field.onChange}
-                        placeholder={'Column Name'}
+                        placeholder="Column Name"
                         value={field.value}
                       />
                       <FormMessage />
@@ -490,10 +490,15 @@ export function DataTableColumnHeader<TData, TValue>({
         </PopoverTrigger>
         <PopoverContent
           align="start"
-          className="flex w-[200px] flex-col bg-gray-300 px-0 py-2 text-xs"
+          className="flex w-[200px] flex-col bg-gray-300 px-1 py-2 text-xs"
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
-          <button className="flex justify-start gap-2 rounded-lg px-3 py-2 text-white transition-colors hover:bg-gray-500">
+          <button
+            className="flex justify-start gap-2 rounded-lg px-3 py-2 text-white transition-colors hover:bg-gray-500"
+            onClick={() => {
+              column.toggleVisibility(!column.getIsVisible());
+            }}
+          >
             <EyeOff className="h-3.5 w-3.5" />
             <span className="">Hide Property</span>
           </button>
