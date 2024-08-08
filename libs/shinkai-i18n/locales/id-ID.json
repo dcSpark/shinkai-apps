@@ -357,7 +357,7 @@
         "models": "Model",
         "quality": "Kualitas",
         "tags": "Tag",
-        "bookPages": "Halaman Buku",
+        "bookPages": "Hingga {{pages}} Halaman Konten",
         "showAll": "Tampilkan semua model",
         "showRecommended": "Tampilkan model yang direkomendasikan",
         "visionCapability": "Gambar ke Teks",

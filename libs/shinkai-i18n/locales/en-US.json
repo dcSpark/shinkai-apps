@@ -188,7 +188,7 @@
         "models": "Models",
         "quality": "Quality",
         "tags": "Tags",
-        "bookPages": "Book Pages",
+        "bookPages": "Up to {{pages}} Pages of Content",
         "showAll": "Show all models",
         "showRecommended": "Show recommended models",
         "visionCapability": "Image To Text",
