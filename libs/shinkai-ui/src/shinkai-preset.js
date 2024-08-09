@@ -83,6 +83,14 @@ module.exports = {
             'animation-timing-function': 'cubic-bezier(0, 0, 0.2, 1)',
           },
         },
+        'shadow-pulse': {
+          '0%': {
+            boxShadow: '0 0 0 0px rgba(0, 0, 0, 0.6)',
+          },
+          '100%': {
+            boxShadow: '0 0 0 10px rgba(0, 0, 0, 0)',
+          },
+        },
         loaderDots: {
           '0%': {
             opacity: 1,
@@ -97,6 +105,7 @@ module.exports = {
         'accordion-up': 'accordion-up 0.2s ease-out',
         breath: 'breath 5s ease-out infinite',
         'big-bounce': 'big-bounce 1s infinite',
+        'shadow-pulse': 'shadow-pulse 2s infinite',
       },
       zIndex: {
         max: 2147483647,

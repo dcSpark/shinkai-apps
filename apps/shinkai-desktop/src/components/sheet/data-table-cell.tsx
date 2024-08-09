@@ -77,20 +77,24 @@ export function DataTableCell<TData>({
             role="button"
             tabIndex={0}
           >
-            <span className="line-clamp-2 flex-1 text-left text-gray-50">
-              {value}
+            <span
+              className={cn(
+                'line-clamp-2 flex-1 text-left text-gray-50',
+                status === ColumnStatus.Pending && 'text-gray-80',
+              )}
+            >
+              {status === ColumnStatus.Pending ? 'Generating ...' : value}
             </span>
-            {/*TODO: if its success, do not show anything*/}
-            {status && (
+            {status && status === ColumnStatus.Pending && (
               <TooltipProvider delayDuration={0}>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Badge className="absolute right-0 flex items-center justify-center p-0">
                       <span
                         className={cn(
-                          'h-1 w-1 rounded-full',
-                          status === ColumnStatus.Ready && 'bg-green-400',
-                          status === ColumnStatus.Pending && 'bg-orange-400',
+                          'shadow-[0px_0px_1px_1px_#0000001a]',
+                          'animate-shadow-pulse h-1.5 w-1.5 rounded-full',
+                          'bg-orange-400',
                         )}
                       />
                     </Badge>

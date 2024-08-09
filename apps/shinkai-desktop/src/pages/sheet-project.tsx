@@ -43,17 +43,22 @@ import { useAuth } from '../store/auth';
 const SheetProject = () => {
   const auth = useAuth((state) => state.auth);
   const { sheetId } = useParams();
-  const { data: sheetInfo } = useGetSheet({
-    nodeAddress: auth?.node_address ?? '',
-    sheetId: sheetId ?? '',
-    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-    profile_identity_sk: auth?.profile_identity_sk ?? '',
-    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-    node_encryption_pk: auth?.node_encryption_pk ?? '',
-    profile: auth?.profile ?? '',
-    shinkaiIdentity: auth?.shinkai_identity ?? '',
-  });
+  const { data: sheetInfo } = useGetSheet(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      sheetId: sheetId ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+      my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+      my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile: auth?.profile ?? '',
+      shinkaiIdentity: auth?.shinkai_identity ?? '',
+    },
+    {
+      refetchInterval: 5000,
+    },
+  );
 
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({
