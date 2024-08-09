@@ -52,7 +52,7 @@ const SheetDashboard = () => {
       headerRightElement={<CreateSheetModal />}
       title={'Shinkai Sheet'}
     >
-      <div className="grid grid-cols-3 gap-4 py-5">
+      <div className="grid gap-5 py-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {!!data?.length &&
           data?.map((sheet) => (
             <SheetCard
@@ -92,13 +92,18 @@ function SheetCard({
             variant: 'outline',
             size: 'auto',
           }),
-          'group relative flex flex-1 cursor-pointer flex-col items-start gap-3 overflow-hidden rounded-lg bg-gray-500 pb-6 pr-8 pt-8 text-left hover:bg-gray-500',
+          'relative flex flex-1 cursor-pointer flex-col items-start gap-6 overflow-hidden rounded-lg bg-gray-500 p-4 text-left transition-shadow duration-200 hover:bg-gray-500 hover:shadow-xl',
         )}
         key={sheetId}
         to={`/sheets/${sheetId}`}
       >
-        <SheetIcon className="transition-transform duration-200 group-hover:-translate-y-0.5" />
-        <span>{sheetName}</span>
+        <div className="flex aspect-square w-full items-center justify-center bg-gray-50/20">
+          <SheetIcon className="h-8 w-8 text-gray-50" />
+        </div>
+        <div className="flex flex-col gap-1">
+          <span>{sheetName}</span>
+          <span className="text-gray-80 text-xs"> 2 days ago</span>
+        </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
