@@ -110,7 +110,7 @@ export const useOllamaPullMutation = (
         queryKey: [FunctionKey.SCAN_OLLAMA_MODELS],
       });
       queryClient.invalidateQueries({
-        queryKey: ['shinkai_node_set_default_options', 'ollama_pulling_models'],
+        queryKey: ['shinkai_node_set_default_options', 'ollama_list', 'ollama_pulling_models'],
       });
       if (options?.onSuccess) {
         options.onSuccess(...onSuccessParameters);
@@ -131,12 +131,13 @@ export const useOllamaRemoveMutation = (
       const response = await ollamaClient.delete({
         model: input.model,
       });
+      pullingModelsMap.delete(input.model);
       return response;
     },
     ...options,
     onSuccess: (...onSuccessParameters) => {
       queryClient.invalidateQueries({
-        queryKey: ['ollama_list'],
+        queryKey: ['ollama_list', 'ollama_pulling_models'],
       });
       queryClient.invalidateQueries({
         queryKey: [FunctionKey.SCAN_OLLAMA_MODELS],

@@ -1884,132 +1884,132 @@
         "size": "5.0GB"
       },
       {
-        "name": "7b-instruct-q5_1",
-        "size": "5.4GB"
-      },
-      {
-        "name": "7b-instruct-v0.3-q3_K_L",
-        "size": "3.8GB"
+        "name": "7b-instruct-v0.3-q5_K_M",
+        "size": "5.1GB"
       },
       {
         "name": "7b-instruct-v0.2-fp16",
         "size": "14GB"
       },
       {
-        "name": "7b-instruct-v0.3-q2_K",
-        "size": "2.7GB"
-      },
-      {
-        "name": "7b-instruct-v0.2-q5_1",
-        "size": "5.4GB"
+        "name": "7b-instruct-v0.2-q5_K_M",
+        "size": "5.1GB"
       },
       {
         "name": "7b-instruct-q5_K_M",
         "size": "5.1GB"
       },
       {
-        "name": "7b-instruct-v0.2-q5_K_M",
-        "size": "5.1GB"
-      },
-      {
-        "name": "7b-instruct-v0.2-q5_0",
-        "size": "5.0GB"
-      },
-      {
-        "name": "7b-instruct-q6_K",
-        "size": "5.9GB"
-      },
-      {
-        "name": "7b-instruct-v0.2-q4_0",
-        "size": "4.1GB"
-      },
-      {
-        "name": "7b-instruct-v0.2-q4_K_S",
-        "size": "4.1GB"
-      },
-      {
-        "name": "7b-instruct-v0.2-q2_K",
-        "size": "3.1GB"
-      },
-      {
-        "name": "7b-instruct-v0.2-q4_1",
-        "size": "4.6GB"
-      },
-      {
-        "name": "7b-instruct-v0.2-q8_0",
-        "size": "7.7GB"
-      },
-      {
-        "name": "7b-instruct-v0.2-q3_K_L",
-        "size": "3.8GB"
-      },
-      {
-        "name": "7b-instruct-v0.2-q4_K_M",
-        "size": "4.4GB"
-      },
-      {
-        "name": "7b-instruct-v0.2-q5_K_S",
-        "size": "5.0GB"
-      },
-      {
-        "name": "7b-instruct-q5_K_S",
-        "size": "5.0GB"
-      },
-      {
         "name": "7b-instruct-q8_0",
         "size": "7.7GB"
-      },
-      {
-        "name": "7b-instruct-v0.2-q6_K",
-        "size": "5.9GB"
-      },
-      {
-        "name": "7b-instruct-v0.2-q3_K_S",
-        "size": "3.2GB"
-      },
-      {
-        "name": "7b-instruct-v0.2-q3_K_M",
-        "size": "3.5GB"
-      },
-      {
-        "name": "7b-instruct-v0.3-fp16",
-        "size": "14GB"
-      },
-      {
-        "name": "7b-instruct-v0.3-q3_K_M",
-        "size": "3.5GB"
-      },
-      {
-        "name": "7b-instruct-v0.3-q3_K_S",
-        "size": "3.2GB"
-      },
-      {
-        "name": "7b-instruct-v0.3-q4_0",
-        "size": "4.1GB"
-      },
-      {
-        "name": "7b-instruct-v0.3-q4_1",
-        "size": "4.6GB"
-      },
-      {
-        "name": "7b-instruct-v0.3-q4_K_M",
-        "size": "4.4GB"
-      },
-      {
-        "name": "7b-instruct-v0.3-q4_K_S",
-        "size": "4.1GB"
-      },
-      {
-        "name": "7b-instruct-v0.3-q5_0",
-        "size": "5.0GB"
       },
       {
         "name": "7b-instruct-v0.3-q5_1",
         "size": "5.4GB"
       },
       {
-        "name": "7b-instruct-v0.3-q5_K_M",
-        "size": "5.1GB"
+        "name": "7b-instruct-v0.3-q3_K_M",
+        "size": "3.5GB"
+      },
+      {
+        "name": "7b-instruct-v0.2-q5_1",
+        "size": "5.4GB"
+      },
+      {
+        "name": "7b-instruct-q5_1",
+        "size": "5.4GB"
+      },
+      {
+        "name": "7b-instruct-v0.2-q4_1",
+        "size": "4.6GB"
+      },
+      {
+        "name": "7b-instruct-v0.2-q4_0",
+        "size": "4.1GB"
+      },
+      {
+        "name": "7b-instruct-v0.3-q3_K_S",
+        "size": "3.2GB"
+      },
+      {
+        "name": "7b-instruct-v0.3-q5_0",
+        "size": "5.0GB"
+      },
+      {
+        "name": "7b-instruct-v0.3-q4_1",
+        "size": "4.6GB"
+      },
+      {
+        "name": "7b-instruct-v0.2-q2_K",
+        "size": "3.1GB"
+      },
+      {
+        "name": "7b-instruct-v0.2-q8_0",
+        "size": "7.7GB"
+      },
+      {
+        "name": "7b-instruct-v0.3-q2_K",
+        "size": "2.7GB"
+      },
+      {
+        "name": "7b-instruct-v0.2-q3_K_L",
+        "size": "3.8GB"
+      },
+      {
+        "name": "7b-instruct-v0.2-q5_K_S",
+        "size": "5.0GB"
+      },
+      {
+        "name": "7b-instruct-v0.3-q4_0",
+        "size": "4.1GB"
+      },
+      {
+        "name": "7b-instruct-v0.3-q3_K_L",
+        "size": "3.8GB"
+      },
+      {
+        "name": "7b-instruct-v0.3-q4_K_S",
+        "size": "4.1GB"
+      },
+      {
+        "name": "7b-instruct-v0.2-q3_K_M",
+        "size": "3.5GB"
+      },
+      {
+        "name": "7b-instruct-q6_K",
+        "size": "5.9GB"
+      },
+      {
+        "name": "7b-instruct-v0.2-q5_0",
+        "size": "5.0GB"
+      },
+      {
+        "name": "7b-instruct-v0.2-q4_K_M",
+        "size": "4.4GB"
+      },
+      {
+        "name": "7b-instruct-q5_K_S",
+        "size": "5.0GB"
+      },
+      {
+        "name": "7b-instruct-v0.2-q3_K_S",
+        "size": "3.2GB"
+      },
+      {
+        "name": "7b-instruct-v0.2-q4_K_S",
+        "size": "4.1GB"
+      },
+      {
+        "name": "7b-instruct-v0.2-q6_K",
+        "size": "5.9GB"
+      },
+      {
+        "name": "7b-instruct-v0.3-fp16",
+        "size": "14GB"
+      },
+      {
+        "name": "7b-instruct-v0.3-q4_K_M",
+        "size": "4.4GB"
       },
       {
         "name": "7b-instruct-v0.3-q5_K_S",
@@ -2028,55 +2028,31 @@
         "size": "4.1GB"
       },
       {
-        "name": "7b-text-fp16",
+        "name": "7b-text-v0.2-fp16",
         "size": "14GB"
       },
       {
-        "name": "7b-text-v0.2-q5_K_M",
-        "size": "5.1GB"
-      },
-      {
-        "name": "7b-text-q2_K",
-        "size": "3.1GB"
-      },
-      {
-        "name": "7b-text-v0.2-q5_1",
-        "size": "5.4GB"
-      },
-      {
-        "name": "7b-text-v0.2-q4_K_M",
-        "size": "4.4GB"
-      },
-      {
-        "name": "7b-text-q4_K_S",
-        "size": "4.1GB"
-      },
-      {
-        "name": "7b-text-q3_K_L",
-        "size": "3.8GB"
-      },
-      {
-        "name": "7b-text-v0.2-q5_0",
+        "name": "7b-text-q5_0",
         "size": "5.0GB"
       },
       {
-        "name": "7b-text-v0.2-q4_K_S",
-        "size": "4.1GB"
-      },
-      {
-        "name": "7b-text-q5_K_M",
-        "size": "5.1GB"
-      },
-      {
-        "name": "7b-text-v0.2-q3_K_S",
-        "size": "3.2GB"
+        "name": "7b-text-v0.2-q8_0",
+        "size": "7.7GB"
       },
       {
         "name": "7b-text-v0.2-q3_K_M",
         "size": "3.5GB"
       },
       {
-        "name": "7b-text-q5_1",
+        "name": "7b-text-v0.2-q4_K_M",
+        "size": "4.4GB"
+      },
+      {
+        "name": "7b-text-v0.2-q5_K_S",
+        "size": "5.0GB"
+      },
+      {
+        "name": "7b-text-v0.2-q5_1",
         "size": "5.4GB"
       },
       {
@@ -2084,32 +2060,80 @@
         "size": "4.4GB"
       },
       {
-        "name": "7b-text-q5_0",
-        "size": "5.0GB"
+        "name": "7b-text-v0.2-q3_K_S",
+        "size": "3.2GB"
       },
       {
-        "name": "7b-text-v0.2-fp16",
-        "size": "14GB"
+        "name": "7b-text-q4_0",
+        "size": "4.1GB"
       },
       {
-        "name": "7b-text-v0.2-q2_K",
-        "size": "2.7GB"
-      },
-      {
-        "name": "7b-text-q8_0",
-        "size": "7.7GB"
+        "name": "7b-text-q4_1",
+        "size": "4.6GB"
       },
       {
         "name": "7b-text-v0.2-q3_K_L",
         "size": "3.8GB"
       },
       {
+        "name": "7b-text-v0.2-q2_K",
+        "size": "2.7GB"
+      },
+      {
         "name": "7b-text-q3_K_M",
         "size": "3.5GB"
       },
       {
+        "name": "7b-text-q2_K",
+        "size": "3.1GB"
+      },
+      {
+        "name": "7b-text-v0.2-q5_K_M",
+        "size": "5.1GB"
+      },
+      {
+        "name": "7b-text-v0.2-q4_1",
+        "size": "4.6GB"
+      },
+      {
+        "name": "7b-text-q4_K_S",
+        "size": "4.1GB"
+      },
+      {
+        "name": "7b-text-fp16",
+        "size": "14GB"
+      },
+      {
+        "name": "7b-text-v0.2-q4_K_S",
+        "size": "4.1GB"
+      },
+      {
+        "name": "7b-text-q3_K_S",
+        "size": "3.2GB"
+      },
+      {
         "name": "7b-text-v0.2-q4_0",
         "size": "4.1GB"
+      },
+      {
+        "name": "7b-text-q3_K_L",
+        "size": "3.8GB"
+      },
+      {
+        "name": "7b-text-v0.2-q6_K",
+        "size": "5.9GB"
+      },
+      {
+        "name": "7b-text-v0.2-q5_0",
+        "size": "5.0GB"
+      },
+      {
+        "name": "7b-text-q5_1",
+        "size": "5.4GB"
+      },
+      {
+        "name": "7b-text-q5_K_M",
+        "size": "5.1GB"
       },
       {
         "name": "7b-text-q5_K_S",
@@ -2120,31 +2144,7 @@
         "size": "5.9GB"
       },
       {
-        "name": "7b-text-v0.2-q4_1",
-        "size": "4.6GB"
-      },
-      {
-        "name": "7b-text-q3_K_S",
-        "size": "3.2GB"
-      },
-      {
-        "name": "7b-text-q4_1",
-        "size": "4.6GB"
-      },
-      {
-        "name": "7b-text-q4_0",
-        "size": "4.1GB"
-      },
-      {
-        "name": "7b-text-v0.2-q5_K_S",
-        "size": "5.0GB"
-      },
-      {
-        "name": "7b-text-v0.2-q6_K",
-        "size": "5.9GB"
-      },
-      {
-        "name": "7b-text-v0.2-q8_0",
+        "name": "7b-text-q8_0",
         "size": "7.7GB"
       }
     ],
@@ -2552,35 +2552,51 @@
         "size": "5.5GB"
       },
       {
-        "name": "7b-instruct-v1.1-q4_K_M",
-        "size": "5.3GB"
-      },
-      {
-        "name": "7b-instruct-v1.1-q4_K_S",
-        "size": "5.0GB"
-      },
-      {
-        "name": "7b-instruct-v1.1-q5_0",
-        "size": "6.0GB"
-      },
-      {
-        "name": "7b-instruct-v1.1-q5_1",
-        "size": "6.5GB"
-      },
-      {
-        "name": "7b-instruct-v1.1-q5_K_M",
-        "size": "6.1GB"
+        "name": "7b-instruct-q3_K_L",
+        "size": "4.7GB"
       },
       {
         "name": "7b-instruct-v1.1-q5_K_S",
         "size": "6.0GB"
       },
       {
+        "name": "7b-instruct-v1.1-q5_K_M",
+        "size": "6.1GB"
+      },
+      {
+        "name": "7b-instruct-q2_K",
+        "size": "3.5GB"
+      },
+      {
+        "name": "7b-instruct-v1.1-q5_1",
+        "size": "6.5GB"
+      },
+      {
+        "name": "7b-instruct-v1.1-q4_K_S",
+        "size": "5.0GB"
+      },
+      {
+        "name": "7b-instruct-fp16",
+        "size": "17GB"
+      },
+      {
+        "name": "7b-instruct-v1.1-q8_0",
+        "size": "9.1GB"
+      },
+      {
         "name": "7b-instruct-v1.1-q6_K",
         "size": "7.0GB"
       },
       {
-        "name": "7b-instruct-q4_K_S",
+        "name": "7b-instruct-v1.1-q5_0",
+        "size": "6.0GB"
+      },
+      {
+        "name": "7b-instruct-v1.1-q4_K_M",
+        "size": "5.3GB"
+      },
+      {
+        "name": "7b-instruct-q4_0",
         "size": "5.0GB"
       },
       {
@@ -2588,36 +2604,20 @@
         "size": "4.0GB"
       },
       {
-        "name": "7b-instruct-q4_0",
-        "size": "5.0GB"
-      },
-      {
-        "name": "7b-instruct-q4_K_M",
-        "size": "5.3GB"
-      },
-      {
-        "name": "7b-instruct-q2_K",
-        "size": "3.5GB"
+        "name": "7b-instruct-q3_K_M",
+        "size": "4.4GB"
       },
       {
         "name": "7b-instruct-q4_1",
         "size": "5.5GB"
       },
       {
-        "name": "7b-instruct-q3_K_L",
-        "size": "4.7GB"
+        "name": "7b-instruct-q4_K_M",
+        "size": "5.3GB"
       },
       {
-        "name": "7b-instruct-q3_K_M",
-        "size": "4.4GB"
-      },
-      {
-        "name": "7b-instruct-v1.1-q8_0",
-        "size": "9.1GB"
-      },
-      {
-        "name": "7b-instruct-fp16",
-        "size": "17GB"
+        "name": "7b-instruct-q4_K_S",
+        "size": "5.0GB"
       },
       {
         "name": "7b-instruct-q5_0",
@@ -2700,52 +2700,56 @@
         "size": "1.8GB"
       },
       {
-        "name": "2b-code-v1.1-q4_K_S",
-        "size": "1.6GB"
+        "name": "2b-code-q5_K_S",
+        "size": "1.8GB"
       },
       {
-        "name": "2b-code-v1.1-q3_K_S",
-        "size": "1.3GB"
+        "name": "2b-code-v1.1-q6_K",
+        "size": "2.1GB"
+      },
+      {
+        "name": "2b-code-v1.1-q4_K_S",
+        "size": "1.6GB"
       },
       {
         "name": "2b-code-v1.1-q4_K_M",
         "size": "1.6GB"
       },
       {
-        "name": "2b-code-q5_K_S",
-        "size": "1.8GB"
+        "name": "2b-code-q8_0",
+        "size": "2.7GB"
       },
       {
         "name": "2b-code-v1.1-q2_K",
         "size": "1.2GB"
       },
       {
-        "name": "2b-code-v1.1-fp16",
-        "size": "5.0GB"
-      },
-      {
-        "name": "2b-code-v1.1-q3_K_L",
-        "size": "1.5GB"
-      },
-      {
-        "name": "2b-code-q8_0",
-        "size": "2.7GB"
-      },
-      {
-        "name": "2b-code-v1.1-q4_0",
-        "size": "1.6GB"
-      },
-      {
-        "name": "2b-code-v1.1-q3_K_M",
-        "size": "1.4GB"
+        "name": "2b-code-v1.1-q3_K_S",
+        "size": "1.3GB"
       },
       {
         "name": "2b-code-v1.1-q4_1",
         "size": "1.7GB"
       },
       {
-        "name": "2b-code-q6_K",
-        "size": "2.1GB"
+        "name": "2b-code-v1.1-q3_K_L",
+        "size": "1.5GB"
+      },
+      {
+        "name": "2b-code-v1.1-q4_0",
+        "size": "1.6GB"
+      },
+      {
+        "name": "2b-code-v1.1-q5_K_S",
+        "size": "1.8GB"
+      },
+      {
+        "name": "2b-code-v1.1-q5_K_M",
+        "size": "1.8GB"
+      },
+      {
+        "name": "2b-code-v1.1-q3_K_M",
+        "size": "1.4GB"
       },
       {
         "name": "2b-code-v1.1-q5_0",
@@ -2756,15 +2760,11 @@
         "size": "1.9GB"
       },
       {
-        "name": "2b-code-v1.1-q5_K_M",
-        "size": "1.8GB"
+        "name": "2b-code-v1.1-fp16",
+        "size": "5.0GB"
       },
       {
-        "name": "2b-code-v1.1-q5_K_S",
-        "size": "1.8GB"
-      },
-      {
-        "name": "2b-code-v1.1-q6_K",
+        "name": "2b-code-q6_K",
         "size": "2.1GB"
       },
       {
@@ -3590,6 +3590,62 @@
         "size": "5.0GB"
       },
       {
+        "name": "7b-instruct-v1.1-fp16",
+        "size": "17GB"
+      },
+      {
+        "name": "7b-instruct-v1.1-q2_K",
+        "size": "3.5GB"
+      },
+      {
+        "name": "7b-instruct-q5_1",
+        "size": "6.7GB"
+      },
+      {
+        "name": "7b-instruct-v1.1-q5_K_S",
+        "size": "6.0GB"
+      },
+      {
+        "name": "7b-instruct-v1.1-q3_K_S",
+        "size": "4.0GB"
+      },
+      {
+        "name": "7b-instruct-v1.1-q4_1",
+        "size": "5.5GB"
+      },
+      {
+        "name": "7b-instruct-v1.1-q8_0",
+        "size": "9.1GB"
+      },
+      {
+        "name": "7b-instruct-v1.1-q4_K_S",
+        "size": "5.0GB"
+      },
+      {
+        "name": "7b-instruct-v1.1-q6_K",
+        "size": "7.0GB"
+      },
+      {
+        "name": "7b-instruct-q4_K_M",
+        "size": "5.5GB"
+      },
+      {
+        "name": "7b-instruct-v1.1-q4_0",
+        "size": "5.0GB"
+      },
+      {
+        "name": "7b-instruct-v1.1-q3_K_M",
+        "size": "4.4GB"
+      },
+      {
+        "name": "7b-instruct-v1.1-q4_K_M",
+        "size": "5.3GB"
+      },
+      {
+        "name": "7b-instruct-q5_0",
+        "size": "6.2GB"
+      },
+      {
         "name": "7b-instruct-fp16",
         "size": "17GB"
       },
@@ -3598,96 +3654,8 @@
         "size": "3.7GB"
       },
       {
-        "name": "7b-instruct-q3_K_L",
-        "size": "4.9GB"
-      },
-      {
-        "name": "7b-instruct-q3_K_M",
-        "size": "4.6GB"
-      },
-      {
-        "name": "7b-instruct-q3_K_S",
-        "size": "4.2GB"
-      },
-      {
-        "name": "7b-instruct-q4_0",
-        "size": "5.2GB"
-      },
-      {
-        "name": "7b-instruct-q4_1",
-        "size": "5.7GB"
-      },
-      {
-        "name": "7b-instruct-q4_K_M",
-        "size": "5.5GB"
-      },
-      {
-        "name": "7b-instruct-q4_K_S",
-        "size": "5.2GB"
-      },
-      {
-        "name": "7b-instruct-q5_0",
-        "size": "6.2GB"
-      },
-      {
-        "name": "7b-instruct-q5_1",
-        "size": "6.7GB"
-      },
-      {
-        "name": "7b-instruct-v1.1-q4_0",
-        "size": "5.0GB"
-      },
-      {
-        "name": "7b-instruct-q5_K_S",
-        "size": "6.2GB"
-      },
-      {
-        "name": "7b-instruct-q5_K_M",
-        "size": "6.3GB"
-      },
-      {
-        "name": "7b-instruct-v1.1-q3_K_S",
-        "size": "4.0GB"
-      },
-      {
         "name": "7b-instruct-v1.1-q3_K_L",
         "size": "4.7GB"
-      },
-      {
-        "name": "7b-instruct-q8_0",
-        "size": "9.1GB"
-      },
-      {
-        "name": "7b-instruct-v1.1-q3_K_M",
-        "size": "4.4GB"
-      },
-      {
-        "name": "7b-instruct-v1.1-q2_K",
-        "size": "3.5GB"
-      },
-      {
-        "name": "7b-instruct-q6_K",
-        "size": "7.2GB"
-      },
-      {
-        "name": "7b-instruct-v1.1-fp16",
-        "size": "17GB"
-      },
-      {
-        "name": "7b-instruct-v1.1-q4_1",
-        "size": "5.5GB"
-      },
-      {
-        "name": "7b-instruct-v1.1-q4_K_M",
-        "size": "5.3GB"
-      },
-      {
-        "name": "7b-instruct-v1.1-q4_K_S",
-        "size": "5.0GB"
-      },
-      {
-        "name": "7b-instruct-v1.1-q5_0",
-        "size": "6.0GB"
       },
       {
         "name": "7b-instruct-v1.1-q5_1",
@@ -3698,15 +3666,47 @@
         "size": "6.1GB"
       },
       {
-        "name": "7b-instruct-v1.1-q5_K_S",
+        "name": "7b-instruct-q3_K_L",
+        "size": "4.9GB"
+      },
+      {
+        "name": "7b-instruct-v1.1-q5_0",
         "size": "6.0GB"
       },
       {
-        "name": "7b-instruct-v1.1-q6_K",
-        "size": "7.0GB"
+        "name": "7b-instruct-q4_0",
+        "size": "5.2GB"
       },
       {
-        "name": "7b-instruct-v1.1-q8_0",
+        "name": "7b-instruct-q3_K_S",
+        "size": "4.2GB"
+      },
+      {
+        "name": "7b-instruct-q3_K_M",
+        "size": "4.6GB"
+      },
+      {
+        "name": "7b-instruct-q4_1",
+        "size": "5.7GB"
+      },
+      {
+        "name": "7b-instruct-q4_K_S",
+        "size": "5.2GB"
+      },
+      {
+        "name": "7b-instruct-q5_K_M",
+        "size": "6.3GB"
+      },
+      {
+        "name": "7b-instruct-q5_K_S",
+        "size": "6.2GB"
+      },
+      {
+        "name": "7b-instruct-q6_K",
+        "size": "7.2GB"
+      },
+      {
+        "name": "7b-instruct-q8_0",
         "size": "9.1GB"
       },
       {
@@ -3838,32 +3838,32 @@
         "size": "2.2GB"
       },
       {
-        "name": "2b-instruct-q8_0",
-        "size": "2.7GB"
-      },
-      {
-        "name": "2b-instruct-v1.1-q3_K_M",
-        "size": "1.4GB"
-      },
-      {
-        "name": "2b-instruct-v1.1-fp16",
-        "size": "5.0GB"
+        "name": "2b-instruct-v1.1-q4_0",
+        "size": "1.6GB"
       },
       {
         "name": "2b-instruct-v1.1-q2_K",
         "size": "1.2GB"
       },
       {
-        "name": "2b-instruct-v1.1-q3_K_L",
-        "size": "1.5GB"
-      },
-      {
         "name": "2b-instruct-v1.1-q3_K_S",
         "size": "1.3GB"
       },
       {
-        "name": "2b-instruct-v1.1-q4_0",
-        "size": "1.6GB"
+        "name": "2b-instruct-v1.1-q3_K_L",
+        "size": "1.5GB"
+      },
+      {
+        "name": "2b-instruct-v1.1-fp16",
+        "size": "5.0GB"
+      },
+      {
+        "name": "2b-instruct-q8_0",
+        "size": "2.7GB"
+      },
+      {
+        "name": "2b-instruct-v1.1-q3_K_M",
+        "size": "1.4GB"
       },
       {
         "name": "2b-instruct-v1.1-q4_1",
@@ -4140,44 +4140,92 @@
         "size": "41GB"
       },
       {
-        "name": "72b-chat-fp16",
+        "name": "72b-chat-v1.5-fp16",
         "size": "145GB"
       },
       {
-        "name": "72b-chat-q2_K",
-        "size": "27GB"
+        "name": "72b-chat-v1.5-q2_K",
+        "size": "28GB"
       },
       {
-        "name": "72b-chat-q3_K_L",
-        "size": "39GB"
+        "name": "72b-chat-v1.5-q3_K_L",
+        "size": "38GB"
       },
       {
-        "name": "72b-chat-q3_K_M",
-        "size": "37GB"
+        "name": "72b-chat-v1.5-q3_K_M",
+        "size": "36GB"
+      },
+      {
+        "name": "72b-chat-v1.5-q3_K_S",
+        "size": "33GB"
+      },
+      {
+        "name": "72b-chat-v1.5-q4_0",
+        "size": "41GB"
+      },
+      {
+        "name": "72b-chat-v1.5-q4_1",
+        "size": "45GB"
+      },
+      {
+        "name": "72b-chat-v1.5-q4_K_M",
+        "size": "44GB"
+      },
+      {
+        "name": "72b-chat-v1.5-q4_K_S",
+        "size": "42GB"
+      },
+      {
+        "name": "72b-chat-v1.5-q5_0",
+        "size": "50GB"
+      },
+      {
+        "name": "72b-chat-v1.5-q5_1",
+        "size": "54GB"
+      },
+      {
+        "name": "72b-chat-v1.5-q5_K_M",
+        "size": "51GB"
+      },
+      {
+        "name": "72b-chat-v1.5-q5_K_S",
+        "size": "50GB"
+      },
+      {
+        "name": "72b-chat-v1.5-q6_K",
+        "size": "59GB"
+      },
+      {
+        "name": "72b-chat-q8_0",
+        "size": "77GB"
+      },
+      {
+        "name": "72b-chat-v1.5-q8_0",
+        "size": "77GB"
       },
       {
         "name": "72b-chat-q3_K_S",
         "size": "32GB"
       },
       {
-        "name": "72b-chat-q4_0",
-        "size": "41GB"
+        "name": "72b-chat-q6_K",
+        "size": "59GB"
       },
       {
         "name": "72b-chat-q4_1",
         "size": "45GB"
       },
       {
-        "name": "72b-chat-q4_K_M",
-        "size": "45GB"
-      },
-      {
-        "name": "72b-chat-q4_K_S",
-        "size": "41GB"
+        "name": "72b-chat-q3_K_M",
+        "size": "37GB"
       },
       {
         "name": "72b-chat-q5_0",
         "size": "50GB"
+      },
+      {
+        "name": "72b-chat-fp16",
+        "size": "145GB"
       },
       {
         "name": "72b-chat-q5_1",
@@ -4192,72 +4240,24 @@
         "size": "50GB"
       },
       {
-        "name": "72b-chat-v1.5-q6_K",
-        "size": "59GB"
-      },
-      {
-        "name": "72b-chat-v1.5-q5_K_M",
-        "size": "51GB"
-      },
-      {
-        "name": "72b-chat-v1.5-q5_K_S",
-        "size": "50GB"
-      },
-      {
-        "name": "72b-chat-v1.5-q2_K",
-        "size": "28GB"
-      },
-      {
-        "name": "72b-chat-v1.5-q5_0",
-        "size": "50GB"
-      },
-      {
-        "name": "72b-chat-v1.5-q4_K_S",
-        "size": "42GB"
-      },
-      {
-        "name": "72b-chat-v1.5-q4_1",
-        "size": "45GB"
-      },
-      {
-        "name": "72b-chat-v1.5-q4_0",
+        "name": "72b-chat-q4_K_S",
         "size": "41GB"
       },
       {
-        "name": "72b-chat-q8_0",
-        "size": "77GB"
+        "name": "72b-chat-q2_K",
+        "size": "27GB"
       },
       {
-        "name": "72b-chat-v1.5-q3_K_S",
-        "size": "33GB"
+        "name": "72b-chat-q4_0",
+        "size": "41GB"
       },
       {
-        "name": "72b-chat-v1.5-fp16",
-        "size": "145GB"
+        "name": "72b-chat-q4_K_M",
+        "size": "45GB"
       },
       {
-        "name": "72b-chat-v1.5-q3_K_M",
-        "size": "36GB"
-      },
-      {
-        "name": "72b-chat-v1.5-q3_K_L",
-        "size": "38GB"
-      },
-      {
-        "name": "72b-chat-v1.5-q4_K_M",
-        "size": "44GB"
-      },
-      {
-        "name": "72b-chat-q6_K",
-        "size": "59GB"
-      },
-      {
-        "name": "72b-chat-v1.5-q5_1",
-        "size": "54GB"
-      },
-      {
-        "name": "72b-chat-v1.5-q8_0",
-        "size": "77GB"
+        "name": "72b-chat-q3_K_L",
+        "size": "39GB"
       },
       {
         "name": "72b-text",
@@ -4296,6 +4296,30 @@
         "size": "45GB"
       },
       {
+        "name": "72b-text-v1.5-q6_K",
+        "size": "59GB"
+      },
+      {
+        "name": "72b-text-q5_1",
+        "size": "54GB"
+      },
+      {
+        "name": "72b-text-q8_0",
+        "size": "77GB"
+      },
+      {
+        "name": "72b-text-q5_K_S",
+        "size": "50GB"
+      },
+      {
+        "name": "72b-text-v1.5-q5_K_S",
+        "size": "50GB"
+      },
+      {
+        "name": "72b-text-q5_K_M",
+        "size": "53GB"
+      },
+      {
         "name": "72b-text-q4_K_S",
         "size": "41GB"
       },
@@ -4304,80 +4328,56 @@
         "size": "50GB"
       },
       {
-        "name": "72b-text-q5_1",
-        "size": "54GB"
-      },
-      {
-        "name": "72b-text-q5_K_M",
-        "size": "53GB"
-      },
-      {
-        "name": "72b-text-q5_K_S",
-        "size": "50GB"
-      },
-      {
-        "name": "72b-text-q6_K",
-        "size": "59GB"
-      },
-      {
-        "name": "72b-text-q8_0",
-        "size": "77GB"
-      },
-      {
-        "name": "72b-text-v1.5-q5_1",
-        "size": "54GB"
-      },
-      {
         "name": "72b-text-v1.5-q3_K_S",
         "size": "33GB"
-      },
-      {
-        "name": "72b-text-v1.5-q4_0",
-        "size": "41GB"
-      },
-      {
-        "name": "72b-text-v1.5-fp16",
-        "size": "145GB"
       },
       {
         "name": "72b-text-v1.5-q3_K_M",
         "size": "36GB"
       },
       {
-        "name": "72b-text-v1.5-q5_0",
-        "size": "50GB"
+        "name": "72b-text-v1.5-q5_1",
+        "size": "54GB"
       },
       {
-        "name": "72b-text-v1.5-q2_K",
-        "size": "28GB"
-      },
-      {
-        "name": "72b-text-v1.5-q4_K_S",
-        "size": "42GB"
-      },
-      {
-        "name": "72b-text-v1.5-q4_K_M",
-        "size": "44GB"
-      },
-      {
-        "name": "72b-text-v1.5-q3_K_L",
-        "size": "38GB"
-      },
-      {
-        "name": "72b-text-v1.5-q4_1",
-        "size": "45GB"
+        "name": "72b-text-v1.5-fp16",
+        "size": "145GB"
       },
       {
         "name": "72b-text-v1.5-q5_K_M",
         "size": "51GB"
       },
       {
-        "name": "72b-text-v1.5-q5_K_S",
+        "name": "72b-text-q6_K",
+        "size": "59GB"
+      },
+      {
+        "name": "72b-text-v1.5-q5_0",
         "size": "50GB"
       },
       {
-        "name": "72b-text-v1.5-q6_K",
-        "size": "59GB"
+        "name": "72b-text-v1.5-q4_K_M",
+        "size": "44GB"
+      },
+      {
+        "name": "72b-text-v1.5-q2_K",
+        "size": "28GB"
+      },
+      {
+        "name": "72b-text-v1.5-q3_K_L",
+        "size": "38GB"
+      },
+      {
+        "name": "72b-text-v1.5-q4_0",
+        "size": "41GB"
+      },
+      {
+        "name": "72b-text-v1.5-q4_K_S",
+        "size": "42GB"
+      },
+      {
+        "name": "72b-text-v1.5-q4_1",
+        "size": "45GB"
       },
       {
         "name": "72b-text-v1.5-q8_0",
@@ -4516,96 +4516,96 @@
         "size": "6.9GB"
       },
       {
-        "name": "14b-chat-v1.5-q4_0",
-        "size": "8.2GB"
-      },
-      {
-        "name": "14b-chat-v1.5-q4_1",
-        "size": "9.0GB"
-      },
-      {
-        "name": "14b-chat-v1.5-q4_K_M",
-        "size": "9.2GB"
-      },
-      {
-        "name": "14b-chat-v1.5-q4_K_S",
-        "size": "8.6GB"
-      },
-      {
-        "name": "14b-chat-v1.5-q5_0",
-        "size": "9.9GB"
-      },
-      {
-        "name": "14b-chat-v1.5-q5_1",
-        "size": "11GB"
-      },
-      {
-        "name": "14b-chat-v1.5-q5_K_M",
-        "size": "11GB"
-      },
-      {
-        "name": "14b-chat-v1.5-q5_K_S",
+        "name": "14b-chat-q5_K_S",
         "size": "10GB"
-      },
-      {
-        "name": "14b-chat-v1.5-q6_K",
-        "size": "12GB"
-      },
-      {
-        "name": "14b-chat-v1.5-q8_0",
-        "size": "15GB"
-      },
-      {
-        "name": "14b-chat-q3_K_M",
-        "size": "7.7GB"
       },
       {
         "name": "14b-chat-fp16",
         "size": "28GB"
       },
       {
+        "name": "14b-chat-q4_K_S",
+        "size": "8.6GB"
+      },
+      {
+        "name": "14b-chat-v1.5-q4_0",
+        "size": "8.2GB"
+      },
+      {
+        "name": "14b-chat-v1.5-q5_1",
+        "size": "11GB"
+      },
+      {
         "name": "14b-chat-q3_K_L",
         "size": "8.0GB"
       },
       {
-        "name": "14b-chat-q2_K",
-        "size": "6.0GB"
+        "name": "14b-chat-v1.5-q5_K_M",
+        "size": "11GB"
       },
       {
-        "name": "14b-chat-q3_K_S",
-        "size": "6.9GB"
+        "name": "14b-chat-v1.5-q5_0",
+        "size": "9.9GB"
+      },
+      {
+        "name": "14b-chat-v1.5-q8_0",
+        "size": "15GB"
       },
       {
         "name": "14b-chat-q4_0",
         "size": "8.2GB"
       },
       {
+        "name": "14b-chat-v1.5-q4_K_M",
+        "size": "9.2GB"
+      },
+      {
+        "name": "14b-chat-q3_K_M",
+        "size": "7.7GB"
+      },
+      {
+        "name": "14b-chat-q2_K",
+        "size": "6.0GB"
+      },
+      {
+        "name": "14b-chat-v1.5-q5_K_S",
+        "size": "10GB"
+      },
+      {
+        "name": "14b-chat-q3_K_S",
+        "size": "6.9GB"
+      },
+      {
         "name": "14b-chat-q4_1",
         "size": "9.0GB"
-      },
-      {
-        "name": "14b-chat-q4_K_M",
-        "size": "9.4GB"
-      },
-      {
-        "name": "14b-chat-q4_K_S",
-        "size": "8.6GB"
-      },
-      {
-        "name": "14b-chat-q5_0",
-        "size": "9.9GB"
       },
       {
         "name": "14b-chat-q5_1",
         "size": "11GB"
       },
       {
+        "name": "14b-chat-v1.5-q4_1",
+        "size": "9.0GB"
+      },
+      {
         "name": "14b-chat-q5_K_M",
         "size": "11GB"
       },
       {
-        "name": "14b-chat-q5_K_S",
-        "size": "10GB"
+        "name": "14b-chat-q5_0",
+        "size": "9.9GB"
+      },
+      {
+        "name": "14b-chat-q4_K_M",
+        "size": "9.4GB"
+      },
+      {
+        "name": "14b-chat-v1.5-q4_K_S",
+        "size": "8.6GB"
+      },
+      {
+        "name": "14b-chat-v1.5-q6_K",
+        "size": "12GB"
       },
       {
         "name": "14b-chat-q6_K",
@@ -4628,32 +4628,36 @@
         "size": "6.1GB"
       },
       {
-        "name": "14b-text-q5_K_M",
-        "size": "11GB"
+        "name": "14b-text-v1.5-q3_K_L",
+        "size": "7.8GB"
       },
       {
-        "name": "14b-text-q5_1",
-        "size": "11GB"
+        "name": "14b-text-v1.5-q3_K_M",
+        "size": "7.4GB"
       },
       {
         "name": "14b-text-q4_0",
         "size": "8.2GB"
       },
       {
-        "name": "14b-text-q4_1",
-        "size": "9.0GB"
+        "name": "14b-text-q3_K_M",
+        "size": "7.7GB"
+      },
+      {
+        "name": "14b-text-q3_K_S",
+        "size": "6.9GB"
       },
       {
         "name": "14b-text-q3_K_L",
         "size": "8.0GB"
       },
       {
-        "name": "14b-text-v1.5-q5_K_S",
-        "size": "10GB"
+        "name": "14b-text-v1.5-q4_0",
+        "size": "8.2GB"
       },
       {
-        "name": "14b-text-q5_0",
-        "size": "9.9GB"
+        "name": "14b-text-v1.5-q3_K_S",
+        "size": "6.9GB"
       },
       {
         "name": "14b-text-v1.5-q5_0",
@@ -4664,12 +4668,8 @@
         "size": "9.2GB"
       },
       {
-        "name": "14b-text-v1.5-q3_K_L",
-        "size": "7.8GB"
-      },
-      {
-        "name": "14b-text-v1.5-q8_0",
-        "size": "15GB"
+        "name": "14b-text-fp16",
+        "size": "28GB"
       },
       {
         "name": "14b-text-v1.5-q4_K_S",
@@ -4688,44 +4688,44 @@
         "size": "9.0GB"
       },
       {
-        "name": "14b-text-q4_K_M",
-        "size": "9.4GB"
-      },
-      {
-        "name": "14b-text-v1.5-q5_K_M",
-        "size": "11GB"
-      },
-      {
-        "name": "14b-text-v1.5-q4_0",
-        "size": "8.2GB"
-      },
-      {
-        "name": "14b-text-v1.5-q3_K_S",
-        "size": "6.9GB"
-      },
-      {
-        "name": "14b-text-v1.5-q3_K_M",
-        "size": "7.4GB"
+        "name": "14b-text-v1.5-q8_0",
+        "size": "15GB"
       },
       {
         "name": "14b-text-v1.5-q5_1",
         "size": "11GB"
       },
       {
-        "name": "14b-text-q3_K_S",
-        "size": "6.9GB"
+        "name": "14b-text-v1.5-q5_K_M",
+        "size": "11GB"
+      },
+      {
+        "name": "14b-text-v1.5-q5_K_S",
+        "size": "10GB"
+      },
+      {
+        "name": "14b-text-q4_1",
+        "size": "9.0GB"
+      },
+      {
+        "name": "14b-text-q4_K_M",
+        "size": "9.4GB"
       },
       {
         "name": "14b-text-q4_K_S",
         "size": "8.6GB"
       },
       {
-        "name": "14b-text-fp16",
-        "size": "28GB"
+        "name": "14b-text-q5_0",
+        "size": "9.9GB"
       },
       {
-        "name": "14b-text-q3_K_M",
-        "size": "7.7GB"
+        "name": "14b-text-q5_1",
+        "size": "11GB"
+      },
+      {
+        "name": "14b-text-q5_K_M",
+        "size": "11GB"
       },
       {
         "name": "14b-text-q5_K_S",
@@ -4800,12 +4800,8 @@
         "size": "6.3GB"
       },
       {
-        "name": "7b-chat-q8_0",
-        "size": "8.2GB"
-      },
-      {
-        "name": "7b-chat-q3_K_M",
-        "size": "4.1GB"
+        "name": "7b-chat-q5_1",
+        "size": "5.8GB"
       },
       {
         "name": "7b-chat-q5_0",
@@ -4816,8 +4812,16 @@
         "size": "4.3GB"
       },
       {
-        "name": "7b-chat-q6_K",
-        "size": "6.3GB"
+        "name": "7b-chat-q3_K_M",
+        "size": "4.1GB"
+      },
+      {
+        "name": "7b-chat-q4_K_M",
+        "size": "4.9GB"
+      },
+      {
+        "name": "7b-chat-q4_0",
+        "size": "4.5GB"
       },
       {
         "name": "7b-chat-q4_1",
@@ -4828,40 +4832,36 @@
         "size": "3.6GB"
       },
       {
-        "name": "7b-chat-q2_K",
-        "size": "3.0GB"
-      },
-      {
-        "name": "7b-chat-q5_1",
-        "size": "5.8GB"
-      },
-      {
-        "name": "7b-chat-q4_0",
-        "size": "4.5GB"
+        "name": "7b-chat-v1.5-q8_0",
+        "size": "8.2GB"
       },
       {
         "name": "7b-chat-q4_K_S",
         "size": "4.5GB"
       },
       {
-        "name": "7b-chat-q4_K_M",
-        "size": "4.9GB"
-      },
-      {
-        "name": "7b-chat-v1.5-q8_0",
-        "size": "8.2GB"
-      },
-      {
-        "name": "7b-chat-q5_K_M",
-        "size": "5.7GB"
+        "name": "7b-chat-q2_K",
+        "size": "3.0GB"
       },
       {
         "name": "7b-chat-fp16",
         "size": "15GB"
       },
       {
+        "name": "7b-chat-q5_K_M",
+        "size": "5.7GB"
+      },
+      {
         "name": "7b-chat-q5_K_S",
         "size": "5.4GB"
+      },
+      {
+        "name": "7b-chat-q6_K",
+        "size": "6.3GB"
+      },
+      {
+        "name": "7b-chat-q8_0",
+        "size": "8.2GB"
       },
       {
         "name": "7b-text",
@@ -4929,6 +4929,10 @@
       },
       {
         "name": "4b-chat",
+        "size": "2.3GB"
+      },
+      {
+        "name": "4b-text",
         "size": "2.3GB"
       },
       {
@@ -5052,10 +5056,6 @@
         "size": "4.2GB"
       },
       {
-        "name": "4b-text",
-        "size": "2.3GB"
-      },
-      {
         "name": "4b-text-v1.5-fp16",
         "size": "7.9GB"
       },
@@ -5168,52 +5168,52 @@
         "size": "1.4GB"
       },
       {
-        "name": "1.8b-chat-q5_K_S",
-        "size": "1.3GB"
-      },
-      {
-        "name": "1.8b-chat-q6_K",
-        "size": "1.6GB"
-      },
-      {
-        "name": "1.8b-chat-q8_0",
-        "size": "2.0GB"
-      },
-      {
-        "name": "1.8b-chat-v1.5-q4_K_S",
-        "size": "1.2GB"
-      },
-      {
         "name": "1.8b-chat-v1.5-q4_1",
         "size": "1.2GB"
-      },
-      {
-        "name": "1.8b-chat-v1.5-fp16",
-        "size": "3.7GB"
       },
       {
         "name": "1.8b-chat-v1.5-q3_K_S",
         "size": "970MB"
       },
       {
+        "name": "1.8b-chat-v1.5-fp16",
+        "size": "3.7GB"
+      },
+      {
         "name": "1.8b-chat-v1.5-q3_K_L",
         "size": "1.1GB"
+      },
+      {
+        "name": "1.8b-chat-q5_K_S",
+        "size": "1.3GB"
+      },
+      {
+        "name": "1.8b-chat-q8_0",
+        "size": "2.0GB"
+      },
+      {
+        "name": "1.8b-chat-q6_K",
+        "size": "1.6GB"
+      },
+      {
+        "name": "1.8b-chat-v1.5-q3_K_M",
+        "size": "1.0GB"
       },
       {
         "name": "1.8b-chat-v1.5-q2_K",
         "size": "863MB"
       },
       {
-        "name": "1.8b-chat-v1.5-q4_K_M",
-        "size": "1.2GB"
-      },
-      {
         "name": "1.8b-chat-v1.5-q4_0",
         "size": "1.1GB"
       },
       {
-        "name": "1.8b-chat-v1.5-q3_K_M",
-        "size": "1.0GB"
+        "name": "1.8b-chat-v1.5-q4_K_M",
+        "size": "1.2GB"
+      },
+      {
+        "name": "1.8b-chat-v1.5-q4_K_S",
+        "size": "1.2GB"
       },
       {
         "name": "1.8b-chat-v1.5-q5_0",
@@ -5244,74 +5244,6 @@
         "size": "1.1GB"
       },
       {
-        "name": "1.8b-text-v1.5-fp16",
-        "size": "3.7GB"
-      },
-      {
-        "name": "1.8b-text-v1.5-q2_K",
-        "size": "863MB"
-      },
-      {
-        "name": "1.8b-text-v1.5-q3_K_L",
-        "size": "1.1GB"
-      },
-      {
-        "name": "1.8b-text-v1.5-q3_K_M",
-        "size": "1.0GB"
-      },
-      {
-        "name": "1.8b-text-v1.5-q3_K_S",
-        "size": "970MB"
-      },
-      {
-        "name": "1.8b-text-v1.5-q4_0",
-        "size": "1.1GB"
-      },
-      {
-        "name": "1.8b-text-v1.5-q4_1",
-        "size": "1.2GB"
-      },
-      {
-        "name": "1.8b-text-v1.5-q4_K_M",
-        "size": "1.2GB"
-      },
-      {
-        "name": "1.8b-text-v1.5-q4_K_S",
-        "size": "1.2GB"
-      },
-      {
-        "name": "1.8b-text-v1.5-q5_0",
-        "size": "1.3GB"
-      },
-      {
-        "name": "1.8b-text-v1.5-q5_1",
-        "size": "1.4GB"
-      },
-      {
-        "name": "1.8b-text-v1.5-q5_K_M",
-        "size": "1.4GB"
-      },
-      {
-        "name": "1.8b-text-q4_1",
-        "size": "1.2GB"
-      },
-      {
-        "name": "1.8b-text-q3_K_M",
-        "size": "1.0GB"
-      },
-      {
-        "name": "1.8b-text-v1.5-q6_K",
-        "size": "1.6GB"
-      },
-      {
-        "name": "1.8b-text-q4_0",
-        "size": "1.1GB"
-      },
-      {
-        "name": "1.8b-text-v1.5-q8_0",
-        "size": "2.0GB"
-      },
-      {
         "name": "1.8b-text-fp16",
         "size": "3.7GB"
       },
@@ -5320,16 +5252,24 @@
         "size": "853MB"
       },
       {
-        "name": "1.8b-text-v1.5-q5_K_S",
-        "size": "1.3GB"
-      },
-      {
         "name": "1.8b-text-q3_K_L",
         "size": "1.1GB"
       },
       {
+        "name": "1.8b-text-q3_K_M",
+        "size": "1.0GB"
+      },
+      {
         "name": "1.8b-text-q3_K_S",
         "size": "970MB"
+      },
+      {
+        "name": "1.8b-text-q4_0",
+        "size": "1.1GB"
+      },
+      {
+        "name": "1.8b-text-q4_1",
+        "size": "1.2GB"
       },
       {
         "name": "1.8b-text-q4_K_M",
@@ -5352,8 +5292,24 @@
         "size": "1.4GB"
       },
       {
+        "name": "1.8b-text-v1.5-q4_1",
+        "size": "1.2GB"
+      },
+      {
         "name": "1.8b-text-q5_K_S",
         "size": "1.3GB"
+      },
+      {
+        "name": "1.8b-text-v1.5-q4_0",
+        "size": "1.1GB"
+      },
+      {
+        "name": "1.8b-text-v1.5-q2_K",
+        "size": "863MB"
+      },
+      {
+        "name": "1.8b-text-v1.5-fp16",
+        "size": "3.7GB"
       },
       {
         "name": "1.8b-text-q6_K",
@@ -5361,6 +5317,50 @@
       },
       {
         "name": "1.8b-text-q8_0",
+        "size": "2.0GB"
+      },
+      {
+        "name": "1.8b-text-v1.5-q3_K_L",
+        "size": "1.1GB"
+      },
+      {
+        "name": "1.8b-text-v1.5-q3_K_M",
+        "size": "1.0GB"
+      },
+      {
+        "name": "1.8b-text-v1.5-q3_K_S",
+        "size": "970MB"
+      },
+      {
+        "name": "1.8b-text-v1.5-q4_K_M",
+        "size": "1.2GB"
+      },
+      {
+        "name": "1.8b-text-v1.5-q4_K_S",
+        "size": "1.2GB"
+      },
+      {
+        "name": "1.8b-text-v1.5-q5_0",
+        "size": "1.3GB"
+      },
+      {
+        "name": "1.8b-text-v1.5-q5_1",
+        "size": "1.4GB"
+      },
+      {
+        "name": "1.8b-text-v1.5-q5_K_M",
+        "size": "1.4GB"
+      },
+      {
+        "name": "1.8b-text-v1.5-q5_K_S",
+        "size": "1.3GB"
+      },
+      {
+        "name": "1.8b-text-v1.5-q6_K",
+        "size": "1.6GB"
+      },
+      {
+        "name": "1.8b-text-v1.5-q8_0",
         "size": "2.0GB"
       },
       {
@@ -8174,28 +8174,88 @@
         "size": "7.7GB"
       },
       {
-        "name": "7b-v2.6-dpo-laser",
-        "size": "4.1GB"
-      },
-      {
         "name": "7b-v2.6",
         "size": "4.1GB"
       },
       {
-        "name": "7b-v2.6-dpo-laser-fp16",
+        "name": "7b-v2.6-dpo-laser",
+        "size": "4.1GB"
+      },
+      {
+        "name": "7b-v2.6-fp16",
         "size": "14GB"
       },
       {
-        "name": "7b-v2.6-dpo-laser-q2_K",
+        "name": "7b-v2.6-q2_K",
         "size": "3.1GB"
+      },
+      {
+        "name": "7b-v2.6-dpo-laser-q3_K_M",
+        "size": "3.5GB"
+      },
+      {
+        "name": "7b-v2.6-q3_K_L",
+        "size": "3.8GB"
+      },
+      {
+        "name": "7b-v2.6-q3_K_M",
+        "size": "3.5GB"
+      },
+      {
+        "name": "7b-v2.6-q4_K_S",
+        "size": "4.1GB"
+      },
+      {
+        "name": "7b-v2.6-q5_0",
+        "size": "5.0GB"
+      },
+      {
+        "name": "7b-v2.6-q4_0",
+        "size": "4.1GB"
       },
       {
         "name": "7b-v2.6-dpo-laser-q3_K_L",
         "size": "3.8GB"
       },
       {
-        "name": "7b-v2.6-dpo-laser-q3_K_M",
-        "size": "3.5GB"
+        "name": "7b-v2.6-q3_K_S",
+        "size": "3.2GB"
+      },
+      {
+        "name": "7b-v2.6-q6_K",
+        "size": "5.9GB"
+      },
+      {
+        "name": "7b-v2.6-q5_K_M",
+        "size": "5.1GB"
+      },
+      {
+        "name": "7b-v2.6-q4_K_M",
+        "size": "4.4GB"
+      },
+      {
+        "name": "7b-v2.6-dpo-laser-fp16",
+        "size": "14GB"
+      },
+      {
+        "name": "7b-v2.6-q5_1",
+        "size": "5.4GB"
+      },
+      {
+        "name": "7b-v2.6-q4_1",
+        "size": "4.6GB"
+      },
+      {
+        "name": "7b-v2.6-q8_0",
+        "size": "7.7GB"
+      },
+      {
+        "name": "7b-v2.6-dpo-laser-q2_K",
+        "size": "3.1GB"
+      },
+      {
+        "name": "7b-v2.6-q5_K_S",
+        "size": "5.0GB"
       },
       {
         "name": "7b-v2.6-dpo-laser-q3_K_S",
@@ -8234,71 +8294,11 @@
         "size": "5.0GB"
       },
       {
-        "name": "7b-v2.6-q4_0",
-        "size": "4.1GB"
-      },
-      {
         "name": "7b-v2.6-dpo-laser-q6_K",
         "size": "5.9GB"
       },
       {
         "name": "7b-v2.6-dpo-laser-q8_0",
-        "size": "7.7GB"
-      },
-      {
-        "name": "7b-v2.6-fp16",
-        "size": "14GB"
-      },
-      {
-        "name": "7b-v2.6-q2_K",
-        "size": "3.1GB"
-      },
-      {
-        "name": "7b-v2.6-q3_K_M",
-        "size": "3.5GB"
-      },
-      {
-        "name": "7b-v2.6-q3_K_S",
-        "size": "3.2GB"
-      },
-      {
-        "name": "7b-v2.6-q3_K_L",
-        "size": "3.8GB"
-      },
-      {
-        "name": "7b-v2.6-q4_1",
-        "size": "4.6GB"
-      },
-      {
-        "name": "7b-v2.6-q4_K_M",
-        "size": "4.4GB"
-      },
-      {
-        "name": "7b-v2.6-q4_K_S",
-        "size": "4.1GB"
-      },
-      {
-        "name": "7b-v2.6-q5_0",
-        "size": "5.0GB"
-      },
-      {
-        "name": "7b-v2.6-q5_1",
-        "size": "5.4GB"
-      },
-      {
-        "name": "7b-v2.6-q5_K_M",
-        "size": "5.1GB"
-      },
-      {
-        "name": "7b-v2.6-q5_K_S",
-        "size": "5.0GB"
-      },
-      {
-        "name": "7b-v2.6-q6_K",
-        "size": "5.9GB"
-      },
-      {
-        "name": "7b-v2.6-q8_0",
         "size": "7.7GB"
       },
       {
@@ -8960,11 +8960,11 @@
         "size": "75GB"
       },
       {
-        "name": "8b-256k",
+        "name": "8b-256k-v2.9",
         "size": "4.7GB"
       },
       {
-        "name": "8b-256k-v2.9",
+        "name": "8b-256k",
         "size": "4.7GB"
       },
       {
@@ -9138,52 +9138,52 @@
         "size": "8.0GB"
       },
       {
-        "name": "15b-instruct-q4_0",
-        "size": "9.1GB"
-      },
-      {
-        "name": "15b-instruct-v0.1-q4_K_S",
-        "size": "9.2GB"
-      },
-      {
         "name": "15b-instruct-v0.1-q3_K_S",
         "size": "7.0GB"
-      },
-      {
-        "name": "15b-instruct-v0.1-q5_K_M",
-        "size": "11GB"
       },
       {
         "name": "15b-instruct-v0.1-q4_0",
         "size": "9.1GB"
       },
       {
-        "name": "15b-instruct-v0.1-q6_K",
-        "size": "13GB"
-      },
-      {
-        "name": "15b-instruct-v0.1-q5_0",
-        "size": "11GB"
+        "name": "15b-instruct-v0.1-q4_1",
+        "size": "10GB"
       },
       {
         "name": "15b-instruct-v0.1-q4_K_M",
         "size": "9.9GB"
       },
       {
-        "name": "15b-instruct-v0.1-q8_0",
-        "size": "17GB"
+        "name": "15b-instruct-v0.1-q4_K_S",
+        "size": "9.2GB"
+      },
+      {
+        "name": "15b-instruct-v0.1-q5_0",
+        "size": "11GB"
       },
       {
         "name": "15b-instruct-v0.1-q5_1",
         "size": "12GB"
       },
       {
-        "name": "15b-instruct-v0.1-q4_1",
-        "size": "10GB"
+        "name": "15b-instruct-v0.1-q5_K_M",
+        "size": "11GB"
       },
       {
         "name": "15b-instruct-v0.1-q5_K_S",
         "size": "11GB"
+      },
+      {
+        "name": "15b-instruct-v0.1-q6_K",
+        "size": "13GB"
+      },
+      {
+        "name": "15b-instruct-q4_0",
+        "size": "9.1GB"
+      },
+      {
+        "name": "15b-instruct-v0.1-q8_0",
+        "size": "17GB"
       },
       {
         "name": "15b-fp16",
@@ -9370,80 +9370,6 @@
     "vision": false
   },
   {
-    "name": "mistral-openorca",
-    "description": "Mistral OpenOrca is a 7 billion parameter model, fine-tuned on top of the Mistral 7B model using the OpenOrca dataset.",
-    "supportTools": false,
-    "defaultTag": "7b",
-    "tags": [
-      {
-        "name": "7b",
-        "size": "4.1GB"
-      },
-      {
-        "name": "7b-fp16",
-        "size": "14GB"
-      },
-      {
-        "name": "7b-q2_K",
-        "size": "3.1GB"
-      },
-      {
-        "name": "7b-q3_K_L",
-        "size": "3.8GB"
-      },
-      {
-        "name": "7b-q3_K_M",
-        "size": "3.5GB"
-      },
-      {
-        "name": "7b-q3_K_S",
-        "size": "3.2GB"
-      },
-      {
-        "name": "7b-q4_0",
-        "size": "4.1GB"
-      },
-      {
-        "name": "7b-q4_1",
-        "size": "4.6GB"
-      },
-      {
-        "name": "7b-q4_K_M",
-        "size": "4.4GB"
-      },
-      {
-        "name": "7b-q4_K_S",
-        "size": "4.1GB"
-      },
-      {
-        "name": "7b-q5_0",
-        "size": "5.0GB"
-      },
-      {
-        "name": "7b-q5_1",
-        "size": "5.4GB"
-      },
-      {
-        "name": "7b-q5_K_M",
-        "size": "5.1GB"
-      },
-      {
-        "name": "7b-q5_K_S",
-        "size": "5.0GB"
-      },
-      {
-        "name": "7b-q6_K",
-        "size": "5.9GB"
-      },
-      {
-        "name": "7b-q8_0",
-        "size": "7.7GB"
-      }
-    ],
-    "embedding": false,
-    "vision": false
-  },
-  {
     "name": "yi",
     "description": "Yi 1.5 is a high-performing, bilingual language model.",
     "supportTools": false,
@@ -9470,48 +9396,32 @@
         "size": "19GB"
       },
       {
-        "name": "34b-chat-fp16",
+        "name": "34b-chat-v1.5-fp16",
         "size": "69GB"
       },
       {
-        "name": "34b-chat-q2_K",
-        "size": "15GB"
+        "name": "34b-chat-v1.5-q2_K",
+        "size": "13GB"
       },
       {
-        "name": "34b-chat-q3_K_L",
+        "name": "34b-chat-v1.5-q3_K_L",
         "size": "18GB"
       },
       {
-        "name": "34b-chat-q3_K_M",
+        "name": "34b-chat-v1.5-q3_K_M",
         "size": "17GB"
       },
       {
-        "name": "34b-chat-q3_K_S",
+        "name": "34b-chat-v1.5-q3_K_S",
         "size": "15GB"
       },
       {
-        "name": "34b-chat-q4_0",
+        "name": "34b-chat-v1.5-q4_0",
         "size": "19GB"
       },
       {
-        "name": "34b-chat-q4_1",
+        "name": "34b-chat-v1.5-q4_1",
         "size": "22GB"
-      },
-      {
-        "name": "34b-chat-q4_K_M",
-        "size": "21GB"
-      },
-      {
-        "name": "34b-chat-v1.5-q5_0",
-        "size": "24GB"
-      },
-      {
-        "name": "34b-chat-q5_1",
-        "size": "26GB"
-      },
-      {
-        "name": "34b-chat-q5_K_S",
-        "size": "24GB"
       },
       {
         "name": "34b-chat-v1.5-q4_K_M",
@@ -9522,52 +9432,8 @@
         "size": "20GB"
       },
       {
-        "name": "34b-chat-v1.5-q3_K_M",
-        "size": "17GB"
-      },
-      {
-        "name": "34b-chat-q6_K",
-        "size": "28GB"
-      },
-      {
-        "name": "34b-chat-q5_0",
+        "name": "34b-chat-v1.5-q5_0",
         "size": "24GB"
-      },
-      {
-        "name": "34b-chat-v1.5-q2_K",
-        "size": "13GB"
-      },
-      {
-        "name": "34b-chat-v1.5-fp16",
-        "size": "69GB"
-      },
-      {
-        "name": "34b-chat-v1.5-q4_0",
-        "size": "19GB"
-      },
-      {
-        "name": "34b-chat-q4_K_S",
-        "size": "20GB"
-      },
-      {
-        "name": "34b-chat-v1.5-q3_K_L",
-        "size": "18GB"
-      },
-      {
-        "name": "34b-chat-q5_K_M",
-        "size": "24GB"
-      },
-      {
-        "name": "34b-chat-q8_0",
-        "size": "37GB"
-      },
-      {
-        "name": "34b-chat-v1.5-q3_K_S",
-        "size": "15GB"
-      },
-      {
-        "name": "34b-chat-v1.5-q4_1",
-        "size": "22GB"
       },
       {
         "name": "34b-chat-v1.5-q5_1",
@@ -9587,6 +9453,66 @@
       },
       {
         "name": "34b-chat-v1.5-q8_0",
+        "size": "37GB"
+      },
+      {
+        "name": "34b-chat-q5_1",
+        "size": "26GB"
+      },
+      {
+        "name": "34b-chat-q4_0",
+        "size": "19GB"
+      },
+      {
+        "name": "34b-chat-q5_0",
+        "size": "24GB"
+      },
+      {
+        "name": "34b-chat-q4_K_S",
+        "size": "20GB"
+      },
+      {
+        "name": "34b-chat-q2_K",
+        "size": "15GB"
+      },
+      {
+        "name": "34b-chat-fp16",
+        "size": "69GB"
+      },
+      {
+        "name": "34b-chat-q3_K_L",
+        "size": "18GB"
+      },
+      {
+        "name": "34b-chat-q4_1",
+        "size": "22GB"
+      },
+      {
+        "name": "34b-chat-q3_K_M",
+        "size": "17GB"
+      },
+      {
+        "name": "34b-chat-q4_K_M",
+        "size": "21GB"
+      },
+      {
+        "name": "34b-chat-q3_K_S",
+        "size": "15GB"
+      },
+      {
+        "name": "34b-chat-q5_K_M",
+        "size": "24GB"
+      },
+      {
+        "name": "34b-chat-q5_K_S",
+        "size": "24GB"
+      },
+      {
+        "name": "34b-chat-q6_K",
+        "size": "28GB"
+      },
+      {
+        "name": "34b-chat-q8_0",
         "size": "37GB"
       },
       {
@@ -9656,6 +9582,22 @@
       {
         "name": "9b-chat",
         "size": "5.0GB"
+      },
+      {
+        "name": "9b-v1.5",
+        "size": "5.0GB"
+      },
+      {
+        "name": "6b-200k",
+        "size": "3.5GB"
+      },
+      {
+        "name": "6b-chat",
+        "size": "3.5GB"
+      },
+      {
+        "name": "6b-v1.5",
+        "size": "3.5GB"
       },
       {
         "name": "34b-q2_K",
@@ -9766,10 +9708,6 @@
         "size": "9.4GB"
       },
       {
-        "name": "9b-v1.5",
-        "size": "5.0GB"
-      },
-      {
         "name": "9b-v1.5-fp16",
         "size": "18GB"
       },
@@ -9828,10 +9766,6 @@
       {
         "name": "9b-v1.5-q8_0",
         "size": "9.4GB"
-      },
-      {
-        "name": "6b-200k",
-        "size": "3.5GB"
       },
       {
         "name": "6b-200k-fp16",
@@ -9894,82 +9828,6 @@
         "size": "6.4GB"
       },
       {
-        "name": "6b-chat",
-        "size": "3.5GB"
-      },
-      {
-        "name": "6b-chat-fp16",
-        "size": "12GB"
-      },
-      {
-        "name": "6b-chat-q2_K",
-        "size": "2.6GB"
-      },
-      {
-        "name": "6b-chat-q3_K_L",
-        "size": "3.2GB"
-      },
-      {
-        "name": "6b-chat-q3_K_M",
-        "size": "3.0GB"
-      },
-      {
-        "name": "6b-chat-q3_K_S",
-        "size": "2.7GB"
-      },
-      {
-        "name": "6b-chat-q4_0",
-        "size": "3.5GB"
-      },
-      {
-        "name": "6b-chat-q4_1",
-        "size": "3.8GB"
-      },
-      {
-        "name": "6b-chat-q4_K_M",
-        "size": "3.7GB"
-      },
-      {
-        "name": "6b-chat-q4_K_S",
-        "size": "3.5GB"
-      },
-      {
-        "name": "6b-chat-q5_0",
-        "size": "4.2GB"
-      },
-      {
-        "name": "6b-chat-q5_1",
-        "size": "4.6GB"
-      },
-      {
-        "name": "6b-chat-q5_K_M",
-        "size": "4.3GB"
-      },
-      {
-        "name": "6b-chat-q5_K_S",
-        "size": "4.2GB"
-      },
-      {
-        "name": "6b-chat-q6_K",
-        "size": "5.0GB"
-      },
-      {
-        "name": "6b-chat-q8_0",
-        "size": "6.4GB"
-      },
-      {
-        "name": "6b-chat-v1.5-q4_K_S",
-        "size": "3.5GB"
-      },
-      {
-        "name": "6b-chat-v1.5-q4_1",
-        "size": "3.8GB"
-      },
-      {
-        "name": "6b-chat-v1.5-q3_K_S",
-        "size": "2.7GB"
-      },
-      {
         "name": "6b-chat-v1.5-fp16",
         "size": "12GB"
       },
@@ -9978,20 +9836,32 @@
         "size": "2.3GB"
       },
       {
+        "name": "6b-chat-v1.5-q3_K_L",
+        "size": "3.2GB"
+      },
+      {
         "name": "6b-chat-v1.5-q3_K_M",
         "size": "3.0GB"
+      },
+      {
+        "name": "6b-chat-v1.5-q3_K_S",
+        "size": "2.7GB"
       },
       {
         "name": "6b-chat-v1.5-q4_0",
         "size": "3.5GB"
       },
       {
-        "name": "6b-chat-v1.5-q3_K_L",
-        "size": "3.2GB"
+        "name": "6b-chat-v1.5-q4_1",
+        "size": "3.8GB"
       },
       {
         "name": "6b-chat-v1.5-q4_K_M",
         "size": "3.7GB"
+      },
+      {
+        "name": "6b-chat-v1.5-q4_K_S",
+        "size": "3.5GB"
       },
       {
         "name": "6b-chat-v1.5-q5_0",
@@ -10014,12 +9884,68 @@
         "size": "5.0GB"
       },
       {
+        "name": "6b-chat-q5_K_M",
+        "size": "4.3GB"
+      },
+      {
         "name": "6b-chat-v1.5-q8_0",
         "size": "6.4GB"
       },
       {
-        "name": "6b-v1.5",
+        "name": "6b-chat-fp16",
+        "size": "12GB"
+      },
+      {
+        "name": "6b-chat-q4_K_M",
+        "size": "3.7GB"
+      },
+      {
+        "name": "6b-chat-q2_K",
+        "size": "2.6GB"
+      },
+      {
+        "name": "6b-chat-q5_1",
+        "size": "4.6GB"
+      },
+      {
+        "name": "6b-chat-q3_K_L",
+        "size": "3.2GB"
+      },
+      {
+        "name": "6b-chat-q5_0",
+        "size": "4.2GB"
+      },
+      {
+        "name": "6b-chat-q4_0",
         "size": "3.5GB"
+      },
+      {
+        "name": "6b-chat-q4_K_S",
+        "size": "3.5GB"
+      },
+      {
+        "name": "6b-chat-q3_K_S",
+        "size": "2.7GB"
+      },
+      {
+        "name": "6b-chat-q3_K_M",
+        "size": "3.0GB"
+      },
+      {
+        "name": "6b-chat-q4_1",
+        "size": "3.8GB"
+      },
+      {
+        "name": "6b-chat-q5_K_S",
+        "size": "4.2GB"
+      },
+      {
+        "name": "6b-chat-q6_K",
+        "size": "5.0GB"
+      },
+      {
+        "name": "6b-chat-q8_0",
+        "size": "6.4GB"
       },
       {
         "name": "6b-v1.5-fp16",
@@ -10140,6 +10066,80 @@
       {
         "name": "6b-q8_0",
         "size": "6.4GB"
+      }
+    ],
+    "embedding": false,
+    "vision": false
+  },
+  {
+    "name": "mistral-openorca",
+    "description": "Mistral OpenOrca is a 7 billion parameter model, fine-tuned on top of the Mistral 7B model using the OpenOrca dataset.",
+    "supportTools": false,
+    "defaultTag": "7b",
+    "tags": [
+      {
+        "name": "7b",
+        "size": "4.1GB"
+      },
+      {
+        "name": "7b-fp16",
+        "size": "14GB"
+      },
+      {
+        "name": "7b-q2_K",
+        "size": "3.1GB"
+      },
+      {
+        "name": "7b-q3_K_L",
+        "size": "3.8GB"
+      },
+      {
+        "name": "7b-q3_K_M",
+        "size": "3.5GB"
+      },
+      {
+        "name": "7b-q3_K_S",
+        "size": "3.2GB"
+      },
+      {
+        "name": "7b-q4_0",
+        "size": "4.1GB"
+      },
+      {
+        "name": "7b-q4_1",
+        "size": "4.6GB"
+      },
+      {
+        "name": "7b-q4_K_M",
+        "size": "4.4GB"
+      },
+      {
+        "name": "7b-q4_K_S",
+        "size": "4.1GB"
+      },
+      {
+        "name": "7b-q5_0",
+        "size": "5.0GB"
+      },
+      {
+        "name": "7b-q5_1",
+        "size": "5.4GB"
+      },
+      {
+        "name": "7b-q5_K_M",
+        "size": "5.1GB"
+      },
+      {
+        "name": "7b-q5_K_S",
+        "size": "5.0GB"
+      },
+      {
+        "name": "7b-q6_K",
+        "size": "5.9GB"
+      },
+      {
+        "name": "7b-q8_0",
+        "size": "7.7GB"
       }
     ],
     "embedding": false,
@@ -10400,20 +10400,36 @@
         "size": "26GB"
       },
       {
-        "name": "13b-v1.5-16k-q2_K",
-        "size": "5.4GB"
+        "name": "13b-v1.5-q4_0",
+        "size": "7.4GB"
       },
       {
-        "name": "13b-v1.5-16k-q3_K_L",
-        "size": "6.9GB"
+        "name": "13b-v1.5-16k-q5_K_M",
+        "size": "9.2GB"
       },
       {
-        "name": "13b-v1.5-16k-q3_K_M",
-        "size": "6.3GB"
+        "name": "13b-v1.5-16k-q5_0",
+        "size": "9.0GB"
       },
       {
-        "name": "13b-v1.5-16k-q3_K_S",
+        "name": "13b-v1.5-16k-q4_K_S",
+        "size": "7.4GB"
+      },
+      {
+        "name": "13b-v1.5-16k-q5_1",
+        "size": "9.8GB"
+      },
+      {
+        "name": "13b-v1.5-16k-q5_K_S",
+        "size": "9.0GB"
+      },
+      {
+        "name": "13b-v1.5-q3_K_S",
         "size": "5.7GB"
+      },
+      {
+        "name": "13b-v1.5-16k-q6_K",
+        "size": "11GB"
       },
       {
         "name": "13b-v1.5-16k-q4_0",
@@ -10424,52 +10440,48 @@
         "size": "8.2GB"
       },
       {
-        "name": "13b-v1.5-16k-q4_K_M",
-        "size": "7.9GB"
-      },
-      {
-        "name": "13b-v1.5-16k-q4_K_S",
-        "size": "7.4GB"
-      },
-      {
-        "name": "13b-v1.5-16k-q5_0",
-        "size": "9.0GB"
-      },
-      {
-        "name": "13b-v1.5-16k-q5_1",
-        "size": "9.8GB"
-      },
-      {
-        "name": "13b-v1.5-16k-q5_K_M",
-        "size": "9.2GB"
-      },
-      {
-        "name": "13b-v1.5-16k-q5_K_S",
-        "size": "9.0GB"
-      },
-      {
-        "name": "13b-v1.5-q6_K",
-        "size": "11GB"
-      },
-      {
-        "name": "13b-v1.5-q5_K_M",
-        "size": "9.2GB"
-      },
-      {
         "name": "13b-v1.5-16k-q8_0",
         "size": "14GB"
       },
       {
-        "name": "13b-v1.5-q2_K",
+        "name": "13b-v1.5-16k-q2_K",
         "size": "5.4GB"
+      },
+      {
+        "name": "13b-v1.5-16k-q3_K_M",
+        "size": "6.3GB"
+      },
+      {
+        "name": "13b-v1.5-16k-q3_K_L",
+        "size": "6.9GB"
       },
       {
         "name": "13b-v1.5-q3_K_M",
         "size": "6.3GB"
       },
       {
-        "name": "13b-v1.5-q5_1",
-        "size": "9.8GB"
+        "name": "13b-v1.5-16k-q3_K_S",
+        "size": "5.7GB"
+      },
+      {
+        "name": "13b-v1.5-q2_K",
+        "size": "5.4GB"
+      },
+      {
+        "name": "13b-v1.5-q3_K_L",
+        "size": "6.9GB"
+      },
+      {
+        "name": "13b-v1.5-fp16",
+        "size": "26GB"
+      },
+      {
+        "name": "13b-v1.5-16k-q4_K_M",
+        "size": "7.9GB"
+      },
+      {
+        "name": "13b-v1.5-q5_K_M",
+        "size": "9.2GB"
       },
       {
         "name": "13b-v1.5-q4_K_M",
@@ -10480,36 +10492,24 @@
         "size": "8.2GB"
       },
       {
-        "name": "13b-v1.5-16k-q6_K",
-        "size": "11GB"
-      },
-      {
-        "name": "13b-v1.5-q3_K_S",
-        "size": "5.7GB"
-      },
-      {
-        "name": "13b-v1.5-q4_0",
-        "size": "7.4GB"
-      },
-      {
-        "name": "13b-v1.5-q3_K_L",
-        "size": "6.9GB"
+        "name": "13b-v1.5-q5_1",
+        "size": "9.8GB"
       },
       {
         "name": "13b-v1.5-q4_K_S",
         "size": "7.4GB"
       },
       {
-        "name": "13b-v1.5-q5_K_S",
-        "size": "9.0GB"
-      },
-      {
         "name": "13b-v1.5-q5_0",
         "size": "9.0GB"
       },
       {
-        "name": "13b-v1.5-fp16",
-        "size": "26GB"
+        "name": "13b-v1.5-q5_K_S",
+        "size": "9.0GB"
+      },
+      {
+        "name": "13b-v1.5-q6_K",
+        "size": "11GB"
       },
       {
         "name": "13b-v1.5-q8_0",
@@ -10580,32 +10580,92 @@
         "size": "14GB"
       },
       {
-        "name": "7b-v1.5-fp16",
+        "name": "7b-v1.5-16k-fp16",
         "size": "13GB"
       },
       {
-        "name": "7b-v1.5-q2_K",
+        "name": "7b-v1.5-16k-q2_K",
         "size": "2.8GB"
       },
       {
-        "name": "7b-v1.5-q3_K_L",
+        "name": "7b-v1.5-16k-q3_K_L",
         "size": "3.6GB"
       },
       {
-        "name": "7b-v1.5-q3_K_M",
+        "name": "7b-v1.5-16k-q3_K_M",
         "size": "3.3GB"
+      },
+      {
+        "name": "7b-v1.5-16k-q3_K_S",
+        "size": "2.9GB"
+      },
+      {
+        "name": "7b-v1.5-16k-q4_0",
+        "size": "3.8GB"
+      },
+      {
+        "name": "7b-v1.5-16k-q4_1",
+        "size": "4.2GB"
+      },
+      {
+        "name": "7b-v1.5-16k-q4_K_M",
+        "size": "4.1GB"
+      },
+      {
+        "name": "7b-v1.5-16k-q4_K_S",
+        "size": "3.9GB"
+      },
+      {
+        "name": "7b-v1.5-16k-q5_0",
+        "size": "4.7GB"
+      },
+      {
+        "name": "7b-v1.5-16k-q5_1",
+        "size": "5.1GB"
+      },
+      {
+        "name": "7b-v1.5-q4_1",
+        "size": "4.2GB"
       },
       {
         "name": "7b-v1.5-q3_K_S",
         "size": "2.9GB"
       },
       {
+        "name": "7b-v1.5-fp16",
+        "size": "13GB"
+      },
+      {
+        "name": "7b-v1.5-16k-q8_0",
+        "size": "7.2GB"
+      },
+      {
         "name": "7b-v1.5-q4_0",
         "size": "3.8GB"
       },
       {
-        "name": "7b-v1.5-q4_1",
-        "size": "4.2GB"
+        "name": "7b-v1.5-16k-q5_K_M",
+        "size": "4.8GB"
+      },
+      {
+        "name": "7b-v1.5-q3_K_L",
+        "size": "3.6GB"
+      },
+      {
+        "name": "7b-v1.5-16k-q6_K",
+        "size": "5.5GB"
+      },
+      {
+        "name": "7b-v1.5-q2_K",
+        "size": "2.8GB"
+      },
+      {
+        "name": "7b-v1.5-16k-q5_K_S",
+        "size": "4.7GB"
+      },
+      {
+        "name": "7b-v1.5-q3_K_M",
+        "size": "3.3GB"
       },
       {
         "name": "7b-v1.5-q4_K_M",
@@ -10637,66 +10697,6 @@
       },
       {
         "name": "7b-v1.5-q8_0",
-        "size": "7.2GB"
-      },
-      {
-        "name": "7b-v1.5-16k-q4_K_S",
-        "size": "3.9GB"
-      },
-      {
-        "name": "7b-v1.5-16k-q3_K_M",
-        "size": "3.3GB"
-      },
-      {
-        "name": "7b-v1.5-16k-q4_1",
-        "size": "4.2GB"
-      },
-      {
-        "name": "7b-v1.5-16k-q4_0",
-        "size": "3.8GB"
-      },
-      {
-        "name": "7b-v1.5-16k-q3_K_S",
-        "size": "2.9GB"
-      },
-      {
-        "name": "7b-v1.5-16k-q4_K_M",
-        "size": "4.1GB"
-      },
-      {
-        "name": "7b-v1.5-16k-fp16",
-        "size": "13GB"
-      },
-      {
-        "name": "7b-v1.5-16k-q2_K",
-        "size": "2.8GB"
-      },
-      {
-        "name": "7b-v1.5-16k-q3_K_L",
-        "size": "3.6GB"
-      },
-      {
-        "name": "7b-v1.5-16k-q5_0",
-        "size": "4.7GB"
-      },
-      {
-        "name": "7b-v1.5-16k-q5_1",
-        "size": "5.1GB"
-      },
-      {
-        "name": "7b-v1.5-16k-q5_K_M",
-        "size": "4.8GB"
-      },
-      {
-        "name": "7b-v1.5-16k-q5_K_S",
-        "size": "4.7GB"
-      },
-      {
-        "name": "7b-v1.5-16k-q6_K",
-        "size": "5.5GB"
-      },
-      {
-        "name": "7b-v1.5-16k-q8_0",
         "size": "7.2GB"
       },
       {
@@ -11486,6 +11486,14 @@
         "size": "4.3GB"
       },
       {
+        "name": "3b-base",
+        "size": "1.8GB"
+      },
+      {
+        "name": "1b-base",
+        "size": "726MB"
+      },
+      {
         "name": "15b-fp16",
         "size": "32GB"
       },
@@ -11606,10 +11614,6 @@
         "size": "8.0GB"
       },
       {
-        "name": "3b-base",
-        "size": "1.8GB"
-      },
-      {
         "name": "3b-base-fp16",
         "size": "6.4GB"
       },
@@ -11668,10 +11672,6 @@
       {
         "name": "3b-base-q8_0",
         "size": "3.4GB"
-      },
-      {
-        "name": "1b-base",
-        "size": "726MB"
       },
       {
         "name": "1b-base-fp16",
@@ -11894,8 +11894,48 @@
         "size": "5.0GB"
       },
       {
+        "name": "7b-v3.5-1210-q4_1",
+        "size": "4.6GB"
+      },
+      {
+        "name": "7b-v3.5-0106-q4_K_M",
+        "size": "4.4GB"
+      },
+      {
+        "name": "7b-v3.5-0106-q4_K_S",
+        "size": "4.1GB"
+      },
+      {
+        "name": "7b-v3.5-0106-q4_1",
+        "size": "4.6GB"
+      },
+      {
+        "name": "7b-v3.5-0106-q5_1",
+        "size": "5.4GB"
+      },
+      {
+        "name": "7b-v3.5-1210-q3_K_M",
+        "size": "3.5GB"
+      },
+      {
+        "name": "7b-v3.5-1210-q3_K_L",
+        "size": "3.8GB"
+      },
+      {
+        "name": "7b-v3.5-0106-fp16",
+        "size": "14GB"
+      },
+      {
+        "name": "7b-v3.5-1210-q4_0",
+        "size": "4.1GB"
+      },
+      {
         "name": "7b-v3.5-q5_1",
         "size": "5.4GB"
+      },
+      {
+        "name": "7b-v3.5-0106-q5_0",
+        "size": "5.0GB"
       },
       {
         "name": "7b-v3.5-q5_K_M",
@@ -11906,120 +11946,80 @@
         "size": "5.0GB"
       },
       {
-        "name": "7b-v3.5-q6_K",
-        "size": "5.9GB"
-      },
-      {
-        "name": "7b-v3.5-1210-q5_K_M",
-        "size": "5.1GB"
-      },
-      {
-        "name": "7b-v3.5-0106-q8_0",
-        "size": "7.7GB"
-      },
-      {
-        "name": "7b-v3.5-1210-q5_0",
-        "size": "5.0GB"
-      },
-      {
-        "name": "7b-v3.5-0106-q5_K_M",
-        "size": "5.1GB"
-      },
-      {
-        "name": "7b-v3.5-1210-q3_K_L",
-        "size": "3.8GB"
-      },
-      {
-        "name": "7b-v3.5-0106-q4_0",
-        "size": "4.1GB"
-      },
-      {
-        "name": "7b-v3.5-1210-q4_K_M",
-        "size": "4.4GB"
-      },
-      {
-        "name": "7b-v3.5-0106-fp16",
-        "size": "14GB"
-      },
-      {
-        "name": "7b-v3.5-1210-fp16",
-        "size": "14GB"
-      },
-      {
-        "name": "7b-v3.5-0106-q4_K_M",
-        "size": "4.4GB"
-      },
-      {
-        "name": "7b-v3.5-0106-q2_K",
-        "size": "3.1GB"
-      },
-      {
-        "name": "7b-v3.5-1210-q2_K",
-        "size": "3.1GB"
-      },
-      {
-        "name": "7b-v3.5-1210-q4_1",
-        "size": "4.6GB"
-      },
-      {
-        "name": "7b-v3.5-0106-q3_K_L",
-        "size": "3.8GB"
-      },
-      {
-        "name": "7b-v3.5-0106-q5_1",
-        "size": "5.4GB"
-      },
-      {
-        "name": "7b-v3.5-1210-q3_K_S",
-        "size": "3.2GB"
-      },
-      {
-        "name": "7b-v3.5-0106-q3_K_M",
-        "size": "3.5GB"
-      },
-      {
-        "name": "7b-v3.5-1210-q5_1",
-        "size": "5.4GB"
-      },
-      {
-        "name": "7b-v3.5-0106-q6_K",
-        "size": "5.9GB"
-      },
-      {
         "name": "7b-v3.5-0106-q5_K_S",
         "size": "5.0GB"
-      },
-      {
-        "name": "7b-v3.5-0106-q4_1",
-        "size": "4.6GB"
       },
       {
         "name": "7b-v3.5-q8_0",
         "size": "7.7GB"
       },
       {
-        "name": "7b-v3.5-0106-q4_K_S",
-        "size": "4.1GB"
+        "name": "7b-v3.5-1210-q2_K",
+        "size": "3.1GB"
       },
       {
-        "name": "7b-v3.5-0106-q5_0",
-        "size": "5.0GB"
+        "name": "7b-v3.5-0106-q6_K",
+        "size": "5.9GB"
       },
       {
         "name": "7b-v3.5-0106-q3_K_S",
         "size": "3.2GB"
       },
       {
-        "name": "7b-v3.5-1210-q3_K_M",
+        "name": "7b-v3.5-0106-q2_K",
+        "size": "3.1GB"
+      },
+      {
+        "name": "7b-v3.5-0106-q4_0",
+        "size": "4.1GB"
+      },
+      {
+        "name": "7b-v3.5-0106-q5_K_M",
+        "size": "5.1GB"
+      },
+      {
+        "name": "7b-v3.5-0106-q3_K_M",
         "size": "3.5GB"
+      },
+      {
+        "name": "7b-v3.5-q6_K",
+        "size": "5.9GB"
+      },
+      {
+        "name": "7b-v3.5-0106-q8_0",
+        "size": "7.7GB"
+      },
+      {
+        "name": "7b-v3.5-1210-fp16",
+        "size": "14GB"
+      },
+      {
+        "name": "7b-v3.5-0106-q3_K_L",
+        "size": "3.8GB"
+      },
+      {
+        "name": "7b-v3.5-1210-q3_K_S",
+        "size": "3.2GB"
+      },
+      {
+        "name": "7b-v3.5-1210-q4_K_M",
+        "size": "4.4GB"
       },
       {
         "name": "7b-v3.5-1210-q4_K_S",
         "size": "4.1GB"
       },
       {
-        "name": "7b-v3.5-1210-q4_0",
-        "size": "4.1GB"
+        "name": "7b-v3.5-1210-q5_0",
+        "size": "5.0GB"
+      },
+      {
+        "name": "7b-v3.5-1210-q5_1",
+        "size": "5.4GB"
+      },
+      {
+        "name": "7b-v3.5-1210-q5_K_M",
+        "size": "5.1GB"
       },
       {
         "name": "7b-v3.5-1210-q5_K_S",
@@ -12832,6 +12832,52 @@
     "vision": false
   },
   {
+    "name": "all-minilm",
+    "description": "Embedding models on very large sentence level datasets.",
+    "supportTools": false,
+    "defaultTag": "22m",
+    "tags": [
+      {
+        "name": "33m",
+        "size": "67MB"
+      },
+      {
+        "name": "22m",
+        "size": "46MB"
+      },
+      {
+        "name": "l12",
+        "size": "67MB"
+      },
+      {
+        "name": "l6",
+        "size": "46MB"
+      },
+      {
+        "name": "v2",
+        "size": "46MB"
+      },
+      {
+        "name": "33m-l12-v2-fp16",
+        "size": "67MB"
+      },
+      {
+        "name": "22m-l6-v2-fp16",
+        "size": "46MB"
+      },
+      {
+        "name": "l6-v2",
+        "size": "46MB"
+      },
+      {
+        "name": "l12-v2",
+        "size": "67MB"
+      }
+    ],
+    "embedding": true,
+    "vision": false
+  },
+  {
     "name": "codeqwen",
     "description": "CodeQwen1.5 is a large language model pretrained on a large amount of code data.",
     "supportTools": false,
@@ -12958,52 +13004,6 @@
     "vision": false
   },
   {
-    "name": "all-minilm",
-    "description": "Embedding models on very large sentence level datasets.",
-    "supportTools": false,
-    "defaultTag": "22m",
-    "tags": [
-      {
-        "name": "33m",
-        "size": "67MB"
-      },
-      {
-        "name": "22m",
-        "size": "46MB"
-      },
-      {
-        "name": "l12",
-        "size": "67MB"
-      },
-      {
-        "name": "l6",
-        "size": "46MB"
-      },
-      {
-        "name": "v2",
-        "size": "46MB"
-      },
-      {
-        "name": "33m-l12-v2-fp16",
-        "size": "67MB"
-      },
-      {
-        "name": "22m-l6-v2-fp16",
-        "size": "46MB"
-      },
-      {
-        "name": "l6-v2",
-        "size": "46MB"
-      },
-      {
-        "name": "l12-v2",
-        "size": "67MB"
-      }
-    ],
-    "embedding": true,
-    "vision": false
-  },
-  {
     "name": "granite-code",
     "description": "A family of open foundation models by IBM for Code Intelligence",
     "supportTools": false,
@@ -13026,12 +13026,12 @@
         "size": "2.0GB"
       },
       {
-        "name": "34b-base",
-        "size": "19GB"
-      },
-      {
         "name": "34b-base-f16",
         "size": "68GB"
+      },
+      {
+        "name": "34b-base",
+        "size": "19GB"
       },
       {
         "name": "34b-base-q2_K",
@@ -13090,12 +13090,12 @@
         "size": "36GB"
       },
       {
-        "name": "34b-instruct",
-        "size": "19GB"
-      },
-      {
         "name": "34b-instruct-f16",
         "size": "68GB"
+      },
+      {
+        "name": "34b-instruct",
+        "size": "19GB"
       },
       {
         "name": "34b-instruct-q2_K",
@@ -13490,12 +13490,12 @@
         "size": "3.7GB"
       },
       {
-        "name": "3b-instruct-f16",
-        "size": "7.0GB"
-      },
-      {
         "name": "3b-instruct",
         "size": "2.0GB"
+      },
+      {
+        "name": "3b-instruct-f16",
+        "size": "7.0GB"
       },
       {
         "name": "3b-instruct-fp16",
@@ -13918,10 +13918,6 @@
         "size": "983MB"
       },
       {
-        "name": "1.6b-zephyr",
-        "size": "983MB"
-      },
-      {
         "name": "12b-fp16",
         "size": "24GB"
       },
@@ -14040,6 +14036,10 @@
       {
         "name": "1.6b-chat-q8_0",
         "size": "1.8GB"
+      },
+      {
+        "name": "1.6b-zephyr",
+        "size": "983MB"
       },
       {
         "name": "1.6b-zephyr-fp16",
@@ -14978,6 +14978,152 @@
     "vision": false
   },
   {
+    "name": "llama3-gradient",
+    "description": "This model extends LLama-3 8B's context length from 8k to over 1m tokens.",
+    "supportTools": false,
+    "defaultTag": "8b",
+    "tags": [
+      {
+        "name": "70b",
+        "size": "40GB"
+      },
+      {
+        "name": "8b",
+        "size": "4.7GB"
+      },
+      {
+        "name": "1048k",
+        "size": "4.7GB"
+      },
+      {
+        "name": "instruct",
+        "size": "4.7GB"
+      },
+      {
+        "name": "70b-instruct-1048k-fp16",
+        "size": "141GB"
+      },
+      {
+        "name": "70b-instruct-1048k-q2_K",
+        "size": "26GB"
+      },
+      {
+        "name": "70b-instruct-1048k-q3_K_L",
+        "size": "37GB"
+      },
+      {
+        "name": "70b-instruct-1048k-q3_K_M",
+        "size": "34GB"
+      },
+      {
+        "name": "70b-instruct-1048k-q3_K_S",
+        "size": "31GB"
+      },
+      {
+        "name": "70b-instruct-1048k-q4_0",
+        "size": "40GB"
+      },
+      {
+        "name": "70b-instruct-1048k-q4_1",
+        "size": "44GB"
+      },
+      {
+        "name": "70b-instruct-1048k-q4_K_M",
+        "size": "43GB"
+      },
+      {
+        "name": "70b-instruct-1048k-q4_K_S",
+        "size": "40GB"
+      },
+      {
+        "name": "70b-instruct-1048k-q5_0",
+        "size": "49GB"
+      },
+      {
+        "name": "70b-instruct-1048k-q5_1",
+        "size": "53GB"
+      },
+      {
+        "name": "70b-instruct-1048k-q5_K_M",
+        "size": "50GB"
+      },
+      {
+        "name": "70b-instruct-1048k-q5_K_S",
+        "size": "49GB"
+      },
+      {
+        "name": "70b-instruct-1048k-q6_K",
+        "size": "58GB"
+      },
+      {
+        "name": "70b-instruct-1048k-q8_0",
+        "size": "75GB"
+      },
+      {
+        "name": "8b-instruct-1048k-fp16",
+        "size": "16GB"
+      },
+      {
+        "name": "8b-instruct-1048k-q2_K",
+        "size": "3.2GB"
+      },
+      {
+        "name": "8b-instruct-1048k-q3_K_L",
+        "size": "4.3GB"
+      },
+      {
+        "name": "8b-instruct-1048k-q3_K_M",
+        "size": "4.0GB"
+      },
+      {
+        "name": "8b-instruct-1048k-q3_K_S",
+        "size": "3.7GB"
+      },
+      {
+        "name": "8b-instruct-1048k-q4_0",
+        "size": "4.7GB"
+      },
+      {
+        "name": "8b-instruct-1048k-q4_1",
+        "size": "5.1GB"
+      },
+      {
+        "name": "8b-instruct-1048k-q4_K_M",
+        "size": "4.9GB"
+      },
+      {
+        "name": "8b-instruct-1048k-q4_K_S",
+        "size": "4.7GB"
+      },
+      {
+        "name": "8b-instruct-1048k-q5_0",
+        "size": "5.6GB"
+      },
+      {
+        "name": "8b-instruct-1048k-q5_1",
+        "size": "6.1GB"
+      },
+      {
+        "name": "8b-instruct-1048k-q5_K_M",
+        "size": "5.7GB"
+      },
+      {
+        "name": "8b-instruct-1048k-q5_K_S",
+        "size": "5.6GB"
+      },
+      {
+        "name": "8b-instruct-1048k-q6_K",
+        "size": "6.6GB"
+      },
+      {
+        "name": "8b-instruct-1048k-q8_0",
+        "size": "8.5GB"
+      }
+    ],
+    "embedding": false,
+    "vision": false
+  },
+  {
     "name": "sqlcoder",
     "description": "SQLCoder is a code completion model fined-tuned on StarCoder for SQL generation tasks",
     "supportTools": false,
@@ -15170,152 +15316,6 @@
       {
         "name": "7b-q8_0",
         "size": "7.7GB"
-      }
-    ],
-    "embedding": false,
-    "vision": false
-  },
-  {
-    "name": "llama3-gradient",
-    "description": "This model extends LLama-3 8B's context length from 8k to over 1m tokens.",
-    "supportTools": false,
-    "defaultTag": "8b",
-    "tags": [
-      {
-        "name": "70b",
-        "size": "40GB"
-      },
-      {
-        "name": "8b",
-        "size": "4.7GB"
-      },
-      {
-        "name": "1048k",
-        "size": "4.7GB"
-      },
-      {
-        "name": "instruct",
-        "size": "4.7GB"
-      },
-      {
-        "name": "70b-instruct-1048k-fp16",
-        "size": "141GB"
-      },
-      {
-        "name": "70b-instruct-1048k-q2_K",
-        "size": "26GB"
-      },
-      {
-        "name": "70b-instruct-1048k-q3_K_L",
-        "size": "37GB"
-      },
-      {
-        "name": "70b-instruct-1048k-q3_K_M",
-        "size": "34GB"
-      },
-      {
-        "name": "70b-instruct-1048k-q3_K_S",
-        "size": "31GB"
-      },
-      {
-        "name": "70b-instruct-1048k-q4_0",
-        "size": "40GB"
-      },
-      {
-        "name": "70b-instruct-1048k-q4_1",
-        "size": "44GB"
-      },
-      {
-        "name": "70b-instruct-1048k-q4_K_M",
-        "size": "43GB"
-      },
-      {
-        "name": "70b-instruct-1048k-q4_K_S",
-        "size": "40GB"
-      },
-      {
-        "name": "70b-instruct-1048k-q5_0",
-        "size": "49GB"
-      },
-      {
-        "name": "70b-instruct-1048k-q5_1",
-        "size": "53GB"
-      },
-      {
-        "name": "70b-instruct-1048k-q5_K_M",
-        "size": "50GB"
-      },
-      {
-        "name": "70b-instruct-1048k-q5_K_S",
-        "size": "49GB"
-      },
-      {
-        "name": "70b-instruct-1048k-q6_K",
-        "size": "58GB"
-      },
-      {
-        "name": "70b-instruct-1048k-q8_0",
-        "size": "75GB"
-      },
-      {
-        "name": "8b-instruct-1048k-fp16",
-        "size": "16GB"
-      },
-      {
-        "name": "8b-instruct-1048k-q2_K",
-        "size": "3.2GB"
-      },
-      {
-        "name": "8b-instruct-1048k-q3_K_L",
-        "size": "4.3GB"
-      },
-      {
-        "name": "8b-instruct-1048k-q3_K_M",
-        "size": "4.0GB"
-      },
-      {
-        "name": "8b-instruct-1048k-q3_K_S",
-        "size": "3.7GB"
-      },
-      {
-        "name": "8b-instruct-1048k-q4_0",
-        "size": "4.7GB"
-      },
-      {
-        "name": "8b-instruct-1048k-q4_1",
-        "size": "5.1GB"
-      },
-      {
-        "name": "8b-instruct-1048k-q4_K_M",
-        "size": "4.9GB"
-      },
-      {
-        "name": "8b-instruct-1048k-q4_K_S",
-        "size": "4.7GB"
-      },
-      {
-        "name": "8b-instruct-1048k-q5_0",
-        "size": "5.6GB"
-      },
-      {
-        "name": "8b-instruct-1048k-q5_1",
-        "size": "6.1GB"
-      },
-      {
-        "name": "8b-instruct-1048k-q5_K_M",
-        "size": "5.7GB"
-      },
-      {
-        "name": "8b-instruct-1048k-q5_K_S",
-        "size": "5.6GB"
-      },
-      {
-        "name": "8b-instruct-1048k-q6_K",
-        "size": "6.6GB"
-      },
-      {
-        "name": "8b-instruct-1048k-q8_0",
-        "size": "8.5GB"
       }
     ],
     "embedding": false,
@@ -18654,214 +18654,6 @@
     "vision": false
   },
   {
-    "name": "nexusraven",
-    "description": "Nexus Raven is a 13B instruction tuned model for function calling tasks.",
-    "supportTools": false,
-    "defaultTag": "13b",
-    "tags": [
-      {
-        "name": "13b",
-        "size": "7.4GB"
-      },
-      {
-        "name": "13b-v2-fp16",
-        "size": "26GB"
-      },
-      {
-        "name": "13b-v2-q2_K",
-        "size": "5.4GB"
-      },
-      {
-        "name": "13b-v2-q3_K_L",
-        "size": "6.9GB"
-      },
-      {
-        "name": "13b-v2-q3_K_M",
-        "size": "6.3GB"
-      },
-      {
-        "name": "13b-v2-q3_K_S",
-        "size": "5.7GB"
-      },
-      {
-        "name": "13b-v2-q4_0",
-        "size": "7.4GB"
-      },
-      {
-        "name": "13b-v2-q4_1",
-        "size": "8.2GB"
-      },
-      {
-        "name": "13b-v2-q4_K_M",
-        "size": "7.9GB"
-      },
-      {
-        "name": "13b-v2-q4_K_S",
-        "size": "7.4GB"
-      },
-      {
-        "name": "13b-v2-q5_0",
-        "size": "9.0GB"
-      },
-      {
-        "name": "13b-v2-q5_1",
-        "size": "9.8GB"
-      },
-      {
-        "name": "13b-v2-q5_K_M",
-        "size": "9.2GB"
-      },
-      {
-        "name": "13b-v2-q5_K_S",
-        "size": "9.0GB"
-      },
-      {
-        "name": "13b-v2-q6_K",
-        "size": "11GB"
-      },
-      {
-        "name": "13b-v2-q8_0",
-        "size": "14GB"
-      },
-      {
-        "name": "13b-fp16",
-        "size": "26GB"
-      },
-      {
-        "name": "13b-q2_K",
-        "size": "5.4GB"
-      },
-      {
-        "name": "13b-q3_K_L",
-        "size": "6.9GB"
-      },
-      {
-        "name": "13b-q3_K_M",
-        "size": "6.3GB"
-      },
-      {
-        "name": "13b-q3_K_S",
-        "size": "5.7GB"
-      },
-      {
-        "name": "13b-q4_0",
-        "size": "7.4GB"
-      },
-      {
-        "name": "13b-q4_1",
-        "size": "8.2GB"
-      },
-      {
-        "name": "13b-q4_K_M",
-        "size": "7.9GB"
-      },
-      {
-        "name": "13b-q4_K_S",
-        "size": "7.4GB"
-      },
-      {
-        "name": "13b-q5_0",
-        "size": "9.0GB"
-      },
-      {
-        "name": "13b-q5_1",
-        "size": "9.8GB"
-      },
-      {
-        "name": "13b-q5_K_M",
-        "size": "9.2GB"
-      },
-      {
-        "name": "13b-q5_K_S",
-        "size": "9.0GB"
-      },
-      {
-        "name": "13b-q6_K",
-        "size": "11GB"
-      },
-      {
-        "name": "13b-q8_0",
-        "size": "14GB"
-      }
-    ],
-    "embedding": false,
-    "vision": false
-  },
-  {
-    "name": "codegeex4",
-    "description": "A versatile model for AI software development scenarios, including code completion.",
-    "supportTools": false,
-    "defaultTag": "9b",
-    "tags": [
-      {
-        "name": "9b",
-        "size": "5.5GB"
-      },
-      {
-        "name": "9b-all-fp16",
-        "size": "19GB"
-      },
-      {
-        "name": "9b-all-q2_K",
-        "size": "4.0GB"
-      },
-      {
-        "name": "9b-all-q3_K_L",
-        "size": "5.3GB"
-      },
-      {
-        "name": "9b-all-q3_K_M",
-        "size": "5.1GB"
-      },
-      {
-        "name": "9b-all-q3_K_S",
-        "size": "4.6GB"
-      },
-      {
-        "name": "9b-all-q4_0",
-        "size": "5.5GB"
-      },
-      {
-        "name": "9b-all-q4_1",
-        "size": "6.0GB"
-      },
-      {
-        "name": "9b-all-q4_K_M",
-        "size": "6.3GB"
-      },
-      {
-        "name": "9b-all-q4_K_S",
-        "size": "5.8GB"
-      },
-      {
-        "name": "9b-all-q5_0",
-        "size": "6.6GB"
-      },
-      {
-        "name": "9b-all-q5_1",
-        "size": "7.1GB"
-      },
-      {
-        "name": "9b-all-q5_K_M",
-        "size": "7.1GB"
-      },
-      {
-        "name": "9b-all-q5_K_S",
-        "size": "6.7GB"
-      },
-      {
-        "name": "9b-all-q6_K",
-        "size": "8.3GB"
-      },
-      {
-        "name": "9b-all-q8_0",
-        "size": "10.0GB"
-      }
-    ],
-    "embedding": false,
-    "vision": false
-  },
-  {
     "name": "glm4",
     "description": "A strong multi-lingual general language model with competitive performance to Llama 3.",
     "supportTools": false,
@@ -18990,6 +18782,214 @@
       {
         "name": "9b-text-q8_0",
         "size": "10.0GB"
+      }
+    ],
+    "embedding": false,
+    "vision": false
+  },
+  {
+    "name": "codegeex4",
+    "description": "A versatile model for AI software development scenarios, including code completion.",
+    "supportTools": false,
+    "defaultTag": "9b",
+    "tags": [
+      {
+        "name": "9b",
+        "size": "5.5GB"
+      },
+      {
+        "name": "9b-all-fp16",
+        "size": "19GB"
+      },
+      {
+        "name": "9b-all-q2_K",
+        "size": "4.0GB"
+      },
+      {
+        "name": "9b-all-q3_K_L",
+        "size": "5.3GB"
+      },
+      {
+        "name": "9b-all-q3_K_M",
+        "size": "5.1GB"
+      },
+      {
+        "name": "9b-all-q3_K_S",
+        "size": "4.6GB"
+      },
+      {
+        "name": "9b-all-q4_0",
+        "size": "5.5GB"
+      },
+      {
+        "name": "9b-all-q4_1",
+        "size": "6.0GB"
+      },
+      {
+        "name": "9b-all-q4_K_M",
+        "size": "6.3GB"
+      },
+      {
+        "name": "9b-all-q4_K_S",
+        "size": "5.8GB"
+      },
+      {
+        "name": "9b-all-q5_0",
+        "size": "6.6GB"
+      },
+      {
+        "name": "9b-all-q5_1",
+        "size": "7.1GB"
+      },
+      {
+        "name": "9b-all-q5_K_M",
+        "size": "7.1GB"
+      },
+      {
+        "name": "9b-all-q5_K_S",
+        "size": "6.7GB"
+      },
+      {
+        "name": "9b-all-q6_K",
+        "size": "8.3GB"
+      },
+      {
+        "name": "9b-all-q8_0",
+        "size": "10.0GB"
+      }
+    ],
+    "embedding": false,
+    "vision": false
+  },
+  {
+    "name": "nexusraven",
+    "description": "Nexus Raven is a 13B instruction tuned model for function calling tasks.",
+    "supportTools": false,
+    "defaultTag": "13b",
+    "tags": [
+      {
+        "name": "13b",
+        "size": "7.4GB"
+      },
+      {
+        "name": "13b-v2-fp16",
+        "size": "26GB"
+      },
+      {
+        "name": "13b-v2-q2_K",
+        "size": "5.4GB"
+      },
+      {
+        "name": "13b-v2-q3_K_L",
+        "size": "6.9GB"
+      },
+      {
+        "name": "13b-v2-q3_K_M",
+        "size": "6.3GB"
+      },
+      {
+        "name": "13b-v2-q3_K_S",
+        "size": "5.7GB"
+      },
+      {
+        "name": "13b-v2-q4_0",
+        "size": "7.4GB"
+      },
+      {
+        "name": "13b-v2-q4_1",
+        "size": "8.2GB"
+      },
+      {
+        "name": "13b-v2-q4_K_M",
+        "size": "7.9GB"
+      },
+      {
+        "name": "13b-v2-q4_K_S",
+        "size": "7.4GB"
+      },
+      {
+        "name": "13b-v2-q5_0",
+        "size": "9.0GB"
+      },
+      {
+        "name": "13b-v2-q5_1",
+        "size": "9.8GB"
+      },
+      {
+        "name": "13b-v2-q5_K_M",
+        "size": "9.2GB"
+      },
+      {
+        "name": "13b-v2-q5_K_S",
+        "size": "9.0GB"
+      },
+      {
+        "name": "13b-v2-q6_K",
+        "size": "11GB"
+      },
+      {
+        "name": "13b-v2-q8_0",
+        "size": "14GB"
+      },
+      {
+        "name": "13b-fp16",
+        "size": "26GB"
+      },
+      {
+        "name": "13b-q2_K",
+        "size": "5.4GB"
+      },
+      {
+        "name": "13b-q3_K_L",
+        "size": "6.9GB"
+      },
+      {
+        "name": "13b-q3_K_M",
+        "size": "6.3GB"
+      },
+      {
+        "name": "13b-q3_K_S",
+        "size": "5.7GB"
+      },
+      {
+        "name": "13b-q4_0",
+        "size": "7.4GB"
+      },
+      {
+        "name": "13b-q4_1",
+        "size": "8.2GB"
+      },
+      {
+        "name": "13b-q4_K_M",
+        "size": "7.9GB"
+      },
+      {
+        "name": "13b-q4_K_S",
+        "size": "7.4GB"
+      },
+      {
+        "name": "13b-q5_0",
+        "size": "9.0GB"
+      },
+      {
+        "name": "13b-q5_1",
+        "size": "9.8GB"
+      },
+      {
+        "name": "13b-q5_K_M",
+        "size": "9.2GB"
+      },
+      {
+        "name": "13b-q5_K_S",
+        "size": "9.0GB"
+      },
+      {
+        "name": "13b-q6_K",
+        "size": "11GB"
+      },
+      {
+        "name": "13b-q8_0",
+        "size": "14GB"
       }
     ],
     "embedding": false,
@@ -19778,76 +19778,6 @@
     "vision": false
   },
   {
-    "name": "goliath",
-    "description": "A language model created by combining two fine-tuned Llama 2 70B models into one.",
-    "supportTools": false,
-    "defaultTag": "120b-q4_0",
-    "tags": [
-      {
-        "name": "120b-q4_0",
-        "size": "66GB"
-      },
-      {
-        "name": "120b-fp16",
-        "size": "236GB"
-      },
-      {
-        "name": "120b-q2_K",
-        "size": "50GB"
-      },
-      {
-        "name": "120b-q3_K_L",
-        "size": "62GB"
-      },
-      {
-        "name": "120b-q3_K_M",
-        "size": "56GB"
-      },
-      {
-        "name": "120b-q3_K_S",
-        "size": "51GB"
-      },
-      {
-        "name": "120b-q4_1",
-        "size": "74GB"
-      },
-      {
-        "name": "120b-q4_K_M",
-        "size": "71GB"
-      },
-      {
-        "name": "120b-q4_K_S",
-        "size": "66GB"
-      },
-      {
-        "name": "120b-q5_0",
-        "size": "81GB"
-      },
-      {
-        "name": "120b-q5_1",
-        "size": "88GB"
-      },
-      {
-        "name": "120b-q5_K_M",
-        "size": "83GB"
-      },
-      {
-        "name": "120b-q5_K_S",
-        "size": "81GB"
-      },
-      {
-        "name": "120b-q6_K",
-        "size": "97GB"
-      },
-      {
-        "name": "120b-q8_0",
-        "size": "125GB"
-      }
-    ],
-    "embedding": false,
-    "vision": false
-  },
-  {
     "name": "notux",
     "description": "A top-performing mixture of experts model, fine-tuned with high-quality data.",
     "supportTools": false,
@@ -19920,6 +19850,76 @@
       {
         "name": "8x7b-v1-q8_0",
         "size": "50GB"
+      }
+    ],
+    "embedding": false,
+    "vision": false
+  },
+  {
+    "name": "goliath",
+    "description": "A language model created by combining two fine-tuned Llama 2 70B models into one.",
+    "supportTools": false,
+    "defaultTag": "120b-q4_0",
+    "tags": [
+      {
+        "name": "120b-q4_0",
+        "size": "66GB"
+      },
+      {
+        "name": "120b-fp16",
+        "size": "236GB"
+      },
+      {
+        "name": "120b-q2_K",
+        "size": "50GB"
+      },
+      {
+        "name": "120b-q3_K_L",
+        "size": "62GB"
+      },
+      {
+        "name": "120b-q3_K_M",
+        "size": "56GB"
+      },
+      {
+        "name": "120b-q3_K_S",
+        "size": "51GB"
+      },
+      {
+        "name": "120b-q4_1",
+        "size": "74GB"
+      },
+      {
+        "name": "120b-q4_K_M",
+        "size": "71GB"
+      },
+      {
+        "name": "120b-q4_K_S",
+        "size": "66GB"
+      },
+      {
+        "name": "120b-q5_0",
+        "size": "81GB"
+      },
+      {
+        "name": "120b-q5_1",
+        "size": "88GB"
+      },
+      {
+        "name": "120b-q5_K_M",
+        "size": "83GB"
+      },
+      {
+        "name": "120b-q5_K_S",
+        "size": "81GB"
+      },
+      {
+        "name": "120b-q6_K",
+        "size": "97GB"
+      },
+      {
+        "name": "120b-q8_0",
+        "size": "125GB"
       }
     ],
     "embedding": false,
