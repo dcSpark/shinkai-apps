@@ -12,7 +12,9 @@ import {
 ed.etc.sha512Sync = (...m) => sha512(ed.etc.concatBytes(...m));
 
 const crypto = new Crypto();
-globalThis.crypto = crypto;
+Object.defineProperty(globalThis, 'crypto', {
+  value: crypto,
+});
 
 describe('Key generation functions', () => {
   test('should generate valid encryption keys', async () => {
