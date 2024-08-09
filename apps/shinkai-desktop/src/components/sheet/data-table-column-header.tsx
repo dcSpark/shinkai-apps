@@ -241,11 +241,18 @@ export function DataTableColumnHeader<TData, TValue>({
       profile_identity_sk: auth.profile_identity_sk,
     });
   };
-  console.log(setColumnForm.formState);
 
   return (
     <div className={cn('flex w-full items-center')}>
-      <Popover onOpenChange={setOpen} open={open}>
+      <Popover
+        onOpenChange={(open) => {
+          if (!open) {
+            setColumnForm.reset();
+          }
+          setOpen(open);
+        }}
+        open={open}
+      >
         <PopoverTrigger asChild>
           <Button
             className="-ml-1.5 line-clamp-1 flex size-full justify-start gap-1.5 rounded-md bg-transparent px-2 pr-0 hover:bg-gray-300 data-[state=open]:bg-gray-300"
