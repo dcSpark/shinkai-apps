@@ -18,18 +18,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Node version
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          check-latest: false
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
       - name: Audit
-        # must use login shell (-l) to have nvm preinstalled, -e exits shell on nonzero exit codes
-        shell: bash -e -l {0}
         run: |
-          NODE=$(jq -r .engines.node ./package.json)
-          NPM=$(jq -r .engines.npm ./package.json)
-          echo "Node/npm version: ${NODE}/${NPM} - found on package.json"
-          echo "RUN:\"nvm i\" => Sets up npm."
-          nvm i
-          echo "RUN:\"npm i -g npm@${NPM}\" => Set up npm ${NPM}"
-          npm i -g npm@"${NPM}"
-          echo "RUN:\"npm i --package-lock-only\" => Creates package-lock.json which is used by audit, also audits, but always exits with 0 and gives a very short output."
-          npm i --package-lock-only --ignore-scripts
-          echo "RUN:\"npm audit\" => Runs the actual audit."
-          npm audit --audit-level=moderate --omit=dev @tauri-apps/cli
+          npm audit --omit=dev
