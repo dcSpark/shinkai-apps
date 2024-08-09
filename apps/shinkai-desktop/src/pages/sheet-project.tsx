@@ -24,6 +24,7 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
+import { AnimatePresence } from 'framer-motion';
 import React, { useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
@@ -232,12 +233,14 @@ const SheetProject = () => {
               </Table>
             </div>
           </div>
-          {Object.keys(rowSelection).length > 0 ? (
-            <SelectedRowsActions
-              selectedRows={rowSelection}
-              setRowSelection={setRowSelection}
-            />
-          ) : null}
+          <AnimatePresence>
+            {Object.keys(rowSelection).length > 0 ? (
+              <SelectedRowsActions
+                selectedRows={rowSelection}
+                setRowSelection={setRowSelection}
+              />
+            ) : null}
+          </AnimatePresence>
           {/*<DataTablePagination table={table} />*/}
         </div>
       </div>

@@ -32,6 +32,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { WorkflowPlaygroundIcon } from '@shinkai_network/shinkai-ui/assets';
 import { RowSelectionState } from '@tanstack/react-table';
+import { motion } from 'framer-motion';
 import { BotIcon, ChevronRight, PlusIcon } from 'lucide-react';
 import { Fragment, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
@@ -61,12 +62,17 @@ export function SelectedRowsActions({
   });
 
   return (
-    <div className="outline-border z-5 absolute bottom-0 left-1/2 inline-flex -translate-x-1/2 items-center overflow-hidden rounded-xl bg-gray-400 px-2 py-2 shadow-lg outline outline-1 outline-gray-200">
-      <div className="rounded-lg pl-3 pr-4 pt-px text-xs">
+    <motion.div
+      animate={{ y: 0 }}
+      className="outline-border z-5 absolute bottom-2 left-1/2 inline-flex -translate-x-1/2 items-center gap-1 overflow-hidden rounded-xl bg-gray-300 px-1.5 py-1.5 shadow-lg outline outline-1 outline-gray-200"
+      initial={{ y: 100 }}
+      transition={{ duration: 0.2 }}
+    >
+      <div className="rounded-xl pl-3 pr-4 pt-px text-xs">
         {Object.keys(selectedRows).length} selected{' '}
       </div>
       <Button
-        className="!h-[32px] min-w-[80px] rounded-md"
+        className="!h-[32px] min-w-[80px] rounded-xl"
         onClick={async () => {
           await removeRowsSheet({
             nodeAddress: auth?.node_address ?? '',
@@ -82,10 +88,11 @@ export function SelectedRowsActions({
           });
         }}
         size="sm"
+        variant="destructive"
       >
         Delete
       </Button>
-    </div>
+    </motion.div>
   );
 }
 
