@@ -219,6 +219,10 @@ export const OllamaModelsRepository = ({
     getScrollElement: () => tableContainerRef.current,
   });
   useEffect(() => {
+    installedOllamaModels?.models &&
+    installedOllamaModels.models.forEach((modelResponse) => {
+      installedOllamaModelsMap.set(modelResponse.name, modelResponse);
+    });
     FILTERED_OLLAMA_MODELS_REPOSITORY.forEach((model) => {
       const defaultTag: string =
         model.tags?.find((tag) =>
@@ -231,13 +235,8 @@ export const OllamaModelsRepository = ({
         model.tags[0].name;
       selectedTagMap.set(model.name, defaultTag);
     });
-  }, [installedOllamaModelsMap, pullingModelsMap, selectedTagMap]);
-  useEffect(() => {
-    installedOllamaModels?.models &&
-      installedOllamaModels.models.forEach((modelResponse) => {
-        installedOllamaModelsMap.set(modelResponse.name, modelResponse);
-      });
-  }, [installedOllamaModels?.models, installedOllamaModelsMap]);
+  }, [installedOllamaModels?.models, installedOllamaModelsMap, pullingModelsMap, selectedTagMap]);
+
   const getFullName = (model: string, tag: string): string => {
     return `${model}:${tag}`;
   };
