@@ -36,12 +36,11 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Node version
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version-file: '.nvmrc'
           check-latest: false
-          registry-url: https://registry.npmjs.org
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: package-lock.json
 
       - name: Install dependencies
@@ -194,12 +193,11 @@ jobs:
           key: ${{ matrix.arch }}-build-cargo-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Setup Node version
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version-file: '.nvmrc'
           check-latest: false
-          registry-url: https://registry.npmjs.org
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: package-lock.json
 
       - name: Install dependencies
@@ -296,12 +294,11 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Node version
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version-file: '.nvmrc'
           check-latest: false
-          registry-url: https://registry.npmjs.org
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: package-lock.json
 
       - name: Install dependencies
@@ -441,12 +438,11 @@ jobs:
   #       uses: nrwl/nx-set-shas@v3
 
   #     - name: Setup Node version
-  #       uses: actions/setup-node@v3
+  #       uses: actions/setup-node@v4
   #       with:
-  #         node-version: 18
+  #         node-version-file: '.nvmrc'
   #         check-latest: false
-  #         registry-url: https://registry.npmjs.org
-  #         cache: 'npm'
+  #         cache: "npm"
   #         cache-dependency-path: package-lock.json
 
   #     - name: Install dependencies
