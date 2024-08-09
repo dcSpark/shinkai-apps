@@ -38,6 +38,7 @@ export function DataTableCell<TData>({
   const { sheetId } = useParams();
   const { mutateAsync: setCellSheet } = useSetCellSheet();
   const auth = useAuth((state) => state.auth);
+  const [open, setOpen] = React.useState(false);
 
   const [cellValue, setCellValue] = React.useState(value);
 
@@ -63,13 +64,7 @@ export function DataTableCell<TData>({
 
   return (
     <div className={cn('w-full')}>
-      <Popover
-        onOpenChange={async (open) => {
-          if (!open) {
-            await handleUpdateCell();
-          }
-        }}
-      >
+      <Popover onOpenChange={setOpen} open={open}>
         <PopoverTrigger asChild>
           <div
             className="relative -ml-1.5 flex h-12 w-full items-center justify-start gap-1.5 rounded-lg bg-transparent px-2 py-1 pr-0"
@@ -107,11 +102,6 @@ export function DataTableCell<TData>({
         <PopoverContent
           align="start"
           className="flex flex-col bg-gray-300 p-0 text-xs"
-          onKeyDown={(e) => {
-            if (e.key === 'Escape') {
-              e.preventDefault();
-            }
-          }}
           side="bottom"
           sideOffset={-45}
         >
@@ -119,6 +109,12 @@ export function DataTableCell<TData>({
             autoFocus
             className="placeholder-gray-80 border-brand focus-visible:ring-brand !min-h-[80px] resize-none bg-gray-500 pl-2 pt-2 text-xs"
             onChange={(e) => setCellValue(e.target.value)}
+            onKeyDown={async (e) => {
+              if (e.metaKey && e.key === 'Enter') {
+                await handleUpdateCell();
+                setOpen(false);
+              }
+            }}
             placeholder="Enter prompt"
             value={cellValue}
           />

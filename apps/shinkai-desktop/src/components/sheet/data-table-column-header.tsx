@@ -35,7 +35,7 @@ import {
   EyeOff,
   Trash,
 } from 'lucide-react';
-import { Fragment } from 'react';
+import { Fragment, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 
@@ -56,6 +56,7 @@ export function DataTableColumnHeader<TData, TValue>({
 }: DataTableColumnHeaderProps<TData, TValue>) {
   const auth = useAuth((state) => state.auth);
   const { sheetId } = useParams();
+  const [open, setOpen] = useState(false);
 
   const { llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
@@ -128,7 +129,7 @@ export function DataTableColumnHeader<TData, TValue>({
       typeof columnBehavior === 'object' &&
       ColumnType.LLMCall in columnBehavior
     ) {
-      return Object.values(columnBehavior)[0].workflow;
+      return Object.values(columnBehavior)[0].workflow as Workflow;
     }
     return undefined;
   };
@@ -140,7 +141,7 @@ export function DataTableColumnHeader<TData, TValue>({
       columnType: getColumnBehaviorName(columnBehavior),
       promptInput: getPromptInput(columnBehavior),
       agentId: getAgentId(columnBehavior),
-      workflow: getWorkflow(columnBehavior),
+      workflow: getWorkflow(columnBehavior) ?? undefined,
       formula: getFormula(columnBehavior),
     },
   });
@@ -175,7 +176,11 @@ export function DataTableColumnHeader<TData, TValue>({
       (type) => type.id === getColumnBehaviorName(columnBehavior),
     ) ?? fieldTypes[0];
 
-  const { mutateAsync: setColumnSheet } = useSetColumnSheet();
+  const { mutateAsync: setColumnSheet } = useSetColumnSheet({
+    onSuccess: () => {
+      setOpen(false);
+    },
+  });
   const { mutateAsync: removeSheetColumn } = useRemoveColumnSheet();
 
   const generateColumnBehavior = (columnType: ColumnType): ColumnBehavior => {
@@ -236,10 +241,11 @@ export function DataTableColumnHeader<TData, TValue>({
       profile_identity_sk: auth.profile_identity_sk,
     });
   };
+  console.log(setColumnForm.formState);
 
   return (
     <div className={cn('flex w-full items-center')}>
-      <Popover>
+      <Popover onOpenChange={setOpen} open={open}>
         <PopoverTrigger asChild>
           <Button
             className="-ml-1.5 line-clamp-1 flex size-full justify-start gap-1.5 rounded-md bg-transparent px-2 pr-0 hover:bg-gray-300 data-[state=open]:bg-gray-300"
