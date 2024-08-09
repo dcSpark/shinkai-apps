@@ -16,7 +16,7 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { ColumnDef, Row } from '@tanstack/react-table';
 import { AnimatePresence, motion } from 'framer-motion';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { useAuth } from '../../store/auth';
@@ -59,6 +59,12 @@ export function DataTableCell<TData>({
       profile_identity_sk: auth.profile_identity_sk,
     });
   };
+
+  useEffect(() => {
+    if (!open) {
+      setCellValue(value);
+    }
+  }, [open, value]);
 
   const isCellValueChanged = cellValue !== value;
 
