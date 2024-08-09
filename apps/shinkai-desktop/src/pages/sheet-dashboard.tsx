@@ -52,7 +52,7 @@ const SheetDashboard = () => {
       headerRightElement={<CreateSheetModal />}
       title={'Shinkai Sheet'}
     >
-      <div className="grid gap-5 py-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <div className="grid gap-5 py-5 sm:grid-cols-2 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
         {!!data?.length &&
           data?.map((sheet) => (
             <SheetCard
@@ -102,7 +102,7 @@ function SheetCard({
         </div>
         <div className="flex flex-col gap-1">
           <span>{sheetName}</span>
-          <span className="text-gray-80 text-xs"> 2 days ago</span>
+          <span className="text-gray-80 text-xs"> Updated 2 days ago</span>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
