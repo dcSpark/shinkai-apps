@@ -27,7 +27,5 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Audit
-        # must use login shell (-l) to have nvm preinstalled, -e exits shell on nonzero exit codes
-        shell: bash -e -l {0}
         run: |
           npm audit --omit=dev
