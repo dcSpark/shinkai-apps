@@ -21,6 +21,7 @@ import {
   // getPaginationRowModel,
   getSortedRowModel,
   RowSelectionState,
+  SortingState,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
@@ -69,6 +70,8 @@ const SheetProject = () => {
     [],
   );
 
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
 
   const data = useMemo(
@@ -92,6 +95,7 @@ const SheetProject = () => {
       columnVisibility,
       columnFilters,
       rowSelection,
+      sorting,
     },
     columnResizeMode: 'onChange',
     columnResizeDirection: 'ltr',
@@ -103,6 +107,7 @@ const SheetProject = () => {
     // getPaginationRowModel: getPaginationRowModel(), // enable if we have pagination
     onColumnFiltersChange: setColumnFilters,
     onRowSelectionChange: setRowSelection,
+    onSortingChange: setSorting,
     defaultColumn: {
       size: 200,
       minSize: 50,

@@ -91,6 +91,12 @@ export const generateColumns = (
             />
           );
         },
+
+        sortingFn: (a, b) => {
+          const aVal = a.original.fields[columnItem.id]?.value ?? '';
+          const bVal = b.original.fields[columnItem.id]?.value ?? '';
+          return aVal.localeCompare(bVal);
+        },
       } as ColumnDef<FormattedRow>;
     }),
   ];

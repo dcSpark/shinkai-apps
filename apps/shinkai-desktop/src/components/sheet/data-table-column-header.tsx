@@ -34,6 +34,7 @@ import {
   EyeOff,
   Trash,
 } from 'lucide-react';
+import { SortAltIcon } from 'primereact/icons/sortalt';
 import { Fragment, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
@@ -459,6 +460,14 @@ export function DataTableColumnHeader<TData, TValue>({
           className="flex w-[200px] flex-col bg-gray-300 px-1 py-2 text-xs"
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
+          <button
+            className="flex justify-start gap-2 rounded-lg px-3 py-2 text-white transition-colors hover:bg-gray-500"
+            onClick={column.getToggleSortingHandler()}
+          >
+            <SortAltIcon className="h-3.5 w-3.5" />
+            <span className="">Sort Column</span>
+          </button>
+          <Separator className="my-1 bg-gray-200" orientation="horizontal" />
           <button
             className="flex justify-start gap-2 rounded-lg px-3 py-2 text-white transition-colors hover:bg-gray-500"
             onClick={() => {

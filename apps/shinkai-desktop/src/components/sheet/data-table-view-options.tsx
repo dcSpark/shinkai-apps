@@ -33,7 +33,7 @@ export function DataTableViewOptions<TData>({
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
-        className="w-[160px] bg-gray-300 p-0 px-2 py-2.5 text-gray-50"
+        className="w-[160px] bg-gray-300 p-4 text-gray-50"
       >
         <DropdownMenuLabel className="text-gray-80 mb-2 px-2 text-xs">
           Visible
