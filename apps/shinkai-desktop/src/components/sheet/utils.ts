@@ -57,3 +57,18 @@ export const getWorkflow = (
   }
   return undefined;
 };
+
+export const getRowHeight = (rowType: string) => {
+  switch (rowType) {
+    case 'small':
+      return 32;
+    case 'medium':
+      return 40;
+    case 'large':
+      return 90;
+    case 'extra-large':
+      return 160;
+    default:
+      return 40;
+  }
+};

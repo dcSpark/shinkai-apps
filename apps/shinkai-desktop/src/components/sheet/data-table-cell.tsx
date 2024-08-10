@@ -39,7 +39,7 @@ import { useParams } from 'react-router-dom';
 import { treeOptions } from '../../lib/constants';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
-import { getColumnBehaviorName } from './utils';
+import { getColumnBehaviorName, getRowHeight } from './utils';
 
 interface DataTableCellProps<TData> {
   row: Row<TData>;
@@ -96,7 +96,7 @@ export function DataTableCell<TData>({
   const columnType = getColumnBehaviorName(columnBehavior);
   const isMultipleVRFiles = columnType === ColumnType.MultipleVRFiles;
   return (
-    <div className={cn('w-full', isMultipleVRFiles && 'pt-1')}>
+    <div className={cn('size-full w-full', isMultipleVRFiles && 'pt-1')}>
       {isMultipleVRFiles ? (
         <button
           className={cn(
@@ -171,7 +171,7 @@ export function DataTableCell<TData>({
             align="start"
             className="flex flex-col bg-gray-300 p-0 text-xs"
             side="bottom"
-            sideOffset={-45}
+            sideOffset={-getRowHeight(heightRow) + 10}
           >
             <Textarea
               autoFocus

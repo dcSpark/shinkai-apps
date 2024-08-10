@@ -37,6 +37,7 @@ import {
 } from '../components/sheet/data-table-actions';
 import { DataTableToolbar } from '../components/sheet/data-table-toolbar';
 import { generateRowsData } from '../components/sheet/sheet-data';
+import { getRowHeight } from '../components/sheet/utils';
 // import { DataTablePagination } from '../components/sheet/data-table-pagination';
 // import { DataTableToolbar } from '../components/sheet/data-table-toolbar';
 import { useAuth } from '../store/auth';
@@ -44,20 +45,6 @@ import { useSettings } from '../store/settings';
 
 const MotionTableCell = motion(TableCell);
 
-const getRowHeight = (rowType: string) => {
-  switch (rowType) {
-    case 'small':
-      return 32;
-    case 'medium':
-      return 40;
-    case 'large':
-      return 90;
-    case 'extra-large':
-      return 160;
-    default:
-      return 40;
-  }
-};
 const SheetProject = () => {
   const auth = useAuth((state) => state.auth);
   const heightRow = useSettings((state) => state.heightRow);
@@ -226,17 +213,16 @@ const SheetProject = () => {
                           >
                             {row.getVisibleCells().map((cell) => (
                               <MotionTableCell
-                                animate={{
-                                  height: getRowHeight(heightRow),
-                                }}
+                                animate={{ height: getRowHeight(heightRow) }}
                                 className={cn(
                                   'flex select-none items-start overflow-hidden border-b border-l bg-gray-500 px-2 py-0 pr-0 pt-[1px] text-xs group-hover:bg-gray-300',
                                   '[&:has([role=checkbox])]:justify-center [&:has([role=checkbox])]:px-2.5',
                                 )}
+                                initial={{ height: getRowHeight(heightRow) }}
                                 key={cell.id}
                                 style={{ width: cell.column.getSize() }}
                               >
-                                <div className="h-full w-full text-xs">
+                                <div className="size-full text-xs">
                                   {flexRender(
                                     cell.column.columnDef.cell,
                                     cell.getContext(),
