@@ -44,6 +44,20 @@ import { useSettings } from '../store/settings';
 
 const MotionTableCell = motion(TableCell);
 
+const getRowHeight = (rowType: string) => {
+  switch (rowType) {
+    case 'small':
+      return 32;
+    case 'medium':
+      return 40;
+    case 'large':
+      return 90;
+    case 'extra-large':
+      return 160;
+    default:
+      return 40;
+  }
+};
 const SheetProject = () => {
   const auth = useAuth((state) => state.auth);
   const heightRow = useSettings((state) => state.heightRow);
@@ -212,6 +226,9 @@ const SheetProject = () => {
                           >
                             {row.getVisibleCells().map((cell) => (
                               <MotionTableCell
+                                animate={{
+                                  height: getRowHeight(heightRow),
+                                }}
                                 className={cn(
                                   'flex select-none items-start overflow-hidden border-b border-l bg-gray-500 px-2 py-0 pr-0 pt-[1px] text-xs group-hover:bg-gray-300',
                                   '[&:has([role=checkbox])]:justify-center [&:has([role=checkbox])]:px-2.5',
@@ -221,7 +238,6 @@ const SheetProject = () => {
                                   heightRow === 'extra-large' && 'h-32',
                                 )}
                                 key={cell.id}
-                                layout
                                 style={{ width: cell.column.getSize() }}
                               >
                                 <div className="h-full w-full text-xs">

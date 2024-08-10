@@ -137,8 +137,8 @@ export function DataTableCell<TData>({
                   status === ColumnStatus.Pending && 'text-gray-80',
                   heightRow === 'small' && 'line-clamp-1',
                   heightRow === 'medium' && 'line-clamp-2',
-                  heightRow === 'large' && 'line-clamp-4',
-                  heightRow === 'extra-large' && 'line-clamp-6',
+                  heightRow === 'large' && 'line-clamp-5',
+                  heightRow === 'extra-large' && 'line-clamp-[9]',
                 )}
               >
                 {status === ColumnStatus.Pending ? 'Generating ...' : value}
