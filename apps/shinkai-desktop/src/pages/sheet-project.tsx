@@ -232,10 +232,6 @@ const SheetProject = () => {
                                 className={cn(
                                   'flex select-none items-start overflow-hidden border-b border-l bg-gray-500 px-2 py-0 pr-0 pt-[1px] text-xs group-hover:bg-gray-300',
                                   '[&:has([role=checkbox])]:justify-center [&:has([role=checkbox])]:px-2.5',
-                                  heightRow === 'small' && 'h-9',
-                                  heightRow === 'medium' && 'h-12',
-                                  heightRow === 'large' && 'h-[76px]',
-                                  heightRow === 'extra-large' && 'h-32',
                                 )}
                                 key={cell.id}
                                 style={{ width: cell.column.getSize() }}

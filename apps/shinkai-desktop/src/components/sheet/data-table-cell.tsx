@@ -100,7 +100,7 @@ export function DataTableCell<TData>({
       {isMultipleVRFiles ? (
         <button
           className={cn(
-            'group flex items-center justify-center rounded-xl bg-gray-50/10 px-2 py-1 transition-colors hover:bg-gray-200',
+            'group flex items-center justify-center rounded-xl bg-gray-50/10 px-2 py-[3px] transition-colors hover:bg-gray-200',
             value && 'border border-gray-300 bg-transparent',
           )}
           onClick={() => {
