@@ -22,7 +22,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { SheetIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { MoreVertical, PlusIcon, Trash2Icon } from 'lucide-react';
+import { MoreHorizontal, PlusIcon, Trash2Icon } from 'lucide-react';
 import { Fragment, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
@@ -92,26 +92,26 @@ function SheetCard({
             variant: 'outline',
             size: 'auto',
           }),
-          'relative flex flex-1 cursor-pointer flex-col items-start gap-6 overflow-hidden rounded-lg bg-gray-500 p-4 text-left transition-shadow duration-200 hover:bg-gray-500 hover:shadow-xl',
+          'group relative flex flex-1 cursor-pointer flex-col items-start gap-4 rounded-lg bg-gray-500 p-4 py-5 text-left transition-shadow duration-200 hover:bg-gray-500 hover:shadow-xl',
         )}
         key={sheetId}
         to={`/sheets/${sheetId}`}
       >
-        <div className="flex aspect-square w-full items-center justify-center bg-gray-50/20">
+        <div className="flex aspect-square w-full items-center justify-center rounded-sm bg-gray-600/30">
           <SheetIcon className="h-8 w-8 text-gray-50" />
         </div>
         <div className="flex flex-col gap-1">
-          <span>{sheetName}</span>
+          <span className="line-clamp-1">{sheetName}</span>
           <span className="text-gray-80 text-xs"> Updated 2 days ago</span>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
-              className="absolute right-2 top-2 h-8 w-8 rounded-md bg-gray-300 hover:bg-gray-400"
+              className="invisible absolute right-2 top-2 flex h-8 w-8 rounded-md bg-transparent hover:bg-gray-300 group-hover:visible data-[state=open]:visible data-[state=open]:bg-gray-300"
               size="icon"
               variant="ghost"
             >
-              <MoreVertical className="h-4 w-4" />
+              <MoreHorizontal className="h-4 w-4" />
               <span className="sr-only">More</span>
             </Button>
           </DropdownMenuTrigger>

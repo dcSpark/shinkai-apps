@@ -210,12 +210,12 @@ const SheetProject = () => {
                                 style={{ width: cell.column.getSize() }}
                               >
                                 <div className="w-full text-xs">
-                                  <div className="line-clamp-1">
-                                    {flexRender(
-                                      cell.column.columnDef.cell,
-                                      cell.getContext(),
-                                    )}
-                                  </div>
+                                  {/*<div className="line-clamp-1 [&:has([role=checkbox])]:line-clamp-none">*/}
+                                  {flexRender(
+                                    cell.column.columnDef.cell,
+                                    cell.getContext(),
+                                  )}
+                                  {/*</div>*/}
                                 </div>
                               </TableCell>
                             ))}

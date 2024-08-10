@@ -83,6 +83,7 @@ export const generateColumns = (
           return (
             <DataTableCell
               column={column}
+              columnBehavior={columnItem.behavior}
               row={row}
               status={row.original.fields[column.id]?.status}
               title={columnItem.name}

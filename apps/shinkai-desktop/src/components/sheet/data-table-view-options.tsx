@@ -19,7 +19,6 @@ export function DataTableViewOptions<TData>({
   table,
   columns,
 }: DataTableViewOptionsProps<TData>) {
-  console.log(columns, 'columns');
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

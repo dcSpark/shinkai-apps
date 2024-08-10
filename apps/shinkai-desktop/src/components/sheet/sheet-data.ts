@@ -3,15 +3,6 @@ import {
   Rows,
 } from '@shinkai_network/shinkai-node-state/lib/queries/getSheet/types';
 
-export type Book = {
-  title: string;
-  author: string;
-  yearReleased: number;
-  pages: number;
-  genre: string;
-  summary: string;
-};
-
 export const generateRowsData = (rows: Rows, display_rows: string[]) => {
   return display_rows.map((rowId) => {
     const columns = rows[rowId];
@@ -32,7 +23,7 @@ export const generateRowsData = (rows: Rows, display_rows: string[]) => {
   });
 };
 
-export const topProductivityBooks: Book[] = [
+export const topProductivityBooks = [
   {
     title: 'Getting Things Done: The Art of Stress-Free Productivity',
     author: 'David Allen',

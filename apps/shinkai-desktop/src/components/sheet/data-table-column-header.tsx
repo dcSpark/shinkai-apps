@@ -4,7 +4,6 @@ import { PopoverClose } from '@radix-ui/react-popover';
 import {
   ColumnBehavior,
   ColumnType,
-  Workflow,
 } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
 import { useRemoveColumnSheet } from '@shinkai_network/shinkai-node-state/lib/mutations/removeColumnSheet/useRemoveColumnSheet';
 import { useSetColumnSheet } from '@shinkai_network/shinkai-node-state/lib/mutations/setColumnSheet/useSetColumnSheet';
@@ -42,6 +41,13 @@ import { useParams } from 'react-router-dom';
 import { useAuth } from '../../store/auth';
 import { fieldTypes } from './constants';
 import { SetColumnFormSchema, setColumnFormSchema } from './forms';
+import {
+  getAgentId,
+  getColumnBehaviorName,
+  getFormula,
+  getPromptInput,
+  getWorkflow,
+} from './utils';
 
 interface DataTableColumnHeaderProps<TData, TValue> {
   column: Column<TData, TValue>;
@@ -79,60 +85,6 @@ export function DataTableColumnHeader<TData, TValue>({
     profile_encryption_sk: auth?.profile_encryption_sk ?? '',
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
-
-  const getFormula = (columnBehavior?: ColumnBehavior): string => {
-    if (
-      typeof columnBehavior === 'object' &&
-      ColumnType.Formula in columnBehavior
-    ) {
-      return Object.values(columnBehavior)[0] as string;
-    }
-    return '';
-  };
-
-  const getColumnBehaviorName = (
-    columnBehavior?: ColumnBehavior,
-  ): ColumnType => {
-    if (typeof columnBehavior === 'string') {
-      return columnBehavior;
-    }
-    if (typeof columnBehavior === 'object') {
-      return Object.keys(columnBehavior)[0] as ColumnType;
-    }
-    return ColumnType.Text;
-  };
-
-  const getPromptInput = (columnBehavior?: ColumnBehavior): string => {
-    if (
-      typeof columnBehavior === 'object' &&
-      ColumnType.LLMCall in columnBehavior
-    ) {
-      return Object.values(columnBehavior)[0].input as string;
-    }
-    return '';
-  };
-
-  const getAgentId = (columnBehavior?: ColumnBehavior): string => {
-    if (
-      typeof columnBehavior === 'object' &&
-      ColumnType.LLMCall in columnBehavior
-    ) {
-      return Object.values(columnBehavior)[0].llm_provider_name as string;
-    }
-    return '';
-  };
-
-  const getWorkflow = (
-    columnBehavior?: ColumnBehavior,
-  ): Workflow | undefined => {
-    if (
-      typeof columnBehavior === 'object' &&
-      ColumnType.LLMCall in columnBehavior
-    ) {
-      return Object.values(columnBehavior)[0].workflow as Workflow;
-    }
-    return undefined;
-  };
 
   const setColumnForm = useForm<SetColumnFormSchema>({
     resolver: zodResolver(setColumnFormSchema),
