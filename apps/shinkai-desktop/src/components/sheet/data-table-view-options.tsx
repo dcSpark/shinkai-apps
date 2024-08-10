@@ -9,6 +9,9 @@ import {
   DropdownMenuLabel,
 } from '@shinkai_network/shinkai-ui';
 import { Table } from '@tanstack/react-table';
+import { FoldVertical } from 'lucide-react';
+
+import { useSettings } from '../../store/settings';
 
 interface DataTableViewOptionsProps<TData> {
   table: Table<TData>;
@@ -22,11 +25,7 @@ export function DataTableViewOptions<TData>({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          className="ml-auto hidden h-8 lg:flex"
-          size="sm"
-          variant="outline"
-        >
+        <Button className="flex h-8 rounded-md" size="sm" variant="outline">
           <MixerHorizontalIcon className="mr-2 h-4 w-4" />
           View
         </Button>
@@ -56,6 +55,52 @@ export function DataTableViewOptions<TData>({
               </DropdownMenuCheckboxItem>
             );
           })}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+export function DataTableHeightOptions<TData>(
+  // eslint-disable-next-line no-empty-pattern
+  {
+    // table,
+    // columns,
+  }: DataTableViewOptionsProps<TData>,
+) {
+  const setHeightRow = useSettings((state) => state.setHeightRow);
+  const heightRow = useSettings((state) => state.heightRow);
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button className="flex h-8 rounded-md" size="icon" variant="outline">
+          <FoldVertical className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="end"
+        className="w-[160px] bg-gray-300 p-4 text-gray-50"
+      >
+        <DropdownMenuLabel className="text-gray-80 mb-2 px-2 text-xs">
+          Row Height
+        </DropdownMenuLabel>
+        {(
+          ['small', 'medium', 'large', 'extra-large'] as (
+            | 'small'
+            | 'medium'
+            | 'large'
+            | 'extra-large'
+          )[]
+        ).map((height) => {
+          return (
+            <DropdownMenuCheckboxItem
+              checked={heightRow === height}
+              className="text-xs capitalize"
+              key={height}
+              onCheckedChange={() => setHeightRow(height)}
+            >
+              {height}
+            </DropdownMenuCheckboxItem>
+          );
+        })}
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -38,6 +38,7 @@ import { useParams } from 'react-router-dom';
 
 import { treeOptions } from '../../lib/constants';
 import { useAuth } from '../../store/auth';
+import { useSettings } from '../../store/settings';
 import { getColumnBehaviorName } from './utils';
 
 interface DataTableCellProps<TData> {
@@ -59,6 +60,8 @@ export function DataTableCell<TData>({
   const { sheetId } = useParams();
   const { mutateAsync: setCellSheet } = useSetCellSheet();
   const auth = useAuth((state) => state.auth);
+  const heightRow = useSettings((state) => state.heightRow);
+
   const [open, setOpen] = React.useState(false);
 
   const [cellValue, setCellValue] = React.useState(value);
@@ -93,11 +96,11 @@ export function DataTableCell<TData>({
   const columnType = getColumnBehaviorName(columnBehavior);
   const isMultipleVRFiles = columnType === ColumnType.MultipleVRFiles;
   return (
-    <div className={cn('w-full', isMultipleVRFiles && 'pt-3')}>
+    <div className={cn('w-full', isMultipleVRFiles && 'pt-1')}>
       {isMultipleVRFiles ? (
         <button
           className={cn(
-            'flex items-center justify-center rounded-xl bg-gray-50/10 px-2 py-1 transition-colors hover:bg-gray-200',
+            'group flex items-center justify-center rounded-xl bg-gray-50/10 px-2 py-1 transition-colors hover:bg-gray-200',
             value && 'border border-gray-300 bg-transparent',
           )}
           onClick={() => {
@@ -107,12 +110,12 @@ export function DataTableCell<TData>({
           {value ? (
             <span className="flex items-center justify-start gap-1">
               <FileInput className="text-gray-80 h-3.5 w-3.5" />
-              <span className="line-clamp-1 flex-1 text-left">
+              <span className={cn('flex-1 text-left')}>
                 {value.split('/')?.at(-1)}
               </span>
             </span>
           ) : (
-            <span className="flex items-center gap-2">
+            <span className="text-gray-80 flex items-center gap-2 text-xs transition-colors group-hover:text-white">
               <PlusIcon size={16} />
               Add Local AI Files
             </span>
@@ -122,14 +125,20 @@ export function DataTableCell<TData>({
         <Popover onOpenChange={setOpen} open={open}>
           <PopoverTrigger asChild>
             <div
-              className="relative -ml-1.5 flex h-12 w-full items-center justify-start gap-1.5 rounded-lg bg-transparent px-2 py-1 pr-0"
+              className={cn(
+                'relative -ml-1.5 flex size-full items-center justify-start gap-1.5 rounded-lg bg-transparent px-2 py-1 pr-0',
+              )}
               role="button"
               tabIndex={0}
             >
               <span
                 className={cn(
-                  'line-clamp-2 flex-1 text-left text-gray-50',
+                  'flex-1 text-left text-gray-50',
                   status === ColumnStatus.Pending && 'text-gray-80',
+                  heightRow === 'small' && 'line-clamp-1',
+                  heightRow === 'medium' && 'line-clamp-2',
+                  heightRow === 'large' && 'line-clamp-4',
+                  heightRow === 'extra-large' && 'line-clamp-6',
                 )}
               >
                 {status === ColumnStatus.Pending ? 'Generating ...' : value}
@@ -138,7 +147,7 @@ export function DataTableCell<TData>({
                 <TooltipProvider delayDuration={0}>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Badge className="absolute right-0 flex items-center justify-center p-0">
+                      <Badge className="absolute right-[2px] top-3 flex items-center justify-center p-0">
                         <span
                           className={cn(
                             'shadow-[0px_0px_1px_1px_#0000001a]',

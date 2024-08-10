@@ -42,7 +42,7 @@ export const generateColumns = (
         </div>
       ),
       cell: ({ row }) => (
-        <div className="group flex h-12 items-center gap-2">
+        <div className="group flex items-center gap-2">
           <div className="flex h-full w-8 items-center justify-center py-2">
             <Checkbox
               aria-label="Select row"

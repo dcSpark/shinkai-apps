@@ -6,7 +6,10 @@ import { Columns } from '@shinkai_network/shinkai-node-state/lib/queries/getShee
 import { Table } from '@tanstack/react-table';
 
 // import { SortAltIcon } from 'primereact/icons/sortalt';
-import { DataTableViewOptions } from './data-table-view-options';
+import {
+  DataTableHeightOptions,
+  DataTableViewOptions,
+} from './data-table-view-options';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -21,7 +24,7 @@ export function DataTableToolbar<TData>({
   // const sortingState = table.getState().sorting;
 
   return (
-    <div className="mr-auto flex w-full items-center justify-end">
+    <div className="flex w-full items-center justify-end gap-3">
       {/*<div className="flex flex-1 items-center space-x-2">*/}
       {/*<div className="relative flex h-10 w-full max-w-[300px] flex-1 items-center">*/}
       {/*  <Input*/}
@@ -48,6 +51,7 @@ export function DataTableToolbar<TData>({
       {/*  </Button>*/}
       {/*)}*/}
       {/*</div>*/}
+      <DataTableHeightOptions columns={columns} table={table} />
       <DataTableViewOptions columns={columns} table={table} />
     </div>
   );

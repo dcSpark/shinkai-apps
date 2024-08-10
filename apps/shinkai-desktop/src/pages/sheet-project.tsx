@@ -25,7 +25,7 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import React, { useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
@@ -40,9 +40,14 @@ import { generateRowsData } from '../components/sheet/sheet-data';
 // import { DataTablePagination } from '../components/sheet/data-table-pagination';
 // import { DataTableToolbar } from '../components/sheet/data-table-toolbar';
 import { useAuth } from '../store/auth';
+import { useSettings } from '../store/settings';
+
+const MotionTableCell = motion(TableCell);
 
 const SheetProject = () => {
   const auth = useAuth((state) => state.auth);
+  const heightRow = useSettings((state) => state.heightRow);
+
   const { sheetId } = useParams();
   const { data: sheetInfo } = useGetSheet(
     {
@@ -159,7 +164,7 @@ const SheetProject = () => {
                         return (
                           <TableHead
                             className={cn(
-                              'group relative flex size-full h-8 select-none border-l border-t bg-gray-500 p-1 pl-2.5 pr-1.5 text-left align-middle font-medium',
+                              'group relative flex size-full h-8 select-none border-l border-t bg-gray-500 p-1 pl-2.5 pr-1.5 text-left font-medium',
                               '[&:has([role=checkbox])]:px-[12px] [&:has([role=checkbox])]:pt-2',
                             )}
                             key={header.id}
@@ -206,23 +211,26 @@ const SheetProject = () => {
                             key={row.id}
                           >
                             {row.getVisibleCells().map((cell) => (
-                              <TableCell
+                              <MotionTableCell
                                 className={cn(
-                                  'flex select-none items-start border-b border-l bg-gray-500 px-2 py-0 text-xs group-hover:bg-gray-300',
+                                  'flex select-none items-start overflow-hidden border-b border-l bg-gray-500 px-2 py-0 pr-0 pt-[1px] text-xs group-hover:bg-gray-300',
                                   '[&:has([role=checkbox])]:justify-center [&:has([role=checkbox])]:px-2.5',
+                                  heightRow === 'small' && 'h-9',
+                                  heightRow === 'medium' && 'h-12',
+                                  heightRow === 'large' && 'h-[76px]',
+                                  heightRow === 'extra-large' && 'h-32',
                                 )}
                                 key={cell.id}
+                                layout
                                 style={{ width: cell.column.getSize() }}
                               >
-                                <div className="w-full text-xs">
-                                  {/*<div className="line-clamp-1 [&:has([role=checkbox])]:line-clamp-none">*/}
+                                <div className="h-full w-full text-xs">
                                   {flexRender(
                                     cell.column.columnDef.cell,
                                     cell.getContext(),
                                   )}
-                                  {/*</div>*/}
                                 </div>
-                              </TableCell>
+                              </MotionTableCell>
                             ))}
                           </TableRow>
                         ))
