@@ -215,8 +215,8 @@ const SheetProject = () => {
                               <MotionTableCell
                                 animate={{ height: getRowHeight(heightRow) }}
                                 className={cn(
-                                  'flex select-none items-start overflow-hidden border-b border-l bg-gray-500 px-2 py-0 pr-0 pt-[1px] text-xs group-hover:bg-gray-300',
-                                  '[&:has([role=checkbox])]:justify-center [&:has([role=checkbox])]:px-2.5',
+                                  'flex size-full select-none items-start overflow-hidden border-b border-l bg-gray-500 px-2 py-0 pt-[1px] text-xs group-hover:bg-gray-300',
+                                  '[&:has([role=checkbox])]:justify-center [&:has([role=checkbox])]:px-3',
                                 )}
                                 initial={{ height: getRowHeight(heightRow) }}
                                 key={cell.id}

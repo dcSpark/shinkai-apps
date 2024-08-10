@@ -96,7 +96,7 @@ export function DataTableCell<TData>({
   const columnType = getColumnBehaviorName(columnBehavior);
   const isMultipleVRFiles = columnType === ColumnType.MultipleVRFiles;
   return (
-    <div className={cn('size-full w-full', isMultipleVRFiles && 'pt-1')}>
+    <div className={cn('flex size-full items-center')}>
       {isMultipleVRFiles ? (
         <button
           className={cn(
@@ -171,7 +171,7 @@ export function DataTableCell<TData>({
             align="start"
             className="flex flex-col bg-gray-300 p-0 text-xs"
             side="bottom"
-            sideOffset={-getRowHeight(heightRow) + 10}
+            sideOffset={-getRowHeight(heightRow) + 5}
           >
             <Textarea
               autoFocus
