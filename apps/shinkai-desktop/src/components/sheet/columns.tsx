@@ -20,7 +20,10 @@ export const generateColumns = (
     (item, index) => display_columns.indexOf(item) === index,
   );
   const formattedColumns = uniqueDisplayColumns
-    .map((id) => columns[id])
+    .map((id) => ({
+      ...columns[id],
+      columnLetter: String.fromCharCode(65 + uniqueDisplayColumns.indexOf(id)),
+    }))
     .filter(Boolean);
 
   return [
@@ -76,6 +79,7 @@ export const generateColumns = (
           <DataTableColumnHeader
             column={info.column}
             columnBehavior={columnItem.behavior}
+            columnLetter={columnItem.columnLetter}
             title={columnItem.name}
           />
         ),

@@ -54,11 +54,13 @@ interface DataTableColumnHeaderProps<TData, TValue> {
   column: Column<TData, TValue>;
   title: string;
   columnBehavior?: ColumnBehavior;
+  columnLetter: string;
 }
 
 export function DataTableColumnHeader<TData, TValue>({
   column,
   title,
+  columnLetter,
   columnBehavior,
 }: DataTableColumnHeaderProps<TData, TValue>) {
   const auth = useAuth((state) => state.auth);
@@ -213,7 +215,8 @@ export function DataTableColumnHeader<TData, TValue>({
             type="button"
             variant="ghost"
           >
-            <currentType.icon className="h-3.5 w-3.5 shrink-0" />
+            <currentType.icon className="h-3.5 w-3.5 shrink-0" /> (
+            {columnLetter})
             <span className="line-clamp-1 flex-1 text-left">{title}</span>
           </Button>
         </PopoverTrigger>

@@ -160,7 +160,7 @@ export function AddColumnAction() {
   const setColumnForm = useForm<SetColumnFormSchema>({
     resolver: zodResolver(setColumnFormSchema),
     defaultValues: {
-      columnName: '',
+      columnName: 'New Column',
       columnType: ColumnType.Text,
       promptInput: '',
       agentId: llmProviders[0]?.id,
