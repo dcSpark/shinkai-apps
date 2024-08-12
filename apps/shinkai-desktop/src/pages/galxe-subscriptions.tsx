@@ -92,14 +92,11 @@ export const GalxeSusbcriptions = () => {
       return matchingFolder
         ? {
             ...subscription,
-            date_created: matchingFolder.created_datetime,
             folderPath: matchingFolder.path,
           }
         : null;
     })
     .filter((item) => !!item);
-
-  console.log(filteredSubscriptions, 'filteredSubscriptions');
 
   const isUserSubscribedToKnowledge =
     (subscriptionFolder?.child_folders ?? [])?.length > 0;
