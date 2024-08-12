@@ -85,17 +85,21 @@ export const GalxeSusbcriptions = () => {
     ?.map((subscription) => {
       const matchingFolder = subscriptionFolder?.child_folders?.find(
         (folder) =>
-          new Date(folder.created_datetime).getTime() ===
-          new Date(subscription.date_created).getTime(),
+          folder.path.split('/')?.[2] ===
+          subscription.shared_folder.replace(/^\/+/, ''),
       );
+
       return matchingFolder
         ? {
             ...subscription,
+            date_created: matchingFolder.created_datetime,
             folderPath: matchingFolder.path,
           }
         : null;
     })
     .filter((item) => !!item);
+
+  console.log(filteredSubscriptions, 'filteredSubscriptions');
 
   const isUserSubscribedToKnowledge =
     (subscriptionFolder?.child_folders ?? [])?.length > 0;
