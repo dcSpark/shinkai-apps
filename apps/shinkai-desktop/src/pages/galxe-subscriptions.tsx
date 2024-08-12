@@ -97,8 +97,6 @@ export const GalxeSusbcriptions = () => {
     })
     .filter((item) => !!item);
 
-  console.log(filteredSubscriptions, 'filteredSubscriptions');
-
   const isUserSubscribedToKnowledge =
     (subscriptionFolder?.child_folders ?? [])?.length > 0;
 
