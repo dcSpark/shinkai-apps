@@ -3,6 +3,7 @@ import { CheckCircledIcon, CircleIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { SmartInbox } from '@shinkai_network/shinkai-message-ts/models/ShinkaiMessage';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
+import { useGetMySubscriptions } from '@shinkai_network/shinkai-node-state/lib/queries/getMySubscriptions/useGetMySubscriptions';
 import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
 import {
   Button,
@@ -69,6 +70,34 @@ export const GalxeSusbcriptions = () => {
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
 
+  const { data: subscriptions } = useGetMySubscriptions({
+    nodeAddress: auth?.node_address ?? '',
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    profile: auth?.profile ?? '',
+    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+  });
+
+  const filteredSubscriptions = subscriptions
+    ?.map((subscription) => {
+      const matchingFolder = subscriptionFolder?.child_folders?.find(
+        (folder) =>
+          folder.path.split('/')?.[2] ===
+          subscription.shared_folder.replace(/^\/+/, ''),
+      );
+
+      return matchingFolder
+        ? {
+            ...subscription,
+            folderPath: matchingFolder.path,
+          }
+        : null;
+    })
+    .filter((item) => !!item);
+
   const isUserSubscribedToKnowledge =
     (subscriptionFolder?.child_folders ?? [])?.length > 0;
 
@@ -88,11 +117,11 @@ export const GalxeSusbcriptions = () => {
   const { data: subscriptionsProof } = useGalxeGenerateProofQuery(
     auth?.node_signature_pk || '',
     JSON.stringify({
-      subscriptions: subscriptionFolder?.child_folders?.map((folder) => {
+      subscriptions: filteredSubscriptions?.map((folder) => {
         return {
           identity: auth?.shinkai_identity,
-          createdAt: folder.created_datetime,
-          folder: folder.path,
+          createdAt: folder.date_created,
+          folder: folder.folderPath,
           inboxes: inboxesWithSubscriptions.map((inbox) => ({
             createdAt: inbox.datetime_created,
           })),
