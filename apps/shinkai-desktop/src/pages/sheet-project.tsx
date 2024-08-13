@@ -12,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from '@shinkai_network/shinkai-ui';
+import { SheetIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
   ColumnFiltersState,
@@ -124,29 +125,34 @@ const SheetProject = () => {
 
   return (
     <div className="mx-auto h-screen max-w-6xl px-3 py-10 pb-4">
-      <div className="mb-4">
-        <Breadcrumb>
-          <BreadcrumbList className="text-xs">
-            <BreadcrumbItem>
-              <BreadcrumbLink
-                asChild
-                className="rounded-md px-2.5 py-1.5 hover:bg-gray-300"
-              >
-                <Link to="/sheets">Shinkai Dashboard</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink className="text-white">
-                {sheetInfo?.sheet_name}
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+      <div className="mb-4 flex items-center justify-between">
+        <div className="flex items-center justify-between">
+          <Breadcrumb>
+            <BreadcrumbList className="text-xs">
+              <BreadcrumbItem>
+                <BreadcrumbLink
+                  asChild
+                  className="rounded-md px-2.5 py-1.5 hover:bg-gray-300"
+                >
+                  <Link className="inline-flex gap-1" to="/sheets">
+                    <SheetIcon className="h-4 w-4" />
+                    Shinkai Dashboard
+                  </Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink className="text-white">
+                  {sheetInfo?.sheet_name}
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
+        <DataTableToolbar columns={sheetInfo?.columns ?? {}} table={table} />
       </div>
       <div className="relative h-[calc(100dvh-120px)] overflow-hidden shadow-sm">
         <div className="flex size-full max-w-[calc(100vw-100px)] flex-col space-y-4 overflow-hidden">
-          <DataTableToolbar columns={sheetInfo?.columns ?? {}} table={table} />
           <div className="scrollbar-thin relative flex size-full h-full flex-col overflow-auto">
             <div className="relative size-full">
               <Table

@@ -20,7 +20,7 @@ import {
   FormField,
   TextField,
 } from '@shinkai_network/shinkai-ui';
-import { SheetIcon } from '@shinkai_network/shinkai-ui/assets';
+import { SheetFileIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { MoreHorizontal, PlusIcon, Trash2Icon } from 'lucide-react';
 import { Fragment, useState } from 'react';
@@ -98,7 +98,7 @@ function SheetCard({
         to={`/sheets/${sheetId}`}
       >
         <div className="flex aspect-square w-full items-center justify-center rounded-sm bg-gray-600/30">
-          <SheetIcon className="h-8 w-8 text-gray-50" />
+          <SheetFileIcon className="h-8 w-8 text-gray-50" />
         </div>
         <div className="flex flex-col gap-1">
           <span className="line-clamp-1">{sheetName}</span>

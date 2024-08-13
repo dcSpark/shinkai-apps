@@ -882,7 +882,7 @@ export const SortingZToA = ({ className }: { className?: string }) => {
     </svg>
   );
 };
-export const SheetIcon = ({ className }: { className?: string }) => (
+export const SheetFileIcon = ({ className }: { className?: string }) => (
   <svg
     className={cn('shrink-0', className)}
     fill="none"
@@ -943,6 +943,39 @@ export const FormulaIcon = ({ className }: { className?: string }) => (
     <path
       d="M18.7051 18.0052H17.9757C17.1222 17.8236 17.0632 17.1307 16.7853 16.6332C16.694 16.4203 16.5994 16.2039 16.5074 15.9966M16.5074 15.9966C16.2261 15.3622 15.9699 14.8119 15.9104 14.6998C15.6495 14.2089 15.5505 13.998 14.2815 13.998M16.5074 15.9966C16.6826 15.7631 16.8571 15.5296 17.0333 15.3087C17.6423 14.5845 18.2494 13.998 19.0146 13.998M16.5074 15.9966C15.7533 17.0013 14.9847 18.0052 13.998 18.0052"
       stroke="currentColor"
+      strokeWidth="1.5"
+    />
+  </svg>
+);
+
+export const SheetIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={cn('shrink-0', className)}
+    color="currentColor"
+    fill="none"
+    height="24"
+    viewBox="0 0 24 24"
+    width="24"
+  >
+    <path
+      d="M11.0343 2.24513L3.68134 6.11508C2.96901 6.49 2.96901 7.51 3.68134 7.88492L11.0343 11.7549C11.3258 11.9083 11.6742 11.9083 11.9657 11.7549L19.3187 7.88492C20.031 7.51 20.031 6.49 19.3187 6.11508L11.9657 2.24513C11.6742 2.09169 11.3258 2.09169 11.0343 2.24513Z"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M3 11L2.95978 11.0402C2.48334 11.5167 2.60489 12.3184 3.20116 12.6322L11.0343 16.7549C11.3258 16.9084 11.6742 16.9084 11.9657 16.7549L19.7988 12.6322C20.3951 12.3184 20.5167 11.5167 20.0402 11.0402L20 11"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M3 16L2.95978 16.0402C2.48334 16.5167 2.60489 17.3184 3.20116 17.6322L11.0343 21.7549C11.3258 21.9084 11.6742 21.9084 11.9657 21.7549L19.7988 17.6322C20.3951 17.3184 20.5167 16.5167 20.0402 16.0402L20 16"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       strokeWidth="1.5"
     />
   </svg>
