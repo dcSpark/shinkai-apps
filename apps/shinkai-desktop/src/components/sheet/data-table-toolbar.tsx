@@ -24,7 +24,7 @@ export function DataTableToolbar<TData>({
   // const sortingState = table.getState().sorting;
 
   return (
-    <div className="flex w-full items-center justify-end gap-3">
+    <div className="flex items-center gap-3">
       {/*<div className="flex flex-1 items-center space-x-2">*/}
       {/*<div className="relative flex h-10 w-full max-w-[300px] flex-1 items-center">*/}
       {/*  <Input*/}

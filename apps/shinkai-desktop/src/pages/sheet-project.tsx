@@ -39,6 +39,7 @@ import {
 import { DataTableToolbar } from '../components/sheet/data-table-toolbar';
 import { generateRowsData } from '../components/sheet/sheet-data';
 import { getRowHeight } from '../components/sheet/utils';
+import useTableHotkeys from '../components/sheet/utils/use-table-hotkeys';
 // import { DataTablePagination } from '../components/sheet/data-table-pagination';
 // import { DataTableToolbar } from '../components/sheet/data-table-toolbar';
 import { useAuth } from '../store/auth';
@@ -49,6 +50,10 @@ const MotionTableCell = motion(TableCell);
 const SheetProject = () => {
   const auth = useAuth((state) => state.auth);
   const heightRow = useSettings((state) => state.heightRow);
+  // const selectedCell = useSheetProjectStore((state) => state.selectedCell);
+  // const setSelectedCell = useSheetProjectStore(
+  //   (state) => state.setSelectedCell,
+  // );
 
   const { sheetId } = useParams();
   const { data: sheetInfo } = useGetSheet(
@@ -122,6 +127,66 @@ const SheetProject = () => {
     },
     getRowId: (row) => row.rowId,
   });
+
+  const { rows } = table.getRowModel();
+  const leafColumns = table.getVisibleLeafColumns();
+
+  useTableHotkeys({ rows, leafColumns });
+
+  // const {
+  //   selectedCell,
+  //   selection: selectedRange,
+  //   getCellRef,
+  //   isCellSelected,
+  //   isCellInRange,
+  //   handleClick,
+  //   handleKeyDown,
+  //   handleMouseDown,
+  //   handleMouseEnter,
+  // } = useCellSelection(table.getRowModel().rows, table.getVisibleFlatColumns());
+
+  // const keybindings = useKeybindingsWithDefaults();
+
+  // const onCopy = React.useCallback(
+  //   async (e?: ClipboardEvent, ignoreFocus?: boolean) => {
+  //     if (!keybindings.copy) return;
+  //     const focused = ignoreFocus === true;
+  //     const selectedColumns = gridSelection.columns;
+  //     const selectedRows = gridSelection.rows;
+  //
+  //     const copyToClipboardWithHeaders = (
+  //       cells: readonly (readonly GridCell[])[],
+  //       columnIndexes: readonly number[],
+  //     ) => {
+  //       copyToClipboard(cells, columnIndexes, e);
+  //     };
+  //     console.log('copy!, gridSelection', gridSelection);
+  //     //
+  //     // if (focused && getCellsForSelection !== undefined) {
+  //     //   if (gridSelection.current !== undefined) {
+  //     //     let thunk = getCellsForSelection(
+  //     //       gridSelection.current.range,
+  //     //       abortControllerRef.current.signal,
+  //     //     );
+  //     //     if (typeof thunk !== 'object') {
+  //     //       thunk = await thunk();
+  //     //     }
+  //     //     // copyToClipboardWithHeaders(
+  //     //     //   thunk,
+  //     //     //   range(
+  //     //     //     gridSelection.current.range.x - 1,
+  //     //     //     gridSelection.current.range.x +
+  //     //     //       gridSelection.current.range.width -
+  //     //     //       1,
+  //     //     //   ),
+  //     //     // );
+  //     //   }
+  //     // }
+  //   },
+  //   [columns, getCellsForSelection, gridSelection, keybindings.copy],
+  // );
+
+  // useEventListener('copy', onCopy, window, false, false);
 
   return (
     <div className="mx-auto h-screen max-w-6xl px-3 py-10 pb-4">
@@ -217,25 +282,85 @@ const SheetProject = () => {
                             data-state={row.getIsSelected() && 'selected'}
                             key={row.id}
                           >
-                            {row.getVisibleCells().map((cell) => (
-                              <MotionTableCell
-                                animate={{ height: getRowHeight(heightRow) }}
-                                className={cn(
-                                  'flex size-full select-none items-start overflow-hidden border-b border-l bg-gray-500 px-2 py-0 pt-[1px] text-xs group-hover:bg-gray-300',
-                                  '[&:has([role=checkbox])]:justify-center [&:has([role=checkbox])]:px-3',
-                                )}
-                                initial={{ height: getRowHeight(heightRow) }}
-                                key={cell.id}
-                                style={{ width: cell.column.getSize() }}
-                              >
-                                <div className="size-full text-xs">
-                                  {flexRender(
-                                    cell.column.columnDef.cell,
-                                    cell.getContext(),
+                            {row.getVisibleCells().map((cell) => {
+                              // const cellRef = getCellRef(
+                              //   cell.row.id,
+                              //   cell.column.id,
+                              // );
+                              // const isSelected = isCellSelected(
+                              //   cell.row.id,
+                              //   cell.column.id,
+                              // );
+                              // const isInRange = isCellInRange(
+                              //   cell.row.id,
+                              //   cell.column.id,
+                              // );
+                              // // const isEditable =
+                              // //   cell.column.columnDef.meta?.editable;
+
+                              return (
+                                <MotionTableCell
+                                  animate={{ height: getRowHeight(heightRow) }}
+                                  className={cn(
+                                    'flex size-full select-none items-start border-b border-l bg-gray-500 px-0 py-0 pt-[1px] text-xs group-hover:bg-gray-300',
+                                    '[&:has([role=checkbox])]:justify-center [&:has([role=checkbox])]:px-3',
+                                    // cell.column.columnDef.id !== 'select' &&
+                                    //   isSelected &&
+                                    //   'outline-brand rounded-sm outline outline-1 -outline-offset-1',
                                   )}
-                                </div>
-                              </MotionTableCell>
-                            ))}
+                                  initial={{ height: getRowHeight(heightRow) }}
+                                  key={cell.id}
+                                  // onClick={() =>
+                                  //   handleClick(cell.row.id, cell.column.id)
+                                  // }
+                                  // onKeyDown={(e) => {
+                                  //   handleKeyDown(
+                                  //     e,
+                                  //     cell.row.id,
+                                  //     cell.column.id,
+                                  //   );
+                                  //   if (e.key === 'Enter') {
+                                  //     e.preventDefault();
+                                  //     const editableCell =
+                                  //       cellRef.current?.querySelector(
+                                  //         '.toggle-view-cell',
+                                  //       );
+                                  //
+                                  //     if (editableCell) {
+                                  //       const event = new KeyboardEvent(
+                                  //         'keydown',
+                                  //         {
+                                  //           key: 'Enter',
+                                  //           bubbles: true,
+                                  //           cancelable: true,
+                                  //         },
+                                  //       );
+                                  //
+                                  //       editableCell.dispatchEvent(event);
+                                  //     }
+                                  //   }
+                                  // }}
+                                  // onMouseDown={() =>
+                                  //   handleMouseDown(cell.row.id, cell.column.id)
+                                  // }
+                                  // onMouseEnter={() =>
+                                  //   handleMouseEnter(
+                                  //     cell.row.id,
+                                  //     cell.column.id,
+                                  //   )
+                                  // }
+                                  // ref={cellRef}
+                                  style={{ width: cell.column.getSize() }}
+                                >
+                                  <div className={cn('size-full text-xs')}>
+                                    {flexRender(
+                                      cell.column.columnDef.cell,
+                                      cell.getContext(),
+                                    )}
+                                  </div>
+                                </MotionTableCell>
+                              );
+                            })}
                           </TableRow>
                         ))
                       : null

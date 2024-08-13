@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Navigate, Outlet, Route, Routes, useNavigate } from 'react-router-dom';
 
+import { TableSheetProvider } from '../components/sheet/context/table-context';
 import PublicSharedFolderSubscription from '../components/subscriptions/public-shared-folders';
 import MySubscriptions from '../components/subscriptions/subscriptions';
 import { VectorFolderSelectionProvider } from '../components/vector-fs/components/folder-selection-list';
@@ -229,7 +230,14 @@ const AppRoutes = () => {
           path="sheets"
         >
           <Route element={<SheetDashboard />} index />
-          <Route element={<SheetProject />} path=":sheetId" />
+          <Route
+            element={
+              <TableSheetProvider>
+                <SheetProject />
+              </TableSheetProvider>
+            }
+            path=":sheetId"
+          />
         </Route>
         <Route
           element={

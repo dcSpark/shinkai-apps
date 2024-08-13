@@ -1,4 +1,3 @@
-import { PopoverClose } from '@radix-ui/react-popover';
 import { Tooltip } from '@radix-ui/react-tooltip';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
@@ -12,9 +11,6 @@ import { transformDataToTreeNodes } from '@shinkai_network/shinkai-node-state/li
 import {
   Badge,
   Button,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
   ScrollArea,
   Sheet,
   SheetContent,
@@ -39,7 +35,8 @@ import { useParams } from 'react-router-dom';
 import { treeOptions } from '../../lib/constants';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
-import { getColumnBehaviorName, getRowHeight } from './utils';
+import { useSheetProjectStore } from './context/table-context';
+import { getColumnBehaviorName } from './utils';
 
 interface DataTableCellProps<TData> {
   row: Row<TData>;
@@ -52,19 +49,47 @@ interface DataTableCellProps<TData> {
 
 export function DataTableCell<TData>({
   row,
-  value,
+  value: initialValue,
   column,
   status,
   columnBehavior,
 }: DataTableCellProps<TData>) {
   const { sheetId } = useParams();
+  const { selectedCell, setSelectedCell } = useSheetProjectStore(
+    ({ selectedCell, setSelectedCell }) => ({
+      selectedCell,
+      setSelectedCell,
+    }),
+  );
+
+  const isSelected =
+    selectedCell &&
+    selectedCell.rowId === row.id &&
+    selectedCell.columnId === column.id;
+  const isFocused = isSelected && selectedCell?.isFocused;
+
+  const setIsFocused = (isFocused: boolean) => {
+    setSelectedCell({
+      rowId: row.id,
+      columnId: column.id ?? '',
+      isFocused,
+    });
+  };
+
   const { mutateAsync: setCellSheet } = useSetCellSheet();
   const auth = useAuth((state) => state.auth);
   const heightRow = useSettings((state) => state.heightRow);
 
-  const [open, setOpen] = React.useState(false);
+  const [cellValue, setCellValue] = React.useState(initialValue);
 
-  const [cellValue, setCellValue] = React.useState(value);
+  const cancelEditing = () => {
+    setCellValue(initialValue);
+    setSelectedCell({
+      rowId: row.id,
+      columnId: column.id ?? '',
+      isFocused: false,
+    });
+  };
 
   const [isVectorFSOpen, setIsVectorFSOpen] = React.useState(false);
 
@@ -86,32 +111,116 @@ export function DataTableCell<TData>({
     });
   };
 
-  useEffect(() => {
-    if (!open) {
-      setCellValue(value);
-    }
-  }, [open, value]);
+  React.useEffect(() => {
+    setCellValue(initialValue);
+  }, [initialValue]);
 
-  const isCellValueChanged = cellValue !== value;
+  const isCellValueChanged = cellValue !== initialValue;
   const columnType = getColumnBehaviorName(columnBehavior);
   const isMultipleVRFiles = columnType === ColumnType.MultipleVRFiles;
+
+  const onChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement | HTMLSelectElement>,
+  ) => {
+    const newValue = e.target.value;
+    setCellValue(newValue);
+  };
+
+  // const handleKeyDownOnView = (e: React.KeyboardEvent) => {
+  //   if (e.key === 'Enter') {
+  //     e.stopPropagation();
+  //     e.preventDefault();
+  //     setSelectedCell({
+  //       rowId: row.id,
+  //       columnId: column.id ?? '',
+  //       isFocused: true,
+  //     });
+  //   }
+  // };
+  const handleEndEditing = async () => {
+    setIsFocused(false);
+    // table.options.meta?.updateCellData(rowId, colId, value);
+    await handleUpdateCell();
+  };
+
+  const handleBlur = () => handleEndEditing();
+
+  const handleKeyDownOnEdit = (e: React.KeyboardEvent) => {
+    if (
+      e.key === 'ArrowLeft' ||
+      e.key === 'ArrowRight' ||
+      e.key === 'ArrowUp' ||
+      e.key === 'ArrowDown'
+    ) {
+      e.stopPropagation();
+    }
+
+    if (e.metaKey && e.key === 'Enter') {
+      handleEndEditing();
+    } else if (e.key === 'Escape') {
+      cancelEditing();
+    } else if (e.key === 'Tab') {
+      handleEndEditing();
+    } else {
+      e.stopPropagation();
+    }
+  };
+
+  if (isFocused) {
+    return (
+      <div className="relative z-40 flex flex-col bg-gray-300 p-0 text-xs">
+        <Textarea
+          autoFocus
+          className="placeholder-gray-80 border-brand focus-visible:ring-brand !min-h-[80px] resize-none rounded-sm bg-gray-500 pl-2 pt-2 text-xs"
+          onBlur={handleBlur}
+          onChange={onChange}
+          onKeyDown={handleKeyDownOnEdit}
+          placeholder="Enter prompt"
+          value={cellValue}
+        />
+        <AnimatePresence mode="popLayout">
+          {isCellValueChanged && (
+            <motion.div
+              animate={{ opacity: 1 }}
+              className="flex items-center justify-end gap-3 px-3 py-1"
+              exit={{ opacity: 0 }}
+              initial={{ opacity: 0 }}
+            >
+              <button className="flex justify-start gap-2 rounded-lg px-3 py-2 text-white transition-colors hover:bg-gray-500">
+                <span className="">Cancel</span>
+              </button>
+              <button
+                className="bg-brand hover:bg-brand-500 flex justify-start gap-2 rounded-lg px-3 py-2 transition-colors"
+                onClick={handleUpdateCell}
+              >
+                <span className="">Save</span>
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  }
   return (
     <div className={cn('flex size-full items-center')}>
       {isMultipleVRFiles ? (
-        <button
+        <div
           className={cn(
-            'group flex items-center justify-center rounded-xl bg-gray-50/10 px-2 py-[3px] transition-colors hover:bg-gray-200',
-            value && 'border border-gray-300 bg-transparent',
+            'group ml-2 flex items-center justify-center rounded-xl bg-gray-50/10 px-2 py-[3px] transition-colors hover:bg-gray-200',
+            initialValue && 'border border-gray-300 bg-transparent',
+            isSelected &&
+              'outline-brand rounded-sm outline outline-1 -outline-offset-1',
           )}
           onClick={() => {
             setIsVectorFSOpen(true);
           }}
+          tabIndex={0}
         >
-          {value ? (
+          {initialValue ? (
             <span className="flex items-center justify-start gap-1">
               <FileInput className="text-gray-80 h-3.5 w-3.5" />
               <span className={cn('flex-1 text-left')}>
-                {value.split('/')?.at(-1)}
+                {initialValue.split('/')?.at(-1)}
               </span>
             </span>
           ) : (
@@ -120,98 +229,83 @@ export function DataTableCell<TData>({
               Add Local AI Files
             </span>
           )}
-        </button>
+        </div>
       ) : (
-        <Popover onOpenChange={setOpen} open={open}>
-          <PopoverTrigger asChild>
-            <div
-              className={cn(
-                'relative -ml-1.5 flex size-full items-center justify-start gap-1.5 rounded-lg bg-transparent px-2 py-1 pr-0',
-              )}
-              role="button"
-              tabIndex={0}
-            >
-              <span
-                className={cn(
-                  'flex-1 text-left text-gray-50',
-                  status === ColumnStatus.Pending && 'text-gray-80',
-                  heightRow === 'small' && 'line-clamp-1',
-                  heightRow === 'medium' && 'line-clamp-2',
-                  heightRow === 'large' && 'line-clamp-5',
-                  heightRow === 'extra-large' && 'line-clamp-[9]',
-                )}
-              >
-                {status === ColumnStatus.Pending ? 'Generating ...' : value}
-              </span>
-              {status && status === ColumnStatus.Pending && (
-                <TooltipProvider delayDuration={0}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Badge className="absolute right-[2px] top-3 flex items-center justify-center p-0">
-                        <span
-                          className={cn(
-                            'shadow-[0px_0px_1px_1px_#0000001a]',
-                            'animate-shadow-pulse h-1.5 w-1.5 rounded-full',
-                            'bg-orange-400',
-                          )}
-                        />
-                      </Badge>
-                    </TooltipTrigger>
-                    <TooltipPortal>
-                      <TooltipContent>
-                        <p>{status}</p>
-                      </TooltipContent>
-                    </TooltipPortal>
-                  </Tooltip>
-                </TooltipProvider>
-              )}
-            </div>
-          </PopoverTrigger>
-          <PopoverContent
-            align="start"
-            className="flex flex-col bg-gray-300 p-0 text-xs"
-            side="bottom"
-            sideOffset={-getRowHeight(heightRow) + 5}
+        <div
+          className={cn(
+            'relative flex size-full items-center justify-start gap-1.5 rounded-lg bg-transparent px-2 py-1 pr-0',
+            isSelected &&
+              'outline-brand rounded-sm outline outline-1 -outline-offset-1',
+          )}
+          onClick={(e) => {
+            if (
+              selectedCell?.rowId === row.id &&
+              selectedCell?.columnId === column.id
+            )
+              return;
+            setSelectedCell({
+              rowId: row.id,
+              columnId: column.id ?? '',
+              isFocused: false,
+            });
+            e.currentTarget.focus();
+          }}
+          onContextMenu={(e) => {
+            e.preventDefault();
+            setSelectedCell({
+              rowId: row.id,
+              columnId: column.id ?? '',
+              isFocused: false,
+            });
+            e.currentTarget.focus();
+          }}
+          onDoubleClick={(e) => {
+            setSelectedCell({
+              rowId: row.id,
+              columnId: column.id ?? '',
+              isFocused: true,
+            });
+            e.currentTarget.focus();
+          }}
+          // onKeyDown={handleKeyDownOnView}
+          role="button"
+          tabIndex={isSelected && !isFocused ? 0 : -1}
+        >
+          <span
+            className={cn(
+              'flex-1 text-left text-gray-50',
+              status === ColumnStatus.Pending && 'text-gray-80',
+              heightRow === 'small' && 'line-clamp-1',
+              heightRow === 'medium' && 'line-clamp-2',
+              heightRow === 'large' && 'line-clamp-5',
+              heightRow === 'extra-large' && 'line-clamp-[9]',
+            )}
           >
-            <Textarea
-              autoFocus
-              className="placeholder-gray-80 border-brand focus-visible:ring-brand !min-h-[80px] resize-none bg-gray-500 pl-2 pt-2 text-xs"
-              onChange={(e) => setCellValue(e.target.value)}
-              onKeyDown={async (e) => {
-                if (e.metaKey && e.key === 'Enter') {
-                  await handleUpdateCell();
-                  setOpen(false);
-                }
-              }}
-              placeholder="Enter prompt"
-              value={cellValue}
-            />
-            <AnimatePresence mode="popLayout">
-              {isCellValueChanged && (
-                <motion.div
-                  animate={{ opacity: 1 }}
-                  className="flex items-center justify-end gap-3 px-3 py-1"
-                  exit={{ opacity: 0 }}
-                  initial={{ opacity: 0 }}
-                >
-                  <PopoverClose asChild>
-                    <button className="flex justify-start gap-2 rounded-lg px-3 py-2 text-white transition-colors hover:bg-gray-500">
-                      <span className="">Cancel</span>
-                    </button>
-                  </PopoverClose>
-                  <PopoverClose asChild>
-                    <button
-                      className="bg-brand hover:bg-brand-500 flex justify-start gap-2 rounded-lg px-3 py-2 transition-colors"
-                      onClick={handleUpdateCell}
-                    >
-                      <span className="">Save</span>
-                    </button>
-                  </PopoverClose>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </PopoverContent>
-        </Popover>
+            {status === ColumnStatus.Pending ? 'Generating ...' : initialValue}
+          </span>
+          {status && status === ColumnStatus.Pending && (
+            <TooltipProvider delayDuration={0}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Badge className="absolute right-2 top-3 flex items-center justify-center p-0">
+                    <span
+                      className={cn(
+                        'shadow-[0px_0px_1px_1px_#0000001a]',
+                        'animate-shadow-pulse h-1 w-1 rounded-full',
+                        'bg-orange-400',
+                      )}
+                    />
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipPortal>
+                  <TooltipContent>
+                    <p>{status}</p>
+                  </TooltipContent>
+                </TooltipPortal>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+        </div>
       )}
       <VectorFsScopeDrawer
         isVectorFSOpen={isVectorFSOpen}
