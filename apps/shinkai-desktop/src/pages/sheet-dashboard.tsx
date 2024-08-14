@@ -123,7 +123,6 @@ function SheetCard({
               className="flex items-center gap-2 px-4 text-red-400"
               onClick={(e) => {
                 e.stopPropagation();
-                // e.preventDefault();
                 setDeleteModalOpen(true);
               }}
             >

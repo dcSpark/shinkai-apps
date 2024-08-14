@@ -10,6 +10,7 @@ export interface Selection {
   start: CellCoordinates;
   end: CellCoordinates;
 }
+// TODO: multiple cell selection
 
 export function useCellSelection<TData>(
   rows: Row<TData>[],
@@ -17,7 +18,7 @@ export function useCellSelection<TData>(
 ) {
   const [selectedCell, setSelectedCell] =
     React.useState<CellCoordinates | null>(null);
-  console.log(selectedCell, 'selectedCell');
+
   const [selection, setSelection] = React.useState<Selection | null>(null);
   const [isSelecting, setIsSelecting] = React.useState(false);
 

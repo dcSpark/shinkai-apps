@@ -13,13 +13,13 @@ import {
   TableRow,
 } from '@shinkai_network/shinkai-ui';
 import { SheetIcon } from '@shinkai_network/shinkai-ui/assets';
+import { useClickAway } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
   ColumnFiltersState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  // getPaginationRowModel,
   getSortedRowModel,
   RowSelectionState,
   SortingState,
@@ -31,6 +31,7 @@ import React, { useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import { generateColumns } from '../components/sheet/columns';
+import { useSheetProjectStore } from '../components/sheet/context/table-context';
 import {
   AddColumnAction,
   AddRowsAction,
@@ -39,6 +40,7 @@ import {
 import { DataTableToolbar } from '../components/sheet/data-table-toolbar';
 import { generateRowsData } from '../components/sheet/sheet-data';
 import { getRowHeight } from '../components/sheet/utils';
+import { useTableMenuActions } from '../components/sheet/utils/copy-paste';
 import useTableHotkeys from '../components/sheet/utils/use-table-hotkeys';
 // import { DataTablePagination } from '../components/sheet/data-table-pagination';
 // import { DataTableToolbar } from '../components/sheet/data-table-toolbar';
@@ -50,10 +52,10 @@ const MotionTableCell = motion(TableCell);
 const SheetProject = () => {
   const auth = useAuth((state) => state.auth);
   const heightRow = useSettings((state) => state.heightRow);
-  // const selectedCell = useSheetProjectStore((state) => state.selectedCell);
-  // const setSelectedCell = useSheetProjectStore(
-  //   (state) => state.setSelectedCell,
-  // );
+  const selectedCell = useSheetProjectStore((state) => state.selectedCell);
+  const setSelectedCell = useSheetProjectStore(
+    (state) => state.setSelectedCell,
+  );
 
   const { sheetId } = useParams();
   const { data: sheetInfo } = useGetSheet(
@@ -133,60 +135,15 @@ const SheetProject = () => {
 
   useTableHotkeys({ rows, leafColumns });
 
-  // const {
-  //   selectedCell,
-  //   selection: selectedRange,
-  //   getCellRef,
-  //   isCellSelected,
-  //   isCellInRange,
-  //   handleClick,
-  //   handleKeyDown,
-  //   handleMouseDown,
-  //   handleMouseEnter,
-  // } = useCellSelection(table.getRowModel().rows, table.getVisibleFlatColumns());
+  const tableRef = useTableMenuActions({
+    selectedCell,
+    rows,
+    leafColumns,
+  });
 
-  // const keybindings = useKeybindingsWithDefaults();
-
-  // const onCopy = React.useCallback(
-  //   async (e?: ClipboardEvent, ignoreFocus?: boolean) => {
-  //     if (!keybindings.copy) return;
-  //     const focused = ignoreFocus === true;
-  //     const selectedColumns = gridSelection.columns;
-  //     const selectedRows = gridSelection.rows;
-  //
-  //     const copyToClipboardWithHeaders = (
-  //       cells: readonly (readonly GridCell[])[],
-  //       columnIndexes: readonly number[],
-  //     ) => {
-  //       copyToClipboard(cells, columnIndexes, e);
-  //     };
-  //     console.log('copy!, gridSelection', gridSelection);
-  //     //
-  //     // if (focused && getCellsForSelection !== undefined) {
-  //     //   if (gridSelection.current !== undefined) {
-  //     //     let thunk = getCellsForSelection(
-  //     //       gridSelection.current.range,
-  //     //       abortControllerRef.current.signal,
-  //     //     );
-  //     //     if (typeof thunk !== 'object') {
-  //     //       thunk = await thunk();
-  //     //     }
-  //     //     // copyToClipboardWithHeaders(
-  //     //     //   thunk,
-  //     //     //   range(
-  //     //     //     gridSelection.current.range.x - 1,
-  //     //     //     gridSelection.current.range.x +
-  //     //     //       gridSelection.current.range.width -
-  //     //     //       1,
-  //     //     //   ),
-  //     //     // );
-  //     //   }
-  //     // }
-  //   },
-  //   [columns, getCellsForSelection, gridSelection, keybindings.copy],
-  // );
-
-  // useEventListener('copy', onCopy, window, false, false);
+  const tableBodyRef = useClickAway<HTMLTableSectionElement>(() => {
+    setSelectedCell(null);
+  });
 
   return (
     <div className="mx-auto h-screen max-w-6xl px-3 py-10 pb-4">
@@ -222,6 +179,7 @@ const SheetProject = () => {
             <div className="relative size-full">
               <Table
                 className="user-none w-full text-sm"
+                ref={tableRef}
                 style={{
                   width: table.getCenterTotalSize(),
                 }}
@@ -271,7 +229,10 @@ const SheetProject = () => {
                     </TableRow>
                   ))}
                 </TableHeader>
-                <TableBody className="[&_tr:last-child]:border-0">
+                <TableBody
+                  className="[&_tr:last-child]:border-0"
+                  ref={tableBodyRef}
+                >
                   {
                     table.getRowModel().rows?.length
                       ? table.getRowModel().rows.map((row) => (
@@ -283,73 +244,15 @@ const SheetProject = () => {
                             key={row.id}
                           >
                             {row.getVisibleCells().map((cell) => {
-                              // const cellRef = getCellRef(
-                              //   cell.row.id,
-                              //   cell.column.id,
-                              // );
-                              // const isSelected = isCellSelected(
-                              //   cell.row.id,
-                              //   cell.column.id,
-                              // );
-                              // const isInRange = isCellInRange(
-                              //   cell.row.id,
-                              //   cell.column.id,
-                              // );
-                              // // const isEditable =
-                              // //   cell.column.columnDef.meta?.editable;
-
                               return (
                                 <MotionTableCell
                                   animate={{ height: getRowHeight(heightRow) }}
                                   className={cn(
                                     'flex size-full select-none items-start border-b border-l bg-gray-500 px-0 py-0 pt-[1px] text-xs group-hover:bg-gray-300',
                                     '[&:has([role=checkbox])]:justify-center [&:has([role=checkbox])]:px-3',
-                                    // cell.column.columnDef.id !== 'select' &&
-                                    //   isSelected &&
-                                    //   'outline-brand rounded-sm outline outline-1 -outline-offset-1',
                                   )}
                                   initial={{ height: getRowHeight(heightRow) }}
                                   key={cell.id}
-                                  // onClick={() =>
-                                  //   handleClick(cell.row.id, cell.column.id)
-                                  // }
-                                  // onKeyDown={(e) => {
-                                  //   handleKeyDown(
-                                  //     e,
-                                  //     cell.row.id,
-                                  //     cell.column.id,
-                                  //   );
-                                  //   if (e.key === 'Enter') {
-                                  //     e.preventDefault();
-                                  //     const editableCell =
-                                  //       cellRef.current?.querySelector(
-                                  //         '.toggle-view-cell',
-                                  //       );
-                                  //
-                                  //     if (editableCell) {
-                                  //       const event = new KeyboardEvent(
-                                  //         'keydown',
-                                  //         {
-                                  //           key: 'Enter',
-                                  //           bubbles: true,
-                                  //           cancelable: true,
-                                  //         },
-                                  //       );
-                                  //
-                                  //       editableCell.dispatchEvent(event);
-                                  //     }
-                                  //   }
-                                  // }}
-                                  // onMouseDown={() =>
-                                  //   handleMouseDown(cell.row.id, cell.column.id)
-                                  // }
-                                  // onMouseEnter={() =>
-                                  //   handleMouseEnter(
-                                  //     cell.row.id,
-                                  //     cell.column.id,
-                                  //   )
-                                  // }
-                                  // ref={cellRef}
                                   style={{ width: cell.column.getSize() }}
                                 >
                                   <div className={cn('size-full text-xs')}>
