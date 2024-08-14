@@ -15,6 +15,7 @@ export type Sheet = {
   // rows: {};
   sheet_name: string;
   uuid: string;
+  last_updated: string;
 };
 
 export type GetUserSheetsOutput = Sheet[];
