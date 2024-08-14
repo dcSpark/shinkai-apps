@@ -631,23 +631,14 @@ const ChatConversation = () => {
                                   )}
                                   exit={{ opacity: 0, x: -10 }}
                                   initial={{ opacity: 0, x: -10 }}
-                                  key={workflow.Workflow.workflow.name}
+                                  key={workflow.name}
                                   onClick={() => {
-                                    setWorkflowSelected({
-                                      description:
-                                        workflow.Workflow.workflow.description,
-                                      name: workflow.Workflow.workflow.name,
-                                      raw: workflow.Workflow.workflow.raw,
-                                      version:
-                                        workflow.Workflow.workflow.version,
-                                    });
+                                    setWorkflowSelected(workflow);
                                   }}
                                   type="button"
                                 >
                                   <WorkflowPlaygroundIcon className="h-3 w-3" />
-                                  {formatWorkflowName(
-                                    workflow.Workflow.workflow.name,
-                                  )}
+                                  {formatWorkflowName(workflow.name)}
                                 </motion.button>
                               ))}
                           </div>

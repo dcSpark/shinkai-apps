@@ -1,4 +1,7 @@
-import type { JobCredentialsPayload } from '@shinkai_network/shinkai-message-ts/models';
+import type {
+  JobCredentialsPayload,
+  Workflow,
+} from '@shinkai_network/shinkai-message-ts/models';
 
 export type GetWorkflowSearchInput = JobCredentialsPayload & {
   nodeAddress: string;
@@ -7,16 +10,4 @@ export type GetWorkflowSearchInput = JobCredentialsPayload & {
   search: string;
 };
 
-export type WorkflowSearch = {
-  Workflow: {
-    embedding: null;
-    workflow: {
-      description: string;
-      name: string;
-      raw: string;
-      version: string;
-    };
-  };
-};
-
-export type GetWorkflowSearchOutput = WorkflowSearch[];
+export type GetWorkflowSearchOutput = Workflow[];

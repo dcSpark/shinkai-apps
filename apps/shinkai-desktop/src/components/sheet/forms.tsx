@@ -8,13 +8,15 @@ export const setColumnFormSchema = z
     agentId: z.string().optional(),
     workflow: z
       .object({
-        description: z.string().optional(),
-        name: z.string(),
-        raw: z.string(),
-        version: z.string(),
-        steps: z.array(z.any()),
         author: z.string(),
-        sticky: z.boolean(),
+        config: z.string().optional(),
+        description: z.string(),
+        enabled: z.boolean(),
+        formatted_tool_summary_for_ui: z.string(),
+        name: z.string(),
+        tool_router_key: z.string(),
+        tool_type: z.string(),
+        version: z.string(),
       })
       .optional(),
     formula: z.string().optional(),

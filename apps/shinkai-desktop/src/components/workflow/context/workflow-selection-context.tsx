@@ -1,8 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Workflow } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
 import { useCreateWorkflow } from '@shinkai_network/shinkai-node-state/lib/mutations/createWorkflow/useCreateWorkflow';
 import { useRemoveWorkflow } from '@shinkai_network/shinkai-node-state/lib/mutations/removeWorkflow/useRemoveWorkflow';
 import { useUpdateWorkflow } from '@shinkai_network/shinkai-node-state/lib/mutations/updateWorkflow/useUpdateWorkflow';
-import { Workflow } from '@shinkai_network/shinkai-node-state/lib/queries/getWorkflowList/types';
 import { useGetWorkflowList } from '@shinkai_network/shinkai-node-state/lib/queries/getWorkflowList/useGetWorkflowList';
 import { useGetWorkflowSearch } from '@shinkai_network/shinkai-node-state/lib/queries/getWorkflowSearch/useGetWorkflowSearch';
 import {
@@ -261,22 +261,16 @@ const WorkflowSearchDrawer = ({
                   className={cn(
                     'flex w-full flex-col gap-1 rounded-sm px-3 py-2 text-left text-sm hover:bg-gray-300',
                   )}
-                  key={workflow.Workflow.workflow.name}
+                  key={workflow.tool_router_key}
                   onClick={() => {
-                    setWorkflowSelected({
-                      description: workflow.Workflow.workflow.description,
-                      name: workflow.Workflow.workflow.name,
-                      raw: workflow.Workflow.workflow.raw,
-                      version: workflow.Workflow.workflow.version,
-                    });
+                    setWorkflowSelected(workflow);
                     setWorkflowSelectionDrawerOpen(false);
                   }}
                   type="button"
                 >
                   <span className="text-sm font-medium">
-                    {formatWorkflowName(workflow.Workflow.workflow.name)}{' '}
-                    {workflowSelected?.name ===
-                      workflow.Workflow.workflow.name && (
+                    {formatWorkflowName(workflow.name)}{' '}
+                    {workflowSelected?.name === workflow.name && (
                       <Badge
                         className="bg-brand ml-2 font-light text-gray-50 shadow-none"
                         variant="default"
@@ -285,9 +279,7 @@ const WorkflowSearchDrawer = ({
                       </Badge>
                     )}
                   </span>
-                  <p className="text-gray-80 text-sm">
-                    {workflow.Workflow.workflow.description}
-                  </p>
+                  <p className="text-gray-80 text-sm">{workflow.description}</p>
                 </button>
               ))}
             {searchQuery &&
