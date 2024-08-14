@@ -66,6 +66,10 @@ export enum MessageSchemaType {
   GetSheet = 'GetSheet',
   AddRows = 'AddRows',
   RemoveRows = 'RemoveRows',
+  // tools
+  ListAllShinkaiTools = 'ListAllShinkaiTools',
+  GetShinkaiTool = 'GetShinkaiTool',
+  SetShinkaiTool = 'SetShinkaiTool',
 }
 
 export interface LocalScopeVRKaiEntry {

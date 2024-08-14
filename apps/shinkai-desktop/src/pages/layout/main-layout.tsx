@@ -28,6 +28,7 @@ import {
   InboxIcon,
   MySubscriptionsIcon,
   SheetIcon,
+  ToolsIcon,
   WorkflowPlaygroundIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
@@ -282,6 +283,11 @@ export function MainNav() {
       title: 'Shinkai Sheet',
       href: '/sheets',
       icon: <SheetIcon />,
+    },
+    optInExperimental && {
+      title: 'Shinkai Tools',
+      href: '/tools',
+      icon: <ToolsIcon />,
     },
   ].filter(Boolean) as NavigationLink[];
 

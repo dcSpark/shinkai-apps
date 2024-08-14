@@ -41,6 +41,7 @@ import SettingsPage from '../pages/settings';
 import SheetDashboard from '../pages/sheet-dashboard';
 import SheetProject from '../pages/sheet-project';
 import ShinkaiPrivatePage from '../pages/shinkai-private';
+import { Tools } from '../pages/tools';
 import TermsAndConditionsPage from '../pages/welcome';
 import WorkflowPlayground from '../pages/workflow-playground';
 import { useAuth } from '../store/auth';
@@ -264,6 +265,14 @@ const AppRoutes = () => {
             path=":inboxId"
           />
         </Route>
+        <Route
+          element={
+            <ProtectedRoute>
+              <Tools />
+            </ProtectedRoute>
+          }
+          path={'/tools'}
+        />
         <Route
           element={
             <ProtectedRoute>

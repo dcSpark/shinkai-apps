@@ -978,3 +978,27 @@ export const SheetIcon = ({ className }: { className?: string }) => (
     />
   </svg>
 );
+export const ToolsIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={cn('shrink-0', className)}
+    fill="none"
+    height="24"
+    viewBox="0 0 24 24"
+    width="24"
+  >
+    <path
+      d="M5 10H7.5L14 16.5V19C14 20.1046 14.8954 21 16 21H19L17 19V17H19L21 19V16C21 14.8954 20.1046 14 19 14H16.5L10 7.5V5C10 3.89543 9.10457 3 8 3H5L7 5V7H5L3 5V8C3 9.10457 3.89543 10 5 10Z"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M9 12L3.91421 17.0858C3.13317 17.8668 3.13316 19.1332 3.91421 19.9142L4.08579 20.0858C4.86683 20.8668 6.13317 20.8668 6.91421 20.0858L12 15M13.5 10.5L18.5 5.5M18.5 5.5L17.5 4.5L20 3L21 4L19.5 6.5L18.5 5.5Z"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+    />
+  </svg>
+);
