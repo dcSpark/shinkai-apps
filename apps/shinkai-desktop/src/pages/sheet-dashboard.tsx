@@ -102,7 +102,7 @@ function SheetCard({
         </div>
         <div className="flex flex-col gap-1">
           <span className="line-clamp-1">{sheetName}</span>
-          <span className="text-gray-80 text-xs"> Updated 2 days ago</span>
+          {/*<span className="text-gray-80 text-xs"> Updated 2 days ago</span>*/}
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
