@@ -72,7 +72,7 @@ export const useSettings = create<SettingsStore>()(
           set({ evmAddress });
         },
 
-        heightRow: 'medium',
+        heightRow: 'large',
         setHeightRow: (heightRow) => {
           set({ heightRow });
         },
