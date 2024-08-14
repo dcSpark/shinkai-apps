@@ -22,6 +22,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { SheetFileIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { formatDistanceToNow } from 'date-fns';
 import { MoreHorizontal, PlusIcon, Trash2Icon } from 'lucide-react';
 import { Fragment, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -35,7 +36,7 @@ import { SimpleLayout } from './layout/simple-layout';
 const SheetDashboard = () => {
   const auth = useAuth((state) => state.auth);
 
-  const { data } = useGetUserSheets({
+  const { isSuccess, data, isPending } = useGetUserSheets({
     nodeAddress: auth?.node_address ?? '',
     profile: auth?.profile ?? '',
     shinkaiIdentity: auth?.shinkai_identity ?? '',
@@ -49,24 +50,62 @@ const SheetDashboard = () => {
   return (
     <SimpleLayout
       classname=""
-      headerRightElement={<CreateSheetModal />}
+      headerRightElement={isSuccess && data.length > 0 && <CreateSheetModal />}
       title={'Shinkai Sheet'}
     >
       <div className="grid gap-5 py-5 sm:grid-cols-2 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
-        {!!data?.length &&
+        {isSuccess &&
+          !!data.length &&
           data?.map((sheet) => (
             <SheetCard
               key={sheet.uuid}
               sheetId={sheet.uuid}
+              sheetLastUpdated={sheet?.last_updated ?? ''}
               sheetName={sheet?.sheet_name ?? '-'}
             />
           ))}
-        {!data?.length && (
-          <div className="col-span-3 flex flex-col items-center justify-center gap-10">
-            <span className="text-gray-50">
-              {' '}
-              No sheets found (todo: add empty state)
-            </span>
+        {isPending &&
+          Array.from({ length: 8 }).map((_, index) => (
+            <div
+              className={cn(
+                buttonVariants({
+                  variant: 'outline',
+                  size: 'auto',
+                }),
+                'flex animate-pulse flex-col items-center justify-center gap-3 rounded-md bg-gray-500 p-6',
+              )}
+              key={index}
+            >
+              <div className="flex aspect-square w-full items-center justify-center rounded-sm bg-gray-600/30">
+                <SheetFileIcon className="h-8 w-8 text-gray-50" />
+              </div>
+              <div className="flex flex-col items-center gap-1">
+                <span className="h-4 w-24 rounded-sm bg-gray-500" />
+                <span className="h-3 w-16 rounded-sm bg-gray-500" />
+              </div>
+            </div>
+          ))}
+        {isSuccess && !data.length && (
+          <div className="col-span-4 flex flex-col items-center justify-center gap-3 rounded-md p-6">
+            <svg
+              className="h-8 w-8"
+              fill="currentColor"
+              height="1em"
+              stroke="currentColor"
+              strokeWidth="0"
+              viewBox="0 0 16 16"
+              width="1em"
+            >
+              <path d="m.5 3 .04.87a2 2 0 0 0-.342 1.311l.637 7A2 2 0 0 0 2.826 14H9v-1H2.826a1 1 0 0 1-.995-.91l-.637-7A1 1 0 0 1 2.19 4h11.62a1 1 0 0 1 .996 1.09L14.54 8h1.005l.256-2.819A2 2 0 0 0 13.81 3H9.828a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 6.172 1H2.5a2 2 0 0 0-2 2m5.672-1a1 1 0 0 1 .707.293L7.586 3H2.19q-.362.002-.683.12L1.5 2.98a1 1 0 0 1 1-.98z" />
+              <path d="M13.5 9a.5.5 0 0 1 .5.5V11h1.5a.5.5 0 1 1 0 1H14v1.5a.5.5 0 1 1-1 0V12h-1.5a.5.5 0 0 1 0-1H13V9.5a.5.5 0 0 1 .5-.5" />
+            </svg>
+            <div className="flex flex-col items-center">
+              <h2 className="text-lg font-medium">No Sheets found.</h2>
+              <p className="text-gray-80 text-sm">
+                Start connecting your data with Shinkai Sheet!
+              </p>
+            </div>
+            <CreateSheetModal />
           </div>
         )}
       </div>
@@ -78,9 +117,11 @@ export default SheetDashboard;
 function SheetCard({
   sheetId,
   sheetName,
+  sheetLastUpdated,
 }: {
   sheetId: string;
   sheetName: string;
+  sheetLastUpdated: string;
 }) {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
@@ -102,7 +143,9 @@ function SheetCard({
         </div>
         <div className="flex flex-col gap-1">
           <span className="line-clamp-1">{sheetName}</span>
-          {/*<span className="text-gray-80 text-xs"> Updated 2 days ago</span>*/}
+          <span className="text-gray-80 text-xs">
+            Updated {formatDistanceToNow(sheetLastUpdated)}
+          </span>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
