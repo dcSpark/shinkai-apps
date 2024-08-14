@@ -303,6 +303,42 @@ export type Workflow = {
   version: string;
 };
 
+export type ToolConfig = {
+  BasicConfig: {
+    description: string;
+    key_name: string;
+    key_value: string | null;
+    required: boolean;
+  };
+};
+
+export type ToolArgument = {
+  name: string;
+  arg_type: string;
+  description: string;
+  is_required: boolean;
+};
+
+export type Embedding = {
+  id: string;
+  vector: number[];
+};
+
+export type JSTool = {
+  toolkit_name: string;
+  name: string;
+  author: string;
+  js_code: string;
+  config: ToolConfig[];
+  description: string;
+  keywords: string[];
+  input_args: ToolArgument[];
+  config_set: boolean;
+  activated: boolean;
+  embedding?: Embedding;
+  // result: JSToolResult;
+};
+
 export enum ColumnType {
   Text = 'Text',
   Number = 'Number',

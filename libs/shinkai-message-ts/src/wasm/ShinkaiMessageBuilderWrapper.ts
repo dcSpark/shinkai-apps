@@ -2181,4 +2181,86 @@ export class ShinkaiMessageBuilderWrapper {
     const message = builder.build_to_string();
     return message;
   }
+  static getTool(
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    toolKey: string,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+    receiver_subidentity: string,
+  ): string {
+    const body = JSON.stringify(toolKey);
+
+    const builder = new ShinkaiMessageBuilderWrapper(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key,
+    );
+
+    builder.message_raw_content(body);
+    builder.message_schema_type(MessageSchemaType.GetShinkaiTool.toString());
+    builder.internal_metadata(
+      sender_subidentity,
+      receiver_subidentity,
+      '',
+      'None',
+    );
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
+
+    const message = builder.build_to_string();
+    return message;
+  }
+  static updateTool(
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+    receiver_subidentity: string,
+  ): string {
+    const body = JSON.stringify({
+      // TODO:
+      type: 'JS',
+      content: [
+        {
+          toolkit_name: 'shinkai__math_expression_evaluator',
+          name: 'shinkai__math_expression_evaluator',
+          author: 'Shinkai',
+          js_code: '',
+          config: [],
+          description: 'A simple JS tool',
+          keywords: ['example', 'js'],
+          input_args: [],
+          config_set: false,
+          activated: true,
+          embedding: null,
+        },
+        true,
+      ],
+    });
+
+    const builder = new ShinkaiMessageBuilderWrapper(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key,
+    );
+
+    builder.message_raw_content(body);
+    builder.message_schema_type(MessageSchemaType.SetShinkaiTool.toString());
+    builder.internal_metadata(
+      sender_subidentity,
+      receiver_subidentity,
+      '',
+      'None',
+    );
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
+
+    const message = builder.build_to_string();
+    return message;
+  }
 }
