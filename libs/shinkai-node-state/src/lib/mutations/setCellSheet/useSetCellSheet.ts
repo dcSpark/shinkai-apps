@@ -16,10 +16,6 @@ export const useSetCellSheet = (options?: Options) => {
     mutationFn: setCellSheet,
     ...options,
     onSuccess: (response, variables, context) => {
-      queryClient.invalidateQueries({
-        queryKey: [FunctionKey.GET_SHEET],
-      });
-
       if (options?.onSuccess) {
         options.onSuccess(response, variables, context);
       }
