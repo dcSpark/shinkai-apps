@@ -1,4 +1,7 @@
+import { ColumnStatus } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
 import { ShinkaiMessageBuilderWrapper } from '@shinkai_network/shinkai-message-ts/wasm/ShinkaiMessageBuilderWrapper';
+import { FunctionKey } from '@shinkai_network/shinkai-node-state/lib/constants';
+import { Sheet } from '@shinkai_network/shinkai-node-state/lib/queries/getSheet/types';
 import { useGetSheet } from '@shinkai_network/shinkai-node-state/lib/queries/getSheet/useGetSheet';
 import {
   Breadcrumb,
@@ -16,7 +19,7 @@ import {
 import { SheetIcon } from '@shinkai_network/shinkai-ui/assets';
 import { useClickAway } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-// import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   ColumnFiltersState,
   flexRender,
@@ -58,31 +61,82 @@ const useWebsocketUpdateCell = ({ enabled }: { enabled: boolean }) => {
   const socketUrl = `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`;
   const { sheetId } = useParams();
 
-  // const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
   const { sendMessage, lastMessage, readyState } = useWebSocket(
     socketUrl,
-    {
-      share: true,
-    },
+    {},
     enabled,
   );
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled || !auth) return;
     if (lastMessage?.data) {
       try {
-        const data = JSON.parse(lastMessage.data);
-        console.log(data, 'sheetCell data', '===>', readyState);
+        const parseData: {
+          message_type: 'Stream' | 'ShinkaiMessage' | 'Sheet';
+          inbox: string;
+          message: string;
+          error_message: string;
+          metadata?: {
+            id: string;
+            is_done: boolean;
+            done_reason: string;
+            total_duration: number;
+            eval_count: number;
+          };
+        } = JSON.parse(lastMessage.data);
+
+        if (parseData.message_type === 'Sheet') {
+          const cellDataParsed: {
+            data: {
+              column_id: string;
+              input_hash: null;
+              last_updated: string;
+              row_id: string;
+              status: 'Pending' | 'Ready';
+              value: string;
+            };
+            sheetId: string;
+            updated_type: 'CellUpdated';
+          } = JSON.parse(parseData.message);
+
+          const queryKey = [
+            FunctionKey.GET_SHEET,
+            {
+              nodeAddress: auth?.node_address,
+              sheetId: sheetId,
+              profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+              profile_identity_sk: auth?.profile_identity_sk ?? '',
+              my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+              my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+              node_encryption_pk: auth?.node_encryption_pk ?? '',
+              profile: auth?.profile ?? '',
+              shinkaiIdentity: auth?.shinkai_identity ?? '',
+            },
+          ];
+
+          queryClient.setQueryData(queryKey, (prev: Sheet) => {
+            const newSheetData = structuredClone(prev);
+            const cell =
+              newSheetData.rows[cellDataParsed.data.row_id]?.[
+                cellDataParsed.data.column_id
+              ];
+            cell.value = cellDataParsed.data.value;
+            cell.status = cellDataParsed.data.status as ColumnStatus;
+            cell.last_updated = cellDataParsed.data.last_updated;
+            return newSheetData;
+          });
+        }
       } catch (e) {
         console.error(e);
       }
     }
-  }, [enabled, lastMessage?.data, readyState]);
+  }, [auth, enabled, lastMessage?.data, queryClient, readyState, sheetId]);
 
   useEffect(() => {
     if (!enabled) return;
     const wsMessage = {
-      subscriptions: [{ topic: 'sheet', subtopic: sheetId }],
+      subscriptions: [{ topic: 'sheet', subtopic: '' }],
       unsubscriptions: [],
     };
     const wsMessageString = JSON.stringify(wsMessage);
@@ -120,22 +174,17 @@ const SheetProject = () => {
 
   useWebsocketUpdateCell({ enabled: true });
 
-  const { data: sheetInfo } = useGetSheet(
-    {
-      nodeAddress: auth?.node_address ?? '',
-      sheetId: sheetId ?? '',
-      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-      profile_identity_sk: auth?.profile_identity_sk ?? '',
-      my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-      my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-      node_encryption_pk: auth?.node_encryption_pk ?? '',
-      profile: auth?.profile ?? '',
-      shinkaiIdentity: auth?.shinkai_identity ?? '',
-    },
-    {
-      refetchInterval: 5000,
-    },
-  );
+  const { data: sheetInfo } = useGetSheet({
+    nodeAddress: auth?.node_address ?? '',
+    sheetId: sheetId ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile: auth?.profile ?? '',
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+  });
 
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({

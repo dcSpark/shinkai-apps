@@ -1997,32 +1997,37 @@ export const setColumnSheet = async (
   receiver_subidentity: string,
   setupDetailsState: CredentialsPayload,
 ) => {
-  const messageStr = ShinkaiMessageBuilderWrapper.setColumnSheet(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    sheetId,
-    columnId,
-    columnName,
-    columnBehavior,
-    sender,
-    sender_subidentity,
-    receiver,
-    receiver_subidentity,
-  );
+  try {
+    const messageStr = ShinkaiMessageBuilderWrapper.setColumnSheet(
+      setupDetailsState.profile_encryption_sk,
+      setupDetailsState.profile_identity_sk,
+      setupDetailsState.node_encryption_pk,
+      sheetId,
+      columnId,
+      columnName,
+      columnBehavior,
+      sender,
+      sender_subidentity,
+      receiver,
+      receiver_subidentity,
+    );
 
-  const message = JSON.parse(messageStr);
+    const message = JSON.parse(messageStr);
 
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/set_column'),
-    message,
-    {
-      responseType: 'json',
-    },
-  );
+    const response = await httpClient.post(
+      urlJoin(nodeAddress, '/v1/set_column'),
+      message,
+      {
+        responseType: 'json',
+      },
+    );
 
-  const data = response.data;
-  return data;
+    const data = response.data;
+    return data;
+  } catch (error) {
+    console.error('Error setColumnSheet:', error);
+    throw error;
+  }
 };
 export const removeColumnSheet = async (
   nodeAddress: string,

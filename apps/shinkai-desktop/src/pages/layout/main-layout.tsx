@@ -277,17 +277,17 @@ export function MainNav() {
     optInExperimental && {
       title: 'Workflow Playground',
       href: '/workflow-playground',
-      icon: <WorkflowPlaygroundIcon />,
+      icon: <WorkflowPlaygroundIcon className="h-5 w-5" />,
     },
     optInExperimental && {
       title: 'Shinkai Sheet',
       href: '/sheets',
-      icon: <SheetIcon />,
+      icon: <SheetIcon className="h-5 w-5" />,
     },
     optInExperimental && {
       title: 'Shinkai Tools',
       href: '/tools',
-      icon: <ToolsIcon />,
+      icon: <ToolsIcon className="h-5 w-5" />,
     },
   ].filter(Boolean) as NavigationLink[];
 
