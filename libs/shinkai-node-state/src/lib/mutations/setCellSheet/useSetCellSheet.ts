@@ -4,14 +4,12 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 
-import { FunctionKey } from '../../constants';
 import { setCellSheet } from './index';
 import { SetCellSheetInput, SetCellSheetOutput } from './types';
 
 type Options = UseMutationOptions<SetCellSheetOutput, Error, SetCellSheetInput>;
 
 export const useSetCellSheet = (options?: Options) => {
-  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: setCellSheet,
     ...options,
