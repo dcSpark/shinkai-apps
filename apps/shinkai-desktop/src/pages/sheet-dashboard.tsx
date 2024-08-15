@@ -240,7 +240,11 @@ function CreateSheetModal() {
               control={shareFolderForm.control}
               name="projectName"
               render={({ field }) => (
-                <TextField autoFocus field={field} label={'Project Name'} />
+                <TextField
+                  autoFocus
+                  field={{ ...field, onFocus: (e) => e.currentTarget.select() }}
+                  label={'Project Name'}
+                />
               )}
             />
             <DialogFooter>

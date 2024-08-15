@@ -141,10 +141,10 @@ export function DataTableCell<TData>({
         setSelectedCell({ columnId: colId, rowId: rowId, isFocused: true });
         return;
       }
-      if (ev.key === 'Backspace') {
-        setCellValue('');
+      if (ev.key === 'Backspace' && !selectedCell.isFocused) {
         ev.preventDefault();
         ev.stopPropagation();
+        setCellValue('');
         handleUpdateCell(selectedCell.columnId, selectedCell.rowId);
         return;
       }
@@ -193,7 +193,7 @@ export function DataTableCell<TData>({
   return (
     <div
       className={cn(
-        'relative flex size-full items-center justify-start gap-1.5 rounded-lg bg-transparent px-2 py-1 pr-0',
+        'relative flex size-full items-center justify-start gap-1.5 rounded-lg bg-transparent px-2 py-1 pr-0 outline-none',
         isSelected &&
           'outline-brand rounded-sm outline outline-1 -outline-offset-1',
       )}
@@ -224,7 +224,7 @@ export function DataTableCell<TData>({
       }}
       ref={ref}
       role="button"
-      tabIndex={isFocused ? 0 : -1}
+      tabIndex={isSelected ? 0 : -1}
     >
       {isFocused ? (
         <div

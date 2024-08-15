@@ -289,6 +289,9 @@ export function AddColumnAction() {
                           autoFocus
                           className="placeholder-gray-80 !h-[40px] resize-none border-none bg-gray-200 py-0 pl-2 pt-0 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
                           onChange={field.onChange}
+                          onFocus={(e) => {
+                            e.currentTarget.select();
+                          }}
                           placeholder={'Column Name'}
                           value={field.value}
                         />

@@ -113,7 +113,7 @@ const useTableHotkeys = ({ rows, leafColumns }: Props) => {
 
       setSelectedCell({ columnId: colId, rowId: rowId, isFocused: false });
     },
-    { enableOnFormTags: true, preventDefault: true },
+    { preventDefault: true },
     [rows, leafColumns, selectedCell, setSelectedCell],
   );
 };
