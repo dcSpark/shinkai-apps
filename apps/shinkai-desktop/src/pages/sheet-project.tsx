@@ -1,3 +1,4 @@
+import { ShinkaiMessageBuilderWrapper } from '@shinkai_network/shinkai-message-ts/wasm/ShinkaiMessageBuilderWrapper';
 import { useGetSheet } from '@shinkai_network/shinkai-node-state/lib/queries/getSheet/useGetSheet';
 import {
   Breadcrumb,
@@ -15,6 +16,7 @@ import {
 import { SheetIcon } from '@shinkai_network/shinkai-ui/assets';
 import { useClickAway } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+// import { useQueryClient } from '@tanstack/react-query';
 import {
   ColumnFiltersState,
   flexRender,
@@ -27,8 +29,9 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 import { AnimatePresence, motion } from 'framer-motion';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import useWebSocket from 'react-use-websocket';
 
 import { generateColumns } from '../components/sheet/columns';
 import { useSheetProjectStore } from '../components/sheet/context/table-context';
@@ -49,6 +52,61 @@ import { useSettings } from '../store/settings';
 
 const MotionTableCell = motion(TableCell);
 
+const useWebsocketUpdateCell = ({ enabled }: { enabled: boolean }) => {
+  const auth = useAuth((state) => state.auth);
+  const nodeAddressUrl = new URL(auth?.node_address ?? 'http://localhost:9850');
+  const socketUrl = `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`;
+  const { sheetId } = useParams();
+
+  // const queryClient = useQueryClient();
+  const { sendMessage, lastMessage, readyState } = useWebSocket(
+    socketUrl,
+    {
+      share: true,
+    },
+    enabled,
+  );
+
+  useEffect(() => {
+    if (!enabled) return;
+    if (lastMessage?.data) {
+      try {
+        console.log(lastMessage.data, 'sheetCell data', '===>', readyState);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }, [enabled, lastMessage?.data, readyState]);
+
+  useEffect(() => {
+    if (!enabled) return;
+    const wsMessage = {
+      subscriptions: [{ topic: 'sheet', subtopic: sheetId }],
+      unsubscriptions: [],
+    };
+    const wsMessageString = JSON.stringify(wsMessage);
+    const shinkaiMessage = ShinkaiMessageBuilderWrapper.ws_connection(
+      wsMessageString,
+      auth?.profile_encryption_sk ?? '',
+      auth?.profile_identity_sk ?? '',
+      auth?.node_encryption_pk ?? '',
+      auth?.shinkai_identity ?? '',
+      auth?.profile ?? '',
+      '',
+      '',
+    );
+    sendMessage(shinkaiMessage);
+  }, [
+    auth?.node_encryption_pk,
+    auth?.profile,
+    auth?.profile_encryption_sk,
+    auth?.profile_identity_sk,
+    auth?.shinkai_identity,
+    enabled,
+    sendMessage,
+  ]);
+};
+
 const SheetProject = () => {
   const auth = useAuth((state) => state.auth);
   const heightRow = useSettings((state) => state.heightRow);
@@ -58,6 +116,9 @@ const SheetProject = () => {
   );
 
   const { sheetId } = useParams();
+
+  useWebsocketUpdateCell({ enabled: true });
+
   const { data: sheetInfo } = useGetSheet(
     {
       nodeAddress: auth?.node_address ?? '',
