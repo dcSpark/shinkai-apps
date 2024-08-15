@@ -4,6 +4,7 @@ import { Navigate, Outlet, Route, Routes, useNavigate } from 'react-router-dom';
 import { TableSheetProvider } from '../components/sheet/context/table-context';
 import PublicSharedFolderSubscription from '../components/subscriptions/public-shared-folders';
 import MySubscriptions from '../components/subscriptions/subscriptions';
+import ToolDetails from '../components/tools/tool-details';
 import { VectorFolderSelectionProvider } from '../components/vector-fs/components/folder-selection-list';
 import { VectorFsProvider } from '../components/vector-fs/context/vector-fs-context';
 import VectorFs from '../components/vector-fs/vector-fs';
@@ -268,11 +269,14 @@ const AppRoutes = () => {
         <Route
           element={
             <ProtectedRoute>
-              <Tools />
+              <Outlet />
             </ProtectedRoute>
           }
-          path={'/tools'}
-        />
+          path={'tools'}
+        >
+          <Route element={<Tools />} index />
+          <Route element={<ToolDetails />} path={':toolKey'} />
+        </Route>
         <Route
           element={
             <ProtectedRoute>

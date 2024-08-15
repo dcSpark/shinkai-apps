@@ -1,5 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Workflow } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
+import {
+  // JSShinkaiTool,
+  ShinkaiTool,
+  Workflow,
+  WorkflowShinkaiTool,
+} from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/lib/mutations/updateTool/useUpdateTool';
 import { useUpdateWorkflow } from '@shinkai_network/shinkai-node-state/lib/mutations/updateWorkflow/useUpdateWorkflow';
 import { useGetTool } from '@shinkai_network/shinkai-node-state/lib/queries/getTool/useGetTool';
@@ -8,10 +13,7 @@ import {
   Avatar,
   AvatarFallback,
   Button,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
+  buttonVariants,
   Form,
   FormControl,
   FormField,
@@ -19,20 +21,30 @@ import {
   FormLabel,
   FormMessage,
   ScrollArea,
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
   Switch,
   Textarea,
   TextField,
+  Tooltip,
+  TooltipContent,
+  TooltipPortal,
+  TooltipProvider,
+  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { BoltIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { useAuth } from '../store/auth';
 import { formatWorkflowName } from './create-job';
-import { SubpageLayout } from './layout/simple-layout';
+import { SimpleLayout } from './layout/simple-layout';
 
 export const Tools = () => {
   const auth = useAuth((state) => state.auth);
@@ -54,7 +66,7 @@ export const Tools = () => {
   const { mutateAsync: updateTool } = useUpdateTool({});
 
   return (
-    <SubpageLayout className="max-w-3xl" title={'Shinkai Tools'}>
+    <SimpleLayout title={'Shinkai Tools'}>
       <ScrollArea className="pr-4 [&>div>div]:!block">
         <div className="grid grid-cols-2 gap-4">
           {toolsList?.map((tool) => (
@@ -83,38 +95,50 @@ export const Tools = () => {
               </div>
 
               <div className="flex items-center justify-between border-t px-4 py-2">
-                <Button
-                  className="min-h-auto h-auto rounded-md py-2"
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    setSelectedToolEdit(tool);
-                  }}
-                  size="sm"
-                  type="button"
-                  variant="outline"
+                <Link
+                  className={cn(
+                    buttonVariants({
+                      variant: 'outline',
+                      size: 'sm',
+                    }),
+                    'min-h-auto h-auto rounded-md py-2',
+                  )}
+                  to={`/tools/${tool.tool_router_key}`}
                 >
                   <BoltIcon className="mr-1.5 h-4 w-4" />
                   Configure
-                </Button>
-                <Switch
-                  // checked={tool.enabled}
-                  onCheckedChange={async (value) => {
-                    console.log(tool.name, '---value', value);
-                    await updateTool({
-                      nodeAddress: auth?.node_address ?? '',
-                      shinkaiIdentity: auth?.shinkai_identity ?? '',
-                      profile: auth?.profile ?? '',
-                      my_device_encryption_sk:
-                        auth?.my_device_encryption_sk ?? '',
-                      my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-                      node_encryption_pk: auth?.node_encryption_pk ?? '',
-                      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-                      profile_identity_sk: auth?.profile_identity_sk ?? '',
-                      // toolKey: tool.tool_router_key,
-                      // enabled: value,
-                    });
-                  }}
-                />
+                </Link>
+                <TooltipProvider delayDuration={0}>
+                  <Tooltip>
+                    <TooltipTrigger className="flex items-center gap-1">
+                      <Switch
+                        checked={tool.enabled}
+                        onCheckedChange={async () => {
+                          // TODO: fix
+                          await updateTool({
+                            nodeAddress: auth?.node_address ?? '',
+                            shinkaiIdentity: auth?.shinkai_identity ?? '',
+                            profile: auth?.profile ?? '',
+                            my_device_encryption_sk:
+                              auth?.my_device_encryption_sk ?? '',
+                            my_device_identity_sk:
+                              auth?.my_device_identity_sk ?? '',
+                            node_encryption_pk: auth?.node_encryption_pk ?? '',
+                            profile_encryption_sk:
+                              auth?.profile_encryption_sk ?? '',
+                            profile_identity_sk:
+                              auth?.profile_identity_sk ?? '',
+                          });
+                        }}
+                      />
+                    </TooltipTrigger>
+                    <TooltipPortal>
+                      <TooltipContent align="center" side="top">
+                        Enabled
+                      </TooltipContent>
+                    </TooltipPortal>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
             </div>
           ))}
@@ -131,7 +155,7 @@ export const Tools = () => {
           toolKey={selectedToolEdit.tool_router_key}
         />
       )}
-    </SubpageLayout>
+    </SimpleLayout>
   );
 };
 const createToolFormSchema = z.object({
@@ -139,6 +163,14 @@ const createToolFormSchema = z.object({
   toolDescription: z.string().min(1, 'Tool description is required'),
 });
 type CreateToolFormSchema = z.infer<typeof createToolFormSchema>;
+
+function isWorkflowShinkaiTool(tool: ShinkaiTool): tool is WorkflowShinkaiTool {
+  return (tool as WorkflowShinkaiTool).workflow !== undefined;
+}
+
+// function isJSShinkaiTool(tool: ShinkaiTool): tool is JSShinkaiTool {
+//   return (tool as JSShinkaiTool).js_code !== undefined;
+// }
 
 function UpdateToolDrawer({
   toolKey,
@@ -150,7 +182,7 @@ function UpdateToolDrawer({
   setOpen: (isOpen: boolean) => void;
 }) {
   const auth = useAuth((state) => state.auth);
-  const { data } = useGetTool({
+  const { data, isSuccess } = useGetTool({
     nodeAddress: auth?.node_address ?? '',
     toolKey: toolKey,
     shinkaiIdentity: auth?.shinkai_identity ?? '',
@@ -161,6 +193,10 @@ function UpdateToolDrawer({
     profile_encryption_sk: auth?.profile_encryption_sk ?? '',
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
+
+  const shinkaiTool: ShinkaiTool = isSuccess
+    ? data?.content[0]
+    : ({} as ShinkaiTool);
 
   const createWorkflowForm = useForm<CreateToolFormSchema>({
     resolver: zodResolver(createToolFormSchema),
@@ -197,11 +233,21 @@ function UpdateToolDrawer({
     });
   };
   return (
-    <Dialog onOpenChange={setOpen} open={open}>
-      <DialogContent className="bg-gray-500">
-        <DialogHeader>
-          <DialogTitle>Update workflow</DialogTitle>
-          <div>
+    <Sheet onOpenChange={setOpen} open={open}>
+      <SheetContent className="bg-gray-500">
+        <SheetHeader>
+          <SheetTitle className="mb-4">Details</SheetTitle>
+          <div className="flex flex-col gap-1">
+            <h2 className="font-medium text-white">
+              {isWorkflowShinkaiTool(shinkaiTool)
+                ? formatWorkflowName(shinkaiTool.workflow.name)
+                : formatWorkflowName(shinkaiTool.name)}
+            </h2>
+            <p className="text-gray-80 text-sm">
+              {isWorkflowShinkaiTool(shinkaiTool)
+                ? shinkaiTool.workflow.description
+                : shinkaiTool.description}
+            </p>
             <Form {...createWorkflowForm}>
               <form
                 className="mt-5 flex flex-col gap-3"
@@ -257,8 +303,8 @@ function UpdateToolDrawer({
               </form>
             </Form>
           </div>
-        </DialogHeader>
-      </DialogContent>
-    </Dialog>
+        </SheetHeader>
+      </SheetContent>
+    </Sheet>
   );
 }

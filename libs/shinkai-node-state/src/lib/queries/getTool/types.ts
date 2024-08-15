@@ -1,6 +1,7 @@
 import {
   JobCredentialsPayload,
-  Workflow,
+  ShinkaiTool,
+  ShinkaiToolType,
 } from '@shinkai_network/shinkai-message-ts/models';
 
 export type GetToolInput = JobCredentialsPayload & {
@@ -10,4 +11,7 @@ export type GetToolInput = JobCredentialsPayload & {
   toolKey: string;
 };
 
-export type GetToolOutput = Workflow[];
+export type GetToolOutput = {
+  content: [ShinkaiTool, boolean];
+  type: ShinkaiToolType;
+};

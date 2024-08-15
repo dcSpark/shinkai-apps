@@ -8,19 +8,29 @@ export const SubpageLayout = ({
   title,
   children,
   className,
+  alignLeft,
 }: {
   title: React.ReactNode;
   children: React.ReactNode;
   className?: string;
+  alignLeft?: boolean;
 }) => {
   const { t } = useTranslation();
   return (
     <div className={cn('relative mx-auto max-w-xl py-10', className)}>
-      <Link className="absolute left-4" to={-1 as To}>
+      <Link
+        className={cn('absolute left-4', alignLeft && 'left-0')}
+        to={-1 as To}
+      >
         <LucideArrowLeft />
         <span className="sr-only">{t('common.back')}</span>
       </Link>
-      <h1 className="mb-8 text-center text-2xl font-semibold tracking-tight">
+      <h1
+        className={cn(
+          'mb-8 text-center text-2xl font-semibold tracking-tight',
+          alignLeft && 'pl-[40px] pt-0 text-left text-xl',
+        )}
+      >
         {title}
       </h1>
       <div className="flex-1">{children}</div>
