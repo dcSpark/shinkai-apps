@@ -71,7 +71,8 @@ const useWebsocketUpdateCell = ({ enabled }: { enabled: boolean }) => {
     if (!enabled) return;
     if (lastMessage?.data) {
       try {
-        console.log(lastMessage.data, 'sheetCell data', '===>', readyState);
+        const data = JSON.parse(lastMessage.data);
+        console.log(data, 'sheetCell data', '===>', readyState);
       } catch (e) {
         console.error(e);
       }
