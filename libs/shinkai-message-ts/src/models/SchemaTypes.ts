@@ -56,6 +56,21 @@ export enum MessageSchemaType {
   AddWorkflow = 'AddWorkflow',
   UpdateWorkflow = 'UpdateWorkflow',
   RemoveWorkflow = 'RemoveWorkflow',
+  // sheet
+  UserSheets = 'UserSheets',
+  SetColumn = 'SetColumn',
+  RemoveColumn = 'RemoveColumn',
+  RemoveSheet = 'RemoveSheet',
+  CreateEmptySheet = 'CreateEmptySheet',
+  SetCellValue = 'SetCellValue',
+  GetSheet = 'GetSheet',
+  AddRows = 'AddRows',
+  RemoveRows = 'RemoveRows',
+  // tools
+  ListAllShinkaiTools = 'ListAllShinkaiTools',
+  GetShinkaiTool = 'GetShinkaiTool',
+  SetShinkaiTool = 'SetShinkaiTool',
+  SearchShinkaiTool = 'SearchShinkaiTool',
 }
 
 export interface LocalScopeVRKaiEntry {
@@ -281,3 +296,112 @@ export interface Exo {
 export interface APIAddAgentRequest {
   agent: SerializedLLMProvider;
 }
+
+export type WorkflowRaw = {
+  name: string;
+  version: string;
+  // steps: Vec<Step>;
+  raw: string;
+  description?: string;
+  author: string;
+  sticky: boolean;
+};
+export type Workflow = {
+  author: string;
+  config?: string;
+  description: string;
+  enabled: boolean;
+  formatted_tool_summary_for_ui: string;
+  name: string;
+  tool_router_key: string;
+  tool_type: ShinkaiToolType;
+  version: string;
+};
+
+export type ToolConfig = {
+  BasicConfig: {
+    description: string;
+    key_name: string;
+    key_value: string | null;
+    required: boolean;
+  };
+};
+export type WorkflowShinkaiTool = {
+  workflow: WorkflowRaw;
+  embedding: Embedding[];
+};
+export type ToolArgument = {
+  name: string;
+  arg_type: string;
+  description: string;
+  is_required: boolean;
+};
+
+type Embedding = {
+  id: string;
+  vector: number[];
+};
+
+type JSToolResult = {
+  result_type: string;
+  properties: Record<string, string>;
+  required: string[];
+};
+export type JSShinkaiTool = {
+  toolkit_name: string;
+  name: string;
+  author: string;
+  js_code: string;
+  config: ToolConfig[];
+  description: string;
+  keywords: string[];
+  input_args: ToolArgument[];
+  config_set: boolean;
+  activated: boolean;
+  embedding?: Embedding;
+  result: JSToolResult;
+};
+export type ShinkaiToolType = 'JS' | 'Workflow';
+export type ShinkaiTool = WorkflowShinkaiTool | JSShinkaiTool;
+
+export enum ColumnType {
+  Text = 'Text',
+  Number = 'Number',
+  Formula = 'Formula',
+  UploadedFiles = 'UploadedFiles',
+  LLMCall = 'LLMCall',
+  MultipleVRFiles = 'MultipleVRFiles',
+}
+export enum ColumnStatus {
+  Ready = 'Ready',
+  Pending = 'Pending',
+  Error = 'Error',
+}
+export type LLMCallPayload = {
+  input: string;
+  workflow?: WorkflowRaw;
+  workflow_name?: string;
+  llm_provider_name: string;
+  input_hash?: string;
+};
+export type ColumnBehavior =
+  | ColumnType.Text
+  | ColumnType.Number
+  | { [ColumnType.Formula]: string }
+  | { [ColumnType.UploadedFiles]: { files: string[] } }
+  | {
+      [ColumnType.LLMCall]: LLMCallPayload;
+    }
+  | {
+      [ColumnType.MultipleVRFiles]: {
+        files: [string, string][];
+      };
+    };
+
+export type Columns = {
+  [key: string]: {
+    behavior?: ColumnBehavior;
+    id: string;
+    name: string;
+  };
+};

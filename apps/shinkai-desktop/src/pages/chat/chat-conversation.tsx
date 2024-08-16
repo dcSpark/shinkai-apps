@@ -81,7 +81,7 @@ import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useDebounce } from '../../hooks/use-debounce';
 import { useAnalytics } from '../../lib/posthog-provider';
 import { useAuth } from '../../store/auth';
-import { formatWorkflowName } from '../create-job';
+import { formatText } from '../create-job';
 enum ErrorCodes {
   VectorResource = 'VectorResource',
   ShinkaiBackendInferenceLimitReached = 'ShinkaiBackendInferenceLimitReached',
@@ -450,7 +450,7 @@ const ChatConversation = () => {
     if (isWorkflowSelectedAndFilesPresent) {
       chatForm.setValue(
         'message',
-        `${formatWorkflowName(workflowSelected.name)} - ${workflowSelected.description}`,
+        `${formatText(workflowSelected.name)} - ${workflowSelected.description}`,
       );
     }
   }, [chatForm, isWorkflowSelectedAndFilesPresent, workflowSelected]);
@@ -565,7 +565,7 @@ const ChatConversation = () => {
                                           <WorkflowPlaygroundIcon className="h-3.5 w-3.5" />
                                           <div className="text-gray-80 line-clamp-1 text-xs">
                                             <span className="text-white">
-                                              {formatWorkflowName(
+                                              {formatText(
                                                 workflowSelected.name,
                                               )}{' '}
                                             </span>
@@ -658,23 +658,14 @@ const ChatConversation = () => {
                                   )}
                                   exit={{ opacity: 0, x: -10 }}
                                   initial={{ opacity: 0, x: -10 }}
-                                  key={workflow.Workflow.workflow.name}
+                                  key={workflow.name}
                                   onClick={() => {
-                                    setWorkflowSelected({
-                                      description:
-                                        workflow.Workflow.workflow.description,
-                                      name: workflow.Workflow.workflow.name,
-                                      raw: workflow.Workflow.workflow.raw,
-                                      version:
-                                        workflow.Workflow.workflow.version,
-                                    });
+                                    setWorkflowSelected(workflow);
                                   }}
                                   type="button"
                                 >
                                   <WorkflowPlaygroundIcon className="h-3 w-3" />
-                                  {formatWorkflowName(
-                                    workflow.Workflow.workflow.name,
-                                  )}
+                                  {formatText(workflow.name)}
                                 </motion.button>
                               ))}
                           </div>

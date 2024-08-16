@@ -1,8 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import { Navigate, Outlet, Route, Routes, useNavigate } from 'react-router-dom';
 
+import { TableSheetProvider } from '../components/sheet/context/table-context';
 import PublicSharedFolderSubscription from '../components/subscriptions/public-shared-folders';
 import MySubscriptions from '../components/subscriptions/subscriptions';
+import ToolDetails from '../components/tools/tool-details';
 import { VectorFolderSelectionProvider } from '../components/vector-fs/components/folder-selection-list';
 import { VectorFsProvider } from '../components/vector-fs/context/vector-fs-context';
 import VectorFs from '../components/vector-fs/vector-fs';
@@ -37,7 +39,10 @@ import OnboardingPage from '../pages/onboarding';
 import { PublicKeys } from '../pages/public-keys';
 import RestoreConnectionPage from '../pages/restore-connection';
 import SettingsPage from '../pages/settings';
+import SheetDashboard from '../pages/sheet-dashboard';
+import SheetProject from '../pages/sheet-project';
 import ShinkaiPrivatePage from '../pages/shinkai-private';
+import { Tools } from '../pages/tools';
 import TermsAndConditionsPage from '../pages/welcome';
 import WorkflowPlayground from '../pages/workflow-playground';
 import { useAuth } from '../store/auth';
@@ -217,6 +222,25 @@ const AppRoutes = () => {
           }
           path={'/create-job'}
         />
+
+        <Route
+          element={
+            <ProtectedRoute>
+              <Outlet />
+            </ProtectedRoute>
+          }
+          path="sheets"
+        >
+          <Route element={<SheetDashboard />} index />
+          <Route
+            element={
+              <TableSheetProvider>
+                <SheetProject />
+              </TableSheetProvider>
+            }
+            path=":sheetId"
+          />
+        </Route>
         <Route
           element={
             <ProtectedRoute>
@@ -241,6 +265,17 @@ const AppRoutes = () => {
             }
             path=":inboxId"
           />
+        </Route>
+        <Route
+          element={
+            <ProtectedRoute>
+              <Outlet />
+            </ProtectedRoute>
+          }
+          path={'tools'}
+        >
+          <Route element={<Tools />} index />
+          <Route element={<ToolDetails />} path={':toolKey'} />
         </Route>
         <Route
           element={

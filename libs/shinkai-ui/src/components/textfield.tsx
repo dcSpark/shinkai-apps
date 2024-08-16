@@ -29,6 +29,7 @@ const TextField = ({
   };
   field: {
     onChange?: (...event: any[]) => void;
+    onFocus?: (...event: any[]) => void;
     onKeyDown?: (...event: any[]) => void;
     onBlur?: () => void;
     value: any;

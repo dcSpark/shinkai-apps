@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { cn } from '../../utils';
 import { fileIconMap } from './file';
 
@@ -882,3 +880,125 @@ export const SortingZToA = ({ className }: { className?: string }) => {
     </svg>
   );
 };
+export const SheetFileIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={cn('shrink-0', className)}
+    fill="none"
+    height="24"
+    viewBox="0 0 24 24"
+    width="24"
+  >
+    <path
+      d="M15 2.5V4C15 5.41421 15 6.12132 15.4393 6.56066C15.8787 7 16.5858 7 18 7H19.5"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M4 16V8C4 5.17157 4 3.75736 4.87868 2.87868C5.75736 2 7.17157 2 10 2H14.1716C14.5803 2 14.7847 2 14.9685 2.07612C15.1522 2.15224 15.2968 2.29676 15.5858 2.58579L19.4142 6.41421C19.7032 6.70324 19.8478 6.84776 19.9239 7.03153C20 7.2153 20 7.41968 20 7.82843V16C20 18.8284 20 20.2426 19.1213 21.1213C18.2426 22 16.8284 22 14 22H10C7.17157 22 5.75736 22 4.87868 21.1213C4 20.2426 4 18.8284 4 16Z"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M12 11V14M12 14V17M12 14H7.5M12 14H16.5M9.5 17H14.5C15.4428 17 15.9142 17 16.2071 16.7071C16.5 16.4142 16.5 15.9428 16.5 15V13C16.5 12.0572 16.5 11.5858 16.2071 11.2929C15.9142 11 15.4428 11 14.5 11H9.5C8.55719 11 8.08579 11 7.79289 11.2929C7.5 11.5858 7.5 12.0572 7.5 13V15C7.5 15.9428 7.5 16.4142 7.79289 16.7071C8.08579 17 8.55719 17 9.5 17Z"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+    />
+  </svg>
+);
+
+export const FormulaIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={cn('shrink-0', className)}
+    fill="none"
+    height="24"
+    viewBox="0 0 24 24"
+    width="24"
+  >
+    <path
+      d="M2 18.2222C2.18866 19.0724 2.56908 20 3.56235 20C5.28118 20 5.71088 18.2222 7 12C8.28912 5.77778 8.71882 4 10.4376 4C11.4309 4 11.8113 4.92763 12 5.77778M4.91667 9.77778H10.4376"
+      stroke="currentColor"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M21 12C22.3804 15.253 22.2854 16.9808 21 20"
+      stroke="currentColor"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M12 12C10.6196 15.253 10.7146 16.9808 12 20"
+      stroke="currentColor"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M18.7051 18.0052H17.9757C17.1222 17.8236 17.0632 17.1307 16.7853 16.6332C16.694 16.4203 16.5994 16.2039 16.5074 15.9966M16.5074 15.9966C16.2261 15.3622 15.9699 14.8119 15.9104 14.6998C15.6495 14.2089 15.5505 13.998 14.2815 13.998M16.5074 15.9966C16.6826 15.7631 16.8571 15.5296 17.0333 15.3087C17.6423 14.5845 18.2494 13.998 19.0146 13.998M16.5074 15.9966C15.7533 17.0013 14.9847 18.0052 13.998 18.0052"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    />
+  </svg>
+);
+
+export const SheetIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={cn('shrink-0', className)}
+    color="currentColor"
+    fill="none"
+    height="24"
+    viewBox="0 0 24 24"
+    width="24"
+  >
+    <path
+      d="M11.0343 2.24513L3.68134 6.11508C2.96901 6.49 2.96901 7.51 3.68134 7.88492L11.0343 11.7549C11.3258 11.9083 11.6742 11.9083 11.9657 11.7549L19.3187 7.88492C20.031 7.51 20.031 6.49 19.3187 6.11508L11.9657 2.24513C11.6742 2.09169 11.3258 2.09169 11.0343 2.24513Z"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M3 11L2.95978 11.0402C2.48334 11.5167 2.60489 12.3184 3.20116 12.6322L11.0343 16.7549C11.3258 16.9084 11.6742 16.9084 11.9657 16.7549L19.7988 12.6322C20.3951 12.3184 20.5167 11.5167 20.0402 11.0402L20 11"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M3 16L2.95978 16.0402C2.48334 16.5167 2.60489 17.3184 3.20116 17.6322L11.0343 21.7549C11.3258 21.9084 11.6742 21.9084 11.9657 21.7549L19.7988 17.6322C20.3951 17.3184 20.5167 16.5167 20.0402 16.0402L20 16"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+    />
+  </svg>
+);
+export const ToolsIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={cn('shrink-0', className)}
+    fill="none"
+    height="24"
+    viewBox="0 0 24 24"
+    width="24"
+  >
+    <path
+      d="M5 10H7.5L14 16.5V19C14 20.1046 14.8954 21 16 21H19L17 19V17H19L21 19V16C21 14.8954 20.1046 14 19 14H16.5L10 7.5V5C10 3.89543 9.10457 3 8 3H5L7 5V7H5L3 5V8C3 9.10457 3.89543 10 5 10Z"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M9 12L3.91421 17.0858C3.13317 17.8668 3.13316 19.1332 3.91421 19.9142L4.08579 20.0858C4.86683 20.8668 6.13317 20.8668 6.91421 20.0858L12 15M13.5 10.5L18.5 5.5M18.5 5.5L17.5 4.5L20 3L21 4L19.5 6.5L18.5 5.5Z"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+    />
+  </svg>
+);

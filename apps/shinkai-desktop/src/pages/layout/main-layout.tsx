@@ -27,6 +27,8 @@ import {
   FilesIcon,
   InboxIcon,
   MySubscriptionsIcon,
+  SheetIcon,
+  ToolsIcon,
   WorkflowPlaygroundIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
@@ -274,9 +276,19 @@ export function MainNav() {
       icon: <MySubscriptionsIcon className="h-5 w-5" />,
     },
     optInExperimental && {
-      title: t('layout.menuItems.workflowPlayground'),
+      title: 'Workflow Playground',
       href: '/workflow-playground',
       icon: <WorkflowPlaygroundIcon className="h-5 w-5" />,
+    },
+    optInExperimental && {
+      title: 'Shinkai Sheet',
+      href: '/sheets',
+      icon: <SheetIcon className="h-5 w-5" />,
+    },
+    optInExperimental && {
+      title: 'Shinkai Tools',
+      href: '/tools',
+      icon: <ToolsIcon className="h-5 w-5" />,
     },
   ].filter(Boolean) as NavigationLink[];
 

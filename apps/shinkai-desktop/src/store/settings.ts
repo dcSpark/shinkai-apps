@@ -22,6 +22,8 @@ type SettingsStore = {
   setUserLanguage: (userLanguage: LocaleMode) => void;
   evmAddress: string;
   setEvmAddress: (evmAddress: string) => void;
+  heightRow: 'small' | 'medium' | 'large' | 'extra-large';
+  setHeightRow: (height: 'small' | 'medium' | 'large' | 'extra-large') => void;
 };
 
 export const useSettings = create<SettingsStore>()(
@@ -70,6 +72,11 @@ export const useSettings = create<SettingsStore>()(
         evmAddress: '',
         setEvmAddress: (evmAddress) => {
           set({ evmAddress });
+        },
+
+        heightRow: 'large',
+        setHeightRow: (heightRow) => {
+          set({ heightRow });
         },
       }),
       {

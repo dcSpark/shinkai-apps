@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 import {
+  ColumnBehavior,
   MessageSchemaType,
+  ShinkaiTool,
+  ShinkaiToolType,
   TSEncryptionMethod,
 } from '../models/SchemaTypes.js';
 import {
@@ -1814,6 +1818,460 @@ export class ShinkaiMessageBuilderWrapper {
 
     builder.message_raw_content(body);
     builder.message_schema_type(MessageSchemaType.RemoveWorkflow.toString());
+    builder.internal_metadata(
+      sender_subidentity,
+      receiver_subidentity,
+      '',
+      'None',
+    );
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
+
+    const message = builder.build_to_string();
+    return message;
+  }
+  static getUserSheets(
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+    receiver_subidentity: string,
+  ): string {
+    const body = JSON.stringify('');
+
+    const builder = new ShinkaiMessageBuilderWrapper(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key,
+    );
+
+    builder.message_raw_content(body);
+    builder.message_schema_type(MessageSchemaType.UserSheets.toString());
+    builder.internal_metadata(
+      sender_subidentity,
+      receiver_subidentity,
+      '',
+      'None',
+    );
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
+
+    const message = builder.build_to_string();
+    return message;
+  }
+  static createSheet(
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    sheetName: string,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+    receiver_subidentity: string,
+  ): string {
+    const body = JSON.stringify(sheetName);
+
+    const builder = new ShinkaiMessageBuilderWrapper(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key,
+    );
+
+    builder.message_raw_content(body);
+    builder.message_schema_type(MessageSchemaType.CreateEmptySheet.toString());
+    builder.internal_metadata(
+      sender_subidentity,
+      receiver_subidentity,
+      '',
+      'None',
+    );
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
+
+    const message = builder.build_to_string();
+    return message;
+  }
+  static removeSheet(
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    sheetId: string,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+    receiver_subidentity: string,
+  ): string {
+    const body = JSON.stringify(sheetId);
+
+    const builder = new ShinkaiMessageBuilderWrapper(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key,
+    );
+
+    builder.message_raw_content(body);
+    builder.message_schema_type(MessageSchemaType.RemoveSheet.toString());
+    builder.internal_metadata(
+      sender_subidentity,
+      receiver_subidentity,
+      '',
+      'None',
+    );
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
+
+    const message = builder.build_to_string();
+    return message;
+  }
+  static getSheet(
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    sheetId: string,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+    receiver_subidentity: string,
+  ): string {
+    const body = JSON.stringify(sheetId);
+
+    const builder = new ShinkaiMessageBuilderWrapper(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key,
+    );
+
+    builder.message_raw_content(body);
+    builder.message_schema_type(MessageSchemaType.GetSheet.toString());
+    builder.internal_metadata(
+      sender_subidentity,
+      receiver_subidentity,
+      '',
+      'None',
+    );
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
+
+    const message = builder.build_to_string();
+    return message;
+  }
+  static setCellSheet(
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    sheetId: string,
+    columnId: string,
+    rowId: string,
+    value: string,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+    receiver_subidentity: string,
+  ): string {
+    const body = JSON.stringify({
+      sheet_id: sheetId,
+      row: rowId,
+      col: columnId,
+      value,
+    });
+
+    const builder = new ShinkaiMessageBuilderWrapper(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key,
+    );
+
+    builder.message_raw_content(body);
+    builder.message_schema_type(MessageSchemaType.SetCellValue.toString());
+    builder.internal_metadata(
+      sender_subidentity,
+      receiver_subidentity,
+      '',
+      'None',
+    );
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
+
+    const message = builder.build_to_string();
+    return message;
+  }
+  static setColumnSheet(
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    sheetId: string,
+    columnId: string | undefined,
+    columnName: string,
+    columnBehavior: ColumnBehavior,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+    receiver_subidentity: string,
+  ): string {
+    const body = JSON.stringify({
+      sheet_id: sheetId,
+      column: {
+        name: columnName,
+        behavior: columnBehavior,
+        id: columnId,
+      },
+    });
+
+    const builder = new ShinkaiMessageBuilderWrapper(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key,
+    );
+
+    builder.message_raw_content(body);
+    builder.message_schema_type(MessageSchemaType.SetColumn.toString());
+    builder.internal_metadata(
+      sender_subidentity,
+      receiver_subidentity,
+      '',
+      'None',
+    );
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
+
+    const message = builder.build_to_string();
+    return message;
+  }
+  static removeColumnSheet(
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    sheetId: string,
+    columnId: string,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+    receiver_subidentity: string,
+  ): string {
+    const body = JSON.stringify({
+      sheet_id: sheetId,
+      column_id: columnId,
+    });
+
+    const builder = new ShinkaiMessageBuilderWrapper(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key,
+    );
+
+    builder.message_raw_content(body);
+    builder.message_schema_type(MessageSchemaType.RemoveColumn.toString());
+    builder.internal_metadata(
+      sender_subidentity,
+      receiver_subidentity,
+      '',
+      'None',
+    );
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
+
+    const message = builder.build_to_string();
+    return message;
+  }
+  static addRowsSheet(
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    sheetId: string,
+    numberOfRows: number,
+    startingRow: number | undefined,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+    receiver_subidentity: string,
+  ): string {
+    const body = JSON.stringify({
+      sheet_id: sheetId,
+      number_of_rows: numberOfRows,
+      starting_row: startingRow,
+    });
+
+    const builder = new ShinkaiMessageBuilderWrapper(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key,
+    );
+
+    builder.message_raw_content(body);
+    builder.message_schema_type(MessageSchemaType.AddRows.toString());
+    builder.internal_metadata(
+      sender_subidentity,
+      receiver_subidentity,
+      '',
+      'None',
+    );
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
+
+    const message = builder.build_to_string();
+    return message;
+  }
+  static removeRowsSheet(
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    sheetId: string,
+    rowIds: string[],
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+    receiver_subidentity: string,
+  ): string {
+    const body = JSON.stringify({
+      sheet_id: sheetId,
+      row_indices: rowIds,
+    });
+
+    const builder = new ShinkaiMessageBuilderWrapper(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key,
+    );
+
+    builder.message_raw_content(body);
+    builder.message_schema_type(MessageSchemaType.RemoveRows.toString());
+    builder.internal_metadata(
+      sender_subidentity,
+      receiver_subidentity,
+      '',
+      'None',
+    );
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
+
+    const message = builder.build_to_string();
+    return message;
+  }
+
+  static getToolsList(
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+    receiver_subidentity: string,
+  ): string {
+    const body = JSON.stringify('');
+
+    const builder = new ShinkaiMessageBuilderWrapper(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key,
+    );
+
+    builder.message_raw_content(body);
+    builder.message_schema_type(
+      MessageSchemaType.ListAllShinkaiTools.toString(),
+    );
+    builder.internal_metadata(
+      sender_subidentity,
+      receiver_subidentity,
+      '',
+      'None',
+    );
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
+
+    const message = builder.build_to_string();
+    return message;
+  }
+  static getTool(
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    toolKey: string,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+    receiver_subidentity: string,
+  ): string {
+    const body = JSON.stringify(toolKey);
+
+    const builder = new ShinkaiMessageBuilderWrapper(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key,
+    );
+
+    builder.message_raw_content(body);
+    builder.message_schema_type(MessageSchemaType.GetShinkaiTool.toString());
+    builder.internal_metadata(
+      sender_subidentity,
+      receiver_subidentity,
+      '',
+      'None',
+    );
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
+
+    const message = builder.build_to_string();
+    return message;
+  }
+  static updateTool(
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    toolType: ShinkaiToolType,
+    toolPayload: ShinkaiTool,
+    isToolEnabled: boolean,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+    receiver_subidentity: string,
+  ): string {
+    const body = JSON.stringify({
+      type: toolType,
+      content: [toolPayload, isToolEnabled],
+    });
+
+    const builder = new ShinkaiMessageBuilderWrapper(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key,
+    );
+
+    builder.message_raw_content(body);
+    builder.message_schema_type(MessageSchemaType.SetShinkaiTool.toString());
+    builder.internal_metadata(
+      sender_subidentity,
+      receiver_subidentity,
+      '',
+      'None',
+    );
+    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
+    builder.body_encryption('DiffieHellmanChaChaPoly1305');
+
+    const message = builder.build_to_string();
+    return message;
+  }
+  static searchTools(
+    my_encryption_secret_key: string,
+    my_signature_secret_key: string,
+    receiver_public_key: string,
+    search: string,
+    sender: string,
+    sender_subidentity: string,
+    receiver: string,
+    receiver_subidentity: string,
+  ): string {
+    const body = JSON.stringify(search);
+
+    const builder = new ShinkaiMessageBuilderWrapper(
+      my_encryption_secret_key,
+      my_signature_secret_key,
+      receiver_public_key,
+    );
+
+    builder.message_raw_content(body);
+    builder.message_schema_type(MessageSchemaType.SearchShinkaiTool.toString());
     builder.internal_metadata(
       sender_subidentity,
       receiver_subidentity,

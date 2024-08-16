@@ -1,8 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Workflow } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
 import { useCreateWorkflow } from '@shinkai_network/shinkai-node-state/lib/mutations/createWorkflow/useCreateWorkflow';
 import { useRemoveWorkflow } from '@shinkai_network/shinkai-node-state/lib/mutations/removeWorkflow/useRemoveWorkflow';
 import { useUpdateWorkflow } from '@shinkai_network/shinkai-node-state/lib/mutations/updateWorkflow/useUpdateWorkflow';
-import { Workflow } from '@shinkai_network/shinkai-node-state/lib/queries/getWorkflowList/types';
 import { useGetWorkflowList } from '@shinkai_network/shinkai-node-state/lib/queries/getWorkflowList/useGetWorkflowList';
 import { useGetWorkflowSearch } from '@shinkai_network/shinkai-node-state/lib/queries/getWorkflowSearch/useGetWorkflowSearch';
 import {
@@ -31,7 +31,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
-  Edit3Icon,
+  // Edit3Icon,
   PlusIcon,
   SearchIcon,
   Trash2Icon,
@@ -44,7 +44,7 @@ import { z } from 'zod';
 import { createStore, useStore } from 'zustand';
 
 import { useDebounce } from '../../../hooks/use-debounce';
-import { formatWorkflowName } from '../../../pages/create-job';
+import { formatText } from '../../../pages/create-job';
 import { useAuth } from '../../../store/auth';
 
 type WorkflowSelectedStore = {
@@ -95,8 +95,8 @@ const WorkflowSearchDrawer = ({
   const debouncedSearchQuery = useDebounce(searchQuery, 600);
   const isSearchQuerySynced = searchQuery === debouncedSearchQuery;
 
-  const [selectedWorkflowEdit, setSelectedWorkflowEdit] =
-    useState<Workflow | null>(null);
+  // const [selectedWorkflowEdit, setSelectedWorkflowEdit] =
+  //   useState<Workflow | null>(null);
 
   const { isPending, data: workflowList } = useGetWorkflowList({
     nodeAddress: auth?.node_address ?? '',
@@ -123,7 +123,7 @@ const WorkflowSearchDrawer = ({
         profile_identity_sk: auth?.profile_identity_sk ?? '',
       },
       {
-        enabled: !!isSearchQuerySynced,
+        enabled: isSearchQuerySynced,
       },
     );
 
@@ -206,16 +206,16 @@ const WorkflowSearchDrawer = ({
                   tabIndex={0}
                 >
                   <div className="absolute right-1 top-1 flex translate-x-[150%] items-center gap-0.5 transition duration-200 group-hover:translate-x-0">
-                    <button
-                      className="text-gray-80 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        setSelectedWorkflowEdit(workflow);
-                      }}
-                      type="button"
-                    >
-                      <Edit3Icon className="h-4 w-4" />
-                    </button>
+                    {/*<button*/}
+                    {/*  className="text-gray-80 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"*/}
+                    {/*  onClick={(event) => {*/}
+                    {/*    event.stopPropagation();*/}
+                    {/*    setSelectedWorkflowEdit(workflow);*/}
+                    {/*  }}*/}
+                    {/*  type="button"*/}
+                    {/*>*/}
+                    {/*  <Edit3Icon className="h-4 w-4" />*/}
+                    {/*</button>*/}
 
                     <button
                       className="text-gray-80 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"
@@ -242,7 +242,7 @@ const WorkflowSearchDrawer = ({
                     </button>
                   </div>
                   <span className="text-sm font-medium">
-                    {formatWorkflowName(workflow.name)}{' '}
+                    {formatText(workflow.name)}{' '}
                     {workflowSelected?.name === workflow.name && (
                       <Badge
                         className="bg-brand ml-2 text-gray-50"
@@ -262,22 +262,16 @@ const WorkflowSearchDrawer = ({
                   className={cn(
                     'flex w-full flex-col gap-1 rounded-sm px-3 py-2 text-left text-sm hover:bg-gray-300',
                   )}
-                  key={workflow.Workflow.workflow.name}
+                  key={workflow.tool_router_key}
                   onClick={() => {
-                    setWorkflowSelected({
-                      description: workflow.Workflow.workflow.description,
-                      name: workflow.Workflow.workflow.name,
-                      raw: workflow.Workflow.workflow.raw,
-                      version: workflow.Workflow.workflow.version,
-                    });
+                    setWorkflowSelected(workflow);
                     setWorkflowSelectionDrawerOpen(false);
                   }}
                   type="button"
                 >
                   <span className="text-sm font-medium">
-                    {formatWorkflowName(workflow.Workflow.workflow.name)}{' '}
-                    {workflowSelected?.name ===
-                      workflow.Workflow.workflow.name && (
+                    {formatText(workflow.name)}{' '}
+                    {workflowSelected?.name === workflow.name && (
                       <Badge
                         className="bg-brand ml-2 font-light text-gray-50 shadow-none"
                         variant="default"
@@ -286,9 +280,7 @@ const WorkflowSearchDrawer = ({
                       </Badge>
                     )}
                   </span>
-                  <p className="text-gray-80 text-sm">
-                    {workflow.Workflow.workflow.description}
-                  </p>
+                  <p className="text-gray-80 text-sm">{workflow.description}</p>
                 </button>
               ))}
             {searchQuery &&
@@ -302,18 +294,18 @@ const WorkflowSearchDrawer = ({
               )}
           </div>
         </ScrollArea>
-        {selectedWorkflowEdit && (
-          <UpdateWorkflowDrawer
-            open={!!selectedWorkflowEdit}
-            setOpen={(open) => {
-              if (!open) {
-                setSelectedWorkflowEdit(null);
-              }
-            }}
-            workflowDescription={selectedWorkflowEdit.description}
-            workflowRaw={selectedWorkflowEdit.raw}
-          />
-        )}
+        {/*{selectedWorkflowEdit && (*/}
+        {/*  <UpdateWorkflowDrawer*/}
+        {/*    open={!!selectedWorkflowEdit}*/}
+        {/*    setOpen={(open) => {*/}
+        {/*      if (!open) {*/}
+        {/*        setSelectedWorkflowEdit(null);*/}
+        {/*      }*/}
+        {/*    }}*/}
+        {/*    workflowDescription={selectedWorkflowEdit.description}*/}
+        {/*    workflowRaw={selectedWorkflowEdit.raw}*/}
+        {/*  />*/}
+        {/*)}*/}
       </SheetContent>
     </Sheet>
   );
@@ -435,6 +427,7 @@ function CreateWorkflowDrawer() {
     </Dialog>
   );
 }
+// @ts-expect-error unused
 function UpdateWorkflowDrawer({
   workflowRaw,
   workflowDescription,

@@ -63,7 +63,7 @@ import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { SubpageLayout } from './layout/simple-layout';
 
-export const formatWorkflowName = (text: string) => {
+export const formatText = (text: string) => {
   const words = text.split('_');
 
   const formattedWords = words.map((word) => {
@@ -326,7 +326,7 @@ const CreateJobPage = () => {
     if (isWorkflowSelectedAndFilesPresent) {
       createJobForm.setValue(
         'content',
-        `${formatWorkflowName(workflowSelected.name)} - ${workflowSelected.description}`,
+        `${formatText(workflowSelected.name)} - ${workflowSelected.description}`,
       );
     }
   }, [
@@ -399,17 +399,9 @@ const CreateJobPage = () => {
                                     )}
                                     exit={{ opacity: 0, x: -10 }}
                                     initial={{ opacity: 0, x: -10 }}
-                                    key={workflow.Workflow.workflow.name}
+                                    key={workflow.name}
                                     onClick={() => {
-                                      setWorkflowSelected({
-                                        description:
-                                          workflow.Workflow.workflow
-                                            .description,
-                                        name: workflow.Workflow.workflow.name,
-                                        raw: workflow.Workflow.workflow.raw,
-                                        version:
-                                          workflow.Workflow.workflow.version,
-                                      });
+                                      setWorkflowSelected(workflow);
                                       if (
                                         Object.keys(selectedKeys ?? {}).length >
                                           0 ||
@@ -421,9 +413,7 @@ const CreateJobPage = () => {
                                     type="button"
                                   >
                                     <WorkflowPlaygroundIcon className="h-3 w-3" />
-                                    {formatWorkflowName(
-                                      workflow.Workflow.workflow.name,
-                                    )}
+                                    {formatText(workflow.name)}
                                   </motion.button>
                                 ))}
                             </div>
@@ -464,7 +454,7 @@ const CreateJobPage = () => {
                                 <WorkflowPlaygroundIcon className="h-4 w-4" />
                                 <span className="text-gray-80 line-clamp-1 font-medium">
                                   <span className="text-sm text-white">
-                                    {formatWorkflowName(workflowSelected.name)}:{' '}
+                                    {formatText(workflowSelected.name)}:{' '}
                                   </span>
                                   <span className="">
                                     {workflowSelected.description}
