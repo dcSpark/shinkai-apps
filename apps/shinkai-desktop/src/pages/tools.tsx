@@ -63,7 +63,7 @@ export const Tools = () => {
     null,
   );
 
-  const { mutateAsync: updateTool } = useUpdateTool({});
+  const { mutateAsync: updateTool } = useUpdateTool();
 
   return (
     <SimpleLayout title={'Shinkai Tools'}>

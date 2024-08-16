@@ -19,6 +19,14 @@ export const useUpdateTool = (options?: Options) => {
       queryClient.invalidateQueries({
         queryKey: [FunctionKey.GET_LIST_TOOLS],
       });
+      queryClient.invalidateQueries({
+        queryKey: [
+          FunctionKey.GET_TOOL,
+          {
+            toolKey: variables.toolKey,
+          },
+        ],
+      });
 
       if (options?.onSuccess) {
         options.onSuccess(response, variables, context);

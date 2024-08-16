@@ -1,8 +1,14 @@
-import { WorkflowShinkaiTool } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
+import {
+  ShinkaiTool,
+  WorkflowShinkaiTool,
+} from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
+import { useUpdateTool } from '@shinkai_network/shinkai-node-state/lib/mutations/updateTool/useUpdateTool';
 import { Switch } from '@shinkai_network/shinkai-ui';
+import { useParams } from 'react-router-dom';
 
 import { formatWorkflowName } from '../../pages/create-job';
 import { SubpageLayout } from '../../pages/layout/simple-layout';
+import { useAuth } from '../../store/auth';
 
 export default function WorkflowTool({
   tool,
@@ -11,12 +17,35 @@ export default function WorkflowTool({
   tool: WorkflowShinkaiTool;
   isEnabled: boolean;
 }) {
+  const auth = useAuth((state) => state.auth);
+
+  const { mutateAsync: updateTool } = useUpdateTool();
+  const { toolKey } = useParams();
+
   return (
     <SubpageLayout alignLeft title={formatWorkflowName(tool.workflow.name)}>
       <div className="flex flex-col">
         <div className="mb-4 flex items-center justify-between gap-1">
           <p className="text-sm text-white">Enabled</p>
-          <Switch checked={isEnabled} />
+          <Switch
+            checked={isEnabled}
+            onCheckedChange={async () => {
+              await updateTool({
+                toolKey: toolKey ?? '',
+                toolType: 'Workflow',
+                toolPayload: {} as ShinkaiTool,
+                isToolEnabled: !isEnabled,
+                nodeAddress: auth?.node_address ?? '',
+                shinkaiIdentity: auth?.shinkai_identity ?? '',
+                profile: auth?.profile ?? '',
+                my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+                my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+                node_encryption_pk: auth?.node_encryption_pk ?? '',
+                profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+                profile_identity_sk: auth?.profile_identity_sk ?? '',
+              });
+            }}
+          />
         </div>
         {[
           {
