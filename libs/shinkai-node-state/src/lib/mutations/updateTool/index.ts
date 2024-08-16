@@ -4,10 +4,12 @@ import { UpdateToolInput } from './types';
 
 export const updateTool = async ({
   nodeAddress,
+  toolKey,
+  toolType,
+  toolPayload,
+  isToolEnabled,
   shinkaiIdentity,
   profile,
-  // workflowRaw,
-  // workflowDescription,
   my_device_encryption_sk,
   my_device_identity_sk,
   node_encryption_pk,
@@ -16,12 +18,14 @@ export const updateTool = async ({
 }: UpdateToolInput) => {
   return await updateToolAPI(
     nodeAddress,
+    toolKey,
+    toolType,
+    toolPayload,
+    isToolEnabled,
     shinkaiIdentity,
     profile,
     shinkaiIdentity,
     profile,
-    // workflowRaw,
-    // workflowDescription,
     {
       my_device_encryption_sk,
       my_device_identity_sk,

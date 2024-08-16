@@ -10,6 +10,8 @@ import {
   LLMProvider,
   SetupPayload,
   ShinkaiMessage,
+  ShinkaiTool,
+  ShinkaiToolType,
   SmartInbox,
 } from '../models';
 import {
@@ -2206,7 +2208,10 @@ export const getTool = async (
 };
 export const updateTool = async (
   nodeAddress: string,
-  // toolKey: string,
+  toolKey: string,
+  toolType: ShinkaiToolType,
+  toolPayload: ShinkaiTool,
+  isToolEnabled: boolean,
   sender: string,
   sender_subidentity: string,
   receiver: string,
@@ -2217,7 +2222,9 @@ export const updateTool = async (
     setupDetailsState.profile_encryption_sk,
     setupDetailsState.profile_identity_sk,
     setupDetailsState.node_encryption_pk,
-    // toolKey,
+    toolType,
+    toolPayload,
+    isToolEnabled,
     sender,
     sender_subidentity,
     receiver,
@@ -2229,8 +2236,8 @@ export const updateTool = async (
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v1/set_shinkai_tool'),
     message,
-
     {
+      params: { tool_name: encodeURI(toolKey) },
       responseType: 'json',
     },
   );

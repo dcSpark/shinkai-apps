@@ -77,14 +77,14 @@ export const Tools = () => {
               )}
               key={tool.name}
             >
-              <div className="flex flex-col gap-2.5 px-4 py-3.5">
+              <div className="flex h-[150px] flex-col gap-2.5 px-4 py-3.5">
                 <span className="text-sm font-medium text-white">
                   {formatWorkflowName(tool.name)}{' '}
                 </span>
-                <p className="text-gray-80 line-clamp-4 h-[80px] text-sm">
+                <p className="text-gray-80 line-clamp-2 text-sm">
                   {tool.description}
                 </p>
-                <div className="flex items-center gap-2">
+                <div className="mt-auto flex items-center gap-2">
                   <Avatar className="bg-brand-gradient h-5 w-5 border text-xs text-gray-50">
                     <AvatarFallback className="">
                       {tool.author.replace(/@/g, '').charAt(0)}
@@ -114,8 +114,11 @@ export const Tools = () => {
                       <Switch
                         checked={tool.enabled}
                         onCheckedChange={async () => {
-                          // TODO: fix
                           await updateTool({
+                            toolKey: tool.tool_router_key,
+                            toolType: tool.tool_type,
+                            toolPayload: {} as ShinkaiTool,
+                            isToolEnabled: !tool.enabled,
                             nodeAddress: auth?.node_address ?? '',
                             shinkaiIdentity: auth?.shinkai_identity ?? '',
                             profile: auth?.profile ?? '',

@@ -3,6 +3,8 @@
 import {
   ColumnBehavior,
   MessageSchemaType,
+  ShinkaiTool,
+  ShinkaiToolType,
   TSEncryptionMethod,
 } from '../models/SchemaTypes.js';
 import {
@@ -2217,30 +2219,17 @@ export class ShinkaiMessageBuilderWrapper {
     my_encryption_secret_key: string,
     my_signature_secret_key: string,
     receiver_public_key: string,
+    toolType: ShinkaiToolType,
+    toolPayload: ShinkaiTool,
+    isToolEnabled: boolean,
     sender: string,
     sender_subidentity: string,
     receiver: string,
     receiver_subidentity: string,
   ): string {
     const body = JSON.stringify({
-      // TODO:
-      type: 'JS',
-      content: [
-        {
-          toolkit_name: 'shinkai__math_expression_evaluator',
-          name: 'shinkai__math_expression_evaluator',
-          author: 'Shinkai',
-          js_code: '',
-          config: [],
-          description: 'A simple JS tool',
-          keywords: ['example', 'js'],
-          input_args: [],
-          config_set: false,
-          activated: true,
-          embedding: null,
-        },
-        true,
-      ],
+      type: toolType,
+      content: [toolPayload, isToolEnabled],
     });
 
     const builder = new ShinkaiMessageBuilderWrapper(
