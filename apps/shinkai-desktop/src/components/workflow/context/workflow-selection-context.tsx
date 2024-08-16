@@ -31,7 +31,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
-  Edit3Icon,
+  // Edit3Icon,
   PlusIcon,
   SearchIcon,
   Trash2Icon,
@@ -95,8 +95,8 @@ const WorkflowSearchDrawer = ({
   const debouncedSearchQuery = useDebounce(searchQuery, 600);
   const isSearchQuerySynced = searchQuery === debouncedSearchQuery;
 
-  const [selectedWorkflowEdit, setSelectedWorkflowEdit] =
-    useState<Workflow | null>(null);
+  // const [selectedWorkflowEdit, setSelectedWorkflowEdit] =
+  //   useState<Workflow | null>(null);
 
   const { isPending, data: workflowList } = useGetWorkflowList({
     nodeAddress: auth?.node_address ?? '',
@@ -205,16 +205,16 @@ const WorkflowSearchDrawer = ({
                   tabIndex={0}
                 >
                   <div className="absolute right-1 top-1 flex translate-x-[150%] items-center gap-0.5 transition duration-200 group-hover:translate-x-0">
-                    <button
-                      className="text-gray-80 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        setSelectedWorkflowEdit(workflow);
-                      }}
-                      type="button"
-                    >
-                      <Edit3Icon className="h-4 w-4" />
-                    </button>
+                    {/*<button*/}
+                    {/*  className="text-gray-80 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"*/}
+                    {/*  onClick={(event) => {*/}
+                    {/*    event.stopPropagation();*/}
+                    {/*    setSelectedWorkflowEdit(workflow);*/}
+                    {/*  }}*/}
+                    {/*  type="button"*/}
+                    {/*>*/}
+                    {/*  <Edit3Icon className="h-4 w-4" />*/}
+                    {/*</button>*/}
 
                     <button
                       className="text-gray-80 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"
@@ -293,18 +293,18 @@ const WorkflowSearchDrawer = ({
               )}
           </div>
         </ScrollArea>
-        {selectedWorkflowEdit && (
-          <UpdateWorkflowDrawer
-            open={!!selectedWorkflowEdit}
-            setOpen={(open) => {
-              if (!open) {
-                setSelectedWorkflowEdit(null);
-              }
-            }}
-            workflowDescription={selectedWorkflowEdit.description}
-            workflowRaw={selectedWorkflowEdit.raw}
-          />
-        )}
+        {/*{selectedWorkflowEdit && (*/}
+        {/*  <UpdateWorkflowDrawer*/}
+        {/*    open={!!selectedWorkflowEdit}*/}
+        {/*    setOpen={(open) => {*/}
+        {/*      if (!open) {*/}
+        {/*        setSelectedWorkflowEdit(null);*/}
+        {/*      }*/}
+        {/*    }}*/}
+        {/*    workflowDescription={selectedWorkflowEdit.description}*/}
+        {/*    workflowRaw={selectedWorkflowEdit.raw}*/}
+        {/*  />*/}
+        {/*)}*/}
       </SheetContent>
     </Sheet>
   );
@@ -426,6 +426,7 @@ function CreateWorkflowDrawer() {
     </Dialog>
   );
 }
+// @ts-expect-error unused
 function UpdateWorkflowDrawer({
   workflowRaw,
   workflowDescription,
