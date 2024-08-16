@@ -1,23 +1,33 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { JSShinkaiTool } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
+  JSShinkaiTool,
+  ShinkaiTool,
+} from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
+import { useUpdateTool } from '@shinkai_network/shinkai-node-state/lib/mutations/updateTool/useUpdateTool';
+import {
+  Button,
   Form,
   FormField,
-  Separator,
   Switch,
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
-import { formatWorkflowName } from '../../pages/create-job';
+import { formatText } from '../../pages/create-job';
 import { SubpageLayout } from '../../pages/layout/simple-layout';
-// import { useAuth } from '../../store/auth';
+import { useAuth } from '../../store/auth';
 
 const jsToolSchema = z.object({
-  apiKey: z.string().optional(),
-  description: z.string().optional(),
+  config: z.array(
+    z.object({
+      key_name: z.string(),
+      key_value: z.string().optional(),
+    }),
+  ),
 });
 type JsToolFormSchema = z.infer<typeof jsToolSchema>;
 
@@ -28,79 +38,137 @@ export default function JsTool({
   tool: JSShinkaiTool;
   isEnabled: boolean;
 }) {
-  const params = useParams();
-  // const auth = useAuth((state) => state.auth);
+  const auth = useAuth((state) => state.auth);
+  const { t } = useTranslation();
+  const { mutateAsync: updateTool, isPending } = useUpdateTool({
+    onSuccess: (_, variables) => {
+      if (
+        'config' in variables.toolPayload &&
+        variables.toolPayload.config?.length > 0
+      ) {
+        toast.success('Tool configuration updated successfully');
+      }
+    },
+  });
+  const { toolKey } = useParams();
+
   const form = useForm<JsToolFormSchema>({
     resolver: zodResolver(jsToolSchema),
+    defaultValues: {
+      config: tool.config.map((conf) => ({
+        key_name: conf.BasicConfig.key_name,
+        key_value: conf.BasicConfig.key_value ?? '',
+      })),
+    },
   });
-  console.log(params);
+
+  const onSubmit = async (data: JsToolFormSchema) => {
+    await updateTool({
+      toolKey: toolKey ?? '',
+      toolType: 'JS',
+      toolPayload: {
+        config: data.config.map((conf) => ({
+          BasicConfig: {
+            key_name: conf.key_name,
+            key_value: conf.key_value,
+          },
+        })),
+      } as ShinkaiTool,
+      isToolEnabled: isEnabled,
+      nodeAddress: auth?.node_address ?? '',
+      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      profile: auth?.profile ?? '',
+      my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+      my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+    });
+  };
+
   return (
-    <SubpageLayout alignLeft title={formatWorkflowName(tool.name)}>
+    <SubpageLayout alignLeft title={formatText(tool.name)}>
       <div className="flex flex-col">
         <div className="mb-4 flex items-center justify-between gap-1">
           <p className="text-sm text-white">Enabled</p>
-          <Switch checked={isEnabled} />
+          <Switch
+            checked={isEnabled}
+            onCheckedChange={async () => {
+              await updateTool({
+                toolKey: toolKey ?? '',
+                toolType: 'JS',
+                toolPayload: {} as ShinkaiTool,
+                isToolEnabled: !isEnabled,
+                nodeAddress: auth?.node_address ?? '',
+                shinkaiIdentity: auth?.shinkai_identity ?? '',
+                profile: auth?.profile ?? '',
+                my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+                my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+                node_encryption_pk: auth?.node_encryption_pk ?? '',
+                profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+                profile_identity_sk: auth?.profile_identity_sk ?? '',
+              });
+            }}
+          />
         </div>
         {[
           {
             label: 'Description',
             value: tool.description,
           },
-          {
+          tool.author && {
             label: 'Author',
             value: tool.author,
           },
-          {
+          tool.keywords.length > 0 && {
             label: 'Keyword',
             value: tool.keywords,
           },
-        ].map(({ label, value }) => (
-          <div className="flex flex-col gap-1 py-4" key={label}>
-            <span className="text-gray-80 text-xs">{label}</span>
-            <span className="text-sm text-white">{value}</span>
-            {/*<Textarea*/}
-            {/*  className="!min-h-[100px] resize-none pl-2 pt-2 text-sm placeholder-transparent"*/}
-            {/*  placeholder={'Enter prompt or a formula...'}*/}
-            {/*  readOnly*/}
-            {/*  spellCheck={false}*/}
-            {/*  value={value ?? ' '}*/}
-            {/*/>*/}
-          </div>
-        ))}
-        <Separator orientation="horizontal" />
-        <div className="mb-4 pt-6 text-xs font-medium">Tool Configuration</div>
-        <Form {...form}>
-          <form className="flex flex-col justify-between space-y-8">
-            <div className="flex grow flex-col space-y-5">
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <TextField
-                    classes={{
-                      input: 'font-mono',
-                    }}
-                    field={{ ...field }}
-                    label={'Enter Description'}
-                  />
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="apiKey"
-                render={({ field }) => (
-                  <TextField
-                    classes={{
-                      input: 'font-mono',
-                    }}
-                    field={{ ...field }}
-                    label={'Enter API KEY'}
-                  />
-                )}
-              />
+        ]
+          .filter((item) => !!item)
+          .map(({ label, value }) => (
+            <div className="flex flex-col gap-1 py-4" key={label}>
+              <span className="text-gray-80 text-xs">{label}</span>(
+              <span className="text-sm text-white">{value}</span>)
             </div>
-          </form>
-        </Form>
+          ))}
+
+        {tool.config.length > 0 && (
+          <div className="mx-auto mt-6 w-full space-y-6 rounded-md border p-8">
+            <div className="text-lg font-medium">Tool Configuration</div>
+
+            <Form {...form}>
+              <form
+                className="flex flex-col justify-between space-y-8"
+                onSubmit={form.handleSubmit(onSubmit)}
+              >
+                <div className="flex grow flex-col space-y-5">
+                  {tool.config.map((conf, index) => (
+                    <FormField
+                      control={form.control}
+                      key={conf.BasicConfig.key_name}
+                      name={`config.${index}.key_value`}
+                      render={({ field }) => (
+                        <TextField
+                          field={{ ...field }}
+                          label={formatText(conf.BasicConfig.key_name)}
+                        />
+                      )}
+                    />
+                  ))}
+                </div>
+                <Button
+                  className="w-full rounded-lg text-sm"
+                  disabled={isPending}
+                  isLoading={isPending}
+                  type="submit"
+                >
+                  {t('common.save')}
+                </Button>
+              </form>
+            </Form>
+          </div>
+        )}
       </div>
     </SubpageLayout>
   );

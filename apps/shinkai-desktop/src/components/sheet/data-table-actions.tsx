@@ -39,7 +39,7 @@ import { useForm, useWatch } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { formatWorkflowName } from '../../pages/create-job';
+import { formatText } from '../../pages/create-job';
 import { useAuth } from '../../store/auth';
 import { fieldTypes } from './constants';
 import { SetColumnFormSchema, setColumnFormSchema } from './forms';
@@ -419,9 +419,7 @@ export function AddColumnAction() {
                         <div className="flex items-center gap-2">
                           <span className="flex items-center gap-1.5 text-gray-50">
                             <WorkflowPlaygroundIcon className="h-3.5 w-3.5" />
-                            {formatWorkflowName(
-                              selectedWorkflow?.name ?? 'None',
-                            )}
+                            {formatText(selectedWorkflow?.name ?? 'None')}
                           </span>
                           <ChevronRight className="text-gray-80 h-3.5 w-3.5" />
                         </div>

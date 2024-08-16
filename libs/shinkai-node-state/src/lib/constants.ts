@@ -21,4 +21,5 @@ export enum FunctionKey {
   GET_SHEET = 'GET_SHEET',
   GET_LIST_TOOLS = 'GET_LIST_TOOLS',
   GET_TOOL = 'GET_TOOL',
+  GET_SEARCH_TOOLS = 'GET_SEARCH_TOOLS',
 }

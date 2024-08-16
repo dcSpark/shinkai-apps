@@ -70,6 +70,7 @@ export enum MessageSchemaType {
   ListAllShinkaiTools = 'ListAllShinkaiTools',
   GetShinkaiTool = 'GetShinkaiTool',
   SetShinkaiTool = 'SetShinkaiTool',
+  SearchShinkaiTool = 'SearchShinkaiTool',
 }
 
 export interface LocalScopeVRKaiEntry {

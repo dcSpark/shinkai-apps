@@ -81,7 +81,7 @@ import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useDebounce } from '../../hooks/use-debounce';
 import { useAnalytics } from '../../lib/posthog-provider';
 import { useAuth } from '../../store/auth';
-import { formatWorkflowName } from '../create-job';
+import { formatText } from '../create-job';
 enum ErrorCodes {
   VectorResource = 'VectorResource',
   ShinkaiBackendInferenceLimitReached = 'ShinkaiBackendInferenceLimitReached',
@@ -423,7 +423,7 @@ const ChatConversation = () => {
     if (isWorkflowSelectedAndFilesPresent) {
       chatForm.setValue(
         'message',
-        `${formatWorkflowName(workflowSelected.name)} - ${workflowSelected.description}`,
+        `${formatText(workflowSelected.name)} - ${workflowSelected.description}`,
       );
     }
   }, [chatForm, isWorkflowSelectedAndFilesPresent, workflowSelected]);
@@ -538,7 +538,7 @@ const ChatConversation = () => {
                                           <WorkflowPlaygroundIcon className="h-3.5 w-3.5" />
                                           <div className="text-gray-80 line-clamp-1 text-xs">
                                             <span className="text-white">
-                                              {formatWorkflowName(
+                                              {formatText(
                                                 workflowSelected.name,
                                               )}{' '}
                                             </span>
@@ -638,7 +638,7 @@ const ChatConversation = () => {
                                   type="button"
                                 >
                                   <WorkflowPlaygroundIcon className="h-3 w-3" />
-                                  {formatWorkflowName(workflow.name)}
+                                  {formatText(workflow.name)}
                                 </motion.button>
                               ))}
                           </div>

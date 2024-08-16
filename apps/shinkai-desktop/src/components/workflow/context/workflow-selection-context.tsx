@@ -44,7 +44,7 @@ import { z } from 'zod';
 import { createStore, useStore } from 'zustand';
 
 import { useDebounce } from '../../../hooks/use-debounce';
-import { formatWorkflowName } from '../../../pages/create-job';
+import { formatText } from '../../../pages/create-job';
 import { useAuth } from '../../../store/auth';
 
 type WorkflowSelectedStore = {
@@ -123,7 +123,7 @@ const WorkflowSearchDrawer = ({
         profile_identity_sk: auth?.profile_identity_sk ?? '',
       },
       {
-        enabled: !!isSearchQuerySynced,
+        enabled: isSearchQuerySynced,
       },
     );
 
@@ -241,7 +241,7 @@ const WorkflowSearchDrawer = ({
                     </button>
                   </div>
                   <span className="text-sm font-medium">
-                    {formatWorkflowName(workflow.name)}{' '}
+                    {formatText(workflow.name)}{' '}
                     {workflowSelected?.name === workflow.name && (
                       <Badge
                         className="bg-brand ml-2 text-gray-50"
@@ -269,7 +269,7 @@ const WorkflowSearchDrawer = ({
                   type="button"
                 >
                   <span className="text-sm font-medium">
-                    {formatWorkflowName(workflow.name)}{' '}
+                    {formatText(workflow.name)}{' '}
                     {workflowSelected?.name === workflow.name && (
                       <Badge
                         className="bg-brand ml-2 font-light text-gray-50 shadow-none"
