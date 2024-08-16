@@ -39,6 +39,7 @@ import { Fragment, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 
+import { formatWorkflowName } from '../../pages/create-job';
 import { useAuth } from '../../store/auth';
 import { fieldTypes } from './constants';
 import { SetColumnFormSchema, setColumnFormSchema } from './forms';
@@ -47,7 +48,7 @@ import {
   getColumnBehaviorName,
   getFormula,
   getPromptInput,
-  getWorkflow,
+  getWorkflowKey,
 } from './utils';
 
 interface DataTableColumnHeaderProps<TData, TValue> {
@@ -96,10 +97,12 @@ export function DataTableColumnHeader<TData, TValue>({
       columnType: getColumnBehaviorName(columnBehavior),
       promptInput: getPromptInput(columnBehavior),
       agentId: getAgentId(columnBehavior),
-      workflow: getWorkflow(columnBehavior) ?? undefined,
+      workflowKey: getWorkflowKey(columnBehavior) ?? undefined,
       formula: getFormula(columnBehavior),
     },
   });
+
+  console.log(setColumnForm.formState.errors, 'errors');
 
   const currentColumnType = useWatch({
     control: setColumnForm.control,
@@ -111,9 +114,9 @@ export function DataTableColumnHeader<TData, TValue>({
     name: 'agentId',
   });
 
-  const currentWorkflow = useWatch({
+  const currentWorkflowKey = useWatch({
     control: setColumnForm.control,
-    name: 'workflow',
+    name: 'workflowKey',
   });
   const currentFormula = useWatch({
     control: setColumnForm.control,
@@ -130,6 +133,10 @@ export function DataTableColumnHeader<TData, TValue>({
     fieldTypes.find(
       (type) => type.id === getColumnBehaviorName(columnBehavior),
     ) ?? fieldTypes[0];
+
+  const selectedWorkflow = workflowList?.find(
+    (workflow) => workflow.tool_router_key === currentWorkflowKey,
+  );
 
   const { mutateAsync: setColumnSheet } = useSetColumnSheet({
     onSuccess: () => {
@@ -150,7 +157,7 @@ export function DataTableColumnHeader<TData, TValue>({
         return {
           [ColumnType.LLMCall]: {
             input: currentPromptInput as string,
-            workflow: currentWorkflow,
+            workflow_name: currentWorkflowKey,
             llm_provider_name: currentAgentId ?? '',
           },
         };
@@ -305,7 +312,7 @@ export function DataTableColumnHeader<TData, TValue>({
                             <div className="flex items-center gap-2">
                               <span className="flex items-center gap-1.5 text-gray-50">
                                 <BotIcon className="h-3.5 w-3.5" />
-                                {field.value ?? 'Select'}
+                                {field?.value ?? 'Select'}
                               </span>
                               <ChevronRight className="text-gray-80 h-3.5 w-3.5" />
                             </div>
@@ -365,7 +372,7 @@ export function DataTableColumnHeader<TData, TValue>({
                       <div className="flex items-center gap-2">
                         <span className="flex items-center gap-1.5 text-gray-50">
                           <WorkflowPlaygroundIcon className="h-3.5 w-3.5" />
-                          {currentWorkflow?.name || 'None'}
+                          {formatWorkflowName(selectedWorkflow?.name ?? 'None')}
                         </span>
                         <ChevronRight className="text-gray-80 h-3.5 w-3.5" />
                       </div>
@@ -377,10 +384,10 @@ export function DataTableColumnHeader<TData, TValue>({
                     side="right"
                   >
                     <DropdownMenuCheckboxItem
-                      checked={undefined === currentWorkflow?.name}
+                      checked={undefined === currentWorkflowKey}
                       className="flex gap-2 truncate text-xs capitalize hover:bg-gray-500 [&>svg]:bg-transparent"
                       onCheckedChange={() =>
-                        setColumnForm.setValue('workflow', undefined)
+                        setColumnForm.setValue('workflowKey', undefined)
                       }
                     >
                       None
@@ -389,11 +396,16 @@ export function DataTableColumnHeader<TData, TValue>({
                     {workflowList?.map((option) => {
                       return (
                         <DropdownMenuCheckboxItem
-                          checked={option.name === currentWorkflow?.name}
+                          checked={
+                            option.tool_router_key === currentWorkflowKey
+                          }
                           className="flex gap-2 truncate text-xs capitalize hover:bg-gray-500 [&>svg]:bg-transparent"
                           key={option.name}
                           onCheckedChange={() =>
-                            setColumnForm.setValue('workflow', option)
+                            setColumnForm.setValue(
+                              'workflowKey',
+                              option.tool_router_key,
+                            )
                           }
                         >
                           {option.name}

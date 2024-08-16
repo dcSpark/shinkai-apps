@@ -44,7 +44,7 @@ interface DataTableCellProps<TData> {
   row: Row<TData>;
   column: ColumnDef<TData>;
   title: string;
-  value: string;
+  value: string | null;
   status: ColumnStatus;
   columnBehavior: ColumnBehavior | undefined;
 }
@@ -111,7 +111,7 @@ export function DataTableCell<TData>({
       sheetId: sheetId ?? '',
       columnId: colId ?? column.id ?? '',
       rowId: rowId ?? row.id ?? '',
-      value: cellValue,
+      value: cellValue ?? '',
       my_device_encryption_sk: auth.my_device_encryption_sk,
       my_device_identity_sk: auth.my_device_identity_sk,
       node_encryption_pk: auth.node_encryption_pk,
@@ -254,7 +254,7 @@ export function DataTableCell<TData>({
               font: 'inherit',
               letterSpacing: 'inherit',
             }}
-            value={cellValue}
+            value={cellValue ?? undefined}
           />
           <AnimatePresence mode="popLayout">
             {isCellValueChanged && (
@@ -366,7 +366,7 @@ export const VectorFsScopeDrawer = ({
 }: {
   isVectorFSOpen: boolean;
   onVectorFSOpenChanges: (value: boolean) => void;
-  selectedFileKey: string;
+  selectedFileKey: string | null;
   setSelectedFileKey: (value: string) => void;
   onSubmit: () => void;
 }) => {

@@ -371,18 +371,20 @@ export enum ColumnStatus {
   Pending = 'Pending',
   Error = 'Error',
 }
+export type LLMCallPayload = {
+  input: string;
+  workflow?: WorkflowRaw;
+  workflow_name?: string;
+  llm_provider_name: string;
+  input_hash?: string;
+};
 export type ColumnBehavior =
   | ColumnType.Text
   | ColumnType.Number
   | { [ColumnType.Formula]: string }
   | { [ColumnType.UploadedFiles]: { files: string[] } }
   | {
-      [ColumnType.LLMCall]: {
-        input: string;
-        workflow: Workflow | undefined;
-        llm_provider_name: string;
-        input_hash?: string;
-      };
+      [ColumnType.LLMCall]: LLMCallPayload;
     }
   | {
       [ColumnType.MultipleVRFiles]: {

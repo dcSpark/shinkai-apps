@@ -1,7 +1,7 @@
 import {
   ColumnBehavior,
   ColumnType,
-  Workflow,
+  LLMCallPayload,
 } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
 
 export const getFormula = (columnBehavior?: ColumnBehavior): string => {
@@ -46,14 +46,14 @@ export const getAgentId = (columnBehavior?: ColumnBehavior): string => {
   return '';
 };
 
-export const getWorkflow = (
+export const getWorkflowKey = (
   columnBehavior?: ColumnBehavior,
-): Workflow | undefined => {
+): string | undefined => {
   if (
     typeof columnBehavior === 'object' &&
     ColumnType.LLMCall in columnBehavior
   ) {
-    return Object.values(columnBehavior)[0].workflow as Workflow;
+    return (Object.values(columnBehavior)[0] as LLMCallPayload)?.workflow_name;
   }
   return undefined;
 };

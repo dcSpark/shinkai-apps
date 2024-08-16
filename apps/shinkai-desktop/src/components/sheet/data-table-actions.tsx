@@ -39,6 +39,7 @@ import { useForm, useWatch } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import { formatWorkflowName } from '../../pages/create-job';
 import { useAuth } from '../../store/auth';
 import { fieldTypes } from './constants';
 import { SetColumnFormSchema, setColumnFormSchema } from './forms';
@@ -164,7 +165,7 @@ export function AddColumnAction() {
       columnType: ColumnType.Text,
       promptInput: '',
       agentId: llmProviders[0]?.id,
-      workflow: undefined,
+      workflowKey: undefined,
     },
   });
 
@@ -185,9 +186,9 @@ export function AddColumnAction() {
     name: 'agentId',
   });
 
-  const currentWorkflow = useWatch({
+  const currentWorkflowKey = useWatch({
     control: setColumnForm.control,
-    name: 'workflow',
+    name: 'workflowKey',
   });
   const currentFormula = useWatch({
     control: setColumnForm.control,
@@ -210,7 +211,7 @@ export function AddColumnAction() {
         return {
           [ColumnType.LLMCall]: {
             input: currentPromptInput as string,
-            workflow: currentWorkflow,
+            workflow_name: currentWorkflowKey,
             llm_provider_name: currentAgentId ?? '',
           },
         };
@@ -240,6 +241,9 @@ export function AddColumnAction() {
   };
 
   const selectedType = fieldTypes.find((type) => type.id === currentColumnType);
+  const selectedWorkflow = workflowList?.find(
+    (workflow) => workflow.tool_router_key === currentWorkflowKey,
+  );
 
   const onSubmit = async (values: SetColumnFormSchema) => {
     if (!auth || !sheetId || !selectedType) return;
@@ -415,7 +419,9 @@ export function AddColumnAction() {
                         <div className="flex items-center gap-2">
                           <span className="flex items-center gap-1.5 text-gray-50">
                             <WorkflowPlaygroundIcon className="h-3.5 w-3.5" />
-                            {currentWorkflow?.name || 'None'}
+                            {formatWorkflowName(
+                              selectedWorkflow?.name ?? 'None',
+                            )}
                           </span>
                           <ChevronRight className="text-gray-80 h-3.5 w-3.5" />
                         </div>
@@ -427,10 +433,10 @@ export function AddColumnAction() {
                       side="right"
                     >
                       <DropdownMenuCheckboxItem
-                        checked={undefined === currentWorkflow?.name}
+                        checked={undefined === currentWorkflowKey}
                         className="flex gap-2 truncate text-xs capitalize hover:bg-gray-500 [&>svg]:bg-transparent"
                         onCheckedChange={() =>
-                          setColumnForm.setValue('workflow', undefined)
+                          setColumnForm.setValue('workflowKey', undefined)
                         }
                       >
                         None
@@ -439,11 +445,16 @@ export function AddColumnAction() {
                       {workflowList?.map((option) => {
                         return (
                           <DropdownMenuCheckboxItem
-                            checked={option.name === currentWorkflow?.name}
+                            checked={
+                              option.tool_router_key === currentWorkflowKey
+                            }
                             className="flex gap-2 truncate text-xs capitalize hover:bg-gray-500 [&>svg]:bg-transparent"
                             key={option.name}
                             onCheckedChange={() =>
-                              setColumnForm.setValue('workflow', option)
+                              setColumnForm.setValue(
+                                'workflowKey',
+                                option.tool_router_key,
+                              )
                             }
                           >
                             {option.name}
