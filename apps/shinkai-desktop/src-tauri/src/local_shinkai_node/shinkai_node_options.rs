@@ -36,14 +36,11 @@ impl ShinkaiNodeOptions {
     }
 
     pub fn default_initial_model() -> String {
-        let mut model = "llama3:8b-instruct-q4_1".to_string();
+        let mut model = "llama3.1:8b-instruct-q4_1".to_string();
         let hardware_summary = hardware_get_summary();
         match hardware_summary.requirements_status {
-            RequirementsStatus::Minimum => {
-                model = "phi3:3.8b".to_string();
-            }
-            RequirementsStatus::StillUsable | RequirementsStatus::Unmeet => {
-                model = "qwen2:1.5b-instruct-q4_K_M".to_string();
+            RequirementsStatus::Minimum | RequirementsStatus::StillUsable | RequirementsStatus::Unmeet => {
+                model = "gemma2:2b-instruct-q4_1".to_string();
             }
             _ => {}
         }
@@ -173,7 +170,7 @@ impl Default for ShinkaiNodeOptions {
             node_ws_port: Some("9551".to_string()),
             node_ip: Some("127.0.0.1".to_string()),
             node_port: Some("9552".to_string()),
-            global_identity_name: Some("@@localhost.arb-sep-shinkai".to_string()),
+            global_identity_name: None,
             node_storage_path: Some("./".to_string()),
             unstructured_server_url: Some("https://public.shinkai.com/x-un".to_string()),
             embeddings_server_url: Some("http://127.0.0.1:11435".to_string()),

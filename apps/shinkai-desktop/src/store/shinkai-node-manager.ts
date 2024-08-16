@@ -11,7 +11,7 @@ type ShinkaiNodeManagerStore = {
   setIsInUse: (value: boolean) => void;
   shinkaiNodeOptions: Partial<ShinkaiNodeOptions> | null;
   setShinkaiNodeOptions: (
-    shinkaiNodeOptions: Partial<ShinkaiNodeOptions>,
+    shinkaiNodeOptions: Partial<ShinkaiNodeOptions> | null,
   ) => void;
 };
 

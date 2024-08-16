@@ -192,7 +192,7 @@ export default {
     resetNodeWarning: {
       title: 'Unable to connect',
       description:
-        'Your Shinkai Node is currently locked by existing keys. To connect again you have three options:',
+        'Your Shinkai Node is currently locked by existing keys. To connect again, you can reset all your Shinkai Node data.',
       option1:
         '<b>Restore:</b> Try to restore your connection using a backed up keys.',
       option2:
@@ -201,13 +201,15 @@ export default {
         '<b>Reset All:</b> Permanently delete all your Shinkai Node data including the encryption and signing keys.',
     },
     models: {
-      table: {
+      labels: {
         models: 'Models',
-        dataLimit: 'Data Limit',
         quality: 'Quality',
-        speed: 'Speed',
-        size: 'Size',
-        bookPages: 'Book Pages',
+        tags: 'Tags',
+        bookPages: 'Up to {{pages}} Pages of Content',
+        showAll: 'Show all models',
+        showRecommended: 'Show recommended models',
+        visionCapability: 'Image To Text',
+        textCapability: 'Text Generation',
       },
       success: {
         modelRemoved: 'Model {{modelName}} removed successfully',
@@ -250,6 +252,9 @@ export default {
       goToShinkaiIdentity: 'Go to My Shinkai Identity',
       success: 'Shinkai Identity updated successfully',
       error: 'Error updating Shinkai Identity',
+      checkIdentityInSync: 'Verify Shinkai Identity',
+      checkIdentityInSyncDescription:
+        'Check that your shinkai identity are accurately in sync.',
     },
     general: 'General',
     sidebar: {

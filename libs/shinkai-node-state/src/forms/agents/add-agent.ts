@@ -2,6 +2,8 @@ import { z } from 'zod';
 
 import { Models, modelsConfig } from '../../lib/utils/models';
 
+const modelsWithoutApiKey = [Models.Ollama, Models.Exo];
+
 export const addAgentSchema = z
   .object({
     agentName: z
@@ -53,7 +55,7 @@ export const addAgentSchema = z
             message: 'Model Type is required',
           });
         }
-        if (!apikey && model !== Models.Ollama) {
+        if (!apikey && !modelsWithoutApiKey.includes(model)) {
           ctx.addIssue({
             path: ['apikey'],
             code: z.ZodIssueCode.custom,

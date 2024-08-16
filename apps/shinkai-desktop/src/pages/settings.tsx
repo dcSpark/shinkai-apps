@@ -29,7 +29,12 @@ import { ExportIcon, QrIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { getVersion } from '@tauri-apps/api/app';
 import { motion } from 'framer-motion';
-import { BarChart2, CodesandboxIcon, ExternalLinkIcon } from 'lucide-react';
+import {
+  BarChart2,
+  CodesandboxIcon,
+  ExternalLinkIcon,
+  ShieldCheck,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -337,6 +342,36 @@ const SettingsPage = () => {
                     {t('common.cancel')}
                   </Button>
                 </div>
+              )}
+
+              {!isIdentityLocalhost && (
+                <a
+                  className={cn(
+                    buttonVariants({
+                      size: 'auto',
+                      variant: 'ghost',
+                    }),
+                    'flex cursor-pointer items-start justify-start gap-2 rounded-lg text-xs',
+                  )}
+                  href={`https://shinkai-contracts.pages.dev/identity/${auth?.shinkai_identity?.replace(
+                    '@@',
+                    '',
+                  )}?encryption_pk=${auth?.node_encryption_pk}&signature_pk=${auth?.node_signature_pk}`}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  <ShieldCheck className="h-5 w-5" />
+                  <span className="flex flex-col gap-0.5">
+                    <span className="capitalize">
+                      {t('settings.shinkaiIdentity.checkIdentityInSync')}
+                    </span>
+                    <span className="text-gray-80">
+                      {t(
+                        'settings.shinkaiIdentity.checkIdentityInSyncDescription',
+                      )}
+                    </span>
+                  </span>
+                </a>
               )}
               <FormField
                 control={form.control}

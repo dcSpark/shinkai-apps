@@ -16,7 +16,7 @@ const AIModelInstallation = () => {
   return (
     <QueryClientProvider client={shinkaiNodeQueryClient}>
       <FixedHeaderLayout
-        className="relative flex w-full max-w-6xl flex-col gap-2 px-4"
+        className="relative flex h-full w-full max-w-6xl flex-col gap-2 px-4"
         title={t('llmProviders.localAI.installTitle')}
       >
         <ResourcesBanner />

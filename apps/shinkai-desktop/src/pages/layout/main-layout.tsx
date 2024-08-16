@@ -47,6 +47,7 @@ import { toast } from 'sonner';
 import { ResourcesBanner } from '../../components/hardware-capabilities/resources-banner';
 import { UpdateBanner } from '../../components/hardware-capabilities/update-banner';
 import OnboardingStepper from '../../components/onboarding/onboarding';
+import config from '../../config';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
 
@@ -258,7 +259,7 @@ export function MainNav() {
       href: '/vector-fs',
       icon: <FilesIcon className="h-5 w-5" />,
     },
-    {
+    config.isDev && {
       title: t('layout.menuItems.vectorSearch'),
       href: '/vector-search',
       icon: <AISearchContentIcon className="h-5 w-5" />,
@@ -584,7 +585,7 @@ const MainLayout = () => {
                 : '70px',
             transition: sidebarTransition,
           }}
-          className={cn('flex-1')}
+          className={cn('flex-1 overflow-hidden')}
           initial={{
             paddingLeft: !displaySidebar
               ? '0px'

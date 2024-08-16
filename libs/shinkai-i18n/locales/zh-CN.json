@@ -107,8 +107,8 @@
     "remove": "移除",
     "rename": "重命名",
     "repeatPassphrase": "确认密码短语",
-    "resetData": "重置数据",
     "resetAll": "重置全部",
+    "resetData": "重置数据",
     "resetFilters": "重置筛选器",
     "restore": "恢复",
     "retry": "重试",
@@ -314,6 +314,8 @@
       "label": "注册新设备"
     },
     "shinkaiIdentity": {
+      "checkIdentityInSync": "验证Shinkai身份",
+      "checkIdentityInSyncDescription": "检查您的Shinkai身份是否准确同步。",
       "error": "更新Shinkai身份时出错",
       "goToShinkaiIdentity": "前往我的Shinkai身份",
       "label": "Shinkai 身份",
@@ -351,13 +353,15 @@
         "modelInstalled": "成功安装模型 {{modelName}}",
         "modelRemoved": "成功移除模型 {{modelName}}"
       },
-      "table": {
-        "bookPages": "书页",
-        "dataLimit": "数据限制",
+      "labels": {
         "models": "模型",
         "quality": "质量",
-        "size": "大小",
-        "speed": "速度"
+        "tags": "标签",
+        "bookPages": "最多 {{pages}} 页内容",
+        "showAll": "显示所有模型",
+        "showRecommended": "显示推荐模型",
+        "visionCapability": "图像转文本",
+        "textCapability": "文本生成"
       }
     },
     "nodeAddress": "节点地址",

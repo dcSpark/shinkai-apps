@@ -12,7 +12,9 @@ import { ShinkaiMessageBuilderWrapper } from './ShinkaiMessageBuilderWrapper';
 ed.etc.sha512Sync = (...m) => sha512(ed.etc.concatBytes(...m));
 
 const crypto = new Crypto();
-globalThis.crypto = crypto;
+Object.defineProperty(globalThis, 'crypto', {
+  value: crypto,
+});
 
 const generateKeys = async () => {
   const seed = new Uint8Array(32);
