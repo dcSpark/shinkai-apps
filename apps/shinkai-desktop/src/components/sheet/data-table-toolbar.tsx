@@ -7,6 +7,7 @@ import { Table } from '@tanstack/react-table';
 
 // import { SortAltIcon } from 'primereact/icons/sortalt';
 import {
+  DataTableChatOptions,
   DataTableHeightOptions,
   DataTableViewOptions,
 } from './data-table-view-options';
@@ -51,6 +52,7 @@ export function DataTableToolbar<TData>({
       {/*  </Button>*/}
       {/*)}*/}
       {/*</div>*/}
+      <DataTableChatOptions />
       <DataTableHeightOptions columns={columns} table={table} />
       <DataTableViewOptions columns={columns} table={table} />
     </div>

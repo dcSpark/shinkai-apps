@@ -9,6 +9,11 @@ import {
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbSeparator,
+  Button,
+  Input,
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
   Table,
   TableBody,
   TableCell,
@@ -32,6 +37,7 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 import { AnimatePresence, motion } from 'framer-motion';
+import { SendIcon, XIcon } from 'lucide-react';
 import React, { useEffect, useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';
@@ -169,6 +175,7 @@ const SheetProject = () => {
   const setSelectedCell = useSheetProjectStore(
     (state) => state.setSelectedCell,
   );
+  const showChatPanel = useSheetProjectStore((state) => state.showChatPanel);
 
   const { sheetId } = useParams();
 
@@ -257,155 +264,230 @@ const SheetProject = () => {
   });
 
   return (
-    <div className="mx-auto h-screen max-w-6xl px-3 py-10 pb-4">
-      <div className="mb-4 flex items-center justify-between">
-        <div className="flex items-center justify-between">
-          <Breadcrumb>
-            <BreadcrumbList className="text-xs">
-              <BreadcrumbItem>
-                <BreadcrumbLink
-                  asChild
-                  className="rounded-md px-2.5 py-1.5 hover:bg-gray-300"
-                >
-                  <Link className="inline-flex gap-1" to="/sheets">
-                    <SheetIcon className="h-4 w-4" />
-                    Shinkai Dashboard
-                  </Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink className="text-white">
-                  {sheetInfo?.sheet_name}
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
-        <DataTableToolbar columns={sheetInfo?.columns ?? {}} table={table} />
-      </div>
-      <div className="relative h-[calc(100dvh-120px)] overflow-hidden shadow-sm">
-        <div className="flex size-full max-w-[calc(100vw-100px)] flex-col space-y-4 overflow-hidden">
-          <div className="scrollbar-thin relative flex size-full h-full flex-col overflow-auto">
-            <div className="relative size-full">
-              <Table
-                className="user-none w-full text-sm"
-                ref={tableRef}
-                style={{
-                  width: table.getCenterTotalSize(),
-                }}
-              >
-                <TableHeader className="sticky top-0 w-full [&_tr]:border-b">
-                  {table.getHeaderGroups().map((headerGroup) => (
-                    <TableRow
-                      className="flex border-b transition-colors hover:bg-transparent [&_th:first-child]:border-l [&_th:last-child]:border-r"
-                      key={headerGroup.id}
+    <ResizablePanelGroup direction="horizontal">
+      <ResizablePanel>
+        <div className="mx-auto h-screen max-w-6xl px-3 py-10 pb-4">
+          <div className="mb-4 flex items-center justify-between">
+            <div className="flex items-center justify-between">
+              <Breadcrumb>
+                <BreadcrumbList className="text-xs">
+                  <BreadcrumbItem>
+                    <BreadcrumbLink
+                      asChild
+                      className="rounded-md px-2.5 py-1.5 hover:bg-gray-300"
                     >
-                      {headerGroup.headers.map((header) => {
-                        return (
-                          <TableHead
-                            className={cn(
-                              'group relative flex size-full h-8 select-none border-l border-t bg-gray-500 p-1 pl-2.5 pr-1.5 text-left font-medium',
-                              '[&:has([role=checkbox])]:px-[12px] [&:has([role=checkbox])]:pt-2',
-                            )}
-                            key={header.id}
-                            style={{ width: header.getSize() }}
-                          >
-                            {header.isPlaceholder
-                              ? null
-                              : flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext(),
-                                )}
-
-                            {header.column.columnDef.id !== 'select' && (
-                              <div
+                      <Link className="inline-flex gap-1" to="/sheets">
+                        <SheetIcon className="h-4 w-4" />
+                        Shinkai Dashboard
+                      </Link>
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <BreadcrumbLink className="text-white">
+                      {sheetInfo?.sheet_name}
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                </BreadcrumbList>
+              </Breadcrumb>
+            </div>
+            <DataTableToolbar
+              columns={sheetInfo?.columns ?? {}}
+              table={table}
+            />
+          </div>
+          <div className="relative h-[calc(100dvh-120px)] overflow-hidden shadow-sm">
+            <div className="flex size-full max-w-[calc(100vw-100px)] flex-col space-y-4 overflow-hidden">
+              <div className="scrollbar-thin relative flex size-full h-full flex-col overflow-auto">
+                <div className="relative size-full">
+                  <Table
+                    className="user-none w-full text-sm"
+                    ref={tableRef}
+                    style={{
+                      width: table.getCenterTotalSize(),
+                    }}
+                  >
+                    <TableHeader className="sticky top-0 w-full [&_tr]:border-b">
+                      {table.getHeaderGroups().map((headerGroup) => (
+                        <TableRow
+                          className="flex border-b transition-colors hover:bg-transparent [&_th:first-child]:border-l [&_th:last-child]:border-r"
+                          key={headerGroup.id}
+                        >
+                          {headerGroup.headers.map((header) => {
+                            return (
+                              <TableHead
                                 className={cn(
-                                  'user-none invisible absolute right-0 top-1.5 h-[20px] min-w-1 shrink-0 cursor-col-resize touch-none rounded-lg bg-gray-100 hover:bg-gray-100 group-hover:visible',
-                                  header.column.getIsResizing() &&
-                                    'bg-brand-500 visible top-0 h-[32px] min-w-[3px]',
+                                  'group relative flex size-full h-8 select-none border-l border-t bg-gray-500 p-1 pl-2.5 pr-1.5 text-left font-medium',
+                                  '[&:has([role=checkbox])]:px-[12px] [&:has([role=checkbox])]:pt-2',
                                 )}
-                                {...{
-                                  onDoubleClick: () =>
-                                    header.column.resetSize(),
-                                  onMouseDown: header?.getResizeHandler(),
-                                  onTouchStart: header?.getResizeHandler(),
-                                }}
-                              />
-                            )}
-                          </TableHead>
-                        );
-                      })}
-                      <AddColumnAction />
-                    </TableRow>
-                  ))}
-                </TableHeader>
-                <TableBody
-                  className="[&_tr:last-child]:border-0"
-                  ref={tableBodyRef}
-                >
-                  {
-                    table.getRowModel().rows?.length
-                      ? table.getRowModel().rows.map((row) => (
-                          <TableRow
-                            className={cn(
-                              'hover:bg-accent group flex w-full border-b transition-colors [&_td:first-child]:border-l [&_td:last-child]:border-r',
-                            )}
-                            data-state={row.getIsSelected() && 'selected'}
-                            key={row.id}
-                          >
-                            {row.getVisibleCells().map((cell) => {
-                              return (
-                                <MotionTableCell
-                                  animate={{ height: getRowHeight(heightRow) }}
-                                  className={cn(
-                                    'flex size-full select-none items-start border-b border-l bg-gray-500 px-0 py-0 pt-[1px] text-xs group-hover:bg-gray-300',
-                                    '[&:has([role=checkbox])]:justify-center [&:has([role=checkbox])]:px-3',
-                                  )}
-                                  initial={{ height: getRowHeight(heightRow) }}
-                                  key={cell.id}
-                                  style={{ width: cell.column.getSize() }}
-                                >
-                                  <div className={cn('size-full text-xs')}>
-                                    {flexRender(
-                                      cell.column.columnDef.cell,
-                                      cell.getContext(),
+                                key={header.id}
+                                style={{ width: header.getSize() }}
+                              >
+                                {header.isPlaceholder
+                                  ? null
+                                  : flexRender(
+                                      header.column.columnDef.header,
+                                      header.getContext(),
                                     )}
-                                  </div>
-                                </MotionTableCell>
-                              );
-                            })}
-                          </TableRow>
-                        ))
-                      : null
-                    // <TableRow>
-                    //   <TableCell
-                    //     className="h-24 text-center"
-                    //     colSpan={
-                    //       generateColumns(sheetInfo?.columns ?? {}).length
-                    //     }
-                    //   >
-                    //     {'No data results'}
-                    //   </TableCell>
-                    // </TableRow>
-                  }
-                  <AddRowsAction />
-                </TableBody>
-              </Table>
+
+                                {header.column.columnDef.id !== 'select' && (
+                                  <div
+                                    className={cn(
+                                      'user-none invisible absolute right-0 top-1.5 h-[20px] min-w-1 shrink-0 cursor-col-resize touch-none rounded-lg bg-gray-100 hover:bg-gray-100 group-hover:visible',
+                                      header.column.getIsResizing() &&
+                                        'bg-brand-500 visible top-0 h-[32px] min-w-[3px]',
+                                    )}
+                                    {...{
+                                      onDoubleClick: () =>
+                                        header.column.resetSize(),
+                                      onMouseDown: header?.getResizeHandler(),
+                                      onTouchStart: header?.getResizeHandler(),
+                                    }}
+                                  />
+                                )}
+                              </TableHead>
+                            );
+                          })}
+                          <AddColumnAction />
+                        </TableRow>
+                      ))}
+                    </TableHeader>
+                    <TableBody
+                      className="[&_tr:last-child]:border-0"
+                      ref={tableBodyRef}
+                    >
+                      {
+                        table.getRowModel().rows?.length
+                          ? table.getRowModel().rows.map((row) => (
+                              <TableRow
+                                className={cn(
+                                  'hover:bg-accent group flex w-full border-b transition-colors [&_td:first-child]:border-l [&_td:last-child]:border-r',
+                                )}
+                                data-state={row.getIsSelected() && 'selected'}
+                                key={row.id}
+                              >
+                                {row.getVisibleCells().map((cell) => {
+                                  return (
+                                    <MotionTableCell
+                                      animate={{
+                                        height: getRowHeight(heightRow),
+                                      }}
+                                      className={cn(
+                                        'flex size-full select-none items-start border-b border-l bg-gray-500 px-0 py-0 pt-[1px] text-xs group-hover:bg-gray-300',
+                                        '[&:has([role=checkbox])]:justify-center [&:has([role=checkbox])]:px-3',
+                                      )}
+                                      initial={{
+                                        height: getRowHeight(heightRow),
+                                      }}
+                                      key={cell.id}
+                                      style={{ width: cell.column.getSize() }}
+                                    >
+                                      <div className={cn('size-full text-xs')}>
+                                        {flexRender(
+                                          cell.column.columnDef.cell,
+                                          cell.getContext(),
+                                        )}
+                                      </div>
+                                    </MotionTableCell>
+                                  );
+                                })}
+                              </TableRow>
+                            ))
+                          : null
+                        // <TableRow>
+                        //   <TableCell
+                        //     className="h-24 text-center"
+                        //     colSpan={
+                        //       generateColumns(sheetInfo?.columns ?? {}).length
+                        //     }
+                        //   >
+                        //     {'No data results'}
+                        //   </TableCell>
+                        // </TableRow>
+                      }
+                      <AddRowsAction />
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+              <AnimatePresence>
+                {Object.keys(rowSelection).length > 0 ? (
+                  <SelectedRowsActions
+                    selectedRows={rowSelection}
+                    setRowSelection={setRowSelection}
+                  />
+                ) : null}
+              </AnimatePresence>
+              {/*<DataTablePagination table={table} />*/}
             </div>
           </div>
-          <AnimatePresence>
-            {Object.keys(rowSelection).length > 0 ? (
-              <SelectedRowsActions
-                selectedRows={rowSelection}
-                setRowSelection={setRowSelection}
-              />
-            ) : null}
-          </AnimatePresence>
-          {/*<DataTablePagination table={table} />*/}
         </div>
-      </div>
-    </div>
+      </ResizablePanel>
+      {showChatPanel && <ResizableHandle className="bg-gray-300" />}
+      <ResizablePanel
+        className={cn(!showChatPanel ? 'hidden' : 'block')}
+        collapsible
+        defaultSize={36}
+        maxSize={36}
+        minSize={30}
+      >
+        <AnimatePresence initial={false} mode="popLayout">
+          {showChatPanel && (
+            <motion.div
+              animate={{ opacity: 1, filter: 'blur(0px)' }}
+              className="h-full"
+              initial={{ opacity: 0, filter: 'blur(5px)' }}
+              transition={{ duration: 0.2 }}
+            >
+              <ChatPanel />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </ResizablePanel>
+    </ResizablePanelGroup>
   );
 };
 export default SheetProject;
+
+function ChatPanel() {
+  const toggleChatPanel = useSheetProjectStore(
+    (state) => state.toggleChatPanel,
+  );
+  return (
+    <div className="flex h-full flex-col gap-10 p-5 px-4 py-8">
+      <Button
+        className="absolute right-4 top-4"
+        onClick={toggleChatPanel}
+        size="icon"
+        variant="tertiary"
+      >
+        <XIcon className="text-gray-80 h-5 w-5" />
+      </Button>
+      <h1>Ask Shinkai AI</h1>
+      <div className="flex flex-1 flex-col items-center justify-center gap-2 overflow-y-auto text-center">
+        <span aria-hidden className="text-5xl">
+          🤖
+        </span>
+        <h2 className="text-lg font-medium">Chat with your Shinkai Sheet</h2>
+        <p className="text-gray-80 text-sm">
+          Try "Generate top 10 tech startups", "Set up a shinkai sheet", “Create
+          a new colum", “Add a new row”
+        </p>
+      </div>
+      <div className="flex shrink-0 items-center gap-1">
+        <Input
+          autoFocus
+          className="placeholder-gray-80 !h-[50px] flex-1 bg-gray-200 px-3 py-2"
+          placeholder={'Ask Shinkai AI'}
+        />
+        <Button
+          className="aspect-square h-[90%] shrink-0 rounded-lg p-2"
+          size="auto"
+          variant="default"
+        >
+          <SendIcon className="h-4.5 w-4.5" />
+        </Button>
+      </div>
+    </div>
+  );
+}

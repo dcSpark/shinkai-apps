@@ -7,10 +7,17 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuLabel,
+  Tooltip,
+  TooltipContent,
+  TooltipPortal,
+  TooltipProvider,
+  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { Table } from '@tanstack/react-table';
+import { SparklesIcon } from 'lucide-react';
 
 import { useSettings } from '../../store/settings';
+import { useSheetProjectStore } from './context/table-context';
 
 interface DataTableViewOptionsProps<TData> {
   table: Table<TData>;
@@ -117,5 +124,36 @@ export function DataTableHeightOptions<TData>(
         })}
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+export function DataTableChatOptions() {
+  const showChatPanel = useSheetProjectStore((state) => state.showChatPanel);
+
+  const toggleChatPanel = useSheetProjectStore(
+    (state) => state.toggleChatPanel,
+  );
+  return (
+    !showChatPanel && (
+      <TooltipProvider delayDuration={0}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              className="hover:bg-brand text-brand fixed bottom-10 right-10 z-40 flex h-14 w-14 cursor-pointer rounded-full hover:text-white"
+              onClick={toggleChatPanel}
+              size="icon"
+              variant="gradient"
+            >
+              <span className="sr-only">Chat with Shinkai Sheet</span>
+              <SparklesIcon className="h-6 w-6" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipPortal>
+            <TooltipContent align="center" side="left" sideOffset={10}>
+              <p>Chat with Shinkai Sheet</p>
+            </TooltipContent>
+          </TooltipPortal>
+        </Tooltip>
+      </TooltipProvider>
+    )
   );
 }
