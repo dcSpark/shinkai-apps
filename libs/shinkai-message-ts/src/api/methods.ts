@@ -2,6 +2,7 @@
 import { httpClient } from '../http-client';
 import {
   AgentCredentialsPayload,
+  AssociatedUI,
   ColumnBehavior,
   CreateChatInboxResponse,
   CredentialsPayload,
@@ -445,6 +446,7 @@ export const createJob = async (
   receiver: string,
   receiver_subidentity: string,
   setupDetailsState: JobCredentialsPayload,
+  associated_ui: AssociatedUI | undefined,
 ): Promise<string> => {
   const messageStr = ShinkaiMessageBuilderWrapper.job_creation(
     setupDetailsState.profile_encryption_sk,
@@ -452,6 +454,7 @@ export const createJob = async (
     setupDetailsState.node_encryption_pk,
     scope,
     is_hidden,
+    associated_ui,
     sender,
     sender_subidentity,
     receiver,

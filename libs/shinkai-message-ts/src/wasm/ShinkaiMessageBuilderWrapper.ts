@@ -7,6 +7,7 @@ import {
   ShinkaiToolType,
   TSEncryptionMethod,
 } from '../models/SchemaTypes.js';
+import { AssociatedUI } from '../models/ShinkaiMessage.js';
 import {
   ShinkaiMessageBuilderWrapper as ShinkaiMessageBuilderWrapperWASM,
   ShinkaiMessageWrapper,
@@ -324,6 +325,7 @@ export class ShinkaiMessageBuilderWrapper {
     receiver_public_key: string,
     scope: any,
     is_hidden: boolean,
+    associated_ui: AssociatedUI | undefined,
     sender: string,
     sender_subidentity: string,
     receiver: string,
@@ -335,6 +337,7 @@ export class ShinkaiMessageBuilderWrapper {
       receiver_public_key,
       scope,
       is_hidden,
+      associated_ui,
       sender,
       sender_subidentity,
       receiver,

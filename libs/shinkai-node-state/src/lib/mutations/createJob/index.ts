@@ -29,7 +29,9 @@ export const createJob = async ({
   node_encryption_pk,
   profile_encryption_sk,
   profile_identity_sk,
+  associated_ui,
 }: CreateJobInput) => {
+  console.log('createJob called');
   const receiver = shinkaiIdentity;
   const receiver_subidentity = `${profile}/agent/${agentId}`;
 
@@ -38,6 +40,7 @@ export const createJob = async ({
   if (selectedVRFiles.length > 0 || selectedVRFolders.length > 0) {
     scope = JobCreationWrapper.from_jsvalue({
       is_hidden: is_hidden,
+      associated_ui: associated_ui,
       scope: {
         local_vrkai: [],
         local_vrpack: [],
@@ -58,6 +61,7 @@ export const createJob = async ({
 
   const hasVRFiles = selectedVRFiles.length > 0 || selectedVRFolders.length > 0;
 
+  console.log('associated_ui: ', associated_ui);
   const jobId = await createJobApi(
     nodeAddress,
     hasVRFiles ? scope : scope.to_jsvalue(),
@@ -73,7 +77,9 @@ export const createJob = async ({
       profile_encryption_sk,
       profile_identity_sk,
     },
+    associated_ui,
   );
+  console.log('jobId: ', jobId);
 
   files?.length
     ? await sendTextMessageWithFilesForInbox(

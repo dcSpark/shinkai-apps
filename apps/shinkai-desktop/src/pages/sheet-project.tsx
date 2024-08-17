@@ -1,6 +1,13 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { ColumnStatus } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
+import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils';
 import { ShinkaiMessageBuilderWrapper } from '@shinkai_network/shinkai-message-ts/wasm/ShinkaiMessageBuilderWrapper';
+import { CreateJobFormSchema, createJobFormSchema } from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
 import { FunctionKey } from '@shinkai_network/shinkai-node-state/lib/constants';
+import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
+import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMessageToJob/useSendMessageToJob';
+import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
+import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
 import { Sheet } from '@shinkai_network/shinkai-node-state/lib/queries/getSheet/types';
 import { useGetSheet } from '@shinkai_network/shinkai-node-state/lib/queries/getSheet/useGetSheet';
 import {
@@ -38,7 +45,9 @@ import {
 } from '@tanstack/react-table';
 import { AnimatePresence, motion } from 'framer-motion';
 import { SendIcon, XIcon } from 'lucide-react';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';
 
@@ -176,8 +185,14 @@ const SheetProject = () => {
     (state) => state.setSelectedCell,
   );
   const showChatPanel = useSheetProjectStore((state) => state.showChatPanel);
-
+  const setSheetId = useSheetProjectStore((state) => state.setSheetId);
   const { sheetId } = useParams();
+
+  useEffect(() => {
+    if (sheetId) {
+      setSheetId(sheetId); // Set the sheetId in the store
+    }
+  }, [sheetId]);
 
   useWebsocketUpdateCell({ enabled: true });
 
@@ -453,6 +468,119 @@ function ChatPanel() {
   const toggleChatPanel = useSheetProjectStore(
     (state) => state.toggleChatPanel,
   );
+  const [inputValue, setInputValue] = useState('');
+  const [jobId, setJobId] = useState<string | null>(null);
+  const { t } = useTranslation();
+  const auth = useAuth((state) => state.auth);
+  const defaulAgentId = useSettings((state) => state.defaultAgentId);
+  const { sheetId } = useParams();
+
+  const createJobForm = useForm<CreateJobFormSchema>({
+    resolver: zodResolver(createJobFormSchema),
+    defaultValues: {
+      files: [],
+    },
+  });
+
+  const { llmProviders, isSuccess } = useGetLLMProviders({
+    nodeAddress: auth?.node_address ?? '',
+    sender: auth?.shinkai_identity ?? '',
+    senderSubidentity: `${auth?.profile}`,
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+    my_device_identity_sk: auth?.profile_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+  });
+
+  const { isPending, mutateAsync: createJob } = useCreateJob({
+    onSuccess: (data) => {
+      setJobId(data.jobId);
+    },
+  });
+
+  const { mutateAsync: sendMessageToJob } = useSendMessageToJob();
+
+  const { data: messagesData, refetch: refetchMessages } = useGetChatConversationWithPagination({
+    nodeAddress: auth?.node_address ?? '',
+    inboxId: jobId ? buildInboxIdFromJobId(jobId) : '',
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    profile: auth?.profile ?? '',
+    my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+    my_device_identity_sk: auth?.profile_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+    refetchIntervalEnabled: !!jobId,
+  });
+
+
+  useEffect(() => {
+    if (isSuccess && llmProviders?.length && !defaulAgentId) {
+      createJobForm.setValue('agent', llmProviders[0].id);
+    } else {
+      createJobForm.setValue('agent', defaulAgentId);
+    }
+  }, [llmProviders, createJobForm, defaulAgentId, isSuccess]);
+
+  useEffect(() => {
+    console.log('sheetId:', sheetId);
+    const createInitialJob = async () => {
+      if (!auth || !sheetId) return;
+      await createJob({
+        nodeAddress: auth?.node_address ?? '',
+        shinkaiIdentity: auth.shinkai_identity,
+        profile: auth.profile,
+        agentId: createJobForm.getValues('agent'),
+        content: '',
+        files_inbox: '',
+        files: [],
+        workflow: undefined,
+        workflowName: undefined,
+        is_hidden: false,
+        selectedVRFiles: [],
+        selectedVRFolders: [],
+        my_device_encryption_sk: auth.my_device_encryption_sk,
+        my_device_identity_sk: auth.my_device_identity_sk,
+        node_encryption_pk: auth.node_encryption_pk,
+        profile_encryption_sk: auth.profile_encryption_sk,
+        profile_identity_sk: auth.profile_identity_sk,
+        associated_ui: { type: 'Sheet', value: sheetId },
+      });
+    };
+
+    createInitialJob();
+  }, [auth, createJob, createJobForm, sheetId]);
+
+  const handleSendClick = async () => {
+    console.log('handleSendClick');
+    if (!auth) return;
+    if (inputValue.trim() && jobId) {
+      try {
+        await sendMessageToJob({
+          nodeAddress: auth?.node_address ?? '',
+          jobId: jobId,
+          message: inputValue,
+          files_inbox: '',
+          parent: '',
+          shinkaiIdentity: auth.shinkai_identity,
+          profile: auth.profile,
+          workflowName: undefined,
+          my_device_encryption_sk: auth.my_device_encryption_sk,
+          my_device_identity_sk: auth.my_device_identity_sk,
+          node_encryption_pk: auth.node_encryption_pk,
+          profile_encryption_sk: auth.profile_encryption_sk,
+          profile_identity_sk: auth.profile_identity_sk,
+        });
+        // Clear the input after sending
+        setInputValue('');
+      } catch (error) {
+        console.error('Failed to send message:', error);
+      }
+    }
+  };
+
   return (
     <div className="flex h-full flex-col gap-10 p-5 px-4 py-8">
       <Button
@@ -473,15 +601,27 @@ function ChatPanel() {
           Try "Generate top 10 tech startups", "Set up a shinkai sheet", “Create
           a new colum", “Add a new row”
         </p>
+        <div className="flex flex-col gap-2">
+          {messagesData?.pages?.map((page) =>
+            page.map((message) => (
+              <div className="text-left" key={message.hash}>
+                {message.content}
+              </div>
+            ))
+          )}
+        </div>
       </div>
       <div className="flex shrink-0 items-center gap-1">
         <Input
           autoFocus
           className="placeholder-gray-80 !h-[50px] flex-1 bg-gray-200 px-3 py-2"
+          onChange={(e) => setInputValue(e.target.value)}
           placeholder={'Ask Shinkai AI'}
+          value={inputValue}
         />
         <Button
           className="aspect-square h-[90%] shrink-0 rounded-lg p-2"
+          onClick={handleSendClick}
           size="auto"
           variant="default"
         >

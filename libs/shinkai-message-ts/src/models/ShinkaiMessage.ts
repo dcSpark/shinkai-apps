@@ -1,5 +1,10 @@
 import { JobScope, MessageSchemaType, TSEncryptionMethod } from './SchemaTypes';
 
+export type AssociatedUI =
+  | { type: 'Sheet'; value: string }
+  // Add more variants as needed
+  ;
+
 export interface InternalMetadata {
   sender_subidentity: string;
   recipient_subidentity: string;

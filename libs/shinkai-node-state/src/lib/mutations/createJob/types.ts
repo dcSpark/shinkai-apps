@@ -2,6 +2,11 @@ import type { JobCredentialsPayload } from '@shinkai_network/shinkai-message-ts/
 
 import { VRFolder, VRItem } from '../../queries/getVRPathSimplified/types';
 
+export type AssociatedUI =
+  | { type: 'Sheet'; value: string }
+  // Add more variants as needed
+  ;
+
 export type CreateJobInput = JobCredentialsPayload & {
   nodeAddress: string;
   shinkaiIdentity: string;
@@ -15,6 +20,7 @@ export type CreateJobInput = JobCredentialsPayload & {
   workflowName?: string;
   selectedVRFiles?: VRItem[];
   selectedVRFolders?: VRFolder[];
+  associated_ui?: AssociatedUI;
 };
 
 export type CreateJobOutput = {

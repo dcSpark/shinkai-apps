@@ -13,6 +13,8 @@ type TableSheetStore = {
   showChatPanel: boolean;
   setShowChatPanel: (show: boolean) => void;
   toggleChatPanel: () => void;
+  sheetId: string | null;
+  setSheetId: (id: string) => void;
 };
 
 const createTableSheetStore = () =>
@@ -31,6 +33,11 @@ const createTableSheetStore = () =>
       set((state) => ({
         showChatPanel: !state.showChatPanel,
       })),
+      sheetId: null, // Initialize sheetId
+      setSheetId: (id) =>
+        set({
+          sheetId: id,
+        }),
   }));
 
 const TableSheetContext = createContext<ReturnType<
