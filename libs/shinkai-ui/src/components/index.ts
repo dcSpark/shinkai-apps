@@ -24,6 +24,7 @@ export * from './markdown-preview';
 export * from './popover';
 export * from './prompt-textarea';
 export * from './qr-code';
+export * from './resizable';
 export * from './scroll-area';
 export * from './select';
 export * from './separator';
