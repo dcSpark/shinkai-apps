@@ -9,8 +9,6 @@ import {
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbSeparator,
-  Button,
-  Input,
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
@@ -37,7 +35,6 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 import { AnimatePresence, motion } from 'framer-motion';
-import { SendIcon, XIcon } from 'lucide-react';
 import React, { useEffect, useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';
@@ -51,6 +48,7 @@ import {
 } from '../components/sheet/data-table-actions';
 import { DataTableToolbar } from '../components/sheet/data-table-toolbar';
 import { generateRowsData } from '../components/sheet/sheet-data';
+import ChatTable from '../components/sheet/table-chat';
 import { getRowHeight } from '../components/sheet/utils';
 import { useTableMenuActions } from '../components/sheet/utils/copy-paste';
 import useTableHotkeys from '../components/sheet/utils/use-table-hotkeys';
@@ -439,7 +437,7 @@ const SheetProject = () => {
               initial={{ opacity: 0, filter: 'blur(5px)' }}
               transition={{ duration: 0.2 }}
             >
-              <ChatPanel />
+              <ChatTable />
             </motion.div>
           )}
         </AnimatePresence>
@@ -448,46 +446,3 @@ const SheetProject = () => {
   );
 };
 export default SheetProject;
-
-function ChatPanel() {
-  const toggleChatPanel = useSheetProjectStore(
-    (state) => state.toggleChatPanel,
-  );
-  return (
-    <div className="flex h-full flex-col gap-10 p-5 px-4 py-8">
-      <Button
-        className="absolute right-4 top-4"
-        onClick={toggleChatPanel}
-        size="icon"
-        variant="tertiary"
-      >
-        <XIcon className="text-gray-80 h-5 w-5" />
-      </Button>
-      <h1>Ask Shinkai AI</h1>
-      <div className="flex flex-1 flex-col items-center justify-center gap-2 overflow-y-auto text-center">
-        <span aria-hidden className="text-5xl">
-          🤖
-        </span>
-        <h2 className="text-lg font-medium">Chat with your Shinkai Sheet</h2>
-        <p className="text-gray-80 text-sm">
-          Try "Generate top 10 tech startups", "Set up a shinkai sheet", “Create
-          a new colum", “Add a new row”
-        </p>
-      </div>
-      <div className="flex shrink-0 items-center gap-1">
-        <Input
-          autoFocus
-          className="placeholder-gray-80 !h-[50px] flex-1 bg-gray-200 px-3 py-2"
-          placeholder={'Ask Shinkai AI'}
-        />
-        <Button
-          className="aspect-square h-[90%] shrink-0 rounded-lg p-2"
-          size="auto"
-          variant="default"
-        >
-          <SendIcon className="h-4.5 w-4.5" />
-        </Button>
-      </div>
-    </div>
-  );
-}

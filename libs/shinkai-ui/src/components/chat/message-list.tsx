@@ -43,7 +43,7 @@ export const MessageList = ({
   ) => Promise<
     InfiniteQueryObserverResult<ChatConversationInfiniteData, Error>
   >;
-  regenerateMessage: (
+  regenerateMessage?: (
     content: string,
     messageHash: string,
     workflowName?: string,
