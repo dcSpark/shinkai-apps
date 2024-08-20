@@ -8,6 +8,7 @@ import {
   CreateJobFormSchema,
   createJobFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
+import { FunctionKeyV2 } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
@@ -19,6 +20,7 @@ import {
   MessageList,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { useQueryClient } from '@tanstack/react-query';
 import { SendIcon, XIcon } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -71,8 +73,8 @@ export default function ChatTable() {
       setChatInboxId(buildInboxIdFromJobId(data.jobId));
     },
   });
-  const { mutateAsync: sendMessageToJob } = useSendMessageToJob({});
-
+  const { mutateAsync: sendMessageToJob } = useSendMessageToJob();
+  const queryClient = useQueryClient();
   const {
     data,
     fetchPreviousPage,
@@ -87,6 +89,14 @@ export default function ChatTable() {
     profile: auth?.profile ?? '',
     enabled: !!chatInboxId,
   });
+
+  useEffect(() => {
+    const lastMessage = data?.pages?.at(-1)?.at(-1);
+    if (!chatInboxId || !lastMessage) return;
+    queryClient.invalidateQueries({
+      queryKey: [FunctionKeyV2.GET_SHEET],
+    });
+  }, [data?.pages]);
 
   const isLoadingMessage = useMemo(() => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
@@ -133,8 +143,8 @@ export default function ChatTable() {
       <h1 className="text-base">Ask Shinkai AI</h1>
       <div
         className={cn(
-          'flex flex-1 flex-col overflow-y-auto text-center',
-          !chatInboxId && 'items-center justify-center gap-2',
+          'flex flex-1 flex-col overflow-y-auto',
+          !chatInboxId && 'items-center justify-center gap-2 text-center',
         )}
       >
         {!chatInboxId && (
@@ -156,6 +166,7 @@ export default function ChatTable() {
         {chatInboxId && (
           <MessageList
             containerClassName="px-5"
+            disabledRetryAndEdit={true}
             fetchPreviousPage={fetchPreviousPage}
             fromPreviousMessagesRef={fromPreviousMessagesRef}
             hasPreviousPage={hasPreviousPage}
