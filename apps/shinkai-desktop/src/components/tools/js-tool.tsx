@@ -128,8 +128,8 @@ export default function JsTool({
           .filter((item) => !!item)
           .map(({ label, value }) => (
             <div className="flex flex-col gap-1 py-4" key={label}>
-              <span className="text-gray-80 text-xs">{label}</span>(
-              <span className="text-sm text-white">{value}</span>)
+              <span className="text-gray-80 text-xs">{label}</span>
+              <span className="text-sm text-white">{value}</span>
             </div>
           ))}
 

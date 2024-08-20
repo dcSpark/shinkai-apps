@@ -68,7 +68,7 @@ export const Tools = () => {
   const { mutateAsync: updateTool } = useUpdateTool();
 
   return (
-    <SimpleLayout title={'Shinkai Tools'}>
+    <SimpleLayout classname="max-w-3xl" title={'Shinkai Tools'}>
       <ScrollArea className="pr-4 [&>div>div]:!block">
         <div className="relative mb-4 flex h-10 w-full items-center">
           <Input
