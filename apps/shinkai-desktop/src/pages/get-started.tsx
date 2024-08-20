@@ -6,9 +6,8 @@ import {
 } from '@shinkai_network/shinkai-node-state/forms/auth/quick-connection';
 import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
 import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/lib/queries/getEncryptionKeys/useGetEncryptionKeys';
-import { Button, buttonVariants, Separator } from '@shinkai_network/shinkai-ui';
+import { Button } from '@shinkai_network/shinkai-ui';
 import { submitRegistrationNoCodeError } from '@shinkai_network/shinkai-ui/helpers';
-import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
@@ -113,11 +112,11 @@ const GetStartedPage = () => {
         onRestore={() => onRestoreConfirmation()}
         open={resetStorageBeforeConnectConfirmationPromptOpen}
       />
-      <div className="mx-auto flex h-full max-w-lg flex-col">
+      <div className="mx-auto flex h-full max-w-md flex-col gap-14">
         <p className="text-gray-80 text-center text-base tracking-wide">
           {t('desktop.welcome')} <span aria-hidden> 🔑</span>
         </p>
-        <div className="mt-10 flex flex-1 flex-col gap-10">
+        <div className="flex flex-1 flex-col gap-4">
           <div className="space-y-4">
             <Button
               className="w-full"
@@ -133,26 +132,27 @@ const GetStartedPage = () => {
             </Button>
             <ResourcesBanner />
           </div>
-          <Separator className="relative" decorative>
-            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-gray-500 p-2 text-gray-100">
-              or
-            </span>
-          </Separator>
+          {/*<Separator className="relative" decorative>*/}
+          {/*  <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-gray-500 p-2 text-gray-100">*/}
+          {/*    or*/}
+          {/*  </span>*/}
+          {/*</Separator>*/}
           <div className="space-y-4">
-            <a
-              className={cn(
-                buttonVariants({
-                  variant: 'ghost',
-                  size: 'lg',
-                }),
-                'w-full',
-              )}
-              href="https://www.shinkai.com/sign-in"
-              rel="noreferrer"
-              target="_blank"
-            >
-              {t('common.logInShinkaiHosting')}
-            </a>
+            {/* Disable Shinkai Hosting */}
+            {/*<a*/}
+            {/*  className={cn(*/}
+            {/*    buttonVariants({*/}
+            {/*      variant: 'ghost',*/}
+            {/*      size: 'lg',*/}
+            {/*    }),*/}
+            {/*    'w-full',*/}
+            {/*  )}*/}
+            {/*  href="https://www.shinkai.com/sign-in"*/}
+            {/*  rel="noreferrer"*/}
+            {/*  target="_blank"*/}
+            {/*>*/}
+            {/*  {t('common.logInShinkaiHosting')}*/}
+            {/*</a>*/}
             {/*<a*/}
             {/*  className={cn(*/}
             {/*    buttonVariants({*/}
