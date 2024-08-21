@@ -74,7 +74,7 @@ export default function JsTool({
           },
         })),
       } as ShinkaiTool,
-      isToolEnabled: isEnabled,
+      isToolEnabled: true,
       nodeAddress: auth?.node_address ?? '',
       shinkaiIdentity: auth?.shinkai_identity ?? '',
       profile: auth?.profile ?? '',
