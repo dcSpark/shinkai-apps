@@ -26,6 +26,7 @@ const jsToolSchema = z.object({
     z.object({
       key_name: z.string(),
       key_value: z.string().optional(),
+      required: z.boolean(),
     }),
   ),
 });
@@ -58,6 +59,7 @@ export default function JsTool({
       config: tool.config.map((conf) => ({
         key_name: conf.BasicConfig.key_name,
         key_value: conf.BasicConfig.key_value ?? '',
+        required: conf.BasicConfig.required,
       })),
     },
   });
@@ -66,8 +68,9 @@ export default function JsTool({
     let enabled = isEnabled;
 
     if (
-      tool.config.some((conf) => conf.BasicConfig.key_value === '') &&
-      data.config.every((conf) => conf.key_value !== '')
+      data.config.every(
+        (conf) => !conf.required || (conf.required && conf.key_value !== ''),
+      )
     ) {
       enabled = true;
     }
