@@ -63,6 +63,15 @@ export default function JsTool({
   });
 
   const onSubmit = async (data: JsToolFormSchema) => {
+    let enabled = isEnabled;
+
+    if (
+      tool.config.some((conf) => conf.BasicConfig.key_value === '') &&
+      data.config.every((conf) => conf.key_value !== '')
+    ) {
+      enabled = true;
+    }
+
     await updateTool({
       toolKey: toolKey ?? '',
       toolType: 'JS',
@@ -74,7 +83,7 @@ export default function JsTool({
           },
         })),
       } as ShinkaiTool,
-      isToolEnabled: true,
+      isToolEnabled: enabled,
       nodeAddress: auth?.node_address ?? '',
       shinkaiIdentity: auth?.shinkai_identity ?? '',
       profile: auth?.profile ?? '',
