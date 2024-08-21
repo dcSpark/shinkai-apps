@@ -2,7 +2,6 @@ import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import * as React from 'react';
 import { useEffect, useImperativeHandle, useRef } from 'react';
 
-import { EyeClosedIcon, EyeOpenIcon } from '../assets';
 import { cn } from '../utils';
 import { Button } from '.';
 import { Badge } from './badge';
