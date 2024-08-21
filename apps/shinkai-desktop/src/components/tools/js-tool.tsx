@@ -159,7 +159,6 @@ export default function JsTool({
                       name={`config.${index}.key_value`}
                       render={({ field }) => (
                         <TextField
-                          classes={{ input: 'font-mono' }}
                           field={field}
                           label={formatText(conf.BasicConfig.key_name)}
                           type="password"
