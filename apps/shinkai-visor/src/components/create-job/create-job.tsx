@@ -127,6 +127,7 @@ export const CreateJob = () => {
       form.setValue('agent', agent.id);
     }
   }, [form, location, llmProviders]);
+
   useEffect(() => {
     if (form.getValues().agent) {
       return;

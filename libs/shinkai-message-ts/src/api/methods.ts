@@ -250,39 +250,6 @@ export const updateInboxName = async (
   return data;
 };
 
-export const getLastMessagesFromInbox = async (
-  nodeAddress: string,
-  inbox: string,
-  count: number,
-  lastKey: string | undefined,
-  setupDetailsState: LastMessagesFromInboxCredentialsPayload,
-): Promise<ShinkaiMessage[]> => {
-  const messageStr = ShinkaiMessageBuilderWrapper.get_last_messages_from_inbox(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    inbox,
-    count,
-    lastKey,
-    setupDetailsState.shinkai_identity,
-    setupDetailsState.profile,
-    setupDetailsState.shinkai_identity,
-  );
-
-  const message = JSON.parse(messageStr);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/last_messages_from_inbox'),
-    message,
-
-    {
-      responseType: 'json',
-    },
-  );
-  const data = response.data;
-  return data.data;
-};
-
 export const submitRequestRegistrationCode = async (
   nodeAddress: string,
   identity_permissions: string,
@@ -435,42 +402,6 @@ export const pingAllNodes = async (nodeAddress: string): Promise<string> => {
   const response = await httpClient.post(urlJoin(nodeAddress, '/ping_all'));
   const data = response.data;
   return data.result;
-};
-
-export const createJob = async (
-  nodeAddress: string,
-  scope: any,
-  is_hidden: boolean,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
-  receiver_subidentity: string,
-  setupDetailsState: JobCredentialsPayload,
-): Promise<string> => {
-  const messageStr = ShinkaiMessageBuilderWrapper.job_creation(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    scope,
-    is_hidden,
-    sender,
-    sender_subidentity,
-    receiver,
-    receiver_subidentity,
-  );
-
-  const message = JSON.parse(messageStr);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/create_job'),
-    message,
-
-    {
-      responseType: 'json',
-    },
-  );
-  const data = response.data;
-  return data.data;
 };
 
 export const updateAgentInJob = async (
@@ -766,71 +697,6 @@ export const retrieveVRPathSimplified = async (
         status: data.status,
       }
     : data;
-};
-export const getWorkflowSearch = async (
-  nodeAddress: string,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
-  receiver_subidentity: string,
-  searchQuery: string,
-  setupDetailsState: CredentialsPayload,
-) => {
-  const messageStr = ShinkaiMessageBuilderWrapper.getWorkflowSearch(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    searchQuery,
-    sender,
-    sender_subidentity,
-    receiver,
-    receiver_subidentity,
-  );
-
-  const message = JSON.parse(messageStr);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/search_workflows'),
-    message,
-
-    {
-      responseType: 'json',
-    },
-  );
-
-  const data = response.data;
-  return data;
-};
-export const getWorkflowList = async (
-  nodeAddress: string,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
-  receiver_subidentity: string,
-  setupDetailsState: CredentialsPayload,
-) => {
-  const messageStr = ShinkaiMessageBuilderWrapper.getWorkflowList(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    sender,
-    sender_subidentity,
-    receiver,
-    receiver_subidentity,
-  );
-
-  const message = JSON.parse(messageStr);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/list_all_workflows'),
-    message,
-    {
-      responseType: 'json',
-    },
-  );
-
-  const data = response.data;
-  return data;
 };
 export const createWorkflow = async (
   nodeAddress: string,

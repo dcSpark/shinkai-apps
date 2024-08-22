@@ -150,3 +150,50 @@ export type LLMProvider = {
 };
 
 export type GetLLMProvidersResponse = LLMProvider[];
+
+export type LLMProviderInterface = {
+  OpenAI?: OpenAI;
+  GenericAPI?: GenericAPI;
+  Ollama?: Ollama;
+  Gemini?: Gemini;
+  Exo?: Exo;
+} & {
+  [model: string]: ModelType;
+};
+
+export interface ModelType {
+  model_type: string;
+}
+
+export interface Ollama {
+  model_type: string;
+}
+export interface Gemini {
+  model_type: string;
+}
+
+export interface OpenAI {
+  model_type: string;
+}
+
+export interface GenericAPI {
+  model_type: string;
+}
+
+export interface Exo {
+  model_type: string;
+}
+
+export type SerializedLLMProvider = {
+  id: string;
+  full_identity_name: string;
+  perform_locally: boolean;
+  external_url?: string;
+  api_key?: string;
+  model: LLMProviderInterface;
+  toolkit_permissions: string[];
+  storage_bucket_permissions: string[];
+  allowed_message_senders: string[];
+};
+export type AddLLMProviderRequest = SerializedLLMProvider;
+export type AddLLMProviderResponse = string;

@@ -1,6 +1,7 @@
 import { QueryObserverOptions, useQuery } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
+import { APIError } from '../../types';
 import { getWorkflowSearch } from './index';
 import { GetWorkflowSearchInput, GetWorkflowSearchOutput } from './types';
 
@@ -11,7 +12,7 @@ export type UseGetWorkflowSearch = [
 
 type Options = QueryObserverOptions<
   GetWorkflowSearchOutput,
-  Error,
+  APIError,
   GetWorkflowSearchOutput,
   GetWorkflowSearchOutput,
   UseGetWorkflowSearch

@@ -5,12 +5,13 @@ import {
 } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
+import { APIError } from '../../types';
 import { sendMessageToJob } from '.';
 import { SendMessageToJobInput, SendMessageToJobOutput } from './types';
 
 type Options = UseMutationOptions<
   SendMessageToJobOutput,
-  Error,
+  APIError,
   SendMessageToJobInput
 >;
 

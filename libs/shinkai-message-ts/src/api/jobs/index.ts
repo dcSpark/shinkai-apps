@@ -1,9 +1,12 @@
 import { httpClient } from '../../http-client';
 import { urlJoin } from '../../utils/url-join';
+import { SerializedLLMProviderWrapper } from '../../wasm/SerializedLLMProviderWrapper';
 import { BEARER_TOKEN } from '../constants';
 import {
   AddFileToInboxRequest,
   AddFileToInboxResponse,
+  AddLLMProviderRequest,
+  AddLLMProviderResponse,
   CreateFilesInboxResponse,
   CreateJobRequest,
   CreateJobResponse,
@@ -12,6 +15,7 @@ import {
   GetLLMProvidersResponse,
   JobMessageRequest,
   JobMessageResponse,
+  LLMProviderInterface,
 } from './types';
 
 export const createJob = async (
@@ -119,4 +123,38 @@ export const getLLMProviders = async (nodeAddress: string) => {
     },
   );
   return response.data as GetLLMProvidersResponse;
+};
+
+function getModelString(model: LLMProviderInterface): string {
+  if (model?.OpenAI?.model_type) {
+    return 'openai:' + model.OpenAI.model_type;
+  } else if (model?.GenericAPI?.model_type) {
+    return 'genericapi:' + model.GenericAPI.model_type;
+  } else if (model?.Ollama?.model_type) {
+    return 'ollama:' + model.Ollama.model_type;
+  } else if (model?.Gemini?.model_type) {
+    return 'gemini:' + model.Gemini.model_type;
+  } else if (model?.Exo?.model_type) {
+    return 'exo:' + model.Exo.model_type;
+  } else if (Object.keys(model).length > 0) {
+    const customModelProvider = Object.keys(model)[0];
+    return `${customModelProvider}:${model[customModelProvider].model_type}`;
+  } else {
+    throw new Error('Invalid model: ' + JSON.stringify(model));
+  }
+}
+
+export const addLLMProvider = async (
+  nodeAddress: string,
+  payload: AddLLMProviderRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/add_llm_provider'),
+    { ...payload, model: getModelString(payload.model) },
+    {
+      headers: { Authorization: `Bearer ${BEARER_TOKEN}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as AddLLMProviderResponse;
 };

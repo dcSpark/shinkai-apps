@@ -2,10 +2,11 @@ import type { UseMutationOptions } from '@tanstack/react-query';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
+import { APIError } from '../../types';
 import { createJob } from '.';
 import { CreateJobInput, CreateJobOutput } from './types';
 
-type Options = UseMutationOptions<CreateJobOutput, Error, CreateJobInput>;
+type Options = UseMutationOptions<CreateJobOutput, APIError, CreateJobInput>;
 
 export const useCreateJob = (options?: Options) => {
   const queryClient = useQueryClient();
