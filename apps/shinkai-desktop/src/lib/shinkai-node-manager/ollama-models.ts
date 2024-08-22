@@ -43,7 +43,7 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     tag: '2b-instruct-q4_1',
     name: 'Gemma2 2b',
     description:
-      'Google Gemma 2 is a high-performing and efficient model by now available in three sizes: 2B, 9B, and 27B.',
+      'Google Gemma 2 is a high-performing and efficient model for generating text',
     contextLength: 8000,
     quality: OllamaModelQuality.Low,
     speed: OllamaModelSpeed.VeryFast,
@@ -56,7 +56,7 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     tag: '8b-instruct-q4_1',
     name: 'Llama 3.1 8b',
     description:
-      'Llama 3.1 is a new state-of-the-art model from Meta available in 8B, 70B and 405B parameter sizes.',
+      'A powerful AI model for understanding and generating text, optimized for tasks like writing and processing language',
     contextLength: 8000,
     quality: OllamaModelQuality.Medium,
     speed: OllamaModelSpeed.Fast,
@@ -81,7 +81,8 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     model: 'llava-phi3',
     tag: '3.8b-mini-q4_0',
     name: 'LLaVA Phi 3',
-    description: 'A new small LLaVA model fine-tuned from Phi 3 Mini. It offers vision capabilities to do image to text.',
+    description:
+      'A model that can understand and generate both text and images, useful for tasks that require processing both types of data',
     contextLength: 4000,
     quality: OllamaModelQuality.Medium,
     speed: OllamaModelSpeed.Average,
