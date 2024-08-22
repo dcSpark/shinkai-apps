@@ -1,6 +1,6 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
-import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
+import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import {
   Button,
   // ChatBubbleIcon,
@@ -61,14 +61,6 @@ export const Inboxes = () => {
   });
   const { llmProviders, isSuccess: isAgentsSuccess } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
-    sender: auth?.shinkai_identity ?? '',
-    senderSubidentity: `${auth?.profile}`,
-    shinkaiIdentity: auth?.shinkai_identity ?? '',
-    my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-    my_device_identity_sk: auth?.profile_identity_sk ?? '',
-    node_encryption_pk: auth?.node_encryption_pk ?? '',
-    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-    profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
 
   const onCreateJobClick = () => {

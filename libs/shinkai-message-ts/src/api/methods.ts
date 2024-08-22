@@ -824,7 +824,6 @@ export const getWorkflowList = async (
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v1/list_all_workflows'),
     message,
-
     {
       responseType: 'json',
     },

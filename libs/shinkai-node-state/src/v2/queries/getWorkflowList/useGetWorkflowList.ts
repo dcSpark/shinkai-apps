@@ -1,11 +1,11 @@
 import { QueryObserverOptions, useQuery } from '@tanstack/react-query';
 
-import { FunctionKey } from '../../constants';
+import { FunctionKeyV2 } from '../../constants';
 import { getWorkflowList } from './index';
 import { GetWorkflowListInput, GetWorkflowListOutput } from './types';
 
 export type UseGetWorkflowList = [
-  FunctionKey.GET_LIST_WORKFLOW,
+  FunctionKeyV2.GET_LIST_WORKFLOW,
   GetWorkflowListInput,
 ];
 
@@ -22,7 +22,7 @@ export const useGetWorkflowList = (
   options?: Omit<Options, 'queryKey' | 'queryFn'>,
 ) => {
   const response = useQuery({
-    queryKey: [FunctionKey.GET_LIST_WORKFLOW, input],
+    queryKey: [FunctionKeyV2.GET_LIST_WORKFLOW, input],
     queryFn: () => getWorkflowList(input),
     ...options,
   });

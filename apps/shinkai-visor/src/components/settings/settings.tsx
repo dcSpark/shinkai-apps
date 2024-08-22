@@ -7,7 +7,7 @@ import {
 import { isShinkaiIdentityLocalhost } from '@shinkai_network/shinkai-message-ts/utils';
 import { useUpdateNodeName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateNodeName/useUpdateNodeName';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
-import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
+import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import {
   Button,
   buttonVariants,
@@ -163,14 +163,6 @@ export const Settings = () => {
 
   const { llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
-    sender: auth?.shinkai_identity ?? '',
-    senderSubidentity: `${auth?.profile}`,
-    shinkaiIdentity: auth?.shinkai_identity ?? '',
-    my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-    my_device_identity_sk: auth?.profile_identity_sk ?? '',
-    node_encryption_pk: auth?.node_encryption_pk ?? '',
-    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-    profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
   const { mutateAsync: updateNodeName, isPending: isUpdateNodeNamePending } =
     useUpdateNodeName({

@@ -1,11 +1,11 @@
 import { QueryObserverOptions, useQuery } from '@tanstack/react-query';
 
-import { FunctionKey } from '../../constants';
+import { FunctionKeyV2 } from '../../constants';
 import { getWorkflowSearch } from './index';
 import { GetWorkflowSearchInput, GetWorkflowSearchOutput } from './types';
 
 export type UseGetWorkflowSearch = [
-  FunctionKey.GET_SEARCH_WORKFLOW,
+  FunctionKeyV2.GET_SEARCH_WORKFLOW,
   GetWorkflowSearchInput,
 ];
 
@@ -22,7 +22,7 @@ export const useGetWorkflowSearch = (
   options?: Omit<Options, 'queryKey' | 'queryFn'>,
 ) => {
   const response = useQuery({
-    queryKey: [FunctionKey.GET_SEARCH_WORKFLOW, input],
+    queryKey: [FunctionKeyV2.GET_SEARCH_WORKFLOW, input],
     queryFn: () => getWorkflowSearch(input),
     ...options,
   });
