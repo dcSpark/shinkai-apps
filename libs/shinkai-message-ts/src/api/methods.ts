@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { httpClient } from '../http-client';
 import {
-  AgentCredentialsPayload,
   ColumnBehavior,
   CreateChatInboxResponse,
   CredentialsPayload,
@@ -20,7 +19,6 @@ import {
 } from '../models/Payloads';
 import { SerializedLLMProvider } from '../models/SchemaTypes';
 import { InboxNameWrapper } from '../pkg/shinkai_message_wasm';
-// import { calculateMessageHash } from '../utils';
 import { urlJoin } from '../utils/url-join';
 import { FileUploader } from '../wasm/FileUploaderUsingSymmetricKeyManager';
 import { SerializedLLMProviderWrapper } from '../wasm/SerializedLLMProviderWrapper';
@@ -515,39 +513,6 @@ export const getLLMProviders = async (
   );
   const data = response.data;
   return data.data;
-};
-
-export const addLLMProvider = async (
-  nodeAddress: string,
-  sender_subidentity: string,
-  node_name: string,
-  agent: SerializedLLMProvider,
-  setupDetailsState: AgentCredentialsPayload,
-) => {
-  const llmProvider_wrapped =
-    SerializedLLMProviderWrapper.fromSerializedAgent(agent);
-  const messageStr = ShinkaiMessageBuilderWrapper.request_add_agent(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    node_name,
-    sender_subidentity,
-    node_name,
-    llmProvider_wrapped,
-  );
-
-  const message = JSON.parse(messageStr);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/add_agent'),
-    message,
-
-    {
-      responseType: 'json',
-    },
-  );
-  const data = response.data;
-  return data;
 };
 
 export const getFileNames = async (
