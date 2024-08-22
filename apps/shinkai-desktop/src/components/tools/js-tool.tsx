@@ -26,6 +26,7 @@ const jsToolSchema = z.object({
     z.object({
       key_name: z.string(),
       key_value: z.string().optional(),
+      required: z.boolean(),
     }),
   ),
 });
@@ -58,11 +59,22 @@ export default function JsTool({
       config: tool.config.map((conf) => ({
         key_name: conf.BasicConfig.key_name,
         key_value: conf.BasicConfig.key_value ?? '',
+        required: conf.BasicConfig.required,
       })),
     },
   });
 
   const onSubmit = async (data: JsToolFormSchema) => {
+    let enabled = isEnabled;
+
+    if (
+      data.config.every(
+        (conf) => !conf.required || (conf.required && conf.key_value !== ''),
+      )
+    ) {
+      enabled = true;
+    }
+
     await updateTool({
       toolKey: toolKey ?? '',
       toolType: 'JS',
@@ -74,7 +86,7 @@ export default function JsTool({
           },
         })),
       } as ShinkaiTool,
-      isToolEnabled: isEnabled,
+      isToolEnabled: enabled,
       nodeAddress: auth?.node_address ?? '',
       shinkaiIdentity: auth?.shinkai_identity ?? '',
       profile: auth?.profile ?? '',
@@ -150,8 +162,9 @@ export default function JsTool({
                       name={`config.${index}.key_value`}
                       render={({ field }) => (
                         <TextField
-                          field={{ ...field }}
+                          field={field}
                           label={formatText(conf.BasicConfig.key_name)}
+                          type="password"
                         />
                       )}
                     />

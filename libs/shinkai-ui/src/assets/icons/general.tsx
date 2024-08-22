@@ -16,6 +16,7 @@ export const ShinkaiLogoIcon = ({ className }: { className?: string }) => (
     />
   </svg>
 );
+
 export const ExportIcon = ({ className }: { className?: string }) => (
   <svg
     className={className}
