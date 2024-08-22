@@ -1,4 +1,4 @@
-import { sendMessageToJob as sendMessageToJobApi } from '@shinkai_network/shinkai-message-ts/api/v2/methods';
+import { sendMessageToJob as sendMessageToJobApi } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 
 import { SendMessageToJobInput } from './types';
 

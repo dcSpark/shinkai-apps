@@ -1,4 +1,4 @@
-import { getLLMProviders as getLLMProvidersAPI } from '@shinkai_network/shinkai-message-ts/api/v2/methods';
+import { getLLMProviders as getLLMProvidersAPI } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 
 import type { GetLLMProvidersInput } from './types';
 

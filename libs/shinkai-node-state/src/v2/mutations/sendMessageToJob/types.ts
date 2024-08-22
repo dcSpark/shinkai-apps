@@ -1,4 +1,4 @@
-import { JobMessageResponse } from '@shinkai_network/shinkai-message-ts/models/v2/types';
+import { JobMessageResponse } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 
 export type SendMessageToJobInput = {
   nodeAddress: string;

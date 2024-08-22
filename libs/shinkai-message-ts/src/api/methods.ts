@@ -969,7 +969,6 @@ export const retrieveVectorSearchSimplified = async (
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v1/vec_fs/retrieve_vector_search_simplified_json'),
     message,
-
     {
       responseType: 'json',
     },

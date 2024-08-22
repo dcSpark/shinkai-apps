@@ -1,4 +1,4 @@
-import { getLastMessages } from '@shinkai_network/shinkai-message-ts/api/v2/methods';
+import { getLastMessages } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 
 import { GetChatConversationInput, GetChatConversationOutput } from './types';
 import { CONVERSATION_PAGINATION_LIMIT } from './useGetChatConversationWithPagination';

@@ -1,4 +1,4 @@
-import { listAllWorkflows as getWorkflowListAPI } from '@shinkai_network/shinkai-message-ts/api/v2/methods';
+import { listAllWorkflows as getWorkflowListAPI } from '@shinkai_network/shinkai-message-ts/api/workflow/index';
 
 import { GetWorkflowListInput } from './types';
 

@@ -1,6 +1,3 @@
-import { listAllWorkflows } from '../../api/v2/methods';
-import { ShinkaiToolType } from '../SchemaTypes';
-
 type ResourceSource = {
   Standard: {
     FileRef: {
@@ -139,21 +136,6 @@ export type AddFileToInboxRequest = {
   file: File;
 };
 export type AddFileToInboxResponse = string;
-
-export type ShinkaiToolHeader = {
-  author: string;
-  config?: string;
-  description: string;
-  enabled: boolean;
-  formatted_tool_summary_for_ui: string;
-  name: string;
-  tool_router_key: string;
-  tool_type: ShinkaiToolType;
-  version: string;
-};
-
-export type ListAllWorkflowsResponse = ShinkaiToolHeader[];
-export type SearchWorkflowsResponse = ShinkaiToolHeader[];
 
 export type LLMProvider = {
   id: string;

@@ -2,7 +2,7 @@ import {
   createJob as createJobApi,
   sendMessageToJob,
   uploadFilesToInbox,
-} from '@shinkai_network/shinkai-message-ts/api/v2/methods';
+} from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 
 import { CreateJobInput } from './types';
 

@@ -1,4 +1,6 @@
 import { httpClient } from '../../http-client';
+import { urlJoin } from '../../utils/url-join';
+import { BEARER_TOKEN } from '../constants';
 import {
   AddFileToInboxRequest,
   AddFileToInboxResponse,
@@ -10,13 +12,7 @@ import {
   GetLLMProvidersResponse,
   JobMessageRequest,
   JobMessageResponse,
-  ListAllWorkflowsResponse,
-  SearchWorkflowsResponse,
-} from '../../models/v2/types';
-import { urlJoin } from '../../utils/url-join';
-
-const BEARER_TOKEN =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ikpva';
+} from './types';
 
 export const createJob = async (
   nodeAddress: string,
@@ -114,27 +110,6 @@ export const uploadFilesToInbox = async (
   return folderId;
 };
 
-export const listAllWorkflows = async (nodeAddress: string) => {
-  const response = await httpClient.get(
-    urlJoin(nodeAddress, '/v2/list_all_workflows'),
-    {
-      headers: { Authorization: `Bearer ${BEARER_TOKEN}` },
-      responseType: 'json',
-    },
-  );
-  return response.data as ListAllWorkflowsResponse;
-};
-export const searchWorkflows = async (nodeAddress: string, query: string) => {
-  const response = await httpClient.get(
-    urlJoin(nodeAddress, '/v2/search_workflows'),
-    {
-      headers: { Authorization: `Bearer ${BEARER_TOKEN}` },
-      params: { query },
-      responseType: 'json',
-    },
-  );
-  return response.data as SearchWorkflowsResponse;
-};
 export const getLLMProviders = async (nodeAddress: string) => {
   const response = await httpClient.get(
     urlJoin(nodeAddress, '/v2/available_models'),
