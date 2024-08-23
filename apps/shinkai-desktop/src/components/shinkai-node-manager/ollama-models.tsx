@@ -16,9 +16,15 @@ import {
   CardHeader,
   CardTitle,
 } from '@shinkai_network/shinkai-ui';
+import {
+  GoogleIcon,
+  MetaIcon,
+  MicrosoftIcon,
+  MistralIcon,
+} from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { BookOpenText, Database, Star, StarIcon } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 
 import { OLLAMA_MODELS } from '../../lib/shinkai-node-manager/ollama-models';
@@ -67,6 +73,15 @@ export const OllamaModels = () => {
     );
   }
 
+  const providerLogoMap = useMemo(() => {
+    return {
+      Microsoft: <MicrosoftIcon className="h-6 w-6" />,
+      Google: <GoogleIcon className="h-6 w-6" />,
+      Meta: <MetaIcon className="h-6 w-6" />,
+      Mistral: <MistralIcon className="h-6 w-6" />,
+    };
+  }, []);
+
   return (
     <div
       className={cn(
@@ -79,9 +94,17 @@ export const OllamaModels = () => {
           <div className="grid grid-cols-2 gap-4">
             {OLLAMA_MODELS.map((model) => {
               return (
-                <Card className="flex flex-col gap-3" key={model.fullName}>
+                <Card className="gap- flex flex-col" key={model.fullName}>
                   <CardHeader className="relative">
-                    <CardTitle className="text-md mb-3">
+                    <CardTitle className="text-md mb-3 flex items-center gap-2">
+                      <span className="bg-gray-350 rounded-lg p-2">
+                        {model.provider
+                          ? providerLogoMap[
+                              model?.provider as keyof typeof providerLogoMap
+                            ]
+                          : null}
+                      </span>
+
                       <span>{model.name}</span>
                       {isDefaultModel(model.fullName) && (
                         <TooltipProvider delayDuration={0}>
@@ -89,7 +112,7 @@ export const OllamaModels = () => {
                             <TooltipTrigger asChild>
                               <Badge
                                 className={cn(
-                                  'border-brand ml-3.5 flex inline-flex h-5 w-5 items-center justify-center rounded-full border p-0 font-medium',
+                                  'border-brand ml-2 flex inline-flex h-5 w-5 items-center justify-center rounded-full border p-0 font-medium',
                                 )}
                                 variant="gradient"
                               >

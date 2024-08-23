@@ -28,6 +28,7 @@ export interface OllamaModel {
   capabilities: OllamaModelCapability[];
   size: number; // Size in GB
   fullName: string;
+  provider?: string;
 }
 export type OllamaModelDefinition =
   (typeof FILTERED_OLLAMA_MODELS_REPOSITORY)[0];
@@ -50,6 +51,7 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     capabilities: [OllamaModelCapability.TextGeneration],
     size: 1.8,
     fullName: '',
+    provider: 'Google',
   },
   {
     model: 'llama3.1',
@@ -63,6 +65,7 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     capabilities: [OllamaModelCapability.TextGeneration],
     size: 4.7,
     fullName: '',
+    provider: 'Meta',
   },
   {
     model: 'mistral-nemo',
@@ -76,6 +79,7 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     capabilities: [OllamaModelCapability.TextGeneration],
     size: 7.1,
     fullName: '',
+    provider: 'Mistral',
   },
   {
     model: 'llava-phi3',
@@ -92,6 +96,7 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     ],
     size: 2.9,
     fullName: '',
+    provider: 'Microsoft',
   },
 ].map((model) => {
   model.fullName = `${model.model}:${model.tag}` as const;
