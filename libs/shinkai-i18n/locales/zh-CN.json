@@ -76,6 +76,7 @@
     "clearSearch": "清除搜索",
     "clickToUpload": "点击上传或拖放",
     "comingSoon": "即将到来 - 八月底",
+    "configure": "配置",
     "connect": "连接",
     "continue": "继续",
     "copy": "复制",
@@ -85,6 +86,7 @@
     "done": "完成",
     "edit": "编辑",
     "editMessage": "编辑消息",
+    "enabled": "已启用",
     "file": "文件",
     "fileWithCount_one": "{{count}} 个文件",
     "fileWithCount_other": "{{count}} 个文件",
@@ -412,6 +414,14 @@
   "subscriptions": {
     "browse": "浏览公共订阅",
     "label": "我的订阅"
+  },
+  "tools": {
+    "emptyState": {
+      "search": {
+        "text": "未找到与搜索查询匹配的工具"
+      }
+    },
+    "label": "深海工具"
   },
   "vectorFs": {
     "actions": {

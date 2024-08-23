@@ -76,6 +76,7 @@
     "clearSearch": "Limpiar búsqueda",
     "clickToUpload": "Haz clic para subir o arrastra y suelta",
     "comingSoon": "Próximamente - Finales de Agosto",
+    "configure": "Configurar",
     "connect": "Conectar",
     "continue": "Continuar",
     "copy": "Copiar",
@@ -85,6 +86,7 @@
     "done": "Hecho",
     "edit": "Editar",
     "editMessage": "Editar mensaje",
+    "enabled": "Activado",
     "file": "Archivo",
     "fileWithCount_one": "{{count}} Archivo",
     "fileWithCount_other": "{{count}} Archivos",
@@ -412,6 +414,14 @@
   "subscriptions": {
     "browse": "Explorar Suscripciones Públicas",
     "label": "Mis Suscripciones"
+  },
+  "tools": {
+    "emptyState": {
+      "search": {
+        "text": "No se encontraron herramientas para la consulta de búsqueda"
+      }
+    },
+    "label": "Herramientas Shinkai"
   },
   "vectorFs": {
     "actions": {

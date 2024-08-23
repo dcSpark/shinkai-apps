@@ -76,6 +76,7 @@
     "clearSearch": "検索をクリア",
     "clickToUpload": "クリックしてアップロードするか、ドラッグアンドドロップ",
     "comingSoon": "近日公開 - 8月末",
+    "configure": "設定",
     "connect": "接続",
     "continue": "続行",
     "copy": "コピー",
@@ -85,6 +86,7 @@
     "done": "完了",
     "edit": "編集",
     "editMessage": "メッセージを編集",
+    "enabled": "有効",
     "file": "ファイル",
     "fileWithCount_one": "{{count}} ファイル",
     "fileWithCount_other": "{{count}} ファイル",
@@ -412,6 +414,14 @@
   "subscriptions": {
     "browse": "パブリックサブスクリプションを閲覧",
     "label": "マイサブスクリプション"
+  },
+  "tools": {
+    "emptyState": {
+      "search": {
+        "text": "検索クエリに一致するツールは見つかりませんでした"
+      }
+    },
+    "label": "深海ツール"
   },
   "vectorFs": {
     "actions": {

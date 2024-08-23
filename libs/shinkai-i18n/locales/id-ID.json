@@ -76,6 +76,7 @@
     "clearSearch": "Hapus Pencarian",
     "clickToUpload": "Klik untuk mengunggah atau seret dan lepas",
     "comingSoon": "Segera hadir - Akhir Agustus",
+    "configure": "Konfigurasi",
     "connect": "Hubungkan",
     "continue": "Lanjutkan",
     "copy": "Salin",
@@ -85,6 +86,7 @@
     "done": "Selesai",
     "edit": "Edit",
     "editMessage": "Edit Pesan",
+    "enabled": "Diaktifkan",
     "file": "Berkas",
     "fileWithCount_one": "{{count}} Berkas",
     "fileWithCount_other": "{{count}} Berkas",
@@ -412,6 +414,14 @@
   "subscriptions": {
     "browse": "Telusuri Langganan Publik",
     "label": "Langganan Saya"
+  },
+  "tools": {
+    "emptyState": {
+      "search": {
+        "text": "Tidak ada alat ditemukan untuk kueri pencarian"
+      }
+    },
+    "label": "Alat-alat Shinkai"
   },
   "vectorFs": {
     "actions": {

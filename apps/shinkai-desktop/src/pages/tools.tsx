@@ -1,7 +1,5 @@
-import {
-  // JSShinkaiTool,
-  ShinkaiTool,
-} from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { ShinkaiTool } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/lib/mutations/updateTool/useUpdateTool';
 import { useGetToolsList } from '@shinkai_network/shinkai-node-state/lib/queries/getToolsList/useGetToolsList';
 import { useGetToolsSearch } from '@shinkai_network/shinkai-node-state/lib/queries/getToolsSearch/useGetToolsSearch';
@@ -30,7 +28,7 @@ import { SimpleLayout } from './layout/simple-layout';
 
 export const Tools = () => {
   const auth = useAuth((state) => state.auth);
-
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounce(searchQuery, 600);
   const isSearchQuerySynced = searchQuery === debouncedSearchQuery;
@@ -67,7 +65,7 @@ export const Tools = () => {
   const { mutateAsync: updateTool } = useUpdateTool();
 
   return (
-    <SimpleLayout classname="max-w-3xl" title={'Shinkai Tools'}>
+    <SimpleLayout classname="max-w-3xl" title={t('tools.label')}>
       <ScrollArea className="pr-4 [&>div>div]:!block">
         <div className="relative mb-4 flex h-10 w-full items-center">
           <Input
@@ -91,7 +89,7 @@ export const Tools = () => {
               variant="ghost"
             >
               <XIcon />
-              <span className="sr-only">Clear Search</span>
+              <span className="sr-only">{t('common.clearSearch')}</span>
             </Button>
           )}
         </div>
@@ -150,7 +148,7 @@ export const Tools = () => {
                   to={`/tools/${tool.tool_router_key}`}
                 >
                   <BoltIcon className="mr-1.5 h-4 w-4" />
-                  Configure
+                  {t('common.configure')}
                 </Link>
                 <TooltipProvider delayDuration={0}>
                   <Tooltip>
@@ -181,7 +179,7 @@ export const Tools = () => {
                     </TooltipTrigger>
                     <TooltipPortal>
                       <TooltipContent align="center" side="top">
-                        Enabled
+                        {t('common.enabled')}
                       </TooltipContent>
                     </TooltipPortal>
                   </Tooltip>
@@ -224,7 +222,7 @@ export const Tools = () => {
                   to={`/tools/${tool.tool_router_key}`}
                 >
                   <BoltIcon className="mr-1.5 h-4 w-4" />
-                  Configure
+                  {t('common.configure')}
                 </Link>
                 <TooltipProvider delayDuration={0}>
                   <Tooltip>
@@ -255,7 +253,7 @@ export const Tools = () => {
                     </TooltipTrigger>
                     <TooltipPortal>
                       <TooltipContent align="center" side="top">
-                        Enabled
+                        {t('common.enabled')}
                       </TooltipContent>
                     </TooltipPortal>
                   </Tooltip>
@@ -267,7 +265,7 @@ export const Tools = () => {
             searchToolList?.length === 0 && (
               <div className="flex h-20 items-center justify-center">
                 <p className="text-gray-80 text-sm">
-                  No tools found for the search query
+                  {t('tools.emptyState.search.text')}
                 </p>
               </div>
             )}

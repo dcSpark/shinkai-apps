@@ -333,6 +333,8 @@ export default {
   common: {
     search: 'Search',
     next: 'Next',
+    enabled: 'Enabled',
+    configure: 'Configure',
     create: 'Create',
     restore: 'Restore',
     retry: 'Retry',
@@ -495,6 +497,14 @@ export default {
     },
     form: {
       projectName: 'Project Name',
+    },
+  },
+  tools: {
+    label: 'Shinkai Tools',
+    emptyState: {
+      search: {
+        text: 'No tools found for the search query',
+      },
     },
   },
   disconnect: {
