@@ -79,6 +79,7 @@
     "connect": "Hubungkan",
     "continue": "Lanjutkan",
     "copy": "Salin",
+    "create": "Buat",
     "delete": "Hapus",
     "disconnect": "Putuskan Koneksi",
     "done": "Selesai",
@@ -95,6 +96,7 @@
     "getStarted": "Mulai",
     "iAgree": "Saya Setuju",
     "install": "Instal",
+    "installed": "Terinstal",
     "logInShinkaiHosting": "Masuk ke Hosting Shinkai",
     "moreOptions": "Opsi Lainnya",
     "next": "Berikutnya",
@@ -341,6 +343,20 @@
       "label": "Sidebar"
     }
   },
+  "sheet": {
+    "actions": {
+      "createProject": "Buat Proyek",
+      "deleteProject": "Hapus Proyek",
+      "deleteProjectConfirmationDescription": "Proyek ini akan segera dihapus. Anda tidak dapat mengurungkan tindakan ini.",
+      "deleteProjectConfirmationTitle": "Hapus Proyek ini?"
+    },
+    "emptyStateDescription": "Mulai menghubungkan data Anda dengan Lembar Shinkai!",
+    "emptyStateTitle": "Tidak ada Lembar ditemukan.",
+    "form": {
+      "projectName": "Nama Proyek"
+    },
+    "label": "Lembar Shinkai"
+  },
   "shinkaiNode": {
     "manager": "Manajer Node Shinkai",
     "models": {
@@ -348,20 +364,20 @@
         "modelInstalled": "Kesalahan saat menginstal model {{modelName}}",
         "modelRemoved": "Kesalahan saat menghapus model {{modelName}}"
       },
+      "labels": {
+        "bookPages": "Hingga {{pages}} Halaman Konten",
+        "models": "Model",
+        "quality": "Kualitas",
+        "showAll": "Tampilkan semua model",
+        "showRecommended": "Tampilkan model yang direkomendasikan",
+        "tags": "Tag",
+        "textCapability": "Generasi Teks",
+        "visionCapability": "Gambar ke Teks"
+      },
       "poweredByOllama": "Didukung oleh Ollama",
       "success": {
         "modelInstalled": "Model {{modelName}} berhasil diinstal",
         "modelRemoved": "Model {{modelName}} berhasil dihapus"
-      },
-      "labels": {
-        "models": "Model",
-        "quality": "Kualitas",
-        "tags": "Tag",
-        "bookPages": "Hingga {{pages}} Halaman Konten",
-        "showAll": "Tampilkan semua model",
-        "showRecommended": "Tampilkan model yang direkomendasikan",
-        "visionCapability": "Gambar ke Teks",
-        "textCapability": "Generasi Teks"
       }
     },
     "nodeAddress": "Alamat Node",

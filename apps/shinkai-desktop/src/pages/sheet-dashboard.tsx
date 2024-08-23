@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogClose } from '@radix-ui/react-dialog';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useCreateSheet } from '@shinkai_network/shinkai-node-state/lib/mutations/createSheet/useCreateSheet';
 import { useRemoveSheet } from '@shinkai_network/shinkai-node-state/lib/mutations/removeSheet/useRemoveSheet';
 import { useGetUserSheets } from '@shinkai_network/shinkai-node-state/lib/queries/getUserSheets/useGetUserSheets';
@@ -35,7 +36,7 @@ import { SimpleLayout } from './layout/simple-layout';
 
 const SheetDashboard = () => {
   const auth = useAuth((state) => state.auth);
-
+  const { t } = useTranslation();
   const { isSuccess, data, isPending } = useGetUserSheets({
     nodeAddress: auth?.node_address ?? '',
     profile: auth?.profile ?? '',
@@ -49,9 +50,8 @@ const SheetDashboard = () => {
 
   return (
     <SimpleLayout
-      classname=""
       headerRightElement={isSuccess && data.length > 0 && <CreateSheetModal />}
-      title={'Shinkai Sheet'}
+      title={t('sheet.label')}
     >
       <div className="grid gap-5 py-5 sm:grid-cols-2 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
         {isSuccess &&
@@ -100,9 +100,11 @@ const SheetDashboard = () => {
               <path d="M13.5 9a.5.5 0 0 1 .5.5V11h1.5a.5.5 0 1 1 0 1H14v1.5a.5.5 0 1 1-1 0V12h-1.5a.5.5 0 0 1 0-1H13V9.5a.5.5 0 0 1 .5-.5" />
             </svg>
             <div className="flex flex-col items-center">
-              <h2 className="text-lg font-medium">No Sheets found.</h2>
+              <h2 className="text-lg font-medium">
+                {t('sheet.emptyStateTitle')}
+              </h2>
               <p className="text-gray-80 text-sm">
-                Start connecting your data with Shinkai Sheet!
+                {t('sheet.emptyStateDescription')}
               </p>
             </div>
             <CreateSheetModal />
@@ -123,6 +125,7 @@ function SheetCard({
   sheetName: string;
   sheetLastUpdated: string;
 }) {
+  const { t } = useTranslation();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   return (
@@ -170,7 +173,7 @@ function SheetCard({
               }}
             >
               <Trash2Icon className="size-4" />
-              Delete Project
+              {t('sheet.actions.deleteProject')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -191,6 +194,7 @@ type CreateSheetFormSchema = z.infer<typeof createSheetFormSchema>;
 
 function CreateSheetModal() {
   const auth = useAuth((state) => state.auth);
+  const { t } = useTranslation();
   const shareFolderForm = useForm<CreateSheetFormSchema>({
     resolver: zodResolver(createSheetFormSchema),
     defaultValues: {
@@ -226,11 +230,13 @@ function CreateSheetModal() {
       <DialogTrigger asChild>
         <Button className="gap-2" size="sm">
           <PlusIcon className="size-4" />
-          Create Project
+          {t('sheet.actions.createProject')}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
-        <DialogTitle className="pb-0">Create Project</DialogTitle>
+        <DialogTitle className="pb-0">
+          {t('sheet.actions.createProject')}
+        </DialogTitle>
         <Form {...shareFolderForm}>
           <form
             className="mt-2 flex flex-col gap-6"
@@ -243,13 +249,13 @@ function CreateSheetModal() {
                 <TextField
                   autoFocus
                   field={{ ...field, onFocus: (e) => e.currentTarget.select() }}
-                  label={'Project Name'}
+                  label={t('sheet.form.projectName')}
                 />
               )}
             />
             <DialogFooter>
               <Button className="w-full" size="auto" type="submit">
-                Create
+                {t('common.create')}
               </Button>
             </DialogFooter>
           </form>
@@ -270,7 +276,7 @@ function RemoveSheetModal({
   onOpenChange: (open: boolean) => void;
 }) {
   const auth = useAuth((state) => state.auth);
-
+  const { t } = useTranslation();
   const { mutateAsync: removeSheet, isPending } = useRemoveSheet({
     onSuccess: () => {
       toast.success(`Sheet deleted successfully`);
@@ -280,10 +286,11 @@ function RemoveSheetModal({
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent className="sm:max-w-[425px]">
-        <DialogTitle className="pb-0">Delete this Project?</DialogTitle>
+        <DialogTitle className="pb-0">
+          {t('sheet.actions.deleteProjectConfirmationTitle')}
+        </DialogTitle>
         <DialogDescription>
-          This project will be deleted immediately. You can not undo this
-          action.
+          {t('sheet.actions.deleteProjectConfirmationDescription')}
         </DialogDescription>
 
         <DialogFooter>
@@ -295,7 +302,7 @@ function RemoveSheetModal({
                 type="button"
                 variant="ghost"
               >
-                Cancel
+                {t('common.cancel')}
               </Button>
             </DialogClose>
             <Button
@@ -317,7 +324,7 @@ function RemoveSheetModal({
               }}
               size="sm"
             >
-              Delete
+              {t('common.delete')}
             </Button>
           </div>
         </DialogFooter>
