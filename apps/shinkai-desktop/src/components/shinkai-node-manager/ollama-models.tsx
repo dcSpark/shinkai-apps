@@ -52,6 +52,15 @@ export const OllamaModels = () => {
     return defaultModel === model;
   };
 
+  const providerLogoMap = useMemo(() => {
+    return {
+      Microsoft: <MicrosoftIcon className="h-6 w-6" />,
+      Google: <GoogleIcon className="h-6 w-6" />,
+      Meta: <MetaIcon className="h-6 w-6" />,
+      Mistral: <MistralIcon className="h-6 w-6" />,
+    };
+  }, []);
+
   if (!isShinkaiNodeRunning) {
     return (
       <div className="flex h-full w-full flex-row items-center justify-center">
@@ -72,15 +81,6 @@ export const OllamaModels = () => {
       </div>
     );
   }
-
-  const providerLogoMap = useMemo(() => {
-    return {
-      Microsoft: <MicrosoftIcon className="h-6 w-6" />,
-      Google: <GoogleIcon className="h-6 w-6" />,
-      Meta: <MetaIcon className="h-6 w-6" />,
-      Mistral: <MistralIcon className="h-6 w-6" />,
-    };
-  }, []);
 
   return (
     <div
