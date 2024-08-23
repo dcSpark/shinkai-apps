@@ -1,10 +1,13 @@
+import { CheckIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useSyncOllamaModels } from '@shinkai_network/shinkai-node-state/lib/mutations/syncOllamaModels/useSyncOllamaModels';
 import { Button, Progress } from '@shinkai_network/shinkai-ui';
 import { useMap } from '@shinkai_network/shinkai-ui/hooks';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { motion } from 'framer-motion';
 import { Download, Loader2, Minus } from 'lucide-react';
 import { ModelResponse, ProgressResponse } from 'ollama/browser';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 import {
@@ -116,18 +119,21 @@ export const OllamaModelInstallButton = ({ model }: { model: string }) => {
       {isOllamaListLoading ? (
         <Loader2 className="animate-spin" />
       ) : installedOllamaModelsMap.has(model) ? (
-        <Button
-          className="hover:border-brand w-full py-1.5 text-sm hover:text-white"
+        <RemoveAIModelButton
           onClick={() => {
             ollamaRemove({ model: model });
           }}
-          size="auto"
-          variant={'destructive'}
-        >
-          <Minus className="mr-2 h-3 w-3" />
-          {t('common.remove')}
-        </Button>
-      ) : pullingModelsMap?.get(model) ? (
+        />
+      ) : // <Button
+      //   className="hover:border-brand w-full py-1.5 text-sm hover:text-white"
+      //
+      //   size="auto"
+      //   variant={'destructive'}
+      // >
+      //   <Minus className="mr-2 h-3 w-3" />
+      //   {t('common.remove')}
+      // </Button>
+      pullingModelsMap?.get(model) ? (
         <div className="flex flex-col items-center gap-1">
           <span className="text-xs text-gray-100">
             {getProgress(pullingModelsMap.get(model) as ProgressResponse) + '%'}
@@ -154,3 +160,30 @@ export const OllamaModelInstallButton = ({ model }: { model: string }) => {
     </div>
   );
 };
+
+const MotionButton = motion(Button);
+
+function RemoveAIModelButton({ onClick }: { onClick: () => void }) {
+  const { t } = useTranslation();
+  const [isHovered, setIsHovered] = useState(false);
+  return (
+    <MotionButton
+      className={cn(
+        'w-full py-1.5 text-sm hover:border-red-800 hover:bg-red-700/50 hover:text-red-50',
+      )}
+      layout
+      onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      size="auto"
+      variant="outline"
+    >
+      {isHovered ? (
+        <Minus className="mr-2 h-3 w-3" />
+      ) : (
+        <CheckIcon className="text-brand mr-2 h-3.5 w-3.5" />
+      )}
+      {isHovered ? t('common.remove') : t('common.installed')}
+    </MotionButton>
+  );
+}

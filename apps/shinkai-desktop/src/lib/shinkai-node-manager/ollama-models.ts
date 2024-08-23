@@ -28,6 +28,7 @@ export interface OllamaModel {
   capabilities: OllamaModelCapability[];
   size: number; // Size in GB
   fullName: string;
+  provider?: string;
 }
 export type OllamaModelDefinition =
   (typeof FILTERED_OLLAMA_MODELS_REPOSITORY)[0];
@@ -43,26 +44,28 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     tag: '2b-instruct-q4_1',
     name: 'Gemma2 2b',
     description:
-      'Google Gemma 2 is a high-performing and efficient model by now available in three sizes: 2B, 9B, and 27B.',
+      'Google Gemma 2 is a high-performing and efficient model for generating text',
     contextLength: 8000,
     quality: OllamaModelQuality.Low,
     speed: OllamaModelSpeed.VeryFast,
     capabilities: [OllamaModelCapability.TextGeneration],
     size: 1.8,
     fullName: '',
+    provider: 'Google',
   },
   {
     model: 'llama3.1',
     tag: '8b-instruct-q4_1',
     name: 'Llama 3.1 8b',
     description:
-      'Llama 3.1 is a new state-of-the-art model from Meta available in 8B, 70B and 405B parameter sizes.',
+      'A powerful AI model for understanding and generating text, optimized for tasks like writing and processing language',
     contextLength: 8000,
     quality: OllamaModelQuality.Medium,
     speed: OllamaModelSpeed.Fast,
     capabilities: [OllamaModelCapability.TextGeneration],
     size: 4.7,
     fullName: '',
+    provider: 'Meta',
   },
   {
     model: 'mistral-nemo',
@@ -76,12 +79,14 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     capabilities: [OllamaModelCapability.TextGeneration],
     size: 7.1,
     fullName: '',
+    provider: 'Mistral',
   },
   {
     model: 'llava-phi3',
     tag: '3.8b-mini-q4_0',
     name: 'LLaVA Phi 3',
-    description: 'A new small LLaVA model fine-tuned from Phi 3 Mini. It offers vision capabilities to do image to text.',
+    description:
+      'A model that can understand and generate both text and images, useful for tasks that require processing both types of data',
     contextLength: 4000,
     quality: OllamaModelQuality.Medium,
     speed: OllamaModelSpeed.Average,
@@ -91,6 +96,7 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     ],
     size: 2.9,
     fullName: '',
+    provider: 'Microsoft',
   },
 ].map((model) => {
   model.fullName = `${model.model}:${model.tag}` as const;

@@ -376,7 +376,7 @@ export default {
     signUpShinkaiHosting: 'Sign up For Shinkai Hosting',
     quickConnect: 'Quick Connect',
     alreadyHaveNode: 'Already have a Node?',
-    shinkaiPrivate: 'Shinkai Private (Local)',
+    shinkaiPrivate: 'Setup Your Local AI (Shinkai)',
     seeOptions: 'See Options',
     termsAndConditionsText:
       'I agree to our <a>Terms of Service</a> and <b>Privacy Policy</b>',
@@ -387,6 +387,7 @@ export default {
     done: 'Done',
     resetFilters: 'Reset Filters',
     folderLocation: 'Folder Location:',
+    installed: 'Installed',
   },
   quickConnection: {
     label: 'Quick Connection',
