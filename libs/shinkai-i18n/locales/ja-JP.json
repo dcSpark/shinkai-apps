@@ -76,14 +76,17 @@
     "clearSearch": "検索をクリア",
     "clickToUpload": "クリックしてアップロードするか、ドラッグアンドドロップ",
     "comingSoon": "近日公開 - 8月末",
+    "configure": "設定",
     "connect": "接続",
     "continue": "続行",
     "copy": "コピー",
+    "create": "作成する",
     "delete": "削除",
     "disconnect": "切断",
     "done": "完了",
     "edit": "編集",
     "editMessage": "メッセージを編集",
+    "enabled": "有効",
     "file": "ファイル",
     "fileWithCount_one": "{{count}} ファイル",
     "fileWithCount_other": "{{count}} ファイル",
@@ -95,6 +98,7 @@
     "getStarted": "開始",
     "iAgree": "同意します",
     "install": "インストール",
+    "installed": "インストール済み",
     "logInShinkaiHosting": "Shinkai Hostingにログイン",
     "moreOptions": "その他のオプション",
     "next": "次へ",
@@ -341,6 +345,20 @@
       "label": "サイドバー"
     }
   },
+  "sheet": {
+    "actions": {
+      "createProject": "プロジェクトを作成",
+      "deleteProject": "プロジェクトを削除",
+      "deleteProjectConfirmationDescription": "このプロジェクトはすぐに削除されます。この操作は元に戻すことができません。",
+      "deleteProjectConfirmationTitle": "このプロジェクトを削除しますか？"
+    },
+    "emptyStateDescription": "データを深海シートに接続し始めましょう！",
+    "emptyStateTitle": "シートが見つかりません。",
+    "form": {
+      "projectName": "プロジェクト名"
+    },
+    "label": "深海シート"
+  },
   "shinkaiNode": {
     "manager": "Shinkaiノードマネージャー",
     "models": {
@@ -348,20 +366,20 @@
         "modelInstalled": "モデル {{modelName}} のインストール中にエラーが発生しました",
         "modelRemoved": "モデル {{modelName}} の削除中にエラーが発生しました"
       },
+      "labels": {
+        "bookPages": "最大{{pages}}ページのコンテンツ",
+        "models": "モデル",
+        "quality": "品質",
+        "showAll": "すべてのモデルを表示",
+        "showRecommended": "おすすめのモデルを表示",
+        "tags": "タグ",
+        "textCapability": "テキスト生成",
+        "visionCapability": "画像からテキストへ"
+      },
       "poweredByOllama": "Ollamaの提供",
       "success": {
         "modelInstalled": "モデル {{modelName}} が正常にインストールされました",
         "modelRemoved": "モデル {{modelName}} が正常に削除されました"
-      },
-      "labels": {
-        "models": "モデル",
-        "quality": "品質",
-        "tags": "タグ",
-        "bookPages": "最大{{pages}}ページのコンテンツ",
-        "showAll": "すべてのモデルを表示",
-        "showRecommended": "おすすめのモデルを表示",
-        "visionCapability": "画像からテキストへ",
-        "textCapability": "テキスト生成"
       }
     },
     "nodeAddress": "ノードアドレス",
@@ -396,6 +414,14 @@
   "subscriptions": {
     "browse": "パブリックサブスクリプションを閲覧",
     "label": "マイサブスクリプション"
+  },
+  "tools": {
+    "emptyState": {
+      "search": {
+        "text": "検索クエリに一致するツールは見つかりませんでした"
+      }
+    },
+    "label": "深海ツール"
   },
   "vectorFs": {
     "actions": {

@@ -333,6 +333,9 @@ export default {
   common: {
     search: 'Search',
     next: 'Next',
+    enabled: 'Enabled',
+    configure: 'Configure',
+    create: 'Create',
     restore: 'Restore',
     retry: 'Retry',
     copy: 'Copy',
@@ -479,6 +482,29 @@ export default {
     errors: {
       registerDesktopInstallation:
         'Error registering your Shinkai Desktop installation. Please ensure your EVM Address was not used previously to register a different installation.',
+    },
+  },
+  sheet: {
+    label: 'Shinkai Sheet',
+    emptyStateTitle: 'No Sheets found.',
+    emptyStateDescription: 'Start connecting your data with Shinkai Sheet!',
+    actions: {
+      createProject: 'Create Project',
+      deleteProject: 'Delete Project',
+      deleteProjectConfirmationTitle: 'Delete this Project?',
+      deleteProjectConfirmationDescription:
+        'This project will be deleted immediately. You can not undo this action.',
+    },
+    form: {
+      projectName: 'Project Name',
+    },
+  },
+  tools: {
+    label: 'Shinkai Tools',
+    emptyState: {
+      search: {
+        text: 'No tools found for the search query',
+      },
     },
   },
   disconnect: {

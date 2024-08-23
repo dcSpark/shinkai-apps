@@ -76,14 +76,17 @@
     "clearSearch": "Limpiar búsqueda",
     "clickToUpload": "Haz clic para subir o arrastra y suelta",
     "comingSoon": "Próximamente - Finales de Agosto",
+    "configure": "Configurar",
     "connect": "Conectar",
     "continue": "Continuar",
     "copy": "Copiar",
+    "create": "Crear",
     "delete": "Eliminar",
     "disconnect": "Desconectar",
     "done": "Hecho",
     "edit": "Editar",
     "editMessage": "Editar mensaje",
+    "enabled": "Activado",
     "file": "Archivo",
     "fileWithCount_one": "{{count}} Archivo",
     "fileWithCount_other": "{{count}} Archivos",
@@ -95,6 +98,7 @@
     "getStarted": "Empezar",
     "iAgree": "Estoy de Acuerdo",
     "install": "Instalar",
+    "installed": "Instalado",
     "logInShinkaiHosting": "Iniciar Sesión en Shinkai Hosting",
     "moreOptions": "Más Opciones",
     "next": "Siguiente",
@@ -341,6 +345,20 @@
       "label": "Barra lateral"
     }
   },
+  "sheet": {
+    "actions": {
+      "createProject": "Crear Proyecto",
+      "deleteProject": "Eliminar Proyecto",
+      "deleteProjectConfirmationDescription": "Este proyecto se eliminará inmediatamente. No podrás deshacer esta acción.",
+      "deleteProjectConfirmationTitle": "¿Eliminar este Proyecto?"
+    },
+    "emptyStateDescription": "¡Comienza a conectar tus datos con Hoja Shinkai!",
+    "emptyStateTitle": "No se encontraron hojas.",
+    "form": {
+      "projectName": "Nombre del Proyecto"
+    },
+    "label": "Hoja Shinkai"
+  },
   "shinkaiNode": {
     "manager": "Gestor de Nodos de Shinkai",
     "models": {
@@ -348,20 +366,20 @@
         "modelInstalled": "Error al instalar el modelo {{modelName}}",
         "modelRemoved": "Error al eliminar el modelo {{modelName}}"
       },
+      "labels": {
+        "bookPages": "Hasta {{pages}} páginas de contenido",
+        "models": "Modelos",
+        "quality": "Calidad",
+        "showAll": "Mostrar todos los modelos",
+        "showRecommended": "Mostrar modelos recomendados",
+        "tags": "Etiquetas",
+        "textCapability": "Generación de Texto",
+        "visionCapability": "Imagen a Texto"
+      },
       "poweredByOllama": "Desarrollado por Ollama",
       "success": {
         "modelInstalled": "Modelo {{modelName}} instalado exitosamente",
         "modelRemoved": "Modelo {{modelName}} eliminado exitosamente"
-      },
-      "labels": {
-        "models": "Modelos",
-        "quality": "Calidad",
-        "tags": "Etiquetas",
-        "bookPages": "Hasta {{pages}} páginas de contenido",
-        "showAll": "Mostrar todos los modelos",
-        "showRecommended": "Mostrar modelos recomendados",
-        "visionCapability": "Imagen a Texto",
-        "textCapability": "Generación de Texto"
       }
     },
     "nodeAddress": "Dirección del Nodo",
@@ -396,6 +414,14 @@
   "subscriptions": {
     "browse": "Explorar Suscripciones Públicas",
     "label": "Mis Suscripciones"
+  },
+  "tools": {
+    "emptyState": {
+      "search": {
+        "text": "No se encontraron herramientas para la consulta de búsqueda"
+      }
+    },
+    "label": "Herramientas Shinkai"
   },
   "vectorFs": {
     "actions": {

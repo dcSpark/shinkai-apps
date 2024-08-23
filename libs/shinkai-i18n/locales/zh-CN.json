@@ -76,14 +76,17 @@
     "clearSearch": "清除搜索",
     "clickToUpload": "点击上传或拖放",
     "comingSoon": "即将到来 - 八月底",
+    "configure": "配置",
     "connect": "连接",
     "continue": "继续",
     "copy": "复制",
+    "create": "创建",
     "delete": "删除",
     "disconnect": "断开连接",
     "done": "完成",
     "edit": "编辑",
     "editMessage": "编辑消息",
+    "enabled": "已启用",
     "file": "文件",
     "fileWithCount_one": "{{count}} 个文件",
     "fileWithCount_other": "{{count}} 个文件",
@@ -95,6 +98,7 @@
     "getStarted": "开始",
     "iAgree": "我同意",
     "install": "安装",
+    "installed": "已安装",
     "logInShinkaiHosting": "登录Shinkai Hosting",
     "moreOptions": "更多选项",
     "next": "下一个",
@@ -341,6 +345,20 @@
       "label": "侧边栏"
     }
   },
+  "sheet": {
+    "actions": {
+      "createProject": "创建项目",
+      "deleteProject": "删除项目",
+      "deleteProjectConfirmationDescription": "此项目将立即被删除。您无法撤销此操作。",
+      "deleteProjectConfirmationTitle": "删除此项目？"
+    },
+    "emptyStateDescription": "开始使用深海表格连接您的数据！",
+    "emptyStateTitle": "未找到表格。",
+    "form": {
+      "projectName": "项目名称"
+    },
+    "label": "深海表格"
+  },
   "shinkaiNode": {
     "manager": "Shinkai 节点管理器",
     "models": {
@@ -348,20 +366,20 @@
         "modelInstalled": "安装模型 {{modelName}} 时出错",
         "modelRemoved": "移除模型 {{modelName}} 时出错"
       },
+      "labels": {
+        "bookPages": "最多 {{pages}} 页内容",
+        "models": "模型",
+        "quality": "质量",
+        "showAll": "显示所有模型",
+        "showRecommended": "显示推荐模型",
+        "tags": "标签",
+        "textCapability": "文本生成",
+        "visionCapability": "图像转文本"
+      },
       "poweredByOllama": "由 Ollama 提供支持",
       "success": {
         "modelInstalled": "成功安装模型 {{modelName}}",
         "modelRemoved": "成功移除模型 {{modelName}}"
-      },
-      "labels": {
-        "models": "模型",
-        "quality": "质量",
-        "tags": "标签",
-        "bookPages": "最多 {{pages}} 页内容",
-        "showAll": "显示所有模型",
-        "showRecommended": "显示推荐模型",
-        "visionCapability": "图像转文本",
-        "textCapability": "文本生成"
       }
     },
     "nodeAddress": "节点地址",
@@ -396,6 +414,14 @@
   "subscriptions": {
     "browse": "浏览公共订阅",
     "label": "我的订阅"
+  },
+  "tools": {
+    "emptyState": {
+      "search": {
+        "text": "未找到与搜索查询匹配的工具"
+      }
+    },
+    "label": "深海工具"
   },
   "vectorFs": {
     "actions": {
