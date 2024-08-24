@@ -1,5 +1,5 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
+import { useGetInboxes } from '@shinkai_network/shinkai-node-state/v2/queries/getInboxes/useGetInboxes';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import {
   Button,
@@ -48,16 +48,6 @@ export const Inboxes = () => {
     isPending: isInboxesPending,
   } = useGetInboxes({
     nodeAddress: auth?.node_address ?? '',
-    sender: auth?.shinkai_identity ?? '',
-    senderSubidentity: auth?.profile ?? '',
-    // Assuming receiver and target_shinkai_name_profile are the same as sender
-    receiver: sender,
-    targetShinkaiNameProfile: `${auth?.shinkai_identity}/${auth?.profile}`,
-    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-    node_encryption_pk: auth?.node_encryption_pk ?? '',
-    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-    profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
   const { llmProviders, isSuccess: isAgentsSuccess } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',

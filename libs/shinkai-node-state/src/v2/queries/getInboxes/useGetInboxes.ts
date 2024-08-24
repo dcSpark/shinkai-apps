@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { FunctionKey } from '../../constants';
+import { FunctionKeyV2 } from '../../constants';
 import { getInboxes } from '.';
 import { GetInboxesInput, Options } from './types';
 
@@ -9,7 +9,7 @@ export const useGetInboxes = (
   options?: Omit<Options, 'queryKey' | 'queryFn'>,
 ) => {
   const response = useQuery({
-    queryKey: [FunctionKey.GET_INBOXES, input],
+    queryKey: [FunctionKeyV2.GET_INBOXES, input],
     queryFn: async () => getInboxes(input),
     select: (data) =>
       // display only job inboxes

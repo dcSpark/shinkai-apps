@@ -10,6 +10,7 @@ import {
   CreateFilesInboxResponse,
   CreateJobRequest,
   CreateJobResponse,
+  GetAllInboxesResponse,
   GetLastMessagesRequest,
   GetLastMessagesResponse,
   GetLLMProvidersResponse,
@@ -157,4 +158,15 @@ export const addLLMProvider = async (
     },
   );
   return response.data as AddLLMProviderResponse;
+};
+
+export const getAllInboxes = async (nodeAddress: string) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/all_inboxes'),
+    {
+      headers: { Authorization: `Bearer ${BEARER_TOKEN}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as GetAllInboxesResponse;
 };

@@ -1,3 +1,9 @@
+import {
+  LocalScopeVRKaiEntry,
+  LocalScopeVRPackEntry,
+} from '../../models/SchemaTypes';
+import { AgentInbox } from '../../models/ShinkaiMessage';
+
 type ResourceSource = {
   Standard: {
     FileRef: {
@@ -107,28 +113,32 @@ export type GetLastMessagesRequest = {
   limit: number;
   offset_key?: string;
 };
-export type GetLastMessagesResponse = {
-  inbox: string;
-  job_message: {
-    callback: null;
-    content: string;
-    files_inbox: string;
-    job_id: string;
-    parent: string;
-    sheet_job_data: null;
-    workflow_code: null;
-    workflow_name: string;
-  };
-  node_api_data: {
-    node_message_hash: string;
-    node_timestamp: string;
-    parent_hash: string;
-  };
-  receiver: string;
-  receiver_subidentity: string;
+export type NodeApiData = {
+  node_message_hash: string;
+  node_timestamp: string;
+  parent_hash: string;
+};
+
+export type JobMessage = {
+  callback: null;
+  content: string;
+  files_inbox: string;
+  job_id: string;
+  parent: string;
+  sheet_job_data: null;
+  workflow_code: null;
+  workflow_name: string;
+};
+export type ChatMessage = {
+  job_message: JobMessage;
   sender: string;
   sender_subidentity: string;
-}[];
+  receiver: string;
+  receiver_subidentity: string;
+  node_api_data: NodeApiData;
+  inbox: string;
+};
+export type GetLastMessagesResponse = ChatMessage[];
 export type CreateFilesInboxResponse = string;
 export type AddFileToInboxRequest = {
   file_inbox_name: string;
@@ -139,7 +149,7 @@ export type AddFileToInboxResponse = string;
 
 export type LLMProvider = {
   id: string;
-  full_identity_name: string; // ShinkaiName
+  full_identity_name: string;
   perform_locally: boolean;
   external_url?: string;
   api_key?: string;
@@ -197,3 +207,22 @@ export type SerializedLLMProvider = {
 };
 export type AddLLMProviderRequest = SerializedLLMProvider;
 export type AddLLMProviderResponse = string;
+
+export interface JobScope {
+  local_vrkai: LocalScopeVRKaiEntry[];
+  local_vrpack: LocalScopeVRPackEntry[];
+  vector_fs_items: string[];
+  vector_fs_folders: string[];
+  network_folders: [];
+}
+
+export type Inbox = {
+  inbox_id: string;
+  custom_name: string;
+  last_message?: ChatMessage;
+  is_finished: boolean;
+  job_scope?: JobScope;
+  agent?: AgentInbox;
+  datetime_created: string;
+};
+export type GetAllInboxesResponse = Inbox[];

@@ -1,32 +1,8 @@
-import { getAllInboxesForProfile } from '@shinkai_network/shinkai-message-ts/api';
+import { getAllInboxes as getAllInboxesApi } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 
-import type { GetInboxesInput, GetInboxesOutput } from './types';
+import type { GetInboxesInput } from './types';
 
-export const getInboxes = async ({
-  nodeAddress,
-  receiver,
-  senderSubidentity,
-  sender,
-  targetShinkaiNameProfile,
-  my_device_encryption_sk,
-  my_device_identity_sk,
-  node_encryption_pk,
-  profile_encryption_sk,
-  profile_identity_sk,
-}: GetInboxesInput): Promise<GetInboxesOutput> => {
-  const inboxes = await getAllInboxesForProfile(
-    nodeAddress,
-    sender,
-    senderSubidentity,
-    receiver,
-    targetShinkaiNameProfile,
-    {
-      my_device_encryption_sk,
-      my_device_identity_sk,
-      node_encryption_pk,
-      profile_encryption_sk,
-      profile_identity_sk,
-    },
-  );
+export const getInboxes = async ({ nodeAddress }: GetInboxesInput) => {
+  const inboxes = await getAllInboxesApi(nodeAddress);
   return inboxes;
 };

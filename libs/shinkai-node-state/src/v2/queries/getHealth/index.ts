@@ -5,6 +5,6 @@ import { GetHealthInput, GetHealthOutput } from './types';
 export const getHealth = async ({
   nodeAddress,
 }: GetHealthInput): Promise<GetHealthOutput> => {
-  const response = await checkHealthApi(node_address);
+  const response = await checkHealthApi(nodeAddress);
   return response;
 };
