@@ -1,4 +1,4 @@
-import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
+import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
@@ -12,7 +12,7 @@ export const WithNav = () => {
   const location = useLocation();
 
   const { nodeInfo, isSuccess, isFetching } = useGetHealth(
-    { node_address: auth?.node_address ?? '' },
+    { nodeAddress: auth?.node_address ?? '' },
     { refetchInterval: 10000, enabled: !!auth },
   );
   const isInboxPage =

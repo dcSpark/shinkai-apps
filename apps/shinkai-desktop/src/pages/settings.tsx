@@ -6,7 +6,7 @@ import {
 } from '@shinkai_network/shinkai-i18n';
 import { isShinkaiIdentityLocalhost } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useUpdateNodeName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateNodeName/useUpdateNodeName';
-import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
+import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import {
   Button,
@@ -92,7 +92,7 @@ const SettingsPage = () => {
     (settingsStore) => settingsStore.setDefaultAgentId,
   );
   const { nodeInfo, isSuccess: isNodeInfoSuccess } = useGetHealth({
-    node_address: auth?.node_address ?? '',
+    nodeAddress: auth?.node_address ?? '',
   });
 
   const [appVersion, setAppVersion] = useState('');

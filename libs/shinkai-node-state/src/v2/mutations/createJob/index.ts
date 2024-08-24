@@ -51,7 +51,7 @@ export const createJob = async ({
     job_message: {
       workflow_code: workflowCode,
       content,
-      workflow_name: workflowName ?? '', // API V2 requires this field
+      workflow_name: workflowName,
       job_id: jobId,
       files_inbox: folderId,
       parent: '',

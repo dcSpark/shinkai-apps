@@ -1,4 +1,4 @@
-import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
+import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import { PostHogProvider, usePostHog } from 'posthog-js/react';
 import React, { useEffect } from 'react';
 
@@ -78,7 +78,7 @@ export const useAnalytics = () => {
 
   const auth = useAuth((authStore) => authStore.auth);
   const { nodeInfo } = useGetHealth({
-    node_address: auth?.node_address ?? '',
+    nodeAddress: auth?.node_address ?? '',
   });
 
   function captureAnalyticEvent<TEventName extends AnalyticEventName>(

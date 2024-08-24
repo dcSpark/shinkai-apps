@@ -871,9 +871,7 @@ export const retrieveVectorResource = async (
 
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v1/vec_fs/retrieve_vector_resource'),
-
     message,
-
     {
       responseType: 'json',
     },

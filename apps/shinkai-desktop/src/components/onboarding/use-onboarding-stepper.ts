@@ -1,8 +1,8 @@
-import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
 // import { useGetMySharedFolders } from '@shinkai_network/shinkai-node-state/lib/queries/getMySharedFolders/useGetMySharedFolders';
 import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
 import { getFlatChildItems } from '@shinkai_network/shinkai-node-state/lib/utils/files';
+import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useMap } from '@shinkai_network/shinkai-ui/hooks';
 import { useEffect } from 'react';
@@ -19,7 +19,7 @@ export const useOnboardingSteps = () => {
   );
 
   const { nodeInfo, isSuccess } = useGetHealth(
-    { node_address: auth?.node_address ?? '' },
+    { nodeAddress: auth?.node_address ?? '' },
     { enabled: !!auth },
   );
 

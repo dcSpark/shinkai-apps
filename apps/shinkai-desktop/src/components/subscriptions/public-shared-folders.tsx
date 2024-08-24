@@ -3,9 +3,9 @@ import {
   PriceFilters,
 } from '@shinkai_network/shinkai-node-state/lib/queries/getAvailableSharedItems/types';
 import { useGetAvailableSharedFoldersWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getAvailableSharedItems/useGetAvailableSharedFoldersWithPagination';
-import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import { useGetMySharedFolders } from '@shinkai_network/shinkai-node-state/lib/queries/getMySharedFolders/useGetMySharedFolders';
 import { useGetMySubscriptions } from '@shinkai_network/shinkai-node-state/lib/queries/getMySubscriptions/useGetMySubscriptions';
+import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import {
   Button,
   Input,
@@ -77,8 +77,8 @@ const PublicSharedFolderSubscription = () => {
     priceFilter: paidFilter,
   });
 
-  const { nodeInfo } = useGetHealth({ node_address: auth?.node_address ?? '' });
-
+  const { nodeInfo } = useGetHealth({ nodeAddress: auth?.node_address ?? '' });
+  console.log('nodeInfo', nodeInfo);
   const loadMoreRef = useRef<HTMLButtonElement>(null);
   const isLoadMoreButtonInView = useInView(loadMoreRef);
 
@@ -403,7 +403,7 @@ export const SubscriptionInfo = ({
   isFree: boolean;
 }) => (
   <div className="flex items-center gap-3">
-    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-300/50 ">
+    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-300/50">
       <SharedFolderIcon className="h-6 w-6" />
     </div>
     <div className="space-y-3">

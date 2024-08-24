@@ -6,7 +6,7 @@ import {
 } from '@shinkai_network/shinkai-node-state/forms/auth/quick-connection';
 import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
 import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/lib/queries/getEncryptionKeys/useGetEncryptionKeys';
-import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
+import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import {
   Button,
   ButtonProps,
@@ -72,7 +72,7 @@ const OnboardingPage = () => {
   const locationState = useLocation().state;
   const isShinkaiPrivate = locationState?.connectionType === 'local';
   const { nodeInfo, isSuccess: isNodeInfoSuccess } = useGetHealth(
-    { node_address: LOCAL_NODE_ADDRESS },
+    { nodeAddress: LOCAL_NODE_ADDRESS },
     { enabled: isShinkaiPrivate },
   );
 
