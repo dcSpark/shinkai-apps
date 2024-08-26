@@ -1,4 +1,4 @@
-import { searchWorkflows as getWorkflowSearchApi } from '@shinkai_network/shinkai-message-ts/api/workflow/index';
+import { searchWorkflows as getWorkflowSearchApi } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 
 import { GetWorkflowSearchInput } from './types';
 

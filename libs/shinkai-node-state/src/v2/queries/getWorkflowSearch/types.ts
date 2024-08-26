@@ -1,4 +1,4 @@
-import { SearchWorkflowsResponse } from '@shinkai_network/shinkai-message-ts/api/workflow/types';
+import { SearchWorkflowsResponse } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 
 export type GetWorkflowSearchInput = {
   nodeAddress: string;

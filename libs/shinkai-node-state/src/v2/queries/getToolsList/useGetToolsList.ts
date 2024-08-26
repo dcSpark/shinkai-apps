@@ -1,10 +1,10 @@
 import { QueryObserverOptions, useQuery } from '@tanstack/react-query';
 
-import { FunctionKey } from '../../constants';
-import { getToolsList } from './index';
+import { FunctionKeyV2 } from '../../constants';
+import { getTools } from './index';
 import { GetToolsListInput, GetToolsListOutput } from './types';
 
-export type UseGetToolsList = [FunctionKey.GET_LIST_TOOLS, GetToolsListInput];
+export type UseGetToolsList = [FunctionKeyV2.GET_LIST_TOOLS, GetToolsListInput];
 
 type Options = QueryObserverOptions<
   GetToolsListOutput,
@@ -14,13 +14,13 @@ type Options = QueryObserverOptions<
   UseGetToolsList
 >;
 
-export const useGetToolsList = (
+export const useGetTools = (
   input: GetToolsListInput,
   options?: Omit<Options, 'queryKey' | 'queryFn'>,
 ) => {
   const response = useQuery({
-    queryKey: [FunctionKey.GET_LIST_TOOLS, input],
-    queryFn: () => getToolsList(input),
+    queryKey: [FunctionKeyV2.GET_LIST_TOOLS, input],
+    queryFn: () => getTools(input),
     ...options,
   });
   return response;
