@@ -87,6 +87,7 @@ export const ConnectMethodQrCodePage = () => {
           ...values,
           node_signature_pk: response.identity_public_key ?? '',
           node_encryption_pk: response.encryption_public_key ?? '',
+          api_v2_key: '',
         };
         authSuccess(authData);
       } else {
