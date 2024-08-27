@@ -86,12 +86,8 @@ export const ConnectMethodQrCode = () => {
           ...values,
           node_signature_pk: response.identity_public_key ?? '',
           node_encryption_pk: response.encryption_public_key ?? '',
+          api_v2_key: '',
         };
-        console.log(
-          authData,
-          response.identity_public_key,
-          response.identity_public_key === values.node_signature_pk,
-        );
         authSuccess(authData);
       } else {
         throw new Error('Failed to submit registration');

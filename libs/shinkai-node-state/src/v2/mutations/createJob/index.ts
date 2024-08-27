@@ -44,7 +44,7 @@ export const createJob = async ({
   });
 
   let folderId = '';
-  if (files) {
+  if (files && files.length > 0) {
     folderId = await uploadFilesToInbox(nodeAddress, token, files);
   }
 

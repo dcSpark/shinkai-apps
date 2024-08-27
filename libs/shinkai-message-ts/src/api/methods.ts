@@ -22,6 +22,7 @@ import { FileUploader } from '../wasm/FileUploaderUsingSymmetricKeyManager';
 import { SerializedLLMProviderWrapper } from '../wasm/SerializedLLMProviderWrapper';
 import { ShinkaiMessageBuilderWrapper } from '../wasm/ShinkaiMessageBuilderWrapper';
 import { ShinkaiNameWrapper } from '../wasm/ShinkaiNameWrapper';
+import { Inbox } from './jobs/types';
 
 export const fetchPublicKey =
   (nodeAddress: string) => async (): Promise<any> => {
@@ -187,7 +188,7 @@ export const getAllInboxesForProfile = async (
   receiver: string,
   target_shinkai_name_profile: string,
   setupDetailsState: CredentialsPayload,
-): Promise<SmartInbox[]> => {
+): Promise<Inbox[]> => {
   const messageString =
     ShinkaiMessageBuilderWrapper.get_all_inboxes_for_profile(
       setupDetailsState.profile_encryption_sk,

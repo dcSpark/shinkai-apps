@@ -168,6 +168,7 @@ export const CreateJob = () => {
 
     await createJob({
       nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
       llmProvider: values.agent,
       content: content,
       files: values.files,
