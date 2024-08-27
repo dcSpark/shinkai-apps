@@ -9,7 +9,7 @@ export const useGetCurrentInbox = () => {
   const location = useLocation();
 
   const { inboxes } = useGetInboxes(
-    { nodeAddress: auth?.node_address ?? '' },
+    { nodeAddress: auth?.node_address ?? '', token: auth?.api_v2_key ?? '' },
     { staleTime: Infinity },
   );
   const currentInbox = useMemo(() => {

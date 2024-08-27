@@ -4,9 +4,9 @@ import { GetSearchToolsInput, GetSearchToolsOutput } from './types';
 
 export const searchTools = async ({
   nodeAddress,
+  token,
   search,
-}: GetSearchToolsInput): Promise<GetSearchToolsOutput> => {
-  const response = await searchToolsApi(nodeAddress, search);
-
+}: GetSearchToolsInput) => {
+  const response = await searchToolsApi(nodeAddress, token, search);
   return response;
 };

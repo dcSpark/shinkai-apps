@@ -1,9 +1,10 @@
+import { Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import { GetAllInboxesResponse } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import { QueryObserverOptions } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
 
-export type GetInboxesInput = {
+export type GetInboxesInput = Token & {
   nodeAddress: string;
 };
 export type GetInboxesOutput = GetAllInboxesResponse;

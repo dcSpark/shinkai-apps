@@ -10,6 +10,7 @@ export const useGetCurrentInbox = () => {
 
   const { inboxes } = useGetInboxes({
     nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
   });
   const currentInbox = useMemo(() => {
     const inboxId = location.pathname.split('/')?.[2];

@@ -9,8 +9,6 @@ import {
   LLMProvider,
   SetupPayload,
   ShinkaiMessage,
-  ShinkaiTool,
-  ShinkaiToolType,
   SmartInbox,
 } from '../models';
 import {

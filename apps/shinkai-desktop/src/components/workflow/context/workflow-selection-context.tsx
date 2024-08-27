@@ -100,11 +100,16 @@ const WorkflowSearchDrawer = ({
 
   const { isPending, data: workflowList } = useGetWorkflowList({
     nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
   });
 
   const { data: searchWorkflowList, isPending: isSearchWorkflowListPending } =
     useGetWorkflowSearch(
-      { nodeAddress: auth?.node_address ?? '', search: debouncedSearchQuery },
+      {
+        nodeAddress: auth?.node_address ?? '',
+        token: auth?.api_v2_key ?? '',
+        search: debouncedSearchQuery,
+      },
       { enabled: isSearchQuerySynced },
     );
 

@@ -264,7 +264,11 @@ const ChatConversation = () => {
     data: workflowRecommendations,
     isSuccess: isWorkflowRecommendationsSuccess,
   } = useGetWorkflowSearch(
-    { nodeAddress: auth?.node_address ?? '', search: debounceMessage },
+    {
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      search: debounceMessage,
+    },
     {
       enabled: !!debounceMessage && !!currentMessage,
       select: (data) => data.slice(0, 3),

@@ -47,6 +47,7 @@ export const GalxeSusbcriptions = () => {
 
   const { inboxes } = useGetInboxes({
     nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
   });
 
   const { data: subscriptionFolder } = useGetVRPathSimplified({

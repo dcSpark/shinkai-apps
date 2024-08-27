@@ -1,7 +1,5 @@
 import { httpClient } from '../../http-client';
 import { urlJoin } from '../../utils/url-join';
-import { SerializedLLMProviderWrapper } from '../../wasm/SerializedLLMProviderWrapper';
-import { BEARER_TOKEN } from '../constants';
 import {
   AddFileToInboxRequest,
   AddFileToInboxResponse,
@@ -21,13 +19,14 @@ import {
 
 export const createJob = async (
   nodeAddress: string,
+  bearerToken: string,
   payload: CreateJobRequest,
 ) => {
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v2/create_job'),
     payload,
     {
-      headers: { Authorization: `Bearer ${BEARER_TOKEN}` },
+      headers: { Authorization: `Bearer ${bearerToken}` },
       responseType: 'json',
     },
   );
@@ -37,13 +36,14 @@ export const createJob = async (
 
 export const sendMessageToJob = async (
   nodeAddress: string,
+  bearerToken: string,
   payload: JobMessageRequest,
 ) => {
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v2/job_message'),
     payload,
     {
-      headers: { Authorization: `Bearer ${BEARER_TOKEN}` },
+      headers: { Authorization: `Bearer ${bearerToken}` },
       responseType: 'json',
     },
   );
@@ -52,25 +52,29 @@ export const sendMessageToJob = async (
 
 export const getLastMessages = async (
   nodeAddress: string,
+  bearerToken: string,
   payload: GetLastMessagesRequest,
 ) => {
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v2/last_messages'),
     payload,
     {
-      headers: { Authorization: `Bearer ${BEARER_TOKEN}` },
+      headers: { Authorization: `Bearer ${bearerToken}` },
       responseType: 'json',
     },
   );
   return response.data as GetLastMessagesResponse;
 };
 
-export const createFilesInbox = async (nodeAddress: string) => {
+export const createFilesInbox = async (
+  nodeAddress: string,
+  bearerToken: string,
+) => {
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v2/create_files_inbox'),
     undefined,
     {
-      headers: { Authorization: `Bearer ${BEARER_TOKEN}` },
+      headers: { Authorization: `Bearer ${bearerToken}` },
       responseType: 'json',
     },
   );
@@ -79,6 +83,7 @@ export const createFilesInbox = async (nodeAddress: string) => {
 
 export const addFileToInbox = async (
   nodeAddress: string,
+  bearerToken: string,
   payload: AddFileToInboxRequest,
 ) => {
   const fileData = await payload.file.arrayBuffer();
@@ -92,7 +97,7 @@ export const addFileToInbox = async (
     urlJoin(nodeAddress, '/v2/add_file_to_inbox'),
     formData,
     {
-      headers: { Authorization: `Bearer ${BEARER_TOKEN}` },
+      headers: { Authorization: `Bearer ${bearerToken}` },
       responseType: 'json',
     },
   );
@@ -102,11 +107,12 @@ export const addFileToInbox = async (
 
 export const uploadFilesToInbox = async (
   nodeAddress: string,
+  bearerToken: string,
   files: File[],
 ) => {
-  const folderId = await createFilesInbox(nodeAddress);
+  const folderId = await createFilesInbox(nodeAddress, bearerToken);
   for (const file of files) {
-    await addFileToInbox(nodeAddress, {
+    await addFileToInbox(nodeAddress, bearerToken, {
       filename: file.name,
       file_inbox_name: folderId,
       file,
@@ -115,11 +121,14 @@ export const uploadFilesToInbox = async (
   return folderId;
 };
 
-export const getLLMProviders = async (nodeAddress: string) => {
+export const getLLMProviders = async (
+  nodeAddress: string,
+  bearerToken: string,
+) => {
   const response = await httpClient.get(
     urlJoin(nodeAddress, '/v2/available_models'),
     {
-      headers: { Authorization: `Bearer ${BEARER_TOKEN}` },
+      headers: { Authorization: `Bearer ${bearerToken}` },
       responseType: 'json',
     },
   );
@@ -147,24 +156,28 @@ function getModelString(model: LLMProviderInterface): string {
 
 export const addLLMProvider = async (
   nodeAddress: string,
+  bearerToken: string,
   payload: AddLLMProviderRequest,
 ) => {
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v2/add_llm_provider'),
     { ...payload, model: getModelString(payload.model) },
     {
-      headers: { Authorization: `Bearer ${BEARER_TOKEN}` },
+      headers: { Authorization: `Bearer ${bearerToken}` },
       responseType: 'json',
     },
   );
   return response.data as AddLLMProviderResponse;
 };
 
-export const getAllInboxes = async (nodeAddress: string) => {
+export const getAllInboxes = async (
+  nodeAddress: string,
+  bearerToken: string,
+) => {
   const response = await httpClient.get(
     urlJoin(nodeAddress, '/v2/all_inboxes'),
     {
-      headers: { Authorization: `Bearer ${BEARER_TOKEN}` },
+      headers: { Authorization: `Bearer ${bearerToken}` },
       responseType: 'json',
     },
   );

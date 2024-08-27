@@ -8,6 +8,7 @@ import { CreateJobInput } from './types';
 
 export const createJob = async ({
   nodeAddress,
+  token,
   llmProvider,
   sheetId,
   content,
@@ -18,7 +19,7 @@ export const createJob = async ({
   selectedVRFiles,
   selectedVRFolders,
 }: CreateJobInput) => {
-  const { job_id: jobId } = await createJobApi(nodeAddress, {
+  const { job_id: jobId } = await createJobApi(nodeAddress, token, {
     llm_provider: llmProvider,
     job_creation_info: {
       scope: {
@@ -44,10 +45,10 @@ export const createJob = async ({
 
   let folderId = '';
   if (files) {
-    folderId = await uploadFilesToInbox(nodeAddress, files);
+    folderId = await uploadFilesToInbox(nodeAddress, token, files);
   }
 
-  await sendMessageToJob(nodeAddress, {
+  await sendMessageToJob(nodeAddress, token, {
     job_message: {
       workflow_code: workflowCode,
       content,

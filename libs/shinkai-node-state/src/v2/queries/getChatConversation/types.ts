@@ -1,13 +1,15 @@
+import { Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import { InfiniteData } from '@tanstack/react-query';
 
-export type GetChatConversationInput = {
+export type GetChatConversationInput = Token & {
   nodeAddress: string;
   inboxId: string;
   count?: number;
   lastKey?: string;
   shinkaiIdentity: string;
   profile: string;
-  enabled: boolean;
+  enabled?: boolean;
+  refetchIntervalEnabled?: boolean;
 };
 
 export type ChatConversationMessage = {

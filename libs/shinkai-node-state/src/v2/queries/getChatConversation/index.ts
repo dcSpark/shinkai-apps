@@ -5,13 +5,14 @@ import { CONVERSATION_PAGINATION_LIMIT } from './useGetChatConversationWithPagin
 
 export const getChatConversation = async ({
   nodeAddress,
+  token,
   inboxId,
   count = CONVERSATION_PAGINATION_LIMIT,
   lastKey,
   shinkaiIdentity,
   profile,
 }: GetChatConversationInput) => {
-  const data = await getLastMessages(nodeAddress, {
+  const data = await getLastMessages(nodeAddress, token, {
     inbox_name: inboxId,
     limit: count,
     offset_key: lastKey,

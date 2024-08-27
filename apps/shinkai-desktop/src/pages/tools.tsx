@@ -1,5 +1,5 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { ShinkaiTool } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
+import { ShinkaiTool } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch';
@@ -35,12 +35,14 @@ export const Tools = () => {
 
   const { data: toolsList, isPending } = useGetTools({
     nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
   });
 
   const { data: searchToolList, isLoading: isSearchToolListPending } =
     useGetSearchTools(
       {
         nodeAddress: auth?.node_address ?? '',
+        token: auth?.api_v2_key ?? '',
         search: debouncedSearchQuery,
       },
       { enabled: isSearchQuerySynced },
@@ -146,6 +148,7 @@ export const Tools = () => {
                             toolPayload: {} as ShinkaiTool,
                             isToolEnabled: !tool.enabled,
                             nodeAddress: auth?.node_address ?? '',
+                            token: auth?.api_v2_key ?? '',
                           });
                         }}
                       />

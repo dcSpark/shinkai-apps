@@ -1,7 +1,7 @@
 import {
   ShinkaiTool,
   WorkflowShinkaiTool,
-} from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
+} from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
 import { Switch, Textarea } from '@shinkai_network/shinkai-ui';
 import { useParams } from 'react-router-dom';
@@ -36,6 +36,7 @@ export default function WorkflowTool({
                 toolPayload: {} as ShinkaiTool,
                 isToolEnabled: !isEnabled,
                 nodeAddress: auth?.node_address ?? '',
+                token: auth?.api_v2_key ?? '',
               });
             }}
           />

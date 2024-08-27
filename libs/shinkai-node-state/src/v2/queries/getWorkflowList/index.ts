@@ -4,7 +4,8 @@ import { GetWorkflowListInput } from './types';
 
 export const getWorkflowList = async ({
   nodeAddress,
+  token,
 }: GetWorkflowListInput) => {
-  const response = await getWorkflowListAPI(nodeAddress);
+  const response = await getWorkflowListAPI(nodeAddress, token);
   return response;
 };

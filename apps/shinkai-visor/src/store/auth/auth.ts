@@ -21,6 +21,7 @@ export type SetupData = {
   my_device_encryption_pk: string;
   my_device_identity_sk: string;
   my_device_identity_pk: string;
+  api_v2_key: string;
 };
 
 type AuthStore = {

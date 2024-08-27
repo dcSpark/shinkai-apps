@@ -1,6 +1,7 @@
-import { ListAllWorkflowsResponse } from '@shinkai_network/shinkai-message-ts/models/v2/types';
+import { Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
+import { ListAllWorkflowsResponse } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 
-export type GetWorkflowListInput = {
+export type GetWorkflowListInput = Token & {
   nodeAddress: string;
 };
 

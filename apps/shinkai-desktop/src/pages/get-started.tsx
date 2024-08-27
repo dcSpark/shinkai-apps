@@ -52,6 +52,7 @@ const GetStartedPage = () => {
               (response.data?.node_name ?? ''),
             node_signature_pk: response.data?.identity_public_key ?? '',
             node_encryption_pk: response.data?.encryption_public_key ?? '',
+            api_v2_key: response.data?.api_v2_key ?? '',
           };
           setAuth(updatedSetupData);
           // Hide http subscription for now

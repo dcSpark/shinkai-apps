@@ -2,7 +2,7 @@ import { getAllInboxes as getAllInboxesApi } from '@shinkai_network/shinkai-mess
 
 import type { GetInboxesInput } from './types';
 
-export const getInboxes = async ({ nodeAddress }: GetInboxesInput) => {
-  const inboxes = await getAllInboxesApi(nodeAddress);
+export const getInboxes = async ({ nodeAddress, token }: GetInboxesInput) => {
+  const inboxes = await getAllInboxesApi(nodeAddress, token);
   return inboxes;
 };

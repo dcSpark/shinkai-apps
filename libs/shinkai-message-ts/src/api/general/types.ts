@@ -4,3 +4,5 @@ export type CheckHealthResponse = {
   is_pristine: boolean;
   version: string;
 };
+
+export type Token = { token: string };

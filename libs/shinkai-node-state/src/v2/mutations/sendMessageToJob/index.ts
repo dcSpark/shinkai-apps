@@ -4,13 +4,14 @@ import { SendMessageToJobInput } from './types';
 
 export const sendMessageToJob = async ({
   nodeAddress,
+  token,
   jobId,
   message,
   parent,
   workflowCode,
   workflowName,
 }: SendMessageToJobInput) => {
-  return await sendMessageToJobApi(nodeAddress, {
+  return await sendMessageToJobApi(nodeAddress, token, {
     job_message: {
       workflow_code: workflowCode,
       content: message,

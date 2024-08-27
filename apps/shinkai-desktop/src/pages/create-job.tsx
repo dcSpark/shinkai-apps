@@ -239,6 +239,7 @@ const CreateJobPage = () => {
 
     await createJob({
       nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
       llmProvider: data.agent,
       content: data.content,
       files: data.files,
@@ -270,6 +271,7 @@ const CreateJobPage = () => {
   } = useGetWorkflowSearch(
     {
       nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
       search: debounceMessage,
     },
     {

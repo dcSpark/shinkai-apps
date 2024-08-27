@@ -83,8 +83,9 @@ export default function ChatTable() {
     isFetchingPreviousPage,
     isSuccess: isChatConversationSuccess,
   } = useGetChatConversationWithPagination({
-    inboxId: chatInboxId ?? '',
     nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+    inboxId: chatInboxId ?? '',
     shinkaiIdentity: auth?.shinkai_identity ?? '',
     profile: auth?.profile ?? '',
     enabled: !!chatInboxId,
@@ -109,6 +110,7 @@ export default function ChatTable() {
     if (!chatInboxId) {
       await createJob({
         nodeAddress: auth.node_address,
+        token: auth.api_v2_key,
         llmProvider: data.agent,
         sheetId,
         content: data.content,
@@ -122,6 +124,7 @@ export default function ChatTable() {
     if (!chatInboxId) return;
     await sendMessageToJob({
       nodeAddress: auth.node_address,
+      token: auth.api_v2_key,
       jobId: extractJobIdFromInbox(chatInboxId),
       message: data.content,
       workflowName: '',

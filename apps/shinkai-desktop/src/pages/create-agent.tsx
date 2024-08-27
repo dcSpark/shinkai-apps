@@ -199,6 +199,7 @@ const CreateAgentPage = () => {
     }
     await addLLMProvider({
       nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
       agent: {
         allowed_message_senders: [],
         api_key: data.apikey,

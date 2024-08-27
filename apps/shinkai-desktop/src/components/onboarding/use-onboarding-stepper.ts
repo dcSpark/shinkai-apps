@@ -29,6 +29,7 @@ export const useOnboardingSteps = () => {
 
   const { inboxes } = useGetInboxes({
     nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
   });
 
   const { data: VRFiles } = useGetVRPathSimplified({

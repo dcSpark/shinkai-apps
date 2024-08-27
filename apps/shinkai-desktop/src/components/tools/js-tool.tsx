@@ -3,7 +3,7 @@ import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   JSShinkaiTool,
   ShinkaiTool,
-} from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
+} from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
 import {
   Button,
@@ -88,6 +88,7 @@ export default function JsTool({
       } as ShinkaiTool,
       isToolEnabled: enabled,
       nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
     });
   };
 

@@ -39,6 +39,7 @@ export interface APIUseRegistrationCodeSuccessResponse {
   encryption_public_key: string;
   identity_public_key: string;
   node_name: string;
+  api_v2_key: string;
 }
 
 export interface SubmitInitialRegistrationNoCodePayload {
