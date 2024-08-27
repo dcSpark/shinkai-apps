@@ -52,6 +52,7 @@ export const Inboxes = () => {
   });
   const { llmProviders, isSuccess: isAgentsSuccess } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
   });
 
   const onCreateJobClick = () => {

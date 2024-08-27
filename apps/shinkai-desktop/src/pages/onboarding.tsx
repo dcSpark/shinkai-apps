@@ -94,6 +94,7 @@ const OnboardingPage = () => {
   } = useSubmitRegistrationNoCode({
     onSuccess: (response, setupPayload) => {
       if (response.status === 'success' && encryptionKeys) {
+        console.log(response, 'resss');
         const updatedSetupData = {
           ...encryptionKeys,
           ...setupPayload,

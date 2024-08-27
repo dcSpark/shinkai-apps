@@ -137,6 +137,7 @@ export function AddColumnAction() {
   const auth = useAuth((state) => state.auth);
   const { llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
   });
 
   const { data: workflowList } = useGetWorkflowList({

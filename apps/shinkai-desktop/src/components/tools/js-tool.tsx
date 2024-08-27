@@ -106,6 +106,7 @@ export default function JsTool({
                 toolPayload: {} as ShinkaiTool,
                 isToolEnabled: !isEnabled,
                 nodeAddress: auth?.node_address ?? '',
+                token: auth?.api_v2_key ?? '',
               });
             }}
           />

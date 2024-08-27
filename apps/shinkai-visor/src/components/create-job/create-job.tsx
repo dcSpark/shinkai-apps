@@ -97,6 +97,7 @@ export const CreateJob = () => {
   });
   const { llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
   });
   const { isPending, mutateAsync: createJob } = useCreateJob({
     onSuccess: (data) => {

@@ -4,7 +4,8 @@ import type { GetLLMProvidersInput } from './types';
 
 export const getLLMProviders = async ({
   nodeAddress,
+  token,
 }: GetLLMProvidersInput) => {
-  const result = await getLLMProvidersAPI(nodeAddress);
+  const result = await getLLMProvidersAPI(nodeAddress, token);
   return result;
 };

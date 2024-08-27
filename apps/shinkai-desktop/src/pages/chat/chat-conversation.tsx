@@ -277,15 +277,20 @@ const ChatConversation = () => {
 
   const [firstMessageWorkflow, setFirstMessageWorkflow] = useState<{
     name: string;
-    version: string;
+    author: string;
+    tool_router_key: string;
   } | null>(null);
 
   useEffect(() => {
     if (data?.pages && data.pages.length > 0 && data.pages[0].length > 0) {
       const firstMessage = data.pages[0][0];
       if (firstMessage.workflowName) {
-        const [name, version] = firstMessage.workflowName.split(':::');
-        setFirstMessageWorkflow({ name, version });
+        const [name, author] = firstMessage.workflowName.split(':::');
+        setFirstMessageWorkflow({
+          name,
+          author,
+          tool_router_key: firstMessage.workflowName,
+        });
       }
     }
   }, [data?.pages]);
@@ -346,18 +351,10 @@ const ChatConversation = () => {
     if (!auth || data.message.trim() === '') return;
     fromPreviousMessagesRef.current = false;
 
-    let workflowToUse = workflowSelected;
-    if (!workflowToUse && firstMessageWorkflow) {
-      workflowToUse = {
-        name: firstMessageWorkflow.name,
-        version: firstMessageWorkflow.version,
-        description: '', // We don't have this information from the first message
-        raw: '', // We don't have this information from the first message
-      };
+    let workflowKeyToUse = workflowSelected?.tool_router_key;
+    if (!workflowKeyToUse && firstMessageWorkflow) {
+      workflowKeyToUse = firstMessageWorkflow.tool_router_key;
     }
-
-    const workflowVersion = workflowToUse?.version;
-    const workflowName = workflowToUse?.name;
 
     if (data.file) {
       await sendTextMessageWithFilesForInbox({
@@ -368,9 +365,7 @@ const ChatConversation = () => {
         message: data.message,
         inboxId: inboxId,
         files: [currentFile],
-        workflowName: workflowToUse
-          ? `${workflowName}:::${workflowVersion}`
-          : undefined,
+        workflowName: workflowKeyToUse,
         my_device_encryption_sk: auth.my_device_encryption_sk,
         my_device_identity_sk: auth.my_device_identity_sk,
         node_encryption_pk: auth.node_encryption_pk,
@@ -392,9 +387,7 @@ const ChatConversation = () => {
         parent: '', // Note: we should set the parent if we want to retry or branch out
         shinkaiIdentity: auth.shinkai_identity,
         profile: auth.profile,
-        workflowName: workflowToUse
-          ? `${workflowName}:::${workflowVersion}`
-          : undefined,
+        workflowName: workflowKeyToUse,
         my_device_encryption_sk: auth.my_device_encryption_sk,
         my_device_identity_sk: auth.my_device_identity_sk,
         node_encryption_pk: auth.node_encryption_pk,
@@ -685,6 +678,7 @@ function AgentSelection() {
   const currentInbox = useGetCurrentInbox();
   const { llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
   });
 
   const { mutateAsync: updateAgentInJob } = useUpdateAgentInJob({

@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Workflow } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
+import { ShinkaiToolHeader } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useCreateWorkflow } from '@shinkai_network/shinkai-node-state/lib/mutations/createWorkflow/useCreateWorkflow';
 import { useRemoveWorkflow } from '@shinkai_network/shinkai-node-state/lib/mutations/removeWorkflow/useRemoveWorkflow';
 import { useUpdateWorkflow } from '@shinkai_network/shinkai-node-state/lib/mutations/updateWorkflow/useUpdateWorkflow';
@@ -52,8 +52,10 @@ type WorkflowSelectedStore = {
   setWorkflowSelectionDrawerOpen: (
     workflowSelectionDrawerOpen: boolean,
   ) => void;
-  workflowSelected: Workflow | undefined;
-  setWorkflowSelected: (workflowSelected: Workflow | undefined) => void;
+  workflowSelected: ShinkaiToolHeader | undefined;
+  setWorkflowSelected: (
+    workflowSelected: ShinkaiToolHeader | undefined,
+  ) => void;
 };
 
 const createWorkflowSelectionStore = () =>
@@ -76,7 +78,7 @@ const WorkflowSelectedContext = createContext<ReturnType<
 const WorkflowSearchDrawer = ({
   onSelectWorkflow,
 }: {
-  onSelectWorkflow?: (workflow: Workflow) => void;
+  onSelectWorkflow?: (workflow: ShinkaiToolHeader) => void;
 }) => {
   const workflowSelectionDrawerOpen = useWorkflowSelectionStore(
     (state) => state.workflowSelectionDrawerOpen,

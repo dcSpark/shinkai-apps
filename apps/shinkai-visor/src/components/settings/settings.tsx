@@ -163,6 +163,7 @@ export const Settings = () => {
 
   const { llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
   });
   const { mutateAsync: updateNodeName, isPending: isUpdateNodeNamePending } =
     useUpdateNodeName({

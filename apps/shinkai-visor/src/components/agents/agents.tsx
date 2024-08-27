@@ -43,6 +43,7 @@ export const Agents = () => {
   const navigate = useNavigate();
   const { llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
   });
   const onAddAgentClick = () => {
     navigate('/agents/add');

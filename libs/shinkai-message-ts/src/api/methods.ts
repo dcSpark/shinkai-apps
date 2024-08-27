@@ -354,7 +354,7 @@ export const submitInitialRegistrationNoCode = async (
       status: 'ok';
       node_name: string;
       is_pristine: boolean;
-    }>(urlJoin(payload.node_address, '/v1/shinkai_health'));
+    }>(urlJoin(payload.node_address, '/v2/health_check'));
     const { status, node_name, is_pristine } = healthResponse.data;
     if (status !== 'ok') {
       return { status: 'error' };
@@ -377,7 +377,6 @@ export const submitInitialRegistrationNoCode = async (
 
     const message = JSON.parse(messageStr);
 
-    // Use node_address from setupData for API endpoint
     const response = await httpClient.post(
       urlJoin(payload.node_address, '/v1/use_registration_code'),
       message,
@@ -385,8 +384,7 @@ export const submitInitialRegistrationNoCode = async (
         responseType: 'json',
       },
     );
-    // Update the API_ENDPOINT after successful registration
-    const data = response.data;
+    const data = response.data.data;
     return { status: 'success', data };
   } catch (error) {
     console.error('Error in initial registration:', error);
