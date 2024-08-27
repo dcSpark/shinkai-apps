@@ -19,6 +19,7 @@ export type SetupData = {
   my_device_identity_pk: string;
   identity_type?: string;
   registration_code?: string;
+  api_v2_key: string;
 };
 
 type AuthStore = {

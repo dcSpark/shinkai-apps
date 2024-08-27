@@ -14,8 +14,8 @@ import {
   IonTitle,
 } from '@ionic/react';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils';
-import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
-import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
+import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
+import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { Controller, useForm } from 'react-hook-form';
 import { useHistory } from 'react-router';
 import z from 'zod';
@@ -33,14 +33,7 @@ const CreateJob: React.FC = () => {
   const auth = useAuth((state) => state.auth);
   const { llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
-    sender: auth?.shinkai_identity ?? '',
-    senderSubidentity: `${auth?.profile}`,
-    shinkaiIdentity: auth?.shinkai_identity ?? '',
-    my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-    my_device_identity_sk: auth?.profile_identity_sk ?? '',
-    node_encryption_pk: auth?.node_encryption_pk ?? '',
-    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-    profile_identity_sk: auth?.profile_identity_sk ?? '',
+    token: auth?.api_v2_key ?? '',
   });
 
   const history = useHistory();
@@ -60,17 +53,11 @@ const CreateJob: React.FC = () => {
     if (!auth) return;
     createJob({
       nodeAddress: auth.node_address,
-      shinkaiIdentity: auth.shinkai_identity,
-      profile: auth.profile,
-      agentId: data.model,
+      token: auth?.api_v2_key ?? '',
+      llmProvider: data.model,
       content: data.description,
-      files_inbox: '',
       files: [],
-      my_device_encryption_sk: auth.my_device_encryption_sk,
-      my_device_identity_sk: auth.my_device_identity_sk,
-      node_encryption_pk: auth.node_encryption_pk,
-      profile_encryption_sk: auth.profile_encryption_sk,
-      profile_identity_sk: auth.profile_identity_sk,
+      isHidden: false,
     });
   };
 
