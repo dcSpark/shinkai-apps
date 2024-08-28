@@ -9,7 +9,6 @@ import {
   LLMProvider,
   SetupPayload,
   ShinkaiMessage,
-  SmartInbox,
 } from '../models';
 import {
   APIUseRegistrationCodeSuccessResponse,
@@ -181,39 +180,6 @@ export const sendTextMessageWithFilesForInbox = async (
   }
 };
 
-export const getAllInboxesForProfile = async (
-  nodeAddress: string,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
-  target_shinkai_name_profile: string,
-  setupDetailsState: CredentialsPayload,
-): Promise<Inbox[]> => {
-  const messageString =
-    ShinkaiMessageBuilderWrapper.get_all_inboxes_for_profile(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      sender,
-      sender_subidentity,
-      receiver,
-      target_shinkai_name_profile,
-    );
-
-  const message = JSON.parse(messageString);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/get_all_smart_inboxes_for_profile'),
-    message,
-
-    {
-      responseType: 'json',
-    },
-  );
-  const data = response.data;
-  return data.data;
-};
-
 export const updateInboxName = async (
   nodeAddress: string,
   sender: string,
@@ -283,64 +249,6 @@ export const submitRequestRegistrationCode = async (
 
   const data = response.data;
   return data.code;
-};
-
-export const submitRegistrationCode = async (
-  setupData: SetupPayload,
-): Promise<
-  { encryption_public_key: string; identity_public_key: string } | undefined
-> => {
-  try {
-    const messageStr =
-      ShinkaiMessageBuilderWrapper.use_code_registration_for_device(
-        setupData.my_device_encryption_sk,
-        setupData.my_device_identity_sk,
-        setupData.profile_encryption_sk,
-        setupData.profile_identity_sk,
-        setupData.node_encryption_pk,
-        setupData.registration_code,
-        setupData.identity_type,
-        setupData.permission_type,
-        setupData.registration_name,
-        setupData.profile || '', // sender_profile_name: it doesn't exist yet in the Node
-        setupData.shinkai_identity,
-      );
-
-    const message = JSON.parse(messageStr);
-
-    // Use node_address from setupData for API endpoint
-    const response = await httpClient.post(
-      urlJoin(setupData.node_address, '/v1/use_registration_code'),
-      message,
-      {
-        responseType: 'json',
-      },
-    );
-    // Update the API_ENDPOINT after successful registration
-    setupData.node_address;
-    return response.data;
-  } catch (error) {
-    console.error('Error using registration code:', error);
-    return undefined;
-  }
-};
-
-export const health = async (payload: {
-  node_address: string;
-}): Promise<{
-  status: 'ok';
-  node_name: string;
-  is_pristine: boolean;
-  version: string;
-}> => {
-  const healthResponse = await httpClient.get(
-    urlJoin(payload.node_address, '/v1/shinkai_health'),
-    {
-      responseType: 'json',
-    },
-  );
-  const responseData = healthResponse.data;
-  return responseData;
 };
 
 export const submitInitialRegistrationNoCode = async (
@@ -474,36 +382,6 @@ export const sendMessageToJob = async (
     urlJoin(nodeAddress, '/v1/job_message'),
     message,
 
-    {
-      responseType: 'json',
-    },
-  );
-  const data = response.data;
-  return data.data;
-};
-
-export const getLLMProviders = async (
-  nodeAddress: string,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
-  setupDetailsState: CredentialsPayload,
-): Promise<LLMProvider[]> => {
-  const messageStr = ShinkaiMessageBuilderWrapper.get_profile_agents(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    sender,
-    sender_subidentity,
-    receiver,
-  );
-
-  const message = JSON.parse(messageStr);
-  // const messageHash = calculateMessageHash(message);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/available_agents'),
-    message,
     {
       responseType: 'json',
     },

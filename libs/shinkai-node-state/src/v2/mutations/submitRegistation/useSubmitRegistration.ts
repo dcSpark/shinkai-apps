@@ -1,13 +1,16 @@
-import { SetupPayload } from '@shinkai_network/shinkai-message-ts/models';
+import {
+  SubmitRegistrationCodeRequest,
+  SubmitRegistrationCodeResponse,
+} from '@shinkai_network/shinkai-message-ts/api/general/types';
 import type { UseMutationOptions } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 
 import { submitRegistration } from '.';
 
 type Options = UseMutationOptions<
-  Awaited<ReturnType<typeof submitRegistration>>,
+  SubmitRegistrationCodeResponse,
   Error,
-  SetupPayload
+  SubmitRegistrationCodeRequest
 >;
 
 export const useSubmitRegistration = (options?: Options) => {
