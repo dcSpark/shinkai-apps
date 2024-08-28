@@ -13,7 +13,7 @@ import {
   IonSelectOption,
   IonTitle,
 } from '@ionic/react';
-import { useAddLLMProvider } from '@shinkai_network/shinkai-node-state/lib/mutations/addLLMProvider/useAddLLMProvider';
+import { useAddLLMProvider } from '@shinkai_network/shinkai-node-state/v2/mutations/addLLMProvider/useAddLLMProvider';
 import { Controller, useForm } from 'react-hook-form';
 import { useHistory } from 'react-router';
 import z from 'zod';
@@ -60,8 +60,7 @@ const AddAgent: React.FC = () => {
     if (!auth) return;
     addLLMProvider({
       nodeAddress: auth.node_address,
-      sender_subidentity: auth.profile,
-      node_name: auth.shinkai_identity,
+      token: auth.api_v2_key,
       agent: {
         allowed_message_senders: [],
         api_key: data.apikey,
@@ -74,13 +73,6 @@ const AddAgent: React.FC = () => {
         model: {
           [model]: modelMapping[model],
         },
-      },
-      setupDetailsState: {
-        my_device_encryption_sk: auth.my_device_encryption_sk,
-        my_device_identity_sk: auth.my_device_identity_sk,
-        node_encryption_pk: auth.node_encryption_pk,
-        profile_encryption_sk: auth.profile_encryption_sk,
-        profile_identity_sk: auth.profile_identity_sk,
       },
     });
   };

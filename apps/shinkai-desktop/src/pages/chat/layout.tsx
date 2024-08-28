@@ -1,18 +1,14 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { SmartInbox } from '@shinkai_network/shinkai-message-ts/models';
-import {
-  getMessageContent,
-  isJobInbox,
-  isLocalMessage,
-} from '@shinkai_network/shinkai-message-ts/utils';
+import { Inbox } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
+import { isJobInbox } from '@shinkai_network/shinkai-message-ts/utils';
 import {
   UpdateInboxNameFormSchema,
   updateInboxNameFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/inbox';
 import { useArchiveJob } from '@shinkai_network/shinkai-node-state/lib/mutations/archiveJob/useArchiveJob';
 import { useUpdateInboxName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateInboxName/useUpdateInboxName';
-import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
+import { useGetInboxes } from '@shinkai_network/shinkai-node-state/v2/queries/getInboxes/useGetInboxes';
 import {
   Button,
   Form,
@@ -156,23 +152,22 @@ const MessageButton = ({
 }: {
   to: string;
   isArchivedMessage?: boolean;
-  inbox: SmartInbox;
+  inbox: Inbox;
 }) => {
   const auth = useAuth((state) => state.auth);
   const { t } = useTranslation();
   const inboxId = inbox.inbox_id;
   const inboxName =
     inbox.last_message && inbox.custom_name === inbox.inbox_id
-      ? getMessageContent(inbox.last_message)?.slice(0, 40)
+      ? inbox.last_message.job_message.content?.slice(0, 40)
       : inbox.custom_name?.slice(0, 40);
 
   const lastMessageTime =
-    inbox.last_message?.external_metadata?.scheduled_time ?? '';
+    inbox.last_message?.node_api_data.node_timestamp ?? '';
   const isJobLastMessage = inbox.last_message
-    ? !isLocalMessage(
-        inbox.last_message,
-        auth?.shinkai_identity ?? '',
-        auth?.profile ?? '',
+    ? !(
+        inbox.last_message.sender === auth?.shinkai_identity &&
+        inbox.last_message.sender_subidentity === auth.profile
       )
     : false;
 
@@ -214,10 +209,7 @@ const MessageButton = ({
     },
   });
 
-  const handleArchiveJob = async (
-    event: React.MouseEvent,
-    inbox: SmartInbox,
-  ) => {
+  const handleArchiveJob = async (event: React.MouseEvent, inbox: Inbox) => {
     event.preventDefault();
     await archiveJob({
       nodeAddress: auth?.node_address ?? '',
@@ -308,29 +300,16 @@ const ChatLayout = () => {
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
   const { inboxes, isPending, isSuccess } = useGetInboxes(
-    {
-      nodeAddress: auth?.node_address ?? '',
-      sender: auth?.shinkai_identity ?? '',
-      senderSubidentity: auth?.profile ?? '',
-      // Assuming receiver and target_shinkai_name_profile are the same as sender
-      receiver: auth?.shinkai_identity ?? '',
-      targetShinkaiNameProfile: `${auth?.shinkai_identity}/${auth?.profile}`,
-      my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-      my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-      node_encryption_pk: auth?.node_encryption_pk ?? '',
-      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-      profile_identity_sk: auth?.profile_identity_sk ?? '',
-    },
+    { nodeAddress: auth?.node_address ?? '', token: auth?.api_v2_key ?? '' },
     {
       refetchIntervalInBackground: true,
       refetchInterval: (query) => {
         const allInboxesAreCompleted = query.state.data?.every((inbox) => {
           return (
             inbox.last_message &&
-            !isLocalMessage(
-              inbox.last_message,
-              auth?.shinkai_identity ?? '',
-              auth?.profile ?? '',
+            !(
+              inbox.last_message.sender === auth?.shinkai_identity &&
+              inbox.last_message.sender_subidentity === auth.profile
             )
           );
         });

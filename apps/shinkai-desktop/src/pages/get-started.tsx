@@ -4,8 +4,8 @@ import {
   QuickConnectFormSchema,
   quickConnectFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/auth/quick-connection';
-import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
 import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/lib/queries/getEncryptionKeys/useGetEncryptionKeys';
+import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/v2/mutations/submitRegistation/useSubmitRegistrationNoCode';
 import { Button } from '@shinkai_network/shinkai-ui';
 import { submitRegistrationNoCodeError } from '@shinkai_network/shinkai-ui/helpers';
 import { useState } from 'react';
@@ -52,6 +52,7 @@ const GetStartedPage = () => {
               (response.data?.node_name ?? ''),
             node_signature_pk: response.data?.identity_public_key ?? '',
             node_encryption_pk: response.data?.encryption_public_key ?? '',
+            api_v2_key: response.data?.api_v2_key ?? '',
           };
           setAuth(updatedSetupData);
           // Hide http subscription for now

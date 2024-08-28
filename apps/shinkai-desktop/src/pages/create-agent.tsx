@@ -1,17 +1,17 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { AgentAPIModel } from '@shinkai_network/shinkai-message-ts/models';
+import { LLMProviderInterface } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import {
   addAgentFormDefault,
   AddAgentFormSchema,
   addAgentSchema,
 } from '@shinkai_network/shinkai-node-state/forms/agents/add-agent';
-import { useAddLLMProvider } from '@shinkai_network/shinkai-node-state/lib/mutations/addLLMProvider/useAddLLMProvider';
 import { useScanOllamaModels } from '@shinkai_network/shinkai-node-state/lib/queries/scanOllamaModels/useScanOllamaModels';
 import {
   Models,
   modelsConfig,
 } from '@shinkai_network/shinkai-node-state/lib/utils/models';
+import { useAddLLMProvider } from '@shinkai_network/shinkai-node-state/v2/mutations/addLLMProvider/useAddLLMProvider';
 import {
   Button,
   ErrorMessage,
@@ -65,7 +65,7 @@ const modelOptions: { value: Models; label: string }[] = [
 export const getModelObject = (
   model: Models | string,
   modelType: string,
-): AgentAPIModel => {
+): LLMProviderInterface => {
   switch (model) {
     case Models.OpenAI:
       return { OpenAI: { model_type: modelType } };
@@ -104,8 +104,9 @@ const CreateAgentPage = () => {
       });
     },
     onError: (error) => {
+      console.log(error, 'error');
       toast.error(t('llmProviders.errors.createAgent'), {
-        description: error instanceof Error ? error.message : error,
+        description: error.response?.data?.message ?? error.message,
       });
     },
   });
@@ -198,8 +199,7 @@ const CreateAgentPage = () => {
     }
     await addLLMProvider({
       nodeAddress: auth?.node_address ?? '',
-      sender_subidentity: auth.profile,
-      node_name: auth.shinkai_identity,
+      token: auth?.api_v2_key ?? '',
       agent: {
         allowed_message_senders: [],
         api_key: data.apikey,
@@ -210,13 +210,6 @@ const CreateAgentPage = () => {
         storage_bucket_permissions: [],
         toolkit_permissions: [],
         model,
-      },
-      setupDetailsState: {
-        my_device_encryption_sk: auth.my_device_encryption_sk,
-        my_device_identity_sk: auth.my_device_identity_sk,
-        node_encryption_pk: auth.node_encryption_pk,
-        profile_encryption_sk: auth.profile_encryption_sk,
-        profile_identity_sk: auth.profile_identity_sk,
       },
     });
   };

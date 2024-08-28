@@ -1,6 +1,6 @@
 import { ExitIcon, GearIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
+import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -540,7 +540,7 @@ const MainLayout = () => {
   const sidebarExpanded = useSettings((state) => state.sidebarExpanded);
 
   const { nodeInfo, isSuccess, isFetching } = useGetHealth(
-    { node_address: auth?.node_address ?? '' },
+    { nodeAddress: auth?.node_address ?? '' },
     { refetchInterval: 10000, enabled: !!auth },
   );
 

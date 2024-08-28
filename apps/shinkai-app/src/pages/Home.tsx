@@ -14,9 +14,9 @@ import {
   IonText,
   IonTitle,
 } from '@ionic/react';
-import { SmartInbox } from '@shinkai_network/shinkai-message-ts/models';
+import { Inbox } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import { useUpdateInboxName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateInboxName/useUpdateInboxName';
-import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
+import { useGetInboxes } from '@shinkai_network/shinkai-node-state/v2/queries/getInboxes/useGetInboxes';
 import { addOutline, arrowForward } from 'ionicons/icons';
 import { Edit3Icon } from 'lucide-react';
 import React, { useState } from 'react';
@@ -33,7 +33,7 @@ const updateInboxNameSchema = z.object({
   inboxName: z.string(),
 });
 
-const MessageButton = ({ inbox }: { inbox: SmartInbox }) => {
+const MessageButton = ({ inbox }: { inbox: Inbox }) => {
   const history = useHistory();
   const auth = useAuth((state) => state.auth);
   const [isEditable, setIsEditable] = useState(false);
@@ -145,16 +145,7 @@ const Home: React.FC = () => {
 
   const { inboxes } = useGetInboxes({
     nodeAddress: auth?.node_address ?? '',
-    sender: auth?.shinkai_identity ?? '',
-    senderSubidentity: auth?.profile ?? '',
-    // Assuming receiver and target_shinkai_name_profile are the same as sender
-    receiver: auth?.shinkai_identity ?? '',
-    targetShinkaiNameProfile: `${auth?.shinkai_identity}/${auth?.profile}`,
-    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-    node_encryption_pk: auth?.node_encryption_pk ?? '',
-    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-    profile_identity_sk: auth?.profile_identity_sk ?? '',
+    token: auth?.api_v2_key ?? '',
   });
   const history = useHistory();
 

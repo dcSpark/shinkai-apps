@@ -22,8 +22,8 @@ import {
   generateEncryptionKeys,
   generateSignatureKeys,
 } from '@shinkai_network/shinkai-message-ts/utils';
-import { useSubmitRegistration } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistration';
-import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistrationNoCode';
+import { useSubmitRegistration } from '@shinkai_network/shinkai-node-state/v2/mutations/submitRegistation/useSubmitRegistration';
+import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/v2/mutations/submitRegistation/useSubmitRegistrationNoCode';
 import { useQueryClient } from '@tanstack/react-query';
 // import { QrScanner, QrScannerProps } from '@yudiel/react-qr-scanner';
 import { BrowserQRCodeReader } from '@zxing/browser';
@@ -128,6 +128,7 @@ const Connect = () => {
         profile_identity_sk: values.profile_identity_sk,
         profile_encryption_pk: values.profile_encryption_pk,
         profile_encryption_sk: values.profile_encryption_sk,
+        api_v2_key: '',
       });
       history.push('/home');
     },
@@ -294,7 +295,7 @@ const Connect = () => {
               />
             </div>
           </div>
-          <div className="flex grow overflow-auto bg-white p-10 md:rounded-[1.25rem] dark:bg-slate-800 ">
+          <div className="flex grow overflow-auto bg-white p-10 md:rounded-[1.25rem] dark:bg-slate-800">
             <div className="mx-auto w-full max-w-[31.5rem] pt-10">
               <a href="https://shinkai.com/" rel="noreferrer" target="_blank">
                 <img
@@ -705,6 +706,7 @@ function AutomaticForm() {
         profile_identity_sk: values.profile_identity_sk,
         profile_encryption_pk: values.profile_encryption_pk,
         profile_encryption_sk: values.profile_encryption_sk,
+        api_v2_key: response?.data?.api_v2_key ?? '',
       });
       history.push('/home');
     },

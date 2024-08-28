@@ -1,4 +1,4 @@
-import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
+import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import { Button } from '@shinkai_network/shinkai-ui';
 import React, { useEffect, useState } from 'react';
 
@@ -18,11 +18,12 @@ export const ShinkaiNodeRunningOverlay = ({
   children: React.ReactNode;
 }) => {
   const auth = useAuth((store) => store.auth);
-  const [isShinkaiNodeHealthy, setIsShinkaiNodeHealthy] = useState<boolean>(false);
+  const [isShinkaiNodeHealthy, setIsShinkaiNodeHealthy] =
+    useState<boolean>(false);
   const { data: isShinkaiNodeRunning } = useShinkaiNodeIsRunningQuery();
   const isInUse = useShinkaiNodeManager((store) => store.isInUse);
   const { data: health, isRefetchError: isHealthRefetchError } = useGetHealth(
-    { node_address: auth?.node_address ?? '' },
+    { nodeAddress: auth?.node_address ?? '' },
     { refetchInterval: 15000 },
   );
   useEffect(() => {

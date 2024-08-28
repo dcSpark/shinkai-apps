@@ -5,14 +5,14 @@ import {
   CreateJobFormSchema,
   createJobFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
-import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
-import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
 import {
   VRFolder,
   VRItem,
 } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
 import { transformDataToTreeNodes } from '@shinkai_network/shinkai-node-state/lib/utils/files';
+import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
+import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import {
   Badge,
   Button,
@@ -123,14 +123,7 @@ const WorkflowPlayground = () => {
 
   const { llmProviders, isSuccess } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
-    sender: auth?.shinkai_identity ?? '',
-    senderSubidentity: `${auth?.profile}`,
-    shinkaiIdentity: auth?.shinkai_identity ?? '',
-    my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-    my_device_identity_sk: auth?.profile_identity_sk ?? '',
-    node_encryption_pk: auth?.node_encryption_pk ?? '',
-    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-    profile_identity_sk: auth?.profile_identity_sk ?? '',
+    token: auth?.api_v2_key ?? '',
   });
 
   useEffect(() => {
@@ -159,7 +152,7 @@ const WorkflowPlayground = () => {
         `/workflow-playground/${encodeURIComponent(buildInboxIdFromJobId(data.jobId))}`,
       );
 
-      addWorkflowHistory(variables.workflow as string);
+      addWorkflowHistory(variables.workflowCode as string);
 
       const files = variables?.files ?? [];
       const localFilesCount = (variables.selectedVRFiles ?? [])?.length;
@@ -231,21 +224,14 @@ const WorkflowPlayground = () => {
 
     await createJob({
       nodeAddress: auth?.node_address ?? '',
-      shinkaiIdentity: auth.shinkai_identity,
-      profile: auth.profile,
-      agentId: data.agent,
+      token: auth?.api_v2_key ?? '',
+      llmProvider: data.agent,
       content: data.content,
-      files_inbox: '',
       files: data.files,
-      workflow: data.workflow,
-      is_hidden: true,
+      workflowCode: data.workflow,
+      isHidden: true,
       selectedVRFiles,
       selectedVRFolders,
-      my_device_encryption_sk: auth.my_device_encryption_sk,
-      my_device_identity_sk: auth.my_device_identity_sk,
-      node_encryption_pk: auth.node_encryption_pk,
-      profile_encryption_sk: auth.profile_encryption_sk,
-      profile_identity_sk: auth.profile_identity_sk,
     });
   };
 

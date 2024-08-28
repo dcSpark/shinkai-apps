@@ -3,8 +3,8 @@ import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   JSShinkaiTool,
   ShinkaiTool,
-} from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
-import { useUpdateTool } from '@shinkai_network/shinkai-node-state/lib/mutations/updateTool/useUpdateTool';
+} from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
 import {
   Button,
   Form,
@@ -88,13 +88,7 @@ export default function JsTool({
       } as ShinkaiTool,
       isToolEnabled: enabled,
       nodeAddress: auth?.node_address ?? '',
-      shinkaiIdentity: auth?.shinkai_identity ?? '',
-      profile: auth?.profile ?? '',
-      my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-      my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-      node_encryption_pk: auth?.node_encryption_pk ?? '',
-      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-      profile_identity_sk: auth?.profile_identity_sk ?? '',
+      token: auth?.api_v2_key ?? '',
     });
   };
 
@@ -112,13 +106,7 @@ export default function JsTool({
                 toolPayload: {} as ShinkaiTool,
                 isToolEnabled: !isEnabled,
                 nodeAddress: auth?.node_address ?? '',
-                shinkaiIdentity: auth?.shinkai_identity ?? '',
-                profile: auth?.profile ?? '',
-                my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-                my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-                node_encryption_pk: auth?.node_encryption_pk ?? '',
-                profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-                profile_identity_sk: auth?.profile_identity_sk ?? '',
+                token: auth?.api_v2_key ?? '',
               });
             }}
           />

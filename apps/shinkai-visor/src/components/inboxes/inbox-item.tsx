@@ -1,11 +1,7 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import {
-  ShinkaiMessage,
-  SmartInbox,
-} from '@shinkai_network/shinkai-message-ts/models';
+import { Inbox } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import {
   extractErrorPropertyOrContent,
-  getMessageContent,
   isJobInbox,
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { useArchiveJob } from '@shinkai_network/shinkai-node-state/lib/mutations/archiveJob/useArchiveJob';
@@ -33,19 +29,15 @@ const InboxItem = ({
   inbox,
   actions,
 }: {
-  inbox: SmartInbox;
+  inbox: Inbox;
   actions?: {
     label: string;
-    onClick: (event: React.MouseEvent, inbox: SmartInbox) => void;
+    onClick: (event: React.MouseEvent, inbox: Inbox) => void;
   }[];
 }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const navigateToInbox = (inbox: {
-    inbox_id: string;
-    custom_name: string;
-    last_message?: ShinkaiMessage;
-  }) => {
+  const navigateToInbox = (inbox: Inbox) => {
     navigate(`/inboxes/${encodeURIComponent(inbox.inbox_id)}`, {
       state: { inbox },
     });
@@ -76,7 +68,7 @@ const InboxItem = ({
             <div className="truncate text-left text-xs text-gray-100">
               {inbox.last_message &&
                 extractErrorPropertyOrContent(
-                  getMessageContent(inbox.last_message),
+                  inbox?.last_message?.job_message?.content ?? '',
                   'error_message',
                 )}
             </div>
@@ -84,9 +76,9 @@ const InboxItem = ({
         </div>
         <div className="flex flex-col items-end gap-1">
           <span className="shrink-0 self-start whitespace-nowrap text-end text-xs lowercase text-gray-100">
-            {inbox.last_message?.external_metadata?.scheduled_time &&
+            {inbox.last_message?.node_api_data.node_timestamp &&
               formatDateToMonthAndDay(
-                new Date(inbox.last_message.external_metadata.scheduled_time),
+                new Date(inbox.last_message.node_api_data.node_timestamp),
               )}
           </span>
           {!!actions?.length && isJobChatInbox && (
@@ -134,7 +126,7 @@ const InboxItem = ({
   );
 };
 
-const ActiveInboxItem = ({ inbox }: { inbox: SmartInbox }) => {
+const ActiveInboxItem = ({ inbox }: { inbox: Inbox }) => {
   const auth = useAuth((state) => state.auth);
   const { t } = useTranslation();
   const { mutateAsync: archiveJob } = useArchiveJob({
@@ -148,10 +140,7 @@ const ActiveInboxItem = ({ inbox }: { inbox: SmartInbox }) => {
     },
   });
 
-  const handleArchiveJob = async (
-    event: React.MouseEvent,
-    inbox: SmartInbox,
-  ) => {
+  const handleArchiveJob = async (event: React.MouseEvent, inbox: Inbox) => {
     event.stopPropagation();
     await archiveJob({
       nodeAddress: auth?.node_address ?? '',
@@ -180,7 +169,7 @@ const ActiveInboxItem = ({ inbox }: { inbox: SmartInbox }) => {
     />
   );
 };
-const ArchiveInboxItem = ({ inbox }: { inbox: SmartInbox }) => {
+const ArchiveInboxItem = ({ inbox }: { inbox: Inbox }) => {
   return <InboxItem inbox={inbox} />;
 };
 

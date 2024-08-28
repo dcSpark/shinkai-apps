@@ -1,7 +1,5 @@
-import {
-  LLMProvider,
-  SmartInbox,
-} from '@shinkai_network/shinkai-message-ts/models';
+import { Inbox } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
+import { LLMProvider } from '@shinkai_network/shinkai-message-ts/models';
 import { ZodSchema } from 'zod';
 
 import { ACTIONS_MAP } from './actions';
@@ -59,7 +57,7 @@ export interface ServiceWorkerExternalMessageGetProfileAgentsResponse {
 export type ServiceWorkerExternalMessageGetProfileInboxes = never;
 
 export interface ServiceWorkerExternalMessageGetProfileInboxesResponse {
-  inboxes: SmartInbox[];
+  inboxes: Inbox[];
 }
 
 export interface ServiceWorkerExternalMessageQuickConnectionIntent {

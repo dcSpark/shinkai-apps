@@ -10,6 +10,9 @@ export interface SelectedCell {
 type TableSheetStore = {
   selectedCell: SelectedCell | null;
   setSelectedCell: (cell?: SelectedCell | null) => void;
+  showChatPanel: boolean;
+  setShowChatPanel: (show: boolean) => void;
+  toggleChatPanel: () => void;
 };
 
 const createTableSheetStore = () =>
@@ -19,6 +22,15 @@ const createTableSheetStore = () =>
       set({
         selectedCell: cell,
       }),
+    showChatPanel: false,
+    setShowChatPanel: (show) =>
+      set({
+        showChatPanel: show,
+      }),
+    toggleChatPanel: () =>
+      set((state) => ({
+        showChatPanel: !state.showChatPanel,
+      })),
   }));
 
 const TableSheetContext = createContext<ReturnType<

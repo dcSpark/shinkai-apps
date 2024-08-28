@@ -1,10 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Workflow } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
+import { ShinkaiToolHeader } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useCreateWorkflow } from '@shinkai_network/shinkai-node-state/lib/mutations/createWorkflow/useCreateWorkflow';
 import { useRemoveWorkflow } from '@shinkai_network/shinkai-node-state/lib/mutations/removeWorkflow/useRemoveWorkflow';
 import { useUpdateWorkflow } from '@shinkai_network/shinkai-node-state/lib/mutations/updateWorkflow/useUpdateWorkflow';
-import { useGetWorkflowList } from '@shinkai_network/shinkai-node-state/lib/queries/getWorkflowList/useGetWorkflowList';
-import { useGetWorkflowSearch } from '@shinkai_network/shinkai-node-state/lib/queries/getWorkflowSearch/useGetWorkflowSearch';
+import { useGetWorkflowList } from '@shinkai_network/shinkai-node-state/v2/queries/getWorkflowList/useGetWorkflowList';
+import { useGetWorkflowSearch } from '@shinkai_network/shinkai-node-state/v2/queries/getWorkflowSearch/useGetWorkflowSearch';
 import {
   Badge,
   Button,
@@ -52,8 +52,10 @@ type WorkflowSelectedStore = {
   setWorkflowSelectionDrawerOpen: (
     workflowSelectionDrawerOpen: boolean,
   ) => void;
-  workflowSelected: Workflow | undefined;
-  setWorkflowSelected: (workflowSelected: Workflow | undefined) => void;
+  workflowSelected: ShinkaiToolHeader | undefined;
+  setWorkflowSelected: (
+    workflowSelected: ShinkaiToolHeader | undefined,
+  ) => void;
 };
 
 const createWorkflowSelectionStore = () =>
@@ -76,7 +78,7 @@ const WorkflowSelectedContext = createContext<ReturnType<
 const WorkflowSearchDrawer = ({
   onSelectWorkflow,
 }: {
-  onSelectWorkflow?: (workflow: Workflow) => void;
+  onSelectWorkflow?: (workflow: ShinkaiToolHeader) => void;
 }) => {
   const workflowSelectionDrawerOpen = useWorkflowSelectionStore(
     (state) => state.workflowSelectionDrawerOpen,
@@ -100,31 +102,17 @@ const WorkflowSearchDrawer = ({
 
   const { isPending, data: workflowList } = useGetWorkflowList({
     nodeAddress: auth?.node_address ?? '',
-    shinkaiIdentity: auth?.shinkai_identity ?? '',
-    profile: auth?.profile ?? '',
-    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-    node_encryption_pk: auth?.node_encryption_pk ?? '',
-    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-    profile_identity_sk: auth?.profile_identity_sk ?? '',
+    token: auth?.api_v2_key ?? '',
   });
 
   const { data: searchWorkflowList, isPending: isSearchWorkflowListPending } =
     useGetWorkflowSearch(
       {
         nodeAddress: auth?.node_address ?? '',
-        shinkaiIdentity: auth?.shinkai_identity ?? '',
-        profile: auth?.profile ?? '',
+        token: auth?.api_v2_key ?? '',
         search: debouncedSearchQuery,
-        my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-        my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-        node_encryption_pk: auth?.node_encryption_pk ?? '',
-        profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-        profile_identity_sk: auth?.profile_identity_sk ?? '',
       },
-      {
-        enabled: isSearchQuerySynced,
-      },
+      { enabled: isSearchQuerySynced },
     );
 
   const { mutateAsync: removeWorkflow } = useRemoveWorkflow({

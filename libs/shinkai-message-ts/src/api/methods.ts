@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { httpClient } from '../http-client';
 import {
-  AgentCredentialsPayload,
   ColumnBehavior,
   CreateChatInboxResponse,
   CredentialsPayload,
@@ -10,9 +9,6 @@ import {
   LLMProvider,
   SetupPayload,
   ShinkaiMessage,
-  ShinkaiTool,
-  ShinkaiToolType,
-  SmartInbox,
 } from '../models';
 import {
   APIUseRegistrationCodeSuccessResponse,
@@ -20,12 +16,12 @@ import {
 } from '../models/Payloads';
 import { SerializedLLMProvider } from '../models/SchemaTypes';
 import { InboxNameWrapper } from '../pkg/shinkai_message_wasm';
-// import { calculateMessageHash } from '../utils';
 import { urlJoin } from '../utils/url-join';
 import { FileUploader } from '../wasm/FileUploaderUsingSymmetricKeyManager';
 import { SerializedLLMProviderWrapper } from '../wasm/SerializedLLMProviderWrapper';
 import { ShinkaiMessageBuilderWrapper } from '../wasm/ShinkaiMessageBuilderWrapper';
 import { ShinkaiNameWrapper } from '../wasm/ShinkaiNameWrapper';
+import { Inbox } from './jobs/types';
 
 export const fetchPublicKey =
   (nodeAddress: string) => async (): Promise<any> => {
@@ -169,6 +165,7 @@ export const sendTextMessageWithFilesForInbox = async (
 
   await fileUploader.createFolder();
   for (const fileToUpload of files) {
+    console.log(fileToUpload, 'fileToUpload');
     await fileUploader.uploadEncryptedFile(fileToUpload);
   }
   const message = await fileUploader.finalizeAndSend(text_message, null);
@@ -181,39 +178,6 @@ export const sendTextMessageWithFilesForInbox = async (
     // TODO: workaround to skip error reading encrypted message
     return { inboxId: job_inbox, message };
   }
-};
-
-export const getAllInboxesForProfile = async (
-  nodeAddress: string,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
-  target_shinkai_name_profile: string,
-  setupDetailsState: CredentialsPayload,
-): Promise<SmartInbox[]> => {
-  const messageString =
-    ShinkaiMessageBuilderWrapper.get_all_inboxes_for_profile(
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      sender,
-      sender_subidentity,
-      receiver,
-      target_shinkai_name_profile,
-    );
-
-  const message = JSON.parse(messageString);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/get_all_smart_inboxes_for_profile'),
-    message,
-
-    {
-      responseType: 'json',
-    },
-  );
-  const data = response.data;
-  return data.data;
 };
 
 export const updateInboxName = async (
@@ -247,39 +211,6 @@ export const updateInboxName = async (
   );
   const data = response.data;
   return data;
-};
-
-export const getLastMessagesFromInbox = async (
-  nodeAddress: string,
-  inbox: string,
-  count: number,
-  lastKey: string | undefined,
-  setupDetailsState: LastMessagesFromInboxCredentialsPayload,
-): Promise<ShinkaiMessage[]> => {
-  const messageStr = ShinkaiMessageBuilderWrapper.get_last_messages_from_inbox(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    inbox,
-    count,
-    lastKey,
-    setupDetailsState.shinkai_identity,
-    setupDetailsState.profile,
-    setupDetailsState.shinkai_identity,
-  );
-
-  const message = JSON.parse(messageStr);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/last_messages_from_inbox'),
-    message,
-
-    {
-      responseType: 'json',
-    },
-  );
-  const data = response.data;
-  return data.data;
 };
 
 export const submitRequestRegistrationCode = async (
@@ -320,64 +251,6 @@ export const submitRequestRegistrationCode = async (
   return data.code;
 };
 
-export const submitRegistrationCode = async (
-  setupData: SetupPayload,
-): Promise<
-  { encryption_public_key: string; identity_public_key: string } | undefined
-> => {
-  try {
-    const messageStr =
-      ShinkaiMessageBuilderWrapper.use_code_registration_for_device(
-        setupData.my_device_encryption_sk,
-        setupData.my_device_identity_sk,
-        setupData.profile_encryption_sk,
-        setupData.profile_identity_sk,
-        setupData.node_encryption_pk,
-        setupData.registration_code,
-        setupData.identity_type,
-        setupData.permission_type,
-        setupData.registration_name,
-        setupData.profile || '', // sender_profile_name: it doesn't exist yet in the Node
-        setupData.shinkai_identity,
-      );
-
-    const message = JSON.parse(messageStr);
-
-    // Use node_address from setupData for API endpoint
-    const response = await httpClient.post(
-      urlJoin(setupData.node_address, '/v1/use_registration_code'),
-      message,
-      {
-        responseType: 'json',
-      },
-    );
-    // Update the API_ENDPOINT after successful registration
-    setupData.node_address;
-    return response.data;
-  } catch (error) {
-    console.error('Error using registration code:', error);
-    return undefined;
-  }
-};
-
-export const health = async (payload: {
-  node_address: string;
-}): Promise<{
-  status: 'ok';
-  node_name: string;
-  is_pristine: boolean;
-  version: string;
-}> => {
-  const healthResponse = await httpClient.get(
-    urlJoin(payload.node_address, '/v1/shinkai_health'),
-    {
-      responseType: 'json',
-    },
-  );
-  const responseData = healthResponse.data;
-  return responseData;
-};
-
 export const submitInitialRegistrationNoCode = async (
   payload: SubmitInitialRegistrationNoCodePayload,
 ): Promise<{
@@ -390,7 +263,7 @@ export const submitInitialRegistrationNoCode = async (
       status: 'ok';
       node_name: string;
       is_pristine: boolean;
-    }>(urlJoin(payload.node_address, '/v1/shinkai_health'));
+    }>(urlJoin(payload.node_address, '/v2/health_check'));
     const { status, node_name, is_pristine } = healthResponse.data;
     if (status !== 'ok') {
       return { status: 'error' };
@@ -413,7 +286,6 @@ export const submitInitialRegistrationNoCode = async (
 
     const message = JSON.parse(messageStr);
 
-    // Use node_address from setupData for API endpoint
     const response = await httpClient.post(
       urlJoin(payload.node_address, '/v1/use_registration_code'),
       message,
@@ -421,8 +293,7 @@ export const submitInitialRegistrationNoCode = async (
         responseType: 'json',
       },
     );
-    // Update the API_ENDPOINT after successful registration
-    const data = response.data;
+    const data = response.data.data;
     return { status: 'success', data };
   } catch (error) {
     console.error('Error in initial registration:', error);
@@ -434,42 +305,6 @@ export const pingAllNodes = async (nodeAddress: string): Promise<string> => {
   const response = await httpClient.post(urlJoin(nodeAddress, '/ping_all'));
   const data = response.data;
   return data.result;
-};
-
-export const createJob = async (
-  nodeAddress: string,
-  scope: any,
-  is_hidden: boolean,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
-  receiver_subidentity: string,
-  setupDetailsState: JobCredentialsPayload,
-): Promise<string> => {
-  const messageStr = ShinkaiMessageBuilderWrapper.job_creation(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    scope,
-    is_hidden,
-    sender,
-    sender_subidentity,
-    receiver,
-    receiver_subidentity,
-  );
-
-  const message = JSON.parse(messageStr);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/create_job'),
-    message,
-
-    {
-      responseType: 'json',
-    },
-  );
-  const data = response.data;
-  return data.data;
 };
 
 export const updateAgentInJob = async (
@@ -553,69 +388,6 @@ export const sendMessageToJob = async (
   );
   const data = response.data;
   return data.data;
-};
-
-export const getLLMProviders = async (
-  nodeAddress: string,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
-  setupDetailsState: CredentialsPayload,
-): Promise<LLMProvider[]> => {
-  const messageStr = ShinkaiMessageBuilderWrapper.get_profile_agents(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    sender,
-    sender_subidentity,
-    receiver,
-  );
-
-  const message = JSON.parse(messageStr);
-  // const messageHash = calculateMessageHash(message);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/available_agents'),
-    message,
-    {
-      responseType: 'json',
-    },
-  );
-  const data = response.data;
-  return data.data;
-};
-
-export const addLLMProvider = async (
-  nodeAddress: string,
-  sender_subidentity: string,
-  node_name: string,
-  agent: SerializedLLMProvider,
-  setupDetailsState: AgentCredentialsPayload,
-) => {
-  const llmProvider_wrapped =
-    SerializedLLMProviderWrapper.fromSerializedAgent(agent);
-  const messageStr = ShinkaiMessageBuilderWrapper.request_add_agent(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    node_name,
-    sender_subidentity,
-    node_name,
-    llmProvider_wrapped,
-  );
-
-  const message = JSON.parse(messageStr);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/add_agent'),
-    message,
-
-    {
-      responseType: 'json',
-    },
-  );
-  const data = response.data;
-  return data;
 };
 
 export const getFileNames = async (
@@ -766,72 +538,6 @@ export const retrieveVRPathSimplified = async (
       }
     : data;
 };
-export const getWorkflowSearch = async (
-  nodeAddress: string,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
-  receiver_subidentity: string,
-  searchQuery: string,
-  setupDetailsState: CredentialsPayload,
-) => {
-  const messageStr = ShinkaiMessageBuilderWrapper.getWorkflowSearch(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    searchQuery,
-    sender,
-    sender_subidentity,
-    receiver,
-    receiver_subidentity,
-  );
-
-  const message = JSON.parse(messageStr);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/search_workflows'),
-    message,
-
-    {
-      responseType: 'json',
-    },
-  );
-
-  const data = response.data;
-  return data;
-};
-export const getWorkflowList = async (
-  nodeAddress: string,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
-  receiver_subidentity: string,
-  setupDetailsState: CredentialsPayload,
-) => {
-  const messageStr = ShinkaiMessageBuilderWrapper.getWorkflowList(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    sender,
-    sender_subidentity,
-    receiver,
-    receiver_subidentity,
-  );
-
-  const message = JSON.parse(messageStr);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/list_all_workflows'),
-    message,
-
-    {
-      responseType: 'json',
-    },
-  );
-
-  const data = response.data;
-  return data;
-};
 export const createWorkflow = async (
   nodeAddress: string,
   sender: string,
@@ -969,7 +675,6 @@ export const retrieveVectorSearchSimplified = async (
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v1/vec_fs/retrieve_vector_search_simplified_json'),
     message,
-
     {
       responseType: 'json',
     },
@@ -1041,9 +746,7 @@ export const retrieveVectorResource = async (
 
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v1/vec_fs/retrieve_vector_resource'),
-
     message,
-
     {
       responseType: 'json',
     },
@@ -2129,146 +1832,6 @@ export const removeRowsSheet = async (
 
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v1/remove_rows'),
-    message,
-    {
-      responseType: 'json',
-    },
-  );
-
-  const data = response.data;
-  return data;
-};
-
-export const getToolsList = async (
-  nodeAddress: string,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
-  receiver_subidentity: string,
-  setupDetailsState: CredentialsPayload,
-) => {
-  const messageStr = ShinkaiMessageBuilderWrapper.getToolsList(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    sender,
-    sender_subidentity,
-    receiver,
-    receiver_subidentity,
-  );
-
-  const message = JSON.parse(messageStr);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/list_all_shinkai_tools'),
-    message,
-
-    {
-      responseType: 'json',
-    },
-  );
-
-  const data = response.data;
-  return data;
-};
-
-export const getTool = async (
-  nodeAddress: string,
-  toolKey: string,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
-  receiver_subidentity: string,
-  setupDetailsState: CredentialsPayload,
-) => {
-  const messageStr = ShinkaiMessageBuilderWrapper.getTool(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    toolKey,
-    sender,
-    sender_subidentity,
-    receiver,
-    receiver_subidentity,
-  );
-
-  const message = JSON.parse(messageStr);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/get_shinkai_tool'),
-    message,
-
-    {
-      responseType: 'json',
-    },
-  );
-
-  const data = response.data;
-  return data;
-};
-export const updateTool = async (
-  nodeAddress: string,
-  toolKey: string,
-  toolType: ShinkaiToolType,
-  toolPayload: ShinkaiTool,
-  isToolEnabled: boolean,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
-  receiver_subidentity: string,
-  setupDetailsState: CredentialsPayload,
-) => {
-  const messageStr = ShinkaiMessageBuilderWrapper.updateTool(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    toolType,
-    toolPayload,
-    isToolEnabled,
-    sender,
-    sender_subidentity,
-    receiver,
-    receiver_subidentity,
-  );
-
-  const message = JSON.parse(messageStr);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/set_shinkai_tool'),
-    message,
-    {
-      params: { tool_name: encodeURI(toolKey) },
-      responseType: 'json',
-    },
-  );
-
-  const data = response.data;
-  return data;
-};
-export const searchTools = async (
-  nodeAddress: string,
-  searchQuery: string,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
-  receiver_subidentity: string,
-  setupDetailsState: CredentialsPayload,
-) => {
-  const messageStr = ShinkaiMessageBuilderWrapper.searchTools(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    searchQuery,
-    sender,
-    sender_subidentity,
-    receiver,
-    receiver_subidentity,
-  );
-
-  const message = JSON.parse(messageStr);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/search_shinkai_tool'),
     message,
     {
       responseType: 'json',

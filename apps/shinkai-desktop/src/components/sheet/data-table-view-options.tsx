@@ -7,10 +7,16 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuLabel,
+  Tooltip,
+  TooltipContent,
+  TooltipPortal,
+  TooltipProvider,
+  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { Table } from '@tanstack/react-table';
 
 import { useSettings } from '../../store/settings';
+import { useSheetProjectStore } from './context/table-context';
 
 interface DataTableViewOptionsProps<TData> {
   table: Table<TData>;
@@ -117,5 +123,57 @@ export function DataTableHeightOptions<TData>(
         })}
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+export function DataTableChatOptions() {
+  const showChatPanel = useSheetProjectStore((state) => state.showChatPanel);
+
+  const toggleChatPanel = useSheetProjectStore(
+    (state) => state.toggleChatPanel,
+  );
+  return (
+    !showChatPanel && (
+      <TooltipProvider delayDuration={0}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              className="hover:bg-brand-gradient hover:text-brand fixed bottom-10 right-10 z-40 flex h-14 w-14 cursor-pointer rounded-full text-white"
+              onClick={toggleChatPanel}
+              size="icon"
+              variant="gradient"
+            >
+              <span className="sr-only">Chat with Shinkai Sheet</span>
+              <svg
+                className="h-6 w-6"
+                color="currentColor"
+                fill="none"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+              >
+                <path
+                  d="M8 13.5H16M8 8.5H12"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.5"
+                />
+                <path
+                  d="M6.09881 19C4.7987 18.8721 3.82475 18.4816 3.17157 17.8284C2 16.6569 2 14.7712 2 11V10.5C2 6.72876 2 4.84315 3.17157 3.67157C4.34315 2.5 6.22876 2.5 10 2.5H14C17.7712 2.5 19.6569 2.5 20.8284 3.67157C22 4.84315 22 6.72876 22 10.5V11C22 14.7712 22 16.6569 20.8284 17.8284C19.6569 19 17.7712 19 14 19C13.4395 19.0125 12.9931 19.0551 12.5546 19.155C11.3562 19.4309 10.2465 20.0441 9.14987 20.5789C7.58729 21.3408 6.806 21.7218 6.31569 21.3651C5.37769 20.6665 6.29454 18.5019 6.5 17.5"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeWidth="1.5"
+                />
+              </svg>
+            </Button>
+          </TooltipTrigger>
+          <TooltipPortal>
+            <TooltipContent align="center" side="left" sideOffset={10}>
+              <p>Chat with Shinkai Sheet</p>
+            </TooltipContent>
+          </TooltipPortal>
+        </Tooltip>
+      </TooltipProvider>
+    )
   );
 }

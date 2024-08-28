@@ -30,6 +30,7 @@ export const MessageList = ({
   lastMessageContent,
   isLoadingMessage,
   regenerateMessage,
+  disabledRetryAndEdit,
 }: {
   noMoreMessageLabel: string;
   isSuccess: boolean;
@@ -43,7 +44,7 @@ export const MessageList = ({
   ) => Promise<
     InfiniteQueryObserverResult<ChatConversationInfiniteData, Error>
   >;
-  regenerateMessage: (
+  regenerateMessage?: (
     content: string,
     messageHash: string,
     workflowName?: string,
@@ -51,6 +52,7 @@ export const MessageList = ({
   containerClassName?: string;
   lastMessageContent: string;
   isLoadingMessage: boolean | undefined;
+  disabledRetryAndEdit?: boolean;
 }) => {
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const previousChatHeightRef = useRef<number>(0);
@@ -225,11 +227,12 @@ export const MessageList = ({
                           ? previousMessage.parentHash
                           : null;
 
-                        const disabledRetryAndEdit =
-                          grandparentHash === null || grandparentHash === '';
+                        const disabledRetryAndEditValue =
+                          disabledRetryAndEdit ??
+                          (grandparentHash === null || grandparentHash === '');
 
                         const handleRetryMessage = () => {
-                          regenerateMessage(
+                          regenerateMessage?.(
                             previousMessage.content,
                             grandparentHash ?? '',
                             previousMessage.workflowName,
@@ -239,7 +242,7 @@ export const MessageList = ({
                           message: string,
                           workflowName?: string,
                         ) => {
-                          regenerateMessage(
+                          regenerateMessage?.(
                             message,
                             previousMessage?.hash ?? '',
                             workflowName,
@@ -253,8 +256,8 @@ export const MessageList = ({
                             key={`${message.hash}`}
                           >
                             <Message
-                              disabledEdit={disabledRetryAndEdit}
-                              disabledRetry={disabledRetryAndEdit}
+                              disabledEdit={disabledRetryAndEditValue}
+                              disabledRetry={disabledRetryAndEditValue}
                               handleEditMessage={handleEditMessage}
                               handleRetryMessage={handleRetryMessage}
                               message={message}

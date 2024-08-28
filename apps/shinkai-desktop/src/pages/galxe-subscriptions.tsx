@@ -1,10 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CheckCircledIcon, CircleIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { SmartInbox } from '@shinkai_network/shinkai-message-ts/models/ShinkaiMessage';
-import { useGetInboxes } from '@shinkai_network/shinkai-node-state/lib/queries/getInboxes/useGetInboxes';
+import { Inbox } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import { useGetMySubscriptions } from '@shinkai_network/shinkai-node-state/lib/queries/getMySubscriptions/useGetMySubscriptions';
 import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
+import { useGetInboxes } from '@shinkai_network/shinkai-node-state/v2/queries/getInboxes/useGetInboxes';
 import {
   Button,
   buttonVariants,
@@ -47,15 +47,7 @@ export const GalxeSusbcriptions = () => {
 
   const { inboxes } = useGetInboxes({
     nodeAddress: auth?.node_address ?? '',
-    sender: auth?.shinkai_identity ?? '',
-    senderSubidentity: auth?.profile ?? '',
-    receiver: auth?.shinkai_identity ?? '',
-    targetShinkaiNameProfile: `${auth?.shinkai_identity}/${auth?.profile}`,
-    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-    node_encryption_pk: auth?.node_encryption_pk ?? '',
-    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-    profile_identity_sk: auth?.profile_identity_sk ?? '',
+    token: auth?.api_v2_key ?? '',
   });
 
   const { data: subscriptionFolder } = useGetVRPathSimplified({
@@ -101,7 +93,7 @@ export const GalxeSusbcriptions = () => {
   const isUserSubscribedToKnowledge =
     (subscriptionFolder?.child_folders ?? [])?.length > 0;
 
-  const inboxesWithSubscriptions: SmartInbox[] = inboxes.filter(
+  const inboxesWithSubscriptions: Inbox[] = inboxes.filter(
     (inbox) =>
       (inbox?.job_scope?.vector_fs_folders ?? []).some((folder) =>
         folder?.includes(SUBSCRIPTION_PATH),

@@ -1,8 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { QRSetupData } from '@shinkai_network/shinkai-message-ts/models';
-import { useSubmitRegistration } from '@shinkai_network/shinkai-node-state/lib/mutations/submitRegistation/useSubmitRegistration';
 import { generateMyEncryptionKeys } from '@shinkai_network/shinkai-node-state/lib/queries/getEncryptionKeys/index';
 import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/lib/queries/getEncryptionKeys/useGetEncryptionKeys';
+import { useSubmitRegistration } from '@shinkai_network/shinkai-node-state/v2/mutations/submitRegistation/useSubmitRegistration';
 import {
   Button,
   ErrorMessage,
@@ -87,6 +87,7 @@ export const ConnectMethodQrCodePage = () => {
           ...values,
           node_signature_pk: response.identity_public_key ?? '',
           node_encryption_pk: response.encryption_public_key ?? '',
+          api_v2_key: '',
         };
         authSuccess(authData);
       } else {

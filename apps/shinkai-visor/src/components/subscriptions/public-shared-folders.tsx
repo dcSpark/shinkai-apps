@@ -3,9 +3,9 @@ import {
   PriceFilters,
 } from '@shinkai_network/shinkai-node-state/lib/queries/getAvailableSharedItems/types';
 import { useGetAvailableSharedFoldersWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getAvailableSharedItems/useGetAvailableSharedFoldersWithPagination';
-import { useGetHealth } from '@shinkai_network/shinkai-node-state/lib/queries/getHealth/useGetHealth';
 import { useGetMySharedFolders } from '@shinkai_network/shinkai-node-state/lib/queries/getMySharedFolders/useGetMySharedFolders';
 import { useGetMySubscriptions } from '@shinkai_network/shinkai-node-state/lib/queries/getMySubscriptions/useGetMySubscriptions';
+import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import {
   Button,
   Drawer,
@@ -77,7 +77,7 @@ const PublicSharedFolderSubscription = () => {
     priceFilter: paidFilter,
   });
 
-  const { nodeInfo } = useGetHealth({ node_address: auth?.node_address ?? '' });
+  const { nodeInfo } = useGetHealth({ nodeAddress: auth?.node_address ?? '' });
 
   const loadMoreRef = useRef<HTMLButtonElement>(null);
   const isLoadMoreButtonInView = useInView(loadMoreRef);

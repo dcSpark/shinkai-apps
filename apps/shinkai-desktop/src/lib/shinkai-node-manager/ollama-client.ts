@@ -1,5 +1,4 @@
 import { FunctionKey } from '@shinkai_network/shinkai-node-state/lib/constants';
-import { useMap } from '@shinkai_network/shinkai-ui/hooks';
 import {
   QueryObserverOptions,
   useMutation,
@@ -110,7 +109,11 @@ export const useOllamaPullMutation = (
         queryKey: [FunctionKey.SCAN_OLLAMA_MODELS],
       });
       queryClient.invalidateQueries({
-        queryKey: ['shinkai_node_set_default_options', 'ollama_list', 'ollama_pulling_models'],
+        queryKey: [
+          'shinkai_node_set_default_options',
+          'ollama_list',
+          'ollama_pulling_models',
+        ],
       });
       if (options?.onSuccess) {
         options.onSuccess(...onSuccessParameters);

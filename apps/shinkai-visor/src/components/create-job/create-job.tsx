@@ -5,14 +5,14 @@ import {
   CreateJobFormSchema,
   createJobFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
-import { useCreateJob } from '@shinkai_network/shinkai-node-state/lib/mutations/createJob/useCreateJob';
-import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/lib/queries/getLLMProviders/useGetLLMProviders';
 import {
   VRFolder,
   VRItem,
 } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
 import { transformDataToTreeNodes } from '@shinkai_network/shinkai-node-state/lib/utils/files';
+import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
+import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import {
   Badge,
   Button,
@@ -97,14 +97,7 @@ export const CreateJob = () => {
   });
   const { llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
-    sender: auth?.shinkai_identity ?? '',
-    senderSubidentity: `${auth?.profile}`,
-    shinkaiIdentity: auth?.shinkai_identity ?? '',
-    my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-    my_device_identity_sk: auth?.profile_identity_sk ?? '',
-    node_encryption_pk: auth?.node_encryption_pk ?? '',
-    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-    profile_identity_sk: auth?.profile_identity_sk ?? '',
+    token: auth?.api_v2_key ?? '',
   });
   const { isPending, mutateAsync: createJob } = useCreateJob({
     onSuccess: (data) => {
@@ -135,6 +128,7 @@ export const CreateJob = () => {
       form.setValue('agent', agent.id);
     }
   }, [form, location, llmProviders]);
+
   useEffect(() => {
     if (form.getValues().agent) {
       return;
@@ -174,20 +168,13 @@ export const CreateJob = () => {
 
     await createJob({
       nodeAddress: auth?.node_address ?? '',
-      shinkaiIdentity: auth.shinkai_identity,
-      profile: auth.profile,
-      agentId: values.agent,
+      token: auth?.api_v2_key ?? '',
+      llmProvider: values.agent,
       content: content,
-      files_inbox: '',
       files: values.files,
-      is_hidden: false,
+      isHidden: false,
       selectedVRFiles,
       selectedVRFolders,
-      my_device_encryption_sk: auth.my_device_encryption_sk,
-      my_device_identity_sk: auth.my_device_identity_sk,
-      node_encryption_pk: auth.node_encryption_pk,
-      profile_encryption_sk: auth.profile_encryption_sk,
-      profile_identity_sk: auth.profile_identity_sk,
     });
   };
 

@@ -1,8 +1,8 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { ShinkaiTool } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
-import { useUpdateTool } from '@shinkai_network/shinkai-node-state/lib/mutations/updateTool/useUpdateTool';
-import { useGetToolsList } from '@shinkai_network/shinkai-node-state/lib/queries/getToolsList/useGetToolsList';
-import { useGetToolsSearch } from '@shinkai_network/shinkai-node-state/lib/queries/getToolsSearch/useGetToolsSearch';
+import { ShinkaiTool } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
+import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
+import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch';
 import {
   Badge,
   Button,
@@ -33,33 +33,19 @@ export const Tools = () => {
   const debouncedSearchQuery = useDebounce(searchQuery, 600);
   const isSearchQuerySynced = searchQuery === debouncedSearchQuery;
 
-  const { data: toolsList, isPending } = useGetToolsList({
+  const { data: toolsList, isPending } = useGetTools({
     nodeAddress: auth?.node_address ?? '',
-    shinkaiIdentity: auth?.shinkai_identity ?? '',
-    profile: auth?.profile ?? '',
-    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-    node_encryption_pk: auth?.node_encryption_pk ?? '',
-    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-    profile_identity_sk: auth?.profile_identity_sk ?? '',
+    token: auth?.api_v2_key ?? '',
   });
 
   const { data: searchToolList, isLoading: isSearchToolListPending } =
-    useGetToolsSearch(
+    useGetSearchTools(
       {
         nodeAddress: auth?.node_address ?? '',
-        shinkaiIdentity: auth?.shinkai_identity ?? '',
-        profile: auth?.profile ?? '',
+        token: auth?.api_v2_key ?? '',
         search: debouncedSearchQuery,
-        my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-        my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-        node_encryption_pk: auth?.node_encryption_pk ?? '',
-        profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-        profile_identity_sk: auth?.profile_identity_sk ?? '',
       },
-      {
-        enabled: isSearchQuerySynced,
-      },
+      { enabled: isSearchQuerySynced },
     );
 
   const { mutateAsync: updateTool } = useUpdateTool();
@@ -162,17 +148,7 @@ export const Tools = () => {
                             toolPayload: {} as ShinkaiTool,
                             isToolEnabled: !tool.enabled,
                             nodeAddress: auth?.node_address ?? '',
-                            shinkaiIdentity: auth?.shinkai_identity ?? '',
-                            profile: auth?.profile ?? '',
-                            my_device_encryption_sk:
-                              auth?.my_device_encryption_sk ?? '',
-                            my_device_identity_sk:
-                              auth?.my_device_identity_sk ?? '',
-                            node_encryption_pk: auth?.node_encryption_pk ?? '',
-                            profile_encryption_sk:
-                              auth?.profile_encryption_sk ?? '',
-                            profile_identity_sk:
-                              auth?.profile_identity_sk ?? '',
+                            token: auth?.api_v2_key ?? '',
                           });
                         }}
                       />
@@ -236,17 +212,6 @@ export const Tools = () => {
                             toolPayload: {} as ShinkaiTool,
                             isToolEnabled: !tool.enabled,
                             nodeAddress: auth?.node_address ?? '',
-                            shinkaiIdentity: auth?.shinkai_identity ?? '',
-                            profile: auth?.profile ?? '',
-                            my_device_encryption_sk:
-                              auth?.my_device_encryption_sk ?? '',
-                            my_device_identity_sk:
-                              auth?.my_device_identity_sk ?? '',
-                            node_encryption_pk: auth?.node_encryption_pk ?? '',
-                            profile_encryption_sk:
-                              auth?.profile_encryption_sk ?? '',
-                            profile_identity_sk:
-                              auth?.profile_identity_sk ?? '',
                           });
                         }}
                       />
