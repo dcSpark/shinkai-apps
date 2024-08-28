@@ -15,9 +15,7 @@ const AnalyticsPage = () => {
   return (
     <OnboardingLayout>
       <div className="mx-auto flex h-full max-w-lg flex-col">
-        <p className="text-center text-3xl font-medium leading-[1.5] tracking-wide">
-          {t('analytics.title')}
-        </p>
+        <p className="text-3xl font-semibold">{t('analytics.title')}</p>
         <div className="mt-10 flex flex-1 flex-col gap-10 text-sm text-gray-50">
           <ul className="space-y-3 text-gray-50">
             {analyticsBulletPoints().map((item) => (
@@ -49,7 +47,7 @@ const AnalyticsPage = () => {
               navigate('/get-started');
             }}
             size="lg"
-            variant="ghost"
+            variant="tertiary"
           >
             {t('common.noThanks')}
           </Button>

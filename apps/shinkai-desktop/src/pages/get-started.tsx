@@ -107,11 +107,19 @@ const GetStartedPage = () => {
         onRestore={() => onRestoreConfirmation()}
         open={resetStorageBeforeConnectConfirmationPromptOpen}
       />
-      <div className="mx-auto flex h-full max-w-md flex-col gap-14">
-        <p className="text-gray-80 text-center text-base tracking-wide">
-          {t('desktop.welcome')} <span aria-hidden> 🔑</span>
-        </p>
-        <div className="flex flex-1 flex-col gap-4">
+      <div className="space-between mx-auto flex h-full max-w-md flex-col gap-14">
+        <div className="space-y-5">
+          <h1 className="text-4xl font-bold">
+            {/*{t('desktop.welcome')}*/}
+            Get Started
+          </h1>
+          <p className="text-gray-80 text-lg">
+            {/*{t('desktop.welcomeText')}*/}
+            Shinkai is a free, open-source AI app that runs locally on your
+            computer.
+          </p>
+        </div>
+        <div className="flex flex-1 flex-col justify-end gap-4">
           <div className="space-y-4">
             <Button
               className="w-full"

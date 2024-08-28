@@ -18,9 +18,10 @@ const TermsAndConditionsPage = () => {
   return (
     <OnboardingLayout>
       <div className="flex h-full flex-col justify-between">
-        <p className="text-center text-3xl font-medium leading-[1.5] tracking-wide">
-          {t('desktop.welcome')} <span aria-hidden> 🔑</span>
-        </p>
+        <div className="space-y-5">
+          <h1 className="text-4xl font-bold">{t('desktop.welcome')}</h1>
+          <p className="text-gray-80 text-lg">{t('desktop.welcomeText')}</p>
+        </div>
         <div className="">
           <div className="flex flex-col gap-10">
             <div className="flex gap-3">

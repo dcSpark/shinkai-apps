@@ -4,7 +4,9 @@ export default {
       'Transform your web browsing experience using AI with Shinkai Visor ✨',
   },
   desktop: {
-    welcome: 'Transform your desktop experience using AI with Shinkai Desktop',
+    welcome: 'Welcome to Shinkai ✨',
+    welcomeText:
+      'Transform your desktop experience using AI with Shinkai Desktop',
   },
   layout: {
     sidebar: {
@@ -379,7 +381,7 @@ export default {
     signUpShinkaiHosting: 'Sign up For Shinkai Hosting',
     quickConnect: 'Quick Connect',
     alreadyHaveNode: 'Already have a Node?',
-    shinkaiPrivate: 'Setup Your Local AI (Shinkai)',
+    shinkaiPrivate: 'Setup Your Local AI',
     seeOptions: 'See Options',
     termsAndConditionsText:
       'I agree to our <a>Terms of Service</a> and <b>Privacy Policy</b>',
