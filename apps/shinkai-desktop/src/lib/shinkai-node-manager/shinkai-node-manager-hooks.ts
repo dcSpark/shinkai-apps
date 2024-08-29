@@ -1,25 +1,25 @@
 import { Event, EventCallback, listen } from '@tauri-apps/api/event';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
   ShinkaiNodeManagerEvent,
   ShinkaiNodeManagerEventMap,
 } from './shinkai-node-manager-client-types';
 import {
-  ollamaStartedToast,
+  // ollamaStartedToast,
   ollamaStartErrorToast,
   ollamaStopErrorToast,
   ollamaStoppedToast,
-  pullingModelDoneToast,
+  // pullingModelDoneToast,
   pullingModelErrorToast,
-  pullingModelProgressToast,
-  pullingModelStartToast,
-  shinkaiNodeStartedToast,
+  // pullingModelProgressToast,
+  // pullingModelStartToast,
+  // shinkaiNodeStartedToast,
   shinkaiNodeStartErrorToast,
   shinkaiNodeStopErrorToast,
   shinkaiNodeStoppedToast,
-  startingOllamaToast,
-  startingShinkaiNodeToast,
+  // startingOllamaToast,
+  // startingShinkaiNodeToast,
   stoppingOllamaToast,
   stoppingShinkaiNodeToast,
 } from './shinkai-node-manager-toasts-utils';
@@ -68,15 +68,20 @@ export const mapEvent = (
 };
 
 export const useShinkaiNodeEventsToast = () => {
+  const [shinkaiNodeEventState, setShinkaiNodeEventState] = useState({
+    type: '' as ShinkaiNodeManagerEvent,
+    payload: {} as any,
+  });
   useShinkaiNodeStateChange((event) => {
     const shinkaiNodeEvent = mapEvent(event.payload);
+    setShinkaiNodeEventState(shinkaiNodeEvent);
     switch (shinkaiNodeEvent.type) {
-      case ShinkaiNodeManagerEvent.StartingShinkaiNode:
-        startingShinkaiNodeToast();
-        break;
-      case ShinkaiNodeManagerEvent.ShinkaiNodeStarted:
-        shinkaiNodeStartedToast();
-        break;
+      // case ShinkaiNodeManagerEvent.StartingShinkaiNode:
+      //   startingShinkaiNodeToast();
+      //   break;
+      // case ShinkaiNodeManagerEvent.ShinkaiNodeStarted:
+      //   shinkaiNodeStartedToast();
+      //   break;
       case ShinkaiNodeManagerEvent.ShinkaiNodeStartError:
         shinkaiNodeStartErrorToast();
         break;
@@ -91,12 +96,12 @@ export const useShinkaiNodeEventsToast = () => {
         shinkaiNodeStopErrorToast();
         break;
 
-      case ShinkaiNodeManagerEvent.StartingOllama:
-        startingOllamaToast();
-        break;
-      case ShinkaiNodeManagerEvent.OllamaStarted:
-        ollamaStartedToast();
-        break;
+      // case ShinkaiNodeManagerEvent.StartingOllama:
+      //   startingOllamaToast();
+      //   break;
+      // case ShinkaiNodeManagerEvent.OllamaStarted:
+      //   ollamaStartedToast();
+      //   break;
       case ShinkaiNodeManagerEvent.OllamaStartError:
         ollamaStartErrorToast();
         break;
@@ -111,18 +116,18 @@ export const useShinkaiNodeEventsToast = () => {
         ollamaStopErrorToast();
         break;
 
-      case ShinkaiNodeManagerEvent.PullingModelStart:
-        pullingModelStartToast(shinkaiNodeEvent.payload.model);
-        break;
-      case ShinkaiNodeManagerEvent.PullingModelProgress:
-        pullingModelProgressToast(
-          shinkaiNodeEvent.payload.model,
-          shinkaiNodeEvent.payload.progress,
-        );
-        break;
-      case ShinkaiNodeManagerEvent.PullingModelDone:
-        pullingModelDoneToast(shinkaiNodeEvent.payload.model);
-        break;
+      // case ShinkaiNodeManagerEvent.PullingModelStart:
+      //   pullingModelStartToast(shinkaiNodeEvent.payload.model);
+      //   break;
+      // case ShinkaiNodeManagerEvent.PullingModelProgress:
+      //   pullingModelProgressToast(
+      //     shinkaiNodeEvent.payload.model,
+      //     shinkaiNodeEvent.payload.progress,
+      //   );
+      //   break;
+      // case ShinkaiNodeManagerEvent.PullingModelDone:
+      //   pullingModelDoneToast(shinkaiNodeEvent.payload.model);
+      //   break;
       case ShinkaiNodeManagerEvent.PullingModelError:
         pullingModelErrorToast(shinkaiNodeEvent.payload.model);
         break;
@@ -130,4 +135,5 @@ export const useShinkaiNodeEventsToast = () => {
         console.warn('Unhandled Shinkai Node state change:', event);
     }
   });
+  return shinkaiNodeEventState;
 };

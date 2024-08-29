@@ -14,15 +14,15 @@ const AnalyticsPage = () => {
 
   return (
     <OnboardingLayout>
-      <div className="mx-auto flex h-full max-w-lg flex-col">
-        <p className="text-3xl font-semibold">{t('analytics.title')}</p>
-        <div className="mt-10 flex flex-1 flex-col gap-10 text-sm text-gray-50">
-          <ul className="space-y-3 text-gray-50">
+      <div className="mx-auto flex h-full max-w-lg flex-col gap-4">
+        <p className="mb-3 text-3xl font-bold">{t('analytics.title')}</p>
+        <div className="flex flex-1 flex-col gap-10 text-sm text-gray-50">
+          <ul className="text-gray-80 space-y-3">
             {analyticsBulletPoints().map((item) => (
               <li key={item}>{item}</li>
             ))}
           </ul>
-          <p className="">
+          <p className="mt-4">
             <Trans
               components={{
                 a: (

@@ -28,14 +28,7 @@ export const ModelCapabilityTag = ({
     },
   };
   return (
-    <Badge
-      className={cn(
-        'justify-center rounded-full border-blue-700 bg-blue-700/70 px-2 py-1 font-normal capitalize text-gray-50',
-        className,
-      )}
-      variant="outline"
-      {...props}
-    >
+    <Badge className={cn(className)} variant="tags" {...props}>
       {capabilityMap[capability].icon}
       <span className="ml-2">{capabilityMap[capability].text}</span>
     </Badge>

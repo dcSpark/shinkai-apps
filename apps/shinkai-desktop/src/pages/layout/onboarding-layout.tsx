@@ -30,10 +30,10 @@ const OnboardingLayout = ({
           <div className="flex-1">{children}</div>
         </div>
       </div>
-      <div className="grid h-full place-items-center px-8">
+      <div className="relative grid place-items-center">
         <img
-          alt="shinkai logo"
-          className="w-full mix-blend-screen"
+          alt="shinkai octopus"
+          className="absolute w-[65vw] !max-w-[initial] mix-blend-screen"
           src={shinkaiOctopusImg}
         />
       </div>

@@ -3,6 +3,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import React from 'react';
 import { ExternalToast, toast } from 'sonner';
 
+import { modelNameMap } from '../../pages/get-started';
 import { openShinkaiNodeManagerWindow } from './shinkai-node-manager-windows-utils';
 
 const ShinkaiNodeLogsLabel = ({
@@ -170,13 +171,11 @@ export const pullingModelProgressToast = (model: string, progress: number) => {
   );
 };
 export const pullingModelDoneToast = (model: string) => {
-  return toast.loading(
+  return toast.success(
     t('shinkaiNode.notifications.downloadedModel', {
-      modelName: model,
+      modelName: modelNameMap[model],
     }),
-    {
-      ...defaultToastOptions,
-    },
+    { duration: 3000 },
   );
 };
 
