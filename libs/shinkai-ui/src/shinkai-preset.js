@@ -32,6 +32,7 @@ module.exports = {
           450: 'hsla(228, 7.04%, 13.92%, 1)',
           500: 'hsla(228, 7%, 14%, 1)',
           600: 'hsla(225, 8.33%, 9.41%, 1)',
+          700: 'rgba(12, 13, 14, 1)',
         },
         red: {
           DEFAULT: 'hsla(0, 63%, 51%, 1)',
@@ -53,12 +54,17 @@ module.exports = {
       },
       fontFamily: {
         inter: ['Inter', ...defaultTheme.fontFamily.sans],
+        clash: ['Clash Display', ...defaultTheme.fontFamily.sans],
       },
       backgroundImage: {
         'brand-gradient':
           'linear-gradient(180deg, rgba(249, 97, 98, 0) 0%, rgba(249, 97, 98, 0.20) 100%)',
         'app-gradient':
           'linear-gradient(90deg, rgba(0, 0, 0, 0.30) 0%, rgba(0, 0, 0, 0.20) 100%)',
+        'black-gradient':
+          'linear-gradient(94deg, #08090A 21.25%, #121316 81.73%);',
+        'onboarding-card':
+          'linear-gradient(120deg, #101113 24.72%, #141517 56.36%, #151619 68.07%)',
       },
       keyframes: {
         'accordion-down': {

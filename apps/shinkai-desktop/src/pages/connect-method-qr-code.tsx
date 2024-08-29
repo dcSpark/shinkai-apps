@@ -18,7 +18,6 @@ import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
 import { SetupData, useAuth } from '../store/auth';
-import OnboardingLayout from './layout/onboarding-layout';
 
 const formSchema = z.object({
   registration_code: z.string().min(5),
@@ -156,116 +155,114 @@ export const ConnectMethodQrCodePage = () => {
   };
 
   return (
-    <OnboardingLayout>
-      <div className="flex h-full flex-col space-y-3">
-        <div className="flex flex-col space-y-2">
-          <div className="flex flex-row items-center space-x-2">
-            <h1 className="text-left text-2xl font-semibold">QR Code</h1>
-            <QrCode />
-          </div>
-          <p>Use a QR code to connect</p>
+    <div className="flex h-full flex-col space-y-3">
+      <div className="flex flex-col space-y-2">
+        <div className="flex flex-row items-center space-x-2">
+          <h1 className="text-left text-2xl font-semibold">QR Code</h1>
+          <QrCode />
         </div>
-        <Form {...form}>
-          <form
-            className="flex h-full flex-col justify-between space-y-2"
-            onSubmit={form.handleSubmit(connect)}
-          >
-            <div className="flex flex-col space-y-2">
-              <div className="flex flex-col space-y-1">
-                <div className="flex items-center justify-center">
-                  <div className="flex h-[100px] w-full flex-col items-center justify-center rounded-lg border-2 border-dashed">
-                    {qrImageFile && qrImageUrl ? (
-                      <div className="flex flex-row items-center justify-center space-x-3">
-                        <div className="flex flex-row items-center">
-                          <QrCode className="mr-1 h-4 w-4 space-x-1" />
-                          <span className="font-semibold">
-                            {qrImageFile.name}
-                          </span>
-                        </div>
-                        <div className="relative">
-                          <img
-                            alt="qr connection data"
-                            className="h-[80px]"
-                            src={qrImageUrl}
-                          />
-                          <Button
-                            className="absolute right-1 top-1 h-6 w-6"
-                            onClick={() => removeQRFile()}
-                            size="icon"
-                            type="button"
-                          >
-                            <Trash className="h-4 w-4" />
-                          </Button>
-                        </div>
+        <p>Use a QR code to connect</p>
+      </div>
+      <Form {...form}>
+        <form
+          className="flex h-full flex-col justify-between space-y-2"
+          onSubmit={form.handleSubmit(connect)}
+        >
+          <div className="flex flex-col space-y-2">
+            <div className="flex flex-col space-y-1">
+              <div className="flex items-center justify-center">
+                <div className="flex h-[100px] w-full flex-col items-center justify-center rounded-lg border-2 border-dashed">
+                  {qrImageFile && qrImageUrl ? (
+                    <div className="flex flex-row items-center justify-center space-x-3">
+                      <div className="flex flex-row items-center">
+                        <QrCode className="mr-1 h-4 w-4 space-x-1" />
+                        <span className="font-semibold">
+                          {qrImageFile.name}
+                        </span>
                       </div>
-                    ) : (
-                      <label
-                        className="flex h-[100px] w-full cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-gray-100 bg-gray-400"
-                        htmlFor="dropzone-file"
-                      >
-                        <div className="flex flex-col items-center justify-center space-y-1">
-                          <div>
-                            <Upload className="h-4 w-4" />
-                          </div>
-                          <p className="text-sm text-white">
-                            Click to upload or drag and drop
-                          </p>
-                          <p className="text-gray-80 text-xs">JPG | PNG</p>
-                        </div>
-                        <input
-                          accept="image/png, image/jpeg"
-                          alt="shinaki conection file input"
-                          className="hidden"
-                          id="dropzone-file"
-                          onChange={(event) => onQRImageSelected(event)}
-                          type="file"
+                      <div className="relative">
+                        <img
+                          alt="qr connection data"
+                          className="h-[80px]"
+                          src={qrImageUrl}
                         />
-                      </label>
-                    )}
-                  </div>
+                        <Button
+                          className="absolute right-1 top-1 h-6 w-6"
+                          onClick={() => removeQRFile()}
+                          size="icon"
+                          type="button"
+                        >
+                          <Trash className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <label
+                      className="flex h-[100px] w-full cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-gray-100 bg-gray-400"
+                      htmlFor="dropzone-file"
+                    >
+                      <div className="flex flex-col items-center justify-center space-y-1">
+                        <div>
+                          <Upload className="h-4 w-4" />
+                        </div>
+                        <p className="text-sm text-white">
+                          Click to upload or drag and drop
+                        </p>
+                        <p className="text-gray-80 text-xs">JPG | PNG</p>
+                      </div>
+                      <input
+                        accept="image/png, image/jpeg"
+                        alt="shinaki conection file input"
+                        className="hidden"
+                        id="dropzone-file"
+                        onChange={(event) => onQRImageSelected(event)}
+                        type="file"
+                      />
+                    </label>
+                  )}
                 </div>
               </div>
-              {qrImageFile && (
-                <>
-                  <FormField
-                    control={form.control}
-                    name="registration_name"
-                    render={({ field }) => (
-                      <TextField field={field} label="Registration Name" />
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="node_address"
-                    render={({ field }) => (
-                      <TextField field={field} label="Node Address" />
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="shinkai_identity"
-                    render={({ field }) => (
-                      <TextField field={field} label="Identity Name" />
-                    )}
-                  />
-                </>
-              )}
-
-              {isSubmitError && <ErrorMessage message={submitError?.message} />}
             </div>
-            <Button
-              className="w-full"
-              disabled={isPending || isLoadingEncryptionKeys}
-              isLoading={isPending}
-              type="submit"
-            >
-              Connect
-            </Button>
-          </form>
-        </Form>
-      </div>
-    </OnboardingLayout>
+            {qrImageFile && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="registration_name"
+                  render={({ field }) => (
+                    <TextField field={field} label="Registration Name" />
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="node_address"
+                  render={({ field }) => (
+                    <TextField field={field} label="Node Address" />
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="shinkai_identity"
+                  render={({ field }) => (
+                    <TextField field={field} label="Identity Name" />
+                  )}
+                />
+              </>
+            )}
+
+            {isSubmitError && <ErrorMessage message={submitError?.message} />}
+          </div>
+          <Button
+            className="w-full"
+            disabled={isPending || isLoadingEncryptionKeys}
+            isLoading={isPending}
+            type="submit"
+          >
+            Connect
+          </Button>
+        </form>
+      </Form>
+    </div>
   );
 };

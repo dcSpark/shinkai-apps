@@ -76,19 +76,13 @@ export const ResetStorageBeforeConnectConfirmationPrompt = ({
             </div>
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter className="mt-4 grid gap-2.5">
+        <AlertDialogFooter className="mt-4 flex items-center justify-end gap-2.5">
           {/*<Button className="mt-0 flex-1 text-sm" onClick={() => restore()}>*/}
           {/*  <span aria-label="restore" className="emoji" role="img">*/}
           {/*    🔑 {t('common.restore')}*/}
           {/*  </span>*/}
           {/*</Button>*/}
-          <Button
-            className="flex-1 text-sm"
-            onClick={() => reset(true)}
-            variant={'destructive'}
-          >
-            <span>{t('common.resetData')}</span>
-          </Button>
+
           {/*<Button*/}
           {/*  className="mt-0 flex-1 text-sm"*/}
           {/*  onClick={() => reset(false)}*/}
@@ -99,11 +93,20 @@ export const ResetStorageBeforeConnectConfirmationPrompt = ({
           {/*  </span>*/}
           {/*</Button>*/}
           <Button
-            className="flex-1 text-sm"
+            className="min-w-32 text-sm"
             onClick={() => cancel()}
+            size="sm"
             variant={'outline'}
           >
             {t('common.cancel')}
+          </Button>
+          <Button
+            className="min-w-32 text-sm"
+            onClick={() => reset(true)}
+            size="sm"
+            variant={'destructive'}
+          >
+            <span>{t('common.resetData')}</span>
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

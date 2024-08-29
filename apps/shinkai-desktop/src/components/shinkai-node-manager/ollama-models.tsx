@@ -2,6 +2,7 @@ import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   Badge,
   Button,
+  CardFooter,
   ScrollArea,
   Tooltip,
   TooltipContent,
@@ -91,13 +92,16 @@ export const OllamaModels = () => {
     >
       {!showAllOllamaModels && (
         <ScrollArea className="mt-1 flex flex-1 flex-col overflow-auto [&>div>div]:!block">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-4 gap-4">
             {OLLAMA_MODELS.map((model) => {
               return (
-                <Card className="gap- flex flex-col" key={model.fullName}>
+                <Card
+                  className="gap- flex flex-col rounded-2xl"
+                  key={model.fullName}
+                >
                   <CardHeader className="relative">
-                    <CardTitle className="text-md mb-3 flex items-center gap-2">
-                      <span className="bg-gray-350 rounded-lg p-2">
+                    <CardTitle className="text-md mb-3 flex flex-col gap-1">
+                      <span className="p-2">
                         {model.provider
                           ? providerLogoMap[
                               model?.provider as keyof typeof providerLogoMap
@@ -105,35 +109,36 @@ export const OllamaModels = () => {
                           : null}
                       </span>
 
-                      <span>{model.name}</span>
-                      {isDefaultModel(model.fullName) && (
-                        <TooltipProvider delayDuration={0}>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Badge
-                                className={cn(
-                                  'border-brand ml-2 flex inline-flex h-5 w-5 items-center justify-center rounded-full border p-0 font-medium',
-                                )}
-                                variant="gradient"
-                              >
-                                <StarIcon className="text-brand size-3" />
-                              </Badge>
-                            </TooltipTrigger>
-                            <TooltipPortal>
-                              <TooltipContent align="center" side="top">
-                                {t('common.recommended')}
-                              </TooltipContent>
-                            </TooltipPortal>
-                          </Tooltip>
-                        </TooltipProvider>
-                      )}
+                      <span>
+                        <span className="font-clash text-xl font-semibold">
+                          {model.name}
+                        </span>
+                        {isDefaultModel(model.fullName) && (
+                          <TooltipProvider delayDuration={0}>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Badge
+                                  className={cn(
+                                    'border-brand ml-2 flex inline-flex h-5 w-5 items-center justify-center rounded-full border p-0 font-medium',
+                                  )}
+                                  variant="gradient"
+                                >
+                                  <StarIcon className="text-brand size-3" />
+                                </Badge>
+                              </TooltipTrigger>
+                              <TooltipPortal>
+                                <TooltipContent align="center" side="top">
+                                  {t('common.recommended')}
+                                </TooltipContent>
+                              </TooltipPortal>
+                            </Tooltip>
+                          </TooltipProvider>
+                        )}
+                      </span>
                     </CardTitle>
                     <CardDescription className="overflow-hidden text-ellipsis">
                       {model.description}
                     </CardDescription>
-                    <div className="absolute right-3 top-3 flex items-center justify-center">
-                      <OllamaModelInstallButton model={model.fullName} />
-                    </div>
                   </CardHeader>
                   <CardContent className="flex flex-col items-center gap-1 text-xs">
                     <div className="flex flex-wrap items-center gap-2">
@@ -161,6 +166,9 @@ export const OllamaModels = () => {
                       </Badge>
                     </div>
                   </CardContent>
+                  <CardFooter className="mt-auto">
+                    <OllamaModelInstallButton model={model.fullName} />
+                  </CardFooter>
                 </Card>
               );
             })}
