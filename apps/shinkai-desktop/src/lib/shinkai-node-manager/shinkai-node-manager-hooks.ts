@@ -12,6 +12,7 @@ import {
   ollamaStoppedToast,
   // pullingModelDoneToast,
   pullingModelErrorToast,
+  shinkaiNodeStartedToast,
   // pullingModelProgressToast,
   // pullingModelStartToast,
   // shinkaiNodeStartedToast,
@@ -79,9 +80,9 @@ export const useShinkaiNodeEventsToast = () => {
       // case ShinkaiNodeManagerEvent.StartingShinkaiNode:
       //   startingShinkaiNodeToast();
       //   break;
-      // case ShinkaiNodeManagerEvent.ShinkaiNodeStarted:
-      //   shinkaiNodeStartedToast();
-      //   break;
+      case ShinkaiNodeManagerEvent.ShinkaiNodeStarted:
+        shinkaiNodeStartedToast();
+        break;
       case ShinkaiNodeManagerEvent.ShinkaiNodeStartError:
         shinkaiNodeStartErrorToast();
         break;

@@ -26,7 +26,7 @@ const ShinkaiNodeLogsLabel = ({
 export const SHINKAI_NODE_MANAGER_TOAST_ID = 'shinkai-node-manager-toast-id';
 const defaultToastOptions: ExternalToast = {
   id: SHINKAI_NODE_MANAGER_TOAST_ID,
-  position: 'bottom-center',
+  position: 'top-right',
 };
 
 export const startingShinkaiNodeToast = () => {

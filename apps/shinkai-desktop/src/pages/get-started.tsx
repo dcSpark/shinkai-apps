@@ -110,8 +110,6 @@ const GetStartedPage = () => {
   };
 
   if (
-    shinkaiNodeEventState.type === ShinkaiNodeManagerEvent.StartingOllama ||
-    shinkaiNodeEventState.type === ShinkaiNodeManagerEvent.OllamaStarted ||
     shinkaiNodeEventState.type === ShinkaiNodeManagerEvent.PullingModelStart ||
     shinkaiNodeEventState.type === ShinkaiNodeManagerEvent.PullingModelProgress
   ) {
