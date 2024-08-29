@@ -46,23 +46,23 @@ $ git clone https://github.com/dcSpark/shinkai-apps
 #### Macos
 ```
 ARCH="aarch64-apple-darwin" \
-OLLAMA_VERSION="v0.3.6" \
-SHINKAI_NODE_VERSION="v0.7.30" \
+OLLAMA_VERSION="v0.3.8" \
+SHINKAI_NODE_VERSION="v0.7.32" \
 npx ts-node ./ci-scripts/download-side-binaries.ts
 ```
 
 #### Linux
 ```
 ARCH="x86_64-unknown-linux-gnu" \
-OLLAMA_VERSION="v0.3.6"\
-SHINKAI_NODE_VERSION="v0.7.30" \
+OLLAMA_VERSION="v0.3.8"\
+SHINKAI_NODE_VERSION="v0.7.32" \
 npx ts-node ./ci-scripts/download-side-binaries.ts
 ```
 
 #### Windows
 ```
-$ENV:OLLAMA_VERSION="v0.3.6"
-$ENV:SHINKAI_NODE_VERSION="v0.7.30"
+$ENV:OLLAMA_VERSION="v0.3.8"
+$ENV:SHINKAI_NODE_VERSION="v0.7.32"
 $ENV:ARCH="x86_64-pc-windows-msvc"
 npx ts-node ./ci-scripts/download-side-binaries.ts
 ```

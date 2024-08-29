@@ -47,6 +47,7 @@ apps/shinkai-visor-e2e/test-report
 apps/shinkai-desktop/src-tauri/storage
 apps/shinkai-desktop/src-tauri/node_storage
 
-apps/shinkai-desktop/src-tauri/bin/ollama-windows-resources/*
+apps/shinkai-desktop/src-tauri/bin/ollama-resources/*
 apps/shinkai-desktop/src-tauri/bin/*
 launch.json
+temp

@@ -60,9 +60,7 @@
       "http": {
         "all": false,
         "request": true,
-        "scope": [
-          "http://localhost"
-        ]
+        "scope": ["http://localhost"]
       },
       "process": {
         "relaunch": true
@@ -83,9 +81,14 @@
         "minimumSystemVersion": "10.13"
       },
       "externalBin": [
-        "bin/shinkai-node",
-        "bin/ollama"
-      ]
+        "bin/shinkai-node/shinkai-node",
+        "bin/shinkai-node/shinkai-tools-runner-resources/shinkai-tools-backend",
+        "bin/ollama/ollama"
+      ],
+      "resources": {
+        "bin/shinkai-node/*": "shinkai-node",
+        "bin/ollama": "ollama"
+      }
     },
     "security": {
       "csp": null

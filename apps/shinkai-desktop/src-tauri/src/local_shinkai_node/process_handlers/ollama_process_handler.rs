@@ -18,6 +18,8 @@ pub struct OllamaOptions {
     pub ollama_num_parallel: String,
     pub ollama_max_loaded_models: String,
     pub ollama_origins: String,
+    pub ollama_debug: String,
+    pub ollama_runners_dir: String,
 }
 
 pub struct OllamaProcessHandler {
@@ -47,6 +49,8 @@ impl OllamaProcessHandler {
             ollama_num_parallel: "1".to_string(),
             ollama_max_loaded_models: "2".to_string(),
             ollama_origins: "*".to_string(),
+            ollama_debug: "true".to_string(),
+            ollama_runners_dir: format!("{}/bin/ollama/lib/ollama/runners", std::env::current_dir().unwrap().display()),
         }
     }
 
