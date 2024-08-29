@@ -228,7 +228,7 @@ const GetStartedPage = () => {
             'desktop.benefits.privacy' as const,
             'desktop.benefits.tools' as const,
           ].map((text) => (
-            <li className="flex items-start gap-2">
+            <li className="flex items-start gap-2" key={text}>
               <CheckCircle className="mt-1.5 h-4 w-4 shrink-0" />
               <span className="text-gray-80">
                 <Trans
