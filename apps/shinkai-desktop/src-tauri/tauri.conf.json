@@ -94,8 +94,8 @@
       {
         "transparent": true,
         "title": "Shinkai Desktop",
-        "width": 1080,
-        "height": 820,
+        "width": 1280,
+        "height": 840,
         "resizable": true,
         "fileDropEnabled": false,
         "titleBarStyle": "Overlay",

@@ -12,21 +12,8 @@ export const ModelQuailityTag = ({
 }: {
   quality: OllamaModelQuality;
 } & React.HTMLAttributes<HTMLDivElement>) => {
-  const colorMap: { [key in OllamaModelQuality]: string } = {
-    [OllamaModelQuality.Low]: 'text-orange-200 bg-orange-900',
-    [OllamaModelQuality.Medium]: 'text-yellow-200 bg-yellow-900',
-    [OllamaModelQuality.Good]: 'text-green-200 bg-green-900',
-  };
   return (
-    <Badge
-      className={cn(
-        'items-center justify-center rounded-full border-0 px-2 py-1 font-normal capitalize',
-        colorMap[quality],
-        className,
-      )}
-      variant="outline"
-      {...props}
-    >
+    <Badge className={cn(className)} variant="tags" {...props}>
       <Sparkles className="h-4 w-4" />
       <span className="ml-2">
         {quality} {t('shinkaiNode.models.labels.quality')}

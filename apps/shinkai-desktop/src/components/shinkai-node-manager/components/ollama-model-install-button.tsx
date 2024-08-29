@@ -1,11 +1,10 @@
-import { CheckIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useSyncOllamaModels } from '@shinkai_network/shinkai-node-state/lib/mutations/syncOllamaModels/useSyncOllamaModels';
 import { Button, Progress } from '@shinkai_network/shinkai-ui';
 import { useMap } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
-import { Download, Loader2, Minus } from 'lucide-react';
+import { CheckCircle, Download, Loader2, Minus } from 'lucide-react';
 import { ModelResponse, ProgressResponse } from 'ollama/browser';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -124,16 +123,7 @@ export const OllamaModelInstallButton = ({ model }: { model: string }) => {
             ollamaRemove({ model: model });
           }}
         />
-      ) : // <Button
-      //   className="hover:border-brand w-full py-1.5 text-sm hover:text-white"
-      //
-      //   size="auto"
-      //   variant={'destructive'}
-      // >
-      //   <Minus className="mr-2 h-3 w-3" />
-      //   {t('common.remove')}
-      // </Button>
-      pullingModelsMap?.get(model) ? (
+      ) : pullingModelsMap?.get(model) ? (
         <div className="flex flex-col items-center gap-1">
           <span className="text-xs text-gray-100">
             {getProgress(pullingModelsMap.get(model) as ProgressResponse) + '%'}
@@ -169,7 +159,7 @@ function RemoveAIModelButton({ onClick }: { onClick: () => void }) {
   return (
     <MotionButton
       className={cn(
-        'w-full py-1.5 text-sm hover:border-red-800 hover:bg-red-700/50 hover:text-red-50',
+        'w-full bg-green-900/70 py-1.5 text-sm hover:border-red-800 hover:bg-red-700/50 hover:text-red-50',
       )}
       layout
       onClick={onClick}
@@ -181,7 +171,7 @@ function RemoveAIModelButton({ onClick }: { onClick: () => void }) {
       {isHovered ? (
         <Minus className="mr-2 h-3 w-3" />
       ) : (
-        <CheckIcon className="text-brand mr-2 h-3.5 w-3.5" />
+        <CheckCircle className="mr-2 h-3 w-3 text-white" />
       )}
       {isHovered ? t('common.remove') : t('common.installed')}
     </MotionButton>

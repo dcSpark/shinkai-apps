@@ -45,6 +45,7 @@ export const useOllamaListQuery = (
 };
 
 const pullingModelsMap = new Map<string, ProgressResponse>();
+
 export const useOllamaPullingQuery = (
   options?: QueryObserverOptions,
 ): UseQueryResult<Map<string, ProgressResponse>, Error> => {
@@ -73,7 +74,6 @@ export const useOllamaPullMutation = (
       input,
     ): Promise<AsyncGenerator<ProgressResponse, unknown, unknown>> => {
       const ollamaClient = new Ollama(ollamaConfig);
-
       const pipeGenerator = async function* transformGenerator(generator: {
         [Symbol.asyncIterator](): AsyncGenerator<
           ProgressResponse,
