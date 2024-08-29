@@ -21,17 +21,11 @@
       },
       "shell": {
         "all": false,
-        "open": true,
         "sidecar": true,
         "scope": [
-          {
-            "name": "bin/shinkai-node",
-            "sidecar": true
-          },
-          {
-            "name": "bin/ollama",
-            "sidecar": true
-          }
+          { "name": "external-binaries/shinkai-node/shinkai-node", "sidecar": true },
+          { "name": "external-binaries/shinkai-node/shinkai-tools-runner-resources/shinkai-tools-backend", "sidecar": true },
+          { "name": "external-binaries/ollama/ollama", "sidecar": true }
         ]
       },
       "window": {
@@ -81,13 +75,13 @@
         "minimumSystemVersion": "10.13"
       },
       "externalBin": [
-        "bin/shinkai-node/shinkai-node",
-        "bin/shinkai-node/shinkai-tools-runner-resources/shinkai-tools-backend",
-        "bin/ollama/ollama"
+        "external-binaries/shinkai-node/shinkai-node",
+        "external-binaries/shinkai-node/shinkai-tools-runner-resources/shinkai-tools-backend",
+        "external-binaries/ollama/ollama"
       ],
       "resources": {
-        "bin/shinkai-node/*": "shinkai-node",
-        "bin/ollama": "ollama"
+        "external-binaries/shinkai-node/*": "external-binaries/shinkai-node",
+        "external-binaries/ollama": "external-binaries/ollama"
       }
     },
     "security": {

@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::{path::{Path, PathBuf}, time::Duration};
 
 use regex::Regex;
 use serde::Serialize;
@@ -50,7 +50,7 @@ impl OllamaProcessHandler {
             ollama_max_loaded_models: "2".to_string(),
             ollama_origins: "*".to_string(),
             ollama_debug: "true".to_string(),
-            ollama_runners_dir: format!("{}/bin/ollama/lib/ollama/runners", std::env::current_dir().unwrap().display()),
+            ollama_runners_dir: format!("{}/external-binaries/ollama/lib/ollama/runners", std::env::current_dir().unwrap().display()),
         }
     }
 
@@ -87,7 +87,7 @@ impl OllamaProcessHandler {
 
     pub async fn spawn(&self, ensure_model: Option<&str>) -> Result<(), String> {
         let env = options_to_env(&self.options);
-        self.process_handler.spawn(env, ["serve"].to_vec()).await?;
+        self.process_handler.spawn(env, ["serve"].to_vec(), Some(PathBuf::from("./external-binaries/ollama"))).await?;
         if let Err(e) = self.wait_ollama_server().await {
             self.process_handler.kill().await;
             return Err(e);

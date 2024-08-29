@@ -1,9 +1,9 @@
 import { exec } from 'child_process';
-import { createWriteStream, exists, existsSync } from 'fs';
+import { createWriteStream, existsSync } from 'fs';
 import path from 'path';
 import axios from 'axios';
 import { ensureFile } from 'fs-extra';
-import { cp, readdir, rename, copyFile } from 'fs/promises';
+import { cp, readdir, rename } from 'fs/promises';
 import * as zl from 'zip-lib';
 import { z } from 'zod';
 
@@ -24,9 +24,9 @@ const env: Env = envSchema.parse(process.env);
 
 const TEMP_PATH = './temp';
 const OLLAMA_RESOURCES_PATH =
-  './apps/shinkai-desktop/src-tauri/bin/ollama/';
+  './apps/shinkai-desktop/src-tauri/external-binaries/ollama/';
 const SHINKAI_NODE_RESOURCES_PATH =
-  './apps/shinkai-desktop/src-tauri/bin/shinkai-node/';
+  './apps/shinkai-desktop/src-tauri/external-binaries/shinkai-node/';
 
 const asBinaryName = (arch: Arch, path: string) => {
   return `${path}${arch === Arch.x86_64_pc_windows_msvc ? '.exe' : ''}`;
@@ -101,11 +101,11 @@ const downloadShinkaiNodeBinary = async (arch: Arch, version: string) => {
   // They are used as sidecars in Tauri
   const shinkaiNodeBinaryPath = asBinaryName(
     arch,
-    `./apps/shinkai-desktop/src-tauri/bin/shinkai-node/shinkai-node`,
+    `./apps/shinkai-desktop/src-tauri/external-binaries/shinkai-node/shinkai-node`,
   );
   const shinkaiToolsBackendBinaryPath = asBinaryName(
     arch,
-    `./apps/shinkai-desktop/src-tauri/bin/shinkai-node/shinkai-tools-runner-resources/shinkai-tools-backend`,
+    `./apps/shinkai-desktop/src-tauri/external-binaries/shinkai-node/shinkai-tools-runner-resources/shinkai-tools-backend`,
   );
   await rename(
     shinkaiNodeBinaryPath,
@@ -122,14 +122,14 @@ const downloadShinkaiNodeBinary = async (arch: Arch, version: string) => {
 
 const downloadOllamaAarch64AppleDarwin = async (version: string) => {
   const downloadUrl = `https://github.com/ollama/ollama/releases/download/${version}/ollama-darwin`;
-  const path = `./apps/shinkai-desktop/src-tauri/bin/ollama-${Arch.aarch64_apple_darwin}`;
+  const path = `./apps/shinkai-desktop/src-tauri/external-binaries/ollama-${Arch.aarch64_apple_darwin}`;
   await downloadFile(downloadUrl, path);
   await addExecPermissions(path);
 };
 
 const downloadOllamax8664UnknownLinuxGnu = async (version: string) => {
   let downloadUrl = `https://github.com/ollama/ollama/releases/download/${version}/ollama-linux-amd64`;
-  let path = `./apps/shinkai-desktop/src-tauri/bin/ollama-${Arch.x86_64_unknown_linux_gnu}`;
+  let path = `./apps/shinkai-desktop/src-tauri/external-binaries/ollama-${Arch.x86_64_unknown_linux_gnu}`;
   await downloadFile(downloadUrl, path);
   await addExecPermissions(path);
 };
@@ -159,11 +159,11 @@ const downloadOllamax8664PcWindowsMsvc = async (version: string) => {
 
   const ollamaBinaryPath = asBinaryName(
     Arch.x86_64_pc_windows_msvc,
-    `./apps/shinkai-desktop/src-tauri/bin/ollama/ollama`,
+    `./apps/shinkai-desktop/src-tauri/external-binaries/ollama/ollama`,
   );
   await rename(
     ollamaBinaryPath,
-      asSidecarName(Arch.x86_64_pc_windows_msvc, ollamaBinaryPath),
+    asSidecarName(Arch.x86_64_pc_windows_msvc, ollamaBinaryPath),
   );
   await addExecPermissions(
     asSidecarName(Arch.x86_64_pc_windows_msvc, ollamaBinaryPath),

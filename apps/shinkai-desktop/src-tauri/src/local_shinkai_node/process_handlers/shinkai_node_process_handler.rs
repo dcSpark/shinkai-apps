@@ -1,4 +1,4 @@
-use std::{fs, time::Duration};
+use std::{fs, path::PathBuf, time::Duration};
 
 use regex::Regex;
 use tokio::{sync::mpsc::Sender};
@@ -122,7 +122,7 @@ impl ShinkaiNodeProcessHandler {
 
     pub async fn spawn(&self) -> Result<(), String> {
         let env = options_to_env(&self.options);
-        self.process_handler.spawn(env, [].to_vec()).await?;
+        self.process_handler.spawn(env, [].to_vec(), Some(PathBuf::from("./external-binaries/shinkai-node"))).await?;
         if let Err(e) = self.wait_shinkai_node_server().await {
             self.process_handler.kill().await;
             return Err(e);
