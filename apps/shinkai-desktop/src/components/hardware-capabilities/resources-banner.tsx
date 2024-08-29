@@ -26,7 +26,7 @@ export const ResourcesBanner = ({
   className?: string;
   isInSidebar?: boolean;
 }) => {
-  const { data: hardwareSummary } = useHardwareGetSummaryQuery();
+  const { isSuccess, data: hardwareSummary } = useHardwareGetSummaryQuery();
   const sidebarExpanded = useSettings((state) => state.sidebarExpanded);
 
   const isOptimal =
@@ -134,7 +134,7 @@ export const ResourcesBanner = ({
 
   return (
     <div className={cn('flex w-full flex-col text-xs', className)}>
-      {!isOptimal && alertContent}
+      {isSuccess && !isOptimal && alertContent}
     </div>
   );
 };

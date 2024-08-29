@@ -1,5 +1,6 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { Button } from '@shinkai_network/shinkai-ui';
+import { CheckIcon, XIcon } from 'lucide-react';
 
 import { analyticsBulletPoints } from '../constants/analytics';
 import { useSettings } from '../store/settings';
@@ -18,7 +19,15 @@ const AnalyticsSettingsPage = () => {
         <div className="mt-10 flex flex-1 flex-col gap-10 text-sm text-gray-50">
           <ul className="space-y-5 text-gray-50">
             {analyticsBulletPoints().map((item) => (
-              <li key={item}>{item}</li>
+              <li className="flex items-center gap-2" key={item}>
+                <Trans
+                  components={{
+                    check: <CheckIcon className="h-5 w-5 shrink-0" />,
+                    x: <XIcon className="h-5 w-5 shrink-0" />,
+                  }}
+                  i18nKey={item}
+                />
+              </li>
             ))}
           </ul>
           <p className="">

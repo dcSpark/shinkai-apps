@@ -46,7 +46,7 @@ import { toast } from 'sonner';
 
 import { ResourcesBanner } from '../../components/hardware-capabilities/resources-banner';
 import { UpdateBanner } from '../../components/hardware-capabilities/update-banner';
-import OnboardingStepper from '../../components/onboarding/onboarding';
+import OnboardingStepper from '../../components/onboarding-checklist/onboarding';
 import config from '../../config';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
@@ -303,13 +303,13 @@ export function MainNav() {
       href: '/settings',
       icon: <GearIcon className="h-5 w-5" />,
     },
-    {
+    config.isDev && {
       title: t('layout.menuItems.disconnect'),
       href: '#',
       icon: <ExitIcon className="h-5 w-5" />,
       onClick: () => confirmDisconnect(),
     },
-  ] as NavigationLink[];
+  ].filter(Boolean) as NavigationLink[];
 
   return (
     <motion.aside

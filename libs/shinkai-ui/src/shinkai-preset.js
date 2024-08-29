@@ -54,6 +54,7 @@ module.exports = {
       },
       fontFamily: {
         inter: ['Inter', ...defaultTheme.fontFamily.sans],
+        clash: ['Clash Display', ...defaultTheme.fontFamily.sans],
       },
       backgroundImage: {
         'brand-gradient':

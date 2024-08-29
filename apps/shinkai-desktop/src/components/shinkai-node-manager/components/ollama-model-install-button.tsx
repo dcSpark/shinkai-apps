@@ -159,7 +159,7 @@ function RemoveAIModelButton({ onClick }: { onClick: () => void }) {
   return (
     <MotionButton
       className={cn(
-        'w-full bg-green-800/40 py-1.5 text-sm hover:border-red-800 hover:bg-red-700/50 hover:text-red-50',
+        'w-full bg-green-900/70 py-1.5 text-sm hover:border-red-800 hover:bg-red-700/50 hover:text-red-50',
       )}
       layout
       onClick={onClick}

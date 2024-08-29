@@ -174,7 +174,7 @@ const GetStartedPage = () => {
           </div>
           <div className="flex h-full w-full flex-col gap-10">
             <div className="space-between mx-auto flex h-full max-w-md flex-col">
-              <h1 className="min-h-[100px] text-3xl font-bold">
+              <h1 className="font-clash min-h-[100px] text-3xl font-semibold">
                 {renderTitle()}
               </h1>
               <ul className="flex flex-col gap-3">
@@ -219,8 +219,10 @@ const GetStartedPage = () => {
         open={resetStorageBeforeConnectConfirmationPromptOpen}
       />
       <div className="space-between flex h-full max-w-md flex-col gap-14">
-        <h1 className="text-4xl font-bold">{t('desktop.localAI')}</h1>
-        <ul className="flex flex-col gap-3">
+        <h1 className="font-clash text-4xl font-semibold">
+          {t('desktop.localAI')}
+        </h1>
+        <ul className="flex flex-col gap-4">
           {[
             'desktop.benefits.local' as const,
             'desktop.benefits.privacy' as const,
@@ -290,7 +292,7 @@ const GetStartedPage = () => {
                 <span>{t('common.alreadyHaveNode')}</span>
                 <Link
                   className="font-semibold text-white underline"
-                  to="/onboarding"
+                  to="/quick-connection"
                 >
                   {t('common.quickConnect')}
                 </Link>

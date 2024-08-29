@@ -19,7 +19,9 @@ const TermsAndConditionsPage = () => {
     <OnboardingLayout>
       <div className="flex h-full flex-col justify-between">
         <div className="space-y-5">
-          <h1 className="text-4xl font-bold">{t('desktop.welcome')}</h1>
+          <h1 className="font-clash text-4xl font-semibold">
+            {t('desktop.welcome')}
+          </h1>
           <p className="text-gray-80 text-lg">{t('desktop.welcomeText')}</p>
         </div>
         <div className="">

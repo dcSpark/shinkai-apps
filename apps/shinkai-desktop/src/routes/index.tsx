@@ -35,15 +35,15 @@ import { GalxeValidation } from '../pages/galxe-validation';
 import GenerateCodePage from '../pages/generate-code';
 import GetStartedPage from '../pages/get-started';
 import MainLayout from '../pages/layout/main-layout';
-import OnboardingPage from '../pages/onboarding';
 import { PublicKeys } from '../pages/public-keys';
+import QuickConnectionPage from '../pages/quick-connection';
 import RestoreConnectionPage from '../pages/restore-connection';
 import SettingsPage from '../pages/settings';
 import SheetDashboard from '../pages/sheet-dashboard';
 import SheetProject from '../pages/sheet-project';
 import ShinkaiPrivatePage from '../pages/shinkai-private';
+import TermsAndConditionsPage from '../pages/terms-conditions';
 import { Tools } from '../pages/tools';
-import TermsAndConditionsPage from '../pages/welcome';
 import WorkflowPlayground from '../pages/workflow-playground';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
@@ -93,7 +93,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   ]);
 
   if (!auth) {
-    return <Navigate replace to={'/welcome'} />;
+    return <Navigate replace to={'/terms-conditions'} />;
   }
 
   return <ShinkaiNodeRunningOverlay>{children}</ShinkaiNodeRunningOverlay>;
@@ -108,7 +108,7 @@ const useOnboardingRedirect = () => {
 
   useEffect(() => {
     if (termsAndConditionsAccepted === undefined) {
-      navigate('/welcome');
+      navigate('/terms-conditions');
       return;
     }
 
@@ -125,7 +125,10 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route element={<MainLayout />}>
-        <Route element={<TermsAndConditionsPage />} path={'/welcome'} />
+        <Route
+          element={<TermsAndConditionsPage />}
+          path={'/terms-conditions'}
+        />
         <Route element={<GetStartedPage />} path={'/get-started'} />
         <Route element={<AnalyticsPage />} path={'/analytics'} />
         <Route element={<ShinkaiPrivatePage />} path={'/connect-ai'} />
@@ -137,7 +140,7 @@ const AppRoutes = () => {
           element={<AIModelInstallation />}
           path={'/ai-model-installation'}
         />
-        <Route element={<OnboardingPage />} path={'/onboarding'} />
+        <Route element={<QuickConnectionPage />} path={'/quick-connection'} />
         <Route element={<RestoreConnectionPage />} path={'/restore'} />
         <Route element={<ConnectMethodQrCodePage />} path={'/connect-qr'} />
         <Route

@@ -1,5 +1,6 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { Button } from '@shinkai_network/shinkai-ui';
+import { CheckIcon, XIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { analyticsBulletPoints } from '../constants/analytics';
@@ -15,11 +16,21 @@ const AnalyticsPage = () => {
   return (
     <OnboardingLayout>
       <div className="mx-auto flex h-full max-w-lg flex-col gap-4">
-        <p className="mb-3 text-3xl font-bold">{t('analytics.title')}</p>
+        <p className="font-clash mb-3 text-3xl font-semibold">
+          {t('analytics.title')}
+        </p>
         <div className="flex flex-1 flex-col gap-10 text-sm text-gray-50">
           <ul className="text-gray-80 space-y-3">
             {analyticsBulletPoints().map((item) => (
-              <li key={item}>{item}</li>
+              <li className="flex items-center gap-2" key={item}>
+                <Trans
+                  components={{
+                    check: <CheckIcon className="h-5 w-5 shrink-0" />,
+                    x: <XIcon className="h-5 w-5 shrink-0" />,
+                  }}
+                  i18nKey={item}
+                />
+              </li>
             ))}
           </ul>
           <p className="mt-4">
@@ -39,7 +50,7 @@ const AnalyticsPage = () => {
           </p>
         </div>
 
-        <div className="space-y-4">
+        <div className="flex items-center gap-4">
           <Button
             className="w-full"
             onClick={() => {
@@ -47,7 +58,7 @@ const AnalyticsPage = () => {
               navigate('/get-started');
             }}
             size="lg"
-            variant="tertiary"
+            variant="outline"
           >
             {t('common.noThanks')}
           </Button>

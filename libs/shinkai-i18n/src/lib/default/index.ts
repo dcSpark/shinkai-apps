@@ -443,13 +443,13 @@ export default {
     label: 'Analytics',
     title: 'Help us improve Shinkai',
     bulletPoints: {
-      one: '✅ Always allow you to opt-out via Settings',
-      two: '✅ Randomized Analytics',
+      one: '<check/> Always allow you to opt-out via Settings',
+      two: '<check/> Randomized Analytics',
       three:
-        '✅ Send analytical information about what features you use but without any content or responses',
-      four: '❌ Never collect your IP address',
-      five: '❌ Never collect your AI queries',
-      six: '❌ Never use personal information for training purposes',
+        '<check/> Send analytical information about what features you use but without any content or responses',
+      four: '<x/> Never collect your IP address',
+      five: '<x/> Never collect your AI queries',
+      six: '<x/> Never use personal information for training purposes',
     },
     moreInfo:
       'Fore more information in relation to our privacy practices, please see our <a>Privacy Policy</a>',

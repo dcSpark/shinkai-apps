@@ -100,7 +100,7 @@ export const OllamaModels = () => {
                   key={model.fullName}
                 >
                   <CardHeader className="relative">
-                    <CardTitle className="text-md mb-3 flex flex-col gap-3">
+                    <CardTitle className="text-md mb-3 flex flex-col gap-1">
                       <span className="p-2">
                         {model.provider
                           ? providerLogoMap[
@@ -110,7 +110,9 @@ export const OllamaModels = () => {
                       </span>
 
                       <span>
-                        {model.name}
+                        <span className="font-clash text-xl font-semibold">
+                          {model.name}
+                        </span>
                         {isDefaultModel(model.fullName) && (
                           <TooltipProvider delayDuration={0}>
                             <Tooltip>

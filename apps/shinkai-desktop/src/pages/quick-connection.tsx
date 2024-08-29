@@ -63,7 +63,7 @@ const ConnectionOptionButton = ({
 };
 const LOCAL_NODE_ADDRESS = 'http://127.0.0.1:9850';
 
-const OnboardingPage = () => {
+const QuickConnectionPage = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const setAuth = useAuth((state) => state.setAuth);
@@ -219,4 +219,4 @@ const OnboardingPage = () => {
   );
 };
 
-export default OnboardingPage;
+export default QuickConnectionPage;
