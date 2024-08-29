@@ -171,7 +171,7 @@ const GetStartedPage = () => {
       >
         <div className="bg-onboarding-card grid h-[calc(100dvh-100px)] grid-cols-2 content-center justify-center gap-y-10 rounded-2xl border-[#252528] px-[50px] py-[80px]">
           <div className="relative grid h-full place-items-center">
-            <div className="absolute bottom-4 right-3 z-10 h-4 w-10 bg-[#141419] bg-blend-darken" />
+            <div className="absolute bottom-4 right-3 z-10 h-10 w-10 bg-[#141419]" />
             <video
               autoPlay
               className="h-full w-full mix-blend-screen"
@@ -180,9 +180,8 @@ const GetStartedPage = () => {
               playsInline
               poster={downloadModelImg}
               ref={videoRef}
-            >
-              <source src={downloadModelVideo} type="video/mp4" />
-            </video>
+              src={downloadModelVideo}
+            />
           </div>
           <div className="flex h-full w-full flex-col gap-10">
             <div className="space-between mx-auto flex h-full max-w-md flex-col">

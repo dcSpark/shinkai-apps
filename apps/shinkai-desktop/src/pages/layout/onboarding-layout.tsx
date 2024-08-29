@@ -45,10 +45,10 @@ const OnboardingLayout = ({
             muted
             playsInline
             poster={shinkaiOctopusImg}
+            // loop
             ref={videoRef}
-          >
-            <source src={shinkaiOctopusVideo} type="video/mp4" />
-          </video>
+            src={shinkaiOctopusVideo}
+          />
         </div>
       </div>
     </div>
