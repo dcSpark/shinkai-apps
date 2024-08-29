@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use serde::{Deserialize, Serialize};
 
 use crate::hardware::{hardware_get_summary, RequirementsStatus};
@@ -25,6 +27,8 @@ pub struct ShinkaiNodeOptions {
     pub rpc_url: Option<String>,
     pub default_embedding_model: Option<String>,
     pub supported_embedding_models: Option<String>,
+    pub shinkai_tools_backend_binary_path: Option<String>,
+    pub shinkai_tools_backend_api_port: Option<String>,
 }
 
 impl ShinkaiNodeOptions {
@@ -39,7 +43,9 @@ impl ShinkaiNodeOptions {
         let mut model = "llama3.1:8b-instruct-q4_1".to_string();
         let hardware_summary = hardware_get_summary();
         match hardware_summary.requirements_status {
-            RequirementsStatus::Minimum | RequirementsStatus::StillUsable | RequirementsStatus::Unmeet => {
+            RequirementsStatus::Minimum
+            | RequirementsStatus::StillUsable
+            | RequirementsStatus::Unmeet => {
                 model = "gemma2:2b-instruct-q4_1".to_string();
             }
             _ => {}
@@ -152,6 +158,16 @@ impl ShinkaiNodeOptions {
                     .supported_embedding_models
                     .unwrap_or_else(|| base_options.supported_embedding_models.unwrap()),
             ),
+            shinkai_tools_backend_binary_path: Some(
+                options
+                    .shinkai_tools_backend_binary_path
+                    .unwrap_or_else(|| base_options.shinkai_tools_backend_binary_path.unwrap()),
+            ),
+            shinkai_tools_backend_api_port: Some(
+                options
+                    .shinkai_tools_backend_api_port
+                    .unwrap_or_else(|| base_options.shinkai_tools_backend_api_port.unwrap()),
+            ),
         }
     }
 }
@@ -164,6 +180,24 @@ impl Default for ShinkaiNodeOptions {
             initial_model.replace(|c: char| !c.is_alphanumeric(), "_")
         );
         let initial_agent_models = format!("ollama:{}", initial_model);
+
+        let arch = if std::env::var("IS_DEV").is_ok() {
+            match std::env::consts::OS {
+                "windows" => "-x86_64-pc-windows-msvc",
+                "macos" => "-aarch64-apple-darwin",
+                "linux" => "-x86_64-unknown-linux-gnu",
+                _ => panic!("Unsupported OS"),
+            }
+        } else {
+            ""
+        };
+        let extension = if std::env::consts::OS == "windows" {
+            ".exe"
+        } else {
+            ""
+        };
+
+        println!("arch: {}", arch);
         ShinkaiNodeOptions {
             node_api_ip: Some("127.0.0.1".to_string()),
             node_api_port: Some("9550".to_string()),
@@ -185,6 +219,16 @@ impl Default for ShinkaiNodeOptions {
             rpc_url: Some("https://public.stackup.sh/api/v1/node/arbitrum-sepolia".to_string()),
             default_embedding_model: Some("snowflake-arctic-embed:xs".to_string()),
             supported_embedding_models: Some("snowflake-arctic-embed:xs".to_string()),
+            shinkai_tools_backend_binary_path: Some(
+                PathBuf::from(format!(
+                    "./shinkai-tools-runner-resources/shinkai-tools-backend{}{}",
+                    arch, extension,
+                ))
+                .to_str()
+                .unwrap()
+                .to_string(),
+            ),
+            shinkai_tools_backend_api_port: Some("9650".to_string()),
         }
     }
 }
