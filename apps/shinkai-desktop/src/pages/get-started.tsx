@@ -181,7 +181,7 @@ const GetStartedPage = () => {
               </h1>
               <ul className="flex flex-col gap-3">
                 {getBenefitList().map((text) => (
-                  <li className="flex items-start gap-2">
+                  <li className="flex items-start gap-2" key={text}>
                     <CheckCircle className="mt-1.5 h-4 w-4 shrink-0" />
                     <span className="text-gray-80">
                       <Trans

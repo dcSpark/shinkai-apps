@@ -126,7 +126,6 @@ const AppRoutes = () => {
     <Routes>
       <Route element={<MainLayout />}>
         <Route element={<TermsAndConditionsPage />} path={'/welcome'} />
-        //TODO: fix
         <Route element={<GetStartedPage />} path={'/get-started'} />
         <Route element={<AnalyticsPage />} path={'/analytics'} />
         <Route element={<ShinkaiPrivatePage />} path={'/connect-ai'} />
