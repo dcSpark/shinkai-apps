@@ -7,8 +7,12 @@ import {
 import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/lib/queries/getEncryptionKeys/useGetEncryptionKeys';
 import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/v2/mutations/submitRegistation/useSubmitRegistrationNoCode';
 import { Button, Progress } from '@shinkai_network/shinkai-ui';
-import { downloadModelImg } from '@shinkai_network/shinkai-ui/assets';
+import {
+  downloadModelImg,
+  downloadModelVideo,
+} from '@shinkai_network/shinkai-ui/assets';
 import { submitRegistrationNoCodeError } from '@shinkai_network/shinkai-ui/helpers';
+import { useReverseVideoPlayback } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { CheckCircle } from 'lucide-react';
 import { useState } from 'react';
@@ -21,7 +25,6 @@ import { useShinkaiNodeSpawnMutation } from '../lib/shinkai-node-manager/shinkai
 import { ShinkaiNodeManagerEvent } from '../lib/shinkai-node-manager/shinkai-node-manager-client-types';
 import { useShinkaiNodeEventsToast } from '../lib/shinkai-node-manager/shinkai-node-manager-hooks';
 import { useAuth } from '../store/auth';
-import OnboardingLayout from './layout/onboarding-layout';
 
 export const modelNameMap: Record<string, string> = {
   'snowflake-arctic-embed:xs': "Snowflake's Arctic-embed-xs",
@@ -37,6 +40,8 @@ const GetStartedPage = () => {
     setResetStorageBeforeConnectConfirmationPrompt,
   ] = useState(false);
   const shinkaiNodeEventState = useShinkaiNodeEventsToast();
+  const videoRef = useReverseVideoPlayback();
+
   const { encryptionKeys } = useGetEncryptionKeys();
   const setupDataForm = useForm<QuickConnectFormSchema>({
     resolver: zodResolver(quickConnectFormSchema),
@@ -161,16 +166,23 @@ const GetStartedPage = () => {
     return (
       <div
         className={cn(
-          'bg-black-gradient mx-auto grid h-full flex-col-reverse items-center px-[48px]',
+          'bg-black-gradient fixed inset-0 z-10 mx-auto grid size-full h-full h-screen w-screen flex-col-reverse items-center px-[48px]',
         )}
       >
         <div className="bg-onboarding-card grid h-[calc(100dvh-100px)] grid-cols-2 content-center justify-center gap-y-10 rounded-2xl border-[#252528] px-[50px] py-[80px]">
-          <div className="grid h-full place-items-center px-8">
-            <img
-              alt="shinkai logo"
-              className="w-full mix-blend-screen"
-              src={downloadModelImg}
-            />
+          <div className="relative grid h-full place-items-center">
+            <div className="absolute bottom-4 right-3 z-10 h-4 w-10 bg-[#141419] bg-blend-darken" />
+            <video
+              autoPlay
+              className="h-full w-full mix-blend-screen"
+              loop
+              muted
+              playsInline
+              poster={downloadModelImg}
+              ref={videoRef}
+            >
+              <source src={downloadModelVideo} type="video/mp4" />
+            </video>
           </div>
           <div className="flex h-full w-full flex-col gap-10">
             <div className="space-between mx-auto flex h-full max-w-md flex-col">
@@ -211,7 +223,7 @@ const GetStartedPage = () => {
   }
 
   return (
-    <OnboardingLayout>
+    <>
       <ResetStorageBeforeConnectConfirmationPrompt
         onCancel={() => onCancelConfirmation()}
         onReset={() => onResetConfirmation()}
@@ -301,7 +313,7 @@ const GetStartedPage = () => {
           )}
         </div>
       </div>
-    </OnboardingLayout>
+    </>
   );
 };
 

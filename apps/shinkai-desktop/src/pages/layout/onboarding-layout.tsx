@@ -1,4 +1,8 @@
-import { shinkaiOctopusImg } from '@shinkai_network/shinkai-ui/assets';
+import {
+  shinkaiOctopusImg,
+  shinkaiOctopusVideo,
+} from '@shinkai_network/shinkai-ui/assets';
+import { useReverseVideoPlayback } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import React from 'react';
 
@@ -11,6 +15,8 @@ const OnboardingLayout = ({
   className,
   ...props
 }: OnboardingLayoutProps) => {
+  const videoRef = useReverseVideoPlayback();
+
   return (
     <div
       className={cn(
@@ -30,12 +36,20 @@ const OnboardingLayout = ({
           <div className="flex-1">{children}</div>
         </div>
       </div>
-      <div className="relative grid place-items-center">
-        <img
-          alt="shinkai octopus"
-          className="absolute w-[65vw] !max-w-[initial] mix-blend-screen"
-          src={shinkaiOctopusImg}
-        />
+      <div className="grid h-full place-items-center overflow-hidden">
+        <div className="relative aspect-square w-[800px] p-20">
+          <div className="absolute bottom-3 right-3.5 z-10 h-4 w-11 bg-[#141419] bg-blend-darken" />
+          <video
+            autoPlay
+            className="absolute inset-0 -left-[10%] top-1/2 w-full !max-w-[initial] -translate-y-1/2 mix-blend-screen"
+            muted
+            playsInline
+            poster={shinkaiOctopusImg}
+            ref={videoRef}
+          >
+            <source src={shinkaiOctopusVideo} type="video/mp4" />
+          </video>
+        </div>
       </div>
     </div>
   );

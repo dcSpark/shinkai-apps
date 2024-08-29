@@ -30,7 +30,6 @@ import { toast } from 'sonner';
 import { useShinkaiNodeEventsToast } from '../lib/shinkai-node-manager/shinkai-node-manager-hooks';
 import { HOME_PATH } from '../routes/name';
 import { useAuth } from '../store/auth';
-import OnboardingLayout from './layout/onboarding-layout';
 
 export interface ConnectionOptionButtonProps extends ButtonProps {
   title: string;
@@ -140,82 +139,80 @@ const QuickConnectionPage = () => {
   }, [isNodeInfoSuccess, isShinkaiPrivate, nodeInfo, setupDataForm]);
 
   return (
-    <OnboardingLayout>
-      <div className="flex h-full flex-col justify-between">
-        <div className="flex flex-col">
-          <div className="mb-4 flex items-center gap-2">
-            <Link
-              className={cn(
-                buttonVariants({
-                  size: 'icon',
-                  variant: 'ghost',
-                }),
-              )}
-              to={-1 as To}
-            >
-              <ArrowLeft className="h-6 w-6" />
-            </Link>
-            <h1 className="text-left text-2xl font-semibold">
-              {t('quickConnection.label')} <span aria-hidden>⚡</span>
-            </h1>
-          </div>
-          <Form {...setupDataForm}>
-            <form
-              className="space-y-6"
-              onSubmit={setupDataForm.handleSubmit(onSubmit)}
-            >
-              <div className="space-y-4">
-                <FormField
-                  control={setupDataForm.control}
-                  name="node_address"
-                  render={({ field }) => (
-                    <TextField
-                      field={field}
-                      label={t('quickConnection.form.nodeAddress')}
-                    />
-                  )}
-                />
-                {isError && <ErrorMessage message={error.message} />}
-              </div>
-              <Button
-                className="w-full"
-                disabled={isPending}
-                isLoading={isPending}
-                type="submit"
-                variant="default"
-              >
-                {t('quickConnection.form.connect')}
-              </Button>
-            </form>
-          </Form>
+    <div className="flex h-full flex-col justify-between">
+      <div className="flex flex-col">
+        <div className="mb-4 flex items-center gap-2">
+          <Link
+            className={cn(
+              buttonVariants({
+                size: 'icon',
+                variant: 'ghost',
+              }),
+            )}
+            to={-1 as To}
+          >
+            <ArrowLeft className="h-6 w-6" />
+          </Link>
+          <h1 className="text-left text-2xl font-semibold">
+            {t('quickConnection.label')} <span aria-hidden>⚡</span>
+          </h1>
         </div>
-
-        <div className="mt-4 flex flex-row justify-between gap-4">
-          {/*<ConnectionOptionButton*/}
-          {/*  className="h-32"*/}
-          {/*  description={'Use the QR code to connect'}*/}
-          {/*  icon={<QrCode className="text-gray-100" />}*/}
-          {/*  onClick={() => {*/}
-          {/*    navigate('/connect-qr');*/}
-          {/*  }}*/}
-          {/*  title={'QR Code'}*/}
-          {/*/>*/}
-
-          <ConnectionOptionButton
-            description={t('restoreConnection.description')}
-            icon={
-              <span aria-hidden className="text-base">
-                🔑
-              </span>
-            }
-            onClick={() => {
-              navigate('/restore');
-            }}
-            title={t('restoreConnection.restore')}
-          />
-        </div>
+        <Form {...setupDataForm}>
+          <form
+            className="space-y-6"
+            onSubmit={setupDataForm.handleSubmit(onSubmit)}
+          >
+            <div className="space-y-4">
+              <FormField
+                control={setupDataForm.control}
+                name="node_address"
+                render={({ field }) => (
+                  <TextField
+                    field={field}
+                    label={t('quickConnection.form.nodeAddress')}
+                  />
+                )}
+              />
+              {isError && <ErrorMessage message={error.message} />}
+            </div>
+            <Button
+              className="w-full"
+              disabled={isPending}
+              isLoading={isPending}
+              type="submit"
+              variant="default"
+            >
+              {t('quickConnection.form.connect')}
+            </Button>
+          </form>
+        </Form>
       </div>
-    </OnboardingLayout>
+
+      <div className="mt-4 flex flex-row justify-between gap-4">
+        {/*<ConnectionOptionButton*/}
+        {/*  className="h-32"*/}
+        {/*  description={'Use the QR code to connect'}*/}
+        {/*  icon={<QrCode className="text-gray-100" />}*/}
+        {/*  onClick={() => {*/}
+        {/*    navigate('/connect-qr');*/}
+        {/*  }}*/}
+        {/*  title={'QR Code'}*/}
+        {/*/>*/}
+
+        <ConnectionOptionButton
+          description={t('restoreConnection.description')}
+          icon={
+            <span aria-hidden className="text-base">
+              🔑
+            </span>
+          }
+          onClick={() => {
+            navigate('/restore');
+          }}
+          title={t('restoreConnection.restore')}
+        />
+      </div>
+    </div>
   );
 };
 

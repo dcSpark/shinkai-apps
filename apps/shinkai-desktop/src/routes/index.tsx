@@ -35,6 +35,7 @@ import { GalxeValidation } from '../pages/galxe-validation';
 import GenerateCodePage from '../pages/generate-code';
 import GetStartedPage from '../pages/get-started';
 import MainLayout from '../pages/layout/main-layout';
+import OnboardingLayout from '../pages/layout/onboarding-layout';
 import { PublicKeys } from '../pages/public-keys';
 import QuickConnectionPage from '../pages/quick-connection';
 import RestoreConnectionPage from '../pages/restore-connection';
@@ -126,11 +127,22 @@ const AppRoutes = () => {
     <Routes>
       <Route element={<MainLayout />}>
         <Route
-          element={<TermsAndConditionsPage />}
-          path={'/terms-conditions'}
-        />
-        <Route element={<GetStartedPage />} path={'/get-started'} />
-        <Route element={<AnalyticsPage />} path={'/analytics'} />
+          element={
+            <OnboardingLayout>
+              <Outlet />
+            </OnboardingLayout>
+          }
+        >
+          <Route
+            element={<TermsAndConditionsPage />}
+            path={'/terms-conditions'}
+          />
+          <Route element={<GetStartedPage />} path={'/get-started'} />
+          <Route element={<AnalyticsPage />} path={'/analytics'} />
+          <Route element={<QuickConnectionPage />} path={'/quick-connection'} />
+          <Route element={<RestoreConnectionPage />} path={'/restore'} />
+          <Route element={<ConnectMethodQrCodePage />} path={'/connect-qr'} />
+        </Route>
         <Route element={<ShinkaiPrivatePage />} path={'/connect-ai'} />
         <Route
           element={<FreeSubscriptionsPage />}
@@ -140,9 +152,6 @@ const AppRoutes = () => {
           element={<AIModelInstallation />}
           path={'/ai-model-installation'}
         />
-        <Route element={<QuickConnectionPage />} path={'/quick-connection'} />
-        <Route element={<RestoreConnectionPage />} path={'/restore'} />
-        <Route element={<ConnectMethodQrCodePage />} path={'/connect-qr'} />
         <Route
           element={
             <ProtectedRoute>
