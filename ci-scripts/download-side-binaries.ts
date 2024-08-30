@@ -142,11 +142,11 @@ const downloadOllamax8664UnknownLinuxGnu = async (version: string) => {
     cwd: unzippedPath,
     strip: 1,
   });
-
   const ollamaBinaryPath = asSidecarName(
     Arch.x86_64_unknown_linux_gnu,
     `./apps/shinkai-desktop/src-tauri/external-binaries/ollama/ollama`,
   );
+  await ensureFile(ollamaBinaryPath);
   await copyFile(path.join(unzippedPath, 'bin/ollama'), ollamaBinaryPath);
   await addExecPermissions(ollamaBinaryPath);
 };
