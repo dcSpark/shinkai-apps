@@ -130,7 +130,7 @@ const downloadOllamaAarch64AppleDarwin = async (version: string) => {
 
 const downloadOllamax8664UnknownLinuxGnu = async (version: string) => {
   let downloadUrl = `https://github.com/ollama/ollama/releases/download/${version}/ollama-linux-amd64.tgz`;
-  const zippedPath = path.join(TEMP_PATH, `ollama-linux-amd64-${version}.zip`);
+  const zippedPath = path.join(TEMP_PATH, `ollama-linux-amd64-${version}.tgz`);
 
   await downloadFile(downloadUrl, zippedPath);
 
@@ -139,7 +139,8 @@ const downloadOllamax8664UnknownLinuxGnu = async (version: string) => {
   await mkdir(unzippedPath, { recursive: true });
   await extract({
     f: zippedPath,
-    cwd: unzippedPath
+    cwd: unzippedPath,
+    strip: 1,
   });
 
   const ollamaBinaryPath = asSidecarName(
