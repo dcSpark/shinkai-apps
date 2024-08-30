@@ -122,14 +122,14 @@ const downloadShinkaiNodeBinary = async (arch: Arch, version: string) => {
 
 const downloadOllamaAarch64AppleDarwin = async (version: string) => {
   const downloadUrl = `https://github.com/ollama/ollama/releases/download/${version}/ollama-darwin`;
-  const path = `./apps/shinkai-desktop/src-tauri/external-binaries/ollama-${Arch.aarch64_apple_darwin}`;
+  const path = `./apps/shinkai-desktop/src-tauri/external-binaries/ollama/ollama-${Arch.aarch64_apple_darwin}`;
   await downloadFile(downloadUrl, path);
   await addExecPermissions(path);
 };
 
 const downloadOllamax8664UnknownLinuxGnu = async (version: string) => {
   let downloadUrl = `https://github.com/ollama/ollama/releases/download/${version}/ollama-linux-amd64`;
-  let path = `./apps/shinkai-desktop/src-tauri/external-binaries/ollama-${Arch.x86_64_unknown_linux_gnu}`;
+  let path = `./apps/shinkai-desktop/src-tauri/external-binaries/ollama/ollama-${Arch.x86_64_unknown_linux_gnu}`;
   await downloadFile(downloadUrl, path);
   await addExecPermissions(path);
 };
