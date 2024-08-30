@@ -3,7 +3,7 @@ import { createWriteStream, existsSync } from 'fs';
 import path from 'path';
 import axios from 'axios';
 import { ensureFile } from 'fs-extra';
-import { cp, readdir, rename } from 'fs/promises';
+import { copyFile, cp, readdir, rename } from 'fs/promises';
 import * as zl from 'zip-lib';
 import { z } from 'zod';
 
@@ -129,9 +129,19 @@ const downloadOllamaAarch64AppleDarwin = async (version: string) => {
 
 const downloadOllamax8664UnknownLinuxGnu = async (version: string) => {
   let downloadUrl = `https://github.com/ollama/ollama/releases/download/${version}/ollama-linux-amd64`;
-  let path = `./apps/shinkai-desktop/src-tauri/external-binaries/ollama/ollama-${Arch.x86_64_unknown_linux_gnu}`;
-  await downloadFile(downloadUrl, path);
-  await addExecPermissions(path);
+  const zippedPath = path.join(TEMP_PATH, `ollama-linux-amd64-${version}.zip`);
+
+  await downloadFile(downloadUrl, zippedPath);
+
+  const unzippedPath = path.join(TEMP_PATH, `ollama-linux-amd64-${version}`);
+  await zl.extract(zippedPath, unzippedPath);
+
+  const ollamaBinaryPath = asSidecarName(
+    Arch.x86_64_unknown_linux_gnu,
+    `./apps/shinkai-desktop/src-tauri/external-binaries/ollama/ollama`,
+  );
+  await copyFile(path.join(unzippedPath, 'bin/ollama'), ollamaBinaryPath);
+  await addExecPermissions(ollamaBinaryPath);
 };
 
 const downloadOllamax8664PcWindowsMsvc = async (version: string) => {
