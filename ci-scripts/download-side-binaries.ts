@@ -3,9 +3,10 @@ import { createWriteStream, existsSync } from 'fs';
 import path from 'path';
 import axios from 'axios';
 import { ensureFile } from 'fs-extra';
-import { copyFile, cp, readdir, rename } from 'fs/promises';
+import { copyFile, cp, mkdir, readdir, rename } from 'fs/promises';
 import * as zl from 'zip-lib';
 import { z } from 'zod';
+import { extract } from 'tar';
 
 enum Arch {
   x86_64_unknown_linux_gnu = 'x86_64-unknown-linux-gnu',
@@ -134,7 +135,12 @@ const downloadOllamax8664UnknownLinuxGnu = async (version: string) => {
   await downloadFile(downloadUrl, zippedPath);
 
   const unzippedPath = path.join(TEMP_PATH, `ollama-linux-amd64-${version}`);
-  await zl.extract(zippedPath, unzippedPath);
+
+  await mkdir(unzippedPath, { recursive: true });
+  await extract({
+    f: zippedPath,
+    cwd: unzippedPath
+  });
 
   const ollamaBinaryPath = asSidecarName(
     Arch.x86_64_unknown_linux_gnu,
