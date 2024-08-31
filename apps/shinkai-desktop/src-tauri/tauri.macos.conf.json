@@ -3,6 +3,11 @@
     "systemTray": {
       "iconPath": "icons/tray-icon-macos.png",
       "iconAsTemplate": true
+    },
+    "bundle": {
+      "resources": {
+        "external-binaries/shinkai-node/libpdfium.dylib": "external-binaries/shinkai-node"
+      }
     }
   }
 }

@@ -8,6 +8,10 @@
         "wix": {
           "template": "./dummy.wxs"
         }
+      },
+      "resources": {
+        "external-binaries/shinkai-node/pdfium.dll": "external-binaries/shinkai-node",
+        "external-binaries/ollama/lib/*": "external-binaries/ollama/lib"
       }
     }
   }

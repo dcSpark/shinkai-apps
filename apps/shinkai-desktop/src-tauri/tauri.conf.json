@@ -78,11 +78,7 @@
         "external-binaries/shinkai-node/shinkai-node",
         "external-binaries/shinkai-node/shinkai-tools-runner-resources/shinkai-tools-backend",
         "external-binaries/ollama/ollama"
-      ],
-      "resources": {
-        "external-binaries/shinkai-node/*": "external-binaries/shinkai-node",
-        "external-binaries/ollama": "external-binaries/ollama"
-      }
+      ]
     },
     "security": {
       "csp": null

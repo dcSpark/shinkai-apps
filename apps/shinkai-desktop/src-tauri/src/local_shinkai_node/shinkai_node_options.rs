@@ -181,23 +181,12 @@ impl Default for ShinkaiNodeOptions {
         );
         let initial_agent_models = format!("ollama:{}", initial_model);
 
-        let arch = if std::env::var("IS_DEV").is_ok() {
-            match std::env::consts::OS {
-                "windows" => "-x86_64-pc-windows-msvc",
-                "macos" => "-aarch64-apple-darwin",
-                "linux" => "-x86_64-unknown-linux-gnu",
-                _ => panic!("Unsupported OS"),
-            }
-        } else {
-            ""
-        };
         let extension = if std::env::consts::OS == "windows" {
             ".exe"
         } else {
             ""
         };
 
-        println!("arch: {}", arch);
         ShinkaiNodeOptions {
             node_api_ip: Some("127.0.0.1".to_string()),
             node_api_port: Some("9550".to_string()),
@@ -220,13 +209,10 @@ impl Default for ShinkaiNodeOptions {
             default_embedding_model: Some("snowflake-arctic-embed:xs".to_string()),
             supported_embedding_models: Some("snowflake-arctic-embed:xs".to_string()),
             shinkai_tools_backend_binary_path: Some(
-                PathBuf::from(format!(
-                    "./shinkai-tools-runner-resources/shinkai-tools-backend{}{}",
-                    arch, extension,
-                ))
-                .to_str()
-                .unwrap()
-                .to_string(),
+                PathBuf::from(format!("./shinkai-tools-backend{}", extension))
+                    .to_str()
+                    .unwrap()
+                    .to_string(),
             ),
             shinkai_tools_backend_api_port: Some("9650".to_string()),
         }
