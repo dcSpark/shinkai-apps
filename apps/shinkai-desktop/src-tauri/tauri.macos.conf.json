@@ -7,6 +7,9 @@
     "bundle": {
       "resources": {
         "external-binaries/shinkai-node/libpdfium.dylib": "external-binaries/shinkai-node"
+      },
+      "macOS": {
+        "frameworks": ["external-binaries/shinkai-node/libpdfium.dylib"]
       }
     }
   }

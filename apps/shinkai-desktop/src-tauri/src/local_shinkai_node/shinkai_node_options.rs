@@ -181,11 +181,29 @@ impl Default for ShinkaiNodeOptions {
         );
         let initial_agent_models = format!("ollama:{}", initial_model);
 
+        let mut path = if std::env::var("IS_DEV").is_ok() {
+            let arch = match std::env::consts::OS {
+                "windows" => "x86_64-pc-windows-msvc",
+                "macos" => "aarch64-apple-darwin",
+                "linux" => "x86_64-unknown-linux-gnu",
+                _ => panic!("Unsupported OS"),
+            };
+            format!("external-binaries/shinkai-node/shinkai-tools-runner-resources/shinkai-tools-backend-{}", arch)
+        } else {
+            "shinkai-tools-backend".to_string()
+        };
         let extension = if std::env::consts::OS == "windows" {
             ".exe"
         } else {
             ""
         };
+
+        path = std::env::current_dir()
+            .unwrap()
+            .join(format!("{}{}", path, extension))
+            .to_str()
+            .unwrap()
+            .to_string();
 
         ShinkaiNodeOptions {
             node_api_ip: Some("127.0.0.1".to_string()),
@@ -208,12 +226,7 @@ impl Default for ShinkaiNodeOptions {
             rpc_url: Some("https://public.stackup.sh/api/v1/node/arbitrum-sepolia".to_string()),
             default_embedding_model: Some("snowflake-arctic-embed:xs".to_string()),
             supported_embedding_models: Some("snowflake-arctic-embed:xs".to_string()),
-            shinkai_tools_backend_binary_path: Some(
-                PathBuf::from(format!("./shinkai-tools-backend{}", extension))
-                    .to_str()
-                    .unwrap()
-                    .to_string(),
-            ),
+            shinkai_tools_backend_binary_path: Some(path),
             shinkai_tools_backend_api_port: Some("9650".to_string()),
         }
     }
