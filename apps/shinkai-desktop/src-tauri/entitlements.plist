@@ -16,7 +16,7 @@
     <!-- from Ollama entitlements 'codesign -d --entitlements - --xml Ollama' -->
     <key>com.apple.security.personal-information.location</key><true/>
 
-    <!-- entitlements required by shinkai-tools-backend (collected from nodejs entitlements) -->
+    <!-- entitlements required by shinkai-tools-backend (collected from nodejs entitlements https://github.com/nodejs/node/blob/main/tools/osx-entitlements.plist) -->
     <key>com.apple.security.cs.allow-jit</key>
     <true/>
     <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
