@@ -109,6 +109,7 @@ impl ProcessHandler {
                 message
             })?
             .envs(env.clone())
+            .current_dir(current_dir.unwrap_or_else(|| std::path::PathBuf::from("./")))
             .args(args)
             .spawn()
             .map_err(|error| {
