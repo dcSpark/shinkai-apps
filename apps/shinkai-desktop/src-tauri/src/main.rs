@@ -12,6 +12,7 @@ use crate::commands::shinkai_node_manager_commands::{
     shinkai_node_spawn,
 };
 
+use app::APP_HANDLE;
 use globals::SHINKAI_NODE_MANAGER_INSTANCE;
 use local_shinkai_node::shinkai_node_manager::ShinkaiNodeManager;
 use tauri::{
@@ -21,6 +22,7 @@ use tauri::{GlobalShortcutManager, Size};
 use tauri::{PhysicalSize, SystemTrayMenuItem};
 use tokio::sync::Mutex;
 
+mod app;
 mod audio;
 mod commands;
 mod galxe;
@@ -65,6 +67,9 @@ fn main() {
             galxe_generate_proof
         ])
         .setup(|app| {
+            APP_HANDLE
+                .set(Mutex::new(app.app_handle().to_owned()))
+                .unwrap();
             let app_clone = app.app_handle();
 
             let path = tauri::api::path::resolve_path(

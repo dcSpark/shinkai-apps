@@ -1,8 +1,12 @@
 use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
+use tauri::App;
 
-use crate::hardware::{hardware_get_summary, RequirementsStatus};
+use crate::{
+    app::APP_HANDLE,
+    hardware::{hardware_get_summary, RequirementsStatus},
+};
 
 /// It matches ENV variables names from ShinkaiNode
 #[derive(Serialize, Deserialize, Clone)]
@@ -29,6 +33,7 @@ pub struct ShinkaiNodeOptions {
     pub supported_embedding_models: Option<String>,
     pub shinkai_tools_backend_binary_path: Option<String>,
     pub shinkai_tools_backend_api_port: Option<String>,
+    pub pdfium_dynamic_lib_path: Option<String>,
 }
 
 impl ShinkaiNodeOptions {
@@ -168,6 +173,11 @@ impl ShinkaiNodeOptions {
                     .shinkai_tools_backend_api_port
                     .unwrap_or_else(|| base_options.shinkai_tools_backend_api_port.unwrap()),
             ),
+            pdfium_dynamic_lib_path: Some(
+                options
+                    .pdfium_dynamic_lib_path
+                    .unwrap_or_else(|| base_options.pdfium_dynamic_lib_path.unwrap()),
+            ),
         }
     }
 }
@@ -180,30 +190,6 @@ impl Default for ShinkaiNodeOptions {
             initial_model.replace(|c: char| !c.is_alphanumeric(), "_")
         );
         let initial_agent_models = format!("ollama:{}", initial_model);
-
-        let mut path = if std::env::var("IS_DEV").is_ok() {
-            let arch = match std::env::consts::OS {
-                "windows" => "x86_64-pc-windows-msvc",
-                "macos" => "aarch64-apple-darwin",
-                "linux" => "x86_64-unknown-linux-gnu",
-                _ => panic!("Unsupported OS"),
-            };
-            format!("external-binaries/shinkai-node/shinkai-tools-runner-resources/shinkai-tools-backend-{}", arch)
-        } else {
-            "shinkai-tools-backend".to_string()
-        };
-        let extension = if std::env::consts::OS == "windows" {
-            ".exe"
-        } else {
-            ""
-        };
-
-        path = std::env::current_dir()
-            .unwrap()
-            .join(format!("{}{}", path, extension))
-            .to_str()
-            .unwrap()
-            .to_string();
 
         ShinkaiNodeOptions {
             node_api_ip: Some("127.0.0.1".to_string()),
@@ -226,8 +212,9 @@ impl Default for ShinkaiNodeOptions {
             rpc_url: Some("https://public.stackup.sh/api/v1/node/arbitrum-sepolia".to_string()),
             default_embedding_model: Some("snowflake-arctic-embed:xs".to_string()),
             supported_embedding_models: Some("snowflake-arctic-embed:xs".to_string()),
-            shinkai_tools_backend_binary_path: Some(path),
+            shinkai_tools_backend_binary_path: None,
             shinkai_tools_backend_api_port: Some("9650".to_string()),
+            pdfium_dynamic_lib_path: None,
         }
     }
 }
