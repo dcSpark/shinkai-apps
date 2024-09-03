@@ -317,7 +317,9 @@ export const MessageList = ({
   );
 };
 
-// if its name is payment, then render a payment component
+const truncateAddress = (address: string) => {
+  return `${address.slice(0, 6)}...${address.slice(-4)}`;
+};
 
 function MessageExtra({
   name,
@@ -393,7 +395,7 @@ function Payment({ amount, currency }: { amount: number; currency: string }) {
                       className="hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-brand [&:has([data-state=checked])]:border-brand flex w-full flex-col items-center justify-between rounded-md border-2 border-gray-400 bg-gray-500 p-4"
                       htmlFor="one-time"
                     >
-                      <span className="text-2xl font-semibold">$9.99</span>
+                      <span className="text-2xl font-semibold">$0.09</span>
                       <span className="text-gray-100">one-time use</span>
                     </Label>
                   </div>
@@ -407,11 +409,25 @@ function Payment({ amount, currency }: { amount: number; currency: string }) {
                       className="hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-brand [&:has([data-state=checked])]:border-brand flex w-full flex-col items-center justify-between rounded-md border-2 border-gray-400 bg-gray-500 p-4"
                       htmlFor="download"
                     >
-                      <span className="text-2xl font-semibold">$99.99</span>
+                      <span className="text-2xl font-semibold">$4.99</span>
                       <span className="text-gray-100">for download</span>
                     </Label>
                   </div>
                 </RadioGroup>
+                <div className="mx-auto flex max-w-sm flex-col gap-2 py-2">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-100">Wallet Address</span>
+                    <span className="text-white">
+                      {truncateAddress(
+                        '0x1234567890123456789012345678901234567890',
+                      )}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-100">Wallet Balance</span>
+                    <span className="text-white">1000</span>
+                  </div>
+                </div>
               </CardContent>
             </motion.div>
           )}
@@ -458,11 +474,20 @@ function Payment({ amount, currency }: { amount: number; currency: string }) {
             {status === 'idle' && (
               <motion.div
                 animate={{ opacity: 1, y: 0 }}
+                className="flex justify-between gap-2"
                 exit={{ opacity: 0, y: -10 }}
                 initial={{ opacity: 0, y: 10 }}
                 key="idle-button"
                 transition={{ duration: 0.2 }}
               >
+                <Button
+                  className="mx-auto min-w-[200px] rounded-md"
+                  onClick={handleConfirmPayment}
+                  size="sm"
+                  variant="ghost"
+                >
+                  No, thanks
+                </Button>
                 <Button
                   className="mx-auto min-w-[200px] rounded-md"
                   onClick={handleConfirmPayment}
@@ -488,8 +513,9 @@ function Payment({ amount, currency }: { amount: number; currency: string }) {
                     setStatus('idle');
                   }}
                   size="sm"
+                  variant="ghost"
                 >
-                  Try it out!
+                  Dismiss
                 </Button>
               </motion.div>
             )}

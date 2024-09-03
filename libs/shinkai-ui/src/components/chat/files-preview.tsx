@@ -6,7 +6,7 @@ import { getFileExt } from '../../helpers/file';
 import { cn } from '../../utils';
 
 export type FileListProps = {
-  files: { name: string; preview: string }[];
+  files: { name: string; preview?: string }[];
   className?: string;
 };
 

@@ -54,34 +54,6 @@ export const getChatConversation = async ({
         const fileNames = await getFileNames(nodeAddress, token, {
           inboxName: inbox,
         });
-        const response = await downloadFileFromInbox(
-          nodeAddress,
-          token,
-          inbox,
-          fileNames[0],
-        );
-        // Generate preview for the downloaded file
-        let preview = '';
-        if (response) {
-          const blob = new Blob([response]);
-          const fileType = blob.type;
-
-          if (fileType.startsWith('image/')) {
-            // For image files, create a data URL
-            preview = URL.createObjectURL(blob);
-          } else if (fileType === 'application/pdf') {
-            // For PDF files, you might want to use a PDF.js or similar library
-            // Here, we'll just set a placeholder
-            preview = 'PDF preview not available';
-          } else if (fileType.startsWith('text/')) {
-            // For text files, read the content
-            const text = await blob.text();
-            preview = text.slice(0, 100) + (text.length > 100 ? '...' : '');
-          } else {
-            // For other file types, set a generic message
-            preview = 'Preview not available for this file type';
-          }
-        }
 
         formattedMessage.fileInbox = {
           id: inbox,

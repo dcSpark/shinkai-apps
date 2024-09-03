@@ -242,7 +242,6 @@ export const Message = ({
                         files={message.fileInbox?.files}
                       />
                     )}
-                    {/*{messageExtra}*/}
                     {!!message.workflowName && (
                       <div className="mt-2 flex items-center gap-1.5 border-t pt-1.5">
                         <span className="text-gray-80 text-xs">Workflow:</span>
