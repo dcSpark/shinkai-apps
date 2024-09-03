@@ -131,7 +131,33 @@
     "uploadFile": "Subir un Archivo"
   },
   "desktop": {
-    "welcome": "Transforma tu experiencia de escritorio utilizando IA con Shinkai Desktop"
+    "benefits": {
+      "local": "<b>Local:</b> Con un Shinkai local, obtienes control total sobre tus datos en un entorno seguro.",
+      "privacy": "<b>Enfoque en la Privacidad:</b> Tus datos permanecen seguros con capacidades sin conexión y sólidas protecciones de privacidad.",
+      "tools": "<b>Herramientas para Tareas Diarias:</b> Admite más de 100 integraciones y sigue aumentando."
+    },
+    "localAI": "IA Local de Shinkai",
+    "model": {
+      "downloading": "Descargando",
+      "embeddingBenefits": {
+        "dataAnalysis": "<b>Mejora del Análisis de Datos:</b> Extrae ideas significativas de datos no estructurados, mejorando los procesos de toma de decisiones y la eficiencia operativa.",
+        "efficient": "<b>Tamaño Compacto y Eficiente:</b> Con solo 22 millones de parámetros y un vector de incrustación de 384 dimensiones, el Arctic-embed-xs está diseñado para ser eficiente en recursos.",
+        "highRetrieval": "<b>Alto Rendimiento de Recuperación:</b> Puede recuperar información relevante de conjuntos de datos grandes de manera efectiva, con alta precisión en tareas de búsqueda y recuperación."
+      },
+      "gemmaBenefits": {
+        "fast": "<b>Ejecución Rápida:</b> Los usuarios han notado que funciona eficientemente en hardware de gama media, permitiendo respuestas más rápidas e interacciones más fluidas sin retrasos significativos.",
+        "lightweight": "<b>Ligero:</b> Esta naturaleza ligera significa que requiere menos memoria y potencia computacional, haciéndolo accesible para una amplia gama de usuarios y aplicaciones.",
+        "performance": "<b>Alto Rendimiento en un Tamaño Compacto:</b> El modelo gemma2:2b está diseñado para ofrecer un rendimiento líder en su clase manteniendo un tamaño relativamente pequeño de 2 mil millones de parámetros."
+      },
+      "installation": "Instalando {{modelName}}...",
+      "ollamaBenefits": {
+        "language": "<b>Generación de Lenguaje Potente:</b> Genera texto similar al humano en una variedad de aplicaciones como generación de contenido, traducción de idiomas y asistencia en codificación.",
+        "multilingual": "<b>Soporte Multilingüe:</b> El modelo admite diálogos en varios idiomas, incluidos inglés, español, francés, alemán y más.",
+        "resource": "<b>Uso Eficiente de Recursos:</b> Es un modelo ligero y ultrarrápido en comparación con modelos más grandes."
+      }
+    },
+    "welcome": "Transforma tu experiencia de escritorio utilizando IA con Shinkai Desktop",
+    "welcomeText": "Transforma tu experiencia de escritorio utilizando IA con Shinkai Desktop"
   },
   "disconnect": {
     "exportConnection": "Antes de continuar, por favor <Link>exporta tu conexión</Link> para restaurarla en cualquier momento.",
@@ -297,6 +323,15 @@
       "label": "Idioma",
       "selectLanguage": "Seleccionar Idioma"
     },
+    "layout": {
+      "analytics": "Analíticas",
+      "createRegistrationCode": "Crear Código de Registro",
+      "exportConnection": "Exportar Conexión",
+      "galxe": "Misión Galxe",
+      "general": "General",
+      "publicKeys": "Claves Públicas",
+      "shinkaiNode": "Administrador de Nodo Shinkai"
+    },
     "publicKeys": {
       "label": "Claves Públicas",
       "myDeviceEncryption": "Cifrado de Mi Dispositivo",
@@ -388,6 +423,7 @@
       "downloadedModel": "Modelo de IA {{modelName}} descargado exitosamente",
       "downloadingModel": "Descargando modelo de IA {{modelName}} - {{progress}}%",
       "errorSyncOllama": "Error al sincronizar los modelos locales de Ollama con tu Nodo Shinkai",
+      "installingModel": "Instalando {{modelName}} ...",
       "optionsRestored": "Opciones restauradas a los valores predeterminados",
       "removedNote": "Se eliminó el almacenamiento de tu Nodo Shinkai local",
       "runningNode": "Tu Nodo Shinkai local está en funcionamiento",

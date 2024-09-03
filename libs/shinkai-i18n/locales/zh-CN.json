@@ -131,7 +131,33 @@
     "uploadFile": "上传文件"
   },
   "desktop": {
-    "welcome": "使用Shinkai Desktop利用人工智能改变您的桌面体验"
+    "benefits": {
+      "local": "<b>本地：</b> 使用本地的 Shinkai，您可以在安全环境中完全控制您的数据。",
+      "privacy": "<b>注重隐私：</b> 您的数据在离线环境下保持安全，并具有强大的隐私保护功能。",
+      "tools": "<b>日常任务工具：</b> 支持 100 多种集成和持续增加中。"
+    },
+    "localAI": "Shinkai 本地 AI",
+    "model": {
+      "downloading": "下载中",
+      "embeddingBenefits": {
+        "dataAnalysis": "<b>改进数据分析：</b> 从非结构化数据中提取有意义的见解，改善决策过程和运营效率。",
+        "efficient": "<b>紧凑高效：</b> Arctic-embed-xs 只有 2200 万参数和 384 维嵌入向量，旨在资源高效。",
+        "highRetrieval": "<b>高检索性能：</b> 它可以有效地从大型数据集中检索相关信息，在搜索和检索任务中具有高准确性。"
+      },
+      "gemmaBenefits": {
+        "fast": "<b>快速执行：</b> 用户指出它在中档硬件上运行效率高，实现更快的响应和更流畅的交互而无明显延迟。",
+        "lightweight": "<b>轻量级：</b> 这种轻量级特性意味着它需要更少的内存和计算能力，使更广泛的用户和应用程序可以访问。",
+        "performance": "<b>紧凑高性能：</b> gemma2:2b 模型旨在在保持相对较小的 20 亿参数的情况下提供领先的性能。"
+      },
+      "installation": "正在安装 {{modelName}}...",
+      "ollamaBenefits": {
+        "language": "<b>强大的语言生成：</b> 在各种应用程序中生成类似人类的文本，如内容生成、语言翻译和编码辅助。",
+        "multilingual": "<b>多语言支持：</b> 该模型支持多种语言的对话，包括英语、西班牙语、法语、德语等。",
+        "resource": "<b>高效利用资源：</b> 与较大模型相比，它是一个轻量级、超快速的模型。"
+      }
+    },
+    "welcome": "使用Shinkai Desktop利用人工智能改变您的桌面体验",
+    "welcomeText": "通过Shinkai Desktop使用人工智能改变您的桌面体验"
   },
   "disconnect": {
     "exportConnection": "在继续之前，请<Link>导出您的连接</Link>以随时恢复连接。",
@@ -297,6 +323,15 @@
       "label": "语言",
       "selectLanguage": "选择语言"
     },
+    "layout": {
+      "analytics": "分析",
+      "createRegistrationCode": "创建注册码",
+      "exportConnection": "导出连接",
+      "galxe": "Galxe任务",
+      "general": "常规",
+      "publicKeys": "公钥",
+      "shinkaiNode": "深海节点管理器"
+    },
     "publicKeys": {
       "label": "公钥",
       "myDeviceEncryption": "我的设备加密",
@@ -388,6 +423,7 @@
       "downloadedModel": "AI 模型 {{modelName}} 下载成功",
       "downloadingModel": "正在下载 AI 模型 {{modelName}} - {{progress}}%",
       "errorSyncOllama": "同步本地 Ollama 模型与您的 Shinkai 节点时出错",
+      "installingModel": "正在安装 {{modelName}} ...",
       "optionsRestored": "选项已恢复为默认值",
       "removedNote": "您的本地 Shinkai 节点存储已移除",
       "runningNode": "您的本地 Shinkai 节点正在运行",

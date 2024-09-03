@@ -131,7 +131,33 @@
     "uploadFile": "Unggah Berkas"
   },
   "desktop": {
-    "welcome": "Transformasikan pengalaman desktop Anda menggunakan AI dengan Shinkai Desktop"
+    "benefits": {
+      "local": "<b>Lokal:</b> Dengan Shinkai lokal, Anda mendapatkan kontrol penuh atas data Anda dalam lingkungan yang aman.",
+      "privacy": "<b>Berfokus pada Privasi:</b> Data Anda tetap aman dengan kemampuan offline dan perlindungan privasi yang kuat.",
+      "tools": "<b>Alat untuk Tugas Sehari-hari:</b> Mendukung 100+ integrasi dan terus bertambah."
+    },
+    "localAI": "Kecerdasan Buatan Lokal Shinkai",
+    "model": {
+      "downloading": "Mengunduh",
+      "embeddingBenefits": {
+        "dataAnalysis": "<b>Analisis Data yang Ditingkatkan:</b> Ekstrak wawasan yang bermakna dari data tak terstruktur, meningkatkan proses pengambilan keputusan dan efisiensi operasional.",
+        "efficient": "<b>Ukuran Kompak & Efisien:</b> Dengan hanya 22 juta parameter dan vektor embedding 384 dimensi, Arctic-embed-xs dirancang untuk efisiensi sumber daya.",
+        "highRetrieval": "<b>Kinerja Pemulihan Tinggi:</b> Dapat mengambil informasi relevan dari kumpulan data besar secara efektif, dengan akurasi tinggi dalam tugas pencarian dan pemulihan."
+      },
+      "gemmaBenefits": {
+        "fast": "<b>Eksekusi Cepat:</b> Pengguna mencatat bahwa model ini berjalan efisien pada perangkat keras kelas menengah, memungkinkan respon lebih cepat dan interaksi yang lebih lancar tanpa lag yang signifikan.",
+        "lightweight": "<b>Ringan:</b> Sifat ringan ini berarti membutuhkan lebih sedikit memori dan daya komputasi, menjadikannya dapat diakses oleh berbagai pengguna dan aplikasi.",
+        "performance": "<b>Kinerja Tinggi dalam Ukuran Kompak:</b> Model gemma2:2b dirancang untuk memberikan kinerja terkemuka sambil mempertahankan ukuran relatif kecil sebesar 2 miliar parameter."
+      },
+      "installation": "Menginstal {{modelName}}...",
+      "ollamaBenefits": {
+        "language": "<b>Generasi Bahasa yang Kuat:</b> Menghasilkan teks mirip manusia di berbagai aplikasi seperti generasi konten, terjemahan bahasa, dan bantuan pengkodean.",
+        "multilingual": "<b>Dukungan Multibahasa:</b> Model ini mendukung dialog dalam beberapa bahasa termasuk Bahasa Inggris, Spanyol, Perancis, Jerman, dan lainnya",
+        "resource": "<b>Penggunaan Sumber Daya yang Efisien:</b> Ini adalah model ringan dan ultra-cepat dibandingkan dengan model yang lebih besar."
+      }
+    },
+    "welcome": "Transformasikan pengalaman desktop Anda menggunakan AI dengan Shinkai Desktop",
+    "welcomeText": "Transformasikan pengalaman desktop Anda menggunakan kecerdasan buatan dengan Shinkai Desktop"
   },
   "disconnect": {
     "exportConnection": "Sebelum melanjutkan, harap<Link>ekspor koneksi Anda</Link>untuk memulihkan koneksi Anda kapan saja.",
@@ -297,6 +323,15 @@
       "label": "Bahasa",
       "selectLanguage": "Pilih Bahasa"
     },
+    "layout": {
+      "analytics": "Analitika",
+      "createRegistrationCode": "Buat Kode Registrasi",
+      "exportConnection": "Ekspor Koneksi",
+      "galxe": "Pertualangan Galxe",
+      "general": "Umum",
+      "publicKeys": "Kunci Publik",
+      "shinkaiNode": "Manajer Node Shinkai"
+    },
     "publicKeys": {
       "label": "Kunci Publik",
       "myDeviceEncryption": "Enkripsi Perangkat Saya",
@@ -388,6 +423,7 @@
       "downloadedModel": "Model AI {{modelName}} berhasil diunduh",
       "downloadingModel": "Mengunduh model AI {{modelName}} - {{progress}}%",
       "errorSyncOllama": "Kesalahan saat menyinkronkan model Ollama lokal dengan Node Shinkai Anda",
+      "installingModel": "Menginstal {{modelName}} ...",
       "optionsRestored": "Opsi dikembalikan ke nilai default",
       "removedNote": "Penyimpanan Node Shinkai lokal Anda telah dihapus",
       "runningNode": "Node Shinkai lokal Anda sedang berjalan",

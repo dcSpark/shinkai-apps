@@ -131,7 +131,33 @@
     "uploadFile": "ファイルをアップロード"
   },
   "desktop": {
-    "welcome": "Shinkai Desktopを使用してAIでデスクトップ体験を変革しましょう"
+    "benefits": {
+      "local": "<b>ローカル:</b> ローカルのShinkaiを使用すると、データを安全な環境で完全にコントロールできます。",
+      "privacy": "<b>プライバシー重視:</b> データはオフライン機能と強力なプライバシー保護で安全に保護されます。",
+      "tools": "<b>日常業務のためのツール:</b> 100以上の統合をサポートし、さらに増え続けています。"
+    },
+    "localAI": "Shinkai ローカルAI",
+    "model": {
+      "downloading": "ダウンロード中",
+      "embeddingBenefits": {
+        "dataAnalysis": "<b>改善されたデータ分析:</b> 非構造化データから意味のある洞察を抽出し、意思決定プロセスと業務効率を向上させます。",
+        "efficient": "<b>コンパクトで効率的:</b> 2200万のパラメータと384次元の埋め込みベクトルのみで、Arctic-embed-xsはリソース効率を考慮して設計されています。",
+        "highRetrieval": "<b>高い検索性能:</b> 大規模なデータセットから関連情報を効果的に取得し、検索および検索タスクで高い精度を実現します。"
+      },
+      "gemmaBenefits": {
+        "fast": "<b>高速実行:</b> ユーザーは、中程度のハードウェアで効率的に実行され、大幅な遅延なしにより迅速な応答とスムーズなインタラクションを可能にすると述べています。",
+        "lightweight": "<b>軽量:</b> この軽量性により、より少ないメモリと計算能力が必要となり、幅広いユーザーやアプリケーションにアクセス可能になります。",
+        "performance": "<b>コンパクトサイズで高性能:</b> gemma2:2bモデルは、2つのパラメータが20億で比較的小さなサイズを維持しながら、業界をリードするパフォーマンスを提供するよう設計されています。"
+      },
+      "installation": "{{modelName}}のインストール中...",
+      "ollamaBenefits": {
+        "language": "<b>強力な言語生成:</b> コンテンツ生成、言語翻訳、コーディング支援など、さまざまなアプリケーションで人間らしいテキストを生成します。",
+        "multilingual": "<b>多言語サポート:</b> このモデルは、英語、スペイン語、フランス語、ドイツ語など、複数の言語での対話をサポートしています。",
+        "resource": "<b>リソースの効率的な使用:</b> より大きなモデルと比較して、軽量で超高速なモデルです。"
+      }
+    },
+    "welcome": "Shinkai Desktopを使用してAIでデスクトップ体験を変革しましょう",
+    "welcomeText": "Shinkai Desktopを使用してAIを活用してデスクトップ体験を変革しましょう"
   },
   "disconnect": {
     "exportConnection": "続行する前に、接続をいつでも復元するために<Link>接続をエクスポート</Link>してください",
@@ -297,6 +323,15 @@
       "label": "言語",
       "selectLanguage": "言語を選択"
     },
+    "layout": {
+      "analytics": "分析",
+      "createRegistrationCode": "登録コードの作成",
+      "exportConnection": "接続のエクスポート",
+      "galxe": "ガルクス・クエスト",
+      "general": "一般",
+      "publicKeys": "公開鍵",
+      "shinkaiNode": "シンカイ・ノード・マネージャー"
+    },
     "publicKeys": {
       "label": "公開鍵",
       "myDeviceEncryption": "私のデバイスの暗号化",
@@ -388,6 +423,7 @@
       "downloadedModel": "AIモデル {{modelName}} のダウンロードが完了しました",
       "downloadingModel": "AIモデル {{modelName}} をダウンロード中 - {{progress}}%",
       "errorSyncOllama": "ローカルオラマモデルをシンカイノードと同期する際にエラーが発生しました",
+      "installingModel": "インストール中 {{modelName}} ...",
       "optionsRestored": "オプションがデフォルト値に復元されました",
       "removedNote": "ローカルシンカイノードのストレージが削除されました",
       "runningNode": "ローカルシンカイノードが稼働中です",

@@ -3,7 +3,33 @@
     "welcome": "Transform your web browsing experience using AI with Shinkai Visor ✨"
   },
   "desktop": {
-    "welcome": "Transform your desktop experience using AI with Shinkai Desktop"
+    "welcome": "Welcome to Shinkai ✨",
+    "welcomeText": "Transform your desktop experience using AI with Shinkai Desktop",
+    "localAI": "Shinkai Local AI",
+    "benefits": {
+      "local": "<b>Local:</b> With a local Shinkai, you gain complete control over your data in a secure environment.",
+      "privacy": "<b>Privacy-Focused:</b> Your data remains secure with offline capabilities and strong privacy protections.",
+      "tools": "<b>Tools for Everyday Tasks:</b> Supports 100+ integrations and counting."
+    },
+    "model": {
+      "installation": "Installing {{modelName}}...",
+      "downloading": "Downloading",
+      "embeddingBenefits": {
+        "efficient": "<b>Compact Size & Efficient:</b> With only 22 million parameters and a 384-dimensional embedding vector, the Arctic-embed-xs is designed to be resource-efficient.",
+        "highRetrieval": "<b>High Retrieval Performance:</b> It can effectively retrieve relevant information from large datasets, with high accuracy in search and retrieval tasks.",
+        "dataAnalysis": "<b>Improved Data Analysis:</b> Extract meaningful insights from unstructured data, improving decision-making processes and operational efficiency."
+      },
+      "gemmaBenefits": {
+        "performance": "<b>High Performance in a Compact Size:</b>The gemma2:2b model is designed to deliver class-leading performance while maintaining a relatively small size of 2 billion parameters. ",
+        "fast": "<b>Fast Execution:</b> Users have noted that it runs efficiently on mid-range hardware, enabling faster responses and smoother interactions without significant lag.",
+        "lightweight": "<b>Lightweight:</b>This lightweight nature means it requires less memory and computational power, making it accessible for a wider range of users and applications."
+      },
+      "ollamaBenefits": {
+        "resource": "<b>Efficient Resource Usage:</b> It's a light-weight, ultra-fast model compared to larger models.",
+        "language": "<b>Powerful Language Generation:</b> Generate human-like text across a variety of applications such as content generation, language translation, and coding assistance.",
+        "multilingual": "<b>Multilingual Support:</b> The model supports dialogues in multiple languages including English, Spanish, French, German and more"
+      }
+    }
   },
   "layout": {
     "sidebar": {
@@ -164,16 +190,17 @@
       "stoppedNode": "Your local Shinkai Node was stopped",
       "stopNode": "Stopping your local Shinkai Node",
       "removedNote": "Your local Shinkai Node storage was removed",
-      "startingOllama": "Starting your local Ollama",
-      "runningOllama": "Your local Ollama is running",
+      "startingOllama": "Starting your Ollama",
+      "runningOllama": "Your Ollama is running",
       "stoppedOllama": "Your local Ollama was stopped",
       "stopOllama": "Stopping your local Ollama",
       "syncedOllama": "Local Ollama models synchronized with your Shinkai Node",
       "errorSyncOllama": "Error synchronizing your local Ollama models with your Shinkai Node",
       "optionsRestored": "Options restored to default values",
-      "startingDownload": "Starting download for AI model {{modelName}}",
+      "startingDownload": "Starting downloading {{modelName}}",
       "downloadingModel": "Downloading AI model {{modelName}} - {{progress}}%",
-      "downloadedModel": "AI model {{modelName}} downloaded successfully"
+      "downloadedModel": "AI model {{modelName}} downloaded successfully",
+      "installingModel": "Installing {{modelName}} ..."
     },
     "manager": "Shinkai Node Manager",
     "resetNodeWarning": {
@@ -226,6 +253,15 @@
     "label": "Settings",
     "description": "Manage your account settings preferences.",
     "defaultAgent": "Default AI",
+    "layout": {
+      "general": "General",
+      "shinkaiNode": "Shinkai Node Manager",
+      "exportConnection": "Export Connection",
+      "createRegistrationCode": "Create Registration Code",
+      "analytics": "Analytics",
+      "publicKeys": "Public Keys",
+      "galxe": "Galxe Quest"
+    },
     "shinkaiIdentity": {
       "label": "Shinkai Identity",
       "updatedIdentity": "Shinkai Identity updated successfully.",
@@ -357,7 +393,7 @@
     "signUpShinkaiHosting": "Sign up For Shinkai Hosting",
     "quickConnect": "Quick Connect",
     "alreadyHaveNode": "Already have a Node?",
-    "shinkaiPrivate": "Setup Your Local AI (Shinkai)",
+    "shinkaiPrivate": "Setup Your Local AI",
     "seeOptions": "See Options",
     "termsAndConditionsText": "I agree to our <a>Terms of Service</a> and <b>Privacy Policy</b>",
     "recommended": "Recommended",
@@ -381,12 +417,12 @@
     "label": "Analytics",
     "title": "Help us improve Shinkai",
     "bulletPoints": {
-      "one": "✅ Always allow you to opt-out via Settings",
-      "two": "✅ Randomized Analytics",
-      "three": "✅ Send analytical information about what features you use but without any content or responses",
-      "four": "❌ Never collect your IP address",
-      "five": "❌ Never collect your AI queries",
-      "six": "❌ Never use personal information for training purposes"
+      "one": "<check/> Always allow you to opt-out via Settings",
+      "two": "<check/> Randomized Analytics",
+      "three": "<check/> Send analytical information about what features you use but without any content or responses",
+      "four": "<x/> Never collect your IP address",
+      "five": "<x/> Never collect your AI queries",
+      "six": "<x/> Never use personal information for training purposes"
     },
     "moreInfo": "Fore more information in relation to our privacy practices, please see our <a>Privacy Policy</a>"
   },

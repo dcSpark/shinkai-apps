@@ -504,7 +504,7 @@ export function MainNav() {
                           onClick={() => {
                             setIsConfirmLogoutDialogOpened(false);
                           }}
-                          to={'/export-connection'}
+                          to={'/settings/export-connection'}
                         />
                       ),
                     }}
