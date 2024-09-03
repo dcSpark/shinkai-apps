@@ -1,6 +1,6 @@
 use regex::Regex;
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, sync::Arc};
+use std::{collections::HashMap, path::PathBuf, sync::Arc};
 use tauri::api::process::{Command, CommandChild, CommandEvent};
 use tokio::sync::mpsc::Sender;
 use tokio::sync::Mutex;
@@ -31,7 +31,11 @@ impl ProcessHandler {
     const MIN_MS_ALIVE: u64 = 5000;
 
     /// Initializes a new ShinkaiNodeManager with default or provided options
-    pub(crate) fn new(process_name: String, event_sender: Sender<ProcessHandlerEvent>, ready_matcher: Regex) -> Self {
+    pub(crate) fn new(
+        process_name: String,
+        event_sender: Sender<ProcessHandlerEvent>,
+        ready_matcher: Regex,
+    ) -> Self {
         kill_process_by_name(process_name.as_str());
         ProcessHandler {
             process_name: process_name.clone(),
@@ -83,7 +87,12 @@ impl ProcessHandler {
         process.is_some()
     }
 
-    pub async fn spawn(&self, env: HashMap<String, String>, args: Vec<&str>) -> Result<(), String> {
+    pub async fn spawn(
+        &self,
+        env: HashMap<String, String>,
+        args: Vec<&str>,
+        current_dir: Option<PathBuf>,
+    ) -> Result<(), String> {
         {
             let process = self.process.lock().await;
             if process.is_some() {
@@ -100,6 +109,7 @@ impl ProcessHandler {
                 message
             })?
             .envs(env.clone())
+            .current_dir(current_dir.unwrap_or_else(|| std::path::PathBuf::from("./")))
             .args(args)
             .spawn()
             .map_err(|error| {

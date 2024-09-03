@@ -1,10 +1,10 @@
-use std::time::Duration;
+use std::{path::PathBuf, time::Duration};
 
 use regex::Regex;
 use serde::Serialize;
 use tokio::sync::mpsc::Sender;
 
-use crate::local_shinkai_node::ollama_api::ollama_api_client::OllamaApiClient;
+use crate::{app::APP_HANDLE, local_shinkai_node::ollama_api::ollama_api_client::OllamaApiClient};
 
 use super::{
     logger::LogEntry,
@@ -18,6 +18,8 @@ pub struct OllamaOptions {
     pub ollama_num_parallel: String,
     pub ollama_max_loaded_models: String,
     pub ollama_origins: String,
+    pub ollama_debug: String,
+    pub ollama_runners_dir: Option<String>,
 }
 
 pub struct OllamaProcessHandler {
@@ -47,6 +49,8 @@ impl OllamaProcessHandler {
             ollama_num_parallel: "1".to_string(),
             ollama_max_loaded_models: "2".to_string(),
             ollama_origins: "*".to_string(),
+            ollama_debug: "true".to_string(),
+            ollama_runners_dir: None,
         }
     }
 
@@ -82,8 +86,53 @@ impl OllamaProcessHandler {
     }
 
     pub async fn spawn(&self, ensure_model: Option<&str>) -> Result<(), String> {
-        let env = options_to_env(&self.options);
-        self.process_handler.spawn(env, ["serve"].to_vec()).await?;
+        let resource_dir = APP_HANDLE
+        .get()
+        .unwrap()
+        .lock().await
+        .path_resolver()
+        .resource_dir();
+
+        let ollama_process_cwd = if cfg!(target_os = "windows") {
+            Some(
+                PathBuf::from(resource_dir
+                    .clone()
+                    .map(|dir| {
+                        dir.join("external-binaries/ollama")
+                            .to_string_lossy()
+                            .to_string()
+                    })
+                    .unwrap_or_default())
+            )
+        } else {
+            None
+        };
+        let ollama_runners_dir = if cfg!(target_os = "windows") {
+            Some(
+                resource_dir
+                    .clone()
+                    .map(|dir| {
+                        dir.join("external-binaries/ollama/lib/ollama/runners")
+                            .to_string_lossy()
+                            .to_string()
+                    })
+                    .unwrap_or_default(),
+            )
+        } else {
+            None
+        };
+        let options = OllamaOptions {
+            ollama_runners_dir,
+            ..self.options.clone()
+        };
+        let env = options_to_env(&options);
+        self.process_handler
+            .spawn(
+                env,
+                ["serve"].to_vec(),
+                ollama_process_cwd,
+            )
+            .await?;
         if let Err(e) = self.wait_ollama_server().await {
             self.process_handler.kill().await;
             return Err(e);

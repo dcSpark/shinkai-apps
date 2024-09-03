@@ -1,9 +1,9 @@
 use std::{fs, time::Duration};
 
 use regex::Regex;
-use tokio::{sync::mpsc::Sender};
+use tokio::sync::mpsc::Sender;
 
-use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
+use crate::{app::APP_HANDLE, local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions};
 
 use super::{
     logger::LogEntry,
@@ -31,6 +31,7 @@ impl ShinkaiNodeProcessHandler {
         let options = ShinkaiNodeOptions::with_storage_path(default_node_storage_path.clone());
         let process_handler =
             ProcessHandler::new(Self::PROCESS_NAME.to_string(), event_sender, ready_matcher);
+
         ShinkaiNodeProcessHandler {
             default_node_storage_path: default_node_storage_path.clone(),
             process_handler,
@@ -93,11 +94,14 @@ impl ShinkaiNodeProcessHandler {
         }
         let options = self.options.clone();
         let storage_path = options.node_storage_path.unwrap();
-        for entry in fs::read_dir(storage_path).map_err(|e| format!("Failed to read storage directory: {}", e))? {
+        for entry in fs::read_dir(storage_path)
+            .map_err(|e| format!("Failed to read storage directory: {}", e))?
+        {
             let entry = entry.map_err(|e| format!("Failed to read directory entry: {}", e))?;
             let path = entry.path();
             if path.is_dir() {
-                fs::remove_dir_all(path).map_err(|e| format!("Failed to remove directory: {}", e))?;
+                fs::remove_dir_all(path)
+                    .map_err(|e| format!("Failed to remove directory: {}", e))?;
             } else {
                 if preserve_keys && path.ends_with(".secret") {
                     // Delete the line starting with 'GLOBAL_IDENTITY_NAME=' in .secret file
@@ -121,8 +125,73 @@ impl ShinkaiNodeProcessHandler {
     }
 
     pub async fn spawn(&self) -> Result<(), String> {
-        let env = options_to_env(&self.options);
-        self.process_handler.spawn(env, [].to_vec()).await?;
+        let shinkai_tools_backend_binary_path = if cfg!(target_os = "windows") {
+            std::env::current_exe()
+                .unwrap()
+                .parent()
+                .unwrap()
+                .join("shinkai-tools-backend.exe")
+                .to_string_lossy()
+                .to_string()
+        } else {
+            std::env::current_exe()
+                .unwrap()
+                .parent()
+                .unwrap()
+                .join("shinkai-tools-backend")
+                .to_string_lossy()
+                .to_string()
+        };
+
+        let resource_dir = APP_HANDLE
+            .get()
+            .unwrap()
+            .lock()
+            .await
+            .path_resolver()
+            .resource_dir();
+
+        let pdfium_path = if cfg!(target_os = "macos") {
+            Some(
+                resource_dir
+                    .clone()
+                    .map(|dir| {
+                        dir.join("../Frameworks/libpdfium.dylib")
+                            .to_string_lossy()
+                            .to_string()
+                    })
+                    .unwrap_or_default(),
+            )
+        } else if cfg!(target_os = "windows") {
+            Some(
+                resource_dir
+                    .clone()
+                    .map(|dir| {
+                        dir.join("external-binaries/shinkai-node/pdfium.dll")
+                            .to_string_lossy()
+                            .to_string()
+                    })
+                    .unwrap_or_default(),
+            )
+        } else {
+            Some(
+                resource_dir
+                    .clone()
+                    .map(|dir| {
+                        dir.join("external-binaries/shinkai-node/libpdfium.so")
+                            .to_string_lossy()
+                            .to_string()
+                    })
+                    .unwrap_or_default(),
+            )
+        };
+        let options = ShinkaiNodeOptions {
+            shinkai_tools_backend_binary_path: Some(shinkai_tools_backend_binary_path),
+            pdfium_dynamic_lib_path: pdfium_path,
+            ..self.options.clone()
+        };
+        let env = options_to_env(&options);
+        self.process_handler.spawn(env, [].to_vec(), None).await?;
         if let Err(e) = self.wait_shinkai_node_server().await {
             self.process_handler.kill().await;
             return Err(e);

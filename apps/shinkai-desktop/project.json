@@ -24,7 +24,10 @@
       "defaultConfiguration": "development",
       "options": {
         "cwd": "apps/shinkai-desktop",
-        "command": "npx tauri dev --config=\"./src-tauri/tauri.conf.local.json\""
+        "command": "npx tauri dev --config=\"./src-tauri/tauri.conf.local.json\"",
+        "env": {
+          "IS_DEV": "true"
+        }
       },
       "configurations": {
         "development": {},

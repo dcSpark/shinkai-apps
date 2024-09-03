@@ -21,17 +21,11 @@
       },
       "shell": {
         "all": false,
-        "open": true,
         "sidecar": true,
         "scope": [
-          {
-            "name": "bin/shinkai-node",
-            "sidecar": true
-          },
-          {
-            "name": "bin/ollama",
-            "sidecar": true
-          }
+          { "name": "external-binaries/shinkai-node/shinkai-node", "sidecar": true },
+          { "name": "external-binaries/shinkai-node/shinkai-tools-runner-resources/shinkai-tools-backend", "sidecar": true },
+          { "name": "external-binaries/ollama/ollama", "sidecar": true }
         ]
       },
       "window": {
@@ -60,9 +54,7 @@
       "http": {
         "all": false,
         "request": true,
-        "scope": [
-          "http://localhost"
-        ]
+        "scope": ["http://localhost"]
       },
       "process": {
         "relaunch": true
@@ -80,11 +72,12 @@
         "icons/icon.ico"
       ],
       "macOS": {
-        "minimumSystemVersion": "10.13"
+        "minimumSystemVersion": "12.0"
       },
       "externalBin": [
-        "bin/shinkai-node",
-        "bin/ollama"
+        "external-binaries/shinkai-node/shinkai-node",
+        "external-binaries/shinkai-node/shinkai-tools-runner-resources/shinkai-tools-backend",
+        "external-binaries/ollama/ollama"
       ]
     },
     "security": {

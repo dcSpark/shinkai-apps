@@ -1,11 +1,12 @@
 import { exec } from 'child_process';
-import { createWriteStream } from 'fs';
+import { createWriteStream, existsSync } from 'fs';
 import path from 'path';
 import axios from 'axios';
 import { ensureFile } from 'fs-extra';
-import { copyFile, cp, readdir, rm } from 'fs/promises';
+import { copyFile, cp, mkdir, readdir, rename } from 'fs/promises';
 import * as zl from 'zip-lib';
 import { z } from 'zod';
+import { extract } from 'tar';
 
 enum Arch {
   x86_64_unknown_linux_gnu = 'x86_64-unknown-linux-gnu',
@@ -22,11 +23,32 @@ type Env = z.infer<typeof envSchema>;
 
 const env: Env = envSchema.parse(process.env);
 
+const TEMP_PATH = './temp';
+const OLLAMA_RESOURCES_PATH =
+  './apps/shinkai-desktop/src-tauri/external-binaries/ollama/';
+const SHINKAI_NODE_RESOURCES_PATH =
+  './apps/shinkai-desktop/src-tauri/external-binaries/shinkai-node/';
+
+const asBinaryName = (arch: Arch, path: string) => {
+  return `${path}${arch === Arch.x86_64_pc_windows_msvc ? '.exe' : ''}`;
+};
+
+const asSidecarName = (arch: Arch, path: string) => {
+  return path.replace(
+    /(.exe){0,1}$/,
+    `-${arch}${arch === Arch.x86_64_pc_windows_msvc ? '.exe' : ''}`,
+  );
+};
+
 const addExecPermissions = (path: string) => {
   console.log(`Adding exec permissions (+x) to ${path}`);
   return exec(`chmod +x ${path}`);
 };
+
 const downloadFile = async (url: string, path: string): Promise<void> => {
+  if (existsSync(path)) {
+    return Promise.resolve();
+  }
   console.log(`Downloading ${url}`);
   const response = await axios({
     method: 'GET',
@@ -58,53 +80,111 @@ const downloadFile = async (url: string, path: string): Promise<void> => {
 
 const downloadShinkaiNodeBinary = async (arch: Arch, version: string) => {
   console.log(`Downloading shinkai-node arch:${arch} version:${version}`);
-  let downloadUrl = `https://download.shinkai.com/shinkai-node/binaries/${arch}/shinkai-node-${version}`;
-  let path = `./apps/shinkai-desktop/src-tauri/bin/shinkai-node-${arch}`;
-  if (arch === Arch.x86_64_pc_windows_msvc) {
-    downloadUrl += '.exe';
-    path += '.exe';
+  const downloadUrl = `https://download.shinkai.com/shinkai-node/binaries/production/${arch}/${version}.zip`;
+  const zippedPath = path.join(TEMP_PATH, `shinkai-node-${version}.zip`);
+  await downloadFile(downloadUrl, zippedPath);
+  let unzippedPath = path.join(TEMP_PATH, `shinkai-node-${version}`);
+  await zl.extract(zippedPath, unzippedPath, {
+    overwrite: true,
+  });
+
+  const files = await readdir(unzippedPath);
+  for (const file of files) {
+    await cp(
+      path.join(unzippedPath, file),
+      path.join(SHINKAI_NODE_RESOURCES_PATH, file),
+      {
+        recursive: true,
+      },
+    );
   }
-  await downloadFile(downloadUrl, path);
-  await addExecPermissions(path);
+
+  // They are used as sidecars in Tauri
+  const shinkaiNodeBinaryPath = asBinaryName(
+    arch,
+    `./apps/shinkai-desktop/src-tauri/external-binaries/shinkai-node/shinkai-node`,
+  );
+  const shinkaiToolsBackendBinaryPath = asBinaryName(
+    arch,
+    `./apps/shinkai-desktop/src-tauri/external-binaries/shinkai-node/shinkai-tools-runner-resources/shinkai-tools-backend`,
+  );
+  await rename(
+    shinkaiNodeBinaryPath,
+    asSidecarName(arch, shinkaiNodeBinaryPath),
+  );
+  await rename(
+    shinkaiToolsBackendBinaryPath,
+    asSidecarName(arch, shinkaiToolsBackendBinaryPath),
+  );
+
+  await addExecPermissions(asSidecarName(arch, shinkaiNodeBinaryPath));
+  await addExecPermissions(asSidecarName(arch, shinkaiToolsBackendBinaryPath));
 };
 
 const downloadOllamaAarch64AppleDarwin = async (version: string) => {
-  let downloadUrl = `https://github.com/ollama/ollama/releases/download/${version}/ollama-darwin`;
-  let path = `./apps/shinkai-desktop/src-tauri/bin/ollama-${Arch.aarch64_apple_darwin}`;
+  const downloadUrl = `https://github.com/ollama/ollama/releases/download/${version}/ollama-darwin`;
+  const path = `./apps/shinkai-desktop/src-tauri/external-binaries/ollama/ollama-${Arch.aarch64_apple_darwin}`;
   await downloadFile(downloadUrl, path);
   await addExecPermissions(path);
 };
 
 const downloadOllamax8664UnknownLinuxGnu = async (version: string) => {
-  let downloadUrl = `https://github.com/ollama/ollama/releases/download/${version}/ollama-linux-amd64`;
-  let path = `./apps/shinkai-desktop/src-tauri/bin/ollama-${Arch.x86_64_unknown_linux_gnu}`;
-  await downloadFile(downloadUrl, path);
-  await addExecPermissions(path);
+  let downloadUrl = `https://github.com/ollama/ollama/releases/download/${version}/ollama-linux-amd64.tgz`;
+  const zippedPath = path.join(TEMP_PATH, `ollama-linux-amd64-${version}.tgz`);
+
+  await downloadFile(downloadUrl, zippedPath);
+
+  const unzippedPath = path.join(TEMP_PATH, `ollama-linux-amd64-${version}`);
+
+  await mkdir(unzippedPath, { recursive: true });
+  await extract({
+    f: zippedPath,
+    cwd: unzippedPath,
+    strip: 1,
+  });
+  const ollamaBinaryPath = asSidecarName(
+    Arch.x86_64_unknown_linux_gnu,
+    `./apps/shinkai-desktop/src-tauri/external-binaries/ollama/ollama`,
+  );
+  await ensureFile(ollamaBinaryPath);
+  await copyFile(path.join(unzippedPath, 'bin/ollama'), ollamaBinaryPath);
+  await addExecPermissions(ollamaBinaryPath);
 };
 
 const downloadOllamax8664PcWindowsMsvc = async (version: string) => {
-  let downloadUrl = `https://github.com/ollama/ollama/releases/download/${version}/ollama-windows-amd64.zip`;
-  let zippedPath = `./ollama-windows-amd64.zip`;
+  const downloadUrl = `https://github.com/ollama/ollama/releases/download/${version}/ollama-windows-amd64.zip`;
+  const zippedPath = path.join(
+    TEMP_PATH,
+    `ollama-windows-amd64-${version}.zip`,
+  );
+
   await downloadFile(downloadUrl, zippedPath);
 
-  let unzippedPath = 'ollama-windows-amd64';
+  const unzippedPath = path.join(TEMP_PATH, `ollama-windows-amd64-${version}`);
   await zl.extract(zippedPath, unzippedPath);
 
-  let resourcesPath =
-    './apps/shinkai-desktop/src-tauri/bin/ollama-windows-resources/';
   const files = await readdir(unzippedPath);
   for (const file of files) {
-    if (file !== 'ollama.exe') {
-      await cp(path.join(unzippedPath, file), path.join(resourcesPath, file), {
+    await cp(
+      path.join(unzippedPath, file),
+      path.join(OLLAMA_RESOURCES_PATH, file),
+      {
         recursive: true,
-      });
-    }
+      },
+    );
   }
-  let binaryPath = `./apps/shinkai-desktop/src-tauri/bin/ollama-${Arch.x86_64_pc_windows_msvc}.exe`;
-  await copyFile(path.join(unzippedPath, 'ollama.exe'), binaryPath);
-  await addExecPermissions(binaryPath);
-  await rm(unzippedPath, { recursive: true });
-  await rm(zippedPath);
+
+  const ollamaBinaryPath = asBinaryName(
+    Arch.x86_64_pc_windows_msvc,
+    `./apps/shinkai-desktop/src-tauri/external-binaries/ollama/ollama`,
+  );
+  await rename(
+    ollamaBinaryPath,
+    asSidecarName(Arch.x86_64_pc_windows_msvc, ollamaBinaryPath),
+  );
+  await addExecPermissions(
+    asSidecarName(Arch.x86_64_pc_windows_msvc, ollamaBinaryPath),
+  );
 };
 
 const downloadOllama = {

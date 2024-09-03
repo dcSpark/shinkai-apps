@@ -208,8 +208,8 @@ jobs:
       - name: Download side binaries
         env:
           ARCH: ${{ matrix.arch }}
-          SHINKAI_NODE_VERSION: v0.7.30
-          OLLAMA_VERSION: v0.3.6
+          SHINKAI_NODE_VERSION: v0.7.33
+          OLLAMA_VERSION: v0.3.9
         run: |
           npx ts-node ./ci-scripts/download-side-binaries.ts
 
