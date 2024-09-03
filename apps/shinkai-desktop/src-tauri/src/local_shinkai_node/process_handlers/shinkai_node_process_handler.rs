@@ -1,4 +1,4 @@
-use std::{fs, path::PathBuf, time::Duration};
+use std::{fs, time::Duration};
 
 use regex::Regex;
 use tokio::sync::mpsc::Sender;
@@ -15,7 +15,6 @@ pub struct ShinkaiNodeProcessHandler {
     default_node_storage_path: String,
     process_handler: ProcessHandler,
     options: ShinkaiNodeOptions,
-    shinkai_node_process_cwd: Option<String>,
 }
 
 impl ShinkaiNodeProcessHandler {
@@ -32,31 +31,11 @@ impl ShinkaiNodeProcessHandler {
         let options = ShinkaiNodeOptions::with_storage_path(default_node_storage_path.clone());
         let process_handler =
             ProcessHandler::new(Self::PROCESS_NAME.to_string(), event_sender, ready_matcher);
-        let resource_dir = APP_HANDLE
-            .get()
-            .unwrap()
-            .blocking_lock()
-            .path_resolver()
-            .resource_dir();
 
         ShinkaiNodeProcessHandler {
             default_node_storage_path: default_node_storage_path.clone(),
             process_handler,
             options,
-            shinkai_node_process_cwd: if cfg!(target_os = "windows") {
-                Some(
-                    resource_dir
-                        .clone()
-                        .map(|dir| {
-                            dir.join("external-binaries/shinkai-node")
-                                .to_string_lossy()
-                                .to_string()
-                        })
-                        .unwrap_or_default(),
-                )
-            } else {
-                None
-            },
         }
     }
 
@@ -171,6 +150,7 @@ impl ShinkaiNodeProcessHandler {
             .await
             .path_resolver()
             .resource_dir();
+
         let pdfium_path = if cfg!(target_os = "macos") {
             Some(
                 resource_dir
@@ -182,7 +162,7 @@ impl ShinkaiNodeProcessHandler {
                     })
                     .unwrap_or_default(),
             )
-        } else if cfg!(target_os = "winfows") {
+        } else if cfg!(target_os = "windows") {
             Some(
                 resource_dir
                     .clone()
@@ -211,13 +191,7 @@ impl ShinkaiNodeProcessHandler {
             ..self.options.clone()
         };
         let env = options_to_env(&options);
-        self.process_handler
-            .spawn(
-                env,
-                [].to_vec(),
-                None,
-            )
-            .await?;
+        self.process_handler.spawn(env, [].to_vec(), None).await?;
         if let Err(e) = self.wait_shinkai_node_server().await {
             self.process_handler.kill().await;
             return Err(e);
