@@ -11,8 +11,7 @@ export type GetChatConversationInput = Token & {
   enabled?: boolean;
   refetchIntervalEnabled?: boolean;
 };
-
-export type ChatConversationMessage = {
+export type FormattedChatMessage = {
   hash: string;
   parentHash: string;
   inboxId: string;
@@ -30,10 +29,9 @@ export type ChatConversationMessage = {
     }[];
   };
 };
-
-export type GetChatConversationOutput = ChatConversationMessage[];
+export type GetChatConversationOutput = FormattedChatMessage[];
 
 export type ChatConversationInfiniteData =
   InfiniteData<GetChatConversationOutput> & {
-    content: ChatConversationMessage[];
+    content: FormattedChatMessage[];
   };
