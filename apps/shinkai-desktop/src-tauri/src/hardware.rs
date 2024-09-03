@@ -104,7 +104,7 @@ pub fn hardware_get_summary() -> HardwareSummary {
     let cpus = sys.cpus().len();
 
     let requirement_status;
-    if cpus >= RECOMMENDED_CPUS && memory >= RECOMMENDED_MEMORY && (discrete_gpu || is_macos) {
+    if  is_macos || (cpus >= RECOMMENDED_CPUS && memory >= RECOMMENDED_MEMORY && discrete_gpu) {
         requirement_status = RequirementsStatus::Optimal;
     } else if cpus >= RECOMMENDED_CPUS && memory >= RECOMMENDED_MEMORY {
         requirement_status = RequirementsStatus::Recommended;

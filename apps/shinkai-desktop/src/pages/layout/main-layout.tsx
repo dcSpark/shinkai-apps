@@ -21,7 +21,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import {
   AISearchContentIcon,
-  AiTasksIcon,
+  // AiTasksIcon,
   BrowseSubscriptionIcon,
   CreateAIIcon,
   FilesIcon,
@@ -242,12 +242,12 @@ export function MainNav() {
       href: '/inboxes',
       icon: <InboxIcon className="h-5 w-5" />,
     },
-    {
-      title: t('layout.menuItems.aiTasks'),
-      href: '/ai-tasks',
-      icon: <AiTasksIcon className="h-5 w-5" />,
-      disabled: true,
-    },
+    // {
+    //   title: t('layout.menuItems.aiTasks'),
+    //   href: '/ai-tasks',
+    //   icon: <AiTasksIcon className="h-5 w-5" />,
+    //   disabled: true,
+    // },
     // auth?.shinkai_identity.includes('localhost') && {
     //   title: 'Create DM Chat',
     //   href: '/create-chat',
@@ -436,7 +436,7 @@ export function MainNav() {
                     </TooltipPortal>
                   </Tooltip>
                 </TooltipProvider>
-                {(item.href === '/ai-tasks' ||
+                {(item.href === '/my-subscriptions' ||
                   item.href === '/vector-search') && (
                   <Separator className="my-0.5 w-full bg-gray-200" />
                 )}

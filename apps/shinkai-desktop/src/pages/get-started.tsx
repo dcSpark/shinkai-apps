@@ -268,7 +268,7 @@ const GetStartedPage = () => {
           {/*    or*/}
           {/*  </span>*/}
           {/*</Separator>*/}
-          {!config.isDev && (
+          {config.isDev && (
             <div className="space-y-4">
               {/* Disable Shinkai Hosting */}
               {/*<a*/}
