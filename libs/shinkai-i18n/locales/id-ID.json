@@ -323,6 +323,15 @@
       "label": "Bahasa",
       "selectLanguage": "Pilih Bahasa"
     },
+    "layout": {
+      "analytics": "Analitika",
+      "createRegistrationCode": "Buat Kode Registrasi",
+      "exportConnection": "Ekspor Koneksi",
+      "galxe": "Pertualangan Galxe",
+      "general": "Umum",
+      "publicKeys": "Kunci Publik",
+      "shinkaiNode": "Manajer Node Shinkai"
+    },
     "publicKeys": {
       "label": "Kunci Publik",
       "myDeviceEncryption": "Enkripsi Perangkat Saya",

@@ -323,6 +323,15 @@
       "label": "Idioma",
       "selectLanguage": "Seleccionar Idioma"
     },
+    "layout": {
+      "analytics": "Analíticas",
+      "createRegistrationCode": "Crear Código de Registro",
+      "exportConnection": "Exportar Conexión",
+      "galxe": "Misión Galxe",
+      "general": "General",
+      "publicKeys": "Claves Públicas",
+      "shinkaiNode": "Administrador de Nodo Shinkai"
+    },
     "publicKeys": {
       "label": "Claves Públicas",
       "myDeviceEncryption": "Cifrado de Mi Dispositivo",

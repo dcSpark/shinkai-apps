@@ -323,6 +323,15 @@
       "label": "语言",
       "selectLanguage": "选择语言"
     },
+    "layout": {
+      "analytics": "分析",
+      "createRegistrationCode": "创建注册码",
+      "exportConnection": "导出连接",
+      "galxe": "Galxe任务",
+      "general": "常规",
+      "publicKeys": "公钥",
+      "shinkaiNode": "深海节点管理器"
+    },
     "publicKeys": {
       "label": "公钥",
       "myDeviceEncryption": "我的设备加密",

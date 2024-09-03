@@ -284,6 +284,15 @@ export default {
     label: 'Settings',
     description: 'Manage your account settings preferences.',
     defaultAgent: 'Default AI',
+    layout: {
+      general: 'General',
+      shinkaiNode: 'Shinkai Node Manager',
+      exportConnection: 'Export Connection',
+      createRegistrationCode: 'Create Registration Code',
+      analytics: 'Analytics',
+      publicKeys: 'Public Keys',
+      galxe: 'Galxe Quest',
+    },
     shinkaiIdentity: {
       label: 'Shinkai Identity',
       updatedIdentity: 'Shinkai Identity updated successfully.',
