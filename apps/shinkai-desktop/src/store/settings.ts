@@ -24,6 +24,8 @@ type SettingsStore = {
   setEvmAddress: (evmAddress: string) => void;
   heightRow: 'small' | 'medium' | 'large' | 'extra-large';
   setHeightRow: (height: 'small' | 'medium' | 'large' | 'extra-large') => void;
+  compatibilityBannerDismissed: boolean;
+  setCompatibilityBannerDismissed: (dismissed: boolean) => void;
 };
 
 export const useSettings = create<SettingsStore>()(
@@ -78,6 +80,11 @@ export const useSettings = create<SettingsStore>()(
         setHeightRow: (heightRow) => {
           set({ heightRow });
         },
+
+        compatibilityBannerDismissed: false,
+        setCompatibilityBannerDismissed: (dismissed) => {
+          set({ compatibilityBannerDismissed: dismissed });
+        },
       }),
       {
         name: 'settings',
@@ -90,7 +97,10 @@ useAuth.subscribe((state, prevState) => {
   handleAuthSideEffect(state.auth, prevState.auth);
 });
 
-const handleAuthSideEffect = async (auth: SetupData | null, prevAuth: SetupData | null) => {
+const handleAuthSideEffect = async (
+  auth: SetupData | null,
+  prevAuth: SetupData | null,
+) => {
   // SignOut case
   if (prevAuth && !auth) {
     useSettings.getState().setDefaultAgentId('');

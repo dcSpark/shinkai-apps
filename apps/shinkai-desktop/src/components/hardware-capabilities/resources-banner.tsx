@@ -10,7 +10,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, XIcon } from 'lucide-react';
 
 import {
   RequirementsStatus,
@@ -28,6 +28,12 @@ export const ResourcesBanner = ({
 }) => {
   const { isSuccess, data: hardwareSummary } = useHardwareGetSummaryQuery();
   const sidebarExpanded = useSettings((state) => state.sidebarExpanded);
+  const compatibilityBannerDismissed = useSettings(
+    (state) => state.compatibilityBannerDismissed,
+  );
+  const setCompatibilityBannerDismissed = useSettings(
+    (state) => state.setCompatibilityBannerDismissed,
+  );
 
   const isOptimal =
     hardwareSummary?.requirements_status === RequirementsStatus.Optimal;
@@ -40,7 +46,7 @@ export const ResourcesBanner = ({
     hardwareSummary?.requirements_status === RequirementsStatus.Minimum;
 
   const alertContent = (
-    <Alert className="shadow-lg" variant="warning">
+    <Alert className="relative shadow-lg" variant="warning">
       <AlertTriangle className="h-4 w-4" />
       <AlertTitle className="text-sm font-medium">
         Device Compatibility
@@ -85,9 +91,16 @@ export const ResourcesBanner = ({
           </div> */}
         </div>
       </AlertDescription>
+      <button
+        className="absolute right-2 top-2 z-[100] text-gray-500 hover:text-gray-700"
+        onClick={() => setCompatibilityBannerDismissed(true)}
+        type="button"
+      >
+        <XIcon className="h-4 w-4 text-yellow-200" />
+      </button>
     </Alert>
   );
-  if (isInSidebar && !isOptimal) {
+  if (isInSidebar && !isOptimal && !compatibilityBannerDismissed) {
     return (
       <div className={cn('flex w-full flex-col text-xs', className)}>
         <TooltipProvider delayDuration={0}>
@@ -130,6 +143,10 @@ export const ResourcesBanner = ({
         </TooltipProvider>
       </div>
     );
+  }
+
+  if (compatibilityBannerDismissed) {
+    return null;
   }
 
   return (
