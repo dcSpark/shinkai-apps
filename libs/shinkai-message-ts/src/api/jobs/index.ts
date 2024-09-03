@@ -155,6 +155,25 @@ export const uploadFilesToInbox = async (
   return folderId;
 };
 
+export const downloadFileFromInbox = async (
+  nodeAddress: string,
+  bearerToken: string,
+  inboxName: string,
+  filename: string,
+) => {
+  const response = await httpClient.get(
+    urlJoin(
+      nodeAddress,
+      `/v2/download_file_from_inbox/${inboxName}/${filename}`,
+    ),
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'blob',
+    },
+  );
+  return response.data as Blob;
+};
+
 export const getLLMProviders = async (
   nodeAddress: string,
   bearerToken: string,

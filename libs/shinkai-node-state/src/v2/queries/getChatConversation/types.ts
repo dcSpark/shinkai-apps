@@ -26,6 +26,7 @@ export type FormattedChatMessage = {
     id: string;
     files: {
       name: string;
+      preview?: string;
     }[];
   };
 };

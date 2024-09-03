@@ -3,6 +3,8 @@ import {
   FetchPreviousPageOptions,
   InfiniteQueryObserverResult,
 } from '@tanstack/react-query';
+import { AnimatePresence, motion } from 'framer-motion';
+import { CheckCircle, Loader2 } from 'lucide-react';
 import React, {
   Fragment,
   useCallback,
@@ -335,74 +337,165 @@ function Payment({ amount, currency }: { amount: number; currency: string }) {
     'one-time' | 'download' | 'both'
   >('one-time');
 
+  const [status, setStatus] = React.useState<
+    'idle' | 'pending' | 'success' | 'error'
+  >('idle');
+
+  const handleConfirmPayment = () => {
+    setStatus('pending');
+    setTimeout(() => {
+      setStatus('success');
+    }, 1000);
+  };
+
   return (
-    <div className="-mt-7 mb-4 ml-10 max-w-4xl rounded-xl border border-gray-300 p-1">
+    <motion.div
+      animate={{ opacity: 1, y: 0 }}
+      className="-mt-7 mb-4 ml-10 min-h-[250px] max-w-4xl rounded-xl border border-gray-300 p-1"
+      exit={{ opacity: 0, y: -20 }}
+      initial={{ opacity: 0, y: 20 }}
+      transition={{ duration: 0.3 }}
+    >
       <Card className="mx-auto max-w-xl border-0">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-center text-lg font-semibold">
-            YouTube Transcript
-          </CardTitle>
-          <CardDescription className="text-center text-xs">
-            Elevate your YouTube experience with the ultimate transcript viewer
-            plugin.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <RadioGroup
-            className="grid grid-cols-2 gap-4"
-            onValueChange={(value) =>
-              setSelectedPlan(value as 'one-time' | 'download' | 'both')
-            }
-            value={selectedPlan}
-          >
-            <div className="relative">
-              <RadioGroupItem
-                className="peer sr-only"
-                id="one-time"
-                value="one-time"
-              />
-              <Label
-                className="hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-brand [&:has([data-state=checked])]:border-brand flex w-full flex-col items-center justify-between rounded-md border-2 border-gray-400 bg-gray-500 p-4"
-                htmlFor="one-time"
+        <AnimatePresence mode="wait">
+          {status === 'idle' && (
+            <motion.div
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              initial={{ opacity: 0 }}
+              key="idle"
+              transition={{ duration: 0.2 }}
+            >
+              <CardHeader className="space-y-1">
+                <CardTitle className="text-center text-lg font-semibold">
+                  YouTube Transcript
+                </CardTitle>
+                <CardDescription className="text-center text-xs">
+                  Elevate your YouTube experience with the ultimate transcript
+                  viewer plugin.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <RadioGroup
+                  className="grid grid-cols-2 gap-4"
+                  onValueChange={(value) =>
+                    setSelectedPlan(value as 'one-time' | 'download' | 'both')
+                  }
+                  value={selectedPlan}
+                >
+                  <div className="relative">
+                    <RadioGroupItem
+                      className="peer sr-only"
+                      id="one-time"
+                      value="one-time"
+                    />
+                    <Label
+                      className="hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-brand [&:has([data-state=checked])]:border-brand flex w-full flex-col items-center justify-between rounded-md border-2 border-gray-400 bg-gray-500 p-4"
+                      htmlFor="one-time"
+                    >
+                      <span className="text-2xl font-semibold">$9.99</span>
+                      <span className="text-gray-100">one-time use</span>
+                    </Label>
+                  </div>
+                  <div className="relative">
+                    <RadioGroupItem
+                      className="peer sr-only"
+                      id="download"
+                      value="download"
+                    />
+                    <Label
+                      className="hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-brand [&:has([data-state=checked])]:border-brand flex w-full flex-col items-center justify-between rounded-md border-2 border-gray-400 bg-gray-500 p-4"
+                      htmlFor="download"
+                    >
+                      <span className="text-2xl font-semibold">$99.99</span>
+                      <span className="text-gray-100">for download</span>
+                    </Label>
+                  </div>
+                </RadioGroup>
+              </CardContent>
+            </motion.div>
+          )}
+
+          {status === 'pending' && (
+            <motion.div
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              initial={{ opacity: 0 }}
+              key="pending"
+              transition={{ duration: 0.2 }}
+            >
+              <CardContent className="mt-16 flex items-center justify-center py-8">
+                <Loader2 className="h-8 w-8 animate-spin text-white" />
+                <span className="text-gray-80 ml-2">Processing payment...</span>
+              </CardContent>
+            </motion.div>
+          )}
+
+          {status === 'success' && (
+            <motion.div
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              initial={{ opacity: 0, scale: 0.8 }}
+              key="success"
+              transition={{ duration: 0.3 }}
+            >
+              <CardContent>
+                <div className="flex flex-col items-center justify-center py-8">
+                  <CheckCircle className="h-12 w-12 text-green-500" />
+                  <span className="mt-4 text-lg font-semibold text-white">
+                    Payment Successful!
+                  </span>
+                  <span className="mt-2 text-sm text-gray-100">
+                    Thank you for your purchase.
+                  </span>
+                </div>
+              </CardContent>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <CardFooter className="flex justify-center">
+          <AnimatePresence mode="wait">
+            {status === 'idle' && (
+              <motion.div
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                initial={{ opacity: 0, y: 10 }}
+                key="idle-button"
+                transition={{ duration: 0.2 }}
               >
-                <span className="text-2xl font-semibold">$9.99</span>
-                <span className="text-gray-100">one-time use</span>
-              </Label>
-            </div>
-            <div className="relative">
-              <RadioGroupItem
-                className="peer sr-only"
-                id="download"
-                value="download"
-              />
-              <Label
-                className="hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-brand [&:has([data-state=checked])]:border-brand flex w-full flex-col items-center justify-between rounded-md border-2 border-gray-400 bg-gray-500 p-4"
-                htmlFor="download"
+                <Button
+                  className="mx-auto min-w-[200px] rounded-md"
+                  onClick={handleConfirmPayment}
+                  size="sm"
+                >
+                  Confirm Payment
+                </Button>
+              </motion.div>
+            )}
+
+            {status === 'success' && (
+              <motion.div
+                animate={{ opacity: 1, scale: 1 }}
+                className="text-center"
+                exit={{ opacity: 0, scale: 0.8 }}
+                initial={{ opacity: 0, scale: 0.8 }}
+                key="success-button"
+                transition={{ duration: 0.3 }}
               >
-                <span className="text-2xl font-semibold">$99.99</span>
-                <span className="text-gray-100">for download</span>
-              </Label>
-            </div>
-            {/*<div className="flex flex-col items-center gap-2 p-4 relative">*/}
-            {/*  <RadioGroupItem className="peer sr-only" id="both" value="both" />*/}
-            {/*  <Label*/}
-            {/*    className="hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-brand [&:has([data-state=checked])]:border-brand  w-full flex flex-col items-center justify-between rounded-md border-2 border-gray-400 bg-gray-500 p-4"*/}
-            {/*    htmlFor="both"*/}
-            {/*  >*/}
-            {/*    <span className="text-2xl font-semibold">*/}
-            {/*      <span className="line-through">$109.99</span> $99.99*/}
-            {/*    </span>*/}
-            {/*    <span className="text-gray-100">Both</span>*/}
-            {/*  </Label>*/}
-            {/*</div>*/}
-          </RadioGroup>
-        </CardContent>
-        <CardFooter>
-          <Button className="mx-auto min-w-[200px] rounded-md" size="sm">
-            Confirm Payment
-          </Button>
+                <Button
+                  className="mx-auto min-w-[200px] rounded-md"
+                  onClick={() => {
+                    setStatus('idle');
+                  }}
+                  size="sm"
+                >
+                  Try it out!
+                </Button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </CardFooter>
       </Card>
-    </div>
+    </motion.div>
   );
 }
