@@ -72,7 +72,7 @@
         "icons/icon.ico"
       ],
       "macOS": {
-        "minimumSystemVersion": "10.13"
+        "minimumSystemVersion": "12.0"
       },
       "externalBin": [
         "external-binaries/shinkai-node/shinkai-node",
