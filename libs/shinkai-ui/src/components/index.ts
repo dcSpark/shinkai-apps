@@ -25,6 +25,7 @@ export * from './popover';
 export * from './prompt-textarea';
 export * from './qr-code';
 export * from './resizable';
+export * from './radio-group';
 export * from './scroll-area';
 export * from './select';
 export * from './separator';

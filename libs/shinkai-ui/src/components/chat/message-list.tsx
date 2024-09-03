@@ -1,4 +1,4 @@
-import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
+import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import {
   FetchPreviousPageOptions,
   InfiniteQueryObserverResult,
@@ -14,6 +14,17 @@ import { useInView } from 'react-intersection-observer';
 
 import { getRelativeDateLabel, groupMessagesByDate } from '../../helpers';
 import { cn } from '../../utils';
+import { Button } from '../button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '../card';
+import { Label } from '../label';
+import { RadioGroup, RadioGroupItem } from '../radio-group';
 import { Skeleton } from '../skeleton';
 import { Message } from './message';
 
@@ -262,6 +273,15 @@ export const MessageList = ({
                               handleRetryMessage={handleRetryMessage}
                               message={message}
                             />
+                            {messageIndex === messages.length - 1 && (
+                              <MessageExtra
+                                metadata={{
+                                  amount: 100,
+                                  currency: 'USD',
+                                }}
+                                name="payment"
+                              />
+                            )}
                           </div>
                         );
                       })}
@@ -294,3 +314,95 @@ export const MessageList = ({
     </div>
   );
 };
+
+// if its name is payment, then render a payment component
+
+function MessageExtra({
+  name,
+  metadata,
+}: {
+  name: string;
+  metadata: Record<string, any>;
+}) {
+  if (name === 'payment') {
+    return <Payment amount={metadata.amount} currency={metadata.currency} />;
+  }
+  return null;
+}
+
+function Payment({ amount, currency }: { amount: number; currency: string }) {
+  const [selectedPlan, setSelectedPlan] = React.useState<
+    'one-time' | 'download' | 'both'
+  >('one-time');
+
+  return (
+    <div className="-mt-7 mb-4 ml-10 max-w-4xl rounded-xl border border-gray-300 p-1">
+      <Card className="mx-auto max-w-xl border-0">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-center text-lg font-semibold">
+            YouTube Transcript
+          </CardTitle>
+          <CardDescription className="text-center text-xs">
+            Elevate your YouTube experience with the ultimate transcript viewer
+            plugin.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <RadioGroup
+            className="grid grid-cols-2 gap-4"
+            onValueChange={(value) =>
+              setSelectedPlan(value as 'one-time' | 'download' | 'both')
+            }
+            value={selectedPlan}
+          >
+            <div className="relative">
+              <RadioGroupItem
+                className="peer sr-only"
+                id="one-time"
+                value="one-time"
+              />
+              <Label
+                className="hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-brand [&:has([data-state=checked])]:border-brand flex w-full flex-col items-center justify-between rounded-md border-2 border-gray-400 bg-gray-500 p-4"
+                htmlFor="one-time"
+              >
+                <span className="text-2xl font-semibold">$9.99</span>
+                <span className="text-gray-100">one-time use</span>
+              </Label>
+            </div>
+            <div className="relative">
+              <RadioGroupItem
+                className="peer sr-only"
+                id="download"
+                value="download"
+              />
+              <Label
+                className="hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-brand [&:has([data-state=checked])]:border-brand flex w-full flex-col items-center justify-between rounded-md border-2 border-gray-400 bg-gray-500 p-4"
+                htmlFor="download"
+              >
+                <span className="text-2xl font-semibold">$99.99</span>
+                <span className="text-gray-100">for download</span>
+              </Label>
+            </div>
+            {/*<div className="flex flex-col items-center gap-2 p-4 relative">*/}
+            {/*  <RadioGroupItem className="peer sr-only" id="both" value="both" />*/}
+            {/*  <Label*/}
+            {/*    className="hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-brand [&:has([data-state=checked])]:border-brand  w-full flex flex-col items-center justify-between rounded-md border-2 border-gray-400 bg-gray-500 p-4"*/}
+            {/*    htmlFor="both"*/}
+            {/*  >*/}
+            {/*    <span className="text-2xl font-semibold">*/}
+            {/*      <span className="line-through">$109.99</span> $99.99*/}
+            {/*    </span>*/}
+            {/*    <span className="text-gray-100">Both</span>*/}
+            {/*  </Label>*/}
+            {/*</div>*/}
+          </RadioGroup>
+        </CardContent>
+        <CardFooter>
+          <Button className="mx-auto min-w-[200px] rounded-md" size="sm">
+            Confirm Payment
+          </Button>
+        </CardFooter>
+      </Card>
+    </div>
+  );
+}
