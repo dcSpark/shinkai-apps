@@ -16,17 +16,6 @@ import { useInView } from 'react-intersection-observer';
 
 import { getRelativeDateLabel, groupMessagesByDate } from '../../helpers';
 import { cn } from '../../utils';
-import { Button } from '../button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '../card';
-import { Label } from '../label';
-import { RadioGroup, RadioGroupItem } from '../radio-group';
 import { Skeleton } from '../skeleton';
 import { Message } from './message';
 
@@ -44,6 +33,7 @@ export const MessageList = ({
   isLoadingMessage,
   regenerateMessage,
   disabledRetryAndEdit,
+  messageExtra,
 }: {
   noMoreMessageLabel: string;
   isSuccess: boolean;
@@ -66,6 +56,7 @@ export const MessageList = ({
   lastMessageContent: string;
   isLoadingMessage: boolean | undefined;
   disabledRetryAndEdit?: boolean;
+  messageExtra?: React.ReactNode;
 }) => {
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const previousChatHeightRef = useRef<number>(0);
@@ -275,15 +266,7 @@ export const MessageList = ({
                               handleRetryMessage={handleRetryMessage}
                               message={message}
                             />
-                            {messageIndex === messages.length - 1 && (
-                              <MessageExtra
-                                metadata={{
-                                  amount: 100,
-                                  currency: 'USD',
-                                }}
-                                name="payment"
-                              />
-                            )}
+                            {messageExtra}
                           </div>
                         );
                       })}
@@ -316,212 +299,3 @@ export const MessageList = ({
     </div>
   );
 };
-
-const truncateAddress = (address: string) => {
-  return `${address.slice(0, 6)}...${address.slice(-4)}`;
-};
-
-function MessageExtra({
-  name,
-  metadata,
-}: {
-  name: string;
-  metadata: Record<string, any>;
-}) {
-  if (name === 'payment') {
-    return <Payment amount={metadata.amount} currency={metadata.currency} />;
-  }
-  return null;
-}
-
-function Payment({ amount, currency }: { amount: number; currency: string }) {
-  const [selectedPlan, setSelectedPlan] = React.useState<
-    'one-time' | 'download' | 'both'
-  >('one-time');
-
-  const [status, setStatus] = React.useState<
-    'idle' | 'pending' | 'success' | 'error'
-  >('idle');
-
-  const handleConfirmPayment = () => {
-    setStatus('pending');
-    setTimeout(() => {
-      setStatus('success');
-    }, 1000);
-  };
-
-  return (
-    <motion.div
-      animate={{ opacity: 1, y: 0 }}
-      className="-mt-7 mb-4 ml-10 min-h-[250px] max-w-4xl rounded-xl border border-gray-300 p-1"
-      exit={{ opacity: 0, y: -20 }}
-      initial={{ opacity: 0, y: 20 }}
-      transition={{ duration: 0.3 }}
-    >
-      <Card className="mx-auto max-w-xl border-0">
-        <AnimatePresence mode="wait">
-          {status === 'idle' && (
-            <motion.div
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              initial={{ opacity: 0 }}
-              key="idle"
-              transition={{ duration: 0.2 }}
-            >
-              <CardHeader className="space-y-1">
-                <CardTitle className="text-center text-lg font-semibold">
-                  YouTube Transcript
-                </CardTitle>
-                <CardDescription className="text-center text-xs">
-                  Elevate your YouTube experience with the ultimate transcript
-                  viewer plugin.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <RadioGroup
-                  className="grid grid-cols-2 gap-4"
-                  onValueChange={(value) =>
-                    setSelectedPlan(value as 'one-time' | 'download' | 'both')
-                  }
-                  value={selectedPlan}
-                >
-                  <div className="relative">
-                    <RadioGroupItem
-                      className="peer sr-only"
-                      id="one-time"
-                      value="one-time"
-                    />
-                    <Label
-                      className="hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-brand [&:has([data-state=checked])]:border-brand flex w-full flex-col items-center justify-between rounded-md border-2 border-gray-400 bg-gray-500 p-4"
-                      htmlFor="one-time"
-                    >
-                      <span className="text-2xl font-semibold">$0.09</span>
-                      <span className="text-gray-100">one-time use</span>
-                    </Label>
-                  </div>
-                  <div className="relative">
-                    <RadioGroupItem
-                      className="peer sr-only"
-                      id="download"
-                      value="download"
-                    />
-                    <Label
-                      className="hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-brand [&:has([data-state=checked])]:border-brand flex w-full flex-col items-center justify-between rounded-md border-2 border-gray-400 bg-gray-500 p-4"
-                      htmlFor="download"
-                    >
-                      <span className="text-2xl font-semibold">$4.99</span>
-                      <span className="text-gray-100">for download</span>
-                    </Label>
-                  </div>
-                </RadioGroup>
-                <div className="mx-auto flex max-w-sm flex-col gap-2 py-2">
-                  <div className="flex justify-between text-xs">
-                    <span className="text-gray-100">Wallet Address</span>
-                    <span className="text-white">
-                      {truncateAddress(
-                        '0x1234567890123456789012345678901234567890',
-                      )}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-xs">
-                    <span className="text-gray-100">Wallet Balance</span>
-                    <span className="text-white">1000</span>
-                  </div>
-                </div>
-              </CardContent>
-            </motion.div>
-          )}
-
-          {status === 'pending' && (
-            <motion.div
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              initial={{ opacity: 0 }}
-              key="pending"
-              transition={{ duration: 0.2 }}
-            >
-              <CardContent className="mt-16 flex items-center justify-center py-8">
-                <Loader2 className="h-8 w-8 animate-spin text-white" />
-                <span className="text-gray-80 ml-2">Processing payment...</span>
-              </CardContent>
-            </motion.div>
-          )}
-
-          {status === 'success' && (
-            <motion.div
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              initial={{ opacity: 0, scale: 0.8 }}
-              key="success"
-              transition={{ duration: 0.3 }}
-            >
-              <CardContent>
-                <div className="flex flex-col items-center justify-center py-8">
-                  <CheckCircle className="h-12 w-12 text-green-500" />
-                  <span className="mt-4 text-lg font-semibold text-white">
-                    Payment Successful!
-                  </span>
-                  <span className="mt-2 text-sm text-gray-100">
-                    Thank you for your purchase.
-                  </span>
-                </div>
-              </CardContent>
-            </motion.div>
-          )}
-        </AnimatePresence>
-        <CardFooter className="flex justify-center">
-          <AnimatePresence mode="wait">
-            {status === 'idle' && (
-              <motion.div
-                animate={{ opacity: 1, y: 0 }}
-                className="flex justify-between gap-2"
-                exit={{ opacity: 0, y: -10 }}
-                initial={{ opacity: 0, y: 10 }}
-                key="idle-button"
-                transition={{ duration: 0.2 }}
-              >
-                <Button
-                  className="mx-auto min-w-[200px] rounded-md"
-                  onClick={handleConfirmPayment}
-                  size="sm"
-                  variant="ghost"
-                >
-                  No, thanks
-                </Button>
-                <Button
-                  className="mx-auto min-w-[200px] rounded-md"
-                  onClick={handleConfirmPayment}
-                  size="sm"
-                >
-                  Confirm Payment
-                </Button>
-              </motion.div>
-            )}
-
-            {status === 'success' && (
-              <motion.div
-                animate={{ opacity: 1, scale: 1 }}
-                className="text-center"
-                exit={{ opacity: 0, scale: 0.8 }}
-                initial={{ opacity: 0, scale: 0.8 }}
-                key="success-button"
-                transition={{ duration: 0.3 }}
-              >
-                <Button
-                  className="mx-auto min-w-[200px] rounded-md"
-                  onClick={() => {
-                    setStatus('idle');
-                  }}
-                  size="sm"
-                  variant="ghost"
-                >
-                  Dismiss
-                </Button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </CardFooter>
-      </Card>
-    </motion.div>
-  );
-}

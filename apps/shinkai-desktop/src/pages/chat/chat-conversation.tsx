@@ -1,5 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { WsMessage } from '@shinkai_network/shinkai-message-ts/api/general/types';
+import { PaymentTool } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import {
   extractErrorPropertyOrContent,
   extractJobIdFromInbox,
@@ -76,6 +78,7 @@ import { useParams } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';
 import { toast } from 'sonner';
 
+import MessageExtra from '../../components/chat/message-extra';
 import { useWorkflowSelectionStore } from '../../components/workflow/context/workflow-selection-context';
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useDebounce } from '../../hooks/use-debounce';
@@ -89,6 +92,7 @@ enum ErrorCodes {
 type UseWebSocketMessage = {
   enabled?: boolean;
 };
+
 const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
   const auth = useAuth((state) => state.auth);
   const nodeAddressUrl = new URL(auth?.node_address ?? 'http://localhost:9850');
@@ -103,23 +107,32 @@ const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = decodeURIComponent(encodedInboxId);
   const [messageContent, setMessageContent] = useState('');
+
+  const [paymentTool, setPaymentTool] = useState<PaymentTool | null>(null);
+
   useEffect(() => {
     if (!enabled) return;
+    // TODO: remove hardcoded payment tool
+    setPaymentTool({
+      toolKey: 'Youtube Downloader',
+      description: 'Download Youtube Videos',
+      usageType: {
+        PerUse: 'Free',
+        Downloadable: {
+          DirectDelegation: '1000',
+        },
+      },
+    });
+
     if (lastMessage?.data) {
       try {
-        const parseData: {
-          message_type: 'Stream' | 'ShinkaiMessage';
-          inbox: string;
-          message: string;
-          error_message: string;
-          metadata?: {
-            id: string;
-            is_done: boolean;
-            done_reason: string;
-            total_duration: number;
-            eval_count: number;
-          };
-        } = JSON.parse(lastMessage.data);
+        const parseData: WsMessage = JSON.parse(lastMessage.data);
+        if (parseData.message_type === 'ToolPaymentRequest') {
+          const paymentWidget: {
+            data: PaymentTool;
+          } = JSON.parse(parseData.message);
+          setPaymentTool(paymentWidget.data);
+        }
         if (parseData.message_type !== 'Stream') return;
         if (parseData.metadata?.is_done) {
           const paginationKey = [
@@ -189,7 +202,7 @@ const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
     sendMessage,
   ]);
 
-  return { messageContent, readyState, setMessageContent };
+  return { messageContent, readyState, setMessageContent, paymentTool };
 };
 const ChatConversation = () => {
   const { captureAnalyticEvent } = useAnalytics();
@@ -296,9 +309,10 @@ const ChatConversation = () => {
     return isJobInbox(inboxId) && lastMessage?.isLocal;
   }, [data?.pages, inboxId]);
 
-  const { messageContent, setMessageContent } = useWebSocketMessage({
-    enabled: hasProviderEnableStreaming,
-  });
+  const { messageContent, setMessageContent, paymentTool } =
+    useWebSocketMessage({
+      enabled: hasProviderEnableStreaming,
+    });
 
   const { mutateAsync: sendMessageToInbox } = useSendMessageToInbox();
   const { mutateAsync: sendMessageToJob } = useSendMessageToJob({
@@ -451,6 +465,7 @@ const ChatConversation = () => {
         isLoadingMessage={isLoadingMessage}
         isSuccess={isChatConversationSuccess}
         lastMessageContent={messageContent}
+        messageExtra={<MessageExtra metadata={paymentTool} name="payment" />}
         noMoreMessageLabel={t('chat.allMessagesLoaded')}
         paginatedMessages={data}
         regenerateMessage={regenerateMessage}

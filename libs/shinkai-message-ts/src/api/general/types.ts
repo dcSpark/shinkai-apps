@@ -6,7 +6,19 @@ export type CheckHealthResponse = {
 };
 
 export type Token = { token: string };
-
+export type WsMessage = {
+  message_type: 'Stream' | 'ShinkaiMessage' | 'Sheet' | 'ToolPaymentRequest'; // TODO:validate message type for tool payment
+  inbox: string;
+  message: string;
+  error_message: string;
+  metadata?: {
+    id: string;
+    is_done: boolean;
+    done_reason: string;
+    total_duration: number;
+    eval_count: number;
+  };
+};
 export type SubmitRegistrationCodeRequest = {
   my_device_encryption_sk: string;
   my_device_identity_sk: string;
