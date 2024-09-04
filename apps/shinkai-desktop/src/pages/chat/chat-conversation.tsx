@@ -111,7 +111,6 @@ const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
   const [paymentTool, setPaymentTool] = useState<PaymentTool | null>(null);
 
   useEffect(() => {
-    if (!enabled) return;
     // TODO: remove hardcoded payment tool
     setPaymentTool({
       toolKey: 'Youtube Downloader',
@@ -123,6 +122,7 @@ const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
         },
       },
     });
+    if (!enabled) return;
 
     if (lastMessage?.data) {
       try {

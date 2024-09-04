@@ -107,3 +107,10 @@ export type PaymentTool = {
     Downloadable: ToolPrice;
   };
 };
+
+export type PayInvoiceRequest = {
+  invoice_id: string;
+  data_for_tool: any;
+};
+
+export type PayInvoiceResponse = any;

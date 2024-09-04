@@ -1,4 +1,5 @@
 import { PaymentTool } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { usePayInvoice } from '@shinkai_network/shinkai-node-state/v2/mutations/payInvoice/usePayInvoice';
 import {
   Button,
   Card,
@@ -14,6 +15,8 @@ import {
 import { AnimatePresence, motion } from 'framer-motion';
 import { CheckCircle, Loader2 } from 'lucide-react';
 import React from 'react';
+
+import { useAuth } from '../../store/auth';
 
 const truncateAddress = (address: string) => {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -42,6 +45,9 @@ function Payment({ data }: { data: PaymentTool }) {
     'idle' | 'pending' | 'success' | 'error'
   >('idle');
 
+  const auth = useAuth((state) => state.auth);
+  const { mutateAsync: payInvoice } = usePayInvoice({});
+
   const handleConfirmPayment = () => {
     setStatus('pending');
     setTimeout(() => {
@@ -52,20 +58,20 @@ function Payment({ data }: { data: PaymentTool }) {
   return (
     <motion.div
       animate={{ opacity: 1, y: 0 }}
-      className="-mt-7 mb-4 ml-10 min-h-[250px] max-w-4xl rounded-xl border border-gray-300 p-1"
+      className="-mt-7 mb-4 ml-10 h-[360px] max-w-4xl rounded-xl border border-gray-300 p-1"
       exit={{ opacity: 0, y: -20 }}
       initial={{ opacity: 0, y: 20 }}
       transition={{ duration: 0.3 }}
     >
       <Card className="mx-auto max-w-xl border-0">
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="popLayout">
           {status === 'idle' && (
             <motion.div
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              initial={{ opacity: 0 }}
+              animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
+              exit={{ y: 8, opacity: 0, filter: 'blur(4px)' }}
+              initial={{ y: -32, opacity: 0, filter: 'blur(4px)' }}
               key="idle"
-              transition={{ duration: 0.2 }}
+              transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
             >
               <CardHeader className="space-y-1">
                 <CardTitle className="text-center text-lg font-semibold">
@@ -143,18 +149,50 @@ function Payment({ data }: { data: PaymentTool }) {
                   </div>
                 </div>
               </CardContent>
+              <CardFooter className="flex justify-center">
+                <div className="flex justify-between gap-2">
+                  <Button
+                    className="mx-auto min-w-[200px] rounded-md"
+                    onClick={handleConfirmPayment}
+                    size="sm"
+                    variant="ghost"
+                  >
+                    No, thanks
+                  </Button>
+                  <Button
+                    className="mx-auto min-w-[200px] rounded-md"
+                    onClick={() => {
+                      if (!auth) return;
+                      payInvoice({
+                        nodeAddress: auth.node_address,
+                        token: auth.api_v2_key,
+                        payload: {
+                          invoice_id:
+                            '1234567890123456789012345678901234567890',
+                          data_for_tool: {
+                            plan: selectedPlan,
+                          },
+                        },
+                      });
+                    }}
+                    size="sm"
+                  >
+                    Confirm Payment
+                  </Button>
+                </div>
+              </CardFooter>
             </motion.div>
           )}
 
           {status === 'pending' && (
             <motion.div
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              initial={{ opacity: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              initial={{ opacity: 0, scale: 0.8 }}
               key="pending"
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.3 }}
             >
-              <CardContent className="mt-16 flex items-center justify-center py-8">
+              <CardContent className="mt-16 flex flex-col items-center justify-center gap-2 py-8">
                 <Loader2 className="h-8 w-8 animate-spin text-white" />
                 <span className="text-gray-80 ml-2">Processing payment...</span>
               </CardContent>
@@ -163,11 +201,10 @@ function Payment({ data }: { data: PaymentTool }) {
 
           {status === 'success' && (
             <motion.div
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
+              initial={{ y: -32, opacity: 0, filter: 'blur(4px)' }}
               key="success"
-              transition={{ duration: 0.3 }}
+              transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
             >
               <CardContent>
                 <div className="flex flex-col items-center justify-center py-8">
@@ -180,47 +217,7 @@ function Payment({ data }: { data: PaymentTool }) {
                   </span>
                 </div>
               </CardContent>
-            </motion.div>
-          )}
-        </AnimatePresence>
-        <CardFooter className="flex justify-center">
-          <AnimatePresence mode="wait">
-            {status === 'idle' && (
-              <motion.div
-                animate={{ opacity: 1, y: 0 }}
-                className="flex justify-between gap-2"
-                exit={{ opacity: 0, y: -10 }}
-                initial={{ opacity: 0, y: 10 }}
-                key="idle-button"
-                transition={{ duration: 0.2 }}
-              >
-                <Button
-                  className="mx-auto min-w-[200px] rounded-md"
-                  onClick={handleConfirmPayment}
-                  size="sm"
-                  variant="ghost"
-                >
-                  No, thanks
-                </Button>
-                <Button
-                  className="mx-auto min-w-[200px] rounded-md"
-                  onClick={handleConfirmPayment}
-                  size="sm"
-                >
-                  Confirm Payment
-                </Button>
-              </motion.div>
-            )}
-
-            {status === 'success' && (
-              <motion.div
-                animate={{ opacity: 1, scale: 1 }}
-                className="text-center"
-                exit={{ opacity: 0, scale: 0.8 }}
-                initial={{ opacity: 0, scale: 0.8 }}
-                key="success-button"
-                transition={{ duration: 0.3 }}
-              >
+              <CardFooter className="flex justify-center">
                 <Button
                   className="mx-auto min-w-[200px] rounded-md"
                   onClick={() => {
@@ -231,10 +228,10 @@ function Payment({ data }: { data: PaymentTool }) {
                 >
                   Dismiss
                 </Button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </CardFooter>
+              </CardFooter>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </Card>
     </motion.div>
   );
