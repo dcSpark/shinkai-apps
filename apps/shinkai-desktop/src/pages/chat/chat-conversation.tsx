@@ -113,8 +113,8 @@ const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
   useEffect(() => {
     // TODO: remove hardcoded payment tool
     setPaymentTool({
-      toolKey: 'Youtube Downloader',
-      description: 'Download Youtube Videos',
+      toolKey: 'Youtube Transcript',
+      description: 'It helps you to get the transcript of a youtube video. ',
       usageType: {
         PerUse: 'Free',
         Downloadable: {

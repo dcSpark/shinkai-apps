@@ -13,7 +13,7 @@ import {
   RadioGroupItem,
 } from '@shinkai_network/shinkai-ui';
 import { AnimatePresence, motion } from 'framer-motion';
-import { CheckCircle, Loader2 } from 'lucide-react';
+import { CheckCircle, Loader2, XCircle } from 'lucide-react';
 import React from 'react';
 
 import { useAuth } from '../../store/auth';
@@ -43,10 +43,17 @@ function Payment({ data }: { data: PaymentTool }) {
 
   const [status, setStatus] = React.useState<
     'idle' | 'pending' | 'success' | 'error'
-  >('idle');
+  >('error');
 
   const auth = useAuth((state) => state.auth);
-  const { mutateAsync: payInvoice } = usePayInvoice({});
+  const { mutateAsync: payInvoice } = usePayInvoice({
+    onSuccess: () => {
+      setStatus('success');
+    },
+    onError: () => {
+      setStatus('error');
+    },
+  });
 
   const handleConfirmPayment = () => {
     setStatus('pending');
@@ -58,12 +65,12 @@ function Payment({ data }: { data: PaymentTool }) {
   return (
     <motion.div
       animate={{ opacity: 1, y: 0 }}
-      className="-mt-7 mb-4 ml-10 h-[360px] max-w-4xl rounded-xl border border-gray-300 p-1"
+      className="-mt-7 mb-4 ml-10 min-h-[300px] max-w-3xl rounded-xl border border-gray-300 p-2"
       exit={{ opacity: 0, y: -20 }}
       initial={{ opacity: 0, y: 20 }}
       transition={{ duration: 0.3 }}
     >
-      <Card className="mx-auto max-w-xl border-0">
+      <Card className="mx-auto flex h-full max-w-xl flex-col items-center justify-center border-0">
         <AnimatePresence mode="popLayout">
           {status === 'idle' && (
             <motion.div
@@ -187,12 +194,13 @@ function Payment({ data }: { data: PaymentTool }) {
           {status === 'pending' && (
             <motion.div
               animate={{ opacity: 1, scale: 1 }}
+              className="h-full pt-12"
               exit={{ opacity: 0, scale: 0.8 }}
               initial={{ opacity: 0, scale: 0.8 }}
               key="pending"
               transition={{ duration: 0.3 }}
             >
-              <CardContent className="mt-16 flex flex-col items-center justify-center gap-2 py-8">
+              <CardContent className="flex flex-col items-center justify-center gap-2 py-8">
                 <Loader2 className="h-8 w-8 animate-spin text-white" />
                 <span className="text-gray-80 ml-2">Processing payment...</span>
               </CardContent>
@@ -227,6 +235,40 @@ function Payment({ data }: { data: PaymentTool }) {
                   variant="ghost"
                 >
                   Dismiss
+                </Button>
+              </CardFooter>
+            </motion.div>
+          )}
+
+          {status === 'error' && (
+            <motion.div
+              animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
+              exit={{ y: 8, opacity: 0, filter: 'blur(4px)' }}
+              initial={{ y: -32, opacity: 0, filter: 'blur(4px)' }}
+              key="success"
+              transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
+            >
+              <CardContent>
+                <div className="flex flex-col items-center justify-center py-8">
+                  <XCircle className="h-12 w-12 text-red-500" />
+                  <span className="mt-4 text-lg font-semibold text-white">
+                    Payment Failed!
+                  </span>
+                  <span className="mt-2 text-sm text-gray-100">
+                    Please try again.
+                  </span>
+                </div>
+              </CardContent>
+              <CardFooter className="flex justify-center">
+                <Button
+                  className="mx-auto min-w-[200px] rounded-md"
+                  onClick={() => {
+                    setStatus('idle');
+                  }}
+                  size="sm"
+                  variant="ghost"
+                >
+                  Go back
                 </Button>
               </CardFooter>
             </motion.div>
