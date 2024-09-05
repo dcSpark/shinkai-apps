@@ -1,6 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { WsMessage } from '@shinkai_network/shinkai-message-ts/api/general/types';
+import {
+  WidgetTool,
+  WidgetToolType,
+  WsMessage,
+} from '@shinkai_network/shinkai-message-ts/api/general/types';
 import { PaymentTool } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import {
   extractErrorPropertyOrContent,
@@ -105,7 +109,7 @@ const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = decodeURIComponent(encodedInboxId);
 
-  const [paymentTool, setPaymentTool] = useState<PaymentTool | null>(null);
+  const [widgetTool, setWidgetTool] = useState<WidgetTool | null>(null);
 
   useEffect(() => {
     if (!enabled) return;
@@ -124,11 +128,12 @@ const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
     if (lastMessage?.data) {
       try {
         const parseData: WsMessage = JSON.parse(lastMessage.data);
-        if (parseData.message_type === 'Widget') {
-          const paymentWidget: {
-            data: PaymentTool;
-          } = JSON.parse(parseData.message);
-          setPaymentTool(paymentWidget.data);
+        if (parseData.message_type === 'Widget' && parseData?.widget) {
+          const widgetName = Object.keys(parseData.widget)[0];
+          setWidgetTool({
+            name: widgetName as WidgetToolType,
+            data: parseData.widget[widgetName as WidgetToolType],
+          });
         }
       } catch (error) {
         console.error('Failed to parse ws message', error);
@@ -165,7 +170,7 @@ const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
     sendMessage,
   ]);
 
-  return { readyState, paymentTool };
+  return { readyState, widgetTool: widgetTool };
 };
 
 const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
@@ -369,7 +374,7 @@ const ChatConversation = () => {
     enabled: hasProviderEnableStreaming,
   });
 
-  const { paymentTool } = useWebSocketTools({
+  const { widgetTool } = useWebSocketTools({
     enabled: true,
   });
 
@@ -510,7 +515,9 @@ const ChatConversation = () => {
         isLoadingMessage={isLoadingMessage}
         isSuccess={isChatConversationSuccess}
         lastMessageContent={messageContent}
-        messageExtra={<MessageExtra metadata={paymentTool} name="payment" />}
+        messageExtra={
+          <MessageExtra metadata={widgetTool?.data} name={widgetTool?.name} />
+        }
         noMoreMessageLabel={t('chat.allMessagesLoaded')}
         paginatedMessages={data}
         regenerateMessage={regenerateMessage}

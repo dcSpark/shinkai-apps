@@ -1,4 +1,8 @@
-import { PaymentTool } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import {
+  PaymentRequest,
+  WidgetToolData,
+  WidgetToolType,
+} from '@shinkai_network/shinkai-message-ts/api/general/types';
 import { usePayInvoice } from '@shinkai_network/shinkai-node-state/v2/mutations/payInvoice/usePayInvoice';
 import {
   Button,
@@ -26,17 +30,18 @@ export default function MessageExtra({
   name,
   metadata,
 }: {
-  name: string;
-  metadata: PaymentTool | any;
+  name?: WidgetToolType;
+  metadata?: WidgetToolData;
 }) {
-  console.log(metadata, 'name');
-  if (name === 'payment' && metadata != null) {
+  if (metadata == null || name == null) return null;
+
+  if (name === 'PaymentRequest') {
     return <Payment data={metadata} />;
   }
   return null;
 }
 
-function Payment({ data }: { data: PaymentTool }) {
+function Payment({ data }: { data: PaymentRequest }) {
   const [selectedPlan, setSelectedPlan] = React.useState<
     'one-time' | 'download' | 'both'
   >('one-time');
@@ -62,6 +67,10 @@ function Payment({ data }: { data: PaymentTool }) {
     }, 1000);
   };
 
+  const hasPerUse = !!data?.invoice?.shinkai_offering?.usage_type?.PerUse;
+  const hasDownload =
+    !!data?.invoice?.shinkai_offering?.usage_type?.Downloadable;
+
   return (
     <motion.div
       animate={{ opacity: 1, y: 0 }}
@@ -82,7 +91,7 @@ function Payment({ data }: { data: PaymentTool }) {
             >
               <CardHeader className="space-y-1">
                 <CardTitle className="font-clash text-center text-xl font-medium">
-                  {data.toolKey}
+                  {/*{data.toolKey}*/}
                 </CardTitle>
                 <CardDescription className="text-center text-xs">
                   {data.description}
@@ -96,7 +105,7 @@ function Payment({ data }: { data: PaymentTool }) {
                   }
                   value={selectedPlan}
                 >
-                  {!!data.usageType.PerUse && (
+                  {hasPerUse && (
                     <div className="relative">
                       <RadioGroupItem
                         className="peer sr-only"
@@ -108,17 +117,27 @@ function Payment({ data }: { data: PaymentTool }) {
                         htmlFor="one-time"
                       >
                         <span className="font-clash text-2xl font-semibold">
-                          {data.usageType.PerUse === 'Free'
+                          {data.invoice.shinkai_offering.usage_type.PerUse ===
+                          'Free'
                             ? 'Free'
-                            : 'Payment' in data.usageType.PerUse
-                              ? data.usageType.PerUse.Payment.amount
-                              : data.usageType.PerUse.DirectDelegation}
+                            : 'Payment' in
+                                data.invoice.shinkai_offering.usage_type.PerUse
+                              ? `${
+                                  data.invoice.shinkai_offering.usage_type
+                                    .PerUse.Payment[0].amount
+                                } ${
+                                  data.invoice.shinkai_offering.usage_type
+                                    .PerUse.Payment[0].asset.asset_id
+                                }
+                                  `
+                              : data.invoice.shinkai_offering.usage_type.PerUse
+                                  .DirectDelegation}
                         </span>
                         <span className="text-gray-100">one-time use</span>
                       </Label>
                     </div>
                   )}
-                  {!!data.usageType.Downloadable && (
+                  {hasDownload && (
                     <div className="relative">
                       <RadioGroupItem
                         className="peer sr-only"
@@ -130,11 +149,22 @@ function Payment({ data }: { data: PaymentTool }) {
                         htmlFor="download"
                       >
                         <span className="font-clash text-2xl font-semibold">
-                          {data.usageType.Downloadable === 'Free'
+                          {data.invoice.shinkai_offering.usage_type
+                            .Downloadable === 'Free'
                             ? 'Free'
-                            : 'Payment' in data.usageType.Downloadable
-                              ? data.usageType.Downloadable.Payment.amount
-                              : data.usageType.Downloadable.DirectDelegation}
+                            : 'Payment' in
+                                data.invoice.shinkai_offering.usage_type
+                                  .Downloadable
+                              ? `${
+                                  data.invoice.shinkai_offering.usage_type
+                                    .Downloadable.Payment[0].amount
+                                } ${
+                                  data.invoice.shinkai_offering.usage_type
+                                    .Downloadable.Payment[0].asset.asset_id
+                                }
+                                  `
+                              : data.invoice.shinkai_offering.usage_type
+                                  .Downloadable.DirectDelegation}
                         </span>
                         <span className="text-gray-100">for download</span>
                       </Label>
@@ -145,13 +175,12 @@ function Payment({ data }: { data: PaymentTool }) {
                   <div className="flex justify-between text-xs">
                     <span className="text-gray-100">Wallet Address</span>
                     <span className="text-white">
-                      {truncateAddress(
-                        '0x1234567890123456789012345678901234567890',
-                      )}
+                      {truncateAddress(data.invoice.address.address_id)}
                     </span>
                   </div>
                   <div className="flex justify-between text-xs">
                     <span className="text-gray-100">Wallet Balance</span>
+                    {/*//TODO: get balance*/}
                     <span className="text-white">1000</span>
                   </div>
                 </div>
@@ -174,11 +203,8 @@ function Payment({ data }: { data: PaymentTool }) {
                         nodeAddress: auth.node_address,
                         token: auth.api_v2_key,
                         payload: {
-                          invoice_id:
-                            '1234567890123456789012345678901234567890',
-                          data_for_tool: {
-                            plan: selectedPlan,
-                          },
+                          invoice_id: data.invoice.invoice_id,
+                          data_for_tool: '',
                         },
                       });
                     }}

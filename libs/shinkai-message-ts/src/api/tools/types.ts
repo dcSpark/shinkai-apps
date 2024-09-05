@@ -1,3 +1,5 @@
+import { PaymentRequest } from '../general/types';
+
 export type WorkflowRaw = {
   name: string;
   version: string;
@@ -88,24 +90,25 @@ export type ToolPrice =
   | 'Free'
   | { DirectDelegation: string }
   | {
-      Payment: {
-        asset: {
-          network_id: string;
-          asset_id: string;
-          decimals: number;
-          contract_address: string;
-        };
+      Payment: Array<{
         amount: string;
-      };
+        asset: {
+          asset_id: string;
+          contract_address: string;
+          decimals: number;
+          network_id: string;
+        };
+      }>;
     };
 
+export type ToolUsageType = {
+  PerUse: ToolPrice;
+  Downloadable: ToolPrice;
+};
 export type PaymentTool = {
   toolKey: string;
   description: string;
-  usageType: {
-    PerUse: ToolPrice;
-    Downloadable: ToolPrice;
-  };
+  usageType: ToolUsageType;
 };
 
 export type PayInvoiceRequest = {
