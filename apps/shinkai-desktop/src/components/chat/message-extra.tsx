@@ -81,7 +81,7 @@ function Payment({ data }: { data: PaymentTool }) {
               transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
             >
               <CardHeader className="space-y-1">
-                <CardTitle className="text-center text-lg font-semibold">
+                <CardTitle className="font-clash text-center text-xl font-medium">
                   {data.toolKey}
                 </CardTitle>
                 <CardDescription className="text-center text-xs">
@@ -107,7 +107,7 @@ function Payment({ data }: { data: PaymentTool }) {
                         className="hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-brand [&:has([data-state=checked])]:border-brand flex w-full flex-col items-center justify-between rounded-md border-2 border-gray-400 bg-gray-500 p-4"
                         htmlFor="one-time"
                       >
-                        <span className="text-2xl font-semibold">
+                        <span className="font-clash text-2xl font-semibold">
                           {data.usageType.PerUse === 'Free'
                             ? 'Free'
                             : 'Payment' in data.usageType.PerUse
@@ -129,7 +129,7 @@ function Payment({ data }: { data: PaymentTool }) {
                         className="hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-brand [&:has([data-state=checked])]:border-brand flex w-full flex-col items-center justify-between rounded-md border-2 border-gray-400 bg-gray-500 p-4"
                         htmlFor="download"
                       >
-                        <span className="text-2xl font-semibold">
+                        <span className="font-clash text-2xl font-semibold">
                           {data.usageType.Downloadable === 'Free'
                             ? 'Free'
                             : 'Payment' in data.usageType.Downloadable
