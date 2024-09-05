@@ -78,7 +78,9 @@ function Payment({
   const { mutateAsync: payInvoice } = usePayInvoice({
     onSuccess: () => {
       setStatus('success');
-      onCancel();
+      setTimeout(() => {
+        onCancel();
+      }, 2000);
     },
     onError: () => {
       setStatus('error');
@@ -192,15 +194,15 @@ function Payment({
                     </span>
                   </div>
                   <div className="flex justify-between text-xs">
-                    <span className="text-gray-100">Wallet Balance</span>
-                    <span className="text-white">
+                    <span className="text-gray-100">Wallet Balances</span>
+                    <div className="text-white">
                       {data.wallet_balances.data.map((balance) => (
-                        <span key={balance.asset.asset_id}>
+                        <div key={balance.asset.asset_id}>
                           {formatAmount(balance.amount, balance.asset.decimals)}{' '}
                           {balance.asset.asset_id}
-                        </span>
+                        </div>
                       ))}
-                    </span>
+                    </div>
                   </div>
                 </div>
               </CardContent>
