@@ -214,7 +214,7 @@ const ShinkaiLogo = ({ className }: { className?: string }) => (
 export function MainNav() {
   const { t, Trans } = useTranslation();
   const optInExperimental = useSettings((state) => state.optInExperimental);
-
+  const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
   const logout = useAuth((state) => state.setLogout);
   const isGetStartedChecklistHidden = useSettings(
@@ -223,6 +223,8 @@ export function MainNav() {
 
   const [isConfirmLogoutDialogOpened, setIsConfirmLogoutDialogOpened] =
     useState(false);
+  const [isApiV2KeyMissingDialogOpen, setIsApiV2KeyMissingDialogOpen] =
+    useState(false);
 
   const sidebarExpanded = useSettings((state) => state.sidebarExpanded);
   const toggleSidebar = useSettings((state) => state.toggleSidebar);
@@ -230,6 +232,12 @@ export function MainNav() {
   const confirmDisconnect = () => {
     setIsConfirmLogoutDialogOpened(true);
   };
+
+  useEffect(() => {
+    if (!auth?.api_v2_key) {
+      setIsApiV2KeyMissingDialogOpen(true);
+    }
+  }, [auth?.api_v2_key]);
 
   const handleDisconnect = () => {
     logout();
@@ -481,6 +489,43 @@ export function MainNav() {
         </div>
       </div>
 
+      <AlertDialog
+        onOpenChange={setIsApiV2KeyMissingDialogOpen}
+        open={isApiV2KeyMissingDialogOpen}
+      >
+        <AlertDialogContent className="w-[75%]">
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('disconnect.modalTitle')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              <div className="flex flex-col space-y-3 text-left text-white/70">
+                <div className="flex flex-col space-y-1">
+                  <span className="text-sm">
+                    Reset your connection to the Shinkai Node.
+                  </span>
+                </div>
+                <div className="text-sm">
+                  We’re in beta and just made some major updates, which require
+                  resetting your data for a fresh start. Thanks for your
+                  patience and support!
+                </div>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="mt-4 flex gap-2">
+            <AlertDialogCancel
+              className="mt-0 flex-1"
+              onClick={() => {
+                setIsConfirmLogoutDialogOpened(false);
+              }}
+            >
+              {t('common.cancel')}
+            </AlertDialogCancel>
+            <AlertDialogAction className="flex-1" onClick={handleDisconnect}>
+              {t('common.disconnect')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <AlertDialog
         onOpenChange={setIsConfirmLogoutDialogOpened}
         open={isConfirmLogoutDialogOpened}
