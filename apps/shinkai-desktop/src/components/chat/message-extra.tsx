@@ -197,9 +197,10 @@ function Payment({ data }: { data: PaymentRequest }) {
                   </Button>
                   <Button
                     className="mx-auto min-w-[200px] rounded-md"
-                    onClick={() => {
+                    onClick={async () => {
                       if (!auth) return;
-                      payInvoice({
+                      setStatus('pending');
+                      await payInvoice({
                         nodeAddress: auth.node_address,
                         token: auth.api_v2_key,
                         payload: {
