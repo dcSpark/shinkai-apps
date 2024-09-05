@@ -78,6 +78,7 @@ function Payment({
   const { mutateAsync: payInvoice } = usePayInvoice({
     onSuccess: () => {
       setStatus('success');
+      onCancel();
     },
     onError: () => {
       setStatus('error');
@@ -115,7 +116,7 @@ function Payment({
               </CardHeader>
               <CardContent className="space-y-3">
                 <RadioGroup
-                  className="flex items-center gap-4"
+                  className="flex items-center justify-center gap-4"
                   onValueChange={(value) =>
                     setSelectedPlan(value as 'one-time' | 'download' | 'both')
                   }
@@ -274,7 +275,7 @@ function Payment({
                 <Button
                   className="mx-auto min-w-[200px] rounded-md"
                   onClick={() => {
-                    setStatus('idle');
+                    onCancel();
                   }}
                   size="sm"
                   variant="ghost"
