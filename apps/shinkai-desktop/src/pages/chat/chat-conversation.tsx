@@ -93,6 +93,81 @@ type UseWebSocketMessage = {
   enabled?: boolean;
 };
 
+const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
+  const auth = useAuth((state) => state.auth);
+  const nodeAddressUrl = new URL(auth?.node_address ?? 'http://localhost:9850');
+  const socketUrl = `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`;
+  const { sendMessage, lastMessage, readyState } = useWebSocket(
+    socketUrl,
+    { share: true },
+    enabled,
+  );
+  const { inboxId: encodedInboxId = '' } = useParams();
+  const inboxId = decodeURIComponent(encodedInboxId);
+
+  const [paymentTool, setPaymentTool] = useState<PaymentTool | null>(null);
+
+  useEffect(() => {
+    if (!enabled) return;
+    // TODO: remove hardcoded payment tool
+    setPaymentTool({
+      toolKey: 'Youtube Transcript',
+      description: 'It helps you to get the transcript of a youtube video. ',
+      usageType: {
+        PerUse: 'Free',
+        Downloadable: {
+          DirectDelegation: '1000',
+        },
+      },
+    });
+
+    if (lastMessage?.data) {
+      try {
+        const parseData: WsMessage = JSON.parse(lastMessage.data);
+        if (parseData.message_type === 'Widget') {
+          const paymentWidget: {
+            data: PaymentTool;
+          } = JSON.parse(parseData.message);
+          setPaymentTool(paymentWidget.data);
+        }
+      } catch (error) {
+        console.error('Failed to parse ws message', error);
+      }
+    }
+  }, [enabled, lastMessage?.data]);
+
+  useEffect(() => {
+    if (!enabled) return;
+    const wsMessage = {
+      subscriptions: [{ topic: 'inbox', subtopic: inboxId }],
+      unsubscriptions: [],
+    };
+    const wsMessageString = JSON.stringify(wsMessage);
+    const shinkaiMessage = ShinkaiMessageBuilderWrapper.ws_connection(
+      wsMessageString,
+      auth?.profile_encryption_sk ?? '',
+      auth?.profile_identity_sk ?? '',
+      auth?.node_encryption_pk ?? '',
+      auth?.shinkai_identity ?? '',
+      auth?.profile ?? '',
+      auth?.shinkai_identity ?? '',
+      '',
+    );
+    sendMessage(shinkaiMessage);
+  }, [
+    auth?.node_encryption_pk,
+    auth?.profile,
+    auth?.profile_encryption_sk,
+    auth?.profile_identity_sk,
+    auth?.shinkai_identity,
+    enabled,
+    inboxId,
+    sendMessage,
+  ]);
+
+  return { readyState, paymentTool };
+};
+
 const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
   const auth = useAuth((state) => state.auth);
   const nodeAddressUrl = new URL(auth?.node_address ?? 'http://localhost:9850');
@@ -108,31 +183,12 @@ const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
   const inboxId = decodeURIComponent(encodedInboxId);
   const [messageContent, setMessageContent] = useState('');
 
-  const [paymentTool, setPaymentTool] = useState<PaymentTool | null>(null);
-
   useEffect(() => {
-    // TODO: remove hardcoded payment tool
-    setPaymentTool({
-      toolKey: 'Youtube Transcript',
-      description: 'It helps you to get the transcript of a youtube video. ',
-      usageType: {
-        PerUse: 'Free',
-        Downloadable: {
-          DirectDelegation: '1000',
-        },
-      },
-    });
     if (!enabled) return;
 
     if (lastMessage?.data) {
       try {
         const parseData: WsMessage = JSON.parse(lastMessage.data);
-        if (parseData.message_type === 'ToolPaymentRequest') {
-          const paymentWidget: {
-            data: PaymentTool;
-          } = JSON.parse(parseData.message);
-          setPaymentTool(paymentWidget.data);
-        }
         if (parseData.message_type !== 'Stream') return;
         if (parseData.metadata?.is_done) {
           const paginationKey = [
@@ -202,8 +258,9 @@ const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
     sendMessage,
   ]);
 
-  return { messageContent, readyState, setMessageContent, paymentTool };
+  return { messageContent, readyState, setMessageContent };
 };
+
 const ChatConversation = () => {
   const { captureAnalyticEvent } = useAnalytics();
   const { t } = useTranslation();
@@ -309,10 +366,13 @@ const ChatConversation = () => {
     return isJobInbox(inboxId) && lastMessage?.isLocal;
   }, [data?.pages, inboxId]);
 
-  const { messageContent, setMessageContent, paymentTool } =
-    useWebSocketMessage({
-      enabled: hasProviderEnableStreaming,
-    });
+  const { messageContent, setMessageContent } = useWebSocketMessage({
+    enabled: hasProviderEnableStreaming,
+  });
+
+  const { paymentTool } = useWebSocketTools({
+    enabled: true,
+  });
 
   const { mutateAsync: sendMessageToInbox } = useSendMessageToInbox();
   const { mutateAsync: sendMessageToJob } = useSendMessageToJob({

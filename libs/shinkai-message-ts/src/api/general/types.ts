@@ -7,7 +7,7 @@ export type CheckHealthResponse = {
 
 export type Token = { token: string };
 export type WsMessage = {
-  message_type: 'Stream' | 'ShinkaiMessage' | 'Sheet' | 'ToolPaymentRequest'; // TODO:validate message type for tool payment
+  message_type: 'Stream' | 'ShinkaiMessage' | 'Sheet' | 'Widget';
   inbox: string;
   message: string;
   error_message: string;
