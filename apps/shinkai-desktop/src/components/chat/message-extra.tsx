@@ -30,7 +30,7 @@ export default function MessageExtra({
   metadata: PaymentTool | any;
 }) {
   console.log(metadata, 'name');
-  if (name === 'payment' || metadata != null) {
+  if (name === 'payment' && metadata != null) {
     return <Payment data={metadata} />;
   }
   return null;
@@ -43,7 +43,7 @@ function Payment({ data }: { data: PaymentTool }) {
 
   const [status, setStatus] = React.useState<
     'idle' | 'pending' | 'success' | 'error'
-  >('error');
+  >('idle');
 
   const auth = useAuth((state) => state.auth);
   const { mutateAsync: payInvoice } = usePayInvoice({

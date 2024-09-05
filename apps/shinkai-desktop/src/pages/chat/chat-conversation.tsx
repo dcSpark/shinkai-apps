@@ -109,17 +109,17 @@ const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
 
   useEffect(() => {
     if (!enabled) return;
-    // TODO: remove hardcoded payment tool
-    setPaymentTool({
-      toolKey: 'Youtube Transcript',
-      description: 'It helps you to get the transcript of a youtube video. ',
-      usageType: {
-        PerUse: 'Free',
-        Downloadable: {
-          DirectDelegation: '1000',
-        },
-      },
-    });
+    // // TODO: remove hardcoded payment tool
+    // setPaymentTool({
+    //   toolKey: 'Youtube Transcript',
+    //   description: 'It helps you to get the transcript of a youtube video. ',
+    //   usageType: {
+    //     PerUse: 'Free',
+    //     Downloadable: {
+    //       DirectDelegation: '1000',
+    //     },
+    //   },
+    // });
 
     if (lastMessage?.data) {
       try {
@@ -139,7 +139,7 @@ const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
   useEffect(() => {
     if (!enabled) return;
     const wsMessage = {
-      subscriptions: [{ topic: 'inbox', subtopic: inboxId }],
+      subscriptions: [{ topic: 'widget' }],
       unsubscriptions: [],
     };
     const wsMessageString = JSON.stringify(wsMessage);
@@ -185,7 +185,6 @@ const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
 
   useEffect(() => {
     if (!enabled) return;
-
     if (lastMessage?.data) {
       try {
         const parseData: WsMessage = JSON.parse(lastMessage.data);
