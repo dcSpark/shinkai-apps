@@ -83,7 +83,7 @@ export type CreateJobRequest = {
     };
     associated_ui: {
       Sheet: string;
-    };
+    } | null;
     is_hidden: boolean;
   };
 };
