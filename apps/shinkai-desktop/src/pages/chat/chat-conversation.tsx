@@ -14,11 +14,11 @@ import {
   chatMessageFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/chat-message';
 import { FunctionKey } from '@shinkai_network/shinkai-node-state/lib/constants';
-import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMessageToJob/useSendMessageToJob';
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
 import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageWithFilesToInbox/useSendMessageWithFilesToInbox';
 import { useUpdateAgentInJob } from '@shinkai_network/shinkai-node-state/lib/mutations/updateAgentInJob/useUpdateAgentInJob';
 import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
+import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useGetWorkflowSearch } from '@shinkai_network/shinkai-node-state/v2/queries/getWorkflowSearch/useGetWorkflowSearch';
@@ -400,18 +400,11 @@ const ChatConversation = () => {
 
     await sendMessageToJob({
       nodeAddress: auth.node_address,
+      token: auth.api_v2_key,
       jobId,
       message: content,
-      files_inbox: '',
       parent: parentHash,
       workflowName,
-      shinkaiIdentity: auth.shinkai_identity,
-      profile: auth.profile,
-      my_device_encryption_sk: auth.my_device_encryption_sk,
-      my_device_identity_sk: auth.my_device_identity_sk,
-      node_encryption_pk: auth.node_encryption_pk,
-      profile_encryption_sk: auth.profile_encryption_sk,
-      profile_identity_sk: auth.profile_identity_sk,
     });
   };
 
@@ -449,19 +442,12 @@ const ChatConversation = () => {
       const jobId = extractJobIdFromInbox(inboxId);
 
       await sendMessageToJob({
+        token: auth.api_v2_key,
         nodeAddress: auth.node_address,
         jobId: jobId,
         message: data.message,
-        files_inbox: '',
         parent: '', // Note: we should set the parent if we want to retry or branch out
-        shinkaiIdentity: auth.shinkai_identity,
-        profile: auth.profile,
         workflowName: workflowKeyToUse,
-        my_device_encryption_sk: auth.my_device_encryption_sk,
-        my_device_identity_sk: auth.my_device_identity_sk,
-        node_encryption_pk: auth.node_encryption_pk,
-        profile_encryption_sk: auth.profile_encryption_sk,
-        profile_identity_sk: auth.profile_identity_sk,
       });
     } else {
       const sender = `${auth.shinkai_identity}/${auth.profile}/device/${auth.registration_name}`;
