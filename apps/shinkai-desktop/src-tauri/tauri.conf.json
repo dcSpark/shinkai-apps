@@ -21,6 +21,7 @@
       },
       "shell": {
         "all": false,
+        "open": true,
         "sidecar": true,
         "scope": [
           { "name": "external-binaries/shinkai-node/shinkai-node", "sidecar": true },
