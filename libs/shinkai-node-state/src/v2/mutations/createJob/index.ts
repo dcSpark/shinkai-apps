@@ -36,9 +36,7 @@ export const createJob = async ({
         local_vrkai: [],
         network_folders: [],
       },
-      associated_ui: {
-        Sheet: sheetId ?? '',
-      },
+      associated_ui: sheetId ? { Sheet: sheetId } : null,
       is_hidden: isHidden,
     },
   });
