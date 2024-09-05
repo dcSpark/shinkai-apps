@@ -1,11 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
-  WidgetTool,
+  WidgetToolState,
   WidgetToolType,
   WsMessage,
 } from '@shinkai_network/shinkai-message-ts/api/general/types';
-import { PaymentTool } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import {
   extractErrorPropertyOrContent,
   extractJobIdFromInbox,
@@ -109,21 +108,10 @@ const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = decodeURIComponent(encodedInboxId);
 
-  const [widgetTool, setWidgetTool] = useState<WidgetTool | null>(null);
+  const [widgetTool, setWidgetTool] = useState<WidgetToolState | null>(null);
 
   useEffect(() => {
     if (!enabled) return;
-    // // TODO: remove hardcoded payment tool
-    // setPaymentTool({
-    //   toolKey: 'Youtube Transcript',
-    //   description: 'It helps you to get the transcript of a youtube video. ',
-    //   usageType: {
-    //     PerUse: 'Free',
-    //     Downloadable: {
-    //       DirectDelegation: '1000',
-    //     },
-    //   },
-    // });
 
     if (lastMessage?.data) {
       try {

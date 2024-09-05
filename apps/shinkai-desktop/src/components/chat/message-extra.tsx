@@ -26,6 +26,10 @@ const truncateAddress = (address: string) => {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 };
 
+const formatAmount = (amount: string, decimals: number) => {
+  return (Number(amount) / Math.pow(10, decimals)).toFixed(decimals);
+};
+
 export default function MessageExtra({
   name,
   metadata,
@@ -60,16 +64,12 @@ function Payment({ data }: { data: PaymentRequest }) {
     },
   });
 
-  const handleConfirmPayment = () => {
-    setStatus('pending');
-    setTimeout(() => {
-      setStatus('success');
-    }, 1000);
+  const handleCancelPayment = () => {
+    setStatus('idle');
   };
 
-  const hasPerUse = !!data?.invoice?.shinkai_offering?.usage_type?.PerUse;
-  const hasDownload =
-    !!data?.invoice?.shinkai_offering?.usage_type?.Downloadable;
+  const hasPerUse = !!data?.usage_type?.PerUse;
+  const hasDownload = !!data?.usage_type?.Downloadable;
 
   return (
     <motion.div
@@ -99,14 +99,14 @@ function Payment({ data }: { data: PaymentRequest }) {
               </CardHeader>
               <CardContent className="space-y-3">
                 <RadioGroup
-                  className="grid grid-cols-2 gap-4"
+                  className="flex items-center gap-4"
                   onValueChange={(value) =>
                     setSelectedPlan(value as 'one-time' | 'download' | 'both')
                   }
                   value={selectedPlan}
                 >
                   {hasPerUse && (
-                    <div className="relative">
+                    <div className="relative flex-1">
                       <RadioGroupItem
                         className="peer sr-only"
                         id="one-time"
@@ -117,28 +117,22 @@ function Payment({ data }: { data: PaymentRequest }) {
                         htmlFor="one-time"
                       >
                         <span className="font-clash text-2xl font-semibold">
-                          {data.invoice.shinkai_offering.usage_type.PerUse ===
-                          'Free'
+                          {data.usage_type.PerUse === 'Free'
                             ? 'Free'
-                            : 'Payment' in
-                                data.invoice.shinkai_offering.usage_type.PerUse
-                              ? `${
-                                  data.invoice.shinkai_offering.usage_type
-                                    .PerUse.Payment[0].amount
-                                } ${
-                                  data.invoice.shinkai_offering.usage_type
-                                    .PerUse.Payment[0].asset.asset_id
+                            : 'Payment' in data.usage_type.PerUse
+                              ? `${data.usage_type.PerUse.Payment[0].amount} ${
+                                  data.usage_type.PerUse.Payment[0].asset
+                                    .asset_id
                                 }
                                   `
-                              : data.invoice.shinkai_offering.usage_type.PerUse
-                                  .DirectDelegation}
+                              : data.usage_type.PerUse.DirectDelegation}
                         </span>
                         <span className="text-gray-100">one-time use</span>
                       </Label>
                     </div>
                   )}
                   {hasDownload && (
-                    <div className="relative">
+                    <div className="relative flex-1">
                       <RadioGroupItem
                         className="peer sr-only"
                         id="download"
@@ -149,22 +143,20 @@ function Payment({ data }: { data: PaymentRequest }) {
                         htmlFor="download"
                       >
                         <span className="font-clash text-2xl font-semibold">
-                          {data.invoice.shinkai_offering.usage_type
-                            .Downloadable === 'Free'
+                          {data.usage_type.Downloadable === 'Free'
                             ? 'Free'
-                            : 'Payment' in
-                                data.invoice.shinkai_offering.usage_type
-                                  .Downloadable
-                              ? `${
-                                  data.invoice.shinkai_offering.usage_type
-                                    .Downloadable.Payment[0].amount
-                                } ${
-                                  data.invoice.shinkai_offering.usage_type
-                                    .Downloadable.Payment[0].asset.asset_id
+                            : 'Payment' in data.usage_type.Downloadable
+                              ? `${formatAmount(
+                                  data.usage_type.Downloadable.Payment[0]
+                                    .amount,
+                                  data.usage_type.Downloadable.Payment[0].asset
+                                    .decimals,
+                                )} ${
+                                  data.usage_type.Downloadable.Payment[0].asset
+                                    .asset_id
                                 }
                                   `
-                              : data.invoice.shinkai_offering.usage_type
-                                  .Downloadable.DirectDelegation}
+                              : data.usage_type.Downloadable.DirectDelegation}
                         </span>
                         <span className="text-gray-100">for download</span>
                       </Label>
@@ -180,7 +172,6 @@ function Payment({ data }: { data: PaymentRequest }) {
                   </div>
                   <div className="flex justify-between text-xs">
                     <span className="text-gray-100">Wallet Balance</span>
-                    {/*//TODO: get balance*/}
                     <span className="text-white">1000</span>
                   </div>
                 </div>
@@ -189,7 +180,7 @@ function Payment({ data }: { data: PaymentRequest }) {
                 <div className="flex justify-between gap-2">
                   <Button
                     className="mx-auto min-w-[200px] rounded-md"
-                    onClick={handleConfirmPayment}
+                    onClick={handleCancelPayment}
                     size="sm"
                     variant="ghost"
                   >
@@ -205,7 +196,7 @@ function Payment({ data }: { data: PaymentRequest }) {
                         token: auth.api_v2_key,
                         payload: {
                           invoice_id: data.invoice.invoice_id,
-                          data_for_tool: '',
+                          data_for_tool: data.function_args,
                         },
                       });
                     }}

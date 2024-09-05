@@ -34,13 +34,21 @@ export type PaymentRequest = {
     tool_data: any;
     usage_type_inquiry: any;
   };
+  invoice_id: string;
+  tool_key: string;
+  usage_type: ToolUsageType;
+  function_args: any;
 };
-
 export type Widget = {
   PaymentRequest?: PaymentRequest;
 };
 export type WidgetToolType = keyof Widget;
 export type WidgetToolData = Widget[WidgetToolType];
+
+export type WidgetToolState = {
+  name: WidgetToolType;
+  data: WidgetToolData;
+};
 
 export type WsMessage = {
   message_type: 'Stream' | 'ShinkaiMessage' | 'Sheet' | 'Widget';
