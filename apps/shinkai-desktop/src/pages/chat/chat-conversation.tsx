@@ -139,7 +139,7 @@ const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
   useEffect(() => {
     if (!enabled) return;
     const wsMessage = {
-      subscriptions: [{ topic: 'widget' }],
+      subscriptions: [{ topic: 'widget', subtopic: inboxId }],
       unsubscriptions: [],
     };
     const wsMessageString = JSON.stringify(wsMessage);
