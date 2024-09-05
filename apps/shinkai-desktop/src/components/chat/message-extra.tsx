@@ -78,9 +78,6 @@ function Payment({
   const { mutateAsync: payInvoice } = usePayInvoice({
     onSuccess: () => {
       setStatus('success');
-      setTimeout(() => {
-        onCancel();
-      }, 2000);
     },
     onError: () => {
       setStatus('error');
@@ -187,6 +184,12 @@ function Payment({
                   )}
                 </RadioGroup>
                 <div className="mx-auto flex max-w-sm flex-col gap-2 py-2">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-100">Author</span>
+                    <span className="text-white">
+                      {data.invoice.provider_name}
+                    </span>
+                  </div>
                   <div className="flex justify-between text-xs">
                     <span className="text-gray-100">Wallet Address</span>
                     <span className="text-white">
