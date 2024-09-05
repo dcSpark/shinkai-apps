@@ -197,7 +197,10 @@ function Payment({
                     <span className="text-gray-100">Wallet Balances</span>
                     <div className="text-white">
                       {data.wallet_balances.data.map((balance) => (
-                        <div key={balance.asset.asset_id}>
+                        <div
+                          className="text-right"
+                          key={balance.asset.asset_id}
+                        >
                           {formatAmount(balance.amount, balance.asset.decimals)}{' '}
                           {balance.asset.asset_id}
                         </div>
