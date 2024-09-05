@@ -266,7 +266,6 @@ export const MessageList = ({
                               handleRetryMessage={handleRetryMessage}
                               message={message}
                             />
-                            {messageExtra}
                           </div>
                         );
                       })}
@@ -275,6 +274,7 @@ export const MessageList = ({
                 );
               },
             )}
+            {messageExtra}
             {isLoadingMessage && (
               <Message
                 isPending={isLoadingMessage}
