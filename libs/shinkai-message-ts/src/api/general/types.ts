@@ -8,7 +8,16 @@ export type CheckHealthResponse = {
 };
 
 export type Token = { token: string };
-
+export type WalletBalance = {
+  amount: string;
+  asset: {
+    asset_id: string;
+    contract_address: string | null;
+    decimals: number;
+    network_id: string;
+  };
+  decimals: number;
+};
 export type PaymentRequest = {
   description: string;
   invoice: {
@@ -38,6 +47,12 @@ export type PaymentRequest = {
   tool_key: string;
   usage_type: ToolUsageType;
   function_args: any;
+  wallet_balances: {
+    data: WalletBalance[];
+    has_more: boolean;
+    next_page: string;
+    total_count: number;
+  };
 };
 export type Widget = {
   PaymentRequest?: PaymentRequest;

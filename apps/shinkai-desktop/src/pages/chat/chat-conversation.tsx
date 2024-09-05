@@ -158,7 +158,7 @@ const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
     sendMessage,
   ]);
 
-  return { readyState, widgetTool: widgetTool };
+  return { readyState, widgetTool, setWidgetTool };
 };
 
 const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
@@ -362,7 +362,7 @@ const ChatConversation = () => {
     enabled: hasProviderEnableStreaming,
   });
 
-  const { widgetTool } = useWebSocketTools({
+  const { widgetTool, setWidgetTool } = useWebSocketTools({
     enabled: true,
   });
 
@@ -504,7 +504,13 @@ const ChatConversation = () => {
         isSuccess={isChatConversationSuccess}
         lastMessageContent={messageContent}
         messageExtra={
-          <MessageExtra metadata={widgetTool?.data} name={widgetTool?.name} />
+          <MessageExtra
+            metadata={widgetTool?.data}
+            name={widgetTool?.name}
+            onCancel={() => {
+              setWidgetTool(null);
+            }}
+          />
         }
         noMoreMessageLabel={t('chat.allMessagesLoaded')}
         paginatedMessages={data}

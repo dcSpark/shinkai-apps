@@ -1,5 +1,3 @@
-import { PaymentRequest } from '../general/types';
-
 export type WorkflowRaw = {
   name: string;
   version: string;

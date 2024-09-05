@@ -26,26 +26,46 @@ const truncateAddress = (address: string) => {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 };
 
-const formatAmount = (amount: string, decimals: number) => {
-  return (Number(amount) / Math.pow(10, decimals)).toFixed(decimals);
+const formatAmount = (amount: string, decimals = 18): string => {
+  const value = BigInt(amount);
+  const divisor = BigInt(10 ** decimals);
+  const integerPart = value / divisor;
+  const fractionalPart = value % divisor;
+
+  if (fractionalPart === BigInt(0)) {
+    return integerPart.toString();
+  }
+
+  const fractionalStr = fractionalPart.toString().padStart(decimals, '0');
+  const trimmedFractionalStr = fractionalStr.replace(/0+$/, '');
+
+  return `${integerPart}.${trimmedFractionalStr}`;
 };
 
 export default function MessageExtra({
   name,
   metadata,
+  onCancel,
 }: {
   name?: WidgetToolType;
   metadata?: WidgetToolData;
+  onCancel: () => void;
 }) {
   if (metadata == null || name == null) return null;
 
   if (name === 'PaymentRequest') {
-    return <Payment data={metadata} />;
+    return <Payment data={metadata} onCancel={onCancel} />;
   }
   return null;
 }
 
-function Payment({ data }: { data: PaymentRequest }) {
+function Payment({
+  data,
+  onCancel,
+}: {
+  data: PaymentRequest;
+  onCancel: () => void;
+}) {
   const [selectedPlan, setSelectedPlan] = React.useState<
     'one-time' | 'download' | 'both'
   >('one-time');
@@ -63,10 +83,6 @@ function Payment({ data }: { data: PaymentRequest }) {
       setStatus('error');
     },
   });
-
-  const handleCancelPayment = () => {
-    setStatus('idle');
-  };
 
   const hasPerUse = !!data?.usage_type?.PerUse;
   const hasDownload = !!data?.usage_type?.Downloadable;
@@ -106,7 +122,7 @@ function Payment({ data }: { data: PaymentRequest }) {
                   value={selectedPlan}
                 >
                   {hasPerUse && (
-                    <div className="relative flex-1">
+                    <div className="relative max-w-[200px] flex-1">
                       <RadioGroupItem
                         className="peer sr-only"
                         id="one-time"
@@ -120,7 +136,11 @@ function Payment({ data }: { data: PaymentRequest }) {
                           {data.usage_type.PerUse === 'Free'
                             ? 'Free'
                             : 'Payment' in data.usage_type.PerUse
-                              ? `${data.usage_type.PerUse.Payment[0].amount} ${
+                              ? `${formatAmount(
+                                  data.usage_type.PerUse.Payment[0].amount,
+                                  data.usage_type.PerUse.Payment[0].asset
+                                    .decimals,
+                                )} ${
                                   data.usage_type.PerUse.Payment[0].asset
                                     .asset_id
                                 }
@@ -132,7 +152,7 @@ function Payment({ data }: { data: PaymentRequest }) {
                     </div>
                   )}
                   {hasDownload && (
-                    <div className="relative flex-1">
+                    <div className="relative max-w-[200px] flex-1">
                       <RadioGroupItem
                         className="peer sr-only"
                         id="download"
@@ -142,7 +162,7 @@ function Payment({ data }: { data: PaymentRequest }) {
                         className="hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-brand [&:has([data-state=checked])]:border-brand flex w-full flex-col items-center justify-between rounded-md border-2 border-gray-400 bg-gray-500 p-4"
                         htmlFor="download"
                       >
-                        <span className="font-clash text-2xl font-semibold">
+                        <span className="font-clash text-xl font-semibold">
                           {data.usage_type.Downloadable === 'Free'
                             ? 'Free'
                             : 'Payment' in data.usage_type.Downloadable
@@ -172,7 +192,14 @@ function Payment({ data }: { data: PaymentRequest }) {
                   </div>
                   <div className="flex justify-between text-xs">
                     <span className="text-gray-100">Wallet Balance</span>
-                    <span className="text-white">1000</span>
+                    <span className="text-white">
+                      {data.wallet_balances.data.map((balance) => (
+                        <span key={balance.asset.asset_id}>
+                          {formatAmount(balance.amount, balance.asset.decimals)}{' '}
+                          {balance.asset.asset_id}
+                        </span>
+                      ))}
+                    </span>
                   </div>
                 </div>
               </CardContent>
@@ -180,7 +207,7 @@ function Payment({ data }: { data: PaymentRequest }) {
                 <div className="flex justify-between gap-2">
                   <Button
                     className="mx-auto min-w-[200px] rounded-md"
-                    onClick={handleCancelPayment}
+                    onClick={onCancel}
                     size="sm"
                     variant="ghost"
                   >
