@@ -228,7 +228,17 @@ const ResetConnectionDialog = ({
   onOpenChange: (open: boolean) => void;
 }) => {
   const { mutateAsync: shinkaiNodeKill } = useShinkaiNodeKillMutation();
-  const { mutateAsync: shinkaiNodeSpawn } = useShinkaiNodeSpawnMutation();
+  const { mutateAsync: shinkaiNodeSpawn } = useShinkaiNodeSpawnMutation({
+    onSuccess: async () => {
+      if (!encryptionKeys) return;
+      await submitRegistrationNoCode({
+        profile: 'main',
+        registration_name: 'main_device',
+        node_address: 'http://127.0.0.1:9550',
+        ...encryptionKeys,
+      });
+    },
+  });
   const { mutateAsync: shinkaiNodeRemoveStorage } =
     useShinkaiNodeRemoveStorageMutation();
   const { setShinkaiNodeOptions } = useShinkaiNodeManager();
@@ -262,29 +272,25 @@ const ResetConnectionDialog = ({
   );
 
   const handleReset = async () => {
-    if (!encryptionKeys) return;
     await shinkaiNodeKill();
     await shinkaiNodeRemoveStorage({ preserveKeys: true });
     setShinkaiNodeOptions(null);
     await shinkaiNodeSpawn();
-    await submitRegistrationNoCode({
-      profile: 'main',
-      registration_name: 'main_device',
-      node_address: 'http://127.0.0.1:9550',
-      ...encryptionKeys,
-    });
   };
 
   return (
     <AlertDialog onOpenChange={onOpenChange} open={isOpen}>
       <AlertDialogContent className="w-[75%]">
         <AlertDialogHeader>
-          <AlertDialogTitle>Reset your connection</AlertDialogTitle>
+          <AlertDialogTitle>App Reset Required</AlertDialogTitle>
           <AlertDialogDescription>
             <div className="flex flex-col space-y-3 text-left text-white/70">
               <div className="text-sm">
-                We’re currently in beta and we made some major updates, which
-                require resetting your data for a fresh start.
+                We’re currently in beta and we made some significant updates to
+                improve your experience. To apply these updates, we need to
+                reset your data.
+                <br /> <br />
+                If you need assistance, please contact our support team.
               </div>
             </div>
           </AlertDialogDescription>
@@ -296,7 +302,7 @@ const ResetConnectionDialog = ({
             size="sm"
             variant={'destructive'}
           >
-            Reset Now
+            Reset App
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
