@@ -81,3 +81,37 @@ export type UpdateToolResponse = {
   type: ShinkaiToolType;
   content: [ShinkaiTool, boolean];
 };
+
+// TODO: fix types after backend is ready
+
+export type ToolPrice =
+  | 'Free'
+  | { DirectDelegation: string }
+  | {
+      Payment: Array<{
+        amount: string;
+        asset: {
+          asset_id: string;
+          contract_address: string;
+          decimals: number;
+          network_id: string;
+        };
+      }>;
+    };
+
+export type ToolUsageType = {
+  PerUse: ToolPrice;
+  Downloadable: ToolPrice;
+};
+export type PaymentTool = {
+  toolKey: string;
+  description: string;
+  usageType: ToolUsageType;
+};
+
+export type PayInvoiceRequest = {
+  invoice_id: string;
+  data_for_tool: any;
+};
+
+export type PayInvoiceResponse = any;

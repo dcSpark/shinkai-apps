@@ -4,6 +4,7 @@ import {
   GetToolResponse,
   GetToolsResponse,
   ListAllWorkflowsResponse,
+  PayInvoiceRequest,
   SearchWorkflowsResponse,
   UpdateToolRequest,
   UpdateToolResponse,
@@ -97,4 +98,20 @@ export const updateTool = async (
     },
   );
   return response.data as UpdateToolResponse;
+};
+
+export const payInvoice = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: PayInvoiceRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/pay_invoice'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data;
 };

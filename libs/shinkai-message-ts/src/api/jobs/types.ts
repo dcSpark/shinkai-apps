@@ -3,6 +3,7 @@ import {
   LocalScopeVRPackEntry,
 } from '../../models/SchemaTypes';
 import { AgentInbox } from '../../models/ShinkaiMessage';
+import { getFileNames } from './index';
 
 type ResourceSource = {
   Standard: {
@@ -113,6 +114,11 @@ export type GetLastMessagesRequest = {
   limit: number;
   offset_key?: string;
 };
+export type GetLastMessagesWithBranchesRequest = {
+  inbox_name: string;
+  limit: number;
+  offset_key?: string;
+};
 export type NodeApiData = {
   node_message_hash: string;
   node_timestamp: string;
@@ -139,6 +145,7 @@ export type ChatMessage = {
   inbox: string;
 };
 export type GetLastMessagesResponse = ChatMessage[];
+export type GetLastMessagesWithBranchesResponse = ChatMessage[][];
 export type CreateFilesInboxResponse = string;
 export type AddFileToInboxRequest = {
   file_inbox_name: string;
@@ -226,3 +233,9 @@ export type Inbox = {
   datetime_created: string;
 };
 export type GetAllInboxesResponse = Inbox[];
+
+export type GetFileNamesRequest = {
+  inboxName: string;
+};
+
+export type GetFileNamesResponse = string[];

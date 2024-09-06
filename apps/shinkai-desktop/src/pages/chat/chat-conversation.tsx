@@ -1,6 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
+  WidgetToolState,
+  WidgetToolType,
+  WsMessage,
+} from '@shinkai_network/shinkai-message-ts/api/general/types';
+import {
   extractErrorPropertyOrContent,
   extractJobIdFromInbox,
   extractReceiverShinkaiName,
@@ -12,12 +17,12 @@ import {
   chatMessageFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/chat-message';
 import { FunctionKey } from '@shinkai_network/shinkai-node-state/lib/constants';
-import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMessageToJob/useSendMessageToJob';
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
 import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageWithFilesToInbox/useSendMessageWithFilesToInbox';
 import { useUpdateAgentInJob } from '@shinkai_network/shinkai-node-state/lib/mutations/updateAgentInJob/useUpdateAgentInJob';
-import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
 import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
+import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
+import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useGetWorkflowSearch } from '@shinkai_network/shinkai-node-state/v2/queries/getWorkflowSearch/useGetWorkflowSearch';
 import {
@@ -76,6 +81,7 @@ import { useParams } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';
 import { toast } from 'sonner';
 
+import MessageExtra from '../../components/chat/message-extra';
 import { useWorkflowSelectionStore } from '../../components/workflow/context/workflow-selection-context';
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useDebounce } from '../../hooks/use-debounce';
@@ -89,6 +95,72 @@ enum ErrorCodes {
 type UseWebSocketMessage = {
   enabled?: boolean;
 };
+
+const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
+  const auth = useAuth((state) => state.auth);
+  const nodeAddressUrl = new URL(auth?.node_address ?? 'http://localhost:9850');
+  const socketUrl = `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`;
+  const { sendMessage, lastMessage, readyState } = useWebSocket(
+    socketUrl,
+    { share: true },
+    enabled,
+  );
+  const { inboxId: encodedInboxId = '' } = useParams();
+  const inboxId = decodeURIComponent(encodedInboxId);
+
+  const [widgetTool, setWidgetTool] = useState<WidgetToolState | null>(null);
+
+  useEffect(() => {
+    if (!enabled) return;
+
+    if (lastMessage?.data) {
+      try {
+        const parseData: WsMessage = JSON.parse(lastMessage.data);
+        if (parseData.message_type === 'Widget' && parseData?.widget) {
+          const widgetName = Object.keys(parseData.widget)[0];
+          setWidgetTool({
+            name: widgetName as WidgetToolType,
+            data: parseData.widget[widgetName as WidgetToolType],
+          });
+        }
+      } catch (error) {
+        console.error('Failed to parse ws message', error);
+      }
+    }
+  }, [enabled, lastMessage?.data]);
+
+  useEffect(() => {
+    if (!enabled) return;
+    const wsMessage = {
+      subscriptions: [{ topic: 'widget', subtopic: inboxId }],
+      unsubscriptions: [],
+    };
+    const wsMessageString = JSON.stringify(wsMessage);
+    const shinkaiMessage = ShinkaiMessageBuilderWrapper.ws_connection(
+      wsMessageString,
+      auth?.profile_encryption_sk ?? '',
+      auth?.profile_identity_sk ?? '',
+      auth?.node_encryption_pk ?? '',
+      auth?.shinkai_identity ?? '',
+      auth?.profile ?? '',
+      auth?.shinkai_identity ?? '',
+      '',
+    );
+    sendMessage(shinkaiMessage);
+  }, [
+    auth?.node_encryption_pk,
+    auth?.profile,
+    auth?.profile_encryption_sk,
+    auth?.profile_identity_sk,
+    auth?.shinkai_identity,
+    enabled,
+    inboxId,
+    sendMessage,
+  ]);
+
+  return { readyState, widgetTool, setWidgetTool };
+};
+
 const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
   const auth = useAuth((state) => state.auth);
   const nodeAddressUrl = new URL(auth?.node_address ?? 'http://localhost:9850');
@@ -103,23 +175,12 @@ const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = decodeURIComponent(encodedInboxId);
   const [messageContent, setMessageContent] = useState('');
+
   useEffect(() => {
     if (!enabled) return;
     if (lastMessage?.data) {
       try {
-        const parseData: {
-          message_type: 'Stream' | 'ShinkaiMessage';
-          inbox: string;
-          message: string;
-          error_message: string;
-          metadata?: {
-            id: string;
-            is_done: boolean;
-            done_reason: string;
-            total_duration: number;
-            eval_count: number;
-          };
-        } = JSON.parse(lastMessage.data);
+        const parseData: WsMessage = JSON.parse(lastMessage.data);
         if (parseData.message_type !== 'Stream') return;
         if (parseData.metadata?.is_done) {
           const paginationKey = [
@@ -191,6 +252,7 @@ const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
 
   return { messageContent, readyState, setMessageContent };
 };
+
 const ChatConversation = () => {
   const { captureAnalyticEvent } = useAnalytics();
   const { t } = useTranslation();
@@ -248,15 +310,11 @@ const ChatConversation = () => {
     isFetchingPreviousPage,
     isSuccess: isChatConversationSuccess,
   } = useGetChatConversationWithPagination({
+    token: auth?.api_v2_key ?? '',
     nodeAddress: auth?.node_address ?? '',
     inboxId: inboxId as string,
     shinkaiIdentity: auth?.shinkai_identity ?? '',
     profile: auth?.profile ?? '',
-    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-    node_encryption_pk: auth?.node_encryption_pk ?? '',
-    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-    profile_identity_sk: auth?.profile_identity_sk ?? '',
     refetchIntervalEnabled: !hasProviderEnableStreaming,
   });
 
@@ -304,6 +362,10 @@ const ChatConversation = () => {
     enabled: hasProviderEnableStreaming,
   });
 
+  const { widgetTool, setWidgetTool } = useWebSocketTools({
+    enabled: true,
+  });
+
   const { mutateAsync: sendMessageToInbox } = useSendMessageToInbox();
   const { mutateAsync: sendMessageToJob } = useSendMessageToJob({
     onSuccess: () => {
@@ -331,18 +393,11 @@ const ChatConversation = () => {
 
     await sendMessageToJob({
       nodeAddress: auth.node_address,
+      token: auth.api_v2_key,
       jobId,
       message: content,
-      files_inbox: '',
       parent: parentHash,
       workflowName,
-      shinkaiIdentity: auth.shinkai_identity,
-      profile: auth.profile,
-      my_device_encryption_sk: auth.my_device_encryption_sk,
-      my_device_identity_sk: auth.my_device_identity_sk,
-      node_encryption_pk: auth.node_encryption_pk,
-      profile_encryption_sk: auth.profile_encryption_sk,
-      profile_identity_sk: auth.profile_identity_sk,
     });
   };
 
@@ -380,19 +435,12 @@ const ChatConversation = () => {
       const jobId = extractJobIdFromInbox(inboxId);
 
       await sendMessageToJob({
+        token: auth.api_v2_key,
         nodeAddress: auth.node_address,
         jobId: jobId,
         message: data.message,
-        files_inbox: '',
         parent: '', // Note: we should set the parent if we want to retry or branch out
-        shinkaiIdentity: auth.shinkai_identity,
-        profile: auth.profile,
         workflowName: workflowKeyToUse,
-        my_device_encryption_sk: auth.my_device_encryption_sk,
-        my_device_identity_sk: auth.my_device_identity_sk,
-        node_encryption_pk: auth.node_encryption_pk,
-        profile_encryption_sk: auth.profile_encryption_sk,
-        profile_identity_sk: auth.profile_identity_sk,
       });
     } else {
       const sender = `${auth.shinkai_identity}/${auth.profile}/device/${auth.registration_name}`;
@@ -455,6 +503,15 @@ const ChatConversation = () => {
         isLoadingMessage={isLoadingMessage}
         isSuccess={isChatConversationSuccess}
         lastMessageContent={messageContent}
+        messageExtra={
+          <MessageExtra
+            metadata={widgetTool?.data}
+            name={widgetTool?.name}
+            onCancel={() => {
+              setWidgetTool(null);
+            }}
+          />
+        }
         noMoreMessageLabel={t('chat.allMessagesLoaded')}
         paginatedMessages={data}
         regenerateMessage={regenerateMessage}

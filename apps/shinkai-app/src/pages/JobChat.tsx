@@ -23,8 +23,8 @@ import {
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMessageToJob/useSendMessageToJob';
 import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageWithFilesToInbox/useSendMessageWithFilesToInbox';
-import { ChatConversationMessage } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
-import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/useGetChatConversationWithPagination';
+import { FormattedChatMessage } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
+import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import MarkdownPreview from '@uiw/react-markdown-preview';
 import { send } from 'ionicons/icons';
@@ -41,8 +41,8 @@ import {
 } from '../components/ui/Layout';
 import { useAuth } from '../store/auth';
 
-const groupMessagesByDate = (messages: ChatConversationMessage[]) => {
-  const groupedMessages: Record<string, ChatConversationMessage[]> = {};
+const groupMessagesByDate = (messages: FormattedChatMessage[]) => {
+  const groupedMessages: Record<string, FormattedChatMessage[]> = {};
   messages.forEach((message) => {
     const date = new Date(message.scheduledTime ?? '').toDateString();
 
@@ -78,15 +78,11 @@ const JobChat: React.FC = () => {
     isFetchingPreviousPage,
     isSuccess: isChatConversationSuccess,
   } = useGetChatConversationWithPagination({
+    token: auth?.api_v2_key ?? '',
     nodeAddress: auth.node_address,
     inboxId: deserializedId as string,
     shinkaiIdentity: auth?.shinkai_identity ?? '',
     profile: auth?.profile ?? '',
-    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-    node_encryption_pk: auth?.node_encryption_pk ?? '',
-    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-    profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
 
   const [isScrolling, setScrolling] = useState(true);

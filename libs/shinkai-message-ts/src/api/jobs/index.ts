@@ -9,8 +9,12 @@ import {
   CreateJobRequest,
   CreateJobResponse,
   GetAllInboxesResponse,
+  GetFileNamesRequest,
+  GetFileNamesResponse,
   GetLastMessagesRequest,
   GetLastMessagesResponse,
+  GetLastMessagesWithBranchesRequest,
+  GetLastMessagesWithBranchesResponse,
   GetLLMProvidersResponse,
   JobMessageRequest,
   JobMessageResponse,
@@ -64,6 +68,36 @@ export const getLastMessages = async (
     },
   );
   return response.data as GetLastMessagesResponse;
+};
+export const getLastMessagesWithBranches = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: GetLastMessagesWithBranchesRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/last_messages_with_branches'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as GetLastMessagesWithBranchesResponse;
+};
+
+export const getFileNames = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: GetFileNamesRequest,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, `/v2/list_files_in_inbox/${payload.inboxName}`),
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as GetFileNamesResponse;
 };
 
 export const createFilesInbox = async (
@@ -119,6 +153,25 @@ export const uploadFilesToInbox = async (
     });
   }
   return folderId;
+};
+
+export const downloadFileFromInbox = async (
+  nodeAddress: string,
+  bearerToken: string,
+  inboxName: string,
+  filename: string,
+) => {
+  const response = await httpClient.get(
+    urlJoin(
+      nodeAddress,
+      `/v2/download_file_from_inbox/${inboxName}/${filename}`,
+    ),
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'blob',
+    },
+  );
+  return response.data as Blob;
 };
 
 export const getLLMProviders = async (

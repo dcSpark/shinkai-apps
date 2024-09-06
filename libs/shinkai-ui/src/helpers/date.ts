@@ -12,6 +12,7 @@ export type ChatConversationMessage = {
     id: string;
     files: {
       name: string;
+      preview?: string;
     }[];
   };
   workflowName: string | undefined;

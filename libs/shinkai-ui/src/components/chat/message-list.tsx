@@ -1,8 +1,10 @@
-import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/lib/queries/getChatConversation/types';
+import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import {
   FetchPreviousPageOptions,
   InfiniteQueryObserverResult,
 } from '@tanstack/react-query';
+import { AnimatePresence, motion } from 'framer-motion';
+import { CheckCircle, Loader2 } from 'lucide-react';
 import React, {
   Fragment,
   useCallback,
@@ -31,6 +33,7 @@ export const MessageList = ({
   isLoadingMessage,
   regenerateMessage,
   disabledRetryAndEdit,
+  messageExtra,
 }: {
   noMoreMessageLabel: string;
   isSuccess: boolean;
@@ -53,6 +56,7 @@ export const MessageList = ({
   lastMessageContent: string;
   isLoadingMessage: boolean | undefined;
   disabledRetryAndEdit?: boolean;
+  messageExtra?: React.ReactNode;
 }) => {
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const previousChatHeightRef = useRef<number>(0);
@@ -270,6 +274,7 @@ export const MessageList = ({
                 );
               },
             )}
+            {messageExtra}
             {isLoadingMessage && (
               <Message
                 isPending={isLoadingMessage}

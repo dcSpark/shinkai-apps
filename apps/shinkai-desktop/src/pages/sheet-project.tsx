@@ -1,3 +1,4 @@
+import { WsMessage } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import { ColumnStatus } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
 import { ShinkaiMessageBuilderWrapper } from '@shinkai_network/shinkai-message-ts/wasm/ShinkaiMessageBuilderWrapper';
 import { FunctionKey } from '@shinkai_network/shinkai-node-state/lib/constants';
@@ -76,19 +77,7 @@ const useWebsocketUpdateCell = ({ enabled }: { enabled: boolean }) => {
     if (!enabled || !auth) return;
     if (lastMessage?.data) {
       try {
-        const parseData: {
-          message_type: 'Stream' | 'ShinkaiMessage' | 'Sheet';
-          inbox: string;
-          message: string;
-          error_message: string;
-          metadata?: {
-            id: string;
-            is_done: boolean;
-            done_reason: string;
-            total_duration: number;
-            eval_count: number;
-          };
-        } = JSON.parse(lastMessage.data);
+        const parseData: WsMessage = JSON.parse(lastMessage.data);
 
         if (parseData.message_type === 'Sheet') {
           const cellDataParsed: {
