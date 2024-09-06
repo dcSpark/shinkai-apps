@@ -1,5 +1,7 @@
 import { ExitIcon, GearIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/lib/queries/getEncryptionKeys/useGetEncryptionKeys';
+import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/v2/mutations/submitRegistation/useSubmitRegistrationNoCode';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import {
   AlertDialog,
@@ -31,6 +33,7 @@ import {
   ToolsIcon,
   WorkflowPlaygroundIcon,
 } from '@shinkai_network/shinkai-ui/assets';
+import { submitRegistrationNoCodeError } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion, TargetAndTransition } from 'framer-motion';
 import { ArrowLeftToLine, ArrowRightToLine, BotIcon } from 'lucide-react';
@@ -48,8 +51,14 @@ import { ResourcesBanner } from '../../components/hardware-capabilities/resource
 import { UpdateBanner } from '../../components/hardware-capabilities/update-banner';
 import OnboardingStepper from '../../components/onboarding-checklist/onboarding';
 import config from '../../config';
+import {
+  useShinkaiNodeKillMutation,
+  useShinkaiNodeRemoveStorageMutation,
+  useShinkaiNodeSpawnMutation,
+} from '../../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
+import { useShinkaiNodeManager } from '../../store/shinkai-node-manager';
 
 type NavigationLink = {
   title: string;
@@ -211,10 +220,100 @@ const ShinkaiLogo = ({ className }: { className?: string }) => (
   </svg>
 );
 
+const ResetConnectionDialog = ({
+  isOpen,
+  onOpenChange,
+}: {
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+}) => {
+  const { mutateAsync: shinkaiNodeKill } = useShinkaiNodeKillMutation();
+  const { mutateAsync: shinkaiNodeSpawn } = useShinkaiNodeSpawnMutation({
+    onSuccess: async () => {
+      if (!encryptionKeys) return;
+      await submitRegistrationNoCode({
+        profile: 'main',
+        registration_name: 'main_device',
+        node_address: 'http://127.0.0.1:9550',
+        ...encryptionKeys,
+      });
+    },
+  });
+  const { mutateAsync: shinkaiNodeRemoveStorage } =
+    useShinkaiNodeRemoveStorageMutation();
+  const { setShinkaiNodeOptions } = useShinkaiNodeManager();
+  const { encryptionKeys } = useGetEncryptionKeys();
+  const setAuth = useAuth((state) => state.setAuth);
+  const navigate = useNavigate();
+
+  const { mutateAsync: submitRegistrationNoCode } = useSubmitRegistrationNoCode(
+    {
+      onSuccess: (response, setupPayload) => {
+        if (response.status !== 'success') {
+          shinkaiNodeKill();
+        }
+        if (response.status === 'success' && encryptionKeys) {
+          const updatedSetupData = {
+            ...encryptionKeys,
+            ...setupPayload,
+            permission_type: '',
+            shinkai_identity: response.data?.node_name ?? '',
+            node_signature_pk: response.data?.identity_public_key ?? '',
+            node_encryption_pk: response.data?.encryption_public_key ?? '',
+            api_v2_key: response.data?.api_v2_key ?? '',
+          };
+          setAuth(updatedSetupData);
+          navigate('/ai-model-installation');
+        } else {
+          submitRegistrationNoCodeError();
+        }
+      },
+    },
+  );
+
+  const handleReset = async () => {
+    await shinkaiNodeKill();
+    await shinkaiNodeRemoveStorage({ preserveKeys: true });
+    setShinkaiNodeOptions(null);
+    await shinkaiNodeSpawn();
+  };
+
+  return (
+    <AlertDialog onOpenChange={onOpenChange} open={isOpen}>
+      <AlertDialogContent className="w-[75%]">
+        <AlertDialogHeader>
+          <AlertDialogTitle>App Reset Required</AlertDialogTitle>
+          <AlertDialogDescription>
+            <div className="flex flex-col space-y-3 text-left text-white/70">
+              <div className="text-sm">
+                We’re currently in beta and we made some significant updates to
+                improve your experience. To apply these updates, we need to
+                reset your data.
+                <br /> <br />
+                If you need assistance, please contact our support team.
+              </div>
+            </div>
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter className="mt-4 flex items-center justify-end gap-2.5">
+          <Button
+            className="min-w-32 text-sm"
+            onClick={handleReset}
+            size="sm"
+            variant={'destructive'}
+          >
+            Reset App
+          </Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+};
+
 export function MainNav() {
   const { t, Trans } = useTranslation();
   const optInExperimental = useSettings((state) => state.optInExperimental);
-
+  const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
   const logout = useAuth((state) => state.setLogout);
   const isGetStartedChecklistHidden = useSettings(
@@ -223,6 +322,8 @@ export function MainNav() {
 
   const [isConfirmLogoutDialogOpened, setIsConfirmLogoutDialogOpened] =
     useState(false);
+  const [isApiV2KeyMissingDialogOpen, setIsApiV2KeyMissingDialogOpen] =
+    useState(false);
 
   const sidebarExpanded = useSettings((state) => state.sidebarExpanded);
   const toggleSidebar = useSettings((state) => state.toggleSidebar);
@@ -230,6 +331,12 @@ export function MainNav() {
   const confirmDisconnect = () => {
     setIsConfirmLogoutDialogOpened(true);
   };
+
+  useEffect(() => {
+    if (!auth?.api_v2_key) {
+      setIsApiV2KeyMissingDialogOpen(true);
+    }
+  }, [auth?.api_v2_key]);
 
   const handleDisconnect = () => {
     logout();
@@ -481,6 +588,10 @@ export function MainNav() {
         </div>
       </div>
 
+      <ResetConnectionDialog
+        isOpen={isApiV2KeyMissingDialogOpen}
+        onOpenChange={setIsApiV2KeyMissingDialogOpen}
+      />
       <AlertDialog
         onOpenChange={setIsConfirmLogoutDialogOpened}
         open={isConfirmLogoutDialogOpened}

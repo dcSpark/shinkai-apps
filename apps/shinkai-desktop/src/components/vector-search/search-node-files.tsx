@@ -125,7 +125,7 @@ const SearchNodeFiles = () => {
     <SimpleLayout>
       <div
         className={cn(
-          'flex h-[calc(100vh_-_80px)] flex-col justify-start space-y-3',
+          'flex h-[calc(100vh_-_96px)] flex-col justify-start space-y-3',
           !isSearchEntered && 'overflow-hidden',
         )}
       >

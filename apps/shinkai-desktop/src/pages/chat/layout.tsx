@@ -329,7 +329,7 @@ const ChatLayout = () => {
   return (
     <div className={cn('grid h-screen w-full grid-cols-[280px_1px_1fr]')}>
       <div className="flex h-full flex-col px-2 py-4">
-        <div className="mb-4 flex items-center justify-between gap-2 px-2">
+        <div className="mb-2 flex items-center justify-between gap-2 px-2 py-2">
           <h2>{t('chat.chats')}</h2>
           <TooltipProvider delayDuration={0}>
             <Tooltip>
