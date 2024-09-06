@@ -4,7 +4,7 @@ import {
   useQuery,
 } from '@tanstack/react-query';
 
-import { FunctionKey } from '../../constants';
+import { FunctionKeyV2 } from '../../constants';
 import { getAvailableSharedFolders } from '.';
 import {
   GetAvailableSharedItemsInput,
@@ -25,7 +25,7 @@ export const useGetAvailableSharedFoldersWithPagination = (
     [string, GetAvailableSharedItemsInput],
     { page: number | null }
   >({
-    queryKey: [FunctionKey.GET_AVAILABLE_SHARED_ITEMS, input],
+    queryKey: [FunctionKeyV2.GET_AVAILABLE_SHARED_ITEMS, input],
     queryFn: async ({ pageParam }) =>
       await getAvailableSharedFolders({
         ...input,
@@ -53,7 +53,7 @@ export const useGetAvailableSharedFolders = (
   options?: Options,
 ) => {
   const response = useQuery({
-    queryKey: [FunctionKey.GET_AVAILABLE_SHARED_ITEMS, input],
+    queryKey: [FunctionKeyV2.GET_AVAILABLE_SHARED_ITEMS, input],
     queryFn: async () => await getAvailableSharedFolders(input),
     ...options,
   });

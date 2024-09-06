@@ -1,7 +1,7 @@
-import type { JobCredentialsPayload } from '@shinkai_network/shinkai-message-ts/models';
+import { Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import { QueryObserverOptions } from '@tanstack/react-query';
 
-import { FunctionKey } from '../../constants';
+import { FunctionKeyV2 } from '../../constants';
 
 type TreeNode = {
   name: string;
@@ -26,13 +26,11 @@ type SharedFolder = {
   subscription_requirement: SubscriptionRequirement;
 };
 
-export type GetMySharedFoldersInput = JobCredentialsPayload & {
+export type GetMySharedFoldersInput = Token & {
   nodeAddress: string;
-  shinkaiIdentity: string;
-  profile: string;
 };
 export type UseGetMySharedFolders = [
-  FunctionKey.GET_MY_SHARED_FOLDERS,
+  FunctionKeyV2.GET_MY_SHARED_FOLDERS,
   GetMySharedFoldersInput,
 ];
 

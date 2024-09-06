@@ -1,8 +1,3 @@
-import type { JobCredentialsPayload } from '@shinkai_network/shinkai-message-ts/models';
-import { QueryObserverOptions } from '@tanstack/react-query';
-
-import { FunctionKey } from '../../constants';
-
 enum SubscriptionStatus {
   SubscriptionRequested = 'SubscriptionRequested',
   SubscriptionConfirmed = 'SubscriptionConfirmed',
@@ -29,23 +24,4 @@ type Subscription = {
   last_sync: string | null;
 };
 
-export type GetMySubscriptionsInput = JobCredentialsPayload & {
-  nodeAddress: string;
-  shinkaiIdentity: string;
-  profile: string;
-};
-
-export type UseGetAvailableSharedItems = [
-  FunctionKey.GET_MY_SUBSCRIPTIONS,
-  GetMySubscriptionsInput,
-];
-
-export type GetMySubscriptionsOutput = Subscription[];
-
-export type Options = QueryObserverOptions<
-  GetMySubscriptionsOutput,
-  Error,
-  GetMySubscriptionsOutput,
-  GetMySubscriptionsOutput,
-  UseGetAvailableSharedItems
->;
+export type GetMySubscriptionsResponse = Subscription[];
