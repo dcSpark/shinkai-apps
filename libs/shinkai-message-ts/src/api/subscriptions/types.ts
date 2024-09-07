@@ -25,3 +25,12 @@ type Subscription = {
 };
 
 export type GetMySubscriptionsResponse = Subscription[];
+
+export type GetLastNotificationsRequest = {
+  count: number;
+  timestamp?: string;
+};
+export type GetLastNotificationsResponse = {
+  datetime: string;
+  message: string;
+}[];

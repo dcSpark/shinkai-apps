@@ -1,6 +1,10 @@
 import { httpClient } from '../../http-client';
 import { urlJoin } from '../../utils/url-join';
-import { GetMySubscriptionsResponse } from './types';
+import {
+  GetLastNotificationsRequest,
+  GetLastNotificationsResponse,
+  GetMySubscriptionsResponse,
+} from './types';
 
 export const getMySubscriptions = async (
   nodeAddress: string,
@@ -30,4 +34,20 @@ export const getMySharedFolders = async (
     },
   );
   return response.data;
+};
+
+export const getLastNotifications = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: GetLastNotificationsRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/last_notifications'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as GetLastNotificationsResponse;
 };
