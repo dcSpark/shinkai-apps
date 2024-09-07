@@ -51,6 +51,8 @@ const PublicSharedFolderSubscription = () => {
   const { data: mySharedFolders } = useGetMySharedFolders({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    profile: auth?.profile ?? '',
   });
 
   const {

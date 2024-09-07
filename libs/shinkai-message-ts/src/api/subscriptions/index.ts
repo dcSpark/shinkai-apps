@@ -3,6 +3,7 @@ import { urlJoin } from '../../utils/url-join';
 import {
   GetLastNotificationsRequest,
   GetLastNotificationsResponse,
+  GetMySharedFoldersRequest,
   GetMySubscriptionsResponse,
 } from './types';
 
@@ -24,10 +25,11 @@ export const getMySubscriptions = async (
 export const getMySharedFolders = async (
   nodeAddress: string,
   bearerToken: string,
+  payload: GetMySharedFoldersRequest,
 ) => {
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v2/available_shared_items'),
-    {},
+    payload,
     {
       headers: { Authorization: `Bearer ${bearerToken}` },
       responseType: 'json',

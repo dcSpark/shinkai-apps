@@ -1,3 +1,5 @@
+import { getMySharedFolders } from './index';
+
 enum SubscriptionStatus {
   SubscriptionRequested = 'SubscriptionRequested',
   SubscriptionConfirmed = 'SubscriptionConfirmed',
@@ -25,6 +27,37 @@ type Subscription = {
 };
 
 export type GetMySubscriptionsResponse = Subscription[];
+
+type TreeNode = {
+  name: string;
+  path: string;
+  last_modified: string;
+  children: { [key: string]: TreeNode };
+};
+
+type SubscriptionRequirement = {
+  minimum_token_delegation: number;
+  minimum_time_delegated_hours: number;
+  monthly_payment: {
+    USD: number;
+  };
+  is_free: boolean;
+  folder_description: string;
+};
+type SharedFolder = {
+  path: string;
+  permission: 'Public' | 'Private';
+  tree: TreeNode;
+  subscription_requirement: SubscriptionRequirement;
+};
+
+export type GetMySharedFoldersRequest = {
+  path: string;
+  streamer_node_name: string;
+  streamer_profile_name: string;
+};
+
+export type GetMySharedFoldersResponse = SharedFolder[];
 
 export type GetLastNotificationsRequest = {
   count: number;
