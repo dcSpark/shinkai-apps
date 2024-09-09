@@ -22,6 +22,7 @@ import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-st
 import { useUpdateAgentInJob } from '@shinkai_network/shinkai-node-state/lib/mutations/updateAgentInJob/useUpdateAgentInJob';
 import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
+import { useUpdateChatConfig } from '@shinkai_network/shinkai-node-state/v2/mutations/updateChatConfig/useUpdateChatConfig';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useGetWorkflowSearch } from '@shinkai_network/shinkai-node-state/v2/queries/getWorkflowSearch/useGetWorkflowSearch';
@@ -71,6 +72,7 @@ import {
   ChevronDownIcon,
   Paperclip,
   SendIcon,
+  Settings2,
   X,
   XIcon,
 } from 'lucide-react';
@@ -379,6 +381,12 @@ const ChatConversation = () => {
       },
     });
 
+  const { mutateAsync: updateChatConfig } = useUpdateChatConfig({
+    onSuccess: () => {
+      toast.success('setting updated');
+    },
+  });
+
   const regenerateMessage = async (
     content: string,
     parentHash: string,
@@ -572,6 +580,20 @@ const ChatConversation = () => {
                             </Tooltip>
                           </TooltipProvider>
                           <WorkflowSelection />
+                          <button
+                            onClick={() => {
+                              console.log('111212');
+                              updateChatConfig({
+                                nodeAddress: auth?.node_address ?? '',
+                                token: auth?.api_v2_key ?? '',
+                                jobId: extractJobIdFromInbox(inboxId),
+                              });
+                            }}
+                            type="button"
+                          >
+                            <Settings2 className="h-5 w-5" />
+                            Streaming
+                          </button>
                         </div>
                         <ChatInputArea
                           autoFocus

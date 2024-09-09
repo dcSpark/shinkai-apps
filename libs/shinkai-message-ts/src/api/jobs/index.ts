@@ -19,6 +19,8 @@ import {
   JobMessageRequest,
   JobMessageResponse,
   LLMProviderInterface,
+  UpdateChatConfigRequest,
+  UpdateChatConfigResponse,
 } from './types';
 
 export const createJob = async (
@@ -235,4 +237,20 @@ export const getAllInboxes = async (
     },
   );
   return response.data as GetAllInboxesResponse;
+};
+
+export const updateChatConfig = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: UpdateChatConfigRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/update_job_config'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as UpdateChatConfigResponse;
 };
