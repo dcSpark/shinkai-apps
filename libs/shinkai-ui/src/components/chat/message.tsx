@@ -86,7 +86,6 @@ export const Message = ({
   disabledRetry,
   disabledEdit,
   handleEditMessage,
-  messageExtra,
 }: MessageProps) => {
   const { t } = useTranslation();
 

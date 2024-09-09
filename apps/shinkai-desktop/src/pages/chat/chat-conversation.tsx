@@ -190,11 +190,6 @@ const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
               inboxId: inboxId as string,
               shinkaiIdentity: auth?.shinkai_identity ?? '',
               profile: auth?.profile ?? '',
-              my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-              my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-              node_encryption_pk: auth?.node_encryption_pk ?? '',
-              profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-              profile_identity_sk: auth?.profile_identity_sk ?? '',
             },
           ];
           queryClient.invalidateQueries({ queryKey: paginationKey });
@@ -267,6 +262,9 @@ const ChatConversation = () => {
     currentInbox?.agent?.model.split(':')?.[0] === Models.Ollama ||
     currentInbox?.agent?.model.split(':')?.[0] === Models.Gemini ||
     currentInbox?.agent?.model.split(':')?.[0] === Models.Exo;
+
+  const hasProviderEnableTools =
+    currentInbox?.agent?.model.split(':')?.[0] === Models.OpenAI;
 
   const chatForm = useForm<ChatMessageFormSchema>({
     resolver: zodResolver(chatMessageFormSchema),
@@ -363,7 +361,7 @@ const ChatConversation = () => {
   });
 
   const { widgetTool, setWidgetTool } = useWebSocketTools({
-    enabled: true,
+    enabled: hasProviderEnableTools,
   });
 
   const { mutateAsync: sendMessageToInbox } = useSendMessageToInbox();
