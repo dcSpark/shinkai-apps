@@ -48,6 +48,5 @@ apps/shinkai-desktop/src-tauri/storage
 apps/shinkai-desktop/src-tauri/node_storage
 
 apps/shinkai-desktop/src-tauri/external-binaries
-apps/shinkai-desktop/src-tauri/bin
 launch.json
 temp
