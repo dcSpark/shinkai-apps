@@ -240,7 +240,7 @@ export type GetFileNamesRequest = {
 
 export type GetFileNamesResponse = string[];
 
-type JobConfig = {
+export type JobConfig = {
   custom_prompt: string;
   temperature?: number;
   seed?: number;
@@ -249,9 +249,14 @@ type JobConfig = {
   stream?: boolean;
   other_model_params?: Record<string, string>;
 };
-
+export type GetChatConfigRequest = {
+  job_id: string;
+};
+export type GetChatConfigResponse = JobConfig;
 export type UpdateChatConfigRequest = {
   job_id: string;
   config: JobConfig;
 };
-export type UpdateChatConfigResponse = {};
+export type UpdateChatConfigResponse = {
+  result: string;
+};

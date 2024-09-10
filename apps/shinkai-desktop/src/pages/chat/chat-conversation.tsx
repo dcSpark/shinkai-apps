@@ -23,6 +23,7 @@ import { useUpdateAgentInJob } from '@shinkai_network/shinkai-node-state/lib/mut
 import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useUpdateChatConfig } from '@shinkai_network/shinkai-node-state/v2/mutations/updateChatConfig/useUpdateChatConfig';
+import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useGetWorkflowSearch } from '@shinkai_network/shinkai-node-state/v2/queries/getWorkflowSearch/useGetWorkflowSearch';
@@ -43,12 +44,16 @@ import {
   FormItem,
   FormLabel,
   MessageList,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  Switch,
   Tooltip,
   TooltipContent,
   TooltipPortal,
@@ -318,6 +323,14 @@ const ChatConversation = () => {
     refetchIntervalEnabled: !hasProviderEnableStreaming,
   });
 
+  const { data: chatConfig } = useGetChatConfig({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+    jobId: extractJobIdFromInbox(inboxId),
+  });
+
+  console.log(chatConfig, 'chatConfig');
+
   const {
     data: workflowRecommendations,
     isSuccess: isWorkflowRecommendationsSuccess,
@@ -550,50 +563,79 @@ const ChatConversation = () => {
                     </FormLabel>
                     <FormControl>
                       <div className="">
-                        <div className="flex items-center gap-2.5 px-1 pb-2 pt-1">
-                          <AgentSelection />
-                          <TooltipProvider delayDuration={0}>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <div
-                                  {...getRootFileProps({
-                                    className: cn(
-                                      'hover:bg-gray-350 relative flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full rounded-lg p-1.5 text-white',
-                                    ),
-                                  })}
-                                >
-                                  <Paperclip className="h-full w-full" />
-                                  <input
-                                    {...chatForm.register('file')}
-                                    {...getInputFileProps({
-                                      onChange:
-                                        chatForm.register('file').onChange,
+                        <div className="flex items-center justify-between gap-4 px-1 pb-2 pt-1">
+                          <div className="flex items-center gap-2.5">
+                            <AgentSelection />
+                            <TooltipProvider delayDuration={0}>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div
+                                    {...getRootFileProps({
+                                      className: cn(
+                                        'hover:bg-gray-350 relative flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-lg p-1.5 text-white',
+                                      ),
                                     })}
-                                  />
-                                </div>
-                              </TooltipTrigger>
-                              <TooltipPortal>
-                                <TooltipContent align="center" side="top">
-                                  {t('common.uploadFile')}
-                                </TooltipContent>
-                              </TooltipPortal>
-                            </Tooltip>
-                          </TooltipProvider>
-                          <WorkflowSelection />
-                          <button
-                            onClick={() => {
-                              console.log('111212');
-                              updateChatConfig({
-                                nodeAddress: auth?.node_address ?? '',
-                                token: auth?.api_v2_key ?? '',
-                                jobId: extractJobIdFromInbox(inboxId),
-                              });
-                            }}
-                            type="button"
-                          >
-                            <Settings2 className="h-5 w-5" />
-                            Streaming
-                          </button>
+                                  >
+                                    <Paperclip className="h-full w-full" />
+                                    <input
+                                      {...chatForm.register('file')}
+                                      {...getInputFileProps({
+                                        onChange:
+                                          chatForm.register('file').onChange,
+                                      })}
+                                    />
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipPortal>
+                                  <TooltipContent align="center" side="top">
+                                    {t('common.uploadFile')}
+                                  </TooltipContent>
+                                </TooltipPortal>
+                              </Tooltip>
+                            </TooltipProvider>
+                            <WorkflowSelection />
+                          </div>
+                          <Popover>
+                            <TooltipProvider delayDuration={0}>
+                              <Tooltip>
+                                <PopoverTrigger asChild>
+                                  <TooltipTrigger asChild>
+                                    <button
+                                      className="hover:bg-gray-350 relative flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-lg p-1.5 text-white"
+                                      type="button"
+                                    >
+                                      <Settings2 className="h-4 w-4" />
+                                    </button>
+                                  </TooltipTrigger>
+                                </PopoverTrigger>
+                                <PopoverContent
+                                  align="end"
+                                  className="bg-gray-300 px-3 py-4 text-xs"
+                                  side="top"
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <Switch
+                                      checked={true}
+                                      onCheckedChange={(value) => {
+                                        updateChatConfig({
+                                          nodeAddress: auth?.node_address ?? '',
+                                          token: auth?.api_v2_key ?? '',
+                                          jobId: extractJobIdFromInbox(inboxId),
+                                          jobConfig: {
+                                            stream: value,
+                                            //TODO:
+                                            custom_prompt: '',
+                                          },
+                                        });
+                                      }}
+                                    />
+                                    <span>Enable Stream</span>
+                                  </div>
+                                </PopoverContent>
+                                <TooltipContent>Chat Settings</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </Popover>
                         </div>
                         <ChatInputArea
                           autoFocus

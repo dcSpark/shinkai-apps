@@ -6,13 +6,11 @@ export const updateChatConfig = async ({
   nodeAddress,
   token,
   jobId,
+  jobConfig,
 }: UpdateChatConfigInput) => {
   const response = await updateChatConfigApi(nodeAddress, token, {
     job_id: jobId,
-    config: {
-      stream: false,
-      custom_prompt: '',
-    },
+    config: jobConfig,
   });
   return response;
 };

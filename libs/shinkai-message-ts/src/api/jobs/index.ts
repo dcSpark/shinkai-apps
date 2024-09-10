@@ -9,6 +9,8 @@ import {
   CreateJobRequest,
   CreateJobResponse,
   GetAllInboxesResponse,
+  GetChatConfigRequest,
+  GetChatConfigResponse,
   GetFileNamesRequest,
   GetFileNamesResponse,
   GetLastMessagesRequest,
@@ -238,7 +240,23 @@ export const getAllInboxes = async (
   );
   return response.data as GetAllInboxesResponse;
 };
-
+export const getJobConfig = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: GetChatConfigRequest,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/get_job_config'),
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+      params: {
+        job_id: payload.job_id,
+      },
+    },
+  );
+  return response.data as GetChatConfigResponse;
+};
 export const updateChatConfig = async (
   nodeAddress: string,
   bearerToken: string,

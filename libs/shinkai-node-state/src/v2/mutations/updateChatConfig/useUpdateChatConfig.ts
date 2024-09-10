@@ -21,7 +21,7 @@ export const useUpdateChatConfig = (options?: Options) => {
     ...options,
     onSuccess: (response, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: [FunctionKeyV2.GET_LIST_TOOLS],
+        queryKey: [FunctionKeyV2.GET_CHAT_CONFIG],
       });
 
       if (options?.onSuccess) {
