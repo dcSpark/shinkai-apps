@@ -615,7 +615,7 @@ const ChatConversation = () => {
                                 >
                                   <div className="flex items-center gap-2">
                                     <Switch
-                                      checked={true}
+                                      checked={chatConfig?.stream}
                                       onCheckedChange={(value) => {
                                         updateChatConfig({
                                           nodeAddress: auth?.node_address ?? '',
