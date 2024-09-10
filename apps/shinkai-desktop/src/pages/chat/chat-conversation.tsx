@@ -81,7 +81,7 @@ import {
   X,
   XIcon,
 } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm, useWatch } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
@@ -168,7 +168,11 @@ const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
   return { readyState, widgetTool, setWidgetTool };
 };
 
-const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
+interface AnimationState {
+  displayedContent: string;
+  pendingContent: string;
+}
+export const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
   const auth = useAuth((state) => state.auth);
   const nodeAddressUrl = new URL(auth?.node_address ?? 'http://localhost:9850');
   const socketUrl = `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`;
@@ -181,7 +185,48 @@ const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
   );
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = decodeURIComponent(encodedInboxId);
-  const [messageContent, setMessageContent] = useState('');
+
+  const [animationState, setAnimationState] = useState<AnimationState>({
+    displayedContent: '',
+    pendingContent: '',
+  });
+
+  console.log(animationState, 'animationState');
+
+  const animationFrameRef = useRef<number | null>(null);
+  const isAnimatingRef = useRef(false);
+
+  const animateText = useCallback(() => {
+    setAnimationState((prevState) => {
+      if (prevState.pendingContent.length === 0) {
+        isAnimatingRef.current = false;
+        return prevState;
+      }
+
+      const chunkSize = Math.max(
+        1,
+        Math.round(prevState.pendingContent.length / 60),
+      );
+      const nextChunk = prevState.pendingContent.slice(0, chunkSize);
+      const remainingPending = prevState.pendingContent.slice(chunkSize);
+
+      return {
+        displayedContent: prevState.displayedContent + nextChunk,
+        pendingContent: remainingPending,
+      };
+    });
+
+    if (isAnimatingRef.current) {
+      animationFrameRef.current = requestAnimationFrame(animateText);
+    }
+  }, []);
+
+  const startAnimation = useCallback(() => {
+    if (!isAnimatingRef.current) {
+      isAnimatingRef.current = true;
+      animationFrameRef.current = requestAnimationFrame(animateText);
+    }
+  }, [animateText]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -202,25 +247,24 @@ const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
           queryClient.invalidateQueries({ queryKey: paginationKey });
         }
 
-        setMessageContent((prev) => prev + parseData.message);
-        return;
+        setAnimationState((prevState) => ({
+          ...prevState,
+          pendingContent: prevState.pendingContent + parseData.message,
+        }));
+        startAnimation();
       } catch (error) {
         console.error('Failed to parse ws message', error);
       }
     }
   }, [
-    auth?.my_device_encryption_sk,
-    auth?.my_device_identity_sk,
     auth?.node_address,
-    auth?.node_encryption_pk,
-    auth?.profile,
-    auth?.profile_encryption_sk,
-    auth?.profile_identity_sk,
     auth?.shinkai_identity,
+    auth?.profile,
     enabled,
     inboxId,
     lastMessage?.data,
     queryClient,
+    startAnimation,
   ]);
 
   useEffect(() => {
@@ -252,9 +296,24 @@ const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
     sendMessage,
   ]);
 
-  return { messageContent, readyState, setMessageContent };
-};
+  useEffect(() => {
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, []);
 
+  return {
+    messageContent: animationState.displayedContent,
+    readyState,
+    setMessageContent: (content: string) =>
+      setAnimationState({
+        displayedContent: content,
+        pendingContent: '',
+      }),
+  };
+};
 const ChatConversation = () => {
   const { captureAnalyticEvent } = useAnalytics();
   const { t } = useTranslation();
@@ -328,8 +387,6 @@ const ChatConversation = () => {
     token: auth?.api_v2_key ?? '',
     jobId: extractJobIdFromInbox(inboxId),
   });
-
-  console.log(chatConfig, 'chatConfig');
 
   const {
     data: workflowRecommendations,
@@ -792,6 +849,7 @@ const ChatConversation = () => {
 export default ChatConversation;
 
 function AgentSelection() {
+  console.log('rerender agent');
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const currentInbox = useGetCurrentInbox();
