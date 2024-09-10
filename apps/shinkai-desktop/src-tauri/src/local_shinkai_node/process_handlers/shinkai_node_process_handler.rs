@@ -156,18 +156,7 @@ impl ShinkaiNodeProcessHandler {
                 resource_dir
                     .clone()
                     .map(|dir| {
-                        dir.join("../Frameworks/libpdfium.dylib")
-                            .to_string_lossy()
-                            .to_string()
-                    })
-                    .unwrap_or_default(),
-            )
-        } else if cfg!(target_os = "windows") {
-            Some(
-                resource_dir
-                    .clone()
-                    .map(|dir| {
-                        dir.join("external-binaries/shinkai-node/pdfium.dll")
+                        dir.join("../Frameworks")
                             .to_string_lossy()
                             .to_string()
                     })
@@ -178,9 +167,10 @@ impl ShinkaiNodeProcessHandler {
                 resource_dir
                     .clone()
                     .map(|dir| {
-                        dir.join("external-binaries/shinkai-node/libpdfium.so")
+                        dir.join("external-binaries/shinkai-node")
                             .to_string_lossy()
                             .to_string()
+                            .replace("\\\\?\\C", "C")
                     })
                     .unwrap_or_default(),
             )

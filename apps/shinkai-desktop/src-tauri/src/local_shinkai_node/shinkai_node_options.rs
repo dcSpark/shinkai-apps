@@ -66,122 +66,144 @@ impl ShinkaiNodeOptions {
             node_api_ip: Some(
                 options
                     .node_api_ip
-                    .unwrap_or_else(|| base_options.node_api_ip.unwrap()),
+                    .or(base_options.node_api_ip)
+                    .unwrap_or_default(),
             ),
             node_api_port: Some(
                 options
                     .node_api_port
-                    .unwrap_or_else(|| base_options.node_api_port.unwrap()),
+                    .or(base_options.node_api_port)
+                    .unwrap_or_default(),
             ),
             node_ws_port: Some(
                 options
                     .node_ws_port
-                    .unwrap_or_else(|| base_options.node_ws_port.unwrap()),
+                    .or(base_options.node_ws_port)
+                    .unwrap_or_default(),
             ),
             node_ip: Some(
                 options
                     .node_ip
-                    .unwrap_or_else(|| base_options.node_ip.unwrap()),
+                    .or(base_options.node_ip)
+                    .unwrap_or_default(),
             ),
             node_port: Some(
                 options
                     .node_port
-                    .unwrap_or_else(|| base_options.node_port.unwrap()),
+                    .or(base_options.node_port)
+                    .unwrap_or_default(),
             ),
             global_identity_name: Some(
                 options
                     .global_identity_name
-                    .unwrap_or_else(|| base_options.global_identity_name.unwrap()),
+                    .or(base_options.global_identity_name)
+                    .unwrap_or_default(),
             ),
             node_storage_path: Some(
                 options
                     .node_storage_path
-                    .unwrap_or_else(|| base_options.node_storage_path.unwrap()),
+                    .or(base_options.node_storage_path)
+                    .unwrap_or_default(),
             ),
             unstructured_server_url: Some(
                 options
                     .unstructured_server_url
-                    .unwrap_or_else(|| base_options.unstructured_server_url.unwrap()),
+                    .or(base_options.unstructured_server_url)
+                    .unwrap_or_default(),
             ),
             embeddings_server_url: Some(
                 options
                     .embeddings_server_url
-                    .unwrap_or_else(|| base_options.embeddings_server_url.unwrap()),
+                    .or(base_options.embeddings_server_url)
+                    .unwrap_or_default(),
             ),
             first_device_needs_registration_code: Some(
                 options
                     .first_device_needs_registration_code
-                    .unwrap_or_else(|| base_options.first_device_needs_registration_code.unwrap()),
+                    .or(base_options.first_device_needs_registration_code)
+                    .unwrap_or_default(),
             ),
             initial_agent_names: Some(
                 options
                     .initial_agent_names
-                    .unwrap_or_else(|| base_options.initial_agent_names.unwrap()),
+                    .or(base_options.initial_agent_names)
+                    .unwrap_or_default(),
             ),
             initial_agent_urls: Some(
                 options
                     .initial_agent_urls
-                    .unwrap_or_else(|| base_options.initial_agent_urls.unwrap()),
+                    .or(base_options.initial_agent_urls)
+                    .unwrap_or_default(),
             ),
             initial_agent_models: Some(
                 options
                     .initial_agent_models
-                    .unwrap_or_else(|| base_options.initial_agent_models.unwrap()),
+                    .or(base_options.initial_agent_models)
+                    .unwrap_or_default(),
             ),
             initial_agent_api_keys: Some(
                 options
                     .initial_agent_api_keys
-                    .unwrap_or_else(|| base_options.initial_agent_api_keys.unwrap()),
+                    .or(base_options.initial_agent_api_keys)
+                    .unwrap_or_default(),
             ),
             starting_num_qr_devices: Some(
                 options
                     .starting_num_qr_devices
-                    .unwrap_or_else(|| base_options.starting_num_qr_devices.unwrap()),
+                    .or(base_options.starting_num_qr_devices)
+                    .unwrap_or_default(),
             ),
             log_all: Some(
                 options
                     .log_all
-                    .unwrap_or_else(|| base_options.log_all.unwrap()),
+                    .or(base_options.log_all)
+                    .unwrap_or_default(),
             ),
             proxy_identity: Some(
                 options
                     .proxy_identity
-                    .unwrap_or_else(|| base_options.proxy_identity.unwrap()),
+                    .or(base_options.proxy_identity)
+                    .unwrap_or_default(),
             ),
             rpc_url: Some(
                 options
                     .rpc_url
-                    .unwrap_or_else(|| base_options.rpc_url.unwrap()),
+                    .or(base_options.rpc_url)
+                    .unwrap_or_default(),
             ),
             default_embedding_model: Some(
                 options
                     .default_embedding_model
-                    .unwrap_or_else(|| base_options.default_embedding_model.unwrap()),
+                    .or(base_options.default_embedding_model)
+                    .unwrap_or_default(),
             ),
             supported_embedding_models: Some(
                 options
                     .supported_embedding_models
-                    .unwrap_or_else(|| base_options.supported_embedding_models.unwrap()),
+                    .or(base_options.supported_embedding_models)
+                    .unwrap_or_default(),
             ),
             shinkai_tools_backend_binary_path: Some(
                 options
                     .shinkai_tools_backend_binary_path
-                    .unwrap_or_else(|| base_options.shinkai_tools_backend_binary_path.unwrap()),
+                    .or(base_options.shinkai_tools_backend_binary_path)
+                    .unwrap_or_default(),
             ),
             shinkai_tools_backend_api_port: Some(
                 options
                     .shinkai_tools_backend_api_port
-                    .unwrap_or_else(|| base_options.shinkai_tools_backend_api_port.unwrap()),
+                    .or(base_options.shinkai_tools_backend_api_port)
+                    .unwrap_or_default(),
             ),
             pdfium_dynamic_lib_path: Some(
                 options
                     .pdfium_dynamic_lib_path
-                    .unwrap_or_else(|| base_options.pdfium_dynamic_lib_path.unwrap()),
+                    .or(base_options.pdfium_dynamic_lib_path)
+                    .unwrap_or_default(),
             ),
         }
     }
 }
-
 impl Default for ShinkaiNodeOptions {
     fn default() -> ShinkaiNodeOptions {
         let initial_model = Self::default_initial_model();
