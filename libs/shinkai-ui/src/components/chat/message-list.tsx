@@ -132,7 +132,12 @@ export const MessageList = ({
       const currentHeight = chatContainerElement.scrollHeight;
       const currentScrollTop = chatContainerElement.scrollTop;
       previousChatHeightRef.current = currentHeight;
-      setAutoScroll(false);
+
+      if (currentScrollTop + chatContainerElement.clientHeight < currentHeight - 125) {
+        setAutoScroll(false);
+      } else {
+        setAutoScroll(true);
+      }
 
       if (inView && hasPreviousPage && !isFetchingPreviousPage) {
         previousChatHeightRef.current = currentHeight - currentScrollTop;
