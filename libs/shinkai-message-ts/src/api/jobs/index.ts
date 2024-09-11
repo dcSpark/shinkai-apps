@@ -241,6 +241,7 @@ export const getAllInboxes = async (
   );
   return response.data as GetAllInboxesResponse;
 };
+
 export const getJobConfig = async (
   nodeAddress: string,
   bearerToken: string,
@@ -258,6 +259,7 @@ export const getJobConfig = async (
   );
   return response.data as GetChatConfigResponse;
 };
+
 export const updateChatConfig = async (
   nodeAddress: string,
   bearerToken: string,
@@ -273,6 +275,7 @@ export const updateChatConfig = async (
   );
   return response.data as UpdateChatConfigResponse;
 };
+
 export const stopGeneratingLLM = async (
   nodeAddress: string,
   bearerToken: string,
@@ -280,7 +283,7 @@ export const stopGeneratingLLM = async (
 ) => {
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v2/stop_llm'),
-    jobId, // should send an object with jobId
+    { inbox_name: jobId },
     {
       headers: { Authorization: `Bearer ${bearerToken}` },
       responseType: 'json',
