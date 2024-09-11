@@ -12,7 +12,6 @@ import { useAuth } from '../../store/auth';
 type AnimationState = {
   displayedContent: string;
   pendingContent: string;
-  isStreamFinished: boolean;
 };
 
 type UseWebSocketMessage = {
@@ -33,10 +32,10 @@ export const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = decodeURIComponent(encodedInboxId);
 
+  const isStreamFinishedRef = useRef(false);
   const [animationState, setAnimationState] = useState<AnimationState>({
     displayedContent: '',
     pendingContent: '',
-    isStreamFinished: false,
   });
 
   const animationFrameRef = useRef<number | null>(null);
@@ -44,17 +43,17 @@ export const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
 
   const animateText = useCallback(() => {
     setAnimationState((prevState) => {
-      if (prevState.pendingContent.length === 0) {
+      if (
+        prevState.pendingContent.length === 0 &&
+        isStreamFinishedRef.current
+      ) {
         isAnimatingRef.current = false;
-        return {
-          ...prevState,
-          isStreamFinished: true,
-        };
+        return prevState;
       }
 
       const chunkSize = Math.max(
         1,
-        Math.round(prevState.pendingContent.length / 30),
+        Math.round(prevState.pendingContent.length / 90),
       );
 
       const nextChunk = prevState.pendingContent.slice(0, chunkSize);
@@ -63,7 +62,6 @@ export const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
       return {
         displayedContent: prevState.displayedContent + nextChunk,
         pendingContent: remainingPending,
-        isStreamFinished: prevState.isStreamFinished,
       };
     });
 
@@ -85,7 +83,10 @@ export const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
       try {
         const parseData: WsMessage = JSON.parse(lastMessage.data);
         if (parseData.message_type !== 'Stream') return;
-        if (parseData.metadata?.is_done === true) return;
+        isStreamFinishedRef.current = false;
+        if (parseData.metadata?.is_done === true) {
+          isStreamFinishedRef.current = true;
+        }
 
         setAnimationState((prevState) => ({
           ...prevState,
@@ -146,7 +147,7 @@ export const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
   }, []);
 
   useEffect(() => {
-    if (animationState.isStreamFinished) {
+    if (isStreamFinishedRef.current) {
       const paginationKey = [
         FunctionKey.GET_CHAT_CONVERSATION_PAGINATION,
         {
@@ -161,12 +162,11 @@ export const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
         setAnimationState({
           displayedContent: '',
           pendingContent: '',
-          isStreamFinished: false,
         });
       }, 500);
     }
   }, [
-    animationState.isStreamFinished,
+    isStreamFinishedRef.current,
     auth?.node_address,
     auth?.profile,
     auth?.shinkai_identity,
@@ -176,7 +176,7 @@ export const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
 
   return {
     messageContent: animationState.displayedContent,
-    isStreamFinished: animationState.isStreamFinished,
+    isStreamFinished: isStreamFinishedRef.current,
     readyState,
   };
 };
