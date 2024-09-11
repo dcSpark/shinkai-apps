@@ -264,7 +264,7 @@ export default function ConversationFooter() {
           {isLoadingMessage && (
             <motion.button
               animate={{ opacity: 1, y: 0 }}
-              className="bg-gray-350 absolute -top-8 left-1/2 flex -translate-x-1/2 transform items-center gap-3 rounded-lg px-2 py-1.5 text-xs text-white"
+              className="bg-gray-350 absolute -top-6 left-[calc(50%-40px)] flex items-center justify-center gap-3 rounded-lg border px-2 py-1.5 text-xs text-white transition-colors hover:bg-gray-300"
               exit={{ opacity: 0, y: 10 }}
               initial={{ opacity: 0, y: 10 }}
               onClick={() => {
