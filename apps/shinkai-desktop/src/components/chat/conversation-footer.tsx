@@ -15,6 +15,7 @@ import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-st
 import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useStopGeneratingLLM } from '@shinkai_network/shinkai-node-state/v2/mutations/stopGeneratingLLM/useStopGeneratingLLM';
+import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
 import { useGetWorkflowSearch } from '@shinkai_network/shinkai-node-state/v2/queries/getWorkflowSearch/useGetWorkflowSearch';
 import {
@@ -46,7 +47,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm, useWatch } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
-import { toast } from 'sonner';
 
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAnalytics } from '../../lib/posthog-provider';
@@ -74,10 +74,17 @@ export default function ConversationFooter() {
     },
   });
   const currentInbox = useGetCurrentInbox();
+  const { data: chatConfig } = useGetChatConfig({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+    jobId: extractJobIdFromInbox(inboxId),
+  });
+
   const hasProviderEnableStreaming =
-    currentInbox?.agent?.model.split(':')?.[0] === Models.Ollama ||
-    currentInbox?.agent?.model.split(':')?.[0] === Models.Gemini ||
-    currentInbox?.agent?.model.split(':')?.[0] === Models.Exo;
+    (currentInbox?.agent?.model.split(':')?.[0] === Models.Ollama ||
+      currentInbox?.agent?.model.split(':')?.[0] === Models.Gemini ||
+      currentInbox?.agent?.model.split(':')?.[0] === Models.Exo) &&
+    chatConfig?.stream === true;
 
   const {
     data,
@@ -139,11 +146,7 @@ export default function ConversationFooter() {
     },
   );
 
-  const { mutateAsync: stopGenerating } = useStopGeneratingLLM({
-    onSuccess: () => {
-      toast.success('Stop Generation');
-    },
-  });
+  const { mutateAsync: stopGenerating } = useStopGeneratingLLM();
 
   const { getRootProps: getRootFileProps, getInputProps: getInputFileProps } =
     useDropzone({
@@ -261,7 +264,7 @@ export default function ConversationFooter() {
     <div className="flex flex-col justify-start">
       <div className="relative flex items-start gap-2 p-2 pb-3">
         <AnimatePresence>
-          {isLoadingMessage && (
+          {hasProviderEnableStreaming && isLoadingMessage && (
             <motion.button
               animate={{ opacity: 1, y: 0 }}
               className="bg-gray-350 absolute -top-6 left-[calc(50%-40px)] flex items-center justify-center gap-3 rounded-lg border px-2 py-1.5 text-xs text-white transition-colors hover:bg-gray-300"

@@ -12,6 +12,7 @@ import {
 import { ShinkaiMessageBuilderWrapper } from '@shinkai_network/shinkai-message-ts/wasm/ShinkaiMessageBuilderWrapper';
 import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
+import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
 import {
   Alert,
@@ -114,10 +115,18 @@ const ChatConversation = () => {
   const fromPreviousMessagesRef = useRef<boolean>(false);
 
   const currentInbox = useGetCurrentInbox();
+
+  const { data: chatConfig } = useGetChatConfig({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+    jobId: extractJobIdFromInbox(inboxId),
+  });
+
   const hasProviderEnableStreaming =
-    currentInbox?.agent?.model.split(':')?.[0] === Models.Ollama ||
-    currentInbox?.agent?.model.split(':')?.[0] === Models.Gemini ||
-    currentInbox?.agent?.model.split(':')?.[0] === Models.Exo;
+    (currentInbox?.agent?.model.split(':')?.[0] === Models.Ollama ||
+      currentInbox?.agent?.model.split(':')?.[0] === Models.Gemini ||
+      currentInbox?.agent?.model.split(':')?.[0] === Models.Exo) &&
+    chatConfig?.stream === true;
 
   const hasProviderEnableTools =
     currentInbox?.agent?.model.split(':')?.[0] === Models.OpenAI;
