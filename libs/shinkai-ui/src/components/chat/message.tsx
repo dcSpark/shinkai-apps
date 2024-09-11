@@ -209,7 +209,7 @@ export const Message = ({
                   editing && 'w-full py-1',
                   !message.isLocal &&
                     isPending &&
-                    'relative overflow-hidden pb-4 before:absolute before:bottom-0 before:left-0 before:right-0 before:h-10 before:animate-pulse before:bg-gradient-to-t before:from-gray-200 before:to-gray-200/10',
+                    'relative overflow-hidden pb-4 before:absolute before:bottom-0 before:left-0 before:right-0 before:h-10 before:animate-pulse before:bg-gradient-to-l before:from-gray-200 before:to-gray-200/10',
                 )}
               >
                 {message.content ? (
