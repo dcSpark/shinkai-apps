@@ -31,7 +31,7 @@ import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-import { useAuth } from '../../store/auth';
+import { useAuth } from '../../../store/auth';
 
 const formSchema = z.object({
   stream: z.boolean(),
@@ -43,7 +43,7 @@ const formSchema = z.object({
 
 type FormSchemaType = z.infer<typeof formSchema>;
 
-export function ChatConfigAction() {
+export default function ChatConfigActionBar() {
   const auth = useAuth((state) => state.auth);
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = decodeURIComponent(encodedInboxId);
@@ -79,7 +79,7 @@ export function ChatConfigAction() {
       topP: chatConfig?.top_p,
       topK: chatConfig?.top_k,
     });
-  }, [chatConfig]);
+  }, [chatConfig, form]);
 
   const onSubmit = async (data: FormSchemaType) => {
     await updateChatConfig({
