@@ -1,4 +1,0 @@
-declare global {
-  // interface Window {
-  // }
-}

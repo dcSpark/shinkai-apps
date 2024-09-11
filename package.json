@@ -5,9 +5,6 @@
   "files": [
     "LICENSE"
   ],
-  "workspaces": [
-    "apps/shinkai-app"
-  ],
   "scripts": {
     "postinstall": "npx patch-package"
   },

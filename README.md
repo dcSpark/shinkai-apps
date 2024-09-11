@@ -24,7 +24,6 @@ More In Depth Codebase Documentation (Mutable.ai): [https://wiki.mutable.ai/dcSp
 ### Apps
 
 - shinkai-visor: Shinkai Visor is a chrome extension to interact with shinkai-node.
-- shinkai-app: Shinkai App is a mobile app to interact with shinkai-node.
 - shinkai-desktop: Shinkai Desktop is a desktop app to interact with shinkai-node.
 
 ### Libs
@@ -110,7 +109,7 @@ Every command, if it's needed, build projects and it's dependencies according to
   - `npx nx build shinkai-visor`
   - `npx nx lint shinkai-message-ts`
   - `npx nx e2e shinkai-visor`
-  - `npx nx serve shinkai-app`
+  - `npx nx serve shinkai-desktop`
 
 - Run many tasks
 
