@@ -81,8 +81,6 @@ export function ChatConfigAction() {
     });
   }, [chatConfig]);
 
-  console.log(form.formState.errors, 'errors');
-
   const onSubmit = async (data: FormSchemaType) => {
     await updateChatConfig({
       nodeAddress: auth?.node_address ?? '',

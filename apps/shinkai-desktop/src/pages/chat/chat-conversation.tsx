@@ -641,7 +641,6 @@ const ChatConversation = () => {
 export default ChatConversation;
 
 function AgentSelection() {
-  console.log('rerender agent');
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const currentInbox = useGetCurrentInbox();
