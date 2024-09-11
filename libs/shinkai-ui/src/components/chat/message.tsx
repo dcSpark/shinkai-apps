@@ -233,7 +233,7 @@ export const Message = ({
                     />
                     {!!message.fileInbox?.files?.length && (
                       <FileList
-                        className="mt-2 min-w-[200px] max-w-[400px]"
+                        className="mt-2 min-w-[200px] max-w-[70vw]"
                         files={message.fileInbox?.files}
                       />
                     )}

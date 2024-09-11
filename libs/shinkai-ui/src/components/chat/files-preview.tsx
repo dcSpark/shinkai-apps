@@ -38,29 +38,27 @@ export const FileList = ({ files, className }: FileListProps) => {
   };
 
   return (
-    <ul
-      className={cn(
-        'divide-y divide-gray-100 rounded-md border border-gray-200',
-        className,
-      )}
-    >
+    <ul className={cn('flex w-full flex-wrap gap-1', className)}>
       <AnimatePresence>
         {files?.map((file, index) => (
           <motion.li
             {...animations}
-            className="flex w-full items-center justify-between p-2 text-sm leading-6"
+            className={cn(
+              'flex w-full items-center justify-between p-1 text-sm leading-6',
+              isImageFile(file.name) ? 'aspect-square max-w-64' : 'max-w-56',
+            )}
             key={index}
           >
             {isImageFile(file.name) ? (
-              <div className="relative flex aspect-square w-full max-w-64 items-center justify-between gap-2 overflow-hidden rounded-md">
+              <div className="flex aspect-square w-full max-w-64 items-center justify-between gap-2 overflow-hidden rounded-md">
                 <img
                   alt={file.name}
-                  className="size-full object-contain"
+                  className="h-full max-h-64 w-full max-w-full overflow-hidden rounded-lg object-cover object-center opacity-100 transition-opacity duration-300"
                   src={file.preview}
                 />
               </div>
             ) : (
-              <div className="flex w-full flex-1 items-center justify-between gap-2">
+              <div className="flex w-full items-center justify-between gap-2 rounded-md bg-gray-200 p-2">
                 {fileIconMap[getFileExt(file.name)] ? (
                   <FileTypeIcon
                     className="text-gray-80 h-5 w-5"
@@ -79,7 +77,7 @@ export const FileList = ({ files, className }: FileListProps) => {
                     {decodeURIComponent(file.name)}
                   </a>
                 ) : (
-                  <span className="text-gray-80 grow truncate break-all font-medium">
+                  <span className="grow truncate break-all text-xs text-gray-50">
                     {decodeURIComponent(file.name)}
                   </span>
                 )}
