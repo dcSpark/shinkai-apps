@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { StopIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   WidgetToolState,
@@ -21,6 +22,7 @@ import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-st
 import { useUpdateAgentInJob } from '@shinkai_network/shinkai-node-state/lib/mutations/updateAgentInJob/useUpdateAgentInJob';
 import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
+import { useStopGeneratingLLM } from '@shinkai_network/shinkai-node-state/v2/mutations/stopGeneratingLLM/useStopGeneratingLLM';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useGetWorkflowSearch } from '@shinkai_network/shinkai-node-state/v2/queries/getWorkflowSearch/useGetWorkflowSearch';
@@ -62,7 +64,7 @@ import {
 import { getFileExt } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { partial } from 'filesize';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   AlertCircle,
   BotIcon,
@@ -287,6 +289,12 @@ const ChatConversation = () => {
       },
     });
 
+  const { mutateAsync: stopGenerating } = useStopGeneratingLLM({
+    onSuccess: () => {
+      toast.success('stop generating ');
+    },
+  });
+
   const regenerateMessage = async (
     content: string,
     parentHash: string,
@@ -441,6 +449,29 @@ const ChatConversation = () => {
       {!isLimitReachedErrorLastMessage && (
         <div className="flex flex-col justify-start">
           <div className="relative flex items-start gap-2 p-2 pb-3">
+            <AnimatePresence>
+              {isLoadingMessage && (
+                <motion.button
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-gray-350 absolute -top-8 left-1/2 flex -translate-x-1/2 transform items-center gap-3 rounded-lg px-2 py-1.5 text-xs text-white"
+                  exit={{ opacity: 0, y: 10 }}
+                  initial={{ opacity: 0, y: 10 }}
+                  onClick={() => {
+                    const decodedInboxId = decodeURIComponent(inboxId);
+                    const jobId = extractJobIdFromInbox(decodedInboxId);
+                    stopGenerating({
+                      nodeAddress: auth?.node_address ?? '',
+                      token: auth?.api_v2_key ?? '',
+                      jobId: jobId,
+                    });
+                  }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <StopIcon className="h-4 w-4" />
+                  Stop generating
+                </motion.button>
+              )}
+            </AnimatePresence>
             <Form {...chatForm}>
               <FormField
                 control={chatForm.control}
@@ -486,6 +517,7 @@ const ChatConversation = () => {
                           </div>
                           <ChatConfigAction />
                         </div>
+
                         <ChatInputArea
                           autoFocus
                           bottomAddons={

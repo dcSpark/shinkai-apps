@@ -260,3 +260,6 @@ export type UpdateChatConfigRequest = {
 export type UpdateChatConfigResponse = {
   result: string;
 };
+
+export type StopGeneratingLLMInput = string;
+export type StopGeneratingLLMOutput = { status: string };
