@@ -21,8 +21,6 @@ import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-st
 import { useUpdateAgentInJob } from '@shinkai_network/shinkai-node-state/lib/mutations/updateAgentInJob/useUpdateAgentInJob';
 import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
-import { useUpdateChatConfig } from '@shinkai_network/shinkai-node-state/v2/mutations/updateChatConfig/useUpdateChatConfig';
-import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useGetWorkflowSearch } from '@shinkai_network/shinkai-node-state/v2/queries/getWorkflowSearch/useGetWorkflowSearch';
@@ -43,16 +41,12 @@ import {
   FormItem,
   FormLabel,
   MessageList,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-  Switch,
   Tooltip,
   TooltipContent,
   TooltipPortal,
@@ -75,7 +69,6 @@ import {
   ChevronDownIcon,
   Paperclip,
   SendIcon,
-  Settings2,
   X,
   XIcon,
 } from 'lucide-react';
@@ -86,6 +79,7 @@ import { useParams } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';
 import { toast } from 'sonner';
 
+import { ChatConfigAction } from '../../components/chat/chat-config-action';
 import MessageExtra from '../../components/chat/message-extra';
 import { WebsocketMessage } from '../../components/chat/message-stream';
 import { useWorkflowSelectionStore } from '../../components/workflow/context/workflow-selection-context';
@@ -171,10 +165,10 @@ const ChatConversation = () => {
   const { t } = useTranslation();
   const size = partial({ standard: 'jedec' });
   const { inboxId: encodedInboxId = '' } = useParams();
+  const inboxId = decodeURIComponent(encodedInboxId);
   const auth = useAuth((state) => state.auth);
   const fromPreviousMessagesRef = useRef<boolean>(false);
 
-  const inboxId = decodeURIComponent(encodedInboxId);
   const currentInbox = useGetCurrentInbox();
   const hasProviderEnableStreaming =
     currentInbox?.agent?.model.split(':')?.[0] === Models.Ollama ||
@@ -232,12 +226,6 @@ const ChatConversation = () => {
     shinkaiIdentity: auth?.shinkai_identity ?? '',
     profile: auth?.profile ?? '',
     refetchIntervalEnabled: !hasProviderEnableStreaming,
-  });
-
-  const { data: chatConfig } = useGetChatConfig({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-    jobId: extractJobIdFromInbox(inboxId),
   });
 
   const {
@@ -298,12 +286,6 @@ const ChatConversation = () => {
         });
       },
     });
-
-  const { mutateAsync: updateChatConfig } = useUpdateChatConfig({
-    onSuccess: () => {
-      toast.success('setting updated');
-    },
-  });
 
   const regenerateMessage = async (
     content: string,
@@ -502,47 +484,7 @@ const ChatConversation = () => {
                             </TooltipProvider>
                             <WorkflowSelection />
                           </div>
-                          <Popover>
-                            <TooltipProvider delayDuration={0}>
-                              <Tooltip>
-                                <PopoverTrigger asChild>
-                                  <TooltipTrigger asChild>
-                                    <button
-                                      className="hover:bg-gray-350 relative flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-lg p-1.5 text-white"
-                                      type="button"
-                                    >
-                                      <Settings2 className="h-4 w-4" />
-                                    </button>
-                                  </TooltipTrigger>
-                                </PopoverTrigger>
-                                <PopoverContent
-                                  align="end"
-                                  className="bg-gray-300 px-3 py-4 text-xs"
-                                  side="top"
-                                >
-                                  <div className="flex items-center gap-2">
-                                    <Switch
-                                      checked={chatConfig?.stream}
-                                      onCheckedChange={(value) => {
-                                        updateChatConfig({
-                                          nodeAddress: auth?.node_address ?? '',
-                                          token: auth?.api_v2_key ?? '',
-                                          jobId: extractJobIdFromInbox(inboxId),
-                                          jobConfig: {
-                                            stream: value,
-                                            //TODO:
-                                            custom_prompt: '',
-                                          },
-                                        });
-                                      }}
-                                    />
-                                    <span>Enable Stream</span>
-                                  </div>
-                                </PopoverContent>
-                                <TooltipContent>Chat Settings</TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          </Popover>
+                          <ChatConfigAction />
                         </div>
                         <ChatInputArea
                           autoFocus
