@@ -291,7 +291,7 @@ const ChatConversation = () => {
 
   const { mutateAsync: stopGenerating } = useStopGeneratingLLM({
     onSuccess: () => {
-      toast.success('stop generating ');
+      toast.success('Stop Generation');
     },
   });
 
