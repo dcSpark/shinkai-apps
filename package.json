@@ -1,6 +1,6 @@
 {
   "name": "@shinkai/source",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "license": "SEE LICENSE IN LICENSE",
   "files": [
     "LICENSE"
@@ -56,7 +56,7 @@
     "@uiw/react-markdown-preview": "^5.1.1",
     "@uiw/react-md-editor": "^4.0.4",
     "@zxing/browser": "^0.1.5",
-    "axios": "^1.7.2",
+    "axios": "^1.7.7",
     "class-variance-authority": "^0.7.0",
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
