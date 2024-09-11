@@ -177,54 +177,37 @@ const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
   const [messageContent, setMessageContent] = useState('');
 
   useEffect(() => {
-    if (!enabled) return;
-    if (lastMessage?.data) {
-      try {
-        const parseData: WsMessage = JSON.parse(lastMessage.data);
-        if (parseData.message_type !== 'Stream') return;
-        if (parseData.metadata?.is_done) {
-          const paginationKey = [
-            FunctionKey.GET_CHAT_CONVERSATION_PAGINATION,
-            {
-              nodeAddress: auth?.node_address ?? '',
-              inboxId: inboxId as string,
-              shinkaiIdentity: auth?.shinkai_identity ?? '',
-              profile: auth?.profile ?? '',
-            },
-          ];
-          queryClient.invalidateQueries({ queryKey: paginationKey });
-        }
-
-        setMessageContent((prev) => prev + parseData.message);
-        return;
-      } catch (error) {
-        console.error('Failed to parse ws message', error);
+    if (!enabled || !lastMessage?.data) return;
+    try {
+      const parseData: WsMessage = JSON.parse(lastMessage.data);
+      if (parseData.message_type !== 'Stream') return;
+      if (parseData.metadata?.is_done) {
+        const paginationKey = [
+          FunctionKey.GET_CHAT_CONVERSATION_PAGINATION,
+          {
+            nodeAddress: auth?.node_address ?? '',
+            inboxId: inboxId as string,
+            shinkaiIdentity: auth?.shinkai_identity ?? '',
+            profile: auth?.profile ?? '',
+          },
+        ];
+        queryClient.invalidateQueries({ queryKey: paginationKey });
       }
-    }
-  }, [
-    auth?.my_device_encryption_sk,
-    auth?.my_device_identity_sk,
-    auth?.node_address,
-    auth?.node_encryption_pk,
-    auth?.profile,
-    auth?.profile_encryption_sk,
-    auth?.profile_identity_sk,
-    auth?.shinkai_identity,
-    enabled,
-    inboxId,
-    lastMessage?.data,
-    queryClient,
-  ]);
 
-  useEffect(() => {
-    if (!enabled) return;
-    const wsMessage = {
+      setMessageContent((prev) => prev + parseData.message);
+    } catch (error) {
+      console.error('Failed to parse ws message', error);
+    }
+  }, [enabled, lastMessage?.data, auth?.node_address, auth?.shinkai_identity, auth?.profile, inboxId, queryClient]);
+
+  const wsMessage = useMemo(() => {
+    if (!enabled) return null;
+    const message = {
       subscriptions: [{ topic: 'inbox', subtopic: inboxId }],
       unsubscriptions: [],
     };
-    const wsMessageString = JSON.stringify(wsMessage);
-    const shinkaiMessage = ShinkaiMessageBuilderWrapper.ws_connection(
-      wsMessageString,
+    return ShinkaiMessageBuilderWrapper.ws_connection(
+      JSON.stringify(message),
       auth?.profile_encryption_sk ?? '',
       auth?.profile_identity_sk ?? '',
       auth?.node_encryption_pk ?? '',
@@ -233,21 +216,409 @@ const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
       auth?.shinkai_identity ?? '',
       '',
     );
-    sendMessage(shinkaiMessage);
-  }, [
-    auth?.node_encryption_pk,
-    auth?.profile,
-    auth?.profile_encryption_sk,
-    auth?.profile_identity_sk,
-    auth?.shinkai_identity,
-    enabled,
-    inboxId,
-    sendMessage,
-  ]);
+  }, [enabled, inboxId, auth]);
+
+  useEffect(() => {
+    if (wsMessage) {
+      sendMessage(wsMessage);
+    }
+  }, [wsMessage, sendMessage]);
 
   return { messageContent, readyState, setMessageContent };
 };
 
+const ChatConversation = () => {
+  const { captureAnalyticEvent } = useAnalytics();
+  const { t } = useTranslation();
+  const size = partial({ standard: 'jedec' });
+  const { inboxId: encodedInboxId = '' } = useParams();
+  const auth = useAuth((state) => state.auth);
+  const fromPreviousMessagesRef = useRef<boolean>(false);
+
+  const inboxId = decodeURIComponent(encodedInboxId);
+  const currentInbox = useGetCurrentInbox();
+  const hasProviderEnableStreaming =
+    currentInbox?.agent?.model.split(':')?.[0] === Models.Ollama ||
+    currentInbox?.agent?.model.split(':')?.[0] === Models.Gemini ||
+    currentInbox?.agent?.model.split(':')?.[0] === Models.Exo;
+
+  const hasProviderEnableTools =
+    currentInbox?.agent?.model.split(':')?.[0] === Models.OpenAI;
+
+  const chatForm = useForm<ChatMessageFormSchema>({
+    resolver: zodResolver(chatMessageFormSchema),
+    defaultValues: {
+      message: '',
+    },
+  });
+
+  const workflowSelected = useWorkflowSelectionStore(
+    (state) => state.workflowSelected,
+  );
+  const setWorkflowSelected = useWorkflowSelectionStore(
+    (state) => state.setWorkflowSelected,
+  );
+
+  const currentMessage = useWatch({
+    control: chatForm.control,
+    name: 'message',
+  });
+  const debounceMessage = useDebounce(currentMessage, 500);
+
+  const { getRootProps: getRootFileProps, getInputProps: getInputFileProps } =
+    useDropzone({
+      multiple: false,
+      onDrop: (acceptedFiles) => {
+        const file = acceptedFiles[0];
+        chatForm.setValue('file', file, { shouldValidate: true });
+      },
+    });
+
+  const currentFile = useWatch({
+    control: chatForm.control,
+    name: 'file',
+  });
+
+  const {
+    data,
+    fetchPreviousPage,
+    hasPreviousPage,
+    isPending: isChatConversationLoading,
+    isFetchingPreviousPage,
+    isSuccess: isChatConversationSuccess,
+  } = useGetChatConversationWithPagination({
+    token: auth?.api_v2_key ?? '',
+    nodeAddress: auth?.node_address ?? '',
+    inboxId: inboxId as string,
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    profile: auth?.profile ?? '',
+    refetchIntervalEnabled: !hasProviderEnableStreaming,
+  });
+
+  const {
+    data: workflowRecommendations,
+    isSuccess: isWorkflowRecommendationsSuccess,
+  } = useGetWorkflowSearch(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      search: debounceMessage,
+    },
+    {
+      enabled: !!debounceMessage && !!currentMessage,
+      select: (data) => data.slice(0, 3),
+    },
+  );
+
+  const [firstMessageWorkflow, setFirstMessageWorkflow] = useState<{
+    name: string;
+    author: string;
+    tool_router_key: string;
+  } | null>(null);
+
+  useEffect(() => {
+    const firstMessage = data?.pages[0]?.[0];
+    if (firstMessage?.workflowName) {
+      const [name, author] = firstMessage.workflowName.split(':::');
+      setFirstMessageWorkflow({
+        name,
+        author,
+        tool_router_key: firstMessage.workflowName,
+      });
+    }
+  }, [data?.pages[0]?.[0]?.workflowName]);
+
+  const isLoadingMessage = useMemo(() => {
+    const lastMessage = data?.pages?.at(-1)?.at(-1);
+    return isJobInbox(inboxId) && lastMessage?.isLocal;
+  }, [data?.pages, inboxId]);
+
+  const { messageContent, setMessageContent } = useWebSocketMessage({
+    enabled: hasProviderEnableStreaming,
+  });
+
+  const { widgetTool, setWidgetTool } = useWebSocketTools({
+    enabled: hasProviderEnableTools,
+  });
+
+  const { mutateAsync: sendMessageToInbox } = useSendMessageToInbox();
+  const { mutateAsync: sendMessageToJob } = useSendMessageToJob({
+    onSuccess: () => {
+      captureAnalyticEvent('AI Chat', undefined);
+    },
+  });
+  const { mutateAsync: sendTextMessageWithFilesForInbox } =
+    useSendMessageWithFilesToInbox({
+      onSuccess: () => {
+        captureAnalyticEvent('AI Chat with Files', {
+          filesCount: 1,
+        });
+      },
+    });
+
+  const regenerateMessage = async (
+    content: string,
+    parentHash: string,
+    workflowName?: string,
+  ) => {
+    setMessageContent(''); // trick to clear the ws stream message
+    if (!auth) return;
+    const decodedInboxId = decodeURIComponent(inboxId);
+    const jobId = extractJobIdFromInbox(decodedInboxId);
+
+    await sendMessageToJob({
+      nodeAddress: auth.node_address,
+      token: auth.api_v2_key,
+      jobId,
+      message: content,
+      parent: parentHash,
+      workflowName,
+    });
+  };
+
+  const onSubmit = useCallback(async (data: ChatMessageFormSchema) => {
+    setMessageContent(''); // trick to clear the ws stream message
+    if (!auth || data.message.trim() === '') return;
+    fromPreviousMessagesRef.current = false;
+
+    let workflowKeyToUse = workflowSelected?.tool_router_key;
+    if (!workflowKeyToUse && firstMessageWorkflow) {
+      workflowKeyToUse = firstMessageWorkflow.tool_router_key;
+    }
+
+    if (data.file) {
+      await sendTextMessageWithFilesForInbox({
+        nodeAddress: auth?.node_address ?? '',
+        sender: auth.shinkai_identity,
+        senderSubidentity: auth.profile,
+        receiver: auth.shinkai_identity,
+        message: data.message,
+        inboxId: inboxId,
+        files: [currentFile],
+        workflowName: workflowKeyToUse,
+        my_device_encryption_sk: auth.my_device_encryption_sk,
+        my_device_identity_sk: auth.my_device_identity_sk,
+        node_encryption_pk: auth.node_encryption_pk,
+        profile_encryption_sk: auth.profile_encryption_sk,
+        profile_identity_sk: auth.profile_identity_sk,
+      });
+      chatForm.reset();
+      return;
+    }
+
+    if (isJobInbox(inboxId)) {
+      const jobId = extractJobIdFromInbox(inboxId);
+
+      await sendMessageToJob({
+        token: auth.api_v2_key,
+        nodeAddress: auth.node_address,
+        jobId: jobId,
+        message: data.message,
+        parent: '', // Note: we should set the parent if we want to retry or branch out
+        workflowName: workflowKeyToUse,
+      });
+    } else {
+      const sender = `${auth.shinkai_identity}/${auth.profile}/device/${auth.registration_name}`;
+      const receiver = extractReceiverShinkaiName(inboxId, sender);
+      await sendMessageToInbox({
+        nodeAddress: auth?.node_address ?? '',
+        sender: auth.shinkai_identity,
+        sender_subidentity: `${auth.profile}/device/${auth.registration_name}`,
+        receiver,
+        message: data.message,
+        inboxId: inboxId,
+        my_device_encryption_sk: auth.my_device_encryption_sk,
+        my_device_identity_sk: auth.my_device_identity_sk,
+        node_encryption_pk: auth.node_encryption_pk,
+        profile_encryption_sk: auth.profile_encryption_sk,
+        profile_identity_sk: auth.profile_identity_sk,
+      });
+    }
+    chatForm.reset();
+    setWorkflowSelected(undefined);
+  }, [auth, inboxId, workflowSelected, firstMessageWorkflow, currentFile, sendTextMessageWithFilesForInbox, sendMessageToJob, sendMessageToInbox, chatForm, setWorkflowSelected]);
+
+  useEffect(() => {
+    chatForm.reset();
+    setWorkflowSelected(undefined);
+  }, [chatForm, inboxId]);
+
+  const isLimitReachedErrorLastMessage = useMemo(() => {
+    const lastMessage = data?.pages?.at(-1)?.at(-1);
+    if (!lastMessage) return;
+    const errorCode = extractErrorPropertyOrContent(
+      lastMessage.content,
+      'error',
+    );
+    return errorCode === ErrorCodes.ShinkaiBackendInferenceLimitReached;
+  }, [data?.pages]);
+
+  const isWorkflowSelectedAndFilesPresent =
+    workflowSelected && currentFile !== undefined;
+
+  useEffect(() => {
+    if (isWorkflowSelectedAndFilesPresent) {
+      chatForm.setValue(
+        'message',
+        `${formatText(workflowSelected.name)} - ${workflowSelected.description}`,
+      );
+    }
+  }, [chatForm, isWorkflowSelectedAndFilesPresent, workflowSelected]);
+
+  return (
+    <div className="flex max-h-screen flex-1 flex-col overflow-hidden pt-2">
+      <ConversationHeader />
+      <MessageList
+        containerClassName="px-5"
+        fetchPreviousPage={fetchPreviousPage}
+        fromPreviousMessagesRef={fromPreviousMessagesRef}
+        hasPreviousPage={hasPreviousPage}
+        isFetchingPreviousPage={isFetchingPreviousPage}
+        isLoading={isChatConversationLoading}
+        isLoadingMessage={isLoadingMessage}
+        isSuccess={isChatConversationSuccess}
+        lastMessageContent={messageContent}
+        messageExtra={
+          <MessageExtra
+            metadata={widgetTool?.data}
+            name={widgetTool?.name}
+            onCancel={() => {
+              setWidgetTool(null);
+            }}
+          />
+        }
+        noMoreMessageLabel={t('chat.allMessagesLoaded')}
+        paginatedMessages={data}
+        regenerateMessage={regenerateMessage}
+      />
+      {isLimitReachedErrorLastMessage && (
+        <Alert className="mx-auto w-[98%] shadow-lg" variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle className="text-sm">
+            {t('chat.limitReachedTitle')}
+          </AlertTitle>
+          <AlertDescription className="text-gray-80 text-xs">
+            <div className="flex flex-row items-center space-x-2">
+              {t('chat.limitReachedDescription')}
+            </div>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {!isLimitReachedErrorLastMessage && (
+        <div className="flex flex-col justify-start">
+          <div className="relative flex items-start gap-2 p-2 pb-3">
+            <Form {...chatForm}>
+              <FormField
+                control={chatForm.control}
+                name="message"
+                render={({ field }) => (
+                  <FormItem className="flex-1 space-y-0">
+                    <FormLabel className="sr-only">
+                      {t('chat.enterMessage')}
+                    </FormLabel>
+                    <FormControl>
+                      <div className="">
+                        <div className="flex items-center gap-2.5 px-1 pb-2 pt-1">
+                          <AgentSelection />
+                          <TooltipProvider delayDuration={0}>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div
+                                  {...getRootFileProps({
+                                    className: cn(
+                                      'hover:bg-gray-350 relative flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full rounded-lg p-1.5 text-white',
+                                    ),
+                                  })}
+                                >
+                                  <Paperclip className="h-full w-full" />
+                                  <input
+                                    {...chatForm.register('file')}
+                                    {...getInputFileProps({
+                                      onChange:
+                                        chatForm.register('file').onChange,
+                                    })}
+                                  />
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipPortal>
+                                <TooltipContent align="center" side="top">
+                                  {t('common.uploadFile')}
+                                </TooltipContent>
+                              </TooltipPortal>
+                            </Tooltip>
+                          </TooltipProvider>
+                          <WorkflowSelection />
+                        </div>
+                        <ChatInputArea
+                          autoFocus
+                          bottomAddons={
+                            <Button
+                              className="hover:bg-app-gradient h-[40px] w-[40px] self-end rounded-xl bg-gray-500 p-3 disabled:cursor-not-allowed"
+                              disabled={isLoadingMessage}
+                              onClick={chatForm.handleSubmit(onSubmit)}
+                              size="icon"
+                              variant="tertiary"
+                            >
+                              <SendIcon className="h-full w-full" />
+                              <span className="sr-only">
+                                {t('chat.sendMessage')}
+                              </span>
+                            </Button>
+                          }
+                          disabled={
+                            isLoadingMessage ||
+                            isWorkflowSelectedAndFilesPresent
+                          }
+                          // isLoading={isLoadingMessage}
+                          onChange={field.onChange}
+                          onSubmit={chatForm.handleSubmit(onSubmit)}
+                          topAddons={
+                            <>
+                              {workflowSelected && (
+                                <div className="relative max-w-full rounded-lg border border-gray-200 p-1.5 px-2">
+                                  <TooltipProvider delayDuration={0}>
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <div className="flex items-center gap-2 pr-6">
+                                          <WorkflowPlaygroundIcon className="h-3.5 w-3.5" />
+                                          <div className="text-gray-80 line-clamp-1 text-xs">
+                                            <span className="text-white">
+                                              {formatText(
+                                                workflowSelected.name,
+                                              )}{' '}
+                                            </span>
+                                            -{' '}
+                                            <span className="">
+                                              {workflowSelected.description}
+                                            </span>
+                                          </div>
+                                        </div>
+                                      </TooltipTrigger>
+                                      <TooltipPortal>
+                                        <TooltipContent
+                                          align="end"
+                                          alignOffset={-10}
+                                          className="max-w-[400px]"
+                                          side="top"
+                                          sideOffset={10}
+                                        >
+                                          {workflowSelected.description}
+                                        </TooltipContent>
+                                      </TooltipPortal>
+                                    </Tooltip>
+                                  </TooltipProvider>
+                                  <button
+                                    className="absolute right-2 top-1.5 text-gray-100 hover:text-white"
+                                    onClick={() => {
+                                      setWorkflowSelected(undefined);
+                                    }}
+                                    type="button"
+                                  >
+                                    <XIcon className="h-4 w-4" />
+                                  </button>
+                                </div>
+                              )}
 const ChatConversation = () => {
   const { captureAnalyticEvent } = useAnalytics();
   const { t } = useTranslation();

@@ -241,6 +241,24 @@ export const OllamaModelsRepository = ({
     return `${model}:${tag}`;
   };
 
+  useEffect(() => {
+    if (installedOllamaModels) {
+      installedOllamaModels.models.forEach((model) => {
+        installedOllamaModelsMap.set(model.name, model);
+      });
+    }
+  }, [installedOllamaModels, installedOllamaModelsMap]);
+
+  useEffect(() => {
+    FILTERED_OLLAMA_MODELS_REPOSITORY.forEach((model) => {
+      selectedTagMap.set(model.name, model.tags[0]);
+    });
+  }, [selectedTagMap]);
+
+  const handleSortingChange = useCallback((updatedSorting: SortingState) => {
+    setSorting(updatedSorting);
+  }, []);
+
   return (
     <div
       className={cn('w-full overflow-auto rounded', className)}
