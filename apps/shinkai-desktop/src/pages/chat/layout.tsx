@@ -299,32 +299,25 @@ const ChatLayout = () => {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
-  const { inboxes, isPending, isSuccess } = useGetInboxes(
-    { nodeAddress: auth?.node_address ?? '', token: auth?.api_v2_key ?? '' },
+
+  const refetchInterval = useCallback(() => {
+    return isInboxesLoading ? false : 5000;
+  }, [isInboxesLoading]);
+
+  const { data: inboxes = [], isPending, isSuccess } = useGetInboxes(
     {
-      refetchIntervalInBackground: true,
-      refetchInterval: (query) => {
-        const allInboxesAreCompleted = query.state.data?.every((inbox) => {
-          return (
-            inbox.last_message &&
-            !(
-              inbox.last_message.sender === auth?.shinkai_identity &&
-              inbox.last_message.sender_subidentity === auth.profile
-            )
-          );
-        });
-        return allInboxesAreCompleted ? 0 : 3000;
-      },
+      nodeAddress: auth?.node_address ?? '',
+      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      profile: auth?.profile ?? '',
+    },
+    {
+      enabled: !!auth,
+      refetchInterval,
     },
   );
 
-  const activesInboxes = useMemo(() => {
-    return inboxes?.filter((inbox) => !inbox.is_finished);
-  }, [inboxes]);
-
-  const archivesInboxes = useMemo(() => {
-    return inboxes?.filter((inbox) => inbox.is_finished);
-  }, [inboxes]);
+  const activesInboxes = useMemo(() => inboxes.filter((inbox) => !inbox.is_finished), [inboxes]);
+  const archivesInboxes = useMemo(() => inboxes.filter((inbox) => inbox.is_finished), [inboxes]);
 
   return (
     <div className={cn('grid h-screen w-full grid-cols-[280px_1px_1fr]')}>

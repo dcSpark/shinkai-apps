@@ -207,33 +207,35 @@ const SheetProject = () => {
     [sheetInfo?.columns, sheetInfo?.display_columns],
   );
 
-  const table = useReactTable({
-    data,
-    columns,
-    state: {
-      columnVisibility,
-      columnFilters,
-      rowSelection,
-      sorting,
-    },
-    columnResizeMode: 'onChange',
-    columnResizeDirection: 'ltr',
-    enableRowSelection: true,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    getFilteredRowModel: getFilteredRowModel(),
-    // getPaginationRowModel: getPaginationRowModel(), // enable if we have pagination
-    onColumnFiltersChange: setColumnFilters,
-    onRowSelectionChange: setRowSelection,
-    onSortingChange: setSorting,
-    defaultColumn: {
-      size: 200,
-      minSize: 50,
-      maxSize: 500,
-    },
-    getRowId: (row) => row.rowId,
-  });
+  const table = useMemo(() => {
+    return useReactTable({
+      data,
+      columns,
+      state: {
+        columnVisibility,
+        columnFilters,
+        rowSelection,
+        sorting,
+      },
+      columnResizeMode: 'onChange',
+      columnResizeDirection: 'ltr',
+      enableRowSelection: true,
+      getCoreRowModel: getCoreRowModel(),
+      getSortedRowModel: getSortedRowModel(),
+      onColumnVisibilityChange: setColumnVisibility,
+      getFilteredRowModel: getFilteredRowModel(),
+      // getPaginationRowModel: getPaginationRowModel(), // enable if we have pagination
+      onColumnFiltersChange: setColumnFilters,
+      onRowSelectionChange: setRowSelection,
+      onSortingChange: setSorting,
+      defaultColumn: {
+        size: 200,
+        minSize: 50,
+        maxSize: 500,
+      },
+      getRowId: (row) => row.rowId,
+    });
+  }, [data, columns, columnVisibility, columnFilters, rowSelection, sorting]);
 
   const { rows } = table.getRowModel();
   const leafColumns = table.getVisibleLeafColumns();
