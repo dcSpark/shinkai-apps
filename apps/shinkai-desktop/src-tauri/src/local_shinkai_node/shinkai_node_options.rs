@@ -1,12 +1,7 @@
 use std::path::PathBuf;
 
+use crate::hardware::{hardware_get_summary, RequirementsStatus};
 use serde::{Deserialize, Serialize};
-use tauri::App;
-
-use crate::{
-    app::APP_HANDLE,
-    hardware::{hardware_get_summary, RequirementsStatus},
-};
 
 /// It matches ENV variables names from ShinkaiNode
 #[derive(Serialize, Deserialize, Clone)]
@@ -37,9 +32,28 @@ pub struct ShinkaiNodeOptions {
 }
 
 impl ShinkaiNodeOptions {
-    pub fn with_storage_path(default_node_storage_path: String) -> ShinkaiNodeOptions {
+    pub fn with_app_options(
+        app_resource_dir: Option<PathBuf>,
+        app_data_dir: Option<PathBuf>,
+    ) -> ShinkaiNodeOptions {
+        let default_pdfium_dynamic_lib_path = app_resource_dir.clone().map(|dir| {
+            if cfg!(target_os = "macos") {
+                dir.join("../Frameworks")
+            } else {
+                dir.join("external-binaries/shinkai-node")
+            }
+            .to_string_lossy()
+            .to_string()
+            .replace("\\\\?\\C", "C")
+        });
+        let default_node_storage_path = app_data_dir
+            .clone()
+            .map(|dir| dir.join("node_storage").to_string_lossy().to_string());
+        println!("PDFium dynamic library path: {:?}", default_pdfium_dynamic_lib_path);
+        println!("Node storage path: {:?}", default_node_storage_path);
         ShinkaiNodeOptions {
-            node_storage_path: Some(default_node_storage_path),
+            node_storage_path: default_node_storage_path,
+            pdfium_dynamic_lib_path: default_pdfium_dynamic_lib_path,
             ..Default::default()
         }
     }
@@ -81,12 +95,7 @@ impl ShinkaiNodeOptions {
                     .or(base_options.node_ws_port)
                     .unwrap_or_default(),
             ),
-            node_ip: Some(
-                options
-                    .node_ip
-                    .or(base_options.node_ip)
-                    .unwrap_or_default(),
-            ),
+            node_ip: Some(options.node_ip.or(base_options.node_ip).unwrap_or_default()),
             node_port: Some(
                 options
                     .node_port
@@ -153,24 +162,14 @@ impl ShinkaiNodeOptions {
                     .or(base_options.starting_num_qr_devices)
                     .unwrap_or_default(),
             ),
-            log_all: Some(
-                options
-                    .log_all
-                    .or(base_options.log_all)
-                    .unwrap_or_default(),
-            ),
+            log_all: Some(options.log_all.or(base_options.log_all).unwrap_or_default()),
             proxy_identity: Some(
                 options
                     .proxy_identity
                     .or(base_options.proxy_identity)
                     .unwrap_or_default(),
             ),
-            rpc_url: Some(
-                options
-                    .rpc_url
-                    .or(base_options.rpc_url)
-                    .unwrap_or_default(),
-            ),
+            rpc_url: Some(options.rpc_url.or(base_options.rpc_url).unwrap_or_default()),
             default_embedding_model: Some(
                 options
                     .default_embedding_model
@@ -196,10 +195,10 @@ impl ShinkaiNodeOptions {
                     .unwrap_or_default(),
             ),
             pdfium_dynamic_lib_path: Some(
-                options
-                    .pdfium_dynamic_lib_path
-                    .or(base_options.pdfium_dynamic_lib_path)
-                    .unwrap_or_default(),
+                match options.pdfium_dynamic_lib_path {
+                    Some(ref path) if !path.is_empty() => path.clone(),
+                    _ => base_options.pdfium_dynamic_lib_path.unwrap_or_default(),
+                }
             ),
         }
     }
@@ -212,6 +211,18 @@ impl Default for ShinkaiNodeOptions {
             initial_model.replace(|c: char| !c.is_alphanumeric(), "_")
         );
         let initial_agent_models = format!("ollama:{}", initial_model);
+
+        let shinkai_tools_backend_binary_path = std::env::current_exe()
+            .unwrap()
+            .parent()
+            .unwrap()
+            .join(if cfg!(target_os = "windows") {
+                "shinkai-tools-backend.exe"
+            } else {
+                "shinkai-tools-backend"
+            })
+            .to_string_lossy()
+            .to_string();
 
         ShinkaiNodeOptions {
             node_api_ip: Some("127.0.0.1".to_string()),
@@ -234,7 +245,7 @@ impl Default for ShinkaiNodeOptions {
             rpc_url: Some("https://public.stackup.sh/api/v1/node/arbitrum-sepolia".to_string()),
             default_embedding_model: Some("snowflake-arctic-embed:xs".to_string()),
             supported_embedding_models: Some("snowflake-arctic-embed:xs".to_string()),
-            shinkai_tools_backend_binary_path: None,
+            shinkai_tools_backend_binary_path: Some(shinkai_tools_backend_binary_path),
             shinkai_tools_backend_api_port: Some("9650".to_string()),
             pdfium_dynamic_lib_path: None,
         }
