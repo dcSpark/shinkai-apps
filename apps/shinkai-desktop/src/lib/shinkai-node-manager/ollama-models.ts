@@ -82,13 +82,13 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     provider: 'Mistral',
   },
   {
-    model: 'llava-phi3',
-    tag: '3.8b-mini-q4_0',
-    name: 'LLaVA Phi 3',
+    model: 'minicpm-v',
+    tag: '8b-2.6-fp16',
+    name: 'MiniCPM-V 2.6',
     description:
-      'A model that can understand and generate both text and images, useful for tasks that require processing both types of data',
+      'With only 8B parameters, it surpasses widely used proprietary models like GPT-4o mini, GPT-4V, Gemini 1.5 Pro, and Claude 3.5 Sonnet for single image understanding (OpenCompass).',
     contextLength: 4000,
-    quality: OllamaModelQuality.Medium,
+    quality: OllamaModelQuality.Good,
     speed: OllamaModelSpeed.Average,
     capabilities: [
       OllamaModelCapability.TextGeneration,
@@ -96,7 +96,7 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     ],
     size: 2.9,
     fullName: '',
-    provider: 'Microsoft',
+    provider: 'OpenBMB',
   },
 ].map((model) => {
   model.fullName = `${model.model}:${model.tag}` as const;

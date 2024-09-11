@@ -22,6 +22,7 @@ import {
   MetaIcon,
   MicrosoftIcon,
   MistralIcon,
+  OpenBMBIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { BookOpenText, Database, Star, StarIcon } from 'lucide-react';
@@ -59,6 +60,7 @@ export const OllamaModels = () => {
       Google: <GoogleIcon className="h-6 w-6" />,
       Meta: <MetaIcon className="h-6 w-6" />,
       Mistral: <MistralIcon className="h-6 w-6" />,
+      OpenBMB: <OpenBMBIcon className="h-6 w-6" />,
     };
   }, []);
 
