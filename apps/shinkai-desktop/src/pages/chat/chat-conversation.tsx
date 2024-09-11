@@ -16,7 +16,6 @@ import {
   ChatMessageFormSchema,
   chatMessageFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/chat-message';
-import { FunctionKey } from '@shinkai_network/shinkai-node-state/lib/constants';
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
 import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageWithFilesToInbox/useSendMessageWithFilesToInbox';
 import { useUpdateAgentInJob } from '@shinkai_network/shinkai-node-state/lib/mutations/updateAgentInJob/useUpdateAgentInJob';
@@ -68,7 +67,6 @@ import {
 } from '@shinkai_network/shinkai-ui/assets';
 import { getFileExt } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { useQueryClient } from '@tanstack/react-query';
 import { partial } from 'filesize';
 import { motion } from 'framer-motion';
 import {
@@ -81,7 +79,7 @@ import {
   X,
   XIcon,
 } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm, useWatch } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
@@ -89,6 +87,7 @@ import useWebSocket from 'react-use-websocket';
 import { toast } from 'sonner';
 
 import MessageExtra from '../../components/chat/message-extra';
+import { WebsocketMessage } from '../../components/chat/message-stream';
 import { useWorkflowSelectionStore } from '../../components/workflow/context/workflow-selection-context';
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useDebounce } from '../../hooks/use-debounce';
@@ -166,153 +165,6 @@ const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
   ]);
 
   return { readyState, widgetTool, setWidgetTool };
-};
-
-interface AnimationState {
-  displayedContent: string;
-  pendingContent: string;
-}
-export const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
-  const auth = useAuth((state) => state.auth);
-  const nodeAddressUrl = new URL(auth?.node_address ?? 'http://localhost:9850');
-  const socketUrl = `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`;
-  const queryClient = useQueryClient();
-
-  const { sendMessage, lastMessage, readyState } = useWebSocket(
-    socketUrl,
-    { share: true },
-    enabled,
-  );
-  const { inboxId: encodedInboxId = '' } = useParams();
-  const inboxId = decodeURIComponent(encodedInboxId);
-
-  const [animationState, setAnimationState] = useState<AnimationState>({
-    displayedContent: '',
-    pendingContent: '',
-  });
-
-  console.log(animationState, 'animationState');
-
-  const animationFrameRef = useRef<number | null>(null);
-  const isAnimatingRef = useRef(false);
-
-  const animateText = useCallback(() => {
-    setAnimationState((prevState) => {
-      if (prevState.pendingContent.length === 0) {
-        isAnimatingRef.current = false;
-        return prevState;
-      }
-
-      const chunkSize = Math.max(
-        1,
-        Math.round(prevState.pendingContent.length / 60),
-      );
-      const nextChunk = prevState.pendingContent.slice(0, chunkSize);
-      const remainingPending = prevState.pendingContent.slice(chunkSize);
-
-      return {
-        displayedContent: prevState.displayedContent + nextChunk,
-        pendingContent: remainingPending,
-      };
-    });
-
-    if (isAnimatingRef.current) {
-      animationFrameRef.current = requestAnimationFrame(animateText);
-    }
-  }, []);
-
-  const startAnimation = useCallback(() => {
-    if (!isAnimatingRef.current) {
-      isAnimatingRef.current = true;
-      animationFrameRef.current = requestAnimationFrame(animateText);
-    }
-  }, [animateText]);
-
-  useEffect(() => {
-    if (!enabled) return;
-    if (lastMessage?.data) {
-      try {
-        const parseData: WsMessage = JSON.parse(lastMessage.data);
-        if (parseData.message_type !== 'Stream') return;
-        if (parseData.metadata?.is_done) {
-          const paginationKey = [
-            FunctionKey.GET_CHAT_CONVERSATION_PAGINATION,
-            {
-              nodeAddress: auth?.node_address ?? '',
-              inboxId: inboxId as string,
-              shinkaiIdentity: auth?.shinkai_identity ?? '',
-              profile: auth?.profile ?? '',
-            },
-          ];
-          queryClient.invalidateQueries({ queryKey: paginationKey });
-        }
-
-        setAnimationState((prevState) => ({
-          ...prevState,
-          pendingContent: prevState.pendingContent + parseData.message,
-        }));
-        startAnimation();
-      } catch (error) {
-        console.error('Failed to parse ws message', error);
-      }
-    }
-  }, [
-    auth?.node_address,
-    auth?.shinkai_identity,
-    auth?.profile,
-    enabled,
-    inboxId,
-    lastMessage?.data,
-    queryClient,
-    startAnimation,
-  ]);
-
-  useEffect(() => {
-    if (!enabled) return;
-    const wsMessage = {
-      subscriptions: [{ topic: 'inbox', subtopic: inboxId }],
-      unsubscriptions: [],
-    };
-    const wsMessageString = JSON.stringify(wsMessage);
-    const shinkaiMessage = ShinkaiMessageBuilderWrapper.ws_connection(
-      wsMessageString,
-      auth?.profile_encryption_sk ?? '',
-      auth?.profile_identity_sk ?? '',
-      auth?.node_encryption_pk ?? '',
-      auth?.shinkai_identity ?? '',
-      auth?.profile ?? '',
-      auth?.shinkai_identity ?? '',
-      '',
-    );
-    sendMessage(shinkaiMessage);
-  }, [
-    auth?.node_encryption_pk,
-    auth?.profile,
-    auth?.profile_encryption_sk,
-    auth?.profile_identity_sk,
-    auth?.shinkai_identity,
-    enabled,
-    inboxId,
-    sendMessage,
-  ]);
-
-  useEffect(() => {
-    return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-    };
-  }, []);
-
-  return {
-    messageContent: animationState.displayedContent,
-    readyState,
-    setMessageContent: (content: string) =>
-      setAnimationState({
-        displayedContent: content,
-        pendingContent: '',
-      }),
-  };
 };
 const ChatConversation = () => {
   const { captureAnalyticEvent } = useAnalytics();
@@ -428,10 +280,6 @@ const ChatConversation = () => {
     return isJobInbox(inboxId) && lastMessage?.isLocal;
   }, [data?.pages, inboxId]);
 
-  const { messageContent, setMessageContent } = useWebSocketMessage({
-    enabled: hasProviderEnableStreaming,
-  });
-
   const { widgetTool, setWidgetTool } = useWebSocketTools({
     enabled: hasProviderEnableTools,
   });
@@ -462,7 +310,6 @@ const ChatConversation = () => {
     parentHash: string,
     workflowName?: string,
   ) => {
-    setMessageContent(''); // trick to clear the ws stream message
     if (!auth) return;
     const decodedInboxId = decodeURIComponent(inboxId);
     const jobId = extractJobIdFromInbox(decodedInboxId);
@@ -478,7 +325,6 @@ const ChatConversation = () => {
   };
 
   const onSubmit = async (data: ChatMessageFormSchema) => {
-    setMessageContent(''); // trick to clear the ws stream message
     if (!auth || data.message.trim() === '') return;
     fromPreviousMessagesRef.current = false;
 
@@ -576,9 +422,13 @@ const ChatConversation = () => {
         hasPreviousPage={hasPreviousPage}
         isFetchingPreviousPage={isFetchingPreviousPage}
         isLoading={isChatConversationLoading}
-        isLoadingMessage={isLoadingMessage}
         isSuccess={isChatConversationSuccess}
-        lastMessageContent={messageContent}
+        lastMessageContent={
+          <WebsocketMessage
+            hasProviderEnableStreaming={hasProviderEnableStreaming}
+            isLoadingMessage={isLoadingMessage ?? false}
+          />
+        }
         messageExtra={
           <MessageExtra
             metadata={widgetTool?.data}
