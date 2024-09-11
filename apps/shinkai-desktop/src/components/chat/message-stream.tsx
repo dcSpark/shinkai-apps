@@ -183,13 +183,13 @@ export const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
 
 export function WebsocketMessage({
   isLoadingMessage,
-  hasProviderEnableStreaming,
+  isWsEnabled,
 }: {
   isLoadingMessage: boolean;
-  hasProviderEnableStreaming: boolean;
+  isWsEnabled: boolean;
 }) {
   const { messageContent } = useWebSocketMessage({
-    enabled: hasProviderEnableStreaming,
+    enabled: isWsEnabled,
   });
 
   return isLoadingMessage ? (

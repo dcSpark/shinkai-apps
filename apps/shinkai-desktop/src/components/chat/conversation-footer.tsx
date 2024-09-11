@@ -56,6 +56,7 @@ import { useWorkflowSelectionStore } from '../workflow/context/workflow-selectio
 import AiSelectionActionBar from './chat-action-bar/ai-selection-action-bar';
 import ChatConfigActionBar from './chat-action-bar/chat-config-action-bar';
 import WorkflowSelectionActionBar from './chat-action-bar/workflow-selection-action-bar';
+import { streamingSupportedModels } from './constants';
 
 export default function ConversationFooter() {
   const { inboxId: encodedInboxId = '' } = useParams();
@@ -80,22 +81,18 @@ export default function ConversationFooter() {
     jobId: extractJobIdFromInbox(inboxId),
   });
 
-  const hasProviderEnableStreaming =
-    (currentInbox?.agent?.model.split(':')?.[0] === Models.Ollama ||
-      currentInbox?.agent?.model.split(':')?.[0] === Models.Gemini ||
-      currentInbox?.agent?.model.split(':')?.[0] === Models.Exo) &&
-    chatConfig?.stream === true;
+  const hasProviderEnableStreaming = streamingSupportedModels.includes(
+    currentInbox?.agent?.model.split(':')?.[0] as Models,
+  );
 
-  const {
-    data,
-    // isSuccess: isChatConversationSuccess,
-  } = useGetChatConversationWithPagination({
+  const { data } = useGetChatConversationWithPagination({
     token: auth?.api_v2_key ?? '',
     nodeAddress: auth?.node_address ?? '',
     inboxId: inboxId as string,
     shinkaiIdentity: auth?.shinkai_identity ?? '',
     profile: auth?.profile ?? '',
-    refetchIntervalEnabled: !hasProviderEnableStreaming,
+    refetchIntervalEnabled:
+      !hasProviderEnableStreaming || chatConfig?.stream === false,
   });
 
   const [firstMessageWorkflow, setFirstMessageWorkflow] = useState<{

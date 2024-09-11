@@ -25,6 +25,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';
 
+import { streamingSupportedModels } from '../../components/chat/constants';
 import ConversationFooter from '../../components/chat/conversation-footer';
 import ConversationHeader from '../../components/chat/conversation-header';
 import MessageExtra from '../../components/chat/message-extra';
@@ -115,18 +116,15 @@ const ChatConversation = () => {
   const fromPreviousMessagesRef = useRef<boolean>(false);
 
   const currentInbox = useGetCurrentInbox();
-
   const { data: chatConfig } = useGetChatConfig({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
     jobId: extractJobIdFromInbox(inboxId),
   });
 
-  const hasProviderEnableStreaming =
-    (currentInbox?.agent?.model.split(':')?.[0] === Models.Ollama ||
-      currentInbox?.agent?.model.split(':')?.[0] === Models.Gemini ||
-      currentInbox?.agent?.model.split(':')?.[0] === Models.Exo) &&
-    chatConfig?.stream === true;
+  const hasProviderEnableStreaming = streamingSupportedModels.includes(
+    currentInbox?.agent?.model.split(':')?.[0] as Models,
+  );
 
   const hasProviderEnableTools =
     currentInbox?.agent?.model.split(':')?.[0] === Models.OpenAI;
@@ -144,7 +142,8 @@ const ChatConversation = () => {
     inboxId: inboxId as string,
     shinkaiIdentity: auth?.shinkai_identity ?? '',
     profile: auth?.profile ?? '',
-    refetchIntervalEnabled: !hasProviderEnableStreaming,
+    refetchIntervalEnabled:
+      !hasProviderEnableStreaming || chatConfig?.stream === false,
   });
 
   const isLoadingMessage = useMemo(() => {
@@ -204,8 +203,10 @@ const ChatConversation = () => {
         isSuccess={isChatConversationSuccess}
         lastMessageContent={
           <WebsocketMessage
-            hasProviderEnableStreaming={hasProviderEnableStreaming}
             isLoadingMessage={isLoadingMessage ?? false}
+            isWsEnabled={
+              hasProviderEnableStreaming && chatConfig?.stream === true
+            }
           />
         }
         messageExtra={

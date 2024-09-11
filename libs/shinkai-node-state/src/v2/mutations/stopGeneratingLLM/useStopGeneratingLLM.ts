@@ -1,3 +1,4 @@
+import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import {
   useMutation,
   type UseMutationOptions,
@@ -22,6 +23,12 @@ export const useStopGeneratingLLM = (options?: Options) => {
     onSuccess: (response, variables, context) => {
       queryClient.invalidateQueries({
         queryKey: [FunctionKeyV2.GET_CHAT_CONFIG],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [
+          FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
+          { inboxId: buildInboxIdFromJobId(variables.jobId) },
+        ],
       });
 
       if (options?.onSuccess) {
