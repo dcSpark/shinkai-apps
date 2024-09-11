@@ -208,8 +208,8 @@ jobs:
       - name: Download side binaries
         env:
           ARCH: ${{ matrix.arch }}
-          SHINKAI_NODE_VERSION: v0.8.0
-          OLLAMA_VERSION: v0.3.9
+          SHINKAI_NODE_VERSION: v0.8.2
+          OLLAMA_VERSION: v0.3.10
         run: |
           npx ts-node ./ci-scripts/download-side-binaries.ts
 
@@ -423,69 +423,3 @@ jobs:
                 }
               ]
             }
-
-  # At the moment we are not releasing android (CI was working)
-  # release-shinkai-app-android:
-  #   runs-on: ubuntu-latest
-  #   environment: development
-  #   steps:
-  #     - name: Check out repository
-  #       uses: actions/checkout@v4
-  #       with:
-  #         fetch-depth: 0
-
-  #     - name: Use nx set shas
-  #       uses: nrwl/nx-set-shas@v3
-
-  #     - name: Setup Node version
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version-file: '.nvmrc'
-  #         check-latest: false
-  #         cache: "npm"
-  #         cache-dependency-path: package-lock.json
-
-  #     - name: Install dependencies
-  #       run: |
-  #         npm cache verify
-  #         npm ci --no-audit --prefer-offline
-
-  #     - uses: actions/setup-java@v3
-  #       with:
-  #         java-version: '17'
-  #         distribution: 'temurin'
-
-  #     - name: Set mobile apps version
-  #       run: |
-  #         npx capacitor-set-version -v $VERSION -b $BUILD $APP_PATH
-  #       env:
-  #         VERSION: 0.0.0
-  #         BUILD: ${{ github.run_number }}
-  #         APP_PATH: ./apps/shinkai-app
-
-  #     - name: Mount shinkai android keystore from secret
-  #       run: |
-  #         echo $KEYSTORE_BASE_64_STRING > $KEYSTORE_BASE_64_FILE_NAME
-  #         base64 -d $KEYSTORE_BASE_64_FILE_NAME > $KEYSTORE_FILE_PATH
-  #       env:
-  #         KEYSTORE_BASE_64_STRING: ${{ secrets.ANDROID_KEYSTORE_BASE_64 }}
-  #         KEYSTORE_BASE_64_FILE_NAME: shinkai-keystore-android-upload-base-64
-  #         KEYSTORE_FILE_PATH: ./apps/shinkai-app/android/shinkai-keystore-android
-
-  #     - name: Run NX build on shinkai-app-android
-  #       run: |
-  #         npx nx build:android shinkai-app
-  #       env:
-  #         ANDROID_KEYSTORE_FILE_PATH: shinkai-keystore-android
-  #         ANDROID_KEYSTORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
-  #         ANDROID_KEYSTORE_ALIAS: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
-  #         ANDROID_KEYSTORE_ALIAS_PASS: ${{ secrets.ANDROID_KEYSTORE_ALIAS_PASS }}
-
-  #     - name: Upload signed android .AAB file to Google Play Store
-  #       uses: r0adkll/upload-google-play@v1
-  #       with:
-  #         serviceAccountJsonPlainText: ${{ secrets.ANDROID_SERVICE_ACCOUNT_JSON }}
-  #         packageName: com.shinkai.app
-  #         releaseFiles: ./dist/apps/shinkai-app-android/app-release-signed.aab
-  #         track: internal
-  #         status: draft

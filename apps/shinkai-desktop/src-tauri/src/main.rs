@@ -12,17 +12,15 @@ use crate::commands::shinkai_node_manager_commands::{
     shinkai_node_spawn,
 };
 
-use app::APP_HANDLE;
 use globals::SHINKAI_NODE_MANAGER_INSTANCE;
 use local_shinkai_node::shinkai_node_manager::ShinkaiNodeManager;
+use tauri::SystemTrayMenuItem;
 use tauri::{
     CustomMenuItem, LogicalSize, Manager, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMenu,
 };
 use tauri::{GlobalShortcutManager, Size};
-use tauri::{PhysicalSize, SystemTrayMenuItem};
 use tokio::sync::Mutex;
 
-mod app;
 mod audio;
 mod commands;
 mod galxe;
@@ -67,21 +65,13 @@ fn main() {
             galxe_generate_proof
         ])
         .setup(|app| {
-            APP_HANDLE
-                .set(Mutex::new(app.app_handle().to_owned()))
-                .unwrap();
+            let app_resource_dir = app.path_resolver().resource_dir();
+            let app_data_dir = app.path_resolver().app_data_dir();
             let app_clone = app.app_handle();
 
-            let path = tauri::api::path::resolve_path(
-                &app.config(),
-                app.package_info(),
-                &app.env(),
-                "node_storage",
-                Some(tauri::api::path::BaseDirectory::AppData),
-            )?;
             {
                 let _ = SHINKAI_NODE_MANAGER_INSTANCE.set(Arc::new(Mutex::new(
-                    ShinkaiNodeManager::new(path.to_str().unwrap().to_string()),
+                    ShinkaiNodeManager::new(app_resource_dir, app_data_dir),
                 )));
             }
             let app_handle = app.app_handle();

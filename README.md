@@ -24,7 +24,6 @@ More In Depth Codebase Documentation (Mutable.ai): [https://wiki.mutable.ai/dcSp
 ### Apps
 
 - shinkai-visor: Shinkai Visor is a chrome extension to interact with shinkai-node.
-- shinkai-app: Shinkai App is a mobile app to interact with shinkai-node.
 - shinkai-desktop: Shinkai Desktop is a desktop app to interact with shinkai-node.
 
 ### Libs
@@ -46,23 +45,23 @@ $ git clone https://github.com/dcSpark/shinkai-apps
 #### Macos
 ```
 ARCH="aarch64-apple-darwin" \
-OLLAMA_VERSION="v0.3.9" \
-SHINKAI_NODE_VERSION="v0.8.0" \
+OLLAMA_VERSION="v0.3.10" \
+SHINKAI_NODE_VERSION="v0.8.2" \
 npx ts-node ./ci-scripts/download-side-binaries.ts
 ```
 
 #### Linux
 ```
 ARCH="x86_64-unknown-linux-gnu" \
-OLLAMA_VERSION="v0.3.9"\
-SHINKAI_NODE_VERSION="v0.8.0" \
+OLLAMA_VERSION="v0.3.10"\
+SHINKAI_NODE_VERSION="v0.8.2" \
 npx ts-node ./ci-scripts/download-side-binaries.ts
 ```
 
 #### Windows
 ```
-$ENV:OLLAMA_VERSION="v0.3.9"
-$ENV:SHINKAI_NODE_VERSION="v0.8.0"
+$ENV:OLLAMA_VERSION="v0.3.10"
+$ENV:SHINKAI_NODE_VERSION="v0.8.2"
 $ENV:ARCH="x86_64-pc-windows-msvc"
 npx ts-node ./ci-scripts/download-side-binaries.ts
 ```
@@ -110,7 +109,7 @@ Every command, if it's needed, build projects and it's dependencies according to
   - `npx nx build shinkai-visor`
   - `npx nx lint shinkai-message-ts`
   - `npx nx e2e shinkai-visor`
-  - `npx nx serve shinkai-app`
+  - `npx nx serve shinkai-desktop`
 
 - Run many tasks
 

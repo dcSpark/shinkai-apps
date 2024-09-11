@@ -1,12 +1,9 @@
 {
   "name": "@shinkai/source",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "license": "SEE LICENSE IN LICENSE",
   "files": [
     "LICENSE"
-  ],
-  "workspaces": [
-    "apps/shinkai-app"
   ],
   "scripts": {
     "postinstall": "npx patch-package"
@@ -56,7 +53,7 @@
     "@uiw/react-markdown-preview": "^5.1.1",
     "@uiw/react-md-editor": "^4.0.4",
     "@zxing/browser": "^0.1.5",
-    "axios": "^1.7.2",
+    "axios": "^1.7.7",
     "class-variance-authority": "^0.7.0",
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
@@ -92,12 +89,14 @@
     "react-router-dom": "^6.23.1",
     "react-use-websocket": "^4.8.1",
     "react-virtualized-auto-sizer": "^1.0.24",
+    "rehype-rewrite": "^4.0.2",
     "rxjs": "^7.8.1",
     "sonner": "^1.4.41",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "tiptap-markdown": "^0.8.10",
     "tslib": "^2.6.2",
+    "unified": "^11.0.5",
     "uuid": "^9.0.1",
     "vaul": "^0.9.1",
     "zod": "^3.23.8",
@@ -137,6 +136,7 @@
     "@testing-library/user-event": "^14.5.2",
     "@types/chrome": "^0.0.258",
     "@types/crypto-js": "^4.2.2",
+    "@types/fs-extra": "^11.0.4",
     "@types/jest": "^29.5.12",
     "@types/libsodium-wrappers-sumo": "^0.7.7",
     "@types/node": "20.12.13",

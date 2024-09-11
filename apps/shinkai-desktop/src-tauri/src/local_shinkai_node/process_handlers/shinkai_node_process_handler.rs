@@ -1,9 +1,9 @@
-use std::{fs, time::Duration};
+use std::{fs, path::PathBuf, time::Duration};
 
 use regex::Regex;
 use tokio::sync::mpsc::Sender;
 
-use crate::{app::APP_HANDLE, local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions};
+use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
 
 use super::{
     logger::LogEntry,
@@ -12,8 +12,9 @@ use super::{
 };
 
 pub struct ShinkaiNodeProcessHandler {
-    default_node_storage_path: String,
     process_handler: ProcessHandler,
+    app_resource_dir: Option<PathBuf>,
+    app_data_dir: Option<PathBuf>,
     options: ShinkaiNodeOptions,
 }
 
@@ -25,16 +26,20 @@ impl ShinkaiNodeProcessHandler {
 
     pub fn new(
         event_sender: Sender<ProcessHandlerEvent>,
-        default_node_storage_path: String,
+        app_resource_dir: Option<PathBuf>,
+        app_data_dir: Option<PathBuf>,
     ) -> Self {
         let ready_matcher = Regex::new(Self::READY_MATCHER).unwrap();
-        let options = ShinkaiNodeOptions::with_storage_path(default_node_storage_path.clone());
+
+        let options =
+            ShinkaiNodeOptions::with_app_options(app_resource_dir.clone(), app_data_dir.clone());
         let process_handler =
             ProcessHandler::new(Self::PROCESS_NAME.to_string(), event_sender, ready_matcher);
 
         ShinkaiNodeProcessHandler {
-            default_node_storage_path: default_node_storage_path.clone(),
             process_handler,
+            app_resource_dir,
+            app_data_dir,
             options,
         }
     }
@@ -125,72 +130,7 @@ impl ShinkaiNodeProcessHandler {
     }
 
     pub async fn spawn(&self) -> Result<(), String> {
-        let shinkai_tools_backend_binary_path = if cfg!(target_os = "windows") {
-            std::env::current_exe()
-                .unwrap()
-                .parent()
-                .unwrap()
-                .join("shinkai-tools-backend.exe")
-                .to_string_lossy()
-                .to_string()
-        } else {
-            std::env::current_exe()
-                .unwrap()
-                .parent()
-                .unwrap()
-                .join("shinkai-tools-backend")
-                .to_string_lossy()
-                .to_string()
-        };
-
-        let resource_dir = APP_HANDLE
-            .get()
-            .unwrap()
-            .lock()
-            .await
-            .path_resolver()
-            .resource_dir();
-
-        let pdfium_path = if cfg!(target_os = "macos") {
-            Some(
-                resource_dir
-                    .clone()
-                    .map(|dir| {
-                        dir.join("../Frameworks/libpdfium.dylib")
-                            .to_string_lossy()
-                            .to_string()
-                    })
-                    .unwrap_or_default(),
-            )
-        } else if cfg!(target_os = "windows") {
-            Some(
-                resource_dir
-                    .clone()
-                    .map(|dir| {
-                        dir.join("external-binaries/shinkai-node/pdfium.dll")
-                            .to_string_lossy()
-                            .to_string()
-                    })
-                    .unwrap_or_default(),
-            )
-        } else {
-            Some(
-                resource_dir
-                    .clone()
-                    .map(|dir| {
-                        dir.join("external-binaries/shinkai-node/libpdfium.so")
-                            .to_string_lossy()
-                            .to_string()
-                    })
-                    .unwrap_or_default(),
-            )
-        };
-        let options = ShinkaiNodeOptions {
-            shinkai_tools_backend_binary_path: Some(shinkai_tools_backend_binary_path),
-            pdfium_dynamic_lib_path: pdfium_path,
-            ..self.options.clone()
-        };
-        let env = options_to_env(&options);
+        let env = options_to_env(&self.options.clone());
         self.process_handler.spawn(env, [].to_vec(), None).await?;
         if let Err(e) = self.wait_shinkai_node_server().await {
             self.process_handler.kill().await;
@@ -204,8 +144,10 @@ impl ShinkaiNodeProcessHandler {
     }
 
     pub fn set_default_options(&mut self) -> ShinkaiNodeOptions {
-        self.options =
-            ShinkaiNodeOptions::with_storage_path(self.default_node_storage_path.clone());
+        self.options = ShinkaiNodeOptions::with_app_options(
+            self.app_resource_dir.clone(),
+            self.app_data_dir.clone(),
+        );
         self.options.clone()
     }
 

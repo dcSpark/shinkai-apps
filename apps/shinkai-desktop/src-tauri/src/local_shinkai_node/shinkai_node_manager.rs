@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use super::ollama_api::ollama_api_client::OllamaApiClient;
 use super::ollama_api::ollama_api_types::OllamaApiPullResponse;
 use super::process_handlers::logger::LogEntry;
@@ -40,17 +42,18 @@ pub struct ShinkaiNodeManager {
 }
 
 impl ShinkaiNodeManager {
-    pub(crate) fn new(default_node_storage_path: String) -> Self {
+    pub(crate) fn new(app_resource_dir: Option<PathBuf>, app_data_dir: Option<PathBuf>) -> Self {
         let (ollama_sender, _ollama_receiver) = channel(100);
         let (shinkai_node_sender, _shinkai_node_receiver) = channel(100);
         let (event_broadcaster, _) = broadcast::channel(10);
 
         ShinkaiNodeManager {
-            ollama_process: OllamaProcessHandler::new(
-                None,
-                ollama_sender,
+            ollama_process: OllamaProcessHandler::new(ollama_sender, app_resource_dir.clone()),
+            shinkai_node_process: ShinkaiNodeProcessHandler::new(
+                shinkai_node_sender,
+                app_resource_dir,
+                app_data_dir,
             ),
-            shinkai_node_process: ShinkaiNodeProcessHandler::new(shinkai_node_sender, default_node_storage_path),
             event_broadcaster,
         }
     }
@@ -93,11 +96,22 @@ impl ShinkaiNodeManager {
         let installed_models_response = ollama_api.tags().await;
         if let Err(e) = installed_models_response {
             self.kill().await;
-            self.emit_event(ShinkaiNodeManagerEvent::OllamaStartError { error: "unable to list installed models".to_string() });
+            self.emit_event(ShinkaiNodeManagerEvent::OllamaStartError {
+                error: "unable to list installed models".to_string(),
+            });
             return Err(e.to_string());
         }
-        let installed_models: Vec<String> = installed_models_response.unwrap().models.iter().map(|m| m.model.clone()).collect();
-        let default_embedding_model = self.shinkai_node_process.get_options().default_embedding_model.unwrap();
+        let installed_models: Vec<String> = installed_models_response
+            .unwrap()
+            .models
+            .iter()
+            .map(|m| m.model.clone())
+            .collect();
+        let default_embedding_model = self
+            .shinkai_node_process
+            .get_options()
+            .default_embedding_model
+            .unwrap();
         if !installed_models.contains(&default_embedding_model.to_string()) {
             self.emit_event(ShinkaiNodeManagerEvent::PullingModelStart {
                 model: default_embedding_model.to_string(),
@@ -114,20 +128,23 @@ impl ShinkaiNodeManager {
                                     completed,
                                 } = value
                                 {
-                                    self.emit_event(ShinkaiNodeManagerEvent::PullingModelProgress {
-                                        model: default_embedding_model.to_string(),
-                                        progress: (completed as f32 / total as f32 * 100.0) as u32,
-                                    });
+                                    self.emit_event(
+                                        ShinkaiNodeManagerEvent::PullingModelProgress {
+                                            model: default_embedding_model.to_string(),
+                                            progress: (completed as f32 / total as f32 * 100.0)
+                                                as u32,
+                                        },
+                                    );
                                 }
-                            },
+                            }
                             Err(e) => {
                                 self.kill().await;
                                 self.emit_event(ShinkaiNodeManagerEvent::PullingModelError {
                                     model: default_embedding_model.to_string(),
                                     error: e.to_string(),
                                 });
-                                return Err(e.to_string())
-                            },
+                                return Err(e.to_string());
+                            }
                         }
                     }
                 }
@@ -144,7 +161,6 @@ impl ShinkaiNodeManager {
                 model: default_embedding_model.to_string(),
             });
         }
-        
 
         let mut default_model = ShinkaiNodeOptions::default().initial_agent_models.unwrap();
         default_model = default_model.replace("ollama:", "");
@@ -165,20 +181,23 @@ impl ShinkaiNodeManager {
                                     completed,
                                 } = value
                                 {
-                                    self.emit_event(ShinkaiNodeManagerEvent::PullingModelProgress {
-                                        model: default_model.to_string(),
-                                        progress: (completed as f32 / total as f32 * 100.0) as u32,
-                                    });
+                                    self.emit_event(
+                                        ShinkaiNodeManagerEvent::PullingModelProgress {
+                                            model: default_model.to_string(),
+                                            progress: (completed as f32 / total as f32 * 100.0)
+                                                as u32,
+                                        },
+                                    );
                                 }
-                            },
+                            }
                             Err(e) => {
                                 self.kill().await;
                                 self.emit_event(ShinkaiNodeManagerEvent::PullingModelError {
                                     model: default_model.to_string(),
                                     error: e.to_string(),
                                 });
-                                return Err(e.to_string())
-                            },
+                                return Err(e.to_string());
+                            }
                         }
                     }
                 }
@@ -222,7 +241,9 @@ impl ShinkaiNodeManager {
     }
 
     pub async fn remove_storage(&self, preserve_keys: bool) -> Result<(), String> {
-        self.shinkai_node_process.remove_storage(preserve_keys).await
+        self.shinkai_node_process
+            .remove_storage(preserve_keys)
+            .await
     }
 
     pub async fn set_default_shinkai_node_options(&mut self) -> ShinkaiNodeOptions {
@@ -246,9 +267,7 @@ impl ShinkaiNodeManager {
         self.event_broadcaster.subscribe()
     }
 
-    pub fn get_ollama_api_url(
-        &self,
-    ) -> String {
+    pub fn get_ollama_api_url(&self) -> String {
         self.ollama_process.get_ollama_api_base_url()
     }
 }
