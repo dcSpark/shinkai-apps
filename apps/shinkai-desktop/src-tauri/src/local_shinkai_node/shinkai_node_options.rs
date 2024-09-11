@@ -242,7 +242,7 @@ impl Default for ShinkaiNodeOptions {
             starting_num_qr_devices: Some("0".to_string()),
             log_all: Some("1".to_string()),
             proxy_identity: Some("@@relayer_pub_01.arb-sep-shinkai".to_string()),
-            rpc_url: Some("https://public.stackup.sh/api/v1/node/arbitrum-sepolia".to_string()),
+            rpc_url: Some("https://arbitrum-sepolia.blockpi.network/v1/rpc/public".to_string()),
             default_embedding_model: Some("snowflake-arctic-embed:xs".to_string()),
             supported_embedding_models: Some("snowflake-arctic-embed:xs".to_string()),
             shinkai_tools_backend_binary_path: Some(shinkai_tools_backend_binary_path),
