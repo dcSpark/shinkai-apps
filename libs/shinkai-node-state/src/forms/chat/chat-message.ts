@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const chatMessageFormSchema = z.object({
   message: z.string().min(1),
-  file: z.any().optional(),
+  files: z.array(z.any()).max(20).optional(),
 });
 
 export type ChatMessageFormSchema = z.infer<typeof chatMessageFormSchema>;

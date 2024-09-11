@@ -11,7 +11,6 @@ import {
   chatMessageFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/chat-message';
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
-import { useSendMessageWithFilesToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageWithFilesToInbox/useSendMessageWithFilesToInbox';
 import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useStopGeneratingLLM } from '@shinkai_network/shinkai-node-state/v2/mutations/stopGeneratingLLM/useStopGeneratingLLM';
@@ -72,6 +71,7 @@ export default function ConversationFooter() {
     resolver: zodResolver(chatMessageFormSchema),
     defaultValues: {
       message: '',
+      files: [],
     },
   });
   const currentInbox = useGetCurrentInbox();
@@ -147,32 +147,29 @@ export default function ConversationFooter() {
 
   const { getRootProps: getRootFileProps, getInputProps: getInputFileProps } =
     useDropzone({
-      multiple: false,
+      multiple: true,
       onDrop: (acceptedFiles) => {
-        const file = acceptedFiles[0];
-        chatForm.setValue('file', file, { shouldValidate: true });
+        chatForm.setValue('files', acceptedFiles, { shouldValidate: true });
       },
     });
 
-  const currentFile = useWatch({
+  const currentFiles = useWatch({
     control: chatForm.control,
-    name: 'file',
+    name: 'files',
   });
 
   const { mutateAsync: sendMessageToInbox } = useSendMessageToInbox();
   const { mutateAsync: sendMessageToJob } = useSendMessageToJob({
-    onSuccess: () => {
-      captureAnalyticEvent('AI Chat', undefined);
+    onSuccess: (_, variables) => {
+      if (variables.files && variables.files.length > 0) {
+        captureAnalyticEvent('AI Chat with Files', {
+          filesCount: variables.files.length,
+        });
+      } else {
+        captureAnalyticEvent('AI Chat', undefined);
+      }
     },
   });
-  const { mutateAsync: sendTextMessageWithFilesForInbox } =
-    useSendMessageWithFilesToInbox({
-      onSuccess: () => {
-        captureAnalyticEvent('AI Chat with Files', {
-          filesCount: 1,
-        });
-      },
-    });
 
   const isLoadingMessage = useMemo(() => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
@@ -180,7 +177,7 @@ export default function ConversationFooter() {
   }, [data?.pages, inboxId]);
 
   const isWorkflowSelectedAndFilesPresent =
-    workflowSelected && currentFile !== undefined;
+    workflowSelected && currentFiles && currentFiles.length > 0;
 
   useEffect(() => {
     if (isWorkflowSelectedAndFilesPresent) {
@@ -200,29 +197,37 @@ export default function ConversationFooter() {
       workflowKeyToUse = firstMessageWorkflow.tool_router_key;
     }
 
-    if (data.file) {
-      await sendTextMessageWithFilesForInbox({
-        nodeAddress: auth?.node_address ?? '',
-        sender: auth.shinkai_identity,
-        senderSubidentity: auth.profile,
-        receiver: auth.shinkai_identity,
-        message: data.message,
-        inboxId: inboxId,
-        files: [currentFile],
-        workflowName: workflowKeyToUse,
-        my_device_encryption_sk: auth.my_device_encryption_sk,
-        my_device_identity_sk: auth.my_device_identity_sk,
-        node_encryption_pk: auth.node_encryption_pk,
-        profile_encryption_sk: auth.profile_encryption_sk,
-        profile_identity_sk: auth.profile_identity_sk,
-      });
-      chatForm.reset();
-      return;
-    }
+    // if (currentFiles && currentFiles.length > 0) {
+    //   await sendTextMessageWithFilesForInbox({
+    //     nodeAddress: auth?.node_address ?? '',
+    //     sender: auth.shinkai_identity,
+    //     senderSubidentity: auth.profile,
+    //     receiver: auth.shinkai_identity,
+    //     message: data.message,
+    //     inboxId: inboxId,
+    //     files: currentFiles,
+    //     workflowName: workflowKeyToUse,
+    //     my_device_encryption_sk: auth.my_device_encryption_sk,
+    //     my_device_identity_sk: auth.my_device_identity_sk,
+    //     node_encryption_pk: auth.node_encryption_pk,
+    //     profile_encryption_sk: auth.profile_encryption_sk,
+    //     profile_identity_sk: auth.profile_identity_sk,
+    //   });
+    //   chatForm.reset();
+    //   return;
+    // }
 
     if (isJobInbox(inboxId)) {
       const jobId = extractJobIdFromInbox(inboxId);
-
+      console.log({
+        token: auth.api_v2_key,
+        nodeAddress: auth.node_address,
+        jobId: jobId,
+        message: data.message,
+        parent: '', // Note: we should set the parent if we want to retry or branch out
+        workflowName: workflowKeyToUse,
+        files: currentFiles,
+      });
       await sendMessageToJob({
         token: auth.api_v2_key,
         nodeAddress: auth.node_address,
@@ -230,6 +235,7 @@ export default function ConversationFooter() {
         message: data.message,
         parent: '', // Note: we should set the parent if we want to retry or branch out
         workflowName: workflowKeyToUse,
+        files: currentFiles,
       });
     } else {
       const sender = `${auth.shinkai_identity}/${auth.profile}/device/${auth.registration_name}`;
@@ -309,10 +315,10 @@ export default function ConversationFooter() {
                               >
                                 <Paperclip className="h-full w-full" />
                                 <input
-                                  {...chatForm.register('file')}
+                                  {...chatForm.register('files')}
                                   {...getInputFileProps({
                                     onChange:
-                                      chatForm.register('file').onChange,
+                                      chatForm.register('files').onChange,
                                   })}
                                 />
                               </div>
@@ -395,38 +401,47 @@ export default function ConversationFooter() {
                               </button>
                             </div>
                           )}
-                          {currentFile && (
-                            <div className="relative mt-1 flex min-w-[180px] max-w-[220px] items-center gap-2 self-start rounded-lg border border-gray-200 px-2 py-2.5">
-                              {getFileExt(currentFile?.name) &&
-                              fileIconMap[getFileExt(currentFile?.name)] ? (
-                                <FileTypeIcon
-                                  className="text-gray-80 h-7 w-7 shrink-0"
-                                  type={getFileExt(currentFile?.name)}
-                                />
-                              ) : (
-                                <Paperclip className="text-gray-80 h-4 w-4 shrink-0" />
-                              )}
-                              <div className="space-y-1">
-                                <span className="line-clamp-1 break-all text-left text-xs">
-                                  {currentFile?.name}
-                                </span>
-                                <span className="line-clamp-1 break-all text-left text-xs text-gray-100">
-                                  {size(currentFile?.size)}
-                                </span>
-                              </div>
-                              <button
-                                className={cn(
-                                  'absolute -right-2 -top-2 h-5 w-5 cursor-pointer rounded-full bg-gray-500 p-1 text-gray-100 hover:text-white',
-                                )}
-                                onClick={(event) => {
-                                  event.stopPropagation();
-                                  chatForm.setValue('file', undefined, {
-                                    shouldValidate: true,
-                                  });
-                                }}
-                              >
-                                <X className="h-full w-full" />
-                              </button>
+                          {currentFiles && currentFiles.length > 0 && (
+                            <div className="flex flex-wrap gap-2">
+                              {currentFiles.map((file, index) => (
+                                <div
+                                  className="relative mt-1 flex min-w-[180px] max-w-[220px] items-center gap-2 self-start rounded-lg border border-gray-200 px-2 py-2.5"
+                                  key={index}
+                                >
+                                  {getFileExt(file.name) &&
+                                  fileIconMap[getFileExt(file.name)] ? (
+                                    <FileTypeIcon
+                                      className="text-gray-80 h-7 w-7 shrink-0"
+                                      type={getFileExt(file.name)}
+                                    />
+                                  ) : (
+                                    <Paperclip className="text-gray-80 h-4 w-4 shrink-0" />
+                                  )}
+                                  <div className="space-y-1">
+                                    <span className="line-clamp-1 break-all text-left text-xs">
+                                      {file.name}
+                                    </span>
+                                    <span className="line-clamp-1 break-all text-left text-xs text-gray-100">
+                                      {size(file.size)}
+                                    </span>
+                                  </div>
+                                  <button
+                                    className={cn(
+                                      'absolute -right-2 -top-2 h-5 w-5 cursor-pointer rounded-full bg-gray-500 p-1 text-gray-100 hover:text-white',
+                                    )}
+                                    onClick={(event) => {
+                                      event.stopPropagation();
+                                      const newFiles = [...currentFiles];
+                                      newFiles.splice(index, 1);
+                                      chatForm.setValue('files', newFiles, {
+                                        shouldValidate: true,
+                                      });
+                                    }}
+                                  >
+                                    <X className="h-full w-full" />
+                                  </button>
+                                </div>
+                              ))}
                             </div>
                           )}
                         </>
