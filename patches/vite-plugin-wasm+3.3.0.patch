@@ -1,12 +1,12 @@
 diff --git a/node_modules/vite-plugin-wasm/dist/index.d.ts b/node_modules/vite-plugin-wasm/dist/index.d.ts
-index ab56918..f137f0d 100644
+index ab56918..741b10a 100644
 --- a/node_modules/vite-plugin-wasm/dist/index.d.ts
 +++ b/node_modules/vite-plugin-wasm/dist/index.d.ts
 @@ -1 +1 @@
 -export default function wasm(): any;
 +export default function wasm(pluginOptions?: { bundle?: boolean }): any;
 diff --git a/node_modules/vite-plugin-wasm/dist/index.js b/node_modules/vite-plugin-wasm/dist/index.js
-index c099a84..813ca49 100644
+index c099a84..501a755 100644
 --- a/node_modules/vite-plugin-wasm/dist/index.js
 +++ b/node_modules/vite-plugin-wasm/dist/index.js
 @@ -27,7 +27,7 @@ const esbuild_plugin_1 = require("./esbuild-plugin");
