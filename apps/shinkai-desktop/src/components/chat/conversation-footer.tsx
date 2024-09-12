@@ -16,6 +16,12 @@ import {
   createJobFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
+import {
+  VRFolder,
+  VRItem,
+} from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
+import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
+import { transformDataToTreeNodes } from '@shinkai_network/shinkai-node-state/lib/utils/files';
 import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
@@ -25,6 +31,7 @@ import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-n
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useGetWorkflowSearch } from '@shinkai_network/shinkai-node-state/v2/queries/getWorkflowSearch/useGetWorkflowSearch';
 import {
+  Badge,
   Button,
   ChatInputArea,
   Form,
@@ -39,7 +46,9 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import {
+  AISearchContentIcon,
   fileIconMap,
+  FilesIcon,
   FileTypeIcon,
   WorkflowPlaygroundIcon,
 } from '@shinkai_network/shinkai-ui/assets';
@@ -49,16 +58,22 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { partial } from 'filesize';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Paperclip, SendIcon, X, XIcon } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { TreeCheckboxSelectionKeys } from 'primereact/tree';
+import { TreeNode } from 'primereact/treenode';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm, useWatch } from 'react-hook-form';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAnalytics } from '../../lib/posthog-provider';
 import { formatText } from '../../pages/create-job';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
+import {
+  KnowledgeSearchDrawer,
+  VectorFsScopeDrawer,
+} from '../vector-fs/components/vector-fs-context-drawer';
 import { useWorkflowSelectionStore } from '../workflow/context/workflow-selection-context';
 import {
   AIModelSelector,
@@ -73,8 +88,26 @@ function ConversationEmptyFooter() {
   const size = partial({ standard: 'jedec' });
   const navigate = useNavigate();
 
+  const [selectedKeys, setSelectedKeys] =
+    useState<TreeCheckboxSelectionKeys | null>(null);
+  const selectedFileKeysRef = useRef<Map<string, VRItem>>(new Map());
+  const selectedFolderKeysRef = useRef<Map<string, VRFolder>>(new Map());
+
   const auth = useAuth((state) => state.auth);
   const { captureAnalyticEvent } = useAnalytics();
+
+  const location = useLocation();
+
+  const locationState = location.state as {
+    files: File[];
+    agentName: string;
+    selectedVRFiles: VRItem[];
+    selectedVRFolders: VRFolder[];
+  };
+  const [isVectorFSOpen, setIsVectorFSOpen] = React.useState(false);
+  const [isKnowledgeSearchOpen, setIsKnowledgeSearchOpen] =
+    React.useState(false);
+  const [nodes, setNodes] = useState<TreeNode[]>([]);
 
   const defaulAgentId = useSettings((state) => state.defaultAgentId);
 
@@ -90,6 +123,26 @@ function ConversationEmptyFooter() {
     token: auth?.api_v2_key ?? '',
   });
 
+  const { data: VRFiles, isSuccess: isVRFilesSuccess } = useGetVRPathSimplified(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      profile: auth?.profile ?? '',
+      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      path: '/',
+      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+      my_device_identity_sk: auth?.profile_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+    },
+  );
+
+  useEffect(() => {
+    if (isVRFilesSuccess) {
+      setNodes(transformDataToTreeNodes(VRFiles));
+    }
+  }, [VRFiles, isVRFilesSuccess]);
+
   useEffect(() => {
     if (llmProviders?.length && !defaulAgentId) {
       chatForm.setValue('agent', llmProviders?.[0].id);
@@ -97,6 +150,52 @@ function ConversationEmptyFooter() {
       chatForm.setValue('agent', defaulAgentId);
     }
   }, [llmProviders, chatForm, defaulAgentId]);
+
+  useEffect(() => {
+    if (!locationState?.agentName) {
+      return;
+    }
+    const agent = llmProviders.find(
+      (agent) => agent.id === locationState.agentName,
+    );
+    if (agent) {
+      chatForm.setValue('agent', agent.id);
+    }
+  }, [chatForm, locationState, llmProviders]);
+
+  useEffect(() => {
+    if (
+      locationState?.selectedVRFiles?.length > 0 ||
+      locationState?.selectedVRFolders?.length > 0
+    ) {
+      const selectedVRFilesPathMap = locationState?.selectedVRFiles?.reduce(
+        (acc, file) => {
+          selectedFileKeysRef.current.set(file.path, file);
+          acc[file.path] = {
+            checked: true,
+          };
+          return acc;
+        },
+        {} as Record<string, { checked: boolean }>,
+      );
+
+      const selectedVRFoldersPathMap = locationState?.selectedVRFolders?.reduce(
+        (acc, folder) => {
+          selectedFolderKeysRef.current.set(folder.path, folder);
+          acc[folder.path] = {
+            checked: true,
+          };
+          return acc;
+        },
+        {} as Record<string, { checked: boolean }>,
+      );
+
+      setSelectedKeys({
+        ...selectedVRFilesPathMap,
+        ...selectedVRFoldersPathMap,
+      });
+    }
+  }, [locationState?.selectedVRFiles, locationState?.selectedVRFolders]);
 
   const workflowSelected = useWorkflowSelectionStore(
     (state) => state.workflowSelected,
@@ -139,12 +238,28 @@ function ConversationEmptyFooter() {
     name: 'files',
   });
   const { mutateAsync: createJob, isPending } = useCreateJob({
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
       navigate(
         `/inboxes/${encodeURIComponent(buildInboxIdFromJobId(data.jobId))}`,
       );
 
-      captureAnalyticEvent('AI Chat', undefined);
+      const files = variables?.files ?? [];
+      const localFilesCount = (variables.selectedVRFiles ?? [])?.length;
+      const localFoldersCount = (variables.selectedVRFolders ?? [])?.length;
+
+      if (localFilesCount > 0 || localFoldersCount > 0) {
+        captureAnalyticEvent('Ask Local Files', {
+          foldersCount: localFoldersCount,
+          filesCount: localFilesCount,
+        });
+      }
+      if (files?.length > 0) {
+        captureAnalyticEvent('AI Chat with Files', {
+          filesCount: files.length,
+        });
+      } else {
+        captureAnalyticEvent('AI Chat', undefined);
+      }
     },
   });
 
@@ -162,6 +277,15 @@ function ConversationEmptyFooter() {
 
   const onSubmit = async (data: CreateJobFormSchema) => {
     if (!auth || data.message.trim() === '') return;
+    const selectedVRFiles =
+      selectedFileKeysRef.current.size > 0
+        ? Array.from(selectedFileKeysRef.current.values())
+        : [];
+    const selectedVRFolders =
+      selectedFolderKeysRef.current.size > 0
+        ? Array.from(selectedFolderKeysRef.current.values())
+        : [];
+
     await createJob({
       nodeAddress: auth.node_address,
       token: auth.api_v2_key,
@@ -170,6 +294,8 @@ function ConversationEmptyFooter() {
       files: currentFiles,
       workflowName: workflowSelected?.tool_router_key,
       isHidden: false,
+      selectedVRFiles,
+      selectedVRFolders,
     });
     chatForm.reset();
     setWorkflowSelected(undefined);
@@ -225,6 +351,48 @@ function ConversationEmptyFooter() {
                           </Tooltip>
                         </TooltipProvider>
                         <WorkflowSelectionActionBar />
+                        <Button
+                          className="hover:bg-gray-350 flex h-[40px] items-center justify-between gap-2 rounded-lg p-2.5 text-left"
+                          onClick={() => setIsVectorFSOpen(true)}
+                          size="auto"
+                          type="button"
+                          variant="outline"
+                        >
+                          <div className="flex items-center gap-2">
+                            <FilesIcon className="h-4 w-4" />
+                            <p className="text-sm text-white">
+                              {t('vectorFs.localFiles')}
+                            </p>
+                          </div>
+                          {Object.keys(selectedKeys ?? {}).length > 0 && (
+                            <Badge className="bg-brand text-white">
+                              {Object.keys(selectedKeys ?? {}).length}
+                            </Badge>
+                          )}
+                        </Button>
+                        <TooltipProvider delayDuration={0}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                className="flex h-10 w-10 items-center justify-center gap-2 rounded-lg p-2.5 text-left hover:bg-gray-500"
+                                onClick={() => setIsKnowledgeSearchOpen(true)}
+                                size="icon"
+                                type="button"
+                                variant="ghost"
+                              >
+                                <AISearchContentIcon className="h-5 w-5" />
+                                <p className="sr-only text-xs text-white">
+                                  {t('aiFilesSearch.label')}
+                                </p>
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipPortal>
+                              <TooltipContent sideOffset={0}>
+                                {t('aiFilesSearch.label')}
+                              </TooltipContent>
+                            </TooltipPortal>
+                          </Tooltip>
+                        </TooltipProvider>
                       </div>
                     </div>
 
@@ -377,6 +545,23 @@ function ConversationEmptyFooter() {
           />
         </Form>
       </div>
+      <VectorFsScopeDrawer
+        isVectorFSOpen={isVectorFSOpen}
+        nodes={nodes}
+        onSelectedKeysChange={setSelectedKeys}
+        onVectorFSOpenChanges={setIsVectorFSOpen}
+        selectedFileKeysRef={selectedFileKeysRef}
+        selectedFolderKeysRef={selectedFolderKeysRef}
+        selectedKeys={selectedKeys}
+      />
+
+      <KnowledgeSearchDrawer
+        isKnowledgeSearchOpen={isKnowledgeSearchOpen}
+        onSelectedKeysChange={setSelectedKeys}
+        selectedFileKeysRef={selectedFileKeysRef}
+        selectedKeys={selectedKeys}
+        setIsKnowledgeSearchOpen={setIsKnowledgeSearchOpen}
+      />
     </div>
   );
 }

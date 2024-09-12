@@ -93,8 +93,8 @@ const CreateJobPage = () => {
   const auth = useAuth((state) => state.auth);
   const defaulAgentId = useSettings((state) => state.defaultAgentId);
   const navigate = useNavigate();
-  const location = useLocation();
   const { captureAnalyticEvent } = useAnalytics();
+  const location = useLocation();
 
   const locationState = location.state as {
     files: File[];

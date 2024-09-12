@@ -503,7 +503,7 @@ const AllFiles = () => {
                 if (!isVRSelectionActive) {
                   setVRSelectionActive(true);
                 } else {
-                  navigate('/create-job', {
+                  navigate('/inboxes', {
                     state: {
                       selectedVRFiles: selectedFiles,
                       selectedVRFolders: selectedFolders,

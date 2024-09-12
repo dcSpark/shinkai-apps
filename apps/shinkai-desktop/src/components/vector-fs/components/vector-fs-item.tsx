@@ -137,7 +137,7 @@ const VectorFsItem = ({
               )}
               onClick={(event) => {
                 event.stopPropagation();
-                navigate('/create-job', {
+                navigate('/inboxes', {
                   state: {
                     selectedVRFiles: [file],
                   },
