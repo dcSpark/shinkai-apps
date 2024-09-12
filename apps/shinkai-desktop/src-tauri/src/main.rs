@@ -14,12 +14,14 @@ use crate::commands::shinkai_node_manager_commands::{
 
 use globals::SHINKAI_NODE_MANAGER_INSTANCE;
 use local_shinkai_node::shinkai_node_manager::ShinkaiNodeManager;
+use secure_storage::{retrieve_secure_info, store_secure_info};
 use tauri::SystemTrayMenuItem;
 use tauri::{
     CustomMenuItem, LogicalSize, Manager, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMenu,
 };
 use tauri::{GlobalShortcutManager, Size};
 use tokio::sync::Mutex;
+use usage::stream_hardware_stats;
 
 mod audio;
 mod commands;
@@ -27,6 +29,8 @@ mod galxe;
 mod globals;
 mod hardware;
 mod local_shinkai_node;
+mod secure_storage;
+mod usage;
 
 fn main() {
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
@@ -48,6 +52,17 @@ fn main() {
         .add_item(quit);
 
     let system_tray = SystemTray::new().with_menu(tray_menu);
+
+    // Test Code
+
+    if let Err(e) = store_secure_info("example_key", "nico123") {
+        println!("Failed to store secure info: {}", e);
+    }
+
+    match retrieve_secure_info("example_key") {
+        Ok(value) => println!("Retrieved secure info: {}", value),
+        Err(e) => println!("Failed to retrieve secure info: {}", e),
+    }
 
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
@@ -87,6 +102,11 @@ fn main() {
                             println!("Failed to emit global event for state change: {}", e);
                         });
                 }
+            });
+
+            // Spawn the hardware stats streaming task
+            tauri::async_runtime::spawn(async {
+                stream_hardware_stats().await;
             });
 
             app.global_shortcut_manager()
