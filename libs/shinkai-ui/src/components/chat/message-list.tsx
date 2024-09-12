@@ -3,14 +3,14 @@ import {
   FetchPreviousPageOptions,
   InfiniteQueryObserverResult,
 } from '@tanstack/react-query';
-import { AnimatePresence, motion } from 'framer-motion';
-import { CheckCircle, Loader2 } from 'lucide-react';
 import React, {
   Fragment,
+  RefObject,
   useCallback,
   useEffect,
   useLayoutEffect,
   useRef,
+  useState,
 } from 'react';
 import { useInView } from 'react-intersection-observer';
 
@@ -18,6 +18,35 @@ import { getRelativeDateLabel, groupMessagesByDate } from '../../helpers';
 import { cn } from '../../utils';
 import { Skeleton } from '../skeleton';
 import { Message } from './message';
+
+function useScrollToBottom(
+  scrollRef: RefObject<HTMLDivElement>,
+  detach = false,
+) {
+  const [autoScroll, setAutoScroll] = useState(true);
+  function scrollDomToBottom() {
+    const scrollContainer = scrollRef.current;
+    if (scrollContainer) {
+      requestAnimationFrame(() => {
+        setAutoScroll(true);
+        scrollContainer.scrollTo(0, scrollContainer.scrollHeight);
+      });
+    }
+  }
+
+  useEffect(() => {
+    if (autoScroll && !detach) {
+      scrollDomToBottom();
+    }
+  });
+
+  return {
+    scrollRef,
+    autoScroll,
+    setAutoScroll,
+    scrollDomToBottom,
+  };
+}
 
 export const MessageList = ({
   noMoreMessageLabel,
@@ -30,7 +59,6 @@ export const MessageList = ({
   fromPreviousMessagesRef,
   containerClassName,
   lastMessageContent,
-  isLoadingMessage,
   regenerateMessage,
   disabledRetryAndEdit,
   messageExtra,
@@ -53,8 +81,7 @@ export const MessageList = ({
     workflowName?: string,
   ) => void;
   containerClassName?: string;
-  lastMessageContent: string;
-  isLoadingMessage: boolean | undefined;
+  lastMessageContent: React.ReactNode;
   disabledRetryAndEdit?: boolean;
   messageExtra?: React.ReactNode;
 }) => {
@@ -62,8 +89,22 @@ export const MessageList = ({
   const previousChatHeightRef = useRef<number>(0);
   const { ref, inView } = useInView();
 
+  const isScrolledToBottom = chatContainerRef?.current
+    ? Math.abs(
+        chatContainerRef.current.scrollHeight -
+          (chatContainerRef.current.scrollTop +
+            chatContainerRef.current.clientHeight),
+      ) <= 1
+    : false;
+
+  const { setAutoScroll, scrollDomToBottom } = useScrollToBottom(
+    chatContainerRef,
+    isScrolledToBottom,
+  );
+
   const fetchPreviousMessages = useCallback(async () => {
     fromPreviousMessagesRef.current = true;
+    setAutoScroll(false);
     await fetchPreviousPage();
   }, [fetchPreviousPage]);
 
@@ -92,6 +133,12 @@ export const MessageList = ({
       const currentScrollTop = chatContainerElement.scrollTop;
       previousChatHeightRef.current = currentHeight;
 
+      if (currentScrollTop + chatContainerElement.clientHeight < currentHeight - 125) {
+        setAutoScroll(false);
+      } else {
+        setAutoScroll(true);
+      }
+
       if (inView && hasPreviousPage && !isFetchingPreviousPage) {
         previousChatHeightRef.current = currentHeight - currentScrollTop;
       }
@@ -111,24 +158,18 @@ export const MessageList = ({
     paginatedMessages?.pages?.length,
   ]);
 
-  const scrollToBottom = () => {
-    if (!chatContainerRef.current) return;
-    chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-  };
-
   useEffect(() => {
     if (!fromPreviousMessagesRef.current) {
-      scrollToBottom();
+      setAutoScroll(true);
+      scrollDomToBottom();
     }
   }, [paginatedMessages?.pages]);
 
   useEffect(() => {
-    scrollToBottom();
+    if (isSuccess) {
+      scrollDomToBottom();
+    }
   }, [isSuccess]);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [lastMessageContent]);
 
   const messageList = paginatedMessages?.content ?? [];
 
@@ -275,24 +316,7 @@ export const MessageList = ({
               },
             )}
             {messageExtra}
-            {isLoadingMessage && (
-              <Message
-                isPending={isLoadingMessage}
-                message={{
-                  parentHash: '',
-                  inboxId: '',
-                  hash: '',
-                  content: lastMessageContent,
-                  scheduledTime: new Date().toISOString(),
-                  isLocal: false,
-                  workflowName: undefined,
-                  sender: {
-                    avatar:
-                      'https://ui-avatars.com/api/?name=S&background=FF7E7F&color=ffffff',
-                  },
-                }}
-              />
-            )}
+            {lastMessageContent}
           </Fragment>
         )}
       </div>

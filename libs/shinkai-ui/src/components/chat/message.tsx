@@ -207,6 +207,9 @@ export const Message = ({
                     : 'rounded-bl-none border-none bg-gray-200',
                   !message.content ? 'pb-3' : 'pb-4',
                   editing && 'w-full py-1',
+                  !message.isLocal &&
+                    isPending &&
+                    'relative overflow-hidden pb-4 before:absolute before:bottom-0 before:left-0 before:right-0 before:h-10 before:animate-pulse before:bg-gradient-to-l before:from-gray-200 before:to-gray-200/10',
                 )}
               >
                 {message.content ? (
@@ -223,21 +226,14 @@ export const Message = ({
                           </div>
                         ),
                       }}
-                      source={
-                        isPending
-                          ? extractErrorPropertyOrContent(
-                              message.content,
-                              'error_message',
-                            ) + ' ...'
-                          : extractErrorPropertyOrContent(
-                              message.content,
-                              'error_message',
-                            )
-                      }
+                      source={extractErrorPropertyOrContent(
+                        message.content,
+                        'error_message',
+                      )}
                     />
                     {!!message.fileInbox?.files?.length && (
                       <FileList
-                        className="mt-2 min-w-[200px] max-w-[400px]"
+                        className="mt-2 min-w-[200px] max-w-[70vw]"
                         files={message.fileInbox?.files}
                       />
                     )}

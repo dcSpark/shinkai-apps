@@ -6,7 +6,7 @@ module.exports = defineConfig({
   output: 'locales',
   outputLocales: ['zh-CN', 'ja-JP', 'es-ES', 'id-ID'],
   temperature: 0,
-  modelName: 'gpt-3.5-turbo-0125',
+  modelName: 'gpt-4o-mini',
   splitToken: 2048,
   experimental: {
     jsonMode: true,

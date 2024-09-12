@@ -10,6 +10,8 @@ import { ShinkaiMessageBuilderWrapper } from '@shinkai_network/shinkai-message-t
 import {
   ChatMessageFormSchema,
   chatMessageFormSchema,
+  ChatMessageFormSchemaWithOneFile,
+  chatMessageFormSchemaWithOneFile,
 } from '@shinkai_network/shinkai-node-state/forms/chat/chat-message';
 import { FunctionKey } from '@shinkai_network/shinkai-node-state/lib/constants';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMessageToJob/useSendMessageToJob';
@@ -267,8 +269,8 @@ export const Inbox = () => {
   const auth = useAuth((state) => state.auth);
   const inboxId = decodeURIComponent(encodedInboxId);
 
-  const chatForm = useForm<ChatMessageFormSchema>({
-    resolver: zodResolver(chatMessageFormSchema),
+  const chatForm = useForm<ChatMessageFormSchemaWithOneFile>({
+    resolver: zodResolver(chatMessageFormSchemaWithOneFile),
     defaultValues: {
       message: '',
     },
@@ -344,7 +346,7 @@ export const Inbox = () => {
     });
   };
 
-  const onSubmit = async (data: ChatMessageFormSchema) => {
+  const onSubmit = async (data: ChatMessageFormSchemaWithOneFile) => {
     setMessageContent(''); // trick to clear the ws stream message
     if (!auth || data.message.trim() === '') return;
     fromPreviousMessagesRef.current = false;
@@ -440,7 +442,6 @@ export const Inbox = () => {
         hasPreviousPage={hasPreviousPage}
         isFetchingPreviousPage={isFetchingPreviousPage}
         isLoading={isChatConversationLoading}
-        isLoadingMessage={isLoadingMessage}
         isSuccess={isChatConversationSuccess}
         lastMessageContent={messageContent}
         noMoreMessageLabel={t('chat.allMessagesLoaded')}
