@@ -5,4 +5,12 @@ export const chatMessageFormSchema = z.object({
   files: z.array(z.any()).max(3).optional(),
 });
 
+export const chatMessageFormSchemaWithOneFile = z.object({
+  message: z.string().min(1),
+  file: z.any().optional(),
+});
+
 export type ChatMessageFormSchema = z.infer<typeof chatMessageFormSchema>;
+export type ChatMessageFormSchemaWithOneFile = z.infer<
+  typeof chatMessageFormSchemaWithOneFile
+>;
