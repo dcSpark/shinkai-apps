@@ -21,7 +21,7 @@ import {
   JobMessageRequest,
   JobMessageResponse,
   LLMProviderInterface,
-  StopGeneratingLLMInput,
+  StopGeneratingLLMRequest,
   UpdateChatConfigRequest,
   UpdateChatConfigResponse,
 } from './types';
@@ -279,7 +279,7 @@ export const updateChatConfig = async (
 export const stopGeneratingLLM = async (
   nodeAddress: string,
   bearerToken: string,
-  jobId: StopGeneratingLLMInput,
+  jobId: StopGeneratingLLMRequest,
 ) => {
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v2/stop_llm'),

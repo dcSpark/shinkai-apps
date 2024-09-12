@@ -261,5 +261,5 @@ export type UpdateChatConfigResponse = {
   result: string;
 };
 
-export type StopGeneratingLLMInput = string;
-export type StopGeneratingLLMOutput = { status: string };
+export type StopGeneratingLLMRequest = string;
+export type StopGeneratingLLMResponse = { status: string };

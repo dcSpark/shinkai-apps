@@ -1,7 +1,7 @@
 import { Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
-import { StopGeneratingLLMOutput } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
+import { StopGeneratingLLMResponse } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 
-export type StopGeneratingLLMOutput = StopGeneratingLLMOutput;
+export type StopGeneratingLLMOutput = StopGeneratingLLMResponse;
 
 export type StopGeneratingLLMInput = Token & {
   nodeAddress: string;
