@@ -1,18 +1,16 @@
 {
-  "tauri": {
-    "bundle": {
-      "windows": {
-        "nsis": {
-          "installerIcon": "icons/icon.ico"
-        },
-        "wix": {
-          "template": "./dummy.wxs"
-        }
+  "bundle": {
+    "windows": {
+      "nsis": {
+        "installerIcon": "icons/icon.ico"
       },
-      "resources": [
-        "external-binaries/shinkai-node/pdfium.dll",
-        "external-binaries/ollama/lib"
-      ]
-    }
+      "wix": {
+        "template": "./dummy.wxs"
+      }
+    },
+    "resources": [
+      "external-binaries/shinkai-node/pdfium.dll",
+      "external-binaries/ollama/lib"
+    ]
   }
 }

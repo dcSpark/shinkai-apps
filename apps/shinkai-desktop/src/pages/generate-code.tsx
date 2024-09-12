@@ -17,8 +17,8 @@ import {
   SelectValue,
   TextField,
 } from '@shinkai_network/shinkai-ui';
-import { save } from '@tauri-apps/api/dialog';
-import { BaseDirectory, writeBinaryFile } from '@tauri-apps/api/fs';
+import { save } from '@tauri-apps/plugin-dialog';
+import { BaseDirectory, writeBinaryFile } from '@tauri-apps/plugin-fs';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';

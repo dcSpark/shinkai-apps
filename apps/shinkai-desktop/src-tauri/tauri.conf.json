@@ -2,84 +2,49 @@
   "build": {
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build",
-    "devPath": "http://localhost:1420",
-    "distDir": "../dist",
-    "withGlobalTauri": false
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:1420"
   },
-  "package": {
-    "productName": "Shinkai Desktop",
-    "version": "../../../package.json"
-  },
-  "tauri": {
-    "allowlist": {
-      "all": false,
-      "globalShortcut": {
-        "all": true
-      },
-      "fs": {
-        "all": true
-      },
-      "shell": {
-        "all": false,
-        "open": true,
-        "sidecar": true,
-        "scope": [
-          { "name": "external-binaries/shinkai-node/shinkai-node", "sidecar": true },
-          { "name": "external-binaries/shinkai-node/shinkai-tools-runner-resources/shinkai-tools-backend", "sidecar": true },
-          { "name": "external-binaries/ollama/ollama", "sidecar": true }
-        ]
-      },
-      "window": {
-        "startDragging": true,
-        "close": true,
-        "create": true,
-        "setFocus": true
-      },
-      "notification": {
-        "all": true
-      },
-      "os": {
-        "all": true
-      },
-      "dialog": {
-        "all": true,
-        "ask": true,
-        "confirm": true,
-        "message": true,
-        "open": true,
-        "save": true
-      },
-      "path": {
-        "all": true
-      },
-      "http": {
-        "all": false,
-        "request": true,
-        "scope": ["http://localhost"]
-      },
-      "process": {
-        "relaunch": true
-      }
+  "bundle": {
+    "active": true,
+    "targets": [
+      "app",
+      "appimage",
+      "nsis",
+      "dmg"
+    ],
+    "externalBin": [
+      "external-binaries/shinkai-node/shinkai-node",
+      "external-binaries/shinkai-node/shinkai-tools-runner-resources/shinkai-tools-backend",
+      "external-binaries/ollama/ollama"
+    ],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "macOS": {
+      "minimumSystemVersion": "12.0"
     },
-    "bundle": {
-      "active": true,
-      "targets": ["app", "appimage", "nsis", "dmg", "updater"],
-      "identifier": "com.shinkai.desktop",
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
-      "macOS": {
-        "minimumSystemVersion": "12.0"
-      },
-      "externalBin": [
-        "external-binaries/shinkai-node/shinkai-node",
-        "external-binaries/shinkai-node/shinkai-tools-runner-resources/shinkai-tools-backend",
-        "external-binaries/ollama/ollama"
+    "createUpdaterArtifacts": "v1Compatible"
+  },
+  "productName": "Shinkai Desktop",
+  "version": "../../../package.json",
+  "identifier": "com.shinkai.desktop",
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDY5RTREOUVBODQ0QUYwRDQKUldUVThFcUU2dG5rYVV1MjlvS2FGKzZSMVFnRnFVdUh1ZnVWc2pDSHFqWThaYUFneC9rUU1Gc2MK",
+      "endpoints": [
+        "https://download.shinkai.com/shinkai-desktop/binaries/production/updates.json"
       ]
+    }
+  },
+  "app": {
+    "withGlobalTauri": false,
+    "trayIcon": {
+      "iconPath": "icons/icon.png"
     },
     "security": {
       "csp": null
@@ -91,22 +56,11 @@
         "width": 1280,
         "height": 840,
         "resizable": true,
-        "fileDropEnabled": false,
+        "dragDropEnabled": false,
         "titleBarStyle": "Overlay",
         "hiddenTitle": true
       }
     ],
-    "macOSPrivateApi": true,
-    "systemTray": {
-      "iconPath": "icons/icon.png"
-    },
-    "updater": {
-      "active": true,
-      "endpoints": [
-        "https://download.shinkai.com/shinkai-desktop/binaries/production/updates.json"
-      ],
-      "dialog": false,
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDY5RTREOUVBODQ0QUYwRDQKUldUVThFcUU2dG5rYVV1MjlvS2FGKzZSMVFnRnFVdUh1ZnVWc2pDSHFqWThaYUFneC9rUU1Gc2MK"
-    }
+    "macOSPrivateApi": true
   }
 }

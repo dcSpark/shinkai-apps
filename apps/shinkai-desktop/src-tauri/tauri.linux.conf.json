@@ -1,9 +1,5 @@
 {
-  "tauri": {
-    "bundle": {
-      "resources": [
-        "external-binaries/shinkai-node/libpdfium.so"
-      ]
-    }
+  "bundle": {
+    "resources": ["external-binaries/shinkai-node/libpdfium.so"]
   }
 }

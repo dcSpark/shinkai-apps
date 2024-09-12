@@ -11,14 +11,16 @@ import {
   formatDateToLocaleStringWithTime,
   formatDateToUSLocaleString,
 } from '@shinkai_network/shinkai-ui/helpers';
-import { dialog,fs } from '@tauri-apps/api';
-import { BaseDirectory } from '@tauri-apps/api/fs';
+import {  } from '@tauri-apps/api';
+import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import { partial } from 'filesize';
 import { LockIcon } from 'lucide-react';
 import React from 'react';
 
 import { useAuth } from '../../../store/auth';
 import { useVectorFsStore } from '../context/vector-fs-context';
+import * as dialog from "@tauri-apps/plugin-dialog"
+import * as fs from "@tauri-apps/plugin-fs"
 
 export const VectorFileDetails = () => {
   const selectedFile = useVectorFsStore((state) => state.selectedFile);

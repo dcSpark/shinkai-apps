@@ -1,4 +1,4 @@
-import { WebviewWindow } from '@tauri-apps/api/window';
+import { WebviewWindow } from '@tauri-apps/api/webviewWindow';
 
 export const SHINKAI_NODE_MANAGER_WINDOW = 'shinkai-node-manager-window';
 export const openShinkaiNodeManagerWindow = () => {

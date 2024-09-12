@@ -6,14 +6,14 @@ import {
   useQueryClient,
   UseQueryResult,
 } from '@tanstack/react-query';
-import { platform } from '@tauri-apps/api/os';
-import { relaunch } from '@tauri-apps/api/process';
+import { platform } from '@tauri-apps/plugin-os';
+import { relaunch } from '@tauri-apps/plugin-process';
 import {
   checkUpdate,
   installUpdate,
   onUpdaterEvent,
   UpdateResult,
-} from '@tauri-apps/api/updater';
+} from '@tauri-apps/plugin-updater';
 
 import { useShinkaiNodeKillMutation } from '../shinkai-node-manager/shinkai-node-manager-client';
 

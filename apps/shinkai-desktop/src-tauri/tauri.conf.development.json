@@ -1,11 +1,7 @@
 {
-  "package": {
-    "productName": "Shinkai Desktop Dev"
-  },
-  "tauri": {
-    "bundle": {
-      "identifier": "com.shinkai.desktop.dev"
-    },
+  "productName": "Shinkai Desktop Dev",
+  "identifier": "com.shinkai.desktop.dev",
+  "plugins": {
     "updater": {
       "endpoints": [
         "https://download.shinkai.com/shinkai-desktop/binaries/development/updates.json"

@@ -12,14 +12,16 @@ import {
   Input,
   TextField,
 } from '@shinkai_network/shinkai-ui';
-import { dialog, fs } from '@tauri-apps/api';
-import { BaseDirectory } from '@tauri-apps/api/fs';
+import {   } from '@tauri-apps/api';
+import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import { Download } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useAuth } from '../store/auth';
 import { SubpageLayout } from './layout/simple-layout';
+import * as dialog from "@tauri-apps/plugin-dialog"
+import * as fs from "@tauri-apps/plugin-fs"
 
 export const ExportConnection = () => {
   const { t } = useTranslation();

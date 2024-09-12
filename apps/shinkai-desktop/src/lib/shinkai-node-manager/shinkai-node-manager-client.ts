@@ -8,7 +8,7 @@ import {
   UseQueryResult,
 } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api';
-import { relaunch } from '@tauri-apps/api/process';
+import { relaunch } from '@tauri-apps/plugin-process';
 
 import {
   LogEntry,
