@@ -337,7 +337,7 @@ const ChatLayout = () => {
                 <Button
                   className="h-8 w-8"
                   onClick={() => {
-                    navigate('/create-job');
+                    navigate('/inboxes');
                   }}
                   size="icon"
                   variant="ghost"

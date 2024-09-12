@@ -242,7 +242,7 @@ const CreateJobPage = () => {
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
       llmProvider: data.agent,
-      content: data.content,
+      content: data.message,
       files: data.files,
       workflowName: workflowSelected?.tool_router_key,
       isHidden: false,
@@ -253,7 +253,7 @@ const CreateJobPage = () => {
 
   const currentMessage = useWatch({
     control: createJobForm.control,
-    name: 'content',
+    name: 'message',
   });
   const currentFiles = useWatch({
     control: createJobForm.control,
@@ -292,14 +292,14 @@ const CreateJobPage = () => {
       Object.keys(selectedKeys ?? {}).length > 0 ||
       currentMessage?.endsWith('/')
     ) {
-      createJobForm.setValue('content', '');
+      createJobForm.setValue('message', '');
     }
   }, [workflowSelected]);
 
   useEffect(() => {
     if (isWorkflowSelectedAndFilesPresent) {
       createJobForm.setValue(
-        'content',
+        'message',
         `${formatText(workflowSelected.name)} - ${workflowSelected.description}`,
       );
     }
@@ -321,7 +321,7 @@ const CreateJobPage = () => {
             <div>
               <FormField
                 control={createJobForm.control}
-                name="content"
+                name="message"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Message</FormLabel>
@@ -381,7 +381,7 @@ const CreateJobPage = () => {
                                           0 ||
                                         currentMessage.endsWith('/')
                                       ) {
-                                        createJobForm.setValue('content', '');
+                                        createJobForm.setValue('message', '');
                                       }
                                     }}
                                     type="button"
@@ -456,7 +456,7 @@ const CreateJobPage = () => {
                         onClick={(event) => {
                           setWorkflowSelected(undefined);
                           if (Object.keys(selectedKeys ?? {}).length > 0) {
-                            createJobForm.setValue('content', '');
+                            createJobForm.setValue('message', '');
                           }
                           event.stopPropagation();
                         }}

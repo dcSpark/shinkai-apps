@@ -48,11 +48,14 @@ export default function ChatConfigActionBar() {
   const auth = useAuth((state) => state.auth);
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = decodeURIComponent(encodedInboxId);
-  const { data: chatConfig } = useGetChatConfig({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-    jobId: extractJobIdFromInbox(inboxId),
-  });
+  const { data: chatConfig } = useGetChatConfig(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      jobId: inboxId ? extractJobIdFromInbox(inboxId) : '',
+    },
+    { enabled: !!inboxId },
+  );
   const { t } = useTranslation();
 
   const form = useForm<FormSchemaType>({

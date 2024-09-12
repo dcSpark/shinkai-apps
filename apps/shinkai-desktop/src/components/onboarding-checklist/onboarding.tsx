@@ -87,7 +87,7 @@ export default function OnboardingStepper() {
               <Button
                 className="h-auto gap-1 px-3 py-2"
                 onClick={() => {
-                  navigate('/create-job');
+                  navigate('/inboxes');
                 }}
                 size="sm"
                 variant="outline"
