@@ -152,7 +152,7 @@ export const uploadFilesToInbox = async (
   const folderId = await createFilesInbox(nodeAddress, bearerToken);
   for (const file of files) {
     await addFileToInbox(nodeAddress, bearerToken, {
-      filename: file.name,
+      filename: encodeURIComponent(file.name),
       file_inbox_name: folderId,
       file,
     });
@@ -169,7 +169,7 @@ export const downloadFileFromInbox = async (
   const response = await httpClient.get(
     urlJoin(
       nodeAddress,
-      `/v2/download_file_from_inbox/${inboxName}/${filename}`,
+      `/v2/download_file_from_inbox/${inboxName}/${decodeURIComponent(filename)}`,
     ),
     {
       headers: { Authorization: `Bearer ${bearerToken}` },
