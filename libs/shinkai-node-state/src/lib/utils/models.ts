@@ -11,16 +11,12 @@ export const modelsConfig = {
     apiUrl: 'https://api.openai.com',
     modelTypes: [
       {
-        name: 'GPT 3.5 Turbo (1106)',
-        value: 'gpt-3.5-turbo-1106',
+        name: 'GPT 4o Mini',
+        value: 'gpt-4o-mini',
       },
       {
-        name: 'GPT 4 Turbo',
-        value: 'gpt-4-1106-preview',
-      },
-      {
-        name: 'GPT 4 Vision',
-        value: 'gpt-4-vision-preview',
+        name: 'GPT 4o',
+        value: 'gpt-4o',
       },
     ],
   },
