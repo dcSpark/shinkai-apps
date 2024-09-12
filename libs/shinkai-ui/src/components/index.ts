@@ -27,6 +27,7 @@ export * from './qr-code';
 export * from './resizable';
 export * from './radio-group';
 export * from './scroll-area';
+export * from './slider';
 export * from './select';
 export * from './separator';
 export * from './sheet';

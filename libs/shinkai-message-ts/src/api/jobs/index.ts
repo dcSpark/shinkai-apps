@@ -9,6 +9,8 @@ import {
   CreateJobRequest,
   CreateJobResponse,
   GetAllInboxesResponse,
+  GetChatConfigRequest,
+  GetChatConfigResponse,
   GetFileNamesRequest,
   GetFileNamesResponse,
   GetLastMessagesRequest,
@@ -19,6 +21,9 @@ import {
   JobMessageRequest,
   JobMessageResponse,
   LLMProviderInterface,
+  StopGeneratingLLMRequest,
+  UpdateChatConfigRequest,
+  UpdateChatConfigResponse,
 } from './types';
 
 export const createJob = async (
@@ -147,7 +152,7 @@ export const uploadFilesToInbox = async (
   const folderId = await createFilesInbox(nodeAddress, bearerToken);
   for (const file of files) {
     await addFileToInbox(nodeAddress, bearerToken, {
-      filename: file.name,
+      filename: encodeURIComponent(file.name),
       file_inbox_name: folderId,
       file,
     });
@@ -164,7 +169,7 @@ export const downloadFileFromInbox = async (
   const response = await httpClient.get(
     urlJoin(
       nodeAddress,
-      `/v2/download_file_from_inbox/${inboxName}/${filename}`,
+      `/v2/download_file_from_inbox/${inboxName}/${decodeURIComponent(filename)}`,
     ),
     {
       headers: { Authorization: `Bearer ${bearerToken}` },
@@ -235,4 +240,54 @@ export const getAllInboxes = async (
     },
   );
   return response.data as GetAllInboxesResponse;
+};
+
+export const getJobConfig = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: GetChatConfigRequest,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/get_job_config'),
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+      params: {
+        job_id: payload.job_id,
+      },
+    },
+  );
+  return response.data as GetChatConfigResponse;
+};
+
+export const updateChatConfig = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: UpdateChatConfigRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/update_job_config'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as UpdateChatConfigResponse;
+};
+
+export const stopGeneratingLLM = async (
+  nodeAddress: string,
+  bearerToken: string,
+  jobId: StopGeneratingLLMRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/stop_llm'),
+    { inbox_name: jobId },
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data;
 };

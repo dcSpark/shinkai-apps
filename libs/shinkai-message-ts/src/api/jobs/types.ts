@@ -3,7 +3,7 @@ import {
   LocalScopeVRPackEntry,
 } from '../../models/SchemaTypes';
 import { AgentInbox } from '../../models/ShinkaiMessage';
-import { getFileNames } from './index';
+import { getFileNames, updateChatConfig } from './index';
 
 type ResourceSource = {
   Standard: {
@@ -239,3 +239,27 @@ export type GetFileNamesRequest = {
 };
 
 export type GetFileNamesResponse = string[];
+
+export type JobConfig = {
+  custom_prompt: string;
+  temperature?: number;
+  seed?: number;
+  top_k?: number;
+  top_p?: number;
+  stream?: boolean;
+  other_model_params?: Record<string, string>;
+};
+export type GetChatConfigRequest = {
+  job_id: string;
+};
+export type GetChatConfigResponse = JobConfig;
+export type UpdateChatConfigRequest = {
+  job_id: string;
+  config: JobConfig;
+};
+export type UpdateChatConfigResponse = {
+  result: string;
+};
+
+export type StopGeneratingLLMRequest = string;
+export type StopGeneratingLLMResponse = { status: string };

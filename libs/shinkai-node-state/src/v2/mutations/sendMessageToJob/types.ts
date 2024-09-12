@@ -5,7 +5,7 @@ export type SendMessageToJobInput = Token & {
   nodeAddress: string;
   jobId: string;
   message: string;
-  // files_inbox: string;
+  files?: File[];
   parent: string | null;
   workflowCode?: string;
   workflowName?: string;

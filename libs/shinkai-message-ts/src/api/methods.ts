@@ -165,7 +165,6 @@ export const sendTextMessageWithFilesForInbox = async (
 
   await fileUploader.createFolder();
   for (const fileToUpload of files) {
-    console.log(fileToUpload, 'fileToUpload');
     await fileUploader.uploadEncryptedFile(fileToUpload);
   }
   const message = await fileUploader.finalizeAndSend(text_message, null);

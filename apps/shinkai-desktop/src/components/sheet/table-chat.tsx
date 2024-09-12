@@ -8,6 +8,7 @@ import {
   CreateJobFormSchema,
   createJobFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
+import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import { FunctionKeyV2 } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
@@ -17,6 +18,7 @@ import {
   Form,
   FormField,
   Input,
+  Message,
   MessageList,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
@@ -27,6 +29,7 @@ import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
 import { useSheetProjectStore } from './context/table-context';
@@ -75,6 +78,12 @@ export default function ChatTable() {
   });
   const { mutateAsync: sendMessageToJob } = useSendMessageToJob();
   const queryClient = useQueryClient();
+  const currentInbox = useGetCurrentInbox();
+  const hasProviderEnableStreaming =
+    currentInbox?.agent?.model.split(':')?.[0] === Models.Ollama ||
+    currentInbox?.agent?.model.split(':')?.[0] === Models.Gemini ||
+    currentInbox?.agent?.model.split(':')?.[0] === Models.Exo;
+
   const {
     data,
     fetchPreviousPage,
@@ -89,6 +98,7 @@ export default function ChatTable() {
     shinkaiIdentity: auth?.shinkai_identity ?? '',
     profile: auth?.profile ?? '',
     enabled: !!chatInboxId,
+    refetchIntervalEnabled: !hasProviderEnableStreaming,
   });
 
   useEffect(() => {
@@ -175,9 +185,28 @@ export default function ChatTable() {
             hasPreviousPage={hasPreviousPage}
             isFetchingPreviousPage={isFetchingPreviousPage}
             isLoading={isChatConversationLoading}
-            isLoadingMessage={isLoadingMessage}
+            // isLoadingMessage={isLoadingMessage}
             isSuccess={isChatConversationSuccess}
-            lastMessageContent={''}
+            lastMessageContent={
+              isLoadingMessage && (
+                <Message
+                  isPending={isLoadingMessage}
+                  message={{
+                    parentHash: '',
+                    inboxId: '',
+                    hash: '',
+                    content: '',
+                    scheduledTime: new Date().toISOString(),
+                    isLocal: false,
+                    workflowName: undefined,
+                    sender: {
+                      avatar:
+                        'https://ui-avatars.com/api/?name=S&background=FF7E7F&color=ffffff',
+                    },
+                  }}
+                />
+              )
+            }
             noMoreMessageLabel={t('chat.allMessagesLoaded')}
             paginatedMessages={data}
           />
