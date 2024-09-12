@@ -2,8 +2,8 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, path::PathBuf, sync::Arc};
 use tauri::api::process::{Command, CommandChild, CommandEvent};
-use tokio::sync::mpsc::Sender;
 use tokio::sync::Mutex;
+use tokio::sync::{mpsc::Sender, RwLock};
 
 use super::{
     logger::{LogEntry, Logger},
@@ -22,7 +22,7 @@ pub struct ProcessHandler {
     process_name: String,
     ready_matcher: Regex,
     process: Arc<Mutex<Option<CommandChild>>>,
-    logger: Arc<Mutex<Logger>>,
+    logger: Arc<RwLock<Logger>>,
     event_sender: Arc<Mutex<Sender<ProcessHandlerEvent>>>,
 }
 
@@ -42,7 +42,7 @@ impl ProcessHandler {
             ready_matcher,
             event_sender: Arc::new(Mutex::new(event_sender)),
             process: Arc::new(Mutex::new(None)),
-            logger: Arc::new(Mutex::new(Logger::new(
+            logger: Arc::new(RwLock::new(Logger::new(
                 Self::MAX_LOGS_LENGTH,
                 process_name.clone(),
             ))),
@@ -78,7 +78,7 @@ impl ProcessHandler {
     }
 
     pub async fn get_last_n_logs(&self, n: usize) -> Vec<LogEntry> {
-        let logger = self.logger.lock().await;
+        let logger = self.logger.read().await;
         logger.get_last_n_logs(n)
     }
 
@@ -101,7 +101,7 @@ impl ProcessHandler {
             }
         }
 
-        let mut logger = self.logger.lock().await;
+        let mut logger = self.logger.write().await;
         let (mut rx, child) = Command::new_sidecar(self.process_name.clone())
             .map_err(|error| {
                 let message = format!("failed to spawn, error: {}", error);
@@ -134,7 +134,7 @@ impl ProcessHandler {
         tauri::async_runtime::spawn(async move {
             while let Some(event) = rx.recv().await {
                 let message = Self::command_event_to_message(event.clone());
-                let mut logger = logger_mutex.lock().await;
+                let mut logger = logger_mutex.write().await;
                 let log_entry = logger.add_log(message.clone());
                 let event_sender = event_sender_mutex.lock().await;
                 let _ = event_sender.send(ProcessHandlerEvent::Log(log_entry)).await;
@@ -162,7 +162,7 @@ impl ProcessHandler {
                 let is_ready = is_ready_mutex_clone.lock().await;
                 if process.is_none() {
                     let event_sender = event_sender_mutex.lock().await;
-                    let mut logger = logger_mutex.lock().await;
+                    let mut logger = logger_mutex.write().await;
                     let message = "failed to spawn shinkai-node, it crashed before min time alive"
                         .to_string();
                     let log_entry = logger.add_log(message.clone());
