@@ -49,3 +49,6 @@ pub fn retrieve_info(key: &str) -> Result<String, Error> {
     //     retrieve_secure_info(key)
     // }
 }
+
+// Alternative: asking the user for any password like a normal crypto wallet
+// Probably this approach is better and easier across all platforms

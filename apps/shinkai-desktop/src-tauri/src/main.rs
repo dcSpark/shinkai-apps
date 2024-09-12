@@ -55,14 +55,14 @@ fn main() {
 
     // Test Code
 
-    if let Err(e) = store_secure_info("example_key", "nico123") {
-        println!("Failed to store secure info: {}", e);
-    }
+    // if let Err(e) = store_secure_info("example_key", "nico123") {
+    //     println!("Failed to store secure info: {}", e);
+    // }
 
-    match retrieve_secure_info("example_key") {
-        Ok(value) => println!("Retrieved secure info: {}", value),
-        Err(e) => println!("Failed to retrieve secure info: {}", e),
-    }
+    // match retrieve_secure_info("example_key") {
+    //     Ok(value) => println!("Retrieved secure info: {}", value),
+    //     Err(e) => println!("Failed to retrieve secure info: {}", e),
+    // }
 
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
