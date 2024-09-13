@@ -34,7 +34,7 @@ const ConversationHeader = () => {
 
   return (
     <div className="flex h-[58px] items-center justify-between border-b border-gray-400 px-4 py-2">
-      <div className="inline-flex items-center">
+      <div className="inline-flex items-center gap-2">
         {isChatSidebarCollapsed && (
           <Button
             className="text-gray-80 flex items-center gap-2"
