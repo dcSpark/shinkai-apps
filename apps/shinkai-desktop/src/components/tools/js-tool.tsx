@@ -12,12 +12,12 @@ import {
   Switch,
   TextField,
 } from '@shinkai_network/shinkai-ui';
+import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-import { formatText } from '../../pages/create-job';
 import { SubpageLayout } from '../../pages/layout/simple-layout';
 import { useAuth } from '../../store/auth';
 

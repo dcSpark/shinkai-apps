@@ -29,6 +29,7 @@ import {
   Textarea,
   TextField,
 } from '@shinkai_network/shinkai-ui';
+import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
   // Edit3Icon,
@@ -44,7 +45,6 @@ import { z } from 'zod';
 import { createStore, useStore } from 'zustand';
 
 import { useDebounce } from '../../../hooks/use-debounce';
-import { formatText } from '../../../pages/create-job';
 import { useAuth } from '../../../store/auth';
 
 type WorkflowSelectedStore = {

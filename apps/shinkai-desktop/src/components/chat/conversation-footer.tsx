@@ -53,6 +53,7 @@ import {
   WorkflowPlaygroundIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { getFileExt } from '@shinkai_network/shinkai-ui/helpers';
+import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { useDebounce } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { partial } from 'filesize';
@@ -67,7 +68,6 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAnalytics } from '../../lib/posthog-provider';
-import { formatText } from '../../pages/create-job';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
 import {
