@@ -33,6 +33,7 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { useAuth } from '../../../store/auth';
+import { actionButtonClassnames } from '../conversation-footer';
 
 const formSchema = z.object({
   stream: z.boolean(),
@@ -118,11 +119,8 @@ export default function ChatConfigActionBar() {
         <Tooltip>
           <PopoverTrigger asChild>
             <TooltipTrigger asChild>
-              <button
-                className="hover:bg-gray-350 relative flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-lg p-1.5 text-white"
-                type="button"
-              >
-                <Settings2 className="h-4 w-4" />
+              <button className={actionButtonClassnames} type="button">
+                <Settings2 className="h-full w-full" />
               </button>
             </TooltipTrigger>
           </PopoverTrigger>

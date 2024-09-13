@@ -83,6 +83,9 @@ import ChatConfigActionBar from './chat-action-bar/chat-config-action-bar';
 import WorkflowSelectionActionBar from './chat-action-bar/workflow-selection-action-bar';
 import { streamingSupportedModels } from './constants';
 
+export const actionButtonClassnames =
+  'bg-gray-350 inline-flex h-[30px] w-[30px] cursor-pointer items-center justify-center gap-1.5 truncate border border-gray-200 px-[7px] py-1.5 text-left text-xs rounded-lg font-normal text-gray-50 hover:bg-gray-300 hover:text-white';
+
 function ConversationEmptyFooter() {
   const { t } = useTranslation();
   const size = partial({ standard: 'jedec' });
@@ -329,7 +332,8 @@ function ConversationEmptyFooter() {
                               <div
                                 {...getRootFileProps({
                                   className: cn(
-                                    'hover:bg-gray-350 relative flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-lg p-1.5 text-white',
+                                    actionButtonClassnames,
+                                    'relative shrink-0',
                                   ),
                                 })}
                               >
@@ -351,43 +355,57 @@ function ConversationEmptyFooter() {
                           </Tooltip>
                         </TooltipProvider>
                         <WorkflowSelectionActionBar />
-                        <Button
-                          className="hover:bg-gray-350 flex h-[40px] items-center justify-between gap-2 rounded-lg p-2.5 text-left"
-                          onClick={() => setIsVectorFSOpen(true)}
-                          size="auto"
-                          type="button"
-                          variant="outline"
-                        >
-                          <div className="flex items-center gap-2">
-                            <FilesIcon className="h-4 w-4" />
-                            <p className="text-sm text-white">
-                              {t('vectorFs.localFiles')}
-                            </p>
-                          </div>
-                          {Object.keys(selectedKeys ?? {}).length > 0 && (
-                            <Badge className="bg-brand text-white">
-                              {Object.keys(selectedKeys ?? {}).length}
-                            </Badge>
-                          )}
-                        </Button>
                         <TooltipProvider delayDuration={0}>
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <Button
-                                className="flex h-10 w-10 items-center justify-center gap-2 rounded-lg p-2.5 text-left hover:bg-gray-500"
+                                className={cn(actionButtonClassnames, 'w-auto')}
+                                onClick={() => setIsVectorFSOpen(true)}
+                                size="auto"
+                                type="button"
+                                variant="outline"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <FilesIcon className="h-4 w-4" />
+                                  <p className="text-xs text-white">
+                                    {t('vectorFs.localFiles')}
+                                  </p>
+                                </div>
+                                {Object.keys(selectedKeys ?? {}).length > 0 && (
+                                  <Badge className="bg-brand inline-flex h-5 w-5 items-center justify-center rounded-full p-0 text-center text-white">
+                                    {Object.keys(selectedKeys ?? {}).length}
+                                  </Badge>
+                                )}
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipPortal>
+                              <TooltipContent
+                                className="max-w-[300px]"
+                                sideOffset={5}
+                              >
+                                {t('chat.form.setContextText')}
+                              </TooltipContent>
+                            </TooltipPortal>
+                          </Tooltip>
+                        </TooltipProvider>
+                        <TooltipProvider delayDuration={0}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                className={cn(actionButtonClassnames)}
                                 onClick={() => setIsKnowledgeSearchOpen(true)}
                                 size="icon"
                                 type="button"
                                 variant="ghost"
                               >
-                                <AISearchContentIcon className="h-5 w-5" />
+                                <AISearchContentIcon className="h-4 w-4" />
                                 <p className="sr-only text-xs text-white">
                                   {t('aiFilesSearch.label')}
                                 </p>
                               </Button>
                             </TooltipTrigger>
                             <TooltipPortal>
-                              <TooltipContent sideOffset={0}>
+                              <TooltipContent sideOffset={5}>
                                 {t('aiFilesSearch.label')}
                               </TooltipContent>
                             </TooltipPortal>
@@ -469,7 +487,7 @@ function ConversationEmptyFooter() {
                                   {getFileExt(file.name) &&
                                   fileIconMap[getFileExt(file.name)] ? (
                                     <FileTypeIcon
-                                      className="text-gray-80 h-7 w-7 shrink-0"
+                                      className="text-gray-80 h-8 w-8 shrink-0"
                                       type={getFileExt(file.name)}
                                     />
                                   ) : (
@@ -753,7 +771,8 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                               <div
                                 {...getRootFileProps({
                                   className: cn(
-                                    'hover:bg-gray-350 relative flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-lg p-1.5 text-white',
+                                    actionButtonClassnames,
+                                    'relative shrink-0',
                                   ),
                                 })}
                               >
@@ -854,7 +873,7 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                                   {getFileExt(file.name) &&
                                   fileIconMap[getFileExt(file.name)] ? (
                                     <FileTypeIcon
-                                      className="text-gray-80 h-7 w-7 shrink-0"
+                                      className="text-gray-80 h-8 w-8 shrink-0"
                                       type={getFileExt(file.name)}
                                     />
                                   ) : (

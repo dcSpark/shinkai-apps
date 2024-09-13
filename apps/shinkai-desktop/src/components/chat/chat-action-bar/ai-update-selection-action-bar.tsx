@@ -14,11 +14,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { BotIcon, ChevronDownIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { useGetCurrentInbox } from '../../../hooks/use-current-inbox';
 import { useAuth } from '../../../store/auth';
+import { actionButtonClassnames } from '../conversation-footer';
 
 export function AIModelSelector({
   value,
@@ -39,7 +41,12 @@ export function AIModelSelector({
       <TooltipProvider delayDuration={0}>
         <Tooltip>
           <TooltipTrigger asChild>
-            <DropdownMenuTrigger className="bg-gray-350 inline-flex cursor-pointer items-center justify-between gap-1.5 truncate rounded-xl px-2.5 py-1.5 text-start text-xs font-normal text-gray-50 hover:text-white [&[data-state=open]>.icon]:rotate-180">
+            <DropdownMenuTrigger
+              className={cn(
+                actionButtonClassnames,
+                'w-auto truncate [&[data-state=open]>.icon]:rotate-180',
+              )}
+            >
               <BotIcon className="mr-1 h-4 w-4" />
               <span>{value ?? 'Select'}</span>
               <ChevronDownIcon className="icon h-3 w-3" />

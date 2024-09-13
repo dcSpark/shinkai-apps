@@ -22,12 +22,12 @@ const EmptyMessage = () => {
   return (
     <div className="flex h-full flex-col justify-between">
       <div className="flex w-full flex-1 items-center justify-center p-6">
-        <div className="flex max-w-lg flex-col items-center gap-4 text-center">
+        <div className="flex max-w-lg flex-col items-center gap-4 pt-16 text-center">
           <span aria-hidden={true} className="text-4xl">
             🤖
           </span>
 
-          <h1 className="text-2xl font-bold text-white">
+          <h1 className="text-3xl font-bold text-white">
             {t('chat.emptyStateTitle')}
           </h1>
           <p className="text-gray-80 text-sm">
