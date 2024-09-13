@@ -278,6 +278,10 @@ function ConversationEmptyFooter() {
     }
   }, [chatForm, isWorkflowSelectedAndFilesPresent, workflowSelected]);
 
+  useEffect(() => {
+    setWorkflowSelected(undefined);
+  }, []);
+
   const onSubmit = async (data: CreateJobFormSchema) => {
     if (!auth || data.message.trim() === '') return;
     const selectedVRFiles =
