@@ -41,6 +41,8 @@ tauri-plugin-global-shortcut = "2.0.0-rc.2"
 tauri-plugin-shell = "2.0.0-rc.2"
 tauri-plugin-single-instance = "2.0.0-rc"
 tauri-plugin-updater = "2.0.0-rc.3"
+tauri-plugin-dialog = "2.0.0-rc.6"
+tauri-plugin-fs="2.0.0-rc.4"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

@@ -31,10 +31,12 @@ mod local_shinkai_node;
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
             println!("{}, {argv:?}, {cwd}", app.package_info().name);
             // app.emit("single-instance", Payload { args: argv, cwd }).unwrap();
         }))
+        .plugin(tauri_plugin_dialog::init())
         .plugin(
             tauri_plugin_global_shortcut::Builder::new()
                 .with_shortcuts(["CmdOrCtrl+y"])
@@ -181,7 +183,15 @@ fn main() {
                     std::process::exit(0);
                 });
             }
-            RunEvent::Exit => {}
+            RunEvent::Exit => {
+                tauri::async_runtime::spawn(async {
+                    // For some reason process::exit doesn't fire RunEvent::ExitRequested event in tauri
+                    let mut shinkai_node_manager_guard =
+                        SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
+                    shinkai_node_manager_guard.kill().await;
+                    std::process::exit(0);
+                });
+            }
             RunEvent::WindowEvent {
                 label: _, event: _, ..
             } => {}
