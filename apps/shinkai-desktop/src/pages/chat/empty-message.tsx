@@ -21,11 +21,11 @@ const EmptyMessage = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="flex h-full flex-col justify-between">
+    <div className="flex max-h-screen flex-1 flex-col overflow-hidden pt-2">
       <div className="flex w-full flex-1 items-center justify-center p-6">
         <motion.div
           animate={{ opacity: 1 }}
-          className="flex max-w-lg flex-col items-center gap-4 pt-16 text-center"
+          className="flex max-w-lg flex-col items-center gap-4 pt-10 text-center"
           exit={{ opacity: 0 }}
           initial={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
