@@ -26,6 +26,8 @@ type SettingsStore = {
   setHeightRow: (height: 'small' | 'medium' | 'large' | 'extra-large') => void;
   compatibilityBannerDismissed: boolean;
   setCompatibilityBannerDismissed: (dismissed: boolean) => void;
+  isChatSidebarCollapsed: boolean;
+  setChatSidebarCollapsed: (isChatSidebarCollapsed: boolean) => void;
 };
 
 export const useSettings = create<SettingsStore>()(
@@ -84,6 +86,11 @@ export const useSettings = create<SettingsStore>()(
         compatibilityBannerDismissed: false,
         setCompatibilityBannerDismissed: (dismissed) => {
           set({ compatibilityBannerDismissed: dismissed });
+        },
+
+        isChatSidebarCollapsed: false,
+        setChatSidebarCollapsed: (isChatSidebarCollapsed) => {
+          set({ isChatSidebarCollapsed });
         },
       }),
       {

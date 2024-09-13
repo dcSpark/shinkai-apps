@@ -18,7 +18,6 @@ import {
   FormLabel,
   Input,
   ScrollArea,
-  Separator,
   Skeleton,
   Tabs,
   TabsContent,
@@ -34,18 +33,19 @@ import {
   ActiveIcon,
   ArchiveIcon,
   ChatBubbleIcon,
-  CreateAIIcon,
   JobBubbleIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { Edit3 } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Edit3, PanelRightOpen } from 'lucide-react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, Outlet, useMatch, useNavigate } from 'react-router-dom';
+import { Link, Outlet, useMatch } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { handleSendNotification } from '../../lib/notifications';
 import { useAuth } from '../../store/auth';
+import { useSettings } from '../../store/settings';
 
 const InboxNameInput = ({
   closeEditable,
@@ -233,21 +233,21 @@ const MessageButton = ({
   ) : (
     <Link
       className={cn(
-        'text-gray-80 group flex h-[46px] w-full items-center gap-2 rounded-lg px-2 py-2 hover:bg-gray-300',
+        'text-gray-80 group relative flex h-[46px] w-full items-center gap-2 rounded-lg px-2 py-2 hover:bg-gray-300',
         match && 'bg-gray-300 text-white',
       )}
       key={inboxId}
       to={to}
     >
       {isJobInbox(inboxId) ? (
-        <JobBubbleIcon className="mr-2 h-4 w-4 shrink-0" />
+        <JobBubbleIcon className="mr-2 h-4 w-4 shrink-0 text-inherit" />
       ) : (
-        <ChatBubbleIcon className="mr-2 h-4 w-4 shrink-0" />
+        <ChatBubbleIcon className="mr-2 h-4 w-4 shrink-0 text-inherit" />
       )}
-      <span className="line-clamp-1 flex-1 break-all text-left text-xs">
+      <span className="line-clamp-1 flex-1 break-all pr-2 text-left text-xs">
         {inboxName}
       </span>
-      <div className="translate-x-full transition duration-200 group-hover:translate-x-0">
+      <div className="absolute right-0 rounded-full bg-transparent opacity-0 duration-200 group-hover:bg-gray-300 group-hover:opacity-100">
         <TooltipProvider delayDuration={0}>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -256,7 +256,7 @@ const MessageButton = ({
                 onClick={() => setIsEditable(true)}
                 size="icon"
                 type="button"
-                variant="ghost"
+                variant="tertiary"
               >
                 <Edit3 className="h-4 w-4" />
               </Button>
@@ -277,7 +277,7 @@ const MessageButton = ({
                   onClick={(event) => handleArchiveJob(event, inbox)}
                   size={'icon'}
                   type="button"
-                  variant={'ghost'}
+                  variant={'tertiary'}
                 >
                   <ArchiveIcon className="h-4 w-4" />
                 </Button>
@@ -297,8 +297,14 @@ const MessageButton = ({
 
 const ChatLayout = () => {
   const { t } = useTranslation();
+  const isChatSidebarCollapsed = useSettings(
+    (state) => state.isChatSidebarCollapsed,
+  );
+  const setChatSidebarCollapsed = useSettings(
+    (state) => state.setChatSidebarCollapsed,
+  );
   const auth = useAuth((state) => state.auth);
-  const navigate = useNavigate();
+
   const { inboxes, isPending, isSuccess } = useGetInboxes(
     { nodeAddress: auth?.node_address ?? '', token: auth?.api_v2_key ?? '' },
     {
@@ -327,107 +333,119 @@ const ChatLayout = () => {
   }, [inboxes]);
 
   return (
-    <div className={cn('grid h-screen w-full grid-cols-[280px_1px_1fr]')}>
-      <div className="flex h-full flex-col px-2 py-4">
-        <div className="mb-2 flex items-center justify-between gap-2 px-2 py-2">
-          <h2>{t('chat.chats')}</h2>
-          <TooltipProvider delayDuration={0}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  className="h-8 w-8"
-                  onClick={() => {
-                    navigate('/inboxes');
-                  }}
-                  size="icon"
-                  variant="ghost"
-                >
-                  <CreateAIIcon className="h-4 w-4 shrink-0" />
-                  <span className="sr-only">{t('chat.create')}</span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipPortal>
-                <TooltipContent>
-                  <p>{t('chat.create')}</p>
-                </TooltipContent>
-              </TooltipPortal>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-        <ScrollArea>
-          <Tabs defaultValue="actives">
-            <TabsList className="grid w-full grid-cols-2 bg-transparent">
-              <TabsTrigger
-                className="flex items-center gap-1.5"
-                value="actives"
-              >
-                <ActiveIcon className="h-4 w-4" />
-                {t('chat.actives.label')}
-              </TabsTrigger>
-              <TabsTrigger
-                className="flex items-center gap-1.5"
-                value="archives"
-              >
-                <ArchiveIcon className="h-4 w-4" />
-                {t('chat.archives.label')}
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="actives">
-              <div className="space-y-1">
-                {isPending &&
-                  Array.from({ length: 5 }).map((_, index) => (
-                    <Skeleton
-                      className="h-11 w-full shrink-0 rounded-md bg-gray-300"
-                      key={index}
-                    />
-                  ))}
+    <div
+      className={cn(
+        'grid h-screen w-full',
+        isChatSidebarCollapsed ? 'grid-cols-1' : 'grid-cols-[auto,1fr]',
+      )}
+    >
+      <AnimatePresence initial={false} mode="popLayout">
+        {!isChatSidebarCollapsed && (
+          <motion.div
+            animate={{ width: 240, opacity: 1 }}
+            className="flex h-full flex-col overflow-hidden border-r border-gray-300 px-2 py-4"
+            exit={{ width: 0, opacity: 0 }}
+            initial={{ width: 0, opacity: 0 }}
+            transition={{ type: 'spring', duration: 0.3, bounce: 0.1 }}
+          >
+            <div className="mb-2 flex items-center justify-between gap-2 px-2 py-2">
+              <h2>{t('chat.chats')}</h2>
+              <TooltipProvider delayDuration={0}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      className="h-8 w-8"
+                      onClick={() => setChatSidebarCollapsed(true)}
+                      size="icon"
+                      variant="tertiary"
+                    >
+                      <PanelRightOpen className="text-gray-80 h-4 w-4" />
+                      <span className="sr-only">Close Chat Sidebar</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipPortal>
+                    <TooltipContent>
+                      <p>{t('chat.create')}</p>
+                    </TooltipContent>
+                  </TooltipPortal>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+            <ScrollArea>
+              <Tabs defaultValue="actives">
+                <TabsList className="grid w-full grid-cols-2 bg-transparent">
+                  <TabsTrigger
+                    className="flex items-center gap-1.5"
+                    value="actives"
+                  >
+                    <ActiveIcon className="h-4 w-4" />
+                    {t('chat.actives.label')}
+                  </TabsTrigger>
+                  <TabsTrigger
+                    className="flex items-center gap-1.5"
+                    value="archives"
+                  >
+                    <ArchiveIcon className="h-4 w-4" />
+                    {t('chat.archives.label')}
+                  </TabsTrigger>
+                </TabsList>
+                <TabsContent value="actives">
+                  <div className="space-y-1">
+                    {isPending &&
+                      Array.from({ length: 5 }).map((_, index) => (
+                        <Skeleton
+                          className="h-11 w-full shrink-0 rounded-md bg-gray-300"
+                          key={index}
+                        />
+                      ))}
 
-                {isSuccess &&
-                  activesInboxes?.length > 0 &&
-                  activesInboxes.map((inbox) => (
-                    <MessageButton
-                      inbox={inbox}
-                      key={inbox.inbox_id}
-                      to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
-                    />
-                  ))}
-                {isSuccess && activesInboxes?.length === 0 && (
-                  <p className="text-gray-80 py-3 text-center text-xs">
-                    {t('chat.actives.notFound')}{' '}
-                  </p>
-                )}
-              </div>
-            </TabsContent>
-            <TabsContent value="archives">
-              <div className="space-y-1">
-                {isPending &&
-                  Array.from({ length: 5 }).map((_, index) => (
-                    <Skeleton
-                      className="h-11 w-full shrink-0 rounded-md bg-gray-300"
-                      key={index}
-                    />
-                  ))}
-                {isSuccess &&
-                  archivesInboxes.length > 0 &&
-                  archivesInboxes.map((inbox) => (
-                    <MessageButton
-                      inbox={inbox}
-                      isArchivedMessage
-                      key={inbox.inbox_id}
-                      to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
-                    />
-                  ))}
-                {isSuccess && archivesInboxes?.length === 0 && (
-                  <p className="text-gray-80 py-3 text-center text-xs">
-                    {t('chat.archives.notFound')}{' '}
-                  </p>
-                )}
-              </div>
-            </TabsContent>
-          </Tabs>
-        </ScrollArea>
-      </div>
-      <Separator orientation="vertical" />
+                    {isSuccess &&
+                      activesInboxes?.length > 0 &&
+                      activesInboxes.map((inbox) => (
+                        <MessageButton
+                          inbox={inbox}
+                          key={inbox.inbox_id}
+                          to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
+                        />
+                      ))}
+                    {isSuccess && activesInboxes?.length === 0 && (
+                      <p className="text-gray-80 py-3 text-center text-xs">
+                        {t('chat.actives.notFound')}{' '}
+                      </p>
+                    )}
+                  </div>
+                </TabsContent>
+                <TabsContent value="archives">
+                  <div className="space-y-1">
+                    {isPending &&
+                      Array.from({ length: 5 }).map((_, index) => (
+                        <Skeleton
+                          className="h-11 w-full shrink-0 rounded-md bg-gray-300"
+                          key={index}
+                        />
+                      ))}
+                    {isSuccess &&
+                      archivesInboxes.length > 0 &&
+                      archivesInboxes.map((inbox) => (
+                        <MessageButton
+                          inbox={inbox}
+                          isArchivedMessage
+                          key={inbox.inbox_id}
+                          to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
+                        />
+                      ))}
+                    {isSuccess && archivesInboxes?.length === 0 && (
+                      <p className="text-gray-80 py-3 text-center text-xs">
+                        {t('chat.archives.notFound')}{' '}
+                      </p>
+                    )}
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </ScrollArea>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <Outlet />
     </div>
   );
