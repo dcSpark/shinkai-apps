@@ -3,7 +3,7 @@ import {
   useQuery,
   UseQueryResult,
 } from '@tanstack/react-query';
-import { invoke } from '@tauri-apps/api';
+import { invoke } from '@tauri-apps/api/core';
 
 export enum RequirementsStatus {
   Unmeet = 'Unmeet',

@@ -1,7 +1,11 @@
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, path::PathBuf, sync::Arc};
-use tauri::api::process::{Command, CommandChild, CommandEvent};
+use tauri::AppHandle;
+use tauri_plugin_shell::{
+    process::{CommandChild, CommandEvent},
+    ShellExt,
+};
 use tokio::sync::mpsc::Sender;
 use tokio::sync::Mutex;
 
@@ -19,6 +23,7 @@ pub enum ProcessHandlerEvent {
 }
 
 pub struct ProcessHandler {
+    app: AppHandle,
     process_name: String,
     ready_matcher: Regex,
     process: Arc<Mutex<Option<CommandChild>>>,
@@ -32,12 +37,13 @@ impl ProcessHandler {
 
     /// Initializes a new ShinkaiNodeManager with default or provided options
     pub(crate) fn new(
+        app: AppHandle,
         process_name: String,
         event_sender: Sender<ProcessHandlerEvent>,
         ready_matcher: Regex,
     ) -> Self {
-        kill_process_by_name(process_name.as_str());
         ProcessHandler {
+            app,
             process_name: process_name.clone(),
             ready_matcher,
             event_sender: Arc::new(Mutex::new(event_sender)),
@@ -58,10 +64,10 @@ impl ProcessHandler {
         let mut line: String = "".to_string();
         match event {
             CommandEvent::Stdout(message) => {
-                line = message;
+                line = String::from_utf8_lossy(&message).to_string();
             }
             CommandEvent::Stderr(message) => {
-                line = message;
+                line = String::from_utf8_lossy(&message).to_string();
             }
             CommandEvent::Error(message) => {
                 line = message;
@@ -102,7 +108,9 @@ impl ProcessHandler {
         }
 
         let mut logger = self.logger.lock().await;
-        let (mut rx, child) = Command::new_sidecar(self.process_name.clone())
+        let shell = self.app.shell();
+        let (mut rx, child) = shell
+            .sidecar(self.process_name.clone())
             .map_err(|error| {
                 let message = format!("failed to spawn, error: {}", error);
                 logger.add_log(message.clone());
@@ -179,6 +187,7 @@ impl ProcessHandler {
         .unwrap()?;
 
         self.emit_event(ProcessHandlerEvent::Started).await;
+
         Ok(())
     }
 

@@ -1,6 +1,7 @@
 use std::{fs, path::PathBuf, time::Duration};
 
 use regex::Regex;
+use tauri::AppHandle;
 use tokio::sync::mpsc::Sender;
 
 use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
@@ -8,13 +9,14 @@ use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
 use super::{
     logger::LogEntry,
     process_handler::{ProcessHandler, ProcessHandlerEvent},
-    process_utils::options_to_env,
+    process_utils::{kill_process_by_pid, options_to_env},
 };
 
 pub struct ShinkaiNodeProcessHandler {
+    app: AppHandle,
     process_handler: ProcessHandler,
-    app_resource_dir: Option<PathBuf>,
-    app_data_dir: Option<PathBuf>,
+    app_resource_dir: PathBuf,
+    app_data_dir: PathBuf,
     options: ShinkaiNodeOptions,
 }
 
@@ -25,18 +27,24 @@ impl ShinkaiNodeProcessHandler {
     const READY_MATCHER: &'static str = "listening on ";
 
     pub fn new(
+        app: AppHandle,
         event_sender: Sender<ProcessHandlerEvent>,
-        app_resource_dir: Option<PathBuf>,
-        app_data_dir: Option<PathBuf>,
+        app_resource_dir: PathBuf,
+        app_data_dir: PathBuf,
     ) -> Self {
         let ready_matcher = Regex::new(Self::READY_MATCHER).unwrap();
 
         let options =
             ShinkaiNodeOptions::with_app_options(app_resource_dir.clone(), app_data_dir.clone());
-        let process_handler =
-            ProcessHandler::new(Self::PROCESS_NAME.to_string(), event_sender, ready_matcher);
+        let process_handler = ProcessHandler::new(
+            app.clone(),
+            Self::PROCESS_NAME.to_string(),
+            event_sender,
+            ready_matcher,
+        );
 
         ShinkaiNodeProcessHandler {
+            app,
             process_handler,
             app_resource_dir,
             app_data_dir,
@@ -130,6 +138,8 @@ impl ShinkaiNodeProcessHandler {
     }
 
     pub async fn spawn(&self) -> Result<(), String> {
+        let _ = self.kill_existing_processes_using_ports().await;
+
         let env = options_to_env(&self.options.clone());
         self.process_handler.spawn(env, [].to_vec(), None).await?;
         if let Err(e) = self.wait_shinkai_node_server().await {
@@ -159,7 +169,37 @@ impl ShinkaiNodeProcessHandler {
         self.process_handler.is_running().await
     }
 
+    pub async fn kill_existing_processes_using_ports(&self) -> Result<(), String> {
+        // Extract ports from options
+        let ports: Vec<String> = vec![
+            self.options.node_port.as_ref(),
+            self.options.node_ws_port.as_ref(),
+            self.options.node_api_port.as_ref(),
+            self.options.shinkai_tools_backend_api_port.as_ref(),
+        ]
+        .into_iter()
+        .filter_map(|port| port.cloned())
+        .collect();
+
+        // Kill all existing processes using the same ports
+        for port in ports {
+            let port_number = match port.parse::<u16>() {
+                Ok(num) => num,
+                Err(_) => continue,
+            };
+
+            let processes = listeners::get_processes_by_port(port_number)
+                .map_err(|e| format!("Failed to get processes: {}", e))?;
+
+            for process in processes {
+                kill_process_by_pid(self.app.clone(), &process.pid.to_string()).await;
+            }
+        }
+        Ok(())
+    }
+
     pub async fn kill(&self) {
         self.process_handler.kill().await;
+        let _ = self.kill_existing_processes_using_ports().await;
     }
 }

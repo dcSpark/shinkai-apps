@@ -5,8 +5,8 @@ import {
   useQuery,
   UseQueryResult,
 } from '@tanstack/react-query';
-import { invoke } from '@tauri-apps/api';
 import { getName } from '@tauri-apps/api/app';
+import { invoke } from '@tauri-apps/api/core';
 import axios, { AxiosError } from 'axios';
 
 // Queries

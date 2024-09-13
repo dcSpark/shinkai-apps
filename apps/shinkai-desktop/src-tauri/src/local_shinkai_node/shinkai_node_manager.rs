@@ -8,6 +8,7 @@ use super::process_handlers::shinkai_node_process_handler::ShinkaiNodeProcessHan
 use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
 use futures_util::StreamExt;
 use serde::{Deserialize, Serialize};
+use tauri::AppHandle;
 use tokio::sync::broadcast;
 use tokio::sync::mpsc::channel;
 
@@ -42,14 +43,19 @@ pub struct ShinkaiNodeManager {
 }
 
 impl ShinkaiNodeManager {
-    pub(crate) fn new(app_resource_dir: Option<PathBuf>, app_data_dir: Option<PathBuf>) -> Self {
+    pub(crate) fn new(app: AppHandle, app_resource_dir: PathBuf, app_data_dir: PathBuf) -> Self {
         let (ollama_sender, _ollama_receiver) = channel(100);
         let (shinkai_node_sender, _shinkai_node_receiver) = channel(100);
         let (event_broadcaster, _) = broadcast::channel(10);
 
         ShinkaiNodeManager {
-            ollama_process: OllamaProcessHandler::new(ollama_sender, app_resource_dir.clone()),
+            ollama_process: OllamaProcessHandler::new(
+                app.clone(),
+                ollama_sender,
+                app_resource_dir.clone(),
+            ),
             shinkai_node_process: ShinkaiNodeProcessHandler::new(
+                app,
                 shinkai_node_sender,
                 app_resource_dir,
                 app_data_dir,
