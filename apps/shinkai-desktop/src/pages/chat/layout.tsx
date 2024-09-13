@@ -233,21 +233,21 @@ const MessageButton = ({
   ) : (
     <Link
       className={cn(
-        'text-gray-80 group flex h-[46px] w-full items-center gap-2 rounded-lg px-2 py-2 hover:bg-gray-300',
+        'text-gray-80 group relative flex h-[46px] w-full items-center gap-2 rounded-lg px-2 py-2 hover:bg-gray-300',
         match && 'bg-gray-300 text-white',
       )}
       key={inboxId}
       to={to}
     >
       {isJobInbox(inboxId) ? (
-        <JobBubbleIcon className="mr-2 h-4 w-4 shrink-0" />
+        <JobBubbleIcon className="mr-2 h-4 w-4 shrink-0 text-inherit" />
       ) : (
-        <ChatBubbleIcon className="mr-2 h-4 w-4 shrink-0" />
+        <ChatBubbleIcon className="mr-2 h-4 w-4 shrink-0 text-inherit" />
       )}
-      <span className="line-clamp-1 flex-1 break-all text-left text-xs">
+      <span className="line-clamp-1 flex-1 break-all pr-2 text-left text-xs">
         {inboxName}
       </span>
-      <div className="translate-x-full transition duration-200 group-hover:translate-x-0">
+      <div className="absolute right-0 rounded-full bg-transparent opacity-0 duration-200 group-hover:bg-gray-300 group-hover:opacity-100">
         <TooltipProvider delayDuration={0}>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -256,7 +256,7 @@ const MessageButton = ({
                 onClick={() => setIsEditable(true)}
                 size="icon"
                 type="button"
-                variant="ghost"
+                variant="tertiary"
               >
                 <Edit3 className="h-4 w-4" />
               </Button>
@@ -277,7 +277,7 @@ const MessageButton = ({
                   onClick={(event) => handleArchiveJob(event, inbox)}
                   size={'icon'}
                   type="button"
-                  variant={'ghost'}
+                  variant={'tertiary'}
                 >
                   <ArchiveIcon className="h-4 w-4" />
                 </Button>
