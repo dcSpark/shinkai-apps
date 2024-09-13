@@ -35,7 +35,6 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { CREATE_JOB_PATH } from '../routes/name';
 import { useAuth } from '../store/auth';
 import { SubpageLayout } from './layout/simple-layout';
 
@@ -97,7 +96,7 @@ const CreateAgentPage = () => {
     error,
   } = useAddLLMProvider({
     onSuccess: (_, variables) => {
-      navigate(CREATE_JOB_PATH, {
+      navigate('/inboxes', {
         state: {
           agentName: variables.agent.id,
         },

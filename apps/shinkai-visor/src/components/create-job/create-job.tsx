@@ -91,7 +91,7 @@ export const CreateJob = () => {
     resolver: zodResolver(createJobFormSchema),
     defaultValues: {
       agent: '',
-      content: query.get('initialText') ?? '',
+      message: query.get('initialText') ?? '',
       files: [],
     },
   });
@@ -153,9 +153,9 @@ export const CreateJob = () => {
   }, []);
   const submit = async (values: CreateJobFormSchema) => {
     if (!auth) return;
-    let content = values.content;
+    let content = values.message;
     if (query.has('context')) {
-      content = `${values.content} - \`\`\`${query.get('context')}\`\`\``;
+      content = `${values.message} - \`\`\`${query.get('context')}\`\`\``;
     }
     const selectedVRFiles =
       selectedFileKeysRef.current.size > 0
@@ -272,7 +272,7 @@ export const CreateJob = () => {
 
             <FormField
               control={form.control}
-              name="content"
+              name="message"
               render={({ field }) => (
                 <FormItem className="mt-3">
                   <FormLabel>{t('chat.form.message')}</FormLabel>

@@ -142,7 +142,7 @@ const VectorFsFolder = ({
               )}
               onClick={(event) => {
                 event.stopPropagation();
-                navigate('/create-job', {
+                navigate('/inboxes', {
                   state: {
                     selectedVRFolders: [folder],
                   },

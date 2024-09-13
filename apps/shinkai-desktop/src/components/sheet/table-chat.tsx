@@ -53,7 +53,7 @@ export default function ChatTable() {
     resolver: zodResolver(createJobFormSchema),
     defaultValues: {
       agent: defaultAgentId,
-      content: '',
+      message: '',
       files: [],
     },
   });
@@ -123,7 +123,7 @@ export default function ChatTable() {
         token: auth.api_v2_key,
         llmProvider: data.agent,
         sheetId,
-        content: data.content,
+        content: data.message,
         workflowName: '',
         workflowCode: undefined,
         isHidden: true,
@@ -136,7 +136,7 @@ export default function ChatTable() {
       nodeAddress: auth.node_address,
       token: auth.api_v2_key,
       jobId: extractJobIdFromInbox(chatInboxId),
-      message: data.content,
+      message: data.message,
       workflowName: '',
       parent: '',
     });
@@ -221,7 +221,7 @@ export default function ChatTable() {
           <div className="flex shrink-0 items-center gap-1">
             <FormField
               control={createJobForm.control}
-              name="content"
+              name="message"
               render={({ field }) => (
                 <Input
                   autoFocus

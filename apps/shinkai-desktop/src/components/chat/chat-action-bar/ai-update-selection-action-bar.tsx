@@ -14,36 +14,41 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { BotIcon, ChevronDownIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { useGetCurrentInbox } from '../../../hooks/use-current-inbox';
 import { useAuth } from '../../../store/auth';
+import { actionButtonClassnames } from '../conversation-footer';
 
-export default function AiSelectionActionBar() {
+export function AIModelSelector({
+  value,
+  onValueChange,
+}: {
+  value: string;
+  onValueChange: (value: string) => void;
+}) {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
-  const currentInbox = useGetCurrentInbox();
   const { llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
   });
 
-  const { mutateAsync: updateAgentInJob } = useUpdateAgentInJob({
-    onError: (error) => {
-      toast.error(t('llmProviders.errors.updateAgent'), {
-        description: error.message,
-      });
-    },
-  });
   return (
     <DropdownMenu>
       <TooltipProvider delayDuration={0}>
         <Tooltip>
           <TooltipTrigger asChild>
-            <DropdownMenuTrigger className="bg-gray-350 inline-flex cursor-pointer items-center justify-between gap-1.5 truncate rounded-xl px-2.5 py-1.5 text-start text-xs font-normal text-gray-50 hover:text-white [&[data-state=open]>.icon]:rotate-180">
+            <DropdownMenuTrigger
+              className={cn(
+                actionButtonClassnames,
+                'w-auto truncate [&[data-state=open]>.icon]:rotate-180',
+              )}
+            >
               <BotIcon className="mr-1 h-4 w-4" />
-              <span>{currentInbox?.agent?.id}</span>
+              <span>{value ?? 'Select'}</span>
               <ChevronDownIcon className="icon h-3 w-3" />
             </DropdownMenuTrigger>
           </TooltipTrigger>
@@ -57,26 +62,7 @@ export default function AiSelectionActionBar() {
             className="max-h-[300px] min-w-[220px] overflow-y-auto bg-gray-300 p-1 py-2"
             side="top"
           >
-            <DropdownMenuRadioGroup
-              onValueChange={async (value) => {
-                const jobId = extractJobIdFromInbox(
-                  currentInbox?.inbox_id ?? '',
-                );
-                await updateAgentInJob({
-                  nodeAddress: auth?.node_address ?? '',
-                  shinkaiIdentity: auth?.shinkai_identity ?? '',
-                  profile: auth?.profile ?? '',
-                  jobId: jobId,
-                  newAgentId: value,
-                  my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-                  my_device_identity_sk: auth?.profile_identity_sk ?? '',
-                  node_encryption_pk: auth?.node_encryption_pk ?? '',
-                  profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-                  profile_identity_sk: auth?.profile_identity_sk ?? '',
-                });
-              }}
-              value={currentInbox?.agent?.id ?? ''}
-            >
+            <DropdownMenuRadioGroup onValueChange={onValueChange} value={value}>
               {llmProviders.map((agent) => (
                 <DropdownMenuRadioItem
                   className="flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-2 text-white transition-colors hover:bg-gray-200 aria-checked:bg-gray-200"
@@ -94,5 +80,39 @@ export default function AiSelectionActionBar() {
         </Tooltip>
       </TooltipProvider>
     </DropdownMenu>
+  );
+}
+export function AiUpdateSelectionActionBar() {
+  const { t } = useTranslation();
+  const auth = useAuth((state) => state.auth);
+  const currentInbox = useGetCurrentInbox();
+
+  const { mutateAsync: updateAgentInJob } = useUpdateAgentInJob({
+    onError: (error) => {
+      toast.error(t('llmProviders.errors.updateAgent'), {
+        description: error.message,
+      });
+    },
+  });
+  return (
+    <AIModelSelector
+      onValueChange={async (value) => {
+        if (!currentInbox) return;
+        const jobId = extractJobIdFromInbox(currentInbox?.inbox_id ?? '');
+        await updateAgentInJob({
+          nodeAddress: auth?.node_address ?? '',
+          shinkaiIdentity: auth?.shinkai_identity ?? '',
+          profile: auth?.profile ?? '',
+          jobId: jobId,
+          newAgentId: value,
+          my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+          my_device_identity_sk: auth?.profile_identity_sk ?? '',
+          node_encryption_pk: auth?.node_encryption_pk ?? '',
+          profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+          profile_identity_sk: auth?.profile_identity_sk ?? '',
+        });
+      }}
+      value={currentInbox?.agent?.id ?? ''}
+    />
   );
 }

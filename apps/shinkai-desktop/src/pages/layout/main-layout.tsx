@@ -474,7 +474,7 @@ export function MainNav() {
                     sidebarExpanded &&
                       'w-full justify-start rounded-lg bg-transparent px-4 py-3 hover:bg-gray-500',
                   )}
-                  onClick={() => navigate('/create-job')}
+                  onClick={() => navigate('/inboxes')}
                   whileHover={{ scale: !sidebarExpanded ? 1.05 : 1 }}
                 >
                   <CreateAIIcon className="h-5 w-5 shrink-0" />
