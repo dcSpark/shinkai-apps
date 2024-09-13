@@ -254,7 +254,7 @@ const SearchNodeFiles = () => {
                       selectedFileKeysRef.current.values(),
                     ),
                   }}
-                  to="/create-job"
+                  to="/inboxes"
                 >
                   <span className="text-sm">Create AI Chat</span>
                   <Badge

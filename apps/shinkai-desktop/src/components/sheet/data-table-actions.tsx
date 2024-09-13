@@ -31,6 +31,7 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { WorkflowPlaygroundIcon } from '@shinkai_network/shinkai-ui/assets';
+import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { RowSelectionState } from '@tanstack/react-table';
 import { motion } from 'framer-motion';
 import { BotIcon, ChevronRight, PlusIcon } from 'lucide-react';
@@ -39,7 +40,6 @@ import { useForm, useWatch } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { formatText } from '../../pages/create-job';
 import { useAuth } from '../../store/auth';
 import { fieldTypes } from './constants';
 import { SetColumnFormSchema, setColumnFormSchema } from './forms';

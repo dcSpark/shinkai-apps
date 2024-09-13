@@ -1,9 +1,10 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { buttonVariants } from '@shinkai_network/shinkai-ui';
+import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
-import { CREATE_JOB_PATH } from '../../routes/name';
+import ConversationFooter from '../../components/chat/conversation-footer';
 import { useAuth } from '../../store/auth';
 import { useShinkaiNodeManager } from '../../store/shinkai-node-manager';
 
@@ -20,41 +21,41 @@ const EmptyMessage = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="flex w-full items-center justify-center p-6">
-      <div className="flex max-w-lg flex-col items-center gap-4 text-center">
-        <span aria-hidden={true} className="text-4xl">
-          🤖
-        </span>
+    <div className="flex max-h-screen flex-1 flex-col overflow-hidden pt-2">
+      <div className="flex w-full flex-1 items-center justify-center p-6">
+        <motion.div
+          animate={{ opacity: 1 }}
+          className="flex max-w-lg flex-col items-center gap-4 pt-10 text-center"
+          exit={{ opacity: 0 }}
+          initial={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <span aria-hidden={true} className="text-4xl">
+            🤖
+          </span>
 
-        <h1 className="text-2xl font-bold text-white">
-          {t('chat.emptyStateTitle')}
-        </h1>
-        <p className="text-gray-80 text-sm">
-          {t('chat.emptyStateDescription')}
-        </p>
+          <h1 className="text-3xl font-bold text-white">
+            {t('chat.emptyStateTitle')}
+          </h1>
+          <p className="text-gray-80 text-sm">
+            {t('chat.emptyStateDescription')}
+          </p>
 
-        <div className="mt-4">
-          {llmProviders.length === 0 ? (
-            <Link
-              className={buttonVariants({
-                variant: 'default',
-              })}
-              to={isLocalShinkaiNodeIsUse ? '/agents-locally' : '/add-agent'}
-            >
-              <span>{t('llmProviders.add')}</span>
-            </Link>
-          ) : (
-            <Link
-              className={buttonVariants({
-                variant: 'default',
-              })}
-              to={CREATE_JOB_PATH}
-            >
-              <span>{t('chat.create')}</span>
-            </Link>
-          )}
-        </div>
+          <div className="mt-4">
+            {llmProviders.length === 0 ? (
+              <Link
+                className={buttonVariants({
+                  variant: 'default',
+                })}
+                to={isLocalShinkaiNodeIsUse ? '/agents-locally' : '/add-agent'}
+              >
+                <span>{t('llmProviders.add')}</span>
+              </Link>
+            ) : null}
+          </div>
+        </motion.div>
       </div>
+      <ConversationFooter />
     </div>
   );
 };

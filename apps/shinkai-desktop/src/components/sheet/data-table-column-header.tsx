@@ -25,6 +25,7 @@ import {
   Textarea,
 } from '@shinkai_network/shinkai-ui';
 import { WorkflowPlaygroundIcon } from '@shinkai_network/shinkai-ui/assets';
+import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Column } from '@tanstack/react-table';
 import {
@@ -39,7 +40,6 @@ import { Fragment, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 
-import { formatText } from '../../pages/create-job';
 import { useAuth } from '../../store/auth';
 import { fieldTypes } from './constants';
 import { SetColumnFormSchema, setColumnFormSchema } from './forms';

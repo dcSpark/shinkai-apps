@@ -16,6 +16,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
+import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { BoltIcon, SearchIcon, XIcon } from 'lucide-react';
 import { useState } from 'react';
@@ -23,7 +24,6 @@ import { Link } from 'react-router-dom';
 
 import { useDebounce } from '../hooks/use-debounce';
 import { useAuth } from '../store/auth';
-import { formatText } from './create-job';
 import { SimpleLayout } from './layout/simple-layout';
 
 export const Tools = () => {
@@ -212,6 +212,7 @@ export const Tools = () => {
                             toolPayload: {} as ShinkaiTool,
                             isToolEnabled: !tool.enabled,
                             nodeAddress: auth?.node_address ?? '',
+                            token: auth?.api_v2_key ?? '',
                           });
                         }}
                       />

@@ -155,21 +155,16 @@ const AppRoutes = () => {
         />
         <Route
           element={
-            <ProtectedRoute>
-              <ChatLayout />
-            </ProtectedRoute>
+            <WorkflowSelectionProvider>
+              <ProtectedRoute>
+                <ChatLayout />
+              </ProtectedRoute>
+            </WorkflowSelectionProvider>
           }
           path="inboxes"
         >
           <Route element={<EmptyMessage />} index />
-          <Route
-            element={
-              <WorkflowSelectionProvider>
-                <ChatConversation />
-              </WorkflowSelectionProvider>
-            }
-            path=":inboxId"
-          />
+          <Route element={<ChatConversation />} path=":inboxId" />
         </Route>
         <Route
           element={
