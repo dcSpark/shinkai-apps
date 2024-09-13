@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
 import ConversationFooter from '../../components/chat/conversation-footer';
+import ConversationHeader from '../../components/chat/conversation-header';
 import { useAuth } from '../../store/auth';
 import { useShinkaiNodeManager } from '../../store/shinkai-node-manager';
 
@@ -22,6 +23,7 @@ const EmptyMessage = () => {
 
   return (
     <div className="flex max-h-screen flex-1 flex-col overflow-hidden pt-2">
+      <ConversationHeader />
       <div className="flex w-full flex-1 items-center justify-center p-6">
         <motion.div
           animate={{ opacity: 1 }}

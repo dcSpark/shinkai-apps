@@ -12,11 +12,19 @@ import {
   DirectoryTypeIcon,
   FileTypeIcon,
 } from '@shinkai_network/shinkai-ui/assets';
+import { PanelRightClose } from 'lucide-react';
 
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
+import { useSettings } from '../../store/settings';
 
 const ConversationHeader = () => {
   const currentInbox = useGetCurrentInbox();
+  const isChatSidebarCollapsed = useSettings(
+    (state) => state.isChatSidebarCollapsed,
+  );
+  const setChatSidebarCollapsed = useSettings(
+    (state) => state.setChatSidebarCollapsed,
+  );
   const { t } = useTranslation();
   const hasFolders =
     (currentInbox?.job_scope?.vector_fs_folders ?? [])?.length > 0;
@@ -26,10 +34,27 @@ const ConversationHeader = () => {
 
   return (
     <div className="flex h-[58px] items-center justify-between border-b border-gray-400 px-4 py-2">
-      <div className="inline-flex items-center">
-        <span className="mr-2.5 line-clamp-1 inline text-sm font-medium capitalize text-white">
-          {currentInbox?.custom_name || currentInbox?.inbox_id}
-        </span>
+      <div className="inline-flex items-center gap-2">
+        {isChatSidebarCollapsed && (
+          <Button
+            className="text-gray-80 flex items-center gap-2"
+            onClick={() => setChatSidebarCollapsed(!isChatSidebarCollapsed)}
+            size="icon"
+            variant="tertiary"
+          >
+            <PanelRightClose className="h-4 w-4" />
+            <span className="sr-only">Open Chat Sidebar</span>
+          </Button>
+        )}
+        {currentInbox ? (
+          <span className="mr-2.5 line-clamp-1 inline text-sm font-medium capitalize text-white">
+            {currentInbox?.custom_name || currentInbox?.inbox_id}
+          </span>
+        ) : (
+          <span className="mr-2.5 line-clamp-1 inline text-sm font-medium capitalize text-white">
+            New Chat
+          </span>
+        )}
       </div>
       {hasConversationContext && (
         <Sheet>
