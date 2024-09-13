@@ -1,8 +1,8 @@
-import {  } from '@tauri-apps/api';
+import {} from '@tauri-apps/api';
+import * as notification from '@tauri-apps/plugin-notification';
 import { platform } from '@tauri-apps/plugin-os';
 
 import LogoForNotification from '../assets/icon.png';
-import * as notification from "@tauri-apps/plugin-notification"
 
 const getPlatformIcon = (platform: string): string => {
   switch (platform) {
