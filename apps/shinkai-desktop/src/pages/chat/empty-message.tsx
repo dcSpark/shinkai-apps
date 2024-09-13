@@ -1,6 +1,7 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { buttonVariants } from '@shinkai_network/shinkai-ui';
+import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
 import ConversationFooter from '../../components/chat/conversation-footer';
@@ -22,7 +23,13 @@ const EmptyMessage = () => {
   return (
     <div className="flex h-full flex-col justify-between">
       <div className="flex w-full flex-1 items-center justify-center p-6">
-        <div className="flex max-w-lg flex-col items-center gap-4 pt-16 text-center">
+        <motion.div
+          animate={{ opacity: 1 }}
+          className="flex max-w-lg flex-col items-center gap-4 pt-16 text-center"
+          exit={{ opacity: 0 }}
+          initial={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+        >
           <span aria-hidden={true} className="text-4xl">
             🤖
           </span>
@@ -46,7 +53,7 @@ const EmptyMessage = () => {
               </Link>
             ) : null}
           </div>
-        </div>
+        </motion.div>
       </div>
       <ConversationFooter />
     </div>

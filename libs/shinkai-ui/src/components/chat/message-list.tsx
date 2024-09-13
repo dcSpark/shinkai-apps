@@ -133,7 +133,10 @@ export const MessageList = ({
       const currentScrollTop = chatContainerElement.scrollTop;
       previousChatHeightRef.current = currentHeight;
 
-      if (currentScrollTop + chatContainerElement.clientHeight < currentHeight - 125) {
+      if (
+        currentScrollTop + chatContainerElement.clientHeight <
+        currentHeight - 125
+      ) {
         setAutoScroll(false);
       } else {
         setAutoScroll(true);
@@ -191,27 +194,28 @@ export const MessageList = ({
         )}
       <div className="">
         {isLoading && (
-          <div className="flex flex-col space-y-3">
+          <div className="flex flex-col space-y-8">
             {[...Array(10).keys()].map((index) => (
               <div
                 className={cn(
-                  'flex w-[95%] items-start gap-2',
+                  'flex w-[85%] gap-2',
                   index % 2 === 0
-                    ? 'ml-0 mr-auto flex-row'
-                    : 'ml-auto mr-0 flex-row-reverse',
+                    ? 'ml-0 mr-auto flex-row items-end'
+                    : 'ml-auto mr-0 flex-row-reverse items-start',
                 )}
                 key={`${index}`}
               >
                 <Skeleton
-                  className="h-10 w-10 shrink-0 rounded-full bg-gray-300"
+                  className="h-8 w-8 shrink-0 rounded-full bg-gray-300"
                   key={index}
                 />
                 <Skeleton
                   className={cn(
-                    'h-16 w-full rounded-lg px-2.5 py-3',
+                    'w-full rounded-lg px-2.5 py-3',
                     index % 2 === 0
-                      ? 'rounded-tl-none bg-gray-300'
-                      : 'rounded-tr-none bg-gray-200',
+                      ? 'h-24 rounded-bl-none bg-gray-300'
+                      : 'h-16 rounded-tr-none bg-gray-200',
+                    index % 3 === 0 && 'h-32',
                   )}
                 />
               </div>
@@ -223,23 +227,24 @@ export const MessageList = ({
             {[...Array(3).keys()].map((index) => (
               <div
                 className={cn(
-                  'flex w-[95%] items-start gap-2',
+                  'flex w-[85%] gap-2',
                   index % 2 === 0
-                    ? 'ml-0 mr-auto flex-row'
-                    : 'ml-auto mr-0 flex-row-reverse',
+                    ? 'ml-0 mr-auto flex-row items-end'
+                    : 'ml-auto mr-0 flex-row-reverse items-start',
                 )}
                 key={`${index}`}
               >
                 <Skeleton
-                  className="h-10 w-10 shrink-0 rounded-full bg-gray-300"
+                  className="h-8 w-8 shrink-0 rounded-full bg-gray-300"
                   key={index}
                 />
                 <Skeleton
                   className={cn(
-                    'h-16 w-full rounded-lg px-2.5 py-3',
+                    'w-full rounded-lg px-2.5 py-3',
                     index % 2 === 0
-                      ? 'rounded-tl-none bg-gray-300'
-                      : 'rounded-tr-none bg-gray-200',
+                      ? 'h-24 rounded-bl-none bg-gray-300'
+                      : 'h-16 rounded-tr-none bg-gray-200',
+                    index % 3 === 0 && 'h-32',
                   )}
                 />
               </div>
