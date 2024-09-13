@@ -11,16 +11,16 @@ import {
   formatDateToLocaleStringWithTime,
   formatDateToUSLocaleString,
 } from '@shinkai_network/shinkai-ui/helpers';
-import {  } from '@tauri-apps/api';
+import {} from '@tauri-apps/api';
+import { save } from '@tauri-apps/plugin-dialog';
 import { BaseDirectory } from '@tauri-apps/plugin-fs';
+import * as fs from '@tauri-apps/plugin-fs';
 import { partial } from 'filesize';
 import { LockIcon } from 'lucide-react';
 import React from 'react';
 
 import { useAuth } from '../../../store/auth';
 import { useVectorFsStore } from '../context/vector-fs-context';
-import * as dialog from "@tauri-apps/plugin-dialog"
-import * as fs from "@tauri-apps/plugin-fs"
 
 export const VectorFileDetails = () => {
   const selectedFile = useVectorFsStore((state) => state.selectedFile);
@@ -37,21 +37,16 @@ export const VectorFileDetails = () => {
         reader.readAsDataURL(file);
       });
 
-      const path = await dialog.save({
+      const path = await save({
         defaultPath: variables.path.split('/').at(-1) + '.vrkai',
       });
       if (!path) return;
-      await fs.writeBinaryFile(
-        {
-          path,
-          contents: await fetch(dataUrl).then((response) =>
-            response.arrayBuffer(),
-          ),
-        },
-        {
-          dir: BaseDirectory.Download,
-        },
+      const fileContent = await fetch(dataUrl).then((response) =>
+        response.arrayBuffer(),
       );
+      await fs.writeFile(path, new Uint8Array(fileContent), {
+        baseDir: BaseDirectory.Download,
+      });
     },
   });
 
@@ -71,7 +66,7 @@ export const VectorFileDetails = () => {
               }
             />
           </div>
-          <p className="text-lg font-medium text-white break-words">
+          <p className="break-words text-lg font-medium text-white">
             {selectedFile?.name}
             <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
               {selectedFile?.vr_header?.resource_source?.Standard?.FileRef
@@ -87,7 +82,7 @@ export const VectorFileDetails = () => {
           </p>
         </div>
         <div className="py-6">
-          <h2 className="mb-3 text-left text-lg font-medium  text-white">
+          <h2 className="mb-3 text-left text-lg font-medium text-white">
             Information
           </h2>
           <div className="divide-y divide-gray-300">
