@@ -14,11 +14,11 @@ use crate::commands::shinkai_node_manager_commands::{
 
 use globals::SHINKAI_NODE_MANAGER_INSTANCE;
 use local_shinkai_node::shinkai_node_manager::ShinkaiNodeManager;
-use tauri::SystemTrayMenuItem;
-use tauri::{
-    CustomMenuItem, LogicalSize, Manager, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMenu,
-};
-use tauri::{GlobalShortcutManager, Size};
+use tauri::menu::{MenuBuilder, MenuItemBuilder, SubmenuBuilder};
+use tauri::tray::TrayIconBuilder;
+use tauri::{Emitter, Size};
+use tauri::{LogicalSize, Manager, RunEvent};
+use tauri_plugin_global_shortcut::{Code, Modifiers, ShortcutState};
 use tokio::sync::Mutex;
 
 mod audio;
@@ -29,27 +29,34 @@ mod hardware;
 mod local_shinkai_node;
 
 fn main() {
-    let quit = CustomMenuItem::new("quit".to_string(), "Quit");
-    let hide_show = CustomMenuItem::new("hide_show".to_string(), "Hide");
-    let shinkai_node_manager_section_title = CustomMenuItem::new(
-        "shinkai_node_manager_section_title".to_string(),
-        "Shinkai Node Manager",
-    )
-    .disabled();
-    let open_shinkai_node_manager_window =
-        CustomMenuItem::new("open_shinkai_node_manager_window".to_string(), "Open");
-
-    let tray_menu = SystemTrayMenu::new()
-        .add_item(hide_show)
-        .add_native_item(SystemTrayMenuItem::Separator)
-        .add_item(shinkai_node_manager_section_title)
-        .add_item(open_shinkai_node_manager_window)
-        .add_native_item(SystemTrayMenuItem::Separator)
-        .add_item(quit);
-
-    let system_tray = SystemTray::new().with_menu(tray_menu);
-
     tauri::Builder::default()
+        .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
+            println!("{}, {argv:?}, {cwd}", app.package_info().name);
+            // app.emit("single-instance", Payload { args: argv, cwd }).unwrap();
+        }))
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(
+            tauri_plugin_global_shortcut::Builder::new()
+                .with_shortcuts(["CmdOrCtrl+y"])
+                .unwrap()
+                .with_handler(|app, shortcut, event| {
+                    if event.state == ShortcutState::Pressed
+                        && shortcut.matches(Modifiers::SUPER | Modifiers::CONTROL, Code::KeyY)
+                    {
+                        if let Some(window) = app.get_webview_window("main") {
+                            if let Err(e) = app.emit("navigate-job-and-focus", ()) {
+                                println!("Failed to emit 'navigate-job-and-focus': {}", e);
+                            }
+                            if let Err(e) = window.set_focus() {
+                                println!("Failed to set focus: {}", e);
+                            }
+                        }
+                    }
+                })
+                .build(),
+        )
         .invoke_handler(tauri::generate_handler![
             shinkai_node_is_running,
             shinkai_node_get_last_n_logs,
@@ -65,121 +72,104 @@ fn main() {
             galxe_generate_proof
         ])
         .setup(|app| {
-            let app_resource_dir = app.path_resolver().resource_dir();
-            let app_data_dir = app.path_resolver().app_data_dir();
-            let app_clone = app.app_handle();
+            let app_resource_dir = app.path().resource_dir()?;
+            let app_data_dir = app.path().app_data_dir()?;
 
             {
                 let _ = SHINKAI_NODE_MANAGER_INSTANCE.set(Arc::new(Mutex::new(
-                    ShinkaiNodeManager::new(app_resource_dir, app_data_dir),
+                    ShinkaiNodeManager::new(app.handle().clone(), app_resource_dir, app_data_dir),
                 )));
             }
-            let app_handle = app.app_handle();
-            tauri::async_runtime::spawn(async move {
-                let mut shinkai_node_manager_guard =
-                    SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
-                let mut receiver = shinkai_node_manager_guard.subscribe_to_events();
-                drop(shinkai_node_manager_guard);
-                while let Ok(state_change) = receiver.recv().await {
-                    app_handle
-                        .emit_all("shinkai-node-state-change", state_change)
-                        .unwrap_or_else(|e| {
-                            println!("Failed to emit global event for state change: {}", e);
-                        });
+            // let app_handle = app.handle();
+            tauri::async_runtime::spawn({
+                let app_handle = app.handle().clone();
+                async move {
+                    let mut shinkai_node_manager_guard =
+                        SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
+                    shinkai_node_manager_guard.kill().await;
+                    let mut receiver = shinkai_node_manager_guard.subscribe_to_events();
+                    drop(shinkai_node_manager_guard);
+                    while let Ok(state_change) = receiver.recv().await {
+                        app_handle
+                            .emit("shinkai-node-state-change", state_change)
+                            .unwrap_or_else(|e| {
+                                println!("Failed to emit global event for state change: {}", e);
+                            });
+                    }
                 }
             });
 
-            app.global_shortcut_manager()
-                .register("CmdOrCtrl+y", move || match app_clone.get_window("main") {
-                    Some(window) => {
-                        if let Err(e) = app_clone.emit_all("navigate-job-and-focus", ()) {
-                            println!("Failed to emit 'navigate-job-and-focus': {}", e);
-                        }
+            let quit_menu_item = MenuItemBuilder::with_id("quit", "Quit").build(app)?;
+            let hide_show_menu_item = MenuItemBuilder::with_id("hide_show", "Hide").build(app)?;
 
-                        if let Err(e) = window.set_focus() {
-                            println!("Failed to set focus: {}", e);
+            let open_shinkai_node_manager_window_menu_item =
+                MenuItemBuilder::with_id("open_shinkai_node_manager_window", "Open").build(app)?;
+            let shinkai_node_manager_menu_item = SubmenuBuilder::new(app, "Shinkai Node Manager")
+                .item(&open_shinkai_node_manager_window_menu_item)
+                .build()?;
+
+            let menu = MenuBuilder::new(app)
+                .items(&[
+                    &quit_menu_item,
+                    &hide_show_menu_item,
+                    &shinkai_node_manager_menu_item,
+                ])
+                .build()?;
+
+            let _ = TrayIconBuilder::new()
+                .menu(&menu)
+                .on_menu_event(move |app, event| match event.id().as_ref() {
+                    "hide_show" => {
+                        let window = app.get_webview_window("main").unwrap();
+                        let menu_item = app.menu().unwrap().get("hide_show");
+                        if window.is_visible().unwrap() {
+                            window.hide().unwrap();
+                            let _ = menu_item.unwrap().as_menuitem().unwrap().set_text("Show");
+                        } else {
+                            window.show().unwrap();
+                            window.center().unwrap();
+                            let _ = menu_item.unwrap().as_menuitem().unwrap().set_text("Hide");
                         }
                     }
-                    None => {
-                        println!("Failed to get main window");
+                    "open_shinkai_node_manager_window" => {
+                        let shinkai_node_manager_window = "shinkai-node-manager-window".to_string();
+                        let existing_window = app.get_webview_window(&shinkai_node_manager_window);
+                        if let Some(window) = existing_window {
+                            let _ = window.set_focus();
+                            return;
+                        }
+                        let new_window = tauri::WebviewWindowBuilder::new(
+                            app,
+                            shinkai_node_manager_window,
+                            tauri::WebviewUrl::App(
+                                "src/windows/shinkai-node-manager/index.html".into(),
+                            ),
+                        )
+                        .build()
+                        .unwrap();
+                        let _ = new_window.set_title("Shinkai Node Manager");
+                        let _ = new_window.set_resizable(true);
+                        let _ = new_window.set_size(Size::Logical(LogicalSize {
+                            width: 1280.0,
+                            height: 820.0,
+                        }));
                     }
+                    "quit" => {
+                        tauri::async_runtime::spawn(async {
+                            // For some reason process::exit doesn't fire RunEvent::ExitRequested event in tauri
+                            let mut shinkai_node_manager_guard =
+                                SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
+                            if shinkai_node_manager_guard.is_running().await {
+                                shinkai_node_manager_guard.kill().await;
+                            }
+                            std::process::exit(0);
+                        });
+                    }
+                    _ => (),
                 })
-                .unwrap_or_else(|e| {
-                    println!("Failed to register shortcut: {}", e);
-                });
+                .build(app)?;
+
             Ok(())
-        })
-        .system_tray(system_tray)
-        .on_system_tray_event(move |app, event| match event {
-            SystemTrayEvent::LeftClick {
-                position: _,
-                size: _,
-                ..
-            } => {
-                println!("system tray received a left click");
-            }
-            SystemTrayEvent::RightClick {
-                position: _,
-                size: _,
-                ..
-            } => {
-                println!("system tray received a right click");
-            }
-            SystemTrayEvent::DoubleClick {
-                position: _,
-                size: _,
-                ..
-            } => {
-                println!("system tray received a double click");
-            }
-            SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
-                "hide_show" => {
-                    let window = app.get_window("main").unwrap();
-                    let menu_item = app.tray_handle().get_item("hide_show");
-                    if window.is_visible().unwrap() {
-                        window.hide().unwrap();
-                        let _ = menu_item.set_title("Show");
-                    } else {
-                        window.show().unwrap();
-                        window.center().unwrap();
-                        let _ = menu_item.set_title("Hide");
-                    }
-                }
-                "open_shinkai_node_manager_window" => {
-                    let shinkai_node_manager_window = "shinkai-node-manager-window".to_string();
-                    let existing_window = app.get_window(&shinkai_node_manager_window);
-                    if let Some(window) = existing_window {
-                        let _ = window.set_focus();
-                        return;
-                    }
-                    let new_window = tauri::WindowBuilder::new(
-                        app,
-                        shinkai_node_manager_window,
-                        tauri::WindowUrl::App("src/windows/shinkai-node-manager/index.html".into()),
-                    )
-                    .build()
-                    .unwrap();
-                    let _ = new_window.set_title("Shinkai Node Manager");
-                    let _ = new_window.set_resizable(true);
-                    let _ = new_window.set_size(Size::Logical(LogicalSize {
-                        width: 1280.0,
-                        height: 820.0,
-                    }));
-                }
-                "quit" => {
-                    tauri::async_runtime::spawn(async {
-                        // For some reason process::exit doesn't fire RunEvent::ExitRequested event in tauri
-                        let mut shinkai_node_manager_guard =
-                            SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
-                        if shinkai_node_manager_guard.is_running().await {
-                            shinkai_node_manager_guard.kill().await;
-                        }
-                        std::process::exit(0);
-                    });
-                }
-                _ => {}
-            },
-            _ => {}
         })
         .build(tauri::generate_context!())
         .expect("error while running tauri application")
@@ -189,13 +179,19 @@ fn main() {
                     // For some reason process::exit doesn't fire RunEvent::ExitRequested event in tauri
                     let mut shinkai_node_manager_guard =
                         SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
-                    if shinkai_node_manager_guard.is_running().await {
-                        shinkai_node_manager_guard.kill().await;
-                    }
+                    shinkai_node_manager_guard.kill().await;
                     std::process::exit(0);
                 });
             }
-            RunEvent::Exit => {}
+            RunEvent::Exit => {
+                tauri::async_runtime::spawn(async {
+                    // For some reason process::exit doesn't fire RunEvent::ExitRequested event in tauri
+                    let mut shinkai_node_manager_guard =
+                        SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
+                    shinkai_node_manager_guard.kill().await;
+                    std::process::exit(0);
+                });
+            }
             RunEvent::WindowEvent {
                 label: _, event: _, ..
             } => {}

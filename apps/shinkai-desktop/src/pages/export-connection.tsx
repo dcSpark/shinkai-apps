@@ -12,8 +12,10 @@ import {
   Input,
   TextField,
 } from '@shinkai_network/shinkai-ui';
-import { dialog, fs } from '@tauri-apps/api';
-import { BaseDirectory } from '@tauri-apps/api/fs';
+import {} from '@tauri-apps/api';
+import { save } from '@tauri-apps/plugin-dialog';
+import { BaseDirectory } from '@tauri-apps/plugin-fs';
+import * as fs from '@tauri-apps/plugin-fs';
 import { Download } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -56,24 +58,20 @@ export const ExportConnection = () => {
       reader.onload = () => resolve(reader.result as string);
       reader.readAsDataURL(file);
     });
-    const path = await dialog.save({
+    const path = await save({
       defaultPath:
         `${auth?.shinkai_identity}_${auth?.registration_name}.shinkai.key`
           .replace(/@/g, '')
           .replace(/\//g, '_'),
     });
     if (path) {
-      await fs.writeBinaryFile(
-        {
-          path,
-          contents: await fetch(dataUrl).then((response) =>
-            response.arrayBuffer(),
-          ),
-        },
-        {
-          dir: BaseDirectory.Download,
-        },
+      const arrayBuffer = await fetch(dataUrl).then((response) =>
+        response.arrayBuffer(),
       );
+      const content = new Uint8Array(arrayBuffer);
+      await fs.writeFile(path, content, {
+        baseDir: BaseDirectory.Download,
+      });
     }
   };
   return (

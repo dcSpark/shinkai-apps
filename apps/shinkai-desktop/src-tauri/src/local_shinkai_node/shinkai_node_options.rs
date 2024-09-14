@@ -33,27 +33,27 @@ pub struct ShinkaiNodeOptions {
 
 impl ShinkaiNodeOptions {
     pub fn with_app_options(
-        app_resource_dir: Option<PathBuf>,
-        app_data_dir: Option<PathBuf>,
+        app_resource_dir: PathBuf,
+        app_data_dir: PathBuf,
     ) -> ShinkaiNodeOptions {
-        let default_pdfium_dynamic_lib_path = app_resource_dir.clone().map(|dir| {
-            if cfg!(target_os = "macos") {
-                dir.join("../Frameworks")
-            } else {
-                dir.join("external-binaries/shinkai-node")
-            }
-            .to_string_lossy()
-            .to_string()
-            .replace("\\\\?\\C", "C")
-        });
+        let default_pdfium_dynamic_lib_path = if cfg!(target_os = "macos") {
+            app_resource_dir.join("../Frameworks")
+        } else {
+            app_resource_dir
+                .join("external-binaries/shinkai-node")  
+        }.to_string_lossy().replace("\\\\?\\C", "C");
         let default_node_storage_path = app_data_dir
-            .clone()
-            .map(|dir| dir.join("node_storage").to_string_lossy().to_string());
-        println!("PDFium dynamic library path: {:?}", default_pdfium_dynamic_lib_path);
+            .join("node_storage")
+            .to_string_lossy()
+            .to_string();
+        println!(
+            "PDFium dynamic library path: {:?}",
+            default_pdfium_dynamic_lib_path
+        );
         println!("Node storage path: {:?}", default_node_storage_path);
         ShinkaiNodeOptions {
-            node_storage_path: default_node_storage_path,
-            pdfium_dynamic_lib_path: default_pdfium_dynamic_lib_path,
+            node_storage_path: Some(default_node_storage_path),
+            pdfium_dynamic_lib_path: Some(default_pdfium_dynamic_lib_path),
             ..Default::default()
         }
     }
@@ -194,12 +194,10 @@ impl ShinkaiNodeOptions {
                     .or(base_options.shinkai_tools_backend_api_port)
                     .unwrap_or_default(),
             ),
-            pdfium_dynamic_lib_path: Some(
-                match options.pdfium_dynamic_lib_path {
-                    Some(ref path) if !path.is_empty() => path.clone(),
-                    _ => base_options.pdfium_dynamic_lib_path.unwrap_or_default(),
-                }
-            ),
+            pdfium_dynamic_lib_path: Some(match options.pdfium_dynamic_lib_path {
+                Some(ref path) if !path.is_empty() => path.clone(),
+                _ => base_options.pdfium_dynamic_lib_path.unwrap_or_default(),
+            }),
         }
     }
 }

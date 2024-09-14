@@ -6,29 +6,24 @@ import {
   useQueryClient,
   UseQueryResult,
 } from '@tanstack/react-query';
-import { platform } from '@tauri-apps/api/os';
-import { relaunch } from '@tauri-apps/api/process';
-import {
-  checkUpdate,
-  installUpdate,
-  onUpdaterEvent,
-  UpdateResult,
-} from '@tauri-apps/api/updater';
+import { platform } from '@tauri-apps/plugin-os';
+import { relaunch } from '@tauri-apps/plugin-process';
+import { check, Update } from '@tauri-apps/plugin-updater';
 
 import { useShinkaiNodeKillMutation } from '../shinkai-node-manager/shinkai-node-manager-client';
 
 // Queries
 export const useCheckUpdateQuery = (
   options?: Omit<QueryObserverOptions, 'queryKey'>,
-): UseQueryResult<UpdateResult, Error> => {
+): UseQueryResult<Update | null, Error> => {
   const query = useQuery({
     ...options,
     queryKey: ['check_update'],
-    queryFn: async (): Promise<UpdateResult> => {
-      return checkUpdate();
+    queryFn: async (): Promise<Update | null> => {
+      return check();
     },
   });
-  return { ...query } as UseQueryResult<UpdateResult, Error>;
+  return { ...query } as UseQueryResult<Update | null, Error>;
 };
 
 // Mutations
@@ -38,11 +33,14 @@ export const useInstallUpdateMutation = (options?: UseMutationOptions) => {
   const response = useMutation({
     mutationFn: async (): Promise<void> => {
       const platformName = await platform();
-      if (platformName === 'win32') {
+      if (platformName === 'windows') {
         await shinkaiNodeKill();
       }
       try {
-        await installUpdate();
+        const update = await check();
+        if (update?.available) {
+          await update.downloadAndInstall();
+        }
       } catch (e) {
         console.log(e);
       }
@@ -81,6 +79,3 @@ export const useRelaunchMutation = (options?: UseMutationOptions) => {
   return { ...response };
 };
 
-onUpdaterEvent(({ error, status }) => {
-  console.log('Updater event', error, status);
-});

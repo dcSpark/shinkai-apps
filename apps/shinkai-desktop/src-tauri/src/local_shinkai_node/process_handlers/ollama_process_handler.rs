@@ -2,6 +2,7 @@ use std::{path::PathBuf, time::Duration};
 
 use regex::Regex;
 use serde::Serialize;
+use tauri::AppHandle;
 use tokio::sync::mpsc::Sender;
 
 use crate::local_shinkai_node::ollama_api::ollama_api_client::OllamaApiClient;
@@ -9,7 +10,7 @@ use crate::local_shinkai_node::ollama_api::ollama_api_client::OllamaApiClient;
 use super::{
     logger::LogEntry,
     process_handler::{ProcessHandler, ProcessHandlerEvent},
-    process_utils::{kill_process_by_name, options_to_env},
+    process_utils::{kill_process_by_name, kill_process_by_pid, options_to_env},
 };
 
 #[derive(Serialize, Clone)]
@@ -36,17 +37,13 @@ impl Default for OllamaOptions {
 }
 
 impl OllamaOptions {
-    pub fn with_app_options(app_resource_dir: Option<PathBuf>) -> Self {
+    pub fn with_app_options(app_resource_dir: PathBuf) -> Self {
         let ollama_runners_dir = if cfg!(target_os = "windows") {
             Some(
                 app_resource_dir
-                    .clone()
-                    .map(|dir| {
-                        dir.join("external-binaries/ollama/lib/ollama/runners")
-                            .to_string_lossy()
-                            .to_string()
-                    })
-                    .unwrap_or_default(),
+                    .join("external-binaries/ollama/lib/ollama/runners")
+                    .to_string_lossy()
+                    .to_string(),
             )
         } else {
             None
@@ -59,8 +56,9 @@ impl OllamaOptions {
 }
 
 pub struct OllamaProcessHandler {
+    app: AppHandle,
     process_handler: ProcessHandler,
-    app_resource_dir: Option<PathBuf>,
+    app_resource_dir: PathBuf,
     options: OllamaOptions,
 }
 
@@ -70,15 +68,20 @@ impl OllamaProcessHandler {
     const READY_MATCHER: &'static str = "Listening on ";
 
     pub fn new(
+        app: AppHandle,
         event_sender: Sender<ProcessHandlerEvent>,
-        app_resource_dir: Option<PathBuf>,
+        app_resource_dir: PathBuf,
     ) -> Self {
         let ready_matcher = Regex::new(Self::READY_MATCHER).unwrap();
-        Self::kill_llama_process();
-        let process_handler =
-            ProcessHandler::new(Self::PROCESS_NAME.to_string(), event_sender, ready_matcher);
+        let process_handler = ProcessHandler::new(
+            app.clone(),
+            Self::PROCESS_NAME.to_string(),
+            event_sender,
+            ready_matcher,
+        );
         let options = OllamaOptions::with_app_options(app_resource_dir.clone());
         OllamaProcessHandler {
+            app,
             process_handler,
             app_resource_dir,
             options,
@@ -117,16 +120,15 @@ impl OllamaProcessHandler {
     }
 
     pub async fn spawn(&self, ensure_model: Option<&str>) -> Result<(), String> {
+        let _ = self.kill_existing_processes_using_ports().await;
+
         let ollama_process_cwd = if cfg!(target_os = "windows") {
             Some(PathBuf::from(
                 self.app_resource_dir
                     .clone()
-                    .map(|dir| {
-                        dir.join("external-binaries/ollama")
-                            .to_string_lossy()
-                            .to_string()
-                    })
-                    .unwrap_or_default(),
+                    .join("external-binaries/ollama")
+                    .to_string_lossy()
+                    .to_string(),
             ))
         } else {
             None
@@ -157,11 +159,27 @@ impl OllamaProcessHandler {
         self.process_handler.is_running().await
     }
 
-    pub fn kill_llama_process() {
-        kill_process_by_name("ollama_llama_server");
+    async fn kill_existing_processes_using_ports(&self) -> Result<(), String> {
+        // Extract port from ollama_host
+        let port = self.options.ollama_host.split(':').nth(1)
+            .ok_or_else(|| "invalid ollama_host format".to_string())?
+            .parse::<u16>()
+            .map_err(|_| "invalid port number".to_string())?;
+
+        // Get processes by port
+        let processes = listeners::get_processes_by_port(port)
+            .map_err(|e| format!("failed to get processes: {}", e))?;
+
+        // Kill all existing processes using the same port
+        for process in processes {
+            kill_process_by_pid(self.app.clone(), &process.pid.to_string()).await;
+        }
+        Ok(())
     }
+
     pub async fn kill(&self) {
-        Self::kill_llama_process();
+        kill_process_by_name(self.app.clone(), "ollama_llama_server").await;
         self.process_handler.kill().await;
+        let _ = self.kill_existing_processes_using_ports().await;
     }
 }

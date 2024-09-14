@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
-use tauri::api::process::Command;
+use tauri::AppHandle;
+use tauri_plugin_shell::ShellExt;
 
 /// Converts any object to a HashMap for environment variables.
 pub fn options_to_env<T: serde::Serialize>(options: &T) -> HashMap<String, String> {
@@ -15,34 +16,72 @@ pub fn options_to_env<T: serde::Serialize>(options: &T) -> HashMap<String, Strin
     env
 }
 
-pub fn kill_process_by_name(process_name: &str) {
+pub async fn kill_process_by_name(app: AppHandle, process_name: &str) {
     let adapted_process_name = if cfg!(target_os = "windows") {
         format!("{}.exe", process_name).to_string()
     } else if cfg!(target_os = "linux") {
-        // For linux pkill pattern just supports 15 characters 
+        // For linux pkill pattern just supports 15 characters
         process_name.chars().take(15).collect::<String>()
     } else {
         process_name.to_string()
     };
     let output = if cfg!(target_os = "windows") {
         // Windows: Use taskkill command
-        Command::new("taskkill")
+        app.shell()
+            .command("taskkill")
             .args(["/F", "/IM", &adapted_process_name])
             .output()
     } else {
         // Unix-like systems: Use pkill command
-        Command::new("pkill").args(["-15", &adapted_process_name]).output()
+        app.shell()
+            .command("pkill")
+            .args(["-15", &adapted_process_name])
+            .output()
     };
-    if let Ok(output) = output {
+    if let Ok(output) = output.await {
         if output.status.success() {
-            println!("existing process '{}' has been terminated.", adapted_process_name);
+            println!(
+                "existing process '{}' has been terminated.",
+                adapted_process_name
+            );
         } else {
             println!(
                 "failed to terminate process '{}'. Error: {}",
-                adapted_process_name, output.stderr
+                adapted_process_name, String::from_utf8_lossy(&output.stderr)
             );
         }
     } else {
         println!("failed to execute command to terminate process");
     }
 }
+
+pub async fn kill_process_by_pid(app: AppHandle, process_id: &str) {
+    let output = if cfg!(target_os = "windows") {
+        // windows: use taskkill command
+        app.shell()
+            .command("taskkill")
+            .args(["/F", "/PID", process_id])
+            .output()
+    } else {
+        app.shell()
+            .command("pkill")
+            .args(["-9", "-P", process_id])
+            .output()
+    };
+    if let Ok(output) = output.await {
+        if output.status.success() {
+            println!(
+                "process with PID '{}' has been terminated.",
+                process_id
+            );
+        } else {
+            println!(
+                "failed to terminate process with PID '{}'. error: {}",
+                process_id, String::from_utf8_lossy(&output.stderr)
+            );
+        }
+    } else {
+        println!("failed to execute command to terminate process");
+    }
+}
+

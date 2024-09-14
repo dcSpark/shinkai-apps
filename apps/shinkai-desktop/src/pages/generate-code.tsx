@@ -17,8 +17,8 @@ import {
   SelectValue,
   TextField,
 } from '@shinkai_network/shinkai-ui';
-import { save } from '@tauri-apps/api/dialog';
-import { BaseDirectory, writeBinaryFile } from '@tauri-apps/api/fs';
+import { save } from '@tauri-apps/plugin-dialog';
+import { BaseDirectory, writeFile } from '@tauri-apps/plugin-fs';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -31,9 +31,11 @@ const saveImage = async (dataUrl: string) => {
   const filePath = await save({
     defaultPath: BaseDirectory.Download + '/' + suggestedFilename,
   });
-  const buffer = await (await fetch(dataUrl)).arrayBuffer();
+  const response = await fetch(dataUrl);
+  const arrayBuffer = await response.arrayBuffer();
+  const uint8Array = new Uint8Array(arrayBuffer);
   if (filePath) {
-    await writeBinaryFile(filePath, buffer);
+    await writeFile(filePath, uint8Array);
   }
 };
 

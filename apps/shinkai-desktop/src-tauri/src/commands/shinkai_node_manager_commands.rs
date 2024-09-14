@@ -55,7 +55,10 @@ pub async fn shinkai_node_kill() -> Result<(), String> {
 #[tauri::command]
 pub async fn shinkai_node_remove_storage(preserve_keys: bool) -> Result<(), String> {
     let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
-    match shinkai_node_manager_guard.remove_storage(preserve_keys).await {
+    match shinkai_node_manager_guard
+        .remove_storage(preserve_keys)
+        .await
+    {
         Ok(_) => Ok(()),
         Err(_) => Ok(()),
     }
@@ -73,8 +76,7 @@ pub async fn shinkai_node_set_default_options() -> Result<ShinkaiNodeOptions, St
 #[tauri::command]
 pub async fn shinkai_node_get_ollama_api_url() -> Result<String, String> {
     let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
-    let ollama_api_url = shinkai_node_manager_guard
-        .get_ollama_api_url();
+    let ollama_api_url = shinkai_node_manager_guard.get_ollama_api_url();
     Ok(ollama_api_url)
 }
 

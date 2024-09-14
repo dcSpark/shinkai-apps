@@ -1,0 +1,27 @@
+{
+  "identifier": "migrated",
+  "description": "permissions that were migrated from v1",
+  "local": true,
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "core:webview:allow-create-webview-window",
+    "dialog:allow-save",
+    "fs:allow-download-write",
+    "shell:allow-open"
+  ],
+  "commands.allow": [
+    "shinkai_node_is_running",
+    "shinkai_node_get_last_n_logs",
+    "shinkai_node_get_options",
+    "shinkai_node_set_options",
+    "shinkai_node_spawn",
+    "shinkai_node_kill",
+    "shinkai_node_remove_storage",
+    "shinkai_node_set_default_options",
+    "shinkai_node_get_ollama_api_url",
+    "shinkai_node_get_default_model",
+    "hardware_get_summary",
+    "galxe_generate_proof"
+  ]
+}

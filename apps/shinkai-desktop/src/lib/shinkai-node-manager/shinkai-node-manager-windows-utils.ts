@@ -1,8 +1,10 @@
-import { WebviewWindow } from '@tauri-apps/api/window';
+import { WebviewWindow } from '@tauri-apps/api/webviewWindow';
 
 export const SHINKAI_NODE_MANAGER_WINDOW = 'shinkai-node-manager-window';
-export const openShinkaiNodeManagerWindow = () => {
-  const currentWindow = WebviewWindow.getByLabel(SHINKAI_NODE_MANAGER_WINDOW);
+export const openShinkaiNodeManagerWindow = async () => {
+  const currentWindow = await WebviewWindow.getByLabel(
+    SHINKAI_NODE_MANAGER_WINDOW,
+  );
   if (currentWindow) {
     currentWindow.setFocus().catch((e) => e);
   } else {

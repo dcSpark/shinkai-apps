@@ -1,5 +1,6 @@
-import { notification } from '@tauri-apps/api';
-import { platform } from '@tauri-apps/api/os';
+import {} from '@tauri-apps/api';
+import * as notification from '@tauri-apps/plugin-notification';
+import { platform } from '@tauri-apps/plugin-os';
 
 import LogoForNotification from '../assets/icon.png';
 
