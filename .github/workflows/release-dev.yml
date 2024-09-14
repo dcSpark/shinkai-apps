@@ -225,8 +225,8 @@ jobs:
         if: ${{ matrix.arch == 'x86_64-unknown-linux-gnu' }}
         run: npx nx build shinkai-desktop --config="./src-tauri/tauri.conf.development.json" --skip-nx-cache --debug
         env:
-          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
           VITE_POSTHOG_API_KEY: ${{ secrets.VITE_POSTHOG_API_KEY }}
           SECRET_DESKTOP_INSTALLATION_PROOF_KEY: ${{secrets.SECRET_DESKTOP_INSTALLATION_PROOF_KEY}}
           NODE_OPTIONS: "--max_old_space_size=4096"
@@ -240,8 +240,8 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
           VITE_POSTHOG_API_KEY: ${{ secrets.VITE_POSTHOG_API_KEY }}
           SECRET_DESKTOP_INSTALLATION_PROOF_KEY: ${{secrets.SECRET_DESKTOP_INSTALLATION_PROOF_KEY}}
           NODE_OPTIONS: "--max_old_space_size=4096"
@@ -249,8 +249,8 @@ jobs:
         if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
         run: npx nx build shinkai-desktop --config="./src-tauri/tauri.conf.development.json" --skip-nx-cache  --debug
         env:
-          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
           VITE_POSTHOG_API_KEY: ${{ secrets.VITE_POSTHOG_API_KEY }}
           SECRET_DESKTOP_INSTALLATION_PROOF_KEY: ${{secrets.SECRET_DESKTOP_INSTALLATION_PROOF_KEY}}
           # Windows Only
