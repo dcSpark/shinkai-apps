@@ -85,9 +85,9 @@ jobs:
         include:
           - arch: x86_64-unknown-linux-gnu
             os: ubuntu-22.04
-            build_output_file_path: apps/shinkai-desktop/src-tauri/target/debug/bundle/appimage/Shinkai\ Desktop\ Dev_${{ needs.prebuild.outputs.version }}${{ github.run_number }}_amd64.AppImage
-            build_output_update_file_path: apps/shinkai-desktop/src-tauri/target/debug/bundle/appimage/Shinkai\ Desktop\ Dev_${{ needs.prebuild.outputs.version }}${{ github.run_number }}_amd64.AppImage.tar.gz
-            build_output_update_signature_file_path: apps/shinkai-desktop/src-tauri/target/debug/bundle/appimage/Shinkai\ Desktop\ Dev_${{ needs.prebuild.outputs.version }}${{ github.run_number }}_amd64.AppImage.tar.gz.sig
+            build_output_file_path: apps/shinkai-desktop/src-tauri/target/debug/bundle/appimage/Shinkai Desktop Dev_${{ needs.prebuild.outputs.version }}${{ github.run_number }}_amd64.AppImage
+            build_output_update_file_path: apps/shinkai-desktop/src-tauri/target/debug/bundle/appimage/Shinkai Desktop Dev_${{ needs.prebuild.outputs.version }}${{ github.run_number }}_amd64.AppImage.tar.gz
+            build_output_update_signature_file_path: apps/shinkai-desktop/src-tauri/target/debug/bundle/appimage/Shinkai Desktop Dev_${{ needs.prebuild.outputs.version }}${{ github.run_number }}_amd64.AppImage.tar.gz.sig
             distributable_file_name: Shinkai-Desktop-Dev-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage
             distributable_update_file_name: Shinkai-Desktop-Dev-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage.tar.gz
             distributable_update_signature_file_name: Shinkai-Desktop-Dev-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage.tar.gz.sig
