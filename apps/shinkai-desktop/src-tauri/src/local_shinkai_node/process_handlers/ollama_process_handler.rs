@@ -172,6 +172,7 @@ impl OllamaProcessHandler {
 
         // Kill all existing processes using the same port
         for process in processes {
+            println!("terminating process: PID={}, Name={}", process.pid, process.name);
             kill_process_by_pid(self.app.clone(), &process.pid.to_string()).await;
         }
         Ok(())

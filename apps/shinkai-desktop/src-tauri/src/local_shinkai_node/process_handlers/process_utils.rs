@@ -55,6 +55,24 @@ pub async fn kill_process_by_name(app: AppHandle, process_name: &str) {
     }
 }
 
+pub async fn kill_existing_processes_using_ports(app: AppHandle, ports: Vec<&str>) -> Result<(), String> {
+    for port_str in ports {
+        let port = port_str.parse::<u16>()
+            .map_err(|_| format!("Invalid port number: {}", port_str))?;
+
+        // Get processes by port
+        let processes = listeners::get_processes_by_port(port)
+            .map_err(|e| format!("Failed to get processes for port {}: {}", port, e))?;
+
+        // Kill all existing processes using the same port
+        for process in processes {
+            println!("terminating process: PID={}, Name={}", process.pid, process.name);
+            kill_process_by_pid(app.clone(), &process.pid.to_string()).await;
+        }
+    }
+    Ok(())
+}
+
 pub async fn kill_process_by_pid(app: AppHandle, process_id: &str) {
     let output = if cfg!(target_os = "windows") {
         // windows: use taskkill command
@@ -64,8 +82,8 @@ pub async fn kill_process_by_pid(app: AppHandle, process_id: &str) {
             .output()
     } else {
         app.shell()
-            .command("pkill")
-            .args(["-9", "-P", process_id])
+            .command("kill")
+            .args(["-15", process_id])
             .output()
     };
     if let Ok(output) = output.await {
