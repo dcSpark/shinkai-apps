@@ -8,7 +8,8 @@
     "core:webview:allow-create-webview-window",
     "dialog:allow-save",
     "fs:allow-download-write",
-    "shell:allow-open"
+    "shell:allow-open",
+    "core:window:allow-start-dragging"
   ],
   "commands.allow": [
     "shinkai_node_is_running",

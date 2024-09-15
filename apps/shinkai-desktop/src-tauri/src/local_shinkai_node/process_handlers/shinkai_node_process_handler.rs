@@ -9,7 +9,7 @@ use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
 use super::{
     logger::LogEntry,
     process_handler::{ProcessHandler, ProcessHandlerEvent},
-    process_utils::{kill_process_by_pid, options_to_env},
+    process_utils::{kill_existing_processes_using_ports, options_to_env},
 };
 
 pub struct ShinkaiNodeProcessHandler {
@@ -171,30 +171,17 @@ impl ShinkaiNodeProcessHandler {
 
     pub async fn kill_existing_processes_using_ports(&self) -> Result<(), String> {
         // Extract ports from options
-        let ports: Vec<String> = vec![
-            self.options.node_port.as_ref(),
-            self.options.node_ws_port.as_ref(),
-            self.options.node_api_port.as_ref(),
-            self.options.shinkai_tools_backend_api_port.as_ref(),
+        let ports: Vec<&str> = vec![
+            self.options.node_port.as_deref(),
+            self.options.node_ws_port.as_deref(),
+            self.options.node_api_port.as_deref(),
+            self.options.shinkai_tools_backend_api_port.as_deref(),
         ]
         .into_iter()
-        .filter_map(|port| port.cloned())
+        .flatten()
         .collect();
 
-        // Kill all existing processes using the same ports
-        for port in ports {
-            let port_number = match port.parse::<u16>() {
-                Ok(num) => num,
-                Err(_) => continue,
-            };
-
-            let processes = listeners::get_processes_by_port(port_number)
-                .map_err(|e| format!("Failed to get processes: {}", e))?;
-
-            for process in processes {
-                kill_process_by_pid(self.app.clone(), &process.pid.to_string()).await;
-            }
-        }
+        let _ = kill_existing_processes_using_ports(self.app.clone(), ports).await;
         Ok(())
     }
 
