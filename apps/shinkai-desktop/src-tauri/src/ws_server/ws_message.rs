@@ -14,12 +14,18 @@ pub struct WSMessage {
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
+pub struct FileSearchCriteria {
+    pub partial_file_name: String,
+    pub extension_name: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum WSTauriAction {
     ReadFile(String),
     ReadFolder(String),
     WriteFile(WriteFSContent),
-    // Add other actions as needed
+    FindFilesByName(FileSearchCriteria),
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq)]

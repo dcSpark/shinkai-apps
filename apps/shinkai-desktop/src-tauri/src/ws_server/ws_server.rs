@@ -3,6 +3,7 @@ use std::fs::File;
 use std::io::Read;
 use std::io::Write;
 use std::os::unix::fs::PermissionsExt;
+use std::sync::OnceLock;
 
 use futures_util::SinkExt;
 use futures_util::StreamExt;
@@ -14,6 +15,8 @@ use base64::prelude::*;
 use crate::ws_server::ws_message::WSChannel;
 use crate::ws_server::ws_message::WSMessage;
 use crate::ws_server::ws_message::WSTauriAction;
+
+static DOWNLOADS_PATH: OnceLock<std::path::PathBuf> = OnceLock::new();
 
 pub async fn ws_start_server() {
     ensure_downloads_folder_exists();
@@ -34,6 +37,8 @@ pub async fn ws_start_server() {
 
 fn ensure_downloads_folder_exists() {
     let downloads_path = dirs::home_dir().unwrap().join("tauri_playground");
+    DOWNLOADS_PATH.set(downloads_path.clone()).unwrap();
+
     if !downloads_path.exists() {
         if let Err(e) = fs::create_dir_all(&downloads_path) {
             eprintln!(
@@ -62,6 +67,12 @@ async fn accept_connection(stream: TcpStream) {
             Ok(msg) => {
                 // Log the received message
                 println!("Received: {}", msg);
+
+                // Check if the message is empty
+                if msg.to_string().trim().is_empty() {
+                    eprintln!("Received an empty message");
+                    continue;
+                }
 
                 // Deserialize the message into WSTauriMessage
                 let ws_message: WSMessage = match serde_json::from_str(&msg.to_string()) {
@@ -110,7 +121,23 @@ async fn accept_connection(stream: TcpStream) {
                             {
                                 eprintln!("Error sending message: {}", e);
                             }
-                        } // Handle other actions as needed
+                        }
+                        WSTauriAction::FindFilesByName(criteria) => {
+                            eprintln!(
+                                "Finding files by name: {} with extension {}",
+                                criteria.partial_file_name, criteria.extension_name
+                            );
+                            let result = find_files_by_name(
+                                &criteria.partial_file_name,
+                                &criteria.extension_name,
+                            );
+                            if let Err(e) = write
+                                .send(tokio_tungstenite::tungstenite::Message::Text(result))
+                                .await
+                            {
+                                eprintln!("Error sending message: {}", e);
+                            }
+                        }
                     },
                     // Handle other channels as needed
                 }
@@ -125,8 +152,8 @@ async fn accept_connection(stream: TcpStream) {
 }
 
 fn read_downloads_folder() -> String {
-    let downloads_path = dirs::home_dir().unwrap().join("tauri_playground");
-    match fs::read_dir(&downloads_path) {
+    let downloads_path = DOWNLOADS_PATH.get().unwrap();
+    match fs::read_dir(downloads_path) {
         Ok(entries) => {
             let files: Vec<serde_json::Value> = entries
               .filter_map(|entry| entry.ok())
@@ -163,34 +190,38 @@ fn read_downloads_folder() -> String {
 }
 
 fn read_file_content(file_name: &str) -> String {
-    let downloads_path = dirs::home_dir()
-        .unwrap()
-        .join("tauri_playground")
-        .join(file_name);
+    let downloads_path = DOWNLOADS_PATH.get().unwrap().join(file_name);
+
+    // Check if the file exists
+    if !downloads_path.exists() {
+        eprintln!("File does not exist: {}", downloads_path.display());
+        return serde_json::json!({ "status": "error", "message": "File does not exist" })
+            .to_string();
+    }
+
     let mut file = match File::open(&downloads_path) {
         Ok(file) => file,
         Err(e) => {
             eprintln!("Error opening file {}: {}", downloads_path.display(), e);
-            return "[]".to_string();
+            return serde_json::json!({ "status": "error", "message": "Error opening file" })
+                .to_string();
         }
     };
 
     let mut content = Vec::new();
     if let Err(e) = file.read_to_end(&mut content) {
         eprintln!("Error reading file {}: {}", downloads_path.display(), e);
-        return "[]".to_string();
+        return serde_json::json!({ "status": "error", "message": "Error reading file" })
+            .to_string();
     }
 
     // Encode the binary content to base64
-    STANDARD.encode(content)
+    let encoded_content = STANDARD.encode(content);
+    serde_json::json!({ "status": "success", "data": encoded_content }).to_string()
 }
 
 fn write_file_content(name: &str, destination: &str, content: &str) -> String {
-    let downloads_path = dirs::home_dir()
-        .unwrap()
-        .join("tauri_playground")
-        .join(destination)
-        .join(name);
+    let downloads_path = DOWNLOADS_PATH.get().unwrap().join(destination).join(name);
 
     eprintln!("Writing file to: {}", downloads_path.display());
 
@@ -204,7 +235,7 @@ fn write_file_content(name: &str, destination: &str, content: &str) -> String {
         Ok(decoded) => decoded,
         Err(e) => {
             eprintln!("Error decoding base64 content: {}", e);
-            return "Error decoding base64 content".to_string();
+            return serde_json::json!({ "status": "error", "message": "Error decoding base64 content" }).to_string();
         }
     };
     eprintln!("Decoded content: {:?}", decoded_content);
@@ -213,17 +244,66 @@ fn write_file_content(name: &str, destination: &str, content: &str) -> String {
         Ok(file) => file,
         Err(e) => {
             eprintln!("Error creating file {}: {}", downloads_path.display(), e);
-            return "Error creating file".to_string();
+            return serde_json::json!({ "status": "error", "message": "Error creating file" })
+                .to_string();
         }
     };
     eprintln!("Writing to file: {:?}", downloads_path.display());
 
     if let Err(e) = file.write_all(&decoded_content) {
         eprintln!("Error writing to file {}: {}", downloads_path.display(), e);
-        return "Error writing to file".to_string();
+        return serde_json::json!({ "status": "error", "message": "Error writing to file" })
+            .to_string();
     }
 
-    "File written successfully".to_string()
+    serde_json::json!({ "status": "success", "message": "File written successfully" }).to_string()
+}
+
+fn find_files_by_name(partial_name: &str, extension: &str) -> String {
+    let downloads_path = DOWNLOADS_PATH.get().unwrap();
+    let mut results = Vec::new();
+
+    fn search_dir(
+        base_path: &std::path::Path,
+        dir: &std::path::Path,
+        partial_name: &str,
+        extension: &str,
+        results: &mut Vec<serde_json::Value>,
+    ) {
+        if let Ok(entries) = fs::read_dir(dir) {
+            for entry in entries.filter_map(|entry| entry.ok()) {
+                let path = entry.path();
+                if path.is_dir() {
+                    search_dir(base_path, &path, partial_name, extension, results);
+                } else if let Some(file_name) = path.file_name().and_then(|n| n.to_str()) {
+                    let matches_partial_name = file_name.contains(partial_name);
+                    let matches_extension = extension.is_empty()
+                        || path.extension().and_then(|ext| ext.to_str()) == Some(extension);
+
+                    if matches_partial_name && matches_extension {
+                        let relative_path = path.strip_prefix(base_path).unwrap().to_string_lossy().to_string();
+                        let metadata = fs::metadata(&path).unwrap();
+                        let file_type = if metadata.is_dir() {
+                            "directory"
+                        } else {
+                            "file"
+                        };
+                        results.push(serde_json::json!({
+                            "path": relative_path,
+                            "file_name": file_name.to_string(),
+                            "file_type": file_type,
+                            "size": metadata.len(),
+                            "permissions": format!("{:o}", metadata.permissions().mode()),
+                            "modified": metadata.modified().unwrap().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs()
+                        }));
+                    }
+                }
+            }
+        }
+    }
+
+    search_dir(downloads_path, downloads_path, partial_name, extension, &mut results);
+    serde_json::to_string(&results).unwrap_or_else(|_| "[]".to_string())
 }
 
 #[cfg(test)]
