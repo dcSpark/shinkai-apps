@@ -12,6 +12,7 @@ use crate::commands::shinkai_node_manager_commands::{
     shinkai_node_spawn,
 };
 
+use crate::ws_server::ws_server::ws_start_server;
 use globals::SHINKAI_NODE_MANAGER_INSTANCE;
 use local_shinkai_node::shinkai_node_manager::ShinkaiNodeManager;
 use tauri::menu::{MenuBuilder, MenuItemBuilder, SubmenuBuilder};
@@ -27,11 +28,14 @@ mod galxe;
 mod globals;
 mod hardware;
 mod local_shinkai_node;
+mod ws_server;
 
 fn main() {
+    tauri::async_runtime::spawn(ws_start_server());
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_websocket::init())
         .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
             println!("{}, {argv:?}, {cwd}", app.package_info().name);
             // app.emit("single-instance", Payload { args: argv, cwd }).unwrap();
