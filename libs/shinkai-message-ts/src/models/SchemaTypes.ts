@@ -195,8 +195,8 @@ export interface NetworkFolderScopeEntry {}
 export interface JobScope {
   local_vrkai: LocalScopeVRKaiEntry[];
   local_vrpack: LocalScopeVRPackEntry[];
-  vector_fs_items: string[];
-  vector_fs_folders: string[];
+  vector_fs_items: VectorFSItemScopeEntry[];
+  vector_fs_folders: VectorFSFolderScopeEntry[];
   network_folders: [];
 }
 
