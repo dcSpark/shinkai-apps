@@ -1,9 +1,5 @@
-import {
-  LocalScopeVRKaiEntry,
-  LocalScopeVRPackEntry,
-} from '../../models/SchemaTypes';
+import { JobScope } from '../../models/SchemaTypes';
 import { AgentInbox } from '../../models/ShinkaiMessage';
-import { getFileNames, updateChatConfig } from './index';
 
 type ResourceSource = {
   Standard: {
@@ -72,6 +68,7 @@ export type VRFolderScope = Pick<VRFolder, 'name' | 'path'>;
 export type VRItemScope = Pick<VRItem, 'name' | 'path'> & {
   source: ResourceSource;
 };
+
 export type CreateJobRequest = {
   llm_provider: string;
   job_creation_info: {
@@ -215,14 +212,6 @@ export type SerializedLLMProvider = {
 export type AddLLMProviderRequest = SerializedLLMProvider;
 export type AddLLMProviderResponse = string;
 
-export interface JobScope {
-  local_vrkai: LocalScopeVRKaiEntry[];
-  local_vrpack: LocalScopeVRPackEntry[];
-  vector_fs_items: string[];
-  vector_fs_folders: string[];
-  network_folders: [];
-}
-
 export type Inbox = {
   inbox_id: string;
   custom_name: string;
@@ -263,3 +252,14 @@ export type UpdateChatConfigResponse = {
 
 export type StopGeneratingLLMRequest = string;
 export type StopGeneratingLLMResponse = { status: string };
+
+export type GetJobScopeRequest = {
+  jobId: string;
+};
+export type GetJobScopeResponse = JobScope;
+
+export type UpdateJobScopeRequest = {
+  job_id: string;
+  job_scope: JobScope;
+};
+export type UpdateJobScopeResponse = string;
