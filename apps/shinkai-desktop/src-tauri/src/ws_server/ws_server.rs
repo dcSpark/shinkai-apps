@@ -109,12 +109,8 @@ async fn accept_connection(stream: TcpStream) {
                             }
                         }
                         WSTauriAction::WriteFile(content) => {
-                            eprintln!("Writing file: {}", content.name);
-                            let result = write_file_content(
-                                &content.name,
-                                &content.destination,
-                                &content.content,
-                            );
+                            eprintln!("Writing file: {}", content.destination);
+                            let result = write_file_content(&content.destination, &content.content);
                             if let Err(e) = write
                                 .send(tokio_tungstenite::tungstenite::Message::Text(result))
                                 .await
@@ -220,8 +216,15 @@ fn read_file_content(file_name: &str) -> String {
     serde_json::json!({ "status": "success", "data": encoded_content }).to_string()
 }
 
-fn write_file_content(name: &str, destination: &str, content: &str) -> String {
-    let downloads_path = DOWNLOADS_PATH.get().unwrap().join(destination).join(name);
+fn write_file_content(destination: &str, content: &str) -> String {
+    let mut destination_path = destination.to_string();
+    if destination_path.starts_with("~/") {
+        destination_path = destination_path.replacen("~", ".", 1);
+    } else if destination_path.starts_with("/") {
+        destination_path = format!(".{}", destination_path);
+    }
+
+    let downloads_path = DOWNLOADS_PATH.get().unwrap().join(destination_path);
 
     eprintln!("Writing file to: {}", downloads_path.display());
 
@@ -281,7 +284,11 @@ fn find_files_by_name(partial_name: &str, extension: &str) -> String {
                         || path.extension().and_then(|ext| ext.to_str()) == Some(extension);
 
                     if matches_partial_name && matches_extension {
-                        let relative_path = path.strip_prefix(base_path).unwrap().to_string_lossy().to_string();
+                        let relative_path = path
+                            .strip_prefix(base_path)
+                            .unwrap()
+                            .to_string_lossy()
+                            .to_string();
                         let metadata = fs::metadata(&path).unwrap();
                         let file_type = if metadata.is_dir() {
                             "directory"
@@ -302,7 +309,13 @@ fn find_files_by_name(partial_name: &str, extension: &str) -> String {
         }
     }
 
-    search_dir(downloads_path, downloads_path, partial_name, extension, &mut results);
+    search_dir(
+        downloads_path,
+        downloads_path,
+        partial_name,
+        extension,
+        &mut results,
+    );
     serde_json::to_string(&results).unwrap_or_else(|_| "[]".to_string())
 }
 

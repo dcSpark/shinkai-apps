@@ -30,7 +30,6 @@ pub enum WSTauriAction {
 
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
 pub struct WriteFSContent {
-    pub name: String,
     pub destination: String,
     pub content: String,
 }
