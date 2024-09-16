@@ -1,10 +1,4 @@
 {
-  "app": {
-    "trayIcon": {
-      "iconPath": "icons/tray-icon-macos.png",
-      "iconAsTemplate": true
-    }
-  },
   "bundle": {
     "macOS": {
       "frameworks": ["external-binaries/shinkai-node/libpdfium.dylib"],
