@@ -156,40 +156,6 @@ const WorkflowPlayground = () => {
   useEffect(() => {
     setCurrentWorkflowIndex(workflowHistory.size - 1);
   }, []);
-  //
-  // useEffect(() => {
-  //   if (
-  //     locationState?.selectedVRFiles?.length > 0 ||
-  //     locationState?.selectedVRFolders?.length > 0
-  //   ) {
-  //     const selectedVRFilesPathMap = locationState?.selectedVRFiles?.reduce(
-  //       (acc, file) => {
-  //         selectedFileKeysRef.set(file.path, file);
-  //         acc[file.path] = {
-  //           checked: true,
-  //         };
-  //         return acc;
-  //       },
-  //       {} as Record<string, { checked: boolean }>,
-  //     );
-  //
-  //     const selectedVRFoldersPathMap = locationState?.selectedVRFolders?.reduce(
-  //       (acc, folder) => {
-  //         selectedFolderKeysRef.set(folder.path, folder);
-  //         acc[folder.path] = {
-  //           checked: true,
-  //         };
-  //         return acc;
-  //       },
-  //       {} as Record<string, { checked: boolean }>,
-  //     );
-  //
-  //     onSelectedKeysChange({
-  //       ...selectedVRFilesPathMap,
-  //       ...selectedVRFoldersPathMap,
-  //     });
-  //   }
-  // }, [locationState?.selectedVRFiles, locationState?.selectedVRFolders]);
 
   const onSubmit = async (data: CreateJobFormSchema) => {
     if (!auth) return;
