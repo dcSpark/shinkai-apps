@@ -13,6 +13,8 @@ import {
   GetChatConfigResponse,
   GetFileNamesRequest,
   GetFileNamesResponse,
+  GetJobScopeRequest,
+  GetJobScopeResponse,
   GetLastMessagesRequest,
   GetLastMessagesResponse,
   GetLastMessagesWithBranchesRequest,
@@ -24,6 +26,7 @@ import {
   StopGeneratingLLMRequest,
   UpdateChatConfigRequest,
   UpdateChatConfigResponse,
+  UpdateJobScopeRequest,
 } from './types';
 
 export const createJob = async (
@@ -284,6 +287,37 @@ export const stopGeneratingLLM = async (
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v2/stop_llm'),
     { inbox_name: jobId },
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data;
+};
+
+export const getJobScope = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: GetJobScopeRequest,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/get_job_scope'),
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+      params: { job_id: payload.jobId },
+    },
+  );
+  return response.data as GetJobScopeResponse;
+};
+export const updateJobScope = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: UpdateJobScopeRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/update_job_scope'),
+    payload,
     {
       headers: { Authorization: `Bearer ${bearerToken}` },
       responseType: 'json',

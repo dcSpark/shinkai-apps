@@ -97,9 +97,6 @@ const WorkflowSearchDrawer = ({
   const debouncedSearchQuery = useDebounce(searchQuery, 600);
   const isSearchQuerySynced = searchQuery === debouncedSearchQuery;
 
-  // const [selectedWorkflowEdit, setSelectedWorkflowEdit] =
-  //   useState<Workflow | null>(null);
-
   const { isPending, data: workflowList } = useGetWorkflowList({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',

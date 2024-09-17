@@ -2,13 +2,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { retrieveVectorResource } from '@shinkai_network/shinkai-message-ts/api';
 import {
+  VectorFSFolderScopeEntry,
+  VectorFSItemScopeEntry,
+} from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
+import {
   SearchVectorFormSchema,
   searchVectorFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/vector-fs/vector-search';
-import {
-  VRFolder,
-  VRItem,
-} from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import { useGetVRSeachSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRSearchSimplified/useGetSearchVRItems';
 import {
   Badge,
@@ -47,8 +47,12 @@ export const VectorFsScopeDrawer = ({
   isVectorFSOpen: boolean;
   onVectorFSOpenChanges: (value: boolean) => void;
   selectedKeys: TreeCheckboxSelectionKeys | null;
-  selectedFileKeysRef: React.MutableRefObject<Map<string, VRItem>>;
-  selectedFolderKeysRef: React.MutableRefObject<Map<string, VRFolder>>;
+  selectedFileKeysRef: React.MutableRefObject<
+    Map<string, VectorFSItemScopeEntry>
+  >;
+  selectedFolderKeysRef: React.MutableRefObject<
+    Map<string, VectorFSFolderScopeEntry>
+  >;
   onSelectedKeysChange: (value: TreeCheckboxSelectionKeys | null) => void;
   nodes: TreeNode[];
 }) => {
@@ -139,7 +143,9 @@ export const KnowledgeSearchDrawer = ({
   setIsKnowledgeSearchOpen: (value: boolean) => void;
   selectedKeys: TreeCheckboxSelectionKeys | null;
   onSelectedKeysChange: (value: TreeCheckboxSelectionKeys | null) => void;
-  selectedFileKeysRef: React.MutableRefObject<Map<string, VRItem>>;
+  selectedFileKeysRef: React.MutableRefObject<
+    Map<string, VectorFSItemScopeEntry>
+  >;
 }) => {
   const { t } = useTranslation();
 

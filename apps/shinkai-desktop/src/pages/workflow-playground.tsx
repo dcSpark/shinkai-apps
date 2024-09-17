@@ -9,8 +9,6 @@ import {
   VRFolder,
   VRItem,
 } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
-import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
-import { transformDataToTreeNodes } from '@shinkai_network/shinkai-node-state/lib/utils/files';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import {
@@ -40,16 +38,11 @@ import {
   FilesIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { MoveLeft, MoveRight, PlusIcon, TrashIcon } from 'lucide-react';
-import { TreeCheckboxSelectionKeys } from 'primereact/tree';
-import { TreeNode } from 'primereact/treenode';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
-import {
-  KnowledgeSearchDrawer,
-  VectorFsScopeDrawer,
-} from '../components/vector-fs/components/vector-fs-context-drawer';
+import { useSetJobScope } from '../components/chat/context/set-job-scope-context';
 import { allowedFileExtensions } from '../lib/constants';
 import { useAnalytics } from '../lib/posthog-provider';
 import { ADD_AGENT_PATH } from '../routes/name';
@@ -81,38 +74,25 @@ const WorkflowPlayground = () => {
     selectedVRFolders: VRFolder[];
   };
 
-  const [isVectorFSOpen, setIsVectorFSOpen] = React.useState(false);
-  const [isKnowledgeSearchOpen, setIsKnowledgeSearchOpen] =
-    React.useState(false);
+  const setSetJobScopeOpen = useSetJobScope(
+    (state) => state.setSetJobScopeOpen,
+  );
 
-  const [nodes, setNodes] = useState<TreeNode[]>([]);
-  const [selectedKeys, setSelectedKeys] =
-    useState<TreeCheckboxSelectionKeys | null>(null);
+  const setKnowledgeSearchOpen = useSetJobScope(
+    (state) => state.setKnowledgeSearchOpen,
+  );
 
-  const selectedFileKeysRef = useRef<Map<string, VRItem>>(new Map());
-  const selectedFolderKeysRef = useRef<Map<string, VRFolder>>(new Map());
+  const selectedKeys = useSetJobScope((state) => state.selectedKeys);
+  // const onSelectedKeysChange = useSetJobScope(
+  //   (state) => state.onSelectedKeysChange,
+  // );
 
-  const {
-    // isPending: isVRFilesPending,
-    data: VRFiles,
-    isSuccess: isVRFilesSuccess,
-  } = useGetVRPathSimplified({
-    nodeAddress: auth?.node_address ?? '',
-    profile: auth?.profile ?? '',
-    shinkaiIdentity: auth?.shinkai_identity ?? '',
-    path: '/',
-    my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-    my_device_identity_sk: auth?.profile_identity_sk ?? '',
-    node_encryption_pk: auth?.node_encryption_pk ?? '',
-    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-    profile_identity_sk: auth?.profile_identity_sk ?? '',
-  });
-
-  useEffect(() => {
-    if (isVRFilesSuccess) {
-      setNodes(transformDataToTreeNodes(VRFiles));
-    }
-  }, [VRFiles, isVRFilesSuccess]);
+  const selectedFileKeysRef = useSetJobScope(
+    (state) => state.selectedFileKeysRef,
+  );
+  const selectedFolderKeysRef = useSetJobScope(
+    (state) => state.selectedFolderKeysRef,
+  );
 
   const createJobForm = useForm<CreateJobFormSchema>({
     resolver: zodResolver(createJobFormSchema),
@@ -177,56 +157,22 @@ const WorkflowPlayground = () => {
     setCurrentWorkflowIndex(workflowHistory.size - 1);
   }, []);
 
-  useEffect(() => {
-    if (
-      locationState?.selectedVRFiles?.length > 0 ||
-      locationState?.selectedVRFolders?.length > 0
-    ) {
-      const selectedVRFilesPathMap = locationState?.selectedVRFiles?.reduce(
-        (acc, file) => {
-          selectedFileKeysRef.current.set(file.path, file);
-          acc[file.path] = {
-            checked: true,
-          };
-          return acc;
-        },
-        {} as Record<string, { checked: boolean }>,
-      );
-
-      const selectedVRFoldersPathMap = locationState?.selectedVRFolders?.reduce(
-        (acc, folder) => {
-          selectedFolderKeysRef.current.set(folder.path, folder);
-          acc[folder.path] = {
-            checked: true,
-          };
-          return acc;
-        },
-        {} as Record<string, { checked: boolean }>,
-      );
-
-      setSelectedKeys({
-        ...selectedVRFilesPathMap,
-        ...selectedVRFoldersPathMap,
-      });
-    }
-  }, [locationState?.selectedVRFiles, locationState?.selectedVRFolders]);
-
   const onSubmit = async (data: CreateJobFormSchema) => {
     if (!auth) return;
     const selectedVRFiles =
-      selectedFileKeysRef.current.size > 0
-        ? Array.from(selectedFileKeysRef.current.values())
+      selectedFileKeysRef.size > 0
+        ? Array.from(selectedFileKeysRef.values())
         : [];
     const selectedVRFolders =
-      selectedFolderKeysRef.current.size > 0
-        ? Array.from(selectedFolderKeysRef.current.values())
+      selectedFolderKeysRef.size > 0
+        ? Array.from(selectedFolderKeysRef.values())
         : [];
 
     await createJob({
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
       llmProvider: data.agent,
-      content: data.content,
+      content: data.message,
       files: data.files,
       workflowCode: data.workflow,
       isHidden: true,
@@ -292,7 +238,7 @@ const WorkflowPlayground = () => {
             <div className="space-y-6">
               <FormField
                 control={createJobForm.control}
-                name="content"
+                name="message"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t('chat.form.message')}</FormLabel>
@@ -457,7 +403,7 @@ const WorkflowPlayground = () => {
                       <TooltipTrigger asChild>
                         <Button
                           className="flex h-10 w-10 items-center justify-center gap-2 rounded-lg p-2.5 text-left hover:bg-gray-500"
-                          onClick={() => setIsKnowledgeSearchOpen(true)}
+                          onClick={() => setKnowledgeSearchOpen(true)}
                           size="icon"
                           type="button"
                           variant="ghost"
@@ -479,7 +425,7 @@ const WorkflowPlayground = () => {
                 <div className="flex flex-col gap-1.5">
                   <Button
                     className="hover:bg-gray-350 flex h-[40px] items-center justify-between gap-2 rounded-lg p-2.5 text-left"
-                    onClick={() => setIsVectorFSOpen(true)}
+                    onClick={() => setSetJobScopeOpen(true)}
                     size="auto"
                     type="button"
                     variant="outline"
@@ -534,23 +480,6 @@ const WorkflowPlayground = () => {
           <Outlet />
         </div>
       </div>
-
-      <VectorFsScopeDrawer
-        isVectorFSOpen={isVectorFSOpen}
-        nodes={nodes}
-        onSelectedKeysChange={setSelectedKeys}
-        onVectorFSOpenChanges={setIsVectorFSOpen}
-        selectedFileKeysRef={selectedFileKeysRef}
-        selectedFolderKeysRef={selectedFolderKeysRef}
-        selectedKeys={selectedKeys}
-      />
-      <KnowledgeSearchDrawer
-        isKnowledgeSearchOpen={isKnowledgeSearchOpen}
-        onSelectedKeysChange={setSelectedKeys}
-        selectedFileKeysRef={selectedFileKeysRef}
-        selectedKeys={selectedKeys}
-        setIsKnowledgeSearchOpen={setIsKnowledgeSearchOpen}
-      />
     </SubpageLayout>
   );
 };

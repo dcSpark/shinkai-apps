@@ -1,9 +1,8 @@
 import { Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
-
 import {
-  VRFolder,
-  VRItem,
-} from '../../../lib/queries/getVRPathSimplified/types';
+  VectorFSFolderScopeEntry,
+  VectorFSItemScopeEntry,
+} from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
 
 export type CreateJobInput = Token & {
   nodeAddress: string;
@@ -14,8 +13,8 @@ export type CreateJobInput = Token & {
   workflowName?: string;
   workflowCode?: string;
   files?: File[];
-  selectedVRFiles?: VRItem[];
-  selectedVRFolders?: VRFolder[];
+  selectedVRFiles?: VectorFSItemScopeEntry[];
+  selectedVRFolders?: VectorFSFolderScopeEntry[];
 };
 
 export type CreateJobOutput = {
