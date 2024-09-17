@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { Navigate, Outlet, Route, Routes, useNavigate } from 'react-router-dom';
 
 import { SetJobScopeProvider } from '../components/chat/context/set-job-scope-context';
+import { PromptSelectionProvider } from '../components/prompt/context/prompt-selection-context';
 import { TableSheetProvider } from '../components/sheet/context/table-context';
 import PublicSharedFolderSubscription from '../components/subscriptions/public-shared-folders';
 import MySubscriptions from '../components/subscriptions/subscriptions';
@@ -158,7 +159,9 @@ const AppRoutes = () => {
             <ProtectedRoute>
               <SetJobScopeProvider>
                 <WorkflowSelectionProvider>
-                  <ChatLayout />
+                  <PromptSelectionProvider>
+                    <ChatLayout />
+                  </PromptSelectionProvider>
                 </WorkflowSelectionProvider>
               </SetJobScopeProvider>
             </ProtectedRoute>

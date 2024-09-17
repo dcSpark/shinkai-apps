@@ -115,3 +115,21 @@ export type PayInvoiceRequest = {
 };
 
 export type PayInvoiceResponse = any;
+
+export type Prompt = {
+  name: string;
+  prompt: string;
+  is_system: boolean;
+  is_enabled: boolean;
+  version: string;
+  is_favorite: boolean;
+  embedding?: string;
+};
+export type GetAllPromptsResponse = Prompt[];
+export type SearchPromptsResponse = Prompt[];
+export type CreatePromptRequest = Prompt;
+export type CreatePromptResponse = Prompt;
+export type UpdatePromptRequest = Prompt;
+export type DeletePromptRequest = {
+  prompt_name: string;
+};

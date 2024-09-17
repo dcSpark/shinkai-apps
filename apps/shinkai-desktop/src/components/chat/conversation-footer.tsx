@@ -69,6 +69,7 @@ import {
   AiUpdateSelectionActionBar,
 } from './chat-action-bar/ai-update-selection-action-bar';
 import ChatConfigActionBar from './chat-action-bar/chat-config-action-bar';
+import PromptSelectionActionBar from './chat-action-bar/prompt-selection-action-bar';
 import WorkflowSelectionActionBar from './chat-action-bar/workflow-selection-action-bar';
 import { streamingSupportedModels } from './constants';
 import { useSetJobScope } from './context/set-job-scope-context';
@@ -340,6 +341,7 @@ function ConversationEmptyFooter() {
                             </TooltipPortal>
                           </Tooltip>
                         </TooltipProvider>
+                        <PromptSelectionActionBar />
                         <WorkflowSelectionActionBar />
                         {/*<TooltipProvider delayDuration={0}>*/}
                         {/*  <Tooltip>*/}
@@ -762,6 +764,7 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                             </TooltipPortal>
                           </Tooltip>
                         </TooltipProvider>
+                        <PromptSelectionActionBar />
                         <WorkflowSelectionActionBar />
                       </div>
                       <ChatConfigActionBar />

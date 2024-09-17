@@ -1,11 +1,17 @@
 import { httpClient } from '../../http-client';
 import { urlJoin } from '../../utils/url-join';
 import {
+  CreatePromptRequest,
+  CreatePromptResponse,
+  DeletePromptRequest,
+  GetAllPromptsResponse,
   GetToolResponse,
   GetToolsResponse,
   ListAllWorkflowsResponse,
   PayInvoiceRequest,
+  SearchPromptsResponse,
   SearchWorkflowsResponse,
+  UpdatePromptRequest,
   UpdateToolRequest,
   UpdateToolResponse,
 } from './types';
@@ -107,6 +113,82 @@ export const payInvoice = async (
 ) => {
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v2/pay_invoice'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data;
+};
+export const getAllPrompts = async (
+  nodeAddress: string,
+  bearerToken: string,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/get_all_custom_prompts'),
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as GetAllPromptsResponse;
+};
+
+export const searchPrompt = async (
+  nodeAddress: string,
+  bearerToken: string,
+  query: string,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/search_custom_prompts'),
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      params: { query },
+      responseType: 'json',
+    },
+  );
+  return response.data as SearchPromptsResponse;
+};
+
+export const createPrompt = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: CreatePromptRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/add_custom_prompt'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as CreatePromptResponse;
+};
+export const updatePrompt = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: UpdatePromptRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/update_custom_prompt'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data;
+};
+
+export const removePrompt = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: DeletePromptRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/delete_custom_prompt'),
     payload,
     {
       headers: { Authorization: `Bearer ${bearerToken}` },
