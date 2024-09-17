@@ -1,14 +1,18 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils';
 import { useGetJobScope } from '@shinkai_network/shinkai-node-state/v2/queries/getJobScope/useGetJobScope';
-import { Badge, Button } from '@shinkai_network/shinkai-ui';
 import {
-  // DirectoryTypeIcon,
-  FilesIcon,
-  // FileTypeIcon,
-} from '@shinkai_network/shinkai-ui/assets';
+  Badge,
+  Button,
+  Tooltip,
+  TooltipContent,
+  TooltipPortal,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@shinkai_network/shinkai-ui';
+import { FilesIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { PanelRightClose } from 'lucide-react';
+import { PanelRightClose, PanelRightOpen } from 'lucide-react';
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -110,17 +114,32 @@ const ConversationHeader = () => {
   return (
     <div className="flex h-[58px] items-center justify-between border-b border-gray-400 px-4 py-2">
       <div className="inline-flex items-center gap-2">
-        {isChatSidebarCollapsed && (
-          <Button
-            className="text-gray-80 flex items-center gap-2"
-            onClick={() => setChatSidebarCollapsed(!isChatSidebarCollapsed)}
-            size="icon"
-            variant="tertiary"
-          >
-            <PanelRightClose className="h-4 w-4" />
-            <span className="sr-only">Open Chat Sidebar</span>
-          </Button>
-        )}
+        <TooltipProvider delayDuration={0}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                className="text-gray-80 flex items-center gap-2"
+                onClick={() => setChatSidebarCollapsed(!isChatSidebarCollapsed)}
+                size="icon"
+                variant="tertiary"
+              >
+                {isChatSidebarCollapsed ? (
+                  <PanelRightClose className="h-4 w-4" />
+                ) : (
+                  <PanelRightOpen className="h-4 w-4" />
+                )}
+                <span className="sr-only">
+                  {isChatSidebarCollapsed ? 'Open' : 'Close'} Chat Sidebar
+                </span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipPortal>
+              <TooltipContent>
+                <p> {isChatSidebarCollapsed ? 'Open' : 'Close'} Chat Sidebar</p>
+              </TooltipContent>
+            </TooltipPortal>
+          </Tooltip>
+        </TooltipProvider>
         {currentInbox ? (
           <span className="mr-2.5 line-clamp-1 inline text-sm font-medium capitalize text-white">
             {currentInbox?.custom_name || currentInbox?.inbox_id}

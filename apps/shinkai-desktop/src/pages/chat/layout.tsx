@@ -33,14 +33,15 @@ import {
   ActiveIcon,
   ArchiveIcon,
   ChatBubbleIcon,
+  CreateAIIcon,
   JobBubbleIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Edit3, PanelRightOpen } from 'lucide-react';
+import { Edit3 } from 'lucide-react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, Outlet, useMatch } from 'react-router-dom';
+import { Link, Outlet, useMatch, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { handleSendNotification } from '../../lib/notifications';
@@ -300,9 +301,7 @@ const ChatLayout = () => {
   const isChatSidebarCollapsed = useSettings(
     (state) => state.isChatSidebarCollapsed,
   );
-  const setChatSidebarCollapsed = useSettings(
-    (state) => state.setChatSidebarCollapsed,
-  );
+  const navigate = useNavigate();
   const auth = useAuth((state) => state.auth);
 
   const { inboxes, isPending, isSuccess } = useGetInboxes(
@@ -350,17 +349,18 @@ const ChatLayout = () => {
           >
             <div className="mb-2 flex items-center justify-between gap-2 px-2 py-2">
               <h2>{t('chat.chats')}</h2>
+
               <TooltipProvider delayDuration={0}>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
                       className="h-8 w-8"
-                      onClick={() => setChatSidebarCollapsed(true)}
+                      onClick={() => navigate('/inboxes')}
                       size="icon"
                       variant="tertiary"
                     >
-                      <PanelRightOpen className="text-gray-80 h-4 w-4" />
-                      <span className="sr-only">Close Chat Sidebar</span>
+                      <CreateAIIcon className="text-gray-80 h-[18px] w-[18px]" />
+                      <span className="sr-only">{t('chat.create')}</span>
                     </Button>
                   </TooltipTrigger>
                   <TooltipPortal>
