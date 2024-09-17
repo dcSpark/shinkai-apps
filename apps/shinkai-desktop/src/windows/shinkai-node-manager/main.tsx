@@ -43,10 +43,7 @@ import { z } from 'zod';
 
 import logo from '../../../src-tauri/icons/128x128@2x.png';
 import { OllamaModels } from '../../components/shinkai-node-manager/ollama-models';
-import {
-  ALLOWED_OLLAMA_MODELS,
-  OLLAMA_MODELS,
-} from '../../lib/shinkai-node-manager/ollama-models';
+import { ALLOWED_OLLAMA_MODELS } from '../../lib/shinkai-node-manager/ollama-models';
 import {
   shinkaiNodeQueryClient,
   useShinkaiNodeGetLastNLogsQuery,
@@ -305,7 +302,7 @@ const App = () => {
       </div>
 
       <Tabs
-        className="h-full flex w-full flex-col overflow-hidden"
+        className="flex h-full w-full flex-col overflow-hidden"
         defaultValue="logs"
       >
         <TabsList className="w-full">

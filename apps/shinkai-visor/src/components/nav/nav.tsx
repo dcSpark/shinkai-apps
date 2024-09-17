@@ -1,5 +1,7 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useArchiveJob } from '@shinkai_network/shinkai-node-state/lib/mutations/archiveJob/useArchiveJob';
+import { useGetJobScope } from '@shinkai_network/shinkai-node-state/v2/queries/getJobScope/useGetJobScope';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,7 +48,7 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { ArrowLeft, BotIcon, Menu, Settings, X, XIcon } from 'lucide-react';
 import React, { ReactNode, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import visorLogo from '../../assets/icons/visor.svg';
@@ -98,12 +100,25 @@ const useRouteTitleDescriptionMapping = (): Record<
 
 const DisplayInboxName = () => {
   const { t } = useTranslation();
+  const { inboxId: encodedInboxId = '' } = useParams();
+  const inboxId = decodeURIComponent(encodedInboxId);
+  const auth = useAuth((state) => state.auth);
+
   const currentInbox = useGetCurrentInbox();
   const [isEditInboxNameDialogOpened, setIsEditInboxNameDialogOpened] =
     useState<boolean>(false);
 
-  const hasFolders = !!currentInbox?.job_scope?.vector_fs_folders?.length;
-  const hasFiles = !!currentInbox?.job_scope?.vector_fs_items?.length;
+  const { data: jobScope, isSuccess } = useGetJobScope(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      jobId: inboxId ? extractJobIdFromInbox(inboxId) : '',
+    },
+    { enabled: !!inboxId },
+  );
+
+  const hasFolders = isSuccess && jobScope.vector_fs_folders?.length;
+  const hasFiles = isSuccess && jobScope.vector_fs_items?.length;
 
   const hasConversationContext = hasFolders || hasFiles;
 
@@ -130,8 +145,7 @@ const DisplayInboxName = () => {
                 <span className="text-gray-80 flex items-center gap-1 text-xs font-medium">
                   <DirectoryTypeIcon className="ml-1 h-4 w-4" />
                   {t('common.folderWithCount', {
-                    count: (currentInbox?.job_scope?.vector_fs_folders ?? [])
-                      .length,
+                    count: (jobScope?.vector_fs_folders ?? []).length,
                   })}
                 </span>
               )}
@@ -139,8 +153,7 @@ const DisplayInboxName = () => {
                 <span className="text-gray-80 flex items-center gap-1 text-xs font-medium">
                   <FileTypeIcon className="ml-1 h-4 w-4" />
                   {t('common.fileWithCount', {
-                    count: (currentInbox?.job_scope?.vector_fs_folders ?? [])
-                      .length,
+                    count: (jobScope?.vector_fs_folders ?? []).length,
                   })}
                 </span>
               )}
@@ -162,19 +175,17 @@ const DisplayInboxName = () => {
                       {t('common.folders')}
                     </span>
                     <ul>
-                      {currentInbox?.job_scope?.vector_fs_folders?.map(
-                        (folder) => (
-                          <li
-                            className="flex items-center gap-2 py-1.5"
-                            key={folder}
-                          >
-                            <DirectoryTypeIcon />
-                            <span className="text-gray-80 text-xs text-white">
-                              {folder}
-                            </span>
-                          </li>
-                        ),
-                      )}
+                      {jobScope?.vector_fs_folders?.map((folder) => (
+                        <li
+                          className="flex items-center gap-2 py-1.5"
+                          key={folder.path}
+                        >
+                          <DirectoryTypeIcon />
+                          <span className="text-gray-80 text-xs text-white">
+                            {folder.name}
+                          </span>
+                        </li>
+                      ))}
                     </ul>
                   </div>
                 )}
@@ -187,11 +198,11 @@ const DisplayInboxName = () => {
                       {currentInbox?.job_scope?.vector_fs_items?.map((file) => (
                         <li
                           className="flex items-center gap-2 py-1.5"
-                          key={file}
+                          key={file.path}
                         >
                           <FileTypeIcon />
                           <span className="text-gray-80 text-xs text-white">
-                            {file}
+                            {file.name}
                           </span>
                         </li>
                       ))}

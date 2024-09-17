@@ -1,15 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { retrieveVectorResource } from '@shinkai_network/shinkai-message-ts/api';
+import { retrieveVectorResource } from '@shinkai_network/shinkai-message-ts/api/methods';
+import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import {
   SearchVectorFormSchema,
   searchVectorFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/vector-fs/vector-search';
-import {
-  VRFolder,
-  VRItem,
-} from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
+import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
 import { useGetVRSeachSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRSearchSimplified/useGetSearchVRItems';
+import { transformDataToTreeNodes } from '@shinkai_network/shinkai-node-state/lib/utils/files';
+import { useUpdateJobScope } from '@shinkai_network/shinkai-node-state/v2/mutations/updateJobScope/useUpdateJobScope';
 import {
   Badge,
   Button,
@@ -28,37 +28,85 @@ import { SearchIcon, XIcon } from 'lucide-react';
 import { Checkbox } from 'primereact/checkbox';
 import { Tree, TreeCheckboxSelectionKeys } from 'primereact/tree';
 import { TreeNode } from 'primereact/treenode';
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
+import { useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
-import { treeOptions } from '../../../lib/constants';
-import { useAuth } from '../../../store/auth';
+import { treeOptions } from '../../lib/constants';
+import { useAuth } from '../../store/auth';
+import { useSetJobScope } from './context/set-job-scope-context';
 
-export const VectorFsScopeDrawer = ({
-  isVectorFSOpen,
-  onVectorFSOpenChanges,
-  selectedKeys,
-  selectedFileKeysRef,
-  selectedFolderKeysRef,
-  onSelectedKeysChange,
-  nodes,
-}: {
-  isVectorFSOpen: boolean;
-  onVectorFSOpenChanges: (value: boolean) => void;
-  selectedKeys: TreeCheckboxSelectionKeys | null;
-  selectedFileKeysRef: React.MutableRefObject<Map<string, VRItem>>;
-  selectedFolderKeysRef: React.MutableRefObject<Map<string, VRFolder>>;
-  onSelectedKeysChange: (value: TreeCheckboxSelectionKeys | null) => void;
-  nodes: TreeNode[];
-}) => {
+export const SetJobScopeDrawer = () => {
   const { t } = useTranslation();
+  const { inboxId: encodedInboxId = '' } = useParams();
+  const inboxId = decodeURIComponent(encodedInboxId);
+
+  const isSetJobScopeOpen = useSetJobScope((state) => state.isSetJobScopeOpen);
+  const setSetJobScopeOpen = useSetJobScope(
+    (state) => state.setSetJobScopeOpen,
+  );
+  const selectedKeys = useSetJobScope((state) => state.selectedKeys);
+  const onSelectedKeysChange = useSetJobScope(
+    (state) => state.onSelectedKeysChange,
+  );
+
+  const selectedFileKeysRef = useSetJobScope(
+    (state) => state.selectedFileKeysRef,
+  );
+  const selectedFolderKeysRef = useSetJobScope(
+    (state) => state.selectedFolderKeysRef,
+  );
+  const auth = useAuth((state) => state.auth);
+  const [nodes, setNodes] = useState<TreeNode[]>([]);
+
+  const { data: VRFiles, isSuccess: isVRFilesSuccess } = useGetVRPathSimplified(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      profile: auth?.profile ?? '',
+      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      path: '/',
+      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
+      my_device_identity_sk: auth?.profile_identity_sk ?? '',
+      node_encryption_pk: auth?.node_encryption_pk ?? '',
+      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+      profile_identity_sk: auth?.profile_identity_sk ?? '',
+    },
+  );
+
+  const { mutateAsync: updateJobScope, isPending: isUpdatingJobScope } =
+    useUpdateJobScope({
+      onSuccess: () => {
+        toast.success('Conversation context updated successfully');
+        setSetJobScopeOpen(false);
+      },
+      onError: (error) => {
+        toast.error('Failed to update conversation context', {
+          description: error.response?.data?.message ?? error.message,
+        });
+      },
+    });
+
+  useEffect(() => {
+    if (isVRFilesSuccess) {
+      setNodes(transformDataToTreeNodes(VRFiles));
+    }
+  }, [VRFiles, isVRFilesSuccess]);
+
+  useEffect(() => {
+    if (!isSetJobScopeOpen) {
+      const element = document.querySelector(
+        '[contenteditable="true"]',
+      ) as HTMLDivElement;
+      if (element) {
+        element?.focus?.();
+      }
+    }
+  }, [isSetJobScopeOpen]);
 
   return (
-    <Sheet onOpenChange={onVectorFSOpenChanges} open={isVectorFSOpen}>
+    <Sheet onOpenChange={setSetJobScopeOpen} open={isSetJobScopeOpen}>
       <SheetContent>
-        {/*<DrawerClose className="absolute right-4 top-5">*/}
-        {/*  <XIcon className="text-gray-80" />*/}
-        {/*</DrawerClose>*/}
         <SheetHeader className="mb-3">
           <SheetTitle className="flex h-[40px] items-center gap-4">
             {t('chat.form.setContext')}
@@ -72,28 +120,28 @@ export const VectorFsScopeDrawer = ({
             {t('chat.form.setContextText')}
           </p>
         </SheetHeader>
-
-        <ScrollArea className="h-[calc(100vh-260px)] flex-1">
+        <ScrollArea className="h-[calc(100vh-200px)] flex-1">
           <Tree
             onSelect={(e) => {
               if (e.node.icon === 'icon-folder') {
-                selectedFolderKeysRef.current.set(
-                  String(e.node.key),
-                  e.node.data,
-                );
+                selectedFolderKeysRef.set(String(e.node.key), e.node.data);
                 return;
               }
-              selectedFileKeysRef.current.set(String(e.node.key), e.node.data);
+              selectedFileKeysRef.set(String(e.node.key), {
+                path: e.node.data.path,
+                name: e.node.data.name,
+                source: e.node.data.vr_header.resource_source,
+              });
             }}
             onSelectionChange={(e) => {
               onSelectedKeysChange(e.value as TreeCheckboxSelectionKeys);
             }}
             onUnselect={(e) => {
               if (e.node.icon === 'icon-folder') {
-                selectedFolderKeysRef.current.delete(String(e.node.key));
+                selectedFolderKeysRef.delete(String(e.node.key));
                 return;
               }
-              selectedFileKeysRef.current.delete(String(e.node.key));
+              selectedFileKeysRef.delete(String(e.node.key));
             }}
             propagateSelectionDown={false}
             propagateSelectionUp={false}
@@ -104,20 +152,52 @@ export const VectorFsScopeDrawer = ({
           />
         </ScrollArea>
 
-        <SheetFooter>
+        <SheetFooter className="flex-row items-center gap-3">
           <Button
+            className="flex-1"
             onClick={() => {
               onSelectedKeysChange(null);
+              selectedFileKeysRef.clear();
+              selectedFolderKeysRef.clear();
             }}
+            size="sm"
             type="button"
             variant="outline"
           >
             {t('common.unselectAll')}
           </Button>
           <Button
+            className="flex-1"
+            isLoading={isUpdatingJobScope}
             onClick={() => {
-              onVectorFSOpenChanges(false);
+              if (inboxId) {
+                updateJobScope({
+                  jobId: extractJobIdFromInbox(inboxId),
+                  nodeAddress: auth?.node_address ?? '',
+                  token: auth?.api_v2_key ?? '',
+                  jobScope: {
+                    vector_fs_items: Array.from(
+                      selectedFileKeysRef.values(),
+                    )?.map((vfFile) => ({
+                      path: vfFile.path,
+                      name: vfFile.name,
+                      source: vfFile.source,
+                    })),
+                    vector_fs_folders: Array.from(
+                      selectedFolderKeysRef.values(),
+                    )?.map((vfFolder) => ({
+                      path: vfFolder.path,
+                      name: vfFolder.name,
+                    })),
+                    local_vrpack: [],
+                    local_vrkai: [],
+                    network_folders: [],
+                  },
+                });
+              }
+              setSetJobScopeOpen(false);
             }}
+            size="sm"
             type="button"
           >
             {t('common.done')}
@@ -128,21 +208,24 @@ export const VectorFsScopeDrawer = ({
   );
 };
 
-export const KnowledgeSearchDrawer = ({
-  isKnowledgeSearchOpen,
-  setIsKnowledgeSearchOpen,
-  selectedKeys,
-  onSelectedKeysChange,
-  selectedFileKeysRef,
-}: {
-  isKnowledgeSearchOpen: boolean;
-  setIsKnowledgeSearchOpen: (value: boolean) => void;
-  selectedKeys: TreeCheckboxSelectionKeys | null;
-  onSelectedKeysChange: (value: TreeCheckboxSelectionKeys | null) => void;
-  selectedFileKeysRef: React.MutableRefObject<Map<string, VRItem>>;
-}) => {
+export const KnowledgeSearchDrawer = () => {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
+  const isKnowledgeSearchOpen = useSetJobScope(
+    (state) => state.isKnowledgeSearchOpen,
+  );
+  const setKnowledgeSearchOpen = useSetJobScope(
+    (state) => state.setKnowledgeSearchOpen,
+  );
+
+  const selectedKeys = useSetJobScope((state) => state.selectedKeys);
+  const onSelectedKeysChange = useSetJobScope(
+    (state) => state.onSelectedKeysChange,
+  );
+  const selectedFileKeysRef = useSetJobScope(
+    (state) => state.selectedFileKeysRef,
+  );
+
   const [isSearchEntered, setIsSearchEntered] = useState(false);
   const [search, setSearch] = useState('');
   const searchVectorFSForm = useForm<SearchVectorFormSchema>({
@@ -193,7 +276,7 @@ export const KnowledgeSearchDrawer = ({
   );
 
   return (
-    <Sheet onOpenChange={setIsKnowledgeSearchOpen} open={isKnowledgeSearchOpen}>
+    <Sheet onOpenChange={setKnowledgeSearchOpen} open={isKnowledgeSearchOpen}>
       <SheetContent>
         <SheetHeader className="mb-3">
           <SheetTitle className="flex h-[40px] items-center gap-4">
@@ -319,7 +402,7 @@ export const KnowledgeSearchDrawer = ({
                               },
                             );
 
-                            selectedFileKeysRef.current.set(event.value, {
+                            selectedFileKeysRef.set(event.value, {
                               ...fileInfo.data,
                               path: event.value,
                               vr_header: {
@@ -364,7 +447,7 @@ export const KnowledgeSearchDrawer = ({
           <Button
             onClick={() => {
               onSelectedKeysChange(null);
-              selectedFileKeysRef.current.clear();
+              selectedFileKeysRef.clear();
             }}
             type="button"
             variant="outline"
@@ -373,7 +456,7 @@ export const KnowledgeSearchDrawer = ({
           </Button>
           <Button
             onClick={() => {
-              setIsKnowledgeSearchOpen(false);
+              setKnowledgeSearchOpen(false);
             }}
             type="button"
           >

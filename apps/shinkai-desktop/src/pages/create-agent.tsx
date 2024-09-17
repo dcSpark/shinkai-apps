@@ -103,7 +103,6 @@ const CreateAgentPage = () => {
       });
     },
     onError: (error) => {
-      console.log(error, 'error');
       toast.error(t('llmProviders.errors.createAgent'), {
         description: error.response?.data?.message ?? error.message,
       });

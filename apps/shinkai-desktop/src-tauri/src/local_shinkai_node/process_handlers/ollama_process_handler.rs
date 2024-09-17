@@ -120,6 +120,7 @@ impl OllamaProcessHandler {
     }
 
     pub async fn spawn(&self, ensure_model: Option<&str>) -> Result<(), String> {
+        self.process_handler.kill().await;
         let _ = self.kill_existing_processes_using_ports().await;
 
         let ollama_process_cwd = if cfg!(target_os = "windows") {
