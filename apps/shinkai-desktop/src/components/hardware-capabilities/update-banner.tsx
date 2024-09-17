@@ -15,7 +15,6 @@ import { Download, Loader2, RefreshCw, Rocket } from 'lucide-react';
 
 import {
   UpdateState,
-  useApplyUpdateMutation,
   useCheckUpdateQuery,
   useDownloadUpdateMutation,
   useUpdateStateQuery,
@@ -31,21 +30,19 @@ export const UpdateBanner = ({ className }: { className?: string }) => {
   });
   const { data: updateState } = useUpdateStateQuery();
   const { mutateAsync: downloadUpdate } = useDownloadUpdateMutation({});
-  const { mutateAsync: applyUpdate } = useApplyUpdateMutation();
 
   const downloadAndInstall = (): void => {
-    if (
-      updateState?.update?.available &&
-      updateState.downloadState?.state === 'finished'
-    ) {
-      applyUpdate();
-    } else {
-      downloadUpdate();
+    switch (updateState?.state) {
+      case 'available':
+        downloadUpdate();
+        break;
+      default:
+        break;
     }
   };
 
   const updateStateUI = (updateState: UpdateState) => {
-    if (updateState?.update?.available && !updateState?.downloadState) {
+    if (updateState?.state === 'available') {
       return (
         <div className="flex flex-row items-center space-x-1">
           <Download className="h-5 w-5 shrink-0" />
@@ -64,7 +61,10 @@ export const UpdateBanner = ({ className }: { className?: string }) => {
           </AnimatePresence>
         </div>
       );
-    } else if (updateState?.downloadState?.state === 'downloading') {
+    } else if (
+      updateState?.state === 'downloading' &&
+      updateState?.downloadState?.state === 'downloading'
+    ) {
       return (
         <div className="flex w-full flex-col items-center justify-center space-y-1">
           <span>
@@ -77,29 +77,10 @@ export const UpdateBanner = ({ className }: { className?: string }) => {
           />
         </div>
       );
-    } else if (updateState?.downloadState?.state === 'started') {
+    } else if (updateState?.state === 'restarting') {
       return (
         <div className="flex flex-row items-center space-x-1">
-          <Loader2 className="h-5 w-5 shrink-0" />
-        </div>
-      );
-    } else if (updateState?.downloadState?.state === 'finished') {
-      return (
-        <div className="flex flex-row items-center space-x-1">
-          <RefreshCw className="h-5 w-5 shrink-0" />
-          <AnimatePresence>
-            {sidebarExpanded && (
-              <motion.span
-                animate="show"
-                className="whitespace-nowrap text-xs"
-                exit="hidden"
-                initial="hidden"
-                variants={showAnimation}
-              >
-                Ready to Install
-              </motion.span>
-            )}
-          </AnimatePresence>
+          <Loader2 className="h-5 w-5 shrink-0 animate-spin" />
         </div>
       );
     }

@@ -44,6 +44,7 @@ tauri-plugin-updater = "2.0.0-rc.3"
 tauri-plugin-dialog = "2.0.0-rc.7"
 tauri-plugin-fs="2.0.0-rc.5"
 tauri-plugin-os = "2.0.0-rc.1"
+tauri-plugin-process = "2.0.0-rc.1"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

@@ -23,6 +23,7 @@ export type DownloadState = {
 } | null;
 
 export type UpdateState = {
+  state?: 'available' | 'downloading' | 'restarting';
   update?: Update | null;
   downloadState?: DownloadState;
 };
@@ -59,6 +60,7 @@ export const useCheckUpdateQuery = (
       queryClient.invalidateQueries({
         queryKey: ['update_state'],
       });
+      updateState.state = update?.available ? 'available' : undefined;
       updateState.update = update;
       return updateState;
     },
@@ -69,6 +71,7 @@ export const useCheckUpdateQuery = (
 // Mutations
 export const useDownloadUpdateMutation = (options?: UseMutationOptions) => {
   const queryClient = useQueryClient();
+  const { mutateAsync: shinkaiNodeKill } = useShinkaiNodeKillMutation();
   const response = useMutation({
     mutationFn: async (): Promise<void> => {
       if (!updateState.update?.available || updateState.downloadState) {
@@ -76,8 +79,8 @@ export const useDownloadUpdateMutation = (options?: UseMutationOptions) => {
         return;
       }
       try {
-        updateState.update?.download((downloadEvent) => {
-          console.log('download event', downloadEvent, updateState.update?.rid);
+        updateState.state = 'downloading';
+        await updateState.update?.downloadAndInstall((downloadEvent) => {
           switch (downloadEvent.event) {
             case 'Started':
               updateState.downloadState = {
@@ -129,41 +132,19 @@ export const useDownloadUpdateMutation = (options?: UseMutationOptions) => {
         });
       } catch (e) {
         console.log('error downloading update', e);
+        updateState.state = updateState.update ? 'available' : undefined;
         updateState.downloadState = undefined;
-      } finally {
         queryClient.invalidateQueries({
           queryKey: ['update_state'],
         });
+        return;
       }
-    },
-    ...options,
-    onSuccess: (...onSuccessParameters) => {
+      updateState.state = 'restarting';
       queryClient.invalidateQueries({
-        queryKey: ['check_update', 'update_state'],
+        queryKey: ['update_state'],
       });
-      if (options?.onSuccess) {
-        options.onSuccess(...onSuccessParameters);
-      }
-    },
-  });
-  return { ...response };
-};
-
-export const useApplyUpdateMutation = (options?: UseMutationOptions) => {
-  const queryClient = useQueryClient();
-  const { mutateAsync: shinkaiNodeKill } = useShinkaiNodeKillMutation();
-  const response = useMutation({
-    mutationFn: async (): Promise<void> => {
-      if (
-        updateState.update?.available &&
-        updateState.downloadState?.state === 'finished'
-      ) {
-        console.log('RID', updateState.update.rid);
-        await shinkaiNodeKill();
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        await updateState.update?.install();
-        await relaunch();
-      }
+      await shinkaiNodeKill();
+      await relaunch();
     },
     ...options,
     onSuccess: (...onSuccessParameters) => {
