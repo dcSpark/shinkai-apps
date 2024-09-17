@@ -17,6 +17,7 @@ use local_shinkai_node::shinkai_node_manager::ShinkaiNodeManager;
 use tauri::Emitter;
 use tauri::{Manager, RunEvent};
 use tauri_plugin_global_shortcut::{Code, Modifiers, ShortcutState};
+use tauri_plugin_updater::UpdaterExt;
 use tokio::sync::Mutex;
 use tray::create_tray;
 
@@ -107,6 +108,23 @@ fn main() {
                             });
                     }
                 }
+            });
+
+            let app_handle = app.handle().clone();
+            tauri::async_runtime::spawn(async move {
+                let updater = app_handle.updater_builder();
+                updater
+                    .on_before_exit(|| {
+                        tauri::async_runtime::block_on(async {
+                            eprintln!("app is about to exit on Windows!");
+                            if let Some(manager) = SHINKAI_NODE_MANAGER_INSTANCE.get() {
+                                let mut shinkai_node_manager_guard = manager.lock().await;
+                                shinkai_node_manager_guard.kill().await;
+                            }
+                        });
+                    })
+                    .build()
+                    .unwrap();
             });
 
             create_tray(app.handle())?;

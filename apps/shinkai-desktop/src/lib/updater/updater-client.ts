@@ -1,4 +1,5 @@
 import {
+  QueryClient,
   QueryObserverOptions,
   useMutation,
   UseMutationOptions,
@@ -7,11 +8,11 @@ import {
   UseQueryResult,
 } from '@tanstack/react-query';
 import { relaunch } from '@tauri-apps/plugin-process';
-import { check, Update } from '@tauri-apps/plugin-updater';
+import { check, DownloadEvent, Update } from '@tauri-apps/plugin-updater';
 
 import { useShinkaiNodeKillMutation } from '../shinkai-node-manager/shinkai-node-manager-client';
 
-// Queries
+// Types
 export type DownloadState = {
   state: 'started' | 'downloading' | 'finished';
   data: {
@@ -28,69 +29,82 @@ export type UpdateState = {
   downloadState?: DownloadState;
 };
 
+// Singleton state
 const updateState: UpdateState = {};
 
 // Queries
 export const useUpdateStateQuery = (
-  options?: Omit<QueryObserverOptions, 'queryKey'>,
+  options?: Omit<
+    QueryObserverOptions<UpdateState | null, Error>,
+    'queryKey' | 'queryFn'
+  >,
 ): UseQueryResult<UpdateState | null, Error> => {
-  const query = useQuery({
-    ...options,
+  return useQuery({
     queryKey: ['update_state'],
-    queryFn: async (): Promise<UpdateState | null> => {
-      return updateState;
-    },
+    queryFn: async () => updateState,
+    ...options,
   });
-  return { ...query } as UseQueryResult<UpdateState | null, Error>;
 };
 
 export const useCheckUpdateQuery = (
-  options?: Omit<QueryObserverOptions, 'queryKey'>,
+  options?: Omit<
+    QueryObserverOptions<UpdateState | null, Error>,
+    'queryKey' | 'queryFn'
+  >,
 ): UseQueryResult<UpdateState | null, Error> => {
   const queryClient = useQueryClient();
-  const query = useQuery({
-    ...options,
+  return useQuery({
     queryKey: ['check_update'],
-    queryFn: async (): Promise<UpdateState | null> => {
+    queryFn: async () => {
       if (updateState.update) {
         return updateState;
       }
       const update = await check();
       console.log('check update', update);
-      queryClient.invalidateQueries({
-        queryKey: ['update_state'],
-      });
       updateState.state = update?.available ? 'available' : undefined;
       updateState.update = update;
+      queryClient.invalidateQueries({ queryKey: ['update_state'] });
       return updateState;
     },
+    ...options,
   });
-  return { ...query } as UseQueryResult<UpdateState | null, Error>;
 };
 
 // Mutations
 export const useDownloadUpdateMutation = (options?: UseMutationOptions) => {
   const queryClient = useQueryClient();
   const { mutateAsync: shinkaiNodeKill } = useShinkaiNodeKillMutation();
-  const response = useMutation({
+
+  return useMutation({
     mutationFn: async (): Promise<void> => {
       if (!updateState.update?.available || updateState.downloadState) {
-        console.log('update in progress', updateState);
+        console.log('Update already in progress or not available', updateState);
         return;
       }
+
       try {
         updateState.state = 'downloading';
-        await updateState.update?.downloadAndInstall((downloadEvent) => {
+        queryClient.invalidateQueries({ queryKey: ['update_state'] });
+        await updateState.update.downloadAndInstall((downloadEvent) => {
           switch (downloadEvent.event) {
             case 'Started':
               updateState.downloadState = {
                 state: 'started',
-                data: {
-                  contentLength: downloadEvent.data.contentLength,
-                },
+                data: { contentLength: downloadEvent.data.contentLength },
               };
+              queryClient.invalidateQueries({ queryKey: ['update_state'] });
               break;
-            case 'Progress':
+            case 'Progress': {
+              const newDownloadProgress = updateState.downloadState?.data
+                ?.contentLength
+                ? Math.round(
+                    (((updateState.downloadState?.data?.accumulatedLength ||
+                      0) +
+                      downloadEvent.data.chunkLength) /
+                      updateState.downloadState.data.contentLength) *
+                      100,
+                  )
+                : 0;
               updateState.downloadState = {
                 state: 'downloading',
                 data: {
@@ -99,62 +113,48 @@ export const useDownloadUpdateMutation = (options?: UseMutationOptions) => {
                   accumulatedLength:
                     (updateState.downloadState?.data?.accumulatedLength || 0) +
                     downloadEvent.data.chunkLength,
-                  downloadProgressPercent: updateState.downloadState?.data
-                    ?.contentLength
-                    ? Math.round(
-                        (((updateState.downloadState?.data?.accumulatedLength ||
-                          0) +
-                          downloadEvent.data.chunkLength) /
-                          updateState.downloadState.data.contentLength) *
-                          100,
-                      )
-                    : undefined,
+                  downloadProgressPercent: newDownloadProgress,
                 },
               };
+              if (
+                newDownloadProgress !==
+                updateState.downloadState?.data?.downloadProgressPercent
+              ) {
+                queryClient.invalidateQueries({ queryKey: ['update_state'] });
+              }
               break;
+            }
             case 'Finished':
               updateState.downloadState = {
                 state: 'finished',
                 data: {
-                  contentLength: updateState.downloadState?.data?.contentLength,
-                  lastChunkLength:
-                    updateState.downloadState?.data?.lastChunkLength,
-                  accumulatedLength:
-                    updateState.downloadState?.data?.lastChunkLength,
+                  ...updateState.downloadState?.data,
                   downloadProgressPercent: 100,
                 },
               };
+              queryClient.invalidateQueries({ queryKey: ['update_state'] });
               break;
           }
-          queryClient.invalidateQueries({
-            queryKey: ['update_state'],
-          });
         });
       } catch (e) {
-        console.log('error downloading update', e);
+        console.error('Error downloading update', e);
         updateState.state = updateState.update ? 'available' : undefined;
         updateState.downloadState = undefined;
-        queryClient.invalidateQueries({
-          queryKey: ['update_state'],
-        });
+        queryClient.invalidateQueries({ queryKey: ['update_state'] });
         return;
       }
+
       updateState.state = 'restarting';
-      queryClient.invalidateQueries({
-        queryKey: ['update_state'],
-      });
+      queryClient.invalidateQueries({ queryKey: ['update_state'] });
       await shinkaiNodeKill();
       await relaunch();
     },
     ...options,
-    onSuccess: (...onSuccessParameters) => {
+    onSuccess: (...args) => {
       queryClient.invalidateQueries({
         queryKey: ['check_update', 'update_state'],
       });
-      if (options?.onSuccess) {
-        options.onSuccess(...onSuccessParameters);
-      }
+      options?.onSuccess?.(...args);
     },
   });
-  return { ...response };
 };
