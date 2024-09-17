@@ -105,6 +105,9 @@ export const useDownloadUpdateMutation = (options?: UseMutationOptions) => {
                       100,
                   )
                 : 0;
+              const progressChanged =
+                newDownloadProgress !==
+                updateState.downloadState?.data?.downloadProgressPercent;
               updateState.downloadState = {
                 state: 'downloading',
                 data: {
@@ -116,10 +119,8 @@ export const useDownloadUpdateMutation = (options?: UseMutationOptions) => {
                   downloadProgressPercent: newDownloadProgress,
                 },
               };
-              if (
-                newDownloadProgress !==
-                updateState.downloadState?.data?.downloadProgressPercent
-              ) {
+              if (progressChanged) {
+                console.log('download progress', newDownloadProgress);
                 queryClient.invalidateQueries({ queryKey: ['update_state'] });
               }
               break;
@@ -147,7 +148,11 @@ export const useDownloadUpdateMutation = (options?: UseMutationOptions) => {
       updateState.state = 'restarting';
       queryClient.invalidateQueries({ queryKey: ['update_state'] });
       await shinkaiNodeKill();
-      await relaunch();
+
+      updateState.state = updateState.update ? 'available' : undefined;
+      updateState.downloadState = undefined;
+      queryClient.invalidateQueries({ queryKey: ['update_state'] });
+      // await relaunch();
     },
     ...options,
     onSuccess: (...args) => {

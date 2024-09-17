@@ -115,7 +115,6 @@ const UpdateBanner: React.FC<{ className?: string }> = ({ className }) => {
     return null;
   }
 
-  console.log('updito', updateState);
   return (
     <div
       className={cn('flex w-full flex-col text-xs', className)}
