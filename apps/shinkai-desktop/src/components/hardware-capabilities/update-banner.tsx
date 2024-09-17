@@ -61,19 +61,18 @@ export const UpdateBanner = ({ className }: { className?: string }) => {
           </AnimatePresence>
         </div>
       );
-    } else if (
-      updateState?.state === 'downloading' &&
-      updateState?.downloadState?.state === 'downloading'
-    ) {
+    } else if (updateState?.state === 'downloading') {
       return (
         <div className="flex w-full flex-col items-center justify-center space-y-1">
           <span>
-            {updateState?.downloadState.data.downloadProgressPercent}%
+            {updateState?.downloadState?.data?.downloadProgressPercent || 0}%
           </span>
           <Progress
             className="h-2 w-full"
             max={100}
-            value={updateState?.downloadState.data.downloadProgressPercent}
+            value={
+              updateState?.downloadState?.data?.downloadProgressPercent || 0
+            }
           />
         </div>
       );
