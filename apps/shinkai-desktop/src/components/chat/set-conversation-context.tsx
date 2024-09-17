@@ -77,7 +77,7 @@ export const SetJobScopeDrawer = () => {
   const { mutateAsync: updateJobScope, isPending: isUpdatingJobScope } =
     useUpdateJobScope({
       onSuccess: () => {
-        toast.success('Conversation context has been updated successfully');
+        toast.success('Conversation context updated successfully');
         setSetJobScopeOpen(false);
       },
       onError: (error) => {
@@ -142,6 +142,8 @@ export const SetJobScopeDrawer = () => {
             className="flex-1"
             onClick={() => {
               onSelectedKeysChange(null);
+              selectedFileKeysRef.clear();
+              selectedFolderKeysRef.clear();
             }}
             size="sm"
             type="button"
