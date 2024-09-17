@@ -116,7 +116,7 @@ fn main() {
         .build(tauri::generate_context!())
         .expect("error while running tauri application")
         .run(move |_app_handle, event| match event {
-            RunEvent::ExitRequested { api, code , .. } => {
+            RunEvent::ExitRequested { .. } => {
                 tauri::async_runtime::spawn(async {
                     // For some reason process::exit doesn't fire RunEvent::ExitRequested event in tauri
                     let mut shinkai_node_manager_guard =
