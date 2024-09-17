@@ -39,10 +39,6 @@ const ConversationHeader = () => {
     (state) => state.setSetJobScopeOpen,
   );
 
-  // const setKnowledgeSearchOpen = useSetJobScope(
-  //   (state) => state.setKnowledgeSearchOpen,
-  // );
-  //
   const selectedKeys = useSetJobScope((state) => state.selectedKeys);
   const onSelectedKeysChange = useSetJobScope(
     (state) => state.onSelectedKeysChange,
