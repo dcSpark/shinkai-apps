@@ -46,14 +46,14 @@ export const treeOptions: TreePassThroughOptions = {
   node: { className: 'p-0 outline-none' },
   content: {
     className: cn(
-      'text-gray-80 mb-1 rounded-lg bg-transparent p-1 shadow-none hover:bg-gray-400 hover:text-white',
+      'text-gray-80 mb-1 rounded-lg bg-transparent p-1 py-1.5 shadow-none hover:bg-gray-400 hover:text-white',
       'cursor-pointer select-none',
     ),
   },
   toggler: ({ context }: TreePassThroughMethodOptions) => ({
     className: cn(
       'relative inline-flex shrink-0 cursor-pointer select-none items-center justify-center overflow-hidden',
-      'mr-2 h-8 w-8 rounded-full border-0 bg-transparent transition duration-200',
+      'mr-2.5 h-4 w-4 rounded-full border-0 bg-transparent transition duration-200',
       context.selected
         ? 'text-blue-600 hover:bg-white/30'
         : 'hover:text-gray-80 text-white hover:bg-gray-400',
