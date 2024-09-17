@@ -25,8 +25,8 @@ export const createJob = async ({
       scope: {
         vector_fs_items: (selectedVRFiles ?? [])?.map((vfFile) => ({
           path: vfFile.path,
-          name: vfFile.vr_header.resource_name,
-          source: vfFile.vr_header.resource_source,
+          name: vfFile.name,
+          source: vfFile.source,
         })),
         vector_fs_folders: (selectedVRFolders ?? [])?.map((vfFolder) => ({
           path: vfFolder.path,
