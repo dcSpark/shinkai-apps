@@ -1,18 +1,23 @@
 import {
-  VRFolder,
-  VRItem,
-} from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
+  VectorFSFolderScopeEntry,
+  VectorFSItemScopeEntry,
+} from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
 import { TreeCheckboxSelectionKeys } from 'primereact/tree';
 import React, { createContext, useContext, useRef } from 'react';
 import { createStore, useStore } from 'zustand';
+
+import {
+  KnowledgeSearchDrawer,
+  SetJobScopeDrawer,
+} from '../set-conversation-context';
 
 type SetJobScopeStore = {
   isSetJobScopeOpen: boolean;
   setSetJobScopeOpen: (isSetJobScopeOpen: boolean) => void;
   selectedKeys: TreeCheckboxSelectionKeys | null;
   onSelectedKeysChange: (value: TreeCheckboxSelectionKeys | null) => void;
-  selectedFileKeysRef: Map<string, VRItem>;
-  selectedFolderKeysRef: Map<string, VRFolder>;
+  selectedFileKeysRef: Map<string, VectorFSItemScopeEntry>;
+  selectedFolderKeysRef: Map<string, VectorFSFolderScopeEntry>;
 
   isKnowledgeSearchOpen: boolean;
   setKnowledgeSearchOpen: (isKnowledgeSearchOpen: boolean) => void;
@@ -53,6 +58,8 @@ export const SetJobScopeProvider = ({
   return (
     <SetJobScopeContext.Provider value={storeRef.current}>
       {children}
+      <SetJobScopeDrawer />
+      <KnowledgeSearchDrawer />
     </SetJobScopeContext.Provider>
   );
 };

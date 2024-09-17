@@ -155,13 +155,13 @@ const AppRoutes = () => {
         />
         <Route
           element={
-            <SetJobScopeProvider>
-              <WorkflowSelectionProvider>
-                <ProtectedRoute>
+            <ProtectedRoute>
+              <SetJobScopeProvider>
+                <WorkflowSelectionProvider>
                   <ChatLayout />
-                </ProtectedRoute>
-              </WorkflowSelectionProvider>
-            </SetJobScopeProvider>
+                </WorkflowSelectionProvider>
+              </SetJobScopeProvider>
+            </ProtectedRoute>
           }
           path="inboxes"
         >

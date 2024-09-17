@@ -29,7 +29,6 @@ import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-n
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useGetWorkflowSearch } from '@shinkai_network/shinkai-node-state/v2/queries/getWorkflowSearch/useGetWorkflowSearch';
 import {
-  Badge,
   Button,
   ChatInputArea,
   Form,
@@ -44,9 +43,7 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import {
-  AISearchContentIcon,
   fileIconMap,
-  FilesIcon,
   FileTypeIcon,
   WorkflowPlaygroundIcon,
 } from '@shinkai_network/shinkai-ui/assets';
@@ -75,10 +72,6 @@ import ChatConfigActionBar from './chat-action-bar/chat-config-action-bar';
 import WorkflowSelectionActionBar from './chat-action-bar/workflow-selection-action-bar';
 import { streamingSupportedModels } from './constants';
 import { useSetJobScope } from './context/set-job-scope-context';
-import {
-  KnowledgeSearchDrawer,
-  SetJobScopeDrawer,
-} from './set-conversation-context';
 
 export const actionButtonClassnames =
   'bg-gray-350 inline-flex h-[30px] w-[30px] cursor-pointer items-center justify-center gap-1.5 truncate border border-gray-200 px-[7px] py-1.5 text-left text-xs rounded-lg font-normal text-gray-50 hover:bg-gray-300 hover:text-white';
@@ -88,15 +81,6 @@ function ConversationEmptyFooter() {
   const size = partial({ standard: 'jedec' });
   const navigate = useNavigate();
 
-  const setSetJobScopeOpen = useSetJobScope(
-    (state) => state.setSetJobScopeOpen,
-  );
-
-  const setKnowledgeSearchOpen = useSetJobScope(
-    (state) => state.setKnowledgeSearchOpen,
-  );
-
-  const selectedKeys = useSetJobScope((state) => state.selectedKeys);
   const onSelectedKeysChange = useSetJobScope(
     (state) => state.onSelectedKeysChange,
   );
@@ -161,7 +145,11 @@ function ConversationEmptyFooter() {
     ) {
       const selectedVRFilesPathMap = locationState?.selectedVRFiles?.reduce(
         (acc, file) => {
-          selectedFileKeysRef.set(file.path, file);
+          selectedFileKeysRef.set(file.path, {
+            name: file.name,
+            path: file.path,
+            source: file.vr_header.resource_source,
+          });
           acc[file.path] = {
             checked: true,
           };
@@ -268,6 +256,9 @@ function ConversationEmptyFooter() {
 
   useEffect(() => {
     setWorkflowSelected(undefined);
+    selectedFileKeysRef.clear();
+    selectedFolderKeysRef.clear();
+    onSelectedKeysChange(null);
   }, []);
 
   const onSubmit = async (data: CreateJobFormSchema) => {
@@ -294,6 +285,9 @@ function ConversationEmptyFooter() {
     });
     chatForm.reset();
     setWorkflowSelected(undefined);
+    selectedFileKeysRef.clear();
+    selectedFolderKeysRef.clear();
+    onSelectedKeysChange(null);
   };
 
   return (
@@ -347,62 +341,62 @@ function ConversationEmptyFooter() {
                           </Tooltip>
                         </TooltipProvider>
                         <WorkflowSelectionActionBar />
-                        <TooltipProvider delayDuration={0}>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                className={cn(actionButtonClassnames, 'w-auto')}
-                                onClick={() => setSetJobScopeOpen(true)}
-                                size="auto"
-                                type="button"
-                                variant="outline"
-                              >
-                                <div className="flex items-center gap-2">
-                                  <FilesIcon className="h-4 w-4" />
-                                  <p className="text-xs text-white">
-                                    {t('vectorFs.localFiles')}
-                                  </p>
-                                </div>
-                                {Object.keys(selectedKeys ?? {}).length > 0 && (
-                                  <Badge className="bg-brand inline-flex h-5 w-5 items-center justify-center rounded-full p-0 text-center text-white">
-                                    {Object.keys(selectedKeys ?? {}).length}
-                                  </Badge>
-                                )}
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipPortal>
-                              <TooltipContent
-                                className="max-w-[300px]"
-                                sideOffset={5}
-                              >
-                                {t('chat.form.setContextText')}
-                              </TooltipContent>
-                            </TooltipPortal>
-                          </Tooltip>
-                        </TooltipProvider>
-                        <TooltipProvider delayDuration={0}>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                className={cn(actionButtonClassnames)}
-                                onClick={() => setKnowledgeSearchOpen(true)}
-                                size="icon"
-                                type="button"
-                                variant="ghost"
-                              >
-                                <AISearchContentIcon className="h-4 w-4" />
-                                <p className="sr-only text-xs text-white">
-                                  {t('aiFilesSearch.label')}
-                                </p>
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipPortal>
-                              <TooltipContent sideOffset={5}>
-                                {t('aiFilesSearch.label')}
-                              </TooltipContent>
-                            </TooltipPortal>
-                          </Tooltip>
-                        </TooltipProvider>
+                        {/*<TooltipProvider delayDuration={0}>*/}
+                        {/*  <Tooltip>*/}
+                        {/*    <TooltipTrigger asChild>*/}
+                        {/*      <Button*/}
+                        {/*        className={cn(actionButtonClassnames, 'w-auto')}*/}
+                        {/*        onClick={() => setSetJobScopeOpen(true)}*/}
+                        {/*        size="auto"*/}
+                        {/*        type="button"*/}
+                        {/*        variant="outline"*/}
+                        {/*      >*/}
+                        {/*        <div className="flex items-center gap-2">*/}
+                        {/*          <FilesIcon className="h-4 w-4" />*/}
+                        {/*          <p className="text-xs text-white">*/}
+                        {/*            {t('vectorFs.localFiles')}*/}
+                        {/*          </p>*/}
+                        {/*        </div>*/}
+                        {/*        {Object.keys(selectedKeys ?? {}).length > 0 && (*/}
+                        {/*          <Badge className="bg-brand inline-flex h-5 w-5 items-center justify-center rounded-full p-0 text-center text-white">*/}
+                        {/*            {Object.keys(selectedKeys ?? {}).length}*/}
+                        {/*          </Badge>*/}
+                        {/*        )}*/}
+                        {/*      </Button>*/}
+                        {/*    </TooltipTrigger>*/}
+                        {/*    <TooltipPortal>*/}
+                        {/*      <TooltipContent*/}
+                        {/*        className="max-w-[300px]"*/}
+                        {/*        sideOffset={5}*/}
+                        {/*      >*/}
+                        {/*        {t('chat.form.setContextText')}*/}
+                        {/*      </TooltipContent>*/}
+                        {/*    </TooltipPortal>*/}
+                        {/*  </Tooltip>*/}
+                        {/*</TooltipProvider>*/}
+                        {/*<TooltipProvider delayDuration={0}>*/}
+                        {/*  <Tooltip>*/}
+                        {/*    <TooltipTrigger asChild>*/}
+                        {/*      <Button*/}
+                        {/*        className={cn(actionButtonClassnames)}*/}
+                        {/*        onClick={() => setKnowledgeSearchOpen(true)}*/}
+                        {/*        size="icon"*/}
+                        {/*        type="button"*/}
+                        {/*        variant="ghost"*/}
+                        {/*      >*/}
+                        {/*        <AISearchContentIcon className="h-4 w-4" />*/}
+                        {/*        <p className="sr-only text-xs text-white">*/}
+                        {/*          {t('aiFilesSearch.label')}*/}
+                        {/*        </p>*/}
+                        {/*      </Button>*/}
+                        {/*    </TooltipTrigger>*/}
+                        {/*    <TooltipPortal>*/}
+                        {/*      <TooltipContent sideOffset={5}>*/}
+                        {/*        {t('aiFilesSearch.label')}*/}
+                        {/*      </TooltipContent>*/}
+                        {/*    </TooltipPortal>*/}
+                        {/*  </Tooltip>*/}
+                        {/*</TooltipProvider>*/}
                       </div>
                     </div>
 
@@ -555,8 +549,6 @@ function ConversationEmptyFooter() {
           />
         </Form>
       </div>
-      <SetJobScopeDrawer />
-      <KnowledgeSearchDrawer />
     </div>
   );
 }

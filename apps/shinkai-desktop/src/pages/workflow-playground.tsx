@@ -43,10 +43,6 @@ import { useForm } from 'react-hook-form';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 import { useSetJobScope } from '../components/chat/context/set-job-scope-context';
-import {
-  KnowledgeSearchDrawer,
-  SetJobScopeDrawer,
-} from '../components/chat/set-conversation-context';
 import { allowedFileExtensions } from '../lib/constants';
 import { useAnalytics } from '../lib/posthog-provider';
 import { ADD_AGENT_PATH } from '../routes/name';
@@ -87,9 +83,9 @@ const WorkflowPlayground = () => {
   );
 
   const selectedKeys = useSetJobScope((state) => state.selectedKeys);
-  const onSelectedKeysChange = useSetJobScope(
-    (state) => state.onSelectedKeysChange,
-  );
+  // const onSelectedKeysChange = useSetJobScope(
+  //   (state) => state.onSelectedKeysChange,
+  // );
 
   const selectedFileKeysRef = useSetJobScope(
     (state) => state.selectedFileKeysRef,
@@ -160,40 +156,40 @@ const WorkflowPlayground = () => {
   useEffect(() => {
     setCurrentWorkflowIndex(workflowHistory.size - 1);
   }, []);
-
-  useEffect(() => {
-    if (
-      locationState?.selectedVRFiles?.length > 0 ||
-      locationState?.selectedVRFolders?.length > 0
-    ) {
-      const selectedVRFilesPathMap = locationState?.selectedVRFiles?.reduce(
-        (acc, file) => {
-          selectedFileKeysRef.set(file.path, file);
-          acc[file.path] = {
-            checked: true,
-          };
-          return acc;
-        },
-        {} as Record<string, { checked: boolean }>,
-      );
-
-      const selectedVRFoldersPathMap = locationState?.selectedVRFolders?.reduce(
-        (acc, folder) => {
-          selectedFolderKeysRef.set(folder.path, folder);
-          acc[folder.path] = {
-            checked: true,
-          };
-          return acc;
-        },
-        {} as Record<string, { checked: boolean }>,
-      );
-
-      onSelectedKeysChange({
-        ...selectedVRFilesPathMap,
-        ...selectedVRFoldersPathMap,
-      });
-    }
-  }, [locationState?.selectedVRFiles, locationState?.selectedVRFolders]);
+  //
+  // useEffect(() => {
+  //   if (
+  //     locationState?.selectedVRFiles?.length > 0 ||
+  //     locationState?.selectedVRFolders?.length > 0
+  //   ) {
+  //     const selectedVRFilesPathMap = locationState?.selectedVRFiles?.reduce(
+  //       (acc, file) => {
+  //         selectedFileKeysRef.set(file.path, file);
+  //         acc[file.path] = {
+  //           checked: true,
+  //         };
+  //         return acc;
+  //       },
+  //       {} as Record<string, { checked: boolean }>,
+  //     );
+  //
+  //     const selectedVRFoldersPathMap = locationState?.selectedVRFolders?.reduce(
+  //       (acc, folder) => {
+  //         selectedFolderKeysRef.set(folder.path, folder);
+  //         acc[folder.path] = {
+  //           checked: true,
+  //         };
+  //         return acc;
+  //       },
+  //       {} as Record<string, { checked: boolean }>,
+  //     );
+  //
+  //     onSelectedKeysChange({
+  //       ...selectedVRFilesPathMap,
+  //       ...selectedVRFoldersPathMap,
+  //     });
+  //   }
+  // }, [locationState?.selectedVRFiles, locationState?.selectedVRFolders]);
 
   const onSubmit = async (data: CreateJobFormSchema) => {
     if (!auth) return;
@@ -518,9 +514,6 @@ const WorkflowPlayground = () => {
           <Outlet />
         </div>
       </div>
-
-      <SetJobScopeDrawer />
-      <KnowledgeSearchDrawer />
     </SubpageLayout>
   );
 };

@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { retrieveVectorResource } from '@shinkai_network/shinkai-message-ts/api/methods';
+import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import {
   SearchVectorFormSchema,
   searchVectorFormSchema,
@@ -8,6 +9,7 @@ import {
 import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
 import { useGetVRSeachSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRSearchSimplified/useGetSearchVRItems';
 import { transformDataToTreeNodes } from '@shinkai_network/shinkai-node-state/lib/utils/files';
+import { useUpdateJobScope } from '@shinkai_network/shinkai-node-state/v2/mutations/updateJobScope/useUpdateJobScope';
 import {
   Badge,
   Button,
@@ -28,6 +30,8 @@ import { Tree, TreeCheckboxSelectionKeys } from 'primereact/tree';
 import { TreeNode } from 'primereact/treenode';
 import { useEffect, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
+import { useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import { treeOptions } from '../../lib/constants';
 import { useAuth } from '../../store/auth';
@@ -35,6 +39,9 @@ import { useSetJobScope } from './context/set-job-scope-context';
 
 export const SetJobScopeDrawer = () => {
   const { t } = useTranslation();
+  const { inboxId: encodedInboxId = '' } = useParams();
+  const inboxId = decodeURIComponent(encodedInboxId);
+
   const isSetJobScopeOpen = useSetJobScope((state) => state.isSetJobScopeOpen);
   const setSetJobScopeOpen = useSetJobScope(
     (state) => state.setSetJobScopeOpen,
@@ -67,6 +74,19 @@ export const SetJobScopeDrawer = () => {
     },
   );
 
+  const { mutateAsync: updateJobScope, isPending: isUpdatingJobScope } =
+    useUpdateJobScope({
+      onSuccess: () => {
+        toast.success('Conversation context has been updated successfully');
+        setSetJobScopeOpen(false);
+      },
+      onError: (error) => {
+        toast.error('Failed to update conversation context', {
+          description: error.message,
+        });
+      },
+    });
+
   useEffect(() => {
     if (isVRFilesSuccess) {
       setNodes(transformDataToTreeNodes(VRFiles));
@@ -89,8 +109,7 @@ export const SetJobScopeDrawer = () => {
             {t('chat.form.setContextText')}
           </p>
         </SheetHeader>
-
-        <ScrollArea className="h-[calc(100vh-260px)] flex-1">
+        <ScrollArea className="h-[calc(100vh-200px)] flex-1">
           <Tree
             onSelect={(e) => {
               if (e.node.icon === 'icon-folder') {
@@ -100,7 +119,6 @@ export const SetJobScopeDrawer = () => {
               selectedFileKeysRef.set(String(e.node.key), e.node.data);
             }}
             onSelectionChange={(e) => {
-              console.log(e, 'target');
               onSelectedKeysChange(e.value as TreeCheckboxSelectionKeys);
             }}
             onUnselect={(e) => {
@@ -119,20 +137,50 @@ export const SetJobScopeDrawer = () => {
           />
         </ScrollArea>
 
-        <SheetFooter>
+        <SheetFooter className="flex-row items-center gap-3">
           <Button
+            className="flex-1"
             onClick={() => {
               onSelectedKeysChange(null);
             }}
+            size="sm"
             type="button"
             variant="outline"
           >
             {t('common.unselectAll')}
           </Button>
           <Button
+            className="flex-1"
+            isLoading={isUpdatingJobScope}
             onClick={() => {
+              if (inboxId) {
+                updateJobScope({
+                  jobId: extractJobIdFromInbox(inboxId),
+                  nodeAddress: auth?.node_address ?? '',
+                  token: auth?.api_v2_key ?? '',
+                  jobScope: {
+                    vector_fs_items: Array.from(
+                      selectedFileKeysRef.values(),
+                    )?.map((vfFile) => ({
+                      path: vfFile.path,
+                      name: vfFile.name,
+                      source: vfFile.source,
+                    })),
+                    vector_fs_folders: Array.from(
+                      selectedFolderKeysRef.values(),
+                    )?.map((vfFolder) => ({
+                      path: vfFolder.path,
+                      name: vfFolder.name,
+                    })),
+                    local_vrpack: [],
+                    local_vrkai: [],
+                    network_folders: [],
+                  },
+                });
+              }
               setSetJobScopeOpen(false);
             }}
+            size="sm"
             type="button"
           >
             {t('common.done')}
