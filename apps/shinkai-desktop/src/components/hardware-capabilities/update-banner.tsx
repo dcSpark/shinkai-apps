@@ -2,6 +2,7 @@ import {
   Alert,
   AlertDescription,
   AlertTitle,
+  Progress,
   Tooltip,
   TooltipContent,
   TooltipPortal,
@@ -10,32 +11,98 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowDown, Loader2, Rocket } from 'lucide-react';
+import { Download, Loader2, RefreshCw, Rocket } from 'lucide-react';
 
 import {
+  UpdateState,
+  useApplyUpdateMutation,
   useCheckUpdateQuery,
-  useInstallUpdateMutation,
-  useRelaunchMutation,
+  useDownloadUpdateMutation,
+  useUpdateStateQuery,
 } from '../../lib/updater/updater-client';
 import { showAnimation } from '../../pages/layout/main-layout';
 import { useSettings } from '../../store/settings';
 
 export const UpdateBanner = ({ className }: { className?: string }) => {
-  const CHECK_UPDATE_INTERVAL_MS = 60 * 60 * 1000;
+  const CHECK_UPDATE_INTERVAL_MS = 30 * 60 * 1000;
   const sidebarExpanded = useSettings((state) => state.sidebarExpanded);
-  const { data: checkUpdate } = useCheckUpdateQuery({
+  useCheckUpdateQuery({
     refetchInterval: CHECK_UPDATE_INTERVAL_MS,
   });
-  const { mutateAsync: installUpdate, isPending: isInstallUpdatePending } =
-    useInstallUpdateMutation({});
-  const { mutateAsync: relaunch } = useRelaunchMutation();
+  const { data: updateState } = useUpdateStateQuery();
+  const { mutateAsync: downloadUpdate } = useDownloadUpdateMutation({});
+  const { mutateAsync: applyUpdate } = useApplyUpdateMutation();
 
-  const applyUpdate = async () => {
-    if (isInstallUpdatePending) {
-      return;
+  const downloadAndInstall = (): void => {
+    if (
+      updateState?.update?.available &&
+      updateState.downloadState?.state === 'finished'
+    ) {
+      applyUpdate();
+    } else {
+      downloadUpdate();
     }
-    await installUpdate();
-    await relaunch();
+  };
+
+  const updateStateUI = (updateState: UpdateState) => {
+    if (updateState?.update?.available && !updateState?.downloadState) {
+      return (
+        <div className="flex flex-row items-center space-x-1">
+          <Download className="h-5 w-5 shrink-0" />
+          <AnimatePresence>
+            {sidebarExpanded && (
+              <motion.span
+                animate="show"
+                className="whitespace-nowrap text-xs"
+                exit="hidden"
+                initial="hidden"
+                variants={showAnimation}
+              >
+                New update available!
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </div>
+      );
+    } else if (updateState?.downloadState?.state === 'downloading') {
+      return (
+        <div className="flex w-full flex-col items-center justify-center space-y-1">
+          <span>
+            {updateState?.downloadState.data.downloadProgressPercent}%
+          </span>
+          <Progress
+            className="h-2 w-full"
+            max={100}
+            value={updateState?.downloadState.data.downloadProgressPercent}
+          />
+        </div>
+      );
+    } else if (updateState?.downloadState?.state === 'started') {
+      return (
+        <div className="flex flex-row items-center space-x-1">
+          <Loader2 className="h-5 w-5 shrink-0" />
+        </div>
+      );
+    } else if (updateState?.downloadState?.state === 'finished') {
+      return (
+        <div className="flex flex-row items-center space-x-1">
+          <RefreshCw className="h-5 w-5 shrink-0" />
+          <AnimatePresence>
+            {sidebarExpanded && (
+              <motion.span
+                animate="show"
+                className="whitespace-nowrap text-xs"
+                exit="hidden"
+                initial="hidden"
+                variants={showAnimation}
+              >
+                Ready to Install
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </div>
+      );
+    }
   };
 
   const banner = (
@@ -48,7 +115,7 @@ export const UpdateBanner = ({ className }: { className?: string }) => {
         <div className="mt-2 flex flex-col gap-1">
           <div>
             A new Shinkai Desktop version{' '}
-            <span className="font-bold">v{checkUpdate?.manifest?.version}</span>{' '}
+            <span className="font-bold">v{updateState?.update?.version}</span>{' '}
             is ready to be installed.
           </div>
           <div className="">This will restart the application.</div>
@@ -56,11 +123,11 @@ export const UpdateBanner = ({ className }: { className?: string }) => {
       </AlertDescription>
     </Alert>
   );
-  if (checkUpdate?.shouldUpdate) {
+  if (updateState?.update?.available) {
     return (
       <div
         className={cn('flex w-full flex-col text-xs', className)}
-        onClick={() => applyUpdate()}
+        onClick={() => downloadAndInstall()}
       >
         <TooltipProvider delayDuration={0}>
           <Tooltip>
@@ -72,25 +139,9 @@ export const UpdateBanner = ({ className }: { className?: string }) => {
                 )}
                 variant="success"
               >
-                {isInstallUpdatePending ? (
-                  <Loader2 className="h-5 w-5 shrink-0 animate-spin" />
-                ) : (
-                  <ArrowDown className="h-5 w-5 shrink-0" />
-                )}
-
-                <AnimatePresence>
-                  {sidebarExpanded && (
-                    <motion.span
-                      animate="show"
-                      className="whitespace-nowrap text-xs"
-                      exit="hidden"
-                      initial="hidden"
-                      variants={showAnimation}
-                    >
-                      New update available!
-                    </motion.span>
-                  )}
-                </AnimatePresence>
+                <div className="flex w-full flex-col space-y-1">
+                  {updateStateUI(updateState)}
+                </div>
               </Alert>
             </TooltipTrigger>
             <TooltipPortal>
