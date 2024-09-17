@@ -82,7 +82,7 @@ export const SetJobScopeDrawer = () => {
       },
       onError: (error) => {
         toast.error('Failed to update conversation context', {
-          description: error.message,
+          description: error.response?.data?.message ?? error.message,
         });
       },
     });
@@ -92,6 +92,17 @@ export const SetJobScopeDrawer = () => {
       setNodes(transformDataToTreeNodes(VRFiles));
     }
   }, [VRFiles, isVRFilesSuccess]);
+
+  useEffect(() => {
+    if (!isSetJobScopeOpen) {
+      const element = document.querySelector(
+        '[contenteditable="true"]',
+      ) as HTMLDivElement;
+      if (element) {
+        element?.focus?.();
+      }
+    }
+  }, [isSetJobScopeOpen]);
 
   return (
     <Sheet onOpenChange={setSetJobScopeOpen} open={isSetJobScopeOpen}>
@@ -116,7 +127,11 @@ export const SetJobScopeDrawer = () => {
                 selectedFolderKeysRef.set(String(e.node.key), e.node.data);
                 return;
               }
-              selectedFileKeysRef.set(String(e.node.key), e.node.data);
+              selectedFileKeysRef.set(String(e.node.key), {
+                path: e.node.data.path,
+                name: e.node.data.name,
+                source: e.node.data.vr_header.resource_source,
+              });
             }}
             onSelectionChange={(e) => {
               onSelectedKeysChange(e.value as TreeCheckboxSelectionKeys);

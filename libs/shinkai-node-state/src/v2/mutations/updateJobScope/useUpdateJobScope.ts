@@ -5,12 +5,13 @@ import {
 } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
+import { APIError } from '../../types';
 import { updateJobScope } from './index';
 import { UpdateChatConfigInput, UpdateChatConfigOutput } from './types';
 
 type Options = UseMutationOptions<
   UpdateChatConfigOutput,
-  Error,
+  APIError,
   UpdateChatConfigInput
 >;
 
@@ -21,7 +22,13 @@ export const useUpdateJobScope = (options?: Options) => {
     ...options,
     onSuccess: (response, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: [FunctionKeyV2.GET_JOB_SCOPE],
+        queryKey: [
+          FunctionKeyV2.GET_JOB_SCOPE,
+          {
+            jobId: variables.jobId,
+            nodeAddress: variables.nodeAddress,
+          },
+        ],
       });
 
       if (options?.onSuccess) {

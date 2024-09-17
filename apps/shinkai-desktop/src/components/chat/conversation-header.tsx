@@ -56,9 +56,7 @@ const ConversationHeader = () => {
       token: auth?.api_v2_key ?? '',
       jobId: inboxId ? extractJobIdFromInbox(inboxId) : '',
     },
-    {
-      enabled: !!inboxId,
-    },
+    { enabled: !!inboxId },
   );
 
   const hasFolders = isSuccess && jobScope.vector_fs_folders.length > 0;
@@ -102,7 +100,12 @@ const ConversationHeader = () => {
         ...selectedVRFoldersPathMap,
       });
     }
-  }, [jobScope, isSuccess]);
+  }, [
+    jobScope?.vector_fs_folders,
+    jobScope?.vector_fs_items,
+    isSuccess,
+    inboxId,
+  ]);
 
   return (
     <div className="flex h-[58px] items-center justify-between border-b border-gray-400 px-4 py-2">
@@ -176,30 +179,6 @@ const ConversationHeader = () => {
           )}
         </Button>
       )}
-      {/*<Button*/}
-      {/*  className="flex h-auto items-center gap-4 bg-transparent px-2.5 py-1.5"*/}
-      {/*  variant="ghost"*/}
-      {/*>*/}
-      {/*  {hasFolders && (*/}
-      {/*    <span className="text-gray-80 flex items-center gap-1 text-xs font-medium">*/}
-      {/*      <DirectoryTypeIcon className="ml-1 h-4 w-4" />*/}
-      {/*      {t('common.folderWithCount', {*/}
-      {/*        count: (jobScope?.vector_fs_folders ?? [])*/}
-      {/*          .length,*/}
-      {/*      })}*/}
-      {/*    </span>*/}
-      {/*  )}*/}
-      {/*  {hasFiles && (*/}
-      {/*    <span className="text-gray-80 flex items-center gap-1 truncate text-xs font-medium">*/}
-      {/*      <FileTypeIcon className="ml-1 h-4 w-4" />*/}
-      {/*      {t('common.fileWithCount', {*/}
-      {/*        count: (currentInbox?.job_scope?.vector_fs_items ?? [])*/}
-      {/*          .length,*/}
-      {/*      })}*/}
-      {/*    </span>*/}
-      {/*  )}*/}
-      {/*</Button>*/}
-      {/*)}*/}
     </div>
   );
 };
