@@ -1,7 +1,10 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { Prompt } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
+import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useRemovePrompt } from '@shinkai_network/shinkai-node-state/v2/mutations/removePrompt/useRemovePrompt';
 import { useUpdatePrompt } from '@shinkai_network/shinkai-node-state/v2/mutations/updatePrompt/useUpdatePrompt';
+import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
 import { useGetPromptList } from '@shinkai_network/shinkai-node-state/v2/queries/getPromptList/useGetPromptList';
 import { useGetPromptSearch } from '@shinkai_network/shinkai-node-state/v2/queries/getPromptSearch/useGetPromptSearch';
 import {
@@ -19,12 +22,14 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Edit3, PlusIcon, SearchIcon, Trash2Icon, XIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { CreatePromptDrawer } from '../components/prompt/context/prompt-selection-context';
 import { useDebounce } from '../hooks/use-debounce';
 import { useAuth } from '../store/auth';
+import { useSettings } from '../store/settings';
 import { SimpleLayout } from './layout/simple-layout';
 
 export const PromptLibrary = () => {
@@ -327,7 +332,86 @@ function PromptPreview({ selectedPrompt }: { selectedPrompt: Prompt | null }) {
             />
           )}
         </div>
+        <TryButton />
       </div>
     </ScrollArea>
+  );
+}
+
+function TryButton() {
+  const auth = useAuth((state) => state.auth);
+  const navigate = useNavigate();
+  const [chatInboxId, setChatInboxId] = useState<string | null>(null);
+
+  const defaultAgentId = useSettings(
+    (settingsStore) => settingsStore.defaultAgentId,
+  );
+
+  const { mutateAsync: createJob } = useCreateJob({
+    onSuccess: (data) => {
+      setChatInboxId(buildInboxIdFromJobId(data.jobId));
+    },
+    onError: (error) => {
+      toast.error('Failed to create job', {
+        description: error.message,
+      });
+    },
+  });
+
+  const { data } = useGetChatConversationWithPagination({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+    inboxId: chatInboxId ?? '',
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    profile: auth?.profile ?? '',
+    enabled: !!chatInboxId,
+    refetchIntervalEnabled: true,
+  });
+
+  const isLoadingMessage = useMemo(() => {
+    const lastMessage = data?.pages?.at(-1)?.at(-1);
+    return lastMessage?.isLocal;
+  }, [data?.pages]);
+
+  return (
+    <div>
+      <Button
+        className="text-gray-80 mt-10 flex h-9 min-w-[100px] rounded-lg border border-gray-200 hover:bg-gray-300 hover:text-white"
+        isLoading={isLoadingMessage}
+        onClick={async () => {
+          if (!auth) return;
+          if (!defaultAgentId) {
+            toast.error('Please choose your default agent', {
+              action: {
+                label: 'Choose',
+                onClick: () => {
+                  navigate('/settings');
+                },
+              },
+            });
+            return;
+          }
+          await createJob({
+            nodeAddress: auth.node_address,
+            token: auth.api_v2_key,
+            llmProvider: defaultAgentId,
+            content: 'what is this',
+            isHidden: true,
+          });
+        }}
+        size="auto"
+        type="button"
+        variant="outline"
+      >
+        Try it out
+      </Button>
+
+      {chatInboxId && (
+        <div>
+          See the response
+          <p>{JSON.stringify(data?.pages?.at(-1)?.at(-1)?.content)}</p>
+        </div>
+      )}
+    </div>
   );
 }
