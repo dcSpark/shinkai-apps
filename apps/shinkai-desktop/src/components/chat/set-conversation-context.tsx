@@ -77,7 +77,6 @@ export const SetJobScopeDrawer = () => {
   const { mutateAsync: updateJobScope, isPending: isUpdatingJobScope } =
     useUpdateJobScope({
       onSuccess: () => {
-        toast.success('Conversation context updated successfully');
         setSetJobScopeOpen(false);
       },
       onError: (error) => {

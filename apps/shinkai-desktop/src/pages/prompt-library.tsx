@@ -19,7 +19,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Edit3, SearchIcon, Trash2Icon, XIcon } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 import { useDebounce } from '../hooks/use-debounce';
@@ -41,9 +41,8 @@ export const PromptLibrary = () => {
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
   });
-  const [selectedPrompt, setSelectedPrompt] = useState<Prompt | null>(
-    isSuccess ? promptList?.[0] : null,
-  );
+
+  const [selectedPrompt, setSelectedPrompt] = useState<Prompt | null>(null);
 
   const { data: searchPromptList, isLoading: isSearchPromptListPending } =
     useGetPromptSearch(
@@ -54,6 +53,12 @@ export const PromptLibrary = () => {
       },
       { enabled: isSearchQuerySynced },
     );
+
+  useEffect(() => {
+    if (isSuccess && promptList && promptList.length > 0) {
+      setSelectedPrompt(promptList[0]);
+    }
+  }, [isSuccess]);
 
   return (
     <SimpleLayout
@@ -155,9 +160,7 @@ function PromptPreview({ selectedPrompt }: { selectedPrompt: Prompt | null }) {
   const auth = useAuth((state) => state.auth);
 
   const [editing, setEditing] = useState(false);
-  const [promptEditContent, setPromptEditContent] = useState(
-    selectedPrompt?.prompt,
-  );
+  const [promptEditContent, setPromptEditContent] = useState('');
 
   const { mutateAsync: removePrompt } = useRemovePrompt({
     onSuccess: () => {
@@ -173,7 +176,6 @@ function PromptPreview({ selectedPrompt }: { selectedPrompt: Prompt | null }) {
   const { mutateAsync: updatePrompt, isPending } = useUpdatePrompt({
     onSuccess: () => {
       setEditing(false);
-      toast.success('Prompt updated successfully');
     },
     onError: (error) => {
       toast.error('Failed to update prompt', {
@@ -202,6 +204,7 @@ function PromptPreview({ selectedPrompt }: { selectedPrompt: Prompt | null }) {
                       )}
                       onClick={() => {
                         setEditing(true);
+                        setPromptEditContent(selectedPrompt?.prompt);
                       }}
                     >
                       <Edit3 />
@@ -244,7 +247,7 @@ function PromptPreview({ selectedPrompt }: { selectedPrompt: Prompt | null }) {
                         await removePrompt({
                           nodeAddress: auth?.node_address ?? '',
                           token: auth?.api_v2_key ?? '',
-                          promptName: prompt.name,
+                          promptName: selectedPrompt.name,
                         });
                       }}
                     >
@@ -263,6 +266,7 @@ function PromptPreview({ selectedPrompt }: { selectedPrompt: Prompt | null }) {
           {editing ? (
             <div>
               <Textarea
+                autoFocus
                 className="!min-h-[100px] resize-none pl-2 pt-2 text-sm placeholder-transparent"
                 onChange={(e) => setPromptEditContent(e.target.value)}
                 spellCheck={false}
@@ -272,18 +276,8 @@ function PromptPreview({ selectedPrompt }: { selectedPrompt: Prompt | null }) {
                 <Button
                   className="h-9 min-w-[100px] rounded-md"
                   isLoading={isPending}
-                  onClick={async () => {
-                    if (!promptEditContent) return;
-                    await updatePrompt({
-                      nodeAddress: auth?.node_address ?? '',
-                      token: auth?.api_v2_key ?? '',
-                      promptName: selectedPrompt.name,
-                      promptContent: promptEditContent,
-                      isPromptFavorite: selectedPrompt?.is_favorite,
-                      isPromptEnabled: selectedPrompt.is_enabled,
-                      isPromptSystem: selectedPrompt?.is_system,
-                      promptVersion: selectedPrompt?.version,
-                    });
+                  onClick={() => {
+                    setEditing(false);
                   }}
                   size="auto"
                   type="button"
@@ -293,8 +287,17 @@ function PromptPreview({ selectedPrompt }: { selectedPrompt: Prompt | null }) {
                 </Button>
                 <Button
                   className="h-9 min-w-[100px] rounded-md"
-                  onClick={() => {
-                    setEditing(false);
+                  onClick={async () => {
+                    await updatePrompt({
+                      nodeAddress: auth?.node_address ?? '',
+                      token: auth?.api_v2_key ?? '',
+                      promptName: selectedPrompt.name,
+                      promptContent: promptEditContent ?? '',
+                      isPromptFavorite: selectedPrompt?.is_favorite,
+                      isPromptEnabled: selectedPrompt.is_enabled,
+                      isPromptSystem: selectedPrompt?.is_system,
+                      promptVersion: selectedPrompt?.version,
+                    });
                   }}
                   size="auto"
                   type="button"

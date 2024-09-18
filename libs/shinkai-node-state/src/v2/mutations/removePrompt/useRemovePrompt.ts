@@ -22,7 +22,13 @@ export const useRemovePrompt = (options?: Options) => {
     ...options,
     onSuccess: (response, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: [FunctionKeyV2.GET_LIST_PROMPTS],
+        queryKey: [
+          FunctionKeyV2.GET_LIST_PROMPTS,
+          {
+            nodeAddress: variables.nodeAddress,
+            token: variables.token,
+          },
+        ],
       });
 
       if (options?.onSuccess) {
