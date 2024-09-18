@@ -116,6 +116,7 @@ const ChatConversation = () => {
   const fromPreviousMessagesRef = useRef<boolean>(false);
 
   const currentInbox = useGetCurrentInbox();
+
   const { data: chatConfig } = useGetChatConfig({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',

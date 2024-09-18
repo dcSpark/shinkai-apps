@@ -63,7 +63,7 @@
 
 /* prose styling for chat editor */
 .ProseMirror {
-  @apply max-h-[200px] min-h-[60px] overflow-y-auto;
+  @apply max-h-[42vh] min-h-[60px] overflow-y-auto;
 }
 .prose :where(p):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
   @apply my-2;

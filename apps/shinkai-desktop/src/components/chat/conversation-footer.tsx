@@ -77,11 +77,19 @@ import { useSetJobScope } from './context/set-job-scope-context';
 
 export const actionButtonClassnames =
   'bg-gray-350 inline-flex h-[30px] w-[30px] cursor-pointer items-center justify-center gap-1.5 truncate border border-gray-200 px-[7px] py-1.5 text-left text-xs rounded-lg font-normal text-gray-50 hover:bg-gray-300 hover:text-white';
+export type ChatConversationLocationState = {
+  files: File[];
+  agentName: string;
+  selectedVRFiles: VRItem[];
+  selectedVRFolders: VRFolder[];
+};
 
 function ConversationEmptyFooter() {
   const { t } = useTranslation();
   const size = partial({ standard: 'jedec' });
   const navigate = useNavigate();
+  const { inboxId: encodedInboxId = '' } = useParams();
+  const inboxId = decodeURIComponent(encodedInboxId);
 
   const onSelectedKeysChange = useSetJobScope(
     (state) => state.onSelectedKeysChange,
@@ -102,12 +110,7 @@ function ConversationEmptyFooter() {
 
   const location = useLocation();
 
-  const locationState = location.state as {
-    files: File[];
-    agentName: string;
-    selectedVRFiles: VRItem[];
-    selectedVRFolders: VRFolder[];
-  };
+  const locationState = location.state as ChatConversationLocationState;
 
   const defaulAgentId = useSettings((state) => state.defaultAgentId);
 
@@ -145,8 +148,9 @@ function ConversationEmptyFooter() {
 
   useEffect(() => {
     if (
-      locationState?.selectedVRFiles?.length > 0 ||
-      locationState?.selectedVRFolders?.length > 0
+      !inboxId &&
+      (locationState?.selectedVRFiles?.length > 0 ||
+        locationState?.selectedVRFolders?.length > 0)
     ) {
       const selectedVRFilesPathMap = locationState?.selectedVRFiles?.reduce(
         (acc, file) => {
@@ -264,13 +268,6 @@ function ConversationEmptyFooter() {
       );
     }
   }, [chatForm, isWorkflowSelectedAndFilesPresent, workflowSelected]);
-
-  useEffect(() => {
-    setWorkflowSelected(undefined);
-    selectedFileKeysRef.clear();
-    selectedFolderKeysRef.clear();
-    onSelectedKeysChange(null);
-  }, []);
 
   const onSubmit = async (data: CreateJobFormSchema) => {
     if (!auth || data.message.trim() === '') return;
