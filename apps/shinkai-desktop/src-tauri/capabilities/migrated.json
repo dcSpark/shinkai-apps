@@ -9,7 +9,12 @@
     "dialog:allow-save",
     "fs:allow-download-write",
     "shell:allow-open",
-    "core:window:allow-start-dragging"
+    "core:window:allow-start-dragging",
+    "updater:allow-check",
+    "updater:allow-download",
+    "updater:allow-install",
+    "updater:allow-download-and-install",
+    "process:allow-restart"
   ],
   "commands.allow": [
     "shinkai_node_is_running",

@@ -38,7 +38,10 @@
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDY5RTREOUVBODQ0QUYwRDQKUldUVThFcUU2dG5rYVV1MjlvS2FGKzZSMVFnRnFVdUh1ZnVWc2pDSHFqWThaYUFneC9rUU1Gc2MK",
       "endpoints": [
         "https://download.shinkai.com/shinkai-desktop/binaries/production/updates.json"
-      ]
+      ],
+      "windows": {
+        "installMode": "basicUi"
+      }
     }
   },
   "app": {
