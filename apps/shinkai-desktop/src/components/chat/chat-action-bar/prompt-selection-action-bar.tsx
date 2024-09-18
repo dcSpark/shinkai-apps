@@ -31,7 +31,7 @@ export default function PromptSelectionActionBar() {
         </TooltipTrigger>
         <TooltipPortal>
           <TooltipContent align="center" side="top">
-            Add Prompt
+            Prompt Library
           </TooltipContent>
         </TooltipPortal>
       </Tooltip>

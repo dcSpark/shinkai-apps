@@ -63,6 +63,7 @@ import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAnalytics } from '../../lib/posthog-provider';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
+import { usePromptSelectionStore } from '../prompt/context/prompt-selection-context';
 import { useWorkflowSelectionStore } from '../workflow/context/workflow-selection-context';
 import {
   AIModelSelector,
@@ -91,6 +92,9 @@ function ConversationEmptyFooter() {
   );
   const selectedFolderKeysRef = useSetJobScope(
     (state) => state.selectedFolderKeysRef,
+  );
+  const promptSelected = usePromptSelectionStore(
+    (state) => state.promptSelected,
   );
 
   const auth = useAuth((state) => state.auth);
@@ -247,6 +251,12 @@ function ConversationEmptyFooter() {
     workflowSelected && currentFiles && currentFiles.length > 0;
 
   useEffect(() => {
+    if (promptSelected) {
+      chatForm.setValue('message', promptSelected.prompt);
+    }
+  }, [chatForm, promptSelected]);
+
+  useEffect(() => {
     if (isWorkflowSelectedAndFilesPresent) {
       chatForm.setValue(
         'message',
@@ -343,39 +353,7 @@ function ConversationEmptyFooter() {
                         </TooltipProvider>
                         <PromptSelectionActionBar />
                         <WorkflowSelectionActionBar />
-                        {/*<TooltipProvider delayDuration={0}>*/}
-                        {/*  <Tooltip>*/}
-                        {/*    <TooltipTrigger asChild>*/}
-                        {/*      <Button*/}
-                        {/*        className={cn(actionButtonClassnames, 'w-auto')}*/}
-                        {/*        onClick={() => setSetJobScopeOpen(true)}*/}
-                        {/*        size="auto"*/}
-                        {/*        type="button"*/}
-                        {/*        variant="outline"*/}
-                        {/*      >*/}
-                        {/*        <div className="flex items-center gap-2">*/}
-                        {/*          <FilesIcon className="h-4 w-4" />*/}
-                        {/*          <p className="text-xs text-white">*/}
-                        {/*            {t('vectorFs.localFiles')}*/}
-                        {/*          </p>*/}
-                        {/*        </div>*/}
-                        {/*        {Object.keys(selectedKeys ?? {}).length > 0 && (*/}
-                        {/*          <Badge className="bg-brand inline-flex h-5 w-5 items-center justify-center rounded-full p-0 text-center text-white">*/}
-                        {/*            {Object.keys(selectedKeys ?? {}).length}*/}
-                        {/*          </Badge>*/}
-                        {/*        )}*/}
-                        {/*      </Button>*/}
-                        {/*    </TooltipTrigger>*/}
-                        {/*    <TooltipPortal>*/}
-                        {/*      <TooltipContent*/}
-                        {/*        className="max-w-[300px]"*/}
-                        {/*        sideOffset={5}*/}
-                        {/*      >*/}
-                        {/*        {t('chat.form.setContextText')}*/}
-                        {/*      </TooltipContent>*/}
-                        {/*    </TooltipPortal>*/}
-                        {/*  </Tooltip>*/}
-                        {/*</TooltipProvider>*/}
+
                         {/*<TooltipProvider delayDuration={0}>*/}
                         {/*  <Tooltip>*/}
                         {/*    <TooltipTrigger asChild>*/}
@@ -406,7 +384,7 @@ function ConversationEmptyFooter() {
                       autoFocus
                       bottomAddons={
                         <Button
-                          className="hover:bg-app-gradient h-[40px] w-[40px] self-end rounded-xl bg-gray-500 p-3 disabled:cursor-not-allowed"
+                          className="hover:bg-app-gradient relative z-50 h-[40px] w-[40px] self-end rounded-xl bg-gray-500 p-3 disabled:cursor-not-allowed"
                           disabled={isPending}
                           onClick={chatForm.handleSubmit(onSubmit)}
                           size="icon"
@@ -571,6 +549,10 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
     },
   });
 
+  const promptSelected = usePromptSelectionStore(
+    (state) => state.promptSelected,
+  );
+
   const currentInbox = useGetCurrentInbox();
   const { data: chatConfig } = useGetChatConfig(
     {
@@ -710,6 +692,12 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
   };
 
   useEffect(() => {
+    if (promptSelected) {
+      chatForm.setValue('message', promptSelected.prompt);
+    }
+  }, [chatForm, promptSelected]);
+
+  useEffect(() => {
     chatForm.reset();
     setWorkflowSelected(undefined);
   }, [chatForm, inboxId]);
@@ -774,7 +762,7 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                       autoFocus
                       bottomAddons={
                         <Button
-                          className="hover:bg-app-gradient h-[40px] w-[40px] self-end rounded-xl bg-gray-500 p-3 disabled:cursor-not-allowed"
+                          className="hover:bg-app-gradient relative z-50 h-[40px] w-[40px] self-end rounded-xl bg-gray-500 p-3 disabled:cursor-not-allowed"
                           disabled={isLoadingMessage}
                           onClick={chatForm.handleSubmit(onSubmit)}
                           size="icon"

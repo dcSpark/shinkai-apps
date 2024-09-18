@@ -177,7 +177,6 @@ export const Message = ({
                         }
                         onChange={field.onChange}
                         onSubmit={editMessageForm.handleSubmit(onSubmit)}
-                        setInitialValue={message.content}
                         value={field.value}
                       />
                     )}

@@ -6,7 +6,6 @@ import { useUpdatePrompt } from '@shinkai_network/shinkai-node-state/v2/mutation
 import { useGetPromptList } from '@shinkai_network/shinkai-node-state/v2/queries/getPromptList/useGetPromptList';
 import { useGetPromptSearch } from '@shinkai_network/shinkai-node-state/v2/queries/getPromptSearch/useGetPromptSearch';
 import {
-  Badge,
   Button,
   Dialog,
   DialogContent,
@@ -52,7 +51,7 @@ type PromptSelectedStore = {
   promptSelectionDrawerOpen: boolean;
   setPromptSelectionDrawerOpen: (promptSelectionDrawerOpen: boolean) => void;
   promptSelected: Prompt | undefined;
-  setPromptSelected: (workflowSelected: Prompt | undefined) => void;
+  setPromptSelected: (promptSelected: Prompt | undefined) => void;
   selectedPromptEdit: Prompt | undefined;
   setSelectedPromptEdit: (selectedPromptEdit: Prompt | undefined) => void;
 };
@@ -79,20 +78,14 @@ const PromptSelectedContext = createContext<ReturnType<
   typeof createPromptSelectionStore
 > | null>(null);
 
-const PromptSearchDrawer = ({
-  onSelectWorkflow,
-}: {
-  onSelectWorkflow?: (prompt: Prompt) => void;
-}) => {
+const PromptSearchDrawer = () => {
   const promptSelectionDrawerOpen = usePromptSelectionStore(
     (state) => state.promptSelectionDrawerOpen,
   );
   const setPromptSelectionDrawerOpen = usePromptSelectionStore(
     (state) => state.setPromptSelectionDrawerOpen,
   );
-  const promptSelected = usePromptSelectionStore(
-    (state) => state.promptSelected,
-  );
+
   const setPromptSelected = usePromptSelectionStore(
     (state) => state.setPromptSelected,
   );
@@ -122,7 +115,7 @@ const PromptSearchDrawer = ({
       { enabled: isSearchQuerySynced },
     );
 
-  const { mutateAsync: removeWorkflow } = useRemovePrompt({
+  const { mutateAsync: removePrompt } = useRemovePrompt({
     onSuccess: () => {
       toast.success('Prompt removed successfully');
     },
@@ -178,7 +171,7 @@ const PromptSearchDrawer = ({
             {(isPending || !isSearchQuerySynced || isSearchPromptListPending) &&
               Array.from({ length: 4 }).map((_, idx) => (
                 <div
-                  className="mb-2 flex h-[70px] items-center justify-between gap-2 rounded-lg bg-gray-300 py-3"
+                  className="mb-2 flex h-[40px] items-center justify-between gap-2 rounded-lg bg-gray-300 py-3"
                   key={idx}
                 />
               ))}
@@ -187,13 +180,12 @@ const PromptSearchDrawer = ({
               promptList?.map((prompt) => (
                 <div
                   className={cn(
-                    'group relative flex min-h-[70px] w-full flex-col gap-1 rounded-sm px-3 py-2.5 pr-8 text-left text-sm hover:bg-gray-300',
+                    'group relative flex min-h-[40px] w-full flex-col gap-1 rounded-sm px-3 py-2.5 pr-8 text-left text-sm hover:bg-gray-300',
                   )}
                   key={prompt.name}
                   onClick={() => {
                     setPromptSelected(prompt);
                     setPromptSelectionDrawerOpen(false);
-                    onSelectWorkflow?.(prompt);
                   }}
                   role="button"
                   tabIndex={0}
@@ -214,7 +206,7 @@ const PromptSearchDrawer = ({
                       className="text-gray-80 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"
                       onClick={async (event) => {
                         event.stopPropagation();
-                        await removeWorkflow({
+                        await removePrompt({
                           nodeAddress: auth?.node_address ?? '',
                           token: auth?.api_v2_key ?? '',
                           promptName: prompt.name,
@@ -225,18 +217,7 @@ const PromptSearchDrawer = ({
                       <Trash2Icon className="h-4 w-4" />
                     </button>
                   </div>
-                  <span className="text-sm font-medium">
-                    {prompt.name}{' '}
-                    {promptSelected?.name === prompt.name && (
-                      <Badge
-                        className="bg-brand ml-2 text-gray-50"
-                        variant="default"
-                      >
-                        Selected
-                      </Badge>
-                    )}
-                  </span>
-                  <p className="text-gray-80 text-xs">{prompt.name}</p>
+                  <span className="text-sm">{prompt.name} </span>
                 </div>
               ))}
             {searchQuery &&
@@ -255,14 +236,6 @@ const PromptSearchDrawer = ({
                 >
                   <span className="text-sm font-medium">
                     {formatText(prompt.name)}{' '}
-                    {promptSelected?.name === prompt.name && (
-                      <Badge
-                        className="bg-brand ml-2 font-light text-gray-50 shadow-none"
-                        variant="default"
-                      >
-                        Current
-                      </Badge>
-                    )}
                   </span>
                   <p className="text-gray-80 text-sm">{prompt.name}</p>
                 </button>
@@ -272,7 +245,7 @@ const PromptSearchDrawer = ({
               searchPromptList?.length === 0 && (
                 <div className="flex h-20 items-center justify-center">
                   <p className="text-gray-80 text-sm">
-                    No workflows found for the search query
+                    No prompts found for the search query
                   </p>
                 </div>
               )}
@@ -315,12 +288,12 @@ function CreatePromptDrawer() {
   const createPromptForm = useForm<CreatePromptFormSchema>({
     resolver: zodResolver(createPromptFormSchema),
   });
-  const [isWorkflowDrawerOpen, setIsWorkflowDrawerOpen] = useState(false);
+  const [isPromptDrawerOpen, setIsPromptDrawerOpen] = useState(false);
 
   const { mutateAsync: createWorkflow, isPending } = useCreatePrompt({
     onSuccess: () => {
       toast.success('Prompt created successfully');
-      setIsWorkflowDrawerOpen(false);
+      setIsPromptDrawerOpen(false);
     },
     onError: (error) => {
       toast.error('Failed to create prompt', {
@@ -338,7 +311,7 @@ function CreatePromptDrawer() {
     });
   };
   return (
-    <Dialog onOpenChange={setIsWorkflowDrawerOpen} open={isWorkflowDrawerOpen}>
+    <Dialog onOpenChange={setIsPromptDrawerOpen} open={isPromptDrawerOpen}>
       <DialogTrigger asChild>
         <button
           className="bg-brand absolute right-12 top-2 rounded-full p-2"
@@ -518,7 +491,7 @@ function UpdateWorkflowDrawer({
                   isLoading={isPending}
                   type="submit"
                 >
-                  Update Workflow
+                  Update Prompt
                 </Button>
               </form>
             </Form>
@@ -551,7 +524,7 @@ export function usePromptSelectionStore<T>(
 ) {
   const store = useContext(PromptSelectedContext);
   if (!store) {
-    throw new Error('Missing WorkflowSelectionProvider');
+    throw new Error('Missing PromptSelectionProvider');
   }
   const value = useStore(store, selector);
 
