@@ -29,7 +29,7 @@ const UpdateStateUI: React.FC<{
   updateState: UpdateState['state'];
   downloadProgressPercent: number;
   sidebarExpanded: boolean;
-}> = React.memo(({ updateState, downloadProgressPercent, sidebarExpanded }) => {
+}> = ({ updateState, downloadProgressPercent, sidebarExpanded }) => {
   switch (updateState) {
     case 'available':
       return (
@@ -70,7 +70,7 @@ const UpdateStateUI: React.FC<{
     default:
       return null;
   }
-});
+};
 
 UpdateStateUI.displayName = 'UpdateStateUI';
 

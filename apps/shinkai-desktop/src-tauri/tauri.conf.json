@@ -40,7 +40,7 @@
         "https://download.shinkai.com/shinkai-desktop/binaries/production/updates.json"
       ],
       "windows": {
-        "installMode": "passive"
+        "installMode": "basicUi"
       }
     }
   },

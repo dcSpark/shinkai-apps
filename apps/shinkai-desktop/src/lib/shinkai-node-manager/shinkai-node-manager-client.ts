@@ -97,7 +97,7 @@ export const useShinkaiNodeSpawnMutation = (options?: UseMutationOptions) => {
 export const useShinkaiNodeKillMutation = (options?: UseMutationOptions) => {
   const queryClient = useQueryClient();
   const response = useMutation({
-    mutationFn: () => {
+    mutationFn: async (): Promise<void> => {
       return invoke('shinkai_node_kill');
     },
     onSuccess: (...onSuccessParameters) => {
