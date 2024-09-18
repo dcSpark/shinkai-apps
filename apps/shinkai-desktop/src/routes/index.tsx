@@ -38,6 +38,7 @@ import GetStartedPage from '../pages/get-started';
 import MainLayout from '../pages/layout/main-layout';
 import OnboardingLayout from '../pages/layout/onboarding-layout';
 import SettingsLayout from '../pages/layout/settings-layout';
+import { PromptLibrary } from '../pages/prompt-library';
 import { PublicKeys } from '../pages/public-keys';
 import QuickConnectionPage from '../pages/quick-connection';
 import RestoreConnectionPage from '../pages/restore-connection';
@@ -296,6 +297,7 @@ const AppRoutes = () => {
             element={<AnalyticsSettingsPage />}
             path={'analytics-settings'}
           />
+          <Route element={<PromptLibrary />} path={'prompt-library'} />
           <Route element={<GalxeValidation />} path={'galxe-validation'} />
         </Route>
       </Route>

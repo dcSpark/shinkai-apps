@@ -25,6 +25,7 @@ export const useGetPromptList = (
   const response = useQuery({
     queryKey: [FunctionKeyV2.GET_LIST_PROMPTS, input],
     queryFn: () => getPromptList(input),
+    select: (data) => data?.sort((a, b) => a.name.localeCompare(b.name)),
     ...options,
   });
   return response;
