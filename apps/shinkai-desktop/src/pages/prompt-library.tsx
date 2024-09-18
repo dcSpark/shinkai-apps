@@ -55,10 +55,10 @@ export const PromptLibrary = () => {
     );
 
   useEffect(() => {
-    if (isSuccess && promptList && promptList.length > 0) {
+    if (promptList && promptList.length > 0) {
       setSelectedPrompt(promptList[0]);
     }
-  }, [isSuccess]);
+  }, [isSuccess, promptList]);
 
   return (
     <SimpleLayout
@@ -161,6 +161,10 @@ function PromptPreview({ selectedPrompt }: { selectedPrompt: Prompt | null }) {
 
   const [editing, setEditing] = useState(false);
   const [promptEditContent, setPromptEditContent] = useState('');
+
+  useEffect(() => {
+    setEditing(false);
+  }, [selectedPrompt]);
 
   const { mutateAsync: removePrompt } = useRemovePrompt({
     onSuccess: () => {
