@@ -283,7 +283,11 @@ const createPromptFormSchema = z.object({
 
 type CreatePromptFormSchema = z.infer<typeof createPromptFormSchema>;
 
-function CreatePromptDrawer() {
+export function CreatePromptDrawer({
+  children,
+}: {
+  children?: React.ReactNode;
+}) {
   const auth = useAuth((state) => state.auth);
   const createPromptForm = useForm<CreatePromptFormSchema>({
     resolver: zodResolver(createPromptFormSchema),
@@ -294,6 +298,10 @@ function CreatePromptDrawer() {
     onSuccess: () => {
       toast.success('Prompt created successfully');
       setIsPromptDrawerOpen(false);
+      createPromptForm.reset({
+        promptContent: '',
+        promptName: '',
+      });
     },
     onError: (error) => {
       toast.error('Failed to create prompt', {
@@ -313,14 +321,16 @@ function CreatePromptDrawer() {
   return (
     <Dialog onOpenChange={setIsPromptDrawerOpen} open={isPromptDrawerOpen}>
       <DialogTrigger asChild>
-        <button
-          className="bg-brand absolute right-12 top-2 rounded-full p-2"
-          type="button"
-        >
-          <PlusIcon className="h-4 w-4" />
-        </button>
+        {children ?? (
+          <button
+            className="bg-brand absolute right-12 top-2 rounded-full p-2"
+            type="button"
+          >
+            <PlusIcon className="h-4 w-4" />
+          </button>
+        )}
       </DialogTrigger>
-      <DialogContent className="bg-gray-500">
+      <DialogContent className="bg-gray-600">
         <DialogHeader>
           <DialogTitle>Create custom prompt</DialogTitle>
           <div>
@@ -371,7 +381,7 @@ function CreatePromptDrawer() {
                   isLoading={isPending}
                   type="submit"
                 >
-                  Create Custom Prompt
+                  Create Prompt
                 </Button>
               </form>
             </Form>
@@ -440,7 +450,7 @@ function UpdateWorkflowDrawer({
   };
   return (
     <Dialog onOpenChange={setOpen} open={open}>
-      <DialogContent className="bg-gray-500">
+      <DialogContent className="bg-gray-600">
         <DialogHeader>
           <DialogTitle>Update Prompt</DialogTitle>
           <div>

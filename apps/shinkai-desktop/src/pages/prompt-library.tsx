@@ -18,10 +18,11 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { Edit3, SearchIcon, Trash2Icon, XIcon } from 'lucide-react';
+import { Edit3, PlusIcon, SearchIcon, Trash2Icon, XIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
+import { CreatePromptDrawer } from '../components/prompt/context/prompt-selection-context';
 import { useDebounce } from '../hooks/use-debounce';
 import { useAuth } from '../store/auth';
 import { SimpleLayout } from './layout/simple-layout';
@@ -63,6 +64,14 @@ export const PromptLibrary = () => {
   return (
     <SimpleLayout
       classname="max-w-auto"
+      headerRightElement={
+        <CreatePromptDrawer>
+          <Button className="h-9 min-w-[100px] gap-2 rounded-xl" size="auto">
+            <PlusIcon className="h-5 w-5" />
+            New Prompt
+          </Button>
+        </CreatePromptDrawer>
+      }
       title={t('settings.promptLibrary.label')}
     >
       <div className="grid h-[calc(100dvh-130px)] grid-cols-[300px_1fr]">
@@ -194,6 +203,7 @@ function PromptPreview({ selectedPrompt }: { selectedPrompt: Prompt | null }) {
   return (
     <ScrollArea className="flex h-full flex-col px-5 pb-4">
       <h2 className="mb-6 font-bold text-white">{selectedPrompt?.name}</h2>
+
       <div>
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between gap-2">
@@ -298,7 +308,7 @@ function PromptPreview({ selectedPrompt }: { selectedPrompt: Prompt | null }) {
                       promptName: selectedPrompt.name,
                       promptContent: promptEditContent ?? '',
                       isPromptFavorite: selectedPrompt?.is_favorite,
-                      isPromptEnabled: selectedPrompt.is_enabled,
+                      isPromptEnabled: selectedPrompt?.is_enabled,
                       isPromptSystem: selectedPrompt?.is_system,
                       promptVersion: selectedPrompt?.version,
                     });
