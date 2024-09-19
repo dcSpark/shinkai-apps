@@ -1,4 +1,5 @@
 import { Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
+import { JobConfig } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import {
   VectorFSFolderScopeEntry,
   VectorFSItemScopeEntry,
@@ -15,6 +16,7 @@ export type CreateJobInput = Token & {
   files?: File[];
   selectedVRFiles?: VectorFSItemScopeEntry[];
   selectedVRFolders?: VectorFSFolderScopeEntry[];
+  chatConfig?: JobConfig;
 };
 
 export type CreateJobOutput = {

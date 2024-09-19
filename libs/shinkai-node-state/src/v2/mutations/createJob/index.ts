@@ -1,6 +1,7 @@
 import {
   createJob as createJobApi,
   sendMessageToJob,
+  updateChatConfig,
   uploadFilesToInbox,
 } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 
@@ -18,6 +19,7 @@ export const createJob = async ({
   files,
   selectedVRFiles,
   selectedVRFolders,
+  chatConfig,
 }: CreateJobInput) => {
   const { job_id: jobId } = await createJobApi(nodeAddress, token, {
     llm_provider: llmProvider,
@@ -49,6 +51,13 @@ export const createJob = async ({
       parent: '',
     },
   });
+
+  if (chatConfig) {
+    await updateChatConfig(nodeAddress, token, {
+      job_id: jobId,
+      config: chatConfig,
+    });
+  }
 
   return { jobId };
 };

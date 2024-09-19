@@ -69,7 +69,12 @@ import {
   AIModelSelector,
   AiUpdateSelectionActionBar,
 } from './chat-action-bar/ai-update-selection-action-bar';
-import ChatConfigActionBar from './chat-action-bar/chat-config-action-bar';
+import {
+  chatConfigFormSchema,
+  ChatConfigFormSchemaType,
+  CreateChatConfigActionBar,
+  UpdateChatConfigActionBar,
+} from './chat-action-bar/chat-config-action-bar';
 import PromptSelectionActionBar from './chat-action-bar/prompt-selection-action-bar';
 import WorkflowSelectionActionBar from './chat-action-bar/workflow-selection-action-bar';
 import { streamingSupportedModels } from './constants';
@@ -121,6 +126,18 @@ function ConversationEmptyFooter() {
       files: [],
     },
   });
+
+  const chatConfigForm = useForm<ChatConfigFormSchemaType>({
+    resolver: zodResolver(chatConfigFormSchema),
+    defaultValues: {
+      stream: true,
+      customPrompt: '',
+      temperature: 0.7,
+      topP: 0.9,
+      topK: 50,
+    },
+  });
+
   const { llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
@@ -290,7 +307,15 @@ function ConversationEmptyFooter() {
       isHidden: false,
       selectedVRFiles,
       selectedVRFolders,
+      chatConfig: {
+        stream: chatConfigForm.getValues('stream'),
+        custom_prompt: chatConfigForm.getValues('customPrompt') ?? '',
+        temperature: chatConfigForm.getValues('temperature'),
+        top_p: chatConfigForm.getValues('topP'),
+        top_k: chatConfigForm.getValues('topK'),
+      },
     });
+
     chatForm.reset();
     setWorkflowSelected(undefined);
     selectedFileKeysRef.clear();
@@ -350,31 +375,8 @@ function ConversationEmptyFooter() {
                         </TooltipProvider>
                         <PromptSelectionActionBar />
                         <WorkflowSelectionActionBar />
-
-                        {/*<TooltipProvider delayDuration={0}>*/}
-                        {/*  <Tooltip>*/}
-                        {/*    <TooltipTrigger asChild>*/}
-                        {/*      <Button*/}
-                        {/*        className={cn(actionButtonClassnames)}*/}
-                        {/*        onClick={() => setKnowledgeSearchOpen(true)}*/}
-                        {/*        size="icon"*/}
-                        {/*        type="button"*/}
-                        {/*        variant="ghost"*/}
-                        {/*      >*/}
-                        {/*        <AISearchContentIcon className="h-4 w-4" />*/}
-                        {/*        <p className="sr-only text-xs text-white">*/}
-                        {/*          {t('aiFilesSearch.label')}*/}
-                        {/*        </p>*/}
-                        {/*      </Button>*/}
-                        {/*    </TooltipTrigger>*/}
-                        {/*    <TooltipPortal>*/}
-                        {/*      <TooltipContent sideOffset={5}>*/}
-                        {/*        {t('aiFilesSearch.label')}*/}
-                        {/*      </TooltipContent>*/}
-                        {/*    </TooltipPortal>*/}
-                        {/*  </Tooltip>*/}
-                        {/*</TooltipProvider>*/}
                       </div>
+                      <CreateChatConfigActionBar form={chatConfigForm} />
                     </div>
 
                     <ChatInputArea
@@ -752,7 +754,7 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                         <PromptSelectionActionBar />
                         <WorkflowSelectionActionBar />
                       </div>
-                      <ChatConfigActionBar />
+                      <UpdateChatConfigActionBar />
                     </div>
 
                     <ChatInputArea
