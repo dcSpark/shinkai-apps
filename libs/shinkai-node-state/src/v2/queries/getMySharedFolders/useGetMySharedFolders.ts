@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { FunctionKey } from '../../constants';
+import { FunctionKeyV2 } from '../../constants';
 import { getMySharedFolders } from '.';
 import { GetMySharedFoldersInput, Options } from './types';
 
@@ -9,7 +9,7 @@ export const useGetMySharedFolders = (
   options?: Omit<Options, 'queryKey' | 'queryFn'>,
 ) => {
   const response = useQuery({
-    queryKey: [FunctionKey.GET_MY_SHARED_FOLDERS, input],
+    queryKey: [FunctionKeyV2.GET_MY_SHARED_FOLDERS, input],
     queryFn: async () => await getMySharedFolders(input),
     ...options,
   });

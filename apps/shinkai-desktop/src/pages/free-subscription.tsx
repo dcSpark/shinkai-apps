@@ -1,4 +1,4 @@
-import { useGetAvailableSharedFoldersWithPagination } from '@shinkai_network/shinkai-node-state/lib/queries/getAvailableSharedItems/useGetAvailableSharedFoldersWithPagination';
+import { useGetAvailableSharedFoldersWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getAvailableSharedItems/useGetAvailableSharedFoldersWithPagination';
 import {
   Button,
   buttonVariants,
@@ -58,7 +58,7 @@ const FreeSubscriptionsPage = () => {
                             className="flex min-h-[80px] cursor-pointer items-center justify-between gap-1 rounded-lg py-3.5 pr-2.5 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400"
                             key={sharedFolder.path}
                           >
-                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-300/50 ">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-300/50">
                               <SharedFolderIcon className="h-6 w-6" />
                             </div>
                             <div className="flex-1 space-y-3">

@@ -63,23 +63,33 @@ import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAnalytics } from '../../lib/posthog-provider';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
+import { usePromptSelectionStore } from '../prompt/context/prompt-selection-context';
 import { useWorkflowSelectionStore } from '../workflow/context/workflow-selection-context';
 import {
   AIModelSelector,
   AiUpdateSelectionActionBar,
 } from './chat-action-bar/ai-update-selection-action-bar';
 import ChatConfigActionBar from './chat-action-bar/chat-config-action-bar';
+import PromptSelectionActionBar from './chat-action-bar/prompt-selection-action-bar';
 import WorkflowSelectionActionBar from './chat-action-bar/workflow-selection-action-bar';
 import { streamingSupportedModels } from './constants';
 import { useSetJobScope } from './context/set-job-scope-context';
 
 export const actionButtonClassnames =
   'bg-gray-350 inline-flex h-[30px] w-[30px] cursor-pointer items-center justify-center gap-1.5 truncate border border-gray-200 px-[7px] py-1.5 text-left text-xs rounded-lg font-normal text-gray-50 hover:bg-gray-300 hover:text-white';
+export type ChatConversationLocationState = {
+  files: File[];
+  agentName: string;
+  selectedVRFiles: VRItem[];
+  selectedVRFolders: VRFolder[];
+};
 
 function ConversationEmptyFooter() {
   const { t } = useTranslation();
   const size = partial({ standard: 'jedec' });
   const navigate = useNavigate();
+  const { inboxId: encodedInboxId = '' } = useParams();
+  const inboxId = decodeURIComponent(encodedInboxId);
 
   const onSelectedKeysChange = useSetJobScope(
     (state) => state.onSelectedKeysChange,
@@ -91,18 +101,16 @@ function ConversationEmptyFooter() {
   const selectedFolderKeysRef = useSetJobScope(
     (state) => state.selectedFolderKeysRef,
   );
+  const promptSelected = usePromptSelectionStore(
+    (state) => state.promptSelected,
+  );
 
   const auth = useAuth((state) => state.auth);
   const { captureAnalyticEvent } = useAnalytics();
 
   const location = useLocation();
 
-  const locationState = location.state as {
-    files: File[];
-    agentName: string;
-    selectedVRFiles: VRItem[];
-    selectedVRFolders: VRFolder[];
-  };
+  const locationState = location.state as ChatConversationLocationState;
 
   const defaulAgentId = useSettings((state) => state.defaultAgentId);
 
@@ -140,8 +148,9 @@ function ConversationEmptyFooter() {
 
   useEffect(() => {
     if (
-      locationState?.selectedVRFiles?.length > 0 ||
-      locationState?.selectedVRFolders?.length > 0
+      !inboxId &&
+      (locationState?.selectedVRFiles?.length > 0 ||
+        locationState?.selectedVRFolders?.length > 0)
     ) {
       const selectedVRFilesPathMap = locationState?.selectedVRFiles?.reduce(
         (acc, file) => {
@@ -246,6 +255,12 @@ function ConversationEmptyFooter() {
     workflowSelected && currentFiles && currentFiles.length > 0;
 
   useEffect(() => {
+    if (promptSelected) {
+      chatForm.setValue('message', promptSelected.prompt);
+    }
+  }, [chatForm, promptSelected]);
+
+  useEffect(() => {
     if (isWorkflowSelectedAndFilesPresent) {
       chatForm.setValue(
         'message',
@@ -253,13 +268,6 @@ function ConversationEmptyFooter() {
       );
     }
   }, [chatForm, isWorkflowSelectedAndFilesPresent, workflowSelected]);
-
-  useEffect(() => {
-    setWorkflowSelected(undefined);
-    selectedFileKeysRef.clear();
-    selectedFolderKeysRef.clear();
-    onSelectedKeysChange(null);
-  }, []);
 
   const onSubmit = async (data: CreateJobFormSchema) => {
     if (!auth || data.message.trim() === '') return;
@@ -340,40 +348,9 @@ function ConversationEmptyFooter() {
                             </TooltipPortal>
                           </Tooltip>
                         </TooltipProvider>
+                        <PromptSelectionActionBar />
                         <WorkflowSelectionActionBar />
-                        {/*<TooltipProvider delayDuration={0}>*/}
-                        {/*  <Tooltip>*/}
-                        {/*    <TooltipTrigger asChild>*/}
-                        {/*      <Button*/}
-                        {/*        className={cn(actionButtonClassnames, 'w-auto')}*/}
-                        {/*        onClick={() => setSetJobScopeOpen(true)}*/}
-                        {/*        size="auto"*/}
-                        {/*        type="button"*/}
-                        {/*        variant="outline"*/}
-                        {/*      >*/}
-                        {/*        <div className="flex items-center gap-2">*/}
-                        {/*          <FilesIcon className="h-4 w-4" />*/}
-                        {/*          <p className="text-xs text-white">*/}
-                        {/*            {t('vectorFs.localFiles')}*/}
-                        {/*          </p>*/}
-                        {/*        </div>*/}
-                        {/*        {Object.keys(selectedKeys ?? {}).length > 0 && (*/}
-                        {/*          <Badge className="bg-brand inline-flex h-5 w-5 items-center justify-center rounded-full p-0 text-center text-white">*/}
-                        {/*            {Object.keys(selectedKeys ?? {}).length}*/}
-                        {/*          </Badge>*/}
-                        {/*        )}*/}
-                        {/*      </Button>*/}
-                        {/*    </TooltipTrigger>*/}
-                        {/*    <TooltipPortal>*/}
-                        {/*      <TooltipContent*/}
-                        {/*        className="max-w-[300px]"*/}
-                        {/*        sideOffset={5}*/}
-                        {/*      >*/}
-                        {/*        {t('chat.form.setContextText')}*/}
-                        {/*      </TooltipContent>*/}
-                        {/*    </TooltipPortal>*/}
-                        {/*  </Tooltip>*/}
-                        {/*</TooltipProvider>*/}
+
                         {/*<TooltipProvider delayDuration={0}>*/}
                         {/*  <Tooltip>*/}
                         {/*    <TooltipTrigger asChild>*/}
@@ -404,7 +381,7 @@ function ConversationEmptyFooter() {
                       autoFocus
                       bottomAddons={
                         <Button
-                          className="hover:bg-app-gradient h-[40px] w-[40px] self-end rounded-xl bg-gray-500 p-3 disabled:cursor-not-allowed"
+                          className="hover:bg-app-gradient relative z-50 h-[40px] w-[40px] self-end rounded-xl bg-gray-500 p-3 disabled:cursor-not-allowed"
                           disabled={isPending}
                           onClick={chatForm.handleSubmit(onSubmit)}
                           size="icon"
@@ -569,6 +546,10 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
     },
   });
 
+  const promptSelected = usePromptSelectionStore(
+    (state) => state.promptSelected,
+  );
+
   const currentInbox = useGetCurrentInbox();
   const { data: chatConfig } = useGetChatConfig(
     {
@@ -708,6 +689,12 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
   };
 
   useEffect(() => {
+    if (promptSelected) {
+      chatForm.setValue('message', promptSelected.prompt);
+    }
+  }, [chatForm, promptSelected]);
+
+  useEffect(() => {
     chatForm.reset();
     setWorkflowSelected(undefined);
   }, [chatForm, inboxId]);
@@ -762,6 +749,7 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                             </TooltipPortal>
                           </Tooltip>
                         </TooltipProvider>
+                        <PromptSelectionActionBar />
                         <WorkflowSelectionActionBar />
                       </div>
                       <ChatConfigActionBar />
@@ -771,7 +759,7 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                       autoFocus
                       bottomAddons={
                         <Button
-                          className="hover:bg-app-gradient h-[40px] w-[40px] self-end rounded-xl bg-gray-500 p-3 disabled:cursor-not-allowed"
+                          className="hover:bg-app-gradient relative z-50 h-[40px] w-[40px] self-end rounded-xl bg-gray-500 p-3 disabled:cursor-not-allowed"
                           disabled={isLoadingMessage}
                           onClick={chatForm.handleSubmit(onSubmit)}
                           size="icon"

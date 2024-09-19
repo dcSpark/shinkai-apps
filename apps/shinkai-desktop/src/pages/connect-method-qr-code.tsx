@@ -1,8 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { QRSetupData } from '@shinkai_network/shinkai-message-ts/models';
-import { generateMyEncryptionKeys } from '@shinkai_network/shinkai-node-state/lib/queries/getEncryptionKeys/index';
-import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/lib/queries/getEncryptionKeys/useGetEncryptionKeys';
 import { useSubmitRegistration } from '@shinkai_network/shinkai-node-state/v2/mutations/submitRegistation/useSubmitRegistration';
+import { generateMyEncryptionKeys } from '@shinkai_network/shinkai-node-state/v2/queries/getEncryptionKeys/index';
+import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/v2/queries/getEncryptionKeys/useGetEncryptionKeys';
 import {
   Button,
   ErrorMessage,

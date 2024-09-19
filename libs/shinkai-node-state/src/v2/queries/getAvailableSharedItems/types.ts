@@ -1,6 +1,6 @@
 import { QueryObserverOptions } from '@tanstack/react-query';
 
-import { FunctionKey } from '../../constants';
+import { FunctionKeyV2 } from '../../constants';
 
 export type FolderTreeNode = {
   name: string;
@@ -55,7 +55,7 @@ export type GetAvailableSharedItemsInput = {
 };
 
 export type UseGetAvailableSharedItems = [
-  FunctionKey.GET_AVAILABLE_SHARED_ITEMS,
+  FunctionKeyV2.GET_AVAILABLE_SHARED_ITEMS,
   GetAvailableSharedItemsInput,
 ];
 

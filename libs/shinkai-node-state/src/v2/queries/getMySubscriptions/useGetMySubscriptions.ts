@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { FunctionKey } from '../../constants';
+import { FunctionKeyV2 } from '../../constants';
 import { getMySubscriptions } from '.';
 import { GetMySubscriptionsInput, Options } from './types';
 
@@ -9,7 +9,7 @@ export const useGetMySubscriptions = (
   options?: Omit<Options, 'queryKey' | 'queryFn'>,
 ) => {
   const response = useQuery({
-    queryKey: [FunctionKey.GET_MY_SUBSCRIPTIONS, input],
+    queryKey: [FunctionKeyV2.GET_MY_SUBSCRIPTIONS, input],
     queryFn: async () => await getMySubscriptions(input),
     ...options,
   });

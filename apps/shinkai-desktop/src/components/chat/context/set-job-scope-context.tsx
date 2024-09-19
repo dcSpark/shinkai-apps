@@ -21,6 +21,8 @@ type SetJobScopeStore = {
 
   isKnowledgeSearchOpen: boolean;
   setKnowledgeSearchOpen: (isKnowledgeSearchOpen: boolean) => void;
+
+  resetJobScope: () => void;
 };
 
 const createVectorFsStore = () =>
@@ -39,6 +41,15 @@ const createVectorFsStore = () =>
     isKnowledgeSearchOpen: false,
     setKnowledgeSearchOpen: (isKnowledgeSearchOpen) => {
       set({ isKnowledgeSearchOpen });
+    },
+    resetJobScope: () => {
+      set({
+        isSetJobScopeOpen: false,
+        selectedKeys: null,
+        selectedFileKeysRef: new Map(),
+        selectedFolderKeysRef: new Map(),
+        isKnowledgeSearchOpen: false,
+      });
     },
   }));
 

@@ -292,6 +292,7 @@ export default {
       analytics: 'Analytics',
       publicKeys: 'Public Keys',
       galxe: 'Galxe Quest',
+      promptLibrary: 'Prompt Library',
     },
     shinkaiIdentity: {
       label: 'Shinkai Identity',
@@ -352,6 +353,9 @@ export default {
       profileIdentity: 'Profile Identity',
       myDeviceEncryption: 'My Device Encryption',
       myDeviceIdentity: 'My Device Identity',
+    },
+    promptLibrary: {
+      label: 'Prompt Library',
     },
   },
   exportConnection: {

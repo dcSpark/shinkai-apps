@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { Navigate, Outlet, Route, Routes, useNavigate } from 'react-router-dom';
 
 import { SetJobScopeProvider } from '../components/chat/context/set-job-scope-context';
+import { PromptSelectionProvider } from '../components/prompt/context/prompt-selection-context';
 import { TableSheetProvider } from '../components/sheet/context/table-context';
 import PublicSharedFolderSubscription from '../components/subscriptions/public-shared-folders';
 import MySubscriptions from '../components/subscriptions/subscriptions';
@@ -37,6 +38,7 @@ import GetStartedPage from '../pages/get-started';
 import MainLayout from '../pages/layout/main-layout';
 import OnboardingLayout from '../pages/layout/onboarding-layout';
 import SettingsLayout from '../pages/layout/settings-layout';
+import { PromptLibrary } from '../pages/prompt-library';
 import { PublicKeys } from '../pages/public-keys';
 import QuickConnectionPage from '../pages/quick-connection';
 import RestoreConnectionPage from '../pages/restore-connection';
@@ -158,7 +160,9 @@ const AppRoutes = () => {
             <ProtectedRoute>
               <SetJobScopeProvider>
                 <WorkflowSelectionProvider>
-                  <ChatLayout />
+                  <PromptSelectionProvider>
+                    <ChatLayout />
+                  </PromptSelectionProvider>
                 </WorkflowSelectionProvider>
               </SetJobScopeProvider>
             </ProtectedRoute>
@@ -293,6 +297,7 @@ const AppRoutes = () => {
             element={<AnalyticsSettingsPage />}
             path={'analytics-settings'}
           />
+          <Route element={<PromptLibrary />} path={'prompt-library'} />
           <Route element={<GalxeValidation />} path={'galxe-validation'} />
         </Route>
       </Route>

@@ -1,3 +1,4 @@
+import { PlusIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils';
 import { useGetJobScope } from '@shinkai_network/shinkai-node-state/v2/queries/getJobScope/useGetJobScope';
@@ -43,7 +44,7 @@ const ConversationHeader = () => {
   const onSelectedKeysChange = useSetJobScope(
     (state) => state.onSelectedKeysChange,
   );
-  //
+
   const selectedFileKeysRef = useSetJobScope(
     (state) => state.selectedFileKeysRef,
   );
@@ -70,6 +71,7 @@ const ConversationHeader = () => {
   useEffect(() => {
     if (
       isSuccess &&
+      inboxId &&
       (jobScope.vector_fs_folders?.length > 0 ||
         jobScope.vector_fs_items?.length > 0)
     ) {
@@ -149,11 +151,9 @@ const ConversationHeader = () => {
       {hasConversationContext ? (
         <Button
           className={cn(
-            'flex h-auto items-center gap-2 rounded-lg bg-gray-400 px-2.5 py-1.5',
-            'w-auto',
+            'flex h-auto w-auto items-center gap-2 rounded-lg bg-gray-400 px-2.5 py-1.5',
           )}
           onClick={() => {
-            console.log('www');
             setSetJobScopeOpen(true);
           }}
           size="auto"
@@ -165,7 +165,7 @@ const ConversationHeader = () => {
             <p className="text-xs text-white">{t('vectorFs.localFiles')}</p>
           </div>
           {filesAndFoldersCount > 0 && (
-            <Badge className="bg-gray-350 inline-flex h-5 w-5 items-center justify-center rounded-full border-gray-200 p-0 text-center text-gray-50">
+            <Badge className="bg-brand inline-flex h-5 w-5 items-center justify-center rounded-full border-gray-200 p-0 text-center text-gray-50">
               {filesAndFoldersCount}
             </Badge>
           )}
@@ -173,8 +173,7 @@ const ConversationHeader = () => {
       ) : (
         <Button
           className={cn(
-            'flex h-auto items-center gap-2 rounded-lg bg-gray-400 px-2.5 py-1.5',
-            'w-auto',
+            'flex h-auto w-auto items-center gap-2 rounded-lg bg-gray-400 px-2.5 py-1.5',
           )}
           onClick={() => {
             setSetJobScopeOpen(true);
@@ -185,11 +184,15 @@ const ConversationHeader = () => {
         >
           <div className="flex items-center gap-2">
             <FilesIcon className="h-4 w-4" />
-            <p className="text-xs text-white">Add {t('vectorFs.localFiles')}</p>
+            <p className="text-xs text-white"> {t('vectorFs.localFiles')}</p>
           </div>
-          {Object.keys(selectedKeys || {}).length > 0 && (
-            <Badge className="bg-gray-350 inline-flex h-5 w-5 items-center justify-center rounded-full border-gray-200 p-0 text-center text-gray-50">
+          {Object.keys(selectedKeys || {}).length > 0 ? (
+            <Badge className="bg-brand inline-flex h-5 w-5 items-center justify-center rounded-full border-gray-200 p-0 text-center text-gray-50">
               {Object.keys(selectedKeys || {}).length}
+            </Badge>
+          ) : (
+            <Badge className="inline-flex h-5 w-5 items-center justify-center rounded-full border-gray-200 bg-gray-200 p-0 text-center text-gray-50">
+              <PlusIcon className="h-3.5 w-3.5" />
             </Badge>
           )}
         </Button>

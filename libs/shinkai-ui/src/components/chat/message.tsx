@@ -177,7 +177,6 @@ export const Message = ({
                         }
                         onChange={field.onChange}
                         onSubmit={editMessageForm.handleSubmit(onSubmit)}
-                        setInitialValue={message.content}
                         value={field.value}
                       />
                     )}
@@ -191,7 +190,7 @@ export const Message = ({
                 <motion.div
                   className={cn(
                     'absolute -top-[14px] flex items-center justify-end gap-1.5 text-xs text-gray-100',
-                    message.isLocal ? 'right-10' : 'right-1',
+                    message.isLocal ? 'right-10' : 'left-10',
                   )}
                   variants={actionBar}
                 >
@@ -254,7 +253,7 @@ export const Message = ({
                 <motion.div
                   className={cn(
                     'absolute -bottom-[34px] flex items-end justify-end gap-1.5',
-                    message.isLocal ? 'right-10' : 'right-1',
+                    message.isLocal ? 'right-10' : 'left-10',
                   )}
                   variants={actionBar}
                 >

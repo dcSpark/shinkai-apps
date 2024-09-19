@@ -44,6 +44,9 @@ import { useForm } from 'react-hook-form';
 import { Link, Outlet, useMatch, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import { useSetJobScope } from '../../components/chat/context/set-job-scope-context';
+import { usePromptSelectionStore } from '../../components/prompt/context/prompt-selection-context';
+import { useWorkflowSelectionStore } from '../../components/workflow/context/workflow-selection-context';
 import { handleSendNotification } from '../../lib/notifications';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
@@ -71,6 +74,7 @@ const InboxNameInput = ({
       inputRef.current?.focus();
     }
   }, []);
+
   const onSubmit = async (data: UpdateInboxNameFormSchema) => {
     if (!auth) return;
 
@@ -157,6 +161,8 @@ const MessageButton = ({
 }) => {
   const auth = useAuth((state) => state.auth);
   const { t } = useTranslation();
+  const resetJobScope = useSetJobScope((state) => state.resetJobScope);
+
   const inboxId = inbox.inbox_id;
   const inboxName =
     inbox.last_message && inbox.custom_name === inbox.inbox_id
@@ -238,6 +244,7 @@ const MessageButton = ({
         match && 'bg-gray-300 text-white',
       )}
       key={inboxId}
+      onClick={() => resetJobScope()}
       to={to}
     >
       {isJobInbox(inboxId) ? (
@@ -303,6 +310,13 @@ const ChatLayout = () => {
   );
   const navigate = useNavigate();
   const auth = useAuth((state) => state.auth);
+  const resetJobScope = useSetJobScope((state) => state.resetJobScope);
+  const setWorkflowSelected = useWorkflowSelectionStore(
+    (state) => state.setWorkflowSelected,
+  );
+  const setPromptSelected = usePromptSelectionStore(
+    (state) => state.setPromptSelected,
+  );
 
   const { inboxes, isPending, isSuccess } = useGetInboxes(
     { nodeAddress: auth?.node_address ?? '', token: auth?.api_v2_key ?? '' },
@@ -355,7 +369,20 @@ const ChatLayout = () => {
                   <TooltipTrigger asChild>
                     <Button
                       className="h-8 w-8"
-                      onClick={() => navigate('/inboxes')}
+                      onClick={() => {
+                        resetJobScope();
+                        setWorkflowSelected(undefined);
+                        setPromptSelected(undefined);
+
+                        const element = document.querySelector(
+                          '[contenteditable="true"]',
+                        ) as HTMLDivElement;
+                        if (element) {
+                          element?.focus?.();
+                        }
+
+                        navigate('/inboxes');
+                      }}
                       size="icon"
                       variant="tertiary"
                     >

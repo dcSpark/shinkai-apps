@@ -185,7 +185,6 @@ export default function ChatTable() {
             hasPreviousPage={hasPreviousPage}
             isFetchingPreviousPage={isFetchingPreviousPage}
             isLoading={isChatConversationLoading}
-            // isLoadingMessage={isLoadingMessage}
             isSuccess={isChatConversationSuccess}
             lastMessageContent={
               isLoadingMessage && (
