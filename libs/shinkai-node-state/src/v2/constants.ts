@@ -27,3 +27,11 @@ export enum FunctionKeyV2 {
   GET_LIST_PROMPTS = 'GET_LIST_PROMPTS',
   GET_SEARCH_PROMPT = 'GET_SEARCH_PROMPT',
 }
+
+export const DEFAULT_CHAT_CONFIG = {
+  temperature: 0.8,
+  seed: -1,
+  top_k: 40,
+  top_p: 0.9,
+  stream: true,
+} as const;

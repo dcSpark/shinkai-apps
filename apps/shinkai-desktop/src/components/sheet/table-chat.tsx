@@ -8,8 +8,10 @@ import {
   CreateJobFormSchema,
   createJobFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
-import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
-import { FunctionKeyV2 } from '@shinkai_network/shinkai-node-state/v2/constants';
+import {
+  DEFAULT_CHAT_CONFIG,
+  FunctionKeyV2,
+} from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
@@ -29,7 +31,6 @@ import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
 import { useSheetProjectStore } from './context/table-context';
@@ -78,11 +79,6 @@ export default function ChatTable() {
   });
   const { mutateAsync: sendMessageToJob } = useSendMessageToJob();
   const queryClient = useQueryClient();
-  const currentInbox = useGetCurrentInbox();
-  const hasProviderEnableStreaming =
-    currentInbox?.agent?.model.split(':')?.[0] === Models.Ollama ||
-    currentInbox?.agent?.model.split(':')?.[0] === Models.Gemini ||
-    currentInbox?.agent?.model.split(':')?.[0] === Models.Exo;
 
   const {
     data,
@@ -98,7 +94,7 @@ export default function ChatTable() {
     shinkaiIdentity: auth?.shinkai_identity ?? '',
     profile: auth?.profile ?? '',
     enabled: !!chatInboxId,
-    refetchIntervalEnabled: !hasProviderEnableStreaming,
+    refetchIntervalEnabled: true,
   });
 
   useEffect(() => {
@@ -127,6 +123,13 @@ export default function ChatTable() {
         workflowName: '',
         workflowCode: undefined,
         isHidden: true,
+        chatConfig: {
+          stream: false,
+          custom_prompt: '',
+          temperature: DEFAULT_CHAT_CONFIG.temperature,
+          top_p: DEFAULT_CHAT_CONFIG.top_p,
+          top_k: DEFAULT_CHAT_CONFIG.top_k,
+        },
       });
       createJobForm.reset();
       return;
@@ -225,6 +228,7 @@ export default function ChatTable() {
                 <Input
                   autoFocus
                   className="placeholder-gray-80 !h-[50px] flex-1 bg-gray-200 px-3 py-2"
+                  disabled={isLoadingMessage}
                   onChange={field.onChange}
                   placeholder={'Ask Shinkai AI'}
                   value={field.value}
@@ -234,6 +238,7 @@ export default function ChatTable() {
 
             <Button
               className="aspect-square h-[90%] shrink-0 rounded-lg p-2"
+              disabled={isLoadingMessage}
               size="auto"
               type="submit"
               variant="default"

@@ -21,6 +21,7 @@ import {
   VRItem,
 } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
+import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useStopGeneratingLLM } from '@shinkai_network/shinkai-node-state/v2/mutations/stopGeneratingLLM/useStopGeneratingLLM';
@@ -130,11 +131,11 @@ function ConversationEmptyFooter() {
   const chatConfigForm = useForm<ChatConfigFormSchemaType>({
     resolver: zodResolver(chatConfigFormSchema),
     defaultValues: {
-      stream: true,
+      stream: DEFAULT_CHAT_CONFIG.stream,
       customPrompt: '',
-      temperature: 0.7,
-      topP: 0.9,
-      topK: 50,
+      temperature: DEFAULT_CHAT_CONFIG.temperature,
+      topP: DEFAULT_CHAT_CONFIG.top_p,
+      topK: DEFAULT_CHAT_CONFIG.top_k,
     },
   });
 
