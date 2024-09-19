@@ -31,7 +31,7 @@ import {
   Trash2Icon,
   XIcon,
 } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -203,6 +203,7 @@ function PromptPreview({
 }) {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const [editing, setEditing] = useState(false);
   const [promptEditContent, setPromptEditContent] = useState('');
@@ -238,11 +239,15 @@ function PromptPreview({
     },
   });
 
+  useEffect(() => {
+    scrollRef.current?.scrollTo(0, 0);
+  }, [selectedPrompt]);
+
   if (!selectedPrompt) {
     return <></>;
   }
   return (
-    <ScrollArea className="flex h-full flex-col px-5 pb-4">
+    <ScrollArea className="flex h-full flex-col px-5 pb-4" ref={scrollRef}>
       <h2 className="mb-6 font-bold text-white">{selectedPrompt?.name}</h2>
 
       <div>
@@ -524,7 +529,7 @@ export const PromptTryOut = ({
             initial={{ opacity: 0 }}
           >
             <p className="text-gray-80 border-b border-gray-300 bg-gray-200 px-2.5 py-2 text-xs">
-              Output Response{' '}
+              Output
             </p>
             <div className="p-4">
               <MarkdownPreview
