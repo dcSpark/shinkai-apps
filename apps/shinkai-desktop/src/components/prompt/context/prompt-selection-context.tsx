@@ -285,8 +285,10 @@ type CreatePromptFormSchema = z.infer<typeof createPromptFormSchema>;
 
 export function CreatePromptDrawer({
   children,
+  onPromptCreated,
 }: {
   children?: React.ReactNode;
+  onPromptCreated?: (prompt: Prompt) => void;
 }) {
   const auth = useAuth((state) => state.auth);
   const createPromptForm = useForm<CreatePromptFormSchema>({
@@ -294,14 +296,15 @@ export function CreatePromptDrawer({
   });
   const [isPromptDrawerOpen, setIsPromptDrawerOpen] = useState(false);
 
-  const { mutateAsync: createWorkflow, isPending } = useCreatePrompt({
-    onSuccess: () => {
+  const { mutateAsync: createPrompt, isPending } = useCreatePrompt({
+    onSuccess: (data) => {
       toast.success('Prompt created successfully');
       setIsPromptDrawerOpen(false);
       createPromptForm.reset({
         promptContent: '',
         promptName: '',
       });
+      onPromptCreated?.(data);
     },
     onError: (error) => {
       toast.error('Failed to create prompt', {
@@ -311,7 +314,7 @@ export function CreatePromptDrawer({
   });
 
   const onSubmit = async (data: CreatePromptFormSchema) => {
-    await createWorkflow({
+    await createPrompt({
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
       promptName: data.promptName,
