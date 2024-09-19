@@ -79,7 +79,7 @@ export const PromptLibrary = () => {
           promptList[0],
       );
     }
-  }, [isSuccess, promptList]);
+  }, [isSuccess, promptList, selectedPrompt]);
 
   return (
     <SimpleLayout
