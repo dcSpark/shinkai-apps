@@ -20,6 +20,7 @@ import {
   PopoverTrigger,
   Slider,
   Switch,
+  Textarea,
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -93,7 +94,7 @@ export default function ChatConfigActionBar() {
       jobId: extractJobIdFromInbox(inboxId),
       jobConfig: {
         stream: data.stream,
-        custom_prompt: '',
+        custom_prompt: data.customPrompt ?? '',
         temperature: data.temperature,
         top_p: data.topP,
         top_k: data.topK,
@@ -129,8 +130,8 @@ export default function ChatConfigActionBar() {
             className="min-w-[380px] bg-gray-300 px-6 py-7 text-xs"
             side="top"
           >
-            <h2 className="leading-1 mb-3 text-xs uppercase text-gray-100">
-              Basic Options
+            <h2 className="leading-1 text-gray-80 mb-5 text-xs uppercase">
+              Chat Settings
             </h2>
 
             <Form {...form}>
@@ -288,11 +289,27 @@ export default function ChatConfigActionBar() {
                       </FormItem>
                     )}
                   />
+                  <FormField
+                    control={form.control}
+                    name="customPrompt"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Custom Prompt</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            className="!min-h-[130px] resize-none text-sm"
+                            spellCheck={false}
+                            {...field}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-end gap-2">
                   <PopoverClose asChild>
                     <Button
-                      className="w-full text-sm"
+                      className="h-9 min-w-[100px] gap-2 rounded-xl"
                       size="sm"
                       variant="outline"
                     >
@@ -301,7 +318,7 @@ export default function ChatConfigActionBar() {
                   </PopoverClose>
                   <PopoverClose asChild>
                     <Button
-                      className="w-full text-sm"
+                      className="h-9 min-w-[100px] gap-2 rounded-xl"
                       size="sm"
                       type={'submit'}
                     >
