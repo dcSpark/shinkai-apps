@@ -9,7 +9,7 @@ import {
   GetChatConversationOutput,
 } from './types';
 
-export const CONVERSATION_PAGINATION_LIMIT = 14;
+export const CONVERSATION_PAGINATION_LIMIT = 16;
 export const CONVERSATION_PAGINATION_REFETCH = 5000;
 
 export const useGetChatConversationWithPagination = (
@@ -47,6 +47,7 @@ export const useGetChatConversationWithPagination = (
     getNextPageParam: () => {
       return { lastKey: null };
     },
+    placeholderData: keepPreviousData,
     select: (data) => {
       const allMessages = data.pages.flat();
       return {

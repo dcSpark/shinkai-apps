@@ -213,7 +213,7 @@ export const MessageList = ({
         )}
         {(hasPreviousPage || isFetchingPreviousPage) && (
           <div className="flex flex-col space-y-3" ref={ref}>
-            {[...Array(3).keys()].map((index) => (
+            {[...Array(4).keys()].map((index) => (
               <div
                 className={cn(
                   'flex w-[85%] gap-2',
