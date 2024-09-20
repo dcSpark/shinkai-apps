@@ -127,7 +127,7 @@ export const MessageList = ({
       const currentHeight = chatContainerElement.scrollHeight;
       const currentScrollTop = chatContainerElement.scrollTop;
       previousChatHeightRef.current = currentHeight;
-      const scrollThreshold = 125;
+      const scrollThreshold = 100;
       const isNearBottom =
         currentScrollTop + chatContainerElement.clientHeight >=
         currentHeight - scrollThreshold;
@@ -154,15 +154,24 @@ export const MessageList = ({
   ]);
 
   const messageList = paginatedMessages?.content ?? [];
+  // when inserting a new message
+  useEffect(() => {
+    if (isSuccess && messageList?.length % 2 === 1) {
+      scrollDomToBottom();
+    }
+  }, [paginatedMessages?.content]);
 
   return (
     <div
       className={cn(
         'scroll flex-1 overflow-y-auto overscroll-none will-change-scroll',
+        'flex-1 overflow-y-auto',
         containerClassName,
       )}
-      id="chat-container"
       ref={chatContainerRef}
+      style={{
+        scrollBehavior: 'smooth',
+      }}
     >
       {isSuccess &&
         !isFetchingPreviousPage &&

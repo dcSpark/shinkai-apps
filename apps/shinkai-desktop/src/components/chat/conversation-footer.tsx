@@ -622,15 +622,6 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
   const { mutateAsync: sendMessageToInbox } = useSendMessageToInbox();
   const { mutateAsync: sendMessageToJob } = useSendMessageToJob({
     onSuccess: (_, variables) => {
-      const chatContainer = document.querySelector(
-        '#chat-container',
-      ) as HTMLElement;
-      requestAnimationFrame(() => {
-        chatContainer?.scrollTo({
-          top: chatContainer.scrollHeight,
-          behavior: 'smooth',
-        });
-      });
       if (variables.files && variables.files.length > 0) {
         captureAnalyticEvent('AI Chat with Files', {
           filesCount: variables.files.length,
