@@ -83,9 +83,6 @@ const WorkflowPlayground = () => {
   );
 
   const selectedKeys = useSetJobScope((state) => state.selectedKeys);
-  // const onSelectedKeysChange = useSetJobScope(
-  //   (state) => state.onSelectedKeysChange,
-  // );
 
   const selectedFileKeysRef = useSetJobScope(
     (state) => state.selectedFileKeysRef,
@@ -153,9 +150,10 @@ const WorkflowPlayground = () => {
       }
     },
   });
+
   useEffect(() => {
     setCurrentWorkflowIndex(workflowHistory.size - 1);
-  }, []);
+  }, [workflowHistory.size]);
 
   const onSubmit = async (data: CreateJobFormSchema) => {
     if (!auth) return;
@@ -224,258 +222,326 @@ const WorkflowPlayground = () => {
     [onWorkflowChange],
   );
 
+  const [selectedTab, setSelectedTab] = useState<'workflow' | 'baml'>(
+    'workflow',
+  );
+  const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
+
   return (
     <SubpageLayout
       className="max-w-6xl px-3"
       title={t('workflowPlayground.label')}
     >
       <div className="flex h-[calc(100vh_-_150px)] gap-6 overflow-hidden">
-        <Form {...createJobForm}>
-          <form
-            className="flex-1 space-y-8 overflow-y-auto pr-2"
-            onSubmit={createJobForm.handleSubmit(onSubmit)}
+        {/* Left Sidebar */}
+        <div className="flex w-[30%] flex-col gap-4">
+          <Select
+            onValueChange={(value) =>
+              setSelectedTab(value as 'workflow' | 'baml')
+            }
+            value={selectedTab}
           >
-            <div className="space-y-6">
-              <FormField
-                control={createJobForm.control}
-                name="message"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('chat.form.message')}</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        autoFocus={true}
-                        className="resize-none"
-                        onKeyDown={(event) => {
-                          if (
-                            event.key === 'Enter' &&
-                            (event.metaKey || event.ctrlKey)
-                          ) {
-                            createJobForm.handleSubmit(onSubmit)();
-                          }
-                        }}
-                        placeholder={t('chat.form.messagePlaceholder')}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={createJobForm.control}
-                name="workflow"
-                render={({ field }) => (
-                  <FormItem className="relative">
-                    <FormLabel>{t('chat.form.workflows')}</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        autoFocus={true}
-                        className="!min-h-[100px] resize-none text-sm"
-                        onKeyDown={handleWorkflowKeyDown}
-                        placeholder="Workflow"
-                        spellCheck={false}
-                        {...field}
-                      />
-                    </FormControl>
-                    {Array.from(workflowHistory).length > 0 && (
-                      <>
-                        <div className="absolute right-3 top-3 flex items-center gap-2">
-                          <Button
-                            className="h-6 w-6"
-                            disabled={currentWorkflowIndex <= 0}
-                            onClick={() => {
-                              if (currentWorkflowIndex > 0) {
-                                setCurrentWorkflowIndex(
-                                  (prevIndex) => prevIndex - 1,
-                                );
-                                createJobForm.setValue(
-                                  'workflow',
-                                  Array.from(workflowHistory)[
-                                    currentWorkflowIndex - 1
-                                  ],
-                                );
-                              }
-                            }}
-                            size="icon"
-                            type="button"
-                            variant="outline"
-                          >
-                            <MoveLeft className="h-3 w-3" />
-                          </Button>
+            <SelectTrigger>
+              <SelectValue placeholder="Select Tab" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="workflow">Workflow</SelectItem>
+              <SelectItem value="baml">BAML</SelectItem>
+            </SelectContent>
+          </Select>
 
-                          <Button
-                            className="h-6 w-6"
-                            disabled={
-                              currentWorkflowIndex >= workflowHistory.size - 1
-                            }
-                            onClick={() => {
-                              if (
-                                currentWorkflowIndex <
-                                workflowHistory.size - 1
-                              ) {
-                                setCurrentWorkflowIndex(
-                                  (prevIndex) => prevIndex + 1,
-                                );
-                                createJobForm.setValue(
-                                  'workflow',
-                                  Array.from(workflowHistory)[
-                                    currentWorkflowIndex + 1
-                                  ],
-                                );
-                              }
-                            }}
-                            size="icon"
-                            type="button"
-                            variant="outline"
-                          >
-                            <MoveRight className="h-3 w-3" />
-                          </Button>
-                        </div>
-                        <div className="absolute bottom-3 right-3">
-                          <Button
-                            className="h-6 w-6"
-                            onClick={() => {
-                              setCurrentWorkflowIndex(-1);
-                              createJobForm.setValue('workflow', '');
-                              clearWorkflowHistory();
-                            }}
-                            size="icon"
-                            type="button"
-                            variant="outline"
-                          >
-                            <TrashIcon className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </>
-                    )}
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={createJobForm.control}
-                name="agent"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('chat.form.selectAI')}</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder={t('chat.form.selectAI')} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {llmProviders?.length ? (
-                          llmProviders.map((agent) => (
-                            <SelectItem key={agent.id} value={agent.id}>
-                              <span>{agent.id} </span>
-                            </SelectItem>
-                          ))
-                        ) : (
-                          <Button
-                            onClick={() => {
-                              navigate(ADD_AGENT_PATH);
-                            }}
-                            variant="ghost"
-                          >
-                            <PlusIcon className="mr-2" />
-                            {t('llmProviders.add')}
-                          </Button>
-                        )}
-                      </SelectContent>
-                    </Select>
-                  </FormItem>
-                )}
-              />
-              <div className="my-3 rounded-md bg-gray-400 px-3 py-4">
-                <div className="mb-5 flex items-start justify-between gap-4">
-                  <div className="space-y-1">
-                    <h2 className="text-sm font-medium text-gray-100">
-                      {t('chat.form.setContext')}
-                    </h2>
-                    <p className="text-gray-80 text-xs">
-                      {t('chat.form.setContextText')}
-                    </p>
-                  </div>
-                  <TooltipProvider delayDuration={0}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          className="flex h-10 w-10 items-center justify-center gap-2 rounded-lg p-2.5 text-left hover:bg-gray-500"
-                          onClick={() => setKnowledgeSearchOpen(true)}
-                          size="icon"
-                          type="button"
-                          variant="ghost"
-                        >
-                          <AISearchContentIcon className="h-5 w-5" />
-                          <p className="sr-only text-xs text-white">
-                            AI Files Content Search
-                          </p>
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipPortal>
-                        <TooltipContent sideOffset={0}>
-                          Search AI Files Content
-                        </TooltipContent>
-                      </TooltipPortal>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <Button
-                    className="hover:bg-gray-350 flex h-[40px] items-center justify-between gap-2 rounded-lg p-2.5 text-left"
-                    onClick={() => setSetJobScopeOpen(true)}
-                    size="auto"
-                    type="button"
-                    variant="outline"
-                  >
-                    <div className="flex items-center gap-2">
-                      <FilesIcon className="h-4 w-4" />
-                      <p className="text-sm text-white">Local AI Files</p>
-                    </div>
-                    {Object.keys(selectedKeys ?? {}).length > 0 && (
-                      <Badge className="bg-brand text-white">
-                        {Object.keys(selectedKeys ?? {}).length}
-                      </Badge>
-                    )}
-                  </Button>
-                  <FormField
-                    control={createJobForm.control}
-                    name="files"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="sr-only">Upload a file</FormLabel>
-                        <FormControl>
-                          <FileUploader
-                            accept={allowedFileExtensions.join(',')}
-                            allowMultiple
-                            descriptionText={allowedFileExtensions?.join(' | ')}
-                            onChange={(acceptedFiles) => {
-                              field.onChange(acceptedFiles);
-                            }}
-                            shouldDisableScrolling
+          {/* Main Content Area */}
+          <div className="flex-1">
+            {selectedTab === 'workflow' && (
+              <Form {...createJobForm}>
+                <form
+                  className="space-y-8 overflow-y-auto pr-2"
+                  onSubmit={createJobForm.handleSubmit(onSubmit)}
+                >
+                  <div className="space-y-6">
+                    <FormField
+                      control={createJobForm.control}
+                      name="message"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('chat.form.message')}</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              autoFocus={true}
+                              className="resize-none"
+                              onKeyDown={(event) => {
+                                if (
+                                  event.key === 'Enter' &&
+                                  (event.metaKey || event.ctrlKey)
+                                ) {
+                                  createJobForm.handleSubmit(onSubmit)();
+                                }
+                              }}
+                              placeholder={t('chat.form.messagePlaceholder')}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={createJobForm.control}
+                      name="workflow"
+                      render={({ field }) => (
+                        <FormItem className="relative">
+                          <FormLabel>{t('chat.form.workflows')}</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              autoFocus={true}
+                              className="!min-h-[100px] resize-none text-sm"
+                              onKeyDown={handleWorkflowKeyDown}
+                              placeholder="Workflow"
+                              spellCheck={false}
+                              {...field}
+                            />
+                          </FormControl>
+                          {Array.from(workflowHistory).length > 0 && (
+                            <>
+                              <div className="absolute right-3 top-3 flex items-center gap-2">
+                                <Button
+                                  className="h-6 w-6"
+                                  disabled={currentWorkflowIndex <= 0}
+                                  onClick={() => {
+                                    if (currentWorkflowIndex > 0) {
+                                      setCurrentWorkflowIndex(
+                                        (prevIndex) => prevIndex - 1,
+                                      );
+                                      createJobForm.setValue(
+                                        'workflow',
+                                        Array.from(workflowHistory)[
+                                          currentWorkflowIndex - 1
+                                        ],
+                                      );
+                                    }
+                                  }}
+                                  size="icon"
+                                  type="button"
+                                  variant="outline"
+                                >
+                                  <MoveLeft className="h-3 w-3" />
+                                </Button>
+
+                                <Button
+                                  className="h-6 w-6"
+                                  disabled={
+                                    currentWorkflowIndex >=
+                                    workflowHistory.size - 1
+                                  }
+                                  onClick={() => {
+                                    if (
+                                      currentWorkflowIndex <
+                                      workflowHistory.size - 1
+                                    ) {
+                                      setCurrentWorkflowIndex(
+                                        (prevIndex) => prevIndex + 1,
+                                      );
+                                      createJobForm.setValue(
+                                        'workflow',
+                                        Array.from(workflowHistory)[
+                                          currentWorkflowIndex + 1
+                                        ],
+                                      );
+                                    }
+                                  }}
+                                  size="icon"
+                                  type="button"
+                                  variant="outline"
+                                >
+                                  <MoveRight className="h-3 w-3" />
+                                </Button>
+                              </div>
+                              <div className="absolute bottom-3 right-3">
+                                <Button
+                                  className="h-6 w-6"
+                                  onClick={() => {
+                                    setCurrentWorkflowIndex(-1);
+                                    createJobForm.setValue('workflow', '');
+                                    clearWorkflowHistory();
+                                  }}
+                                  size="icon"
+                                  type="button"
+                                  variant="outline"
+                                >
+                                  <TrashIcon className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </>
+                          )}
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={createJobForm.control}
+                      name="agent"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('chat.form.selectAI')}</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
                             value={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue
+                                  placeholder={t('chat.form.selectAI')}
+                                />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {llmProviders?.length ? (
+                                llmProviders.map((agent) => (
+                                  <SelectItem key={agent.id} value={agent.id}>
+                                    <span>{agent.id} </span>
+                                  </SelectItem>
+                                ))
+                              ) : (
+                                <Button
+                                  onClick={() => {
+                                    navigate(ADD_AGENT_PATH);
+                                  }}
+                                  variant="ghost"
+                                >
+                                  <PlusIcon className="mr-2" />
+                                  {t('llmProviders.add')}
+                                </Button>
+                              )}
+                            </SelectContent>
+                          </Select>
+                        </FormItem>
+                      )}
+                    />
+                    <Button
+                      className="hover:bg-gray-350 flex h-[40px] items-center justify-between gap-2 rounded-lg p-2.5 text-left"
+                      onClick={() => setIsContextMenuOpen(!isContextMenuOpen)}
+                      size="auto"
+                      type="button"
+                      variant="outline"
+                    >
+                      <div className="flex items-center gap-2">
+                        <FilesIcon className="h-4 w-4" />
+                        <p className="text-sm text-white">Set Chat Context</p>
+                      </div>
+                    </Button>
+
+                    {isContextMenuOpen && (
+                      <div className="my-3 rounded-md bg-gray-400 px-3 py-4">
+                        <div className="mb-5 flex items-start justify-between gap-4">
+                          <div className="space-y-1">
+                            <h2 className="text-sm font-medium text-gray-100">
+                              {t('chat.form.setContext')}
+                            </h2>
+                            <p className="text-gray-80 text-xs">
+                              {t('chat.form.setContextText')}
+                            </p>
+                          </div>
+                          <TooltipProvider delayDuration={0}>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  className="flex h-10 w-10 items-center justify-center gap-2 rounded-lg p-2.5 text-left hover:bg-gray-500"
+                                  onClick={() => setKnowledgeSearchOpen(true)}
+                                  size="icon"
+                                  type="button"
+                                  variant="ghost"
+                                >
+                                  <AISearchContentIcon className="h-5 w-5" />
+                                  <p className="sr-only text-xs text-white">
+                                    AI Files Content Search
+                                  </p>
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipPortal>
+                                <TooltipContent sideOffset={0}>
+                                  Search AI Files Content
+                                </TooltipContent>
+                              </TooltipPortal>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+
+                        <div className="mt-2 flex flex-col gap-1.5">
+                          <Button
+                            className="hover:bg-gray-350 flex h-[40px] items-center justify-between gap-2 rounded-lg p-2.5 text-left"
+                            onClick={() => setSetJobScopeOpen(true)}
+                            size="auto"
+                            type="button"
+                            variant="outline"
+                          >
+                            <div className="flex items-center gap-2">
+                              <FilesIcon className="h-4 w-4" />
+                              <p className="text-sm text-white">
+                                Local AI Files
+                              </p>
+                            </div>
+                            {Object.keys(selectedKeys ?? {}).length > 0 && (
+                              <Badge className="bg-brand text-white">
+                                {Object.keys(selectedKeys ?? {}).length}
+                              </Badge>
+                            )}
+                          </Button>
+                          <FormField
+                            control={createJobForm.control}
+                            name="files"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="sr-only">
+                                  Upload a file
+                                </FormLabel>
+                                <FormControl>
+                                  <FileUploader
+                                    accept={allowedFileExtensions.join(',')}
+                                    allowMultiple
+                                    descriptionText={allowedFileExtensions?.join(
+                                      ' | ',
+                                    )}
+                                    onChange={(acceptedFiles) => {
+                                      field.onChange(acceptedFiles);
+                                    }}
+                                    shouldDisableScrolling
+                                    value={field.value}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
                           />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
+                        </div>
+                      </div>
                     )}
-                  />
-                </div>
+                  </div>
+                  <Button
+                    className="w-full"
+                    disabled={isPending}
+                    isLoading={isPending}
+                    size="sm"
+                    type="submit"
+                  >
+                    Try Workflow
+                  </Button>
+                </form>
+              </Form>
+            )}
+            {selectedTab === 'baml' && (
+              <div className="space-y-8 overflow-y-auto pr-2">
+                <h2 className="text-lg font-semibold">BAML Content</h2>
+                {/* Add BAML-specific content here */}
+                <p>
+                  This is the BAML section. Add your BAML-related components and
+                  logic here.
+                </p>
               </div>
-            </div>
-            <Button
-              className="w-full"
-              disabled={isPending}
-              isLoading={isPending}
-              size="sm"
-              type="submit"
-            >
-              Try Workflow
-            </Button>
-          </form>
-        </Form>
+            )}
+          </div>
+        </div>
+
+        {/* Right Side Content (Outlet) */}
         <div className="flex h-full flex-1 flex-col">
           <Outlet />
         </div>
