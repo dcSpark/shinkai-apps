@@ -229,7 +229,7 @@ const WorkflowPlayground = () => {
 
   return (
     <SubpageLayout
-      className="max-w-6xl px-3"
+      className="max-w-[auto] px-3"
       title={t('workflowPlayground.label')}
     >
       <div className="flex h-[calc(100vh_-_150px)] gap-6 overflow-hidden">
