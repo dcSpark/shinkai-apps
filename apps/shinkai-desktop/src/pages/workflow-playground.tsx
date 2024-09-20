@@ -609,7 +609,7 @@ function ExtractResume(resume_text: string) -> Resume {
               </Form>
             )}
             {selectedTab === 'baml' && (
-              <div className="space-y-8 overflow-y-auto pr-2">
+              <div className="space-y-8 overflow-y-auto pr-2 max-h-[calc(100vh_-_200px)]">
                 <h2 className="text-lg font-semibold">BAML Content</h2>
                 <Form {...bamlForm}>
                   <form
