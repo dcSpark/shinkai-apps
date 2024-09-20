@@ -249,7 +249,11 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <SetJobScopeProvider>
-                <WorkflowPlayground />
+                <WorkflowSelectionProvider>
+                  <PromptSelectionProvider>
+                    <WorkflowPlayground />
+                  </PromptSelectionProvider>
+                </WorkflowSelectionProvider>
               </SetJobScopeProvider>
             </ProtectedRoute>
           }
