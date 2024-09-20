@@ -227,6 +227,49 @@ const WorkflowPlayground = () => {
   );
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
 
+  const bamlForm = useForm({
+    defaultValues: {
+      bamlInput: '',
+      dslFile: '',
+      functionName: '',
+      paramName: '',
+    },
+  });
+
+  const escapeContent = (content: string) => {
+    return content.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+  };
+
+  const onBamlSubmit = async (data: any) => {
+    const { bamlInput, dslFile, functionName, paramName } = data;
+    const escapedBamlInput = escapeContent(bamlInput);
+    const escapedDslFile = escapeContent(dslFile);
+    const workflowText = `
+      workflow ${functionName} v0.1 {
+        step Initialize {
+          $DSL = "${escapedDslFile}"
+          $INPUT = "${escapedBamlInput}"
+          $RESULT = call baml_inference($INPUT, "", "", $DSL, ${functionName}, ${paramName})
+        }
+      } @@localhost.arb-sep-shinkai
+    `;
+    console.log('Generated Workflow:', workflowText);
+
+    if (!auth) return;
+
+    await createJob({
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      llmProvider: defaulAgentId,
+      content: '',
+      files: [],
+      workflowCode: workflowText,
+      isHidden: true,
+      selectedVRFiles: [],
+      selectedVRFolders: [],
+    });
+  };
+
   return (
     <SubpageLayout
       className="max-w-[auto] px-3"
@@ -294,7 +337,7 @@ const WorkflowPlayground = () => {
                           <FormControl>
                             <Textarea
                               autoFocus={true}
-                              className="!min-h-[100px] resize-none text-sm"
+                              className="!min-h-[300px] resize-none text-sm"
                               onKeyDown={handleWorkflowKeyDown}
                               placeholder="Workflow"
                               spellCheck={false}
@@ -531,11 +574,86 @@ const WorkflowPlayground = () => {
             {selectedTab === 'baml' && (
               <div className="space-y-8 overflow-y-auto pr-2">
                 <h2 className="text-lg font-semibold">BAML Content</h2>
-                {/* Add BAML-specific content here */}
-                <p>
-                  This is the BAML section. Add your BAML-related components and
-                  logic here.
-                </p>
+                <Form {...bamlForm}>
+                  <form
+                    className="space-y-8"
+                    onSubmit={bamlForm.handleSubmit(onBamlSubmit)}
+                  >
+                    <FormField
+                      control={bamlForm.control}
+                      name="bamlInput"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>BAML Input</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              className="resize-none"
+                              placeholder="Enter BAML input"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={bamlForm.control}
+                      name="dslFile"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>DSL File</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              className="resize-none"
+                              placeholder="Enter DSL file content"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={bamlForm.control}
+                        name="functionName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Function Name</FormLabel>
+                            <FormControl>
+                              <Textarea
+                                className="resize-none"
+                                placeholder="Enter function name"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={bamlForm.control}
+                        name="paramName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Param Name</FormLabel>
+                            <FormControl>
+                              <Textarea
+                                className="resize-none"
+                                placeholder="Enter param name"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <Button className="w-full" size="sm" type="submit">
+                      Submit BAML
+                    </Button>
+                  </form>
+                </Form>
               </div>
             )}
           </div>
