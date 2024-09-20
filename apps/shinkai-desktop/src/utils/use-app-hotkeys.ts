@@ -18,7 +18,11 @@ const useAppHotkeys = () => {
     () => {
       setChatSidebarCollapsed(!isChatSidebarCollapsed);
     },
-    { enableOnContentEditable: true, preventDefault: true },
+    {
+      enableOnContentEditable: true,
+      preventDefault: true,
+      enableOnFormTags: true,
+    },
   );
 
   useHotkeys(
@@ -26,7 +30,11 @@ const useAppHotkeys = () => {
     () => {
       navigate('/inboxes');
     },
-    { enableOnContentEditable: true, preventDefault: true },
+    {
+      enableOnContentEditable: true,
+      enableOnFormTags: true,
+      preventDefault: true,
+    },
   );
 };
 
