@@ -229,10 +229,47 @@ const WorkflowPlayground = () => {
 
   const bamlForm = useForm({
     defaultValues: {
-      bamlInput: '',
-      dslFile: '',
-      functionName: '',
-      paramName: '',
+      bamlInput: `John Doe
+Education
+- University of California, Berkeley
+  - B.S. in Computer Science
+  - 2020
+Skills
+- Python
+- Java
+- C++`,
+      dslFile: `class Resume {
+  name string
+  education Education[] @description("Extract in the same order listed")
+  skills string[] @description("Only include programming languages")
+}
+
+class Education {
+  school string
+  degree string
+  year int
+}
+
+function ExtractResume(resume_text: string) -> Resume {
+  client Ollama
+
+  // The prompt uses Jinja syntax. Change the models or this text and watch the prompt preview change!
+  prompt #"
+    Parse the following resume and return a structured representation of the data in the schema below.
+
+    Resume:
+    ---
+    {{ resume_text }}
+    ---
+
+    {# special macro to print the output instructions. #}
+    {{ ctx.output_format }}
+
+    JSON:
+  "#
+}`,
+      functionName: 'ExtractResume',
+      paramName: 'resume_text',
     },
   });
 
@@ -311,7 +348,7 @@ const WorkflowPlayground = () => {
                           <FormControl>
                             <Textarea
                               autoFocus={true}
-                              className="resize-none"
+                              className="resize-vertical"
                               onKeyDown={(event) => {
                                 if (
                                   event.key === 'Enter' &&
@@ -337,7 +374,7 @@ const WorkflowPlayground = () => {
                           <FormControl>
                             <Textarea
                               autoFocus={true}
-                              className="!min-h-[300px] resize-none text-sm"
+                              className="!min-h-[300px] resize-vertical text-sm"
                               onKeyDown={handleWorkflowKeyDown}
                               placeholder="Workflow"
                               spellCheck={false}
@@ -587,7 +624,7 @@ const WorkflowPlayground = () => {
                           <FormLabel>BAML Input</FormLabel>
                           <FormControl>
                             <Textarea
-                              className="resize-none"
+                              className="resize-vertical"
                               placeholder="Enter BAML input"
                               {...field}
                             />
@@ -604,7 +641,7 @@ const WorkflowPlayground = () => {
                           <FormLabel>DSL File</FormLabel>
                           <FormControl>
                             <Textarea
-                              className="resize-none"
+                              className="resize-vertical"
                               placeholder="Enter DSL file content"
                               {...field}
                             />
@@ -622,7 +659,7 @@ const WorkflowPlayground = () => {
                             <FormLabel>Function Name</FormLabel>
                             <FormControl>
                               <Textarea
-                                className="resize-none"
+                                className="resize-vertical"
                                 placeholder="Enter function name"
                                 {...field}
                               />
@@ -639,7 +676,7 @@ const WorkflowPlayground = () => {
                             <FormLabel>Param Name</FormLabel>
                             <FormControl>
                               <Textarea
-                                className="resize-none"
+                                className="resize-vertical"
                                 placeholder="Enter param name"
                                 {...field}
                               />
