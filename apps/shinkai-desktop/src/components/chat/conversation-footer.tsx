@@ -55,7 +55,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { partial } from 'filesize';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Paperclip, SendIcon, X, XIcon } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm, useWatch } from 'react-hook-form';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -540,7 +540,6 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
   const auth = useAuth((state) => state.auth);
   const { captureAnalyticEvent } = useAnalytics();
 
-  const fromPreviousMessagesRef = useRef<boolean>(false);
   const chatForm = useForm<ChatMessageFormSchema>({
     resolver: zodResolver(chatMessageFormSchema),
     defaultValues: {
@@ -623,6 +622,15 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
   const { mutateAsync: sendMessageToInbox } = useSendMessageToInbox();
   const { mutateAsync: sendMessageToJob } = useSendMessageToJob({
     onSuccess: (_, variables) => {
+      const chatContainer = document.querySelector(
+        '#chat-container',
+      ) as HTMLElement;
+      requestAnimationFrame(() => {
+        chatContainer?.scrollTo({
+          top: chatContainer.scrollHeight,
+          behavior: 'smooth',
+        });
+      });
       if (variables.files && variables.files.length > 0) {
         captureAnalyticEvent('AI Chat with Files', {
           filesCount: variables.files.length,
@@ -652,7 +660,6 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
 
   const onSubmit = async (data: ChatMessageFormSchema) => {
     if (!auth || data.message.trim() === '') return;
-    fromPreviousMessagesRef.current = false;
 
     let workflowKeyToUse = workflowSelected?.tool_router_key;
     if (!workflowKeyToUse && firstMessageWorkflow) {
