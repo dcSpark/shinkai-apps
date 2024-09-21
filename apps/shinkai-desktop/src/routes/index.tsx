@@ -1,3 +1,4 @@
+import { listen } from '@tauri-apps/api/event';
 import React, { useEffect, useRef } from 'react';
 import { Navigate, Outlet, Route, Routes, useNavigate } from 'react-router-dom';
 
@@ -124,9 +125,23 @@ const useOnboardingRedirect = () => {
   }, []);
 };
 
+const useGlobalAppShortcuts = () => {
+  const navigate = useNavigate();
+  useEffect(() => {
+    const unlisten = listen('create-chat', () => {
+      navigate('/inboxes');
+    });
+
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, []);
+};
+
 const AppRoutes = () => {
   useOnboardingRedirect();
   useAppHotkeys();
+  useGlobalAppShortcuts();
 
   return (
     <Routes>

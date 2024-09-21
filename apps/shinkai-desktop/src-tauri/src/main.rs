@@ -49,15 +49,15 @@ fn main() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(
             tauri_plugin_global_shortcut::Builder::new()
-                .with_shortcuts(["CmdOrCtrl+y"])
+                .with_shortcuts(["super+shift+i", "control+shift+i"])
                 .unwrap()
                 .with_handler(|app, shortcut, event| {
                     if event.state == ShortcutState::Pressed
-                        && shortcut.matches(Modifiers::SUPER | Modifiers::CONTROL, Code::KeyY)
+                        && shortcut.matches(Modifiers::SUPER | Modifiers::SHIFT, Code::KeyI)
                     {
                         if let Some(window) = app.get_webview_window("main") {
-                            if let Err(e) = app.emit("navigate-job-and-focus", ()) {
-                                println!("Failed to emit 'navigate-job-and-focus': {}", e);
+                            if let Err(e) = app.emit("create-chat", ()) {
+                                println!("Failed to emit 'create-chat': {}", e);
                             }
                             if let Err(e) = window.set_focus() {
                                 println!("Failed to set focus: {}", e);
@@ -122,7 +122,7 @@ fn main() {
                     let mut shinkai_node_manager_guard =
                         SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
                     shinkai_node_manager_guard.kill().await;
-                    
+
                     // Force exit the application
                     std::process::exit(0);
                 });
