@@ -225,9 +225,7 @@ const WorkflowPlayground = () => {
     [onWorkflowChange],
   );
 
-  const [selectedTab, setSelectedTab] = useState<'workflow' | 'baml'>(
-    'baml',
-  );
+  const [selectedTab, setSelectedTab] = useState<'workflow' | 'baml'>('baml');
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
 
   // **New State for BAML Script Selection and Data**
@@ -392,6 +390,14 @@ function ClassifyMessage(message_text: string) -> Message {
       ...prevData,
       [selectedBamlScript]: data,
     }));
+  };
+
+  const handleSave = () => {
+    // Implement save functionality
+  };
+
+  const handleLoad = () => {
+    // Implement load functionality
   };
 
   return (
@@ -738,6 +744,26 @@ function ClassifyMessage(message_text: string) -> Message {
                   >
                     Classify Message
                   </Button>
+
+                  {/* Save and Load Buttons */}
+                  {selectedBamlScript === 'my' && (
+                    <div className="ml-auto flex gap-2">
+                      <Button
+                        className="px-3 py-1.5 text-sm"
+                        onClick={handleSave}
+                        variant="outline"
+                      >
+                        Save
+                      </Button>
+                      <Button
+                        className="px-3 py-1.5 text-sm"
+                        onClick={handleLoad}
+                        variant="outline"
+                      >
+                        Load
+                      </Button>
+                    </div>
+                  )}
                 </div>
 
                 {/* Layout Switch Button */}
