@@ -42,6 +42,8 @@ type UseWebSocketMessage = {
   enabled?: boolean;
 };
 
+export const LOADING_FLAT_CONTENT = '...';
+
 const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
   const auth = useAuth((state) => state.auth);
   const nodeAddressUrl = new URL(auth?.node_address ?? 'http://localhost:9850');
@@ -151,6 +153,11 @@ const ChatConversation = () => {
     return isJobInbox(inboxId) && lastMessage?.isLocal;
   }, [data?.pages, inboxId]);
 
+  // useEffect(() => {
+  //   if(isLoadingMessage) {
+  //     queryClient.invalidateQueries({ queryKey: paginationKey });
+  //   }
+  // }, [isLoadingMessage]);
   const { widgetTool, setWidgetTool } = useWebSocketTools({
     enabled: hasProviderEnableTools,
   });
