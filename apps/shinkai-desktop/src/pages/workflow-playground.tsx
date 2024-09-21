@@ -251,7 +251,7 @@ class Education {
 }
 
 function ExtractResume(resume_text: string) -> Resume {
-  client Ollama
+  client ShinkaiProvider
 
   // The prompt uses Jinja syntax. Change the models or this text and watch the prompt preview change!
   prompt #"
@@ -286,7 +286,9 @@ function ExtractResume(resume_text: string) -> Resume {
         step Initialize {
           $DSL = "${escapedDslFile}"
           $INPUT = "${escapedBamlInput}"
-          $RESULT = call baml_inference($INPUT, "", "", $DSL, ${functionName}, ${paramName})
+          $PARAM = "${paramName}"
+          $FUNCTION = "${functionName}"
+          $RESULT = call baml_inference($INPUT, "", "", $DSL, $FUNCTION, $PARAM)
         }
       } @@localhost.arb-sep-shinkai
     `;
