@@ -228,6 +228,31 @@ const WorkflowPlayground = () => {
   const [selectedTab, setSelectedTab] = useState<'workflow' | 'baml'>('baml');
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
 
+  const [selectedWorkflowScript, setSelectedWorkflowScript] = useState<
+    'custom' | 'example1' | 'example2'
+  >('custom');
+  const [workflowFormData, setWorkflowFormData] = useState<{
+    custom: any;
+    example1: any;
+    example2: any;
+  }>({
+    custom: {
+      message: '',
+      workflow: '',
+      agent: '',
+    },
+    example1: {
+      message: 'Example message 1',
+      workflow: 'Example workflow 1',
+      agent: '',
+    },
+    example2: {
+      message: 'Example message 2',
+      workflow: 'Example workflow 2',
+      agent: '',
+    },
+  });
+
   // **New State for BAML Script Selection and Data**
   const [selectedBamlScript, setSelectedBamlScript] = useState<
     'my' | 'extractResume' | 'classifyMessage'
@@ -318,6 +343,29 @@ function ClassifyMessage(message_text: string) -> Message {
     defaultValues: bamlFormData[selectedBamlScript],
   });
 
+  const handleWorkflowScriptChange = (
+    script: 'custom' | 'example1' | 'example2',
+  ) => {
+    // Save current form data
+    setWorkflowFormData((prevData) => ({
+      ...prevData,
+      [selectedWorkflowScript]: createJobForm.getValues(),
+    }));
+
+    // Switch to the selected script
+    setSelectedWorkflowScript(script);
+
+    // Load the new form data
+    createJobForm.reset(workflowFormData[script]);
+  };
+
+  useEffect(() => {
+    setWorkflowFormData((prevData) => ({
+      ...prevData,
+      [selectedWorkflowScript]: createJobForm.getValues(),
+    }));
+  }, [createJobForm, selectedWorkflowScript]);
+
   // **Handle BAML Script Selection**
   const handleBamlScriptChange = (
     script: 'my' | 'extractResume' | 'classifyMessage',
@@ -392,11 +440,20 @@ function ClassifyMessage(message_text: string) -> Message {
     }));
   };
 
-  const handleSave = () => {
+  const handleWorkflowSave = () => {
     // Implement save functionality
   };
 
-  const handleLoad = () => {
+  const handleWorkflowLoad = () => {
+    // Implement load functionality
+  };
+
+
+  const handleBamlSave = () => {
+    // Implement save functionality
+  };
+
+  const handleBamlLoad = () => {
     // Implement load functionality
   };
 
@@ -432,6 +489,64 @@ function ClassifyMessage(message_text: string) -> Message {
                   onSubmit={createJobForm.handleSubmit(onSubmit)}
                 >
                   <div className="space-y-6">
+                     {/* Workflow Script Selection Buttons */}
+                  <div className="flex items-center gap-4">
+                    {/* Custom Workflow Script Button */}
+                    <Button
+                      className="px-3 py-1.5 text-sm"
+                      onClick={() => handleWorkflowScriptChange('custom')}
+                      variant={
+                        selectedWorkflowScript === 'custom' ? 'default' : 'outline'
+                      }
+                    >
+                      Custom Workflow Script
+                    </Button>
+
+                    {/* Examples Text */}
+                    <span className="text-lg text-white">Examples:</span>
+
+                    {/* Example 1 Button */}
+                    <Button
+                      className="px-3 py-1.5 text-sm"
+                      onClick={() => handleWorkflowScriptChange('example1')}
+                      variant={
+                        selectedWorkflowScript === 'example1' ? 'default' : 'outline'
+                      }
+                    >
+                      Example 1
+                    </Button>
+
+                    {/* Example 2 Button */}
+                    <Button
+                      className="px-3 py-1.5 text-sm"
+                      onClick={() => handleWorkflowScriptChange('example2')}
+                      variant={
+                        selectedWorkflowScript === 'example2' ? 'default' : 'outline'
+                      }
+                    >
+                      Example 2
+                    </Button>
+
+                    {/* Save and Load Buttons */}
+                    {selectedWorkflowScript === 'custom' && (
+                      <div className="ml-auto flex gap-2">
+                        <Button
+                          className="px-3 py-1.5 text-sm"
+                          onClick={handleWorkflowSave}
+                          variant="outline"
+                        >
+                          Save
+                        </Button>
+                        <Button
+                          className="px-3 py-1.5 text-sm"
+                          onClick={handleWorkflowLoad}
+                          variant="outline"
+                        >
+                          Load
+                        </Button>
+                      </div>
+                    )}
+                  </div>
                     <FormField
                       control={createJobForm.control}
                       name="message"
@@ -750,14 +865,14 @@ function ClassifyMessage(message_text: string) -> Message {
                     <div className="ml-auto flex gap-2">
                       <Button
                         className="px-3 py-1.5 text-sm"
-                        onClick={handleSave}
+                        onClick={handleBamlSave}
                         variant="outline"
                       >
                         Save
                       </Button>
                       <Button
                         className="px-3 py-1.5 text-sm"
-                        onClick={handleLoad}
+                        onClick={handleBamlLoad}
                         variant="outline"
                       >
                         Load
