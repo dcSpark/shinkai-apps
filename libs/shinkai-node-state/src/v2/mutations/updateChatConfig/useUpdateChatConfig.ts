@@ -5,12 +5,13 @@ import {
 } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
+import { APIError } from '../../types';
 import { updateChatConfig } from './index';
 import { UpdateChatConfigInput, UpdateChatConfigOutput } from './types';
 
 type Options = UseMutationOptions<
   UpdateChatConfigOutput,
-  Error,
+  APIError,
   UpdateChatConfigInput
 >;
 

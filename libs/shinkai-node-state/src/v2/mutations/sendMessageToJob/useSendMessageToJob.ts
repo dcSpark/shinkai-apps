@@ -27,9 +27,7 @@ export const useSendMessageToJob = (options?: Options) => {
           { inboxId: response.inbox },
         ],
       });
-      queryClient.invalidateQueries({
-        queryKey: [FunctionKeyV2.GET_INBOXES],
-      });
+
       if (options?.onSuccess) {
         options.onSuccess(response, variables, context);
       }

@@ -391,8 +391,16 @@ const ChatLayout = () => {
                     </Button>
                   </TooltipTrigger>
                   <TooltipPortal>
-                    <TooltipContent>
-                      <p>{t('chat.create')}</p>
+                    <TooltipContent
+                      align="center"
+                      className="flex flex-col items-center gap-1"
+                      side="right"
+                    >
+                      <span>{t('chat.create')}</span>
+                      <div className="text-gray-80 flex items-center justify-center gap-2 text-center">
+                        <span>⌘</span>
+                        <span>N</span>
+                      </div>
                     </TooltipContent>
                   </TooltipPortal>
                 </Tooltip>

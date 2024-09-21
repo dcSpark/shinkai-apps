@@ -21,7 +21,7 @@ import {
   MessageList,
 } from '@shinkai_network/shinkai-ui';
 import { AlertCircle } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';
 
@@ -113,7 +113,6 @@ const ChatConversation = () => {
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = decodeURIComponent(encodedInboxId);
   const auth = useAuth((state) => state.auth);
-  const fromPreviousMessagesRef = useRef<boolean>(false);
 
   const currentInbox = useGetCurrentInbox();
 
@@ -197,7 +196,6 @@ const ChatConversation = () => {
       <MessageList
         containerClassName="px-5"
         fetchPreviousPage={fetchPreviousPage}
-        fromPreviousMessagesRef={fromPreviousMessagesRef}
         hasPreviousPage={hasPreviousPage}
         isFetchingPreviousPage={isFetchingPreviousPage}
         isLoading={isChatConversationLoading}

@@ -52,6 +52,7 @@ import WorkflowPlayground from '../pages/workflow-playground';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
+import useAppHotkeys from '../utils/use-app-hotkeys';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const auth = useAuth((state) => state.auth);
@@ -125,6 +126,7 @@ const useOnboardingRedirect = () => {
 
 const AppRoutes = () => {
   useOnboardingRedirect();
+  useAppHotkeys();
 
   return (
     <Routes>
@@ -247,7 +249,11 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <SetJobScopeProvider>
-                <WorkflowPlayground />
+                <WorkflowSelectionProvider>
+                  <PromptSelectionProvider>
+                    <WorkflowPlayground />
+                  </PromptSelectionProvider>
+                </WorkflowSelectionProvider>
               </SetJobScopeProvider>
             </ProtectedRoute>
           }

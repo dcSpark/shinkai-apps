@@ -9,7 +9,7 @@ import {
   GetChatConversationOutput,
 } from './types';
 
-export const CONVERSATION_PAGINATION_LIMIT = 12;
+export const CONVERSATION_PAGINATION_LIMIT = 20;
 export const CONVERSATION_PAGINATION_REFETCH = 5000;
 
 export const useGetChatConversationWithPagination = (
@@ -19,10 +19,15 @@ export const useGetChatConversationWithPagination = (
     GetChatConversationOutput,
     Error,
     ChatConversationInfiniteData,
-    [string, GetChatConversationInput],
+    [string, { inboxId: string }],
     { lastKey: string | null }
   >({
-    queryKey: [FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION, input],
+    queryKey: [
+      FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
+      {
+        inboxId: input.inboxId,
+      },
+    ],
     queryFn: ({ pageParam }) =>
       getChatConversation({
         ...input,

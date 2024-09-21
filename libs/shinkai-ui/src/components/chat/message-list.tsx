@@ -56,7 +56,6 @@ export const MessageList = ({
   isFetchingPreviousPage,
   hasPreviousPage,
   fetchPreviousPage,
-  fromPreviousMessagesRef,
   containerClassName,
   lastMessageContent,
   regenerateMessage,
@@ -68,7 +67,6 @@ export const MessageList = ({
   isLoading: boolean;
   isFetchingPreviousPage: boolean;
   hasPreviousPage: boolean;
-  fromPreviousMessagesRef: React.MutableRefObject<boolean>;
   paginatedMessages: ChatConversationInfiniteData | undefined;
   fetchPreviousPage: (
     options?: FetchPreviousPageOptions | undefined,
@@ -85,25 +83,15 @@ export const MessageList = ({
   disabledRetryAndEdit?: boolean;
   messageExtra?: React.ReactNode;
 }) => {
-  const chatContainerRef = useRef<HTMLDivElement | null>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
   const previousChatHeightRef = useRef<number>(0);
   const { ref, inView } = useInView();
+  const messageList = paginatedMessages?.pages.flat() ?? [];
 
-  const isScrolledToBottom = chatContainerRef?.current
-    ? Math.abs(
-        chatContainerRef.current.scrollHeight -
-          (chatContainerRef.current.scrollTop +
-            chatContainerRef.current.clientHeight),
-      ) <= 1
-    : false;
-
-  const { setAutoScroll, scrollDomToBottom } = useScrollToBottom(
-    chatContainerRef,
-    isScrolledToBottom,
-  );
+  const { autoScroll, setAutoScroll, scrollDomToBottom } =
+    useScrollToBottom(chatContainerRef);
 
   const fetchPreviousMessages = useCallback(async () => {
-    fromPreviousMessagesRef.current = true;
     setAutoScroll(false);
     await fetchPreviousPage();
   }, [fetchPreviousPage]);
@@ -116,14 +104,22 @@ export const MessageList = ({
 
   // adjust the scroll position of a chat container after new messages are fetched
   useLayoutEffect(() => {
-    if (!isFetchingPreviousPage) {
+    if (!isFetchingPreviousPage && inView) {
       const chatContainerElement = chatContainerRef.current;
       if (!chatContainerElement) return;
       const currentHeight = chatContainerElement.scrollHeight;
       const previousHeight = previousChatHeightRef.current;
+
+      if (!autoScroll) {
+        chatContainerElement.scrollTop =
+          currentHeight - previousHeight + chatContainerElement.scrollTop;
+      } else {
+        scrollDomToBottom();
+      }
+
       chatContainerElement.scrollTop = currentHeight - previousHeight;
     }
-  }, [paginatedMessages, isFetchingPreviousPage]);
+  }, [paginatedMessages, isFetchingPreviousPage, inView]);
 
   useEffect(() => {
     const chatContainerElement = chatContainerRef.current;
@@ -132,15 +128,12 @@ export const MessageList = ({
       const currentHeight = chatContainerElement.scrollHeight;
       const currentScrollTop = chatContainerElement.scrollTop;
       previousChatHeightRef.current = currentHeight;
+      const scrollThreshold = 100;
+      const isNearBottom =
+        currentScrollTop + chatContainerElement.clientHeight >=
+        currentHeight - scrollThreshold;
 
-      if (
-        currentScrollTop + chatContainerElement.clientHeight <
-        currentHeight - 125
-      ) {
-        setAutoScroll(false);
-      } else {
-        setAutoScroll(true);
-      }
+      setAutoScroll(isNearBottom);
 
       if (inView && hasPreviousPage && !isFetchingPreviousPage) {
         previousChatHeightRef.current = currentHeight - currentScrollTop;
@@ -162,11 +155,10 @@ export const MessageList = ({
   ]);
 
   useEffect(() => {
-    if (!fromPreviousMessagesRef.current) {
-      setAutoScroll(true);
+    if (messageList?.length % 2 === 1) {
       scrollDomToBottom();
     }
-  }, [paginatedMessages?.pages]);
+  }, [messageList?.length]);
 
   useEffect(() => {
     if (isSuccess) {
@@ -174,12 +166,11 @@ export const MessageList = ({
     }
   }, [isSuccess]);
 
-  const messageList = paginatedMessages?.content ?? [];
-
   return (
     <div
       className={cn(
         'scroll flex-1 overflow-y-auto overscroll-none will-change-scroll',
+        'flex-1 overflow-y-auto',
         containerClassName,
       )}
       ref={chatContainerRef}
@@ -224,7 +215,7 @@ export const MessageList = ({
         )}
         {(hasPreviousPage || isFetchingPreviousPage) && (
           <div className="flex flex-col space-y-3" ref={ref}>
-            {[...Array(3).keys()].map((index) => (
+            {[...Array(4).keys()].map((index) => (
               <div
                 className={cn(
                   'flex w-[85%] gap-2',
@@ -303,7 +294,7 @@ export const MessageList = ({
                             data-testid={`message-${
                               message.isLocal ? 'local' : 'remote'
                             }-${message.hash}`}
-                            key={`${message.hash}`}
+                            key={`${message.hash}::${messageIndex}`}
                           >
                             <Message
                               disabledEdit={disabledRetryAndEditValue}

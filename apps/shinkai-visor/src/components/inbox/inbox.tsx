@@ -438,7 +438,6 @@ export const Inbox = () => {
       <MessageList
         containerClassName="pr-4"
         fetchPreviousPage={fetchPreviousPage}
-        fromPreviousMessagesRef={fromPreviousMessagesRef}
         hasPreviousPage={hasPreviousPage}
         isFetchingPreviousPage={isFetchingPreviousPage}
         isLoading={isChatConversationLoading}
