@@ -132,7 +132,6 @@ const useGlobalAppShortcuts = () => {
       navigate('/inboxes');
     });
 
-    // Cleanup the listener on component unmount
     return () => {
       unlisten.then((fn) => fn());
     };
