@@ -150,12 +150,7 @@ export const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
     if (isStreamFinishedRef.current) {
       const paginationKey = [
         FunctionKey.GET_CHAT_CONVERSATION_PAGINATION,
-        {
-          nodeAddress: auth?.node_address ?? '',
-          inboxId: inboxId as string,
-          shinkaiIdentity: auth?.shinkai_identity ?? '',
-          profile: auth?.profile ?? '',
-        },
+        { inboxId: inboxId as string },
       ];
       queryClient.invalidateQueries({ queryKey: paginationKey });
       setTimeout(() => {
