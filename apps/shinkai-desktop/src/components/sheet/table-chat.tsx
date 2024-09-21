@@ -26,7 +26,7 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { SendIcon, XIcon } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -44,7 +44,6 @@ export default function ChatTable() {
   );
 
   const [chatInboxId, setChatInboxId] = useState<string | null>(null);
-  const fromPreviousMessagesRef = useRef<boolean>(false);
 
   const { sheetId } = useParams();
   const toggleChatPanel = useSheetProjectStore(
@@ -184,7 +183,6 @@ export default function ChatTable() {
             containerClassName="px-5"
             disabledRetryAndEdit={true}
             fetchPreviousPage={fetchPreviousPage}
-            fromPreviousMessagesRef={fromPreviousMessagesRef}
             hasPreviousPage={hasPreviousPage}
             isFetchingPreviousPage={isFetchingPreviousPage}
             isLoading={isChatConversationLoading}

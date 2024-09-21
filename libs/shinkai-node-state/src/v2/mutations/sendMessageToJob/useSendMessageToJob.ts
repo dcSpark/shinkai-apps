@@ -27,6 +27,7 @@ export const useSendMessageToJob = (options?: Options) => {
           { inboxId: response.inbox },
         ],
       });
+
       if (options?.onSuccess) {
         options.onSuccess(response, variables, context);
       }

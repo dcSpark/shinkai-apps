@@ -86,6 +86,7 @@ export const MessageList = ({
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const previousChatHeightRef = useRef<number>(0);
   const { ref, inView } = useInView();
+  const messageList = paginatedMessages?.pages.flat() ?? [];
 
   const { autoScroll, setAutoScroll, scrollDomToBottom } =
     useScrollToBottom(chatContainerRef);
@@ -153,13 +154,17 @@ export const MessageList = ({
     paginatedMessages?.pages?.length,
   ]);
 
-  const messageList = paginatedMessages?.content ?? [];
-  // when inserting a new message
   useEffect(() => {
-    if (isSuccess && messageList?.length % 2 === 1) {
+    if (messageList?.length % 2 === 1) {
       scrollDomToBottom();
     }
-  }, [paginatedMessages?.content]);
+  }, [messageList?.length]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      scrollDomToBottom();
+    }
+  }, [isSuccess]);
 
   return (
     <div
@@ -169,9 +174,6 @@ export const MessageList = ({
         containerClassName,
       )}
       ref={chatContainerRef}
-      style={{
-        scrollBehavior: 'smooth',
-      }}
     >
       {isSuccess &&
         !isFetchingPreviousPage &&

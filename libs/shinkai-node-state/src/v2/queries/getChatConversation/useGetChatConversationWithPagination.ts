@@ -1,5 +1,5 @@
 import { isJobInbox } from '@shinkai_network/shinkai-message-ts/utils';
-import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
 import { getChatConversation } from '.';
@@ -9,7 +9,7 @@ import {
   GetChatConversationOutput,
 } from './types';
 
-export const CONVERSATION_PAGINATION_LIMIT = 16;
+export const CONVERSATION_PAGINATION_LIMIT = 20;
 export const CONVERSATION_PAGINATION_REFETCH = 5000;
 
 export const useGetChatConversationWithPagination = (
@@ -19,10 +19,15 @@ export const useGetChatConversationWithPagination = (
     GetChatConversationOutput,
     Error,
     ChatConversationInfiniteData,
-    [string, GetChatConversationInput],
+    [string, { inboxId: string }],
     { lastKey: string | null }
   >({
-    queryKey: [FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION, input],
+    queryKey: [
+      FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
+      {
+        inboxId: input.inboxId,
+      },
+    ],
     queryFn: ({ pageParam }) =>
       getChatConversation({
         ...input,
@@ -47,7 +52,6 @@ export const useGetChatConversationWithPagination = (
     getNextPageParam: () => {
       return { lastKey: null };
     },
-    placeholderData: keepPreviousData,
     select: (data) => {
       const allMessages = data.pages.flat();
       return {
