@@ -56,8 +56,8 @@ fn main() {
                         && shortcut.matches(Modifiers::SUPER | Modifiers::SHIFT, Code::KeyI)
                     {
                         if let Some(window) = app.get_webview_window("main") {
-                            if let Err(e) = app.emit("navigate-job-and-focus", ()) {
-                                println!("Failed to emit 'navigate-job-and-focus': {}", e);
+                            if let Err(e) = app.emit("create-chat", ()) {
+                                println!("Failed to emit 'create-chat': {}", e);
                             }
                             if let Err(e) = window.set_focus() {
                                 println!("Failed to set focus: {}", e);

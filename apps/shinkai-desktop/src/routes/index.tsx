@@ -128,7 +128,7 @@ const useOnboardingRedirect = () => {
 const useGlobalAppShortcuts = () => {
   const navigate = useNavigate();
   useEffect(() => {
-    const unlisten = listen('navigate-job-and-focus', () => {
+    const unlisten = listen('create-chat', () => {
       navigate('/inboxes');
     });
 
