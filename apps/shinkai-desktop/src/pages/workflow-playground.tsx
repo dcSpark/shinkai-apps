@@ -300,7 +300,7 @@ function ExtractResume(resume_text: string) -> Resume {
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
       llmProvider: defaulAgentId,
-      content: '',
+      content: escapedBamlInput,
       files: [],
       workflowCode: workflowText,
       isHidden: true,
@@ -316,7 +316,7 @@ function ExtractResume(resume_text: string) -> Resume {
     >
       <div className="flex h-[calc(100vh_-_150px)] gap-6 overflow-hidden">
         {/* Left Sidebar */}
-        <div className="flex w-[30%] flex-col gap-4">
+        <div className="flex w-[50%] flex-col gap-4">
           <Select
             onValueChange={(value) =>
               setSelectedTab(value as 'workflow' | 'baml')
