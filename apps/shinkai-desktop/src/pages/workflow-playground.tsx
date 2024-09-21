@@ -9,6 +9,7 @@ import {
   VRFolder,
   VRItem,
 } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
+import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import {
@@ -225,7 +226,7 @@ const WorkflowPlayground = () => {
   );
 
   const [selectedTab, setSelectedTab] = useState<'workflow' | 'baml'>(
-    'workflow',
+    'baml',
   );
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
 
@@ -289,7 +290,7 @@ function ExtractResume(resume_text: string) -> Resume {
       paramName: 'resume_text',
     },
     classifyMessage: {
-      bamlInput: `Classify the following message into categories.`,
+      bamlInput: `I can't access my account using my login credentials. I havent received the promised reset password email. Please help.`,
       dslFile: `class Message {
   text string
   category string
@@ -320,7 +321,9 @@ function ClassifyMessage(message_text: string) -> Message {
   });
 
   // **Handle BAML Script Selection**
-  const handleBamlScriptChange = (script: 'my' | 'extractResume' | 'classifyMessage') => {
+  const handleBamlScriptChange = (
+    script: 'my' | 'extractResume' | 'classifyMessage',
+  ) => {
     // Save current form data
     setBamlFormData((prevData) => ({
       ...prevData,
@@ -375,6 +378,13 @@ function ClassifyMessage(message_text: string) -> Message {
       isHidden: true,
       selectedVRFiles: [],
       selectedVRFolders: [],
+      chatConfig: {
+        stream: false,
+        custom_prompt: '',
+        temperature: DEFAULT_CHAT_CONFIG.temperature,
+        top_p: DEFAULT_CHAT_CONFIG.top_p,
+        top_k: DEFAULT_CHAT_CONFIG.top_k,
+      },
     });
 
     // Save the form data after submission
@@ -391,7 +401,7 @@ function ClassifyMessage(message_text: string) -> Message {
     >
       <div className="flex h-[calc(100vh_-_150px)] gap-6 overflow-hidden">
         {/* Left Sidebar */}
-        <div className="flex w-[50%] flex-col gap-4">
+        <div className="flex w-[60%] flex-col gap-4">
           <Select
             onValueChange={(value) =>
               setSelectedTab(value as 'workflow' | 'baml')
@@ -451,7 +461,7 @@ function ClassifyMessage(message_text: string) -> Message {
                           <FormControl>
                             <Textarea
                               autoFocus={true}
-                              className="!min-h-[300px] resize-vertical text-sm"
+                              className="resize-vertical !min-h-[300px] text-sm"
                               onKeyDown={handleWorkflowKeyDown}
                               placeholder="Workflow"
                               spellCheck={false}
@@ -686,27 +696,31 @@ function ClassifyMessage(message_text: string) -> Message {
               </Form>
             )}
             {selectedTab === 'baml' && (
-              <div className="space-y-8 overflow-y-auto pr-2 max-h-[calc(100vh_-_200px)]">
+              <div className="max-h-[calc(100vh_-_200px)] space-y-8 overflow-y-auto pr-2">
                 {/* BAML Script Selection Buttons */}
                 <div className="flex items-center gap-4">
                   {/* My BAML Script Button */}
                   <Button
-                    className="text-sm py-1.5 px-3"
+                    className="px-3 py-1.5 text-sm"
                     onClick={() => handleBamlScriptChange('my')}
-                    variant={selectedBamlScript === 'my' ? 'default' : 'outline'}
+                    variant={
+                      selectedBamlScript === 'my' ? 'default' : 'outline'
+                    }
                   >
                     My BAML Script
                   </Button>
 
                   {/* Examples Text */}
-                  <span className="text-white text-lg">Examples:</span>
+                  <span className="text-lg text-white">Examples:</span>
 
                   {/* Extract Resume Button */}
                   <Button
-                    className="text-sm py-1.5 px-3"
+                    className="px-3 py-1.5 text-sm"
                     onClick={() => handleBamlScriptChange('extractResume')}
                     variant={
-                      selectedBamlScript === 'extractResume' ? 'default' : 'outline'
+                      selectedBamlScript === 'extractResume'
+                        ? 'default'
+                        : 'outline'
                     }
                   >
                     Extract Resume
@@ -714,10 +728,12 @@ function ClassifyMessage(message_text: string) -> Message {
 
                   {/* Classify Message Button */}
                   <Button
-                    className="text-sm py-1.5 px-3"
+                    className="px-3 py-1.5 text-sm"
                     onClick={() => handleBamlScriptChange('classifyMessage')}
                     variant={
-                      selectedBamlScript === 'classifyMessage' ? 'default' : 'outline'
+                      selectedBamlScript === 'classifyMessage'
+                        ? 'default'
+                        : 'outline'
                     }
                   >
                     Classify Message
@@ -726,7 +742,7 @@ function ClassifyMessage(message_text: string) -> Message {
 
                 {/* Layout Switch Button */}
                 <Button
-                  className="text-sm py-1.5 px-3"
+                  className="px-3 py-1.5 text-sm"
                   onClick={() => setIsTwoColumnLayout(!isTwoColumnLayout)}
                   variant="outline"
                 >
@@ -749,8 +765,10 @@ function ClassifyMessage(message_text: string) -> Message {
                               <FormLabel>BAML Input</FormLabel>
                               <FormControl>
                                 <Textarea
-                                  className="resize-vertical min-h-[160px]"
+                                  maxHeight={600}
+                                  minHeight={500}
                                   placeholder="Enter BAML input"
+                                  resize="vertical"
                                   {...field}
                                 />
                               </FormControl>
@@ -766,8 +784,10 @@ function ClassifyMessage(message_text: string) -> Message {
                               <FormLabel>DSL File</FormLabel>
                               <FormControl>
                                 <Textarea
-                                  className="resize-vertical min-h-[160px]"
+                                  maxHeight={600}
+                                  minHeight={500}
                                   placeholder="Enter DSL file content"
+                                  resize="vertical"
                                   {...field}
                                 />
                               </FormControl>
