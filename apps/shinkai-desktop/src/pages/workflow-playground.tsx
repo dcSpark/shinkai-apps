@@ -66,6 +66,7 @@ const WorkflowPlayground = () => {
   const location = useLocation();
   const { captureAnalyticEvent } = useAnalytics();
   const [currentWorkflowIndex, setCurrentWorkflowIndex] = useState(-1);
+  const [isTwoColumnLayout, setIsTwoColumnLayout] = useState(true);
 
   const locationState = location.state as {
     files: File[];
@@ -91,6 +92,7 @@ const WorkflowPlayground = () => {
     (state) => state.selectedFolderKeysRef,
   );
 
+  // **Create the main job form**
   const createJobForm = useForm<CreateJobFormSchema>({
     resolver: zodResolver(createJobFormSchema),
     defaultValues: {
@@ -227,8 +229,23 @@ const WorkflowPlayground = () => {
   );
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
 
-  const bamlForm = useForm({
-    defaultValues: {
+  // **New State for BAML Script Selection and Data**
+  const [selectedBamlScript, setSelectedBamlScript] = useState<
+    'my' | 'extractResume' | 'classifyMessage'
+  >('my');
+
+  const [bamlFormData, setBamlFormData] = useState<{
+    my: any;
+    extractResume: any;
+    classifyMessage: any;
+  }>({
+    my: {
+      bamlInput: '',
+      dslFile: '',
+      functionName: '',
+      paramName: '',
+    },
+    extractResume: {
       bamlInput: `John Doe
 Education
 - University of California, Berkeley
@@ -271,7 +288,59 @@ function ExtractResume(resume_text: string) -> Resume {
       functionName: 'ExtractResume',
       paramName: 'resume_text',
     },
+    classifyMessage: {
+      bamlInput: `Classify the following message into categories.`,
+      dslFile: `class Message {
+  text string
+  category string
+}
+
+function ClassifyMessage(message_text: string) -> Message {
+  client ShinkaiProvider
+
+  prompt #"
+    Classify the following message into appropriate categories.
+
+    Message:
+    ---
+    {{ message_text }}
+    ---
+
+    JSON:
+  "#
+}`,
+      functionName: 'ClassifyMessage',
+      paramName: 'message_text',
+    },
   });
+
+  // **Define the BAML Form**
+  const bamlForm = useForm({
+    defaultValues: bamlFormData[selectedBamlScript],
+  });
+
+  // **Handle BAML Script Selection**
+  const handleBamlScriptChange = (script: 'my' | 'extractResume' | 'classifyMessage') => {
+    // Save current form data
+    setBamlFormData((prevData) => ({
+      ...prevData,
+      [selectedBamlScript]: bamlForm.getValues(),
+    }));
+
+    // Switch to the selected script
+    setSelectedBamlScript(script);
+
+    // Load the new form data
+    bamlForm.reset(bamlFormData[script]);
+  };
+
+  // **Update form data on change**
+  useEffect(() => {
+    setBamlFormData((prevData) => ({
+      ...prevData,
+      [selectedBamlScript]: bamlForm.getValues(),
+    }));
+  }, [bamlForm, selectedBamlScript]);
 
   const escapeContent = (content: string) => {
     return content.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
@@ -307,6 +376,12 @@ function ExtractResume(resume_text: string) -> Resume {
       selectedVRFiles: [],
       selectedVRFolders: [],
     });
+
+    // Save the form data after submission
+    setBamlFormData((prevData) => ({
+      ...prevData,
+      [selectedBamlScript]: data,
+    }));
   };
 
   return (
@@ -612,46 +687,133 @@ function ExtractResume(resume_text: string) -> Resume {
             )}
             {selectedTab === 'baml' && (
               <div className="space-y-8 overflow-y-auto pr-2 max-h-[calc(100vh_-_200px)]">
-                <h2 className="text-lg font-semibold">BAML Content</h2>
+                {/* BAML Script Selection Buttons */}
+                <div className="flex items-center gap-4">
+                  {/* My BAML Script Button */}
+                  <Button
+                    className="text-sm py-1.5 px-3"
+                    onClick={() => handleBamlScriptChange('my')}
+                    variant={selectedBamlScript === 'my' ? 'default' : 'outline'}
+                  >
+                    My BAML Script
+                  </Button>
+
+                  {/* Examples Text */}
+                  <span className="text-white text-lg">Examples:</span>
+
+                  {/* Extract Resume Button */}
+                  <Button
+                    className="text-sm py-1.5 px-3"
+                    onClick={() => handleBamlScriptChange('extractResume')}
+                    variant={
+                      selectedBamlScript === 'extractResume' ? 'default' : 'outline'
+                    }
+                  >
+                    Extract Resume
+                  </Button>
+
+                  {/* Classify Message Button */}
+                  <Button
+                    className="text-sm py-1.5 px-3"
+                    onClick={() => handleBamlScriptChange('classifyMessage')}
+                    variant={
+                      selectedBamlScript === 'classifyMessage' ? 'default' : 'outline'
+                    }
+                  >
+                    Classify Message
+                  </Button>
+                </div>
+
+                {/* Layout Switch Button */}
+                <Button
+                  className="text-sm py-1.5 px-3"
+                  onClick={() => setIsTwoColumnLayout(!isTwoColumnLayout)}
+                  variant="outline"
+                >
+                  Switch Layout
+                </Button>
+
+                {/* BAML Form */}
                 <Form {...bamlForm}>
                   <form
                     className="space-y-8"
                     onSubmit={bamlForm.handleSubmit(onBamlSubmit)}
                   >
-                    <FormField
-                      control={bamlForm.control}
-                      name="bamlInput"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>BAML Input</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              className="resize-vertical"
-                              placeholder="Enter BAML input"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={bamlForm.control}
-                      name="dslFile"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>DSL File</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              className="resize-vertical"
-                              placeholder="Enter DSL file content"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    {isTwoColumnLayout ? (
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={bamlForm.control}
+                          name="bamlInput"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>BAML Input</FormLabel>
+                              <FormControl>
+                                <Textarea
+                                  className="resize-vertical min-h-[160px]"
+                                  placeholder="Enter BAML input"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={bamlForm.control}
+                          name="dslFile"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>DSL File</FormLabel>
+                              <FormControl>
+                                <Textarea
+                                  className="resize-vertical min-h-[160px]"
+                                  placeholder="Enter DSL file content"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    ) : (
+                      <>
+                        <FormField
+                          control={bamlForm.control}
+                          name="bamlInput"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>BAML Input</FormLabel>
+                              <FormControl>
+                                <Textarea
+                                  className="resize-vertical"
+                                  placeholder="Enter BAML input"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={bamlForm.control}
+                          name="dslFile"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>DSL File</FormLabel>
+                              <FormControl>
+                                <Textarea
+                                  className="resize-vertical"
+                                  placeholder="Enter DSL file content"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </>
+                    )}
                     <div className="grid grid-cols-2 gap-4">
                       <FormField
                         control={bamlForm.control}
