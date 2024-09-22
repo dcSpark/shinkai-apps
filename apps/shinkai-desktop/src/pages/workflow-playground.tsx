@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { createWorkflow } from '@shinkai_network/shinkai-message-ts/api';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils';
 import {
   CreateJobFormSchema,
@@ -243,7 +244,15 @@ const WorkflowPlayground = () => {
     },
     example1: {
       message: 'Example message 1',
-      workflow: 'Example workflow 1',
+      workflow: `workflow Extensive_summary v0.1 {
+    step Initialize {
+        $PROMPT = "Summarize this: "
+        $EMBEDDINGS = call process_embeddings_in_job_scope()
+    }
+    step Summarize {
+        $RESULT = call multi_inference($PROMPT, $EMBEDDINGS)
+    }
+} @@official.shinkai`,
       agent: '',
     },
     example2: {
@@ -346,11 +355,21 @@ function ClassifyMessage(message_text: string) -> Message {
   const handleWorkflowScriptChange = (
     script: 'custom' | 'example1' | 'example2',
   ) => {
+    const currentValues = createJobForm.getValues();
+
     // Save current form data
-    setWorkflowFormData((prevData) => ({
-      ...prevData,
-      [selectedWorkflowScript]: createJobForm.getValues(),
-    }));
+    setWorkflowFormData((prevData) => {
+      const updatedData = {
+        ...prevData,
+        [selectedWorkflowScript]: {
+          message: currentValues.message || '',
+          workflow: currentValues.workflow || '',
+          agent: currentValues.agent || '',
+          files: currentValues.files || [],
+        },
+      };
+      return updatedData;
+    });
 
     // Switch to the selected script
     setSelectedWorkflowScript(script);
@@ -400,16 +419,16 @@ function ClassifyMessage(message_text: string) -> Message {
     const escapedBamlInput = escapeContent(bamlInput);
     const escapedDslFile = escapeContent(dslFile);
     const workflowText = `
-      workflow ${functionName} v0.1 {
-        step Initialize {
-          $DSL = "${escapedDslFile}"
-          $INPUT = "${escapedBamlInput}"
-          $PARAM = "${paramName}"
-          $FUNCTION = "${functionName}"
-          $RESULT = call baml_inference($INPUT, "", "", $DSL, $FUNCTION, $PARAM)
-        }
-      } @@localhost.arb-sep-shinkai
-    `;
+    workflow ${functionName} v0.1 {
+      step Initialize {
+        $DSL = "${escapedDslFile}"
+        $INPUT = "${escapedBamlInput}"
+        $PARAM = "${paramName}"
+        $FUNCTION = "${functionName}"
+        $RESULT = call baml_inference($INPUT, "", "", $DSL, $FUNCTION, $PARAM)
+      }
+    } @@localhost.arb-sep-shinkai
+  `;
     console.log('Generated Workflow:', workflowText);
 
     if (!auth) return;
@@ -448,9 +467,57 @@ function ClassifyMessage(message_text: string) -> Message {
     // Implement load functionality
   };
 
+  const [bamlScriptName, setBamlScriptName] = useState('');
 
-  const handleBamlSave = () => {
-    // Implement save functionality
+  const handleBamlSave = async () => {
+    if (!auth) return;
+
+    if (!bamlScriptName.trim()) {
+      alert('Please provide a name for the BAML script.');
+      return;
+    }
+
+    const bamlData = bamlFormData[selectedBamlScript];
+    const { bamlInput, dslFile, functionName, paramName } = bamlData;
+
+    const escapedBamlInput = escapeContent(bamlInput);
+    const escapedDslFile = escapeContent(dslFile);
+    const workflowRaw = `
+      workflow ${bamlScriptName} v0.1 {
+        step Initialize {
+          $DSL = "${escapedDslFile}"
+          $INPUT = "${escapedBamlInput}"
+          $PARAM = "${paramName}"
+          $FUNCTION = "${functionName}"
+          $RESULT = call baml_inference($INPUT, "", "", $DSL, $FUNCTION, $PARAM)
+        }
+      } @@localhost.arb-sep-shinkai
+    `;
+    const workflowDescription = `Workflow for ${bamlScriptName}`;
+
+    try {
+      const response = await createWorkflow(
+        auth.node_address,
+        auth.shinkai_identity,
+        auth.profile,
+        auth.shinkai_identity,
+        auth.profile,
+        workflowRaw,
+        workflowDescription,
+        {
+          my_device_encryption_sk: auth.profile_encryption_sk,
+          my_device_identity_sk: auth.profile_identity_sk,
+          node_encryption_pk: auth.node_encryption_pk,
+          profile_encryption_sk: auth.profile_encryption_sk,
+          profile_identity_sk: auth.profile_identity_sk,
+        },
+      );
+      console.log('Workflow created successfully:', response);
+      // Optionally, show a success message to the user
+    } catch (error) {
+      console.error('Failed to create workflow:', error);
+      // Optionally, show an error message to the user
+    }
   };
 
   const handleBamlLoad = () => {
@@ -481,7 +548,7 @@ function ClassifyMessage(message_text: string) -> Message {
           </Select>
 
           {/* Main Content Area */}
-          <div className="flex-1">
+          <div className="flex-1 overflow-y-auto">
             {selectedTab === 'workflow' && (
               <Form {...createJobForm}>
                 <form
@@ -489,64 +556,70 @@ function ClassifyMessage(message_text: string) -> Message {
                   onSubmit={createJobForm.handleSubmit(onSubmit)}
                 >
                   <div className="space-y-6">
-                     {/* Workflow Script Selection Buttons */}
-                  <div className="flex items-center gap-4">
-                    {/* Custom Workflow Script Button */}
-                    <Button
-                      className="px-3 py-1.5 text-sm"
-                      onClick={() => handleWorkflowScriptChange('custom')}
-                      variant={
-                        selectedWorkflowScript === 'custom' ? 'default' : 'outline'
-                      }
-                    >
-                      Custom Workflow Script
-                    </Button>
+                    {/* Workflow Script Selection Buttons */}
+                    <div className="flex items-center gap-4">
+                      {/* Custom Workflow Script Button */}
+                      <Button
+                        className="px-3 py-1.5 text-sm"
+                        onClick={() => handleWorkflowScriptChange('custom')}
+                        variant={
+                          selectedWorkflowScript === 'custom'
+                            ? 'default'
+                            : 'outline'
+                        }
+                      >
+                        Custom Workflow Script
+                      </Button>
 
-                    {/* Examples Text */}
-                    <span className="text-lg text-white">Examples:</span>
+                      {/* Examples Text */}
+                      <span className="text-lg text-white">Examples:</span>
 
-                    {/* Example 1 Button */}
-                    <Button
-                      className="px-3 py-1.5 text-sm"
-                      onClick={() => handleWorkflowScriptChange('example1')}
-                      variant={
-                        selectedWorkflowScript === 'example1' ? 'default' : 'outline'
-                      }
-                    >
-                      Example 1
-                    </Button>
+                      {/* Example 1 Button */}
+                      <Button
+                        className="px-3 py-1.5 text-sm"
+                        onClick={() => handleWorkflowScriptChange('example1')}
+                        variant={
+                          selectedWorkflowScript === 'example1'
+                            ? 'default'
+                            : 'outline'
+                        }
+                      >
+                        Full Document Summarizer
+                      </Button>
 
-                    {/* Example 2 Button */}
-                    <Button
-                      className="px-3 py-1.5 text-sm"
-                      onClick={() => handleWorkflowScriptChange('example2')}
-                      variant={
-                        selectedWorkflowScript === 'example2' ? 'default' : 'outline'
-                      }
-                    >
-                      Example 2
-                    </Button>
+                      {/* Example 2 Button */}
+                      <Button
+                        className="px-3 py-1.5 text-sm"
+                        onClick={() => handleWorkflowScriptChange('example2')}
+                        variant={
+                          selectedWorkflowScript === 'example2'
+                            ? 'default'
+                            : 'outline'
+                        }
+                      >
+                        Example 2
+                      </Button>
 
-                    {/* Save and Load Buttons */}
-                    {selectedWorkflowScript === 'custom' && (
-                      <div className="ml-auto flex gap-2">
-                        <Button
-                          className="px-3 py-1.5 text-sm"
-                          onClick={handleWorkflowSave}
-                          variant="outline"
-                        >
-                          Save
-                        </Button>
-                        <Button
-                          className="px-3 py-1.5 text-sm"
-                          onClick={handleWorkflowLoad}
-                          variant="outline"
-                        >
-                          Load
-                        </Button>
-                      </div>
-                    )}
-                  </div>
+                      {/* Save and Load Buttons */}
+                      {selectedWorkflowScript === 'custom' && (
+                        <div className="ml-auto flex gap-2">
+                          <Button
+                            className="px-3 py-1.5 text-sm"
+                            onClick={handleWorkflowSave}
+                            variant="outline"
+                          >
+                            Save
+                          </Button>
+                          <Button
+                            className="px-3 py-1.5 text-sm"
+                            onClick={handleWorkflowLoad}
+                            variant="outline"
+                          >
+                            Load
+                          </Button>
+                        </div>
+                      )}
+                    </div>
                     <FormField
                       control={createJobForm.control}
                       name="message"
@@ -881,21 +954,41 @@ function ClassifyMessage(message_text: string) -> Message {
                   )}
                 </div>
 
-                {/* Layout Switch Button */}
-                <Button
-                  className="px-3 py-1.5 text-sm"
-                  onClick={() => setIsTwoColumnLayout(!isTwoColumnLayout)}
-                  variant="outline"
-                >
-                  Switch Layout
-                </Button>
-
                 {/* BAML Form */}
                 <Form {...bamlForm}>
                   <form
                     className="space-y-8"
                     onSubmit={bamlForm.handleSubmit(onBamlSubmit)}
                   >
+                    <div className="flex items-center gap-4">
+                      <Button
+                        className="px-3 py-1.5 text-sm"
+                        onClick={() => setIsTwoColumnLayout(!isTwoColumnLayout)}
+                        variant="outline"
+                      >
+                        Switch Layout
+                      </Button>
+                      {selectedBamlScript === 'my' && (
+                        <FormField
+                          control={bamlForm.control}
+                          name="bamlScriptName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Name:</FormLabel>
+                              <FormControl>
+                                <Textarea
+                                  placeholder="Name the BAML Script for Saving"
+                                  {...field}
+                                  className="resize-vertical"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      )}
+                    </div>
+
                     {isTwoColumnLayout ? (
                       <div className="grid grid-cols-2 gap-4">
                         <FormField
