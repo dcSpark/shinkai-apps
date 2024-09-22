@@ -228,6 +228,7 @@ const WorkflowPlayground = () => {
 
   const [selectedTab, setSelectedTab] = useState<'workflow' | 'baml'>('baml');
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
+  // const [bamlScriptName, setBamlScriptName] = useState('');
 
   const [selectedWorkflowScript, setSelectedWorkflowScript] = useState<
     'custom' | 'example1' | 'example2'
@@ -467,26 +468,44 @@ function ClassifyMessage(message_text: string) -> Message {
     // Implement load functionality
   };
 
-  const [bamlScriptName, setBamlScriptName] = useState('');
+
 
   const handleBamlSave = async () => {
+    console.log('handleBamlSave called');
     if (!auth) return;
 
+    const bamlData = bamlFormData[selectedBamlScript];
+    const { dslFile, functionName, paramName, bamlScriptName } = bamlData;
+    console.log('bamlData:', bamlData);
+
     if (!bamlScriptName.trim()) {
-      alert('Please provide a name for the BAML script.');
+      console.log('Please provide a name for the BAML script.'); // Use alert instead of dialog
+      alert('Please provide a name for the BAML script.'); // Use alert instead of dialog
       return;
     }
 
-    const bamlData = bamlFormData[selectedBamlScript];
-    const { bamlInput, dslFile, functionName, paramName } = bamlData;
+    if (!dslFile.trim()) {
+      console.log('Please provide a DSL file for the BAML script.'); // Use alert instead of dialog
+      alert('Please provide a DSL file for the BAML script.'); // Use alert instead of dialog
+      return;
+    }
+    if (!functionName.trim()) {
+      console.log('Please provide a function name for the BAML script.'); // Use alert instead of dialog
+      alert('Please provide a function name for the BAML script.'); // Use alert instead of dialog
+      return;
+    }
 
-    const escapedBamlInput = escapeContent(bamlInput);
+    if (!paramName.trim()) {
+      console.log('Please provide a parameter name for the BAML script.'); // Use alert instead of dialog
+      alert('Please provide a parameter name for the BAML script.'); // Use alert instead of dialog
+      return;
+    }
+
     const escapedDslFile = escapeContent(dslFile);
     const workflowRaw = `
       workflow ${bamlScriptName} v0.1 {
         step Initialize {
           $DSL = "${escapedDslFile}"
-          $INPUT = "${escapedBamlInput}"
           $PARAM = "${paramName}"
           $FUNCTION = "${functionName}"
           $RESULT = call baml_inference($INPUT, "", "", $DSL, $FUNCTION, $PARAM)
@@ -977,9 +996,9 @@ function ClassifyMessage(message_text: string) -> Message {
                               <FormLabel>Name:</FormLabel>
                               <FormControl>
                                 <Textarea
+                                  className="resize-vertical"
                                   placeholder="Name the BAML Script for Saving"
                                   {...field}
-                                  className="resize-vertical"
                                 />
                               </FormControl>
                               <FormMessage />
