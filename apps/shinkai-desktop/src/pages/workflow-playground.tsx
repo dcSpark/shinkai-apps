@@ -1,21 +1,3 @@
-
-// import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils';
-
-// import { CreateJobFormSchema, createJobFormSchema } from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
-// import {
-//   VRFolder,
-//   VRItem,
-// } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
-// import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
-// import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
-// import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
-// import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
-// import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
-
-// import { MoveLeft, MoveRight, PlusIcon, TrashIcon } from 'lucide-react';
-// import React, { useCallback, useEffect, useState } from 'react';
-// previous code
-// WorkflowPlayground.tsx
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
@@ -124,7 +106,7 @@ const WorkflowPlayground = () => {
           </Select>
 
           {/* Main Content Area */}
-          <div className="flex-1">
+          <div className="flex-1 overflow-y-auto">
             {selectedTab === 'workflow' && (
               <WorkflowForm
                 auth={auth}
