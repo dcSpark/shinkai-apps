@@ -19,11 +19,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  ScrollArea,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
   Tabs,
   TabsContent,
   TabsList,
@@ -41,6 +47,7 @@ import {
   FilesIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import {
+  BookText,
   GalleryHorizontal,
   GalleryVertical,
   MoveLeft,
@@ -60,18 +67,19 @@ import { ADD_AGENT_PATH } from '../routes/name';
 import { useAuth } from '../store/auth';
 import { useExperimental } from '../store/experimental';
 import { useSettings } from '../store/settings';
-import { SubpageLayout } from './layout/simple-layout';
+import { SimpleLayout } from './layout/simple-layout';
 
 const WorkflowPlayground = () => {
   const { t } = useTranslation();
 
   return (
-    <SubpageLayout
-      className="max-w-[auto] px-3"
+    <SimpleLayout
+      classname="max-w-[auto] px-4"
+      headerRightElement={<DocsPanel />}
       title={t('workflowPlayground.label')}
     >
       <div className="flex h-[calc(100vh_-_150px)] gap-6 overflow-hidden">
-        <div className="flex w-[60%] flex-col gap-4 px-2">
+        <div className="flex w-[60%] flex-col gap-4">
           <Tabs defaultValue="workflow">
             <TabsList className="grid w-full grid-cols-2 bg-transparent">
               <TabsTrigger
@@ -97,10 +105,41 @@ const WorkflowPlayground = () => {
           <Outlet />
         </div>
       </div>
-    </SubpageLayout>
+    </SimpleLayout>
   );
 };
 export default WorkflowPlayground;
+
+function DocsPanel() {
+  return (
+    <Sheet modal={false}>
+      <SheetTrigger asChild>
+        <Button className="h-8 gap-1.5 rounded-lg" size="sm" variant="outline">
+          <BookText className="h-4 w-4" />
+          Explore Docs
+        </Button>
+      </SheetTrigger>
+      <SheetContent
+        className="max-w-md"
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+      >
+        <SheetHeader className="mb-3">
+          <SheetTitle className="flex h-[40px] items-center gap-4">
+            Documentation
+          </SheetTitle>
+          <p className="text-gray-80 text-sm">
+            Learn more about [] and how to use them.
+          </p>
+        </SheetHeader>
+        <ScrollArea className="h-[calc(100vh-200px)] flex-1">
+          {/*// content*/}
+        </ScrollArea>
+      </SheetContent>
+    </Sheet>
+  );
+}
 
 function WorkflowEditor() {
   const { t } = useTranslation();
@@ -991,7 +1030,7 @@ function ClassifyMessage(message_text: string) -> Message {
 
   return (
     <div className="max-h-[calc(100vh_-_200px)] space-y-8 overflow-y-auto pr-2">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2.5">
         <Button
           className="h-8 gap-1 rounded-lg"
           onClick={() => handleBamlScriptChange('my')}
