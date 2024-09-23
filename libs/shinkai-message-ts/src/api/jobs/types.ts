@@ -167,10 +167,12 @@ export type GetLLMProvidersResponse = LLMProvider[];
 
 export type LLMProviderInterface = {
   OpenAI?: OpenAI;
-  GenericAPI?: GenericAPI;
+  TogetherAI?: TogetherAI;
   Ollama?: Ollama;
   Gemini?: Gemini;
   Exo?: Exo;
+  Groq?: Groq;
+  OpenRouter?: OpenRouter;
 } & {
   [model: string]: ModelType;
 };
@@ -186,11 +188,19 @@ export interface Gemini {
   model_type: string;
 }
 
+export interface Groq {
+  model_type: string;
+}
+
+export interface OpenRouter {
+  model_type: string;
+}
+
 export interface OpenAI {
   model_type: string;
 }
 
-export interface GenericAPI {
+export interface TogetherAI {
   model_type: string;
 }
 

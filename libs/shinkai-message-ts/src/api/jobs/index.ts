@@ -199,12 +199,16 @@ export const getLLMProviders = async (
 function getModelString(model: LLMProviderInterface): string {
   if (model?.OpenAI?.model_type) {
     return 'openai:' + model.OpenAI.model_type;
-  } else if (model?.GenericAPI?.model_type) {
-    return 'genericapi:' + model.GenericAPI.model_type;
+  } else if (model?.TogetherAI?.model_type) {
+    return 'togetherai:' + model.TogetherAI.model_type;
   } else if (model?.Ollama?.model_type) {
     return 'ollama:' + model.Ollama.model_type;
   } else if (model?.Gemini?.model_type) {
     return 'gemini:' + model.Gemini.model_type;
+  } else if (model?.Groq?.model_type) {
+    return 'groq:' + model.Groq.model_type;
+  } else if (model?.OpenRouter?.model_type) {
+    return 'openrouter:' + model.OpenRouter.model_type;
   } else if (model?.Exo?.model_type) {
     return 'exo:' + model.Exo.model_type;
   } else if (Object.keys(model).length > 0) {

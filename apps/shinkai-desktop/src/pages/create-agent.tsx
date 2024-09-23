@@ -56,6 +56,14 @@ const modelOptions: { value: Models; label: string }[] = [
     label: 'Gemini',
   },
   {
+    value: Models.Groq,
+    label: 'Groq',
+  },
+  {
+    value: Models.OpenRouter,
+    label: 'OpenRouter',
+  },
+  {
     value: Models.Exo,
     label: 'Exo',
   },
@@ -69,7 +77,7 @@ export const getModelObject = (
     case Models.OpenAI:
       return { OpenAI: { model_type: modelType } };
     case Models.TogetherComputer:
-      return { GenericAPI: { model_type: modelType } };
+      return { TogetherAI: { model_type: modelType } };
     case Models.Ollama:
       return { Ollama: { model_type: modelType } };
     case Models.Gemini:

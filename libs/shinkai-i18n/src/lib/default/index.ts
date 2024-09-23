@@ -497,6 +497,7 @@ export default {
       customModelType: 'Custom Model Type',
       toggleCustomModel: 'Add a custom model',
       selectModel: 'Select your Model',
+      customModelType: 'Custom Model Type',
     },
     success: {
       createAgent: 'AI created successfully',
