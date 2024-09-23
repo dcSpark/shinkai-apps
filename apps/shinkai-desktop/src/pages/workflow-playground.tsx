@@ -6,10 +6,6 @@ import {
   CreateJobFormSchema,
   createJobFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
-import {
-  VRFolder,
-  VRItem,
-} from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
@@ -28,7 +24,12 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
   Textarea,
+  TextField,
   Tooltip,
   TooltipContent,
   TooltipPortal,
@@ -39,10 +40,18 @@ import {
   AISearchContentIcon,
   FilesIcon,
 } from '@shinkai_network/shinkai-ui/assets';
-import { MoveLeft, MoveRight, PlusIcon, TrashIcon } from 'lucide-react';
-import React, { useCallback, useEffect, useState } from 'react';
+import {
+  GalleryHorizontal,
+  GalleryVertical,
+  MoveLeft,
+  MoveRight,
+  PlusIcon,
+  TrashIcon,
+} from 'lucide-react';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import { useSetJobScope } from '../components/chat/context/set-job-scope-context';
 import { allowedFileExtensions } from '../lib/constants';
@@ -55,6 +64,46 @@ import { SubpageLayout } from './layout/simple-layout';
 
 const WorkflowPlayground = () => {
   const { t } = useTranslation();
+
+  return (
+    <SubpageLayout
+      className="max-w-[auto] px-3"
+      title={t('workflowPlayground.label')}
+    >
+      <div className="flex h-[calc(100vh_-_150px)] gap-6 overflow-hidden">
+        <div className="flex w-[60%] flex-col gap-4 px-2">
+          <Tabs defaultValue="workflow">
+            <TabsList className="grid w-full grid-cols-2 bg-transparent">
+              <TabsTrigger
+                className="flex items-center gap-1.5"
+                value="workflow"
+              >
+                Workflow
+              </TabsTrigger>
+              <TabsTrigger className="flex items-center gap-1.5" value="baml">
+                BAML
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="workflow">
+              <WorkflowEditor />
+            </TabsContent>
+            <TabsContent value="baml">
+              <BamlEditor />
+            </TabsContent>
+          </Tabs>
+        </div>
+
+        <div className="flex h-full flex-1 flex-col">
+          <Outlet />
+        </div>
+      </div>
+    </SubpageLayout>
+  );
+};
+export default WorkflowPlayground;
+
+function WorkflowEditor() {
+  const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const workflowHistory = useExperimental((state) => state.workflowHistory);
   const addWorkflowHistory = useExperimental(
@@ -65,17 +114,9 @@ const WorkflowPlayground = () => {
   );
   const defaulAgentId = useSettings((state) => state.defaultAgentId);
   const navigate = useNavigate();
-  const location = useLocation();
+
   const { captureAnalyticEvent } = useAnalytics();
   const [currentWorkflowIndex, setCurrentWorkflowIndex] = useState(-1);
-  const [isTwoColumnLayout, setIsTwoColumnLayout] = useState(true);
-
-  const locationState = location.state as {
-    files: File[];
-    agentName: string;
-    selectedVRFiles: VRItem[];
-    selectedVRFolders: VRFolder[];
-  };
 
   const setSetJobScopeOpen = useSetJobScope(
     (state) => state.setSetJobScopeOpen,
@@ -114,18 +155,6 @@ const WorkflowPlayground = () => {
       createJobForm.setValue('agent', defaulAgentId);
     }
   }, [llmProviders, createJobForm, defaulAgentId, isSuccess]);
-
-  useEffect(() => {
-    if (!locationState?.agentName) {
-      return;
-    }
-    const agent = llmProviders.find(
-      (agent) => agent.id === locationState.agentName,
-    );
-    if (agent) {
-      createJobForm.setValue('agent', agent.id);
-    }
-  }, [createJobForm, locationState, llmProviders]);
 
   const { isPending, mutateAsync: createJob } = useCreateJob({
     onSuccess: (data, variables) => {
@@ -226,7 +255,6 @@ const WorkflowPlayground = () => {
     [onWorkflowChange],
   );
 
-  const [selectedTab, setSelectedTab] = useState<'workflow' | 'baml'>('baml');
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
   // const [bamlScriptName, setBamlScriptName] = useState('');
 
@@ -263,7 +291,391 @@ const WorkflowPlayground = () => {
     },
   });
 
-  // **New State for BAML Script Selection and Data**
+  const handleWorkflowScriptChange = (
+    script: 'custom' | 'example1' | 'example2',
+  ) => {
+    const currentValues = createJobForm.getValues();
+
+    // Save current form data
+    setWorkflowFormData((prevData) => {
+      const updatedData = {
+        ...prevData,
+        [selectedWorkflowScript]: {
+          message: currentValues.message || '',
+          workflow: currentValues.workflow || '',
+          agent: currentValues.agent || '',
+          files: currentValues.files || [],
+        },
+      };
+      return updatedData;
+    });
+
+    // Switch to the selected script
+    setSelectedWorkflowScript(script);
+
+    // Load the new form data
+    createJobForm.reset(workflowFormData[script]);
+  };
+
+  useEffect(() => {
+    setWorkflowFormData((prevData) => ({
+      ...prevData,
+      [selectedWorkflowScript]: createJobForm.getValues(),
+    }));
+  }, [createJobForm, selectedWorkflowScript]);
+
+  const handleWorkflowSave = () => {
+    // Implement save functionality
+  };
+
+  const handleWorkflowLoad = () => {
+    // Implement load functionality
+  };
+
+  return (
+    <Fragment>
+      <div className="flex items-center gap-2.5">
+        <Button
+          className="h-8 gap-1 rounded-lg"
+          onClick={() => handleWorkflowScriptChange('custom')}
+          size="sm"
+          type="button"
+          variant={selectedWorkflowScript === 'custom' ? 'default' : 'outline'}
+        >
+          <PlusIcon className="h-4 w-4" />
+          Custom Workflow
+        </Button>
+        <Button
+          className="h-8 rounded-lg"
+          onClick={() => handleWorkflowScriptChange('example1')}
+          size="sm"
+          type="button"
+          variant={
+            selectedWorkflowScript === 'example1' ? 'default' : 'outline'
+          }
+        >
+          Full Document Summarizer
+        </Button>
+
+        <Button
+          className="h-8 rounded-lg"
+          onClick={() => handleWorkflowScriptChange('example2')}
+          size="sm"
+          type="button"
+          variant={
+            selectedWorkflowScript === 'example2' ? 'default' : 'outline'
+          }
+        >
+          Example 2
+        </Button>
+      </div>
+      <Form {...createJobForm}>
+        <form
+          className="relative space-y-8 overflow-y-auto pr-2 pt-12"
+          onSubmit={createJobForm.handleSubmit(onSubmit)}
+        >
+          <div className="space-y-4">
+            {/* Workflow Script Selection Buttons */}
+            {selectedWorkflowScript === 'custom' && (
+              <div className="absolute right-0 top-5 flex gap-2">
+                <Button
+                  className="h-8 min-w-[90px] rounded-md"
+                  onClick={handleWorkflowSave}
+                  size="sm"
+                  type="button"
+                  variant="ghost"
+                >
+                  Save
+                </Button>
+                <Button
+                  className="h-8 min-w-[90px] rounded-md"
+                  onClick={handleWorkflowLoad}
+                  size="sm"
+                  type="button"
+                  variant="ghost"
+                >
+                  Load
+                </Button>
+              </div>
+            )}
+            <FormField
+              control={createJobForm.control}
+              name="message"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('chat.form.message')}</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      autoFocus={true}
+                      className="resize-vertical"
+                      onKeyDown={(event) => {
+                        if (
+                          event.key === 'Enter' &&
+                          (event.metaKey || event.ctrlKey)
+                        ) {
+                          createJobForm.handleSubmit(onSubmit)();
+                        }
+                      }}
+                      placeholder={t('chat.form.messagePlaceholder')}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={createJobForm.control}
+              name="workflow"
+              render={({ field }) => (
+                <FormItem className="relative">
+                  <FormLabel>{t('chat.form.workflows')}</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      autoFocus={true}
+                      className="resize-vertical !min-h-[300px] text-sm"
+                      onKeyDown={handleWorkflowKeyDown}
+                      placeholder="Workflow"
+                      spellCheck={false}
+                      {...field}
+                    />
+                  </FormControl>
+                  {Array.from(workflowHistory).length > 0 && (
+                    <>
+                      <div className="absolute right-3 top-3 flex items-center gap-2">
+                        <Button
+                          className="h-6 w-6"
+                          disabled={currentWorkflowIndex <= 0}
+                          onClick={() => {
+                            if (currentWorkflowIndex > 0) {
+                              setCurrentWorkflowIndex(
+                                (prevIndex) => prevIndex - 1,
+                              );
+                              createJobForm.setValue(
+                                'workflow',
+                                Array.from(workflowHistory)[
+                                  currentWorkflowIndex - 1
+                                ],
+                              );
+                            }
+                          }}
+                          size="icon"
+                          type="button"
+                          variant="outline"
+                        >
+                          <MoveLeft className="h-3 w-3" />
+                        </Button>
+
+                        <Button
+                          className="h-6 w-6"
+                          disabled={
+                            currentWorkflowIndex >= workflowHistory.size - 1
+                          }
+                          onClick={() => {
+                            if (
+                              currentWorkflowIndex <
+                              workflowHistory.size - 1
+                            ) {
+                              setCurrentWorkflowIndex(
+                                (prevIndex) => prevIndex + 1,
+                              );
+                              createJobForm.setValue(
+                                'workflow',
+                                Array.from(workflowHistory)[
+                                  currentWorkflowIndex + 1
+                                ],
+                              );
+                            }
+                          }}
+                          size="icon"
+                          type="button"
+                          variant="outline"
+                        >
+                          <MoveRight className="h-3 w-3" />
+                        </Button>
+                      </div>
+                      <div className="absolute bottom-3 right-3">
+                        <Button
+                          className="h-6 w-6"
+                          onClick={() => {
+                            setCurrentWorkflowIndex(-1);
+                            createJobForm.setValue('workflow', '');
+                            clearWorkflowHistory();
+                          }}
+                          size="icon"
+                          type="button"
+                          variant="outline"
+                        >
+                          <TrashIcon className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </>
+                  )}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={createJobForm.control}
+              name="agent"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('chat.form.selectAI')}</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder={t('chat.form.selectAI')} />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {llmProviders?.length ? (
+                        llmProviders.map((agent) => (
+                          <SelectItem key={agent.id} value={agent.id}>
+                            <span>{agent.id} </span>
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <Button
+                          onClick={() => {
+                            navigate(ADD_AGENT_PATH);
+                          }}
+                          variant="ghost"
+                        >
+                          <PlusIcon className="mr-2" />
+                          {t('llmProviders.add')}
+                        </Button>
+                      )}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+            <Button
+              className="hover:bg-gray-350 flex h-[40px] items-center justify-between gap-2 rounded-lg p-2.5 text-left"
+              onClick={() => setIsContextMenuOpen(!isContextMenuOpen)}
+              size="auto"
+              type="button"
+              variant="outline"
+            >
+              <div className="flex items-center gap-2">
+                <FilesIcon className="h-4 w-4" />
+                <p className="text-sm text-white">Set Chat Context</p>
+              </div>
+            </Button>
+
+            {isContextMenuOpen && (
+              <div className="my-3 rounded-md bg-gray-400 px-3 py-4">
+                <div className="mb-5 flex items-start justify-between gap-4">
+                  <div className="space-y-1">
+                    <h2 className="text-sm font-medium text-gray-100">
+                      {t('chat.form.setContext')}
+                    </h2>
+                    <p className="text-gray-80 text-xs">
+                      {t('chat.form.setContextText')}
+                    </p>
+                  </div>
+                  <TooltipProvider delayDuration={0}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          className="flex h-10 w-10 items-center justify-center gap-2 rounded-lg p-2.5 text-left hover:bg-gray-500"
+                          onClick={() => setKnowledgeSearchOpen(true)}
+                          size="icon"
+                          type="button"
+                          variant="ghost"
+                        >
+                          <AISearchContentIcon className="h-5 w-5" />
+                          <p className="sr-only text-xs text-white">
+                            AI Files Content Search
+                          </p>
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipPortal>
+                        <TooltipContent sideOffset={0}>
+                          Search AI Files Content
+                        </TooltipContent>
+                      </TooltipPortal>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+
+                <div className="mt-2 flex flex-col gap-1.5">
+                  <Button
+                    className="hover:bg-gray-350 flex h-[40px] items-center justify-between gap-2 rounded-lg p-2.5 text-left"
+                    onClick={() => setSetJobScopeOpen(true)}
+                    size="auto"
+                    type="button"
+                    variant="outline"
+                  >
+                    <div className="flex items-center gap-2">
+                      <FilesIcon className="h-4 w-4" />
+                      <p className="text-sm text-white">Local AI Files</p>
+                    </div>
+                    {Object.keys(selectedKeys ?? {}).length > 0 && (
+                      <Badge className="bg-brand text-white">
+                        {Object.keys(selectedKeys ?? {}).length}
+                      </Badge>
+                    )}
+                  </Button>
+                  <FormField
+                    control={createJobForm.control}
+                    name="files"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="sr-only">Upload a file</FormLabel>
+                        <FormControl>
+                          <FileUploader
+                            accept={allowedFileExtensions.join(',')}
+                            allowMultiple
+                            descriptionText={allowedFileExtensions?.join(' | ')}
+                            onChange={(acceptedFiles) => {
+                              field.onChange(acceptedFiles);
+                            }}
+                            shouldDisableScrolling
+                            value={field.value}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+          <Button
+            className="w-full"
+            disabled={isPending}
+            isLoading={isPending}
+            size="sm"
+            type="submit"
+          >
+            Try Workflow
+          </Button>
+        </form>
+      </Form>
+    </Fragment>
+  );
+}
+
+const escapeContent = (content: string) => {
+  return content.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+};
+
+function BamlEditor() {
+  const auth = useAuth((state) => state.auth);
+  const navigate = useNavigate();
+  const defaulAgentId = useSettings((state) => state.defaultAgentId);
+
+  const { isPending, mutateAsync: createJob } = useCreateJob({
+    onSuccess: (data) => {
+      navigate(
+        `/workflow-playground/${encodeURIComponent(buildInboxIdFromJobId(data.jobId))}`,
+      );
+    },
+  });
+
+  const [isTwoColumnLayout, setIsTwoColumnLayout] = useState(true);
   const [selectedBamlScript, setSelectedBamlScript] = useState<
     'my' | 'extractResume' | 'classifyMessage' | 'ragWithCitations'
   >('my');
@@ -428,7 +840,6 @@ function ClassifyMessage(message_text: string) -> Message {
       functionName: 'AnswerQuestion',
       paramName: 'context',
     },
-
   });
 
   // **Define the BAML Form**
@@ -436,40 +847,6 @@ function ClassifyMessage(message_text: string) -> Message {
     defaultValues: bamlFormData[selectedBamlScript],
   });
 
-  const handleWorkflowScriptChange = (
-    script: 'custom' | 'example1' | 'example2',
-  ) => {
-    const currentValues = createJobForm.getValues();
-
-    // Save current form data
-    setWorkflowFormData((prevData) => {
-      const updatedData = {
-        ...prevData,
-        [selectedWorkflowScript]: {
-          message: currentValues.message || '',
-          workflow: currentValues.workflow || '',
-          agent: currentValues.agent || '',
-          files: currentValues.files || [],
-        },
-      };
-      return updatedData;
-    });
-
-    // Switch to the selected script
-    setSelectedWorkflowScript(script);
-
-    // Load the new form data
-    createJobForm.reset(workflowFormData[script]);
-  };
-
-  useEffect(() => {
-    setWorkflowFormData((prevData) => ({
-      ...prevData,
-      [selectedWorkflowScript]: createJobForm.getValues(),
-    }));
-  }, [createJobForm, selectedWorkflowScript]);
-
-  // **Handle BAML Script Selection**
   const handleBamlScriptChange = (
     script: 'my' | 'extractResume' | 'classifyMessage' | 'ragWithCitations',
   ) => {
@@ -486,6 +863,79 @@ function ClassifyMessage(message_text: string) -> Message {
     bamlForm.reset(bamlFormData[script]);
   };
 
+  const handleBamlSave = async () => {
+    console.log('handleBamlSave called');
+    if (!auth) return;
+
+    const bamlData = bamlFormData[selectedBamlScript];
+    const { dslFile, functionName, paramName, bamlScriptName = '' } = bamlData;
+    console.log('bamlData:', bamlData);
+
+    if (!defaulAgentId) {
+      toast.error('Please select an AI provider.');
+      return;
+    }
+    if (!bamlScriptName.trim()) {
+      toast.error('Please provide a name for the BAML script.');
+      return;
+    }
+
+    if (!dslFile.trim()) {
+      toast.error('Please provide a DSL file for the BAML script.');
+      return;
+    }
+    if (!functionName.trim()) {
+      toast.error('Please provide a function name for the BAML script.');
+      return;
+    }
+
+    if (!paramName.trim()) {
+      toast.error('Please provide a parameter name for the BAML script.');
+      return;
+    }
+
+    const escapedDslFile = escapeContent(dslFile);
+    const workflowRaw = `
+      workflow ${bamlScriptName} v0.1 {
+        step Initialize {
+          $DSL = "${escapedDslFile}"
+          $PARAM = "${paramName}"
+          $FUNCTION = "${functionName}"
+          $RESULT = call baml_inference($INPUT, "", "", $DSL, $FUNCTION, $PARAM)
+        }
+      } @@localhost.arb-sep-shinkai
+    `;
+    const workflowDescription = `Workflow for ${bamlScriptName}`;
+
+    try {
+      const response = await createWorkflow(
+        auth.node_address,
+        auth.shinkai_identity,
+        auth.profile,
+        auth.shinkai_identity,
+        auth.profile,
+        workflowRaw,
+        workflowDescription,
+        {
+          my_device_encryption_sk: auth.profile_encryption_sk,
+          my_device_identity_sk: auth.profile_identity_sk,
+          node_encryption_pk: auth.node_encryption_pk,
+          profile_encryption_sk: auth.profile_encryption_sk,
+          profile_identity_sk: auth.profile_identity_sk,
+        },
+      );
+      console.log('Workflow created successfully:', response);
+      // Optionally, show a success message to the user
+    } catch (error) {
+      console.error('Failed to create workflow:', error);
+      // Optionally, show an error message to the user
+    }
+  };
+
+  const handleBamlLoad = () => {
+    // Implement load functionality
+  };
+
   // **Update form data on change**
   useEffect(() => {
     setBamlFormData((prevData) => ({
@@ -493,10 +943,6 @@ function ClassifyMessage(message_text: string) -> Message {
       [selectedBamlScript]: bamlForm.getValues(),
     }));
   }, [bamlForm, selectedBamlScript]);
-
-  const escapeContent = (content: string) => {
-    return content.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-  };
 
   const onBamlSubmit = async (data: any) => {
     const { bamlInput, dslFile, functionName, paramName } = data;
@@ -543,698 +989,227 @@ function ClassifyMessage(message_text: string) -> Message {
     }));
   };
 
-  const handleWorkflowSave = () => {
-    // Implement save functionality
-  };
-
-  const handleWorkflowLoad = () => {
-    // Implement load functionality
-  };
-
-
-
-  const handleBamlSave = async () => {
-    console.log('handleBamlSave called');
-    if (!auth) return;
-
-    const bamlData = bamlFormData[selectedBamlScript];
-    const { dslFile, functionName, paramName, bamlScriptName } = bamlData;
-    console.log('bamlData:', bamlData);
-
-    if (!bamlScriptName.trim()) {
-      console.log('Please provide a name for the BAML script.'); // Use alert instead of dialog
-      alert('Please provide a name for the BAML script.'); // Use alert instead of dialog
-      return;
-    }
-
-    if (!dslFile.trim()) {
-      console.log('Please provide a DSL file for the BAML script.'); // Use alert instead of dialog
-      alert('Please provide a DSL file for the BAML script.'); // Use alert instead of dialog
-      return;
-    }
-    if (!functionName.trim()) {
-      console.log('Please provide a function name for the BAML script.'); // Use alert instead of dialog
-      alert('Please provide a function name for the BAML script.'); // Use alert instead of dialog
-      return;
-    }
-
-    if (!paramName.trim()) {
-      console.log('Please provide a parameter name for the BAML script.'); // Use alert instead of dialog
-      alert('Please provide a parameter name for the BAML script.'); // Use alert instead of dialog
-      return;
-    }
-
-    const escapedDslFile = escapeContent(dslFile);
-    const workflowRaw = `
-      workflow ${bamlScriptName} v0.1 {
-        step Initialize {
-          $DSL = "${escapedDslFile}"
-          $PARAM = "${paramName}"
-          $FUNCTION = "${functionName}"
-          $RESULT = call baml_inference($INPUT, "", "", $DSL, $FUNCTION, $PARAM)
-        }
-      } @@localhost.arb-sep-shinkai
-    `;
-    const workflowDescription = `Workflow for ${bamlScriptName}`;
-
-    try {
-      const response = await createWorkflow(
-        auth.node_address,
-        auth.shinkai_identity,
-        auth.profile,
-        auth.shinkai_identity,
-        auth.profile,
-        workflowRaw,
-        workflowDescription,
-        {
-          my_device_encryption_sk: auth.profile_encryption_sk,
-          my_device_identity_sk: auth.profile_identity_sk,
-          node_encryption_pk: auth.node_encryption_pk,
-          profile_encryption_sk: auth.profile_encryption_sk,
-          profile_identity_sk: auth.profile_identity_sk,
-        },
-      );
-      console.log('Workflow created successfully:', response);
-      // Optionally, show a success message to the user
-    } catch (error) {
-      console.error('Failed to create workflow:', error);
-      // Optionally, show an error message to the user
-    }
-  };
-
-  const handleBamlLoad = () => {
-    // Implement load functionality
-  };
-
   return (
-    <SubpageLayout
-      className="max-w-[auto] px-3"
-      title={t('workflowPlayground.label')}
-    >
-      <div className="flex h-[calc(100vh_-_150px)] gap-6 overflow-hidden">
-        {/* Left Sidebar */}
-        <div className="flex w-[60%] flex-col gap-4">
-          <Select
-            onValueChange={(value) =>
-              setSelectedTab(value as 'workflow' | 'baml')
-            }
-            value={selectedTab}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select Tab" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="workflow">Workflow</SelectItem>
-              <SelectItem value="baml">BAML</SelectItem>
-            </SelectContent>
-          </Select>
+    <div className="max-h-[calc(100vh_-_200px)] space-y-8 overflow-y-auto pr-2">
+      <div className="flex items-center gap-4">
+        <Button
+          className="h-8 gap-1 rounded-lg"
+          onClick={() => handleBamlScriptChange('my')}
+          size="sm"
+          type="button"
+          variant={selectedBamlScript === 'my' ? 'default' : 'outline'}
+        >
+          <PlusIcon className="h-4 w-4" />
+          My BAML Script
+        </Button>
 
-          {/* Main Content Area */}
-          <div className="flex-1 overflow-y-auto">
-            {selectedTab === 'workflow' && (
-              <Form {...createJobForm}>
-                <form
-                  className="space-y-8 overflow-y-auto pr-2"
-                  onSubmit={createJobForm.handleSubmit(onSubmit)}
+        <Button
+          className="h-8 rounded-lg"
+          onClick={() => handleBamlScriptChange('extractResume')}
+          size="sm"
+          type="button"
+          variant={
+            selectedBamlScript === 'extractResume' ? 'default' : 'outline'
+          }
+        >
+          Extract Resume
+        </Button>
+
+        {/* Classify Message Button */}
+        <Button
+          className="h-8 rounded-lg"
+          onClick={() => handleBamlScriptChange('classifyMessage')}
+          size="sm"
+          type="button"
+          variant={
+            selectedBamlScript === 'classifyMessage' ? 'default' : 'outline'
+          }
+        >
+          Classify Message
+        </Button>
+
+        {/* RAG with Citations Button */}
+        <Button
+          className="h-8 rounded-lg"
+          onClick={() => handleBamlScriptChange('ragWithCitations')}
+          size="sm"
+          type="button"
+          variant={
+            selectedBamlScript === 'ragWithCitations' ? 'default' : 'outline'
+          }
+        >
+          RAG with Citations
+        </Button>
+      </div>
+
+      {/* BAML Form */}
+      <Form {...bamlForm}>
+        <form
+          className="relative space-y-8 pt-2"
+          onSubmit={bamlForm.handleSubmit(onBamlSubmit)}
+        >
+          <div className="absolute -top-2 right-0 flex items-center gap-4">
+            {selectedBamlScript === 'my' && (
+              <div className="ml-auto flex gap-2">
+                <Button
+                  className="h-8 min-w-[90px] rounded-md"
+                  onClick={handleBamlSave}
+                  size="sm"
+                  type="button"
+                  variant="ghost"
                 >
-                  <div className="space-y-6">
-                    {/* Workflow Script Selection Buttons */}
-                    <div className="flex items-center gap-4">
-                      {/* Custom Workflow Script Button */}
-                      <Button
-                        className="px-3 py-1.5 text-sm"
-                        onClick={() => handleWorkflowScriptChange('custom')}
-                        variant={
-                          selectedWorkflowScript === 'custom'
-                            ? 'default'
-                            : 'outline'
-                        }
-                      >
-                        Custom Workflow Script
-                      </Button>
-
-                      {/* Examples Text */}
-                      <span className="text-lg text-white">Examples:</span>
-
-                      {/* Example 1 Button */}
-                      <Button
-                        className="px-3 py-1.5 text-sm"
-                        onClick={() => handleWorkflowScriptChange('example1')}
-                        variant={
-                          selectedWorkflowScript === 'example1'
-                            ? 'default'
-                            : 'outline'
-                        }
-                      >
-                        Full Document Summarizer
-                      </Button>
-
-                      {/* Example 2 Button */}
-                      <Button
-                        className="px-3 py-1.5 text-sm"
-                        onClick={() => handleWorkflowScriptChange('example2')}
-                        variant={
-                          selectedWorkflowScript === 'example2'
-                            ? 'default'
-                            : 'outline'
-                        }
-                      >
-                        Example 2
-                      </Button>
-
-                      {/* Save and Load Buttons */}
-                      {selectedWorkflowScript === 'custom' && (
-                        <div className="ml-auto flex gap-2">
-                          <Button
-                            className="px-3 py-1.5 text-sm"
-                            onClick={handleWorkflowSave}
-                            variant="outline"
-                          >
-                            Save
-                          </Button>
-                          <Button
-                            className="px-3 py-1.5 text-sm"
-                            onClick={handleWorkflowLoad}
-                            variant="outline"
-                          >
-                            Load
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                    <FormField
-                      control={createJobForm.control}
-                      name="message"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('chat.form.message')}</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              autoFocus={true}
-                              className="resize-vertical"
-                              onKeyDown={(event) => {
-                                if (
-                                  event.key === 'Enter' &&
-                                  (event.metaKey || event.ctrlKey)
-                                ) {
-                                  createJobForm.handleSubmit(onSubmit)();
-                                }
-                              }}
-                              placeholder={t('chat.form.messagePlaceholder')}
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={createJobForm.control}
-                      name="workflow"
-                      render={({ field }) => (
-                        <FormItem className="relative">
-                          <FormLabel>{t('chat.form.workflows')}</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              autoFocus={true}
-                              className="resize-vertical !min-h-[300px] text-sm"
-                              onKeyDown={handleWorkflowKeyDown}
-                              placeholder="Workflow"
-                              spellCheck={false}
-                              {...field}
-                            />
-                          </FormControl>
-                          {Array.from(workflowHistory).length > 0 && (
-                            <>
-                              <div className="absolute right-3 top-3 flex items-center gap-2">
-                                <Button
-                                  className="h-6 w-6"
-                                  disabled={currentWorkflowIndex <= 0}
-                                  onClick={() => {
-                                    if (currentWorkflowIndex > 0) {
-                                      setCurrentWorkflowIndex(
-                                        (prevIndex) => prevIndex - 1,
-                                      );
-                                      createJobForm.setValue(
-                                        'workflow',
-                                        Array.from(workflowHistory)[
-                                          currentWorkflowIndex - 1
-                                        ],
-                                      );
-                                    }
-                                  }}
-                                  size="icon"
-                                  type="button"
-                                  variant="outline"
-                                >
-                                  <MoveLeft className="h-3 w-3" />
-                                </Button>
-
-                                <Button
-                                  className="h-6 w-6"
-                                  disabled={
-                                    currentWorkflowIndex >=
-                                    workflowHistory.size - 1
-                                  }
-                                  onClick={() => {
-                                    if (
-                                      currentWorkflowIndex <
-                                      workflowHistory.size - 1
-                                    ) {
-                                      setCurrentWorkflowIndex(
-                                        (prevIndex) => prevIndex + 1,
-                                      );
-                                      createJobForm.setValue(
-                                        'workflow',
-                                        Array.from(workflowHistory)[
-                                          currentWorkflowIndex + 1
-                                        ],
-                                      );
-                                    }
-                                  }}
-                                  size="icon"
-                                  type="button"
-                                  variant="outline"
-                                >
-                                  <MoveRight className="h-3 w-3" />
-                                </Button>
-                              </div>
-                              <div className="absolute bottom-3 right-3">
-                                <Button
-                                  className="h-6 w-6"
-                                  onClick={() => {
-                                    setCurrentWorkflowIndex(-1);
-                                    createJobForm.setValue('workflow', '');
-                                    clearWorkflowHistory();
-                                  }}
-                                  size="icon"
-                                  type="button"
-                                  variant="outline"
-                                >
-                                  <TrashIcon className="h-3 w-3" />
-                                </Button>
-                              </div>
-                            </>
-                          )}
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={createJobForm.control}
-                      name="agent"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('chat.form.selectAI')}</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            value={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue
-                                  placeholder={t('chat.form.selectAI')}
-                                />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {llmProviders?.length ? (
-                                llmProviders.map((agent) => (
-                                  <SelectItem key={agent.id} value={agent.id}>
-                                    <span>{agent.id} </span>
-                                  </SelectItem>
-                                ))
-                              ) : (
-                                <Button
-                                  onClick={() => {
-                                    navigate(ADD_AGENT_PATH);
-                                  }}
-                                  variant="ghost"
-                                >
-                                  <PlusIcon className="mr-2" />
-                                  {t('llmProviders.add')}
-                                </Button>
-                              )}
-                            </SelectContent>
-                          </Select>
-                        </FormItem>
-                      )}
-                    />
-                    <Button
-                      className="hover:bg-gray-350 flex h-[40px] items-center justify-between gap-2 rounded-lg p-2.5 text-left"
-                      onClick={() => setIsContextMenuOpen(!isContextMenuOpen)}
-                      size="auto"
-                      type="button"
-                      variant="outline"
-                    >
-                      <div className="flex items-center gap-2">
-                        <FilesIcon className="h-4 w-4" />
-                        <p className="text-sm text-white">Set Chat Context</p>
-                      </div>
-                    </Button>
-
-                    {isContextMenuOpen && (
-                      <div className="my-3 rounded-md bg-gray-400 px-3 py-4">
-                        <div className="mb-5 flex items-start justify-between gap-4">
-                          <div className="space-y-1">
-                            <h2 className="text-sm font-medium text-gray-100">
-                              {t('chat.form.setContext')}
-                            </h2>
-                            <p className="text-gray-80 text-xs">
-                              {t('chat.form.setContextText')}
-                            </p>
-                          </div>
-                          <TooltipProvider delayDuration={0}>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  className="flex h-10 w-10 items-center justify-center gap-2 rounded-lg p-2.5 text-left hover:bg-gray-500"
-                                  onClick={() => setKnowledgeSearchOpen(true)}
-                                  size="icon"
-                                  type="button"
-                                  variant="ghost"
-                                >
-                                  <AISearchContentIcon className="h-5 w-5" />
-                                  <p className="sr-only text-xs text-white">
-                                    AI Files Content Search
-                                  </p>
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipPortal>
-                                <TooltipContent sideOffset={0}>
-                                  Search AI Files Content
-                                </TooltipContent>
-                              </TooltipPortal>
-                            </Tooltip>
-                          </TooltipProvider>
-                        </div>
-
-                        <div className="mt-2 flex flex-col gap-1.5">
-                          <Button
-                            className="hover:bg-gray-350 flex h-[40px] items-center justify-between gap-2 rounded-lg p-2.5 text-left"
-                            onClick={() => setSetJobScopeOpen(true)}
-                            size="auto"
-                            type="button"
-                            variant="outline"
-                          >
-                            <div className="flex items-center gap-2">
-                              <FilesIcon className="h-4 w-4" />
-                              <p className="text-sm text-white">
-                                Local AI Files
-                              </p>
-                            </div>
-                            {Object.keys(selectedKeys ?? {}).length > 0 && (
-                              <Badge className="bg-brand text-white">
-                                {Object.keys(selectedKeys ?? {}).length}
-                              </Badge>
-                            )}
-                          </Button>
-                          <FormField
-                            control={createJobForm.control}
-                            name="files"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="sr-only">
-                                  Upload a file
-                                </FormLabel>
-                                <FormControl>
-                                  <FileUploader
-                                    accept={allowedFileExtensions.join(',')}
-                                    allowMultiple
-                                    descriptionText={allowedFileExtensions?.join(
-                                      ' | ',
-                                    )}
-                                    onChange={(acceptedFiles) => {
-                                      field.onChange(acceptedFiles);
-                                    }}
-                                    shouldDisableScrolling
-                                    value={field.value}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  <Button
-                    className="w-full"
-                    disabled={isPending}
-                    isLoading={isPending}
-                    size="sm"
-                    type="submit"
-                  >
-                    Try Workflow
-                  </Button>
-                </form>
-              </Form>
-            )}
-            {selectedTab === 'baml' && (
-              <div className="max-h-[calc(100vh_-_200px)] space-y-8 overflow-y-auto pr-2">
-                {/* BAML Script Selection Buttons */}
-                <div className="flex items-center gap-4">
-                  {/* My BAML Script Button */}
-                  <Button
-                    className="px-3 py-1.5 text-sm"
-                    onClick={() => handleBamlScriptChange('my')}
-                    variant={
-                      selectedBamlScript === 'my' ? 'default' : 'outline'
-                    }
-                  >
-                    My BAML Script
-                  </Button>
-
-                  {/* Examples Text */}
-                  <span className="text-lg text-white">Examples:</span>
-
-                  {/* Extract Resume Button */}
-                  <Button
-                    className="px-3 py-1.5 text-sm"
-                    onClick={() => handleBamlScriptChange('extractResume')}
-                    variant={
-                      selectedBamlScript === 'extractResume'
-                        ? 'default'
-                        : 'outline'
-                    }
-                  >
-                    Extract Resume
-                  </Button>
-
-                  {/* Classify Message Button */}
-                  <Button
-                    className="px-3 py-1.5 text-sm"
-                    onClick={() => handleBamlScriptChange('classifyMessage')}
-                    variant={
-                      selectedBamlScript === 'classifyMessage'
-                        ? 'default'
-                        : 'outline'
-                    }
-                  >
-                    Classify Message
-                  </Button>
-
-                  {/* RAG with Citations Button */}
-                  <Button
-                    className="px-3 py-1.5 text-sm"
-                    onClick={() => handleBamlScriptChange('ragWithCitations')}
-                    variant={
-                      selectedBamlScript === 'ragWithCitations'
-                        ? 'default'
-                        : 'outline'
-                    }
-                  >
-                    RAG with Citations
-                  </Button>
-
-                  {/* Save and Load Buttons */}
-                  {selectedBamlScript === 'my' && (
-                    <div className="ml-auto flex gap-2">
-                      <Button
-                        className="px-3 py-1.5 text-sm"
-                        onClick={handleBamlSave}
-                        variant="outline"
-                      >
-                        Save
-                      </Button>
-                      <Button
-                        className="px-3 py-1.5 text-sm"
-                        onClick={handleBamlLoad}
-                        variant="outline"
-                      >
-                        Load
-                      </Button>
-                    </div>
-                  )}
-                </div>
-
-                {/* BAML Form */}
-                <Form {...bamlForm}>
-                  <form
-                    className="space-y-8"
-                    onSubmit={bamlForm.handleSubmit(onBamlSubmit)}
-                  >
-                    <div className="flex items-center gap-4">
-                      <Button
-                        className="px-3 py-1.5 text-sm"
-                        onClick={() => setIsTwoColumnLayout(!isTwoColumnLayout)}
-                        variant="outline"
-                      >
-                        Switch Layout
-                      </Button>
-                      {selectedBamlScript === 'my' && (
-                        <FormField
-                          control={bamlForm.control}
-                          name="bamlScriptName"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Name:</FormLabel>
-                              <FormControl>
-                                <Textarea
-                                  className="resize-vertical"
-                                  placeholder="Name the BAML Script for Saving"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      )}
-                    </div>
-
-                    {isTwoColumnLayout ? (
-                      <div className="grid grid-cols-2 gap-4">
-                        <FormField
-                          control={bamlForm.control}
-                          name="bamlInput"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>BAML Input</FormLabel>
-                              <FormControl>
-                                <Textarea
-                                  maxHeight={600}
-                                  minHeight={500}
-                                  placeholder="Enter BAML input"
-                                  resize="vertical"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={bamlForm.control}
-                          name="dslFile"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>DSL File</FormLabel>
-                              <FormControl>
-                                <Textarea
-                                  maxHeight={600}
-                                  minHeight={500}
-                                  placeholder="Enter DSL file content"
-                                  resize="vertical"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                    ) : (
-                      <>
-                        <FormField
-                          control={bamlForm.control}
-                          name="bamlInput"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>BAML Input</FormLabel>
-                              <FormControl>
-                                <Textarea
-                                  className="resize-vertical"
-                                  placeholder="Enter BAML input"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={bamlForm.control}
-                          name="dslFile"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>DSL File</FormLabel>
-                              <FormControl>
-                                <Textarea
-                                  className="resize-vertical"
-                                  placeholder="Enter DSL file content"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </>
-                    )}
-                    <div className="grid grid-cols-2 gap-4">
-                      <FormField
-                        control={bamlForm.control}
-                        name="functionName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Function Name</FormLabel>
-                            <FormControl>
-                              <Textarea
-                                className="resize-vertical"
-                                placeholder="Enter function name"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={bamlForm.control}
-                        name="paramName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Param Name</FormLabel>
-                            <FormControl>
-                              <Textarea
-                                className="resize-vertical"
-                                placeholder="Enter param name"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <Button className="w-full" size="sm" type="submit">
-                      Submit BAML
-                    </Button>
-                  </form>
-                </Form>
+                  Save
+                </Button>
+                <Button
+                  className="h-8 min-w-[90px] rounded-md"
+                  onClick={handleBamlLoad}
+                  size="sm"
+                  type="button"
+                  variant="ghost"
+                >
+                  Load
+                </Button>
               </div>
             )}
+            <TooltipProvider delayDuration={0}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    onClick={() => setIsTwoColumnLayout(!isTwoColumnLayout)}
+                    size="icon"
+                    type="button"
+                    variant="outline"
+                  >
+                    {isTwoColumnLayout ? (
+                      <GalleryVertical className="text-gray-80 h-4 w-4" />
+                    ) : (
+                      <GalleryHorizontal className="text-gray-80 h-4 w-4" />
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipPortal>
+                  <TooltipContent>
+                    <p>Switch Layout</p>
+                  </TooltipContent>
+                </TooltipPortal>
+              </Tooltip>
+            </TooltipProvider>
           </div>
-        </div>
+          {selectedBamlScript === 'my' && (
+            <FormField
+              control={bamlForm.control}
+              name="bamlScriptName"
+              render={({ field }) => (
+                <TextField field={field} label="Name the BAML Script" />
+              )}
+            />
+          )}
 
-        {/* Right Side Content (Outlet) */}
-        <div className="flex h-full flex-1 flex-col">
-          <Outlet />
-        </div>
-      </div>
-    </SubpageLayout>
+          {isTwoColumnLayout ? (
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={bamlForm.control}
+                name="bamlInput"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>BAML Input</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        maxHeight={600}
+                        minHeight={500}
+                        placeholder="Enter BAML input"
+                        resize="vertical"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={bamlForm.control}
+                name="dslFile"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>DSL File</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        maxHeight={600}
+                        minHeight={500}
+                        placeholder="Enter DSL file content"
+                        resize="vertical"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          ) : (
+            <>
+              <FormField
+                control={bamlForm.control}
+                name="bamlInput"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>BAML Input</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        className="resize-vertical"
+                        placeholder="Enter BAML input"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={bamlForm.control}
+                name="dslFile"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>DSL File</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        className="resize-vertical"
+                        placeholder="Enter DSL file content"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </>
+          )}
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={bamlForm.control}
+              name="functionName"
+              render={({ field }) => (
+                <TextField field={field} label="Enter function name" />
+              )}
+            />
+            <FormField
+              control={bamlForm.control}
+              name="paramName"
+              render={({ field }) => (
+                <TextField field={field} label="Enter param name" />
+              )}
+            />
+          </div>
+          <Button
+            className="w-full"
+            isLoading={isPending}
+            size="sm"
+            type="submit"
+          >
+            Submit BAML
+          </Button>
+        </form>
+      </Form>
+    </div>
   );
-};
-export default WorkflowPlayground;
+}
