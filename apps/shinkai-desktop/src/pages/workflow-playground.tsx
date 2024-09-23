@@ -46,6 +46,7 @@ import {
   AISearchContentIcon,
   FilesIcon,
 } from '@shinkai_network/shinkai-ui/assets';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
   BookText,
   GalleryHorizontal,
@@ -153,6 +154,8 @@ function WorkflowEditor() {
   );
   const defaulAgentId = useSettings((state) => state.defaultAgentId);
   const navigate = useNavigate();
+
+  const [isTwoColumnLayout, setIsTwoColumnLayout] = useState(true);
 
   const { captureAnalyticEvent } = useAnalytics();
   const [currentWorkflowIndex, setCurrentWorkflowIndex] = useState(-1);
@@ -414,146 +417,194 @@ function WorkflowEditor() {
           onSubmit={createJobForm.handleSubmit(onSubmit)}
         >
           <div className="space-y-4">
-            {/* Workflow Script Selection Buttons */}
-            {selectedWorkflowScript === 'custom' && (
-              <div className="absolute right-0 top-5 flex gap-2">
-                <Button
-                  className="h-8 min-w-[90px] rounded-md"
-                  onClick={handleWorkflowSave}
-                  size="sm"
-                  type="button"
-                  variant="ghost"
-                >
-                  Save
-                </Button>
-                <Button
-                  className="h-8 min-w-[90px] rounded-md"
-                  onClick={handleWorkflowLoad}
-                  size="sm"
-                  type="button"
-                  variant="ghost"
-                >
-                  Load
-                </Button>
-              </div>
-            )}
-            <FormField
-              control={createJobForm.control}
-              name="message"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('chat.form.message')}</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      autoFocus={true}
-                      className="resize-vertical"
-                      onKeyDown={(event) => {
-                        if (
-                          event.key === 'Enter' &&
-                          (event.metaKey || event.ctrlKey)
-                        ) {
-                          createJobForm.handleSubmit(onSubmit)();
-                        }
-                      }}
-                      placeholder={t('chat.form.messagePlaceholder')}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+            <div className="absolute right-0 top-5 flex items-center gap-4">
+              {/* Workflow Script Selection Buttons */}
+              {selectedWorkflowScript === 'custom' && (
+                <div className="flex gap-2">
+                  <Button
+                    className="h-8 min-w-[90px] rounded-md"
+                    onClick={handleWorkflowSave}
+                    size="sm"
+                    type="button"
+                    variant="ghost"
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    className="h-8 min-w-[90px] rounded-md"
+                    onClick={handleWorkflowLoad}
+                    size="sm"
+                    type="button"
+                    variant="ghost"
+                  >
+                    Load
+                  </Button>
+                </div>
               )}
-            />
-            <FormField
-              control={createJobForm.control}
-              name="workflow"
-              render={({ field }) => (
-                <FormItem className="relative">
-                  <FormLabel>{t('chat.form.workflows')}</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      autoFocus={true}
-                      className="resize-vertical !min-h-[300px] text-sm"
-                      onKeyDown={handleWorkflowKeyDown}
-                      placeholder="Workflow"
-                      spellCheck={false}
-                      {...field}
-                    />
-                  </FormControl>
-                  {Array.from(workflowHistory).length > 0 && (
-                    <>
-                      <div className="absolute right-3 top-3 flex items-center gap-2">
-                        <Button
-                          className="h-6 w-6"
-                          disabled={currentWorkflowIndex <= 0}
-                          onClick={() => {
-                            if (currentWorkflowIndex > 0) {
-                              setCurrentWorkflowIndex(
-                                (prevIndex) => prevIndex - 1,
-                              );
-                              createJobForm.setValue(
-                                'workflow',
-                                Array.from(workflowHistory)[
-                                  currentWorkflowIndex - 1
-                                ],
-                              );
-                            }
-                          }}
-                          size="icon"
-                          type="button"
-                          variant="outline"
-                        >
-                          <MoveLeft className="h-3 w-3" />
-                        </Button>
-
-                        <Button
-                          className="h-6 w-6"
-                          disabled={
-                            currentWorkflowIndex >= workflowHistory.size - 1
+              <TooltipProvider delayDuration={0}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      onClick={() => setIsTwoColumnLayout(!isTwoColumnLayout)}
+                      size="icon"
+                      type="button"
+                      variant="outline"
+                    >
+                      {isTwoColumnLayout ? (
+                        <GalleryVertical className="text-gray-80 h-4 w-4" />
+                      ) : (
+                        <GalleryHorizontal className="text-gray-80 h-4 w-4" />
+                      )}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipPortal>
+                    <TooltipContent>
+                      <p>Switch Layout</p>
+                    </TooltipContent>
+                  </TooltipPortal>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+            <div
+              className={cn(
+                'grid gap-3',
+                isTwoColumnLayout ? 'grid-cols-2' : 'grid-cols-1',
+              )}
+            >
+              <FormField
+                control={createJobForm.control}
+                name="message"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('chat.form.message')}</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        autoFocus={true}
+                        className={cn(
+                          'resize-vertical',
+                          isTwoColumnLayout && '!max-h-full',
+                        )}
+                        {...(isTwoColumnLayout && {
+                          minHeight: 400,
+                          maxHeight: 400,
+                        })}
+                        onKeyDown={(event) => {
+                          if (
+                            event.key === 'Enter' &&
+                            (event.metaKey || event.ctrlKey)
+                          ) {
+                            createJobForm.handleSubmit(onSubmit)();
                           }
-                          onClick={() => {
-                            if (
-                              currentWorkflowIndex <
-                              workflowHistory.size - 1
-                            ) {
-                              setCurrentWorkflowIndex(
-                                (prevIndex) => prevIndex + 1,
-                              );
-                              createJobForm.setValue(
-                                'workflow',
-                                Array.from(workflowHistory)[
-                                  currentWorkflowIndex + 1
-                                ],
-                              );
+                        }}
+                        placeholder={t('chat.form.messagePlaceholder')}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={createJobForm.control}
+                name="workflow"
+                render={({ field }) => (
+                  <FormItem className="relative">
+                    <FormLabel>{t('chat.form.workflows')}</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        autoFocus={true}
+                        className="resize-vertical"
+                        onKeyDown={handleWorkflowKeyDown}
+                        placeholder="Workflow"
+                        spellCheck={false}
+                        {...(isTwoColumnLayout
+                          ? {
+                              minHeight: 400,
+                              maxHeight: 400,
                             }
-                          }}
-                          size="icon"
-                          type="button"
-                          variant="outline"
-                        >
-                          <MoveRight className="h-3 w-3" />
-                        </Button>
-                      </div>
-                      <div className="absolute bottom-3 right-3">
-                        <Button
-                          className="h-6 w-6"
-                          onClick={() => {
-                            setCurrentWorkflowIndex(-1);
-                            createJobForm.setValue('workflow', '');
-                            clearWorkflowHistory();
-                          }}
-                          size="icon"
-                          type="button"
-                          variant="outline"
-                        >
-                          <TrashIcon className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    </>
-                  )}
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                          : {
+                              minHeight: 280,
+                              maxHeight: 280,
+                            })}
+                        {...field}
+                      />
+                    </FormControl>
+                    {Array.from(workflowHistory).length > 0 && (
+                      <>
+                        <div className="absolute right-3 top-3 flex items-center gap-2">
+                          <Button
+                            className="h-6 w-6"
+                            disabled={currentWorkflowIndex <= 0}
+                            onClick={() => {
+                              if (currentWorkflowIndex > 0) {
+                                setCurrentWorkflowIndex(
+                                  (prevIndex) => prevIndex - 1,
+                                );
+                                createJobForm.setValue(
+                                  'workflow',
+                                  Array.from(workflowHistory)[
+                                    currentWorkflowIndex - 1
+                                  ],
+                                );
+                              }
+                            }}
+                            size="icon"
+                            type="button"
+                            variant="outline"
+                          >
+                            <MoveLeft className="h-3 w-3" />
+                          </Button>
+
+                          <Button
+                            className="h-6 w-6"
+                            disabled={
+                              currentWorkflowIndex >= workflowHistory.size - 1
+                            }
+                            onClick={() => {
+                              if (
+                                currentWorkflowIndex <
+                                workflowHistory.size - 1
+                              ) {
+                                setCurrentWorkflowIndex(
+                                  (prevIndex) => prevIndex + 1,
+                                );
+                                createJobForm.setValue(
+                                  'workflow',
+                                  Array.from(workflowHistory)[
+                                    currentWorkflowIndex + 1
+                                  ],
+                                );
+                              }
+                            }}
+                            size="icon"
+                            type="button"
+                            variant="outline"
+                          >
+                            <MoveRight className="h-3 w-3" />
+                          </Button>
+                        </div>
+                        <div className="absolute bottom-3 right-3">
+                          <Button
+                            className="h-6 w-6"
+                            onClick={() => {
+                              setCurrentWorkflowIndex(-1);
+                              createJobForm.setValue('workflow', '');
+                              clearWorkflowHistory();
+                            }}
+                            size="icon"
+                            type="button"
+                            variant="outline"
+                          >
+                            <TrashIcon className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </>
+                    )}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <FormField
               control={createJobForm.control}
               name="agent"
