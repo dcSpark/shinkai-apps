@@ -44,9 +44,13 @@ export const getModelObject = (
     case Models.OpenAI:
       return { OpenAI: { model_type: modelType } };
     case Models.TogetherComputer:
-      return { GenericAPI: { model_type: modelType } };
+      return { TogetherAI: { model_type: modelType } };
     case Models.Ollama:
       return { Ollama: { model_type: modelType } };
+    case Models.Groq:
+      return { Groq: { model_type: modelType } };
+    case Models.OpenRouter:
+      return { OpenRouter: { model_type: modelType } };
     default:
       return { [model]: { model_type: modelType } };
   }
@@ -154,6 +158,7 @@ export const AddAgent = () => {
   const [modelTypeOptions, setModelTypeOptions] = useState<
     { label: string; value: string }[]
   >([]);
+  const [isCustomModelType, setIsCustomModelType] = useState(false);
 
   useEffect(() => {
     if (isCustomModelMode) {
@@ -167,7 +172,7 @@ export const AddAgent = () => {
         (ollamaModels ?? []).map((model) => ({
           label: model.model,
           value: model.model,
-        })),
+        })).concat({ label: 'Custom Model', value: 'custom' }),
       );
       return;
     }
@@ -177,7 +182,7 @@ export const AddAgent = () => {
       modelsConfig[currentModel as Models].modelTypes.map((modelType) => ({
         label: modelType.name,
         value: modelType.value,
-      })),
+      })).concat({ label: 'Custom Model', value: 'custom' }),
     );
   }, [currentModel, form, isCustomModelMode, ollamaModels]);
   useEffect(() => {
@@ -192,6 +197,10 @@ export const AddAgent = () => {
     }
     form.setValue('agentName', currentModelType.replace(/[^a-zA-Z0-9_]/g, '_'));
   }, [form, currentModelType, modelTypeOptions?.length]);
+  useEffect(() => {
+    setIsCustomModelType(currentModelType === 'custom');
+  }, [currentModelType]);
+
   return (
     <div className="flex h-full flex-col space-y-3">
       <Form {...form}>
@@ -320,6 +329,19 @@ export const AddAgent = () => {
                   )}
                 />
               </>
+            )}
+
+            {isCustomModelType && (
+              <FormField
+                control={form.control}
+                name="modelTypeCustom"
+                render={({ field }) => (
+                  <TextField
+                    field={field}
+                    label={t('llmProviders.form.customModelType')}
+                  />
+                )}
+              />
             )}
 
             <FormField

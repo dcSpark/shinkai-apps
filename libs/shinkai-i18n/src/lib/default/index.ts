@@ -494,6 +494,7 @@ export default {
       modelName: 'Model Name',
       modelId: 'Model ID',
       modelType: 'Model Type',
+      customModelType: 'Custom Model Type',
       toggleCustomModel: 'Add a custom model',
       selectModel: 'Select your Model',
     },

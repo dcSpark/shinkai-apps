@@ -262,7 +262,9 @@ export type LLMProvider = {
 };
 export type AgentAPIModel = {
   OpenAI?: OpenAI;
-  GenericAPI?: GenericAPI;
+  TogetherAI?: TogetherAI;
+  Groq?: Groq;
+  OpenRouter?: OpenRouter;
   Ollama?: Ollama;
   Gemini?: Gemini;
   Exo?: Exo;
@@ -281,11 +283,19 @@ export interface Gemini {
   model_type: string;
 }
 
+export interface Groq {
+  model_type: string;
+}
+
+export interface OpenRouter {
+  model_type: string;
+}
+
 export interface OpenAI {
   model_type: string;
 }
 
-export interface GenericAPI {
+export interface TogetherAI {
   model_type: string;
 }
 

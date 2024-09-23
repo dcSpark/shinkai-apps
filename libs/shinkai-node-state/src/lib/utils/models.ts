@@ -4,6 +4,8 @@ export enum Models {
   Ollama = 'ollama',
   Gemini = 'gemini',
   Exo = 'exo',
+  Groq = 'groq',
+  OpenRouter = 'openrouter',
 }
 
 export const modelsConfig = {
@@ -79,5 +81,30 @@ export const modelsConfig = {
         value: 'llama3.1-8b',
       },
     ],
+  },
+  [Models.Groq]: {
+    apiUrl: 'https://api.groq.com/openai/v1',
+    modelTypes: [
+      {
+        name: 'Llama3 Groq 70B (Tool Use Preview)',
+        value: 'llama3-groq-70b-8192-tool-use-preview',
+      },
+      {
+        name: 'Llama3 Groq 8B (Tool Use Preview)',
+        value: 'llama3-groq-8b-8192-tool-use-preview',
+      },
+      {
+        name: 'Llama 3.1 70B Versatile',
+        value: 'llama-3.1-70b-versatile',
+      },
+      {
+        name: 'Llama 3.1 8B Instant',
+        value: 'llama-3.1-8b-instant',
+      },
+    ],
+  },
+  [Models.OpenRouter]: {
+    apiUrl: 'https://openrouter.ai',
+    modelTypes: [],
   },
 };

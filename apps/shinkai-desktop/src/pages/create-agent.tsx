@@ -56,6 +56,14 @@ const modelOptions: { value: Models; label: string }[] = [
     label: 'Gemini',
   },
   {
+    value: Models.Groq,
+    label: 'Groq',
+  },
+  {
+    value: Models.OpenRouter,
+    label: 'OpenRouter',
+  },
+  {
     value: Models.Exo,
     label: 'Exo',
   },
@@ -69,7 +77,7 @@ export const getModelObject = (
     case Models.OpenAI:
       return { OpenAI: { model_type: modelType } };
     case Models.TogetherComputer:
-      return { GenericAPI: { model_type: modelType } };
+      return { TogetherAI: { model_type: modelType } };
     case Models.Ollama:
       return { Ollama: { model_type: modelType } };
     case Models.Gemini:
@@ -149,6 +157,8 @@ const CreateAgentPage = () => {
   const [modelTypeOptions, setModelTypeOptions] = useState<
     { label: string; value: string }[]
   >([]);
+  const [isCustomModelType, setIsCustomModelType] = useState(false);
+
   useEffect(() => {
     if (isCustomModelMode) {
       addAgentForm.setValue('externalUrl', '');
@@ -160,7 +170,7 @@ const CreateAgentPage = () => {
         (ollamaModels ?? []).map((model) => ({
           label: model.model,
           value: model.model,
-        })),
+        })).concat({ label: 'Custom Model', value: 'custom' }),
       );
       return;
     }
@@ -170,15 +180,17 @@ const CreateAgentPage = () => {
       modelsConfig[currentModel as Models].modelTypes.map((modelType) => ({
         label: modelType.name,
         value: modelType.value,
-      })),
+      })).concat({ label: 'Custom Model', value: 'custom' }),
     );
   }, [currentModel, addAgentForm, isCustomModelMode, ollamaModels]);
+
   useEffect(() => {
     if (!modelTypeOptions?.length) {
       return;
     }
     addAgentForm.setValue('modelType', modelTypeOptions[0].value);
   }, [modelTypeOptions, addAgentForm]);
+
   useEffect(() => {
     if (!modelTypeOptions?.length) {
       return;
@@ -189,11 +201,17 @@ const CreateAgentPage = () => {
     );
   }, [addAgentForm, currentModelType, modelTypeOptions?.length]);
 
+  useEffect(() => {
+    setIsCustomModelType(currentModelType === 'custom');
+  }, [currentModelType]);
+
   const onSubmit = async (data: AddAgentFormSchema) => {
     if (!auth) return;
     let model = getModelObject(data.model, data.modelType);
     if (isCustomModelMode && data.modelCustom && data.modelTypeCustom) {
       model = getModelObject(data.modelCustom, data.modelTypeCustom);
+    } else if (isCustomModelType && data.modelTypeCustom) {
+      model = getModelObject(data.model, data.modelTypeCustom);
     }
     await addLLMProvider({
       nodeAddress: auth?.node_address ?? '',
@@ -333,6 +351,19 @@ const CreateAgentPage = () => {
                   )}
                 />
               </>
+            )}
+
+            {isCustomModelType && (
+              <FormField
+                control={addAgentForm.control}
+                name="modelTypeCustom"
+                render={({ field }) => (
+                  <TextField
+                    field={field}
+                    label={t('llmProviders.form.customModelType')}
+                  />
+                )}
+              />
             )}
 
             <FormField
