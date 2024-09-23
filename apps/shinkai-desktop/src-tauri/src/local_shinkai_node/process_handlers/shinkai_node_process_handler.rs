@@ -138,7 +138,7 @@ impl ShinkaiNodeProcessHandler {
     }
 
     pub async fn spawn(&self) -> Result<(), String> {
-        let _ = self.kill_existing_processes_using_ports().await;
+        let _ = self.kill().await;
 
         let env = options_to_env(&self.options.clone());
         self.process_handler.spawn(env, [].to_vec(), None).await?;
