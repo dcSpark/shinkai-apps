@@ -260,7 +260,8 @@
       "createRegistrationCode": "Create Registration Code",
       "analytics": "Analytics",
       "publicKeys": "Public Keys",
-      "galxe": "Galxe Quest"
+      "galxe": "Galxe Quest",
+      "promptLibrary": "Prompt Library"
     },
     "shinkaiIdentity": {
       "label": "Shinkai Identity",
@@ -319,6 +320,9 @@
       "profileIdentity": "Profile Identity",
       "myDeviceEncryption": "My Device Encryption",
       "myDeviceIdentity": "My Device Identity"
+    },
+    "promptLibrary": {
+      "label": "Prompt Library"
     }
   },
   "exportConnection": {
@@ -450,6 +454,7 @@
       "modelName": "Model Name",
       "modelId": "Model ID",
       "modelType": "Model Type",
+      "customModelType": "Custom Model Type",
       "toggleCustomModel": "Add a custom model",
       "selectModel": "Select your Model"
     },
