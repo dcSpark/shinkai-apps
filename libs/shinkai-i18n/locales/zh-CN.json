@@ -236,6 +236,7 @@
     "form": {
       "agentName": "人工智能名称",
       "apiKey": "API密钥",
+      "customModelType": "自定义模型类型",
       "externalUrl": "外部URL",
       "modelId": "模型ID",
       "modelName": "模型名称",
@@ -329,8 +330,12 @@
       "exportConnection": "导出连接",
       "galxe": "Galxe任务",
       "general": "常规",
+      "promptLibrary": "提示库",
       "publicKeys": "公钥",
       "shinkaiNode": "深海节点管理器"
+    },
+    "promptLibrary": {
+      "label": "提示库"
     },
     "publicKeys": {
       "label": "公钥",

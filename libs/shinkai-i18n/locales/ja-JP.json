@@ -236,6 +236,7 @@
     "form": {
       "agentName": "AI名",
       "apiKey": "APIキー",
+      "customModelType": "カスタムモデルタイプ",
       "externalUrl": "外部URL",
       "modelId": "モデルID",
       "modelName": "モデル名",
@@ -329,8 +330,12 @@
       "exportConnection": "接続のエクスポート",
       "galxe": "ガルクス・クエスト",
       "general": "一般",
+      "promptLibrary": "プロンプトライブラリ",
       "publicKeys": "公開鍵",
       "shinkaiNode": "シンカイ・ノード・マネージャー"
+    },
+    "promptLibrary": {
+      "label": "プロンプトライブラリ"
     },
     "publicKeys": {
       "label": "公開鍵",

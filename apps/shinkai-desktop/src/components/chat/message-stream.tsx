@@ -3,7 +3,7 @@ import { ShinkaiMessageBuilderWrapper } from '@shinkai_network/shinkai-message-t
 import { FunctionKey } from '@shinkai_network/shinkai-node-state/lib/constants';
 import { Message } from '@shinkai_network/shinkai-ui';
 import { useQueryClient } from '@tanstack/react-query';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';
 
@@ -11,11 +11,87 @@ import { useAuth } from '../../store/auth';
 
 type AnimationState = {
   displayedContent: string;
-  pendingContent: string;
 };
 
 type UseWebSocketMessage = {
   enabled?: boolean;
+};
+
+const START_ANIMATION_SPEED = 4;
+const END_ANIMATION_SPEED = 15;
+
+const createSmoothMessage = (params: {
+  onTextUpdate: (delta: string, text: string) => void;
+  onFinished?: () => void;
+  startSpeed?: number;
+}) => {
+  const { startSpeed = START_ANIMATION_SPEED } = params;
+
+  let buffer = '';
+  const outputQueue: string[] = [];
+  let isAnimationActive = false;
+  let animationFrameId: number | null = null;
+
+  const stopAnimation = () => {
+    isAnimationActive = false;
+    if (animationFrameId !== null) {
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = null;
+    }
+  };
+
+  const startAnimation = (speed = startSpeed) =>
+    new Promise<void>((resolve) => {
+      if (isAnimationActive) {
+        resolve();
+        return;
+      }
+
+      isAnimationActive = true;
+
+      const updateText = () => {
+        if (!isAnimationActive) {
+          cancelAnimationFrame(animationFrameId as number);
+          animationFrameId = null;
+          resolve();
+          return;
+        }
+
+        if (outputQueue.length > 0) {
+          const charsToAdd = outputQueue.splice(0, speed).join('');
+          buffer += charsToAdd;
+          params.onTextUpdate(charsToAdd, buffer);
+        } else {
+          isAnimationActive = false;
+          animationFrameId = null;
+          params.onFinished?.();
+          resolve();
+          return;
+        }
+        animationFrameId = requestAnimationFrame(updateText);
+      };
+
+      animationFrameId = requestAnimationFrame(updateText);
+    });
+
+  const pushToQueue = (text: string) => {
+    outputQueue.push(...text.split(''));
+  };
+
+  const reset = () => {
+    buffer = '';
+    outputQueue.length = 0;
+    stopAnimation();
+  };
+
+  return {
+    isAnimationActive,
+    isTokenRemain: () => outputQueue.length > 0,
+    pushToQueue,
+    startAnimation,
+    stopAnimation,
+    reset,
+  };
 };
 
 export const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
@@ -32,68 +108,57 @@ export const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = decodeURIComponent(encodedInboxId);
 
-  const isStreamFinishedRef = useRef(false);
   const [animationState, setAnimationState] = useState<AnimationState>({
     displayedContent: '',
-    pendingContent: '',
   });
+  const isStreamingFinished = useRef(false);
 
-  const animationFrameRef = useRef<number | null>(null);
-  const isAnimatingRef = useRef(false);
+  const textControllerRef = useRef<ReturnType<
+    typeof createSmoothMessage
+  > | null>(null);
 
-  const animateText = useCallback(() => {
-    setAnimationState((prevState) => {
-      if (
-        prevState.pendingContent.length === 0 &&
-        isStreamFinishedRef.current
-      ) {
-        isAnimatingRef.current = false;
-        return prevState;
-      }
-
-      const chunkSize = Math.max(
-        1,
-        Math.round(prevState.pendingContent.length / 90),
-      );
-
-      const nextChunk = prevState.pendingContent.slice(0, chunkSize);
-      const remainingPending = prevState.pendingContent.slice(chunkSize);
-
-      return {
-        displayedContent: prevState.displayedContent + nextChunk,
-        pendingContent: remainingPending,
-      };
+  useEffect(() => {
+    textControllerRef.current = createSmoothMessage({
+      onTextUpdate: (_, text) => {
+        if (isStreamingFinished.current) return;
+        setAnimationState({
+          displayedContent: text,
+        });
+      },
     });
-
-    if (isAnimatingRef.current) {
-      animationFrameRef.current = requestAnimationFrame(animateText);
-    }
   }, []);
-
-  const startAnimation = useCallback(() => {
-    if (!isAnimatingRef.current) {
-      isAnimatingRef.current = true;
-      animationFrameRef.current = requestAnimationFrame(animateText);
-    }
-  }, [animateText]);
 
   useEffect(() => {
     if (!enabled) return;
+    if (!textControllerRef.current) return;
     if (lastMessage?.data) {
       try {
         const parseData: WsMessage = JSON.parse(lastMessage.data);
         if (parseData.message_type !== 'Stream') return;
-        isStreamFinishedRef.current = false;
+        isStreamingFinished.current = false;
         if (parseData.metadata?.is_done === true) {
-          isStreamFinishedRef.current = true;
+          textControllerRef.current.stopAnimation();
+          if (textControllerRef.current.isTokenRemain()) {
+            textControllerRef.current.startAnimation(END_ANIMATION_SPEED);
+          }
+
+          const paginationKey = [
+            FunctionKey.GET_CHAT_CONVERSATION_PAGINATION,
+            { inboxId: inboxId as string },
+          ];
+          queryClient.invalidateQueries({ queryKey: paginationKey });
+          isStreamingFinished.current = true;
+          // TODO: unify streaming message as part of messages cache to avoid layout shift
+          setTimeout(() => {
+            setAnimationState({ displayedContent: '' });
+            textControllerRef.current?.reset();
+          }, 600);
         }
 
-        setAnimationState((prevState) => ({
-          ...prevState,
-          pendingContent: prevState.pendingContent + parseData.message,
-        }));
+        textControllerRef.current?.pushToQueue(parseData.message);
 
-        startAnimation();
+        if (!textControllerRef.current.isAnimationActive)
+          textControllerRef.current.startAnimation();
       } catch (error) {
         console.error('Failed to parse ws message', error);
       }
@@ -106,7 +171,6 @@ export const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
     inboxId,
     lastMessage?.data,
     queryClient,
-    startAnimation,
   ]);
 
   useEffect(() => {
@@ -138,45 +202,8 @@ export const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
     sendMessage,
   ]);
 
-  useEffect(() => {
-    return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (isStreamFinishedRef.current) {
-      const paginationKey = [
-        FunctionKey.GET_CHAT_CONVERSATION_PAGINATION,
-        {
-          nodeAddress: auth?.node_address ?? '',
-          inboxId: inboxId as string,
-          shinkaiIdentity: auth?.shinkai_identity ?? '',
-          profile: auth?.profile ?? '',
-        },
-      ];
-      queryClient.invalidateQueries({ queryKey: paginationKey });
-      setTimeout(() => {
-        setAnimationState({
-          displayedContent: '',
-          pendingContent: '',
-        });
-      }, 500);
-    }
-  }, [
-    isStreamFinishedRef.current,
-    auth?.node_address,
-    auth?.profile,
-    auth?.shinkai_identity,
-    inboxId,
-    queryClient,
-  ]);
-
   return {
     messageContent: animationState.displayedContent,
-    isStreamFinished: isStreamFinishedRef.current,
     readyState,
   };
 };

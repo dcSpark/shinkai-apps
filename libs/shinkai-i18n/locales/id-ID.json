@@ -236,6 +236,7 @@
     "form": {
       "agentName": "Nama AI",
       "apiKey": "Kunci API",
+      "customModelType": "Tipe Model Kustom",
       "externalUrl": "URL Eksternal",
       "modelId": "ID Model",
       "modelName": "Nama Model",
@@ -329,8 +330,12 @@
       "exportConnection": "Ekspor Koneksi",
       "galxe": "Pertualangan Galxe",
       "general": "Umum",
+      "promptLibrary": "Perpustakaan Prompt",
       "publicKeys": "Kunci Publik",
       "shinkaiNode": "Manajer Node Shinkai"
+    },
+    "promptLibrary": {
+      "label": "Perpustakaan Prompt"
     },
     "publicKeys": {
       "label": "Kunci Publik",

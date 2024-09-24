@@ -236,6 +236,7 @@
     "form": {
       "agentName": "Nombre de la IA",
       "apiKey": "Clave API",
+      "customModelType": "Tipo de Modelo Personalizado",
       "externalUrl": "URL Externa",
       "modelId": "ID del Modelo",
       "modelName": "Nombre del Modelo",
@@ -329,8 +330,12 @@
       "exportConnection": "Exportar Conexión",
       "galxe": "Misión Galxe",
       "general": "General",
+      "promptLibrary": "Biblioteca de Prompts",
       "publicKeys": "Claves Públicas",
       "shinkaiNode": "Administrador de Nodo Shinkai"
+    },
+    "promptLibrary": {
+      "label": "Biblioteca de Prompts"
     },
     "publicKeys": {
       "label": "Claves Públicas",
