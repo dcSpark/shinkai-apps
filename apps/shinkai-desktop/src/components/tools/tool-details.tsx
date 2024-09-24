@@ -12,7 +12,9 @@ import { useAuth } from '../../store/auth';
 import JsTool from './js-tool';
 import WorkflowTool from './workflow-tool';
 
-function isWorkflowShinkaiTool(tool: ShinkaiTool): tool is WorkflowShinkaiTool {
+export function isWorkflowShinkaiTool(
+  tool: ShinkaiTool,
+): tool is WorkflowShinkaiTool {
   return (tool as WorkflowShinkaiTool).workflow !== undefined;
 }
 

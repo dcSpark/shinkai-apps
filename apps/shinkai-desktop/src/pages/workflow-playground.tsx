@@ -1,6 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { createWorkflow } from '@shinkai_network/shinkai-message-ts/api';
+import { getTool } from '@shinkai_network/shinkai-message-ts/api/tools/index';
+import { ShinkaiTool } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils';
 import {
   CreateJobFormSchema,
@@ -9,9 +11,17 @@ import {
 import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
+import { useGetWorkflowList } from '@shinkai_network/shinkai-node-state/v2/queries/getWorkflowList/useGetWorkflowList';
 import {
   Badge,
   Button,
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
   FileUploader,
   Form,
   FormControl,
@@ -19,6 +29,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
   ScrollArea,
   Select,
   SelectContent,
@@ -46,11 +59,14 @@ import {
   AISearchContentIcon,
   FilesIcon,
 } from '@shinkai_network/shinkai-ui/assets';
+import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
   BookText,
+  CirclePlayIcon,
   GalleryHorizontal,
   GalleryVertical,
+  ImportIcon,
   MoveLeft,
   MoveRight,
   PlusIcon,
@@ -62,51 +78,58 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { useSetJobScope } from '../components/chat/context/set-job-scope-context';
+import { isWorkflowShinkaiTool } from '../components/tools/tool-details';
 import { allowedFileExtensions } from '../lib/constants';
 import { useAnalytics } from '../lib/posthog-provider';
 import { ADD_AGENT_PATH } from '../routes/name';
 import { useAuth } from '../store/auth';
 import { useExperimental } from '../store/experimental';
 import { useSettings } from '../store/settings';
-import { SimpleLayout } from './layout/simple-layout';
 
 const WorkflowPlayground = () => {
-  const { t } = useTranslation();
-
   return (
-    <SimpleLayout
-      classname="max-w-[auto] px-4"
-      headerRightElement={<DocsPanel />}
-      title={t('workflowPlayground.label')}
-    >
-      <div className="flex h-[calc(100vh_-_150px)] gap-6 overflow-hidden">
-        <div className="flex w-[60%] flex-col gap-4">
-          <Tabs defaultValue="workflow">
-            <TabsList className="grid w-full grid-cols-2 bg-transparent">
+    <Tabs defaultValue="workflow">
+      <div className="mx-auto flex h-full flex-col gap-4 px-5 py-10">
+        <div className="flex justify-between gap-4">
+          <div className="flex items-center gap-8">
+            <h1 className="text-2xl font-semibold tracking-tight">
+              Playground
+            </h1>
+            <TabsList className="grid w-full grid-cols-2 rounded-lg border border-gray-400 bg-transparent p-0.5">
               <TabsTrigger
-                className="flex items-center gap-1.5"
+                className="flex h-8 items-center gap-1.5 text-xs font-semibold"
                 value="workflow"
               >
                 Workflow
               </TabsTrigger>
-              <TabsTrigger className="flex items-center gap-1.5" value="baml">
+              <TabsTrigger
+                className="flex h-8 items-center gap-1.5 text-xs font-semibold"
+                value="baml"
+              >
                 BAML
               </TabsTrigger>
             </TabsList>
-            <TabsContent value="workflow">
+          </div>
+          <div>
+            {/*<button>Get Started with Template</button>*/}
+            <DocsPanel />
+          </div>
+        </div>
+        <div className="flex h-[calc(100vh_-_150px)] gap-6 overflow-hidden">
+          <div className="max-w-[60%] flex-1 shrink-0 basis-[60%]">
+            <TabsContent className="h-full" value="workflow">
               <WorkflowEditor />
             </TabsContent>
-            <TabsContent value="baml">
+            <TabsContent className="h-full" value="baml">
               <BamlEditor />
             </TabsContent>
-          </Tabs>
-        </div>
-
-        <div className="flex h-full flex-1 flex-col">
-          <Outlet />
+          </div>
+          <div className="flex h-full flex-col">
+            <Outlet />
+          </div>
         </div>
       </div>
-    </SimpleLayout>
+    </Tabs>
   );
 };
 export default WorkflowPlayground;
@@ -117,7 +140,7 @@ function DocsPanel() {
       <SheetTrigger asChild>
         <Button className="h-8 gap-1.5 rounded-lg" size="sm" variant="outline">
           <BookText className="h-4 w-4" />
-          Explore Docs
+          Docs
         </Button>
       </SheetTrigger>
       <SheetContent
@@ -154,6 +177,13 @@ function WorkflowEditor() {
   );
   const defaulAgentId = useSettings((state) => state.defaultAgentId);
   const navigate = useNavigate();
+
+  const { data: workflowList } = useGetWorkflowList({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
+  const [openWorkflowList, setOpenWorkflowList] = useState(false);
 
   const [isTwoColumnLayout, setIsTwoColumnLayout] = useState(true);
 
@@ -376,41 +406,89 @@ function WorkflowEditor() {
 
   return (
     <Fragment>
-      <div className="flex items-center gap-2.5">
-        <Button
-          className="h-8 gap-1 rounded-lg"
-          onClick={() => handleWorkflowScriptChange('custom')}
-          size="sm"
-          type="button"
-          variant={selectedWorkflowScript === 'custom' ? 'default' : 'outline'}
-        >
-          <PlusIcon className="h-4 w-4" />
-          Custom Workflow
-        </Button>
-        <Button
-          className="h-8 rounded-lg"
-          onClick={() => handleWorkflowScriptChange('example1')}
-          size="sm"
-          type="button"
-          variant={
-            selectedWorkflowScript === 'example1' ? 'default' : 'outline'
-          }
-        >
-          Full Document Summarizer
-        </Button>
-
-        <Button
-          className="h-8 rounded-lg"
-          onClick={() => handleWorkflowScriptChange('example2')}
-          size="sm"
-          type="button"
-          variant={
-            selectedWorkflowScript === 'example2' ? 'default' : 'outline'
-          }
-        >
-          Example 2
-        </Button>
+      <div className="flex items-center justify-end gap-2.5">
+        {/*<Button*/}
+        {/*  className="h-8 gap-1 rounded-lg"*/}
+        {/*  onClick={() => handleWorkflowScriptChange('custom')}*/}
+        {/*  size="sm"*/}
+        {/*  type="button"*/}
+        {/*  variant={selectedWorkflowScript === 'custom' ? 'default' : 'outline'}*/}
+        {/*>*/}
+        {/*  <PlusIcon className="h-4 w-4" />*/}
+        {/*  Custom Workflow*/}
+        {/*</Button>*/}
+        <Popover onOpenChange={setOpenWorkflowList} open={openWorkflowList}>
+          <PopoverTrigger asChild>
+            <Button
+              className="flex h-8 gap-1 rounded-lg"
+              size="sm"
+              type="button"
+              variant="outline"
+            >
+              <ImportIcon className="h-4 w-4" />
+              Workflow Template
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent
+            align="end"
+            className="min-w-[380px] bg-gray-500 p-0 text-xs"
+            side="bottom"
+          >
+            <Command className="text-gray-80 w-full rounded-lg border-0">
+              <CommandInput
+                className="placeholder:text-gray-100"
+                placeholder="Find a workflow..."
+              />
+              <CommandList>
+                <CommandEmpty>No results found.</CommandEmpty>
+                <CommandGroup heading="Examples">
+                  <CommandItem
+                    onSelect={() => {
+                      handleWorkflowScriptChange('example1');
+                      setOpenWorkflowList(false);
+                    }}
+                  >
+                    <span>Full Document Summarizer</span>
+                  </CommandItem>
+                  <CommandItem
+                    onSelect={() => {
+                      handleWorkflowScriptChange('example2');
+                      setOpenWorkflowList(false);
+                    }}
+                  >
+                    <span>example2</span>
+                  </CommandItem>
+                </CommandGroup>
+                <CommandSeparator />
+                <CommandGroup heading="Current">
+                  {workflowList?.map((workflow) => (
+                    <CommandItem
+                      className="text-white"
+                      key={workflow.name}
+                      onSelect={async () => {
+                        if (!auth) return;
+                        const workflowInfo = await getTool(
+                          auth?.node_address,
+                          auth?.api_v2_key,
+                          workflow.tool_router_key,
+                        );
+                        const tool = workflowInfo.content?.[0] as ShinkaiTool;
+                        if (isWorkflowShinkaiTool(tool)) {
+                          createJobForm.setValue('workflow', tool.workflow.raw);
+                          setOpenWorkflowList(false);
+                        }
+                      }}
+                    >
+                      <span>{formatText(workflow.name)}</span>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
       </div>
+
       <Form {...createJobForm}>
         <form
           className="relative space-y-8 overflow-y-auto pr-2 pt-12"
@@ -734,13 +812,14 @@ function WorkflowEditor() {
             )}
           </div>
           <Button
-            className="w-full"
+            className="ml-auto flex h-8 w-auto min-w-[100px] gap-1.5 rounded-lg font-semibold"
             disabled={isPending}
             isLoading={isPending}
             size="sm"
             type="submit"
           >
-            Try Workflow
+            <CirclePlayIcon className="h-4 w-4" />
+            Run
           </Button>
         </form>
       </Form>
@@ -1291,12 +1370,14 @@ function ClassifyMessage(message_text: string) -> Message {
             />
           </div>
           <Button
-            className="w-full"
+            className="ml-auto flex h-8 w-auto min-w-[100px] gap-1.5 rounded-lg font-semibold"
+            disabled={isPending}
             isLoading={isPending}
             size="sm"
             type="submit"
           >
-            Submit BAML
+            <CirclePlayIcon className="h-4 w-4" />
+            Run
           </Button>
         </form>
       </Form>
