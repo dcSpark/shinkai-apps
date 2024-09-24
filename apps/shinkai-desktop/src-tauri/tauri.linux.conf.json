@@ -1,5 +1,10 @@
 {
   "bundle": {
-    "resources": ["external-binaries/shinkai-node/libpdfium.so"]
+    "resources": ["external-binaries/shinkai-node/libpdfium.so"],
+    "linux": {
+      "appimage": {
+        "bundleMediaFramework": true
+      }
+    }
   }
 }
