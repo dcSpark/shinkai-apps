@@ -17,7 +17,7 @@ type UseWebSocketMessage = {
   enabled?: boolean;
 };
 
-const START_ANIMATION_SPEED = 3;
+const START_ANIMATION_SPEED = 4;
 const END_ANIMATION_SPEED = 15;
 
 const createSmoothMessage = (params: {
