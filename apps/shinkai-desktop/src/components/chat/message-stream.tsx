@@ -51,7 +51,7 @@ const createSmoothMessage = (params: {
 
       const updateText = () => {
         if (!isAnimationActive) {
-          cancelAnimationFrame(animationFrameId!);
+          cancelAnimationFrame(animationFrameId as number);
           animationFrameId = null;
           resolve();
           return;
