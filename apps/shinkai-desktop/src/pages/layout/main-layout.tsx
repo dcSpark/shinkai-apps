@@ -31,12 +31,16 @@ import {
   MySubscriptionsIcon,
   SheetIcon,
   ToolsIcon,
-  WorkflowPlaygroundIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { submitRegistrationNoCodeError } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion, TargetAndTransition } from 'framer-motion';
-import { ArrowLeftToLine, ArrowRightToLine, BotIcon } from 'lucide-react';
+import {
+  ArrowLeftToLine,
+  ArrowRightToLine,
+  BotIcon,
+  SquareTerminal,
+} from 'lucide-react';
 import React, { Fragment, useEffect, useState } from 'react';
 import {
   Link,
@@ -383,9 +387,9 @@ export function MainNav() {
       icon: <MySubscriptionsIcon className="h-5 w-5" />,
     },
     optInExperimental && {
-      title: 'Workflow Playground',
+      title: 'Playground',
       href: '/workflow-playground',
-      icon: <WorkflowPlaygroundIcon className="h-5 w-5" />,
+      icon: <SquareTerminal className="h-5 w-5" />,
     },
     optInExperimental && {
       title: 'Shinkai Sheet',

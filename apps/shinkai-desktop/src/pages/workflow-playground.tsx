@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { DialogClose } from '@radix-ui/react-dialog';
+import { ChevronRightIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { createWorkflow } from '@shinkai_network/shinkai-message-ts/api';
 import { getTool } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 import { ShinkaiTool } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils';
@@ -9,14 +10,17 @@ import {
   createJobFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
 import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
-import { useAddTool } from '@shinkai_network/shinkai-node-state/v2/mutations/addTool/useAddTool';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
+import { useCreateWorkflow } from '@shinkai_network/shinkai-node-state/v2/mutations/createWorkflow/useCreateWorkflow';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useGetWorkflowList } from '@shinkai_network/shinkai-node-state/v2/queries/getWorkflowList/useGetWorkflowList';
 import {
   Badge,
   Button,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
   Command,
   CommandEmpty,
   CommandGroup,
@@ -24,6 +28,13 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
   FileUploader,
   Form,
   FormControl,
@@ -182,6 +193,10 @@ function WorkflowEditor() {
   const addWorkflowHistory = useExperimental(
     (state) => state.addWorkflowHistory,
   );
+
+  const [workflowDescription, setWorkflowDescription] = useState('');
+  const [saveWorkflowDialogOpen, setWorkflowDialogOpen] = useState(false);
+
   const clearWorkflowHistory = useExperimental(
     (state) => state.clearWorkflowHistory,
   );
@@ -293,7 +308,18 @@ function WorkflowEditor() {
       selectedVRFolders,
     });
   };
-  const { mutateAsync: addTool } = useAddTool();
+  const { mutateAsync: createWorkflow, isPending: isCreateWorkflowPending } =
+    useCreateWorkflow({
+      onSuccess: () => {
+        toast.success('Workflow saved successfully');
+        setWorkflowDialogOpen(false);
+      },
+      onError: (error) => {
+        toast.error('Failed to save workflow', {
+          description: error?.response?.data?.message ?? error.message,
+        });
+      },
+    });
 
   const onWorkflowChange = useCallback(
     (value: string) => {
@@ -337,9 +363,6 @@ function WorkflowEditor() {
     },
     [onWorkflowChange],
   );
-
-  const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
-  // const [bamlScriptName, setBamlScriptName] = useState('');
 
   const [selectedWorkflowScript, setSelectedWorkflowScript] = useState<
     'custom' | 'example1' | 'example2'
@@ -408,23 +431,11 @@ function WorkflowEditor() {
   }, [createJobForm, selectedWorkflowScript]);
 
   const handleWorkflowSave = async () => {
-    await addTool({
-      nodeAddress: auth?.node_address ?? '',
+    await createWorkflow({
       token: auth?.api_v2_key ?? '',
-      toolType: 'Workflow',
-      toolPayload: {
-        workflow: {
-          name: 'New Workflow',
-          author: auth?.shinkai_identity ?? '',
-          raw: createJobForm.getValues().workflow ?? '',
-          sticky: true,
-          description: 'this is test',
-          version: '1',
-          steps: [],
-        },
-        embedding: [],
-      },
-      isToolEnabled: true,
+      nodeAddress: auth?.node_address ?? '',
+      raw: createJobForm.getValues().workflow ?? '',
+      description: workflowDescription,
     });
   };
 
@@ -447,9 +458,7 @@ function WorkflowEditor() {
     <Fragment>
       <div className="mb-7 flex items-center justify-end gap-2.5">
         <div className="flex w-full items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-base font-medium text-white">Template</span>
-          </div>
+          <span className="text-base font-medium text-white">Template</span>
           <div className="flex items-center gap-3">
             <TooltipProvider delayDuration={0}>
               <Tooltip>
@@ -476,16 +485,6 @@ function WorkflowEditor() {
               </Tooltip>
             </TooltipProvider>
 
-            <Button
-              className="flex h-8 gap-1.5 rounded-lg"
-              onClick={handleWorkflowSave}
-              size="sm"
-              type="button"
-              variant="outline"
-            >
-              <PlusIcon className="h-3.5 w-3.5" />
-              New Workflow
-            </Button>
             <Popover onOpenChange={setOpenWorkflowList} open={openWorkflowList}>
               <PopoverTrigger asChild>
                 <Button
@@ -574,6 +573,83 @@ function WorkflowEditor() {
                 </Command>
               </PopoverContent>
             </Popover>
+            <Dialog
+              onOpenChange={setWorkflowDialogOpen}
+              open={saveWorkflowDialogOpen}
+            >
+              <DialogTrigger asChild>
+                <Button
+                  className="flex h-8 gap-1.5 rounded-lg"
+                  disabled={createJobForm.watch('workflow') === ''}
+                  size="sm"
+                  type="button"
+                >
+                  <svg
+                    className="h-4 w-4"
+                    fill={'none'}
+                    height={24}
+                    viewBox="0 0 24 24"
+                    width={24}
+                  >
+                    <path
+                      d="M12 8V16M16 12L8 12"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="1.5"
+                    />
+                    <path
+                      d="M2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                  </svg>
+                  Save
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md bg-gray-500">
+                <DialogHeader>
+                  <DialogTitle>Save as Workflow</DialogTitle>
+                  <DialogDescription>
+                    Add a description to save this workflow.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="flex items-center space-x-2">
+                  <Textarea
+                    className="placeholder-gray-80 !min-h-[100px] resize-none bg-gray-200 pl-2 pt-2 text-xs"
+                    onChange={(e) => {
+                      setWorkflowDescription(e.target.value);
+                    }}
+                    placeholder={'Enter description...'}
+                    spellCheck={false}
+                    value={workflowDescription}
+                  />
+                </div>
+                <DialogFooter>
+                  <div className="flex gap-2 pt-4">
+                    <DialogClose asChild className="flex-1">
+                      <Button
+                        className="min-w-[100px] flex-1"
+                        size="sm"
+                        type="button"
+                        variant="ghost"
+                      >
+                        {t('common.cancel')}
+                      </Button>
+                    </DialogClose>
+                    <Button
+                      className="min-w-[100px] flex-1"
+                      disabled={isCreateWorkflowPending}
+                      isLoading={isCreateWorkflowPending}
+                      onClick={handleWorkflowSave}
+                      size="sm"
+                    >
+                      Save
+                    </Button>
+                  </div>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </div>
@@ -628,7 +704,7 @@ function WorkflowEditor() {
                 name="workflow"
                 render={({ field }) => (
                   <FormItem className="relative">
-                    <FormLabel>{t('chat.form.workflows')}</FormLabel>
+                    <FormLabel>Workflow</FormLabel>
                     <FormControl>
                       <Textarea
                         autoFocus={true}
@@ -759,98 +835,96 @@ function WorkflowEditor() {
                 </FormItem>
               )}
             />
-            <Button
-              className="hover:bg-gray-350 flex h-[40px] items-center justify-between gap-2 rounded-lg p-2.5 text-left"
-              onClick={() => setIsContextMenuOpen(!isContextMenuOpen)}
-              size="auto"
-              type="button"
-              variant="outline"
-            >
-              <div className="flex items-center gap-2">
-                <FilesIcon className="h-4 w-4" />
-                <p className="text-sm text-white">Set Chat Context</p>
-              </div>
-            </Button>
 
-            {isContextMenuOpen && (
-              <div className="my-3 rounded-md bg-gray-400 px-3 py-4">
-                <div className="mb-5 flex items-start justify-between gap-4">
-                  <div className="space-y-1">
-                    <h2 className="text-sm font-medium text-gray-100">
-                      {t('chat.form.setContext')}
-                    </h2>
-                    <p className="text-gray-80 text-xs">
-                      {t('chat.form.setContextText')}
-                    </p>
-                  </div>
-                  <TooltipProvider delayDuration={0}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          className="flex h-10 w-10 items-center justify-center gap-2 rounded-lg p-2.5 text-left hover:bg-gray-500"
-                          onClick={() => setKnowledgeSearchOpen(true)}
-                          size="icon"
-                          type="button"
-                          variant="ghost"
-                        >
-                          <AISearchContentIcon className="h-5 w-5" />
-                          <p className="sr-only text-xs text-white">
-                            AI Files Content Search
-                          </p>
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipPortal>
-                        <TooltipContent sideOffset={0}>
-                          Search AI Files Content
-                        </TooltipContent>
-                      </TooltipPortal>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-
-                <div className="mt-2 flex flex-col gap-1.5">
-                  <Button
-                    className="hover:bg-gray-350 flex h-[40px] items-center justify-between gap-2 rounded-lg p-2.5 text-left"
-                    onClick={() => setSetJobScopeOpen(true)}
-                    size="auto"
-                    type="button"
-                    variant="outline"
-                  >
-                    <div className="flex items-center gap-2">
-                      <FilesIcon className="h-4 w-4" />
-                      <p className="text-sm text-white">Local AI Files</p>
+            <Collapsible>
+              <CollapsibleTrigger className="hover:bg-gray-350 flex w-full items-center justify-between gap-2 rounded-lg bg-gray-400 p-2.5 [&[data-state=open]>svg]:rotate-90">
+                <p className="text-xs text-gray-50">Set Chat Context</p>
+                <ChevronRightIcon className="h-4 w-4 transition" />
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <div className="my-3 rounded-md bg-gray-400 px-3 py-4">
+                  <div className="mb-5 flex items-start justify-between gap-4">
+                    <div className="space-y-1">
+                      <h2 className="text-sm font-medium text-gray-100">
+                        {t('chat.form.setContext')}
+                      </h2>
+                      <p className="text-gray-80 text-xs">
+                        {t('chat.form.setContextText')}
+                      </p>
                     </div>
-                    {Object.keys(selectedKeys ?? {}).length > 0 && (
-                      <Badge className="bg-brand text-white">
-                        {Object.keys(selectedKeys ?? {}).length}
-                      </Badge>
-                    )}
-                  </Button>
-                  <FormField
-                    control={createJobForm.control}
-                    name="files"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="sr-only">Upload a file</FormLabel>
-                        <FormControl>
-                          <FileUploader
-                            accept={allowedFileExtensions.join(',')}
-                            allowMultiple
-                            descriptionText={allowedFileExtensions?.join(' | ')}
-                            onChange={(acceptedFiles) => {
-                              field.onChange(acceptedFiles);
-                            }}
-                            shouldDisableScrolling
-                            value={field.value}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <TooltipProvider delayDuration={0}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            className="flex h-10 w-10 items-center justify-center gap-2 rounded-lg p-2.5 text-left hover:bg-gray-500"
+                            onClick={() => setKnowledgeSearchOpen(true)}
+                            size="icon"
+                            type="button"
+                            variant="ghost"
+                          >
+                            <AISearchContentIcon className="h-5 w-5" />
+                            <p className="sr-only text-xs text-white">
+                              AI Files Content Search
+                            </p>
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipPortal>
+                          <TooltipContent sideOffset={0}>
+                            Search AI Files Content
+                          </TooltipContent>
+                        </TooltipPortal>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+
+                  <div className="mt-2 flex flex-col gap-1.5">
+                    <Button
+                      className="hover:bg-gray-350 flex h-[40px] items-center justify-between gap-2 rounded-lg p-2.5 text-left"
+                      onClick={() => setSetJobScopeOpen(true)}
+                      size="auto"
+                      type="button"
+                      variant="outline"
+                    >
+                      <div className="flex items-center gap-2">
+                        <FilesIcon className="h-4 w-4" />
+                        <p className="text-sm text-white">Local AI Files</p>
+                      </div>
+                      {Object.keys(selectedKeys ?? {}).length > 0 && (
+                        <Badge className="bg-brand text-white">
+                          {Object.keys(selectedKeys ?? {}).length}
+                        </Badge>
+                      )}
+                    </Button>
+                    <FormField
+                      control={createJobForm.control}
+                      name="files"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="sr-only">
+                            Upload a file
+                          </FormLabel>
+                          <FormControl>
+                            <FileUploader
+                              accept={allowedFileExtensions.join(',')}
+                              allowMultiple
+                              descriptionText={allowedFileExtensions?.join(
+                                ' | ',
+                              )}
+                              onChange={(acceptedFiles) => {
+                                field.onChange(acceptedFiles);
+                              }}
+                              shouldDisableScrolling
+                              value={field.value}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 </div>
-              </div>
-            )}
+              </CollapsibleContent>
+            </Collapsible>
           </div>
           <Button
             className="ml-auto flex h-8 w-auto min-w-[100px] gap-1.5 rounded-lg font-semibold"
@@ -876,6 +950,8 @@ function BamlEditor() {
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
   const defaulAgentId = useSettings((state) => state.defaultAgentId);
+  const [workflowDialogOpen, setWorkflowDialogOpen] = useState(false);
+  const [workflowDescription, setWorkflowDescription] = useState('');
 
   const { isPending, mutateAsync: createJob } = useCreateJob({
     onSuccess: (data) => {
@@ -884,6 +960,26 @@ function BamlEditor() {
       );
     },
   });
+
+  const { mutateAsync: createWorkflow, isPending: isCreateWorkflowPending } =
+    useCreateWorkflow({
+      onSuccess: () => {
+        toast.success('BAML saved successfully');
+        setWorkflowDialogOpen(false);
+      },
+      onError: (error) => {
+        toast.error('Failed to save BAML', {
+          description: error?.response?.data?.message ?? error.message,
+        });
+      },
+    });
+
+  const { data: workflowList } = useGetWorkflowList({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
+  const [openWorkflowList, setOpenWorkflowList] = useState(false);
 
   const [isTwoColumnLayout, setIsTwoColumnLayout] = useState(true);
   const [selectedBamlScript, setSelectedBamlScript] = useState<
@@ -1052,7 +1148,22 @@ function ClassifyMessage(message_text: string) -> Message {
     },
   });
 
-  // **Define the BAML Form**
+  const handleUseTemplate = async (toolRouterKey: string) => {
+    if (!auth) return;
+    const workflowInfo = await getTool(
+      auth?.node_address,
+      auth?.api_v2_key,
+      toolRouterKey,
+    );
+    // @ts-expect-error: for now
+    const tool = workflowInfo.content?.[0] as ShinkaiTool;
+    // TODO:
+    // if (isWorkflowShinkaiTool(tool)) {
+    //   createJobForm.setValue('workflow', tool.workflow.raw);
+    //   setOpenWorkflowList(false);
+    // }
+  };
+
   const bamlForm = useForm({
     defaultValues: bamlFormData[selectedBamlScript],
   });
@@ -1074,7 +1185,6 @@ function ClassifyMessage(message_text: string) -> Message {
   };
 
   const handleBamlSave = async () => {
-    console.log('handleBamlSave called');
     if (!auth) return;
 
     const bamlData = bamlFormData[selectedBamlScript];
@@ -1116,37 +1226,14 @@ function ClassifyMessage(message_text: string) -> Message {
       } @@localhost.arb-sep-shinkai
     `;
     const workflowDescription = `Workflow for ${bamlScriptName}`;
-
-    try {
-      const response = await createWorkflow(
-        auth.node_address,
-        auth.shinkai_identity,
-        auth.profile,
-        auth.shinkai_identity,
-        auth.profile,
-        workflowRaw,
-        workflowDescription,
-        {
-          my_device_encryption_sk: auth.profile_encryption_sk,
-          my_device_identity_sk: auth.profile_identity_sk,
-          node_encryption_pk: auth.node_encryption_pk,
-          profile_encryption_sk: auth.profile_encryption_sk,
-          profile_identity_sk: auth.profile_identity_sk,
-        },
-      );
-      console.log('Workflow created successfully:', response);
-      // Optionally, show a success message to the user
-    } catch (error) {
-      console.error('Failed to create workflow:', error);
-      // Optionally, show an error message to the user
-    }
+    await createWorkflow({
+      token: auth?.api_v2_key ?? '',
+      nodeAddress: auth?.node_address ?? '',
+      raw: workflowRaw,
+      description: workflowDescription,
+    });
   };
 
-  const handleBamlLoad = () => {
-    // Implement load functionality
-  };
-
-  // **Update form data on change**
   useEffect(() => {
     setBamlFormData((prevData) => ({
       ...prevData,
@@ -1169,7 +1256,6 @@ function ClassifyMessage(message_text: string) -> Message {
       }
     } @@localhost.arb-sep-shinkai
   `;
-    console.log('Generated Workflow:', workflowText);
 
     if (!auth) return;
 
@@ -1201,99 +1287,26 @@ function ClassifyMessage(message_text: string) -> Message {
 
   return (
     <div className="max-h-[calc(100vh_-_200px)] space-y-8 overflow-y-auto pr-2">
-      <div className="flex items-center gap-2.5">
-        <Button
-          className="h-8 gap-1 rounded-lg"
-          onClick={() => handleBamlScriptChange('my')}
-          size="sm"
-          type="button"
-          variant={selectedBamlScript === 'my' ? 'default' : 'outline'}
-        >
-          <PlusIcon className="h-4 w-4" />
-          My BAML Script
-        </Button>
-
-        <Button
-          className="h-8 rounded-lg"
-          onClick={() => handleBamlScriptChange('extractResume')}
-          size="sm"
-          type="button"
-          variant={
-            selectedBamlScript === 'extractResume' ? 'default' : 'outline'
-          }
-        >
-          Extract Resume
-        </Button>
-
-        {/* Classify Message Button */}
-        <Button
-          className="h-8 rounded-lg"
-          onClick={() => handleBamlScriptChange('classifyMessage')}
-          size="sm"
-          type="button"
-          variant={
-            selectedBamlScript === 'classifyMessage' ? 'default' : 'outline'
-          }
-        >
-          Classify Message
-        </Button>
-
-        {/* RAG with Citations Button */}
-        <Button
-          className="h-8 rounded-lg"
-          onClick={() => handleBamlScriptChange('ragWithCitations')}
-          size="sm"
-          type="button"
-          variant={
-            selectedBamlScript === 'ragWithCitations' ? 'default' : 'outline'
-          }
-        >
-          RAG with Citations
-        </Button>
-      </div>
-
-      {/* BAML Form */}
-      <Form {...bamlForm}>
-        <form
-          className="relative space-y-8 pt-2"
-          onSubmit={bamlForm.handleSubmit(onBamlSubmit)}
-        >
-          <div className="absolute -top-2 right-0 flex items-center gap-4">
-            {selectedBamlScript === 'my' && (
-              <div className="ml-auto flex gap-2">
-                <Button
-                  className="h-8 min-w-[90px] rounded-md"
-                  onClick={handleBamlSave}
-                  size="sm"
-                  type="button"
-                  variant="ghost"
-                >
-                  Save
-                </Button>
-                <Button
-                  className="h-8 min-w-[90px] rounded-md"
-                  onClick={handleBamlLoad}
-                  size="sm"
-                  type="button"
-                  variant="ghost"
-                >
-                  Load
-                </Button>
-              </div>
-            )}
+      <div className="flex items-center gap-3">
+        <div className="flex w-full items-center justify-between">
+          <span className="text-base font-medium text-white">
+            BAML Template
+          </span>
+          <div className="flex items-center gap-3">
             <TooltipProvider delayDuration={0}>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
+                    className="h-7 w-7"
                     onClick={() => setIsTwoColumnLayout(!isTwoColumnLayout)}
                     size="icon"
                     type="button"
                     variant="outline"
                   >
                     {isTwoColumnLayout ? (
-                      <GalleryVertical className="text-gray-80 h-4 w-4" />
+                      <GalleryVertical className="text-gray-80 h-3.5 w-3.5" />
                     ) : (
-                      <GalleryHorizontal className="text-gray-80 h-4 w-4" />
+                      <GalleryHorizontal className="text-gray-80 h-3.5 w-3.5" />
                     )}
                   </Button>
                 </TooltipTrigger>
@@ -1304,16 +1317,195 @@ function ClassifyMessage(message_text: string) -> Message {
                 </TooltipPortal>
               </Tooltip>
             </TooltipProvider>
+            <Popover onOpenChange={setOpenWorkflowList} open={openWorkflowList}>
+              <PopoverTrigger asChild>
+                <Button
+                  className="flex h-8 gap-1.5 rounded-lg"
+                  size="sm"
+                  type="button"
+                  variant="outline"
+                >
+                  Use Template
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="end"
+                className="w-[250px] bg-gray-300 p-0 text-xs"
+                side="bottom"
+              >
+                <Command className="text-gray-80 w-full rounded-lg border-0">
+                  <CommandInput
+                    className="text-xs placeholder:text-gray-100"
+                    placeholder="Find a workflow..."
+                  />
+                  <CommandList>
+                    <CommandEmpty>No results found.</CommandEmpty>
+                    <CommandGroup heading="Examples">
+                      <CommandItem
+                        className="text-xs text-white"
+                        key="extractResume"
+                        onSelect={() => {
+                          handleBamlScriptChange('extractResume');
+                          setOpenWorkflowList(false);
+                        }}
+                      >
+                        <span>Extract Resume</span>
+                      </CommandItem>
+                      <CommandItem
+                        className="text-xs text-white"
+                        key="classifyMessage"
+                        onSelect={() => {
+                          handleBamlScriptChange('classifyMessage');
+                          setOpenWorkflowList(false);
+                        }}
+                      >
+                        <span> Classify Message</span>
+                      </CommandItem>
+                      <CommandItem
+                        className="text-xs text-white"
+                        key="ragWithCitations"
+                        onSelect={() => {
+                          handleBamlScriptChange('ragWithCitations');
+                          setOpenWorkflowList(false);
+                        }}
+                      >
+                        <span> RAG with Citations</span>
+                      </CommandItem>
+                    </CommandGroup>
+                    <CommandSeparator />
+
+                    <CommandGroup heading="Your Workflows">
+                      {workflowList
+                        ?.filter(
+                          (workflow) =>
+                            workflow.author !== '@@official.shinkai',
+                        )
+                        ?.map((workflow) => (
+                          <CommandItem
+                            className="text-xs text-white"
+                            key={workflow.name}
+                            onSelect={() => {
+                              handleUseTemplate(workflow.tool_router_key);
+                            }}
+                          >
+                            <span>{formatText(workflow.name)}</span>
+                          </CommandItem>
+                        ))}
+                    </CommandGroup>
+                    <CommandSeparator />
+                    <CommandGroup heading="Community">
+                      {workflowList
+                        ?.filter(
+                          (workflow) =>
+                            workflow.author === '@@official.shinkai',
+                        )
+                        ?.map((workflow) => (
+                          <CommandItem
+                            className="text-xs text-white"
+                            key={workflow.name}
+                            onSelect={() => {
+                              handleUseTemplate(workflow.tool_router_key);
+                            }}
+                          >
+                            <span>{formatText(workflow.name)}</span>
+                          </CommandItem>
+                        ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
-          {selectedBamlScript === 'my' && (
-            <FormField
-              control={bamlForm.control}
-              name="bamlScriptName"
-              render={({ field }) => (
-                <TextField field={field} label="Name the BAML Script" />
-              )}
-            />
-          )}
+        </div>
+
+        <Dialog onOpenChange={setWorkflowDialogOpen} open={workflowDialogOpen}>
+          <DialogTrigger asChild>
+            <Button
+              className="flex h-8 gap-1.5 rounded-lg"
+              // disabled={createJobForm.watch('workflow') === ''}
+              size="sm"
+              type="button"
+            >
+              <svg
+                className="h-4 w-4"
+                fill={'none'}
+                height={24}
+                viewBox="0 0 24 24"
+                width={24}
+              >
+                <path
+                  d="M12 8V16M16 12L8 12"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.5"
+                />
+                <path
+                  d="M2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                />
+              </svg>
+              Save
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-md bg-gray-500">
+            <DialogHeader>
+              <DialogTitle>Save as Workflow</DialogTitle>
+              <DialogDescription>
+                Add a description to save this workflow.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex items-center space-x-2">
+              <Textarea
+                className="placeholder-gray-80 !min-h-[100px] resize-none bg-gray-200 pl-2 pt-2 text-xs"
+                onChange={(e) => {
+                  setWorkflowDescription(e.target.value);
+                }}
+                placeholder={'Enter description...'}
+                spellCheck={false}
+                value={workflowDescription}
+              />
+            </div>
+            <DialogFooter>
+              <div className="flex gap-2 pt-4">
+                <DialogClose asChild className="flex-1">
+                  <Button
+                    className="min-w-[100px] flex-1"
+                    size="sm"
+                    type="button"
+                    variant="ghost"
+                  >
+                    Cancel
+                  </Button>
+                </DialogClose>
+                <Button
+                  className="min-w-[100px] flex-1"
+                  disabled={isCreateWorkflowPending}
+                  isLoading={isCreateWorkflowPending}
+                  onClick={handleBamlSave}
+                  size="sm"
+                >
+                  Save
+                </Button>
+              </div>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      <Form {...bamlForm}>
+        <form
+          className="space-y-8 pt-2"
+          onSubmit={bamlForm.handleSubmit(onBamlSubmit)}
+        >
+          <FormField
+            control={bamlForm.control}
+            name="bamlScriptName"
+            render={({ field }) => (
+              <TextField field={field} label="Name the BAML Script" />
+            )}
+          />
 
           {isTwoColumnLayout ? (
             <div className="grid grid-cols-2 gap-4">

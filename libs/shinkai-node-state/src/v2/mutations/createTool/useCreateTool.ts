@@ -5,15 +5,15 @@ import {
 } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
-import { addTool } from './index';
-import { AddToolInput, AddToolOutput } from './types';
+import { createTool } from './index';
+import { CreateToolInput, CreateToolOutput } from './types';
 
-type Options = UseMutationOptions<AddToolOutput, Error, AddToolInput>;
+type Options = UseMutationOptions<CreateToolOutput, Error, CreateToolInput>;
 
-export const useAddTool = (options?: Options) => {
+export const useCreateTool = (options?: Options) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: addTool,
+    mutationFn: createTool,
     ...options,
     onSuccess: (response, variables, context) => {
       queryClient.invalidateQueries({

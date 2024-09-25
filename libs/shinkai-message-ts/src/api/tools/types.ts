@@ -74,6 +74,14 @@ export type GetToolResponse = {
 };
 export type GetToolsResponse = ShinkaiToolHeader[];
 
+export type AddWorkflowRequest = {
+  workflow_raw: string;
+  description: string;
+};
+export type AddWorkflowResponse = {
+  status: string;
+  message: string;
+};
 export type AddToolRequest = {
   type: ShinkaiToolType;
   content: [ShinkaiTool, boolean];

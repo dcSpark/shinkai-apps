@@ -5,9 +5,9 @@ import {
   UpdateToolResponse,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 
-export type AddToolOutput = UpdateToolResponse;
+export type CreateToolOutput = UpdateToolResponse;
 
-export type AddToolInput = Token & {
+export type CreateToolInput = Token & {
   nodeAddress: string;
   toolType: ShinkaiToolType;
   toolPayload: ShinkaiTool;

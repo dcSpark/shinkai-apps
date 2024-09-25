@@ -2,6 +2,8 @@ import { httpClient } from '../../http-client';
 import { urlJoin } from '../../utils/url-join';
 import {
   AddToolRequest,
+  AddWorkflowRequest,
+  AddWorkflowResponse,
   CreatePromptRequest,
   CreatePromptResponse,
   DeletePromptRequest,
@@ -46,7 +48,23 @@ export const searchWorkflows = async (
   return response.data as SearchWorkflowsResponse;
 };
 
-export const addTool = async (
+export const createWorkflow = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: AddWorkflowRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/set_workflow'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as AddWorkflowResponse;
+};
+
+export const createTool = async (
   nodeAddress: string,
   bearerToken: string,
   payload: AddToolRequest,
