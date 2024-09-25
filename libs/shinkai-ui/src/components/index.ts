@@ -6,6 +6,7 @@ export * from './badge';
 export * from './breadcrumb';
 export * from './button';
 export * from './checkbox';
+export * from './collapsible';
 export * from './command';
 export * from './context-menu';
 export * from './copy-to-clipboard-icon';

@@ -10,6 +10,7 @@ import {
 } from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
 import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
+import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useGetWorkflowList } from '@shinkai_network/shinkai-node-state/v2/queries/getWorkflowList/useGetWorkflowList';
 import {
@@ -29,6 +30,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  MarkdownPreview,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -61,20 +63,29 @@ import {
 } from '@shinkai_network/shinkai-ui/assets';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   BookText,
+  ChevronDown,
   CirclePlayIcon,
   GalleryHorizontal,
   GalleryVertical,
   ImportIcon,
+  Loader2,
   MoveLeft,
   MoveRight,
   PlusIcon,
   TrashIcon,
 } from 'lucide-react';
-import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { useForm } from 'react-hook-form';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { useSetJobScope } from '../components/chat/context/set-job-scope-context';
@@ -88,10 +99,10 @@ import { useSettings } from '../store/settings';
 
 const WorkflowPlayground = () => {
   return (
-    <Tabs defaultValue="workflow">
-      <div className="mx-auto flex h-full flex-col gap-4 px-5 py-10">
-        <div className="flex justify-between gap-4">
-          <div className="flex items-center gap-8">
+    <Tabs className="h-full" defaultValue="workflow">
+      <div className="mx-auto flex h-full flex-col pb-4 pt-6">
+        <div className="flex justify-between gap-4 border-b border-gray-300 px-5">
+          <div className="flex items-center gap-8 pb-5">
             <h1 className="text-2xl font-semibold tracking-tight">
               Playground
             </h1>
@@ -115,8 +126,8 @@ const WorkflowPlayground = () => {
             <DocsPanel />
           </div>
         </div>
-        <div className="flex h-[calc(100vh_-_150px)] gap-6 overflow-hidden">
-          <div className="max-w-[60%] flex-1 shrink-0 basis-[60%]">
+        <div className="flex flex-1">
+          <div className="max-w-[60%] flex-1 shrink-0 basis-[60%] border-r border-gray-300 px-5 pt-5">
             <TabsContent className="h-full" value="workflow">
               <WorkflowEditor />
             </TabsContent>
@@ -124,7 +135,7 @@ const WorkflowPlayground = () => {
               <BamlEditor />
             </TabsContent>
           </div>
-          <div className="flex h-full flex-col">
+          <div className="h-full flex-1 flex-col px-5 pt-5">
             <Outlet />
           </div>
         </div>
@@ -400,149 +411,138 @@ function WorkflowEditor() {
     // Implement save functionality
   };
 
-  const handleWorkflowLoad = () => {
+  const handleUseTemplate = async (toolRouterKey: string) => {
     // Implement load functionality
+    if (!auth) return;
+    const workflowInfo = await getTool(
+      auth?.node_address,
+      auth?.api_v2_key,
+      toolRouterKey,
+    );
+    const tool = workflowInfo.content?.[0] as ShinkaiTool;
+
+    if (isWorkflowShinkaiTool(tool)) {
+      createJobForm.setValue('workflow', tool.workflow.raw);
+      setOpenWorkflowList(false);
+    }
   };
 
   return (
     <Fragment>
-      <div className="flex items-center justify-end gap-2.5">
-        {/*<Button*/}
-        {/*  className="h-8 gap-1 rounded-lg"*/}
-        {/*  onClick={() => handleWorkflowScriptChange('custom')}*/}
-        {/*  size="sm"*/}
-        {/*  type="button"*/}
-        {/*  variant={selectedWorkflowScript === 'custom' ? 'default' : 'outline'}*/}
-        {/*>*/}
-        {/*  <PlusIcon className="h-4 w-4" />*/}
-        {/*  Custom Workflow*/}
-        {/*</Button>*/}
-        <Popover onOpenChange={setOpenWorkflowList} open={openWorkflowList}>
-          <PopoverTrigger asChild>
+      <div className="mb-7 flex items-center justify-end gap-2.5">
+        <div className="flex w-full items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-base font-medium text-white">Template</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <TooltipProvider delayDuration={0}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    className="h-7 w-7"
+                    onClick={() => setIsTwoColumnLayout(!isTwoColumnLayout)}
+                    size="icon"
+                    type="button"
+                    variant="outline"
+                  >
+                    {isTwoColumnLayout ? (
+                      <GalleryVertical className="text-gray-80 h-3.5 w-3.5" />
+                    ) : (
+                      <GalleryHorizontal className="text-gray-80 h-3.5 w-3.5" />
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipPortal>
+                  <TooltipContent>
+                    <p>Switch Layout</p>
+                  </TooltipContent>
+                </TooltipPortal>
+              </Tooltip>
+            </TooltipProvider>
+
             <Button
-              className="flex h-8 gap-1 rounded-lg"
+              className="flex h-8 gap-1.5 rounded-lg"
+              onClick={handleWorkflowSave}
               size="sm"
               type="button"
               variant="outline"
             >
-              <ImportIcon className="h-4 w-4" />
-              Workflow Template
+              <PlusIcon className="h-3.5 w-3.5" />
+              New Workflow
             </Button>
-          </PopoverTrigger>
-          <PopoverContent
-            align="end"
-            className="min-w-[380px] bg-gray-500 p-0 text-xs"
-            side="bottom"
-          >
-            <Command className="text-gray-80 w-full rounded-lg border-0">
-              <CommandInput
-                className="placeholder:text-gray-100"
-                placeholder="Find a workflow..."
-              />
-              <CommandList>
-                <CommandEmpty>No results found.</CommandEmpty>
-                <CommandGroup heading="Examples">
-                  <CommandItem
-                    onSelect={() => {
-                      handleWorkflowScriptChange('example1');
-                      setOpenWorkflowList(false);
-                    }}
-                  >
-                    <span>Full Document Summarizer</span>
-                  </CommandItem>
-                  <CommandItem
-                    onSelect={() => {
-                      handleWorkflowScriptChange('example2');
-                      setOpenWorkflowList(false);
-                    }}
-                  >
-                    <span>example2</span>
-                  </CommandItem>
-                </CommandGroup>
-                <CommandSeparator />
-                <CommandGroup heading="Current">
-                  {workflowList?.map((workflow) => (
-                    <CommandItem
-                      className="text-white"
-                      key={workflow.name}
-                      onSelect={async () => {
-                        if (!auth) return;
-                        const workflowInfo = await getTool(
-                          auth?.node_address,
-                          auth?.api_v2_key,
-                          workflow.tool_router_key,
-                        );
-                        const tool = workflowInfo.content?.[0] as ShinkaiTool;
-                        if (isWorkflowShinkaiTool(tool)) {
-                          createJobForm.setValue('workflow', tool.workflow.raw);
+            <Popover onOpenChange={setOpenWorkflowList} open={openWorkflowList}>
+              <PopoverTrigger asChild>
+                <Button
+                  className="flex h-8 gap-1.5 rounded-lg"
+                  size="sm"
+                  type="button"
+                  variant="outline"
+                >
+                  Use Template
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="end"
+                className="w-[250px] bg-gray-300 p-0 text-xs"
+                side="bottom"
+              >
+                <Command className="text-gray-80 w-full rounded-lg border-0">
+                  <CommandInput
+                    className="text-xs placeholder:text-gray-100"
+                    placeholder="Find a workflow..."
+                  />
+                  <CommandList>
+                    <CommandEmpty>No results found.</CommandEmpty>
+                    <CommandGroup heading="Examples">
+                      <CommandItem
+                        className="text-xs text-white"
+                        key="example1"
+                        onSelect={() => {
+                          handleWorkflowScriptChange('example1');
                           setOpenWorkflowList(false);
-                        }
-                      }}
-                    >
-                      <span>{formatText(workflow.name)}</span>
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
+                        }}
+                      >
+                        <span>Full Document Summarizer</span>
+                      </CommandItem>
+                      <CommandItem
+                        className="text-xs text-white"
+                        key="example2"
+                        onSelect={() => {
+                          handleWorkflowScriptChange('example2');
+                          setOpenWorkflowList(false);
+                        }}
+                      >
+                        <span>example2</span>
+                      </CommandItem>
+                    </CommandGroup>
+                    <CommandSeparator />
+                    <CommandGroup heading="Current">
+                      {workflowList?.map((workflow) => (
+                        <CommandItem
+                          className="text-xs text-white"
+                          key={workflow.name}
+                          onSelect={() => {
+                            handleUseTemplate(workflow.tool_router_key);
+                          }}
+                        >
+                          <span>{formatText(workflow.name)}</span>
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+          </div>
+        </div>
       </div>
 
       <Form {...createJobForm}>
         <form
-          className="relative space-y-8 overflow-y-auto pr-2 pt-12"
+          className="space-y-8 overflow-y-auto pr-2"
           onSubmit={createJobForm.handleSubmit(onSubmit)}
         >
           <div className="space-y-4">
-            <div className="absolute right-0 top-5 flex items-center gap-4">
-              {/* Workflow Script Selection Buttons */}
-              {selectedWorkflowScript === 'custom' && (
-                <div className="flex gap-2">
-                  <Button
-                    className="h-8 min-w-[90px] rounded-md"
-                    onClick={handleWorkflowSave}
-                    size="sm"
-                    type="button"
-                    variant="ghost"
-                  >
-                    Save
-                  </Button>
-                  <Button
-                    className="h-8 min-w-[90px] rounded-md"
-                    onClick={handleWorkflowLoad}
-                    size="sm"
-                    type="button"
-                    variant="ghost"
-                  >
-                    Load
-                  </Button>
-                </div>
-              )}
-              <TooltipProvider delayDuration={0}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      onClick={() => setIsTwoColumnLayout(!isTwoColumnLayout)}
-                      size="icon"
-                      type="button"
-                      variant="outline"
-                    >
-                      {isTwoColumnLayout ? (
-                        <GalleryVertical className="text-gray-80 h-4 w-4" />
-                      ) : (
-                        <GalleryHorizontal className="text-gray-80 h-4 w-4" />
-                      )}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipPortal>
-                    <TooltipContent>
-                      <p>Switch Layout</p>
-                    </TooltipContent>
-                  </TooltipPortal>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
             <div
               className={cn(
                 'grid gap-3',
@@ -1381,6 +1381,64 @@ function ClassifyMessage(message_text: string) -> Message {
           </Button>
         </form>
       </Form>
+    </div>
+  );
+}
+
+export function PlaygroundPreview() {
+  const { inboxId: encodedInboxId = '' } = useParams();
+  const inboxId = decodeURIComponent(encodedInboxId);
+  const auth = useAuth((state) => state.auth);
+
+  const { data } = useGetChatConversationWithPagination({
+    token: auth?.api_v2_key ?? '',
+    nodeAddress: auth?.node_address ?? '',
+    inboxId: inboxId as string,
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    profile: auth?.profile ?? '',
+    refetchIntervalEnabled: true,
+    enabled: !!inboxId,
+  });
+
+  const isLoadingMessage = useMemo(() => {
+    const lastMessage = data?.pages?.at(-1)?.at(-1);
+    return inboxId && lastMessage?.isLocal;
+  }, [data?.pages, inboxId]);
+
+  return (
+    <div className="flex max-h-screen w-full flex-1 flex-col overflow-hidden">
+      {!inboxId && (
+        <div className="flex h-full items-center justify-center">
+          <p className="text-gray-80 text-sm">
+            Run a workflow/baml to see the output here.
+          </p>
+        </div>
+      )}
+      {isLoadingMessage && (
+        <div className="flex h-full items-center justify-center">
+          <Loader2 className={cn('h-4 w-4 animate-spin')} />{' '}
+        </div>
+      )}
+      <AnimatePresence>
+        {!isLoadingMessage && (
+          <motion.div
+            animate={{ opacity: 1 }}
+            className="mt-4 overflow-hidden rounded-md border border-gray-400"
+            exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }}
+          >
+            <p className="text-gray-80 border-b border-gray-300 bg-gray-200 px-2.5 py-2 text-xs">
+              Output
+            </p>
+            <div className="p-4">
+              <MarkdownPreview
+                className="prose-h1:!text-gray-80 prose-h1:!text-xs !text-gray-80 !text-xs"
+                source={data?.pages?.at(-1)?.at(-1)?.content ?? ''}
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

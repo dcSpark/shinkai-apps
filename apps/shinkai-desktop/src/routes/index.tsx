@@ -49,7 +49,9 @@ import SheetProject from '../pages/sheet-project';
 import ShinkaiPrivatePage from '../pages/shinkai-private';
 import TermsAndConditionsPage from '../pages/terms-conditions';
 import { Tools } from '../pages/tools';
-import WorkflowPlayground from '../pages/workflow-playground';
+import WorkflowPlayground, {
+  PlaygroundPreview,
+} from '../pages/workflow-playground';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
@@ -274,22 +276,8 @@ const AppRoutes = () => {
           }
           path="workflow-playground"
         >
-          <Route
-            element={
-              <div className="flex h-[400px] flex-col items-center justify-center">
-                <h1 className="">Create your workflow!</h1>
-              </div>
-            }
-            index
-          />
-          <Route
-            element={
-              <WorkflowSelectionProvider>
-                <ChatConversation />
-              </WorkflowSelectionProvider>
-            }
-            path=":inboxId"
-          />
+          <Route element={<PlaygroundPreview />} index />
+          <Route element={<PlaygroundPreview />} path=":inboxId" />
         </Route>
         <Route
           element={
