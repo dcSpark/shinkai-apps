@@ -109,48 +109,50 @@ import { useSettings } from '../store/settings';
 
 const WorkflowPlayground = () => {
   return (
-    <Tabs className="h-full" defaultValue="workflow">
-      <div className="mx-auto flex h-full flex-col pb-4 pt-6">
-        <div className="flex justify-between gap-4 border-b border-gray-300 px-5">
-          <div className="flex items-center gap-8 pb-5">
-            <h1 className="text-2xl font-semibold tracking-tight">
-              Playground
-            </h1>
-            <TabsList className="grid w-full grid-cols-2 rounded-lg border border-gray-400 bg-transparent p-0.5">
-              <TabsTrigger
-                className="flex h-8 items-center gap-1.5 text-xs font-semibold"
-                value="workflow"
-              >
-                Workflow
-              </TabsTrigger>
-              <TabsTrigger
-                className="flex h-8 items-center gap-1.5 text-xs font-semibold"
-                value="baml"
-              >
-                BAML
-              </TabsTrigger>
-            </TabsList>
+    <TooltipProvider delayDuration={0}>
+      <Tabs className="h-full" defaultValue="workflow">
+        <div className="mx-auto flex h-full flex-col pb-4 pt-6">
+          <div className="flex justify-between gap-4 border-b border-gray-300 px-5">
+            <div className="flex items-center gap-8 pb-5">
+              <h1 className="text-2xl font-semibold tracking-tight">
+                Playground
+              </h1>
+              <TabsList className="grid w-full grid-cols-2 rounded-lg border border-gray-400 bg-transparent p-0.5">
+                <TabsTrigger
+                  className="flex h-8 items-center gap-1.5 text-xs font-semibold"
+                  value="workflow"
+                >
+                  Workflow
+                </TabsTrigger>
+                <TabsTrigger
+                  className="flex h-8 items-center gap-1.5 text-xs font-semibold"
+                  value="baml"
+                >
+                  BAML
+                </TabsTrigger>
+              </TabsList>
+            </div>
+            <div>
+              {/*<button>Get Started with Template</button>*/}
+              <DocsPanel />
+            </div>
           </div>
-          <div>
-            {/*<button>Get Started with Template</button>*/}
-            <DocsPanel />
+          <div className="flex flex-1">
+            <div className="max-w-[60%] flex-1 shrink-0 basis-[60%] border-r border-gray-300 px-5 pt-5">
+              <TabsContent className="h-full" value="workflow">
+                <WorkflowEditor />
+              </TabsContent>
+              <TabsContent className="h-full" value="baml">
+                <BamlEditor />
+              </TabsContent>
+            </div>
+            <div className="h-full flex-1 flex-col px-5 pt-5">
+              <Outlet />
+            </div>
           </div>
         </div>
-        <div className="flex flex-1">
-          <div className="max-w-[60%] flex-1 shrink-0 basis-[60%] border-r border-gray-300 px-5 pt-5">
-            <TabsContent className="h-full" value="workflow">
-              <WorkflowEditor />
-            </TabsContent>
-            <TabsContent className="h-full" value="baml">
-              <BamlEditor />
-            </TabsContent>
-          </div>
-          <div className="h-full flex-1 flex-col px-5 pt-5">
-            <Outlet />
-          </div>
-        </div>
-      </div>
-    </Tabs>
+      </Tabs>
+    </TooltipProvider>
   );
 };
 export default WorkflowPlayground;
@@ -460,30 +462,28 @@ function WorkflowEditor() {
         <div className="flex w-full items-center justify-between">
           <span className="text-base font-medium text-white">Template</span>
           <div className="flex items-center gap-3">
-            <TooltipProvider delayDuration={0}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    className="h-7 w-7"
-                    onClick={() => setIsTwoColumnLayout(!isTwoColumnLayout)}
-                    size="icon"
-                    type="button"
-                    variant="outline"
-                  >
-                    {isTwoColumnLayout ? (
-                      <GalleryVertical className="text-gray-80 h-3.5 w-3.5" />
-                    ) : (
-                      <GalleryHorizontal className="text-gray-80 h-3.5 w-3.5" />
-                    )}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipPortal>
-                  <TooltipContent>
-                    <p>Switch Layout</p>
-                  </TooltipContent>
-                </TooltipPortal>
-              </Tooltip>
-            </TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  className="h-7 w-7"
+                  onClick={() => setIsTwoColumnLayout(!isTwoColumnLayout)}
+                  size="icon"
+                  type="button"
+                  variant="outline"
+                >
+                  {isTwoColumnLayout ? (
+                    <GalleryVertical className="text-gray-80 h-3.5 w-3.5" />
+                  ) : (
+                    <GalleryHorizontal className="text-gray-80 h-3.5 w-3.5" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipPortal>
+                <TooltipContent>
+                  <p>Switch Layout</p>
+                </TooltipContent>
+              </TooltipPortal>
+            </Tooltip>
 
             <Popover onOpenChange={setOpenWorkflowList} open={openWorkflowList}>
               <PopoverTrigger asChild>
@@ -852,29 +852,28 @@ function WorkflowEditor() {
                         {t('chat.form.setContextText')}
                       </p>
                     </div>
-                    <TooltipProvider delayDuration={0}>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            className="flex h-10 w-10 items-center justify-center gap-2 rounded-lg p-2.5 text-left hover:bg-gray-500"
-                            onClick={() => setKnowledgeSearchOpen(true)}
-                            size="icon"
-                            type="button"
-                            variant="ghost"
-                          >
-                            <AISearchContentIcon className="h-5 w-5" />
-                            <p className="sr-only text-xs text-white">
-                              AI Files Content Search
-                            </p>
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipPortal>
-                          <TooltipContent sideOffset={0}>
-                            Search AI Files Content
-                          </TooltipContent>
-                        </TooltipPortal>
-                      </Tooltip>
-                    </TooltipProvider>
+
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          className="flex h-10 w-10 items-center justify-center gap-2 rounded-lg p-2.5 text-left hover:bg-gray-500"
+                          onClick={() => setKnowledgeSearchOpen(true)}
+                          size="icon"
+                          type="button"
+                          variant="ghost"
+                        >
+                          <AISearchContentIcon className="h-5 w-5" />
+                          <p className="sr-only text-xs text-white">
+                            AI Files Content Search
+                          </p>
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipPortal>
+                        <TooltipContent sideOffset={0}>
+                          Search AI Files Content
+                        </TooltipContent>
+                      </TooltipPortal>
+                    </Tooltip>
                   </div>
 
                   <div className="mt-2 flex flex-col gap-1.5">
@@ -1189,7 +1188,6 @@ function ClassifyMessage(message_text: string) -> Message {
 
     const bamlData = bamlFormData[selectedBamlScript];
     const { dslFile, functionName, paramName, bamlScriptName = '' } = bamlData;
-    console.log('bamlData:', bamlData);
 
     if (!defaulAgentId) {
       toast.error('Please select an AI provider.');
@@ -1293,30 +1291,29 @@ function ClassifyMessage(message_text: string) -> Message {
             BAML Template
           </span>
           <div className="flex items-center gap-3">
-            <TooltipProvider delayDuration={0}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    className="h-7 w-7"
-                    onClick={() => setIsTwoColumnLayout(!isTwoColumnLayout)}
-                    size="icon"
-                    type="button"
-                    variant="outline"
-                  >
-                    {isTwoColumnLayout ? (
-                      <GalleryVertical className="text-gray-80 h-3.5 w-3.5" />
-                    ) : (
-                      <GalleryHorizontal className="text-gray-80 h-3.5 w-3.5" />
-                    )}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipPortal>
-                  <TooltipContent>
-                    <p>Switch Layout</p>
-                  </TooltipContent>
-                </TooltipPortal>
-              </Tooltip>
-            </TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  className="h-7 w-7"
+                  onClick={() => setIsTwoColumnLayout(!isTwoColumnLayout)}
+                  size="icon"
+                  type="button"
+                  variant="outline"
+                >
+                  {isTwoColumnLayout ? (
+                    <GalleryVertical className="text-gray-80 h-3.5 w-3.5" />
+                  ) : (
+                    <GalleryHorizontal className="text-gray-80 h-3.5 w-3.5" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipPortal>
+                <TooltipContent>
+                  <p>Switch Layout</p>
+                </TooltipContent>
+              </TooltipPortal>
+            </Tooltip>
+
             <Popover onOpenChange={setOpenWorkflowList} open={openWorkflowList}>
               <PopoverTrigger asChild>
                 <Button
@@ -1496,7 +1493,7 @@ function ClassifyMessage(message_text: string) -> Message {
 
       <Form {...bamlForm}>
         <form
-          className="space-y-8 pt-2"
+          className="space-y-4"
           onSubmit={bamlForm.handleSubmit(onBamlSubmit)}
         >
           <FormField
