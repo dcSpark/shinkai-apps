@@ -188,6 +188,26 @@ function DocsPanel() {
   );
 }
 
+const workflowExamples = {
+  example1: {
+    message: 'Example message 1',
+    workflow: `
+    workflow Extensive_summary v0.1 {
+      step Initialize {
+          $PROMPT = "Summarize this: "
+          $EMBEDDINGS = call process_embeddings_in_job_scope()
+      }
+      step Summarize {
+          $RESULT = call multi_inference($PROMPT, $EMBEDDINGS)
+      }
+    } @@official.shinkai`,
+  },
+  example2: {
+    message: 'Example message 2',
+    workflow: 'Example workflow 2',
+  },
+};
+
 function WorkflowEditor() {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
@@ -399,30 +419,11 @@ function WorkflowEditor() {
     },
   });
 
-  const handleWorkflowScriptChange = (
-    script: 'custom' | 'example1' | 'example2',
-  ) => {
-    const currentValues = createJobForm.getValues();
-
-    // Save current form data
-    setWorkflowFormData((prevData) => {
-      const updatedData = {
-        ...prevData,
-        [selectedWorkflowScript]: {
-          message: currentValues.message || '',
-          workflow: currentValues.workflow || '',
-          agent: currentValues.agent || '',
-          files: currentValues.files || [],
-        },
-      };
-      return updatedData;
-    });
-
-    // Switch to the selected script
-    setSelectedWorkflowScript(script);
-
-    // Load the new form data
-    createJobForm.reset(workflowFormData[script]);
+  const handleWorkflowScriptChange = (script: 'example1' | 'example2') => {
+    const selectedWorkflowExample =
+      workflowExamples[script as 'example1' | 'example2'];
+    createJobForm.setValue('message', selectedWorkflowExample.message);
+    createJobForm.setValue('workflow', selectedWorkflowExample.workflow);
   };
 
   useEffect(() => {
