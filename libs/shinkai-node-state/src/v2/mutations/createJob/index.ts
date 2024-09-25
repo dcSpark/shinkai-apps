@@ -36,6 +36,13 @@ export const createJob = async ({
     },
   });
 
+  if (chatConfig) {
+    await updateChatConfig(nodeAddress, token, {
+      job_id: jobId,
+      config: chatConfig,
+    });
+  }
+
   let folderId = '';
   if (files && files.length > 0) {
     folderId = await uploadFilesToInbox(nodeAddress, token, files);
@@ -51,13 +58,6 @@ export const createJob = async ({
       parent: '',
     },
   });
-
-  if (chatConfig) {
-    await updateChatConfig(nodeAddress, token, {
-      job_id: jobId,
-      config: chatConfig,
-    });
-  }
 
   return { jobId };
 };
