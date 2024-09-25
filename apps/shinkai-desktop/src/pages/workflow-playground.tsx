@@ -9,6 +9,7 @@ import {
   createJobFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
 import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
+import { useAddTool } from '@shinkai_network/shinkai-node-state/v2/mutations/addTool/useAddTool';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
@@ -66,11 +67,9 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   BookText,
-  ChevronDown,
   CirclePlayIcon,
   GalleryHorizontal,
   GalleryVertical,
-  ImportIcon,
   Loader2,
   MoveLeft,
   MoveRight,
@@ -294,6 +293,7 @@ function WorkflowEditor() {
       selectedVRFolders,
     });
   };
+  const { mutateAsync: addTool } = useAddTool();
 
   const onWorkflowChange = useCallback(
     (value: string) => {
@@ -407,12 +407,28 @@ function WorkflowEditor() {
     }));
   }, [createJobForm, selectedWorkflowScript]);
 
-  const handleWorkflowSave = () => {
-    // Implement save functionality
+  const handleWorkflowSave = async () => {
+    await addTool({
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      toolType: 'Workflow',
+      toolPayload: {
+        workflow: {
+          name: 'New Workflow',
+          author: auth?.shinkai_identity ?? '',
+          raw: createJobForm.getValues().workflow ?? '',
+          sticky: true,
+          description: 'this is test',
+          version: '1',
+          steps: [],
+        },
+        embedding: [],
+      },
+      isToolEnabled: true,
+    });
   };
 
   const handleUseTemplate = async (toolRouterKey: string) => {
-    // Implement load functionality
     if (!auth) return;
     const workflowInfo = await getTool(
       auth?.node_address,
@@ -516,18 +532,43 @@ function WorkflowEditor() {
                       </CommandItem>
                     </CommandGroup>
                     <CommandSeparator />
-                    <CommandGroup heading="Current">
-                      {workflowList?.map((workflow) => (
-                        <CommandItem
-                          className="text-xs text-white"
-                          key={workflow.name}
-                          onSelect={() => {
-                            handleUseTemplate(workflow.tool_router_key);
-                          }}
-                        >
-                          <span>{formatText(workflow.name)}</span>
-                        </CommandItem>
-                      ))}
+
+                    <CommandGroup heading="Your Workflows">
+                      {workflowList
+                        ?.filter(
+                          (workflow) =>
+                            workflow.author !== '@@official.shinkai',
+                        )
+                        ?.map((workflow) => (
+                          <CommandItem
+                            className="text-xs text-white"
+                            key={workflow.name}
+                            onSelect={() => {
+                              handleUseTemplate(workflow.tool_router_key);
+                            }}
+                          >
+                            <span>{formatText(workflow.name)}</span>
+                          </CommandItem>
+                        ))}
+                    </CommandGroup>
+                    <CommandSeparator />
+                    <CommandGroup heading="Community">
+                      {workflowList
+                        ?.filter(
+                          (workflow) =>
+                            workflow.author === '@@official.shinkai',
+                        )
+                        ?.map((workflow) => (
+                          <CommandItem
+                            className="text-xs text-white"
+                            key={workflow.name}
+                            onSelect={() => {
+                              handleUseTemplate(workflow.tool_router_key);
+                            }}
+                          >
+                            <span>{formatText(workflow.name)}</span>
+                          </CommandItem>
+                        ))}
                     </CommandGroup>
                   </CommandList>
                 </Command>

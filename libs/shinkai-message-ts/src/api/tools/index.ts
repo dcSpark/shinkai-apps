@@ -1,6 +1,7 @@
 import { httpClient } from '../../http-client';
 import { urlJoin } from '../../utils/url-join';
 import {
+  AddToolRequest,
   CreatePromptRequest,
   CreatePromptResponse,
   DeletePromptRequest,
@@ -43,6 +44,22 @@ export const searchWorkflows = async (
     },
   );
   return response.data as SearchWorkflowsResponse;
+};
+
+export const addTool = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: AddToolRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/add_shinkai_tool'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as UpdateToolResponse;
 };
 
 export const getTool = async (
