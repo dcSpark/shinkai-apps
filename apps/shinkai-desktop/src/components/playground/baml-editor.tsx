@@ -536,6 +536,7 @@ function BamlEditor() {
                         minHeight={500}
                         placeholder="Enter BAML input"
                         resize="vertical"
+                        spellCheck={false}
                         {...field}
                       />
                     </FormControl>
@@ -555,6 +556,7 @@ function BamlEditor() {
                         minHeight={500}
                         placeholder="Enter DSL file content"
                         resize="vertical"
+                        spellCheck={false}
                         {...field}
                       />
                     </FormControl>
@@ -575,6 +577,7 @@ function BamlEditor() {
                       <Textarea
                         className="resize-vertical"
                         placeholder="Enter BAML input"
+                        spellCheck={false}
                         {...field}
                       />
                     </FormControl>
@@ -592,6 +595,7 @@ function BamlEditor() {
                       <Textarea
                         className="resize-vertical"
                         placeholder="Enter DSL file content"
+                        spellCheck={false}
                         {...field}
                       />
                     </FormControl>

@@ -605,6 +605,7 @@ function WorkflowEditor() {
                           'resize-vertical',
                           isTwoColumnLayout && '!max-h-full',
                         )}
+                        spellCheck={false}
                         {...(isTwoColumnLayout && {
                           minHeight: 400,
                           maxHeight: 400,
