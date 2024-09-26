@@ -40,9 +40,9 @@ export type CreateWorkflowFormSchema = z.infer<typeof createWorkflowFormSchema>;
 const WorkflowPlayground = () => {
   return (
     <TooltipProvider delayDuration={0}>
-      <Tabs className="h-full" defaultValue="workflow">
-        <div className="mx-auto flex h-full flex-col pb-4 pt-6">
-          <div className="flex justify-between gap-4 border-b border-gray-300 px-5">
+      <Tabs className="h-full min-h-screen" defaultValue="workflow">
+        <div className="mx-auto flex h-full flex-col">
+          <div className="flex justify-between gap-4 border-b border-gray-300 px-5 pt-6">
             <div className="flex items-center gap-8 pb-5">
               <h1 className="text-2xl font-semibold tracking-tight">
                 Playground
@@ -66,16 +66,16 @@ const WorkflowPlayground = () => {
               <DocsPanel />
             </div>
           </div>
-          <div className="flex flex-1">
-            <div className="max-w-[60%] flex-1 shrink-0 basis-[60%] border-r border-gray-300 px-5 pt-5">
-              <TabsContent className="h-full" value="workflow">
+          <div className="flex max-h-[calc(100vh-84px)] flex-1 overflow-hidden">
+            <div className="max-w-[60%] flex-1 shrink-0 basis-[60%] border-r border-gray-300">
+              <TabsContent className="mt-0 h-full" value="workflow">
                 <WorkflowEditor />
               </TabsContent>
-              <TabsContent className="h-full" value="baml">
+              <TabsContent className="mt-0 h-full" value="baml">
                 <BamlEditor />
               </TabsContent>
             </div>
-            <div className="h-full flex-1 flex-col px-5 pt-5">
+            <div className="h-full flex-1 flex-col">
               <Outlet />
             </div>
           </div>
@@ -123,8 +123,8 @@ function PlaygroundPreviewWithInbox({ inboxId }: { inboxId: string }) {
   });
 
   return (
-    <div className="flex max-h-screen w-full flex-1 flex-col overflow-hidden">
-      <div className="flex h-10 items-center justify-between gap-3">
+    <div className="h-full space-y-6 overflow-y-auto px-4 pb-4">
+      <div className="flex items-center justify-between gap-3 pt-5">
         <span className="text-sm font-semibold text-gray-50">Output</span>
         {lastMessage?.content && (
           <div>
@@ -148,7 +148,7 @@ function PlaygroundPreviewWithInbox({ inboxId }: { inboxId: string }) {
           </div>
         )}
       </div>
-      <div className="py-2.5">
+      <div className="">
         {isLoadingMessage && messageContent === '' && (
           <DotsLoader className="pl-1 pt-1" />
         )}
@@ -169,7 +169,6 @@ ${lastMessage?.content}
         {!isLoadingMessage && (
           <MarkdownPreview
             className="prose-h1:!text-gray-80 prose-h1:!text-sm !text-gray-80 !text-sm"
-            // source={lastMessage?.content}
             source={
               lastMessage?.content?.startsWith('{') &&
               lastMessage?.content?.endsWith('}')
@@ -189,11 +188,11 @@ ${lastMessage?.content}
 
 function PlaygroundPreviewEmpty() {
   return (
-    <div className="flex max-h-screen w-full flex-1 flex-col overflow-hidden">
-      <div className="flex h-10 items-center justify-between gap-3">
+    <div className="h-full space-y-6 overflow-y-auto px-4 pb-4">
+      <div className="flexpt-5 items-center justify-between gap-3">
         <span className="text-sm font-semibold text-gray-50">Output</span>
       </div>
-      <div className="py-2.5">
+      <div className="">
         <p className="text-gray-80 text-sm">
           Run a workflow/baml to see the output here.
         </p>

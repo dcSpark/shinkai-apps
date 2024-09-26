@@ -75,7 +75,7 @@ import {
   TrashIcon,
 } from 'lucide-react';
 import { InfoCircleIcon } from 'primereact/icons/infocircle';
-import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -344,9 +344,9 @@ function WorkflowEditor() {
   }, [createWorkflowForm, currentWorkflowRaw]);
 
   return (
-    <Fragment>
-      <div className="mb-7 flex items-center justify-end gap-2.5">
-        <div className="flex w-full items-center justify-between">
+    <div className="h-full space-y-6 overflow-y-auto px-4 pb-4">
+      <div className="flex items-center gap-3">
+        <div className="flex w-full items-center justify-between pt-5">
           <span className="text-base font-medium text-white">Template</span>
           <div className="flex items-center gap-3">
             <Tooltip>
@@ -582,10 +582,10 @@ ${createWorkflowForm.watch('workflowRaw')}
 
       <Form {...createJobPlaygroundForm}>
         <form
-          className="space-y-8 overflow-y-auto pr-2"
+          className="space-y-3"
           onSubmit={createJobPlaygroundForm.handleSubmit(onSubmit)}
         >
-          <div className="space-y-4">
+          <div className="max-h-[68vh] space-y-5 overflow-y-auto pr-1">
             <div
               className={cn(
                 'grid gap-3',
@@ -875,7 +875,8 @@ ${createWorkflowForm.watch('workflowRaw')}
           )}
         </form>
       </Form>
-    </Fragment>
+    </div>
   );
 }
+
 export default WorkflowEditor;

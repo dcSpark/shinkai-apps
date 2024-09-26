@@ -271,9 +271,9 @@ function BamlEditor() {
   };
 
   return (
-    <div className="h-full space-y-8 overflow-y-auto pr-2">
+    <div className="h-full space-y-6 overflow-y-auto px-4 pb-4">
       <div className="flex items-center gap-3">
-        <div className="flex w-full items-center justify-between">
+        <div className="flex w-full items-center justify-between pt-5">
           <span className="text-base font-medium text-white">
             BAML Template
           </span>
@@ -381,246 +381,256 @@ function BamlEditor() {
                 </Command>
               </PopoverContent>
             </Popover>
-          </div>
-        </div>
 
-        <Dialog onOpenChange={setWorkflowDialogOpen} open={workflowDialogOpen}>
-          <DialogTrigger asChild>
-            <Button
-              className="flex h-8 gap-1.5 rounded-lg"
-              disabled={
-                currentBamlScriptName.length === 0 ||
-                currentBamlInput.length === 0 ||
-                currentDslFile.length === 0 ||
-                currentFunctionName.length === 0 ||
-                currentParamName.length === 0
-              }
-              size="sm"
-              type="button"
+            <Dialog
+              onOpenChange={setWorkflowDialogOpen}
+              open={workflowDialogOpen}
             >
-              <svg
-                className="h-4 w-4"
-                fill={'none'}
-                height={24}
-                viewBox="0 0 24 24"
-                width={24}
-              >
-                <path
-                  d="M12 8V16M16 12L8 12"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="1.5"
-                />
-                <path
-                  d="M2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                />
-              </svg>
-              Save
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-lg bg-gray-500">
-            <Form {...createWorkflowForm}>
-              <form
-                className="space-y-8 overflow-y-auto pr-2"
-                onSubmit={createWorkflowForm.handleSubmit(handleWorkflowSave)}
-              >
-                <DialogHeader>
-                  <DialogTitle>Save Workflow</DialogTitle>
-                </DialogHeader>
+              <DialogTrigger asChild>
+                <Button
+                  className="flex h-8 gap-1.5 rounded-lg"
+                  disabled={
+                    currentBamlScriptName.length === 0 ||
+                    currentBamlInput.length === 0 ||
+                    currentDslFile.length === 0 ||
+                    currentFunctionName.length === 0 ||
+                    currentParamName.length === 0
+                  }
+                  size="sm"
+                  type="button"
+                >
+                  <svg
+                    className="h-4 w-4"
+                    fill={'none'}
+                    height={24}
+                    viewBox="0 0 24 24"
+                    width={24}
+                  >
+                    <path
+                      d="M12 8V16M16 12L8 12"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="1.5"
+                    />
+                    <path
+                      d="M2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                  </svg>
+                  Save
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-lg bg-gray-500">
+                <Form {...createWorkflowForm}>
+                  <form
+                    className="space-y-8 overflow-y-auto pr-2"
+                    onSubmit={createWorkflowForm.handleSubmit(
+                      handleWorkflowSave,
+                    )}
+                  >
+                    <DialogHeader>
+                      <DialogTitle>Save Workflow</DialogTitle>
+                    </DialogHeader>
 
-                <div className="flex flex-col gap-2.5">
-                  <div className="space-y-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-gray-80 text-xs">Code</span>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <InfoCircleIcon className="text-gray-80 h-3.5 w-3.5" />
-                        </TooltipTrigger>
-                        <TooltipPortal>
-                          <TooltipContent>
-                            <p>
-                              The name and version of the workflow is specified
-                              in the workflow code.
-                            </p>
-                          </TooltipContent>
-                        </TooltipPortal>
-                      </Tooltip>
-                    </div>
-                    <MarkdownPreview
-                      className="h-[250px] overflow-auto"
-                      source={`
+                    <div className="flex flex-col gap-2.5">
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-gray-80 text-xs">Code</span>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <InfoCircleIcon className="text-gray-80 h-3.5 w-3.5" />
+                            </TooltipTrigger>
+                            <TooltipPortal>
+                              <TooltipContent>
+                                <p>
+                                  The name and version of the workflow is
+                                  specified in the workflow code.
+                                </p>
+                              </TooltipContent>
+                            </TooltipPortal>
+                          </Tooltip>
+                        </div>
+                        <MarkdownPreview
+                          className="h-[250px] overflow-auto"
+                          source={`
 \`\`\`
 ${createWorkflowForm.watch('workflowRaw')}
 \`\`\`
                           `}
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <span className="text-gray-80 text-xs">Description</span>
-                    <FormField
-                      control={createWorkflowForm.control}
-                      name="workflowDescription"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Textarea
-                              className="placeholder-gray-80 !min-h-[100px] resize-none bg-gray-200 pl-2 pt-2 text-xs"
-                              onChange={field.onChange}
-                              placeholder={'Enter description...'}
-                              spellCheck={false}
-                              value={field.value}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-                <DialogFooter>
-                  <div className="flex gap-2 pt-4">
-                    <DialogClose asChild className="flex-1">
-                      <Button
-                        className="min-w-[100px] flex-1"
-                        size="sm"
-                        type="button"
-                        variant="ghost"
-                      >
-                        {t('common.cancel')}
-                      </Button>
-                    </DialogClose>
-                    <Button
-                      className="min-w-[100px] flex-1"
-                      disabled={isCreateWorkflowPending}
-                      isLoading={isCreateWorkflowPending}
-                      size="sm"
-                      type="submit"
-                    >
-                      Save
-                    </Button>
-                  </div>
-                </DialogFooter>
-              </form>
-            </Form>
-          </DialogContent>
-        </Dialog>
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <span className="text-gray-80 text-xs">
+                          Description
+                        </span>
+                        <FormField
+                          control={createWorkflowForm.control}
+                          name="workflowDescription"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <Textarea
+                                  className="placeholder-gray-80 !min-h-[100px] resize-none bg-gray-200 pl-2 pt-2 text-xs"
+                                  onChange={field.onChange}
+                                  placeholder={'Enter description...'}
+                                  spellCheck={false}
+                                  value={field.value}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <div className="flex gap-2 pt-4">
+                        <DialogClose asChild className="flex-1">
+                          <Button
+                            className="min-w-[100px] flex-1"
+                            size="sm"
+                            type="button"
+                            variant="ghost"
+                          >
+                            {t('common.cancel')}
+                          </Button>
+                        </DialogClose>
+                        <Button
+                          className="min-w-[100px] flex-1"
+                          disabled={isCreateWorkflowPending}
+                          isLoading={isCreateWorkflowPending}
+                          size="sm"
+                          type="submit"
+                        >
+                          Save
+                        </Button>
+                      </div>
+                    </DialogFooter>
+                  </form>
+                </Form>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </div>
       </div>
 
       <Form {...bamlForm}>
         <form
-          className="space-y-4"
+          className="space-y-3"
           onSubmit={bamlForm.handleSubmit(onBamlSubmit)}
         >
-          <FormField
-            control={bamlForm.control}
-            name="bamlScriptName"
-            render={({ field }) => (
-              <TextField field={field} label="Name the BAML Script" />
-            )}
-          />
+          <div className="max-h-[68vh] space-y-5 overflow-y-auto pr-1">
+            <FormField
+              control={bamlForm.control}
+              name="bamlScriptName"
+              render={({ field }) => (
+                <TextField field={field} label="Name the BAML Script" />
+              )}
+            />
 
-          {isTwoColumnLayout ? (
+            {isTwoColumnLayout ? (
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={bamlForm.control}
+                  name="bamlInput"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>BAML Input</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          maxHeight={600}
+                          minHeight={500}
+                          placeholder="Enter BAML input"
+                          resize="vertical"
+                          spellCheck={false}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={bamlForm.control}
+                  name="dslFile"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>DSL File</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          maxHeight={600}
+                          minHeight={500}
+                          placeholder="Enter DSL file content"
+                          resize="vertical"
+                          spellCheck={false}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            ) : (
+              <>
+                <FormField
+                  control={bamlForm.control}
+                  name="bamlInput"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>BAML Input</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          className="resize-vertical"
+                          placeholder="Enter BAML input"
+                          spellCheck={false}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={bamlForm.control}
+                  name="dslFile"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>DSL File</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          className="resize-vertical"
+                          placeholder="Enter DSL file content"
+                          spellCheck={false}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
+            )}
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={bamlForm.control}
-                name="bamlInput"
+                name="functionName"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>BAML Input</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        maxHeight={600}
-                        minHeight={500}
-                        placeholder="Enter BAML input"
-                        resize="vertical"
-                        spellCheck={false}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                  <TextField field={field} label="Enter function name" />
                 )}
               />
               <FormField
                 control={bamlForm.control}
-                name="dslFile"
+                name="paramName"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>DSL File</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        maxHeight={600}
-                        minHeight={500}
-                        placeholder="Enter DSL file content"
-                        resize="vertical"
-                        spellCheck={false}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                  <TextField field={field} label="Enter param name" />
                 )}
               />
             </div>
-          ) : (
-            <>
-              <FormField
-                control={bamlForm.control}
-                name="bamlInput"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>BAML Input</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        className="resize-vertical"
-                        placeholder="Enter BAML input"
-                        spellCheck={false}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={bamlForm.control}
-                name="dslFile"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>DSL File</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        className="resize-vertical"
-                        placeholder="Enter DSL file content"
-                        spellCheck={false}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </>
-          )}
-          <div className="grid grid-cols-2 gap-4">
-            <FormField
-              control={bamlForm.control}
-              name="functionName"
-              render={({ field }) => (
-                <TextField field={field} label="Enter function name" />
-              )}
-            />
-            <FormField
-              control={bamlForm.control}
-              name="paramName"
-              render={({ field }) => (
-                <TextField field={field} label="Enter param name" />
-              )}
-            />
           </div>
+
           {isLoadingMessage ? (
             <Button
               className="ml-auto flex h-8 w-auto min-w-[100px] gap-1.5 rounded-lg font-semibold"
