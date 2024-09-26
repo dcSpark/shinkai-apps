@@ -475,7 +475,7 @@ function WorkflowEditor() {
                   Save
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-md bg-gray-500">
+              <DialogContent className="max-w-lg bg-gray-500">
                 <Form {...createWorkflowForm}>
                   <form
                     className="space-y-8 overflow-y-auto pr-2"
@@ -506,6 +506,7 @@ function WorkflowEditor() {
                           </Tooltip>
                         </div>
                         <MarkdownPreview
+                          className="h-[250px] overflow-auto"
                           source={createWorkflowForm.watch('workflowRaw')}
                         />
                       </div>

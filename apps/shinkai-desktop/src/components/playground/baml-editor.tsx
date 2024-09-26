@@ -248,7 +248,7 @@ function BamlEditor() {
   };
 
   return (
-    <div className="max-h-[calc(100vh_-_200px)] space-y-8 overflow-y-auto pr-2">
+    <div className="h-full space-y-8 overflow-y-auto pr-2">
       <div className="flex items-center gap-3">
         <div className="flex w-full items-center justify-between">
           <span className="text-base font-medium text-white">
@@ -394,11 +394,10 @@ function BamlEditor() {
               Save
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md bg-gray-500">
+          <DialogContent className="max-w-lg bg-gray-500">
             <Form {...createWorkflowForm}>
               <form
                 className="space-y-8 overflow-y-auto pr-2"
-                // onSubmit={createWorkflowForm.handleSubmit(handleBamlSave)}
                 onSubmit={createWorkflowForm.handleSubmit(handleWorkflowSave)}
               >
                 <DialogHeader>
@@ -424,6 +423,7 @@ function BamlEditor() {
                       </Tooltip>
                     </div>
                     <MarkdownPreview
+                      className="h-[250px] overflow-auto"
                       source={createWorkflowForm.watch('workflowRaw')}
                     />
                   </div>

@@ -160,7 +160,7 @@ export function PlaygroundPreview() {
             source={messageContent}
           />
         )}
-        {!isLoadingMessage && (
+        {!isLoadingMessage && inboxId && (
           <MarkdownPreview
             className="prose-h1:!text-gray-80 prose-h1:!text-xs !text-gray-80 !text-xs"
             source={lastMessage?.content || '--'}
