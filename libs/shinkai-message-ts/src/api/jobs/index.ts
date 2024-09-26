@@ -27,6 +27,8 @@ import {
   UpdateChatConfigRequest,
   UpdateChatConfigResponse,
   UpdateJobScopeRequest,
+  UpdateLLMProviderRequest,
+  UpdateLLMProviderResponse,
 } from './types';
 
 export const createJob = async (
@@ -233,6 +235,22 @@ export const addLLMProvider = async (
     },
   );
   return response.data as AddLLMProviderResponse;
+};
+
+export const updateLLMProvider = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: UpdateLLMProviderRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/modify_llm_provider'),
+    { ...payload, model: getModelString(payload.model) },
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as UpdateLLMProviderResponse;
 };
 
 export const getAllInboxes = async (

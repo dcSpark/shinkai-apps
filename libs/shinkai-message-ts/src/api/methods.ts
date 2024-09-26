@@ -1356,42 +1356,6 @@ export const downloadVectorResource = async (
   const data = response.data;
   return data;
 };
-export const updateLLMProvider = async (
-  nodeAddress: string,
-  agent: SerializedLLMProvider,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
-  receiver_subidentity: string,
-  setupDetailsState: CredentialsPayload,
-): Promise<{ data: any; status: string }> => {
-  const llmProvider_wrapped =
-    SerializedLLMProviderWrapper.fromSerializedAgent(agent);
-
-  const messageStr = ShinkaiMessageBuilderWrapper.updateLLMProvider(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    llmProvider_wrapped,
-    sender,
-    sender_subidentity,
-    receiver,
-    receiver_subidentity,
-  );
-
-  const message = JSON.parse(messageStr);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/modify_agent'),
-    message,
-
-    {
-      responseType: 'json',
-    },
-  );
-  const data = response.data;
-  return data;
-};
 export const deleteLLMProvider = async (
   nodeAddress: string,
   agentId: string,
