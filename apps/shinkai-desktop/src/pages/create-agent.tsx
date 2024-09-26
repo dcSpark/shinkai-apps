@@ -167,20 +167,24 @@ const CreateAgentPage = () => {
     if (currentModel === Models.Ollama) {
       addAgentForm.setValue('externalUrl', modelsConfig[Models.Ollama].apiUrl);
       setModelTypeOptions(
-        (ollamaModels ?? []).map((model) => ({
-          label: model.model,
-          value: model.model,
-        })).concat({ label: 'Custom Model', value: 'custom' }),
+        (ollamaModels ?? [])
+          .map((model) => ({
+            label: model.model,
+            value: model.model,
+          }))
+          .concat({ label: 'Custom Model', value: 'custom' }),
       );
       return;
     }
     const modelConfig = modelsConfig[currentModel as Models];
     addAgentForm.setValue('externalUrl', modelConfig.apiUrl);
     setModelTypeOptions(
-      modelsConfig[currentModel as Models].modelTypes.map((modelType) => ({
-        label: modelType.name,
-        value: modelType.value,
-      })).concat({ label: 'Custom Model', value: 'custom' }),
+      modelsConfig[currentModel as Models].modelTypes
+        .map((modelType) => ({
+          label: modelType.name,
+          value: modelType.value,
+        }))
+        .concat({ label: 'Custom Model', value: 'custom' }),
     );
   }, [currentModel, addAgentForm, isCustomModelMode, ollamaModels]);
 
@@ -372,7 +376,22 @@ const CreateAgentPage = () => {
               render={({ field }) => (
                 <TextField
                   autoFocus
-                  field={field}
+                  field={{
+                    ...field,
+                    onChange: (e) => {
+                      const value = e.target.value;
+                      const alphanumericValue = value.replace(
+                        /[^a-zA-Z0-9_]/g,
+                        '_',
+                      );
+                      field.onChange({
+                        ...e,
+                        target: {
+                          value: alphanumericValue,
+                        },
+                      });
+                    },
+                  }}
                   label={t('llmProviders.form.agentName')}
                 />
               )}
