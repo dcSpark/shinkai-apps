@@ -519,9 +519,9 @@ function WorkflowEditor() {
                         <MarkdownPreview
                           className="h-[250px] overflow-auto"
                           source={`
-                            \`\`\`
-                             ${createWorkflowForm.watch('workflowRaw')}
-                            \`\`\`
+\`\`\`
+${createWorkflowForm.watch('workflowRaw')}
+\`\`\`
                           `}
                         />
                       </div>

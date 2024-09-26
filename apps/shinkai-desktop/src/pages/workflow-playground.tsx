@@ -155,13 +155,31 @@ function PlaygroundPreviewWithInbox({ inboxId }: { inboxId: string }) {
         {isLoadingMessage && messageContent !== '' && (
           <MarkdownPreview
             className="prose-h1:!text-gray-80 prose-h1:!text-xs !text-gray-80 !text-xs"
-            source={messageContent}
+            source={
+              lastMessage?.content.startsWith('{')
+                ? `
+\`\`\`json
+${lastMessage?.content}
+\`\`\`
+`
+                : lastMessage?.content
+            }
           />
         )}
         {!isLoadingMessage && (
           <MarkdownPreview
             className="prose-h1:!text-gray-80 prose-h1:!text-xs !text-gray-80 !text-xs"
-            source={lastMessage?.content}
+            // source={lastMessage?.content}
+            source={
+              lastMessage?.content.startsWith('{') &&
+              lastMessage?.content.endsWith('}')
+                ? `
+\`\`\`json
+${lastMessage?.content}
+\`\`\`
+`
+                : lastMessage?.content
+            }
           />
         )}
       </div>
