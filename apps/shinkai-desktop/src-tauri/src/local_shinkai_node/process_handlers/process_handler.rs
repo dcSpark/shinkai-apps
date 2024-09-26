@@ -6,8 +6,8 @@ use tauri_plugin_shell::{
     process::{CommandChild, CommandEvent},
     ShellExt,
 };
-use tokio::sync::{mpsc::Sender, RwLock};
 use tokio::sync::Mutex;
+use tokio::sync::{mpsc::Sender, RwLock};
 
 use super::{
     logger::{LogEntry, Logger},
@@ -102,7 +102,7 @@ impl ProcessHandler {
         {
             let process = self.process.lock().await;
             if process.is_some() {
-                println!("process {} is already running", self.process_name);
+                log::warn!("process {} is already running", self.process_name);
                 return Ok(());
             }
         }
@@ -195,14 +195,14 @@ impl ProcessHandler {
         let mut process = self.process.lock().await;
         if let Some(child) = process.take() {
             match child.kill() {
-                Ok(_) => println!("{}: process killed", self.process_name),
-                Err(e) => println!("{}: failed to kill {}", self.process_name, e),
+                Ok(_) => log::info!("{}: process killed", self.process_name),
+                Err(e) => log::warn!("{}: failed to kill {}", self.process_name, e),
             }
             *process = None;
             let event_sender = self.event_sender.lock().await;
             let _ = event_sender.send(ProcessHandlerEvent::Stopped).await;
         } else {
-            println!("no process is running");
+            log::error!("no process is running");
         }
     }
 }

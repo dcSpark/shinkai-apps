@@ -38,7 +38,7 @@ impl OllamaApiClient {
         match self.pull_stream(model_name).await {
             Ok(mut stream) => {
                 while let Some(stream_value) = stream.next().await {
-                    println!("{:?}", stream_value);
+                    log::debug!("ollama pull stream value {:?}", stream_value);
                 }
             }
             Err(e) => {
@@ -51,14 +51,20 @@ impl OllamaApiClient {
     pub async fn pull_stream(
         &self,
         model_name: &str,
-    ) -> Result<Box<dyn Stream<Item = Result<OllamaApiPullResponse, String>> + Send + Unpin>, String> {
+    ) -> Result<Box<dyn Stream<Item = Result<OllamaApiPullResponse, String>> + Send + Unpin>, String>
+    {
         let url = format!("{}/api/pull", self.base_url);
         let client = reqwest::Client::new();
         let body: OllamaApiPullRequest = OllamaApiPullRequest {
             stream: true,
             model: model_name.to_string(),
         };
-        let response = client.post(&url).json(&body).send().await.map_err(|e| e.to_string())?;
+        let response = client
+            .post(&url)
+            .json(&body)
+            .send()
+            .await
+            .map_err(|e| e.to_string())?;
         let stream = response.bytes_stream();
         let mapped_stream = stream.map(|message_buffer| {
             if message_buffer.is_err() {
@@ -71,15 +77,19 @@ impl OllamaApiClient {
             }
             let json_message: serde_json::Value = json_message_result.unwrap();
             if json_message["error"].is_string() {
-                return Err(json_message["error"].as_str().unwrap_or("error").to_string());
+                return Err(json_message["error"]
+                    .as_str()
+                    .unwrap_or("error")
+                    .to_string());
             }
             let status = json_message["status"]
                 .as_str()
                 .unwrap_or("Unknown")
                 .to_string();
             let value = match status.clone() {
-                s if s.contains("pulling manifest") =>
-                    OllamaApiPullResponse::PullingManifest { status },
+                s if s.contains("pulling manifest") => {
+                    OllamaApiPullResponse::PullingManifest { status }
+                }
                 s if s.contains("pulling") => OllamaApiPullResponse::Downloading {
                     status,
                     digest: json_message["digest"]
@@ -106,7 +116,8 @@ impl OllamaApiClient {
             };
             Ok(value)
         });
-        let result = Box::new(mapped_stream) as Box<dyn Stream<Item = Result<OllamaApiPullResponse, String>> + Send + Unpin>; 
+        let result = Box::new(mapped_stream)
+            as Box<dyn Stream<Item = Result<OllamaApiPullResponse, String>> + Send + Unpin>;
         Ok(result)
     }
 }

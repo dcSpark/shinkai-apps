@@ -1,5 +1,7 @@
 use tauri::{
-    menu::{MenuBuilder, MenuItemBuilder, SubmenuBuilder}, tray::TrayIconBuilder, LogicalSize, Manager, Runtime, Size
+    menu::{MenuBuilder, MenuItemBuilder, SubmenuBuilder},
+    tray::TrayIconBuilder,
+    LogicalSize, Manager, Runtime, Size,
 };
 
 use crate::globals::SHINKAI_NODE_MANAGER_INSTANCE;
@@ -22,7 +24,7 @@ pub fn create_tray<R: Runtime>(app: &tauri::AppHandle<R>) -> tauri::Result<()> {
         ])
         .build()?;
     let is_template = cfg!(target_os = "macos");
-    let icon =     if cfg!(target_os = "macos") {
+    let icon = if cfg!(target_os = "macos") {
         tauri::image::Image::from_bytes(include_bytes!("../icons/tray-icon-macos.png"))?
     } else {
         app.default_window_icon().unwrap().clone()
