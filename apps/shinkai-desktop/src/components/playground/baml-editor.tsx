@@ -65,6 +65,7 @@ import {
 } from '../../pages/workflow-playground';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
+import { isWorkflowShinkaiTool } from '../tools/tool-details';
 import { BAML_EXAMPLES } from './constants';
 
 const escapeContent = (content: string) => {
@@ -119,10 +120,16 @@ function BamlEditor() {
 
   const { isLoadingMessage } = useStopGenerationPlayground();
 
-  const { data: workflowList } = useGetWorkflowList({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-  });
+  const { data: workflowList } = useGetWorkflowList(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+    },
+    {
+      select: (data) =>
+        data.filter((workflow) => workflow.name.includes('baml_')),
+    },
+  );
 
   const [openWorkflowList, setOpenWorkflowList] = useState(false);
 
@@ -135,13 +142,36 @@ function BamlEditor() {
       auth?.api_v2_key,
       toolRouterKey,
     );
-    // @ts-expect-error: for now
     const tool = workflowInfo.content?.[0] as ShinkaiTool;
-    // TODO:
-    // if (isWorkflowShinkaiTool(tool)) {
-    //   createJobForm.setValue('workflow', tool.workflow.raw);
-    //   setOpenWorkflowList(false);
-    // }
+
+    if (isWorkflowShinkaiTool(tool)) {
+      console.log(tool.workflow.steps, 'tool.workflow.steps');
+      // @ts-expect-error types
+      const workflowSteps = tool.workflow.steps?.[0]?.body?.[0]?.value;
+      const dslFile = workflowSteps?.find(
+        // @ts-expect-error types
+        (step) => step.value.register === '$DSL',
+      )?.value?.value;
+      const bamlInput = workflowSteps?.find(
+        // @ts-expect-error types
+        (step) => step.value.register === '$INPUT',
+      )?.value?.value;
+      const paramName = workflowSteps?.find(
+        // @ts-expect-error types
+        (step) => step.value.register === '$PARAM',
+      )?.value?.value;
+      const functionName = workflowSteps?.find(
+        // @ts-expect-error types
+        (step) => step.value.register === '$FUNCTION',
+      )?.value?.value;
+
+      bamlForm.setValue('dslFile', dslFile);
+      bamlForm.setValue('bamlInput', bamlInput);
+      bamlForm.setValue('paramName', paramName);
+      bamlForm.setValue('functionName', functionName);
+      bamlForm.setValue('bamlScriptName', tool.workflow.name);
+      setOpenWorkflowList(false);
+    }
   };
 
   const bamlForm = useForm<BamlFormSchema>({
@@ -310,7 +340,7 @@ function BamlEditor() {
                     </CommandGroup>
                     <CommandSeparator />
 
-                    <CommandGroup heading="Your Workflows">
+                    <CommandGroup heading="Your BAML">
                       {workflowList
                         ?.filter(
                           (workflow) =>
@@ -421,7 +451,11 @@ function BamlEditor() {
                     </div>
                     <MarkdownPreview
                       className="h-[250px] overflow-auto"
-                      source={createWorkflowForm.watch('workflowRaw')}
+                      source={`
+                            \`\`\`
+                             ${createWorkflowForm.watch('workflowRaw')}
+                            \`\`\`
+                          `}
                     />
                   </div>
                   <div className="space-y-1">
@@ -617,7 +651,8 @@ function getWorkflowFromBaml(
   paramName: string,
   functionName: string,
 ) {
-  return `workflow baml${bamlScriptName} v0.1 {
+  const bamlName = bamlScriptName.replace(/[^a-zA-Z0-9]/g, '_');
+  return `workflow baml_${bamlName} v0.1 {
       step Initialize {
         $DSL = "${escapedDslFile}"
         $INPUT = "${escapedBamlInput}"

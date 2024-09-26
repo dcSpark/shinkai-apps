@@ -115,10 +115,16 @@ function WorkflowEditor() {
   const defaulAgentId = useSettings((state) => state.defaultAgentId);
   const navigate = useNavigate();
 
-  const { data: workflowList } = useGetWorkflowList({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-  });
+  const { data: workflowList } = useGetWorkflowList(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+    },
+    {
+      select: (data) =>
+        data.filter((workflow) => !workflow.name.includes('baml_')),
+    },
+  );
 
   const [openWorkflowList, setOpenWorkflowList] = useState(false);
 
@@ -513,7 +519,9 @@ function WorkflowEditor() {
                         <MarkdownPreview
                           className="h-[250px] overflow-auto"
                           source={`
-                          ${createWorkflowForm.watch('workflowRaw')}
+                            \`\`\`
+                             ${createWorkflowForm.watch('workflowRaw')}
+                            \`\`\`
                           `}
                         />
                       </div>
