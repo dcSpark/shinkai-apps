@@ -18,10 +18,8 @@ import { SerializedLLMProvider } from '../models/SchemaTypes';
 import { InboxNameWrapper } from '../pkg/shinkai_message_wasm';
 import { urlJoin } from '../utils/url-join';
 import { FileUploader } from '../wasm/FileUploaderUsingSymmetricKeyManager';
-import { SerializedLLMProviderWrapper } from '../wasm/SerializedLLMProviderWrapper';
 import { ShinkaiMessageBuilderWrapper } from '../wasm/ShinkaiMessageBuilderWrapper';
 import { ShinkaiNameWrapper } from '../wasm/ShinkaiNameWrapper';
-import { Inbox } from './jobs/types';
 
 export const fetchPublicKey =
   (nodeAddress: string) => async (): Promise<any> => {
