@@ -493,10 +493,10 @@ export default {
       apiKey: 'API Key',
       modelName: 'Model Name',
       modelId: 'Model ID',
-      modelType: 'Model Type',
+      modelType: 'Model',
       customModelType: 'Custom Model Type',
       toggleCustomModel: 'Add a custom model',
-      selectModel: 'Select your Model',
+      selectModel: 'Select Model Provider',
     },
     success: {
       createAgent: 'AI created successfully',
