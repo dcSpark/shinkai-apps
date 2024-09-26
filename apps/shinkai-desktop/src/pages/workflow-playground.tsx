@@ -86,11 +86,9 @@ const WorkflowPlayground = () => {
 };
 export default WorkflowPlayground;
 
-export function PlaygroundPreview() {
+function PlaygroundPreviewWithInbox({ inboxId }: { inboxId: string }) {
   const { t } = useTranslation();
 
-  const { inboxId: encodedInboxId = '' } = useParams();
-  const inboxId = decodeURIComponent(encodedInboxId);
   const auth = useAuth((state) => state.auth);
   const currentInbox = useGetCurrentInbox();
 
@@ -98,16 +96,11 @@ export function PlaygroundPreview() {
     currentInbox?.agent?.model.split(':')?.[0] as Models,
   );
 
-  const { data: chatConfig } = useGetChatConfig(
-    {
-      nodeAddress: auth?.node_address ?? '',
-      token: auth?.api_v2_key ?? '',
-      jobId: inboxId ? extractJobIdFromInbox(inboxId) : '',
-    },
-    {
-      enabled: !!inboxId,
-    },
-  );
+  const { data: chatConfig } = useGetChatConfig({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+    jobId: extractJobIdFromInbox(inboxId),
+  });
 
   const { data } = useGetChatConversationWithPagination({
     token: auth?.api_v2_key ?? '',
@@ -115,7 +108,6 @@ export function PlaygroundPreview() {
     inboxId: inboxId as string,
     shinkaiIdentity: auth?.shinkai_identity ?? '',
     profile: auth?.profile ?? '',
-    enabled: !!inboxId,
     refetchIntervalEnabled:
       !hasProviderEnableStreaming || chatConfig?.stream === false,
   });
@@ -157,12 +149,6 @@ export function PlaygroundPreview() {
         )}
       </div>
       <div className="py-2.5">
-        {!inboxId && (
-          <p className="text-gray-80 text-sm">
-            Run a workflow/baml to see the output here.
-          </p>
-        )}
-
         {isLoadingMessage && messageContent === '' && (
           <DotsLoader className="pl-1 pt-1" />
         )}
@@ -172,7 +158,7 @@ export function PlaygroundPreview() {
             source={messageContent}
           />
         )}
-        {!isLoadingMessage && inboxId && (
+        {!isLoadingMessage && (
           <MarkdownPreview
             className="prose-h1:!text-gray-80 prose-h1:!text-xs !text-gray-80 !text-xs"
             source={lastMessage?.content}
@@ -181,6 +167,31 @@ export function PlaygroundPreview() {
       </div>
     </div>
   );
+}
+
+function PlaygroundPreviewEmpty() {
+  return (
+    <div className="flex max-h-screen w-full flex-1 flex-col overflow-hidden">
+      <div className="flex h-10 items-center justify-between gap-3">
+        <span className="text-sm font-semibold text-gray-50">Output</span>
+      </div>
+      <div className="py-2.5">
+        <p className="text-gray-80 text-sm">
+          Run a workflow/baml to see the output here.
+        </p>
+      </div>
+    </div>
+  );
+}
+export function PlaygroundPreview() {
+  const { inboxId: encodedInboxId = '' } = useParams();
+  const inboxId = decodeURIComponent(encodedInboxId);
+
+  if (inboxId) {
+    return <PlaygroundPreviewWithInbox inboxId={inboxId} />;
+  }
+
+  return <PlaygroundPreviewEmpty />;
 }
 
 export function useStopGenerationPlayground() {

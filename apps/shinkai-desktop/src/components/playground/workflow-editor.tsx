@@ -512,7 +512,9 @@ function WorkflowEditor() {
                         </div>
                         <MarkdownPreview
                           className="h-[250px] overflow-auto"
-                          source={createWorkflowForm.watch('workflowRaw')}
+                          source={`
+                          ${createWorkflowForm.watch('workflowRaw')}
+                          `}
                         />
                       </div>
                       <div className="space-y-1">

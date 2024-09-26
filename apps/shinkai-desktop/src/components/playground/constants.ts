@@ -9,8 +9,7 @@ export const WORKFLOW_EXAMPLES: Record<
   example1: {
     name: 'Full Document Summarizer',
     message: 'Example message 1',
-    workflow: `
-    workflow Extensive_summary v0.1 {
+    workflow: `workflow Extensive_summary v0.1 {
       step Initialize {
           $PROMPT = "Summarize this: "
           $EMBEDDINGS = call process_embeddings_in_job_scope()

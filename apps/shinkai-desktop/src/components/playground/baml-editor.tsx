@@ -359,7 +359,11 @@ function BamlEditor() {
             <Button
               className="flex h-8 gap-1.5 rounded-lg"
               disabled={
-                !bamlForm.formState.isValid || !bamlForm.formState.isDirty
+                currentBamlScriptName.length === 0 ||
+                currentBamlInput.length === 0 ||
+                currentDslFile.length === 0 ||
+                currentFunctionName.length === 0 ||
+                currentParamName.length === 0
               }
               size="sm"
               type="button"
@@ -613,8 +617,7 @@ function getWorkflowFromBaml(
   paramName: string,
   functionName: string,
 ) {
-  return `
-     workflow baml_${bamlScriptName} v0.1 {
+  return `workflow baml${bamlScriptName} v0.1 {
       step Initialize {
         $DSL = "${escapedDslFile}"
         $INPUT = "${escapedBamlInput}"
@@ -622,6 +625,5 @@ function getWorkflowFromBaml(
         $FUNCTION = "${functionName}"
         $RESULT = call baml_inference($INPUT, "", "", $DSL, $FUNCTION, $PARAM)
       }
-    } @@localhost.arb-sep-shinkai
-  `;
+    } @@localhost.arb-sep-shinkai`;
 }
