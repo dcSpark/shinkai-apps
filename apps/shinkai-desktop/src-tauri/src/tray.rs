@@ -1,6 +1,6 @@
 use tauri::{
     menu::{MenuBuilder, MenuItemBuilder, SubmenuBuilder},
-    tray::TrayIconBuilder,
+    tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
     LogicalSize, Manager, Runtime, Size,
 };
 
@@ -31,6 +31,7 @@ pub fn create_tray<R: Runtime>(app: &tauri::AppHandle<R>) -> tauri::Result<()> {
     };
     let _ = TrayIconBuilder::with_id("tray")
         .icon(icon)
+        .menu_on_left_click(false)
         .icon_as_template(is_template)
         .menu(&menu)
         .on_menu_event(move |app, event| match event.id().as_ref() {
@@ -67,17 +68,34 @@ pub fn create_tray<R: Runtime>(app: &tauri::AppHandle<R>) -> tauri::Result<()> {
                 }));
             }
             "quit" => {
-                tauri::async_runtime::spawn(async {
+                let app_handle = app.app_handle().clone();
+                tauri::async_runtime::spawn(async move {
                     // For some reason process::exit doesn't fire RunEvent::ExitRequested event in tauri
                     let mut shinkai_node_manager_guard =
                         SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
                     if shinkai_node_manager_guard.is_running().await {
                         shinkai_node_manager_guard.kill().await;
                     }
-                    std::process::exit(0);
+                    app_handle.exit(0);
                 });
             }
             _ => (),
+        })
+        .on_tray_icon_event(|tray, event| {
+            log::debug!("tray icon event: {:?}", event);
+            if let TrayIconEvent::Click {
+                button: MouseButton::Left,
+                button_state: MouseButtonState::Up,
+                ..
+            } = event
+            {
+                log::debug!("showing and focusing main window after tray icon click: {:?}", event);
+                let app = tray.app_handle();
+                if let Some(window) = app.get_webview_window("main") {
+                    let _ = window.show();
+                    let _ = window.set_focus();
+                }
+            }
         })
         .build(app)?;
     Ok(())
