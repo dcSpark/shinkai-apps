@@ -154,9 +154,9 @@ function PlaygroundPreviewWithInbox({ inboxId }: { inboxId: string }) {
         )}
         {isLoadingMessage && messageContent !== '' && (
           <MarkdownPreview
-            className="prose-h1:!text-gray-80 prose-h1:!text-xs !text-gray-80 !text-xs"
+            className="prose-h1:!text-gray-80 prose-h1:!text-sm !text-gray-80 !text-sm"
             source={
-              lastMessage?.content.startsWith('{')
+              lastMessage?.content?.startsWith('{')
                 ? `
 \`\`\`json
 ${lastMessage?.content}
@@ -168,11 +168,11 @@ ${lastMessage?.content}
         )}
         {!isLoadingMessage && (
           <MarkdownPreview
-            className="prose-h1:!text-gray-80 prose-h1:!text-xs !text-gray-80 !text-xs"
+            className="prose-h1:!text-gray-80 prose-h1:!text-sm !text-gray-80 !text-sm"
             // source={lastMessage?.content}
             source={
-              lastMessage?.content.startsWith('{') &&
-              lastMessage?.content.endsWith('}')
+              lastMessage?.content?.startsWith('{') &&
+              lastMessage?.content?.endsWith('}')
                 ? `
 \`\`\`json
 ${lastMessage?.content}
