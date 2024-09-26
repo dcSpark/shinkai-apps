@@ -188,8 +188,16 @@ function DocsPanel() {
   );
 }
 
-const workflowExamples = {
+const workflowExamples: Record<
+  string,
+  {
+    name: string;
+    message: string;
+    workflow: string;
+  }
+> = {
   example1: {
+    name: 'Full Document Summarizer',
     message: 'Example message 1',
     workflow: `
     workflow Extensive_summary v0.1 {
@@ -203,6 +211,7 @@ const workflowExamples = {
     } @@official.shinkai`,
   },
   example2: {
+    name: 'Example 2',
     message: 'Example message 2',
     workflow: 'Example workflow 2',
   },
@@ -254,7 +263,6 @@ function WorkflowEditor() {
     (state) => state.selectedFolderKeysRef,
   );
 
-  // **Create the main job form**
   const createJobForm = useForm<CreateJobFormSchema>({
     resolver: zodResolver(createJobFormSchema),
     defaultValues: {
@@ -386,52 +394,11 @@ function WorkflowEditor() {
     [onWorkflowChange],
   );
 
-  const [selectedWorkflowScript, setSelectedWorkflowScript] = useState<
-    'custom' | 'example1' | 'example2'
-  >('custom');
-  const [workflowFormData, setWorkflowFormData] = useState<{
-    custom: any;
-    example1: any;
-    example2: any;
-  }>({
-    custom: {
-      message: '',
-      workflow: '',
-      agent: '',
-    },
-    example1: {
-      message: 'Example message 1',
-      workflow: `workflow Extensive_summary v0.1 {
-    step Initialize {
-        $PROMPT = "Summarize this: "
-        $EMBEDDINGS = call process_embeddings_in_job_scope()
-    }
-    step Summarize {
-        $RESULT = call multi_inference($PROMPT, $EMBEDDINGS)
-    }
-} @@official.shinkai`,
-      agent: '',
-    },
-    example2: {
-      message: 'Example message 2',
-      workflow: 'Example workflow 2',
-      agent: '',
-    },
-  });
-
-  const handleWorkflowScriptChange = (script: 'example1' | 'example2') => {
-    const selectedWorkflowExample =
-      workflowExamples[script as 'example1' | 'example2'];
+  const handleWorkflowScriptChange = (script: string) => {
+    const selectedWorkflowExample = workflowExamples[script];
     createJobForm.setValue('message', selectedWorkflowExample.message);
     createJobForm.setValue('workflow', selectedWorkflowExample.workflow);
   };
-
-  useEffect(() => {
-    setWorkflowFormData((prevData) => ({
-      ...prevData,
-      [selectedWorkflowScript]: createJobForm.getValues(),
-    }));
-  }, [createJobForm, selectedWorkflowScript]);
 
   const handleWorkflowSave = async () => {
     await createWorkflow({
@@ -510,26 +477,18 @@ function WorkflowEditor() {
                   <CommandList>
                     <CommandEmpty>No results found.</CommandEmpty>
                     <CommandGroup heading="Examples">
-                      <CommandItem
-                        className="text-xs text-white"
-                        key="example1"
-                        onSelect={() => {
-                          handleWorkflowScriptChange('example1');
-                          setOpenWorkflowList(false);
-                        }}
-                      >
-                        <span>Full Document Summarizer</span>
-                      </CommandItem>
-                      <CommandItem
-                        className="text-xs text-white"
-                        key="example2"
-                        onSelect={() => {
-                          handleWorkflowScriptChange('example2');
-                          setOpenWorkflowList(false);
-                        }}
-                      >
-                        <span>example2</span>
-                      </CommandItem>
+                      {Object.keys(workflowExamples).map((key) => (
+                        <CommandItem
+                          className="text-xs text-white"
+                          key={key}
+                          onSelect={() => {
+                            handleWorkflowScriptChange(key);
+                            setOpenWorkflowList(false);
+                          }}
+                        >
+                          <span>{workflowExamples?.[key]?.name}</span>
+                        </CommandItem>
+                      ))}
                     </CommandGroup>
                     <CommandSeparator />
 
