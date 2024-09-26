@@ -28,7 +28,9 @@ pub fn run<T>(
     let buffer = Arc::new(Mutex::new(Vec::new()));
 
     // Initialize the VAD
-    let vad = Arc::new(Mutex::new(Vad::new(config.sample_rate.0.try_into().unwrap()).unwrap()));
+    let vad = Arc::new(Mutex::new(
+        Vad::new(config.sample_rate.0.try_into().unwrap()).unwrap(),
+    ));
     vad.lock()
         .unwrap()
         .fvad_set_mode(webrtc_vad::VadMode::VeryAggressive)
@@ -49,14 +51,20 @@ pub fn run<T>(
 
                 let mut is_activated = is_activated.lock().unwrap();
                 let mut vad = Vad::new(config.sample_rate.0.try_into().unwrap()).unwrap();
-                vad.fvad_set_mode(webrtc_vad::VadMode::VeryAggressive).unwrap();
+                vad.fvad_set_mode(webrtc_vad::VadMode::VeryAggressive)
+                    .unwrap();
 
                 // print buffer length
                 // println!("Buffer length: {}", buffer.len());
                 if !buffer.is_empty() && buffer.len() >= 480 {
                     // println!("Buffer length: {}", buffer.len());
-                    let buffer_i16: Vec<i16> = buffer.iter().map(|&f| (f * i16::MAX as f32) as i16).collect();
-                    let is_voice = vad.is_voice_segment(&buffer_i16[(buffer.len() - 480)..]).unwrap();
+                    let buffer_i16: Vec<i16> = buffer
+                        .iter()
+                        .map(|&f| (f * i16::MAX as f32) as i16)
+                        .collect();
+                    let is_voice = vad
+                        .is_voice_segment(&buffer_i16[(buffer.len() - 480)..])
+                        .unwrap();
                     // println!("Is voice: {}", is_voice);
 
                     if is_voice {
@@ -68,7 +76,9 @@ pub fn run<T>(
                             println!("Started recording");
                         }
                     } else if let Some(last_voice_activity) = last_voice_activity {
-                        if last_voice_activity.elapsed() > Duration::from_secs_f32(1.0) && *is_activated {
+                        if last_voice_activity.elapsed() > Duration::from_secs_f32(1.0)
+                            && *is_activated
+                        {
                             // Stop recording
                             *is_activated = false;
                             if let Some(start_time) = start_time {
@@ -84,20 +94,28 @@ pub fn run<T>(
                                 let ctx = ctx.lock().unwrap();
                                 let mut state = ctx.create_state().expect("failed to create state");
 
-                                let mut params = FullParams::new(SamplingStrategy::Greedy { best_of: 1 });
+                                let mut params =
+                                    FullParams::new(SamplingStrategy::Greedy { best_of: 1 });
                                 params.set_n_threads(2);
                                 params.set_print_special(false);
                                 params.set_print_progress(false);
                                 params.set_print_realtime(false);
                                 params.set_print_timestamps(false);
 
-                                let audio_data = whisper_rs::convert_stereo_to_mono_audio(&buffer).unwrap();
+                                let audio_data =
+                                    whisper_rs::convert_stereo_to_mono_audio(&buffer).unwrap();
 
-                                state.full(params, &audio_data).expect("failed to run model");
+                                state
+                                    .full(params, &audio_data)
+                                    .expect("failed to run model");
 
-                                let num_segments = state.full_n_segments().expect("failed to get number of segments");
+                                let num_segments = state
+                                    .full_n_segments()
+                                    .expect("failed to get number of segments");
                                 for i in 0..num_segments {
-                                    let segment = state.full_get_segment_text(i).expect("failed to get segment");
+                                    let segment = state
+                                        .full_get_segment_text(i)
+                                        .expect("failed to get segment");
                                     println!("Segment {}: {}", i, segment);
 
                                     let start_timestamp = state
@@ -106,7 +124,10 @@ pub fn run<T>(
                                     let end_timestamp = state
                                         .full_get_segment_t1(i)
                                         .expect("failed to get segment end timestamp");
-                                    println!("[{} - {}]: {}", start_timestamp, end_timestamp, segment);
+                                    println!(
+                                        "[{} - {}]: {}",
+                                        start_timestamp, end_timestamp, segment
+                                    );
                                 }
 
                                 // Clear the buffer

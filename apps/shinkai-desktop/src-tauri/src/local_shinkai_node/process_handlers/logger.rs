@@ -37,7 +37,7 @@ impl Logger {
             self.logs.remove(0);
         }
         self.logs.push(log_entry.clone());
-        println!("{:?}", log_entry);
+        log::debug!("{:?}", log_entry);
         log_entry
     }
 

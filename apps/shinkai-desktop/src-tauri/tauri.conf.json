@@ -59,6 +59,24 @@
         "dragDropEnabled": false,
         "titleBarStyle": "Overlay",
         "hiddenTitle": true
+      },
+      {
+        "label": "spotlight",
+        "transparent": true,
+        "title": "Spotlight",
+        "width": 1280,
+        "height": 840,
+        "resizable": false,
+        "dragDropEnabled": false,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true,
+        "url": "src/windows/spotlight/index.html",
+        "center": true,
+        "skipTaskbar": true,
+        "shadow": true,
+        "decorations": false,
+        "visible": false,
+        "closable": false
       }
     ],
     "macOSPrivateApi": true

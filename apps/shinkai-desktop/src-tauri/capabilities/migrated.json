@@ -2,7 +2,9 @@
   "identifier": "migrated",
   "description": "permissions that were migrated from v1",
   "local": true,
-  "windows": ["main"],
+  "windows": [
+    "main"
+  ],
   "permissions": [
     "core:default",
     "core:webview:allow-create-webview-window",
@@ -14,7 +16,8 @@
     "updater:allow-download",
     "updater:allow-install",
     "updater:allow-download-and-install",
-    "process:allow-restart"
+    "process:allow-restart",
+    "log:default"
   ],
   "commands.allow": [
     "shinkai_node_is_running",

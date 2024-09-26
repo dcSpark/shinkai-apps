@@ -40,24 +40,29 @@ pub async fn kill_process_by_name(app: AppHandle, process_name: &str) {
     };
     if let Ok(output) = output.await {
         if output.status.success() {
-            println!(
+            log::info!(
                 "existing process '{}' has been terminated.",
                 adapted_process_name
             );
         } else {
-            println!(
+            log::warn!(
                 "failed to terminate process '{}'. Error: {}",
-                adapted_process_name, String::from_utf8_lossy(&output.stderr)
+                adapted_process_name,
+                String::from_utf8_lossy(&output.stderr)
             );
         }
     } else {
-        println!("failed to execute command to terminate process");
+        log::error!("failed to execute command to terminate process");
     }
 }
 
-pub async fn kill_existing_processes_using_ports(app: AppHandle, ports: Vec<&str>) -> Result<(), String> {
+pub async fn kill_existing_processes_using_ports(
+    app: AppHandle,
+    ports: Vec<&str>,
+) -> Result<(), String> {
     for port_str in ports {
-        let port = port_str.parse::<u16>()
+        let port = port_str
+            .parse::<u16>()
             .map_err(|_| format!("Invalid port number: {}", port_str))?;
 
         // Get processes by port
@@ -66,7 +71,10 @@ pub async fn kill_existing_processes_using_ports(app: AppHandle, ports: Vec<&str
 
         // Kill all existing processes using the same port
         for process in processes {
-            println!("terminating process: PID={}, Name={}", process.pid, process.name);
+            log::info!(
+                "terminating process: PID={}, Name={}",
+                process.pid, process.name
+            );
             kill_process_by_pid(app.clone(), &process.pid.to_string()).await;
         }
     }
@@ -88,18 +96,15 @@ pub async fn kill_process_by_pid(app: AppHandle, process_id: &str) {
     };
     if let Ok(output) = output.await {
         if output.status.success() {
-            println!(
-                "process with PID '{}' has been terminated.",
-                process_id
-            );
+            log::info!("process with PID '{}' has been terminated.", process_id);
         } else {
-            println!(
+            log::warn!(
                 "failed to terminate process with PID '{}'. error: {}",
-                process_id, String::from_utf8_lossy(&output.stderr)
+                process_id,
+                String::from_utf8_lossy(&output.stderr)
             );
         }
     } else {
-        println!("failed to execute command to terminate process");
+        log::error!("failed to execute command to terminate process");
     }
 }
-

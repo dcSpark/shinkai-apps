@@ -36,6 +36,7 @@ hex = "0.4.3"
 base64 = "0.22.1"
 time = "^0.3.36"
 listeners = "0.2"
+log = "0.4"
 
 tauri-plugin-global-shortcut = "2.0.0-rc.2"
 tauri-plugin-shell = "2.0.0-rc.3"
@@ -45,6 +46,7 @@ tauri-plugin-dialog = "2.0.0-rc.7"
 tauri-plugin-fs="2.0.0-rc.5"
 tauri-plugin-os = "2.0.0-rc.1"
 tauri-plugin-process = "2.0.0-rc.1"
+tauri-plugin-log = "2.0.0-rc"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

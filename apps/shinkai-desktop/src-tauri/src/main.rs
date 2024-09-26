@@ -12,17 +12,18 @@ use crate::commands::shinkai_node_manager_commands::{
     shinkai_node_spawn,
 };
 
+use global_shortcuts::global_shortcut_handler;
 use globals::SHINKAI_NODE_MANAGER_INSTANCE;
 use local_shinkai_node::shinkai_node_manager::ShinkaiNodeManager;
 use tauri::Emitter;
 use tauri::{Manager, RunEvent};
-use tauri_plugin_global_shortcut::{Code, Modifiers, ShortcutState};
 use tokio::sync::Mutex;
 use tray::create_tray;
 
 mod audio;
 mod commands;
 mod galxe;
+mod global_shortcuts;
 mod globals;
 mod hardware;
 mod local_shinkai_node;
@@ -36,35 +37,34 @@ struct Payload {
 
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_log::Builder::new().build())
         .plugin(tauri_plugin_os::init())
+        .plugin(tauri_plugin_log::Builder::new().build())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
-            println!("{}, {argv:?}, {cwd}", app.package_info().name);
             app.emit("single-instance", Payload { args: argv, cwd })
                 .unwrap();
         }))
         .plugin(tauri_plugin_dialog::init())
         .plugin(
             tauri_plugin_global_shortcut::Builder::new()
-                .with_shortcuts(["super+shift+i", "control+shift+i"])
+                .with_shortcuts([
+                    "super+shift+i",
+                    "control+shift+i",
+                    "super+shift+j",
+                    "control+shift+j",
+                ])
                 .unwrap()
-                .with_handler(|app, shortcut, event| {
-                    if event.state == ShortcutState::Pressed
-                        && shortcut.matches(Modifiers::SUPER | Modifiers::SHIFT, Code::KeyI)
-                    {
-                        if let Some(window) = app.get_webview_window("main") {
-                            if let Err(e) = app.emit("create-chat", ()) {
-                                println!("Failed to emit 'create-chat': {}", e);
-                            }
-                            if let Err(e) = window.set_focus() {
-                                println!("Failed to set focus: {}", e);
-                            }
-                        }
-                    }
-                })
+                .with_handler(
+                    |app: &tauri::AppHandle,
+                     shortcut: &tauri_plugin_global_shortcut::Shortcut,
+                     event: tauri_plugin_global_shortcut::ShortcutEvent| {
+                        global_shortcut_handler(app, *shortcut, event)
+                    },
+                )
                 .build(),
         )
         .invoke_handler(tauri::generate_handler![
@@ -103,7 +103,7 @@ fn main() {
                         app_handle
                             .emit("shinkai-node-state-change", state_change)
                             .unwrap_or_else(|e| {
-                                println!("failed to emit global event for state change: {}", e);
+                                log::error!("failed to emit global event for state change: {}", e);
                             });
                     }
                 }
