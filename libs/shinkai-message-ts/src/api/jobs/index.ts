@@ -23,6 +23,7 @@ import {
   JobMessageRequest,
   JobMessageResponse,
   LLMProviderInterface,
+  RemoveLLMProviderRequest,
   StopGeneratingLLMRequest,
   UpdateChatConfigRequest,
   UpdateChatConfigResponse,
@@ -256,11 +257,11 @@ export const updateLLMProvider = async (
 export const removeLLMProvider = async (
   nodeAddress: string,
   bearerToken: string,
-  providerName: string,
+  payload: RemoveLLMProviderRequest,
 ) => {
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v2/remove_llm_provider'),
-    providerName,
+    payload,
     {
       headers: { Authorization: `Bearer ${bearerToken}` },
       responseType: 'json',

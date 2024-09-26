@@ -7,6 +7,8 @@ export const removeLLMProvider = async ({
   token,
   llmProviderId,
 }: RemoveLLMProviderInput) => {
-  const data = await removeLLMProviderApi(nodeAddress, token, llmProviderId);
+  const data = await removeLLMProviderApi(nodeAddress, token, {
+    llm_provider_id: llmProviderId,
+  });
   return data;
 };
