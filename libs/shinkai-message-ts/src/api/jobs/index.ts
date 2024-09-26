@@ -253,6 +253,22 @@ export const updateLLMProvider = async (
   return response.data as UpdateLLMProviderResponse;
 };
 
+export const removeLLMProvider = async (
+  nodeAddress: string,
+  bearerToken: string,
+  providerName: string,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/remove_llm_provider'),
+    providerName,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data;
+};
+
 export const getAllInboxes = async (
   nodeAddress: string,
   bearerToken: string,
