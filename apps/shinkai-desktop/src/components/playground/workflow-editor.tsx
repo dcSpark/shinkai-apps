@@ -194,6 +194,11 @@ function WorkflowEditor() {
         captureAnalyticEvent('AI Chat', undefined);
       }
     },
+    onError: (error) => {
+      toast.error('Failed to create job', {
+        description: error?.response?.data?.message ?? error.message,
+      });
+    },
   });
 
   useEffect(() => {

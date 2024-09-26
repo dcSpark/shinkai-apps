@@ -170,17 +170,15 @@ function BamlEditor() {
   const currentParamName = bamlForm.watch('paramName');
 
   useEffect(() => {
+    const escapedBamlInput = escapeContent(currentBamlInput);
     const escapedDslFile = escapeContent(currentDslFile);
-    const workflowRaw = `
-      workflow baml_${currentBamlScriptName} v0.1 {
-        step Initialize {
-          $DSL = "${escapedDslFile}"
-          $PARAM = "${currentParamName}"
-          $FUNCTION = "${currentFunctionName}"
-          $RESULT = call baml_inference($INPUT, "", "", $DSL, $FUNCTION, $PARAM)
-        }
-      } @@localhost.arb-sep-shinkai
-    `;
+    const workflowRaw = getWorkflowFromBaml(
+      currentBamlScriptName,
+      escapedDslFile,
+      escapedBamlInput,
+      currentParamName,
+      currentFunctionName,
+    );
     createWorkflowForm.setValue('workflowRaw', workflowRaw);
   }, [
     currentBamlScriptName,
@@ -188,23 +186,21 @@ function BamlEditor() {
     currentDslFile,
     currentFunctionName,
     currentParamName,
+    createWorkflowForm,
   ]);
 
   const onBamlSubmit = async (data: BamlFormSchema) => {
-    const { bamlInput, dslFile, functionName, paramName } = data;
+    const { bamlInput, dslFile, functionName, paramName, bamlScriptName } =
+      data;
     const escapedBamlInput = escapeContent(bamlInput);
     const escapedDslFile = escapeContent(dslFile);
-    const workflowText = `
-    workflow ${functionName} v0.1 {
-      step Initialize {
-        $DSL = "${escapedDslFile}"
-        $INPUT = "${escapedBamlInput}"
-        $PARAM = "${paramName}"
-        $FUNCTION = "${functionName}"
-        $RESULT = call baml_inference($INPUT, "", "", $DSL, $FUNCTION, $PARAM)
-      }
-    } @@localhost.arb-sep-shinkai
-  `;
+    const workflowCode = getWorkflowFromBaml(
+      bamlScriptName,
+      escapedDslFile,
+      escapedBamlInput,
+      paramName,
+      functionName,
+    );
 
     if (!auth) return;
 
@@ -213,11 +209,8 @@ function BamlEditor() {
       token: auth?.api_v2_key ?? '',
       llmProvider: defaulAgentId,
       content: escapedBamlInput,
-      files: [],
-      workflowCode: workflowText,
+      workflowCode,
       isHidden: true,
-      selectedVRFiles: [],
-      selectedVRFolders: [],
       chatConfig: {
         stream: false,
         custom_prompt: '',
@@ -612,3 +605,23 @@ function BamlEditor() {
   );
 }
 export default BamlEditor;
+
+function getWorkflowFromBaml(
+  bamlScriptName: string,
+  escapedDslFile: string,
+  escapedBamlInput: string,
+  paramName: string,
+  functionName: string,
+) {
+  return `
+     workflow baml_${bamlScriptName} v0.1 {
+      step Initialize {
+        $DSL = "${escapedDslFile}"
+        $INPUT = "${escapedBamlInput}"
+        $PARAM = "${paramName}"
+        $FUNCTION = "${functionName}"
+        $RESULT = call baml_inference($INPUT, "", "", $DSL, $FUNCTION, $PARAM)
+      }
+    } @@localhost.arb-sep-shinkai
+  `;
+}

@@ -1,3 +1,4 @@
+import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { listen } from '@tauri-apps/api/event';
 import React, { useEffect, useRef } from 'react';
 import { Navigate, Outlet, Route, Routes, useNavigate } from 'react-router-dom';
@@ -140,10 +141,28 @@ const useGlobalAppShortcuts = () => {
   }, []);
 };
 
+const useDefaultAgentByDefault = () => {
+  const auth = useAuth((state) => state.auth);
+  const defaultAgentId = useSettings((state) => state.defaultAgentId);
+  const setDefaultAgentId = useSettings((state) => state.setDefaultAgentId);
+
+  const { llmProviders, isSuccess } = useGetLLMProviders({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
+  useEffect(() => {
+    if (isSuccess && llmProviders?.length && !defaultAgentId) {
+      setDefaultAgentId(llmProviders[0].id);
+    }
+  }, [llmProviders, isSuccess, setDefaultAgentId, defaultAgentId]);
+};
+
 const AppRoutes = () => {
   useOnboardingRedirect();
   useAppHotkeys();
   useGlobalAppShortcuts();
+  useDefaultAgentByDefault();
 
   return (
     <Routes>

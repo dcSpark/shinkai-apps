@@ -98,21 +98,33 @@ export function PlaygroundPreview() {
     currentInbox?.agent?.model.split(':')?.[0] as Models,
   );
 
+  const { data: chatConfig } = useGetChatConfig(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      jobId: inboxId ? extractJobIdFromInbox(inboxId) : '',
+    },
+    {
+      enabled: !!inboxId,
+    },
+  );
+
   const { data } = useGetChatConversationWithPagination({
     token: auth?.api_v2_key ?? '',
     nodeAddress: auth?.node_address ?? '',
     inboxId: inboxId as string,
     shinkaiIdentity: auth?.shinkai_identity ?? '',
     profile: auth?.profile ?? '',
-    refetchIntervalEnabled: !hasProviderEnableStreaming,
     enabled: !!inboxId,
+    refetchIntervalEnabled:
+      !hasProviderEnableStreaming || chatConfig?.stream === false,
   });
 
   const lastMessage = data?.pages?.at(-1)?.at(-1);
 
   const isLoadingMessage = useMemo(() => {
-    return !!inboxId && lastMessage?.isLocal;
-  }, [inboxId, lastMessage?.isLocal]);
+    return lastMessage?.isLocal;
+  }, [lastMessage?.isLocal]);
 
   const { messageContent } = useWebSocketMessage({
     enabled: hasProviderEnableStreaming,
@@ -163,7 +175,7 @@ export function PlaygroundPreview() {
         {!isLoadingMessage && inboxId && (
           <MarkdownPreview
             className="prose-h1:!text-gray-80 prose-h1:!text-xs !text-gray-80 !text-xs"
-            source={lastMessage?.content || '--'}
+            source={lastMessage?.content}
           />
         )}
       </div>
