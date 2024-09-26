@@ -116,8 +116,14 @@ fn main() {
         .build(tauri::generate_context!())
         .expect("error while running tauri application")
         .run(move |_app_handle, event| match event {
-            RunEvent::ExitRequested { .. } => {
+            RunEvent::ExitRequested { api, .. } => {
+                log::debug!("calling prevent_exit to send the app to the system tray");
+                api.prevent_exit();
+            }
+            RunEvent::Exit {} => {
                 tauri::async_runtime::spawn(async {
+                    log::debug!("killing ollama and shinkai-node before exit");
+
                     // For some reason process::exit doesn't fire RunEvent::ExitRequested event in tauri
                     let mut shinkai_node_manager_guard =
                         SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
