@@ -23,10 +23,13 @@ import {
   JobMessageRequest,
   JobMessageResponse,
   LLMProviderInterface,
+  RemoveLLMProviderRequest,
   StopGeneratingLLMRequest,
   UpdateChatConfigRequest,
   UpdateChatConfigResponse,
   UpdateJobScopeRequest,
+  UpdateLLMProviderRequest,
+  UpdateLLMProviderResponse,
 } from './types';
 
 export const createJob = async (
@@ -233,6 +236,38 @@ export const addLLMProvider = async (
     },
   );
   return response.data as AddLLMProviderResponse;
+};
+
+export const updateLLMProvider = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: UpdateLLMProviderRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/modify_llm_provider'),
+    { ...payload, model: getModelString(payload.model) },
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as UpdateLLMProviderResponse;
+};
+
+export const removeLLMProvider = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: RemoveLLMProviderRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/remove_llm_provider'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data;
 };
 
 export const getAllInboxes = async (
