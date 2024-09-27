@@ -20,9 +20,13 @@ import {
   ScrollArea,
   Separator,
 } from '@shinkai_network/shinkai-ui';
+import { copyToClipboard } from '@shinkai_network/shinkai-ui/helpers';
+import { invoke } from '@tauri-apps/api/core';
 import { motion } from 'framer-motion';
-import { useEffect, useMemo } from 'react';
+import { CheckCircle2 } from 'lucide-react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useHotkeys } from 'react-hotkeys-hook';
 
 import { AIModelSelector } from '../../../components/chat/chat-action-bar/ai-update-selection-action-bar';
 import { streamingSupportedModels } from '../../../components/chat/constants';
@@ -32,6 +36,9 @@ import { useAuth } from '../../../store/auth';
 import { useSettings } from '../../../store/settings';
 import { useQuickAskStore } from '../context/quick-ask';
 
+export const hideSpotlightWindow = async () => {
+  return invoke('hide_spotlight_window_app');
+};
 function QuickAsk() {
   const auth = useAuth((state) => state.auth);
   const defaultAgentId = useSettings((state) => state.defaultAgentId);
@@ -41,6 +48,38 @@ function QuickAsk() {
     (state) => state.setMessageResponse,
   );
   useDefaultAgentByDefault();
+
+  const [clipboard, setClipboard] = useState(false);
+  let timeout: ReturnType<typeof setTimeout>;
+
+  useHotkeys(
+    ['esc'],
+    () => {
+      hideSpotlightWindow();
+    },
+    {
+      enableOnContentEditable: true,
+      preventDefault: true,
+      enableOnFormTags: true,
+    },
+  );
+
+  useHotkeys(
+    ['mod+c', 'ctrl+c'],
+    () => {
+      if (!messageResponse) return;
+      const string_ = messageResponse.trim();
+      copyToClipboard(string_);
+      setClipboard(true);
+      clearTimeout(timeout);
+      timeout = setTimeout(() => setClipboard(false), 1000);
+    },
+    {
+      enableOnContentEditable: true,
+      preventDefault: true,
+      enableOnFormTags: true,
+    },
+  );
 
   const chatForm = useForm<CreateJobFormSchema>({
     resolver: zodResolver(createJobFormSchema),
@@ -119,9 +158,8 @@ function QuickAsk() {
         />
       </div>
       <Separator className="bg-gray-350" />
-      <ScrollArea className="flex-1 p-5 text-sm">
-        <QuickAskBody aiModel={chatForm.watch('agent')} />
-      </ScrollArea>
+      <QuickAskBody aiModel={chatForm.watch('agent')} />
+
       <Separator className="bg-gray-350" />
       <div className="flex h-10 w-full items-center justify-between px-4 py-1.5 text-xs">
         <div>
@@ -152,7 +190,10 @@ function QuickAsk() {
           ) : messageResponse ? (
             <CopyToClipboardIcon asChild string={messageResponse}>
               <button className="text-gray-80 flex items-center justify-center gap-2 rounded-md px-1.5 py-0.5 text-center transition-colors hover:bg-gray-300">
-                <span>Copy Answer</span>
+                {clipboard && (
+                  <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />
+                )}
+                <span>{clipboard ? 'Copied' : 'Copy'} Answer</span>
                 <span className="flex items-center gap-1">
                   <kbd className="text-gray-1100 flex h-5 w-5 items-center justify-center rounded-md bg-gray-300 px-1 font-sans">
                     ⌘
@@ -190,10 +231,10 @@ const QuickAskBody = ({ aiModel }: { aiModel: string }) => {
   const decodedInboxId = decodeURIComponent(inboxId ?? '');
   if (!decodedInboxId) {
     return (
-      <div className="flex w-full flex-1 items-center justify-center p-6">
+      <div className="flex h-full w-full flex-1 items-center justify-center p-6">
         <motion.div
           animate={{ opacity: 1 }}
-          className="flex max-w-lg flex-col items-center gap-2 pt-10 text-center"
+          className="flex max-w-lg flex-col items-center gap-2 text-center"
           exit={{ opacity: 0 }}
           initial={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
@@ -224,6 +265,7 @@ const QuickAskBodyWithResponse = ({
   inboxId: string;
   aiModel: string;
 }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const auth = useAuth((state) => state.auth);
 
   const { llmProviders } = useGetLLMProviders({
@@ -273,32 +315,41 @@ const QuickAskBodyWithResponse = ({
     }
   }, [isLoadingMessage, lastMessage?.content, setMessageResponse]);
 
+  useLayoutEffect(() => {
+    containerRef.current?.scrollTo({
+      top: containerRef.current?.scrollHeight,
+      behavior: 'smooth',
+    });
+  }, [messageContent]);
+
   return (
-    <div className="pb-4">
-      {isLoadingMessage && (
-        <>
-          {messageContent === '' && <DotsLoader className="pl-1 pt-1" />}
+    <ScrollArea className="flex-1 p-5 text-sm" ref={containerRef}>
+      <div className="pb-4">
+        {isLoadingMessage && (
+          <>
+            {messageContent === '' && <DotsLoader className="pl-1 pt-1" />}
+            <MarkdownPreview
+              className="prose-h1:!text-gray-80 prose-h1:!text-sm !text-gray-80 !text-sm"
+              source={messageContent}
+            />
+          </>
+        )}
+        {!isLoadingMessage && (
           <MarkdownPreview
             className="prose-h1:!text-gray-80 prose-h1:!text-sm !text-gray-80 !text-sm"
-            source={messageContent}
-          />
-        </>
-      )}
-      {!isLoadingMessage && (
-        <MarkdownPreview
-          className="prose-h1:!text-gray-80 prose-h1:!text-sm !text-gray-80 !text-sm"
-          source={
-            lastMessage?.content?.startsWith('{') &&
-            lastMessage?.content?.endsWith('}')
-              ? `
+            source={
+              lastMessage?.content?.startsWith('{') &&
+              lastMessage?.content?.endsWith('}')
+                ? `
 \`\`\`json
 ${lastMessage?.content}
 \`\`\`
 `
-              : lastMessage?.content
-          }
-        />
-      )}
-    </div>
+                : lastMessage?.content
+            }
+          />
+        )}
+      </div>
+    </ScrollArea>
   );
 };
