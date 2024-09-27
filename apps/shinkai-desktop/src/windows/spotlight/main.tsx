@@ -18,6 +18,7 @@ import { shinkaiNodeQueryClient } from '../../lib/shinkai-node-manager/shinkai-n
 import { useShinkaiNodeEventsToast } from '../../lib/shinkai-node-manager/shinkai-node-manager-hooks';
 import { initSyncStorage } from '../../store/sync-utils';
 import QuickAsk from './components/quick-ask';
+import { QuickAskProvider } from './context/quick-ask';
 
 initSyncStorage();
 
@@ -27,16 +28,18 @@ const App = () => {
   return (
     <I18nProvider>
       <ErrorBoundary FallbackComponent={FullPageErrorFallback}>
-        <QueryProvider>
-          <TooltipProvider delayDuration={0}>
-            <Router>
-              {/*<Routes>*/}
-              <QuickAsk />
-              {/*</Routes>*/}
-            </Router>
-            <Toaster />
-          </TooltipProvider>
-        </QueryProvider>
+        <QuickAskProvider>
+          <QueryProvider>
+            <TooltipProvider delayDuration={0}>
+              <Router>
+                {/*<Routes>*/}
+                <QuickAsk />
+                {/*</Routes>*/}
+              </Router>
+              <Toaster />
+            </TooltipProvider>
+          </QueryProvider>
+        </QuickAskProvider>
       </ErrorBoundary>
     </I18nProvider>
   );

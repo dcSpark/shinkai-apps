@@ -1,5 +1,5 @@
 import { CheckCircle2, CopyIcon } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { cloneElement, ReactElement, useState } from 'react';
 
 import { copyToClipboard } from '../helpers/copy-to-clipboard';
 import { cn } from '../utils';
@@ -7,9 +7,10 @@ import { Button } from './button';
 
 type CopyToClipboardIconProps = {
   string?: string;
-  children?: React.ReactNode;
+  children?: ReactElement;
   className?: string;
   onCopyClipboard?: () => void;
+  asChild?: boolean;
 };
 
 const CopyToClipboardIcon = ({
@@ -17,6 +18,7 @@ const CopyToClipboardIcon = ({
   children,
   className,
   onCopyClipboard,
+  asChild = false,
 }: CopyToClipboardIconProps) => {
   const [clipboard, setClipboard] = useState(false);
 
@@ -35,6 +37,13 @@ const CopyToClipboardIcon = ({
   };
 
   const ClipboardIcon = clipboard ? CheckCircle2 : CopyIcon;
+
+  if (asChild && children) {
+    return cloneElement(children, {
+      onClick: onCopy,
+      className: cn(children.props.className, className),
+    });
+  }
 
   return (
     <Button

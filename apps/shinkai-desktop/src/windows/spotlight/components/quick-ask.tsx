@@ -19,14 +19,9 @@ import {
   MarkdownPreview,
   ScrollArea,
   Separator,
-  Tooltip,
-  TooltipContent,
-  TooltipPortal,
-  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { AIModelSelector } from '../../../components/chat/chat-action-bar/ai-update-selection-action-bar';
@@ -35,13 +30,18 @@ import { useWebSocketMessage } from '../../../components/chat/message-stream';
 import { useDefaultAgentByDefault } from '../../../routes';
 import { useAuth } from '../../../store/auth';
 import { useSettings } from '../../../store/settings';
+import { useQuickAskStore } from '../context/quick-ask';
 
 function QuickAsk() {
   const auth = useAuth((state) => state.auth);
   const defaultAgentId = useSettings((state) => state.defaultAgentId);
+  const setInboxId = useQuickAskStore((state) => state.setInboxId);
+  const messageResponse = useQuickAskStore((state) => state.messageResponse);
+  const setMessageResponse = useQuickAskStore(
+    (state) => state.setMessageResponse,
+  );
   useDefaultAgentByDefault();
 
-  const [inboxId, setInboxId] = useState<string | null>(null);
   const chatForm = useForm<CreateJobFormSchema>({
     resolver: zodResolver(createJobFormSchema),
     defaultValues: {
@@ -50,12 +50,16 @@ function QuickAsk() {
     },
   });
 
+  const messageInput = chatForm.watch('message');
+
   useEffect(() => {
     chatForm.reset({
       message: '',
       agent: defaultAgentId,
       files: [],
     });
+    setInboxId(null);
+    setMessageResponse('');
   }, []);
 
   const { mutateAsync: createJob } = useCreateJob({
@@ -73,8 +77,6 @@ function QuickAsk() {
     chatForm.setValue('agent', defaultAgentId);
   }, [chatForm, defaultAgentId]);
 
-  console.log('QuickAsk', chatForm.formState);
-
   const onSubmit = async (data: CreateJobFormSchema) => {
     if (!auth) return;
     await createJob({
@@ -85,17 +87,18 @@ function QuickAsk() {
       isHidden: true,
     });
   };
-
+  console.log('QuickAsk renders');
   return (
     <div className="relative flex size-full flex-col">
-      <div
-        className="absolute top-0 z-50 h-8 w-full"
-        data-tauri-drag-region={true}
-      />
+      {/*// TODO: drag support*/}
+      {/*<div*/}
+      {/*  className="absolute top-0 z-50 h-8 w-full"*/}
+      {/*  data-tauri-drag-region={true}*/}
+      {/*/>*/}
       <div className="font-lg flex h-[60px] shrink-0 items-center space-x-3 px-5 py-2">
         <input
           autoFocus
-          className="flex-grow bg-transparent text-lg text-white placeholder:text-gray-200 focus:outline-none"
+          className="placeholder:text-gray-80/70 flex-grow bg-transparent text-lg text-white focus:outline-none"
           onChange={(e) => {
             chatForm.setValue('message', e.target.value);
           }}
@@ -117,11 +120,12 @@ function QuickAsk() {
       </div>
       <Separator className="bg-gray-350" />
       <ScrollArea className="flex-1 p-5 text-sm">
-        <QuickAskBody aiModel={chatForm.watch('agent')} inboxId={inboxId} />
+        <QuickAskBody aiModel={chatForm.watch('agent')} />
       </ScrollArea>
       <Separator className="bg-gray-350" />
       <div className="flex h-10 w-full items-center justify-between px-4 py-1.5 text-xs">
         <div>
+          {/*TODO: Support for full longer text*/}
           <button className="text-gray-80 flex items-center justify-center gap-2 rounded-md px-1.5 py-0.5 text-center transition-colors hover:bg-gray-300">
             <span>Full Text Input </span>
             <span className="flex items-center gap-1">
@@ -134,13 +138,43 @@ function QuickAsk() {
             </span>
           </button>
         </div>
-        <div>
-          <button className="text-gray-80 flex items-center justify-center gap-2 rounded-md px-1.5 py-0.5 text-center transition-colors hover:bg-gray-300">
-            <span>Submit</span>
-            <kbd className="text-gray-1100 flex h-5 w-5 items-center justify-center rounded-md bg-gray-300 px-1 font-sans">
-              ↵
-            </kbd>
-          </button>
+        <div className="flex items-center gap-1">
+          {messageInput ? (
+            <button
+              className="text-gray-80 flex items-center justify-center gap-2 rounded-md px-1.5 py-0.5 text-center transition-colors hover:bg-gray-300"
+              onClick={chatForm.handleSubmit(onSubmit)}
+            >
+              <span>Submit</span>
+              <kbd className="text-gray-1100 flex h-5 w-5 items-center justify-center rounded-md bg-gray-300 px-1 font-sans">
+                ↵
+              </kbd>
+            </button>
+          ) : messageResponse ? (
+            <CopyToClipboardIcon asChild string={messageResponse}>
+              <button className="text-gray-80 flex items-center justify-center gap-2 rounded-md px-1.5 py-0.5 text-center transition-colors hover:bg-gray-300">
+                <span>Copy Answer</span>
+                <span className="flex items-center gap-1">
+                  <kbd className="text-gray-1100 flex h-5 w-5 items-center justify-center rounded-md bg-gray-300 px-1 font-sans">
+                    ⌘
+                  </kbd>
+                  <kbd className="text-gray-1100 flex h-5 w-5 items-center justify-center rounded-md bg-gray-300 px-1 font-sans">
+                    C
+                  </kbd>
+                </span>
+              </button>
+            </CopyToClipboardIcon>
+          ) : (
+            // should toggle longer text mode
+            <button
+              className="text-gray-80 flex items-center justify-center gap-2 rounded-md px-1.5 py-0.5 text-center transition-colors hover:bg-gray-300"
+              onClick={chatForm.handleSubmit(onSubmit)}
+            >
+              <span>Submit</span>
+              <kbd className="text-gray-1100 flex h-5 w-5 items-center justify-center rounded-md bg-gray-300 px-1 font-sans">
+                ↵
+              </kbd>
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -149,14 +183,10 @@ function QuickAsk() {
 
 export default QuickAsk;
 
-const QuickAskBody = ({
-  inboxId,
-  aiModel,
-}: {
-  inboxId: string | null;
-  aiModel: string;
-}) => {
+const QuickAskBody = ({ aiModel }: { aiModel: string }) => {
   const { t } = useTranslation();
+  const inboxId = useQuickAskStore((state) => state.inboxId);
+
   const decodedInboxId = decodeURIComponent(inboxId ?? '');
   if (!decodedInboxId) {
     return (
@@ -168,7 +198,7 @@ const QuickAskBody = ({
           initial={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <span aria-hidden={true} className="text-3xl">
+          <span aria-hidden={true} className="text-4xl">
             🤖
           </span>
 
@@ -195,7 +225,6 @@ const QuickAskBodyWithResponse = ({
   aiModel: string;
 }) => {
   const auth = useAuth((state) => state.auth);
-  const { t } = useTranslation();
 
   const { llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
@@ -207,7 +236,6 @@ const QuickAskBodyWithResponse = ({
   const hasProviderEnableStreaming = streamingSupportedModels.includes(
     currentModel?.model.split(':')?.[0] as Models,
   );
-  console.log(inboxId, 'inboxId');
 
   const { data: chatConfig } = useGetChatConfig({
     nodeAddress: auth?.node_address ?? '',
@@ -235,58 +263,42 @@ const QuickAskBodyWithResponse = ({
     enabled: hasProviderEnableStreaming,
     inboxId: inboxId,
   });
+  const setMessageResponse = useQuickAskStore(
+    (state) => state.setMessageResponse,
+  );
+
+  useEffect(() => {
+    if (!isLoadingMessage && lastMessage?.content) {
+      setMessageResponse(lastMessage?.content);
+    }
+  }, [isLoadingMessage, lastMessage?.content, setMessageResponse]);
 
   return (
-    <div className="relative pb-4">
-      <div className="flex items-center justify-between gap-3 pt-5">
-        {lastMessage?.content && (
-          <div className="absolute -top-2 right-2">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div>
-                  <CopyToClipboardIcon
-                    className={cn(
-                      'text-gray-80 bg-gray-450 h-7 w-7 border border-gray-200 hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
-                    )}
-                    string={lastMessage?.content}
-                  />
-                </div>
-              </TooltipTrigger>
-              <TooltipPortal>
-                <TooltipContent>
-                  <p>{t('common.copy')}</p>
-                </TooltipContent>
-              </TooltipPortal>
-            </Tooltip>
-          </div>
-        )}
-      </div>
-      <div className="pb-4">
-        {isLoadingMessage && (
-          <>
-            {messageContent === '' && <DotsLoader className="pl-1 pt-1" />}
-            <MarkdownPreview
-              className="prose-h1:!text-gray-80 prose-h1:!text-sm !text-gray-80 !text-sm"
-              source={messageContent}
-            />
-          </>
-        )}
-        {!isLoadingMessage && (
+    <div className="pb-4">
+      {isLoadingMessage && (
+        <>
+          {messageContent === '' && <DotsLoader className="pl-1 pt-1" />}
           <MarkdownPreview
             className="prose-h1:!text-gray-80 prose-h1:!text-sm !text-gray-80 !text-sm"
-            source={
-              lastMessage?.content?.startsWith('{') &&
-              lastMessage?.content?.endsWith('}')
-                ? `
+            source={messageContent}
+          />
+        </>
+      )}
+      {!isLoadingMessage && (
+        <MarkdownPreview
+          className="prose-h1:!text-gray-80 prose-h1:!text-sm !text-gray-80 !text-sm"
+          source={
+            lastMessage?.content?.startsWith('{') &&
+            lastMessage?.content?.endsWith('}')
+              ? `
 \`\`\`json
 ${lastMessage?.content}
 \`\`\`
 `
-                : lastMessage?.content
-            }
-          />
-        )}
-      </div>
+              : lastMessage?.content
+          }
+        />
+      )}
     </div>
   );
 };
