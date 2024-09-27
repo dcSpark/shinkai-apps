@@ -1,7 +1,7 @@
 export type WorkflowRaw = {
   name: string;
   version: string;
-  // steps: Vec<Step>;
+  steps?: [];
   raw: string;
   description?: string;
   author: string;
@@ -73,6 +73,20 @@ export type GetToolResponse = {
   type: ShinkaiToolType;
 };
 export type GetToolsResponse = ShinkaiToolHeader[];
+
+export type AddWorkflowRequest = {
+  workflow_raw: string;
+  description: string;
+};
+export type AddWorkflowResponse = {
+  status: string;
+  message: string;
+};
+export type AddToolRequest = {
+  type: ShinkaiToolType;
+  content: [ShinkaiTool, boolean];
+};
+
 export type UpdateToolRequest = {
   type: ShinkaiToolType;
   content: [ShinkaiTool, boolean];

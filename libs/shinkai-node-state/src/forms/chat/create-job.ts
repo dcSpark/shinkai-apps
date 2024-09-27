@@ -8,3 +8,10 @@ export const createJobFormSchema = z.object({
 });
 
 export type CreateJobFormSchema = z.infer<typeof createJobFormSchema>;
+
+export const createJobPlaygroundFormSchema = createJobFormSchema
+  .omit({ workflow: true })
+  .merge(z.object({ workflow: z.string().min(1) }));
+export type CreateJobPlaygroundFormSchema = z.infer<
+  typeof createJobPlaygroundFormSchema
+>;

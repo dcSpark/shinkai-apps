@@ -1,5 +1,6 @@
-import { CaretSortIcon, CheckIcon } from '@radix-ui/react-icons';
+import { CheckIcon } from '@radix-ui/react-icons';
 import * as SelectPrimitive from '@radix-ui/react-select';
+import { ChevronDown } from 'lucide-react';
 import * as React from 'react';
 
 import { cn } from '../utils';
@@ -18,7 +19,7 @@ const SelectTrigger = React.forwardRef<
     className={cn(
       'h-input relative flex w-full items-center justify-between rounded-md border border-gray-200 bg-gray-400 px-4 py-2 text-sm shadow-sm',
       'placeholder:text-gray-100 focus:outline-none focus:ring-1 focus:ring-inset focus:ring-gray-100 disabled:cursor-not-allowed disabled:opacity-50',
-      'peer/select  [&[data-placeholder]>svg]:mt-0',
+      'peer/select [&[data-placeholder]>svg]:mt-0',
       'pt-6 data-[placeholder]:pt-2',
       'aria-expanded:ring-1 aria-expanded:ring-inset aria-expanded:ring-gray-100',
       className,
@@ -28,7 +29,7 @@ const SelectTrigger = React.forwardRef<
   >
     {children}
     <SelectPrimitive.Icon asChild>
-      <CaretSortIcon className="absolute right-3 top-[23px] h-4 w-4 opacity-50" />
+      <ChevronDown className="absolute right-3 top-[23px] h-4 w-4 opacity-50" />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 ));

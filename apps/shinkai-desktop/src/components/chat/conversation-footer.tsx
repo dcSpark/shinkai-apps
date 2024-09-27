@@ -933,7 +933,7 @@ function StopGeneratingButton({
     if (!inboxId) return;
     const decodedInboxId = decodeURIComponent(inboxId);
     const jobId = extractJobIdFromInbox(decodedInboxId);
-    stopGenerating({
+    await stopGenerating({
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
       jobId: jobId,

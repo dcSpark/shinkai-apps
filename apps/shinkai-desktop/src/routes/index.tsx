@@ -1,3 +1,4 @@
+import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { listen } from '@tauri-apps/api/event';
 import React, { useEffect, useRef } from 'react';
 import { Navigate, Outlet, Route, Routes, useNavigate } from 'react-router-dom';
@@ -49,7 +50,9 @@ import SheetProject from '../pages/sheet-project';
 import ShinkaiPrivatePage from '../pages/shinkai-private';
 import TermsAndConditionsPage from '../pages/terms-conditions';
 import { Tools } from '../pages/tools';
-import WorkflowPlayground from '../pages/workflow-playground';
+import WorkflowPlayground, {
+  PlaygroundPreview,
+} from '../pages/workflow-playground';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
@@ -138,10 +141,28 @@ const useGlobalAppShortcuts = () => {
   }, []);
 };
 
+const useDefaultAgentByDefault = () => {
+  const auth = useAuth((state) => state.auth);
+  const defaultAgentId = useSettings((state) => state.defaultAgentId);
+  const setDefaultAgentId = useSettings((state) => state.setDefaultAgentId);
+
+  const { llmProviders, isSuccess } = useGetLLMProviders({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
+  useEffect(() => {
+    if (isSuccess && llmProviders?.length && !defaultAgentId) {
+      setDefaultAgentId(llmProviders[0].id);
+    }
+  }, [llmProviders, isSuccess, setDefaultAgentId, defaultAgentId]);
+};
+
 const AppRoutes = () => {
   useOnboardingRedirect();
   useAppHotkeys();
   useGlobalAppShortcuts();
+  useDefaultAgentByDefault();
 
   return (
     <Routes>
@@ -274,22 +295,8 @@ const AppRoutes = () => {
           }
           path="workflow-playground"
         >
-          <Route
-            element={
-              <div className="flex h-[400px] flex-col items-center justify-center">
-                <h1 className="">Create your workflow!</h1>
-              </div>
-            }
-            index
-          />
-          <Route
-            element={
-              <WorkflowSelectionProvider>
-                <ChatConversation />
-              </WorkflowSelectionProvider>
-            }
-            path=":inboxId"
-          />
+          <Route element={<PlaygroundPreview />} index />
+          <Route element={<PlaygroundPreview />} path=":inboxId" />
         </Route>
         <Route
           element={
