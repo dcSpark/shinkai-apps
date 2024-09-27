@@ -240,6 +240,7 @@
       "externalUrl": "外部URL",
       "modelId": "モデルID",
       "modelName": "モデル名",
+      "modelProvider": "モデルプロバイダー",
       "modelType": "モデルタイプ",
       "selectModel": "モデルを選択",
       "toggleCustomModel": "カスタムモデルを追加"

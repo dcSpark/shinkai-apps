@@ -5,8 +5,8 @@ import {
   EditAgentFormSchema,
   editAgentSchema,
 } from '@shinkai_network/shinkai-node-state/forms/agents/edit-agent';
-import { useDeleteLLMProvider } from '@shinkai_network/shinkai-node-state/lib/mutations/deleteLLMProvider/useDeleteLLMProvider';
-import { useUpdateLLMProvider } from '@shinkai_network/shinkai-node-state/lib/mutations/updateLLMProvider/useUpdateLLMProvider';
+import { useRemoveLLMProvider } from '@shinkai_network/shinkai-node-state/v2/mutations/removeLLMProvider/useRemoveLLMProvider';
+import { useUpdateLLMProvider } from '@shinkai_network/shinkai-node-state/v2/mutations/updateLLMProvider/useUpdateLLMProvider';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import {
   Badge,
@@ -261,8 +261,7 @@ const EditAgentDrawer = ({
 
     await updateLLMProvider({
       nodeAddress: auth?.node_address ?? '',
-      shinkaiIdentity: auth?.shinkai_identity ?? '',
-      profile: auth?.profile ?? '',
+      token: auth?.api_v2_key ?? '',
       agent: {
         allowed_message_senders: [],
         api_key: values.apikey,
@@ -274,11 +273,6 @@ const EditAgentDrawer = ({
         toolkit_permissions: [],
         model,
       },
-      my_device_encryption_sk: auth.my_device_encryption_sk,
-      my_device_identity_sk: auth.my_device_identity_sk,
-      node_encryption_pk: auth.node_encryption_pk,
-      profile_encryption_sk: auth.profile_encryption_sk,
-      profile_identity_sk: auth.profile_identity_sk,
     });
   };
 
@@ -377,7 +371,7 @@ const RemoveAgentDrawer = ({
   const { t } = useTranslation();
 
   const auth = useAuth((state) => state.auth);
-  const { mutateAsync: deleteLLMProvider, isPending } = useDeleteLLMProvider({
+  const { mutateAsync: removeLLMProvider, isPending } = useRemoveLLMProvider({
     onSuccess: () => {
       onOpenChange(false);
       toast.success(t('llmProviders.success.deleteAgent'));
@@ -407,16 +401,10 @@ const RemoveAgentDrawer = ({
             isLoading={isPending}
             onClick={async () => {
               if (!auth) return;
-              await deleteLLMProvider({
+              await removeLLMProvider({
                 nodeAddress: auth?.node_address ?? '',
-                shinkaiIdentity: auth?.shinkai_identity ?? '',
-                profile: auth?.profile ?? '',
-                agentId,
-                my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-                my_device_identity_sk: auth?.profile_identity_sk ?? '',
-                node_encryption_pk: auth?.node_encryption_pk ?? '',
-                profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-                profile_identity_sk: auth?.profile_identity_sk ?? '',
+                llmProviderId: agentId,
+                token: auth?.api_v2_key ?? '',
               });
             }}
             variant="destructive"
