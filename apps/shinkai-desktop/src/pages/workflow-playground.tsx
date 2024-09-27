@@ -149,22 +149,14 @@ function PlaygroundPreviewWithInbox({ inboxId }: { inboxId: string }) {
         )}
       </div>
       <div className="">
-        {isLoadingMessage && messageContent === '' && (
-          <DotsLoader className="pl-1 pt-1" />
-        )}
-        {isLoadingMessage && messageContent !== '' && (
-          <MarkdownPreview
-            className="prose-h1:!text-gray-80 prose-h1:!text-sm !text-gray-80 !text-sm"
-            source={
-              lastMessage?.content?.startsWith('{')
-                ? `
-\`\`\`json
-${lastMessage?.content}
-\`\`\`
-`
-                : lastMessage?.content
-            }
-          />
+        {isLoadingMessage && (
+          <>
+            {messageContent === '' && <DotsLoader className="pl-1 pt-1" />}
+            <MarkdownPreview
+              className="prose-h1:!text-gray-80 prose-h1:!text-sm !text-gray-80 !text-sm"
+              source={messageContent}
+            />
+          </>
         )}
         {!isLoadingMessage && (
           <MarkdownPreview
@@ -189,7 +181,7 @@ ${lastMessage?.content}
 function PlaygroundPreviewEmpty() {
   return (
     <div className="h-full space-y-6 overflow-y-auto px-4 pb-4">
-      <div className="flexpt-5 items-center justify-between gap-3">
+      <div className="flexpt-5 items-center justify-between gap-3 pt-5">
         <span className="text-sm font-semibold text-gray-50">Output</span>
       </div>
       <div className="">

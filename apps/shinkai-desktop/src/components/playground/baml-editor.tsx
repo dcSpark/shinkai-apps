@@ -540,8 +540,8 @@ ${createWorkflowForm.watch('workflowRaw')}
                       <FormLabel>BAML Input</FormLabel>
                       <FormControl>
                         <Textarea
-                          maxHeight={600}
-                          minHeight={500}
+                          maxHeight={500}
+                          minHeight={400}
                           placeholder="Enter BAML input"
                           resize="vertical"
                           spellCheck={false}
@@ -560,8 +560,8 @@ ${createWorkflowForm.watch('workflowRaw')}
                       <FormLabel>DSL File</FormLabel>
                       <FormControl>
                         <Textarea
-                          maxHeight={600}
-                          minHeight={500}
+                          maxHeight={500}
+                          minHeight={400}
                           placeholder="Enter DSL file content"
                           resize="vertical"
                           spellCheck={false}
