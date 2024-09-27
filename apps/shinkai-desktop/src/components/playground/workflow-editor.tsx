@@ -585,7 +585,7 @@ ${createWorkflowForm.watch('workflowRaw')}
           className="space-y-3"
           onSubmit={createJobPlaygroundForm.handleSubmit(onSubmit)}
         >
-          <div className="max-h-[74vh] space-y-5 overflow-y-auto pr-1">
+          <div className="max-h-[71vh] space-y-5 overflow-y-auto pr-1">
             <div
               className={cn(
                 'grid gap-3',

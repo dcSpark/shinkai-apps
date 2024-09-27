@@ -521,7 +521,7 @@ ${createWorkflowForm.watch('workflowRaw')}
           className="space-y-3"
           onSubmit={bamlForm.handleSubmit(onBamlSubmit)}
         >
-          <div className="max-h-[74vh] space-y-5 overflow-y-auto pr-1">
+          <div className="max-h-[71vh] space-y-5 overflow-y-auto pr-1">
             <FormField
               control={bamlForm.control}
               name="bamlScriptName"

@@ -66,7 +66,7 @@ const WorkflowPlayground = () => {
               <DocsPanel />
             </div>
           </div>
-          <div className="flex max-h-[calc(100vh-88px)] flex-1 overflow-hidden">
+          <div className="flex max-h-[calc(100vh-87px)] flex-1 overflow-hidden">
             <div className="max-w-[60%] flex-1 shrink-0 basis-[60%] border-r border-gray-300">
               <TabsContent className="mt-0 h-full" value="workflow">
                 <WorkflowEditor />
