@@ -66,7 +66,7 @@ const WorkflowPlayground = () => {
               <DocsPanel />
             </div>
           </div>
-          <div className="flex max-h-[calc(100vh-84px)] flex-1 overflow-hidden">
+          <div className="flex max-h-[calc(100vh-88px)] flex-1 overflow-hidden">
             <div className="max-w-[60%] flex-1 shrink-0 basis-[60%] border-r border-gray-300">
               <TabsContent className="mt-0 h-full" value="workflow">
                 <WorkflowEditor />
@@ -148,7 +148,7 @@ function PlaygroundPreviewWithInbox({ inboxId }: { inboxId: string }) {
           </div>
         )}
       </div>
-      <div className="">
+      <div className="pb-4">
         {isLoadingMessage && (
           <>
             {messageContent === '' && <DotsLoader className="pl-1 pt-1" />}
@@ -181,7 +181,7 @@ ${lastMessage?.content}
 function PlaygroundPreviewEmpty() {
   return (
     <div className="h-full space-y-6 overflow-y-auto px-4 pb-4">
-      <div className="flexpt-5 items-center justify-between gap-3 pt-5">
+      <div className="flex items-center justify-between gap-3 pt-5">
         <span className="text-sm font-semibold text-gray-50">Output</span>
       </div>
       <div className="">
