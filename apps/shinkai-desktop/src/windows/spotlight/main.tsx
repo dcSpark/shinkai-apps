@@ -2,11 +2,16 @@ import './globals.css';
 
 import { I18nProvider } from '@shinkai_network/shinkai-i18n';
 import { QueryProvider } from '@shinkai_network/shinkai-node-state';
-import { Toaster } from '@shinkai_network/shinkai-ui';
+import { Toaster, TooltipProvider } from '@shinkai_network/shinkai-ui';
 import { QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { ErrorBoundary } from 'react-error-boundary';
+import {
+  BrowserRouter as Router,
+  // Route,
+  // Routes
+} from 'react-router-dom';
 
 import FullPageErrorFallback from '../../components/error-boundary';
 import { shinkaiNodeQueryClient } from '../../lib/shinkai-node-manager/shinkai-node-manager-client';
@@ -23,8 +28,14 @@ const App = () => {
     <I18nProvider>
       <ErrorBoundary FallbackComponent={FullPageErrorFallback}>
         <QueryProvider>
-          <QuickAsk />
-          <Toaster />
+          <TooltipProvider delayDuration={0}>
+            <Router>
+              {/*<Routes>*/}
+              <QuickAsk />
+              {/*</Routes>*/}
+            </Router>
+            <Toaster />
+          </TooltipProvider>
         </QueryProvider>
       </ErrorBoundary>
     </I18nProvider>

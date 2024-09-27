@@ -15,6 +15,7 @@ type AnimationState = {
 
 type UseWebSocketMessage = {
   enabled?: boolean;
+  inboxId?: string;
 };
 
 const START_ANIMATION_SPEED = 4;
@@ -94,7 +95,10 @@ const createSmoothMessage = (params: {
   };
 };
 
-export const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
+export const useWebSocketMessage = ({
+  enabled,
+  inboxId: defaultInboxId,
+}: UseWebSocketMessage) => {
   const auth = useAuth((state) => state.auth);
   const nodeAddressUrl = new URL(auth?.node_address ?? 'http://localhost:9850');
   const socketUrl = `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`;
@@ -106,7 +110,7 @@ export const useWebSocketMessage = ({ enabled }: UseWebSocketMessage) => {
     enabled,
   );
   const { inboxId: encodedInboxId = '' } = useParams();
-  const inboxId = decodeURIComponent(encodedInboxId);
+  const inboxId = defaultInboxId || decodeURIComponent(encodedInboxId);
 
   const [animationState, setAnimationState] = useState<AnimationState>({
     displayedContent: '',
