@@ -40,3 +40,9 @@ pub fn show_or_recreate_window(app_handle: AppHandle, window_name: Window) {
         }
     }
 }
+
+pub fn hide_spotlight_window(app_handle: AppHandle) {
+    if let Some(window) = app_handle.get_webview_window(Window::Spotlight.as_str()) {
+        window.hide().unwrap();
+    }
+}
