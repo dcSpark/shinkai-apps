@@ -694,7 +694,7 @@ const MainLayout = () => {
   return (
     <div className="relative flex min-h-full flex-col bg-gray-500 text-white">
       <div
-        className="absolute top-0 z-50 h-8 w-full"
+        className="absolute top-0 z-50 h-6 w-full"
         data-tauri-drag-region={true}
       />
       <div className={cn('flex flex-1', !!auth && '')}>

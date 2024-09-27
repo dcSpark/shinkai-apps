@@ -1,7 +1,12 @@
 @import '../../../../../libs/shinkai-ui/src/styles/styles.css';
-@import 'primereact/resources/themes/lara-light-blue/theme.css';
-@import 'primereact/resources/primereact.min.css';
+
+html,
+body,
+#root {
+  overscroll-behavior: none;
+  @apply size-full overflow-hidden rounded-xl;
+}
 
 #root {
-  overflow-y: hidden;
+  @apply rounded-xl border border-gray-200 bg-gray-500 text-white shadow-xl;
 }

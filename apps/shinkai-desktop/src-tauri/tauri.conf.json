@@ -56,11 +56,12 @@
         "hiddenTitle": true
       },
       {
+        "fullscreen": false,
         "label": "spotlight",
         "transparent": true,
         "title": "Spotlight",
-        "width": 1280,
-        "height": 840,
+        "width": 640,
+        "height": 420,
         "resizable": false,
         "dragDropEnabled": false,
         "titleBarStyle": "Overlay",
