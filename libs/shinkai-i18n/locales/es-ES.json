@@ -240,6 +240,7 @@
       "externalUrl": "URL Externa",
       "modelId": "ID del Modelo",
       "modelName": "Nombre del Modelo",
+      "modelProvider": "Proveedor de Modelo",
       "modelType": "Tipo de Modelo",
       "selectModel": "Selecciona tu Modelo",
       "toggleCustomModel": "Añadir un modelo personalizado"

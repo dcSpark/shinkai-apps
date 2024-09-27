@@ -240,6 +240,7 @@
       "externalUrl": "外部URL",
       "modelId": "模型ID",
       "modelName": "模型名称",
+      "modelProvider": "模型提供者",
       "modelType": "模型类型",
       "selectModel": "选择您的模型",
       "toggleCustomModel": "添加自定义模型"

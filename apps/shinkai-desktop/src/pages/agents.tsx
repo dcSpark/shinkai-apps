@@ -354,7 +354,7 @@ const EditAgentDrawer = ({
                 render={({ field }) => (
                   <TextField
                     field={field}
-                    label={t('llmProviders.form.modelName')}
+                    label={t('llmProviders.form.modelProvider')}
                   />
                 )}
               />

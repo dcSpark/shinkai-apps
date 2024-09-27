@@ -492,6 +492,7 @@ export default {
       externalUrl: 'External URL',
       apiKey: 'API Key',
       modelName: 'Model Name',
+      modelProvider: 'Model Provider',
       modelId: 'Model ID',
       modelType: 'Model',
       customModelType: 'Custom Model Type',

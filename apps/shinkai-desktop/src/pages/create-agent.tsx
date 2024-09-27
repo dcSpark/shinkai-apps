@@ -273,7 +273,9 @@ const CreateAgentPage = () => {
                 name="model"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('llmProviders.form.selectModel')}</FormLabel>
+                    <FormLabel>
+                      {t('llmProviders.form.modelProvider')}
+                    </FormLabel>
                     <Select
                       defaultValue={field.value}
                       onValueChange={field.onChange}

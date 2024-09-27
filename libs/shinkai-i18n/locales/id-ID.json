@@ -240,6 +240,7 @@
       "externalUrl": "URL Eksternal",
       "modelId": "ID Model",
       "modelName": "Nama Model",
+      "modelProvider": "Penyedia Model",
       "modelType": "Tipe Model",
       "selectModel": "Pilih Model Anda",
       "toggleCustomModel": "Tambahkan model kustom"
