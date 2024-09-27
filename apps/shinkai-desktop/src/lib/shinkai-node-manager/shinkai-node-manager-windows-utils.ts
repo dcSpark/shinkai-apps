@@ -1,27 +1,7 @@
-import { WebviewWindow } from '@tauri-apps/api/webviewWindow';
+import { invoke } from '@tauri-apps/api/core';
 
-export const SHINKAI_NODE_MANAGER_WINDOW = 'shinkai-node-manager-window';
 export const openShinkaiNodeManagerWindow = async () => {
-  const currentWindow = await WebviewWindow.getByLabel(
-    SHINKAI_NODE_MANAGER_WINDOW,
-  );
-  if (currentWindow) {
-    currentWindow.setFocus().catch((e) => e);
-  } else {
-    const webview = new WebviewWindow(SHINKAI_NODE_MANAGER_WINDOW, {
-      url: 'src/windows/shinkai-node-manager/index.html',
-      title: 'Shinkai Node Manager',
-      resizable: true,
-      width: 1280,
-      height: 820,
-    });
-    webview.once('tauri://created', function () {
-      console.log(`window started`);
-    });
-    webview.once('tauri://error', function (e) {
-      console.log(`window error: ${JSON.stringify(e)}`);
-    });
-  }
+  return invoke('show_shinkai_node_manager_window');
 };
 
 export const isLocalShinkaiNode = (nodeAddress: string) => {
