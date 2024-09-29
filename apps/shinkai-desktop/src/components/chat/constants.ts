@@ -4,6 +4,5 @@ export const streamingSupportedModels = [
   Models.Ollama,
   Models.Exo,
   Models.Gemini,
-  Models.Groq,
   Models.OpenRouter,
 ];
