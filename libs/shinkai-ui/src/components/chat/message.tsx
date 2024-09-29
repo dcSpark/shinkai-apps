@@ -4,8 +4,10 @@ import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { Edit3, RotateCcw } from 'lucide-react';
 import { InfoCircleIcon } from 'primereact/icons/infocircle';
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { PythonProvider } from 'react-pyodide';
+import usePython from 'react-pyodide/dist/hooks/use-python';
 import { z } from 'zod';
 
 import { appIcon } from '../../assets';
@@ -26,6 +28,7 @@ import {
 } from '../tooltip';
 import { ChatInputArea } from './chat-input-area';
 import { FileList } from './files-preview';
+import PythonCodeRenderer from './python-code-renderer';
 
 export const extractErrorPropertyOrContent = (
   content: string,
@@ -40,6 +43,11 @@ export const extractErrorPropertyOrContent = (
     /* ignore */
   }
   return String(content);
+};
+
+const containsPythonCode = (content: string): boolean => {
+  const pythonCodeRegex = /```python\s[\s\S]*?```/;
+  return pythonCodeRegex.test(content);
 };
 
 type MessageProps = {
@@ -107,6 +115,14 @@ export const Message = ({
   useEffect(() => {
     editMessageForm.reset({ message: message.content });
   }, [editMessageForm, message.content]);
+
+  const pythonCode = useMemo(() => {
+    if (containsPythonCode(message.content)) {
+      const match = message.content.match(/```python\s([\s\S]*?)```/);
+      return match ? match[1] : null;
+    }
+    return null;
+  }, [message.content]);
 
   return (
     <motion.div
@@ -230,6 +246,11 @@ export const Message = ({
                         'error_message',
                       )}
                     />
+                    {pythonCode && (
+                      <PythonProvider>
+                        <PythonCodeRenderer code={pythonCode} />
+                      </PythonProvider>
+                    )}
                     {!!message.fileInbox?.files?.length && (
                       <FileList
                         className="mt-2 min-w-[200px] max-w-[70vw]"

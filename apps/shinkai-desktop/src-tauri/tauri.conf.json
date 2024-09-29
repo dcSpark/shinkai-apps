@@ -7,12 +7,7 @@
   },
   "bundle": {
     "active": true,
-    "targets": [
-      "app",
-      "appimage",
-      "nsis",
-      "dmg"
-    ],
+    "targets": ["app", "appimage", "nsis", "dmg"],
     "externalBin": [
       "external-binaries/shinkai-node/shinkai-node",
       "external-binaries/shinkai-node/shinkai-tools-runner-resources/shinkai-tools-backend",
@@ -47,7 +42,7 @@
   "app": {
     "withGlobalTauri": false,
     "security": {
-      "csp": null
+      "csp": "default-src 'self'; script-src 'self' 'unsafe-inline' http://localhost:1420; style-src 'self' 'unsafe-inline'; connect-src 'self' http://localhost:1420 ws://localhost:1420; img-src 'self' data:; media-src 'self'; frame-src 'self'; font-src 'self'; object-src 'none';"
     },
     "windows": [
       {
