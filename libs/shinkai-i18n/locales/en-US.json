@@ -265,7 +265,8 @@
       "analytics": "Analytics",
       "publicKeys": "Public Keys",
       "galxe": "Galxe Quest",
-      "promptLibrary": "Prompt Library"
+      "promptLibrary": "Prompt Library",
+      "cryptoWallet": "Crypto Wallet"
     },
     "shinkaiIdentity": {
       "label": "Shinkai Identity",
