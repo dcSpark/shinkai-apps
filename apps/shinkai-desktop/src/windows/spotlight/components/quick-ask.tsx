@@ -23,7 +23,7 @@ import {
 import { copyToClipboard } from '@shinkai_network/shinkai-ui/helpers';
 import { invoke } from '@tauri-apps/api/core';
 import { motion } from 'framer-motion';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, Loader2 } from 'lucide-react';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -47,6 +47,10 @@ function QuickAsk() {
   const setMessageResponse = useQuickAskStore(
     (state) => state.setMessageResponse,
   );
+  const isLoadingResponse = useQuickAskStore(
+    (state) => state.isLoadingResponse,
+  );
+
   useDefaultAgentByDefault();
 
   const [clipboard, setClipboard] = useState(false);
@@ -163,18 +167,28 @@ function QuickAsk() {
       <Separator className="bg-gray-350" />
       <div className="flex h-10 w-full items-center justify-between px-4 py-1.5 text-xs">
         <div>
-          {/*TODO: Support for full longer text*/}
-          <button className="text-gray-80 flex items-center justify-center gap-2 rounded-md px-1.5 py-0.5 text-center transition-colors hover:bg-gray-300">
-            <span>Full Text Input </span>
-            <span className="flex items-center gap-1">
-              <kbd className="text-gray-1100 flex h-5 w-5 items-center justify-center rounded-md bg-gray-300 px-1 font-sans">
-                ⌘
-              </kbd>
-              <kbd className="text-gray-1100 flex h-5 w-5 items-center justify-center rounded-md bg-gray-300 px-1 font-sans">
-                N
-              </kbd>
-            </span>
-          </button>
+          {isLoadingResponse ? (
+            <div className="flex items-center justify-center gap-2 rounded-md px-1.5 py-0.5 text-center text-gray-100 transition-colors hover:bg-gray-300">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>Getting AI response...</span>
+            </div>
+          ) : (
+            // TODO: Support for full longer text
+            <button
+              className="text-gray-80 flex items-center justify-center gap-2 rounded-md px-1.5 py-0.5 text-center transition-colors hover:bg-gray-300"
+              disabled
+            >
+              <span>Full Text Input </span>
+              <span className="flex items-center gap-1">
+                <kbd className="text-gray-1100 flex h-5 w-5 items-center justify-center rounded-md bg-gray-300 px-1 font-sans">
+                  ⌘
+                </kbd>
+                <kbd className="text-gray-1100 flex h-5 w-5 items-center justify-center rounded-md bg-gray-300 px-1 font-sans">
+                  N
+                </kbd>
+              </span>
+            </button>
+          )}
         </div>
         <div className="flex items-center gap-1">
           {messageInput ? (
@@ -267,7 +281,9 @@ const QuickAskBodyWithResponse = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const auth = useAuth((state) => state.auth);
-
+  const setLoadingResponse = useQuickAskStore(
+    (state) => state.setLoadingResponse,
+  );
   const { llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
@@ -308,6 +324,10 @@ const QuickAskBodyWithResponse = ({
   const setMessageResponse = useQuickAskStore(
     (state) => state.setMessageResponse,
   );
+
+  useEffect(() => {
+    setLoadingResponse(!!isLoadingMessage);
+  }, [isLoadingMessage]);
 
   useEffect(() => {
     if (!isLoadingMessage && lastMessage?.content) {

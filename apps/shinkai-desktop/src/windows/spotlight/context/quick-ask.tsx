@@ -6,6 +6,8 @@ type QuickAskStore = {
   setInboxId: (inboxId: string | null) => void;
   messageResponse: string;
   setMessageResponse: (messageResponse: string) => void;
+  isLoadingResponse: boolean;
+  setLoadingResponse: (loadingResponse: boolean) => void;
 };
 
 const createQuickAskStore = () =>
@@ -19,6 +21,11 @@ const createQuickAskStore = () =>
     setMessageResponse: (messageResponse) =>
       set({
         messageResponse,
+      }),
+    isLoadingResponse: false,
+    setLoadingResponse: (isLoadingResponse) =>
+      set({
+        isLoadingResponse,
       }),
   }));
 
