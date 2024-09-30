@@ -256,6 +256,7 @@ const GetStartedPage = () => {
           <div className="space-y-4">
             <Button
               className="w-full"
+              disabled={shinkaiNodeSpawnIsPending}
               isLoading={shinkaiNodeSpawnIsPending}
               onClick={() => shinkaiNodeSpawn()}
               size="lg"
