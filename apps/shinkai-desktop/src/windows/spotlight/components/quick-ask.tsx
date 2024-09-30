@@ -14,16 +14,21 @@ import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
   CopyToClipboardIcon,
   DotsLoader,
   MarkdownPreview,
   ScrollArea,
   Separator,
 } from '@shinkai_network/shinkai-ui';
+import { ShinkaiCombinationMarkIcon } from '@shinkai_network/shinkai-ui/assets';
 import { copyToClipboard } from '@shinkai_network/shinkai-ui/helpers';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { invoke } from '@tauri-apps/api/core';
 import { motion } from 'framer-motion';
-import { CheckCircle2, Loader2 } from 'lucide-react';
+import { CheckCircle2, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -39,9 +44,11 @@ import { useQuickAskStore } from '../context/quick-ask';
 export const hideSpotlightWindow = async () => {
   return invoke('hide_spotlight_window_app');
 };
+
 function QuickAsk() {
   const auth = useAuth((state) => state.auth);
   const defaultAgentId = useSettings((state) => state.defaultAgentId);
+  const inboxId = useQuickAskStore((state) => state.inboxId);
   const setInboxId = useQuickAskStore((state) => state.setInboxId);
   const messageResponse = useQuickAskStore((state) => state.messageResponse);
   const setMessageResponse = useQuickAskStore(
@@ -127,10 +134,10 @@ function QuickAsk() {
       token: auth.api_v2_key,
       llmProvider: data.agent,
       content: data.message,
-      isHidden: true,
+      isHidden: false,
     });
   };
-  console.log('QuickAsk renders');
+
   return (
     <div className="relative flex size-full flex-col">
       {/*// TODO: drag support*/}
@@ -139,6 +146,17 @@ function QuickAsk() {
       {/*  data-tauri-drag-region={true}*/}
       {/*/>*/}
       <div className="font-lg flex h-[60px] shrink-0 items-center space-x-3 px-5 py-2">
+        {inboxId && (
+          <button
+            className="h-6 w-6 rounded-md bg-gray-200 p-1"
+            onClick={() => {
+              setInboxId(null);
+            }}
+            type="button"
+          >
+            <ChevronLeft className="size-full" />
+          </button>
+        )}
         <input
           autoFocus
           className="placeholder:text-gray-80/70 flex-grow bg-transparent text-lg text-white focus:outline-none"
@@ -151,6 +169,7 @@ function QuickAsk() {
             }
           }}
           placeholder="Ask a question..."
+          spellCheck={false}
           type="text"
           value={chatForm.watch('message')}
         />
@@ -174,20 +193,21 @@ function QuickAsk() {
             </div>
           ) : (
             // TODO: Support for full longer text
-            <button
-              className="text-gray-80 flex items-center justify-center gap-2 rounded-md px-1.5 py-0.5 text-center transition-colors hover:bg-gray-300"
-              disabled
-            >
-              <span>Full Text Input </span>
-              <span className="flex items-center gap-1">
-                <kbd className="text-gray-1100 flex h-5 w-5 items-center justify-center rounded-md bg-gray-300 px-1 font-sans">
-                  ⌘
-                </kbd>
-                <kbd className="text-gray-1100 flex h-5 w-5 items-center justify-center rounded-md bg-gray-300 px-1 font-sans">
-                  N
-                </kbd>
-              </span>
-            </button>
+            // <button
+            //   className="text-gray-80 flex items-center justify-center gap-2 rounded-md px-1.5 py-0.5 text-center transition-colors hover:bg-gray-300"
+            //   disabled
+            // >
+            //   <span>Full Text Input </span>
+            //   <span className="flex items-center gap-1">
+            //     <kbd className="text-gray-1100 flex h-5 w-5 items-center justify-center rounded-md bg-gray-300 px-1 font-sans">
+            //       ⌘
+            //     </kbd>
+            //     <kbd className="text-gray-1100 flex h-5 w-5 items-center justify-center rounded-md bg-gray-300 px-1 font-sans">
+            //       N
+            //     </kbd>
+            //   </span>
+            // </button>
+            <ShinkaiCombinationMarkIcon className="h-auto w-[60px] text-gray-100" />
           )}
         </div>
         <div className="flex items-center gap-1">
@@ -289,7 +309,9 @@ const QuickAskBodyWithResponse = ({
     token: auth?.api_v2_key ?? '',
   });
 
-  const currentModel = llmProviders.find((provider) => provider.id === aiModel);
+  const currentModel = llmProviders?.find(
+    (provider) => provider.id === aiModel,
+  );
 
   const hasProviderEnableStreaming = streamingSupportedModels.includes(
     currentModel?.model.split(':')?.[0] as Models,
@@ -312,6 +334,7 @@ const QuickAskBodyWithResponse = ({
   });
 
   const lastMessage = data?.pages?.at(-1)?.at(-1);
+  const inputMessage = data?.pages?.at(-1)?.at(0);
 
   const isLoadingMessage = useMemo(() => {
     return lastMessage?.isLocal;
@@ -343,20 +366,48 @@ const QuickAskBodyWithResponse = ({
   }, [messageContent]);
 
   return (
-    <ScrollArea className="flex-1 p-5 text-sm" ref={containerRef}>
-      <div className="pb-4">
+    <ScrollArea
+      className="flex-1 text-sm [&>div>div]:!block"
+      ref={containerRef}
+    >
+      <Collapsible className="border-b border-gray-200 bg-gray-400">
+        <CollapsibleTrigger
+          className={cn(
+            'flex w-full max-w-full items-center justify-between gap-6 px-5 py-2',
+            '[&[data-state=open]>svg]:rotate-90',
+            '[&[data-state=open]>span.input]:block',
+            '[&[data-state=open]>span.content]:hidden',
+          )}
+        >
+          <span className="input text-gray-80 hidden flex-1 items-center gap-1 truncate text-left text-xs">
+            Input Message
+          </span>
+          <span className="content flex-1 truncate text-left text-gray-50">
+            {inputMessage?.content}
+          </span>
+
+          <ChevronRight className="text-gray-80 h-4 w-4 shrink-0" />
+        </CollapsibleTrigger>
+        <CollapsibleContent className="max-h-[150px] overflow-y-auto px-5 pb-2 pt-0.5">
+          <MarkdownPreview
+            className="prose-h1:!text-gray-50 prose-h1:!text-sm !text-sm !text-gray-50"
+            source={inputMessage?.content}
+          />
+        </CollapsibleContent>
+      </Collapsible>
+      <div className="p-5 pb-4">
         {isLoadingMessage && (
           <>
             {messageContent === '' && <DotsLoader className="pl-1 pt-1" />}
             <MarkdownPreview
-              className="prose-h1:!text-gray-80 prose-h1:!text-sm !text-gray-80 !text-sm"
+              className="prose-h1:!text-white prose-h1:!text-sm !text-sm !text-white"
               source={messageContent}
             />
           </>
         )}
         {!isLoadingMessage && (
           <MarkdownPreview
-            className="prose-h1:!text-gray-80 prose-h1:!text-sm !text-gray-80 !text-sm"
+            className="prose-h1:!text-white prose-h1:!text-sm !text-sm !text-white"
             source={
               lastMessage?.content?.startsWith('{') &&
               lastMessage?.content?.endsWith('}')
