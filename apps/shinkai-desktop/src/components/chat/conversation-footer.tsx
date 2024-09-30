@@ -383,18 +383,25 @@ function ConversationEmptyFooter() {
                     <ChatInputArea
                       autoFocus
                       bottomAddons={
-                        <Button
-                          className="hover:bg-app-gradient relative z-50 h-[40px] w-[40px] self-end rounded-xl bg-gray-500 p-3 disabled:cursor-not-allowed"
-                          disabled={isPending}
-                          onClick={chatForm.handleSubmit(onSubmit)}
-                          size="icon"
-                          variant="tertiary"
-                        >
-                          <SendIcon className="h-full w-full" />
-                          <span className="sr-only">
-                            {t('chat.sendMessage')}
-                          </span>
-                        </Button>
+                        <div className="relative z-50 flex items-end gap-3 self-end">
+                          {!debounceMessage && (
+                            <span className="pb-1 text-xs font-light text-gray-100">
+                              <span className="font-medium">Enter</span> to send
+                            </span>
+                          )}
+                          <Button
+                            className="hover:bg-app-gradient h-[40px] w-[40px] rounded-xl bg-gray-500 p-3 disabled:cursor-not-allowed"
+                            disabled={isPending}
+                            onClick={chatForm.handleSubmit(onSubmit)}
+                            size="icon"
+                            variant="tertiary"
+                          >
+                            <SendIcon className="h-full w-full" />
+                            <span className="sr-only">
+                              {t('chat.sendMessage')}
+                            </span>
+                          </Button>
+                        </div>
                       }
                       disabled={isPending || isWorkflowSelectedAndFilesPresent}
                       onChange={field.onChange}
@@ -520,6 +527,12 @@ function ConversationEmptyFooter() {
                               {formatText(workflow.name)}
                             </motion.button>
                           ))}
+                        {!debounceMessage && (
+                          <span className="text-xs font-light text-gray-100">
+                            <span className="font-medium">Shift + Enter</span>{' '}
+                            for a new line
+                          </span>
+                        )}
                       </div>
                     </motion.div>
                   </div>
@@ -759,18 +772,25 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                     <ChatInputArea
                       autoFocus
                       bottomAddons={
-                        <Button
-                          className="hover:bg-app-gradient relative z-50 h-[40px] w-[40px] self-end rounded-xl bg-gray-500 p-3 disabled:cursor-not-allowed"
-                          disabled={isLoadingMessage}
-                          onClick={chatForm.handleSubmit(onSubmit)}
-                          size="icon"
-                          variant="tertiary"
-                        >
-                          <SendIcon className="h-full w-full" />
-                          <span className="sr-only">
-                            {t('chat.sendMessage')}
-                          </span>
-                        </Button>
+                        <div className="relative z-50 flex items-end gap-3 self-end">
+                          {!debounceMessage && (
+                            <span className="pb-1 text-xs font-light text-gray-100">
+                              <span className="font-medium">Enter</span> to send
+                            </span>
+                          )}
+                          <Button
+                            className="hover:bg-app-gradient h-[40px] w-[40px] rounded-xl bg-gray-500 p-3 disabled:cursor-not-allowed"
+                            disabled={isLoadingMessage}
+                            onClick={chatForm.handleSubmit(onSubmit)}
+                            size="icon"
+                            variant="tertiary"
+                          >
+                            <SendIcon className="h-full w-full" />
+                            <span className="sr-only">
+                              {t('chat.sendMessage')}
+                            </span>
+                          </Button>
+                        </div>
                       }
                       disabled={
                         isLoadingMessage || isWorkflowSelectedAndFilesPresent
@@ -898,6 +918,12 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                               {formatText(workflow.name)}
                             </motion.button>
                           ))}
+                        {!debounceMessage && (
+                          <span className="text-xs font-light text-gray-100">
+                            <span className="font-medium">Shift + Enter</span>{' '}
+                            for a new line
+                          </span>
+                        )}
                       </div>
                     </motion.div>
                   </div>
