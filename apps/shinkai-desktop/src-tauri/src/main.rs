@@ -135,6 +135,7 @@ fn main() {
                     std::process::exit(0);
                 });
             }
+            #[cfg(target_os = "macos")]
             RunEvent::Reopen { .. } => {
                 let main_window_label = "main";
                 if let Some(window) = app_handle.get_webview_window(main_window_label) {
