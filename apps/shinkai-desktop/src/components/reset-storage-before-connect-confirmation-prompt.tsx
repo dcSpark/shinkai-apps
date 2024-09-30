@@ -30,9 +30,9 @@ export const ResetStorageBeforeConnectConfirmationPrompt = ({
   // const navigate = useNavigate();
   const { t } = useTranslation();
   const { setShinkaiNodeOptions } = useShinkaiNodeManager();
-  const { mutateAsync: shinkaiNodeKill } = useShinkaiNodeKillMutation();
-  const { mutateAsync: shinkaiNodeSpawn } = useShinkaiNodeSpawnMutation();
-  const { mutateAsync: shinkaiNodeRemoveStorage } =
+  const { mutateAsync: shinkaiNodeKill, isPending: isShinkaiNodeKillPending } = useShinkaiNodeKillMutation();
+  const { mutateAsync: shinkaiNodeSpawn, isPending: isShinkaiNodeSpawnPending } = useShinkaiNodeSpawnMutation();
+  const { mutateAsync: shinkaiNodeRemoveStorage, isPending: isShinkaiNodeRemoveStoragePending} =
     useShinkaiNodeRemoveStorageMutation();
 
   const cancel = () => {
@@ -47,6 +47,8 @@ export const ResetStorageBeforeConnectConfirmationPrompt = ({
   //     onRestore();
   //   }
   // };
+
+  const isResetLoading = isShinkaiNodeKillPending || isShinkaiNodeRemoveStoragePending || isShinkaiNodeSpawnPending;
 
   const reset = async (preserveKeys: boolean) => {
     await shinkaiNodeKill();
@@ -102,6 +104,8 @@ export const ResetStorageBeforeConnectConfirmationPrompt = ({
           </Button>
           <Button
             className="min-w-32 text-sm"
+            disabled={isResetLoading}
+            isLoading={isResetLoading}
             onClick={() => reset(true)}
             size="sm"
             variant={'destructive'}
