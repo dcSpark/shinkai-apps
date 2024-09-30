@@ -1,5 +1,6 @@
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import { Button } from '@shinkai_network/shinkai-ui';
+import { Loader2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 
 import { useAuth } from '../store/auth';
@@ -18,17 +19,41 @@ export const ShinkaiNodeRunningOverlay = ({
   children: React.ReactNode;
 }) => {
   const auth = useAuth((store) => store.auth);
-  const [isShinkaiNodeHealthy, setIsShinkaiNodeHealthy] =
-    useState<boolean>(false);
-  const { data: isShinkaiNodeRunning } = useShinkaiNodeIsRunningQuery();
+  const [isShinkaiNodeHealthy, setIsShinkaiNodeHealthy] = useState<
+    boolean | undefined
+  >(undefined);
+  const { data: isShinkaiNodeRunning, isPending: isShinkaiNodeRunningPending } =
+    useShinkaiNodeIsRunningQuery();
   const isInUse = useShinkaiNodeManager((store) => store.isInUse);
-  const { data: health, isRefetchError: isHealthRefetchError } = useGetHealth(
+  const {
+    isSuccess: isHealthSuccess,
+    data: health,
+    isRefetchError: isHealthRefetchError,
+    isPending: isHealthPending,
+  } = useGetHealth(
     { nodeAddress: auth?.node_address ?? '' },
     { refetchInterval: 15000 },
   );
   useEffect(() => {
-    setIsShinkaiNodeHealthy(!isHealthRefetchError && health?.status === 'ok');
-  }, [health, isHealthRefetchError]);
+    if (isHealthSuccess) {
+      setIsShinkaiNodeHealthy(!isHealthRefetchError && health.status === 'ok');
+    }
+  }, [health, isHealthRefetchError, isHealthSuccess]);
+
+  if (
+    isShinkaiNodeHealthy === undefined ||
+    isHealthPending ||
+    isShinkaiNodeRunningPending
+  ) {
+    return (
+      <div className="flex h-full flex-col items-center justify-center gap-3 py-8">
+        <Loader2 className="h-8 w-8 animate-spin text-white" />
+        <span className="text-gray-80 text-sm">
+          Checking Shinkai Node Status ...
+        </span>
+      </div>
+    );
+  }
 
   return !!auth && isShinkaiNodeHealthy ? (
     children
