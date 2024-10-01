@@ -193,11 +193,11 @@ function BamlEditor() {
     bamlForm.setValue('bamlInput', BAML_EXAMPLES[script].bamlInput);
   };
 
-  const currentBamlScriptName = bamlForm.watch('bamlScriptName');
-  const currentBamlInput = bamlForm.watch('bamlInput');
-  const currentDslFile = bamlForm.watch('dslFile');
-  const currentFunctionName = bamlForm.watch('functionName');
-  const currentParamName = bamlForm.watch('paramName');
+  const currentBamlScriptName = bamlForm.watch('bamlScriptName') ?? '';
+  const currentBamlInput = bamlForm.watch('bamlInput') ?? '';
+  const currentDslFile = bamlForm.watch('dslFile') ?? '';
+  const currentFunctionName = bamlForm.watch('functionName') ?? '';
+  const currentParamName = bamlForm.watch('paramName') ?? '';
 
   useEffect(() => {
     const escapedBamlInput = escapeContent(currentBamlInput);

@@ -278,10 +278,10 @@ const QuickAskBody = ({ aiModel }: { aiModel: string }) => {
           </span>
 
           <h1 className="text-xl font-bold text-white">
-            {t('chat.emptyStateTitle')}
+            {t('quickAsk.emptyStateTitle')}
           </h1>
           <p className="text-gray-80 text-xs">
-            {t('chat.emptyStateDescription')}
+            {t('quickAsk.emptyStateDescription')}
           </p>
         </motion.div>
       </div>
