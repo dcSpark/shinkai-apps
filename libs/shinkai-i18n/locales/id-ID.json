@@ -315,6 +315,22 @@
     "restore": "Pulihkan"
   },
   "settings": {
+    "cryptoWallet": {
+      "addCoinbaseCDPWallet": "Tambahkan Dompet Coinbase CDP",
+      "addLocalWallet": "Tambahkan Dompet Lokal",
+      "addWallet": "Tambahkan Dompet",
+      "description": "Kelola dompet kripto Anda. Tambahkan Dompet Coinbase CDP atau Dompet Lokal Anda.",
+      "errorDescription": "Terjadi kesalahan saat memulihkan dompet Anda.",
+      "errorTitle": "Kesalahan saat memulihkan dompet",
+      "name": "Nama",
+      "privateKey": "Kunci Pribadi",
+      "serverSigner": "Penanda Server",
+      "successDescription": "Dompet Anda telah berhasil dipulihkan.",
+      "successTitle": "Dompet berhasil dipulihkan",
+      "title": "Dompet Kripto",
+      "walletId": "ID Dompet",
+      "walletIdOptional": "ID Dompet bersifat opsional"
+    },
     "defaultAgent": "AI Default",
     "description": "Kelola preferensi pengaturan akun Anda.",
     "experimentalFeature": {
@@ -332,6 +348,7 @@
     "layout": {
       "analytics": "Analitika",
       "createRegistrationCode": "Buat Kode Registrasi",
+      "cryptoWallet": "Dompet Kripto",
       "exportConnection": "Ekspor Koneksi",
       "galxe": "Pertualangan Galxe",
       "general": "Umum",
