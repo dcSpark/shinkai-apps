@@ -27,6 +27,7 @@ import { ShinkaiCombinationMarkIcon } from '@shinkai_network/shinkai-ui/assets';
 import { copyToClipboard } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { invoke } from '@tauri-apps/api/core';
+import { listen } from '@tauri-apps/api/event';
 import { motion } from 'framer-motion';
 import { CheckCircle2, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
@@ -100,6 +101,16 @@ function QuickAsk() {
     },
   });
 
+  useEffect(() => {
+    const unlisten = listen('tauri://focus', () => {
+      chatForm.setFocus('message');
+    });
+
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, []);
+
   const messageInput = chatForm.watch('message');
 
   useEffect(() => {
@@ -160,18 +171,19 @@ function QuickAsk() {
         <input
           autoFocus
           className="placeholder:text-gray-80/70 flex-grow bg-transparent text-lg text-white focus:outline-none"
-          onChange={(e) => {
-            chatForm.setValue('message', e.target.value);
-          }}
+          {...chatForm.register('message')}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               chatForm.handleSubmit(onSubmit)();
             }
+
+            if (e.key === 'Backspace' && !chatForm.watch('message')) {
+              setInboxId(null);
+              setMessageResponse('');
+            }
           }}
           placeholder="Ask a question..."
           spellCheck={false}
-          type="text"
-          value={chatForm.watch('message')}
         />
         <AIModelSelector
           onValueChange={(value) => {
