@@ -34,4 +34,5 @@ export const DEFAULT_CHAT_CONFIG = {
   top_k: 40,
   top_p: 0.9,
   stream: true,
+  max_tokens: 2000,
 } as const;

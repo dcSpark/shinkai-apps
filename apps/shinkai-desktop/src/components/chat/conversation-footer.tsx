@@ -136,6 +136,7 @@ function ConversationEmptyFooter() {
       temperature: DEFAULT_CHAT_CONFIG.temperature,
       topP: DEFAULT_CHAT_CONFIG.top_p,
       topK: DEFAULT_CHAT_CONFIG.top_k,
+      max_tokens: DEFAULT_CHAT_CONFIG.max_tokens,
     },
   });
 
@@ -314,6 +315,7 @@ function ConversationEmptyFooter() {
         temperature: chatConfigForm.getValues('temperature'),
         top_p: chatConfigForm.getValues('topP'),
         top_k: chatConfigForm.getValues('topK'),
+        max_tokens: chatConfigForm.getValues('max_tokens'),
       },
     });
 
