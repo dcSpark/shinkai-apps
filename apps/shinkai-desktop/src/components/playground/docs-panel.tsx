@@ -34,45 +34,63 @@ function DocsPanel() {
         </Button>
       </SheetTrigger>
       <SheetContent
-        className="max-w-md p-0 bg-black-gradient text-foreground"
+        className="bg-onboarding-card max-w-md p-0 text-white"
         onInteractOutside={(e) => {
           e.preventDefault();
         }}
       >
-        <div className="flex flex-col h-full">
-          <SheetHeader className="p-6 pb-3">
-            <SheetTitle className="text-2xl font-bold text-foreground">
+        <div className="flex h-full flex-col">
+          <SheetHeader className="space-y-0.5 p-6 pb-4">
+            <SheetTitle className="text-xl font-bold text-white">
               Documentation
             </SheetTitle>
-            <p className="text-muted-foreground text-sm mt-1">
+            <p className="text-gray-80 text-sm">
               Learn more about available functions and how to use them.
             </p>
           </SheetHeader>
-          <ScrollArea className="flex-grow px-6 pb-6">
+          <ScrollArea className="flex-grow px-6 pb-6 pr-4 [&>div>div]:!block">
             {documentationResults.map((func, index) => (
-              <div className="mb-8 pb-8 border-b border-gray-350 last:border-b-0" key={index}>
-                <h3 className="text-xl font-bold text-foreground mb-1 break-words">
+              <div
+                className="mb-6 border-b border-gray-300 pb-6 last:border-b-0"
+                key={index}
+              >
+                <h3 className="mb-1 break-words text-base font-semibold text-gray-50">
                   {capitalizeWords(func.name)}
                 </h3>
-                <p className="text-xs text-muted-foreground mb-2 break-words">{func.description}</p>
-                <p className="text-xs text-gray-80 mb-3">
+                <p className="text-gray-80 mb-2 break-words text-xs">
+                  {func.description}
+                </p>
+                <p className="text-gray-80 mb-3 text-xs">
                   Type: {func.tool_type} | Author: {func.author}
                 </p>
-                <div className="bg-gray-400 rounded-md p-2 mb-3 overflow-x-auto">
-                  <code className="text-brand-500 text-xs whitespace-pre-wrap break-words">Fn: {func.fn_name}</code>
+                <div className="mb-3 overflow-x-auto rounded-md bg-gray-400 p-2">
+                  <code className="text-brand-500 whitespace-pre-wrap break-words text-xs">
+                    Fn: {func.fn_name}
+                  </code>
                 </div>
-                {Array.isArray(func.input_args) && func.input_args.length > 0 && (
-                  <div className="bg-black-gradient rounded-md p-2 border border-gray-350">
-                    <h5 className="text-xs font-semibold text-foreground mb-2">Parameters:</h5>
-                    {func.input_args.map((arg: InputArg, argIndex: number) => (
-                      <div className="mb-2 last:mb-0 text-xs" key={argIndex}>
-                        <span className="text-foreground font-medium">{arg.name} </span>
-                        <span className="text-muted-foreground">{arg.description} </span>
-                        {arg.is_required && <span className="text-red">(Required)</span>}
-                      </div>
-                    ))}
-                  </div>
-                )}
+                {Array.isArray(func.input_args) &&
+                  func.input_args.length > 0 && (
+                    <div className="border-gray-350 rounded-md border bg-gray-500 p-2 text-xs">
+                      <h5 className="text-foreground mb-2 font-semibold">
+                        Parameters:
+                      </h5>
+                      {func.input_args.map(
+                        (arg: InputArg, argIndex: number) => (
+                          <div className="mb-2 last:mb-0" key={argIndex}>
+                            <span className="font-medium text-white">
+                              {arg.name}{' '}
+                            </span>
+                            <span className="text-gray-80">
+                              {arg.description}{' '}
+                            </span>
+                            {arg.is_required && (
+                              <span className="text-red-500">(Required)</span>
+                            )}
+                          </div>
+                        ),
+                      )}
+                    </div>
+                  )}
               </div>
             ))}
           </ScrollArea>
