@@ -41,7 +41,6 @@
     "editMessage": {
       "warning": "这将重新开始您的对话。"
     },
-    "emptyStateDescription": "尝试 “如何在 JavaScript 中进行 HTTP 请求”, “给我 80 年代十大摇滚音乐”, “解释互联网的工作原理”",
     "emptyStateTitle": "询问 Shinkai AI",
     "enterMessage": "输入消息",
     "fileProcessing": {

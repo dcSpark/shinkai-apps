@@ -41,7 +41,6 @@
     "editMessage": {
       "warning": "Ini akan memulai ulang percakapan Anda dari sini."
     },
-    "emptyStateDescription": "Coba “Bagaimana cara membuat permintaan HTTP dalam JavaScript”, “Beri saya 10 musik rock teratas di tahun 80an”, “Jelaskan bagaimana internet bekerja”",
     "emptyStateTitle": "Tanyakan kepada Shinkai AI",
     "enterMessage": "Masukkan Pesan",
     "fileProcessing": {

@@ -41,7 +41,6 @@
     "editMessage": {
       "warning": "Esto reiniciará tu conversación desde aquí."
     },
-    "emptyStateDescription": "Prueba con “Cómo hacer una solicitud HTTP en JavaScript”, “Dame las 10 mejores canciones de rock de los 80”, “Explícame cómo funciona internet”",
     "emptyStateTitle": "Pregunta a Shinkai IA",
     "enterMessage": "Introducir Mensaje",
     "fileProcessing": {

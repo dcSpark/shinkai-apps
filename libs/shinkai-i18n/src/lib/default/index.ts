@@ -73,7 +73,7 @@ export default {
     chats: 'Chats',
     emptyStateTitle: 'Ask Shinkai AI',
     emptyStateDescription:
-      'Try “How to make a HTTP request in JavaScript” , “Give me the top 10 rock music in the 80s”, “Explain me how internet works”',
+      'Use Shinkai Spotlight for quick questions using X + X + J',
     create: 'Create AI Chat',
     allMessagesLoaded: 'All previous messages have been loaded ✅',
     limitReachedTitle: 'Limit Reached',

@@ -41,7 +41,6 @@
     "editMessage": {
       "warning": "ここから会話をやり直します。"
     },
-    "emptyStateDescription": "「JavaScriptでHTTPリクエストを作成する方法」、「80年代のロック音楽のトップ10を教えて」、「インターネットの仕組みを説明して」などをお試しください",
     "emptyStateTitle": "Shinkai AIに質問してみてください",
     "enterMessage": "メッセージを入力",
     "fileProcessing": {
