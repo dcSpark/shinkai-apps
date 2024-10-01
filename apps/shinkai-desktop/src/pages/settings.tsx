@@ -236,6 +236,7 @@ const SettingsPage = () => {
                   name="defaultAgentId"
                   onValueChange={(value) => {
                     form.setValue('defaultAgentId', value);
+                    useSettings.persist.rehydrate();
                   }}
                   value={
                     llmProviders?.find((agent) => agent.id === defaultAgentId)
