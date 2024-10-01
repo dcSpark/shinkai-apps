@@ -1,7 +1,7 @@
 import { httpClient } from '../http-client';
 import { urlJoin } from '../utils/url-join';
 
-interface RestoreCoinbaseMPCWalletParams {
+export type RestoreCoinbaseMPCWalletRequest = {
   network: string;
   config: {
     name: string;
@@ -11,12 +11,16 @@ interface RestoreCoinbaseMPCWalletParams {
   };
   wallet_id?: string;
   role: string;
-}
+};
+
+export type RestoreCoinbaseMPCWalletResponse = {
+  status: string;
+};
 
 export const restoreCoinbaseMPCWallet = async (
   nodeAddress: string,
   bearerToken: string,
-  payload: RestoreCoinbaseMPCWalletParams
+  payload: RestoreCoinbaseMPCWalletRequest,
 ) => {
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v2/restore_coinbase_mpc_wallet'),
@@ -24,7 +28,7 @@ export const restoreCoinbaseMPCWallet = async (
     {
       headers: { Authorization: `Bearer ${bearerToken}` },
       responseType: 'json',
-    }
+    },
   );
   return response.data;
 };

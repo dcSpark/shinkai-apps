@@ -1,9 +1,19 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Input, Label, Switch } from '@shinkai_network/shinkai-ui';
+import { useRestoreCoinbaseMpcWallet } from '@shinkai_network/shinkai-node-state/v2/mutations/restoreCoinbaseMpcWallet/useRestoreCoinbaseMpcWallet';
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  Input,
+  Label,
+  Switch,
+} from '@shinkai_network/shinkai-ui';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 
-import { useRestoreCoinbaseMPCWalletMutation } from '../lib/crypto-wallet/crypto-wallet-client';
+import { useAuth } from '../store/auth';
 
 interface CoinbaseCDPWalletForm {
   name: string;
@@ -14,6 +24,7 @@ interface CoinbaseCDPWalletForm {
 
 const CryptoWalletPage: React.FC = () => {
   const { t } = useTranslation();
+  const auth = useAuth((state) => state.auth);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formData, setFormData] = useState<CoinbaseCDPWalletForm>({
     name: '',
@@ -21,7 +32,23 @@ const CryptoWalletPage: React.FC = () => {
     walletId: '',
     serverSigner: true,
   });
-  const restoreCoinbaseMPCWalletMutation = useRestoreCoinbaseMPCWalletMutation();
+  const { mutateAsync: restoreCoinbaseMPCWallet } = useRestoreCoinbaseMpcWallet(
+    {
+      onSuccess: (response) => {
+        console.log('Wallet restored successfully:', response);
+        toast.success(t('settings.cryptoWallet.successTitle'), {
+          description: t('settings.cryptoWallet.successDescription'),
+        });
+        setIsDialogOpen(false);
+      },
+      onError: (error) => {
+        console.error('Error restoring wallet:', error);
+        toast.error(t('settings.cryptoWallet.errorTitle'), {
+          description: t('settings.cryptoWallet.errorDescription'),
+        });
+      },
+    },
+  );
 
   const handleAddCoinbaseCDPWallet = () => {
     setIsDialogOpen(true);
@@ -45,30 +72,16 @@ const CryptoWalletPage: React.FC = () => {
     e.preventDefault();
     console.log('Submitting Coinbase CDP Wallet:', formData);
 
-    try {
-      const result = await restoreCoinbaseMPCWalletMutation.mutateAsync({
-        network: 'BaseSepolia', // You might want to make this configurable
-        config: {
-          name: formData.name,
-          private_key: formData.privateKey,
-          wallet_id: formData.walletId,
-          use_server_signer: formData.serverSigner.toString(),
-        },
-        wallet_id: formData.walletId,
-        role: 'Both', // You might want to make this configurable
-      });
-
-      console.log('Wallet restored successfully:', result);
-      toast.success(t('settings.cryptoWallet.successTitle'), {
-        description: t('settings.cryptoWallet.successDescription'),
-      });
-      setIsDialogOpen(false);
-    } catch (error) {
-      console.error('Error restoring wallet:', error);
-      toast.error(t('settings.cryptoWallet.errorTitle'), {
-        description: t('settings.cryptoWallet.errorDescription'),
-      });
-    }
+    await restoreCoinbaseMPCWallet({
+      token: auth?.api_v2_key ?? '',
+      nodeAddress: auth?.node_address ?? '',
+      network: 'BaseSepolia', // You might want to make this configurable
+      name: formData.name,
+      privateKey: formData.privateKey,
+      walletId: formData.walletId,
+      useServerSigner: formData.serverSigner.toString(),
+      role: 'Both', // You might want to make this configurable
+    });
   };
 
   return (
@@ -94,7 +107,9 @@ const CryptoWalletPage: React.FC = () => {
       <Dialog onOpenChange={setIsDialogOpen} open={isDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t('settings.cryptoWallet.addCoinbaseCDPWallet')}</DialogTitle>
+            <DialogTitle>
+              {t('settings.cryptoWallet.addCoinbaseCDPWallet')}
+            </DialogTitle>
           </DialogHeader>
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
@@ -129,7 +144,7 @@ const CryptoWalletPage: React.FC = () => {
                 onChange={handleInputChange}
                 value={formData.walletId}
               />
-              <p className="text-sm text-gray-400 mt-1">
+              <p className="mt-1 text-sm text-gray-400">
                 {t('settings.cryptoWallet.walletIdOptional')}
               </p>
             </div>
