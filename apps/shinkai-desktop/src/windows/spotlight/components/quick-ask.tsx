@@ -176,6 +176,11 @@ function QuickAsk() {
             if (e.key === 'Enter') {
               chatForm.handleSubmit(onSubmit)();
             }
+
+            if (e.key === 'Backspace' && !chatForm.watch('message')) {
+              setInboxId(null);
+              setMessageResponse('');
+            }
           }}
           placeholder="Ask a question..."
           spellCheck={false}
