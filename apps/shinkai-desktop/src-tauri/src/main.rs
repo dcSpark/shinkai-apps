@@ -9,24 +9,28 @@ use crate::commands::shinkai_node_manager_commands::{
     shinkai_node_get_default_model, shinkai_node_get_last_n_logs, shinkai_node_get_ollama_api_url,
     shinkai_node_get_options, shinkai_node_is_running, shinkai_node_kill,
     shinkai_node_remove_storage, shinkai_node_set_default_options, shinkai_node_set_options,
-    shinkai_node_spawn,
+    shinkai_node_spawn, show_shinkai_node_manager_window,
 };
 
+use commands::spotlight_commands::hide_spotlight_window_app;
+use global_shortcuts::global_shortcut_handler;
 use globals::SHINKAI_NODE_MANAGER_INSTANCE;
 use local_shinkai_node::shinkai_node_manager::ShinkaiNodeManager;
-use tauri::Emitter;
+use tauri::{Emitter, WindowEvent};
 use tauri::{Manager, RunEvent};
-use tauri_plugin_global_shortcut::{Code, Modifiers, ShortcutState};
 use tokio::sync::Mutex;
 use tray::create_tray;
+use windows::Window;
 
 mod audio;
 mod commands;
 mod galxe;
+mod global_shortcuts;
 mod globals;
 mod hardware;
 mod local_shinkai_node;
 mod tray;
+mod windows;
 
 #[derive(Clone, serde::Serialize)]
 struct Payload {
@@ -36,38 +40,39 @@ struct Payload {
 
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_log::Builder::new().build())
         .plugin(tauri_plugin_os::init())
+        .plugin(tauri_plugin_log::Builder::new().build())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
-            println!("{}, {argv:?}, {cwd}", app.package_info().name);
             app.emit("single-instance", Payload { args: argv, cwd })
                 .unwrap();
         }))
         .plugin(tauri_plugin_dialog::init())
         .plugin(
             tauri_plugin_global_shortcut::Builder::new()
-                .with_shortcuts(["super+shift+i", "control+shift+i"])
+                .with_shortcuts([
+                    "super+shift+i",
+                    "control+shift+i",
+                    "super+shift+j",
+                    "control+shift+j",
+                ])
                 .unwrap()
-                .with_handler(|app, shortcut, event| {
-                    if event.state == ShortcutState::Pressed
-                        && shortcut.matches(Modifiers::SUPER | Modifiers::SHIFT, Code::KeyI)
-                    {
-                        if let Some(window) = app.get_webview_window("main") {
-                            if let Err(e) = app.emit("create-chat", ()) {
-                                println!("Failed to emit 'create-chat': {}", e);
-                            }
-                            if let Err(e) = window.set_focus() {
-                                println!("Failed to set focus: {}", e);
-                            }
-                        }
-                    }
-                })
+                .with_handler(
+                    |app: &tauri::AppHandle,
+                     shortcut: &tauri_plugin_global_shortcut::Shortcut,
+                     event: tauri_plugin_global_shortcut::ShortcutEvent| {
+                        global_shortcut_handler(app, *shortcut, event)
+                    },
+                )
                 .build(),
         )
         .invoke_handler(tauri::generate_handler![
+            hide_spotlight_window_app,
+            show_shinkai_node_manager_window,
             shinkai_node_is_running,
             shinkai_node_get_last_n_logs,
             shinkai_node_get_options,
@@ -103,7 +108,7 @@ fn main() {
                         app_handle
                             .emit("shinkai-node-state-change", state_change)
                             .unwrap_or_else(|e| {
-                                println!("failed to emit global event for state change: {}", e);
+                                log::error!("failed to emit global event for state change: {}", e);
                             });
                     }
                 }
@@ -115,9 +120,14 @@ fn main() {
         })
         .build(tauri::generate_context!())
         .expect("error while running tauri application")
-        .run(move |_app_handle, event| match event {
-            RunEvent::ExitRequested { .. } => {
+        .run(move |app_handle, event| match event {
+            RunEvent::ExitRequested { api, .. } => {
+                api.prevent_exit();
+            }
+            RunEvent::Exit { .. } => {
                 tauri::async_runtime::spawn(async {
+                    log::debug!("killing ollama and shinkai-node before exit");
+
                     // For some reason process::exit doesn't fire RunEvent::ExitRequested event in tauri
                     let mut shinkai_node_manager_guard =
                         SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
@@ -127,12 +137,56 @@ fn main() {
                     std::process::exit(0);
                 });
             }
-            RunEvent::WindowEvent {
-                label: _, event: _, ..
-            } => {}
+            #[cfg(target_os = "macos")]
+            RunEvent::Reopen { .. } => {
+                let main_window_label = "main";
+                if let Some(window) = app_handle.get_webview_window(main_window_label) {
+                    window.show().unwrap();
+                    window.center().unwrap();
+                    let _ = window.set_focus();
+                } else {
+                    let main_window_config = app_handle
+                        .config()
+                        .app
+                        .windows
+                        .iter()
+                        .find(|w| w.label == main_window_label)
+                        .unwrap()
+                        .clone();
+                    match tauri::WebviewWindowBuilder::from_config(app_handle, &main_window_config)
+                    {
+                        Ok(builder) => {
+                            if let Err(e) = builder.build() {
+                                log::error!("failed to build main window: {}", e);
+                            }
+                        }
+                        Err(e) => {
+                            log::error!("failed to create WebviewWindowBuilder from config: {}", e);
+                        }
+                    }
+                }
+            }
             RunEvent::Ready => {}
             RunEvent::Resumed => {}
             RunEvent::MainEventsCleared => {}
+            RunEvent::WindowEvent {
+                label,
+                event: WindowEvent::Focused(focused),
+                ..
+            } => match label {
+                label if label == Window::Spotlight.as_str() => {
+                    if !focused {
+                        if let Some(spotlight_window) =
+                            app_handle.get_webview_window(Window::Spotlight.as_str())
+                        {
+                            if spotlight_window.is_visible().unwrap_or(false) {
+                                let _ = spotlight_window.hide();
+                            }
+                        }
+                    }
+                }
+                _ => {}
+            },
             _ => {}
         });
 }

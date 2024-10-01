@@ -161,7 +161,11 @@ impl OllamaProcessHandler {
 
     async fn kill_existing_processes_using_ports(&self) -> Result<(), String> {
         // Extract port from ollama_host
-        let port = self.options.ollama_host.split(':').nth(1)
+        let port = self
+            .options
+            .ollama_host
+            .split(':')
+            .nth(1)
             .ok_or_else(|| "invalid ollama_host format".to_string())?
             .parse::<u16>()
             .map_err(|_| "invalid port number".to_string())?;
@@ -172,7 +176,10 @@ impl OllamaProcessHandler {
 
         // Kill all existing processes using the same port
         for process in processes {
-            println!("terminating process: PID={}, Name={}", process.pid, process.name);
+            log::info!(
+                "terminating process: PID={}, Name={}",
+                process.pid, process.name
+            );
             kill_process_by_pid(self.app.clone(), &process.pid.to_string()).await;
         }
         Ok(())

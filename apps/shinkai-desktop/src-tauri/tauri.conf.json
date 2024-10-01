@@ -7,12 +7,7 @@
   },
   "bundle": {
     "active": true,
-    "targets": [
-      "app",
-      "appimage",
-      "nsis",
-      "dmg"
-    ],
+    "targets": ["app", "appimage", "nsis", "dmg"],
     "externalBin": [
       "external-binaries/shinkai-node/shinkai-node",
       "external-binaries/shinkai-node/shinkai-tools-runner-resources/shinkai-tools-backend",
@@ -59,6 +54,40 @@
         "dragDropEnabled": false,
         "titleBarStyle": "Overlay",
         "hiddenTitle": true
+      },
+      {
+        "fullscreen": false,
+        "label": "spotlight",
+        "transparent": true,
+        "title": "Spotlight",
+        "width": 720,
+        "height": 470,
+        "resizable": false,
+        "dragDropEnabled": false,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true,
+        "url": "src/windows/spotlight/index.html",
+        "center": true,
+        "skipTaskbar": true,
+        "shadow": true,
+        "decorations": false,
+        "visible": false,
+        "closable": false,
+        "parent": null,
+        "create": true
+      },
+      {
+        "label": "shinkai-node-manager",
+        "url": "src/windows/shinkai-node-manager/index.html",
+        "transparent": true,
+        "title": "Shinkai Node Manager",
+        "width": 1280,
+        "height": 840,
+        "resizable": true,
+        "dragDropEnabled": true,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true,
+        "create": false
       }
     ],
     "macOSPrivateApi": true
