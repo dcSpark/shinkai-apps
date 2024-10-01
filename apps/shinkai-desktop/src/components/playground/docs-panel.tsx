@@ -11,6 +11,19 @@ import { BookText } from 'lucide-react';
 
 import documentationResults from './documentation_results.json';
 
+// Add this type definition at the top of the file
+type InputArg = {
+  name: string;
+  arg_type: string;
+  description: string;
+  is_required: boolean;
+};
+
+// Helper function to capitalize each word
+function capitalizeWords(str: string): string {
+  return str.replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
 function DocsPanel() {
   return (
     <Sheet modal={false}>
@@ -21,43 +34,43 @@ function DocsPanel() {
         </Button>
       </SheetTrigger>
       <SheetContent
-        className="max-w-md p-0 bg-gray-900 text-gray-100"
+        className="max-w-md p-0 bg-black-gradient text-foreground"
         onInteractOutside={(e) => {
           e.preventDefault();
         }}
       >
         <div className="flex flex-col h-full">
           <SheetHeader className="p-6 pb-3">
-            <SheetTitle className="flex h-[40px] items-center gap-4 text-white">
+            <SheetTitle className="text-2xl font-bold text-foreground">
               Documentation
             </SheetTitle>
-            <p className="text-gray-300 text-sm">
+            <p className="text-muted-foreground text-sm mt-1">
               Learn more about available functions and how to use them.
             </p>
           </SheetHeader>
           <ScrollArea className="flex-grow px-6 pb-6">
             {documentationResults.map((func, index) => (
-              <div className="mb-6 border-b border-gray-700 pb-4 last:border-b-0" key={index}>
-                <h3 className="text-xl font-bold text-yellow-400">
-                  Fn: <code className="bg-gray-800 p-1 rounded text-green-400">{func.fn_name}</code>
+              <div className="mb-8 pb-8 border-b border-gray-350 last:border-b-0" key={index}>
+                <h3 className="text-xl font-bold text-foreground mb-1 break-words">
+                  {capitalizeWords(func.name)}
                 </h3>
-                <h4 className="text-lg font-semibold mt-1 text-white">{func.name}</h4>
-                <p className="text-sm text-gray-300 mt-2">{func.description}</p>
-                <p className="text-xs text-gray-400 mt-1">
+                <p className="text-xs text-muted-foreground mb-2 break-words">{func.description}</p>
+                <p className="text-xs text-gray-80 mb-3">
                   Type: {func.tool_type} | Author: {func.author}
                 </p>
-                {func.input_args && func.input_args.length > 0 && (
-                  <div className="mt-2">
-                    <h5 className="text-sm font-semibold text-white">Parameters:</h5>
-                    <ul className="list-disc list-inside">
-                      {func.input_args.map((arg, argIndex) => (
-                        <li className="text-xs mt-1 text-gray-300" key={argIndex}>
-                          <span className="font-medium text-cyan-400">{arg.name}</span>
-                          {arg.description && `: ${arg.description}`}
-                          {arg.is_required && <span className="text-red-400"> (Required)</span>}
-                        </li>
-                      ))}
-                    </ul>
+                <div className="bg-gray-400 rounded-md p-2 mb-3 overflow-x-auto">
+                  <code className="text-brand-500 text-xs whitespace-pre-wrap break-words">Fn: {func.fn_name}</code>
+                </div>
+                {Array.isArray(func.input_args) && func.input_args.length > 0 && (
+                  <div className="bg-black-gradient rounded-md p-2 border border-gray-350">
+                    <h5 className="text-xs font-semibold text-foreground mb-2">Parameters:</h5>
+                    {func.input_args.map((arg: InputArg, argIndex: number) => (
+                      <div className="mb-2 last:mb-0 text-xs" key={argIndex}>
+                        <span className="text-foreground font-medium">{arg.name} </span>
+                        <span className="text-muted-foreground">{arg.description} </span>
+                        {arg.is_required && <span className="text-red">(Required)</span>}
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
