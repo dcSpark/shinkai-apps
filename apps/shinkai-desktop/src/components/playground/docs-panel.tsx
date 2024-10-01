@@ -40,7 +40,7 @@ function DocsPanel() {
         }}
       >
         <div className="flex h-full flex-col">
-          <SheetHeader className="space-y-0.5 p-6 pb-4">
+          <SheetHeader className="space-y-0.5 p-6 pb-3">
             <SheetTitle className="font-clash text-xl text-white">
               Documentation
             </SheetTitle>
