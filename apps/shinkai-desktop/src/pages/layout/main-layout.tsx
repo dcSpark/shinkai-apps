@@ -24,11 +24,11 @@ import {
 import {
   AISearchContentIcon,
   // AiTasksIcon,
-  BrowseSubscriptionIcon,
+  // BrowseSubscriptionIcon,
   CreateAIIcon,
   FilesIcon,
   InboxIcon,
-  MySubscriptionsIcon,
+  // MySubscriptionsIcon,
   SheetIcon,
   ShinkaiCombinationMarkIcon,
   ToolsIcon,
@@ -333,16 +333,16 @@ export function MainNav() {
       icon: <AISearchContentIcon className="h-5 w-5" />,
     },
 
-    {
-      title: t('layout.menuItems.subscriptions'),
-      href: '/public-subscriptions',
-      icon: <BrowseSubscriptionIcon className="h-5 w-5" />,
-    },
-    {
-      title: t('layout.menuItems.mySubscriptions'),
-      href: '/my-subscriptions',
-      icon: <MySubscriptionsIcon className="h-5 w-5" />,
-    },
+    // {
+    //   title: t('layout.menuItems.subscriptions'),
+    //   href: '/public-subscriptions',
+    //   icon: <BrowseSubscriptionIcon className="h-5 w-5" />,
+    // },
+    // {
+    //   title: t('layout.menuItems.mySubscriptions'),
+    //   href: '/my-subscriptions',
+    //   icon: <MySubscriptionsIcon className="h-5 w-5" />,
+    // },
     optInExperimental && {
       title: 'Playground',
       href: '/workflow-playground',
@@ -512,8 +512,7 @@ export function MainNav() {
                     </TooltipPortal>
                   </Tooltip>
                 </TooltipProvider>
-                {(item.href === '/my-subscriptions' ||
-                  item.href === '/vector-search') && (
+                {item.href === '/vector-search' && (
                   <Separator className="my-0.5 w-full bg-gray-200" />
                 )}
               </Fragment>
