@@ -1,4 +1,6 @@
 {
+  "": {
+  },
   "aiFilesSearch": {
     "description": "Busca para encontrar contenido en todos los archivos de tus archivos AI fácilmente",
     "filesSelected": "Seleccionados {{count}} archivos",
@@ -41,6 +43,7 @@
     "editMessage": {
       "warning": "Esto reiniciará tu conversación desde aquí."
     },
+    "emptyStateDescription": "Para preguntas rápidas, presiona ⌘ + Shift + J para usar Shinkai Spotlight",
     "emptyStateTitle": "Pregunta a Shinkai IA",
     "enterMessage": "Introducir Mensaje",
     "fileProcessing": {
@@ -287,6 +290,10 @@
     "setupShinkaiDesktopDescription": "Configura Shinkai Desktop para comenzar",
     "uploadAFile": "Subir un archivo",
     "uploadAFileDescription": "Guarda tus notas, sitios web, documentos y otros de forma segura en un solo lugar."
+  },
+  "quickAsk": {
+    "emptyStateDescription": "Prueba con “¿Cómo hacer una solicitud HTTP en JavaScript?”, “Dame las 10 mejores canciones de rock de los 80”, “Explícame cómo funciona Internet”",
+    "emptyStateTitle": "Pregunta a Shinkai AI"
   },
   "quickConnection": {
     "connectingToNode": "Conectando a tu Nodo Shinkai local",

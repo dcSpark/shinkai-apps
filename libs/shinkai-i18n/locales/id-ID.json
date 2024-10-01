@@ -41,6 +41,7 @@
     "editMessage": {
       "warning": "Ini akan memulai ulang percakapan Anda dari sini."
     },
+    "emptyStateDescription": "Untuk pertanyaan cepat, tekan ⌘ + Shift + J untuk menggunakan Shinkai Spotlight",
     "emptyStateTitle": "Tanyakan kepada Shinkai AI",
     "enterMessage": "Masukkan Pesan",
     "fileProcessing": {
@@ -287,6 +288,10 @@
     "setupShinkaiDesktopDescription": "Atur Desktop Shinkai untuk memulai",
     "uploadAFile": "Unggah File",
     "uploadAFileDescription": "Simpan catatan, situs web, dokumen, dan lainnya dengan aman di satu tempat."
+  },
+  "quickAsk": {
+    "emptyStateDescription": "Coba tanyakan “Bagaimana cara membuat permintaan HTTP di JavaScript”, “Berikan saya 10 lagu rock terbaik di tahun 80-an”, “Jelaskan bagaimana internet bekerja”",
+    "emptyStateTitle": "Tanya Shinkai AI"
   },
   "quickConnection": {
     "connectingToNode": "Menghubungkan ke Node Shinkai lokal Anda",

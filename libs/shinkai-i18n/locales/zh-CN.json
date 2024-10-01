@@ -41,6 +41,7 @@
     "editMessage": {
       "warning": "这将重新开始您的对话。"
     },
+    "emptyStateDescription": "对于快速问题，请按 ⌘ + Shift + J 使用 Shinkai Spotlight",
     "emptyStateTitle": "询问 Shinkai AI",
     "enterMessage": "输入消息",
     "fileProcessing": {
@@ -287,6 +288,10 @@
     "setupShinkaiDesktopDescription": "设置 Shinkai 桌面以开始使用",
     "uploadAFile": "上传文件",
     "uploadAFileDescription": "将您的笔记、网站、文档等安全存储在一个地方。"
+  },
+  "quickAsk": {
+    "emptyStateDescription": "试试“如何在 JavaScript 中发起 HTTP 请求”，“给我 80 年代的十大摇滚音乐”，“给我解释一下互联网是如何工作的”",
+    "emptyStateTitle": "询问 Shinkai AI"
   },
   "quickConnection": {
     "connectingToNode": "连接到您的本地Shinkai节点",

@@ -69,11 +69,16 @@ export default {
       messagePlaceholder: 'Enter your message',
     },
   },
+  quickAsk: {
+    emptyStateTitle: 'Ask Shinkai AI',
+    emptyStateDescription:
+      'Try “How to make a HTTP request in JavaScript” , “Give me the top 10 rock music in the 80s”, “Explain me how internet works”',
+  },
   chat: {
     chats: 'Chats',
     emptyStateTitle: 'Ask Shinkai AI',
     emptyStateDescription:
-      'Use Shinkai Spotlight for quick questions using X + X + J',
+      'For quick questions, press ⌘ + Shift + J to use Shinkai Spotlight',
     create: 'Create AI Chat',
     allMessagesLoaded: 'All previous messages have been loaded ✅',
     limitReachedTitle: 'Limit Reached',
