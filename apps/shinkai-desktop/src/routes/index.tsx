@@ -32,6 +32,7 @@ import ChatLayout from '../pages/chat/layout';
 import { ConnectMethodQrCodePage } from '../pages/connect-method-qr-code';
 import CreateAgentPage from '../pages/create-agent';
 import CreateChatPage from '../pages/create-chat';
+import CryptoWalletPage from '../pages/crypto-wallet';
 import { ExportConnection } from '../pages/export-connection';
 import FreeSubscriptionsPage from '../pages/free-subscription';
 import { GalxeValidation } from '../pages/galxe-validation';
@@ -327,6 +328,7 @@ const AppRoutes = () => {
           />
           <Route element={<PromptLibrary />} path={'prompt-library'} />
           <Route element={<GalxeValidation />} path={'galxe-validation'} />
+          <Route element={<CryptoWalletPage />} path={'crypto-wallet'} />
         </Route>
       </Route>
       <Route element={<Navigate replace to={'inboxes/'} />} path="/" />

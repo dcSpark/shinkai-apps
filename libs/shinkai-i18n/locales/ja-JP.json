@@ -315,6 +315,22 @@
     "restore": "復元"
   },
   "settings": {
+    "cryptoWallet": {
+      "addCoinbaseCDPWallet": "Coinbase CDPウォレットを追加",
+      "addLocalWallet": "ローカルウォレットを追加",
+      "addWallet": "ウォレットを追加",
+      "description": "暗号通貨ウォレットを管理します。Coinbase CDPウォレットまたはローカルウォレットを追加してください。",
+      "errorDescription": "ウォレットの復元中にエラーが発生しました。",
+      "errorTitle": "ウォレットの復元中にエラーが発生しました",
+      "name": "名前",
+      "privateKey": "秘密鍵",
+      "serverSigner": "サーバー署名者",
+      "successDescription": "あなたのウォレットは正常に復元されました。",
+      "successTitle": "ウォレットが正常に復元されました",
+      "title": "暗号通貨ウォレット",
+      "walletId": "ウォレットID",
+      "walletIdOptional": "ウォレットIDは任意です"
+    },
     "defaultAgent": "デフォルトAI",
     "description": "アカウント設定を管理します",
     "experimentalFeature": {
@@ -332,6 +348,7 @@
     "layout": {
       "analytics": "分析",
       "createRegistrationCode": "登録コードの作成",
+      "cryptoWallet": "暗号通貨ウォレット",
       "exportConnection": "接続のエクスポート",
       "galxe": "ガルクス・クエスト",
       "general": "一般",

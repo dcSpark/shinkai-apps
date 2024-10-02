@@ -317,6 +317,22 @@
     "restore": "Restaurar"
   },
   "settings": {
+    "cryptoWallet": {
+      "addCoinbaseCDPWallet": "Agregar Billetera Coinbase CDP",
+      "addLocalWallet": "Agregar Billetera Local",
+      "addWallet": "Agregar Billetera",
+      "description": "Gestiona tus billeteras cripto. Agrega tu Billetera Coinbase CDP o tu Billetera Local.",
+      "errorDescription": "Hubo un error al restaurar tu billetera.",
+      "errorTitle": "Error al restaurar la billetera",
+      "name": "Nombre",
+      "privateKey": "Clave Privada",
+      "serverSigner": "Firmante del Servidor",
+      "successDescription": "Tu billetera ha sido restaurada con éxito.",
+      "successTitle": "Billetera restaurada con éxito",
+      "title": "Billetera Cripto",
+      "walletId": "ID de Billetera",
+      "walletIdOptional": "El ID de Billetera es opcional"
+    },
     "defaultAgent": "IA Predeterminada",
     "description": "Administra tus preferencias de configuración de cuenta.",
     "experimentalFeature": {
@@ -334,6 +350,7 @@
     "layout": {
       "analytics": "Analíticas",
       "createRegistrationCode": "Crear Código de Registro",
+      "cryptoWallet": "Billetera Cripto",
       "exportConnection": "Exportar Conexión",
       "galxe": "Misión Galxe",
       "general": "General",
