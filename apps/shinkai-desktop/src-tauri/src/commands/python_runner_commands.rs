@@ -16,13 +16,17 @@ pub enum ExecutionState {
 pub struct ExecutionResult {
     pub state: ExecutionState,
     pub payload: Option<serde_json::Value>,
+    pub stdout: Vec<String>,
+    pub stderr: Vec<String>,
 }
 
-
-
 #[tauri::command]
-pub async fn python_runner_run(app_handle: tauri::AppHandle, code: String) -> Result<ExecutionResult, String> {
-    let python_runner_window = create_window(app_handle, Window::PythonRunner).map_err(|e| e.to_string())?;
+pub async fn python_runner_run(
+    app_handle: tauri::AppHandle,
+    code: String,
+) -> Result<ExecutionResult, String> {
+    let python_runner_window =
+        create_window(app_handle, Window::PythonRunner).map_err(|e| e.to_string())?;
     let python_runner_window_clone = python_runner_window.clone();
     let (tx, rx) = tokio::sync::oneshot::channel();
 
@@ -32,7 +36,7 @@ pub async fn python_runner_run(app_handle: tauri::AppHandle, code: String) -> Re
     });
     let _ = rx.await;
 
-    let (tx_result, mut rx_result) = tokio::sync::oneshot::channel::<ExecutionResult>();
+    let (tx_result, rx_result) = tokio::sync::oneshot::channel::<ExecutionResult>();
 
     let _ = python_runner_window.emit_to(python_runner_window.label(), "run", code);
     python_runner_window_clone.once("execution-result", move |result: Event| {
@@ -42,7 +46,11 @@ pub async fn python_runner_run(app_handle: tauri::AppHandle, code: String) -> Re
         } else {
             let _ = tx_result.send(ExecutionResult {
                 state: ExecutionState::Error,
-                payload: Some(serde_json::json!({ "error": "failed to deserialize execution result" })),
+                stdout: vec![],
+                stderr: vec![],
+                payload: Some(
+                    serde_json::json!({ "error": "failed to deserialize execution result" }),
+                ),
             });
         }
     });
