@@ -1,10 +1,11 @@
-use tauri::{AppHandle, WebviewWindowBuilder, Manager};
+use tauri::{AppHandle, Manager, WebviewWindow, WebviewWindowBuilder};
 
 #[derive(Debug, Clone, Copy)]
 pub enum Window {
     Main,
     ShinkaiNodeManager,
     Spotlight,
+    PythonRunner,
 }
 
 impl Window {
@@ -13,10 +14,10 @@ impl Window {
             Window::Main => "main",
             Window::ShinkaiNodeManager => "shinkai-node-manager",
             Window::Spotlight => "spotlight",
+            Window::PythonRunner => "python-runner",
         }
     }
 }
-
 
 pub fn show_or_recreate_window(app_handle: AppHandle, window_name: Window) {
     let label = window_name.as_str();
@@ -27,18 +28,46 @@ pub fn show_or_recreate_window(app_handle: AppHandle, window_name: Window) {
         let _ = window.set_focus();
     } else {
         log::info!("window {} not found, recreating...", label);
-        let window_config = app_handle.config().app.windows.iter().find(|w| w.label == label).unwrap().clone();
+        let window_config = app_handle
+            .config()
+            .app
+            .windows
+            .iter()
+            .find(|w| w.label == label)
+            .unwrap()
+            .clone();
         match WebviewWindowBuilder::from_config(&app_handle, &window_config) {
             Ok(builder) => {
                 if let Err(e) = builder.build() {
                     log::error!("failed to recreate window: {}", e);
                 }
-            },
+            }
             Err(e) => {
                 log::error!("failed to recreate window from config: {}", e);
             }
         }
     }
+}
+
+pub fn create_window(app_handle: AppHandle, window_name: Window) -> Result<WebviewWindow, anyhow::Error> {
+    let label = window_name.as_str();
+    let mut window_config = app_handle
+        .config()
+        .app
+        .windows
+        .iter()
+        .find(|w| w.label == label)
+        .unwrap()
+        .clone();
+    let unique_label = format!("python-runner-{}", uuid::Uuid::new_v4().to_string());
+    window_config.label = unique_label.clone();
+    let window_builder = WebviewWindowBuilder::from_config(&app_handle, &window_config).inspect_err(|e| {
+      log::error!("failed to get window builder from config for window {}. error: {}", unique_label, e);
+    })?;
+    window_builder.build().map_err(|e| {
+      log::error!("failed to create window {}. error: {}", unique_label, e);
+      anyhow::anyhow!(e) // Convert to anyhow::Error
+    })
 }
 
 pub fn hide_spotlight_window(app_handle: AppHandle) {

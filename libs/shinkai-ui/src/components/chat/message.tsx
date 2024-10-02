@@ -6,8 +6,6 @@ import { Edit3, RotateCcw } from 'lucide-react';
 import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { PythonProvider } from 'react-pyodide';
-import usePython from 'react-pyodide/dist/hooks/use-python';
 import { z } from 'zod';
 
 import { appIcon } from '../../assets';
@@ -247,9 +245,7 @@ export const Message = ({
                       )}
                     />
                     {pythonCode && (
-                      <PythonProvider>
                         <PythonCodeRenderer code={pythonCode} />
-                      </PythonProvider>
                     )}
                     {!!message.fileInbox?.files?.length && (
                       <FileList

@@ -12,6 +12,7 @@ use crate::commands::shinkai_node_manager_commands::{
     shinkai_node_spawn, show_shinkai_node_manager_window,
 };
 
+use commands::python_runner_commands::python_runner_run;
 use commands::spotlight_commands::hide_spotlight_window_app;
 use global_shortcuts::global_shortcut_handler;
 use globals::SHINKAI_NODE_MANAGER_INSTANCE;
@@ -84,7 +85,8 @@ fn main() {
             shinkai_node_get_ollama_api_url,
             shinkai_node_get_default_model,
             hardware_get_summary,
-            galxe_generate_proof
+            galxe_generate_proof,
+            python_runner_run,
         ])
         .setup(|app| {
             let app_resource_dir = app.path().resource_dir()?;
