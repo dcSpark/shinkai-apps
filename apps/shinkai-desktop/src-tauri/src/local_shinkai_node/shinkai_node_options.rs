@@ -39,18 +39,19 @@ impl ShinkaiNodeOptions {
         let default_pdfium_dynamic_lib_path = if cfg!(target_os = "macos") {
             app_resource_dir.join("../Frameworks")
         } else {
-            app_resource_dir
-                .join("external-binaries/shinkai-node")  
-        }.to_string_lossy().replace("\\\\?\\C", "C");
+            app_resource_dir.join("external-binaries/shinkai-node")
+        }
+        .to_string_lossy()
+        .replace("\\\\?\\C", "C");
         let default_node_storage_path = app_data_dir
             .join("node_storage")
             .to_string_lossy()
             .to_string();
-        println!(
+        log::debug!(
             "PDFium dynamic library path: {:?}",
             default_pdfium_dynamic_lib_path
         );
-        println!("Node storage path: {:?}", default_node_storage_path);
+        log::debug!("Node storage path: {:?}", default_node_storage_path);
         ShinkaiNodeOptions {
             node_storage_path: Some(default_node_storage_path),
             pdfium_dynamic_lib_path: Some(default_pdfium_dynamic_lib_path),

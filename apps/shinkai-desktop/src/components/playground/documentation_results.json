@@ -1,0 +1,578 @@
+[
+  {
+    "name": "Extensive Summary",
+    "fn_name": "extensive_summary",
+    "description": "Reviews in depth all the content to generate a summary.",
+    "tool_type": "Workflow",
+    "author": "@@official.shinkai",
+    "version": "v0.1",
+    "input_args": [
+      {
+        "name": "$PROMPT",
+        "arg_type": "string",
+        "description": "Prompt text to summarize.",
+        "is_required": true
+      },
+      {
+        "name": "$EMBEDDINGS",
+        "arg_type": "object",
+        "description": "Embeddings generated from the job scope.",
+        "is_required": true
+      }
+    ],
+    "config": null
+  },
+  {
+    "name": "Hyde Inference",
+    "fn_name": "hyde_inference",
+    "description": "Generates a passage to answer a question and uses embeddings to refine the answer.",
+    "tool_type": "Workflow",
+    "author": "@@official.shinkai",
+    "version": "v0.1",
+    "input_args": [
+      {
+        "name": "INPUT",
+        "arg_type": "string",
+        "description": "The input passage or question.",
+        "is_required": true
+      }
+    ],
+    "config": null
+  },
+  {
+    "name": "Answer Question",
+    "fn_name": "answerQuestion",
+    "description": "Generates an answer to a question with citations from the provided content using BAML. The answer includes quotes from the content as citations.",
+    "tool_type": "Prompt",
+    "author": "@official.shinkai",
+    "version": "1.0",
+    "input_args": [
+      {
+        "name": "context",
+        "arg_type": "Context",
+        "description": "The context containing the question and documents to be used for generating an answer.",
+        "is_required": true
+      }
+    ],
+    "config": null
+  },
+  {
+    "name": "answer with citations workflow",
+    "fn_name": "answer_with_citations_workflow",
+    "description": "Generates an answer to a question with citations from the provided content using RAG workflow.",
+    "tool_type": "Workflow",
+    "author": "@@official.shinkai",
+    "version": "v0.1",
+    "input_args": [
+      {
+        "name": "$FILE_PIECES",
+        "arg_type": "registeroperation",
+        "description": "A value obtained from calling the function named 'process_embeddings_in_job_scope_with_metadata'. No additional arguments required.",
+        "is_required": false
+      },
+      {
+        "name": "$LLM_INPUT",
+        "arg_type": "registeroperation",
+        "description": "A value obtained from calling the function named 'generate_json_map' with the string '\"question\"', a register '$INPUT', another string '\"documents\"', and a register '$FILE_PIECES'",
+        "is_required": false
+      },
+      {
+        "name": "$LLM_RESPONSE",
+        "arg_type": "registeroperation",
+        "description": "A value obtained from calling the function named 'baml_answer_with_citations' with a register '$LLM_INPUT'",
+        "is_required": false
+      }
+    ],
+    "config": null
+  },
+  {
+    "name": "shinkai duckduckgo search",
+    "fn_name": "duckduckgo_search",
+    "description": "Searches the DuckDuckGo search engine. Example result: [{\"title\": \"IMDb Top 250 Movies\", \"description\": \"Find out which <b>movies</b> are rated as the <b>best</b> <b>of</b> <b>all</b> <b>time</b> by IMDb users. See the list of 250 titles sorted by ranking, genre, year, and rating, and learn how the list is determined.\", \"url\": \"https://www.imdb.com/chart/top/\"}]",
+    "tool_type": "JS Tool",
+    "author": "Shinkai",
+    "version": "",
+    "input_args": [
+      {
+        "name": "message",
+        "arg_type": "string",
+        "description": "",
+        "is_required": true
+      }
+    ],
+    "config": null
+  },
+  {
+    "name": "shinkai perplexity",
+    "fn_name": "perplexity",
+    "description": "Searches the internet using Perplexity",
+    "tool_type": "JS Tool",
+    "author": "Shinkai",
+    "version": null,
+    "input_args": {
+      "name": "query",
+      "arg_type": "string",
+      "description": "",
+      "is_required": true
+    },
+    "config": null
+  },
+  {
+    "name": "shinkai perplexity api",
+    "fn_name": "perplexity_api",
+    "description": "Searches the web using Perplexity API (limited)",
+    "tool_type": "JS Tool",
+    "author": "Shinkai",
+    "version": "",
+    "input_args": [
+      {
+        "name": "query",
+        "arg_type": "string",
+        "description": "",
+        "is_required": true
+      }
+    ],
+    "config": null
+  },
+  {
+    "name": "Shinkai Youtube Video Summary",
+    "fn_name": "youtube_video_summary",
+    "description": "Summarizes a YouTube video content without watching. Provides a summary with organized sections and clickable timestamp links. Useful for quickly grasping main points, preparing for discussions, or efficient research. Example uses: summarizing tech talks, product reviews, or educational lectures.",
+    "tool_type": "JS",
+    "author": "Shinkai",
+    "version": null,
+    "input_args": [
+      {
+        "name": "url",
+        "arg_type": "string",
+        "description": "The full URL of the YouTube video to transcribe and summarize. Must be a valid and accessible YouTube video link.",
+        "is_required": true
+      }
+    ],
+    "config": null
+  },
+  {
+    "name": "shinkai tool token price",
+    "fn_name": "token_price_using_chainlink__limited_",
+    "description": "Fetches the price of a coin or token using Chainlink. It doesn't have many tokens.",
+    "tool_type": "JS Tool",
+    "author": "Shinkai",
+    "version": "",
+    "input_args": [
+      {
+        "name": "symbol",
+        "arg_type": "string",
+        "description": "",
+        "is_required": true
+      }
+    ],
+    "config": null
+  },
+  {
+    "name": "shinkai math expression evaluator",
+    "fn_name": "math",
+    "description": "Parses and evaluates mathematical expressions. It’s a safer and more math-oriented alternative to using JavaScript’s eval function for mathematical expressions.",
+    "tool_type": "JS Tool",
+    "author": "Shinkai",
+    "version": "",
+    "input_args": [
+      {
+        "name": "expression",
+        "arg_type": "string",
+        "description": "",
+        "is_required": true
+      }
+    ],
+    "config": null
+  },
+  {
+    "name": "Shinkai Leiden Algorithm",
+    "fn_name": "leiden algorithm",
+    "description": "Runs the Leiden algorithm on the input edges",
+    "tool_type": "JS Tool",
+    "author": "Shinkai",
+    "version": "",
+    "input_args": [
+      {
+        "name": "edges",
+        "arg_type": "array",
+        "description": "",
+        "is_required": true
+      },
+      {
+        "name": "resolution",
+        "arg_type": "number",
+        "description": "",
+        "is_required": false
+      },
+      {
+        "name": "nIterations",
+        "arg_type": "number",
+        "description": "",
+        "is_required": false
+      },
+      {
+        "name": "nRandomStarts",
+        "arg_type": "number",
+        "description": "",
+        "is_required": false
+      },
+      {
+        "name": "convergenceThreshold",
+        "arg_type": "number",
+        "description": "",
+        "is_required": false
+      }
+    ],
+    "config": null
+  },
+  {
+    "name": "shinkai coinbase transaction sender",
+    "fn_name": "coinbase_transaction_sender",
+    "description": "Tool for restoring a Coinbase wallet and sending a transaction",
+    "tool_type": "JS Tool",
+    "author": "Shinkai",
+    "version": "1.0",
+    "input_args": [
+      {
+        "name": "recipient_address",
+        "arg_type": "string",
+        "description": "",
+        "is_required": true
+      },
+      {
+        "name": "assetId",
+        "arg_type": "string",
+        "description": "",
+        "is_required": true
+      },
+      {
+        "name": "amount",
+        "arg_type": "string",
+        "description": "",
+        "is_required": true
+      }
+    ],
+    "config": null
+  },
+  {
+    "name": "Shinkai Defillama TVL Rankings",
+    "fn_name": "defillama-tvl-rankings",
+    "description": "Fetches data on DeFi protocols by category (e.g., 'Liquid Staking', 'Lending', 'Bridge', 'Dexes', 'Restaking', 'Liquid Restaking', 'CDP', 'RWA', 'Yield', 'Derivatives', 'Farm', 'Yield Aggregator') and optionally filters by blockchain (e.g., 'Ethereum', 'Solana', 'Arbitrum', 'Base', 'Cardano', 'Near', 'BSC', 'Sui'). Returns protocol details including rank, name, TVL, TVL percentage changes, market cap to TVL ratio, and fees/revenue for the past 24 hours, 7 days, and 30 days.",
+    "tool_type": "JS Tool",
+    "author": "Shinkai",
+    "version": "",
+    "input_args": [
+      {
+        "name": "top10",
+        "arg_type": "boolean",
+        "description": "",
+        "is_required": false
+      },
+      {
+        "name": "categoryName",
+        "arg_type": "string",
+        "description": "",
+        "is_required": false
+      },
+      {
+        "name": "networkName",
+        "arg_type": "string",
+        "description": "",
+        "is_required": false
+      }
+    ],
+    "config": null
+  },
+  {
+    "name": "token balance for evm ethereum address based on ethplorer",
+    "fn_name": "token_balance_for_evm_ethereum_address__based_on_ethplorer",
+    "description": "Fetches the balance for an Ethereum EVM address like 0x123... and returns detailed token information. Example output: { \"address\": \"0x123...\", \"ETH\": { \"balance\": 1.23, \"rawBalance\": \"12300000000000000000\" }, \"tokens\": [ { \"balance\": 100, \"rawBalance\": \"100000000000000000000\", \"tokenInfo\": { \"name\": \"TokenName\", \"symbol\": \"TKN\", \"decimals\": \"18\" } } ] }",
+    "tool_type": "JS Tool",
+    "author": "Shinkai",
+    "version": "1.0",
+    "input_args": [
+      {
+        "name": "address",
+        "arg_type": "string",
+        "description": "",
+        "is_required": true
+      }
+    ],
+    "config": null
+  },
+  {
+    "name": "Shinkai Coinbase Balance Getter",
+    "fn_name": "shinkai_coinbase_balance_getter",
+    "description": "Tool for getting the balance of a Coinbase wallet after restoring it",
+    "tool_type": "JS Tool",
+    "author": "Shinkai",
+    "version": "",
+    "input_args": [
+      {
+        "name": "walletId",
+        "arg_type": "string",
+        "description": "",
+        "is_required": false
+      }
+    ],
+    "config": null
+  },
+  {
+    "name": "Shin Kai Coinbase Get My Address",
+    "fn_name": "coinbase_my_address_getter",
+    "description": "Tool for getting the default address of a Coinbase wallet",
+    "tool_type": "JS Tool",
+    "author": "Shinkai",
+    "version": "",
+    "input_args": [
+      {
+        "name": "walletId",
+        "arg_type": "string",
+        "description": "",
+        "is_required": false
+      }
+    ],
+    "config": null
+  },
+  {
+    "name": "Shinkai Coinbase Faucet Caller",
+    "fn_name": "coinbase_faucet_caller",
+    "description": "Tool for calling a faucet on Coinbase",
+    "tool_type": "JS",
+    "author": "Shinkai",
+    "version": "",
+    "input_args": [
+      {
+        "name": "name",
+        "arg_type": "string",
+        "description": "",
+        "is_required": true
+      },
+      {
+        "name": "privateKey",
+        "arg_type": "string",
+        "description": "",
+        "is_required": true
+      },
+      {
+        "name": "walletId",
+        "arg_type": "string",
+        "description": "",
+        "is_required": false
+      }
+    ],
+    "config": "{...}"
+  },
+  {
+    "name": "Shinkai Coinbase Wallet Creator",
+    "fn_name": "coinbase_wallet_creator",
+    "description": "Tool for creating a Coinbase wallet",
+    "tool_type": "JS Tool",
+    "author": "Shinkai",
+    "version": "",
+    "input_args": [
+      {
+        "name": "name",
+        "arg_type": "string",
+        "description": "",
+        "is_required": true
+      },
+      {
+        "name": "privateKey",
+        "arg_type": "string",
+        "description": "",
+        "is_required": true
+      },
+      {
+        "name": "useServerSigner",
+        "arg_type": "boolean",
+        "description": "",
+        "is_required": false
+      }
+    ],
+    "config": null
+  },
+  {
+    "name": "shinkai web3 eth uniswap",
+    "fn_name": "web3_eth_uniswap",
+    "description": "Fetches the balance of an Ethereum address in ETH using Uniswap.",
+    "tool_type": "JS",
+    "author": "Shinkai",
+    "version": "",
+    "input_args": [
+      {
+        "name": "address",
+        "arg_type": "string",
+        "description": "",
+        "is_required": true
+      }
+    ],
+    "config": ""
+  },
+  {
+    "name": "@@official.shinkai:::extensive_summary",
+    "fn_name": "extensive_summary",
+    "description": "New playwright-example tool from template",
+    "tool_type": "JS Tool",
+    "author": "Shinkai",
+    "version": "",
+    "input_args": [
+      {
+        "name": "url",
+        "arg_type": "string",
+        "description": "",
+        "is_required": true
+      }
+    ],
+    "config": null
+  },
+  {
+    "name": "Shinkai Json to Markdown",
+    "fn_name": "json-to-md",
+    "description": "Converts JSON to Markdown using a Nunjucks (Jinja2-like) template",
+    "tool_type": "JS Tool",
+    "author": "Shinkai",
+    "version": "",
+    "input_args": [
+      {
+        "name": "message",
+        "arg_type": "string",
+        "description": "",
+        "is_required": true
+      },
+      {
+        "name": "template",
+        "arg_type": "string",
+        "description": "",
+        "is_required": true
+      }
+    ],
+    "config": ""
+  },
+  {
+    "name": "shinkai echo",
+    "fn_name": "extensive_summary",
+    "description": "Echoes the input message",
+    "tool_type": "JS Tool",
+    "author": "Shinkai",
+    "version": "",
+    "input_args": [
+      {
+        "name": "message",
+        "arg_type": "string",
+        "description": "",
+        "is_required": true
+      }
+    ],
+    "config": ""
+  },
+  {
+    "name": "shinkai aave loan requester",
+    "fn_name": "aave_loan_requester",
+    "description": "Tool for requesting a loan on Aave, including selecting assets to supply and borrow with their APYs",
+    "tool_type": "JS Tool",
+    "author": "Shinkai",
+    "version": "",
+    "input_args": [
+      {
+        "name": "inputValue",
+        "arg_type": "string",
+        "description": "",
+        "is_required": true
+      },
+      {
+        "name": "assetSymbol",
+        "arg_type": "string",
+        "description": "",
+        "is_required": true
+      }
+    ],
+    "config": null
+  },
+  {
+    "name": "shinkai web3 eth balance",
+    "fn_name": "web3_eth_balance",
+    "description": "Fetches the balance of an Ethereum address in ETH.",
+    "tool_type": "JS",
+    "author": "Shinkai",
+    "version": "",
+    "input_args": [
+      {
+        "name": "address",
+        "arg_type": "string",
+        "description": "",
+        "is_required": true
+      }
+    ],
+    "config": null
+  },
+  {
+    "name": "Shinkai Weather By City",
+    "fn_name": "weather_by_city",
+    "description": "Get weather information for a city name",
+    "tool_type": "JS",
+    "author": "",
+    "version": "",
+    "input_args": [
+      {
+        "name": "city",
+        "arg_type": "string",
+        "description": "",
+        "is_required": true
+      }
+    ],
+    "config": null
+  },
+  {
+    "name": "shinkai download page",
+    "fn_name": "download_page",
+    "description": "Downloads a URL and converts its HTML content to Markdown",
+    "tool_type": "JS Tool ",
+    "author": "Shinkai",
+    "version": "",
+    "input_args": [
+      {
+        "name": "url",
+        "arg_type": "string",
+        "description": "",
+        "is_required": true
+      }
+    ],
+    "config": null
+  },
+  {
+    "name": "shinkai foobar",
+    "fn_name": "foobar",
+    "description": "New foobar tool from template",
+    "tool_type": "JS Tool",
+    "author": "Shinkai",
+    "version": "",
+    "input_args": [
+      {
+        "name": "message",
+        "arg_type": "string",
+        "description": "",
+        "is_required": true
+      }
+    ],
+    "config": null
+  },
+  {
+    "name": "Shinkai Coinbase Transactions Getter",
+    "fn_name": "shinkai_coinbase_transactions_getter",
+    "description": "Tool for getting the transactions of a Coinbase wallet after restoring it",
+    "tool_type": "JS Tool",
+    "author": "Shinkai",
+    "version": null,
+    "input_args": [
+      {
+        "name": "walletId",
+        "arg_type": "string",
+        "description": "",
+        "is_required": false
+      }
+    ],
+    "config": null
+  }
+]

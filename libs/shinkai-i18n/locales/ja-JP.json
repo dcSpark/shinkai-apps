@@ -41,7 +41,7 @@
     "editMessage": {
       "warning": "ここから会話をやり直します。"
     },
-    "emptyStateDescription": "「JavaScriptでHTTPリクエストを作成する方法」、「80年代のロック音楽のトップ10を教えて」、「インターネットの仕組みを説明して」などをお試しください",
+    "emptyStateDescription": "簡単な質問の場合は、⌘ + Shift + Jを押して新海スポットライトを使用してください",
     "emptyStateTitle": "Shinkai AIに質問してみてください",
     "enterMessage": "メッセージを入力",
     "fileProcessing": {
@@ -288,6 +288,10 @@
     "setupShinkaiDesktopDescription": "Shinkaiデスクトップのセットアップを行いましょう",
     "uploadAFile": "ファイルをアップロード",
     "uploadAFileDescription": "ノート、ウェブサイト、ドキュメントなどを安全に保存"
+  },
+  "quickAsk": {
+    "emptyStateDescription": "「JavaScriptでHTTPリクエストを作成する方法は？」、「80年代のロック音楽トップ10は？」、「インターネットの仕組みを説明して」などを試してみてください。",
+    "emptyStateTitle": "新海AIに質問する"
   },
   "quickConnection": {
     "connectingToNode": "ローカルShinkaiノードに接続中",

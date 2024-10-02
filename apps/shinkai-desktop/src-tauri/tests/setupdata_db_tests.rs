@@ -55,14 +55,17 @@ mod tests {
             db.read_setup_data_key("registration_code").unwrap(),
             setup_data.registration_code
         );
-        assert_eq!(db.read_setup_data_key("profile").unwrap(), setup_data.profile);
+        assert_eq!(
+            db.read_setup_data_key("profile").unwrap(),
+            setup_data.profile
+        );
 
         // Try to read a key that doesn't exist and check that it returns an error
         assert!(db.read_setup_data_key("nonexistent_key").is_err());
 
-         // Update a key in the SetupData and check that the new value is stored in the database
-         let new_value = "new_value".to_string();
-         db.update_setup_data_key("profile", &new_value).unwrap();
-         assert_eq!(db.read_setup_data_key("profile").unwrap(), new_value);
+        // Update a key in the SetupData and check that the new value is stored in the database
+        let new_value = "new_value".to_string();
+        db.update_setup_data_key("profile", &new_value).unwrap();
+        assert_eq!(db.read_setup_data_key("profile").unwrap(), new_value);
     }
 }

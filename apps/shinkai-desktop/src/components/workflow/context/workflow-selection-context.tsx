@@ -97,10 +97,15 @@ const WorkflowSearchDrawer = ({
   const debouncedSearchQuery = useDebounce(searchQuery, 600);
   const isSearchQuerySynced = searchQuery === debouncedSearchQuery;
 
-  const { isPending, data: workflowList } = useGetWorkflowList({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-  });
+  const { isPending, data: workflowList } = useGetWorkflowList(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+    },
+    {
+      select: (data) => data.filter((workflow) => workflow.enabled),
+    },
+  );
 
   const { data: searchWorkflowList, isPending: isSearchWorkflowListPending } =
     useGetWorkflowSearch(
@@ -109,7 +114,10 @@ const WorkflowSearchDrawer = ({
         token: auth?.api_v2_key ?? '',
         search: debouncedSearchQuery,
       },
-      { enabled: isSearchQuerySynced },
+      {
+        enabled: isSearchQuerySynced,
+        select: (data) => data.filter((workflow) => workflow.enabled),
+      },
     );
 
   const { mutateAsync: removeWorkflow } = useRemoveWorkflow({

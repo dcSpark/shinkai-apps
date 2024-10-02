@@ -141,7 +141,7 @@ const useGlobalAppShortcuts = () => {
   }, []);
 };
 
-const useDefaultAgentByDefault = () => {
+export const useDefaultAgentByDefault = () => {
   const auth = useAuth((state) => state.auth);
   const defaultAgentId = useSettings((state) => state.defaultAgentId);
   const setDefaultAgentId = useSettings((state) => state.setDefaultAgentId);
