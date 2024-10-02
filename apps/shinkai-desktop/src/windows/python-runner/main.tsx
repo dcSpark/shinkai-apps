@@ -25,12 +25,23 @@ const main = async () => {
     console.log('loading pyodide');
     pyodide = await loadPyodide({
       indexURL: "/pyodide",
-      // fullStdLib: true,
     });
-    console.log('pyodide loaded sucessfully')
+    console.log('pyodide loaded successfully');
+
+    // Load micropip
+    await pyodide.loadPackage('micropip');
+    console.log('micropip loaded successfully');
+
+    // Use micropip to install numpy
+    await pyodide.runPythonAsync(`
+      import micropip
+      await micropip.install('numpy')
+    `);
+    console.log('numpy loaded successfully');
+
     emit('ready');
   } catch (e) {
-    console.log('pyodide load error')
+    console.log('pyodide load error', e);
     emit('loading-error');
     return;
   }
