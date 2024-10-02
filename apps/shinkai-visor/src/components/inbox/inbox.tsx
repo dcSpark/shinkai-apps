@@ -437,6 +437,7 @@ export const Inbox = () => {
     <div className="flex h-full flex-col justify-between gap-3">
       <MessageList
         containerClassName="pr-4"
+        editAndRegenerateMessage={regenerateMessage}
         fetchPreviousPage={fetchPreviousPage}
         hasPreviousPage={hasPreviousPage}
         isFetchingPreviousPage={isFetchingPreviousPage}
@@ -445,7 +446,6 @@ export const Inbox = () => {
         lastMessageContent={messageContent}
         noMoreMessageLabel={t('chat.allMessagesLoaded')}
         paginatedMessages={data}
-        regenerateMessage={regenerateMessage}
       />
       {isJobProcessingFile && (
         <Alert className="shadow-lg">

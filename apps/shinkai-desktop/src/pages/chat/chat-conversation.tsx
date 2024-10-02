@@ -11,6 +11,7 @@ import {
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { ShinkaiMessageBuilderWrapper } from '@shinkai_network/shinkai-message-ts/wasm/ShinkaiMessageBuilderWrapper';
 import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
+import { useRetryMessage } from '@shinkai_network/shinkai-node-state/v2/mutations/retryMessage/useRetryMessage';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
@@ -106,6 +107,7 @@ const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
 
   return { readyState, widgetTool, setWidgetTool };
 };
+
 const ChatConversation = () => {
   const { captureAnalyticEvent } = useAnalytics();
   const { t } = useTranslation();
@@ -146,6 +148,8 @@ const ChatConversation = () => {
       !hasProviderEnableStreaming || chatConfig?.stream === false,
   });
 
+  const { mutateAsync: retryMessage } = useRetryMessage();
+
   const isLoadingMessage = useMemo(() => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
     return isJobInbox(inboxId) && lastMessage?.isLocal;
@@ -161,7 +165,19 @@ const ChatConversation = () => {
     },
   });
 
-  const regenerateMessage = async (
+  const regenerateMessage = async (messageId: string) => {
+    if (!auth) return;
+    const decodedInboxId = decodeURIComponent(inboxId);
+
+    await retryMessage({
+      nodeAddress: auth.node_address,
+      token: auth.api_v2_key,
+      inboxId: decodedInboxId,
+      messageId: messageId,
+    });
+  };
+
+  const editAndRegenerateMessage = async (
     content: string,
     parentHash: string,
     workflowName?: string,
@@ -195,6 +211,7 @@ const ChatConversation = () => {
       <ConversationHeader />
       <MessageList
         containerClassName="px-5"
+        editAndRegenerateMessage={editAndRegenerateMessage}
         fetchPreviousPage={fetchPreviousPage}
         hasPreviousPage={hasPreviousPage}
         isFetchingPreviousPage={isFetchingPreviousPage}

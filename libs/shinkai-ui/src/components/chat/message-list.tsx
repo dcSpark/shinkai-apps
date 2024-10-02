@@ -58,6 +58,7 @@ export const MessageList = ({
   fetchPreviousPage,
   containerClassName,
   lastMessageContent,
+  editAndRegenerateMessage,
   regenerateMessage,
   disabledRetryAndEdit,
   messageExtra,
@@ -73,7 +74,8 @@ export const MessageList = ({
   ) => Promise<
     InfiniteQueryObserverResult<ChatConversationInfiniteData, Error>
   >;
-  regenerateMessage?: (
+  regenerateMessage?: (messageId: string) => void;
+  editAndRegenerateMessage?: (
     content: string,
     messageHash: string,
     workflowName?: string,
@@ -273,17 +275,14 @@ export const MessageList = ({
                           (grandparentHash === null || grandparentHash === '');
 
                         const handleRetryMessage = () => {
-                          regenerateMessage?.(
-                            previousMessage.content,
-                            grandparentHash ?? '',
-                            previousMessage.workflowName,
-                          );
+                          regenerateMessage?.(message?.hash ?? '');
                         };
+
                         const handleEditMessage = (
                           message: string,
                           workflowName?: string,
                         ) => {
-                          regenerateMessage?.(
+                          editAndRegenerateMessage?.(
                             message,
                             previousMessage?.hash ?? '',
                             workflowName,
