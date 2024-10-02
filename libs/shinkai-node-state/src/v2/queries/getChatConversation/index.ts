@@ -28,7 +28,7 @@ export const getChatConversation = async ({
 
   const flattenMessages = data.flat(1);
 
-  return Promise.all(
+  const formattedMessagePromise = await Promise.all(
     flattenMessages.map(async (message) => {
       const isLocal =
         message.sender === shinkaiIdentity &&
@@ -84,4 +84,12 @@ export const getChatConversation = async ({
       return formattedMessage;
     }),
   );
+
+  const messages = await Promise.all(formattedMessagePromise);
+  // filter out messages if a message is repeated by its parent-hash
+  const uniqueMessages = messages.filter(
+    (message, index, self) =>
+      index === self.findIndex((t) => t.parentHash === message.parentHash),
+  );
+  return uniqueMessages;
 };

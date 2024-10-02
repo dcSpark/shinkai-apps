@@ -297,7 +297,6 @@ export const MessageList = ({
                           >
                             <Message
                               disabledEdit={disabledRetryAndEditValue}
-                              disabledRetry={disabledRetryAndEditValue}
                               handleEditMessage={handleEditMessage}
                               handleRetryMessage={handleRetryMessage}
                               message={message}
