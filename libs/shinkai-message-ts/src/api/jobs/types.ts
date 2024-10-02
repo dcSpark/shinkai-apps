@@ -279,3 +279,8 @@ export type UpdateJobScopeRequest = {
   job_scope: JobScope;
 };
 export type UpdateJobScopeResponse = string;
+
+export type RetryMessageRequest = {
+  message_id: string;
+  inbox_name: string;
+};

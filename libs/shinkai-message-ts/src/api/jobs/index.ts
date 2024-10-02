@@ -24,6 +24,7 @@ import {
   JobMessageResponse,
   LLMProviderInterface,
   RemoveLLMProviderRequest,
+  RetryMessageRequest,
   StopGeneratingLLMRequest,
   UpdateChatConfigRequest,
   UpdateChatConfigResponse,
@@ -356,6 +357,22 @@ export const updateJobScope = async (
 ) => {
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v2/update_job_scope'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data;
+};
+
+export const retryMessage = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: RetryMessageRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/retry_message'),
     payload,
     {
       headers: { Authorization: `Bearer ${bearerToken}` },

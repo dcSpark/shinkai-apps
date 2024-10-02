@@ -58,7 +58,9 @@ export const MessageList = ({
   fetchPreviousPage,
   containerClassName,
   lastMessageContent,
+  editAndRegenerateMessage,
   regenerateMessage,
+  regenerateFirstMessage,
   disabledRetryAndEdit,
   messageExtra,
 }: {
@@ -73,7 +75,9 @@ export const MessageList = ({
   ) => Promise<
     InfiniteQueryObserverResult<ChatConversationInfiniteData, Error>
   >;
-  regenerateMessage?: (
+  regenerateMessage?: (messageId: string) => void;
+  regenerateFirstMessage?: (message: string) => void;
+  editAndRegenerateMessage?: (
     content: string,
     messageHash: string,
     workflowName?: string,
@@ -268,27 +272,32 @@ export const MessageList = ({
                           ? previousMessage.parentHash
                           : null;
 
+                        const firstMessageRetry =
+                          disabledRetryAndEdit ??
+                          (grandparentHash === null || grandparentHash === '');
                         const disabledRetryAndEditValue =
                           disabledRetryAndEdit ??
                           (grandparentHash === null || grandparentHash === '');
 
                         const handleRetryMessage = () => {
-                          regenerateMessage?.(
-                            previousMessage.content,
-                            grandparentHash ?? '',
-                            previousMessage.workflowName,
-                          );
+                          regenerateMessage?.(message?.hash ?? '');
                         };
+
                         const handleEditMessage = (
                           message: string,
                           workflowName?: string,
                         ) => {
-                          regenerateMessage?.(
+                          editAndRegenerateMessage?.(
                             message,
                             previousMessage?.hash ?? '',
                             workflowName,
                           );
                         };
+
+                        const handleFirstMessageRetry = () => {
+                          regenerateFirstMessage?.(previousMessage.content);
+                        };
+
                         return (
                           <div
                             data-testid={`message-${
@@ -298,9 +307,12 @@ export const MessageList = ({
                           >
                             <Message
                               disabledEdit={disabledRetryAndEditValue}
-                              disabledRetry={disabledRetryAndEditValue}
                               handleEditMessage={handleEditMessage}
-                              handleRetryMessage={handleRetryMessage}
+                              handleRetryMessage={
+                                firstMessageRetry
+                                  ? handleFirstMessageRetry
+                                  : handleRetryMessage
+                              }
                               message={message}
                             />
                           </div>
