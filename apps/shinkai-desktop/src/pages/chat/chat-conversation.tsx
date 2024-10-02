@@ -5,12 +5,14 @@ import {
   WsMessage,
 } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import {
+  buildInboxIdFromJobId,
   extractErrorPropertyOrContent,
   extractJobIdFromInbox,
   isJobInbox,
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { ShinkaiMessageBuilderWrapper } from '@shinkai_network/shinkai-message-ts/wasm/ShinkaiMessageBuilderWrapper';
 import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
+import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useRetryMessage } from '@shinkai_network/shinkai-node-state/v2/mutations/retryMessage/useRetryMessage';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
@@ -23,7 +25,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { AlertCircle } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';
 
 import { streamingSupportedModels } from '../../components/chat/constants';
@@ -111,6 +113,7 @@ const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
 const ChatConversation = () => {
   const { captureAnalyticEvent } = useAnalytics();
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = decodeURIComponent(encodedInboxId);
@@ -164,6 +167,26 @@ const ChatConversation = () => {
       captureAnalyticEvent('AI Chat', undefined);
     },
   });
+
+  const { mutateAsync: createJob } = useCreateJob({
+    onSuccess: (data) => {
+      const jobId = encodeURIComponent(buildInboxIdFromJobId(data.jobId));
+      navigate(`/inboxes/${jobId}`);
+    },
+  });
+
+  // endpoint doesnt support retry in first message yet
+  const regenerateFirstMessage = async (message: string) => {
+    if (!auth) return;
+
+    await createJob({
+      nodeAddress: auth.node_address,
+      token: auth.api_v2_key,
+      content: message,
+      llmProvider: currentInbox?.agent?.id ?? '',
+      isHidden: false,
+    });
+  };
 
   const regenerateMessage = async (messageId: string) => {
     if (!auth) return;
@@ -236,6 +259,7 @@ const ChatConversation = () => {
         }
         noMoreMessageLabel={t('chat.allMessagesLoaded')}
         paginatedMessages={data}
+        regenerateFirstMessage={regenerateFirstMessage}
         regenerateMessage={regenerateMessage}
       />
       {isLimitReachedErrorLastMessage && (

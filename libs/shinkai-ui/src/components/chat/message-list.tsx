@@ -60,6 +60,7 @@ export const MessageList = ({
   lastMessageContent,
   editAndRegenerateMessage,
   regenerateMessage,
+  regenerateFirstMessage,
   disabledRetryAndEdit,
   messageExtra,
 }: {
@@ -75,6 +76,7 @@ export const MessageList = ({
     InfiniteQueryObserverResult<ChatConversationInfiniteData, Error>
   >;
   regenerateMessage?: (messageId: string) => void;
+  regenerateFirstMessage?: (message: string) => void;
   editAndRegenerateMessage?: (
     content: string,
     messageHash: string,
@@ -270,6 +272,9 @@ export const MessageList = ({
                           ? previousMessage.parentHash
                           : null;
 
+                        const firstMessageRetry =
+                          disabledRetryAndEdit ??
+                          (grandparentHash === null || grandparentHash === '');
                         const disabledRetryAndEditValue =
                           disabledRetryAndEdit ??
                           (grandparentHash === null || grandparentHash === '');
@@ -288,6 +293,11 @@ export const MessageList = ({
                             workflowName,
                           );
                         };
+
+                        const handleFirstMessageRetry = () => {
+                          regenerateFirstMessage?.(previousMessage.content);
+                        };
+
                         return (
                           <div
                             data-testid={`message-${
@@ -298,7 +308,11 @@ export const MessageList = ({
                             <Message
                               disabledEdit={disabledRetryAndEditValue}
                               handleEditMessage={handleEditMessage}
-                              handleRetryMessage={handleRetryMessage}
+                              handleRetryMessage={
+                                firstMessageRetry
+                                  ? handleFirstMessageRetry
+                                  : handleRetryMessage
+                              }
                               message={message}
                             />
                           </div>
