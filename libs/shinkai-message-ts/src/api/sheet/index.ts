@@ -5,6 +5,7 @@ import {
   ExportSheetResponse,
   ImportSheetRequest,
   ImportSheetResponse,
+  SheetFileFormat,
 } from './types';
 
 export const exportSheet = async (
@@ -27,12 +28,21 @@ export const importSheet = async (
   bearerToken: string,
   payload: ImportSheetRequest,
 ) => {
-  const fileData = await payload.file.arrayBuffer();
+  let content;
+
+  if (payload.type === SheetFileFormat.XLSX) {
+    const fileData = await payload.file.arrayBuffer();
+    content = Array.from(new Uint8Array(fileData));
+  } else if (payload.type === SheetFileFormat.CSV) {
+    content = await payload.file.text();
+  } else {
+    throw new Error('Unsupported file type');
+  }
 
   const data = {
     sheet_data: {
       type: payload.type.toUpperCase(),
-      content: Array.from(new Uint8Array(fileData)),
+      content,
     },
   };
 

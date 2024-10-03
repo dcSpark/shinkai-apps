@@ -302,12 +302,16 @@ function ImportSheetModal() {
 
   const onSubmit = async (data: ImportSheetFormSchema) => {
     const fileSelected = data.file?.[0];
+    const fileFormat = fileSelected?.name?.split('.')?.pop();
 
     await importSheet({
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
       file: fileSelected,
-      fileFormat: SheetFileFormat.CSV,
+      fileFormat:
+        fileFormat === SheetFileFormat.XLSX
+          ? SheetFileFormat.XLSX
+          : SheetFileFormat.CSV,
     });
   };
 
