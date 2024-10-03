@@ -103,7 +103,7 @@
         "closable": true,
         "incognito": true,
         "contentProtected": true,
-        "visible": true,
+        "visible": false,
         "parent": null
       }
     ],

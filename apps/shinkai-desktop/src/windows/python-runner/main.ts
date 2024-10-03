@@ -26,6 +26,7 @@ def capture_df_display(df):
     return df.to_html()
 
 output = None
+outputError = None
 fig_json = None
 local_scope = {}
 try:
@@ -46,19 +47,22 @@ try:
             fig_json = pio.to_json(var_value)
             break
 except Exception as e:
-    output = str(e)
+    outputError = str(e)
 
 # Reset stdout
 sys.stdout = old_stdout
 
-(output, fig_json)
+(output, outputError, fig_json)
     `;
   return wrappedCode;
 };
 const runPythonCode = async (
   code: string,
 ): Promise<{ type: string; data: string }> => {
-  const [output, figJson] = await pyodide.runPythonAsync(code);
+  const [output, outputError, figJson] = await pyodide.runPythonAsync(code);
+  if (outputError) {
+    throw new Error(outputError);
+  }
   if (figJson) {
     return { type: 'plotly', data: figJson };
   }
@@ -93,7 +97,12 @@ listen('run', async (event: Event<string>) => {
     });
   } catch (e) {
     console.log('pyodide run error', e);
-    emit('execution-result', { state: 'error', stdout, stderr, payload: e });
+    emit('execution-result', {
+      state: 'error',
+      stdout,
+      stderr,
+      payload: String(e),
+    });
   }
 });
 
@@ -110,6 +119,7 @@ const main = async () => {
         console.log('python stderr', message);
         stderr.push(message);
       },
+      fullStdLib: true,
     });
     await pyodide.loadPackage(['micropip', 'pandas', 'numpy', 'matplotlib']);
     const micropip = pyodide.pyimport('micropip');
