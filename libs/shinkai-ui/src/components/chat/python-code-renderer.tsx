@@ -117,9 +117,9 @@ const ResultRender = ({ result }: { result: any }) => {
     <div className="flex flex-col space-y-2">
       {result?.payload?.type === 'plotly' ? (
         <Plot
-          config={{ responsive: true }}
-          data={result.payload.data.data}
-          layout={{ title: 'A Fancy Plot' }}
+          config={{ responsive: false }}
+          data={JSON.parse(result.payload.data).data}
+          layout={{ title: 'A Fancy Plot', width: 450, height: 300 }}
         />
       ) : (
         <div className="rounded-md bg-gray-100 p-4">
