@@ -1,11 +1,15 @@
 import { DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
 import { MixerHorizontalIcon } from '@radix-ui/react-icons';
+import { SheetFileFormat } from '@shinkai_network/shinkai-message-ts/api/sheet/types';
 import { Columns } from '@shinkai_network/shinkai-node-state/lib/queries/getSheet/types';
+import { useGetSheet } from '@shinkai_network/shinkai-node-state/lib/queries/getSheet/useGetSheet';
+import { useExportSheet } from '@shinkai_network/shinkai-node-state/v2/mutations/exportSheet/useExportSheet';
 import {
   Button,
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
   Tooltip,
   TooltipContent,
@@ -14,7 +18,13 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { Table } from '@tanstack/react-table';
+import { save } from '@tauri-apps/plugin-dialog';
+import * as fs from '@tauri-apps/plugin-fs';
+import { BaseDirectory } from '@tauri-apps/plugin-fs';
+import { Download } from 'lucide-react';
+import { useParams } from 'react-router-dom';
 
+import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
 import { useSheetProjectStore } from './context/table-context';
 
@@ -175,5 +185,86 @@ export function DataTableChatOptions() {
         </Tooltip>
       </TooltipProvider>
     )
+  );
+}
+
+export function DataTableExportOptions() {
+  const { sheetId } = useParams();
+  const auth = useAuth((state) => state.auth);
+
+  const { data: sheetInfo } = useGetSheet({
+    nodeAddress: auth?.node_address ?? '',
+    sheetId: sheetId ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile: auth?.profile ?? '',
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+  });
+  const { mutateAsync: exportSheet } = useExportSheet({
+    onSuccess: async (response, variables) => {
+      const isCsvFormat = variables.fileFormat === SheetFileFormat.CSV;
+      const fileFormat = isCsvFormat ? 'csv' : 'xlsx';
+
+      const path = await save({
+        defaultPath: `${sheetInfo?.sheet_name}.${fileFormat}`,
+      });
+
+      if (!path) return;
+      let fileContent: Uint8Array;
+      if (typeof response.content === 'string') {
+        const file = new Blob([response.content], {
+          type: 'application/octet-stream',
+        });
+        const dataUrl = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.readAsDataURL(file);
+        });
+        const fileBuffer = await fetch(dataUrl).then((response) =>
+          response.arrayBuffer(),
+        );
+        fileContent = new Uint8Array(fileBuffer);
+      } else {
+        fileContent = new Uint8Array(response.content);
+      }
+
+      await fs.writeFile(path, fileContent, {
+        baseDir: BaseDirectory.Download,
+      });
+    },
+  });
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button className="flex h-8 rounded-md" size="sm" variant="outline">
+          <Download className="mr-2 h-4 w-4" />
+          Export
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="end"
+        className="w-[160px] bg-gray-300 px-1 py-2 text-gray-50"
+      >
+        {[SheetFileFormat.CSV, SheetFileFormat.XLSX].map((fileFormat) => (
+          <DropdownMenuItem
+            key={fileFormat}
+            onClick={() => {
+              if (!auth || !sheetId) return;
+              exportSheet({
+                nodeAddress: auth.node_address,
+                token: auth.api_v2_key,
+                sheetId,
+                fileFormat,
+              });
+            }}
+          >
+            Export as {fileFormat}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
