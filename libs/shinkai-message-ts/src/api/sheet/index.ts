@@ -27,9 +27,18 @@ export const importSheet = async (
   bearerToken: string,
   payload: ImportSheetRequest,
 ) => {
+  const fileData = await payload.file.arrayBuffer();
+
+  const data = {
+    sheet_data: {
+      type: payload.type.toUpperCase(),
+      content: Array.from(new Uint8Array(fileData)),
+    },
+  };
+
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v2/import_sheet'),
-    payload,
+    data,
     {
       headers: { Authorization: `Bearer ${bearerToken}` },
       responseType: 'json',

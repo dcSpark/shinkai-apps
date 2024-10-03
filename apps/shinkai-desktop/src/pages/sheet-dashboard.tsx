@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { SheetFileFormat } from '@shinkai_network/shinkai-message-ts/api/sheet/types';
 import { useCreateSheet } from '@shinkai_network/shinkai-node-state/lib/mutations/createSheet/useCreateSheet';
 import { useRemoveSheet } from '@shinkai_network/shinkai-node-state/lib/mutations/removeSheet/useRemoveSheet';
 import { useGetUserSheets } from '@shinkai_network/shinkai-node-state/lib/queries/getUserSheets/useGetUserSheets';
@@ -30,15 +31,13 @@ import {
 import { SheetFileIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { formatDistanceToNow } from 'date-fns';
-import { MoreHorizontal, PlusIcon, Trash2Icon } from 'lucide-react';
-import React, { Fragment, useState } from 'react';
-import { useDropzone } from 'react-dropzone';
+import { FileUpIcon, MoreHorizontal, PlusIcon, Trash2Icon } from 'lucide-react';
+import { Fragment, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-import { allowedFileExtensions } from '../lib/constants';
 import { useAuth } from '../store/auth';
 import { SimpleLayout } from './layout/simple-layout';
 
@@ -295,35 +294,20 @@ function ImportSheetModal() {
 
   const navigate = useNavigate();
 
-  const { getRootProps: getRootFileProps, getInputProps: getInputFileProps } =
-    useDropzone({
-      multiple: false,
-      onDrop: (acceptedFiles) => {
-        const file = acceptedFiles[0];
-        importSheetForm.setValue('file', file, { shouldValidate: true });
-      },
-    });
-
-  const { file } = importSheetForm.watch();
-
-  console.log(file, 'file');
-
   const { mutateAsync: importSheet } = useImportSheet({
-    onSuccess: (data, response) => {
-      // navigate(`/sheets/${data.response}`);
-      toast.success('Sheet created successfully');
+    onSuccess: (data) => {
+      navigate(`/sheets/${data.sheet_id}`);
     },
   });
 
   const onSubmit = async (data: ImportSheetFormSchema) => {
-    const fileSelected = data.file;
-    const fileData = '';
+    const fileSelected = data.file?.[0];
 
     await importSheet({
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
-      sheetData: fileData,
-      // file: data.files[0],
+      file: fileSelected,
+      fileFormat: SheetFileFormat.CSV,
     });
   };
 
@@ -331,8 +315,8 @@ function ImportSheetModal() {
     <Dialog>
       <DialogTrigger asChild>
         <Button className="gap-2" size="sm">
-          <PlusIcon className="size-4" />
-          {t('sheet.actions.createProject')}
+          <FileUpIcon className="size-4" />
+          Import
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
@@ -352,9 +336,8 @@ function ImportSheetModal() {
                   <FormLabel className="sr-only">{t('common.file')}</FormLabel>
                   <FormControl>
                     <FileUploader
-                      accept={allowedFileExtensions.join(',')}
-                      allowMultiple
-                      descriptionText={allowedFileExtensions?.join(' | ')}
+                      accept={['csv', 'xlsx'].join(',')}
+                      descriptionText={['csv', 'xlsx']?.join(' | ')}
                       onChange={(acceptedFiles) => {
                         field.onChange(acceptedFiles);
                       }}

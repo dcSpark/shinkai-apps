@@ -13,7 +13,8 @@ export type ExportSheetResponse = {
 };
 
 export type ImportSheetRequest = {
-  sheet_data: string | ArrayBuffer;
+  type: SheetFileFormat;
+  file: File;
 };
 
 export type ImportSheetResponse = {

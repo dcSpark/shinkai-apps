@@ -5,9 +5,11 @@ import { ImportSheetInput } from './types';
 export const importSheet = async ({
   nodeAddress,
   token,
-  sheetData,
+  file,
+  fileFormat,
 }: ImportSheetInput) => {
   return await importSheetApi(nodeAddress, token, {
-    sheet_data: sheetData,
+    file: file,
+    type: fileFormat,
   });
 };

@@ -216,7 +216,7 @@ export function DataTableExportOptions() {
       let fileContent: Uint8Array;
       if (typeof response.content === 'string') {
         const file = new Blob([response.content], {
-          type: 'application/octet-stream',
+          type: 'text/csv',
         });
         const dataUrl = await new Promise<string>((resolve) => {
           const reader = new FileReader();
