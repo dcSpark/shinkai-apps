@@ -54,15 +54,14 @@ const SheetDashboard = () => {
     profile_encryption_sk: auth?.profile_encryption_sk ?? '',
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
-
   return (
     <SimpleLayout
       headerRightElement={
         isSuccess &&
         data.length > 0 && (
-          <div>
-            <CreateSheetModal />
+          <div className="flex items-center gap-3">
             <ImportSheetModal />
+            <CreateSheetModal />
           </div>
         )
       }
@@ -122,7 +121,10 @@ const SheetDashboard = () => {
                 {t('sheet.emptyStateDescription')}
               </p>
             </div>
-            <CreateSheetModal />
+            <div className="flex items-center gap-3">
+              <ImportSheetModal />
+              <CreateSheetModal />
+            </div>
           </div>
         )}
       </div>
@@ -243,7 +245,7 @@ function CreateSheetModal() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="gap-2" size="sm">
+        <Button className="gap-2 px-3" size="sm">
           <PlusIcon className="size-4" />
           {t('sheet.actions.createProject')}
         </Button>
@@ -318,15 +320,13 @@ function ImportSheetModal() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="gap-2" size="sm" variant="tertiary">
+        <Button className="gap-2 px-3" size="sm" variant="outline">
           <FileUpIcon className="size-4" />
           Import CSV / XLSX
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
-        <DialogTitle className="pb-0">
-          {t('sheet.actions.createProject')}
-        </DialogTitle>
+        <DialogTitle className="pb-0">Import CSV / XLSX</DialogTitle>
         <Form {...importSheetForm}>
           <form
             className="mt-2 flex flex-col gap-6"
@@ -341,7 +341,7 @@ function ImportSheetModal() {
                   <FormControl>
                     <FileUploader
                       accept={['csv', 'xlsx'].join(',')}
-                      descriptionText={['csv', 'xlsx']?.join(' | ')}
+                      descriptionText={`Choose a ${['csv', 'xlsx']?.join(' or ')} file`}
                       onChange={(acceptedFiles) => {
                         field.onChange(acceptedFiles);
                       }}
@@ -355,7 +355,7 @@ function ImportSheetModal() {
             />
             <DialogFooter>
               <Button className="w-full" size="auto" type="submit">
-                {t('common.create')}
+                Import
               </Button>
             </DialogFooter>
           </form>
