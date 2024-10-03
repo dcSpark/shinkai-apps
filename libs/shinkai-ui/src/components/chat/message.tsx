@@ -245,7 +245,7 @@ export const Message = ({
                       )}
                     />
                     {pythonCode && (
-                        <PythonCodeRenderer code={pythonCode} />
+                        <PythonCodeRenderer code={pythonCode} workerUrl={'/src/workers/python-runner-worker.ts'} />
                     )}
                     {!!message.fileInbox?.files?.length && (
                       <FileList

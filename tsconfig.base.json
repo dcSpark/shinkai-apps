@@ -12,7 +12,8 @@
     "module": "esnext",
     "lib": [
       "es2020",
-      "dom"
+      "dom",
+      "WebWorker"
     ],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,

@@ -1,22 +1,66 @@
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { useMutation, UseMutationOptions } from '@tanstack/react-query';
-import { invoke } from '@tauri-apps/api/core';
 import { Play } from 'lucide-react';
 import { useState } from 'react';
 import Plot from 'react-plotly.js';
 
+// TODO: Refactor this import, we shouldn't importing an external script
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import PythonRunnerWorker from '../../../../../apps/shinkai-desktop/src/workers/python-runner-worker?worker';
 import { Button } from '../button';
 
 type PythonCodeRendererProps = {
   code: string;
 };
 
+type RunResult =
+  | {
+      state: 'success';
+      stdout: string[];
+      stderr: string[];
+      result:
+        | { type: 'plotly'; data: string }
+        | { type: 'string'; data: string };
+    }
+  | {
+      state: 'error';
+      stdout: string[];
+      stderr: string[];
+      message: string;
+    };
+
 export const usePythonRunnerRunMutation = (
-  options?: UseMutationOptions<any, Error, { code: string }>,
+  options?: UseMutationOptions<RunResult, Error, { code: string }>,
 ) => {
   const response = useMutation({
     mutationFn: async (params: { code: string }): Promise<any> => {
-      return invoke('python_runner_run', { code: params.code });
+      const worker = new PythonRunnerWorker();
+      worker.postMessage({ type: 'run', payload: { code: params.code } });
+      const result: RunResult = await new Promise<RunResult>(
+        (resolve, reject) => {
+          const timeout = setTimeout(() => {
+            reject(new Error('execution timed out'));
+          }, 30000); // 30 seconds timeout
+          worker.onmessage = (event: {
+            data: { type: string; payload: RunResult | PromiseLike<RunResult> };
+          }) => {
+            if (event.data.type === 'run-done') {
+              clearTimeout(timeout);
+              console.log('worker event', event);
+              resolve(event.data.payload);
+            }
+          };
+          worker.onerror = (error: { message: any }) => {
+            clearTimeout(timeout);
+            console.log('worker error', error);
+            reject(new Error(`worker error: ${error.message}`));
+          };
+        },
+      ).finally(() => {
+        worker.terminate();
+      });
+      console.log('ccc run result', result);
+      return result;
     },
     ...options,
     onSuccess: (...onSuccessParameters) => {
@@ -102,11 +146,11 @@ const ErrorRender = ({ error }: { error: string }) => {
   );
 };
 
-const ResultRender = ({ result }: { result: any }) => {
+const ResultRender = ({ result }: { result: RunResult }) => {
   if (result?.state === 'error') {
     return (
       <div className="flex flex-col space-y-2">
-        <ErrorRender error={result.payload} />
+        <ErrorRender error={result.message} />
         <StdoutRender stdout={result.stdout || []} />
         <StderrRender stderr={result.stderr || []} />
       </div>
@@ -115,17 +159,25 @@ const ResultRender = ({ result }: { result: any }) => {
 
   return (
     <div className="flex flex-col space-y-2">
-      {result?.payload?.type === 'plotly' ? (
+      {result?.result?.type === 'plotly' ? (
         <Plot
-          config={{ responsive: false }}
-          data={JSON.parse(result.payload.data).data}
-          layout={{ title: 'A Fancy Plot', width: 450, height: 300 }}
+          config={{ responsive: true, displayModeBar: true, scrollZoom: true }}
+          data={JSON.parse(result.result.data).data}
+          layout={{
+            ...JSON.parse(result.result.data).layout,
+            autosize: true,
+            margin: { l: 50, r: 50, b: 50, t: 50, pad: 4 },
+            width: '100%',
+            height: 500,
+          }}
+          style={{ width: '100%', height: '100%' }}
+          useResizeHandler={true}
         />
       ) : (
         <div className="rounded-md bg-gray-100 p-4">
           <h3 className="mb-2 font-bold">Result:</h3>
           <pre className="overflow-x-auto whitespace-pre-wrap">
-            {result.payload.data}
+            {result.result.data}
           </pre>
         </div>
       )}
@@ -135,7 +187,11 @@ const ResultRender = ({ result }: { result: any }) => {
 };
 
 const PythonCodeRenderer = ({ code }: PythonCodeRendererProps) => {
-  const { mutateAsync: run, data, isPending } = usePythonRunnerRunMutation();
+  const {
+    mutateAsync: run,
+    data,
+    isPending,
+  } = usePythonRunnerRunMutation();
   console.log('run result', data);
   return (
     <div className="mt-4">

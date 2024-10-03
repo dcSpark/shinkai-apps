@@ -76,19 +76,34 @@ listen('run', async (event: Event<string>) => {
     throw error;
   }
   try {
+    const startTime = performance.now();
+
+    console.log('Starting code execution');
     const code = getWrappedCode(event.payload);
-    console.log('executing code', code);
+    console.log('Code wrapped', performance.now() - startTime, 'ms');
+
+    console.log('Loading packages from imports');
+    const loadPackagesStart = performance.now();
     await pyodide.loadPackagesFromImports(code, {
       messageCallback: (message) => {
-        console.log('load package message', message);
+        console.log('Load package message:', message);
       },
       errorCallback: (message) => {
-        console.log('load package error', message);
+        console.log('Load package error:', message);
       },
     });
-    console.log('packages loaded');
+    console.log('Packages loaded', performance.now() - loadPackagesStart, 'ms');
+
+    console.log('Running Python code');
+    const runCodeStart = performance.now();
     const result = await runPythonCode(code);
-    console.log('pyodide run result', result);
+    console.log('Python code executed', performance.now() - runCodeStart, 'ms');
+
+    console.log('Pyodide run result:', result);
+    
+    const totalTime = performance.now() - startTime;
+    console.log('Total execution time:', totalTime, 'ms');
+
     emit('execution-result', {
       state: 'success',
       stdout,
@@ -96,7 +111,7 @@ listen('run', async (event: Event<string>) => {
       payload: result,
     });
   } catch (e) {
-    console.log('pyodide run error', e);
+    console.log('Pyodide run error:', e);
     emit('execution-result', {
       state: 'error',
       stdout,
@@ -109,6 +124,7 @@ listen('run', async (event: Event<string>) => {
 const main = async () => {
   try {
     console.log('loading pyodide');
+    const startLoadPyodide = performance.now();
     pyodide = await loadPyodide({
       indexURL: INDEX_URL,
       stdout: (message) => {
@@ -121,11 +137,32 @@ const main = async () => {
       },
       fullStdLib: true,
     });
+    const endLoadPyodide = performance.now();
+    console.log(`Pyodide loaded in ${endLoadPyodide - startLoadPyodide} ms`);
+
+    const startLoadPackages = performance.now();
     await pyodide.loadPackage(['micropip', 'pandas', 'numpy', 'matplotlib']);
+    const endLoadPackages = performance.now();
+    console.log(`Packages loaded in ${endLoadPackages - startLoadPackages} ms`);
+
+    const startMicropip = performance.now();
     const micropip = pyodide.pyimport('micropip');
+    const endMicropip = performance.now();
+    console.log(`Micropip imported in ${endMicropip - startMicropip} ms`);
+
+    const startPlotly = performance.now();
     await micropip.install('plotly');
+    const endPlotly = performance.now();
+    console.log(`Plotly installed in ${endPlotly - startPlotly} ms`);
+
+    const startSeaborn = performance.now();
     await micropip.install('seaborn');
+    const endSeaborn = performance.now();
+    console.log(`Seaborn installed in ${endSeaborn - startSeaborn} ms`);
+
     console.log('pyodide loaded successfully');
+    const totalTime = performance.now() - startLoadPyodide;
+    console.log(`Total loading time: ${totalTime} ms`);
     emit('ready');
   } catch (e) {
     console.log('pyodide load error', e);

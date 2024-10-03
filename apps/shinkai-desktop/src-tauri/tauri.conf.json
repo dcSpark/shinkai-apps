@@ -104,7 +104,8 @@
         "incognito": true,
         "contentProtected": true,
         "visible": false,
-        "parent": null
+        "parent": null,
+        "skipTaskbar": true
       }
     ],
     "macOSPrivateApi": true
