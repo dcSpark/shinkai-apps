@@ -318,9 +318,9 @@ function ImportSheetModal() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="gap-2" size="sm">
+        <Button className="gap-2" size="sm" variant="tertiary">
           <FileUpIcon className="size-4" />
-          Import
+          Import CSV / XLSX
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">

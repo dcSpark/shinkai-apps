@@ -13,8 +13,10 @@ export type ExportSheetResponse = {
 };
 
 export type ImportSheetRequest = {
-  type: SheetFileFormat;
-  file: File;
+  sheet_data: {
+    type: SheetFileFormat;
+    content: string | number[]; //binary data
+  };
 };
 
 export type ImportSheetResponse = {
