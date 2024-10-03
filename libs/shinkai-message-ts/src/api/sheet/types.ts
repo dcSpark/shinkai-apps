@@ -11,3 +11,11 @@ export type ExportSheetResponse = {
   type: string;
   content: string | ArrayBuffer;
 };
+
+export type ImportSheetRequest = {
+  sheet_data: string | ArrayBuffer;
+};
+
+export type ImportSheetResponse = {
+  sheet_id: string;
+};
