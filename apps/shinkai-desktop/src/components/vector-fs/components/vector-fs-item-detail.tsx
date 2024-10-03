@@ -1,4 +1,5 @@
 import { useDownloadVRFile } from '@shinkai_network/shinkai-node-state/lib/mutations/downloadVRFile/useDownloadVRFile';
+import { useRetrieveSourceFile } from '@shinkai_network/shinkai-node-state/v2/mutations/retrieveSourceFile/useRetrieveSourceFile';
 import {
   Badge,
   Button,
@@ -26,6 +27,13 @@ export const VectorFileDetails = () => {
   const selectedFile = useVectorFsStore((state) => state.selectedFile);
   const size = partial({ standard: 'jedec' });
   const auth = useAuth((state) => state.auth);
+  const { mutateAsync: retreiveSourceFile } = useRetrieveSourceFile({
+    onSuccess: async (response) => {
+      // TODO:
+      console.log(response);
+    },
+  });
+
   const { mutateAsync: downloadVRFile } = useDownloadVRFile({
     onSuccess: async (response, variables) => {
       const file = new Blob([response.data], {
@@ -117,7 +125,7 @@ export const VectorFileDetails = () => {
           </span>
         </div>
       </div>
-      <SheetFooter>
+      <SheetFooter className="flex flex-row gap-3 [&>*]:flex-1">
         <Button
           onClick={async () => {
             if (!selectedFile || !auth) return;
@@ -133,9 +141,24 @@ export const VectorFileDetails = () => {
               profile_identity_sk: auth.profile_identity_sk,
             });
           }}
-          variant="default"
+          size="sm"
+          variant="outline"
         >
           Download Vector Resource
+        </Button>
+        <Button
+          onClick={async () => {
+            if (!selectedFile || !auth) return;
+            await retreiveSourceFile({
+              nodeAddress: auth.node_address,
+              filePath: selectedFile.path,
+              token: auth.api_v2_key,
+            });
+          }}
+          size="sm"
+          variant="default"
+        >
+          Download Source File
         </Button>
       </SheetFooter>
     </React.Fragment>
