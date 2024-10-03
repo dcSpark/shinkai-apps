@@ -18,9 +18,10 @@ type RunResult =
       state: 'success';
       stdout: string[];
       stderr: string[];
-      result:
-        | { type: 'plotly'; data: string }
-        | { type: 'string'; data: string };
+      result: {
+        rawOutput: string;
+        figures: { type: 'plotly' | 'html'; data: string }[];
+      };
     }
   | {
       state: 'error';
@@ -59,7 +60,7 @@ export const usePythonRunnerRunMutation = (
       ).finally(() => {
         worker.terminate();
       });
-      console.log('ccc run result', result);
+      console.log('mutation run result', result);
       return result;
     },
     ...options,
@@ -80,18 +81,34 @@ const StdoutRender = ({ stdout }: { stdout: string[] }) => {
   }
 
   return (
-    <div className="mt-4">
+    <div className="mt-4 rounded-md border border-gray-200 bg-gray-50">
       <button
-        className="flex items-center text-sm text-gray-600 hover:text-gray-800 focus:outline-none"
+        className="flex w-full items-center justify-between p-3 text-sm text-gray-700 transition-colors duration-200 hover:bg-gray-100 focus:outline-none"
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <span className="mr-2">{isExpanded ? '▼' : '▶'}</span>
-        {isExpanded ? 'Hide' : 'Show'} stdout ({stdout.length} lines)
+        <span className="flex items-center">
+          <span
+            className={`mr-2 transition-transform duration-200 ${isExpanded ? 'rotate-90 transform' : ''}`}
+          >
+            ▶
+          </span>
+          Stdout ({stdout.length} line{stdout.length !== 1 ? 's' : ''})
+        </span>
+        <span className="text-gray-500">{isExpanded ? 'Hide' : 'Show'}</span>
       </button>
       {isExpanded && (
-        <pre className="mt-2 max-h-60 overflow-y-auto rounded-md bg-gray-100 p-4 text-sm">
-          {stdout.join('\n')}
-        </pre>
+        <div className="border-t border-gray-200">
+          <pre className="max-h-60 overflow-y-auto whitespace-pre-wrap break-words p-4 text-sm text-gray-800">
+            {stdout.map((line, index) => (
+              <div className="mb-1 last:mb-0" key={index}>
+                <span className="mr-2 select-none text-gray-500">
+                  {index + 1}
+                </span>
+                {line}
+              </div>
+            ))}
+          </pre>
+        </div>
       )}
     </div>
   );
@@ -159,39 +176,50 @@ const ResultRender = ({ result }: { result: RunResult }) => {
 
   return (
     <div className="flex flex-col space-y-2">
-      {result?.result?.type === 'plotly' ? (
-        <Plot
-          config={{ responsive: true, displayModeBar: true, scrollZoom: true }}
-          data={JSON.parse(result.result.data).data}
-          layout={{
-            ...JSON.parse(result.result.data).layout,
-            autosize: true,
-            margin: { l: 50, r: 50, b: 50, t: 50, pad: 4 },
-            width: '100%',
-            height: 500,
-          }}
-          style={{ width: '100%', height: '100%' }}
-          useResizeHandler={true}
-        />
-      ) : (
-        <div className="rounded-md bg-gray-100 p-4">
-          <h3 className="mb-2 font-bold">Result:</h3>
-          <pre className="overflow-x-auto whitespace-pre-wrap">
-            {result.result.data}
-          </pre>
-        </div>
-      )}
+      <div className="flex flex-col space-y-2">
+        {result?.result?.figures?.map((figure, index) => {
+          return figure.type === 'plotly' ? (
+            <div className="mb-4" key={index}>
+              <Plot
+                config={{
+                  responsive: true,
+                  displayModeBar: true,
+                  scrollZoom: true,
+                }}
+                data={JSON.parse(figure.data).data}
+                layout={{
+                  ...JSON.parse(figure.data).layout,
+                  autosize: true,
+                  margin: { l: 50, r: 50, b: 50, t: 50, pad: 4 },
+                  width: '100%',
+                  height: 500,
+                }}
+                style={{ width: '100%', height: '100%' }}
+                useResizeHandler={true}
+              />
+            </div>
+          ) : (
+            <div
+              dangerouslySetInnerHTML={{ __html: figure.data }}
+              key={index}
+            />
+          );
+        })}
+      </div>
+
+      <details className="rounded-md bg-gray-100 p-4">
+        <summary className="mb-2 cursor-pointer font-bold">Output:</summary>
+        <pre className="mt-2 overflow-x-auto whitespace-pre-wrap">
+          {result.result.rawOutput}
+        </pre>
+      </details>
       <StdoutRender stdout={result.stdout || []} />
     </div>
   );
 };
 
 const PythonCodeRenderer = ({ code }: PythonCodeRendererProps) => {
-  const {
-    mutateAsync: run,
-    data,
-    isPending,
-  } = usePythonRunnerRunMutation();
+  const { mutateAsync: run, data, isPending } = usePythonRunnerRunMutation();
   console.log('run result', data);
   return (
     <div className="mt-4">

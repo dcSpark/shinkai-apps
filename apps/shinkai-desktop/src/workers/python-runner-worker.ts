@@ -15,10 +15,11 @@ import plotly.graph_objects as go
 import plotly.express as px
 import plotly.io as pio
 import json
+import array
 
 # Redirect stdout to capture prints
 old_stdout = sys.stdout
-sys.stdout = mystdout = StringIO()
+mystdout = sys.stdout = StringIO()
 
 # Function to capture DataFrame display as HTML
 def capture_df_display(df):
@@ -26,47 +27,45 @@ def capture_df_display(df):
 
 output = None
 outputError = None
-fig_json = None
+figures = []
 local_scope = {}
-print("patat")
 try:
     exec("""${code}""", globals(), local_scope)
-    if 'output' in local_scope and isinstance(local_scope['output'], pd.DataFrame):
-        output = capture_df_display(local_scope['output'])
+
+    # Capture the last variable in the scope
+    last_var = list(local_scope.values())[-1] if local_scope else None
+    if isinstance(last_var, pd.DataFrame):
+        output = capture_df_display(last_var)
+    elif isinstance(last_var, (str, int, float, list, dict)):
+        output = json.dumps(last_var)
     else:
-        # Capture the last variable in the scope
-        last_var = list(local_scope.values())[-1] if local_scope else None
-        if isinstance(last_var, pd.DataFrame):
-            output = capture_df_display(last_var)
-        elif isinstance(last_var, (str, int, float, list, dict)):
-            output = json.dumps(last_var)
-        else:
-            output = mystdout.getvalue().strip()
+        output = mystdout.getvalue().strip()
+    
     for var_name, var_value in local_scope.items():
         if isinstance(var_value, go.Figure):
-            fig_json = pio.to_json(var_value)
-            break
+            figures.append({ 'type': 'plotly', 'data': pio.to_json(var_value) })
+        if isinstance(var_value, pd.DataFrame):
+            figures.append({ 'type': 'html', 'data': capture_df_display(var_value) })        
+
 except Exception as e:
     outputError = str(e)
 
 # Reset stdout
 sys.stdout = old_stdout
-
-(output, outputError, fig_json)
+figures = json.dumps(figures)
+(output, outputError, figures)
     `;
   return wrappedCode;
 };
 const runPythonCode = async (
   code: string,
-): Promise<{ type: string; data: string }> => {
-  const [output, outputError, figJson] = await pyodide.runPythonAsync(code);
+): Promise<{ rawOutput: string; figures: string[] }> => {
+  const [output, outputError, figures] =
+    await pyodide.runPythonAsync(code);
   if (outputError) {
     throw new Error(outputError);
   }
-  if (figJson) {
-    return { type: 'plotly', data: figJson };
-  }
-  return { type: 'string', data: output };
+  return { rawOutput: output, figures: JSON.parse(figures) };
 };
 
 const run = async (code: string) => {
@@ -117,7 +116,7 @@ const initialize = async () => {
       console.log('python stderr', message);
       stderr.push(message);
     },
-    fullStdLib: true,
+    fullStdLib: false,
   });
   console.timeEnd('pyodide loading');
 
