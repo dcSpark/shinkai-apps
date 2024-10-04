@@ -12,7 +12,6 @@ import {
   formatDateToLocaleStringWithTime,
   formatDateToUSLocaleString,
 } from '@shinkai_network/shinkai-ui/helpers';
-import {} from '@tauri-apps/api';
 import { save } from '@tauri-apps/plugin-dialog';
 import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import * as fs from '@tauri-apps/plugin-fs';
