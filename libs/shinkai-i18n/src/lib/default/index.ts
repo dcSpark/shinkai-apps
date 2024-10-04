@@ -587,4 +587,11 @@ export default {
       description: 'You have received a response from {{inboxName}}',
     },
   },
+  codeRunner: {
+    errorOccurred: 'Error Occurred',
+    stderr: 'Standard Error',
+    stdout: 'Standard Output',
+    output: 'Output',
+    executeCode: 'Execute Code',
+  },
 };
