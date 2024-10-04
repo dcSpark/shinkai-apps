@@ -7,12 +7,12 @@ export const retrieveSourceFile = async (
   bearerToken: string,
   payload: RetrieveSourceFileRequest,
 ) => {
-  const response = await httpClient.post(
+  const response = await httpClient.get(
     urlJoin(nodeAddress, '/v2/retrieve_source_file'),
-    payload,
     {
+      params: payload,
       headers: { Authorization: `Bearer ${bearerToken}` },
-      responseType: 'blob',
+      responseType: 'json',
     },
   );
   return response.data as RetrieveSourceFileResponse;

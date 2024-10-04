@@ -19,6 +19,7 @@ import * as fs from '@tauri-apps/plugin-fs';
 import { partial } from 'filesize';
 import { LockIcon } from 'lucide-react';
 import React from 'react';
+import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';
 import { useVectorFsStore } from '../context/vector-fs-context';
@@ -27,10 +28,42 @@ export const VectorFileDetails = () => {
   const selectedFile = useVectorFsStore((state) => state.selectedFile);
   const size = partial({ standard: 'jedec' });
   const auth = useAuth((state) => state.auth);
+
+  const fileExtension =
+    selectedFile?.vr_header?.resource_source?.Standard?.FileRef?.file_type
+      ?.Document;
   const { mutateAsync: retreiveSourceFile } = useRetrieveSourceFile({
-    onSuccess: async (response) => {
-      // TODO:
-      console.log(response);
+    onSuccess: async (response, variables) => {
+      if (!fileExtension) {
+        toast.error('File extension not found');
+        return;
+      }
+      try {
+        const binaryData = Uint8Array.from(atob(response), (c) =>
+          c.charCodeAt(0),
+        );
+
+        const savePath = await save({
+          defaultPath: `${variables.filePath.split('/').pop()}.${fileExtension.toLowerCase()}`,
+          filters: [
+            { name: fileExtension, extensions: [fileExtension.toLowerCase()] },
+          ],
+        });
+
+        if (!savePath) {
+          toast.info('File save cancelled');
+          return;
+        }
+
+        await fs.writeFile(savePath, binaryData, {
+          baseDir: BaseDirectory.Download,
+        });
+
+        toast.success('File saved successfully');
+      } catch (error) {
+        console.error('Error saving file:', error);
+        toast.error('Failed to save file');
+      }
     },
   });
 
