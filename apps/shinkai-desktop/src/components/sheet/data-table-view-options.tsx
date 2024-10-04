@@ -1,11 +1,15 @@
 import { DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
 import { MixerHorizontalIcon } from '@radix-ui/react-icons';
+import { SheetFileFormat } from '@shinkai_network/shinkai-message-ts/api/sheet/types';
 import { Columns } from '@shinkai_network/shinkai-node-state/lib/queries/getSheet/types';
+import { useGetSheet } from '@shinkai_network/shinkai-node-state/lib/queries/getSheet/useGetSheet';
+import { useExportSheet } from '@shinkai_network/shinkai-node-state/v2/mutations/exportSheet/useExportSheet';
 import {
   Button,
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
   Tooltip,
   TooltipContent,
@@ -14,7 +18,13 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { Table } from '@tanstack/react-table';
+import { save } from '@tauri-apps/plugin-dialog';
+import * as fs from '@tauri-apps/plugin-fs';
+import { BaseDirectory } from '@tauri-apps/plugin-fs';
+import { ChevronDownIcon } from 'lucide-react';
+import { useParams } from 'react-router-dom';
 
+import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
 import { useSheetProjectStore } from './context/table-context';
 
@@ -175,5 +185,151 @@ export function DataTableChatOptions() {
         </Tooltip>
       </TooltipProvider>
     )
+  );
+}
+
+export function DataTableExportOptions() {
+  const { sheetId } = useParams();
+  const auth = useAuth((state) => state.auth);
+
+  const { data: sheetInfo } = useGetSheet({
+    nodeAddress: auth?.node_address ?? '',
+    sheetId: sheetId ?? '',
+    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
+    profile_identity_sk: auth?.profile_identity_sk ?? '',
+    my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
+    my_device_identity_sk: auth?.my_device_identity_sk ?? '',
+    node_encryption_pk: auth?.node_encryption_pk ?? '',
+    profile: auth?.profile ?? '',
+    shinkaiIdentity: auth?.shinkai_identity ?? '',
+  });
+  const { mutateAsync: exportSheet } = useExportSheet({
+    onSuccess: async (response, variables) => {
+      const isCsvFormat = variables.fileFormat === SheetFileFormat.CSV;
+      const fileFormat = isCsvFormat ? 'csv' : 'xlsx';
+
+      const path = await save({
+        defaultPath: `${sheetInfo?.sheet_name}.${fileFormat}`,
+      });
+
+      if (!path) return;
+      let fileContent: Uint8Array;
+      if (typeof response.content === 'string') {
+        const file = new Blob([response.content], {
+          type: 'text/csv',
+        });
+        const dataUrl = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.readAsDataURL(file);
+        });
+        const fileBuffer = await fetch(dataUrl).then((response) =>
+          response.arrayBuffer(),
+        );
+        fileContent = new Uint8Array(fileBuffer);
+      } else {
+        fileContent = new Uint8Array(response.content);
+      }
+
+      await fs.writeFile(path, fileContent, {
+        baseDir: BaseDirectory.Download,
+      });
+    },
+  });
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button className="flex h-8 rounded-md" size="sm" variant="outline">
+          Export
+          <ChevronDownIcon className="ml-2 h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="end"
+        className="w-[160px] bg-gray-300 px-1 py-2 text-gray-50"
+      >
+        {[SheetFileFormat.CSV, SheetFileFormat.XLSX].map((fileFormat) => (
+          <DropdownMenuItem
+            className="gap-2 text-xs font-normal text-gray-50"
+            key={fileFormat}
+            onClick={() => {
+              if (!auth || !sheetId) return;
+              exportSheet({
+                nodeAddress: auth.node_address,
+                token: auth.api_v2_key,
+                sheetId,
+                fileFormat,
+              });
+            }}
+          >
+            {fileFormat === SheetFileFormat.CSV ? (
+              <CsvFile className="h-4 w-4" />
+            ) : (
+              <XlsFile className="h-4 w-4" />
+            )}
+            Export as {fileFormat.toUpperCase()}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+function CsvFile({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      fill={'none'}
+      height={24}
+      viewBox="0 0 24 24"
+      width={24}
+    >
+      <path
+        d="M8 13L9.70791 15.5M9.70791 15.5L11.4158 18M9.70791 15.5L11.4158 13M9.70791 15.5L8 18M16.5619 18H15.7079C14.9028 18 14.5002 18 14.2501 17.7559C14 17.5118 14 17.119 14 16.3333V13M20.7281 13H19.779C19.3997 13 19.21 13 19.0604 13.0634C18.5577 13.2766 18.5578 13.7739 18.5579 14.2316V14.2684C18.5578 14.7261 18.5577 15.2234 19.0604 15.4366C19.21 15.5 19.3997 15.5 19.779 15.5C20.1583 15.5 20.3479 15.5 20.4975 15.5634C21.0002 15.7766 21.0001 16.2739 21 16.7316V16.7684C21.0001 17.2261 21.0002 17.7234 20.4975 17.9366C20.3479 18 20.1583 18 19.779 18H18.7452"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.5"
+      />
+      <path
+        d="M15 22H10.7273C7.46607 22 5.83546 22 4.70307 21.2022C4.37862 20.9736 4.09058 20.7025 3.8477 20.3971C3 19.3313 3 17.7966 3 14.7273V12.1818C3 9.21865 3 7.73706 3.46894 6.55375C4.22281 4.65142 5.81714 3.15088 7.83836 2.44135C9.09563 2 10.6698 2 13.8182 2C15.6173 2 16.5168 2 17.2352 2.2522C18.3902 2.65765 19.3012 3.5151 19.732 4.60214C20 5.27832 20 6.12494 20 7.81818V10"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.5"
+      />
+      <path
+        d="M3 12C3 10.1591 4.49238 8.66667 6.33333 8.66667C6.99912 8.66667 7.78404 8.78333 8.43137 8.60988C9.00652 8.45576 9.45576 8.00652 9.60988 7.43136C9.78333 6.78404 9.66667 5.99912 9.66667 5.33333C9.66667 3.49238 11.1591 2 13 2"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.5"
+      />
+    </svg>
+  );
+}
+function XlsFile({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      fill={'none'}
+      height={24}
+      viewBox="0 0 24 24"
+      width={24}
+    >
+      <path
+        d="M10.2941 15.0163C10.2485 14.0244 9.57068 14 8.65122 14C7.23483 14 7 14.3384 7 15.6667V17.3333C7 18.6616 7.23483 19 8.65122 19C9.57068 19 10.2485 18.9756 10.2941 17.9837M21 14L19.5365 17.9123C19.2652 18.6374 19.1296 19 18.9148 19C18.7 19 18.5644 18.6374 18.2931 17.9123L16.8296 14M14.7214 14H13.7489C13.3602 14 13.1659 14 13.0126 14.0635C12.4906 14.2795 12.4977 14.7873 12.4977 15.25C12.4977 15.7127 12.4906 16.2206 13.0126 16.4366C13.1659 16.5 13.3602 16.5 13.7489 16.5C14.1375 16.5 14.3318 16.5 14.4851 16.5634C15.0071 16.7795 15 17.2873 15 17.75C15 18.2127 15.0071 18.7205 14.4851 18.9366C14.3318 19 14.1375 19 13.7489 19H12.6897"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeWidth="1.5"
+      />
+      <path
+        d="M19 11C19 10 19 9.4306 18.8478 9.06306C18.6955 8.69552 18.4065 8.40649 17.8284 7.82843L13.0919 3.09188C12.593 2.593 12.3436 2.34355 12.0345 2.19575C11.9702 2.165 11.9044 2.13772 11.8372 2.11401C11.5141 2 11.1614 2 10.4558 2C7.21082 2 5.58831 2 4.48933 2.88607C4.26731 3.06508 4.06508 3.26731 3.88607 3.48933C3 4.58831 3 6.21082 3 9.45584V14C3 17.7712 3 19.6569 4.17157 20.8284C5.34315 22 7.22876 22 11 22H19M12 2.5V3C12 5.82843 12 7.24264 12.8787 8.12132C13.7574 9 15.1716 9 18 9H18.5"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.5"
+      />
+    </svg>
   );
 }

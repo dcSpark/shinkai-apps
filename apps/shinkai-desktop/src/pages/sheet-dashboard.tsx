@@ -1,9 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { SheetFileFormat } from '@shinkai_network/shinkai-message-ts/api/sheet/types';
 import { useCreateSheet } from '@shinkai_network/shinkai-node-state/lib/mutations/createSheet/useCreateSheet';
 import { useRemoveSheet } from '@shinkai_network/shinkai-node-state/lib/mutations/removeSheet/useRemoveSheet';
 import { useGetUserSheets } from '@shinkai_network/shinkai-node-state/lib/queries/getUserSheets/useGetUserSheets';
+import { useImportSheet } from '@shinkai_network/shinkai-node-state/v2/mutations/importSheet/useImportSheet';
 import {
   Button,
   buttonVariants,
@@ -17,14 +19,19 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  FileUploader,
   Form,
+  FormControl,
   FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import { SheetFileIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { formatDistanceToNow } from 'date-fns';
-import { MoreHorizontal, PlusIcon, Trash2Icon } from 'lucide-react';
+import { FileUpIcon, MoreHorizontal, PlusIcon, Trash2Icon } from 'lucide-react';
 import { Fragment, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
@@ -47,10 +54,17 @@ const SheetDashboard = () => {
     profile_encryption_sk: auth?.profile_encryption_sk ?? '',
     profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
-
   return (
     <SimpleLayout
-      headerRightElement={isSuccess && data.length > 0 && <CreateSheetModal />}
+      headerRightElement={
+        isSuccess &&
+        data.length > 0 && (
+          <div className="flex items-center gap-3">
+            <ImportSheetModal />
+            <CreateSheetModal />
+          </div>
+        )
+      }
       title={t('sheet.label')}
     >
       <div className="grid gap-5 py-5 sm:grid-cols-2 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
@@ -107,7 +121,10 @@ const SheetDashboard = () => {
                 {t('sheet.emptyStateDescription')}
               </p>
             </div>
-            <CreateSheetModal />
+            <div className="flex items-center gap-3">
+              <ImportSheetModal />
+              <CreateSheetModal />
+            </div>
           </div>
         )}
       </div>
@@ -228,7 +245,7 @@ function CreateSheetModal() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="gap-2" size="sm">
+        <Button className="gap-2 px-3" size="sm">
           <PlusIcon className="size-4" />
           {t('sheet.actions.createProject')}
         </Button>
@@ -256,6 +273,109 @@ function CreateSheetModal() {
             <DialogFooter>
               <Button className="w-full" size="auto" type="submit">
                 {t('common.create')}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+const importSheetFormSchema = z.object({
+  file: z.any(),
+  projectName: z.string().min(1, 'Project name is required'),
+});
+type ImportSheetFormSchema = z.infer<typeof importSheetFormSchema>;
+
+function ImportSheetModal() {
+  const auth = useAuth((state) => state.auth);
+  const { t } = useTranslation();
+  const importSheetForm = useForm<ImportSheetFormSchema>({
+    resolver: zodResolver(importSheetFormSchema),
+  });
+
+  const navigate = useNavigate();
+
+  const { mutateAsync: importSheet } = useImportSheet({
+    onSuccess: (data) => {
+      navigate(`/sheets/${data.sheet_id}`);
+    },
+  });
+
+  const onSubmit = async (data: ImportSheetFormSchema) => {
+    const fileSelected = data.file?.[0];
+    const fileFormat = fileSelected?.name?.split('.')?.pop();
+
+    await importSheet({
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      file: fileSelected,
+      sheetName: data.projectName,
+      fileFormat:
+        fileFormat === SheetFileFormat.XLSX
+          ? SheetFileFormat.XLSX
+          : SheetFileFormat.CSV,
+    });
+  };
+
+  const file = importSheetForm.watch('file') as File[];
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button className="gap-2 px-3" size="sm" variant="outline">
+          <FileUpIcon className="size-4" />
+          Import CSV / XLSX
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogTitle className="pb-0">Import CSV / XLSX</DialogTitle>
+        <Form {...importSheetForm}>
+          <form
+            className="mt-2 flex flex-col gap-6"
+            onSubmit={importSheetForm.handleSubmit(onSubmit)}
+          >
+            <FormField
+              control={importSheetForm.control}
+              name="file"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="sr-only">{t('common.file')}</FormLabel>
+                  <FormControl>
+                    <FileUploader
+                      accept={['csv', 'xlsx'].join(',')}
+                      descriptionText={`Choose a ${['csv', 'xlsx']?.join(' or ')} file`}
+                      onChange={(acceptedFiles) => {
+                        field.onChange(acceptedFiles);
+                      }}
+                      shouldDisableScrolling
+                      value={field.value}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {file && (
+              <FormField
+                control={importSheetForm.control}
+                name="projectName"
+                render={({ field }) => (
+                  <TextField
+                    autoFocus
+                    field={{
+                      ...field,
+                      onFocus: (e) => e.currentTarget.select(),
+                    }}
+                    label={t('sheet.form.projectName')}
+                  />
+                )}
+              />
+            )}
+            <DialogFooter>
+              <Button className="w-full" size="auto" type="submit">
+                Import
               </Button>
             </DialogFooter>
           </form>
