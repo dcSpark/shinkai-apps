@@ -37,7 +37,6 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { AIModelSelector } from '../../../components/chat/chat-action-bar/ai-update-selection-action-bar';
 import { streamingSupportedModels } from '../../../components/chat/constants';
 import { useWebSocketMessage } from '../../../components/chat/message-stream';
-import { useDefaultAgentByDefault } from '../../../routes';
 import { useAuth } from '../../../store/auth';
 import { useSettings } from '../../../store/settings';
 import { useQuickAskStore } from '../context/quick-ask';
@@ -46,9 +45,34 @@ export const hideSpotlightWindow = async () => {
   return invoke('hide_spotlight_window_app');
 };
 
+export const useDefaultSpotlightAiByDefault = () => {
+  const auth = useAuth((state) => state.auth);
+  const defaultSpotlightAiId = useSettings(
+    (state) => state.defaultSpotlightAiId,
+  );
+  const setDefaultSpotlightAiId = useSettings(
+    (state) => state.setDefaultSpotlightAiId,
+  );
+  const { llmProviders, isSuccess } = useGetLLMProviders({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
+  useEffect(() => {
+    if (isSuccess && llmProviders?.length && !defaultSpotlightAiId) {
+      setDefaultSpotlightAiId(llmProviders[0].id);
+    }
+  }, [llmProviders, isSuccess, setDefaultSpotlightAiId, defaultSpotlightAiId]);
+
+  return {
+    defaultSpotlightAiId,
+    setDefaultSpotlightAiId,
+  };
+};
+
 function QuickAsk() {
   const auth = useAuth((state) => state.auth);
-  const defaultAgentId = useSettings((state) => state.defaultAgentId);
+
   const inboxId = useQuickAskStore((state) => state.inboxId);
   const setInboxId = useQuickAskStore((state) => state.setInboxId);
   const messageResponse = useQuickAskStore((state) => state.messageResponse);
@@ -59,7 +83,8 @@ function QuickAsk() {
     (state) => state.isLoadingResponse,
   );
 
-  useDefaultAgentByDefault();
+  const { defaultSpotlightAiId, setDefaultSpotlightAiId } =
+    useDefaultSpotlightAiByDefault();
 
   const [clipboard, setClipboard] = useState(false);
   let timeout: ReturnType<typeof setTimeout>;
@@ -114,7 +139,7 @@ function QuickAsk() {
   useEffect(() => {
     chatForm.reset({
       message: '',
-      agent: defaultAgentId,
+      agent: defaultSpotlightAiId,
       files: [],
     });
     setInboxId(null);
@@ -126,15 +151,15 @@ function QuickAsk() {
       setInboxId(encodeURIComponent(buildInboxIdFromJobId(data.jobId)));
       chatForm.reset({
         message: '',
-        agent: defaultAgentId,
+        agent: defaultSpotlightAiId,
         files: [],
       });
     },
   });
 
   useEffect(() => {
-    chatForm.setValue('agent', defaultAgentId);
-  }, [chatForm, defaultAgentId]);
+    chatForm.setValue('agent', defaultSpotlightAiId);
+  }, [chatForm, defaultSpotlightAiId]);
 
   const onSubmit = async (data: CreateJobFormSchema) => {
     if (!auth) return;
@@ -186,6 +211,7 @@ function QuickAsk() {
         <AIModelSelector
           onValueChange={(value) => {
             chatForm.setValue('agent', value);
+            setDefaultSpotlightAiId(value);
           }}
           value={chatForm.watch('agent')}
         />

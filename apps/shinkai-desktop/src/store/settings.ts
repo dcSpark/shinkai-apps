@@ -7,6 +7,8 @@ import { SetupData, useAuth } from './auth';
 type SettingsStore = {
   defaultAgentId: string;
   setDefaultAgentId: (defaultAgentId: string) => void;
+  defaultSpotlightAiId: string;
+  setDefaultSpotlightAiId: (defaultSpotlightAiId: string) => void;
   sidebarExpanded: boolean;
   toggleSidebar: () => void;
   isGetStartedChecklistHidden: boolean;
@@ -37,6 +39,11 @@ export const useSettings = create<SettingsStore>()(
         defaultAgentId: '',
         setDefaultAgentId: (defaultAgentId) => {
           set({ defaultAgentId });
+        },
+
+        defaultSpotlightAiId: '',
+        setDefaultSpotlightAiId: (defaultSpotlightAiId) => {
+          set({ defaultSpotlightAiId });
         },
 
         sidebarExpanded: false,
