@@ -232,6 +232,7 @@ function WorkflowEditor() {
       isHidden: true,
       selectedVRFiles,
       selectedVRFolders,
+      playground: true,
     });
   };
   const { mutateAsync: createWorkflow, isPending: isCreateWorkflowPending } =

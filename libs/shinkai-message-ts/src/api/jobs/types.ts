@@ -79,9 +79,14 @@ export type CreateJobRequest = {
       local_vrpack: [];
       local_vrkai: [];
     };
-    associated_ui: {
-      Sheet: string;
-    } | null;
+    associated_ui:
+      | null
+      | {
+          Sheet: string | null;
+        }
+      | {
+          Playground: '';
+        };
     is_hidden: boolean;
   };
 };

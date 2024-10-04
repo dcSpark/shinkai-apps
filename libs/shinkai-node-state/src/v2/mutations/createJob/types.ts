@@ -17,6 +17,7 @@ export type CreateJobInput = Token & {
   selectedVRFiles?: VectorFSItemScopeEntry[];
   selectedVRFolders?: VectorFSFolderScopeEntry[];
   chatConfig?: JobConfig;
+  playground?: boolean;
 };
 
 export type CreateJobOutput = {

@@ -20,7 +20,27 @@ export const createJob = async ({
   selectedVRFiles,
   selectedVRFolders,
   chatConfig,
+  playground,
 }: CreateJobInput) => {
+  let associatedUI:
+    | null
+    | {
+        Sheet: string | null;
+      }
+    | {
+        Playground: '';
+      } = null;
+
+  if (playground) {
+    associatedUI = {
+      Playground: '',
+    };
+  } else if (sheetId) {
+    associatedUI = {
+      Sheet: sheetId,
+    };
+  }
+
   const { job_id: jobId } = await createJobApi(nodeAddress, token, {
     llm_provider: llmProvider,
     job_creation_info: {
@@ -31,7 +51,7 @@ export const createJob = async ({
         local_vrkai: [],
         network_folders: [],
       },
-      associated_ui: sheetId ? { Sheet: sheetId } : null,
+      associated_ui: associatedUI,
       is_hidden: isHidden,
     },
   });
