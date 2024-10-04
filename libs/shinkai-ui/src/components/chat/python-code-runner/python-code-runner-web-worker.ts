@@ -1,4 +1,32 @@
+/* eslint-disable no-restricted-globals */
 import { loadPyodide, PyodideInterface } from 'pyodide';
+
+export type CodeOutput = {
+  rawOutput: string;
+  figures: { type: 'plotly' | 'html'; data: string }[];
+};
+
+export type RunResult =
+  | {
+      state: 'success';
+      stdout: string[];
+      stderr: string[];
+      result: {
+        rawOutput: string;
+        figures: { type: 'plotly' | 'html'; data: string }[];
+      };
+    }
+  | {
+      state: 'error';
+      stdout: string[];
+      stderr: string[];
+      message: string;
+    };
+
+export type PythonCodeRunnerWebWorkerMessage = {
+  type: 'run-done';
+  payload: RunResult;
+};
 
 const INDEX_URL = 'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/';
 
@@ -57,11 +85,8 @@ figures = json.dumps(figures)
     `;
   return wrappedCode;
 };
-const runPythonCode = async (
-  code: string,
-): Promise<{ rawOutput: string; figures: string[] }> => {
-  const [output, outputError, figures] =
-    await pyodide.runPythonAsync(code);
+const runPythonCode = async (code: string): Promise<CodeOutput> => {
+  const [output, outputError, figures] = await pyodide.runPythonAsync(code);
   if (outputError) {
     throw new Error(outputError);
   }
@@ -152,7 +177,7 @@ self.onmessage = async (event) => {
             stdout,
             stderr,
             result: runResult,
-          },
+          } as RunResult,
         });
       } catch (e) {
         self.postMessage({
@@ -162,7 +187,7 @@ self.onmessage = async (event) => {
             stdout,
             stderr,
             message: String(e),
-          },
+          } as RunResult,
         });
       } finally {
         console.timeEnd('total run time');

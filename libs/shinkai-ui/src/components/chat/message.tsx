@@ -26,7 +26,7 @@ import {
 } from '../tooltip';
 import { ChatInputArea } from './chat-input-area';
 import { FileList } from './files-preview';
-import PythonCodeRenderer from './python-code-renderer';
+import { PythonCodeRunner } from './python-code-runner/python-code-runner';
 
 export const extractErrorPropertyOrContent = (
   content: string,
@@ -244,9 +244,7 @@ export const Message = ({
                         'error_message',
                       )}
                     />
-                    {pythonCode && (
-                        <PythonCodeRenderer code={pythonCode} workerUrl={'/src/workers/python-runner-worker.ts'} />
-                    )}
+                    {pythonCode && <PythonCodeRunner code={pythonCode} />}
                     {!!message.fileInbox?.files?.length && (
                       <FileList
                         className="mt-2 min-w-[200px] max-w-[70vw]"
