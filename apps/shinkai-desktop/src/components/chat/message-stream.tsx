@@ -138,6 +138,7 @@ export const useWebSocketMessage = ({
     if (lastMessage?.data) {
       try {
         const parseData: WsMessage = JSON.parse(lastMessage.data);
+        console.log(parseData, 'parseData');
         if (parseData.message_type !== 'Stream' || parseData.inbox !== inboxId)
           return;
         isStreamingFinished.current = false;
