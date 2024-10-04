@@ -30,14 +30,13 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { motion } from 'framer-motion';
 import { CheckCircle2, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useHotkeys } from 'react-hotkeys-hook';
 
 import { AIModelSelector } from '../../../components/chat/chat-action-bar/ai-update-selection-action-bar';
 import { streamingSupportedModels } from '../../../components/chat/constants';
 import { useWebSocketMessage } from '../../../components/chat/message-stream';
-import { useDefaultAgentByDefault } from '../../../routes';
 import { useAuth } from '../../../store/auth';
 import { useSettings } from '../../../store/settings';
 import { useQuickAskStore } from '../context/quick-ask';
@@ -46,9 +45,34 @@ export const hideSpotlightWindow = async () => {
   return invoke('hide_spotlight_window_app');
 };
 
+export const useDefaultSpotlightAiByDefault = () => {
+  const auth = useAuth((state) => state.auth);
+  const defaultSpotlightAiId = useSettings(
+    (state) => state.defaultSpotlightAiId,
+  );
+  const setDefaultSpotlightAiId = useSettings(
+    (state) => state.setDefaultSpotlightAiId,
+  );
+  const { llmProviders, isSuccess } = useGetLLMProviders({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
+  useEffect(() => {
+    if (isSuccess && llmProviders?.length && !defaultSpotlightAiId) {
+      setDefaultSpotlightAiId(llmProviders[0].id);
+    }
+  }, [llmProviders, isSuccess, setDefaultSpotlightAiId, defaultSpotlightAiId]);
+
+  return {
+    defaultSpotlightAiId,
+    setDefaultSpotlightAiId,
+  };
+};
+
 function QuickAsk() {
   const auth = useAuth((state) => state.auth);
-  const defaultAgentId = useSettings((state) => state.defaultAgentId);
+
   const inboxId = useQuickAskStore((state) => state.inboxId);
   const setInboxId = useQuickAskStore((state) => state.setInboxId);
   const messageResponse = useQuickAskStore((state) => state.messageResponse);
@@ -59,7 +83,8 @@ function QuickAsk() {
     (state) => state.isLoadingResponse,
   );
 
-  useDefaultAgentByDefault();
+  const { defaultSpotlightAiId, setDefaultSpotlightAiId } =
+    useDefaultSpotlightAiByDefault();
 
   const [clipboard, setClipboard] = useState(false);
   let timeout: ReturnType<typeof setTimeout>;
@@ -70,14 +95,13 @@ function QuickAsk() {
       hideSpotlightWindow();
     },
     {
-      enableOnContentEditable: true,
       preventDefault: true,
       enableOnFormTags: true,
     },
   );
 
   useHotkeys(
-    ['mod+c', 'ctrl+c'],
+    ['mod+shift+c', 'ctrl+shift+c'],
     () => {
       if (!messageResponse) return;
       const string_ = messageResponse.trim();
@@ -87,7 +111,6 @@ function QuickAsk() {
       timeout = setTimeout(() => setClipboard(false), 1000);
     },
     {
-      enableOnContentEditable: true,
       preventDefault: true,
       enableOnFormTags: true,
     },
@@ -116,7 +139,7 @@ function QuickAsk() {
   useEffect(() => {
     chatForm.reset({
       message: '',
-      agent: defaultAgentId,
+      agent: defaultSpotlightAiId,
       files: [],
     });
     setInboxId(null);
@@ -128,15 +151,15 @@ function QuickAsk() {
       setInboxId(encodeURIComponent(buildInboxIdFromJobId(data.jobId)));
       chatForm.reset({
         message: '',
-        agent: defaultAgentId,
+        agent: defaultSpotlightAiId,
         files: [],
       });
     },
   });
 
   useEffect(() => {
-    chatForm.setValue('agent', defaultAgentId);
-  }, [chatForm, defaultAgentId]);
+    chatForm.setValue('agent', defaultSpotlightAiId);
+  }, [chatForm, defaultSpotlightAiId]);
 
   const onSubmit = async (data: CreateJobFormSchema) => {
     if (!auth) return;
@@ -188,6 +211,7 @@ function QuickAsk() {
         <AIModelSelector
           onValueChange={(value) => {
             chatForm.setValue('agent', value);
+            setDefaultSpotlightAiId(value);
           }}
           value={chatForm.watch('agent')}
         />
@@ -244,14 +268,16 @@ function QuickAsk() {
                   <kbd className="text-gray-1100 flex h-5 w-5 items-center justify-center rounded-md bg-gray-300 px-1 font-sans">
                     ⌘
                   </kbd>
+                  <kbd className="text-gray-1100 flex h-5 w-8 items-center justify-center rounded-md bg-gray-300 px-1 font-sans">
+                    Shift
+                  </kbd>
                   <kbd className="text-gray-1100 flex h-5 w-5 items-center justify-center rounded-md bg-gray-300 px-1 font-sans">
                     C
                   </kbd>
                 </span>
               </button>
             </CopyToClipboardIcon>
-          ) : (
-            // should toggle longer text mode
+          ) : isLoadingResponse ? null : (
             <button
               className="text-gray-80 flex items-center justify-center gap-2 rounded-md px-1.5 py-0.5 text-center transition-colors hover:bg-gray-300"
               onClick={chatForm.handleSubmit(onSubmit)}
@@ -311,7 +337,6 @@ const QuickAskBodyWithResponse = ({
   inboxId: string;
   aiModel: string;
 }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
   const auth = useAuth((state) => state.auth);
   const setLoadingResponse = useQuickAskStore(
     (state) => state.setLoadingResponse,
@@ -370,18 +395,8 @@ const QuickAskBodyWithResponse = ({
     }
   }, [isLoadingMessage, lastMessage?.content, setMessageResponse]);
 
-  useLayoutEffect(() => {
-    containerRef.current?.scrollTo({
-      top: containerRef.current?.scrollHeight,
-      behavior: 'smooth',
-    });
-  }, [messageContent]);
-
   return (
-    <ScrollArea
-      className="flex-1 text-sm [&>div>div]:!block"
-      ref={containerRef}
-    >
+    <ScrollArea className="flex-1 text-sm [&>div>div]:!block">
       <Collapsible className="border-b border-gray-200 bg-gray-400">
         <CollapsibleTrigger
           className={cn(

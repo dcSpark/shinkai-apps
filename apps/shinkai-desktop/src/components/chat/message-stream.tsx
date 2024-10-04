@@ -138,7 +138,8 @@ export const useWebSocketMessage = ({
     if (lastMessage?.data) {
       try {
         const parseData: WsMessage = JSON.parse(lastMessage.data);
-        if (parseData.message_type !== 'Stream') return;
+        if (parseData.message_type !== 'Stream' || parseData.inbox !== inboxId)
+          return;
         isStreamingFinished.current = false;
         if (parseData.metadata?.is_done === true) {
           textControllerRef.current.stopAnimation();

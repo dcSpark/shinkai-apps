@@ -110,6 +110,7 @@ function ConversationEmptyFooter() {
   const promptSelected = usePromptSelectionStore(
     (state) => state.promptSelected,
   );
+  const setDefaultAgentId = useSettings((state) => state.setDefaultAgentId);
 
   const auth = useAuth((state) => state.auth);
   const { captureAnalyticEvent } = useAnalytics();
@@ -343,6 +344,7 @@ function ConversationEmptyFooter() {
                         <AIModelSelector
                           onValueChange={(value) => {
                             chatForm.setValue('agent', value);
+                            setDefaultAgentId(value);
                           }}
                           value={chatForm.watch('agent')}
                         />
