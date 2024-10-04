@@ -8,6 +8,7 @@ export const importSheet = async ({
   token,
   file,
   fileFormat,
+  sheetName,
 }: ImportSheetInput) => {
   let content;
 
@@ -21,6 +22,7 @@ export const importSheet = async ({
   }
 
   return await importSheetApi(nodeAddress, token, {
+    sheet_name: sheetName,
     sheet_data: {
       content: content,
       type: fileFormat.toUpperCase() as SheetFileFormat,

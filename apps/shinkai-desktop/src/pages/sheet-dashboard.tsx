@@ -284,6 +284,7 @@ function CreateSheetModal() {
 
 const importSheetFormSchema = z.object({
   file: z.any(),
+  projectName: z.string().min(1, 'Project name is required'),
 });
 type ImportSheetFormSchema = z.infer<typeof importSheetFormSchema>;
 
@@ -310,12 +311,15 @@ function ImportSheetModal() {
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
       file: fileSelected,
+      sheetName: data.projectName,
       fileFormat:
         fileFormat === SheetFileFormat.XLSX
           ? SheetFileFormat.XLSX
           : SheetFileFormat.CSV,
     });
   };
+
+  const file = importSheetForm.watch('file') as File[];
 
   return (
     <Dialog>
@@ -353,6 +357,22 @@ function ImportSheetModal() {
                 </FormItem>
               )}
             />
+            {file && (
+              <FormField
+                control={importSheetForm.control}
+                name="projectName"
+                render={({ field }) => (
+                  <TextField
+                    autoFocus
+                    field={{
+                      ...field,
+                      onFocus: (e) => e.currentTarget.select(),
+                    }}
+                    label={t('sheet.form.projectName')}
+                  />
+                )}
+              />
+            )}
             <DialogFooter>
               <Button className="w-full" size="auto" type="submit">
                 Import

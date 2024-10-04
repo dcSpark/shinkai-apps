@@ -10,4 +10,5 @@ export type ImportSheetInput = Token & {
   nodeAddress: string;
   fileFormat: SheetFileFormat;
   file: File;
+  sheetName: string;
 };

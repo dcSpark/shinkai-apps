@@ -142,7 +142,7 @@ export const FileUploader = ({
         <ScrollArea
           className={cn(
             'max-h-[40vh] flex-1 grow overflow-y-scroll pr-1 [&>div>div]:!block',
-            shouldDisableScrolling && 'max-h-full pr-0',
+            shouldDisableScrolling && 'max-h-full overflow-y-auto pr-0',
           )}
         >
           <div className="flex flex-col gap-2">

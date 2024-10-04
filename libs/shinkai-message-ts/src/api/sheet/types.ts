@@ -13,6 +13,7 @@ export type ExportSheetResponse = {
 };
 
 export type ImportSheetRequest = {
+  sheet_name: string;
   sheet_data: {
     type: SheetFileFormat;
     content: string | number[]; //binary data
