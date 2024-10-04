@@ -30,7 +30,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { motion } from 'framer-motion';
 import { CheckCircle2, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useHotkeys } from 'react-hotkeys-hook';
 
@@ -70,14 +70,13 @@ function QuickAsk() {
       hideSpotlightWindow();
     },
     {
-      enableOnContentEditable: true,
       preventDefault: true,
       enableOnFormTags: true,
     },
   );
 
   useHotkeys(
-    ['mod+c', 'ctrl+c'],
+    ['mod+shift+c', 'ctrl+shift+c'],
     () => {
       if (!messageResponse) return;
       const string_ = messageResponse.trim();
@@ -87,7 +86,6 @@ function QuickAsk() {
       timeout = setTimeout(() => setClipboard(false), 1000);
     },
     {
-      enableOnContentEditable: true,
       preventDefault: true,
       enableOnFormTags: true,
     },
@@ -244,14 +242,16 @@ function QuickAsk() {
                   <kbd className="text-gray-1100 flex h-5 w-5 items-center justify-center rounded-md bg-gray-300 px-1 font-sans">
                     ⌘
                   </kbd>
+                  <kbd className="text-gray-1100 flex h-5 w-8 items-center justify-center rounded-md bg-gray-300 px-1 font-sans">
+                    Shift
+                  </kbd>
                   <kbd className="text-gray-1100 flex h-5 w-5 items-center justify-center rounded-md bg-gray-300 px-1 font-sans">
                     C
                   </kbd>
                 </span>
               </button>
             </CopyToClipboardIcon>
-          ) : (
-            // should toggle longer text mode
+          ) : isLoadingResponse ? null : (
             <button
               className="text-gray-80 flex items-center justify-center gap-2 rounded-md px-1.5 py-0.5 text-center transition-colors hover:bg-gray-300"
               onClick={chatForm.handleSubmit(onSubmit)}
@@ -311,7 +311,6 @@ const QuickAskBodyWithResponse = ({
   inboxId: string;
   aiModel: string;
 }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
   const auth = useAuth((state) => state.auth);
   const setLoadingResponse = useQuickAskStore(
     (state) => state.setLoadingResponse,
@@ -370,18 +369,8 @@ const QuickAskBodyWithResponse = ({
     }
   }, [isLoadingMessage, lastMessage?.content, setMessageResponse]);
 
-  useLayoutEffect(() => {
-    containerRef.current?.scrollTo({
-      top: containerRef.current?.scrollHeight,
-      behavior: 'smooth',
-    });
-  }, [messageContent]);
-
   return (
-    <ScrollArea
-      className="flex-1 text-sm [&>div>div]:!block"
-      ref={containerRef}
-    >
+    <ScrollArea className="flex-1 text-sm [&>div>div]:!block">
       <Collapsible className="border-b border-gray-200 bg-gray-400">
         <CollapsibleTrigger
           className={cn(
