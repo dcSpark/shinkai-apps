@@ -45,6 +45,12 @@ import plotly.io as pio
 import json
 import array
 
+import pyodide_http
+pyodide_http.patch_all()
+
+import urllib3
+import requests
+
 # Redirect stdout to capture prints
 old_stdout = sys.stdout
 mystdout = sys.stdout = StringIO()
@@ -153,13 +159,20 @@ const initialize = async () => {
   const micropip = pyodide.pyimport('micropip');
   console.timeEnd('importing micropip');
 
-  console.time('installing plotly');
-  await micropip.install('plotly');
-  console.timeEnd('installing plotly');
-
-  console.time('installing seaborn');
-  await micropip.install('seaborn');
-  console.timeEnd('installing seaborn');
+  const micropipLibs = [
+    'plotly',
+    'pyodide-http',
+    'requests',
+    'urllib3',
+    'seaborn',
+  ];
+  console.log('Installing micropip libraries');
+  for (const lib of micropipLibs) {
+    console.time(`installing ${lib}`);
+    await micropip.install(lib);
+    console.timeEnd(`installing ${lib}`);
+  }
+  console.log('Finished installing micropip libraries');
   console.log('pyodide initialized successfully');
 };
 
