@@ -45,6 +45,7 @@ export const chatConfigFormSchema = z.object({
   temperature: z.number(),
   topP: z.number(),
   topK: z.number(),
+  max_tokens: z.number(),
 });
 
 export type ChatConfigFormSchemaType = z.infer<typeof chatConfigFormSchema>;
@@ -69,6 +70,46 @@ function ChatConfigForm({ form }: ChatConfigFormProps) {
                 Enable Stream
               </FormLabel>
             </div>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="max_tokens"
+        render={({ field }) => (
+          <FormItem className="flex gap-2.5">
+            <FormControl>
+              <HoverCard openDelay={200}>
+                <HoverCardTrigger asChild>
+                  <div className="grid w-full gap-4">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="max_tokens">Output Tokens</Label>
+                      <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
+                        {field.value}
+                      </span>
+                    </div>
+                    <Slider
+                      aria-label="Output Tokens"
+                      className="[&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
+                      id="max_tokens"
+                      max={8000}
+                      onValueChange={(vals) => {
+                        field.onChange(vals[0]);
+                      }}
+                      step={100}
+                      value={[field.value]}
+                    />
+                  </div>
+                </HoverCardTrigger>
+                <HoverCardContent
+                  align="start"
+                  className="w-[260px] bg-gray-600 px-2 py-3 text-xs"
+                  side="left"
+                >
+                  Output Tokens determines the maximum number of tokens (words or parts of words) that the AI can generate in a single response. Higher values allow for longer responses.
+                </HoverCardContent>
+              </HoverCard>
+            </FormControl>
           </FormItem>
         )}
       />
@@ -245,6 +286,7 @@ export function UpdateChatConfigActionBar() {
       temperature: chatConfig?.temperature,
       topP: chatConfig?.top_p,
       topK: chatConfig?.top_k,
+      max_tokens: chatConfig?.max_tokens,
     },
   });
 
@@ -267,6 +309,7 @@ export function UpdateChatConfigActionBar() {
         temperature: chatConfig.temperature,
         topP: chatConfig.top_p,
         topK: chatConfig.top_k,
+        max_tokens: chatConfig.max_tokens,
       });
     }
   }, [chatConfig, form]);
@@ -283,6 +326,7 @@ export function UpdateChatConfigActionBar() {
         temperature: data.temperature,
         top_p: data.topP,
         top_k: data.topK,
+        max_tokens: data.max_tokens,
       },
     });
   };
@@ -297,6 +341,7 @@ export function UpdateChatConfigActionBar() {
             temperature: chatConfig?.temperature,
             topP: chatConfig?.top_p,
             topK: chatConfig?.top_k,
+            max_tokens: chatConfig?.max_tokens,
           });
         }
       }}

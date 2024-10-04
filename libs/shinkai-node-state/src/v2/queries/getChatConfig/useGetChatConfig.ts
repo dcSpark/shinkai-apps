@@ -32,6 +32,7 @@ export const useGetChatConfig = (
         top_k: data.top_k ?? DEFAULT_CHAT_CONFIG.top_k,
         top_p: data.top_p ?? DEFAULT_CHAT_CONFIG.top_p,
         stream: data.stream ?? DEFAULT_CHAT_CONFIG.stream,
+        max_tokens: data.max_tokens ?? DEFAULT_CHAT_CONFIG.max_tokens,
       };
     },
     ...options,

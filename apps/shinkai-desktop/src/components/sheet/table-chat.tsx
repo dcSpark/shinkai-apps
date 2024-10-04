@@ -128,6 +128,7 @@ export default function ChatTable() {
           temperature: DEFAULT_CHAT_CONFIG.temperature,
           top_p: DEFAULT_CHAT_CONFIG.top_p,
           top_k: DEFAULT_CHAT_CONFIG.top_k,
+          max_tokens: DEFAULT_CHAT_CONFIG.max_tokens,
         },
       });
       createJobForm.reset();
