@@ -1,6 +1,6 @@
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { useMutation, UseMutationOptions } from '@tanstack/react-query';
-import { Play } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
 import Plot from 'react-plotly.js';
 
@@ -184,7 +184,7 @@ const ResultRender = ({ result }: { result: RunResult }) => {
                 config={{
                   responsive: true,
                   displayModeBar: true,
-                  scrollZoom: true,
+                  scrollZoom: false,
                 }}
                 data={JSON.parse(figure.data).data}
                 layout={{
@@ -192,7 +192,7 @@ const ResultRender = ({ result }: { result: RunResult }) => {
                   autosize: true,
                   margin: { l: 50, r: 50, b: 50, t: 50, pad: 4 },
                   width: '100%',
-                  height: 500,
+                  height: 400,
                 }}
                 style={{ width: '100%', height: '100%' }}
                 useResizeHandler={true}
@@ -224,21 +224,48 @@ const PythonCodeRenderer = ({ code }: PythonCodeRendererProps) => {
   return (
     <div className="mt-4">
       <Button
+        className="h-8 min-w-[160px] cursor-pointer justify-start rounded-md border border-[#63676c] px-4 text-gray-50 hover:border-white hover:bg-transparent"
         disabled={isPending}
         isLoading={isPending}
         onClick={() => {
           run({ code });
         }}
-        size={'icon'}
-        variant={'secondary'}
+        size={'sm'}
+        variant="outline"
       >
-        <Play />
+        {isPending ? null : (
+          <svg
+            className="mr-2 h-4 w-4"
+            fill="currentColor"
+            height="1em"
+            stroke="currentColor"
+            strokeWidth="0"
+            viewBox="0 0 512 512"
+            width="1em"
+          >
+            <path
+              d="M112 111v290c0 17.44 17 28.52 31 20.16l247.9-148.37c12.12-7.25 12.12-26.33 0-33.58L143 90.84c-14-8.36-31 2.72-31 20.16z"
+              fill="none"
+              strokeMiterlimit="10"
+              strokeWidth="32"
+            />
+          </svg>
+        )}
+        <span className="text-xs font-semibold text-gray-50">Execute Code</span>
       </Button>
-      {!isPending && data && (
-        <div className="mt-2">
-          <ResultRender result={data} />
-        </div>
-      )}
+      <AnimatePresence>
+        {!isPending && data && (
+          <motion.div
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-2"
+            exit={{ opacity: 0, y: -10 }}
+            initial={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+          >
+            <ResultRender result={data} />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
