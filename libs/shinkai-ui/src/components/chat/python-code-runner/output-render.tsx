@@ -1,3 +1,4 @@
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import Plot from 'react-plotly.js';
 
 import { ErrorRender } from './error-render';
@@ -10,6 +11,8 @@ export type OutputRender = {
 };
 
 export const OutputRender = ({ result }: { result: RunResult }) => {
+  const i18n = useTranslation();
+
   if (result?.state === 'error') {
     return (
       <div className="flex flex-col space-y-2">
@@ -54,7 +57,9 @@ export const OutputRender = ({ result }: { result: RunResult }) => {
       </div>
 
       <details className="rounded-md bg-gray-100 p-4">
-        <summary className="mb-2 cursor-pointer font-bold">Output:</summary>
+        <summary className="mb-2 cursor-pointer font-bold">
+          {i18n.t('codeRunner.output')}
+        </summary>
         <pre className="mt-2 overflow-x-auto whitespace-pre-wrap">
           {result.result.rawOutput}
         </pre>

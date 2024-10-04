@@ -537,5 +537,12 @@
   },
   "workflowPlayground": {
     "label": "工作流程游乐场"
+  },
+  "codeRunner": {
+    "errorOccurred": "发生错误",
+    "stderr": "标准错误",
+    "stdout": "标准输出",
+    "output": "输出",
+    "executeCode": "执行代码"
   }
 }

@@ -1,6 +1,8 @@
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useState } from 'react';
 
 export const StdoutRender = ({ stdout }: { stdout: string[] }) => {
+  const i18n = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
 
   if (stdout.length === 0) {
@@ -19,7 +21,8 @@ export const StdoutRender = ({ stdout }: { stdout: string[] }) => {
           >
             ▶
           </span>
-          Stdout ({stdout.length} line{stdout.length !== 1 ? 's' : ''})
+          {i18n.t('codeRunner.stdout')} ({stdout.length} line
+          {stdout.length !== 1 ? 's' : ''})
         </span>
         <span className="text-gray-500">{isExpanded ? 'Hide' : 'Show'}</span>
       </button>

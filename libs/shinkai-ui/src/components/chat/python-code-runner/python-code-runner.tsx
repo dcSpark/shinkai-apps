@@ -1,6 +1,6 @@
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useState } from 'react';
 
 import { Button } from '../../button';
 import { OutputRender } from './output-render';
@@ -58,6 +58,7 @@ export const usePythonRunnerRunMutation = (
 };
 
 export const PythonCodeRunner = ({ code }: PythonCodeRunnerProps) => {
+  const i18n = useTranslation();
   const {
     mutateAsync: run,
     data: runResult,
@@ -94,7 +95,9 @@ export const PythonCodeRunner = ({ code }: PythonCodeRunnerProps) => {
             />
           </svg>
         )}
-        <span className="text-xs font-semibold text-gray-50">Execute Code</span>
+        <span className="text-xs font-semibold text-gray-50">
+          {i18n.t('codeRunner.executeCode')}
+        </span>
       </Button>
       <AnimatePresence>
         {!isPending && runResult && (

@@ -537,5 +537,12 @@
   },
   "workflowPlayground": {
     "label": "ワークフロープレイグラウンド"
+  },
+  "codeRunner": {
+    "errorOccurred": "エラーが発生しました",
+    "stderr": "標準エラー",
+    "stdout": "標準出力",
+    "output": "出力",
+    "executeCode": "コードを実行"
   }
 }

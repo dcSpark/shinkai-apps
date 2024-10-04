@@ -1,6 +1,8 @@
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useState } from 'react';
 
 export const StderrRender = ({ stderr }: { stderr: string[] }) => {
+  const i18n = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
 
   if (stderr.length === 0) {
@@ -10,7 +12,7 @@ export const StderrRender = ({ stderr }: { stderr: string[] }) => {
   return (
     <div className="mt-4 rounded-md border border-red-200 bg-red-50 p-4">
       <div className="mb-2 flex items-center justify-between">
-        <h3 className="font-semibold text-red-700">Stderr</h3>
+        <h3 className="font-semibold text-red-700">{i18n.t('codeRunner.stderr')}</h3>
         <button
           className="text-sm text-red-600 transition-colors duration-200 hover:text-red-800 focus:outline-none"
           onClick={() => setIsExpanded(!isExpanded)}
