@@ -20,6 +20,7 @@ import { toast } from 'sonner';
 
 import { useGetCurrentInbox } from '../../../hooks/use-current-inbox';
 import { useAuth } from '../../../store/auth';
+import { useSettings } from '../../../store/settings';
 import { actionButtonClassnames } from '../conversation-footer';
 
 export function AIModelSelector({
@@ -86,6 +87,7 @@ export function AiUpdateSelectionActionBar() {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const currentInbox = useGetCurrentInbox();
+  const setDefaultAgentId = useSettings((state) => state.setDefaultAgentId);
 
   const { mutateAsync: updateAgentInJob } = useUpdateAgentInJob({
     onError: (error) => {
@@ -98,6 +100,7 @@ export function AiUpdateSelectionActionBar() {
     <AIModelSelector
       onValueChange={async (value) => {
         if (!currentInbox) return;
+
         const jobId = extractJobIdFromInbox(currentInbox?.inbox_id ?? '');
         await updateAgentInJob({
           nodeAddress: auth?.node_address ?? '',
@@ -111,6 +114,7 @@ export function AiUpdateSelectionActionBar() {
           profile_encryption_sk: auth?.profile_encryption_sk ?? '',
           profile_identity_sk: auth?.profile_identity_sk ?? '',
         });
+        setDefaultAgentId(value);
       }}
       value={currentInbox?.agent?.id ?? ''}
     />
