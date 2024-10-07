@@ -375,7 +375,7 @@ const ChatLayout = () => {
                         setPromptSelected(undefined);
 
                         const element = document.querySelector(
-                          '[contenteditable="true"]',
+                          '#chat-input',
                         ) as HTMLDivElement;
                         if (element) {
                           element?.focus?.();

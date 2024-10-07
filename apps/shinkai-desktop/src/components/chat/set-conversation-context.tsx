@@ -94,9 +94,7 @@ export const SetJobScopeDrawer = () => {
 
   useEffect(() => {
     if (!isSetJobScopeOpen) {
-      const element = document.querySelector(
-        '[contenteditable="true"]',
-      ) as HTMLDivElement;
+      const element = document.querySelector('#chat-input') as HTMLDivElement;
       if (element) {
         element?.focus?.();
       }

@@ -540,7 +540,6 @@ export const Inbox = () => {
                             </Button>
                           }
                           disabled={isLoadingMessage}
-                          // isLoading={isLoadingMessage}
                           onChange={field.onChange}
                           onSubmit={chatForm.handleSubmit(onSubmit)}
                           topAddons={
