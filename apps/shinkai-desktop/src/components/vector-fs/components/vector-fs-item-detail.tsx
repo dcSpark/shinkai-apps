@@ -1,4 +1,5 @@
 import { useDownloadVRFile } from '@shinkai_network/shinkai-node-state/lib/mutations/downloadVRFile/useDownloadVRFile';
+import { useRetrieveSourceFile } from '@shinkai_network/shinkai-node-state/v2/mutations/retrieveSourceFile/useRetrieveSourceFile';
 import {
   Badge,
   Button,
@@ -11,13 +12,13 @@ import {
   formatDateToLocaleStringWithTime,
   formatDateToUSLocaleString,
 } from '@shinkai_network/shinkai-ui/helpers';
-import {} from '@tauri-apps/api';
 import { save } from '@tauri-apps/plugin-dialog';
 import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import * as fs from '@tauri-apps/plugin-fs';
 import { partial } from 'filesize';
 import { LockIcon } from 'lucide-react';
 import React from 'react';
+import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';
 import { useVectorFsStore } from '../context/vector-fs-context';
@@ -26,6 +27,45 @@ export const VectorFileDetails = () => {
   const selectedFile = useVectorFsStore((state) => state.selectedFile);
   const size = partial({ standard: 'jedec' });
   const auth = useAuth((state) => state.auth);
+
+  const fileExtension =
+    selectedFile?.vr_header?.resource_source?.Standard?.FileRef?.file_type
+      ?.Document;
+  const { mutateAsync: retreiveSourceFile } = useRetrieveSourceFile({
+    onSuccess: async (response, variables) => {
+      if (!fileExtension) {
+        toast.error('File extension not found');
+        return;
+      }
+      try {
+        const binaryData = Uint8Array.from(atob(response), (c) =>
+          c.charCodeAt(0),
+        );
+
+        const savePath = await save({
+          defaultPath: `${variables.filePath.split('/').pop()}.${fileExtension.toLowerCase()}`,
+          filters: [
+            { name: fileExtension, extensions: [fileExtension.toLowerCase()] },
+          ],
+        });
+
+        if (!savePath) {
+          toast.info('File save cancelled');
+          return;
+        }
+
+        await fs.writeFile(savePath, binaryData, {
+          baseDir: BaseDirectory.Download,
+        });
+
+        toast.success('File saved successfully');
+      } catch (error) {
+        console.error('Error saving file:', error);
+        toast.error('Failed to save file');
+      }
+    },
+  });
+
   const { mutateAsync: downloadVRFile } = useDownloadVRFile({
     onSuccess: async (response, variables) => {
       const file = new Blob([response.data], {
@@ -117,7 +157,7 @@ export const VectorFileDetails = () => {
           </span>
         </div>
       </div>
-      <SheetFooter>
+      <SheetFooter className="flex flex-row gap-3 [&>*]:flex-1">
         <Button
           onClick={async () => {
             if (!selectedFile || !auth) return;
@@ -133,9 +173,24 @@ export const VectorFileDetails = () => {
               profile_identity_sk: auth.profile_identity_sk,
             });
           }}
-          variant="default"
+          size="sm"
+          variant="outline"
         >
           Download Vector Resource
+        </Button>
+        <Button
+          onClick={async () => {
+            if (!selectedFile || !auth) return;
+            await retreiveSourceFile({
+              nodeAddress: auth.node_address,
+              filePath: selectedFile.path,
+              token: auth.api_v2_key,
+            });
+          }}
+          size="sm"
+          variant="default"
+        >
+          Download Source File
         </Button>
       </SheetFooter>
     </React.Fragment>
