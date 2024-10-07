@@ -1,11 +1,10 @@
-use tauri::{AppHandle, Manager, WebviewWindow, WebviewWindowBuilder};
+use tauri::{AppHandle, Manager, WebviewWindowBuilder};
 
 #[derive(Debug, Clone, Copy)]
 pub enum Window {
     Main,
     ShinkaiNodeManager,
     Spotlight,
-    PythonRunner,
 }
 
 impl Window {
@@ -14,7 +13,6 @@ impl Window {
             Window::Main => "main",
             Window::ShinkaiNodeManager => "shinkai-node-manager",
             Window::Spotlight => "spotlight",
-            Window::PythonRunner => "python-runner",
         }
     }
 }

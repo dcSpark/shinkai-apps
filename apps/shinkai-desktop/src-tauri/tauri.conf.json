@@ -42,7 +42,7 @@
   "app": {
     "withGlobalTauri": false,
     "security": {
-      "csp": "default-src 'self'; script-src 'self' 'unsafe-inline' http://localhost:1420; style-src 'self' 'unsafe-inline'; connect-src 'self' http://localhost:1420 ws://localhost:1420; img-src 'self' data:; media-src 'self'; frame-src 'self'; font-src 'self'; object-src 'none';"
+      "csp": null
     },
     "windows": [
       {
@@ -88,24 +88,6 @@
         "titleBarStyle": "Overlay",
         "hiddenTitle": true,
         "create": false
-      },
-      {
-        "label": "python-runner",
-        "url": "src/windows/python-runner/index.html",
-        "title": "Python Runner",
-        "width": 1280,
-        "height": 840,
-        "resizable": true,
-        "dragDropEnabled": true,
-        "titleBarStyle": "Overlay",
-        "hiddenTitle": true,
-        "create": false,
-        "closable": true,
-        "incognito": true,
-        "contentProtected": true,
-        "visible": false,
-        "parent": null,
-        "skipTaskbar": true
       }
     ],
     "macOSPrivateApi": true
