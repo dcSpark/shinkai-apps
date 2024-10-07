@@ -63,4 +63,7 @@ export default defineConfig(() => ({
       },
     },
   },
+  worker: {
+    format: 'es' as const
+  },
 }));

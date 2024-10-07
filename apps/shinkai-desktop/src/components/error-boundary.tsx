@@ -1,3 +1,5 @@
+import { Button } from "@shinkai_network/shinkai-ui";
+
 const FullPageErrorFallback = ({ error }: { error: Error }) => {
   return (
     <div
@@ -5,9 +7,16 @@ const FullPageErrorFallback = ({ error }: { error: Error }) => {
       role="alert"
     >
       <p>Something went wrong. Try refreshing the app.</p>
-      <pre className="whitespace-pre-wrap text-balance break-all text-center">
+      <pre className="whitespace-pre-wrap text-balance break-all text-center mb-4">
         {error.message}
       </pre>
+      <Button
+        onClick={() => window.location.reload()}
+        size="sm"
+        variant="secondary"
+      >
+        Refresh
+      </Button>
     </div>
   );
 };

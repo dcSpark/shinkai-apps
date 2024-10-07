@@ -1,6 +1,7 @@
 import { I18nProvider } from '@shinkai_network/shinkai-i18n';
 import { QueryProvider } from '@shinkai_network/shinkai-node-state';
 import { Toaster } from '@shinkai_network/shinkai-ui';
+import { useEffect } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { BrowserRouter as Router } from 'react-router-dom';
 

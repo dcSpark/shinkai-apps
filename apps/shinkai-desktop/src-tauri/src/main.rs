@@ -84,7 +84,7 @@ fn main() {
             shinkai_node_get_ollama_api_url,
             shinkai_node_get_default_model,
             hardware_get_summary,
-            galxe_generate_proof
+            galxe_generate_proof,
         ])
         .setup(|app| {
             let app_resource_dir = app.path().resource_dir()?;

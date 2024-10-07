@@ -37,6 +37,8 @@ base64 = "0.22.1"
 time = "^0.3.36"
 listeners = "0.2"
 log = "0.4"
+anyhow = "1.0.89"
+uuid = "1.10.0"
 
 tauri-plugin-global-shortcut = "2.0.0-rc.2"
 tauri-plugin-shell = "2.0.0-rc.3"

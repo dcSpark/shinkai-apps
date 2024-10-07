@@ -537,5 +537,12 @@
   },
   "workflowPlayground": {
     "label": "Taman Bermain Alur Kerja"
+  },
+  "codeRunner": {
+    "errorOccurred": "Terjadi Kesalahan",
+    "stderr": "Kesalahan Standar",
+    "stdout": "Keluaran Standar",
+    "output": "Hasil",
+    "executeCode": "Jalankan Kode"
   }
 }

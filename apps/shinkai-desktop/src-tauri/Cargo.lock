@@ -125,9 +125,9 @@ dependencies = [
 
 [[package]]
 name = "anyhow"
-version = "1.0.81"
+version = "1.0.89"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0952808a6c2afd1aa8947271f3a60f1a6763c7b912d210184c5149b5cf147247"
+checksum = "86fdf8605db99b54d3cd748a44c6d04df638eb5dafb219b135d0149bd0db01f6"
 
 [[package]]
 name = "arbitrary"
@@ -4839,6 +4839,7 @@ dependencies = [
 name = "shinkai-desktop"
 version = "0.0.0"
 dependencies = [
+ "anyhow",
  "base64 0.22.1",
  "blake3",
  "chrono",
@@ -4869,6 +4870,7 @@ dependencies = [
  "tauri-plugin-updater",
  "time",
  "tokio",
+ "uuid",
  "webrtc-vad",
  "wgpu",
  "whisper-rs",
@@ -6189,9 +6191,9 @@ checksum = "86bd8d4e895da8537e5315b8254664e6b769c4ff3db18321b297a1e7004392e3"
 
 [[package]]
 name = "uuid"
-version = "1.8.0"
+version = "1.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a183cf7feeba97b4dd1c0d46788634f6221d87fa961b305bed08c851829efcc0"
+checksum = "81dfa00651efa65069b0b6b651f4aaa31ba9e3c3ce0137aaad053604ee7e0314"
 dependencies = [
  "getrandom 0.2.12",
 ]
