@@ -64,7 +64,6 @@ export const PythonCodeRunner = ({ code }: PythonCodeRunnerProps) => {
     data: runResult,
     isPending,
   } = usePythonRunnerRunMutation();
-  console.log('run result', runResult);
   return (
     <div className="mt-4">
       <Button

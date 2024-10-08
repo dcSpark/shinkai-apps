@@ -48,8 +48,8 @@ import array
 import pyodide_http
 pyodide_http.patch_all()
 
-import urllib3
-import requests
+import matplotlib
+matplotlib.use("AGG")
 
 # Redirect stdout to capture prints
 old_stdout = sys.stdout
