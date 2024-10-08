@@ -43,11 +43,23 @@ export const MarkdownPreview = ({
         'prose-h2:!text-[1.09375rem] prose-h2:!leading-[1.25] prose-h2:!my-3.5 prose-h2:!font-bold',
         'prose-h3:!text-base prose-h3:!leading-[1.25] prose-h3:!my-3.5 prose-h3:!font-bold',
         'prose-code:text-white prose-blockquote:text-gray-50 prose-blockquote:bg-gray-200 prose-strong:text-white prose-headings:text-white prose-p:whitespace-pre-wrap',
+        'prose-code:before:hidden prose-code:after:hidden',
         'prose-h1:!border-b-0 prose-h2:!border-b-0 prose-h3:!border-b-0 prose-h4:!border-b-0 prose-h5:!border-b-0 prose-h6:!border-b-0',
         'prose-hr:!border-b-0 prose-hr:!h-[2px] prose-hr:!bg-gray-50/80',
         className,
       )}
-      components={components}
+      components={{
+        a: ({ node, ...props }) => (
+          // eslint-disable-next-line jsx-a11y/anchor-has-content
+          <a {...props} target="_blank" />
+        ),
+        table: ({ node, ...props }) => (
+          <div className="mb-2 size-full overflow-x-auto">
+            <table className="w-full" {...props} />
+          </div>
+        ),
+        ...components,
+      }}
       rehypePlugins={rehypePlugins}
       source={source}
       wrapperElement={{ 'data-color-mode': 'dark' }}
