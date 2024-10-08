@@ -34,7 +34,7 @@ let pyodide: PyodideInterface;
 const stdout: string[] = [];
 const stderr: string[] = [];
 
-const getWrappedCode = (code: string): string => {
+const wrapCode = (code: string): string => {
   const wrappedCode = `
 import sys
 from io import StringIO
@@ -90,52 +90,71 @@ figures = json.dumps(figures)
     `;
   return wrappedCode;
 };
-const runPythonCode = async (code: string): Promise<CodeOutput> => {
-  const [output, outputError, figures] = await pyodide.runPythonAsync(code);
-  if (outputError) {
-    throw new Error(outputError);
-  }
-  return { rawOutput: output, figures: JSON.parse(figures) };
-};
 
-const run = async (code: string) => {
-  if (!pyodide) {
-    const error = new Error('pyodide is not initialized');
-    throw error;
-  }
-  console.time('total execution');
-
-  console.log('starting code execution');
-  console.time('code wrapping');
-  const wrappedCode = getWrappedCode(code);
-  console.timeEnd('code wrapping');
-
-  console.log('loading packages from imports');
-  console.time('loading packages');
-  await pyodide.loadPackagesFromImports(wrappedCode, {
-    messageCallback: (message) => {
-      console.log('load package message:', message);
-    },
-    errorCallback: (message) => {
-      console.log('load package error:', message);
-    },
-  });
-  console.timeEnd('loading packages');
-
-  console.log('running Python code');
-  console.time('python code execution');
-  const result = await runPythonCode(wrappedCode);
-  console.timeEnd('python code execution');
-
-  console.log('pyodide run result:', result);
-
-  console.timeEnd('total execution');
+const findImportsFromCodeString = async (code: string): Promise<string[]> => {
+  const wrappedCode = `
+from pyodide.code import find_imports
+import json
+code = """${code.replace(/"""/g, '\\"\\"\\"')}"""
+imports = find_imports(code)
+json.dumps(imports)
+`;
+  const jsonResult = await pyodide.runPythonAsync(wrappedCode);
+  const result = JSON.parse(jsonResult);
   return result;
 };
 
+/**
+ * Attempts to install dependencies for the given Python code using micropip.
+ *
+ * This method does its best effort to install all dependencies using micropip,
+ * but it's important to note that not all packages may be available or compatible
+ * with the Pyodide environment. Even after this method completes, some dependencies
+ * might still not be found or properly installed due to various constraints of
+ * the web-based Python runtime.
+ *
+ * This just do the best effort to install micropip dependencies
+ * Native pyodide dependencies are install uner the hood when call runPythonAsync
+ *
+ * The function performs the following steps:
+ * 1. Loads the 'micropip' package.
+ * 2. Finds imports from both the wrapped code template and the user's code.
+ * 3. Attempts to install each found dependency using micropip.
+ *
+ * @param code - The Python code string to analyze for dependencies.
+ * @returns A Promise that resolves when the installation attempts are complete.
+ */
+const installDependencies = async (code: string): Promise<void> => {
+  console.time('install micropip dependencies');
+  await pyodide.loadPackage(['micropip']);
+  const micropip = pyodide.pyimport('micropip');
+  const codeDependencies = [
+    // Our code wrapper constains dependencies so we need to install them
+    ...(await findImportsFromCodeString(wrapCode(''))),
+    ...(await findImportsFromCodeString(code)),
+  ];
+  console.log('trying to install the following dependencies', codeDependencies);
+  const installPromises = codeDependencies.map((dependency) =>
+    micropip.install(dependency),
+  );
+  await Promise.allSettled(installPromises);
+  console.timeEnd('install micropip dependencies');
+};
+
+const run = async (code: string) => {
+  console.time('run code');
+  const wrappedCode = wrapCode(code);
+  const [output, outputError, figures] =
+    await pyodide.runPythonAsync(wrappedCode);
+  if (outputError) {
+    throw new Error(outputError);
+  }
+  console.timeEnd('run code');
+  return { rawOutput: output, figures: JSON.parse(figures) };
+};
+
 const initialize = async () => {
-  console.log('initializing pyodide');
-  console.time('pyodide loading');
+  console.time('initialize');
   pyodide = await loadPyodide({
     indexURL: INDEX_URL,
     stdout: (message) => {
@@ -148,31 +167,7 @@ const initialize = async () => {
     },
     fullStdLib: false,
   });
-  console.timeEnd('pyodide loading');
-
-  console.time('pyodide loading packages');
-  await pyodide.loadPackage(['micropip', 'pandas', 'numpy', 'matplotlib']);
-  console.timeEnd('pyodide loading packages');
-
-  console.time('importing micropip');
-  const micropip = pyodide.pyimport('micropip');
-  console.timeEnd('importing micropip');
-
-  const micropipLibs = [
-    'plotly',
-    'pyodide-http',
-    'requests',
-    'urllib3',
-    'seaborn',
-  ];
-  console.log('Installing micropip libraries');
-  for (const lib of micropipLibs) {
-    console.time(`installing ${lib}`);
-    await micropip.install(lib);
-    console.timeEnd(`installing ${lib}`);
-  }
-  console.log('Finished installing micropip libraries');
-  console.log('pyodide initialized successfully');
+  console.timeEnd('initialize');
 };
 
 self.onmessage = async (event) => {
@@ -181,6 +176,7 @@ self.onmessage = async (event) => {
       console.time('total run time');
       try {
         await initialize();
+        await installDependencies(event.data.payload.code);
         const runResult = await run(event.data.payload.code);
         self.postMessage({
           type: 'run-done',
