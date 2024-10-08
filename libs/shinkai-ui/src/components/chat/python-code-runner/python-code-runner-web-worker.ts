@@ -64,8 +64,7 @@ outputError = None
 figures = []
 local_scope = {}
 try:
-    exec("""${code}""", globals(), local_scope)
-
+    exec("""${code.replace(/"""/g, '\\"\\"\\"')}""", globals(), local_scope)
     # Capture the last variable in the scope
     last_var = list(local_scope.values())[-1] if local_scope else None
     if isinstance(last_var, pd.DataFrame):
