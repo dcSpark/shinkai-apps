@@ -18,6 +18,7 @@ const ChatInputBase = React.forwardRef<HTMLTextAreaElement, ChatInputProps>(
         id="chat-input"
         onKeyDown={(event) => {
           if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
             onSend?.();
           }
         }}
