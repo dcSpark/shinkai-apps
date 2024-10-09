@@ -193,6 +193,7 @@ const fetchPage = (url: string): string => {
 
   // Define the message handler
   const handleMessage = (event: MessageEvent) => {
+    console.log('fetch-page-sync-response: ', event);
     if (event.data?.type === 'fetch-page-sync-response' && event.data.meta === url) {
       if (event.data.payload.status >= 200 && event.data.payload.status < 300) {
         response = event.data.payload.body;
@@ -210,7 +211,7 @@ const fetchPage = (url: string): string => {
   while (response === null && error === null) {
     // Sleep for 10ms
     const start = Date.now();
-    while (Date.now() - start < 10) {
+    while (Date.now() - start < 50) {
       // Busy-wait
     }
   }
