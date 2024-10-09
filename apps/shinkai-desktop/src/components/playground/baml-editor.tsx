@@ -661,15 +661,14 @@ export default BamlEditor;
 function getWorkflowFromBaml(
   bamlScriptName: string,
   escapedDslFile: string,
-  escapedBamlInput: string,
+  _escapedBamlInput: string,
   paramName: string,
   functionName: string,
 ) {
-  const bamlName = bamlScriptName.replace(/[^a-zA-Z0-9]/g, '_');
+  const bamlName = bamlScriptName.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
   return `workflow baml_${bamlName} v0.1 {
       step Initialize {
         $DSL = "${escapedDslFile}"
-        $INPUT = "${escapedBamlInput}"
         $PARAM = "${paramName}"
         $FUNCTION = "${functionName}"
         $RESULT = call baml_inference($INPUT, "", "", $DSL, $FUNCTION, $PARAM)
