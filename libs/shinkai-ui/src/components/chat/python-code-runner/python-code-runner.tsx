@@ -17,7 +17,7 @@ type PythonCodeRunnerProps = {
 
 // Define more specific message types
 type FetchPageMessage = {
-  type: 'fetch-page';
+  type: 'fetch-page-response';
   meta: string; // URL
 };
 
@@ -30,7 +30,7 @@ type WorkerMessage = FetchPageMessage | RunDoneMessage;
 
 // Type guard functions
 function isFetchPageMessage(message: WorkerMessage): message is FetchPageMessage {
-  return message.type === 'fetch-page';
+  return message.type === 'fetch-page-response';
 }
 
 function isRunDoneMessage(message: WorkerMessage): message is RunDoneMessage {
@@ -57,14 +57,14 @@ export const usePythonRunnerRunMutation = (
               const response = await invoke<{ status: number; headers: Record<string, string[]>; body: string }>('fetch_page', { url });
               console.log('fetch response', response);
               worker.postMessage({
-                type: 'fetch-page-response',
+                type: 'fetch-page-sync-response',
                 meta: url,
                 payload: response,
               });
             } catch (error) {
               console.error('error fetching page', error);
               worker.postMessage({
-                type: 'fetch-page-response',
+                type: 'fetch-page-sync-response',
                 meta: event.data.meta,
                 payload: { status: 500, headers: {}, body: `Failed to fetch page: ${error}` },
               });

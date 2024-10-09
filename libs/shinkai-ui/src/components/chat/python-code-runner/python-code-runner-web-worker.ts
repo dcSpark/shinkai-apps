@@ -182,34 +182,38 @@ const run = async (code: string) => {
  * @throws Will throw an error if the HTTP request fails.
  */
 const fetchPage = (url: string): string => {
-  let response: string | null = null;
+  let result: string | null = null;
   let error: Error | null = null;
 
-  // Send a message to the main thread to perform the fetch
-  self.postMessage({
-    type: 'fetch-page-sync',
-    meta: url,
-  });
+  const fetchAsync = async (): Promise<void> => {
+    return new Promise((resolve) => {
+      const handleMessage = (event: MessageEvent) => {
+        console.log('> handleMessage', event);
+        if (event.data?.type === 'fetch-page-sync-response' && event.data.meta === url) {
+          if (event.data.payload.status >= 200 && event.data.payload.status < 300) {
+            result = event.data.payload.body;
+          } else {
+            error = new Error(`HTTP Error: ${event.data.payload.status}`);
+          }
+          self.removeEventListener('message', handleMessage);
+          resolve();
+        }
+      };
 
-  // Define the message handler
-  const handleMessage = (event: MessageEvent) => {
-    console.log('fetch-page-sync-response: ', event);
-    if (event.data?.type === 'fetch-page-sync-response' && event.data.meta === url) {
-      if (event.data.payload.status >= 200 && event.data.payload.status < 300) {
-        response = event.data.payload.body;
-      } else {
-        error = new Error(`HTTP Error: ${event.data.payload.status}`);
-      }
-      // Clean up the event listener
-      self.removeEventListener('message', handleMessage);
-    }
+      self.addEventListener('message', handleMessage);
+
+      self.postMessage({
+        type: 'fetch-page-response',
+        meta: url,
+      });
+    });
   };
 
-  self.addEventListener('message', handleMessage);
+  fetchAsync();
 
   // Polling loop to wait for the response
-  while (response === null && error === null) {
-    // Sleep for 10ms
+  while (result === null && error === null) {
+    // Sleep for 50ms
     const start = Date.now();
     while (Date.now() - start < 50) {
       // Busy-wait
@@ -221,7 +225,7 @@ const fetchPage = (url: string): string => {
     throw error;
   }
 
-  return response!;
+  return result!;
 };
 
 const initialize = async () => {
