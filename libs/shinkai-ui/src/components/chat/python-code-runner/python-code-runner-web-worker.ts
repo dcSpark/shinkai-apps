@@ -44,54 +44,24 @@ import plotly.io as pio
 import json
 import array
 
-import ssl
 import pyodide_http
 pyodide_http.patch_all()
 
-import asyncio
-
-async def async_custom_fetch(url):
-    try:
-        response_text = await custom_fetch(url)
-        print('response_text ', response_text)
-        return response_text.encode('utf-8')
-    except Exception as e:
-        print(f"async_custom_fetch error: {e}")
-        raise
-
-def sync_custom_fetch(url):
-    loop = asyncio.get_event_loop()
-    task = loop.create_task(async_custom_fetch(url))
-    try:
-        loop.run_until_complete(task)
-        if task.done() and not task.cancelled():
-            return task.result()
-        else:
-            print("sync_custom_fetch: Task did not complete successfully.")
-            return b''
-    except Exception as e:
-        print(f"sync_custom_fetch exception: {e}")
-        return b''
-
-# Replace fetch.get with custom_fetch
 import requests
 from requests.models import Response
 
 class CustomSession(requests.Session):
     def request(self, method, url, *args, **kwargs):
-        # Use the custom_fetch function to get the response text
-        response_content = sync_custom_fetch(url)
-
-        # Create a new Response object
-        response = Response()
-
-        # Set the response content
-        response._content = response_content
-
-        # Set the status code (assuming success for this mock)
-        response.status_code = 200
-
-        return response
+        try:
+            print('Fetching URL:', url)
+            response_content = custom_fetch(url)
+            response = Response()
+            response._content = response_content
+            response.status_code = 200  # Assuming success
+            return response
+        except Exception as e:
+            print(f"CustomSession request error: {e}")
+            raise
 
 # Override the default requests.get with our custom session's get method
 requests.get = CustomSession().get
@@ -112,7 +82,7 @@ ${code
   .split('\n')
   .map((line) => `    ${line}`)
   .join('\n')}
-    return locals()       
+    return locals()
 
 try:
     user_code_result = execute_user_code()
@@ -124,7 +94,7 @@ try:
         output = json.dumps(last_var)
     else:
         output = ''
-    
+
     for var_name, var_value in user_code_result.items():
         if isinstance(var_value, go.Figure):
             figures.append({ 'type': 'plotly', 'data': pio.to_json(var_value) })
@@ -205,36 +175,52 @@ const run = async (code: string) => {
 };
 
 /**
- * Fetches a web page by communicating with the main thread instead of directly invoking Tauri's `invoke`.
+ * Synchronously fetches a web page by polling for messages.
  *
  * @param url - The URL of the page to fetch.
- * @returns A promise that resolves to the page's body as a string.
+ * @returns The page's body as a string.
+ * @throws Will throw an error if the HTTP request fails.
  */
-const fetchPage = (url: string): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    // Listen for the main thread's response
-    const handleMessage = (event: MessageEvent) => {
-      console.log('fetch-page-response (worked) ', event.data);
-      if (event.data?.type === 'fetch-page-response' && event.data.meta === url) {
-        console.log('fetch-page-response (worked) ', event.data);
-        if (event.data.payload.status >= 200 && event.data.payload.status < 300) {
-          resolve(event.data.payload.body);
-        } else {
-          reject(new Error(`HTTP Error: ${event.data.payload.status}`));
-        }
-        // Clean up the event listener after receiving the response
-        self.removeEventListener('message', handleMessage);
-      }
-    };
+const fetchPage = (url: string): string => {
+  let response: string | null = null;
+  let error: Error | null = null;
 
-    self.addEventListener('message', handleMessage);
-
-    // Send a message to the main thread to perform the fetch
-    self.postMessage({
-      type: 'fetch-page',
-      meta: url, // Identifier to match the response
-    });
+  // Send a message to the main thread to perform the fetch
+  self.postMessage({
+    type: 'fetch-page-sync',
+    meta: url,
   });
+
+  // Define the message handler
+  const handleMessage = (event: MessageEvent) => {
+    if (event.data?.type === 'fetch-page-sync-response' && event.data.meta === url) {
+      if (event.data.payload.status >= 200 && event.data.payload.status < 300) {
+        response = event.data.payload.body;
+      } else {
+        error = new Error(`HTTP Error: ${event.data.payload.status}`);
+      }
+      // Clean up the event listener
+      self.removeEventListener('message', handleMessage);
+    }
+  };
+
+  self.addEventListener('message', handleMessage);
+
+  // Polling loop to wait for the response
+  while (response === null && error === null) {
+    // Sleep for 10ms
+    const start = Date.now();
+    while (Date.now() - start < 10) {
+      // Busy-wait
+    }
+  }
+
+  // Check for errors
+  if (error) {
+    throw error;
+  }
+
+  return response!;
 };
 
 const initialize = async () => {
