@@ -3,6 +3,7 @@
 
 use std::sync::Arc;
 
+use crate::commands::fetch::fetch_page;
 use crate::commands::galxe::galxe_generate_proof;
 use crate::commands::hardware::hardware_get_summary;
 use crate::commands::shinkai_node_manager_commands::{
@@ -85,6 +86,7 @@ fn main() {
             shinkai_node_get_default_model,
             hardware_get_summary,
             galxe_generate_proof,
+            fetch_page,
         ])
         .setup(|app| {
             let app_resource_dir = app.path().resource_dir()?;

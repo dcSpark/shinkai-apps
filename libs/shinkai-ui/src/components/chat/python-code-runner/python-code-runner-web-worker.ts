@@ -1,4 +1,5 @@
 /* eslint-disable no-restricted-globals */
+import { invoke } from '@tauri-apps/api/core';
 import { loadPyodide, PyodideInterface } from 'pyodide';
 
 export type CodeOutput = {
@@ -45,8 +46,57 @@ import plotly.io as pio
 import json
 import array
 
+import ssl
 import pyodide_http
 pyodide_http.patch_all()
+
+import asyncio
+
+async def async_custom_fetch(url):
+    try:
+        response_text = await custom_fetch(url)
+        print('response_text ', response_text)
+        return response_text.encode('utf-8')
+    except Exception as e:
+        print(f"async_custom_fetch error: {e}")
+        raise
+
+def sync_custom_fetch(url):
+    loop = asyncio.get_event_loop()
+    task = loop.create_task(async_custom_fetch(url))
+    try:
+        loop.run_until_complete(task)
+        if task.done() and not task.cancelled():
+            return task.result()
+        else:
+            print("sync_custom_fetch: Task did not complete successfully.")
+            return b''
+    except Exception as e:
+        print(f"sync_custom_fetch exception: {e}")
+        return b''
+
+# Replace fetch.get with custom_fetch
+import requests
+from requests.models import Response
+
+class CustomSession(requests.Session):
+    def request(self, method, url, *args, **kwargs):
+        # Use the custom_fetch function to get the response text
+        response_content = sync_custom_fetch(url)
+
+        # Create a new Response object
+        response = Response()
+
+        # Set the response content
+        response._content = response_content
+
+        # Set the status code (assuming success for this mock)
+        response.status_code = 200
+
+        return response
+
+# Override the default requests.get with our custom session's get method
+requests.get = CustomSession().get
 
 import matplotlib
 matplotlib.use("AGG")
@@ -73,12 +123,12 @@ try:
         output = json.dumps(last_var)
     else:
         output = mystdout.getvalue().strip()
-    
+
     for var_name, var_value in local_scope.items():
         if isinstance(var_value, go.Figure):
             figures.append({ 'type': 'plotly', 'data': pio.to_json(var_value) })
         if isinstance(var_value, pd.DataFrame):
-            figures.append({ 'type': 'html', 'data': capture_df_display(var_value) })        
+            figures.append({ 'type': 'html', 'data': capture_df_display(var_value) })
 
 except Exception as e:
     outputError = str(e)
@@ -128,6 +178,7 @@ const installDependencies = async (code: string): Promise<void> => {
   console.time('install micropip dependencies');
   await pyodide.loadPackage(['micropip']);
   const micropip = pyodide.pyimport('micropip');
+  micropip.install('pyodide-http>=0.2.1');
   const codeDependencies = [
     // Our code wrapper constains dependencies so we need to install them
     ...(await findImportsFromCodeString(wrapCode(''))),
@@ -153,6 +204,40 @@ const run = async (code: string) => {
   return { rawOutput: output, figures: JSON.parse(figures) };
 };
 
+/**
+ * Fetches a web page by invoking the Tauri backend command.
+ *
+ * @param url - The URL of the page to fetch.
+ * @returns A promise that resolves to the page's body as a string.
+ */
+const fetchPage = async (url: string): Promise<string> => {
+  console.log('> fetching page', url);
+  try {
+    const response = (await invoke('fetch_page', { url })) as {
+      status: number;
+      headers: Record<string, string[]>;
+      body: string;
+    };
+
+    console.log('> fetchpage response: ', response);
+
+    // // Hardcoded response message
+    // const response = {
+    //   status: 200,
+    //   headers: { 'Content-Type': ['text/html'] },
+    //   body: '<html><body><h1>Hardcoded Page</h1></body></html>',
+    // };
+
+    if (response.status >= 200 && response.status < 300) {
+      return response.body;
+    } else {
+      throw new Error(`HTTP Error: ${response.status}`);
+    }
+  } catch (error) {
+    throw new Error(`Failed to fetch page: ${error}`);
+  }
+};
+
 const initialize = async () => {
   console.time('initialize');
   pyodide = await loadPyodide({
@@ -167,6 +252,10 @@ const initialize = async () => {
     },
     fullStdLib: false,
   });
+  console.log('Pyodide initialized');
+  // **Inject fetchPage into Python's global scope**
+  pyodide.globals.set('custom_fetch', fetchPage);
+
   console.timeEnd('initialize');
 };
 
