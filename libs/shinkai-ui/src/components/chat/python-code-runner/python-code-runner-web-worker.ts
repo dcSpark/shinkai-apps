@@ -37,7 +37,6 @@ const stderr: string[] = [];
 const wrapCode = (code: string): string => {
   const wrappedCode = `
 import sys
-from io import StringIO
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
@@ -51,10 +50,6 @@ pyodide_http.patch_all()
 import matplotlib
 matplotlib.use("AGG")
 
-# Redirect stdout to capture prints
-old_stdout = sys.stdout
-mystdout = sys.stdout = StringIO()
-
 # Function to capture DataFrame display as HTML
 def capture_df_display(df):
     return df.to_html()
@@ -62,19 +57,26 @@ def capture_df_display(df):
 output = None
 outputError = None
 figures = []
-local_scope = {}
+
+def execute_user_code():
+${code
+  .split('\n')
+  .map((line) => `    ${line}`)
+  .join('\n')}
+    return locals()       
+
 try:
-    exec("""${code.replace(/"""/g, '\\"\\"\\"')}""", globals(), local_scope)
+    user_code_result = execute_user_code()
     # Capture the last variable in the scope
-    last_var = list(local_scope.values())[-1] if local_scope else None
+    last_var = list(user_code_result.values())[-1] if user_code_result else None
     if isinstance(last_var, pd.DataFrame):
         output = capture_df_display(last_var)
     elif isinstance(last_var, (str, int, float, list, dict)):
         output = json.dumps(last_var)
     else:
-        output = mystdout.getvalue().strip()
+        output = ''
     
-    for var_name, var_value in local_scope.items():
+    for var_name, var_value in user_code_result.items():
         if isinstance(var_value, go.Figure):
             figures.append({ 'type': 'plotly', 'data': pio.to_json(var_value) })
         if isinstance(var_value, pd.DataFrame):
@@ -83,11 +85,10 @@ try:
 except Exception as e:
     outputError = str(e)
 
-# Reset stdout
-sys.stdout = old_stdout
 figures = json.dumps(figures)
 (output, outputError, figures)
     `;
+  console.log('Running code:', wrappedCode);
   return wrappedCode;
 };
 
