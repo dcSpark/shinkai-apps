@@ -347,7 +347,7 @@ const ChatLayout = () => {
 
   return (
     <div className={cn('flex h-screen')}>
-      <AnimatePresence>
+      <AnimatePresence initial={false}>
         {!isChatSidebarCollapsed && (
           <motion.div
             animate={{ width: 240, opacity: 1 }}
@@ -356,7 +356,7 @@ const ChatLayout = () => {
             initial={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="flex h-full w-[240px] flex-col px-2 py-4">
+            <div className="flex h-full w-[240px] flex-col px-4 py-4">
               <div className="mb-2 flex items-center justify-between gap-2">
                 <h2>{t('chat.chats')}</h2>
 
