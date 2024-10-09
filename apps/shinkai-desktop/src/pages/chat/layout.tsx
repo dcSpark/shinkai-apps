@@ -346,138 +346,135 @@ const ChatLayout = () => {
   }, [inboxes]);
 
   return (
-    <div
-      className={cn(
-        'grid h-screen w-full',
-        isChatSidebarCollapsed ? 'grid-cols-1' : 'grid-cols-[auto,1fr]',
-      )}
-    >
-      <AnimatePresence initial={false} mode="popLayout">
+    <div className={cn('flex h-screen')}>
+      <AnimatePresence initial={false}>
         {!isChatSidebarCollapsed && (
           <motion.div
             animate={{ width: 240, opacity: 1 }}
-            className="flex h-full flex-col overflow-hidden border-r border-gray-300 px-2 py-4"
+            className="flex h-full flex-col overflow-hidden border-r border-gray-300"
             exit={{ width: 0, opacity: 0 }}
             initial={{ width: 0, opacity: 0 }}
-            transition={{ type: 'spring', duration: 0.3, bounce: 0.1 }}
+            transition={{ duration: 0.3 }}
           >
-            <div className="mb-2 flex items-center justify-between gap-2 px-2 py-2">
-              <h2>{t('chat.chats')}</h2>
+            <div className="flex h-full w-[240px] flex-col px-3 py-4">
+              <div className="mb-2 flex items-center justify-between gap-2">
+                <h2>{t('chat.chats')}</h2>
 
-              <TooltipProvider delayDuration={0}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      className="h-8 w-8"
-                      onClick={() => {
-                        resetJobScope();
-                        setWorkflowSelected(undefined);
-                        setPromptSelected(undefined);
+                <TooltipProvider delayDuration={0}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        className="h-8 w-8"
+                        onClick={() => {
+                          resetJobScope();
+                          setWorkflowSelected(undefined);
+                          setPromptSelected(undefined);
 
-                        const element = document.querySelector(
-                          '[contenteditable="true"]',
-                        ) as HTMLDivElement;
-                        if (element) {
-                          element?.focus?.();
-                        }
+                          const element = document.querySelector(
+                            '#chat-input',
+                          ) as HTMLDivElement;
+                          if (element) {
+                            element?.focus?.();
+                          }
 
-                        navigate('/inboxes');
-                      }}
-                      size="icon"
-                      variant="tertiary"
+                          navigate('/inboxes');
+                        }}
+                        size="icon"
+                        variant="tertiary"
+                      >
+                        <CreateAIIcon className="text-gray-80 h-[18px] w-[18px]" />
+                        <span className="sr-only">{t('chat.create')}</span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipPortal>
+                      <TooltipContent
+                        align="center"
+                        className="flex flex-col items-center gap-1"
+                        side="bottom"
+                      >
+                        <span>{t('chat.create')}</span>
+                        <div className="text-gray-80 flex items-center justify-center gap-2 text-center">
+                          <span>⌘</span>
+                          <span>N</span>
+                        </div>
+                      </TooltipContent>
+                    </TooltipPortal>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              <ScrollArea>
+                <Tabs defaultValue="actives">
+                  <TabsList className="grid w-full grid-cols-2 bg-transparent">
+                    <TabsTrigger
+                      className="flex items-center gap-1.5"
+                      value="actives"
                     >
-                      <CreateAIIcon className="text-gray-80 h-[18px] w-[18px]" />
-                      <span className="sr-only">{t('chat.create')}</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipPortal>
-                    <TooltipContent
-                      align="center"
-                      className="flex flex-col items-center gap-1"
-                      side="right"
+                      <ActiveIcon className="h-4 w-4" />
+                      {t('chat.actives.label')}
+                    </TabsTrigger>
+                    <TabsTrigger
+                      className="flex items-center gap-1.5"
+                      value="archives"
                     >
-                      <span>{t('chat.create')}</span>
-                      <div className="text-gray-80 flex items-center justify-center gap-2 text-center">
-                        <span>⌘</span>
-                        <span>N</span>
-                      </div>
-                    </TooltipContent>
-                  </TooltipPortal>
-                </Tooltip>
-              </TooltipProvider>
+                      <ArchiveIcon className="h-4 w-4" />
+                      {t('chat.archives.label')}
+                    </TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="actives">
+                    <div className="space-y-1">
+                      {isPending &&
+                        Array.from({ length: 5 }).map((_, index) => (
+                          <Skeleton
+                            className="h-11 w-full shrink-0 rounded-md bg-gray-300"
+                            key={index}
+                          />
+                        ))}
+
+                      {isSuccess &&
+                        activesInboxes?.length > 0 &&
+                        activesInboxes.map((inbox) => (
+                          <MessageButton
+                            inbox={inbox}
+                            key={inbox.inbox_id}
+                            to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
+                          />
+                        ))}
+                      {isSuccess && activesInboxes?.length === 0 && (
+                        <p className="text-gray-80 py-3 text-center text-xs">
+                          {t('chat.actives.notFound')}{' '}
+                        </p>
+                      )}
+                    </div>
+                  </TabsContent>
+                  <TabsContent value="archives">
+                    <div className="space-y-1">
+                      {isPending &&
+                        Array.from({ length: 5 }).map((_, index) => (
+                          <Skeleton
+                            className="h-11 w-full shrink-0 rounded-md bg-gray-300"
+                            key={index}
+                          />
+                        ))}
+                      {isSuccess &&
+                        archivesInboxes.length > 0 &&
+                        archivesInboxes.map((inbox) => (
+                          <MessageButton
+                            inbox={inbox}
+                            isArchivedMessage
+                            key={inbox.inbox_id}
+                            to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
+                          />
+                        ))}
+                      {isSuccess && archivesInboxes?.length === 0 && (
+                        <p className="text-gray-80 py-3 text-center text-xs">
+                          {t('chat.archives.notFound')}{' '}
+                        </p>
+                      )}
+                    </div>
+                  </TabsContent>
+                </Tabs>
+              </ScrollArea>
             </div>
-            <ScrollArea>
-              <Tabs defaultValue="actives">
-                <TabsList className="grid w-full grid-cols-2 bg-transparent">
-                  <TabsTrigger
-                    className="flex items-center gap-1.5"
-                    value="actives"
-                  >
-                    <ActiveIcon className="h-4 w-4" />
-                    {t('chat.actives.label')}
-                  </TabsTrigger>
-                  <TabsTrigger
-                    className="flex items-center gap-1.5"
-                    value="archives"
-                  >
-                    <ArchiveIcon className="h-4 w-4" />
-                    {t('chat.archives.label')}
-                  </TabsTrigger>
-                </TabsList>
-                <TabsContent value="actives">
-                  <div className="space-y-1">
-                    {isPending &&
-                      Array.from({ length: 5 }).map((_, index) => (
-                        <Skeleton
-                          className="h-11 w-full shrink-0 rounded-md bg-gray-300"
-                          key={index}
-                        />
-                      ))}
-
-                    {isSuccess &&
-                      activesInboxes?.length > 0 &&
-                      activesInboxes.map((inbox) => (
-                        <MessageButton
-                          inbox={inbox}
-                          key={inbox.inbox_id}
-                          to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
-                        />
-                      ))}
-                    {isSuccess && activesInboxes?.length === 0 && (
-                      <p className="text-gray-80 py-3 text-center text-xs">
-                        {t('chat.actives.notFound')}{' '}
-                      </p>
-                    )}
-                  </div>
-                </TabsContent>
-                <TabsContent value="archives">
-                  <div className="space-y-1">
-                    {isPending &&
-                      Array.from({ length: 5 }).map((_, index) => (
-                        <Skeleton
-                          className="h-11 w-full shrink-0 rounded-md bg-gray-300"
-                          key={index}
-                        />
-                      ))}
-                    {isSuccess &&
-                      archivesInboxes.length > 0 &&
-                      archivesInboxes.map((inbox) => (
-                        <MessageButton
-                          inbox={inbox}
-                          isArchivedMessage
-                          key={inbox.inbox_id}
-                          to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
-                        />
-                      ))}
-                    {isSuccess && archivesInboxes?.length === 0 && (
-                      <p className="text-gray-80 py-3 text-center text-xs">
-                        {t('chat.archives.notFound')}{' '}
-                      </p>
-                    )}
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </ScrollArea>
           </motion.div>
         )}
       </AnimatePresence>

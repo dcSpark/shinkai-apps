@@ -228,17 +228,6 @@ export const Message = ({
                 {message.content ? (
                   <Fragment>
                     <MarkdownPreview
-                      components={{
-                        a: ({ node, ...props }) => (
-                          // eslint-disable-next-line jsx-a11y/anchor-has-content
-                          <a {...props} target="_blank" />
-                        ),
-                        table: ({ node, ...props }) => (
-                          <div className="mb-2 size-full overflow-x-auto">
-                            <table className="w-full" {...props} />
-                          </div>
-                        ),
-                      }}
                       source={extractErrorPropertyOrContent(
                         message.content,
                         'error_message',
