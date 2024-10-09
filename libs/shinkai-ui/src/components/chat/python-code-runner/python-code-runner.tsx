@@ -1,5 +1,6 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useMutation, UseMutationOptions } from '@tanstack/react-query';
+import { invoke } from '@tauri-apps/api/core';
 import { AnimatePresence, motion } from 'framer-motion';
 
 import { Button } from '../../button';
@@ -14,38 +15,77 @@ type PythonCodeRunnerProps = {
   code: string;
 };
 
+// Define more specific message types
+type FetchPageMessage = {
+  type: 'fetch-page';
+  meta: string; // URL
+};
+
+type RunDoneMessage = {
+  type: 'run-done';
+  payload: RunResult;
+};
+
+type WorkerMessage = FetchPageMessage | RunDoneMessage;
+
+// Type guard functions
+function isFetchPageMessage(message: WorkerMessage): message is FetchPageMessage {
+  return message.type === 'fetch-page';
+}
+
+function isRunDoneMessage(message: WorkerMessage): message is RunDoneMessage {
+  return message.type === 'run-done';
+}
+
 export const usePythonRunnerRunMutation = (
   options?: UseMutationOptions<RunResult, Error, { code: string }>,
 ) => {
   const response = useMutation({
     mutationFn: async (params: { code: string }): Promise<RunResult> => {
       const worker = new PythonRunnerWorker();
-      worker.postMessage({ type: 'run', payload: { code: params.code } });
-      const result: RunResult = await new Promise<RunResult>(
-        (resolve, reject) => {
-          const timeout = setTimeout(() => {
-            reject(new Error('execution timed out'));
-          }, 30000);
-          worker.onmessage = (event: {
-            data: PythonCodeRunnerWebWorkerMessage;
-          }) => {
-            if (event.data.type === 'run-done') {
-              clearTimeout(timeout);
-              console.log('worker event', event);
-              resolve(event.data.payload);
+
+      return new Promise<RunResult>((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(new Error('execution timed out'));
+        }, 30000);
+
+        worker.onmessage = async (event: { data: WorkerMessage }) => {
+          if (isFetchPageMessage(event.data)) {
+            try {
+              console.log('fetching page', event.data.meta);
+              const url = event.data.meta;
+              const response = await invoke<{ status: number; headers: Record<string, string[]>; body: string }>('fetch_page', { url });
+              console.log('fetch response', response);
+              worker.postMessage({
+                type: 'fetch-page-response',
+                meta: url,
+                payload: response,
+              });
+            } catch (error) {
+              console.error('error fetching page', error);
+              worker.postMessage({
+                type: 'fetch-page-response',
+                meta: event.data.meta,
+                payload: { status: 500, headers: {}, body: `Failed to fetch page: ${error}` },
+              });
             }
-          };
-          worker.onerror = (error: { message: string }) => {
+          } else if (isRunDoneMessage(event.data)) {
             clearTimeout(timeout);
-            console.log('worker error', error);
-            reject(new Error(`worker error: ${error.message}`));
-          };
-        },
-      ).finally(() => {
+            console.log('worker event', event);
+            resolve(event.data.payload);
+          }
+        };
+
+        worker.onerror = (error: { message: string }) => {
+          clearTimeout(timeout);
+          console.log('worker error', error);
+          reject(new Error(`worker error: ${error.message}`));
+        };
+
+        worker.postMessage({ type: 'run', payload: { code: params.code } });
+      }).finally(() => {
         worker.terminate();
       });
-      console.log('mutation run result', result);
-      return result;
     },
     ...options,
     onSuccess: (...onSuccessParameters) => {

@@ -1,5 +1,4 @@
 /* eslint-disable no-restricted-globals */
-import { invoke } from '@tauri-apps/api/core';
 import { loadPyodide, PyodideInterface } from 'pyodide';
 
 export type CodeOutput = {
@@ -205,37 +204,36 @@ const run = async (code: string) => {
 };
 
 /**
- * Fetches a web page by invoking the Tauri backend command.
+ * Fetches a web page by communicating with the main thread instead of directly invoking Tauri's `invoke`.
  *
  * @param url - The URL of the page to fetch.
  * @returns A promise that resolves to the page's body as a string.
  */
-const fetchPage = async (url: string): Promise<string> => {
-  console.log('> fetching page', url);
-  try {
-    const response = (await invoke('fetch_page', { url })) as {
-      status: number;
-      headers: Record<string, string[]>;
-      body: string;
+const fetchPage = (url: string): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    // Listen for the main thread's response
+    const handleMessage = (event: MessageEvent) => {
+      console.log('fetch-page-response (worked) ', event.data);
+      if (event.data?.type === 'fetch-page-response' && event.data.meta === url) {
+        console.log('fetch-page-response (worked) ', event.data);
+        if (event.data.payload.status >= 200 && event.data.payload.status < 300) {
+          resolve(event.data.payload.body);
+        } else {
+          reject(new Error(`HTTP Error: ${event.data.payload.status}`));
+        }
+        // Clean up the event listener after receiving the response
+        self.removeEventListener('message', handleMessage);
+      }
     };
 
-    console.log('> fetchpage response: ', response);
+    self.addEventListener('message', handleMessage);
 
-    // // Hardcoded response message
-    // const response = {
-    //   status: 200,
-    //   headers: { 'Content-Type': ['text/html'] },
-    //   body: '<html><body><h1>Hardcoded Page</h1></body></html>',
-    // };
-
-    if (response.status >= 200 && response.status < 300) {
-      return response.body;
-    } else {
-      throw new Error(`HTTP Error: ${response.status}`);
-    }
-  } catch (error) {
-    throw new Error(`Failed to fetch page: ${error}`);
-  }
+    // Send a message to the main thread to perform the fetch
+    self.postMessage({
+      type: 'fetch-page',
+      meta: url, // Identifier to match the response
+    });
+  });
 };
 
 const initialize = async () => {
