@@ -213,7 +213,7 @@ const App = () => {
                     shinkaiNodeIsRunning
                   }
                   onClick={() => {
-                    console.log('SPAWNING');
+                    console.log('spawning');
                     shinkaiNodeSpawn();
                   }}
                   variant={'default'}
