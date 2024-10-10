@@ -1,0 +1,15 @@
+{
+  "identifier": "coordinator",
+  "description": "permissions for coordinator window",
+  "local": true,
+  "windows": [
+    "coordinator"
+  ],
+  "permissions": [
+    "core:event:allow-listen",
+    "core:event:allow-unlisten",
+    "core:event:allow-emit",
+    "log:default"
+  ],
+  "commands.allow": []
+}

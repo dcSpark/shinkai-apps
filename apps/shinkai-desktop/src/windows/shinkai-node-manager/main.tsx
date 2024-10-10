@@ -72,10 +72,10 @@ import {
 } from '../../lib/shinkai-node-manager/shinkai-node-manager-toasts-utils';
 import { useAuth } from '../../store/auth';
 import { useShinkaiNodeManager } from '../../store/shinkai-node-manager';
-import { useSyncStorage } from '../../store/sync-utils';
+import { useSyncStorageSecondary } from '../../store/sync-utils';
 
 const App = () => {
-  useSyncStorage();
+  useSyncStorageSecondary();
   const auth = useAuth((auth) => auth.auth);
   const setLogout = useAuth((auth) => auth.setLogout);
   const { setShinkaiNodeOptions } = useShinkaiNodeManager();
