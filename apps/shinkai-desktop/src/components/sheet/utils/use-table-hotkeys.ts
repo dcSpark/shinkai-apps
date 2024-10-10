@@ -1,5 +1,6 @@
 import { FormattedRow } from '@shinkai_network/shinkai-node-state/lib/queries/getSheet/types';
 import type { Column, Row } from '@tanstack/react-table';
+import { warn } from '@tauri-apps/plugin-log';
 import { useHotkeys } from 'react-hotkeys-hook';
 
 import { useSheetProjectStore } from '../context/table-context';
@@ -54,7 +55,9 @@ const useTableHotkeys = ({ rows, leafColumns }: Props) => {
       const colIdx = leafColumns.findIndex((c) => c.id === colId);
 
       if (rowIdx === -1 || colIdx === -1) {
-        console.warn('Could not find row/col for cell', selectedCell);
+        warn(
+          `Could not find row/col for cell rowId:${selectedCell.rowId} colId:${selectedCell.columnId}`,
+        );
         return;
       }
 

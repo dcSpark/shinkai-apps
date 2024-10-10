@@ -10,8 +10,8 @@ You can find it <a href="https://github.com/dcSpark/shinkai-node">here</a>.</p><
 
 [![Mutable.ai Auto Wiki](https://img.shields.io/badge/Auto_Wiki-Mutable.ai-blue)](https://wiki.mutable.ai/dcSpark/shinkai-apps)
 
-
-https://github.com/dcSpark/shinkai-apps/assets/46382556/010114fb-0ed4-449a-9f27-a266b22b7bdb
+## Demo
+[![Shinkai Desktop Demo](https://img.youtube.com/vi/v8Ba7S2XMDw/0.jpg)](https://www.youtube.com/watch?v=v8Ba7S2XMDw)
 
 ## Documentation
 
