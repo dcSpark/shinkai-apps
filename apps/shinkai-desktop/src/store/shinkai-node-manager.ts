@@ -1,10 +1,8 @@
-import { invoke } from '@tauri-apps/api/core';
+import { debug } from '@tauri-apps/plugin-log';
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 
 import { ShinkaiNodeOptions } from '../lib/shinkai-node-manager/shinkai-node-manager-client-types';
-import { isLocalShinkaiNode } from '../lib/shinkai-node-manager/shinkai-node-manager-windows-utils';
-import { SetupData, useAuth } from './auth';
 
 type ShinkaiNodeManagerStore = {
   isInUse: boolean | null;
@@ -22,9 +20,11 @@ export const useShinkaiNodeManager = create<ShinkaiNodeManagerStore>()(
         isInUse: false,
         shinkaiNodeOptions: null,
         setShinkaiNodeOptions: (shinkaiNodeOptions) => {
+          debug('setting shinkai-node options');
           set({ shinkaiNodeOptions });
         },
         setIsInUse: (value: boolean) => {
+          debug('setting is in use');
           set({ isInUse: value });
         },
       }),
@@ -34,24 +34,3 @@ export const useShinkaiNodeManager = create<ShinkaiNodeManagerStore>()(
     ),
   ),
 );
-
-useAuth.subscribe((state, prevState) => {
-  handleAuthSideEffect(state.auth, prevState.auth);
-});
-
-const handleAuthSideEffect = async (
-  auth: SetupData | null,
-  prevAuth: SetupData | null,
-) => {
-  // SignOut case
-  if (prevAuth && !auth) {
-    useShinkaiNodeManager.getState().setIsInUse(false);
-    return;
-  }
-  // SignIn
-  if (!prevAuth) {
-    const isLocal = isLocalShinkaiNode(auth?.node_address || '');
-    const isRunning: boolean = await invoke('shinkai_node_is_running');
-    useShinkaiNodeManager.getState().setIsInUse(isLocal && isRunning);
-  }
-};

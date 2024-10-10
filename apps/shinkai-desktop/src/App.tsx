@@ -7,10 +7,10 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import FullPageErrorFallback from './components/error-boundary';
 import { AnalyticsProvider } from './lib/posthog-provider';
 import AppRoutes from './routes';
-import { useSyncStorage } from './store/sync-utils';
+import { useSyncStorageSecondary } from './store/sync-utils';
 
 function App() {
-  useSyncStorage();
+  useSyncStorageSecondary();
   return (
     <I18nProvider>
       <ErrorBoundary FallbackComponent={FullPageErrorFallback}>

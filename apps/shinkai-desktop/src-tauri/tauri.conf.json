@@ -77,6 +77,27 @@
         "create": true
       },
       {
+        "fullscreen": false,
+        "label": "coordinator",
+        "transparent": true,
+        "title": "Coordinator",
+        "width": 720,
+        "height": 470,
+        "resizable": false,
+        "dragDropEnabled": false,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true,
+        "url": "src/windows/coordinator/index.html",
+        "center": true,
+        "skipTaskbar": false,
+        "shadow": false,
+        "decorations": false,
+        "visible": false,
+        "closable": false,
+        "parent": null,
+        "create": true
+      },
+      {
         "label": "shinkai-node-manager",
         "url": "src/windows/shinkai-node-manager/index.html",
         "transparent": true,
