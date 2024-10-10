@@ -47,6 +47,7 @@ export const getChatConversation = async ({
             ? 'https://ui-avatars.com/api/?name=Me&background=313336&color=b0b0b0'
             : 'https://ui-avatars.com/api/?name=S&background=FF7E7F&color=ffffff',
         },
+        toolCalls: message.job_message?.metadata?.function_calls ?? [],
       };
 
       const inbox = message.job_message?.files_inbox;
