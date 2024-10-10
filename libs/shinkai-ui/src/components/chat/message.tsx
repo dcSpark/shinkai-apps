@@ -1,5 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { CheckIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { FormattedChatMessage } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { Edit3, RotateCcw } from 'lucide-react';
@@ -9,8 +11,13 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { appIcon } from '../../assets';
-import { ChatConversationMessage } from '../../helpers';
 import { cn } from '../../utils';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '../accordion';
 import { Avatar, AvatarFallback, AvatarImage } from '../avatar';
 import { Button } from '../button';
 import { CopyToClipboardIcon } from '../copy-to-clipboard-icon';
@@ -50,7 +57,7 @@ const containsPythonCode = (content: string): boolean => {
 
 type MessageProps = {
   isPending?: boolean;
-  message: ChatConversationMessage;
+  message: FormattedChatMessage;
   handleRetryMessage?: () => void;
   disabledRetry?: boolean;
   disabledEdit?: boolean;
@@ -227,6 +234,42 @@ export const Message = ({
               >
                 {message.content ? (
                   <Fragment>
+                    <Accordion type="multiple">
+                      {message.toolCalls &&
+                        message.toolCalls.length > 0 &&
+                        message.toolCalls.map((tool) => (
+                          <AccordionItem
+                            className="mb-2.5 w-[20rem] overflow-hidden rounded-lg bg-gray-500"
+                            key={tool.name}
+                            value={tool.name}
+                          >
+                            <AccordionTrigger className="flex items-center gap-1.5 rounded-lg px-3 py-2 no-underline hover:no-underline">
+                              <div className="flex items-center gap-1.5 rounded-lg">
+                                <CheckIcon />
+                                <span className="text-gray-80 text-xs">
+                                  Used Tool:
+                                </span>
+                                <span className="text-gray-white text-xs">
+                                  {tool.name}
+                                </span>
+                              </div>
+                            </AccordionTrigger>
+                            <AccordionContent className="bg-gray-450 rounded-lg px-3 pb-3 pt-2 text-xs">
+                              {tool.arguments.message && (
+                                <span className="font-medium text-white">
+                                  {tool.name}(
+                                  {Object.keys(tool.arguments).length > 0 && (
+                                    <span className="text-gray-80 font-medium">
+                                      {JSON.stringify(tool.arguments)}
+                                    </span>
+                                  )}
+                                  )
+                                </span>
+                              )}
+                            </AccordionContent>
+                          </AccordionItem>
+                        ))}
+                    </Accordion>
                     <MarkdownPreview
                       source={extractErrorPropertyOrContent(
                         message.content,

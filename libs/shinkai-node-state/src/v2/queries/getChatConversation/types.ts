@@ -29,6 +29,12 @@ export type FormattedChatMessage = {
       preview?: string;
     }[];
   };
+  toolCalls?: {
+    name: string;
+    arguments: {
+      message: string;
+    };
+  }[];
 };
 export type GetChatConversationOutput = FormattedChatMessage[];
 

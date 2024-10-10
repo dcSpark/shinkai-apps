@@ -59,14 +59,28 @@ export type Widget = {
 };
 export type WidgetToolType = keyof Widget;
 export type WidgetToolData = Widget[WidgetToolType];
-
+export type ToolName = string;
 export type WidgetToolState = {
-  name: WidgetToolType;
-  data: WidgetToolData;
+  name: ToolName;
+  args: Tool['args'];
+};
+//TODO: verify tool types
+export type Tool = {
+  toolCallId: string;
+  toolName: ToolName; // todo enum of tools
+  // type based on the tool
+  // args: {"location":"San Francisco","unit":"c" },
+  // result: { t: 21 },
+  args: Record<string, any>;
+  result: Record<string, any>;
+  status: {
+    type: 'running' | 'complete' | 'incomplete' | 'requires_action';
+    reason: string; // 'other' if its incomplete/error
+  };
 };
 
 export type WsMessage = {
-  message_type: 'Stream' | 'ShinkaiMessage' | 'Sheet' | 'Widget';
+  message_type: 'Stream' | 'ShinkaiMessage' | 'Sheet' | 'Tools';
   inbox: string;
   message: string;
   error_message: string;
@@ -77,7 +91,8 @@ export type WsMessage = {
     total_duration: number;
     eval_count: number;
   };
-  widget?: Widget;
+  // widget?: Widget;
+  tools: Tool[];
 };
 
 export type SubmitRegistrationCodeRequest = {

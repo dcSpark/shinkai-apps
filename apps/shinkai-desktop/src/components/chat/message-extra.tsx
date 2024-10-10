@@ -1,7 +1,6 @@
 import {
   PaymentRequest,
-  WidgetToolData,
-  WidgetToolType,
+  ToolName,
 } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import { usePayInvoice } from '@shinkai_network/shinkai-node-state/v2/mutations/payInvoice/usePayInvoice';
 import {
@@ -44,26 +43,26 @@ const formatAmount = (amount: string, decimals = 18): string => {
 
 export default function MessageExtra({
   name,
-  metadata,
+  args,
   onCancel,
 }: {
-  name?: WidgetToolType;
-  metadata?: WidgetToolData;
+  name?: ToolName;
+  args?: Record<string, any>;
   onCancel: () => void;
 }) {
-  if (metadata == null || name == null) return null;
+  if (args == null || name == null) return null;
 
   if (name === 'PaymentRequest') {
-    return <Payment data={metadata} onCancel={onCancel} />;
+    return <Payment args={args} onCancel={onCancel} />;
   }
   return null;
 }
 
 function Payment({
-  data,
+  args,
   onCancel,
 }: {
-  data: PaymentRequest;
+  args: PaymentRequest;
   onCancel: () => void;
 }) {
   const [selectedPlan, setSelectedPlan] = React.useState<
@@ -84,8 +83,8 @@ function Payment({
     },
   });
 
-  const hasPerUse = !!data?.usage_type?.PerUse;
-  const hasDownload = !!data?.usage_type?.Downloadable;
+  const hasPerUse = !!args?.usage_type?.PerUse;
+  const hasDownload = !!args?.usage_type?.Downloadable;
 
   return (
     <motion.div
@@ -110,7 +109,7 @@ function Payment({
                   {/*{data.toolKey}*/}
                 </CardTitle>
                 <CardDescription className="text-center text-xs">
-                  {data.description}
+                  {args.description}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -133,19 +132,19 @@ function Payment({
                         htmlFor="one-time"
                       >
                         <span className="font-clash text-2xl font-semibold">
-                          {data.usage_type.PerUse === 'Free'
+                          {args.usage_type.PerUse === 'Free'
                             ? 'Free'
-                            : 'Payment' in data.usage_type.PerUse
+                            : 'Payment' in args.usage_type.PerUse
                               ? `${formatAmount(
-                                  data.usage_type.PerUse.Payment[0].amount,
-                                  data.usage_type.PerUse.Payment[0].asset
+                                  args.usage_type.PerUse.Payment[0].amount,
+                                  args.usage_type.PerUse.Payment[0].asset
                                     .decimals,
                                 )} ${
-                                  data.usage_type.PerUse.Payment[0].asset
+                                  args.usage_type.PerUse.Payment[0].asset
                                     .asset_id
                                 }
                                   `
-                              : data.usage_type.PerUse.DirectDelegation}
+                              : args.usage_type.PerUse.DirectDelegation}
                         </span>
                         <span className="text-gray-100">one-time use</span>
                       </Label>
@@ -163,20 +162,20 @@ function Payment({
                         htmlFor="download"
                       >
                         <span className="font-clash text-xl font-semibold">
-                          {data.usage_type.Downloadable === 'Free'
+                          {args.usage_type.Downloadable === 'Free'
                             ? 'Free'
-                            : 'Payment' in data.usage_type.Downloadable
+                            : 'Payment' in args.usage_type.Downloadable
                               ? `${formatAmount(
-                                  data.usage_type.Downloadable.Payment[0]
+                                  args.usage_type.Downloadable.Payment[0]
                                     .amount,
-                                  data.usage_type.Downloadable.Payment[0].asset
+                                  args.usage_type.Downloadable.Payment[0].asset
                                     .decimals,
                                 )} ${
-                                  data.usage_type.Downloadable.Payment[0].asset
+                                  args.usage_type.Downloadable.Payment[0].asset
                                     .asset_id
                                 }
                                   `
-                              : data.usage_type.Downloadable.DirectDelegation}
+                              : args.usage_type.Downloadable.DirectDelegation}
                         </span>
                         <span className="text-gray-100">for download</span>
                       </Label>
@@ -187,19 +186,19 @@ function Payment({
                   <div className="flex justify-between text-xs">
                     <span className="text-gray-100">Author</span>
                     <span className="text-white">
-                      {data.invoice.provider_name}
+                      {args.invoice.provider_name}
                     </span>
                   </div>
                   <div className="flex justify-between text-xs">
                     <span className="text-gray-100">Wallet Address</span>
                     <span className="text-white">
-                      {truncateAddress(data.invoice.address.address_id)}
+                      {truncateAddress(args.invoice.address.address_id)}
                     </span>
                   </div>
                   <div className="flex justify-between text-xs">
                     <span className="text-gray-100">Wallet Balances</span>
                     <div className="text-white">
-                      {data.wallet_balances.data.map((balance) => (
+                      {args.wallet_balances.data.map((balance) => (
                         <div
                           className="text-right"
                           key={balance.asset.asset_id}
@@ -231,8 +230,8 @@ function Payment({
                         nodeAddress: auth.node_address,
                         token: auth.api_v2_key,
                         payload: {
-                          invoice_id: data.invoice.invoice_id,
-                          data_for_tool: data.function_args,
+                          invoice_id: args.invoice.invoice_id,
+                          data_for_tool: args.function_args,
                         },
                       });
                     }}
