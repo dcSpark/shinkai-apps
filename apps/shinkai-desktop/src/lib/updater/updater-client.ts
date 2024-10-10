@@ -6,6 +6,7 @@ import {
   useQueryClient,
   UseQueryResult,
 } from '@tanstack/react-query';
+import { debug } from '@tauri-apps/plugin-log';
 import { platform } from '@tauri-apps/plugin-os';
 import { relaunch } from '@tauri-apps/plugin-process';
 import { check, Update } from '@tauri-apps/plugin-updater';
@@ -61,7 +62,7 @@ export const useCheckUpdateQuery = (
         return updateState;
       }
       const update = await check();
-      console.log('check update', update);
+      debug(`check update available:${update?.available}`);
       updateState.state = update?.available ? 'available' : undefined;
       updateState.update = update;
       queryClient.invalidateQueries({ queryKey: ['update_state'] });
@@ -78,11 +79,16 @@ export const useDownloadUpdateMutation = (options?: UseMutationOptions) => {
 
   return useMutation({
     mutationFn: async (): Promise<void> => {
-      if (!updateState.update?.available || updateState.downloadState) {
-        console.log('Update already in progress or not available', updateState);
+      if (!updateState.update?.available) {
+        debug(`update not available`);
         return;
       }
-
+      if (updateState.downloadState) {
+        debug(
+          `update already in progress ${JSON.stringify(updateState.downloadState)}`,
+        );
+        return;
+      }
       try {
         updateState.state = 'downloading';
         queryClient.invalidateQueries({ queryKey: ['update_state'] });
@@ -116,7 +122,6 @@ export const useDownloadUpdateMutation = (options?: UseMutationOptions) => {
                   downloadProgressPercent: newDownloadProgress,
                 },
               };
-              console.log('before download progress', newDownloadProgress);
               break;
             }
             case 'Finished':

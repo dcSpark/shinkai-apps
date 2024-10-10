@@ -1,4 +1,5 @@
 import { Event, EventCallback, listen } from '@tauri-apps/api/event';
+import { warn } from '@tauri-apps/plugin-log';
 import { useEffect, useState } from 'react';
 
 import {
@@ -133,7 +134,7 @@ export const useShinkaiNodeEventsToast = () => {
         pullingModelErrorToast(shinkaiNodeEvent.payload.model);
         break;
       default:
-        console.warn('Unhandled Shinkai Node state change:', event);
+        warn(`unhandled shinkai node state change:${shinkaiNodeEvent.type}`);
     }
   });
   return shinkaiNodeEventState;

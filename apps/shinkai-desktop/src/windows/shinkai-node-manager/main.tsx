@@ -72,11 +72,10 @@ import {
 } from '../../lib/shinkai-node-manager/shinkai-node-manager-toasts-utils';
 import { useAuth } from '../../store/auth';
 import { useShinkaiNodeManager } from '../../store/shinkai-node-manager';
-import { initSyncStorage } from '../../store/sync-utils';
-
-initSyncStorage();
+import { useSyncStorage } from '../../store/sync-utils';
 
 const App = () => {
+  useSyncStorage();
   const auth = useAuth((auth) => auth.auth);
   const setLogout = useAuth((auth) => auth.setLogout);
   const { setShinkaiNodeOptions } = useShinkaiNodeManager();
@@ -214,7 +213,7 @@ const App = () => {
                     shinkaiNodeIsRunning
                   }
                   onClick={() => {
-                    console.log('SPAWNING');
+                    console.log('spawning');
                     shinkaiNodeSpawn();
                   }}
                   variant={'default'}
