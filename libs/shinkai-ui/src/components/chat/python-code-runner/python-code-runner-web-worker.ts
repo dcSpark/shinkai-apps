@@ -47,6 +47,25 @@ import array
 import pyodide_http
 pyodide_http.patch_all()
 
+import requests
+from requests.models import Response
+
+class CustomSession(requests.Session):
+    def request(self, method, url, *args, **kwargs):
+        try:
+            print('Fetching URL:', url)
+            response_content = custom_fetch(url)
+            response = Response()
+            response._content = response_content
+            response.status_code = 200  # Assuming success
+            return response
+        except Exception as e:
+            print(f"CustomSession request error: {e}")
+            raise
+
+# Override the default requests.get with our custom session's get method
+requests.get = CustomSession().get
+
 import matplotlib
 matplotlib.use("AGG")
 
@@ -63,7 +82,7 @@ ${code
   .split('\n')
   .map((line) => `    ${line}`)
   .join('\n')}
-    return locals()       
+    return locals()
 
 try:
     user_code_result = execute_user_code()
@@ -75,12 +94,12 @@ try:
         output = json.dumps(last_var)
     else:
         output = ''
-    
+
     for var_name, var_value in user_code_result.items():
         if isinstance(var_value, go.Figure):
             figures.append({ 'type': 'plotly', 'data': pio.to_json(var_value) })
         if isinstance(var_value, pd.DataFrame):
-            figures.append({ 'type': 'html', 'data': capture_df_display(var_value) })        
+            figures.append({ 'type': 'html', 'data': capture_df_display(var_value) })
 
 except Exception as e:
     outputError = str(e)
@@ -129,6 +148,7 @@ const installDependencies = async (code: string): Promise<void> => {
   console.time('install micropip dependencies');
   await pyodide.loadPackage(['micropip']);
   const micropip = pyodide.pyimport('micropip');
+  micropip.install('pyodide-http>=0.2.1');
   const codeDependencies = [
     // Our code wrapper constains dependencies so we need to install them
     ...(await findImportsFromCodeString(wrapCode(''))),
@@ -154,6 +174,60 @@ const run = async (code: string) => {
   return { rawOutput: output, figures: JSON.parse(figures) };
 };
 
+/**
+ * Synchronously fetches a web page by polling for messages.
+ *
+ * @param url - The URL of the page to fetch.
+ * @returns The page's body as a string.
+ * @throws Will throw an error if the HTTP request fails.
+ */
+const fetchPage = (url: string): string => {
+  let result: string | null = null;
+  let error: Error | null = null;
+
+  const fetchAsync = async (): Promise<void> => {
+    return new Promise((resolve) => {
+      const handleMessage = (event: MessageEvent) => {
+        console.log('> handleMessage', event);
+        if (event.data?.type === 'fetch-page-sync-response' && event.data.meta === url) {
+          if (event.data.payload.status >= 200 && event.data.payload.status < 300) {
+            result = event.data.payload.body;
+          } else {
+            error = new Error(`HTTP Error: ${event.data.payload.status}`);
+          }
+          self.removeEventListener('message', handleMessage);
+          resolve();
+        }
+      };
+
+      self.addEventListener('message', handleMessage);
+
+      self.postMessage({
+        type: 'fetch-page-response',
+        meta: url,
+      });
+    });
+  };
+
+  fetchAsync();
+
+  // Polling loop to wait for the response
+  while (result === null && error === null) {
+    // Sleep for 50ms
+    const start = Date.now();
+    while (Date.now() - start < 50) {
+      // Busy-wait
+    }
+  }
+
+  // Check for errors
+  if (error) {
+    throw error;
+  }
+
+  return result!;
+};
+
 const initialize = async () => {
   console.time('initialize');
   pyodide = await loadPyodide({
@@ -168,6 +242,10 @@ const initialize = async () => {
     },
     fullStdLib: false,
   });
+  console.log('Pyodide initialized');
+  // **Inject fetchPage into Python's global scope**
+  pyodide.globals.set('custom_fetch', fetchPage);
+
   console.timeEnd('initialize');
 };
 
