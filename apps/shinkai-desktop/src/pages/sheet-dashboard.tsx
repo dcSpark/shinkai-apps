@@ -374,7 +374,13 @@ function ImportSheetModal() {
               />
             )}
             <DialogFooter>
-              <Button className="w-full" size="auto" type="submit">
+              <Button
+                className="w-full"
+                disabled={isPendingImportSheet}
+                isLoading={isPendingImportSheet}
+                size="auto"
+                type="submit"
+              >
                 Import
               </Button>
             </DialogFooter>
