@@ -15,7 +15,7 @@ import { submitRegistrationNoCodeError } from '@shinkai_network/shinkai-ui/helpe
 import { useReverseVideoPlayback } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { CheckCircle } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -35,12 +35,17 @@ const GetStartedPage = () => {
   const navigate = useNavigate();
   const { t, Trans } = useTranslation();
   const setAuth = useAuth((state) => state.setAuth);
+  const setLogout = useAuth((state) => state.setLogout);
   const [
     resetStorageBeforeConnectConfirmationPromptOpen,
     setResetStorageBeforeConnectConfirmationPrompt,
   ] = useState(false);
   const shinkaiNodeEventState = useShinkaiNodeEventsToast();
   const videoRef = useReverseVideoPlayback();
+
+  useEffect(() => {
+    setLogout();
+  }, []);
 
   const { encryptionKeys } = useGetEncryptionKeys();
   const setupDataForm = useForm<QuickConnectFormSchema>({
