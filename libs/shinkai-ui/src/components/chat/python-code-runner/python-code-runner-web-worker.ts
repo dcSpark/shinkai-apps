@@ -34,6 +34,27 @@ let pyodide: PyodideInterface;
 const stdout: string[] = [];
 const stderr: string[] = [];
 
+let db: IDBDatabase | null = null;
+
+const openDB = (): Promise<IDBDatabase> => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open('fetchDB', 1);
+
+    request.onupgradeneeded = (event) => {
+      const db = (event.target as IDBOpenDBRequest).result;
+      db.createObjectStore('responses', { keyPath: 'uuid' });
+    };
+
+    request.onsuccess = () => {
+      resolve(request.result);
+    };
+
+    request.onerror = () => {
+      reject(new Error('Failed to open IndexedDB'));
+    };
+  });
+};
+
 const wrapCode = (code: string): string => {
   const wrappedCode = `
 import sys
@@ -43,6 +64,8 @@ import plotly.express as px
 import plotly.io as pio
 import json
 import array
+import time
+import asyncio
 
 import pyodide_http
 pyodide_http.patch_all()
@@ -53,8 +76,32 @@ from requests.models import Response
 class CustomSession(requests.Session):
     def request(self, method, url, *args, **kwargs):
         try:
+            # Call the JavaScript function from Python
+            uuid = "123"
             print('Fetching URL:', url)
-            response_content = custom_fetch(url)
+            # Send fetch request
+            sendFetchPageRequest(url, uuid)
+
+            # Polling loop to check IndexedDB
+            start_time = time.time()
+            timeout = 10  # 10 seconds
+            response_content = None
+
+            def fetch_content():
+                nonlocal response_content
+                promise = readFromIndexedDB(uuid)
+                promise.then(lambda content: setattr(response_content, content)).catch(lambda e: print("Error checking IndexedDB:", e))
+
+                while time.time() - start_time < timeout:
+                    if response_content:
+                        break
+                    # Sleep for 100ms
+                    time.sleep(0.1)
+
+            fetch_content()
+
+            print("Response content:", response_content)
+
             response = Response()
             response._content = response_content
             response.status_code = 200  # Assuming success
@@ -174,58 +221,31 @@ const run = async (code: string) => {
   return { rawOutput: output, figures: JSON.parse(figures) };
 };
 
+
 /**
- * Synchronously fetches a web page by reading from IndexedDB.
+ * Sends a message to the main thread to fetch a page and store it in IndexedDB.
  *
  * @param url - The URL of the page to fetch.
  * @param uuid - The UUID to use for fetching the data from IndexedDB.
- * @returns The page's body as a string.
- * @throws Will throw an error if the data is not found or if there is an IndexedDB error.
  */
-const fetchPage = (url: string): string => {
-  let result: string | null = null;
-  let error: Error | null = null;
-
-  // Generate a UUID
-  const uuid = crypto.randomUUID();
-
-  // Send a message to the main thread to fetch the page and store it in IndexedDB
+const sendFetchPageRequest = (url: string, uuid: string): void => {
   self.postMessage({
     type: 'fetch-page-response',
     meta: url,
     uuid: uuid,
   });
+};
 
-  const openDB = (): IDBDatabase => {
-    const request = indexedDB.open('fetchDB', 1);
-    let db: IDBDatabase | null = null;
-
-    request.onupgradeneeded = (event) => {
-      db = (event.target as IDBOpenDBRequest).result;
-      db.createObjectStore('responses', { keyPath: 'uuid' });
-    };
-
-    request.onsuccess = () => {
-      db = request.result;
-    };
-
-    // Busy-wait until the database is opened
-    const startTime = Date.now();
-    const timeout = 10000; // 10 seconds
-    while (db === null && (Date.now() - startTime) < timeout) {
-      // Sleep for 50ms
-      const start = Date.now();
-      while (Date.now() - start < 50) {
-        // Busy-wait
-      }
-    }
-
-    if (db === null) {
-      throw new Error('Timeout: Failed to open IndexedDB within 10 seconds');
-    }
-
-    return db;
-  };
+/**
+ * Checks IndexedDB for the fetched page data.
+ *
+ * @param uuid - The UUID to use for fetching the data from IndexedDB.
+ * @returns The page's body as a string.
+ * @throws Will throw an error if the data is not found or if there is an IndexedDB error.
+ */
+const checkIndexedDBForPage = (uuid: string): string => {
+  let result: string | null = null;
+  const error: Error | null = null;
 
   const fetchFromIndexedDB = (db: IDBDatabase): void => {
     const transaction = db.transaction('responses', 'readonly');
@@ -233,24 +253,32 @@ const fetchPage = (url: string): string => {
     const getRequest = store.get(uuid);
 
     getRequest.onsuccess = () => {
+      console.log('getRequest: ', getRequest);
       if (getRequest.result) {
         result = getRequest.result.body;
       }
     };
 
     getRequest.onerror = () => {
-      error = new Error('Error fetching data from IndexedDB');
+      // error = new Error('Error fetching data from IndexedDB');
     };
   };
-
-  const db = openDB();
 
   const startTime = Date.now();
   const timeout = 10000; // 10 seconds
 
+  // print if db is loaded
+  console.log('db', db);
+
   // Polling loop to wait for the response
-  while (result === null && error === null && (Date.now() - startTime) < timeout) {
-    fetchFromIndexedDB(db);
+  while (
+    result === null &&
+    error === null &&
+    Date.now() - startTime < timeout
+  ) {
+    if (db) {
+      fetchFromIndexedDB(db);
+    }
 
     // Sleep for 50ms
     const start = Date.now();
@@ -261,10 +289,39 @@ const fetchPage = (url: string): string => {
 
   // Check for timeout
   if (result === null) {
-    throw new Error('Timeout: Failed to fetch data from IndexedDB within 10 seconds');
+    throw new Error(
+      'Timeout: Failed to fetch data from IndexedDB within 10 seconds',
+    );
   }
 
   return result!;
+};
+
+// Function to read from IndexedDB
+const readFromIndexedDB = (uuid: string): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    if (!db) {
+      return reject(new Error('IndexedDB is not initialized'));
+    }
+
+    const transaction = db.transaction('responses', 'readonly');
+    const store = transaction.objectStore('responses');
+    const getRequest = store.get(uuid);
+
+    getRequest.onsuccess = () => {
+      console.log('getRequest.onsuccess: ', getRequest);
+      if (getRequest.result) {
+        resolve(getRequest.result.body);
+      } else {
+        reject(new Error('No data found'));
+      }
+    };
+
+    getRequest.onerror = () => {
+      console.log('getRequest.onerror: ', getRequest);
+      reject(new Error('Error fetching data from IndexedDB'));
+    };
+  });
 };
 
 const initialize = async () => {
@@ -283,7 +340,12 @@ const initialize = async () => {
   });
   console.log('Pyodide initialized');
   // **Inject fetchPage into Python's global scope**
-  pyodide.globals.set('custom_fetch', fetchPage);
+  // pyodide.globals.set('custom_fetch', fetchPage);
+  pyodide.globals.set('sendFetchPageRequest', sendFetchPageRequest);
+  pyodide.globals.set('readFromIndexedDB', readFromIndexedDB);
+
+  // Open the IndexedDB and store it in the global variable
+  db = await openDB();
 
   console.timeEnd('initialize');
 };
