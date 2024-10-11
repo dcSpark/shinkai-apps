@@ -1,6 +1,5 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
-  ToolState,
   WidgetToolState,
   WidgetToolType,
   WsMessage,
@@ -111,76 +110,6 @@ const useWebSocketToolWidget = ({ enabled }: UseWebSocketMessage) => {
   return { readyState, widgetTool, setWidgetTool };
 };
 
-export const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
-  const auth = useAuth((state) => state.auth);
-  const nodeAddressUrl = new URL(auth?.node_address ?? 'http://localhost:9850');
-  const socketUrl = `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`;
-  const { sendMessage, lastMessage, readyState } = useWebSocket(
-    socketUrl,
-    { share: true },
-    enabled,
-  );
-  const { inboxId: encodedInboxId = '' } = useParams();
-  const inboxId = decodeURIComponent(encodedInboxId);
-
-  const [tool, setTool] = useState<ToolState | null>(null);
-
-  useEffect(() => {
-    if (!enabled) return;
-
-    if (lastMessage?.data) {
-      try {
-        const parseData: WsMessage = JSON.parse(lastMessage.data);
-        if (
-          parseData.message_type === 'Widget' &&
-          parseData?.widget?.ToolRequest
-        ) {
-          const tool = parseData.widget.ToolRequest;
-          setTool({
-            name: tool.tool_name,
-            args: tool.args.arguments,
-            status: tool.status.type_,
-          });
-        }
-        // TODO:need to clean up when the tool status type is Complete
-        // setTool(null);
-      } catch (error) {
-        console.error('Failed to parse ws message', error);
-      }
-    }
-  }, [enabled, lastMessage?.data]);
-
-  useEffect(() => {
-    if (!enabled) return;
-    const wsMessage = {
-      subscriptions: [{ topic: 'widget', subtopic: inboxId }],
-      unsubscriptions: [],
-    };
-    const wsMessageString = JSON.stringify(wsMessage);
-    const shinkaiMessage = ShinkaiMessageBuilderWrapper.ws_connection(
-      wsMessageString,
-      auth?.profile_encryption_sk ?? '',
-      auth?.profile_identity_sk ?? '',
-      auth?.node_encryption_pk ?? '',
-      auth?.shinkai_identity ?? '',
-      auth?.profile ?? '',
-      auth?.shinkai_identity ?? '',
-      '',
-    );
-    sendMessage(shinkaiMessage);
-  }, [
-    auth?.node_encryption_pk,
-    auth?.profile,
-    auth?.profile_encryption_sk,
-    auth?.profile_identity_sk,
-    auth?.shinkai_identity,
-    enabled,
-    inboxId,
-    sendMessage,
-  ]);
-
-  return { readyState, tool, setTool };
-};
 const ChatConversation = () => {
   const { captureAnalyticEvent } = useAnalytics();
   const { t } = useTranslation();
