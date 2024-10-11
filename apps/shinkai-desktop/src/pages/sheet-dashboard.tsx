@@ -297,7 +297,7 @@ function ImportSheetModal() {
 
   const navigate = useNavigate();
 
-  const { mutateAsync: importSheet } = useImportSheet({
+  const { mutateAsync: importSheet, isPending: isPendingImportSheet } = useImportSheet({
     onSuccess: (data) => {
       navigate(`/sheets/${data.sheet_id}`);
     },
