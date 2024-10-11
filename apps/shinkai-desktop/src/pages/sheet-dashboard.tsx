@@ -307,6 +307,11 @@ function ImportSheetModal() {
     const fileSelected = data.file?.[0];
     const fileFormat = fileSelected?.name?.split('.')?.pop();
 
+    if (fileFormat !== 'csv' && fileFormat !== 'xlsx') {
+      toast.error('Invalid file format. Please upload a CSV or XLSX file');
+      return;
+    }
+
     await importSheet({
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
@@ -329,7 +334,7 @@ function ImportSheetModal() {
           Import CSV / XLSX
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="max-w-[500px]">
         <DialogTitle className="pb-0">Import CSV / XLSX</DialogTitle>
         <Form {...importSheetForm}>
           <form
