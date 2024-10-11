@@ -48,13 +48,11 @@ const formatAmount = (amount: string, decimals = 18): string => {
 export default function MessageExtra({
   name,
   args,
-  status,
   onCancel,
 }: {
   name?: ToolName;
   args?: ToolArgs;
   onCancel: () => void;
-  status: ToolStatusType;
 }) {
   if (args == null || name == null) return null;
 
