@@ -182,50 +182,26 @@ const run = async (code: string) => {
  * @throws Will throw an error if the HTTP request fails.
  */
 const fetchPage = (url: string): string => {
-  let result: string | null = null;
-  let error: Error | null = null;
+  const sharedBuffer = new SharedArrayBuffer(1024); // Adjust size as needed
+  const syncArray = new Int32Array(sharedBuffer, 0, 1);
+  const dataArray = new Uint8Array(sharedBuffer, 4);
 
-  const fetchAsync = async (): Promise<void> => {
-    return new Promise((resolve) => {
-      const handleMessage = (event: MessageEvent) => {
-        console.log('> handleMessage', event);
-        if (event.data?.type === 'fetch-page-sync-response' && event.data.meta === url) {
-          if (event.data.payload.status >= 200 && event.data.payload.status < 300) {
-            result = event.data.payload.body;
-          } else {
-            error = new Error(`HTTP Error: ${event.data.payload.status}`);
-          }
-          self.removeEventListener('message', handleMessage);
-          resolve();
-        }
-      };
+  // Post a message to the main thread with the shared buffer
+  self.postMessage({
+    type: 'fetch-page-response',
+    meta: url,
+    sharedBuffer,
+  });
 
-      self.addEventListener('message', handleMessage);
+  // Wait for the main thread to signal completion
+  Atomics.wait(syncArray, 0, 0);
+  console.log('atomic wait done');
 
-      self.postMessage({
-        type: 'fetch-page-response',
-        meta: url,
-      });
-    });
-  };
+  // Convert the binary data to a string
+  const textDecoder = new TextDecoder();
+  const result = textDecoder.decode(dataArray);
 
-  fetchAsync();
-
-  // Polling loop to wait for the response
-  while (result === null && error === null) {
-    // Sleep for 50ms
-    const start = Date.now();
-    while (Date.now() - start < 50) {
-      // Busy-wait
-    }
-  }
-
-  // Check for errors
-  if (error) {
-    throw error;
-  }
-
-  return result!;
+  return result;
 };
 
 const initialize = async () => {

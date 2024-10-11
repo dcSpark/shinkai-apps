@@ -19,6 +19,7 @@ type PythonCodeRunnerProps = {
 type FetchPageMessage = {
   type: 'fetch-page-response';
   meta: string; // URL
+  sharedBuffer: SharedArrayBuffer;
 };
 
 type RunDoneMessage = {
@@ -29,7 +30,9 @@ type RunDoneMessage = {
 type WorkerMessage = FetchPageMessage | RunDoneMessage;
 
 // Type guard functions
-function isFetchPageMessage(message: WorkerMessage): message is FetchPageMessage {
+function isFetchPageMessage(
+  message: WorkerMessage,
+): message is FetchPageMessage {
   return message.type === 'fetch-page-response';
 }
 
@@ -51,23 +54,40 @@ export const usePythonRunnerRunMutation = (
 
         worker.onmessage = async (event: { data: WorkerMessage }) => {
           if (isFetchPageMessage(event.data)) {
+            console.log('fetching page', event.data.meta);
+            const url = event.data.meta;
+
+            // Create a SharedArrayBuffer for synchronization and data transfer
+            const sharedBuffer = event.data.sharedBuffer;
+            const syncArray = new Int32Array(sharedBuffer, 0, 1);
+            const dataArray = new Uint8Array(sharedBuffer, 4);
+
             try {
-              console.log('fetching page', event.data.meta);
-              const url = event.data.meta;
-              const response = await invoke<{ status: number; headers: Record<string, string[]>; body: string }>('fetch_page', { url });
+              const response = await invoke<{
+                status: number;
+                headers: Record<string, string[]>;
+                body: string;
+              }>('fetch_page', { url });
               console.log('fetch response', response);
-              worker.postMessage({
-                type: 'fetch-page-sync-response',
-                meta: url,
-                payload: response,
-              });
+
+              if (response.status >= 200 && response.status < 300) {
+                // Encode the response body into binary data
+                const textEncoder = new TextEncoder();
+                const encodedData = textEncoder.encode(response.body);
+
+                // Copy the encoded data into the shared buffer
+                dataArray.set(encodedData);
+
+                // Signal the worker that the data is ready
+                syncArray[0] = 1;
+                Atomics.notify(syncArray, 0);
+              } else {
+                throw new Error(`HTTP Error: ${response.status}`);
+              }
             } catch (error) {
               console.error('error fetching page', error);
-              worker.postMessage({
-                type: 'fetch-page-sync-response',
-                meta: event.data.meta,
-                payload: { status: 500, headers: {}, body: `Failed to fetch page: ${error}` },
-              });
+              syncArray[0] = -1; // Indicate error
+              Atomics.notify(syncArray, 0);
             }
           } else if (isRunDoneMessage(event.data)) {
             clearTimeout(timeout);
