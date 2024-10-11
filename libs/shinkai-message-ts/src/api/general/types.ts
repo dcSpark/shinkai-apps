@@ -56,31 +56,40 @@ export type PaymentRequest = {
 };
 export type Widget = {
   PaymentRequest?: PaymentRequest;
+  ToolRequest?: Tool;
 };
+export enum ToolStatusType {
+  Running = 'Running',
+  Complete = 'Complete',
+  Incomplete = 'Incomplete',
+  RequiresAction = 'RequiresAction',
+}
+export type ToolArgs = Record<string, any>;
+
 export type WidgetToolType = keyof Widget;
 export type WidgetToolData = Widget[WidgetToolType];
 export type ToolName = string;
 export type WidgetToolState = {
   name: ToolName;
-  args: Tool['args'];
+  args: ToolArgs;
+  status: ToolStatusType;
 };
-//TODO: verify tool types
+
 export type Tool = {
-  toolCallId: string;
-  toolName: ToolName; // todo enum of tools
-  // type based on the tool
-  // args: {"location":"San Francisco","unit":"c" },
-  // result: { t: 21 },
-  args: Record<string, any>;
-  result: Record<string, any>;
+  tool_name: ToolName;
+  args: {
+    name: 'shinkai__perplexity';
+    arguments: ToolArgs;
+  };
+  result?: Record<string, any>;
   status: {
-    type: 'running' | 'complete' | 'incomplete' | 'requires_action';
-    reason: string; // 'other' if its incomplete/error
+    type_: ToolStatusType;
+    reason?: string;
   };
 };
 
 export type WsMessage = {
-  message_type: 'Stream' | 'ShinkaiMessage' | 'Sheet' | 'Tools';
+  message_type: 'Stream' | 'ShinkaiMessage' | 'Sheet' | 'Widget'; // 'Tools'
   inbox: string;
   message: string;
   error_message: string;
@@ -91,8 +100,7 @@ export type WsMessage = {
     total_duration: number;
     eval_count: number;
   };
-  // widget?: Widget;
-  tools: Tool[];
+  widget?: Widget;
 };
 
 export type SubmitRegistrationCodeRequest = {

@@ -255,7 +255,7 @@ export const Message = ({
                               </div>
                             </AccordionTrigger>
                             <AccordionContent className="bg-gray-450 rounded-lg px-3 pb-3 pt-2 text-xs">
-                              {tool.arguments.message && (
+                              {Object.keys(tool.arguments).length > 0 && (
                                 <span className="font-medium text-white">
                                   {tool.name}(
                                   {Object.keys(tool.arguments).length > 0 && (

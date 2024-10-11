@@ -1,6 +1,9 @@
+import { CheckIcon } from '@radix-ui/react-icons';
 import {
   PaymentRequest,
+  ToolArgs,
   ToolName,
+  ToolStatusType,
 } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import { usePayInvoice } from '@shinkai_network/shinkai-node-state/v2/mutations/payInvoice/usePayInvoice';
 import {
@@ -17,6 +20,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CheckCircle, Loader2, XCircle } from 'lucide-react';
+import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import React from 'react';
 
 import { useAuth } from '../../store/auth';
@@ -44,11 +48,13 @@ const formatAmount = (amount: string, decimals = 18): string => {
 export default function MessageExtra({
   name,
   args,
+  status,
   onCancel,
 }: {
   name?: ToolName;
-  args?: Record<string, any>;
+  args?: ToolArgs;
   onCancel: () => void;
+  status: ToolStatusType;
 }) {
   if (args == null || name == null) return null;
 
@@ -329,5 +335,53 @@ function Payment({
         </AnimatePresence>
       </Card>
     </motion.div>
+  );
+}
+
+function ToolRequest({
+  name,
+  args,
+  status,
+  onCancel,
+}: {
+  args: ToolArgs;
+  onCancel: () => void;
+  status: ToolStatusType;
+  name: string;
+}) {
+  const renderStatus = () => {
+    if (status === ToolStatusType.Complete) {
+      return <CheckIcon />;
+    }
+    if (status === ToolStatusType.Incomplete) {
+      return <XCircle />;
+    }
+    if (status === ToolStatusType.RequiresAction) {
+      return <InfoCircleIcon />;
+    }
+    return <Loader2 className="h-4 w-4 animate-spin" />;
+  };
+
+  const renderLabelText = () => {
+    if (status === ToolStatusType.Complete) {
+      return 'Tool Used:';
+    }
+    if (status === ToolStatusType.Incomplete) {
+      return 'Incomplete';
+    }
+    if (status === ToolStatusType.RequiresAction) {
+      return 'Requires Action';
+    }
+    return 'Processing Tool:';
+  };
+
+  return (
+    <div className="ml-10 flex items-center gap-1.5 rounded-lg px-3 py-2 no-underline hover:no-underline">
+      <div className="flex items-center gap-1.5 rounded-lg">
+        {renderStatus()}
+        <span className="text-gray-80 text-xs">{renderLabelText()}</span>
+        <span className="text-gray-white text-xs">{name}</span>
+      </div>
+    </div>
   );
 }
