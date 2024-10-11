@@ -1,6 +1,7 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   WidgetToolState,
+  WidgetToolType,
   WsMessage,
 } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import {
@@ -64,12 +65,11 @@ const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
     if (lastMessage?.data) {
       try {
         const parseData: WsMessage = JSON.parse(lastMessage.data);
-        if (parseData.message_type === 'Tools' && parseData?.tools?.length) {
-          //TODO: support array of tools
-          const firstTool = parseData.tools[0];
+        if (parseData.message_type === 'Widget' && parseData?.widget) {
+          const widgetName = Object.keys(parseData.widget)[0];
           setWidgetTool({
-            name: firstTool.toolName,
-            args: firstTool.args,
+            name: widgetName as WidgetToolType,
+            data: parseData.widget[widgetName as WidgetToolType],
           });
         }
       } catch (error) {
@@ -81,7 +81,7 @@ const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
   useEffect(() => {
     if (!enabled) return;
     const wsMessage = {
-      subscriptions: [{ topic: 'tools', subtopic: inboxId }],
+      subscriptions: [{ topic: 'widget', subtopic: inboxId }],
       unsubscriptions: [],
     };
     const wsMessageString = JSON.stringify(wsMessage);
@@ -250,7 +250,7 @@ const ChatConversation = () => {
         }
         messageExtra={
           <MessageExtra
-            args={widgetTool?.args}
+            metadata={widgetTool?.data}
             name={widgetTool?.name}
             onCancel={() => {
               setWidgetTool(null);

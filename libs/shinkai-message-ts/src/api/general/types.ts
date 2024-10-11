@@ -70,6 +70,10 @@ export type WidgetToolType = keyof Widget;
 export type WidgetToolData = Widget[WidgetToolType];
 export type ToolName = string;
 export type WidgetToolState = {
+  name: WidgetToolType;
+  data: WidgetToolData;
+};
+export type WidgetToolaaaState = {
   name: ToolName;
   args: ToolArgs;
   status: ToolStatusType;
@@ -89,7 +93,7 @@ export type Tool = {
 };
 
 export type WsMessage = {
-  message_type: 'Stream' | 'ShinkaiMessage' | 'Sheet' | 'Widget'; // 'Tools'
+  message_type: 'Stream' | 'ShinkaiMessage' | 'Sheet' | 'Widget';
   inbox: string;
   message: string;
   error_message: string;
