@@ -134,10 +134,6 @@ export const Message = ({
     return null;
   }, [message.content]);
 
-  const hasToolProcessing =
-    message.toolCalls &&
-    message.toolCalls.some((tool) => tool.status === ToolStatusType.Running);
-
   return (
     <motion.div
       animate="rest"
@@ -406,7 +402,7 @@ const variants = {
 
 export function ToolCard({
   name,
-  args,
+  // args,
   status,
   toolRouterKey,
 }: {
