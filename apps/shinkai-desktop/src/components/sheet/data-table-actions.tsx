@@ -65,7 +65,7 @@ export function SelectedRowsActions({
   return (
     <motion.div
       animate={{ y: 0 }}
-      className="outline-border z-5 absolute bottom-2 left-1/2 inline-flex -translate-x-1/2 items-center gap-1 overflow-hidden rounded-xl bg-gray-300 px-1.5 py-1.5 shadow-lg outline outline-1 outline-gray-200"
+      className="outline-border absolute bottom-2 left-1/2 z-20 inline-flex translate-x-1/2 items-center gap-1 overflow-hidden rounded-xl bg-gray-300 px-1.5 py-1.5 shadow-lg outline outline-1 outline-gray-200"
       initial={{ y: 100 }}
       transition={{ duration: 0.2 }}
     >
@@ -119,7 +119,7 @@ export function AddRowsAction() {
 
   return (
     <button
-      className="text-gray-80 sticky bottom-0 right-0 z-[10] flex h-8 w-[calc(100%-32px)] min-w-[180px] items-center justify-start gap-1 border border-t-0 bg-gray-500 p-1 transition-colors hover:bg-gray-300"
+      className="text-gray-80 sticky bottom-0 right-0 z-10 flex h-8 w-[calc(100%-32px)] min-w-[180px] items-center justify-start gap-1 border border-t-0 bg-gray-500 p-1 transition-colors hover:bg-gray-300"
       onClick={handleAddRow}
     >
       <span className="flex h-8 shrink-0 items-center justify-center p-1.5">
