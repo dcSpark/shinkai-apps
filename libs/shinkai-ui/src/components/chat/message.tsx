@@ -14,7 +14,8 @@ import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { appIcon } from '../../assets';
+import { appIcon, ToolsIcon } from '../../assets';
+import { formatText } from '../../helpers/format-text';
 import { cn } from '../../utils';
 import {
   Accordion,
@@ -243,22 +244,31 @@ export const Message = ({
                 {message.content ? (
                   <Fragment>
                     {message.toolCalls && message.toolCalls.length > 0 && (
-                      <Accordion type="multiple">
+                      <Accordion
+                        className="space-y-1.5 self-baseline pb-3"
+                        type="multiple"
+                      >
                         {message.toolCalls.map((tool) => {
                           return (
                             <AccordionItem
-                              className="mb-2.5 w-[20rem] overflow-hidden rounded-lg bg-gray-500"
+                              className="bg-app-gradient overflow-hidden rounded-lg"
+                              disabled={tool.status !== ToolStatusType.Complete}
                               key={tool.name}
                               value={tool.name}
                             >
-                              <AccordionTrigger className="flex items-center gap-1.5 rounded-lg px-3 py-2 no-underline hover:no-underline">
+                              <AccordionTrigger
+                                className={cn(
+                                  'min-w-[10rem] py-0 pr-2 no-underline hover:no-underline',
+                                  'transition-colors hover:bg-gray-500 [&>svg]:hidden [&[data-state=open]]:bg-gray-500',
+                                )}
+                              >
                                 <ToolCard
                                   args={tool.args}
                                   name={tool.name}
                                   status={tool.status}
                                 />
                               </AccordionTrigger>
-                              <AccordionContent className="bg-gray-450 rounded-lg px-3 pb-3 pt-2 text-xs">
+                              <AccordionContent className="bg-gray-450 rounded-b-lg px-3 pb-3 pt-2 text-xs">
                                 {Object.keys(tool.args).length > 0 && (
                                   <span className="font-medium text-white">
                                     {tool.name}(
@@ -398,20 +408,20 @@ export function ToolCard({
 }) {
   const renderStatus = () => {
     if (status === ToolStatusType.Complete) {
-      return <CheckIcon />;
+      return <ToolsIcon className="text-brand size-full" />;
     }
     if (status === ToolStatusType.Incomplete) {
-      return <XCircle />;
+      return <XCircle className="text-gray-80 size-full" />;
     }
     if (status === ToolStatusType.RequiresAction) {
-      return <InfoCircleIcon />;
+      return <InfoCircleIcon className="text-gray-80 size-full" />;
     }
-    return <Loader2 className="h-4 w-4 animate-spin" />;
+    return <Loader2 className="text-brand size-full animate-spin" />;
   };
 
   const renderLabelText = () => {
     if (status === ToolStatusType.Complete) {
-      return 'Tool Used:';
+      return 'Tool Used';
     }
     if (status === ToolStatusType.Incomplete) {
       return 'Incomplete';
@@ -419,15 +429,17 @@ export function ToolCard({
     if (status === ToolStatusType.RequiresAction) {
       return 'Requires Action';
     }
-    return 'Processing Tool:';
+    return 'Processing Tool';
   };
 
   return (
-    <div className="ml-10 flex items-center gap-1.5 rounded-lg px-3 py-2 no-underline hover:no-underline">
-      <div className="flex items-center gap-1.5 rounded-lg">
-        {renderStatus()}
+    <div className="flex items-center gap-1 rounded-lg p-[5px]">
+      <div className="size-7 shrink-0 px-1.5">{renderStatus()}</div>
+      <div className="flex items-center gap-1">
         <span className="text-gray-80 text-xs">{renderLabelText()}</span>
-        <span className="text-gray-white text-xs">{name}</span>
+        <span className="text-gray-white text-xs font-semibold">
+          {formatText(name)}
+        </span>
       </div>
     </div>
   );
