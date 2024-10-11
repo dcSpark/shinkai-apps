@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CheckIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   ToolArgs,
@@ -7,7 +6,7 @@ import {
 } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import { FormattedChatMessage } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { format } from 'date-fns';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Edit3, Loader2, RotateCcw, XCircle } from 'lucide-react';
 import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
@@ -397,6 +396,12 @@ export const Message = ({
   );
 };
 
+const variants = {
+  initial: { opacity: 0, y: -25 },
+  visible: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: 25 },
+};
+
 export function ToolCard({
   name,
   args,
@@ -433,14 +438,24 @@ export function ToolCard({
   };
 
   return (
-    <div className="flex items-center gap-1 rounded-lg p-[5px]">
-      <div className="size-7 shrink-0 px-1.5">{renderStatus()}</div>
-      <div className="flex items-center gap-1">
-        <span className="text-gray-80 text-xs">{renderLabelText()}</span>
-        <span className="text-gray-white text-xs font-semibold">
-          {formatText(name)}
-        </span>
-      </div>
-    </div>
+    <AnimatePresence initial={false} mode="popLayout">
+      <motion.div
+        animate="visible"
+        exit="exit"
+        initial="initial"
+        transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
+        variants={variants}
+      >
+        <div className="flex items-center gap-1 p-[5px]">
+          <div className="size-7 shrink-0 px-1.5">{renderStatus()}</div>
+          <div className="flex items-center gap-1">
+            <span className="text-gray-80 text-xs">{renderLabelText()}</span>
+            <span className="text-gray-white text-xs font-semibold">
+              {formatText(name)}
+            </span>
+          </div>
+        </div>
+      </motion.div>
+    </AnimatePresence>
   );
 }
