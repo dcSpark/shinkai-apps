@@ -175,44 +175,83 @@ const run = async (code: string) => {
 };
 
 /**
- * Synchronously fetches a web page by polling for messages.
+ * Synchronously fetches a web page by reading from IndexedDB.
  *
  * @param url - The URL of the page to fetch.
+ * @param uuid - The UUID to use for fetching the data from IndexedDB.
  * @returns The page's body as a string.
- * @throws Will throw an error if the HTTP request fails.
+ * @throws Will throw an error if the data is not found or if there is an IndexedDB error.
  */
 const fetchPage = (url: string): string => {
   let result: string | null = null;
   let error: Error | null = null;
 
-  const fetchAsync = async (): Promise<void> => {
-    return new Promise((resolve) => {
-      const handleMessage = (event: MessageEvent) => {
-        console.log('> handleMessage', event);
-        if (event.data?.type === 'fetch-page-sync-response' && event.data.meta === url) {
-          if (event.data.payload.status >= 200 && event.data.payload.status < 300) {
-            result = event.data.payload.body;
-          } else {
-            error = new Error(`HTTP Error: ${event.data.payload.status}`);
-          }
-          self.removeEventListener('message', handleMessage);
-          resolve();
-        }
-      };
+  // Generate a UUID
+  const uuid = crypto.randomUUID();
 
-      self.addEventListener('message', handleMessage);
+  // Send a message to the main thread to fetch the page and store it in IndexedDB
+  self.postMessage({
+    type: 'fetch-page-response',
+    meta: url,
+    uuid: uuid,
+  });
 
-      self.postMessage({
-        type: 'fetch-page-response',
-        meta: url,
-      });
-    });
+  const openDB = (): IDBDatabase => {
+    const request = indexedDB.open('fetchDB', 1);
+    let db: IDBDatabase | null = null;
+
+    request.onupgradeneeded = (event) => {
+      db = (event.target as IDBOpenDBRequest).result;
+      db.createObjectStore('responses', { keyPath: 'uuid' });
+    };
+
+    request.onsuccess = () => {
+      db = request.result;
+    };
+
+    // Busy-wait until the database is opened
+    const startTime = Date.now();
+    const timeout = 10000; // 10 seconds
+    while (db === null && (Date.now() - startTime) < timeout) {
+      // Sleep for 50ms
+      const start = Date.now();
+      while (Date.now() - start < 50) {
+        // Busy-wait
+      }
+    }
+
+    if (db === null) {
+      throw new Error('Timeout: Failed to open IndexedDB within 10 seconds');
+    }
+
+    return db;
   };
 
-  fetchAsync();
+  const fetchFromIndexedDB = (db: IDBDatabase): void => {
+    const transaction = db.transaction('responses', 'readonly');
+    const store = transaction.objectStore('responses');
+    const getRequest = store.get(uuid);
+
+    getRequest.onsuccess = () => {
+      if (getRequest.result) {
+        result = getRequest.result.body;
+      }
+    };
+
+    getRequest.onerror = () => {
+      error = new Error('Error fetching data from IndexedDB');
+    };
+  };
+
+  const db = openDB();
+
+  const startTime = Date.now();
+  const timeout = 10000; // 10 seconds
 
   // Polling loop to wait for the response
-  while (result === null && error === null) {
+  while (result === null && error === null && (Date.now() - startTime) < timeout) {
+    fetchFromIndexedDB(db);
+
     // Sleep for 50ms
     const start = Date.now();
     while (Date.now() - start < 50) {
@@ -220,9 +259,9 @@ const fetchPage = (url: string): string => {
     }
   }
 
-  // Check for errors
-  if (error) {
-    throw error;
+  // Check for timeout
+  if (result === null) {
+    throw new Error('Timeout: Failed to fetch data from IndexedDB within 10 seconds');
   }
 
   return result!;

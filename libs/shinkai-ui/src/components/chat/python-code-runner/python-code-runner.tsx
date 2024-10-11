@@ -19,6 +19,7 @@ type PythonCodeRunnerProps = {
 type FetchPageMessage = {
   type: 'fetch-page-response';
   meta: string; // URL
+  uuid: string;
 };
 
 type RunDoneMessage = {
@@ -29,7 +30,9 @@ type RunDoneMessage = {
 type WorkerMessage = FetchPageMessage | RunDoneMessage;
 
 // Type guard functions
-function isFetchPageMessage(message: WorkerMessage): message is FetchPageMessage {
+function isFetchPageMessage(
+  message: WorkerMessage,
+): message is FetchPageMessage {
   return message.type === 'fetch-page-response';
 }
 
@@ -54,20 +57,50 @@ export const usePythonRunnerRunMutation = (
             try {
               console.log('fetching page', event.data.meta);
               const url = event.data.meta;
-              const response = await invoke<{ status: number; headers: Record<string, string[]>; body: string }>('fetch_page', { url });
+              const uuid = event.data.uuid;
+              console.log('uuid', uuid);
+
+              const response = await invoke<{
+                status: number;
+                headers: Record<string, string[]>;
+                body: string;
+              }>('fetch_page', { url });
               console.log('fetch response', response);
-              worker.postMessage({
-                type: 'fetch-page-sync-response',
-                meta: url,
-                payload: response,
-              });
+
+              // Write the response to IndexedDB
+              const dbRequest = indexedDB.open('fetchDB', 1);
+
+              dbRequest.onupgradeneeded = (event) => {
+                const db = (event.target as IDBOpenDBRequest).result;
+                db.createObjectStore('responses', { keyPath: 'uuid' });
+              };
+
+              dbRequest.onsuccess = (event) => {
+                const db = (event.target as IDBOpenDBRequest).result;
+                const transaction = db.transaction('responses', 'readwrite');
+                const store = transaction.objectStore('responses');
+
+                // Ensure the object has a uuid
+                const record = { uuid: uuid, body: response.body };
+                console.log('Storing record:', record); // Debugging log
+
+                store.put({ uuid, body: response.body });
+
+                transaction.oncomplete = () => {
+                  console.log('Response written to IndexedDB');
+                };
+
+                transaction.onerror = (event) => {
+                  console.error('Error writing to IndexedDB', event);
+                };
+              };
+
+              dbRequest.onerror = (event) => {
+                console.error('Error opening IndexedDB', event);
+              };
             } catch (error) {
               console.error('error fetching page', error);
-              worker.postMessage({
-                type: 'fetch-page-sync-response',
-                meta: event.data.meta,
-                payload: { status: 500, headers: {}, body: `Failed to fetch page: ${error}` },
-              });
+              // Handle error case if needed
             }
           } else if (isRunDoneMessage(event.data)) {
             clearTimeout(timeout);
