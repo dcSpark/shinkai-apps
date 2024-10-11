@@ -1,10 +1,14 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CheckIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import {
+  ToolArgs,
+  ToolStatusType,
+} from '@shinkai_network/shinkai-message-ts/api/general/types';
 import { FormattedChatMessage } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
-import { Edit3, RotateCcw } from 'lucide-react';
+import { Edit3, Loader2, RotateCcw, XCircle } from 'lucide-react';
 import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -129,6 +133,10 @@ export const Message = ({
     return null;
   }, [message.content]);
 
+  const hasToolProcessing =
+    message.toolCalls &&
+    message.toolCalls.some((tool) => tool.status === ToolStatusType.Running);
+
   return (
     <motion.div
       animate="rest"
@@ -234,42 +242,41 @@ export const Message = ({
               >
                 {message.content ? (
                   <Fragment>
-                    <Accordion type="multiple">
-                      {message.toolCalls &&
-                        message.toolCalls.length > 0 &&
-                        message.toolCalls.map((tool) => (
-                          <AccordionItem
-                            className="mb-2.5 w-[20rem] overflow-hidden rounded-lg bg-gray-500"
-                            key={tool.name}
-                            value={tool.name}
-                          >
-                            <AccordionTrigger className="flex items-center gap-1.5 rounded-lg px-3 py-2 no-underline hover:no-underline">
-                              <div className="flex items-center gap-1.5 rounded-lg">
-                                <CheckIcon />
-                                <span className="text-gray-80 text-xs">
-                                  Used Tool:
-                                </span>
-                                <span className="text-gray-white text-xs">
-                                  {tool.name}
-                                </span>
-                              </div>
-                            </AccordionTrigger>
-                            <AccordionContent className="bg-gray-450 rounded-lg px-3 pb-3 pt-2 text-xs">
-                              {Object.keys(tool.arguments).length > 0 && (
-                                <span className="font-medium text-white">
-                                  {tool.name}(
-                                  {Object.keys(tool.arguments).length > 0 && (
-                                    <span className="text-gray-80 font-medium">
-                                      {JSON.stringify(tool.arguments)}
-                                    </span>
-                                  )}
-                                  )
-                                </span>
-                              )}
-                            </AccordionContent>
-                          </AccordionItem>
-                        ))}
-                    </Accordion>
+                    {message.toolCalls && message.toolCalls.length > 0 && (
+                      <Accordion type="multiple">
+                        {message.toolCalls.map((tool) => {
+                          return (
+                            <AccordionItem
+                              className="mb-2.5 w-[20rem] overflow-hidden rounded-lg bg-gray-500"
+                              key={tool.name}
+                              value={tool.name}
+                            >
+                              <AccordionTrigger className="flex items-center gap-1.5 rounded-lg px-3 py-2 no-underline hover:no-underline">
+                                <ToolCard
+                                  args={tool.args}
+                                  name={tool.name}
+                                  status={tool.status}
+                                />
+                              </AccordionTrigger>
+                              <AccordionContent className="bg-gray-450 rounded-lg px-3 pb-3 pt-2 text-xs">
+                                {Object.keys(tool.args).length > 0 && (
+                                  <span className="font-medium text-white">
+                                    {tool.name}(
+                                    {Object.keys(tool.args).length > 0 && (
+                                      <span className="text-gray-80 font-medium">
+                                        {JSON.stringify(tool.args)}
+                                      </span>
+                                    )}
+                                    )
+                                  </span>
+                                )}
+                              </AccordionContent>
+                            </AccordionItem>
+                          );
+                        })}
+                      </Accordion>
+                    )}
+
                     <MarkdownPreview
                       source={extractErrorPropertyOrContent(
                         message.content,
@@ -379,3 +386,49 @@ export const Message = ({
     </motion.div>
   );
 };
+
+export function ToolCard({
+  name,
+  args,
+  status,
+}: {
+  args: ToolArgs;
+  status: ToolStatusType;
+  name: string;
+}) {
+  const renderStatus = () => {
+    if (status === ToolStatusType.Complete) {
+      return <CheckIcon />;
+    }
+    if (status === ToolStatusType.Incomplete) {
+      return <XCircle />;
+    }
+    if (status === ToolStatusType.RequiresAction) {
+      return <InfoCircleIcon />;
+    }
+    return <Loader2 className="h-4 w-4 animate-spin" />;
+  };
+
+  const renderLabelText = () => {
+    if (status === ToolStatusType.Complete) {
+      return 'Tool Used:';
+    }
+    if (status === ToolStatusType.Incomplete) {
+      return 'Incomplete';
+    }
+    if (status === ToolStatusType.RequiresAction) {
+      return 'Requires Action';
+    }
+    return 'Processing Tool:';
+  };
+
+  return (
+    <div className="ml-10 flex items-center gap-1.5 rounded-lg px-3 py-2 no-underline hover:no-underline">
+      <div className="flex items-center gap-1.5 rounded-lg">
+        {renderStatus()}
+        <span className="text-gray-80 text-xs">{renderLabelText()}</span>
+        <span className="text-gray-white text-xs">{name}</span>
+      </div>
+    </div>
+  );
+}

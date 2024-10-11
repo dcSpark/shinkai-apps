@@ -73,7 +73,7 @@ export type WidgetToolState = {
   name: WidgetToolType;
   data: WidgetToolData;
 };
-export type WidgetToolaaaState = {
+export type ToolState = {
   name: ToolName;
   args: ToolArgs;
   status: ToolStatusType;

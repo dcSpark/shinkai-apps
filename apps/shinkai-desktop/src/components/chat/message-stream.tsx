@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';
 
+import { useWebSocketTools } from '../../pages/chat/chat-conversation';
 import { useAuth } from '../../store/auth';
 
 type AnimationState = {
@@ -215,23 +216,25 @@ export const useWebSocketMessage = ({
 
 export function WebsocketMessage({
   isLoadingMessage,
-  isWsEnabled,
+  // isWsEnabled,
 }: {
   isLoadingMessage: boolean;
   isWsEnabled: boolean;
 }) {
   const { messageContent } = useWebSocketMessage({
-    enabled: isWsEnabled,
+    enabled: true,
   });
+  const { tool } = useWebSocketTools({ enabled: true });
 
   return isLoadingMessage ? (
     <Message
       isPending={isLoadingMessage}
       message={{
+        toolCalls: tool ? [tool] : [],
         parentHash: '',
         inboxId: '',
         hash: '',
-        content: messageContent,
+        content: tool ? '...' : messageContent,
         scheduledTime: new Date().toISOString(),
         isLocal: false,
         workflowName: undefined,

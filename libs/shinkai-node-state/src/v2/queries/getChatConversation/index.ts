@@ -1,3 +1,4 @@
+import { ToolStatusType } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import {
   downloadFileFromInbox,
   getFileNames,
@@ -47,7 +48,13 @@ export const getChatConversation = async ({
             ? 'https://ui-avatars.com/api/?name=Me&background=313336&color=b0b0b0'
             : 'https://ui-avatars.com/api/?name=S&background=FF7E7F&color=ffffff',
         },
-        toolCalls: message.job_message?.metadata?.function_calls ?? [],
+        toolCalls: message.job_message?.metadata?.function_calls.map(
+          (tool) => ({
+            name: tool.name,
+            args: tool.arguments,
+            status: ToolStatusType.Complete, //TODO: fix backend status
+          }),
+        ),
       };
 
       const inbox = message.job_message?.files_inbox;
