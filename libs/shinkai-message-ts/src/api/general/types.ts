@@ -77,15 +77,17 @@ export type ToolState = {
   name: ToolName;
   args: ToolArgs;
   status: ToolStatusType;
+  toolRouterKey: string;
+  result?: string;
 };
 
 export type Tool = {
   tool_name: ToolName;
   args: {
-    name: 'shinkai__perplexity';
+    name: string;
     arguments: ToolArgs;
   };
-  result?: Record<string, any>;
+  result?: { data: { message?: string } };
   status: {
     type_: ToolStatusType;
     reason?: string;

@@ -228,7 +228,7 @@ const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = decodeURIComponent(encodedInboxId);
   const queryClient = useQueryClient();
-
+  const isToolReceived = useRef(false);
   const [tool, setTool] = useState<ToolState | null>(null);
 
   useEffect(() => {
@@ -238,26 +238,34 @@ const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
       try {
         const parseData: WsMessage = JSON.parse(lastMessage.data);
         if (
+          parseData.message_type === 'ShinkaiMessage' &&
+          isToolReceived.current
+        ) {
+          isToolReceived.current = false;
+          const paginationKey = [
+            FunctionKey.GET_CHAT_CONVERSATION_PAGINATION,
+            { inboxId: inboxId as string },
+          ];
+          queryClient.invalidateQueries({ queryKey: paginationKey });
+          setTimeout(() => {
+            setTool(null);
+          }, 1000);
+          return;
+        }
+        if (
           parseData.message_type === 'Widget' &&
           parseData?.widget?.ToolRequest
         ) {
+          isToolReceived.current = true;
           const tool = parseData.widget.ToolRequest;
+
           setTool({
             name: tool.tool_name,
             args: tool.args.arguments,
             status: tool.status.type_,
+            toolRouterKey: '',
+            result: tool.result?.data.message,
           });
-
-          if (tool.status.type_ === 'Complete') {
-            const paginationKey = [
-              FunctionKey.GET_CHAT_CONVERSATION_PAGINATION,
-              { inboxId: inboxId as string },
-            ];
-            queryClient.invalidateQueries({ queryKey: paginationKey });
-            setTimeout(() => {
-              setTool(null);
-            }, 6000);
-          }
         }
       } catch (error) {
         console.error('Failed to parse ws message', error);
@@ -299,13 +307,13 @@ const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
 
 export function WebsocketMessage({
   isLoadingMessage,
-  // isWsEnabled,
+  isWsEnabled,
 }: {
   isLoadingMessage: boolean;
   isWsEnabled: boolean;
 }) {
   const { messageContent } = useWebSocketMessage({
-    enabled: true,
+    enabled: isWsEnabled,
   });
   const { tool } = useWebSocketTools({ enabled: true });
 
@@ -321,7 +329,7 @@ export function WebsocketMessage({
           tool?.status === 'Running'
             ? '...'
             : tool?.status === 'Complete'
-              ? '   '
+              ? 'Getting AI response ...' // trick for now, ollama tool calls only works with stream off
               : messageContent,
         scheduledTime: new Date().toISOString(),
         isLocal: false,
