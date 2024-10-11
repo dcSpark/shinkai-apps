@@ -139,6 +139,7 @@ export type JobMessage = {
       arguments: {
         message: string;
       };
+      tool_router_key: string;
     }[];
   };
 };

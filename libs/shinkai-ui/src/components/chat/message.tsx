@@ -11,6 +11,7 @@ import { Edit3, Loader2, RotateCcw, XCircle } from 'lucide-react';
 import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { Link } from 'react-router-dom';
 import { z } from 'zod';
 
 import { appIcon, ToolsIcon } from '../../assets';
@@ -265,6 +266,7 @@ export const Message = ({
                                   args={tool.args}
                                   name={tool.name}
                                   status={tool.status}
+                                  toolRouterKey={tool.toolRouterKey}
                                 />
                               </AccordionTrigger>
                               <AccordionContent className="bg-gray-450 rounded-b-lg px-3 pb-3 pt-2 text-xs">
@@ -406,10 +408,12 @@ export function ToolCard({
   name,
   args,
   status,
+  toolRouterKey,
 }: {
   args: ToolArgs;
   status: ToolStatusType;
   name: string;
+  toolRouterKey: string;
 }) {
   const renderStatus = () => {
     if (status === ToolStatusType.Complete) {
@@ -450,9 +454,12 @@ export function ToolCard({
           <div className="size-7 shrink-0 px-1.5">{renderStatus()}</div>
           <div className="flex items-center gap-1">
             <span className="text-gray-80 text-xs">{renderLabelText()}</span>
-            <span className="text-gray-white text-xs font-semibold">
+            <Link
+              className="text-gray-white text-xs font-semibold hover:underline"
+              to={`/tools/${toolRouterKey}`}
+            >
               {formatText(name)}
-            </span>
+            </Link>
           </div>
         </div>
       </motion.div>

@@ -37,6 +37,7 @@ export type FormattedChatMessage = {
     name: string;
     args: ToolArgs;
     status: ToolStatusType;
+    toolRouterKey: string;
   }[];
 };
 export type GetChatConversationOutput = FormattedChatMessage[];

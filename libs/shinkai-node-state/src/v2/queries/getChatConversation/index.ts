@@ -53,6 +53,7 @@ export const getChatConversation = async ({
             name: tool.name,
             args: tool.arguments,
             status: ToolStatusType.Complete, //TODO: add from backend status
+            toolRouterKey: tool.tool_router_key,
           }),
         ),
       };
