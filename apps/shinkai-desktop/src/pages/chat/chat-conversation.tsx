@@ -142,6 +142,8 @@ export const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
             status: tool.status.type_,
           });
         }
+        // TODO:need to clean up when the tool status type is Complete
+        // setTool(null);
       } catch (error) {
         console.error('Failed to parse ws message', error);
       }

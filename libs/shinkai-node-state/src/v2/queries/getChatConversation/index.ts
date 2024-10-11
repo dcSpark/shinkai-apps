@@ -52,7 +52,7 @@ export const getChatConversation = async ({
           (tool) => ({
             name: tool.name,
             args: tool.arguments,
-            status: ToolStatusType.Complete, //TODO: fix backend status
+            status: ToolStatusType.Complete, //TODO: add from backend status
           }),
         ),
       };
