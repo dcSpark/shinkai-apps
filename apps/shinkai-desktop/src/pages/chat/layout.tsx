@@ -356,7 +356,7 @@ const ChatLayout = () => {
             initial={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="flex h-full w-[240px] flex-col px-3 py-4">
+            <div className="flex h-full w-[240px] flex-col px-3 py-4 pt-6">
               <div className="mb-2 flex items-center justify-between gap-2">
                 <h2>{t('chat.chats')}</h2>
 

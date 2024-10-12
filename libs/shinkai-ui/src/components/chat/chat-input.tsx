@@ -7,8 +7,40 @@ export interface ChatInputProps
   onSend?: () => void;
 }
 
+export const useAutoResizeTextarea = (
+  ref: React.ForwardedRef<HTMLTextAreaElement>,
+  autoResize = true, //later to unify
+) => {
+  const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  React.useImperativeHandle(ref, () => textAreaRef.current!);
+
+  React.useEffect(() => {
+    const ref = textAreaRef?.current;
+
+    const updateTextareaHeight = () => {
+      if (ref && autoResize) {
+        ref.style.height = 'auto';
+        ref.style.height = ref?.scrollHeight + 'px';
+      }
+    };
+
+    updateTextareaHeight();
+
+    ref?.addEventListener('input', updateTextareaHeight);
+    return () => ref?.removeEventListener('input', updateTextareaHeight);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return { textAreaRef };
+};
+
 const ChatInputBase = React.forwardRef<HTMLTextAreaElement, ChatInputProps>(
   ({ className, onSend, ...props }, ref) => {
+    const { textAreaRef } = useAutoResizeTextarea(ref);
+
     return (
       <textarea
         className={cn(
@@ -22,7 +54,7 @@ const ChatInputBase = React.forwardRef<HTMLTextAreaElement, ChatInputProps>(
             onSend?.();
           }
         }}
-        ref={ref}
+        ref={textAreaRef}
         {...props}
       />
     );

@@ -45,7 +45,7 @@ type UseWebSocketMessage = {
   enabled?: boolean;
 };
 
-const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
+const useWebSocketToolWidget = ({ enabled }: UseWebSocketMessage) => {
   const auth = useAuth((state) => state.auth);
   const nodeAddressUrl = new URL(auth?.node_address ?? 'http://localhost:9850');
   const socketUrl = `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`;
@@ -158,7 +158,7 @@ const ChatConversation = () => {
     return isJobInbox(inboxId) && lastMessage?.isLocal;
   }, [data?.pages, inboxId]);
 
-  const { widgetTool, setWidgetTool } = useWebSocketTools({
+  const { widgetTool, setWidgetTool } = useWebSocketToolWidget({
     enabled: hasProviderEnableTools,
   });
 
