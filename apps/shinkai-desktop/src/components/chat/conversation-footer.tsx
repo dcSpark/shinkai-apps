@@ -274,9 +274,7 @@ function ConversationEmptyFooter() {
     workflowSelected && currentFiles && currentFiles.length > 0;
 
   useEffect(() => {
-    if (promptSelected) {
-      chatForm.setValue('message', promptSelected.prompt);
-    }
+    chatForm.setValue('message', promptSelected?.prompt ?? '');
   }, [chatForm, promptSelected]);
 
   useEffect(() => {
@@ -551,6 +549,9 @@ function ConversationEmptyFooter() {
 function ConversationChatFooter({ inboxId }: { inboxId: string }) {
   const { t } = useTranslation();
   const size = partial({ standard: 'jedec' });
+  const setWorkflowSelected = useWorkflowSelectionStore(
+    (state) => state.setWorkflowSelected,
+  );
 
   const auth = useAuth((state) => state.auth);
   const { captureAnalyticEvent } = useAnalytics();
@@ -595,9 +596,6 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
 
   const workflowSelected = useWorkflowSelectionStore(
     (state) => state.workflowSelected,
-  );
-  const setWorkflowSelected = useWorkflowSelectionStore(
-    (state) => state.setWorkflowSelected,
   );
 
   const currentMessage = useWatch({
