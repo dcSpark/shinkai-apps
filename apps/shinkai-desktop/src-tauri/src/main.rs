@@ -42,6 +42,30 @@ fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_log::Builder::new().build())
         .plugin(tauri_plugin_os::init())
+        .plugin(
+            tauri_plugin_stronghold::Builder::new(|password| {
+                use argon2::{
+                    password_hash::{PasswordHasher, SaltString},
+                    rand_core::OsRng,
+                    Argon2,
+                };
+
+                // Generate a random salt
+                let salt = SaltString::generate(&mut OsRng);
+
+                // Create an Argon2 instance with default parameters
+                let argon2 = Argon2::default();
+
+                // Hash the password
+                let password_hash = argon2
+                    .hash_password(password.as_ref(), &salt)
+                    .expect("failed to hash password");
+
+                // Convert the password hash to a vector of bytes
+                password_hash.hash.unwrap().as_bytes().to_vec()
+            })
+            .build(),
+        )
         .plugin(tauri_plugin_log::Builder::new().build())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_shell::init())
@@ -116,6 +140,13 @@ fn main() {
 
             create_tray(app.handle())?;
 
+            let salt_path = app
+                .path()
+                .app_local_data_dir()
+                .expect("could not resolve app local data path")
+                .join("salt.txt");
+            app.handle()
+                .plugin(tauri_plugin_stronghold::Builder::with_argon2(&salt_path).build())?;
             Ok(())
         })
         .build(tauri::generate_context!())

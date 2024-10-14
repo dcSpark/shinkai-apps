@@ -39,6 +39,8 @@ listeners = "0.2"
 log = "0.4"
 anyhow = "1.0.89"
 uuid = "1.10.0"
+argon2 = "0.5.3"
+rand_core = "0.8"
 
 tauri-plugin-global-shortcut = "2.0.1"
 tauri-plugin-shell = "2.0.1"
@@ -49,6 +51,7 @@ tauri-plugin-fs="2.0.1"
 tauri-plugin-os = "2.0.1"
 tauri-plugin-process = "2.0.1"
 tauri-plugin-log = "2.0.1"
+tauri-plugin-stronghold = "2.0.1"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

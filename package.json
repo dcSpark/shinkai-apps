@@ -52,6 +52,7 @@
     "@tauri-apps/plugin-notification": "^2.0.0-rc.1",
     "@tauri-apps/plugin-os": "^2.0.0-rc.1",
     "@tauri-apps/plugin-process": "^2.0.0-rc.1",
+    "@tauri-apps/plugin-stronghold": "^2.0.0",
     "@tauri-apps/plugin-updater": "^2.0.0-rc.2",
     "@uidotdev/usehooks": "^2.4.1",
     "@uiw/react-markdown-preview": "^5.1.3",
