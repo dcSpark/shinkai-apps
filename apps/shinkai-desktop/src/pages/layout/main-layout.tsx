@@ -343,15 +343,15 @@ export function MainNav() {
     //   href: '/my-subscriptions',
     //   icon: <MySubscriptionsIcon className="h-5 w-5" />,
     // },
+    {
+      title: 'Shinkai Sheet',
+      href: '/sheets',
+      icon: <SheetIcon className="h-5 w-5" />,
+    },
     optInExperimental && {
       title: 'Playground',
       href: '/workflow-playground',
       icon: <SquareTerminal className="h-5 w-5" />,
-    },
-    optInExperimental && {
-      title: 'Shinkai Sheet',
-      href: '/sheets',
-      icon: <SheetIcon className="h-5 w-5" />,
     },
     optInExperimental && {
       title: 'Shinkai Tools',
@@ -474,6 +474,9 @@ export function MainNav() {
           {navigationLinks.map((item) => {
             return (
               <Fragment key={item.title}>
+                {item.href === '/workflow-playground' && optInExperimental && (
+                  <Separator className="my-0.5 w-full bg-gray-200" />
+                )}
                 <TooltipProvider
                   delayDuration={
                     item.disabled ? 0 : !sidebarExpanded ? 0 : 10000
@@ -513,9 +516,6 @@ export function MainNav() {
                     </TooltipPortal>
                   </Tooltip>
                 </TooltipProvider>
-                {item.href === '/vector-search' && (
-                  <Separator className="my-0.5 w-full bg-gray-200" />
-                )}
               </Fragment>
             );
           })}
