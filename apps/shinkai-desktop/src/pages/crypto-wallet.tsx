@@ -29,6 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
   Switch,
+  Textarea,
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import {
@@ -572,7 +573,16 @@ const RegularRestoreWalletMnemonic = () => {
             control={form.control}
             name="mnemonic"
             render={({ field }) => (
-              <TextField field={field} label="Secret Recovery Phrase" />
+              <FormItem>
+                <FormLabel>Custom Prompt</FormLabel>
+                <FormControl>
+                  <Textarea
+                    className="!min-h-[130px] resize-none text-sm"
+                    spellCheck={false}
+                    {...field}
+                  />
+                </FormControl>
+              </FormItem>
             )}
           />
 
@@ -724,7 +734,7 @@ const RegularRestoreWalletPrivateKey = () => {
             control={form.control}
             name="privateKey"
             render={({ field }) => (
-              <TextField field={field} label="Private Key" />
+              <TextField field={field} label="Private Key" type="password" />
             )}
           />
 
