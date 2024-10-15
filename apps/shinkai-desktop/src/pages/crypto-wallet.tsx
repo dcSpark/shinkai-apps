@@ -5,9 +5,12 @@ import {
   NetworkIdentifier,
   WalletRole,
 } from '@shinkai_network/shinkai-message-ts/api/wallets';
+import { useCreateLocalWallet } from '@shinkai_network/shinkai-node-state/v2/mutations/createLocalWallet/useCreateLocalWallet';
 import { useRestoreCoinbaseMpcWallet } from '@shinkai_network/shinkai-node-state/v2/mutations/restoreCoinbaseMpcWallet/useRestoreCoinbaseMpcWallet';
 import { useRestoreLocalWallet } from '@shinkai_network/shinkai-node-state/v2/mutations/restoreLocalWallet/useRestoreLocalWallet';
+import { useGetWalletList } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletList/useGetWalletList';
 import {
+  Badge,
   Button,
   buttonVariants,
   Dialog,
@@ -20,9 +23,6 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  Label,
-  RadioGroup,
-  RadioGroupItem,
   Select,
   SelectContent,
   SelectItem,
@@ -31,25 +31,23 @@ import {
   Switch,
   TextField,
 } from '@shinkai_network/shinkai-ui';
-import { CryptoWalletIcon } from '@shinkai_network/shinkai-ui/assets';
+import {
+  AddCryptoWalletIcon,
+  CryptoWalletIcon,
+} from '@shinkai_network/shinkai-ui/assets';
 import { useMeasure } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import {
-  ArrowDownToLine,
-  ArrowLeft,
-  ArrowLeftRight,
-  ArrowUpFromLine,
-  Download,
-  FileText,
-  PlusIcon,
-  XIcon,
-} from 'lucide-react';
-import { useMemo, useRef, useState } from 'react';
+import { ArrowLeft, Download, FileText, PlusIcon, XIcon } from 'lucide-react';
+import { useMemo, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import {
+  useWalletsStore,
+  WalletCreateConnectView,
+} from '../components/crypto-wallet/context/wallets-context';
 import { useAuth } from '../store/auth';
 import { SimpleLayout } from './layout/simple-layout';
 
@@ -57,33 +55,38 @@ const CryptoWalletPage = () => {
   const { t } = useTranslation();
   const [elementRef, bounds] = useMeasure();
   const previousHeightRef = useRef<number | null>();
+  const auth = useAuth((state) => state.auth);
+  const openWalletCreationModal = useWalletsStore(
+    (state) => state.openWalletCreationModal,
+  );
+  const setOpenWalletCreationModal = useWalletsStore(
+    (state) => state.setOpenWalletCreationModal,
+  );
+  const walletCreationView = useWalletsStore(
+    (state) => state.walletCreationView,
+  );
+  const setWalletCreationView = useWalletsStore(
+    (state) => state.setWalletCreationView,
+  );
 
-  const [isOpen, setIsOpen] = useState(false);
-  const [view, setView] = useState<
-    | 'main'
-    | 'mpc'
-    | 'mpc-restore'
-    | 'regular'
-    | 'regular-create'
-    | 'regular-mnemonic'
-    | 'regular-private-key'
-  >('main');
-
+  const { data: walletInfo } = useGetWalletList({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
   const handleBack = () => {
-    if (view === 'mpc-restore') {
-      setView('mpc');
+    if (walletCreationView === WalletCreateConnectView.MpcRestore) {
+      setWalletCreationView(WalletCreateConnectView.Mpc);
       return;
     }
     if (
-      view === 'regular-mnemonic' ||
-      view === 'regular-private-key' ||
-      view === 'regular-create'
+      walletCreationView === WalletCreateConnectView.RegularMnemonic ||
+      walletCreationView === WalletCreateConnectView.RegularPrivateKey ||
+      walletCreationView === WalletCreateConnectView.RegularCreate
     ) {
-      setView('regular');
+      setWalletCreationView(WalletCreateConnectView.Regular);
       return;
     }
-
-    setView('main');
+    setWalletCreationView(WalletCreateConnectView.Main);
   };
 
   const opacityDuration = useMemo(() => {
@@ -110,8 +113,8 @@ const CryptoWalletPage = () => {
   }, [bounds.height]);
 
   const renderContent = () => {
-    switch (view) {
-      case 'main':
+    switch (walletCreationView) {
+      case WalletCreateConnectView.Main:
         return (
           <div>
             <DialogHeader>
@@ -122,10 +125,12 @@ const CryptoWalletPage = () => {
             <div className="mt-8 space-y-3">
               <Button
                 className="flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left hover:bg-gray-200"
-                onClick={() => setView('mpc')}
+                onClick={() =>
+                  setWalletCreationView(WalletCreateConnectView.Mpc)
+                }
                 variant="outline"
               >
-                <CryptoWalletIcon className="size-5" />
+                <AddCryptoWalletIcon className="size-5" />
                 <div>
                   <div className="text-sm font-semibold">
                     Multi-Party Computation Wallet{' '}
@@ -138,25 +143,23 @@ const CryptoWalletPage = () => {
               </Button>
               <Button
                 className="flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left hover:bg-gray-200"
-                onClick={() => setView('regular')}
+                onClick={() =>
+                  setWalletCreationView(WalletCreateConnectView.Regular)
+                }
                 variant="outline"
               >
-                <CryptoWalletIcon className="size-5" />
+                <AddCryptoWalletIcon className="size-5" />
                 <div>
-                  <div className="text-sm font-semibold">
-                    {' '}
-                    Traditional Wallet
-                  </div>
+                  <div className="text-sm font-semibold">Hot Wallet</div>
                   <div className="text-gray-80 text-sm">
-                    Use a traditional wallet to store your cryptocurrency
-                    assets.
+                    Use a hot wallet to store your cryptocurrency assets.
                   </div>
                 </div>
               </Button>
             </div>
           </div>
         );
-      case 'mpc':
+      case WalletCreateConnectView.Mpc:
         return (
           <div>
             <DialogHeader>
@@ -171,7 +174,7 @@ const CryptoWalletPage = () => {
                       'flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left hover:bg-gray-200',
                   }),
                 )}
-                href="https://docs.cdp.coinbase.com/mpc-wallet/docs/welcome"
+                href="https://portal.cdp.coinbase.com/access/api"
                 rel="noreferrer"
                 target="_blank"
               >
@@ -185,7 +188,9 @@ const CryptoWalletPage = () => {
               </a>
               <Button
                 className="flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left hover:bg-gray-200"
-                onClick={() => setView('mpc-restore')}
+                onClick={() =>
+                  setWalletCreationView(WalletCreateConnectView.MpcRestore)
+                }
                 variant="outline"
               >
                 <Download className="size-4 shrink-0" />
@@ -202,7 +207,7 @@ const CryptoWalletPage = () => {
             </div>
           </div>
         );
-      case 'regular':
+      case WalletCreateConnectView.Regular:
         return (
           <div>
             <DialogHeader>
@@ -211,7 +216,9 @@ const CryptoWalletPage = () => {
             <div className="mt-8 space-y-3">
               <Button
                 className="flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left hover:bg-gray-200"
-                onClick={() => setView('regular-create')}
+                onClick={() =>
+                  setWalletCreationView(WalletCreateConnectView.RegularCreate)
+                }
                 variant="outline"
               >
                 <PlusIcon className="size-4 shrink-0" />
@@ -224,7 +231,9 @@ const CryptoWalletPage = () => {
               </Button>
               <Button
                 className="flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left hover:bg-gray-200"
-                onClick={() => setView('regular-mnemonic')}
+                onClick={() =>
+                  setWalletCreationView(WalletCreateConnectView.RegularMnemonic)
+                }
                 variant="outline"
               >
                 <FileText className="size-4 shrink-0" />
@@ -240,7 +249,11 @@ const CryptoWalletPage = () => {
               </Button>
               <Button
                 className="flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left hover:bg-gray-200"
-                onClick={() => setView('regular-private-key')}
+                onClick={() =>
+                  setWalletCreationView(
+                    WalletCreateConnectView.RegularPrivateKey,
+                  )
+                }
                 variant="outline"
               >
                 <Download className="size-4 shrink-0" />
@@ -257,110 +270,138 @@ const CryptoWalletPage = () => {
             </div>
           </div>
         );
-      case 'mpc-restore':
+      case WalletCreateConnectView.MpcRestore:
         return <MpcRestoreWallet />;
-      case 'regular-create':
+      case WalletCreateConnectView.RegularCreate:
         return <RegularCreateWallet />;
-      case 'regular-mnemonic':
+      case WalletCreateConnectView.RegularMnemonic:
         return <RegularRestoreWalletMnemonic />;
-      case 'regular-private-key':
+      case WalletCreateConnectView.RegularPrivateKey:
         return <RegularRestoreWalletPrivateKey />;
       default:
         throw new Error('Invalid view');
     }
   };
 
+  const walletExist =
+    walletInfo?.payment_wallet || walletInfo?.receiving_wallet;
+
   return (
-    <SimpleLayout classname="max-w-lg" title={t('settings.cryptoWallet.title')}>
-      <div className="flex h-full flex-col items-center justify-center">
-        <div className="col-span-4 flex flex-col items-center justify-center gap-3 rounded-md p-6">
-          <CryptoWalletIcon />
-          <div className="flex flex-col items-center text-center">
-            <h2 className="text-lg font-medium">
-              {t('settings.cryptoWallet.emptyState.title')}
+    <SimpleLayout
+      classname="max-w-4xl "
+      title={t('settings.cryptoWallet.title')}
+    >
+      {walletExist ? (
+        <div className="mt-6 flex w-full items-center justify-between gap-4 rounded-md border border-gray-200 px-6 py-3">
+          <span className="rounded-md bg-gray-300 p-2">
+            <CryptoWalletIcon className="size-4" />
+          </span>
+          <div className="flex-1 space-y-1">
+            <h2 className="text-sm font-medium">
+              {walletInfo?.payment_wallet.data.network.display_name}
+              {walletInfo?.payment_wallet.data.network.is_testnet && (
+                <Badge className="ml-2" variant="tags">
+                  Testnet
+                </Badge>
+              )}
             </h2>
             <p className="text-gray-80 text-sm">
-              {t('settings.cryptoWallet.emptyState.description')}
+              {walletInfo?.payment_wallet?.data?.address?.address_id}
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <Dialog
-              onOpenChange={(open) => {
-                if (!open) {
-                  setView('main');
-                }
-                setIsOpen(open);
-              }}
-              open={isOpen}
-            >
-              <DialogTrigger asChild>
-                <Button className="min-w-[150px] gap-2 px-3" size="sm">
-                  <PlusIcon className="size-4" />
-                  Setup Wallet{' '}
-                </Button>
-              </DialogTrigger>
-              <DialogContent
-                onInteractOutside={(e) => {
-                  e.preventDefault();
+          <span className="text-gray-80 text-xs">
+            -{' '}
+            {walletInfo?.payment_wallet?.data?.network?.native_asset?.asset_id}
+          </span>
+        </div>
+      ) : (
+        <div className="flex h-full flex-col items-center justify-center">
+          <div className="col-span-4 flex flex-col items-center justify-center gap-3 rounded-md p-6">
+            <AddCryptoWalletIcon />
+            <div className="flex flex-col items-center text-center">
+              <h2 className="text-lg font-medium">
+                {t('settings.cryptoWallet.emptyState.title')}
+              </h2>
+              <p className="text-gray-80 text-sm">
+                {t('settings.cryptoWallet.emptyState.description')}
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <Dialog
+                onOpenChange={(open) => {
+                  if (!open) {
+                    setWalletCreationView(WalletCreateConnectView.Main);
+                  }
+                  setOpenWalletCreationModal(open);
                 }}
+                open={openWalletCreationModal}
               >
-                <motion.div
-                  animate={{
-                    height: bounds.height ?? 0,
-                    transition: {
-                      duration: 0.27,
-                      ease: [0.25, 1, 0.5, 1],
-                    },
+                <DialogTrigger asChild>
+                  <Button className="min-w-[150px] gap-2 px-3" size="sm">
+                    <PlusIcon className="size-4" />
+                    Setup Wallet{' '}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent
+                  onInteractOutside={(e) => {
+                    e.preventDefault();
                   }}
                 >
-                  {view !== 'main' && (
-                    <Button
-                      className="absolute left-4 top-6"
-                      onClick={handleBack}
-                      size="icon"
-                      variant="tertiary"
-                    >
-                      <ArrowLeft className="h-4 w-4" />
-                    </Button>
-                  )}
-                  <DialogClose asChild>
-                    <Button
-                      className="absolute right-4 top-6"
-                      size="icon"
-                      variant="tertiary"
-                    >
-                      <XIcon className="text-gray-80 h-5 w-5" />
-                    </Button>
-                  </DialogClose>
-                  <div
-                    className="px-2 pb-3 pt-2.5 antialiased"
-                    ref={elementRef}
+                  <motion.div
+                    animate={{
+                      height: bounds.height ?? 0,
+                      transition: {
+                        duration: 0.27,
+                        ease: [0.25, 1, 0.5, 1],
+                      },
+                    }}
                   >
-                    <AnimatePresence
-                      custom={view}
-                      initial={false}
-                      mode="popLayout"
-                    >
-                      <motion.div
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.96 }}
-                        initial={{ opacity: 0, scale: 0.96 }}
-                        key={view}
-                        transition={{
-                          duration: opacityDuration,
-                          ease: [0.26, 0.08, 0.25, 1],
-                        }}
+                    {walletCreationView !== 'main' && (
+                      <Button
+                        className="absolute left-4 top-6"
+                        onClick={handleBack}
+                        size="icon"
+                        variant="tertiary"
                       >
-                        {renderContent()}
-                      </motion.div>
-                    </AnimatePresence>
-                  </div>
-                </motion.div>
-              </DialogContent>
-            </Dialog>
+                        <ArrowLeft className="h-4 w-4" />
+                      </Button>
+                    )}
+                    <DialogClose asChild>
+                      <Button
+                        className="absolute right-4 top-6"
+                        size="icon"
+                        variant="tertiary"
+                      >
+                        <XIcon className="text-gray-80 h-5 w-5" />
+                      </Button>
+                    </DialogClose>
+                    <div className="px-2 pt-2.5 antialiased" ref={elementRef}>
+                      <AnimatePresence
+                        custom={walletCreationView}
+                        initial={false}
+                        mode="popLayout"
+                      >
+                        <motion.div
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.96 }}
+                          initial={{ opacity: 0, scale: 0.96 }}
+                          key={walletCreationView}
+                          transition={{
+                            duration: opacityDuration,
+                            ease: [0.26, 0.08, 0.25, 1],
+                          }}
+                        >
+                          {renderContent()}
+                        </motion.div>
+                      </AnimatePresence>
+                    </div>
+                  </motion.div>
+                </DialogContent>
+              </Dialog>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </SimpleLayout>
   );
 };
@@ -379,23 +420,18 @@ export type MpcRestoreWalletFormSchema = z.infer<
 const MpcRestoreWallet = () => {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
-
   const form = useForm<MpcRestoreWalletFormSchema>({
     resolver: zodResolver(mpcRestoreWalletFormSchema),
   });
 
   const { mutateAsync: restoreCoinbaseMPCWallet } = useRestoreCoinbaseMpcWallet(
     {
-      onSuccess: (response) => {
-        console.log('Wallet restored successfully:', response);
-        toast.success(t('settings.cryptoWallet.successTitle'), {
-          description: t('settings.cryptoWallet.successDescription'),
-        });
+      onSuccess: () => {
+        toast.success('MPC Wallet restored successfully');
       },
       onError: (error) => {
-        console.error('Error restoring wallet:', error);
-        toast.error(t('settings.cryptoWallet.errorTitle'), {
-          description: t('settings.cryptoWallet.errorDescription'),
+        toast.error('Error restoring MPC wallet', {
+          description: error?.response?.data?.message ?? error.message,
         });
       },
     },
@@ -413,6 +449,7 @@ const MpcRestoreWallet = () => {
       role: WalletRole.Both, // You might want to make this configurable
     });
   };
+
   return (
     <div>
       <DialogHeader>
@@ -439,7 +476,7 @@ const MpcRestoreWallet = () => {
             control={form.control}
             name="walletId"
             render={({ field }) => (
-              <TextField field={field} label="Wallet ID (optional)" />
+              <TextField field={field} label="Wallet ID" />
             )}
           />
 
@@ -468,14 +505,6 @@ const MpcRestoreWallet = () => {
           />
           <div className="flex justify-end pt-6">
             <div className="flex justify-end gap-2">
-              <Button
-                className="min-w-[100px] flex-1"
-                size="sm"
-                type="button"
-                variant="ghost"
-              >
-                {t('common.cancel')}
-              </Button>
               <Button className="min-w-[100px] flex-1" size="sm" type="submit">
                 {t('common.restore')}
               </Button>
@@ -503,19 +532,19 @@ const RegularRestoreWalletMnemonic = () => {
 
   const form = useForm<RegularRestoreWalletMnemonicFormSchema>({
     resolver: zodResolver(regularRestoreWalletMnemonicFormSchema),
+    defaultValues: {
+      network: NetworkIdentifier.BaseSepolia,
+      role: WalletRole.Both,
+    },
   });
 
   const { mutateAsync: restoreLocalWallet } = useRestoreLocalWallet({
-    onSuccess: (response) => {
-      console.log('Wallet restored successfully:', response);
-      toast.success(t('settings.cryptoWallet.successTitle'), {
-        description: t('settings.cryptoWallet.successDescription'),
-      });
+    onSuccess: () => {
+      toast.success('Wallet restored successfully');
     },
     onError: (error) => {
-      console.error('Error restoring wallet:', error);
-      toast.error(t('settings.cryptoWallet.errorTitle'), {
-        description: t('settings.cryptoWallet.errorDescription'),
+      toast.error('Error restoring wallet', {
+        description: error?.response?.data?.message ?? error.message,
       });
     },
   });
@@ -524,7 +553,7 @@ const RegularRestoreWalletMnemonic = () => {
     await restoreLocalWallet({
       token: auth?.api_v2_key ?? '',
       nodeAddress: auth?.node_address ?? '',
-      network: NetworkIdentifier.BaseSepolia,
+      network: data.network as NetworkIdentifier,
       role: data.role as WalletRole,
       mnemonic: data.mnemonic,
     });
@@ -541,85 +570,6 @@ const RegularRestoreWalletMnemonic = () => {
         >
           <FormField
             control={form.control}
-            name="network"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Select a network</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                  </FormControl>
-
-                  <SelectContent>
-                    <SelectItem value="ethereum">Ethereum</SelectItem>
-                    <SelectItem value="sepolia">Sepolia</SelectItem>
-                    <SelectItem value="polygon">Polygon</SelectItem>
-                    <SelectItem value="arbitrum">Arbitrum</SelectItem>
-                    <SelectItem value="optimism">Optimism</SelectItem>
-                  </SelectContent>
-                </Select>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="role"
-            render={({ field }) => (
-              <div className="space-y-1.5">
-                <Label className="text-gray-80 pb-2 pl-2 text-xs">
-                  Select account type
-                </Label>
-                <FormItem>
-                  <FormControl>
-                    <RadioGroup
-                      className="grid grid-cols-3 gap-4"
-                      id="account-type"
-                      onValueChange={(value) => field.onChange(value)}
-                      value={field.value || ''}
-                    >
-                      {[
-                        {
-                          label: 'Payment',
-                          value: WalletRole.Payment,
-                          Icon: ArrowUpFromLine,
-                        },
-                        {
-                          label: 'Receive',
-                          value: WalletRole.Receiving,
-                          Icon: ArrowDownToLine,
-                        },
-                        {
-                          label: 'Both',
-                          value: WalletRole.Both,
-                          Icon: ArrowLeftRight,
-                        },
-                      ].map(({ label, value, Icon }) => (
-                        <div key={label}>
-                          <RadioGroupItem
-                            className="peer sr-only"
-                            id={value}
-                            value={value}
-                          />
-                          <Label
-                            className="peer-data-[state=checked]:border-brand [&:has([data-state=checked])]:border-brand hover:bg-gray-450 flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-gray-200 bg-gray-400 p-4 transition-colors hover:text-white"
-                            htmlFor={value}
-                          >
-                            <Icon className="mb-3 h-6 w-6" />
-                            {label}
-                          </Label>
-                        </div>
-                      ))}
-                    </RadioGroup>
-                  </FormControl>
-                </FormItem>
-              </div>
-            )}
-          />
-
-          <FormField
-            control={form.control}
             name="mnemonic"
             render={({ field }) => (
               <TextField field={field} label="Secret Recovery Phrase" />
@@ -628,14 +578,6 @@ const RegularRestoreWalletMnemonic = () => {
 
           <div className="flex justify-end pt-6">
             <div className="flex justify-end gap-2">
-              <Button
-                className="min-w-[100px] flex-1"
-                size="sm"
-                type="button"
-                variant="ghost"
-              >
-                {t('common.cancel')}
-              </Button>
               <Button className="min-w-[100px] flex-1" size="sm" type="submit">
                 {t('common.restore')}
               </Button>
@@ -663,19 +605,19 @@ const RegularRestoreWalletPrivateKey = () => {
 
   const form = useForm<RegularRestoreWalletPrivateKeyFormSchema>({
     resolver: zodResolver(regularRestoreWalletPrivateKeyFormSchema),
+    defaultValues: {
+      network: NetworkIdentifier.BaseSepolia,
+      role: WalletRole.Both,
+    },
   });
 
   const { mutateAsync: restoreLocalWallet } = useRestoreLocalWallet({
-    onSuccess: (response) => {
-      console.log('Wallet restored successfully:', response);
-      toast.success(t('settings.cryptoWallet.successTitle'), {
-        description: t('settings.cryptoWallet.successDescription'),
-      });
+    onSuccess: () => {
+      toast.success('Wallet restored successfully');
     },
     onError: (error) => {
-      console.error('Error restoring wallet:', error);
-      toast.error(t('settings.cryptoWallet.errorTitle'), {
-        description: t('settings.cryptoWallet.errorDescription'),
+      toast.error('Error restoring wallet', {
+        description: error?.response?.data?.message ?? error.message,
       });
     },
   });
@@ -686,7 +628,7 @@ const RegularRestoreWalletPrivateKey = () => {
     await restoreLocalWallet({
       token: auth?.api_v2_key ?? '',
       nodeAddress: auth?.node_address ?? '',
-      network: NetworkIdentifier.BaseSepolia,
+      network: data.network as NetworkIdentifier,
       role: data.role as WalletRole,
       privateKey: data.privateKey,
     });
@@ -715,70 +657,69 @@ const RegularRestoreWalletPrivateKey = () => {
                   </FormControl>
 
                   <SelectContent>
-                    <SelectItem value="ethereum">Ethereum</SelectItem>
-                    <SelectItem value="sepolia">Sepolia</SelectItem>
-                    <SelectItem value="polygon">Polygon</SelectItem>
-                    <SelectItem value="arbitrum">Arbitrum</SelectItem>
-                    <SelectItem value="optimism">Optimism</SelectItem>
+                    <SelectItem value="BaseSepolia">Base Sepolia</SelectItem>
+                    <SelectItem disabled value="disabled">
+                      Other networks coming up soon
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="role"
-            render={({ field }) => (
-              <div className="space-y-1.5">
-                <Label className="text-gray-80 pb-2 pl-2 text-xs">
-                  Select account type
-                </Label>
-                <FormItem>
-                  <FormControl>
-                    <RadioGroup
-                      className="grid grid-cols-3 gap-4"
-                      id="account-type"
-                      onValueChange={(value) => field.onChange(value)}
-                      value={field.value || ''}
-                    >
-                      {[
-                        {
-                          label: 'Payment',
-                          value: WalletRole.Payment,
-                          Icon: ArrowUpFromLine,
-                        },
-                        {
-                          label: 'Receive',
-                          value: WalletRole.Receiving,
-                          Icon: ArrowDownToLine,
-                        },
-                        {
-                          label: 'Both',
-                          value: WalletRole.Both,
-                          Icon: ArrowLeftRight,
-                        },
-                      ].map(({ label, value, Icon }) => (
-                        <div key={label}>
-                          <RadioGroupItem
-                            className="peer sr-only"
-                            id={value}
-                            value={value}
-                          />
-                          <Label
-                            className="peer-data-[state=checked]:border-brand [&:has([data-state=checked])]:border-brand hover:bg-gray-450 flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-gray-200 bg-gray-400 p-4 transition-colors hover:text-white"
-                            htmlFor={value}
-                          >
-                            <Icon className="mb-3 h-6 w-6" />
-                            {label}
-                          </Label>
-                        </div>
-                      ))}
-                    </RadioGroup>
-                  </FormControl>
-                </FormItem>
-              </div>
-            )}
-          />
+          {/*<FormField*/}
+          {/*  control={form.control}*/}
+          {/*  name="role"*/}
+          {/*  render={({ field }) => (*/}
+          {/*    <div className="space-y-1.5">*/}
+          {/*      <Label className="text-gray-80 pb-2 pl-2 text-xs">*/}
+          {/*        Select account type*/}
+          {/*      </Label>*/}
+          {/*      <FormItem>*/}
+          {/*        <FormControl>*/}
+          {/*          <RadioGroup*/}
+          {/*            className="grid grid-cols-3 gap-4"*/}
+          {/*            id="account-type"*/}
+          {/*            onValueChange={(value) => field.onChange(value)}*/}
+          {/*            value={field.value || ''}*/}
+          {/*          >*/}
+          {/*            {[*/}
+          {/*              {*/}
+          {/*                label: 'Payment',*/}
+          {/*                value: WalletRole.Payment,*/}
+          {/*                Icon: ArrowUpFromLine,*/}
+          {/*              },*/}
+          {/*              {*/}
+          {/*                label: 'Receive',*/}
+          {/*                value: WalletRole.Receiving,*/}
+          {/*                Icon: ArrowDownToLine,*/}
+          {/*              },*/}
+          {/*              {*/}
+          {/*                label: 'Both',*/}
+          {/*                value: WalletRole.Both,*/}
+          {/*                Icon: ArrowLeftRight,*/}
+          {/*              },*/}
+          {/*            ].map(({ label, value, Icon }) => (*/}
+          {/*              <div key={label}>*/}
+          {/*                <RadioGroupItem*/}
+          {/*                  className="peer sr-only"*/}
+          {/*                  id={value}*/}
+          {/*                  value={value}*/}
+          {/*                />*/}
+          {/*                <Label*/}
+          {/*                  className="peer-data-[state=checked]:border-brand [&:has([data-state=checked])]:border-brand hover:bg-gray-450 flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-gray-200 bg-gray-400 p-4 transition-colors hover:text-white"*/}
+          {/*                  htmlFor={value}*/}
+          {/*                >*/}
+          {/*                  <Icon className="mb-3 h-6 w-6" />*/}
+          {/*                  {label}*/}
+          {/*                </Label>*/}
+          {/*              </div>*/}
+          {/*            ))}*/}
+          {/*          </RadioGroup>*/}
+          {/*        </FormControl>*/}
+          {/*      </FormItem>*/}
+          {/*    </div>*/}
+          {/*  )}*/}
+          {/*/>*/}
           <FormField
             control={form.control}
             name="privateKey"
@@ -789,14 +730,6 @@ const RegularRestoreWalletPrivateKey = () => {
 
           <div className="flex justify-end pt-6">
             <div className="flex justify-end gap-2">
-              <Button
-                className="min-w-[100px] flex-1"
-                size="sm"
-                type="button"
-                variant="ghost"
-              >
-                {t('common.cancel')}
-              </Button>
               <Button className="min-w-[100px] flex-1" size="sm" type="submit">
                 {t('common.restore')}
               </Button>
@@ -823,28 +756,28 @@ const RegularCreateWallet = () => {
 
   const form = useForm<RegularCreateWalletFormSchema>({
     resolver: zodResolver(regularCreateWalletFormSchema),
+    defaultValues: {
+      network: NetworkIdentifier.BaseSepolia,
+      role: WalletRole.Both,
+    },
   });
 
-  const { mutateAsync: restoreLocalWallet } = useRestoreLocalWallet({
-    onSuccess: (response) => {
-      console.log('Wallet restored successfully:', response);
-      toast.success(t('settings.cryptoWallet.successTitle'), {
-        description: t('settings.cryptoWallet.successDescription'),
-      });
+  const { mutateAsync: createLocalWallet } = useCreateLocalWallet({
+    onSuccess: () => {
+      toast.success('Wallet created successfully');
     },
     onError: (error) => {
-      console.error('Error restoring wallet:', error);
-      toast.error(t('settings.cryptoWallet.errorTitle'), {
-        description: t('settings.cryptoWallet.errorDescription'),
+      toast.error('Error creating wallet', {
+        description: error?.response?.data?.message ?? error.message,
       });
     },
   });
 
   const handleSubmit = async (data: RegularCreateWalletFormSchema) => {
-    await restoreLocalWallet({
+    await createLocalWallet({
       token: auth?.api_v2_key ?? '',
       nodeAddress: auth?.node_address ?? '',
-      network: NetworkIdentifier.BaseSepolia,
+      network: data.network as NetworkIdentifier,
       role: data.role as WalletRole,
     });
   };
@@ -872,82 +805,19 @@ const RegularCreateWallet = () => {
                   </FormControl>
 
                   <SelectContent>
-                    <SelectItem value="ethereum">Ethereum</SelectItem>
-                    <SelectItem value="sepolia">Sepolia</SelectItem>
-                    <SelectItem value="polygon">Polygon</SelectItem>
-                    <SelectItem value="arbitrum">Arbitrum</SelectItem>
-                    <SelectItem value="optimism">Optimism</SelectItem>
+                    <SelectItem value="BaseSepolia">Base Sepolia</SelectItem>
+                    <SelectItem disabled value="disabled">
+                      Other networks coming up soon
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="role"
-            render={({ field }) => (
-              <div className="space-y-1.5">
-                <Label className="text-gray-80 pb-2 pl-2 text-xs">
-                  Select account type
-                </Label>
-                <FormItem>
-                  <FormControl>
-                    <RadioGroup
-                      className="grid grid-cols-3 gap-4"
-                      id="account-type"
-                      onValueChange={(value) => field.onChange(value)}
-                      value={field.value || ''}
-                    >
-                      {[
-                        {
-                          label: 'Payment',
-                          value: WalletRole.Payment,
-                          Icon: ArrowUpFromLine,
-                        },
-                        {
-                          label: 'Receive',
-                          value: WalletRole.Receiving,
-                          Icon: ArrowDownToLine,
-                        },
-                        {
-                          label: 'Both',
-                          value: WalletRole.Both,
-                          Icon: ArrowLeftRight,
-                        },
-                      ].map(({ label, value, Icon }) => (
-                        <div>
-                          <RadioGroupItem
-                            className="peer sr-only"
-                            id={value}
-                            value={value}
-                          />
-                          <Label
-                            className="peer-data-[state=checked]:border-brand [&:has([data-state=checked])]:border-brand hover:bg-gray-450 flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-gray-200 bg-gray-400 p-4 transition-colors hover:text-white"
-                            htmlFor={value}
-                          >
-                            <Icon className="mb-3 h-6 w-6" />
-                            {label}
-                          </Label>
-                        </div>
-                      ))}
-                    </RadioGroup>
-                  </FormControl>
-                </FormItem>
-              </div>
-            )}
-          />
           <div className="flex justify-end pt-6">
             <div className="flex justify-end gap-2">
-              <Button
-                className="min-w-[100px] flex-1"
-                size="sm"
-                type="button"
-                variant="ghost"
-              >
-                {t('common.cancel')}
-              </Button>
               <Button className="min-w-[100px] flex-1" size="sm" type="submit">
-                {t('common.restore')}
+                {t('common.create')}
               </Button>
             </div>
           </div>

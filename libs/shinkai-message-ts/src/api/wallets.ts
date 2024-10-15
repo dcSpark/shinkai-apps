@@ -49,7 +49,46 @@ export type CreateLocalWalletRequest = {
 export type RestoreCoinbaseMPCWalletResponse = {
   status: string;
 };
+interface NativeAsset {
+  network_id: string;
+  asset_id: string;
+  decimals: number;
+  contract_address: string | null;
+}
 
+interface Network {
+  id: string;
+  display_name: string;
+  chain_id: number;
+  protocol_family: string;
+  is_testnet: boolean;
+  native_asset: NativeAsset;
+}
+
+interface Address {
+  wallet_id: string;
+  network_id: string;
+  public_key: string | null;
+  address_id: string;
+}
+
+interface WalletData {
+  id: string;
+  network: Network;
+  address: Address;
+  wallet_private_key: string;
+  provider_url: string;
+}
+
+interface LocalEthersWallet {
+  type: string;
+  data: WalletData;
+}
+
+export type GetWalletListResponse = {
+  payment_wallet: LocalEthersWallet;
+  receiving_wallet: LocalEthersWallet;
+};
 export const restoreCoinbaseMPCWallet = async (
   nodeAddress: string,
   bearerToken: string,
@@ -98,7 +137,10 @@ export const createLocalWallet = async (
   return response.data;
 };
 
-export const listWallets = async (nodeAddress: string, bearerToken: string) => {
+export const getWalletList = async (
+  nodeAddress: string,
+  bearerToken: string,
+) => {
   const response = await httpClient.get(
     urlJoin(nodeAddress, '/v2/list_wallets'),
     {
@@ -106,5 +148,5 @@ export const listWallets = async (nodeAddress: string, bearerToken: string) => {
       responseType: 'json',
     },
   );
-  return response.data;
+  return response.data as GetWalletListResponse;
 };

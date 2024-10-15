@@ -3,19 +3,19 @@ import { useMutation } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
 import { APIError } from '../../types';
-import { restoreLocalWallet } from '.';
-import { RestoreLocalWalletInput, RestoreLocalWalletOutput } from './types';
+import { createLocalWallet } from '.';
+import { CreateLocalWalletInput, CreateLocalWalletOutput } from './types';
 
 type Options = UseMutationOptions<
-  RestoreLocalWalletOutput,
+  CreateLocalWalletOutput,
   APIError,
-  RestoreLocalWalletInput
+  CreateLocalWalletInput
 >;
 
-export const useRestoreLocalWallet = (options?: Options) => {
+export const useCreateLocalWallet = (options?: Options) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: restoreLocalWallet,
+    mutationFn: createLocalWallet,
     ...options,
     onSuccess: (response, variables, context) => {
       queryClient.invalidateQueries({

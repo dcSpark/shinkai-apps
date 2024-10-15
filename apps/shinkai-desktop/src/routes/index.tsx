@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from 'react';
 import { Navigate, Outlet, Route, Routes, useNavigate } from 'react-router-dom';
 
 import { SetJobScopeProvider } from '../components/chat/context/set-job-scope-context';
+import { WalletsProvider } from '../components/crypto-wallet/context/wallets-context';
 import { PromptSelectionProvider } from '../components/prompt/context/prompt-selection-context';
 import { TableSheetProvider } from '../components/sheet/context/table-context';
 import PublicSharedFolderSubscription from '../components/subscriptions/public-shared-folders';
@@ -328,7 +329,14 @@ const AppRoutes = () => {
           />
           <Route element={<PromptLibrary />} path={'prompt-library'} />
           <Route element={<GalxeValidation />} path={'galxe-validation'} />
-          <Route element={<CryptoWalletPage />} path={'crypto-wallet'} />
+          <Route
+            element={
+              <WalletsProvider>
+                <CryptoWalletPage />
+              </WalletsProvider>
+            }
+            path={'crypto-wallet'}
+          />
         </Route>
       </Route>
       <Route element={<Navigate replace to={'inboxes/'} />} path="/" />
