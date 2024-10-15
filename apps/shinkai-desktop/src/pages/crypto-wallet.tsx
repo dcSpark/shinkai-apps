@@ -1,3 +1,4 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   NetworkIdentifier,
@@ -12,9 +13,14 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
   Input,
   Label,
   Switch,
+  TextField,
 } from '@shinkai_network/shinkai-ui';
 import { CryptoWalletIcon } from '@shinkai_network/shinkai-ui/assets';
 import { useMeasure } from '@shinkai_network/shinkai-ui/hooks';
@@ -22,7 +28,9 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, Download, FileText, PlusIcon } from 'lucide-react';
 import React, { useMemo, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { z } from 'zod';
 
 import { useAuth } from '../store/auth';
 import { SimpleLayout } from './layout/simple-layout';
@@ -349,22 +357,25 @@ const CryptoWalletPage = () => {
   );
 };
 
-interface CoinbaseCDPWalletForm {
-  name: string;
-  privateKey: string;
-  walletId: string;
-  serverSigner: boolean;
-}
+export const mpcRestoreWalletFormSchema = z.object({
+  name: z.string().min(1),
+  privateKey: z.string().min(1),
+  walletId: z.string(),
+  serverSigner: z.boolean(),
+});
+
+export type MpcRestoreWalletFormSchema = z.infer<
+  typeof mpcRestoreWalletFormSchema
+>;
 
 const MpcRestoreWallet = () => {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
-  const [formData, setFormData] = useState<CoinbaseCDPWalletForm>({
-    name: '',
-    privateKey: '',
-    walletId: '',
-    serverSigner: true,
+
+  const form = useForm<MpcRestoreWalletFormSchema>({
+    resolver: zodResolver(mpcRestoreWalletFormSchema),
   });
+
   const { mutateAsync: restoreCoinbaseMPCWallet } = useRestoreCoinbaseMpcWallet(
     {
       onSuccess: (response) => {
@@ -382,27 +393,15 @@ const MpcRestoreWallet = () => {
     },
   );
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSwitchChange = (checked: boolean) => {
-    setFormData((prev) => ({ ...prev, serverSigner: checked }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Submitting Coinbase CDP Wallet:', formData);
-
+  const handleSubmit = async (data: MpcRestoreWalletFormSchema) => {
     await restoreCoinbaseMPCWallet({
       token: auth?.api_v2_key ?? '',
       nodeAddress: auth?.node_address ?? '',
       network: NetworkIdentifier.BaseSepolia, // You might want to make this configurable
-      name: formData.name,
-      privateKey: formData.privateKey,
-      walletId: formData.walletId,
-      useServerSigner: formData.serverSigner.toString(),
+      name: data.name,
+      privateKey: data.privateKey,
+      walletId: data.walletId,
+      useServerSigner: data.serverSigner.toString(),
       role: WalletRole.Both, // You might want to make this configurable
     });
   };
@@ -411,53 +410,64 @@ const MpcRestoreWallet = () => {
       <DialogHeader>
         <DialogTitle className="text-center">Restore MPC Wallet</DialogTitle>
       </DialogHeader>
-      <form className="space-y-4" onSubmit={handleSubmit}>
-        <div>
-          <Label htmlFor="name">Name</Label>
-          <Input
-            className="py-1"
-            id="name"
+      <Form {...form}>
+        <form className="space-y-4" onSubmit={form.handleSubmit(handleSubmit)}>
+          <FormField
+            control={form.control}
             name="name"
-            onChange={handleInputChange}
-            required
-            value={formData.name}
+            render={({ field }) => <TextField field={field} label="Name" />}
           />
-        </div>
-        <div>
-          <Label htmlFor="privateKey">Private Key</Label>
-          <Input
-            className="py-1"
-            id="privateKey"
+          <FormField
+            control={form.control}
             name="privateKey"
-            onChange={handleInputChange}
-            required
-            type="password"
-            value={formData.privateKey}
+            render={({ field }) => (
+              <TextField field={field} label="Private Key" />
+            )}
           />
-        </div>
-        <div>
-          <Label htmlFor="walletId">Wallet ID (optional)</Label>
-          <Input
-            className="py-1"
-            id="walletId"
+          <FormField
+            control={form.control}
             name="walletId"
-            onChange={handleInputChange}
-            value={formData.walletId}
+            render={({ field }) => (
+              <TextField field={field} label="Wallet ID (optional)" />
+            )}
           />
           <p className="mt-1 text-sm text-gray-400">
             {t('settings.cryptoWallet.walletIdOptional')}
           </p>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Switch
-            checked={formData.serverSigner}
-            id="serverSigner"
-            onCheckedChange={handleSwitchChange}
+          <FormField
+            control={form.control}
+            name="serverSigner"
+            render={({ field }) => (
+              <FormItem className="mt-4 flex flex-row items-center justify-center space-x-3 py-1">
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    id={'custom-model'}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <div
+                  className={cn(
+                    'text-gray-80 space-y-1 text-sm leading-none',
+                    field.value && 'text-white',
+                  )}
+                >
+                  <label htmlFor="custom-model">Server Signer</label>
+                </div>
+              </FormItem>
+            )}
           />
-          <Label htmlFor="serverSigner">Server Signer</Label>
-        </div>
-        <Button type="submit">{t('common.send')}</Button>
-      </form>
+          {/*<div className="flex items-center space-x-2">*/}
+          {/*  <Switch*/}
+          {/*      checked={formData.serverSigner}*/}
+          {/*      id="serverSigner"*/}
+          {/*      onCheckedChange={handleSwitchChange}*/}
+          {/*  />*/}
+          {/*  <Label htmlFor="serverSigner">Server Signer</Label>*/}
+          {/*</div>*/}
+          <Button type="submit">{t('common.send')}</Button>
+        </form>
+      </Form>
     </div>
   );
 };
