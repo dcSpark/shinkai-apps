@@ -102,7 +102,8 @@ try:
             figures.append({ 'type': 'html', 'data': capture_df_display(var_value) })
 
 except Exception as e:
-    outputError = str(e)
+    import traceback
+    outputError = "%s - %s" % (str(e), traceback.format_exc())
 
 figures = json.dumps(figures)
 (output, outputError, figures)
