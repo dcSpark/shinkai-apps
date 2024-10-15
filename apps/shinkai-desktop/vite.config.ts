@@ -64,6 +64,7 @@ export default defineConfig(() => ({
           'src/windows/shinkai-node-manager/index.html',
         ),
         spotlight: resolve(__dirname, 'src/windows/spotlight/index.html'),
+        coordinator: resolve(__dirname, 'src/windows/coordinator/index.html'),
       },
     },
   },

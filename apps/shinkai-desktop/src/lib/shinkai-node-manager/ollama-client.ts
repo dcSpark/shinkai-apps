@@ -84,7 +84,6 @@ export const useOllamaPullMutation = (
         for await (const progress of generator) {
           pullingModelsMap.set(input.model, progress);
           if (progress.status === 'success') {
-            console.log(`completed invalidating`);
             queryClient.invalidateQueries({
               queryKey: ['ollama_list'],
             });

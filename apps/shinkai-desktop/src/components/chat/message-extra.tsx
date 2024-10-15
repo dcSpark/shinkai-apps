@@ -53,7 +53,7 @@ export default function MessageExtra({
 }) {
   if (metadata == null || name == null) return null;
 
-  if (name === 'PaymentRequest') {
+  if (name === 'PaymentRequest' && 'invoice' in metadata) {
     return <Payment data={metadata} onCancel={onCancel} />;
   }
   return null;

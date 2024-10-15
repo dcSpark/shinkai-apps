@@ -16,13 +16,13 @@ import {
 import FullPageErrorFallback from '../../components/error-boundary';
 import { shinkaiNodeQueryClient } from '../../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { useShinkaiNodeEventsToast } from '../../lib/shinkai-node-manager/shinkai-node-manager-hooks';
-import { initSyncStorage } from '../../store/sync-utils';
+import { useSyncStorageSecondary } from '../../store/sync-utils';
 import QuickAsk from './components/quick-ask';
 import { QuickAskProvider } from './context/quick-ask';
 
-initSyncStorage();
 
 const App = () => {
+  useSyncStorageSecondary();
   useShinkaiNodeEventsToast();
 
   return (

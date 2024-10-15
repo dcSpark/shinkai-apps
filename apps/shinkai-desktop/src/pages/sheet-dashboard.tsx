@@ -297,7 +297,7 @@ function ImportSheetModal() {
 
   const navigate = useNavigate();
 
-  const { mutateAsync: importSheet } = useImportSheet({
+  const { mutateAsync: importSheet, isPending: isPendingImportSheet } = useImportSheet({
     onSuccess: (data) => {
       navigate(`/sheets/${data.sheet_id}`);
     },
@@ -306,6 +306,11 @@ function ImportSheetModal() {
   const onSubmit = async (data: ImportSheetFormSchema) => {
     const fileSelected = data.file?.[0];
     const fileFormat = fileSelected?.name?.split('.')?.pop();
+
+    if (fileFormat !== 'csv' && fileFormat !== 'xlsx') {
+      toast.error('Invalid file format. Please upload a CSV or XLSX file');
+      return;
+    }
 
     await importSheet({
       nodeAddress: auth?.node_address ?? '',
@@ -329,7 +334,7 @@ function ImportSheetModal() {
           Import CSV / XLSX
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="max-w-[500px]">
         <DialogTitle className="pb-0">Import CSV / XLSX</DialogTitle>
         <Form {...importSheetForm}>
           <form
@@ -374,7 +379,13 @@ function ImportSheetModal() {
               />
             )}
             <DialogFooter>
-              <Button className="w-full" size="auto" type="submit">
+              <Button
+                className="w-full"
+                disabled={isPendingImportSheet}
+                isLoading={isPendingImportSheet}
+                size="auto"
+                type="submit"
+              >
                 Import
               </Button>
             </DialogFooter>

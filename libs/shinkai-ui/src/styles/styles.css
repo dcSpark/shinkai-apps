@@ -61,31 +61,6 @@
   }
 }
 
-/* prose styling for chat editor */
-.ProseMirror {
-  @apply max-h-[42vh] min-h-[60px] overflow-y-auto;
-}
-.prose :where(p):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-  @apply my-2;
-}
-.prose-sm
-  :where(pre):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-  @apply mt-2 border border-gray-700 bg-transparent;
-}
-.tiptap p.is-editor-empty:first-child::before {
-  content: attr(data-placeholder);
-  @apply pointer-events-none float-left h-0 text-gray-100;
-}
-.tiptap {
-  @apply placeholder:text-gray-80 max-w-full px-2 py-1 text-sm text-white shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-transparent disabled:cursor-not-allowed disabled:opacity-50;
-}
-.tiptap[contenteditable='false'] {
-  @apply opacity-40;
-}
-.wmde-markdown pre {
-  @apply grid;
-}
-
 /* react tree view */
 .p-checkbox {
   @apply h-[18px] w-[18px] shrink-0;

@@ -56,13 +56,42 @@ export type PaymentRequest = {
 };
 export type Widget = {
   PaymentRequest?: PaymentRequest;
+  ToolRequest?: Tool;
 };
+export enum ToolStatusType {
+  Running = 'Running',
+  Complete = 'Complete',
+  Incomplete = 'Incomplete',
+  RequiresAction = 'RequiresAction',
+}
+export type ToolArgs = Record<string, any>;
+
 export type WidgetToolType = keyof Widget;
 export type WidgetToolData = Widget[WidgetToolType];
-
+export type ToolName = string;
 export type WidgetToolState = {
   name: WidgetToolType;
   data: WidgetToolData;
+};
+export type ToolState = {
+  name: ToolName;
+  args: ToolArgs;
+  status: ToolStatusType;
+  toolRouterKey: string;
+  result?: string;
+};
+
+export type Tool = {
+  tool_name: ToolName;
+  args: {
+    name: string;
+    arguments: ToolArgs;
+  };
+  result?: { data: { message?: string } };
+  status: {
+    type_: ToolStatusType;
+    reason?: string;
+  };
 };
 
 export type WsMessage = {

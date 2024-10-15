@@ -1,16 +1,28 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import {
+  ToolArgs,
+  ToolStatusType,
+} from '@shinkai_network/shinkai-message-ts/api/general/types';
+import { FormattedChatMessage } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { format } from 'date-fns';
-import { motion } from 'framer-motion';
-import { Edit3, RotateCcw } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Edit3, Loader2, RotateCcw, XCircle } from 'lucide-react';
 import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { Link } from 'react-router-dom';
 import { z } from 'zod';
 
-import { appIcon } from '../../assets';
-import { ChatConversationMessage } from '../../helpers';
+import { appIcon, ToolsIcon } from '../../assets';
+import { formatText } from '../../helpers/format-text';
 import { cn } from '../../utils';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '../accordion';
 import { Avatar, AvatarFallback, AvatarImage } from '../avatar';
 import { Button } from '../button';
 import { CopyToClipboardIcon } from '../copy-to-clipboard-icon';
@@ -50,7 +62,7 @@ const containsPythonCode = (content: string): boolean => {
 
 type MessageProps = {
   isPending?: boolean;
-  message: ChatConversationMessage;
+  message: FormattedChatMessage;
   handleRetryMessage?: () => void;
   disabledRetry?: boolean;
   disabledEdit?: boolean;
@@ -227,18 +239,52 @@ export const Message = ({
               >
                 {message.content ? (
                   <Fragment>
+                    {message.toolCalls && message.toolCalls.length > 0 && (
+                      <Accordion
+                        className="space-y-1.5 self-baseline pb-3"
+                        type="multiple"
+                      >
+                        {message.toolCalls.map((tool) => {
+                          return (
+                            <AccordionItem
+                              className="bg-app-gradient overflow-hidden rounded-lg"
+                              disabled={tool.status !== ToolStatusType.Complete}
+                              key={tool.name}
+                              value={tool.name}
+                            >
+                              <AccordionTrigger
+                                className={cn(
+                                  'min-w-[10rem] py-0 pr-2 no-underline hover:no-underline',
+                                  'transition-colors hover:bg-gray-500 [&>svg]:hidden [&[data-state=open]]:bg-gray-500',
+                                )}
+                              >
+                                <ToolCard
+                                  args={tool.args}
+                                  name={tool.name}
+                                  status={tool.status}
+                                  toolRouterKey={tool.toolRouterKey}
+                                />
+                              </AccordionTrigger>
+                              <AccordionContent className="bg-gray-450 rounded-b-lg px-3 pb-3 pt-2 text-xs">
+                                {Object.keys(tool.args).length > 0 && (
+                                  <span className="font-medium text-white">
+                                    {tool.name}(
+                                    {Object.keys(tool.args).length > 0 && (
+                                      <span className="text-gray-80 font-medium">
+                                        {JSON.stringify(tool.args)}
+                                      </span>
+                                    )}
+                                    )
+                                  </span>
+                                )}
+                              </AccordionContent>
+                            </AccordionItem>
+                          );
+                        })}
+                      </Accordion>
+                    )}
+
                     <MarkdownPreview
-                      components={{
-                        a: ({ node, ...props }) => (
-                          // eslint-disable-next-line jsx-a11y/anchor-has-content
-                          <a {...props} target="_blank" />
-                        ),
-                        table: ({ node, ...props }) => (
-                          <div className="mb-2 size-full overflow-x-auto">
-                            <table className="w-full" {...props} />
-                          </div>
-                        ),
-                      }}
                       source={extractErrorPropertyOrContent(
                         message.content,
                         'error_message',
@@ -347,3 +393,72 @@ export const Message = ({
     </motion.div>
   );
 };
+
+const variants = {
+  initial: { opacity: 0, y: -25 },
+  visible: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: 25 },
+};
+
+export function ToolCard({
+  name,
+  // args,
+  status,
+  toolRouterKey,
+}: {
+  args: ToolArgs;
+  status: ToolStatusType;
+  name: string;
+  toolRouterKey: string;
+}) {
+  const renderStatus = () => {
+    if (status === ToolStatusType.Complete) {
+      return <ToolsIcon className="text-brand size-full" />;
+    }
+    if (status === ToolStatusType.Incomplete) {
+      return <XCircle className="text-gray-80 size-full" />;
+    }
+    if (status === ToolStatusType.RequiresAction) {
+      return <InfoCircleIcon className="text-gray-80 size-full" />;
+    }
+    return <Loader2 className="text-brand size-full animate-spin" />;
+  };
+
+  const renderLabelText = () => {
+    if (status === ToolStatusType.Complete) {
+      return 'Tool Used';
+    }
+    if (status === ToolStatusType.Incomplete) {
+      return 'Incomplete';
+    }
+    if (status === ToolStatusType.RequiresAction) {
+      return 'Requires Action';
+    }
+    return 'Processing Tool';
+  };
+
+  return (
+    <AnimatePresence initial={false} mode="popLayout">
+      <motion.div
+        animate="visible"
+        exit="exit"
+        initial="initial"
+        transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
+        variants={variants}
+      >
+        <div className="flex items-center gap-1 p-[5px]">
+          <div className="size-7 shrink-0 px-1.5">{renderStatus()}</div>
+          <div className="flex items-center gap-1">
+            <span className="text-gray-80 text-xs">{renderLabelText()}</span>
+            <Link
+              className="text-gray-white text-xs font-semibold hover:underline"
+              to={`/tools/${toolRouterKey}`}
+            >
+              {formatText(name)}
+            </Link>
+          </div>
+        </div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}

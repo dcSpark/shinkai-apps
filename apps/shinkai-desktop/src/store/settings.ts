@@ -2,8 +2,6 @@ import { LocaleMode, switchLanguage } from '@shinkai_network/shinkai-i18n';
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 
-import { SetupData, useAuth } from './auth';
-
 type SettingsStore = {
   defaultAgentId: string;
   setDefaultAgentId: (defaultAgentId: string) => void;
@@ -106,18 +104,3 @@ export const useSettings = create<SettingsStore>()(
     ),
   ),
 );
-
-useAuth.subscribe((state, prevState) => {
-  handleAuthSideEffect(state.auth, prevState.auth);
-});
-
-const handleAuthSideEffect = async (
-  auth: SetupData | null,
-  prevAuth: SetupData | null,
-) => {
-  // SignOut case
-  if (prevAuth && !auth) {
-    useSettings.getState().setDefaultAgentId('');
-    return;
-  }
-};

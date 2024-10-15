@@ -131,6 +131,17 @@ export type JobMessage = {
   sheet_job_data: null;
   workflow_code: null;
   workflow_name: string;
+  metadata: null | {
+    tps: null;
+    duration_ms: string;
+    function_calls: {
+      name: string;
+      arguments: {
+        message: string;
+      };
+      tool_router_key: string;
+    }[];
+  };
 };
 export type ChatMessage = {
   job_message: JobMessage;

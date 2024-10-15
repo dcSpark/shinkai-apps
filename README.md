@@ -10,8 +10,8 @@ You can find it <a href="https://github.com/dcSpark/shinkai-node">here</a>.</p><
 
 [![Mutable.ai Auto Wiki](https://img.shields.io/badge/Auto_Wiki-Mutable.ai-blue)](https://wiki.mutable.ai/dcSpark/shinkai-apps)
 
-
-https://github.com/dcSpark/shinkai-apps/assets/46382556/010114fb-0ed4-449a-9f27-a266b22b7bdb
+## Demo
+[![Shinkai Desktop Demo](https://img.youtube.com/vi/v8Ba7S2XMDw/0.jpg)](https://www.youtube.com/watch?v=v8Ba7S2XMDw)
 
 ## Documentation
 
@@ -46,7 +46,7 @@ $ git clone https://github.com/dcSpark/shinkai-apps
 ```
 ARCH="aarch64-apple-darwin" \
 OLLAMA_VERSION="v0.3.12" \
-SHINKAI_NODE_VERSION="v0.8.9" \
+SHINKAI_NODE_VERSION="v0.8.10" \
 npx ts-node ./ci-scripts/download-side-binaries.ts
 ```
 
@@ -54,14 +54,14 @@ npx ts-node ./ci-scripts/download-side-binaries.ts
 ```
 ARCH="x86_64-unknown-linux-gnu" \
 OLLAMA_VERSION="v0.3.12"\
-SHINKAI_NODE_VERSION="v0.8.9" \
+SHINKAI_NODE_VERSION="v0.8.10" \
 npx ts-node ./ci-scripts/download-side-binaries.ts
 ```
 
 #### Windows
 ```
 $ENV:OLLAMA_VERSION="v0.3.12"
-$ENV:SHINKAI_NODE_VERSION="v0.8.9"
+$ENV:SHINKAI_NODE_VERSION="v0.8.10"
 $ENV:ARCH="x86_64-pc-windows-msvc"
 npx ts-node ./ci-scripts/download-side-binaries.ts
 ```

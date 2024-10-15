@@ -1,4 +1,8 @@
-import { Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
+import {
+  Token,
+  ToolArgs,
+  ToolStatusType,
+} from '@shinkai_network/shinkai-message-ts/api/general/types';
 import { InfiniteData } from '@tanstack/react-query';
 
 export type GetChatConversationInput = Token & {
@@ -29,6 +33,12 @@ export type FormattedChatMessage = {
       preview?: string;
     }[];
   };
+  toolCalls?: {
+    name: string;
+    args: ToolArgs;
+    status: ToolStatusType;
+    toolRouterKey: string;
+  }[];
 };
 export type GetChatConversationOutput = FormattedChatMessage[];
 

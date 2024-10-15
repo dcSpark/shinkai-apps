@@ -133,7 +133,7 @@ const NavLink = ({
           {sidebarExpanded && (
             <motion.div
               animate="show"
-              className="flex items-center gap-3 whitespace-nowrap text-xs"
+              className="flex items-center gap-3 overflow-hidden whitespace-nowrap text-xs"
               exit="hidden"
               initial="hidden"
               variants={showAnimation}
@@ -168,7 +168,7 @@ const NavLink = ({
         {sidebarExpanded && (
           <motion.div
             animate="show"
-            className="whitespace-nowrap text-xs"
+            className="overflow-hidden whitespace-nowrap text-xs"
             exit="hidden"
             initial="hidden"
             variants={showAnimation}
@@ -343,15 +343,15 @@ export function MainNav() {
     //   href: '/my-subscriptions',
     //   icon: <MySubscriptionsIcon className="h-5 w-5" />,
     // },
+    {
+      title: 'Shinkai Sheet',
+      href: '/sheets',
+      icon: <SheetIcon className="h-5 w-5" />,
+    },
     optInExperimental && {
       title: 'Playground',
       href: '/workflow-playground',
       icon: <SquareTerminal className="h-5 w-5" />,
-    },
-    optInExperimental && {
-      title: 'Shinkai Sheet',
-      href: '/sheets',
-      icon: <SheetIcon className="h-5 w-5" />,
     },
     optInExperimental && {
       title: 'Shinkai Tools',
@@ -383,12 +383,11 @@ export function MainNav() {
     <motion.aside
       animate={{
         width: sidebarExpanded ? '230px' : '70px',
-        transition: sidebarTransition,
       }}
-      className="fixed inset-0 z-30 flex w-auto shrink-0 flex-col gap-2 overflow-y-auto overflow-x-hidden border-r border-gray-400/30 bg-gradient-to-b from-gray-300 to-gray-400/70 px-2 py-6 pt-9 shadow-xl"
-      initial={{
-        width: sidebarExpanded ? '230px' : '70px',
-      }}
+      className="relative z-30 flex w-auto shrink-0 flex-col gap-2 overflow-y-auto overflow-x-hidden border-r border-gray-400/30 bg-gradient-to-b from-gray-300 to-gray-400/70 px-2 py-6 pt-9 shadow-xl"
+      exit={{ width: 0, opacity: 0 }}
+      initial={{ width: 0, opacity: 0 }}
+      transition={{ duration: 0.3 }}
     >
       <div className="text-gray-80 flex w-full items-center justify-between gap-2 py-2 pl-4">
         {sidebarExpanded && (
@@ -431,11 +430,13 @@ export function MainNav() {
               <TooltipTrigger asChild>
                 <motion.button
                   className={cn(
-                    'text-gray-80 mb-1.5 mt-4 flex h-8 w-8 items-center justify-center gap-2 self-center rounded-full bg-white/10 hover:bg-white/10 hover:text-white',
-                    sidebarExpanded &&
-                      'w-full justify-start rounded-lg bg-transparent px-4 py-3 hover:bg-gray-500',
+                    'text-gray-80 mb-1.5 mt-4 flex h-8 items-center gap-2 bg-white/10 hover:bg-white/10 hover:text-white',
+                    sidebarExpanded
+                      ? 'w-full justify-start rounded-lg bg-transparent px-4 py-3 hover:bg-gray-500'
+                      : 'w-8 justify-center self-center rounded-full',
                   )}
                   onClick={() => navigate('/inboxes')}
+                  transition={{ duration: 0.3 }}
                   whileHover={{ scale: !sidebarExpanded ? 1.05 : 1 }}
                 >
                   <CreateAIIcon className="h-5 w-5 shrink-0" />
@@ -443,7 +444,7 @@ export function MainNav() {
                     {sidebarExpanded && (
                       <motion.span
                         animate="show"
-                        className="whitespace-nowrap text-xs"
+                        className="overflow-hidden whitespace-nowrap text-xs"
                         exit="hidden"
                         initial="hidden"
                         variants={showAnimation}
@@ -473,6 +474,9 @@ export function MainNav() {
           {navigationLinks.map((item) => {
             return (
               <Fragment key={item.title}>
+                {item.href === '/workflow-playground' && optInExperimental && (
+                  <Separator className="my-0.5 w-full bg-gray-200" />
+                )}
                 <TooltipProvider
                   delayDuration={
                     item.disabled ? 0 : !sidebarExpanded ? 0 : 10000
@@ -512,9 +516,6 @@ export function MainNav() {
                     </TooltipPortal>
                   </Tooltip>
                 </TooltipProvider>
-                {item.href === '/vector-search' && (
-                  <Separator className="my-0.5 w-full bg-gray-200" />
-                )}
               </Fragment>
             );
           })}
@@ -616,7 +617,6 @@ const MainLayout = () => {
   const { t } = useTranslation();
   const location = useLocation();
   const auth = useAuth((state) => state.auth);
-  const sidebarExpanded = useSettings((state) => state.sidebarExpanded);
 
   const { nodeInfo, isSuccess, isFetching } = useGetHealth(
     { nodeAddress: auth?.node_address ?? '' },
@@ -648,33 +648,18 @@ const MainLayout = () => {
     !!auth && !disabledSidebarRoutes.includes(location.pathname);
 
   return (
-    <div className="relative flex min-h-full flex-col bg-gray-500 text-white">
+    <div className="relative flex h-screen min-h-full flex-col overflow-hidden bg-gray-500 text-white">
       <div
         className="absolute top-0 z-50 h-6 w-full"
         data-tauri-drag-region={true}
       />
-      <div className={cn('flex flex-1', !!auth && '')}>
-        {displaySidebar && <MainNav />}
-        <motion.div
-          animate={{
-            paddingLeft: !displaySidebar
-              ? '0px'
-              : sidebarExpanded
-                ? '230px'
-                : '70px',
-            transition: sidebarTransition,
-          }}
-          className={cn('flex-1 overflow-hidden')}
-          initial={{
-            paddingLeft: !displaySidebar
-              ? '0px'
-              : sidebarExpanded
-                ? '230px'
-                : '70px',
-          }}
-        >
+      <div className={cn('flex h-full flex-1', !!auth && '')}>
+        <AnimatePresence initial={false}>
+          {displaySidebar && <MainNav />}
+        </AnimatePresence>
+        <div className={cn('min-h-full flex-1 overflow-auto')}>
           <Outlet />
-        </motion.div>
+        </div>
       </div>
     </div>
   );
