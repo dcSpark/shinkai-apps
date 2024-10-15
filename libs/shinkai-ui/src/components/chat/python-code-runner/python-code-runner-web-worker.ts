@@ -44,9 +44,6 @@ import plotly.io as pio
 import json
 import array
 
-import pyodide_http
-pyodide_http.patch_all()
-
 import requests
 from requests.models import Response
 
@@ -183,24 +180,48 @@ const run = async (code: string) => {
  * @throws Will throw an error if the HTTP request fails.
  */
 const fetchPage = (url: string): string => {
-  const sharedBuffer = new SharedArrayBuffer(1024); // Adjust size as needed
-  const syncArray = new Int32Array(sharedBuffer, 0, 1);
-  const dataArray = new Uint8Array(sharedBuffer, 4);
+  let bufferSize = 512 * 1024; // Start with 512kb
+  const maxBufferSize = 100 * 1024 * 1024; // Set a maximum buffer size, e.g., 100MB
+  let sharedBuffer: SharedArrayBuffer;
+  let result = ''; // Initialize result with an empty string
 
-  // Post a message to the main thread with the shared buffer
-  self.postMessage({
-    type: 'fetch-page-response',
-    meta: url,
-    sharedBuffer,
-  });
+  while (bufferSize <= maxBufferSize) {
+    try {
+      sharedBuffer = new SharedArrayBuffer(bufferSize);
+      const syncArray = new Int32Array(sharedBuffer, 0, 1);
+      const dataArray = new Uint8Array(sharedBuffer, 4);
 
-  // Wait for the main thread to signal completion
-  Atomics.wait(syncArray, 0, 0);
-  console.log('atomic wait done');
+      // Post a message to the main thread with the shared buffer
+      self.postMessage({
+        type: 'fetch-page-response',
+        meta: url,
+        sharedBuffer,
+      });
 
-  // Convert the binary data to a string
-  const textDecoder = new TextDecoder();
-  const result = textDecoder.decode(dataArray);
+      console.log('Posted message to main thread, waiting for response...');
+
+      // Wait for the main thread to signal completion
+      Atomics.wait(syncArray, 0, 0);
+      console.log('atomic wait done');
+
+      // Convert the binary data to a string
+      const textDecoder = new TextDecoder();
+      result = textDecoder.decode(dataArray);
+      console.log(`Received data of length: ${result.length}`);
+
+      // If successful, break out of the loop
+      break;
+    } catch (e) {
+      console.error(`Buffer size ${bufferSize} was insufficient, retrying with larger size.`);
+      bufferSize *= 2; // Double the buffer size and retry
+    }
+  }
+
+  console.log('result', result);
+
+  if (!result) {
+    throw new Error('Failed to fetch page: Buffer size exceeded maximum limit.');
+  }
 
   return result;
 };

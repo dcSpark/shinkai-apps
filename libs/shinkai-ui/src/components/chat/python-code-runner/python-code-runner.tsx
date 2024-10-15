@@ -50,44 +50,58 @@ export const usePythonRunnerRunMutation = (
       return new Promise<RunResult>((resolve, reject) => {
         const timeout = setTimeout(() => {
           reject(new Error('execution timed out'));
-        }, 30000);
+        }, 120000); // 2 minutes
 
         worker.onmessage = async (event: { data: WorkerMessage }) => {
           if (isFetchPageMessage(event.data)) {
             console.log('fetching page', event.data.meta);
             const url = event.data.meta;
 
-            // Create a SharedArrayBuffer for synchronization and data transfer
-            const sharedBuffer = event.data.sharedBuffer;
+            const sharedBuffer = event.data.sharedBuffer; // Initialize outside the loop
             const syncArray = new Int32Array(sharedBuffer, 0, 1);
             const dataArray = new Uint8Array(sharedBuffer, 4);
 
-            try {
-              const response = await invoke<{
-                status: number;
-                headers: Record<string, string[]>;
-                body: string;
-              }>('fetch_page', { url });
-              console.log('fetch response', response);
+            let bufferSize = 512 * 1024; // Start with 512Kb
+            const maxBufferSize = 100 * 1024 * 1024; // Set a maximum buffer size, e.g., 100MB
+            let success = false;
 
-              if (response.status >= 200 && response.status < 300) {
-                // Encode the response body into binary data
-                const textEncoder = new TextEncoder();
-                const encodedData = textEncoder.encode(response.body);
+            while (bufferSize <= maxBufferSize && !success) {
+              try {
+                // Fetch the page data
+                const response = await invoke<{
+                  status: number;
+                  headers: Record<string, string[]>;
+                  body: string;
+                }>('fetch_page', { url });
+                console.log('fetch response', response);
 
-                // Copy the encoded data into the shared buffer
-                dataArray.set(encodedData);
+                if (response.status >= 200 && response.status < 300) {
+                  const textEncoder = new TextEncoder();
+                  const encodedData = textEncoder.encode(response.body);
 
-                // Signal the worker that the data is ready
-                syncArray[0] = 1;
-                Atomics.notify(syncArray, 0);
-              } else {
-                throw new Error(`HTTP Error: ${response.status}`);
+                  if (encodedData.length > dataArray.length) {
+                    throw new Error('Buffer size insufficient');
+                  }
+
+                  console.log('success ', encodedData.length, dataArray.length);
+                  dataArray.set(encodedData);
+                  syncArray[0] = 1; // Indicate success
+                  console.log('Notifying Atomics with success');
+                  Atomics.notify(syncArray, 0);
+                  success = true;
+                } else {
+                  throw new Error(`HTTP Error: ${response.status}`);
+                }
+              } catch (error) {
+                console.error('error fetching page', error);
+                bufferSize *= 2; // Double the buffer size and retry
+                if (bufferSize > maxBufferSize) {
+                  syncArray[0] = -1; // Indicate error
+                  Atomics.notify(syncArray, 0);
+                  reject(new Error('Failed to fetch page: Buffer size exceeded maximum limit.'));
+                  return;
+                }
               }
-            } catch (error) {
-              console.error('error fetching page', error);
-              syncArray[0] = -1; // Indicate error
-              Atomics.notify(syncArray, 0);
             }
           } else if (isRunDoneMessage(event.data)) {
             clearTimeout(timeout);
