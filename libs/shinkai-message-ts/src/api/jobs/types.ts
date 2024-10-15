@@ -259,6 +259,7 @@ export type GetFileNamesResponse = string[];
 export type JobConfig = {
   custom_prompt: string;
   temperature?: number;
+  max_tokens?: number;
   seed?: number;
   top_k?: number;
   top_p?: number;
