@@ -8,16 +8,8 @@ import {
 export type RestoreLocalWalletInput = Token & {
   nodeAddress: string;
   network: NetworkIdentifier;
-  name: string;
-  privateKey: string;
-  mnemonic: string;
+  privateKey?: string;
+  mnemonic?: string;
   role: WalletRole;
-} & (
-    | {
-        privateKey: string;
-      }
-    | {
-        mnemonic: string;
-      }
-  );
+};
 export type RestoreLocalWalletOutput = RestoreCoinbaseMPCWalletResponse;

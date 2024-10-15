@@ -92,7 +92,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {type === 'password' && (
           <Button
             aria-label={showPassword ? 'Hide password' : 'Show password'}
-            className="peer/adornment adornment text-gray-80 hover:bg-gray-350 absolute right-3 top-3"
+            className="text-gray-80 hover:bg-gray-350 absolute right-3 top-3"
             onClick={togglePasswordVisibility}
             size={'icon'}
             type="button"

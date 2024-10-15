@@ -1,10 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { DialogClose } from '@radix-ui/react-dialog';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   NetworkIdentifier,
   WalletRole,
 } from '@shinkai_network/shinkai-message-ts/api/wallets';
 import { useRestoreCoinbaseMpcWallet } from '@shinkai_network/shinkai-node-state/v2/mutations/restoreCoinbaseMpcWallet/useRestoreCoinbaseMpcWallet';
+import { useRestoreLocalWallet } from '@shinkai_network/shinkai-node-state/v2/mutations/restoreLocalWallet/useRestoreLocalWallet';
 import {
   Button,
   buttonVariants,
@@ -17,8 +19,15 @@ import {
   FormControl,
   FormField,
   FormItem,
-  Input,
+  FormLabel,
   Label,
+  RadioGroup,
+  RadioGroupItem,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   Switch,
   TextField,
 } from '@shinkai_network/shinkai-ui';
@@ -26,8 +35,17 @@ import { CryptoWalletIcon } from '@shinkai_network/shinkai-ui/assets';
 import { useMeasure } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowLeft, Download, FileText, PlusIcon } from 'lucide-react';
-import React, { useMemo, useRef, useState } from 'react';
+import {
+  ArrowDownToLine,
+  ArrowLeft,
+  ArrowLeftRight,
+  ArrowUpFromLine,
+  Download,
+  FileText,
+  PlusIcon,
+  XIcon,
+} from 'lucide-react';
+import { useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -56,7 +74,11 @@ const CryptoWalletPage = () => {
       setView('mpc');
       return;
     }
-    if (view === 'regular-mnemonic' || view === 'regular-private-key') {
+    if (
+      view === 'regular-mnemonic' ||
+      view === 'regular-private-key' ||
+      view === 'regular-create'
+    ) {
       setView('regular');
       return;
     }
@@ -99,7 +121,7 @@ const CryptoWalletPage = () => {
             </DialogHeader>
             <div className="mt-8 space-y-3">
               <Button
-                className="flex h-[auto] w-full items-center justify-start gap-4 rounded-md px-5 py-2.5 text-left"
+                className="flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left hover:bg-gray-200"
                 onClick={() => setView('mpc')}
                 variant="outline"
               >
@@ -115,7 +137,7 @@ const CryptoWalletPage = () => {
                 </div>
               </Button>
               <Button
-                className="flex h-[auto] w-full items-center justify-start gap-4 rounded-md px-5 py-2.5 text-left"
+                className="flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left hover:bg-gray-200"
                 onClick={() => setView('regular')}
                 variant="outline"
               >
@@ -144,9 +166,9 @@ const CryptoWalletPage = () => {
               <a
                 className={cn(
                   buttonVariants({
-                    variant: 'outline',
+                    variant: 'tertiary',
                     className:
-                      'flex h-[auto] w-full items-center justify-start gap-4 rounded-md px-5 py-2.5 text-left',
+                      'flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left hover:bg-gray-200',
                   }),
                 )}
                 href="https://docs.cdp.coinbase.com/mpc-wallet/docs/welcome"
@@ -162,7 +184,7 @@ const CryptoWalletPage = () => {
                 </div>
               </a>
               <Button
-                className="flex h-[auto] w-full items-center justify-start gap-4 rounded-md px-5 py-2.5 text-left"
+                className="flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left hover:bg-gray-200"
                 onClick={() => setView('mpc-restore')}
                 variant="outline"
               >
@@ -188,8 +210,8 @@ const CryptoWalletPage = () => {
             </DialogHeader>
             <div className="mt-8 space-y-3">
               <Button
-                className="flex h-[auto] w-full items-center justify-start gap-4 rounded-md px-5 py-2.5 text-left"
-                onClick={() => setView('mpc-restore')}
+                className="flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left hover:bg-gray-200"
+                onClick={() => setView('regular-create')}
                 variant="outline"
               >
                 <PlusIcon className="size-4 shrink-0" />
@@ -201,7 +223,7 @@ const CryptoWalletPage = () => {
                 </div>
               </Button>
               <Button
-                className="flex h-[auto] w-full items-center justify-start gap-4 rounded-md px-5 py-2.5 text-left"
+                className="flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left hover:bg-gray-200"
                 onClick={() => setView('regular-mnemonic')}
                 variant="outline"
               >
@@ -217,7 +239,7 @@ const CryptoWalletPage = () => {
                 </div>
               </Button>
               <Button
-                className="flex h-[auto] w-full items-center justify-start gap-4 rounded-md px-5 py-2.5 text-left"
+                className="flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left hover:bg-gray-200"
                 onClick={() => setView('regular-private-key')}
                 variant="outline"
               >
@@ -237,47 +259,12 @@ const CryptoWalletPage = () => {
         );
       case 'mpc-restore':
         return <MpcRestoreWallet />;
+      case 'regular-create':
+        return <RegularCreateWallet />;
       case 'regular-mnemonic':
-        return (
-          <div>
-            <DialogHeader>
-              <DialogTitle className="text-center">
-                Import Secret Phrase
-              </DialogTitle>
-            </DialogHeader>
-            <div className="mt-4 space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="recoveryPhrase">Recovery Phrase</Label>
-                <Input
-                  id="recoveryPhrase"
-                  placeholder="Enter your recovery phrase"
-                />
-              </div>
-              <Button className="w-full">Restore Wallet</Button>
-            </div>
-          </div>
-        );
+        return <RegularRestoreWalletMnemonic />;
       case 'regular-private-key':
-        return (
-          <div>
-            <DialogHeader>
-              <DialogTitle className="text-center">
-                Import Private Key
-              </DialogTitle>
-            </DialogHeader>
-            <div className="mt-4 space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="recoveryPhrase">Recovery Phrase</Label>
-                <Input
-                  id="recoveryPhrase"
-                  placeholder="Enter your recovery phrase"
-                />
-              </div>
-              <Button className="w-full">Restore Wallet</Button>
-            </div>
-          </div>
-        );
-
+        return <RegularRestoreWalletPrivateKey />;
       default:
         throw new Error('Invalid view');
     }
@@ -297,14 +284,26 @@ const CryptoWalletPage = () => {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <Dialog onOpenChange={setIsOpen} open={isOpen}>
+            <Dialog
+              onOpenChange={(open) => {
+                if (!open) {
+                  setView('main');
+                }
+                setIsOpen(open);
+              }}
+              open={isOpen}
+            >
               <DialogTrigger asChild>
                 <Button className="min-w-[150px] gap-2 px-3" size="sm">
                   <PlusIcon className="size-4" />
                   Setup Wallet{' '}
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent
+                onInteractOutside={(e) => {
+                  e.preventDefault();
+                }}
+              >
                 <motion.div
                   animate={{
                     height: bounds.height ?? 0,
@@ -316,16 +315,25 @@ const CryptoWalletPage = () => {
                 >
                   {view !== 'main' && (
                     <Button
-                      className="absolute left-4 top-4"
+                      className="absolute left-4 top-6"
                       onClick={handleBack}
                       size="icon"
-                      variant="ghost"
+                      variant="tertiary"
                     >
                       <ArrowLeft className="h-4 w-4" />
                     </Button>
                   )}
+                  <DialogClose asChild>
+                    <Button
+                      className="absolute right-4 top-6"
+                      size="icon"
+                      variant="tertiary"
+                    >
+                      <XIcon className="text-gray-80 h-5 w-5" />
+                    </Button>
+                  </DialogClose>
                   <div
-                    className="px-2 pb-6 pt-2.5 antialiased"
+                    className="px-2 pb-3 pt-2.5 antialiased"
                     ref={elementRef}
                   >
                     <AnimatePresence
@@ -411,7 +419,10 @@ const MpcRestoreWallet = () => {
         <DialogTitle className="text-center">Restore MPC Wallet</DialogTitle>
       </DialogHeader>
       <Form {...form}>
-        <form className="space-y-4" onSubmit={form.handleSubmit(handleSubmit)}>
+        <form
+          className="flex flex-col gap-6 pt-8"
+          onSubmit={form.handleSubmit(handleSubmit)}
+        >
           <FormField
             control={form.control}
             name="name"
@@ -421,7 +432,7 @@ const MpcRestoreWallet = () => {
             control={form.control}
             name="privateKey"
             render={({ field }) => (
-              <TextField field={field} label="Private Key" />
+              <TextField field={field} label="Private Key" type="password" />
             )}
           />
           <FormField
@@ -431,14 +442,12 @@ const MpcRestoreWallet = () => {
               <TextField field={field} label="Wallet ID (optional)" />
             )}
           />
-          <p className="mt-1 text-sm text-gray-400">
-            {t('settings.cryptoWallet.walletIdOptional')}
-          </p>
+
           <FormField
             control={form.control}
             name="serverSigner"
             render={({ field }) => (
-              <FormItem className="mt-4 flex flex-row items-center justify-center space-x-3 py-1">
+              <FormItem className="mt-4 flex flex-row items-center justify-start space-x-3 py-1">
                 <FormControl>
                   <Switch
                     checked={field.value}
@@ -452,20 +461,496 @@ const MpcRestoreWallet = () => {
                     field.value && 'text-white',
                   )}
                 >
-                  <label htmlFor="custom-model">Server Signer</label>
+                  <label htmlFor="custom-model">Enable Server Signer</label>
                 </div>
               </FormItem>
             )}
           />
-          {/*<div className="flex items-center space-x-2">*/}
-          {/*  <Switch*/}
-          {/*      checked={formData.serverSigner}*/}
-          {/*      id="serverSigner"*/}
-          {/*      onCheckedChange={handleSwitchChange}*/}
-          {/*  />*/}
-          {/*  <Label htmlFor="serverSigner">Server Signer</Label>*/}
-          {/*</div>*/}
-          <Button type="submit">{t('common.send')}</Button>
+          <div className="flex justify-end pt-6">
+            <div className="flex justify-end gap-2">
+              <Button
+                className="min-w-[100px] flex-1"
+                size="sm"
+                type="button"
+                variant="ghost"
+              >
+                {t('common.cancel')}
+              </Button>
+              <Button className="min-w-[100px] flex-1" size="sm" type="submit">
+                {t('common.restore')}
+              </Button>
+            </div>
+          </div>
+        </form>
+      </Form>
+    </div>
+  );
+};
+
+export const regularRestoreWalletMnemonicFormSchema = z.object({
+  role: z.string().min(1),
+  network: z.string().min(1),
+  mnemonic: z.string().min(1),
+});
+
+export type RegularRestoreWalletMnemonicFormSchema = z.infer<
+  typeof regularRestoreWalletMnemonicFormSchema
+>;
+
+const RegularRestoreWalletMnemonic = () => {
+  const { t } = useTranslation();
+  const auth = useAuth((state) => state.auth);
+
+  const form = useForm<RegularRestoreWalletMnemonicFormSchema>({
+    resolver: zodResolver(regularRestoreWalletMnemonicFormSchema),
+  });
+
+  const { mutateAsync: restoreLocalWallet } = useRestoreLocalWallet({
+    onSuccess: (response) => {
+      console.log('Wallet restored successfully:', response);
+      toast.success(t('settings.cryptoWallet.successTitle'), {
+        description: t('settings.cryptoWallet.successDescription'),
+      });
+    },
+    onError: (error) => {
+      console.error('Error restoring wallet:', error);
+      toast.error(t('settings.cryptoWallet.errorTitle'), {
+        description: t('settings.cryptoWallet.errorDescription'),
+      });
+    },
+  });
+
+  const handleSubmit = async (data: RegularRestoreWalletMnemonicFormSchema) => {
+    await restoreLocalWallet({
+      token: auth?.api_v2_key ?? '',
+      nodeAddress: auth?.node_address ?? '',
+      network: NetworkIdentifier.BaseSepolia,
+      role: data.role as WalletRole,
+      mnemonic: data.mnemonic,
+    });
+  };
+  return (
+    <div>
+      <DialogHeader>
+        <DialogTitle className="text-center">Import Secret Phrase</DialogTitle>
+      </DialogHeader>
+      <Form {...form}>
+        <form
+          className="flex flex-col gap-6 pt-8"
+          onSubmit={form.handleSubmit(handleSubmit)}
+        >
+          <FormField
+            control={form.control}
+            name="network"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Select a network</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                  </FormControl>
+
+                  <SelectContent>
+                    <SelectItem value="ethereum">Ethereum</SelectItem>
+                    <SelectItem value="sepolia">Sepolia</SelectItem>
+                    <SelectItem value="polygon">Polygon</SelectItem>
+                    <SelectItem value="arbitrum">Arbitrum</SelectItem>
+                    <SelectItem value="optimism">Optimism</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="role"
+            render={({ field }) => (
+              <div className="space-y-1.5">
+                <Label className="text-gray-80 pb-2 pl-2 text-xs">
+                  Select account type
+                </Label>
+                <FormItem>
+                  <FormControl>
+                    <RadioGroup
+                      className="grid grid-cols-3 gap-4"
+                      id="account-type"
+                      onValueChange={(value) => field.onChange(value)}
+                      value={field.value || ''}
+                    >
+                      {[
+                        {
+                          label: 'Payment',
+                          value: WalletRole.Payment,
+                          Icon: ArrowUpFromLine,
+                        },
+                        {
+                          label: 'Receive',
+                          value: WalletRole.Receiving,
+                          Icon: ArrowDownToLine,
+                        },
+                        {
+                          label: 'Both',
+                          value: WalletRole.Both,
+                          Icon: ArrowLeftRight,
+                        },
+                      ].map(({ label, value, Icon }) => (
+                        <div key={label}>
+                          <RadioGroupItem
+                            className="peer sr-only"
+                            id={value}
+                            value={value}
+                          />
+                          <Label
+                            className="peer-data-[state=checked]:border-brand [&:has([data-state=checked])]:border-brand hover:bg-gray-450 flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-gray-200 bg-gray-400 p-4 transition-colors hover:text-white"
+                            htmlFor={value}
+                          >
+                            <Icon className="mb-3 h-6 w-6" />
+                            {label}
+                          </Label>
+                        </div>
+                      ))}
+                    </RadioGroup>
+                  </FormControl>
+                </FormItem>
+              </div>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="mnemonic"
+            render={({ field }) => (
+              <TextField field={field} label="Secret Recovery Phrase" />
+            )}
+          />
+
+          <div className="flex justify-end pt-6">
+            <div className="flex justify-end gap-2">
+              <Button
+                className="min-w-[100px] flex-1"
+                size="sm"
+                type="button"
+                variant="ghost"
+              >
+                {t('common.cancel')}
+              </Button>
+              <Button className="min-w-[100px] flex-1" size="sm" type="submit">
+                {t('common.restore')}
+              </Button>
+            </div>
+          </div>
+        </form>
+      </Form>
+    </div>
+  );
+};
+
+export const regularRestoreWalletPrivateKeyFormSchema = z.object({
+  role: z.string().min(1),
+  network: z.string().min(1),
+  privateKey: z.string().min(1),
+});
+
+export type RegularRestoreWalletPrivateKeyFormSchema = z.infer<
+  typeof regularRestoreWalletPrivateKeyFormSchema
+>;
+
+const RegularRestoreWalletPrivateKey = () => {
+  const { t } = useTranslation();
+  const auth = useAuth((state) => state.auth);
+
+  const form = useForm<RegularRestoreWalletPrivateKeyFormSchema>({
+    resolver: zodResolver(regularRestoreWalletPrivateKeyFormSchema),
+  });
+
+  const { mutateAsync: restoreLocalWallet } = useRestoreLocalWallet({
+    onSuccess: (response) => {
+      console.log('Wallet restored successfully:', response);
+      toast.success(t('settings.cryptoWallet.successTitle'), {
+        description: t('settings.cryptoWallet.successDescription'),
+      });
+    },
+    onError: (error) => {
+      console.error('Error restoring wallet:', error);
+      toast.error(t('settings.cryptoWallet.errorTitle'), {
+        description: t('settings.cryptoWallet.errorDescription'),
+      });
+    },
+  });
+
+  const handleSubmit = async (
+    data: RegularRestoreWalletPrivateKeyFormSchema,
+  ) => {
+    await restoreLocalWallet({
+      token: auth?.api_v2_key ?? '',
+      nodeAddress: auth?.node_address ?? '',
+      network: NetworkIdentifier.BaseSepolia,
+      role: data.role as WalletRole,
+      privateKey: data.privateKey,
+    });
+  };
+  return (
+    <div>
+      <DialogHeader>
+        <DialogTitle className="text-center">Import Private Key</DialogTitle>
+      </DialogHeader>
+      <Form {...form}>
+        <form
+          className="flex flex-col gap-6 pt-8"
+          onSubmit={form.handleSubmit(handleSubmit)}
+        >
+          <FormField
+            control={form.control}
+            name="network"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Select a network</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                  </FormControl>
+
+                  <SelectContent>
+                    <SelectItem value="ethereum">Ethereum</SelectItem>
+                    <SelectItem value="sepolia">Sepolia</SelectItem>
+                    <SelectItem value="polygon">Polygon</SelectItem>
+                    <SelectItem value="arbitrum">Arbitrum</SelectItem>
+                    <SelectItem value="optimism">Optimism</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="role"
+            render={({ field }) => (
+              <div className="space-y-1.5">
+                <Label className="text-gray-80 pb-2 pl-2 text-xs">
+                  Select account type
+                </Label>
+                <FormItem>
+                  <FormControl>
+                    <RadioGroup
+                      className="grid grid-cols-3 gap-4"
+                      id="account-type"
+                      onValueChange={(value) => field.onChange(value)}
+                      value={field.value || ''}
+                    >
+                      {[
+                        {
+                          label: 'Payment',
+                          value: WalletRole.Payment,
+                          Icon: ArrowUpFromLine,
+                        },
+                        {
+                          label: 'Receive',
+                          value: WalletRole.Receiving,
+                          Icon: ArrowDownToLine,
+                        },
+                        {
+                          label: 'Both',
+                          value: WalletRole.Both,
+                          Icon: ArrowLeftRight,
+                        },
+                      ].map(({ label, value, Icon }) => (
+                        <div key={label}>
+                          <RadioGroupItem
+                            className="peer sr-only"
+                            id={value}
+                            value={value}
+                          />
+                          <Label
+                            className="peer-data-[state=checked]:border-brand [&:has([data-state=checked])]:border-brand hover:bg-gray-450 flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-gray-200 bg-gray-400 p-4 transition-colors hover:text-white"
+                            htmlFor={value}
+                          >
+                            <Icon className="mb-3 h-6 w-6" />
+                            {label}
+                          </Label>
+                        </div>
+                      ))}
+                    </RadioGroup>
+                  </FormControl>
+                </FormItem>
+              </div>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="privateKey"
+            render={({ field }) => (
+              <TextField field={field} label="Private Key" />
+            )}
+          />
+
+          <div className="flex justify-end pt-6">
+            <div className="flex justify-end gap-2">
+              <Button
+                className="min-w-[100px] flex-1"
+                size="sm"
+                type="button"
+                variant="ghost"
+              >
+                {t('common.cancel')}
+              </Button>
+              <Button className="min-w-[100px] flex-1" size="sm" type="submit">
+                {t('common.restore')}
+              </Button>
+            </div>
+          </div>
+        </form>
+      </Form>
+    </div>
+  );
+};
+
+export const regularCreateWalletFormSchema = z.object({
+  role: z.string().min(1),
+  network: z.string().min(1),
+});
+
+export type RegularCreateWalletFormSchema = z.infer<
+  typeof regularCreateWalletFormSchema
+>;
+
+const RegularCreateWallet = () => {
+  const { t } = useTranslation();
+  const auth = useAuth((state) => state.auth);
+
+  const form = useForm<RegularCreateWalletFormSchema>({
+    resolver: zodResolver(regularCreateWalletFormSchema),
+  });
+
+  const { mutateAsync: restoreLocalWallet } = useRestoreLocalWallet({
+    onSuccess: (response) => {
+      console.log('Wallet restored successfully:', response);
+      toast.success(t('settings.cryptoWallet.successTitle'), {
+        description: t('settings.cryptoWallet.successDescription'),
+      });
+    },
+    onError: (error) => {
+      console.error('Error restoring wallet:', error);
+      toast.error(t('settings.cryptoWallet.errorTitle'), {
+        description: t('settings.cryptoWallet.errorDescription'),
+      });
+    },
+  });
+
+  const handleSubmit = async (data: RegularCreateWalletFormSchema) => {
+    await restoreLocalWallet({
+      token: auth?.api_v2_key ?? '',
+      nodeAddress: auth?.node_address ?? '',
+      network: NetworkIdentifier.BaseSepolia,
+      role: data.role as WalletRole,
+    });
+  };
+  return (
+    <div>
+      <DialogHeader>
+        <DialogTitle className="text-center">Create Wallet</DialogTitle>
+      </DialogHeader>
+      <Form {...form}>
+        <form
+          className="flex flex-col gap-6 pt-8"
+          onSubmit={form.handleSubmit(handleSubmit)}
+        >
+          <FormField
+            control={form.control}
+            name="network"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Select a network</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                  </FormControl>
+
+                  <SelectContent>
+                    <SelectItem value="ethereum">Ethereum</SelectItem>
+                    <SelectItem value="sepolia">Sepolia</SelectItem>
+                    <SelectItem value="polygon">Polygon</SelectItem>
+                    <SelectItem value="arbitrum">Arbitrum</SelectItem>
+                    <SelectItem value="optimism">Optimism</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="role"
+            render={({ field }) => (
+              <div className="space-y-1.5">
+                <Label className="text-gray-80 pb-2 pl-2 text-xs">
+                  Select account type
+                </Label>
+                <FormItem>
+                  <FormControl>
+                    <RadioGroup
+                      className="grid grid-cols-3 gap-4"
+                      id="account-type"
+                      onValueChange={(value) => field.onChange(value)}
+                      value={field.value || ''}
+                    >
+                      {[
+                        {
+                          label: 'Payment',
+                          value: WalletRole.Payment,
+                          Icon: ArrowUpFromLine,
+                        },
+                        {
+                          label: 'Receive',
+                          value: WalletRole.Receiving,
+                          Icon: ArrowDownToLine,
+                        },
+                        {
+                          label: 'Both',
+                          value: WalletRole.Both,
+                          Icon: ArrowLeftRight,
+                        },
+                      ].map(({ label, value, Icon }) => (
+                        <div>
+                          <RadioGroupItem
+                            className="peer sr-only"
+                            id={value}
+                            value={value}
+                          />
+                          <Label
+                            className="peer-data-[state=checked]:border-brand [&:has([data-state=checked])]:border-brand hover:bg-gray-450 flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-gray-200 bg-gray-400 p-4 transition-colors hover:text-white"
+                            htmlFor={value}
+                          >
+                            <Icon className="mb-3 h-6 w-6" />
+                            {label}
+                          </Label>
+                        </div>
+                      ))}
+                    </RadioGroup>
+                  </FormControl>
+                </FormItem>
+              </div>
+            )}
+          />
+          <div className="flex justify-end pt-6">
+            <div className="flex justify-end gap-2">
+              <Button
+                className="min-w-[100px] flex-1"
+                size="sm"
+                type="button"
+                variant="ghost"
+              >
+                {t('common.cancel')}
+              </Button>
+              <Button className="min-w-[100px] flex-1" size="sm" type="submit">
+                {t('common.restore')}
+              </Button>
+            </div>
+          </div>
         </form>
       </Form>
     </div>
