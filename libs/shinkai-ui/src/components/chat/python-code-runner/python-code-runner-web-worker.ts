@@ -56,7 +56,7 @@ class CustomSession(requests.Session):
             print('Fetching URL:', url)
             response_content = custom_fetch(url)
             response = Response()
-            response._content = response_content
+            response._content = response_content.encode(encoding="utf-8")
             response.status_code = 200  # Assuming success
             return response
         except Exception as e:
