@@ -316,6 +316,11 @@ export default {
       successDescription: 'Your wallet has been restored successfully.',
       errorTitle: 'Error restoring wallet',
       errorDescription: 'There was an error restoring your wallet.',
+      emptyState: {
+        title: 'No wallets found',
+        description:
+          'Manage your crypto wallets. Create or restore your Coinbase CDP Wallet or your Local Wallet.',
+      },
     },
     shinkaiIdentity: {
       label: 'Shinkai Identity',

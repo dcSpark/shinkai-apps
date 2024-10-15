@@ -14,6 +14,7 @@ export const restoreCoinbaseMPCWallet = async ({
 }: RestoreCoinbaseMpcWalletInput) => {
   const data = await restoreCoinbaseMPCWalletApi(nodeAddress, token, {
     network: network,
+    wallet_id: walletId,
     config: {
       name: name,
       private_key: privateKey,
