@@ -6,7 +6,6 @@ import {
 } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import {
   buildInboxIdFromJobId,
-  extractErrorPropertyOrContent,
   extractJobIdFromInbox,
   isJobInbox,
 } from '@shinkai_network/shinkai-message-ts/utils';
@@ -17,13 +16,7 @@ import { useRetryMessage } from '@shinkai_network/shinkai-node-state/v2/mutation
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-  MessageList,
-} from '@shinkai_network/shinkai-ui';
-import { AlertCircle } from 'lucide-react';
+import { MessageList } from '@shinkai_network/shinkai-ui';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';
@@ -37,10 +30,11 @@ import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAnalytics } from '../../lib/posthog-provider';
 import { useAuth } from '../../store/auth';
 
-enum ErrorCodes {
-  VectorResource = 'VectorResource',
-  ShinkaiBackendInferenceLimitReached = 'ShinkaiBackendInferenceLimitReached',
-}
+// enum ErrorCodes {
+//   VectorResource = 'VectorResource',
+//   ShinkaiBackendInferenceLimitReached = 'ShinkaiBackendInferenceLimitReached',
+// }
+
 type UseWebSocketMessage = {
   enabled?: boolean;
 };
@@ -219,16 +213,6 @@ const ChatConversation = () => {
     });
   };
 
-  const isLimitReachedErrorLastMessage = useMemo(() => {
-    const lastMessage = data?.pages?.at(-1)?.at(-1);
-    if (!lastMessage) return;
-    const errorCode = extractErrorPropertyOrContent(
-      lastMessage.content,
-      'error',
-    );
-    return errorCode === ErrorCodes.ShinkaiBackendInferenceLimitReached;
-  }, [data?.pages]);
-
   return (
     <div className="flex max-h-screen flex-1 flex-col overflow-hidden pt-2">
       <ConversationHeader />
@@ -262,21 +246,8 @@ const ChatConversation = () => {
         regenerateFirstMessage={regenerateFirstMessage}
         regenerateMessage={regenerateMessage}
       />
-      {isLimitReachedErrorLastMessage && (
-        <Alert className="mx-auto w-[98%] shadow-lg" variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle className="text-sm">
-            {t('chat.limitReachedTitle')}
-          </AlertTitle>
-          <AlertDescription className="text-gray-80 text-xs">
-            <div className="flex flex-row items-center space-x-2">
-              {t('chat.limitReachedDescription')}
-            </div>
-          </AlertDescription>
-        </Alert>
-      )}
 
-      {!isLimitReachedErrorLastMessage && <ConversationFooter />}
+      <ConversationFooter />
     </div>
   );
 };
