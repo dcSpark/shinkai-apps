@@ -398,15 +398,11 @@ export type ColumnBehavior =
   | ColumnType.Text
   | ColumnType.Number
   | { [ColumnType.Formula]: string }
-  | { [ColumnType.UploadedFiles]: { files: string[] } }
   | {
       [ColumnType.LLMCall]: LLMCallPayload;
     }
-  | {
-      [ColumnType.MultipleVRFiles]: {
-        files: [string, string][];
-      };
-    };
+  | ColumnType.MultipleVRFiles
+  | { [ColumnType.UploadedFiles]: { fileInboxId: string } };
 
 export type Columns = {
   [key: string]: {

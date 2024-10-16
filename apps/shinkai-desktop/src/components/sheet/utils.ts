@@ -58,6 +58,16 @@ export const getWorkflowKey = (
   return undefined;
 };
 
+export const getUploadFilesId = (columnBehavior?: ColumnBehavior): string => {
+  if (
+    typeof columnBehavior === 'object' &&
+    ColumnType.UploadedFiles in columnBehavior
+  ) {
+    return Object.values(columnBehavior)[0].fileInboxId as string;
+  }
+  return '';
+};
+
 export const getRowHeight = (rowType: string) => {
   switch (rowType) {
     case 'small':
