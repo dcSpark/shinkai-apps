@@ -90,9 +90,9 @@ figures = []
 
 def execute_user_code():
 ${code
-    .split('\n')
-    .map((line) => `    ${line}`)
-    .join('\n')}
+  .split('\n')
+  .map((line) => `    ${line}`)
+  .join('\n')}
     return locals()
 
 try:
@@ -169,7 +169,10 @@ const installDependencies = async (code: string): Promise<void> => {
     ...(await findImportsFromCodeString(wrapCode(''))),
     ...(await findImportsFromCodeString(code)),
   ];
-  console.log('Trying to install the following dependencies:', codeDependencies);
+  console.log(
+    'Trying to install the following dependencies:',
+    codeDependencies,
+  );
 
   const installPromises = codeDependencies.map((dependency) =>
     micropip.install(dependency),
@@ -201,7 +204,12 @@ const run = async (code: string) => {
  * @returns The page's body as a string.
  * @throws Will throw an error if the HTTP request fails.
  */
-const fetchPage = (url: string, headers: any, method: 'GET' | 'POST', body: any = null): string => {
+const fetchPage = (
+  url: string,
+  headers: any,
+  method: 'GET' | 'POST',
+  body: any = null,
+): string => {
   console.log('fetchPage called with url:', url);
   console.log('fetchPage called with headers:', headers);
   console.log('fetchPage called with method:', method);
@@ -308,24 +316,11 @@ const initialize = async () => {
 
   // **Mount IDBFS to persist filesystem in IndexedDB**
   try {
-    // Create a persistent directory
-    pyodide.FS.mkdir('/persistent');
-
     // Mount IDBFS to the persistent directory
-    pyodide.FS.mount(pyodide.FS.filesystems.IDBFS, {}, '/persistent');
+    pyodide.FS.mount(pyodide.FS.filesystems.IDBFS, { autoPersist: true }, '/');
 
-    // Synchronize the filesystem: load data from IndexedDB into MEMFS
-    await new Promise<void>((resolve, reject) => {
-      pyodide.FS.syncfs(true, (err: Error | null) => {
-        if (err) {
-          console.error('Error during initial syncfs:', err);
-          reject(err);
-        } else {
-          console.log('Initial syncfs completed (loaded from IndexedDB)');
-          resolve();
-        }
-      });
-    });
+    // Use syncFilesystem to synchronize the filesystem
+    await syncFilesystem(true);
   } catch (error) {
     console.error('Failed to set up IDBFS:', error);
   }
@@ -367,8 +362,8 @@ self.onmessage = async (event) => {
         // Run the Python code
         const runResult = await run(event.data.payload.code);
 
-        // Synchronize the filesystem to save changes to IndexedDB
-        await syncFilesystem(true); // Change to true to save changes
+        // // Synchronize the filesystem to save changes to IndexedDB
+        // await syncFilesystem(false); // Change to true to save changes
 
         // Post the successful run result
         self.postMessage({
