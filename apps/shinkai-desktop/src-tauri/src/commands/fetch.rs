@@ -25,6 +25,7 @@ pub fn header_map_to_hashmap(headers: &HeaderMap) -> HashMap<String, Vec<String>
 #[tauri::command]
 pub async fn get_request(url: String, custom_headers: String) -> Result<FetchResponse, String> {
     log::debug!("get_request called with url: {}", url);
+    log::debug!("get_request called with custom_headers: {}", custom_headers);
     println!("get_request called with url: {}", url);
     eprintln!("get_request");
 

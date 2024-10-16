@@ -181,12 +181,13 @@ const run = async (code: string) => {
  * @returns The page's body as a string.
  * @throws Will throw an error if the HTTP request fails.
  */
-const fetchPage = (url: string, headers: Record<string, string>): string => {
+const fetchPage = (url: string, headers: any): string => {
   console.log('fetchPage called with url:', url);
   console.log('fetchPage called with headers:', headers);
 
   const filteredHeaders: Record<string, string> = {};
-  for (const [key, value] of Object.entries(headers)) {
+  // Extract headers from the Proxy object
+  for (const [key, value] of Object.entries(headers.toJs())) {
     if (typeof key === 'string' && typeof value === 'string') {
       filteredHeaders[key] = value;
     }
@@ -223,14 +224,22 @@ const fetchPage = (url: string, headers: Record<string, string>): string => {
 
     // Convert the binary data to a string
     const textDecoder = new TextDecoder();
-    const result = textDecoder.decode(dataArray);
+    let result = textDecoder.decode(dataArray);
+
+    // Trim null characters from the result
+    result = result.replace(/\0/g, '').trim();
+
     console.log(`Received data of length: ${result.length}`);
+    console.log('result: ', result);
 
     return result;
   } catch (e) {
     console.error('An error occurred:', e);
     // TODO(Alfredo- help): this is not translating to an error that gets shown in the UI
-    throw new Error('Failed to fetch page: ' + (e instanceof Error ? e.message : 'Unknown error'));
+    throw new Error(
+      'Failed to fetch page: ' +
+        (e instanceof Error ? e.message : 'Unknown error'),
+    );
   }
 };
 
