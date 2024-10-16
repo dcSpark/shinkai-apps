@@ -51,7 +51,9 @@ class CustomSession(requests.Session):
     def request(self, method, url, *args, **kwargs):
         try:
             print('Fetching URL:', url)
-            response_content = custom_fetch(url)
+            headers = kwargs.get('headers', {})
+            print('headers', headers);
+            response_content = custom_fetch(url, headers)
             response = Response()
             response._content = response_content.encode(encoding="utf-8")
             response.status_code = 200  # Assuming success
@@ -179,51 +181,57 @@ const run = async (code: string) => {
  * @returns The page's body as a string.
  * @throws Will throw an error if the HTTP request fails.
  */
-const fetchPage = (url: string): string => {
-  let bufferSize = 512 * 1024; // Start with 512kb
-  const maxBufferSize = 100 * 1024 * 1024; // Set a maximum buffer size, e.g., 100MB
-  let sharedBuffer: SharedArrayBuffer;
-  let result = ''; // Initialize result with an empty string
+const fetchPage = (url: string, headers: Record<string, string>): string => {
+  console.log('fetchPage called with url:', url);
+  console.log('fetchPage called with headers:', headers);
 
-  while (bufferSize <= maxBufferSize) {
-    try {
-      sharedBuffer = new SharedArrayBuffer(bufferSize);
-      const syncArray = new Int32Array(sharedBuffer, 0, 1);
-      const dataArray = new Uint8Array(sharedBuffer, 4);
-
-      // Post a message to the main thread with the shared buffer
-      self.postMessage({
-        type: 'get-page',
-        meta: url,
-        sharedBuffer,
-      });
-
-      console.log('Posted message to main thread, waiting for response...');
-
-      // Wait for the main thread to signal completion
-      Atomics.wait(syncArray, 0, 0);
-      console.log('atomic wait done');
-
-      // Convert the binary data to a string
-      const textDecoder = new TextDecoder();
-      result = textDecoder.decode(dataArray);
-      console.log(`Received data of length: ${result.length}`);
-
-      // If successful, break out of the loop
-      break;
-    } catch (e) {
-      console.error(`Buffer size ${bufferSize} was insufficient, retrying with larger size.`);
-      bufferSize *= 2; // Double the buffer size and retry
+  const filteredHeaders: Record<string, string> = {};
+  for (const [key, value] of Object.entries(headers)) {
+    if (typeof key === 'string' && typeof value === 'string') {
+      filteredHeaders[key] = value;
     }
   }
+  console.log('filteredHeaders', filteredHeaders);
 
-  console.log('result', result);
+  const bufferSize = 512 * 1024; // Fixed buffer size of 512kb
+  const sharedBuffer = new SharedArrayBuffer(bufferSize);
+  const syncArray = new Int32Array(sharedBuffer, 0, 1);
+  const dataArray = new Uint8Array(sharedBuffer, 4);
 
-  if (!result) {
-    throw new Error('Failed to fetch page: Buffer size exceeded maximum limit.');
+  try {
+    // Post a message to the main thread with the shared buffer
+    self.postMessage({
+      type: 'get-page',
+      meta: url,
+      headers: filteredHeaders,
+      sharedBuffer,
+    });
+
+    console.log('Posted message to main thread, waiting for response...');
+
+    // Wait for the main thread to signal completion
+    Atomics.wait(syncArray, 0, 0);
+    console.log('atomic wait done with status: ', syncArray[0]);
+
+    if (syncArray[0] === -1) {
+      // Error occurred, decode the error message
+      const textDecoder = new TextDecoder();
+      const errorMessage = textDecoder.decode(dataArray);
+      console.error('Error fetching page:', errorMessage);
+      throw new Error(errorMessage); // Ensure the error message is thrown
+    }
+
+    // Convert the binary data to a string
+    const textDecoder = new TextDecoder();
+    const result = textDecoder.decode(dataArray);
+    console.log(`Received data of length: ${result.length}`);
+
+    return result;
+  } catch (e) {
+    console.error('An error occurred:', e);
+    // TODO(Alfredo- help): this is not translating to an error that gets shown in the UI
+    throw new Error('Failed to fetch page: ' + (e instanceof Error ? e.message : 'Unknown error'));
   }
-
-  return result;
 };
 
 const initialize = async () => {
