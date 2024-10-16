@@ -21,7 +21,12 @@ import {
   QrIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { BarChart2, CodesandboxIcon, SettingsIcon, WalletMinimal } from 'lucide-react';
+import {
+  BarChart2,
+  CodesandboxIcon,
+  SettingsIcon,
+  WalletMinimal,
+} from 'lucide-react';
 import React, { useState } from 'react';
 import { Link, Outlet, useMatch, useNavigate } from 'react-router-dom';
 
@@ -166,6 +171,11 @@ export function MainNav() {
       icon: <PromptLibraryIcon className="text-gray-80 h-4 w-4" />,
     },
     {
+      title: t('settings.layout.cryptoWallet'),
+      href: '/settings/crypto-wallet',
+      icon: <WalletMinimal className="text-gray-80 h-4 w-4" />,
+    },
+    {
       title: t('settings.layout.galxe'),
       href: '/settings/galxe-validation',
       icon: (
@@ -174,11 +184,6 @@ export function MainNav() {
         </div>
       ),
       disabled: true,
-    },
-    {
-      title: t('settings.layout.cryptoWallet'),
-      href: '/settings/crypto-wallet',
-      icon: <WalletMinimal className="text-gray-80 h-4 w-4" />,
     },
   ].filter(Boolean) as NavigationLink[];
 

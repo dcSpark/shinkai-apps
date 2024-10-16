@@ -54,9 +54,74 @@ import { SimpleLayout } from './layout/simple-layout';
 
 const CryptoWalletPage = () => {
   const { t } = useTranslation();
+
+  const auth = useAuth((state) => state.auth);
+
+  const { data: walletInfo } = useGetWalletList({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
+  const walletExist =
+    walletInfo?.payment_wallet || walletInfo?.receiving_wallet;
+
+  return (
+    <SimpleLayout
+      classname="max-w-4xl "
+      headerRightElement={
+        walletExist ? <CreateWalletDialog buttonLabel="Update Wallet" /> : null
+      }
+      title={t('settings.cryptoWallet.title')}
+    >
+      {walletExist ? (
+        <div className="mt-6 flex w-full items-center justify-between gap-4 rounded-md border border-gray-200 px-6 py-3">
+          <span className="rounded-md bg-gray-300 p-2">
+            <CryptoWalletIcon className="size-4" />
+          </span>
+          <div className="flex-1 space-y-1">
+            <h2 className="text-sm font-medium">
+              {walletInfo?.payment_wallet.data.network.display_name}
+              {walletInfo?.payment_wallet.data.network.is_testnet && (
+                <Badge className="ml-2" variant="tags">
+                  Testnet
+                </Badge>
+              )}
+            </h2>
+            <p className="text-gray-80 text-sm">
+              {walletInfo?.payment_wallet?.data?.address?.address_id}
+            </p>
+          </div>
+          <span className="text-gray-80 text-xs">
+            -{' '}
+            {walletInfo?.payment_wallet?.data?.network?.native_asset?.asset_id}
+          </span>
+        </div>
+      ) : (
+        <div className="flex h-full flex-col items-center justify-center">
+          <div className="col-span-4 flex flex-col items-center justify-center gap-3 rounded-md p-6">
+            <AddCryptoWalletIcon />
+            <div className="flex flex-col items-center text-center">
+              <h2 className="text-lg font-medium">
+                {t('settings.cryptoWallet.emptyState.title')}
+              </h2>
+              <p className="text-gray-80 text-sm">
+                {t('settings.cryptoWallet.emptyState.description')}
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <CreateWalletDialog buttonLabel="Setup Wallet" />
+            </div>
+          </div>
+        </div>
+      )}
+    </SimpleLayout>
+  );
+};
+
+const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
   const [elementRef, bounds] = useMeasure();
   const previousHeightRef = useRef<number | null>();
-  const auth = useAuth((state) => state.auth);
+
   const openWalletCreationModal = useWalletsStore(
     (state) => state.openWalletCreationModal,
   );
@@ -70,10 +135,6 @@ const CryptoWalletPage = () => {
     (state) => state.setWalletCreationView,
   );
 
-  const { data: walletInfo } = useGetWalletList({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-  });
   const handleBack = () => {
     if (walletCreationView === WalletCreateConnectView.MpcRestore) {
       setWalletCreationView(WalletCreateConnectView.Mpc);
@@ -284,126 +345,77 @@ const CryptoWalletPage = () => {
     }
   };
 
-  const walletExist =
-    walletInfo?.payment_wallet || walletInfo?.receiving_wallet;
-
   return (
-    <SimpleLayout
-      classname="max-w-4xl "
-      title={t('settings.cryptoWallet.title')}
+    <Dialog
+      onOpenChange={(open) => {
+        if (!open) {
+          setWalletCreationView(WalletCreateConnectView.Main);
+        }
+        setOpenWalletCreationModal(open);
+      }}
+      open={openWalletCreationModal}
     >
-      {walletExist ? (
-        <div className="mt-6 flex w-full items-center justify-between gap-4 rounded-md border border-gray-200 px-6 py-3">
-          <span className="rounded-md bg-gray-300 p-2">
-            <CryptoWalletIcon className="size-4" />
-          </span>
-          <div className="flex-1 space-y-1">
-            <h2 className="text-sm font-medium">
-              {walletInfo?.payment_wallet.data.network.display_name}
-              {walletInfo?.payment_wallet.data.network.is_testnet && (
-                <Badge className="ml-2" variant="tags">
-                  Testnet
-                </Badge>
-              )}
-            </h2>
-            <p className="text-gray-80 text-sm">
-              {walletInfo?.payment_wallet?.data?.address?.address_id}
-            </p>
-          </div>
-          <span className="text-gray-80 text-xs">
-            -{' '}
-            {walletInfo?.payment_wallet?.data?.network?.native_asset?.asset_id}
-          </span>
-        </div>
-      ) : (
-        <div className="flex h-full flex-col items-center justify-center">
-          <div className="col-span-4 flex flex-col items-center justify-center gap-3 rounded-md p-6">
-            <AddCryptoWalletIcon />
-            <div className="flex flex-col items-center text-center">
-              <h2 className="text-lg font-medium">
-                {t('settings.cryptoWallet.emptyState.title')}
-              </h2>
-              <p className="text-gray-80 text-sm">
-                {t('settings.cryptoWallet.emptyState.description')}
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <Dialog
-                onOpenChange={(open) => {
-                  if (!open) {
-                    setWalletCreationView(WalletCreateConnectView.Main);
-                  }
-                  setOpenWalletCreationModal(open);
+      <DialogTrigger asChild>
+        <Button className="min-w-[150px] gap-2 px-3" size="sm">
+          {buttonLabel}
+        </Button>
+      </DialogTrigger>
+      <DialogContent
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+      >
+        <motion.div
+          animate={{
+            height: bounds.height ?? 0,
+            transition: {
+              duration: 0.27,
+              ease: [0.25, 1, 0.5, 1],
+            },
+          }}
+        >
+          {walletCreationView !== WalletCreateConnectView.Main && (
+            <Button
+              className="absolute left-4 top-6"
+              onClick={handleBack}
+              size="icon"
+              variant="tertiary"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          )}
+          <DialogClose asChild>
+            <Button
+              className="absolute right-4 top-6"
+              size="icon"
+              variant="tertiary"
+            >
+              <XIcon className="text-gray-80 h-5 w-5" />
+            </Button>
+          </DialogClose>
+          <div className="px-2 pt-2.5 antialiased" ref={elementRef}>
+            <AnimatePresence
+              custom={walletCreationView}
+              initial={false}
+              mode="popLayout"
+            >
+              <motion.div
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                initial={{ opacity: 0, scale: 0.96 }}
+                key={walletCreationView}
+                transition={{
+                  duration: opacityDuration,
+                  ease: [0.26, 0.08, 0.25, 1],
                 }}
-                open={openWalletCreationModal}
               >
-                <DialogTrigger asChild>
-                  <Button className="min-w-[150px] gap-2 px-3" size="sm">
-                    <PlusIcon className="size-4" />
-                    Setup Wallet{' '}
-                  </Button>
-                </DialogTrigger>
-                <DialogContent
-                  onInteractOutside={(e) => {
-                    e.preventDefault();
-                  }}
-                >
-                  <motion.div
-                    animate={{
-                      height: bounds.height ?? 0,
-                      transition: {
-                        duration: 0.27,
-                        ease: [0.25, 1, 0.5, 1],
-                      },
-                    }}
-                  >
-                    {walletCreationView !== 'main' && (
-                      <Button
-                        className="absolute left-4 top-6"
-                        onClick={handleBack}
-                        size="icon"
-                        variant="tertiary"
-                      >
-                        <ArrowLeft className="h-4 w-4" />
-                      </Button>
-                    )}
-                    <DialogClose asChild>
-                      <Button
-                        className="absolute right-4 top-6"
-                        size="icon"
-                        variant="tertiary"
-                      >
-                        <XIcon className="text-gray-80 h-5 w-5" />
-                      </Button>
-                    </DialogClose>
-                    <div className="px-2 pt-2.5 antialiased" ref={elementRef}>
-                      <AnimatePresence
-                        custom={walletCreationView}
-                        initial={false}
-                        mode="popLayout"
-                      >
-                        <motion.div
-                          animate={{ opacity: 1, scale: 1, y: 0 }}
-                          exit={{ opacity: 0, scale: 0.96 }}
-                          initial={{ opacity: 0, scale: 0.96 }}
-                          key={walletCreationView}
-                          transition={{
-                            duration: opacityDuration,
-                            ease: [0.26, 0.08, 0.25, 1],
-                          }}
-                        >
-                          {renderContent()}
-                        </motion.div>
-                      </AnimatePresence>
-                    </div>
-                  </motion.div>
-                </DialogContent>
-              </Dialog>
-            </div>
+                {renderContent()}
+              </motion.div>
+            </AnimatePresence>
           </div>
-        </div>
-      )}
-    </SimpleLayout>
+        </motion.div>
+      </DialogContent>
+    </Dialog>
   );
 };
 
@@ -424,11 +436,15 @@ const MpcRestoreWallet = () => {
   const form = useForm<MpcRestoreWalletFormSchema>({
     resolver: zodResolver(mpcRestoreWalletFormSchema),
   });
+  const setOpenWalletCreationModal = useWalletsStore(
+    (state) => state.setOpenWalletCreationModal,
+  );
 
   const { mutateAsync: restoreCoinbaseMPCWallet } = useRestoreCoinbaseMpcWallet(
     {
       onSuccess: () => {
         toast.success('MPC Wallet restored successfully');
+        setOpenWalletCreationModal(false);
       },
       onError: (error) => {
         toast.error('Error restoring MPC wallet', {
@@ -530,7 +546,9 @@ export type RegularRestoreWalletMnemonicFormSchema = z.infer<
 const RegularRestoreWalletMnemonic = () => {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
-
+  const setOpenWalletCreationModal = useWalletsStore(
+    (state) => state.setOpenWalletCreationModal,
+  );
   const form = useForm<RegularRestoreWalletMnemonicFormSchema>({
     resolver: zodResolver(regularRestoreWalletMnemonicFormSchema),
     defaultValues: {
@@ -542,6 +560,7 @@ const RegularRestoreWalletMnemonic = () => {
   const { mutateAsync: restoreLocalWallet } = useRestoreLocalWallet({
     onSuccess: () => {
       toast.success('Wallet restored successfully');
+      setOpenWalletCreationModal(false);
     },
     onError: (error) => {
       toast.error('Error restoring wallet', {
@@ -574,7 +593,7 @@ const RegularRestoreWalletMnemonic = () => {
             name="mnemonic"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Custom Prompt</FormLabel>
+                <FormLabel>Secret Recovery Phrase</FormLabel>
                 <FormControl>
                   <Textarea
                     className="!min-h-[130px] resize-none text-sm"
@@ -612,6 +631,9 @@ export type RegularRestoreWalletPrivateKeyFormSchema = z.infer<
 const RegularRestoreWalletPrivateKey = () => {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
+  const setOpenWalletCreationModal = useWalletsStore(
+    (state) => state.setOpenWalletCreationModal,
+  );
 
   const form = useForm<RegularRestoreWalletPrivateKeyFormSchema>({
     resolver: zodResolver(regularRestoreWalletPrivateKeyFormSchema),
@@ -624,6 +646,7 @@ const RegularRestoreWalletPrivateKey = () => {
   const { mutateAsync: restoreLocalWallet } = useRestoreLocalWallet({
     onSuccess: () => {
       toast.success('Wallet restored successfully');
+      setOpenWalletCreationModal(false);
     },
     onError: (error) => {
       toast.error('Error restoring wallet', {
@@ -763,6 +786,9 @@ export type RegularCreateWalletFormSchema = z.infer<
 const RegularCreateWallet = () => {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
+  const setOpenWalletCreationModal = useWalletsStore(
+    (state) => state.setOpenWalletCreationModal,
+  );
 
   const form = useForm<RegularCreateWalletFormSchema>({
     resolver: zodResolver(regularCreateWalletFormSchema),
@@ -775,6 +801,7 @@ const RegularCreateWallet = () => {
   const { mutateAsync: createLocalWallet } = useCreateLocalWallet({
     onSuccess: () => {
       toast.success('Wallet created successfully');
+      setOpenWalletCreationModal(false);
     },
     onError: (error) => {
       toast.error('Error creating wallet', {

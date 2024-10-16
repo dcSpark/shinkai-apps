@@ -305,7 +305,7 @@ export default {
       addCoinbaseCDPWallet: 'Add Coinbase CDP Wallet',
       addLocalWallet: 'Add Local Wallet',
       description:
-        'Manage your crypto wallets. Add your Coinbase CDP Wallet or your Local Wallet.',
+        'Manage your crypto wallets. Add your Coinbase CDP Wallet or your Hot Wallet.',
       addWallet: 'Add Wallet',
       name: 'Name',
       privateKey: 'Private Key',
@@ -319,7 +319,7 @@ export default {
       emptyState: {
         title: 'No wallets found',
         description:
-          'Manage your crypto wallets. Create or restore your Coinbase CDP Wallet or your Local Wallet.',
+          'Manage your crypto wallets. Create or restore your Coinbase CDP Wallet or your Hot Wallet.',
       },
     },
     shinkaiIdentity: {
