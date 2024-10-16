@@ -6,7 +6,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Button } from '../../button';
 import { OutputRender } from './output-render';
 import {
-  PythonCodeRunnerWebWorkerMessage,
   RunResult,
 } from './python-code-runner-web-worker';
 import PythonRunnerWorker from './python-code-runner-web-worker?worker';
@@ -16,9 +15,10 @@ type PythonCodeRunnerProps = {
 };
 
 // Define more specific message types
-type FetchPageMessage = {
-  type: 'fetch-page-response';
+type GetPageMessage = {
+  type: 'get-page';
   meta: string; // URL
+  headers: Record<string, string>; // Add headers field
   sharedBuffer: SharedArrayBuffer;
 };
 
@@ -27,13 +27,13 @@ type RunDoneMessage = {
   payload: RunResult;
 };
 
-type WorkerMessage = FetchPageMessage | RunDoneMessage;
+type WorkerMessage = GetPageMessage | RunDoneMessage;
 
 // Type guard functions
 function isFetchPageMessage(
   message: WorkerMessage,
-): message is FetchPageMessage {
-  return message.type === 'fetch-page-response';
+): message is GetPageMessage {
+  return message.type === 'get-page';
 }
 
 function isRunDoneMessage(message: WorkerMessage): message is RunDoneMessage {
@@ -56,6 +56,7 @@ export const usePythonRunnerRunMutation = (
           if (isFetchPageMessage(event.data)) {
             console.log('fetching page', event.data.meta);
             const url = event.data.meta;
+            const headers = event.data.headers; // Extract headers
 
             const sharedBuffer = event.data.sharedBuffer; // Initialize outside the loop
             const syncArray = new Int32Array(sharedBuffer, 0, 1);
@@ -72,7 +73,7 @@ export const usePythonRunnerRunMutation = (
                   status: number;
                   headers: Record<string, string[]>;
                   body: string;
-                }>('fetch_page', { url });
+                }>('get_request', { url, custom_headers: headers });
                 console.log('fetch response', response);
 
                 if (response.status >= 200 && response.status < 300) {

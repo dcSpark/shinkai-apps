@@ -193,7 +193,7 @@ const fetchPage = (url: string): string => {
 
       // Post a message to the main thread with the shared buffer
       self.postMessage({
-        type: 'fetch-page-response',
+        type: 'get-page',
         meta: url,
         sharedBuffer,
       });
