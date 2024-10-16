@@ -1,18 +1,45 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useMutation, UseMutationOptions } from '@tanstack/react-query';
+import { invoke } from '@tauri-apps/api/core';
 import { AnimatePresence, motion } from 'framer-motion';
 
 import { Button } from '../../button';
 import { OutputRender } from './output-render';
-import {
-  PythonCodeRunnerWebWorkerMessage,
-  RunResult,
-} from './python-code-runner-web-worker';
+import { RunResult } from './python-code-runner-web-worker';
 import PythonRunnerWorker from './python-code-runner-web-worker?worker';
+
+// Utility function to create a delay
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 type PythonCodeRunnerProps = {
   code: string;
 };
+
+// Define more specific message types
+type PageMessage = {
+  type: 'page';
+  method: 'GET' | 'POST'; // New field to specify the method
+  meta: string; // URL
+  headers: Record<string, string>; // Headers
+  body?: string; // Optional body content for POST
+  sharedBuffer: SharedArrayBuffer;
+};
+
+type RunDoneMessage = {
+  type: 'run-done';
+  payload: RunResult;
+};
+
+type WorkerMessage = PageMessage | RunDoneMessage;
+
+// Type guard functions
+function isPageMessage(message: WorkerMessage): message is PageMessage {
+  return message.type === 'page';
+}
+
+function isRunDoneMessage(message: WorkerMessage): message is RunDoneMessage {
+  return message.type === 'run-done';
+}
 
 export const usePythonRunnerRunMutation = (
   options?: UseMutationOptions<RunResult, Error, { code: string }>,
@@ -20,32 +47,103 @@ export const usePythonRunnerRunMutation = (
   const response = useMutation({
     mutationFn: async (params: { code: string }): Promise<RunResult> => {
       const worker = new PythonRunnerWorker();
-      worker.postMessage({ type: 'run', payload: { code: params.code } });
-      const result: RunResult = await new Promise<RunResult>(
-        (resolve, reject) => {
-          const timeout = setTimeout(() => {
-            reject(new Error('execution timed out'));
-          }, 30000);
-          worker.onmessage = (event: {
-            data: PythonCodeRunnerWebWorkerMessage;
-          }) => {
-            if (event.data.type === 'run-done') {
-              clearTimeout(timeout);
-              console.log('worker event', event);
-              resolve(event.data.payload);
+
+      return new Promise<RunResult>((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(new Error('execution timed out'));
+        }, 120000); // 2 minutes
+
+        worker.onmessage = async (event: { data: WorkerMessage }) => {
+          if (isPageMessage(event.data)) {
+            const { method, meta: url, headers, body, sharedBuffer } = event.data;
+            console.log(`main thread> ${method.toLowerCase()}ing page`, url);
+            console.log('main thread> headers: ', headers);
+
+            const syncArray = new Int32Array(sharedBuffer, 0, 1);
+            const dataArray = new Uint8Array(sharedBuffer, 4);
+
+            const bufferSize = 512 * 1024; // Start with 512Kb
+            const maxBufferSize = 100 * 1024 * 1024; // Set a maximum buffer size, e.g., 100MB
+            let success = false;
+
+            while (bufferSize <= maxBufferSize && !success) {
+              try {
+                console.log(`main thread> ${method.toLowerCase()}ing page`, url);
+                const response = await invoke<{
+                  status: number;
+                  headers: Record<string, string[]>;
+                  body: string;
+                }>(method === 'GET' ? 'get_request' : 'post_request', {
+                  url,
+                  customHeaders: JSON.stringify(headers),
+                  ...(method === 'POST' && { body: JSON.stringify(body) }), // Ensure body is a string
+                });
+                console.log(`main thread> ${method.toLowerCase()} response`, response);
+
+                if (response.status >= 200 && response.status < 300) {
+                  const textEncoder = new TextEncoder();
+                  const encodedData = textEncoder.encode(response.body);
+
+                  if (encodedData.length > dataArray.length) {
+                    throw new Error('Buffer size insufficient');
+                  }
+
+                  console.log(
+                    'main thread> success ',
+                    encodedData.length,
+                    dataArray.length,
+                  );
+                  dataArray.set(encodedData);
+                  syncArray[0] = 1; // Indicate success
+                  console.log('main thread> Notifying Atomics with success');
+                  Atomics.notify(syncArray, 0);
+                  success = true;
+                } else {
+                  throw new Error(`HTTP Error: ${response.status}`);
+                }
+              } catch (error) {
+                let errorMessage = 'Unknown error';
+                if (error instanceof Error) {
+                  errorMessage = error.message;
+                }
+                console.error(`main thread> error ${method.toLowerCase()}ing page`, errorMessage);
+
+                const textEncoder = new TextEncoder();
+                const encodedError = textEncoder.encode(errorMessage);
+
+                if (encodedError.length <= dataArray.length) {
+                  dataArray.set(encodedError);
+                } else {
+                  console.warn('Error message too long to fit in buffer');
+                }
+
+                console.log('main thread> Notifying Atomics with error');
+                syncArray[0] = -1; // Indicate error
+                Atomics.notify(syncArray, 0);
+
+                // Await the delay before rejecting
+                await delay(10);
+                reject(new Error(`Failed to ${method.toLowerCase()} page: ` + errorMessage));
+                return; // Exit the loop and function after rejection
+              }
             }
-          };
-          worker.onerror = (error: { message: string }) => {
+          } else if (isRunDoneMessage(event.data)) {
             clearTimeout(timeout);
-            console.log('worker error', error);
-            reject(new Error(`worker error: ${error.message}`));
-          };
-        },
-      ).finally(() => {
+            console.log('main thread> worker event', event);
+            resolve(event.data.payload);
+          }
+        };
+
+        worker.onerror = (error: { message: string }) => {
+          console.log('worker error', error);
+          clearTimeout(timeout);
+          reject(new Error(`worker error: ${error.message}`));
+        };
+
+        worker.postMessage({ type: 'run', payload: { code: params.code } });
+      }).finally(() => {
         worker.terminate();
       });
-      console.log('mutation run result', result);
-      return result;
     },
     ...options,
     onSuccess: (...onSuccessParameters) => {
