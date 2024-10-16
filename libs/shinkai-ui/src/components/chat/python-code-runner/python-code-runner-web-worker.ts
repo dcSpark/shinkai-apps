@@ -52,8 +52,12 @@ class CustomSession(requests.Session):
         try:
             print('Fetching URL:', url)
             headers = kwargs.get('headers', {})
+            body = kwargs.get('data', None) or kwargs.get('json', None)
             print('headers', headers);
-            response_content = custom_fetch(url, headers)
+            print('method', method);
+            if body:
+                print('body', body);
+            response_content = custom_fetch(url, headers, method, body)
             response = Response()
             response._content = response_content.encode(encoding="utf-8")
             response.status_code = 200  # Assuming success
@@ -62,8 +66,8 @@ class CustomSession(requests.Session):
             print(f"CustomSession request error: {e}")
             raise
 
-# Override the default requests.get with our custom session's get method
 requests.get = CustomSession().get
+requests.post = CustomSession().post
 
 import matplotlib
 matplotlib.use("AGG")
@@ -181,12 +185,15 @@ const run = async (code: string) => {
  * @returns The page's body as a string.
  * @throws Will throw an error if the HTTP request fails.
  */
-const fetchPage = (url: string, headers: any): string => {
+const fetchPage = (url: string, headers: any, method: 'GET' | 'POST', body: any = null): string => {
   console.log('fetchPage called with url:', url);
   console.log('fetchPage called with headers:', headers);
+  console.log('fetchPage called with method:', method);
+  if (body) {
+    console.log('fetchPage called with body:', body);
+  }
 
   const filteredHeaders: Record<string, string> = {};
-  // Extract headers from the Proxy object
   for (const [key, value] of Object.entries(headers.toJs())) {
     if (typeof key === 'string' && typeof value === 'string') {
       filteredHeaders[key] = value;
@@ -194,39 +201,58 @@ const fetchPage = (url: string, headers: any): string => {
   }
   console.log('filteredHeaders', filteredHeaders);
 
+  // Process body based on its type
+  let processedBody: any = null;
+  if (body) {
+    if (typeof body === 'string') {
+      processedBody = body; // If it's a string, use it directly
+    } else if (body && typeof body.toJs === 'function') {
+      // Check if body has a toJs method, indicating it might be a Proxy
+      try {
+        const jsBody = body.toJs();
+        processedBody = {};
+        const proxyEntries = Object.entries(jsBody);
+        for (const [key, value] of proxyEntries) {
+          processedBody[key] = value;
+        }
+      } catch (error) {
+        console.error('Error processing Proxy-like body:', error);
+      }
+    } else if (typeof body === 'object') {
+      processedBody = JSON.stringify(body); // Convert JSON object to string
+    }
+  }
+  console.log('Final processedBody:', processedBody);
+
   const bufferSize = 512 * 1024; // Fixed buffer size of 512kb
   const sharedBuffer = new SharedArrayBuffer(bufferSize);
   const syncArray = new Int32Array(sharedBuffer, 0, 1);
   const dataArray = new Uint8Array(sharedBuffer, 4);
 
   try {
-    // Post a message to the main thread with the shared buffer
     self.postMessage({
-      type: 'get-page',
+      type: 'page', // Updated message type
+      method, // Include method in the message
       meta: url,
       headers: filteredHeaders,
+      body: processedBody, // Use processed body
       sharedBuffer,
     });
 
     console.log('Posted message to main thread, waiting for response...');
 
-    // Wait for the main thread to signal completion
     Atomics.wait(syncArray, 0, 0);
     console.log('atomic wait done with status: ', syncArray[0]);
 
     if (syncArray[0] === -1) {
-      // Error occurred, decode the error message
       const textDecoder = new TextDecoder();
       const errorMessage = textDecoder.decode(dataArray);
       console.error('Error fetching page:', errorMessage);
-      throw new Error(errorMessage); // Ensure the error message is thrown
+      throw new Error(errorMessage);
     }
 
-    // Convert the binary data to a string
     const textDecoder = new TextDecoder();
     let result = textDecoder.decode(dataArray);
-
-    // Trim null characters from the result
     result = result.replace(/\0/g, '').trim();
 
     console.log(`Received data of length: ${result.length}`);
@@ -235,7 +261,6 @@ const fetchPage = (url: string, headers: any): string => {
     return result;
   } catch (e) {
     console.error('An error occurred:', e);
-    // TODO(Alfredo- help): this is not translating to an error that gets shown in the UI
     throw new Error(
       'Failed to fetch page: ' +
         (e instanceof Error ? e.message : 'Unknown error'),

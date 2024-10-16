@@ -16,10 +16,12 @@ type PythonCodeRunnerProps = {
 };
 
 // Define more specific message types
-type GetPageMessage = {
-  type: 'get-page';
+type PageMessage = {
+  type: 'page';
+  method: 'GET' | 'POST'; // New field to specify the method
   meta: string; // URL
-  headers: Record<string, string>; // Add headers field
+  headers: Record<string, string>; // Headers
+  body?: string; // Optional body content for POST
   sharedBuffer: SharedArrayBuffer;
 };
 
@@ -28,23 +30,11 @@ type RunDoneMessage = {
   payload: RunResult;
 };
 
-type PostPageMessage = {
-  type: 'post-page';
-  meta: string; // URL
-  headers: Record<string, string>; // Headers
-  body: string; // Body content for POST
-  sharedBuffer: SharedArrayBuffer;
-};
-
-type WorkerMessage = GetPageMessage | RunDoneMessage | PostPageMessage;
+type WorkerMessage = PageMessage | RunDoneMessage;
 
 // Type guard functions
-function isFetchPageMessage(message: WorkerMessage): message is GetPageMessage {
-  return message.type === 'get-page';
-}
-
-function isPostPageMessage(message: WorkerMessage): message is PostPageMessage {
-  return message.type === 'post-page';
+function isPageMessage(message: WorkerMessage): message is PageMessage {
+  return message.type === 'page';
 }
 
 function isRunDoneMessage(message: WorkerMessage): message is RunDoneMessage {
@@ -64,13 +54,11 @@ export const usePythonRunnerRunMutation = (
         }, 120000); // 2 minutes
 
         worker.onmessage = async (event: { data: WorkerMessage }) => {
-          if (isFetchPageMessage(event.data)) {
-            console.log('main thread> fetching page', event.data.meta);
-            const url = event.data.meta;
-            const headers = event.data.headers; // Extract headers
+          if (isPageMessage(event.data)) {
+            const { method, meta: url, headers, body, sharedBuffer } = event.data;
+            console.log(`main thread> ${method.toLowerCase()}ing page`, url);
             console.log('main thread> headers: ', headers);
 
-            const sharedBuffer = event.data.sharedBuffer; // Initialize outside the loop
             const syncArray = new Int32Array(sharedBuffer, 0, 1);
             const dataArray = new Uint8Array(sharedBuffer, 4);
 
@@ -80,16 +68,17 @@ export const usePythonRunnerRunMutation = (
 
             while (bufferSize <= maxBufferSize && !success) {
               try {
-                // Fetch the page data
+                console.log(`main thread> ${method.toLowerCase()}ing page`, url);
                 const response = await invoke<{
                   status: number;
                   headers: Record<string, string[]>;
                   body: string;
-                }>('get_request', {
+                }>(method === 'GET' ? 'get_request' : 'post_request', {
                   url,
                   customHeaders: JSON.stringify(headers),
+                  ...(method === 'POST' && { body: JSON.stringify(body) }), // Ensure body is a string
                 });
-                console.log('main thread> fetch response', response);
+                console.log(`main thread> ${method.toLowerCase()} response`, response);
 
                 if (response.status >= 200 && response.status < 300) {
                   const textEncoder = new TextEncoder();
@@ -117,7 +106,7 @@ export const usePythonRunnerRunMutation = (
                 if (error instanceof Error) {
                   errorMessage = error.message;
                 }
-                console.error('main thread> error fetching page', errorMessage);
+                console.error(`main thread> error ${method.toLowerCase()}ing page`, errorMessage);
 
                 const textEncoder = new TextEncoder();
                 const encodedError = textEncoder.encode(errorMessage);
@@ -134,81 +123,7 @@ export const usePythonRunnerRunMutation = (
 
                 // Await the delay before rejecting
                 await delay(10);
-                reject(new Error('Failed to fetch page: ' + errorMessage));
-                return; // Exit the loop and function after rejection
-              }
-            }
-          } else if (isPostPageMessage(event.data)) {
-            console.log('main thread> posting page', event.data.meta);
-            const url = event.data.meta;
-            const headers = event.data.headers;
-            const body = event.data.body;
-
-            const sharedBuffer = event.data.sharedBuffer;
-            const syncArray = new Int32Array(sharedBuffer, 0, 1);
-            const dataArray = new Uint8Array(sharedBuffer, 4);
-
-            const bufferSize = 512 * 1024; // Start with 512Kb
-            const maxBufferSize = 100 * 1024 * 1024; // Set a maximum buffer size, e.g., 100MB
-            let success = false;
-
-            while (bufferSize <= maxBufferSize && !success) {
-              try {
-                // Post the page data
-                const response = await invoke<{
-                  status: number;
-                  headers: Record<string, string[]>;
-                  body: string;
-                }>('post_request', {
-                  url,
-                  customHeaders: JSON.stringify(headers),
-                  body,
-                });
-                console.log('main thread> post response', response);
-
-                if (response.status >= 200 && response.status < 300) {
-                  const textEncoder = new TextEncoder();
-                  const encodedData = textEncoder.encode(response.body);
-
-                  if (encodedData.length > dataArray.length) {
-                    throw new Error('Buffer size insufficient');
-                  }
-
-                  console.log(
-                    'main thread> success ',
-                    encodedData.length,
-                    dataArray.length,
-                  );
-                  dataArray.set(encodedData);
-                  syncArray[0] = 1; // Indicate success
-                  console.log('main thread> Notifying Atomics with success');
-                  Atomics.notify(syncArray, 0);
-                  success = true;
-                } else {
-                  throw new Error(`HTTP Error: ${response.status}`);
-                }
-              } catch (error) {
-                let errorMessage = 'Unknown error';
-                if (error instanceof Error) {
-                  errorMessage = error.message;
-                }
-                console.error('main thread> error posting page', errorMessage);
-
-                const textEncoder = new TextEncoder();
-                const encodedError = textEncoder.encode(errorMessage);
-
-                if (encodedError.length <= dataArray.length) {
-                  dataArray.set(encodedError);
-                } else {
-                  console.warn('Error message too long to fit in buffer');
-                }
-
-                syncArray[0] = -1; // Indicate error
-                Atomics.notify(syncArray, 0);
-
-                // Await the delay before rejecting
-                await delay(10);
-                reject(new Error('Failed to fetch page: ' + errorMessage));
+                reject(new Error(`Failed to ${method.toLowerCase()} page: ` + errorMessage));
                 return; // Exit the loop and function after rejection
               }
             }
