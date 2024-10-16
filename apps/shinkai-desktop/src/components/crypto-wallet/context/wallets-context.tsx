@@ -16,6 +16,7 @@ type WalletsStore = {
   setWalletCreationView: (walletCreationView: WalletCreateConnectView) => void;
   openWalletCreationModal: boolean;
   setOpenWalletCreationModal: (openWalletCreationModal: boolean) => void;
+  resetWalletCreation: () => void;
 };
 
 const createWalletsStore = () =>
@@ -28,6 +29,12 @@ const createWalletsStore = () =>
     openWalletCreationModal: false,
     setOpenWalletCreationModal: (openWalletCreationModal) => {
       set({ openWalletCreationModal });
+    },
+    resetWalletCreation: () => {
+      set({
+        walletCreationView: WalletCreateConnectView.Main,
+        openWalletCreationModal: false,
+      });
     },
   }));
 

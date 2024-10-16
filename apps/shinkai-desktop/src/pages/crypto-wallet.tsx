@@ -128,6 +128,9 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
   const setOpenWalletCreationModal = useWalletsStore(
     (state) => state.setOpenWalletCreationModal,
   );
+  const resetWalletCreation = useWalletsStore(
+    (state) => state.resetWalletCreation,
+  );
   const walletCreationView = useWalletsStore(
     (state) => state.walletCreationView,
   );
@@ -349,7 +352,8 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
     <Dialog
       onOpenChange={(open) => {
         if (!open) {
-          setWalletCreationView(WalletCreateConnectView.Main);
+          resetWalletCreation();
+          return;
         }
         setOpenWalletCreationModal(open);
       }}
@@ -436,15 +440,15 @@ const MpcRestoreWallet = () => {
   const form = useForm<MpcRestoreWalletFormSchema>({
     resolver: zodResolver(mpcRestoreWalletFormSchema),
   });
-  const setOpenWalletCreationModal = useWalletsStore(
-    (state) => state.setOpenWalletCreationModal,
+  const resetWalletCreation = useWalletsStore(
+    (state) => state.resetWalletCreation,
   );
 
   const { mutateAsync: restoreCoinbaseMPCWallet } = useRestoreCoinbaseMpcWallet(
     {
       onSuccess: () => {
         toast.success('MPC Wallet restored successfully');
-        setOpenWalletCreationModal(false);
+        resetWalletCreation();
       },
       onError: (error) => {
         toast.error('Error restoring MPC wallet', {
@@ -546,8 +550,8 @@ export type RegularRestoreWalletMnemonicFormSchema = z.infer<
 const RegularRestoreWalletMnemonic = () => {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
-  const setOpenWalletCreationModal = useWalletsStore(
-    (state) => state.setOpenWalletCreationModal,
+  const resetWalletCreation = useWalletsStore(
+    (state) => state.resetWalletCreation,
   );
   const form = useForm<RegularRestoreWalletMnemonicFormSchema>({
     resolver: zodResolver(regularRestoreWalletMnemonicFormSchema),
@@ -560,7 +564,7 @@ const RegularRestoreWalletMnemonic = () => {
   const { mutateAsync: restoreLocalWallet } = useRestoreLocalWallet({
     onSuccess: () => {
       toast.success('Wallet restored successfully');
-      setOpenWalletCreationModal(false);
+      resetWalletCreation();
     },
     onError: (error) => {
       toast.error('Error restoring wallet', {
@@ -631,8 +635,8 @@ export type RegularRestoreWalletPrivateKeyFormSchema = z.infer<
 const RegularRestoreWalletPrivateKey = () => {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
-  const setOpenWalletCreationModal = useWalletsStore(
-    (state) => state.setOpenWalletCreationModal,
+  const resetWalletCreation = useWalletsStore(
+    (state) => state.resetWalletCreation,
   );
 
   const form = useForm<RegularRestoreWalletPrivateKeyFormSchema>({
@@ -646,7 +650,7 @@ const RegularRestoreWalletPrivateKey = () => {
   const { mutateAsync: restoreLocalWallet } = useRestoreLocalWallet({
     onSuccess: () => {
       toast.success('Wallet restored successfully');
-      setOpenWalletCreationModal(false);
+      resetWalletCreation();
     },
     onError: (error) => {
       toast.error('Error restoring wallet', {
@@ -786,8 +790,8 @@ export type RegularCreateWalletFormSchema = z.infer<
 const RegularCreateWallet = () => {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
-  const setOpenWalletCreationModal = useWalletsStore(
-    (state) => state.setOpenWalletCreationModal,
+  const resetWalletCreation = useWalletsStore(
+    (state) => state.resetWalletCreation,
   );
 
   const form = useForm<RegularCreateWalletFormSchema>({
@@ -801,7 +805,7 @@ const RegularCreateWallet = () => {
   const { mutateAsync: createLocalWallet } = useCreateLocalWallet({
     onSuccess: () => {
       toast.success('Wallet created successfully');
-      setOpenWalletCreationModal(false);
+      resetWalletCreation();
     },
     onError: (error) => {
       toast.error('Error creating wallet', {
