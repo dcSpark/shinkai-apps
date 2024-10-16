@@ -34,6 +34,10 @@ let pyodide: PyodideInterface;
 const stdout: string[] = [];
 const stderr: string[] = [];
 
+// Flag to check if Pyodide has been initialized
+let isInitialized = false;
+
+// Wrap user code with additional Python setup
 const wrapCode = (code: string): string => {
   const wrappedCode = `
 import sys
@@ -43,6 +47,7 @@ import plotly.express as px
 import plotly.io as pio
 import json
 import array
+import os
 
 import requests
 from requests.models import Response
@@ -72,6 +77,9 @@ requests.post = CustomSession().post
 import matplotlib
 matplotlib.use("AGG")
 
+# Ensure the working directory exists
+os.makedirs('/working', exist_ok=True)
+
 # Function to capture DataFrame display as HTML
 def capture_df_display(df):
     return df.to_html()
@@ -82,9 +90,9 @@ figures = []
 
 def execute_user_code():
 ${code
-  .split('\n')
-  .map((line) => `    ${line}`)
-  .join('\n')}
+    .split('\n')
+    .map((line) => `    ${line}`)
+    .join('\n')}
     return locals()
 
 try:
@@ -110,11 +118,12 @@ except Exception as e:
 
 figures = json.dumps(figures)
 (output, outputError, figures)
-    `;
+  `;
   console.log('Running code:', wrappedCode);
   return wrappedCode;
 };
 
+// Function to find imports from Python code
 const findImportsFromCodeString = async (code: string): Promise<string[]> => {
   const wrappedCode = `
 from pyodide.code import find_imports
@@ -122,7 +131,7 @@ import json
 code = """${code.replace(/"""/g, '\\"\\"\\"')}"""
 imports = find_imports(code)
 json.dumps(imports)
-`;
+  `;
   const jsonResult = await pyodide.runPythonAsync(wrappedCode);
   const result = JSON.parse(jsonResult);
   return result;
@@ -138,7 +147,7 @@ json.dumps(imports)
  * the web-based Python runtime.
  *
  * This just do the best effort to install micropip dependencies
- * Native pyodide dependencies are install uner the hood when call runPythonAsync
+ * Native pyodide dependencies are install under the hood when call runPythonAsync
  *
  * The function performs the following steps:
  * 1. Loads the 'micropip' package.
@@ -152,13 +161,16 @@ const installDependencies = async (code: string): Promise<void> => {
   console.time('install micropip dependencies');
   await pyodide.loadPackage(['micropip']);
   const micropip = pyodide.pyimport('micropip');
-  micropip.install('pyodide-http>=0.2.1');
+  // TODO: i think is safe to remove this since we are not using pyodide-http
+  // await micropip.install('pyodide-http>=0.2.1');
+
   const codeDependencies = [
-    // Our code wrapper constains dependencies so we need to install them
+    // Our code wrapper contains dependencies so we need to install them
     ...(await findImportsFromCodeString(wrapCode(''))),
     ...(await findImportsFromCodeString(code)),
   ];
-  console.log('trying to install the following dependencies', codeDependencies);
+  console.log('Trying to install the following dependencies:', codeDependencies);
+
   const installPromises = codeDependencies.map((dependency) =>
     micropip.install(dependency),
   );
@@ -166,6 +178,7 @@ const installDependencies = async (code: string): Promise<void> => {
   console.timeEnd('install micropip dependencies');
 };
 
+// Function to execute Python code
 const run = async (code: string) => {
   console.time('run code');
   const wrappedCode = wrapCode(code);
@@ -182,6 +195,9 @@ const run = async (code: string) => {
  * Synchronously fetches a web page by polling for messages.
  *
  * @param url - The URL of the page to fetch.
+ * @param headers - The headers to include in the request.
+ * @param method - The HTTP method ('GET' or 'POST').
+ * @param body - The body of the request (optional).
  * @returns The page's body as a string.
  * @throws Will throw an error if the HTTP request fails.
  */
@@ -268,35 +284,93 @@ const fetchPage = (url: string, headers: any, method: 'GET' | 'POST', body: any 
   }
 };
 
+// Initialize Pyodide and set up the filesystem
 const initialize = async () => {
+  if (isInitialized) {
+    console.log('Pyodide is already initialized.');
+    return;
+  }
+
   console.time('initialize');
   pyodide = await loadPyodide({
     indexURL: INDEX_URL,
     stdout: (message) => {
-      console.log('python stdout', message);
+      console.log('python stdout:', message);
       stdout.push(message);
     },
     stderr: (message) => {
-      console.log('python stderr', message);
+      console.log('python stderr:', message);
       stderr.push(message);
     },
     fullStdLib: false,
   });
   console.log('Pyodide initialized');
+
+  // **Mount IDBFS to persist filesystem in IndexedDB**
+  try {
+    // Create a persistent directory
+    pyodide.FS.mkdir('/persistent');
+
+    // Mount IDBFS to the persistent directory
+    pyodide.FS.mount(pyodide.FS.filesystems.IDBFS, {}, '/persistent');
+
+    // Synchronize the filesystem: load data from IndexedDB into MEMFS
+    await new Promise<void>((resolve, reject) => {
+      pyodide.FS.syncfs(true, (err: Error | null) => {
+        if (err) {
+          console.error('Error during initial syncfs:', err);
+          reject(err);
+        } else {
+          console.log('Initial syncfs completed (loaded from IndexedDB)');
+          resolve();
+        }
+      });
+    });
+  } catch (error) {
+    console.error('Failed to set up IDBFS:', error);
+  }
+
   // **Inject fetchPage into Python's global scope**
   pyodide.globals.set('custom_fetch', fetchPage);
 
+  isInitialized = true;
   console.timeEnd('initialize');
 };
 
+// Function to synchronize the filesystem to IndexedDB
+const syncFilesystem = async (save = false) => {
+  return new Promise<void>((resolve, reject) => {
+    pyodide.FS.syncfs(save, (err: any) => {
+      if (err) {
+        console.error('syncfs error:', err);
+        reject(err);
+      } else {
+        console.log(`syncfs ${save ? 'saved to' : 'loaded from'} IndexedDB`);
+        resolve();
+      }
+    });
+  });
+};
+
+// Message handler for the web worker
 self.onmessage = async (event) => {
   switch (event.data?.type) {
     case 'run':
       console.time('total run time');
       try {
+        // Initialize Pyodide if not already done
         await initialize();
+
+        // Install dependencies
         await installDependencies(event.data.payload.code);
+
+        // Run the Python code
         const runResult = await run(event.data.payload.code);
+
+        // Synchronize the filesystem to save changes to IndexedDB
+        await syncFilesystem(true); // Change to true to save changes
+
+        // Post the successful run result
         self.postMessage({
           type: 'run-done',
           payload: {
@@ -307,6 +381,7 @@ self.onmessage = async (event) => {
           } as RunResult,
         });
       } catch (e) {
+        // Post the error result
         self.postMessage({
           type: 'run-done',
           payload: {
@@ -320,5 +395,8 @@ self.onmessage = async (event) => {
         console.timeEnd('total run time');
       }
       break;
+
+    default:
+      console.warn('Unknown message type:', event.data?.type);
   }
 };
