@@ -98,6 +98,28 @@
         "create": true
       },
       {
+        "fullscreen": false,
+        "label": "python-code-runner",
+        "transparent": false,
+        "title": "Python Code Runner",
+        "width": 720,
+        "height": 470,
+        "resizable": true,
+        "dragDropEnabled": true,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": false,
+        "url": "src/windows/python-code-runner/index.html",
+        "center": true,
+        "skipTaskbar": false,
+        "shadow": false,
+        "decorations": false,
+        "visible": true,
+        "closable": false,
+        "parent": null,
+        "create": true,
+        
+      },
+      {
         "label": "shinkai-node-manager",
         "url": "src/windows/shinkai-node-manager/index.html",
         "transparent": true,

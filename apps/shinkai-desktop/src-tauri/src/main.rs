@@ -14,6 +14,7 @@ use crate::commands::shinkai_node_manager_commands::{
 };
 
 use commands::spotlight_commands::hide_spotlight_window_app;
+use external_api::init;
 use global_shortcuts::global_shortcut_handler;
 use globals::SHINKAI_NODE_MANAGER_INSTANCE;
 use local_shinkai_node::shinkai_node_manager::ShinkaiNodeManager;
@@ -25,6 +26,7 @@ use windows::Window;
 
 mod audio;
 mod commands;
+mod external_api;
 mod galxe;
 mod global_shortcuts;
 mod globals;
@@ -116,9 +118,11 @@ fn main() {
                     }
                 }
             });
-
             create_tray(app.handle())?;
-
+            let app_handle_clone = app.handle().clone();
+            tauri::async_runtime::spawn(async move {
+                init(app_handle_clone, 11436).await;
+            });
             Ok(())
         })
         .build(tauri::generate_context!())

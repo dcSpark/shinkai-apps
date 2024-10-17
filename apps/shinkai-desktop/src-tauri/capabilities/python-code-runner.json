@@ -1,0 +1,13 @@
+{
+  "identifier": "python-code-runner",
+  "description": "permissions for python-code-runner window",
+  "local": true,
+  "windows": ["python-code-runner"],
+  "permissions": [
+    "core:event:allow-listen",
+    "core:event:allow-unlisten",
+    "core:event:allow-emit",
+    "log:default"
+  ],
+  "commands.allow": []
+}

@@ -5,6 +5,8 @@ pub enum Window {
     Main,
     ShinkaiNodeManager,
     Spotlight,
+    Coordinator,
+    PythonCodeRunner,
 }
 
 impl Window {
@@ -13,6 +15,8 @@ impl Window {
             Window::Main => "main",
             Window::ShinkaiNodeManager => "shinkai-node-manager",
             Window::Spotlight => "spotlight",
+            Window::Coordinator => "coordinator",
+            Window::PythonCodeRunner => "python-code-runner",
         }
     }
 }
@@ -52,3 +56,4 @@ pub fn hide_spotlight_window(app_handle: AppHandle) {
         window.hide().unwrap();
     }
 }
+
