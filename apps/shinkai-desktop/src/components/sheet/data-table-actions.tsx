@@ -203,23 +203,11 @@ export function AddColumnAction() {
           },
         };
       case ColumnType.MultipleVRFiles:
-        return {
-          [ColumnType.MultipleVRFiles]: {
-            files: [
-              [
-                '/My Files (Private)/Shinkai/Shinkai Whitepaper',
-                'Shinkai Whitepaper',
-              ],
-            ],
-          },
-        };
+        return ColumnType.MultipleVRFiles;
       case ColumnType.UploadedFiles:
         return {
           [ColumnType.UploadedFiles]: {
-            files: [
-              '/My Files (Private)/Shinkai/Shinkai Whitepaper',
-              '/My Files (Private)/Shinkai/Shinkai Whitepaper',
-            ],
+            fileInboxId: '',
           },
         };
       default:
@@ -247,6 +235,7 @@ export function AddColumnAction() {
       node_encryption_pk: auth.node_encryption_pk,
       profile_encryption_sk: auth.profile_encryption_sk,
       profile_identity_sk: auth.profile_identity_sk,
+      token: auth.api_v2_key,
     });
   };
 

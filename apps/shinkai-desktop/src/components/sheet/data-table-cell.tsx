@@ -1,5 +1,6 @@
 import { Tooltip } from '@radix-ui/react-tooltip';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { addFileToInbox } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 import {
   ColumnBehavior,
   ColumnStatus,
@@ -31,14 +32,16 @@ import { FileInput, PlusIcon } from 'lucide-react';
 import { Tree } from 'primereact/tree';
 import { TreeNode } from 'primereact/treenode';
 import React, { useEffect, useState } from 'react';
+import { useDropzone } from 'react-dropzone';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import { treeOptions } from '../../lib/constants';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
 import { useSheetProjectStore } from './context/table-context';
-import { getColumnBehaviorName, getRowHeight } from './utils';
+import { getColumnBehaviorName, getRowHeight, getUploadFilesId } from './utils';
 
 interface DataTableCellProps<TData> {
   row: Row<TData>;
@@ -122,7 +125,10 @@ export function DataTableCell<TData>({
 
   const isCellValueChanged = cellValue !== initialValue;
   const columnType = getColumnBehaviorName(columnBehavior);
+
   const isMultipleVRFiles = columnType === ColumnType.MultipleVRFiles;
+  const isUploadedFiles = columnType === ColumnType.UploadedFiles;
+  const fileInboxId = isUploadedFiles ? getUploadFilesId(columnBehavior) : null;
 
   const ref = useHotkeys<HTMLDivElement>(
     HOTKEYS,
@@ -196,6 +202,7 @@ export function DataTableCell<TData>({
         'relative flex size-full items-center justify-start gap-1.5 rounded-lg bg-transparent px-2 py-1 pr-0 outline-none',
         isSelected &&
           'outline-brand rounded-sm outline outline-1 -outline-offset-1',
+        (isUploadedFiles || isMultipleVRFiles) && 'cursor-pointer p-0',
       )}
       onClick={(e) => {
         if (
@@ -301,6 +308,13 @@ export function DataTableCell<TData>({
                 </span>
               )}
             </div>
+          ) : isUploadedFiles ? (
+            <FileUploadButton
+              columnId={column.id}
+              fileInboxId={fileInboxId}
+              initialValue={initialValue}
+              rowId={row.id}
+            />
           ) : (
             <>
               <span
@@ -426,5 +440,92 @@ export const VectorFsScopeDrawer = ({
         </SheetFooter>
       </SheetContent>
     </Sheet>
+  );
+};
+
+const FileUploadButton = ({
+  initialValue,
+  fileInboxId,
+  columnId,
+  rowId,
+}: {
+  initialValue: string | null;
+  fileInboxId: string | null;
+  columnId: string | undefined;
+  rowId: string | undefined;
+}) => {
+  const { mutateAsync: setCellSheet } = useSetCellSheet();
+  const auth = useAuth((state) => state.auth);
+  const { sheetId } = useParams();
+
+  const handleUpdateCell = async (fileName: string) => {
+    if (!auth || !sheetId) return;
+    await setCellSheet({
+      nodeAddress: auth.node_address,
+      shinkaiIdentity: auth.shinkai_identity,
+      profile: auth.profile,
+      sheetId: sheetId ?? '',
+      columnId: columnId ?? '',
+      rowId: rowId ?? '',
+      value: fileName ?? '',
+      my_device_encryption_sk: auth.my_device_encryption_sk,
+      my_device_identity_sk: auth.my_device_identity_sk,
+      node_encryption_pk: auth.node_encryption_pk,
+      profile_encryption_sk: auth.profile_encryption_sk,
+      profile_identity_sk: auth.profile_identity_sk,
+    });
+  };
+
+  const { getRootProps: getRootFileProps, getInputProps: getInputFileProps } =
+    useDropzone({
+      multiple: false,
+      maxFiles: 1,
+      onDrop: async (acceptedFiles) => {
+        if (!auth || !fileInboxId) return;
+        try {
+          await addFileToInbox(auth.node_address, auth.api_v2_key, {
+            file: acceptedFiles[0],
+            filename: encodeURIComponent(acceptedFiles[0].name),
+            file_inbox_name: '',
+          });
+          await handleUpdateCell(acceptedFiles[0].name);
+        } catch (error) {
+          if (error instanceof Error) {
+            toast.error('Error uploading file', {
+              description: error.message,
+            });
+            console.error('Error uploading file', error);
+          }
+        }
+      },
+    });
+
+  return (
+    <div
+      {...getRootFileProps({
+        className:
+          'dropzone size-full bg-gray-500 px-2 py-1 flex items-center justify-start overflow-hidden',
+      })}
+    >
+      <div
+        className={cn(
+          'group ml-2 flex items-center justify-center rounded-xl bg-gray-50/10 px-2 py-[3px] transition-colors hover:bg-gray-200',
+          initialValue && 'border border-gray-300 bg-transparent',
+        )}
+      >
+        {initialValue ? (
+          <span className="flex items-center gap-2">
+            <FileInput className="text-gray-80 h-3.5 w-3.5 shrink-0" />
+            <span className="text-gray-80 line-clamp-1">{initialValue}</span>
+          </span>
+        ) : (
+          <span className="text-gray-80 flex items-center gap-2 pr-3 text-xs transition-colors group-hover:text-white">
+            <PlusIcon size={16} />
+            Click to upload
+          </span>
+        )}
+      </div>
+      <input {...getInputFileProps({})} />
+    </div>
   );
 };
