@@ -298,6 +298,29 @@ export default {
       publicKeys: 'Public Keys',
       galxe: 'Galxe Quest',
       promptLibrary: 'Prompt Library',
+      cryptoWallet: 'Crypto Wallet',
+    },
+    cryptoWallet: {
+      title: 'Crypto Wallet',
+      addCoinbaseCDPWallet: 'Add Coinbase CDP Wallet',
+      addLocalWallet: 'Add Local Wallet',
+      description:
+        'Manage your crypto wallets. Add your Coinbase CDP Wallet or your Hot Wallet.',
+      addWallet: 'Add Wallet',
+      name: 'Name',
+      privateKey: 'Private Key',
+      walletId: 'Wallet ID',
+      serverSigner: 'Server Signer',
+      walletIdOptional: 'Wallet ID is optional',
+      successTitle: 'Wallet restored successfully',
+      successDescription: 'Your wallet has been restored successfully.',
+      errorTitle: 'Error restoring wallet',
+      errorDescription: 'There was an error restoring your wallet.',
+      emptyState: {
+        title: 'No wallets found',
+        description:
+          'Manage your crypto wallets. Create or restore your Coinbase CDP Wallet or your Hot Wallet.',
+      },
     },
     shinkaiIdentity: {
       label: 'Shinkai Identity',

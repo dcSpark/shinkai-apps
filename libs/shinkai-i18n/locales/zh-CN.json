@@ -315,6 +315,22 @@
     "restore": "恢复"
   },
   "settings": {
+    "cryptoWallet": {
+      "addCoinbaseCDPWallet": "添加 Coinbase CDP 钱包",
+      "addLocalWallet": "添加本地钱包",
+      "addWallet": "添加钱包",
+      "description": "管理您的加密钱包。添加您的 Coinbase CDP 钱包或本地钱包。",
+      "errorDescription": "恢复您的钱包时发生错误。",
+      "errorTitle": "恢复钱包时出错",
+      "name": "名称",
+      "privateKey": "私钥",
+      "serverSigner": "服务器签名者",
+      "successDescription": "您的钱包已成功恢复。",
+      "successTitle": "钱包恢复成功",
+      "title": "加密钱包",
+      "walletId": "钱包 ID",
+      "walletIdOptional": "钱包 ID 可选"
+    },
     "defaultAgent": "默认 AI",
     "description": "管理您的帐户设置偏好。",
     "experimentalFeature": {
@@ -332,6 +348,7 @@
     "layout": {
       "analytics": "分析",
       "createRegistrationCode": "创建注册码",
+      "cryptoWallet": "加密钱包",
       "exportConnection": "导出连接",
       "galxe": "Galxe任务",
       "general": "常规",
