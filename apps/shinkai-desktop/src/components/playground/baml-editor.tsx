@@ -241,6 +241,7 @@ function BamlEditor() {
       content: escapedBamlInput,
       workflowCode,
       isHidden: true,
+      playground: true,
       chatConfig: {
         stream: false,
         custom_prompt: '',
