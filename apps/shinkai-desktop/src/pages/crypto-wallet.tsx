@@ -439,6 +439,9 @@ const MpcRestoreWallet = () => {
   const auth = useAuth((state) => state.auth);
   const form = useForm<MpcRestoreWalletFormSchema>({
     resolver: zodResolver(mpcRestoreWalletFormSchema),
+    defaultValues: {
+      serverSigner: false,
+    },
   });
   const resetWalletCreation = useWalletsStore(
     (state) => state.resetWalletCreation,
@@ -457,7 +460,7 @@ const MpcRestoreWallet = () => {
       },
     },
   );
-
+  console.log(form.formState);
   const handleSubmit = async (data: MpcRestoreWalletFormSchema) => {
     await restoreCoinbaseMPCWallet({
       token: auth?.api_v2_key ?? '',
