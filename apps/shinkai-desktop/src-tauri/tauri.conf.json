@@ -42,7 +42,7 @@
   "app": {
     "withGlobalTauri": false,
     "security": {
-      "csp": null
+      "csp": "default-src 'self'; connect-src ipc: http://ipc.localhost; cross-origin-embedder-policy 'require-corp'; cross-origin-opener-policy 'same-origin'"
     },
     "windows": [
       {
