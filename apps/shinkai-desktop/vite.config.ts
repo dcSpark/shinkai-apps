@@ -61,10 +61,14 @@ export default defineConfig(() => ({
         ),
         spotlight: resolve(__dirname, 'src/windows/spotlight/index.html'),
         coordinator: resolve(__dirname, 'src/windows/coordinator/index.html'),
+        'python-code-runner': resolve(
+          __dirname,
+          'src/windows/python-code-runner/index.html',
+        ),
       },
     },
   },
   worker: {
-    format: 'es' as const
+    format: 'es' as const,
   },
 }));
