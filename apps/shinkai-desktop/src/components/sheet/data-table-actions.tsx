@@ -1,6 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PopoverClose } from '@radix-ui/react-popover';
-import { createFilesInbox } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 import {
   ColumnBehavior,
   ColumnType,
@@ -188,15 +187,6 @@ export function AddColumnAction() {
   });
 
   const generateColumnBehavior = (columnType: ColumnType): ColumnBehavior => {
-    let fileInboxId = '';
-    if (columnType === ColumnType.UploadedFiles) {
-      createFilesInbox(auth?.node_address ?? '', auth?.api_v2_key ?? '').then(
-        (response) => {
-          fileInboxId = response;
-        },
-      );
-    }
-
     switch (columnType) {
       case ColumnType.Text:
         return ColumnType.Text;
@@ -217,7 +207,7 @@ export function AddColumnAction() {
       case ColumnType.UploadedFiles:
         return {
           [ColumnType.UploadedFiles]: {
-            fileInboxId,
+            fileInboxId: '',
           },
         };
       default:
@@ -245,6 +235,7 @@ export function AddColumnAction() {
       node_encryption_pk: auth.node_encryption_pk,
       profile_encryption_sk: auth.profile_encryption_sk,
       profile_identity_sk: auth.profile_identity_sk,
+      token: auth.api_v2_key,
     });
   };
 

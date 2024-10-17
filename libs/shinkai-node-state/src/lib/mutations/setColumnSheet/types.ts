@@ -1,3 +1,4 @@
+import { Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import type {
   ColumnBehavior,
   CredentialsPayload,
@@ -11,12 +12,13 @@ export type SetSheetColumnOutput = {
   };
 };
 
-export type SetSheetColumnInput = CredentialsPayload & {
-  nodeAddress: string;
-  shinkaiIdentity: string;
-  profile: string;
-  sheetId: string;
-  columnId: string | undefined;
-  columnName: string;
-  columnBehavior: ColumnBehavior;
-};
+export type SetSheetColumnInput = Token &
+  CredentialsPayload & {
+    nodeAddress: string;
+    shinkaiIdentity: string;
+    profile: string;
+    sheetId: string;
+    columnId: string | undefined;
+    columnName: string;
+    columnBehavior: ColumnBehavior;
+  };
