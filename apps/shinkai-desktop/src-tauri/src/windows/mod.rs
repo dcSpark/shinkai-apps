@@ -1,10 +1,11 @@
-use tauri::{AppHandle, Manager, WebviewWindowBuilder};
+use tauri::{AppHandle, Listener, Manager, WebviewWindowBuilder};
 
 #[derive(Debug, Clone, Copy)]
 pub enum Window {
     Main,
     ShinkaiNodeManager,
     Spotlight,
+    Coordinator,
 }
 
 impl Window {
@@ -13,17 +14,20 @@ impl Window {
             Window::Main => "main",
             Window::ShinkaiNodeManager => "shinkai-node-manager",
             Window::Spotlight => "spotlight",
+            Window::Coordinator => "coordinator",
         }
     }
 }
 
-pub fn show_or_recreate_window(app_handle: AppHandle, window_name: Window) {
+pub fn recreate_window(app_handle: AppHandle, window_name: Window, focus: bool) {
     let label = window_name.as_str();
     if let Some(window) = app_handle.get_webview_window(label) {
         log::info!("window {} found, bringing to front", label);
-        window.show().unwrap();
-        window.center().unwrap();
-        let _ = window.set_focus();
+        if focus {
+            window.show().unwrap();
+            window.center().unwrap();
+            let _ = window.set_focus();
+        }
     } else {
         log::info!("window {} not found, recreating...", label);
         let window_config = app_handle

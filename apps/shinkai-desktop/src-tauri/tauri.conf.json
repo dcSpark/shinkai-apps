@@ -42,7 +42,7 @@
   "app": {
     "withGlobalTauri": false,
     "security": {
-      "csp": "default-src 'self'; connect-src ipc: http://ipc.localhost; cross-origin-embedder-policy 'require-corp'; cross-origin-opener-policy 'same-origin'"
+      "csp": null
     },
     "windows": [
       {
@@ -53,7 +53,8 @@
         "resizable": true,
         "dragDropEnabled": false,
         "titleBarStyle": "Overlay",
-        "hiddenTitle": true
+        "hiddenTitle": true,
+        "create": false
       },
       {
         "fullscreen": false,
@@ -74,7 +75,7 @@
         "visible": false,
         "closable": false,
         "parent": null,
-        "create": true
+        "create": false
       },
       {
         "fullscreen": false,
@@ -95,7 +96,7 @@
         "visible": false,
         "closable": false,
         "parent": null,
-        "create": true
+        "create": false
       },
       {
         "label": "shinkai-node-manager",

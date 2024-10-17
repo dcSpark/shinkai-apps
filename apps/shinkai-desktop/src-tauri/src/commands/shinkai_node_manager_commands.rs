@@ -1,11 +1,11 @@
 use crate::globals::SHINKAI_NODE_MANAGER_INSTANCE;
 use crate::local_shinkai_node::process_handlers::logger::LogEntry;
 use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
-use crate::windows::{show_or_recreate_window, Window};
+use crate::windows::{recreate_window, Window};
 
 #[tauri::command]
 pub async fn show_shinkai_node_manager_window(app_handle: tauri::AppHandle) {
-    show_or_recreate_window(app_handle, Window::ShinkaiNodeManager);
+    recreate_window(app_handle, Window::ShinkaiNodeManager, true);
 }
 
 #[tauri::command]

@@ -1,6 +1,8 @@
 import { I18nProvider } from '@shinkai_network/shinkai-i18n';
 import { QueryProvider } from '@shinkai_network/shinkai-node-state';
 import { Toaster } from '@shinkai_network/shinkai-ui';
+import { info } from '@tauri-apps/plugin-log';
+import { useEffect } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { BrowserRouter as Router } from 'react-router-dom';
 
@@ -10,6 +12,9 @@ import AppRoutes from './routes';
 import { useSyncStorageSecondary } from './store/sync-utils';
 
 function App() {
+  useEffect(() => {
+    info('initializing main');
+  }, []);
   useSyncStorageSecondary();
   return (
     <I18nProvider>
