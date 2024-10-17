@@ -74,7 +74,7 @@ impl ProcessHandler {
             }
             CommandEvent::Terminated(payload) => {
                 line = format!(
-                    "Shinkai Node process terminated with code:{:?} and signal:{:?}",
+                    "process terminated with code:{:?} and signal:{:?}",
                     payload.code, payload.signal
                 );
             }

@@ -1,5 +1,6 @@
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { listen } from '@tauri-apps/api/event';
+import { debug } from '@tauri-apps/plugin-log';
 import React, { useEffect, useRef } from 'react';
 import { Navigate, Outlet, Route, Routes, useNavigate } from 'react-router-dom';
 
@@ -80,6 +81,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     Node auto start process probably should be in rust side
   */
   useEffect(() => {
+    debug(`initializing autoStartShinkaiNodeTried.current:${autoStartShinkaiNodeTried.current} isInUse:${isInUse} shinkaiNodeIsRunning:${shinkaiNodeIsRunning}`);
     if (
       !autoStartShinkaiNodeTried.current &&
       isInUse &&

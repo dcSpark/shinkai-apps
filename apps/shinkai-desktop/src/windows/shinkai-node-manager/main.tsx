@@ -28,6 +28,7 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { QueryClientProvider } from '@tanstack/react-query';
+import { info } from '@tauri-apps/plugin-log';
 import {
   Bot,
   ListRestart,
@@ -75,6 +76,9 @@ import { useShinkaiNodeManager } from '../../store/shinkai-node-manager';
 import { useSyncStorageSecondary } from '../../store/sync-utils';
 
 const App = () => {
+  useEffect(() => {
+    info('initializing shinkai-node-manager');
+  }, []);
   useSyncStorageSecondary();
   const auth = useAuth((auth) => auth.auth);
   const setLogout = useAuth((auth) => auth.setLogout);

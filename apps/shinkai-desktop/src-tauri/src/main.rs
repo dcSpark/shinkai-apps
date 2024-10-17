@@ -19,9 +19,10 @@ use globals::SHINKAI_NODE_MANAGER_INSTANCE;
 use local_shinkai_node::shinkai_node_manager::ShinkaiNodeManager;
 use tauri::{Emitter, WindowEvent};
 use tauri::{Manager, RunEvent};
+use tauri_plugin_log::LogLevel;
 use tokio::sync::Mutex;
 use tray::create_tray;
-use windows::Window;
+use windows::{recreate_window, Window};
 
 mod audio;
 mod commands;
@@ -40,10 +41,14 @@ struct Payload {
 }
 
 fn main() {
+    log::info!("startin app version: {}", env!("CARGO_PKG_VERSION"));
     tauri::Builder::default()
-        .plugin(tauri_plugin_log::Builder::new().build())
+        .plugin(
+            tauri_plugin_log::Builder::new()
+                .level(log::LevelFilter::Info)
+                .build(),
+        )
         .plugin(tauri_plugin_os::init())
-        .plugin(tauri_plugin_log::Builder::new().build())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_fs::init())
@@ -99,12 +104,32 @@ fn main() {
                 )));
             }
 
+            create_tray(app.handle())?;
+
+            /*
+                This is the initialization pipeline
+                At some point we will need to add a UI because some tasks can be hard/slow to execute
+            */
+            tauri::async_runtime::spawn({
+                let app_handle = app.handle().clone();
+                async move {
+                    // Kill any existing process related to shinkai and/or using shinkai ports
+                    let mut shinkai_node_manager_guard =
+                        SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
+                    shinkai_node_manager_guard.kill().await;
+                    drop(shinkai_node_manager_guard);
+
+                    recreate_window(app_handle.clone(), Window::Coordinator, false);
+                    recreate_window(app_handle.clone(), Window::Spotlight, false);
+                    recreate_window(app_handle.clone(), Window::Main, true);
+                }
+            });
+
             tauri::async_runtime::spawn({
                 let app_handle = app.handle().clone();
                 async move {
                     let mut shinkai_node_manager_guard =
                         SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
-                    shinkai_node_manager_guard.kill().await;
                     let mut receiver = shinkai_node_manager_guard.subscribe_to_events();
                     drop(shinkai_node_manager_guard);
                     while let Ok(state_change) = receiver.recv().await {
@@ -116,8 +141,6 @@ fn main() {
                     }
                 }
             });
-
-            create_tray(app.handle())?;
 
             Ok(())
         })

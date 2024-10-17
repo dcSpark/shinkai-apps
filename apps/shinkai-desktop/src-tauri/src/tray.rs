@@ -6,7 +6,7 @@ use tauri::{
 
 use crate::{
     globals::SHINKAI_NODE_MANAGER_INSTANCE,
-    windows::{show_or_recreate_window, Window},
+    windows::{recreate_window, Window},
 };
 
 pub fn create_tray(app: &tauri::AppHandle) -> tauri::Result<()> {
@@ -38,10 +38,10 @@ pub fn create_tray(app: &tauri::AppHandle) -> tauri::Result<()> {
         .menu(&menu)
         .on_menu_event(move |tray, event| match event.id().as_ref() {
             "show" => {
-                show_or_recreate_window(tray.app_handle().clone(), Window::Main);
+                recreate_window(tray.app_handle().clone(), Window::Main, true);
             }
             "open_shinkai_node_manager_window" => {
-                show_or_recreate_window(tray.app_handle().clone(), Window::ShinkaiNodeManager);
+                recreate_window(tray.app_handle().clone(), Window::ShinkaiNodeManager, true);
             }
             "quit" => {
                 let app_handle = tray.app_handle().clone();
@@ -52,7 +52,7 @@ pub fn create_tray(app: &tauri::AppHandle) -> tauri::Result<()> {
                     if shinkai_node_manager_guard.is_running().await {
                         shinkai_node_manager_guard.kill().await;
                     }
-                    app_handle.exit(0);
+                    std::process::exit(0);
                 });
             }
             _ => (),
