@@ -35,6 +35,7 @@ import React, { useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import { treeOptions } from '../../lib/constants';
 import { useAuth } from '../../store/auth';
@@ -481,12 +482,21 @@ const FileUploadButton = ({
       maxFiles: 1,
       onDrop: async (acceptedFiles) => {
         if (!auth || !fileInboxId) return;
-        await addFileToInbox(auth.node_address, auth.api_v2_key, {
-          file: acceptedFiles[0],
-          filename: encodeURIComponent(acceptedFiles[0].name),
-          file_inbox_name: fileInboxId,
-        });
-        await handleUpdateCell(acceptedFiles[0].name);
+        try {
+          await addFileToInbox(auth.node_address, auth.api_v2_key, {
+            file: acceptedFiles[0],
+            filename: encodeURIComponent(acceptedFiles[0].name),
+            file_inbox_name: '',
+          });
+          await handleUpdateCell(acceptedFiles[0].name);
+        } catch (error) {
+          if (error instanceof Error) {
+            toast.error('Error uploading file', {
+              description: error.message,
+            });
+            console.error('Error uploading file', error);
+          }
+        }
       },
     });
 
