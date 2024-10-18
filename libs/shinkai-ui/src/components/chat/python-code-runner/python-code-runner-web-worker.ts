@@ -336,11 +336,52 @@ const initialize = async () => {
 
   // **Mount IDBFS to persist filesystem in IndexedDB**
   try {
+    const customFS = {
+      open: (path: string, flags: string, mode: number) => {
+        try {
+          console.log('open called with path:', path);
+          self.postMessage({ type: 'fs-operation', payload: { operation: 'open', path, flags, mode } });
+          // Implement synchronization or use asyncify to handle asynchronous operations
+        } catch (error) {
+          console.error('Error in open:', error);
+        }
+      },
+      read: (stream: { path: string }, buffer: Uint8Array, offset: number, length: number, position: number) => {
+        try {
+          console.log('read called with path:', stream.path);
+          self.postMessage({ type: 'fs-operation', payload: { operation: 'read', path: stream.path } });
+          // Handle response in onmessage
+        } catch (error) {
+          console.error('Error in read:', error);
+        }
+      },
+      write: (stream: { path: string }, buffer: Uint8Array, offset: number, length: number, position: number) => {
+        try {
+          console.log('write called with path:', stream.path);
+          self.postMessage({ type: 'fs-operation', payload: { operation: 'write', path: stream.path, data: buffer } });
+          // Handle response in onmessage
+        } catch (error) {
+          console.error('Error in write:', error);
+        }
+      },
+      close: (stream: { path: string }) => {
+        try {
+          console.log('close called with path:', stream.path);
+          self.postMessage({ type: 'fs-operation', payload: { operation: 'close', path: stream.path } });
+          // Implement close operation
+        } catch (error) {
+          console.error('Error in close:', error);
+        }
+      },
+      // Implement other methods as needed
+    };
+
     // Mount IDBFS to the persistent directory
-    pyodide.FS.mount(pyodide.FS.filesystems.IDBFS, { autoPersist: true }, '/');
+    // pyodide.FS.mount(pyodide.FS.filesystems.IDBFS, { autoPersist: true }, '/');
+    pyodide.FS.mount(pyodide.FS.filesystems.PROXYFS, { root: '/', fs: customFS }, '/');
 
     // Use syncFilesystem to synchronize the filesystem
-    await syncFilesystem(true);
+    // await syncFilesystem(true);
   } catch (error) {
     console.error('Failed to set up IDBFS:', error);
   }
@@ -352,20 +393,20 @@ const initialize = async () => {
   console.timeEnd('initialize');
 };
 
-// Function to synchronize the filesystem to IndexedDB
-const syncFilesystem = async (save = false) => {
-  return new Promise<void>((resolve, reject) => {
-    pyodide.FS.syncfs(save, (err: any) => {
-      if (err) {
-        console.error('syncfs error:', err);
-        reject(err);
-      } else {
-        console.log(`syncfs ${save ? 'saved to' : 'loaded from'} IndexedDB`);
-        resolve();
-      }
-    });
-  });
-};
+// // Function to synchronize the filesystem to IndexedDB
+// const syncFilesystem = async (save = false) => {
+//   return new Promise<void>((resolve, reject) => {
+//     pyodide.FS.syncfs(save, (err: any) => {
+//       if (err) {
+//         console.error('syncfs error:', err);
+//         reject(err);
+//       } else {
+//         console.log(`syncfs ${save ? 'saved to' : 'loaded from'} IndexedDB`);
+//         resolve();
+//       }
+//     });
+//   });
+// };
 
 // Message handler for the web worker
 self.onmessage = async (event) => {

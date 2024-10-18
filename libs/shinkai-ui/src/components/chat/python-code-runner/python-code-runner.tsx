@@ -30,7 +30,16 @@ type RunDoneMessage = {
   payload: RunResult;
 };
 
-type WorkerMessage = PageMessage | RunDoneMessage;
+type FsOperationMessage = {
+  type: 'fs-operation';
+  operation: 'open' | 'read' | 'write' | 'close';
+  path: string;
+  flags?: number;
+  mode?: number;
+  data?: Uint8Array;
+};
+
+type WorkerMessage = PageMessage | RunDoneMessage | FsOperationMessage;
 
 // Type guard functions
 function isPageMessage(message: WorkerMessage): message is PageMessage {
@@ -39,6 +48,10 @@ function isPageMessage(message: WorkerMessage): message is PageMessage {
 
 function isRunDoneMessage(message: WorkerMessage): message is RunDoneMessage {
   return message.type === 'run-done';
+}
+
+function isFsOperationMessage(message: WorkerMessage): message is FsOperationMessage {
+  return message.type === 'fs-operation';
 }
 
 export const usePythonRunnerRunMutation = (
@@ -55,7 +68,13 @@ export const usePythonRunnerRunMutation = (
 
         worker.onmessage = async (event: { data: WorkerMessage }) => {
           if (isPageMessage(event.data)) {
-            const { method, meta: url, headers, body, sharedBuffer } = event.data;
+            const {
+              method,
+              meta: url,
+              headers,
+              body,
+              sharedBuffer,
+            } = event.data;
             console.log(`main thread> ${method.toLowerCase()}ing page`, url);
             console.log('main thread> headers: ', headers);
 
@@ -68,7 +87,10 @@ export const usePythonRunnerRunMutation = (
 
             while (bufferSize <= maxBufferSize && !success) {
               try {
-                console.log(`main thread> ${method.toLowerCase()}ing page`, url);
+                console.log(
+                  `main thread> ${method.toLowerCase()}ing page`,
+                  url,
+                );
                 const response = await invoke<{
                   status: number;
                   headers: Record<string, string[]>;
@@ -78,7 +100,10 @@ export const usePythonRunnerRunMutation = (
                   customHeaders: JSON.stringify(headers),
                   ...(method === 'POST' && { body: JSON.stringify(body) }), // Ensure body is a string
                 });
-                console.log(`main thread> ${method.toLowerCase()} response`, response);
+                console.log(
+                  `main thread> ${method.toLowerCase()} response`,
+                  response,
+                );
 
                 if (response.status >= 200 && response.status < 300) {
                   const textEncoder = new TextEncoder();
@@ -88,13 +113,20 @@ export const usePythonRunnerRunMutation = (
 
                   let offset = 0;
                   while (offset < encodedData.length) {
-                    const chunkSize = Math.min(dataArray.length, encodedData.length - offset);
-                    dataArray.set(encodedData.subarray(offset, offset + chunkSize));
+                    const chunkSize = Math.min(
+                      dataArray.length,
+                      encodedData.length - offset,
+                    );
+                    dataArray.set(
+                      encodedData.subarray(offset, offset + chunkSize),
+                    );
                     offset += chunkSize;
 
                     // Indicate that a chunk is ready
                     syncArray[0] = 2; // New number to indicate chunk ready
-                    console.log('main thread> Notifying Atomics with chunk ready');
+                    console.log(
+                      'main thread> Notifying Atomics with chunk ready',
+                    );
                     Atomics.notify(syncArray, 0);
 
                     // Polling loop to wait for the other end to be ready for the next chunk
@@ -116,7 +148,10 @@ export const usePythonRunnerRunMutation = (
                 if (error instanceof Error) {
                   errorMessage = error.message;
                 }
-                console.error(`main thread> error using ${method.toLowerCase()} with page`, errorMessage);
+                console.error(
+                  `main thread> error using ${method.toLowerCase()} with page`,
+                  errorMessage,
+                );
 
                 const textEncoder = new TextEncoder();
                 const encodedError = textEncoder.encode(errorMessage);
@@ -133,7 +168,11 @@ export const usePythonRunnerRunMutation = (
 
                 // Await the delay before rejecting
                 await delay(10);
-                reject(new Error(`Failed to ${method.toLowerCase()} page: ` + errorMessage));
+                reject(
+                  new Error(
+                    `Failed to ${method.toLowerCase()} page: ` + errorMessage,
+                  ),
+                );
                 return; // Exit the loop and function after rejection
               }
             }
@@ -141,6 +180,34 @@ export const usePythonRunnerRunMutation = (
             clearTimeout(timeout);
             console.log('main thread> worker event', event);
             resolve(event.data.payload);
+          } else if (isFsOperationMessage(event.data)) {
+            const { operation, path, flags, mode, data } = event.data;
+            try {
+              switch (operation) {
+                case 'open':
+                  console.log(`Main thread> Opening file: ${path}`);
+                  // Implement logic to open file in IndexedDB
+                  break;
+                case 'read':
+                  console.log(`Main thread> Reading file: ${path}`);
+                  // Implement logic to read file from IndexedDB
+                  break;
+                case 'write':
+                  console.log(`Main thread> Writing to file: ${path}`);
+                  // Implement logic to write data to IndexedDB
+                  break;
+                case 'close':
+                  console.log(`Main thread> Closing file: ${path}`);
+                  // Implement logic to close file in IndexedDB
+                  break;
+                default:
+                  console.error(`Main thread> Unknown operation: ${operation}`);
+              }
+            } catch (error) {
+              console.error(
+                `Main thread> Error handling fs-operation: ${error}`,
+              );
+            }
           }
         };
 
