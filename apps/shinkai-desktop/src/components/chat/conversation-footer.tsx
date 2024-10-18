@@ -202,7 +202,13 @@ function ConversationEmptyFooter() {
         ...selectedVRFoldersPathMap,
       });
     }
-  }, [locationState?.selectedVRFiles, locationState?.selectedVRFolders]);
+  }, [
+    inboxId,
+    locationState?.selectedVRFiles,
+    locationState?.selectedVRFolders,
+    selectedFileKeysRef,
+    selectedFolderKeysRef,
+  ]);
 
   const workflowSelected = useWorkflowSelectionStore(
     (state) => state.workflowSelected,

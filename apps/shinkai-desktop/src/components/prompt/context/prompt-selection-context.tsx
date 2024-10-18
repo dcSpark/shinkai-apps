@@ -38,7 +38,7 @@ import {
   Trash2Icon,
   XIcon,
 } from 'lucide-react';
-import React, { createContext, useContext, useRef, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -520,12 +520,12 @@ export const PromptSelectionProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const storeRef = useRef<ReturnType<typeof createPromptSelectionStore>>();
-  if (!storeRef.current) {
-    storeRef.current = createPromptSelectionStore();
-  }
+  const [store] = useState<ReturnType<typeof createPromptSelectionStore>>(
+    createPromptSelectionStore(),
+  );
+
   return (
-    <PromptSelectedContext.Provider value={storeRef.current}>
+    <PromptSelectedContext.Provider value={store}>
       {children}
       <PromptSearchDrawer />
     </PromptSelectedContext.Provider>

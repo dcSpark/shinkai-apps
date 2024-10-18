@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useRef } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { createStore, useStore } from 'zustand';
 
 type QuickAskStore = {
@@ -38,12 +38,12 @@ export const QuickAskProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const storeRef = useRef<ReturnType<typeof createQuickAskStore>>();
-  if (!storeRef.current) {
-    storeRef.current = createQuickAskStore();
-  }
+  const [store] = useState<ReturnType<typeof createQuickAskStore>>(
+    createQuickAskStore(),
+  );
+
   return (
-    <QuickAskContext.Provider value={storeRef.current}>
+    <QuickAskContext.Provider value={store}>
       {children}
     </QuickAskContext.Provider>
   );

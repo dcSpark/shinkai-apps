@@ -3,7 +3,7 @@ import {
   VectorFSItemScopeEntry,
 } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
 import { TreeCheckboxSelectionKeys } from 'primereact/tree';
-import React, { createContext, useContext, useRef } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { createStore, useStore } from 'zustand';
 
 import {
@@ -62,12 +62,11 @@ export const SetJobScopeProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const storeRef = useRef<ReturnType<typeof createVectorFsStore>>();
-  if (!storeRef.current) {
-    storeRef.current = createVectorFsStore();
-  }
+  const [store] = useState<ReturnType<typeof createVectorFsStore>>(
+    createVectorFsStore(),
+  );
   return (
-    <SetJobScopeContext.Provider value={storeRef.current}>
+    <SetJobScopeContext.Provider value={store}>
       {children}
       <SetJobScopeDrawer />
       <KnowledgeSearchDrawer />

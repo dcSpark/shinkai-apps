@@ -27,11 +27,9 @@ const HOTKEYS = [
 ].join(',');
 
 const useTableHotkeys = ({ rows, leafColumns }: Props) => {
-  const { selectedCell, setSelectedCell } = useSheetProjectStore(
-    ({ selectedCell, setSelectedCell }) => ({
-      selectedCell,
-      setSelectedCell,
-    }),
+  const selectedCell = useSheetProjectStore((state) => state.selectedCell);
+  const setSelectedCell = useSheetProjectStore(
+    (state) => state.setSelectedCell,
   );
 
   useHotkeys(

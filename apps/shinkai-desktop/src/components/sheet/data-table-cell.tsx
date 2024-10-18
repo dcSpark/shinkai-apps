@@ -66,11 +66,10 @@ export function DataTableCell<TData>({
   columnBehavior,
 }: DataTableCellProps<TData>) {
   const { sheetId } = useParams();
-  const { selectedCell, setSelectedCell } = useSheetProjectStore(
-    ({ selectedCell, setSelectedCell }) => ({
-      selectedCell,
-      setSelectedCell,
-    }),
+
+  const selectedCell = useSheetProjectStore((state) => state.selectedCell);
+  const setSelectedCell = useSheetProjectStore(
+    (state) => state.setSelectedCell,
   );
 
   const isSelected =

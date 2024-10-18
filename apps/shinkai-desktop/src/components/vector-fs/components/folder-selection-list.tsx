@@ -13,7 +13,7 @@ import {
 import { DirectoryTypeIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { ChevronRight } from 'lucide-react';
-import React, { createContext, useContext, useRef } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { createStore, useStore } from 'zustand';
 
 import { useAuth } from '../../../store/auth';
@@ -47,12 +47,12 @@ export const VectorFolderSelectionProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const storeRef = useRef<ReturnType<typeof createVectorFsStore>>();
-  if (!storeRef.current) {
-    storeRef.current = createVectorFsStore();
-  }
+  const [store] = useState<ReturnType<typeof createVectorFsStore>>(
+    createVectorFsStore(),
+  );
+
   return (
-    <VectorFolderSelectionContext.Provider value={storeRef.current}>
+    <VectorFolderSelectionContext.Provider value={store}>
       {children}
     </VectorFolderSelectionContext.Provider>
   );

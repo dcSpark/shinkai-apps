@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useRef } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { createStore, useStore } from 'zustand';
 
 export interface SelectedCell {
@@ -42,12 +42,12 @@ export const TableSheetProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const storeRef = useRef<ReturnType<typeof createTableSheetStore>>();
-  if (!storeRef.current) {
-    storeRef.current = createTableSheetStore();
-  }
+  const [context] = useState<ReturnType<typeof createTableSheetStore>>(
+    createTableSheetStore(),
+  );
+
   return (
-    <TableSheetContext.Provider value={storeRef.current}>
+    <TableSheetContext.Provider value={context}>
       {children}
     </TableSheetContext.Provider>
   );
