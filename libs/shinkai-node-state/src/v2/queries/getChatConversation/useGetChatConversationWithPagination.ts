@@ -2,6 +2,7 @@ import { isJobInbox } from '@shinkai_network/shinkai-message-ts/utils';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
+import { APIError } from '../../types';
 import { getChatConversation } from '.';
 import {
   ChatConversationInfiniteData,
@@ -17,7 +18,7 @@ export const useGetChatConversationWithPagination = (
 ) => {
   const response = useInfiniteQuery<
     GetChatConversationOutput,
-    Error,
+    APIError,
     ChatConversationInfiniteData,
     [string, { inboxId: string }],
     { lastKey: string | null }

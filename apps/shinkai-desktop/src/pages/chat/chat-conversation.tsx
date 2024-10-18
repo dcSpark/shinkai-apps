@@ -27,6 +27,7 @@ import { AlertCircle } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';
+import { toast } from 'sonner';
 
 import { streamingSupportedModels } from '../../components/chat/constants';
 import ConversationFooter from '../../components/chat/conversation-footer';
@@ -141,6 +142,8 @@ const ChatConversation = () => {
     isPending: isChatConversationLoading,
     isFetchingPreviousPage,
     isSuccess: isChatConversationSuccess,
+    isError,
+    error: chatConversationError,
   } = useGetChatConversationWithPagination({
     token: auth?.api_v2_key ?? '',
     nodeAddress: auth?.node_address ?? '',
@@ -150,6 +153,17 @@ const ChatConversation = () => {
     refetchIntervalEnabled:
       !hasProviderEnableStreaming || chatConfig?.stream === false,
   });
+
+  useEffect(() => {
+    if (isError) {
+      console.error('Failed loading chat conversation', chatConversationError);
+      toast.error('Failed loading chat conversation', {
+        description:
+          chatConversationError?.response?.data?.message ??
+          chatConversationError.message,
+      });
+    }
+  }, [chatConversationError, isError]);
 
   const { mutateAsync: retryMessage } = useRetryMessage();
 

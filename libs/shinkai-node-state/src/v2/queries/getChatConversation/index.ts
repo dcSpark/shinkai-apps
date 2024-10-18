@@ -48,7 +48,7 @@ export const getChatConversation = async ({
             ? 'https://ui-avatars.com/api/?name=Me&background=313336&color=b0b0b0'
             : 'https://ui-avatars.com/api/?name=S&background=FF7E7F&color=ffffff',
         },
-        toolCalls: message.job_message?.metadata?.function_calls.map(
+        toolCalls: (message.job_message?.metadata?.function_calls ?? []).map(
           (tool) => ({
             name: tool.name,
             args: tool.arguments,
@@ -73,15 +73,20 @@ export const getChatConversation = async ({
                 preview?: string;
               } = { name };
               if (name.match(/\.(jpg|jpeg|png|gif)$/i)) {
-                const response = await downloadFileFromInbox(
-                  nodeAddress,
-                  token,
-                  inbox,
-                  name,
-                );
-                if (response) {
-                  const blob = new Blob([response]);
-                  file.preview = URL.createObjectURL(blob);
+                try {
+                  const response = await downloadFileFromInbox(
+                    nodeAddress,
+                    token,
+                    inbox,
+                    name,
+                  );
+                  if (response) {
+                    const blob = new Blob([response]);
+                    file.preview = URL.createObjectURL(blob);
+                  }
+                } catch (error) {
+                  console.error(error);
+                  throw new Error(`Failed to download file - ${name}`);
                 }
               }
               return file;
