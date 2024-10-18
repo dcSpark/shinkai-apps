@@ -106,7 +106,7 @@ export default function ChatTable() {
 
   const isLoadingMessage = useMemo(() => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
-    return lastMessage?.isLocal;
+    return lastMessage?.role === 'user';
   }, [data?.pages]);
 
   const onSubmit = async (data: CreateJobFormSchema) => {
@@ -192,17 +192,13 @@ export default function ChatTable() {
                 <Message
                   isPending={isLoadingMessage}
                   message={{
-                    parentHash: '',
-                    inboxId: '',
-                    hash: '',
+                    role: 'assistant',
+                    toolCalls: [],
                     content: '',
-                    scheduledTime: new Date().toISOString(),
-                    isLocal: false,
-                    workflowName: undefined,
-                    sender: {
-                      avatar:
-                        'https://ui-avatars.com/api/?name=S&background=FF7E7F&color=ffffff',
-                    },
+                    createdAt: new Date().toISOString(),
+                    messageId: new Date().toISOString(),
+                    metadata: { parentMessageId: '', inboxId: '' },
+                    status: { type: 'complete', reason: 'unknown' },
                   }}
                 />
               )
