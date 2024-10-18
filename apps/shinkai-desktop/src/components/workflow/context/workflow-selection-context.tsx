@@ -38,7 +38,7 @@ import {
   Trash2Icon,
   XIcon,
 } from 'lucide-react';
-import React, { createContext, useContext, useRef, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -539,12 +539,12 @@ export const WorkflowSelectionProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const storeRef = useRef<ReturnType<typeof createWorkflowSelectionStore>>();
-  if (!storeRef.current) {
-    storeRef.current = createWorkflowSelectionStore();
-  }
+  const [store] = useState<ReturnType<typeof createWorkflowSelectionStore>>(
+    createWorkflowSelectionStore(),
+  );
+
   return (
-    <WorkflowSelectedContext.Provider value={storeRef.current}>
+    <WorkflowSelectedContext.Provider value={store}>
       {children}
       <WorkflowSearchDrawer />
     </WorkflowSelectedContext.Provider>

@@ -185,6 +185,7 @@ function QuickAsk() {
             className="h-6 w-6 rounded-md bg-gray-200 p-1"
             onClick={() => {
               setInboxId(null);
+              setMessageResponse('');
             }}
             type="button"
           >
