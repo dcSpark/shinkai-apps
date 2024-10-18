@@ -9,6 +9,7 @@ pub struct ShinkaiNodeOptions {
     pub node_api_ip: Option<String>,
     pub node_api_port: Option<String>,
     pub node_ws_port: Option<String>,
+    pub node_https_port: Option<String>,
     pub node_ip: Option<String>,
     pub node_port: Option<String>,
     pub global_identity_name: Option<String>,
@@ -101,6 +102,12 @@ impl ShinkaiNodeOptions {
                 options
                     .node_port
                     .or(base_options.node_port)
+                    .unwrap_or_default(),
+            ),
+            node_https_port: Some(
+                options
+                    .node_https_port
+                    .or(base_options.node_https_port)
                     .unwrap_or_default(),
             ),
             global_identity_name: Some(
@@ -229,6 +236,7 @@ impl Default for ShinkaiNodeOptions {
             node_ws_port: Some("9551".to_string()),
             node_ip: Some("127.0.0.1".to_string()),
             node_port: Some("9552".to_string()),
+            node_https_port: Some("9553".to_string()),
             global_identity_name: None,
             node_storage_path: Some("./".to_string()),
             unstructured_server_url: Some("https://public.shinkai.com/x-un".to_string()),
