@@ -265,21 +265,37 @@ const fetchPage = (
 
     console.log('Posted message to main thread, waiting for response...');
 
-    Atomics.wait(syncArray, 0, 0);
-    console.log('atomic wait done with status: ', syncArray[0]);
+    const textDecoder = new TextDecoder();
+    let result = '';
+    let moreChunks = true;
 
-    if (syncArray[0] === -1) {
-      const textDecoder = new TextDecoder();
-      const errorMessage = textDecoder.decode(dataArray);
-      console.error('Error fetching page:', errorMessage);
-      throw new Error(errorMessage);
+    while (moreChunks) {
+      Atomics.wait(syncArray, 0, 0);
+      console.log('atomic wait done with status: ', syncArray[0]);
+
+      if (syncArray[0] === -1) {
+        const errorMessage = textDecoder.decode(dataArray);
+        console.error('Error fetching page:', errorMessage);
+        throw new Error(errorMessage);
+      }
+
+      // Read the current chunk
+      const chunk = textDecoder.decode(dataArray).replace(/\0/g, '').trim();
+      result += chunk;
+
+      console.log(`Received chunk of length: ${chunk.length}`);
+
+      // Check if more chunks are needed
+      if (syncArray[0] === 1) {
+        moreChunks = false; // Success, all chunks received
+      } else {
+        // Signal readiness for the next chunk
+        syncArray[0] = 0;
+        Atomics.notify(syncArray, 0);
+      }
     }
 
-    const textDecoder = new TextDecoder();
-    let result = textDecoder.decode(dataArray);
-    result = result.replace(/\0/g, '').trim();
-
-    console.log(`Received data of length: ${result.length}`);
+    console.log(`Total received data of length: ${result.length}`);
     console.log('result: ', result);
 
     return result;

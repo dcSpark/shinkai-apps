@@ -84,16 +84,24 @@ export const usePythonRunnerRunMutation = (
                   const textEncoder = new TextEncoder();
                   const encodedData = textEncoder.encode(response.body);
 
-                  if (encodedData.length > dataArray.length) {
-                    throw new Error('Buffer size insufficient');
+                  console.log('Required buffer size:', encodedData.length); // Log the required buffer size
+
+                  let offset = 0;
+                  while (offset < encodedData.length) {
+                    const chunkSize = Math.min(dataArray.length, encodedData.length - offset);
+                    dataArray.set(encodedData.subarray(offset, offset + chunkSize));
+                    offset += chunkSize;
+
+                    // Indicate that a chunk is ready
+                    syncArray[0] = 2; // New number to indicate chunk ready
+                    console.log('main thread> Notifying Atomics with chunk ready');
+                    Atomics.notify(syncArray, 0);
+
+                    // Wait for the other end to be ready for the next chunk
+                    Atomics.wait(syncArray, 0, 2);
                   }
 
-                  console.log(
-                    'main thread> success ',
-                    encodedData.length,
-                    dataArray.length,
-                  );
-                  dataArray.set(encodedData);
+                  // Indicate success after all chunks are sent
                   syncArray[0] = 1; // Indicate success
                   console.log('main thread> Notifying Atomics with success');
                   Atomics.notify(syncArray, 0);
@@ -106,7 +114,7 @@ export const usePythonRunnerRunMutation = (
                 if (error instanceof Error) {
                   errorMessage = error.message;
                 }
-                console.error(`main thread> error ${method.toLowerCase()}ing page`, errorMessage);
+                console.error(`main thread> error using ${method.toLowerCase()} with page`, errorMessage);
 
                 const textEncoder = new TextEncoder();
                 const encodedError = textEncoder.encode(errorMessage);
