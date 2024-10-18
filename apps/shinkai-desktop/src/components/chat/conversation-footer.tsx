@@ -21,7 +21,10 @@ import {
   VRItem,
 } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
-import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
+import {
+  DEFAULT_CHAT_CONFIG,
+  FunctionKeyV2,
+} from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useStopGeneratingLLM } from '@shinkai_network/shinkai-node-state/v2/mutations/stopGeneratingLLM/useStopGeneratingLLM';
@@ -52,6 +55,7 @@ import { getFileExt } from '@shinkai_network/shinkai-ui/helpers';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { useDebounce } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { useQueryClient } from '@tanstack/react-query';
 import { partial } from 'filesize';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Paperclip, SendIcon, X, XIcon } from 'lucide-react';
@@ -624,6 +628,7 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
       select: (data) => data.slice(0, 3),
     },
   );
+  const queryClient = useQueryClient();
 
   const { getRootProps: getRootFileProps, getInputProps: getInputFileProps } =
     useDropzone({
@@ -648,6 +653,66 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
       } else {
         captureAnalyticEvent('AI Chat', undefined);
       }
+    },
+    onMutate: async () => {
+      const queryKey = [
+        FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
+        {
+          inboxId,
+        },
+      ];
+
+      await queryClient.cancelQueries({
+        queryKey: queryKey,
+      });
+
+      const snapshot = queryClient.getQueryData(queryKey) as ReturnType<
+        typeof useGetChatConversationWithPagination
+      >;
+
+      queryClient.setQueryData(queryKey, (previousData) => {
+        return {
+          ...previousData,
+          pages: [
+            [
+              ...previousData.pages[0],
+              {
+                status: {
+                  type: 'running',
+                },
+                messageId: 'temp',
+                content: 'temp',
+                role: 'assistant',
+                createdAt: new Date().toISOString(),
+                toolCalls: [],
+                metadata: {
+                  parentMessageId: '',
+                  inboxId: '',
+                },
+              },
+            ],
+          ],
+        };
+      });
+
+      return () => {
+        queryClient.setQueryData(queryKey, snapshot);
+      };
+    },
+    onError: (error, _, rollback) => {
+      console.log('error', error);
+      rollback?.();
+    },
+    onSettled: () => {
+      const queryKey = [
+        FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
+        {
+          inboxId,
+        },
+      ];
+      return queryClient.invalidateQueries({
+        queryKey: queryKey,
+      });
     },
   });
 
