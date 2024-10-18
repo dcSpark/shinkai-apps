@@ -69,6 +69,13 @@
       "shinkaiIdentity": "Identitas Shinkai"
     }
   },
+  "codeRunner": {
+    "errorOccurred": "Terjadi Kesalahan",
+    "executeCode": "Jalankan Kode",
+    "output": "Hasil",
+    "stderr": "Kesalahan Standar",
+    "stdout": "Keluaran Standar"
+  },
   "common": {
     "alreadyHaveNode": "Sudah memiliki Node?",
     "back": "Kembali",
@@ -320,6 +327,10 @@
       "addLocalWallet": "Tambahkan Dompet Lokal",
       "addWallet": "Tambahkan Dompet",
       "description": "Kelola dompet kripto Anda. Tambahkan Dompet Coinbase CDP atau Dompet Lokal Anda.",
+      "emptyState": {
+        "description": "Kelola dompet kripto Anda. Buat atau pulihkan Dompet CDP Coinbase Anda atau Dompet Panas Anda.",
+        "title": "Tidak ada dompet ditemukan"
+      },
       "errorDescription": "Terjadi kesalahan saat memulihkan dompet Anda.",
       "errorTitle": "Kesalahan saat memulihkan dompet",
       "name": "Nama",
@@ -554,12 +565,5 @@
   },
   "workflowPlayground": {
     "label": "Taman Bermain Alur Kerja"
-  },
-  "codeRunner": {
-    "errorOccurred": "Terjadi Kesalahan",
-    "stderr": "Kesalahan Standar",
-    "stdout": "Keluaran Standar",
-    "output": "Hasil",
-    "executeCode": "Jalankan Kode"
   }
 }

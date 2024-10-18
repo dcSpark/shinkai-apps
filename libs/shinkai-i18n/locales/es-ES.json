@@ -1,6 +1,4 @@
 {
-  "": {
-  },
   "aiFilesSearch": {
     "description": "Busca para encontrar contenido en todos los archivos de tus archivos AI fácilmente",
     "filesSelected": "Seleccionados {{count}} archivos",
@@ -70,6 +68,13 @@
       "messagePlaceholder": "Ingresa tu mensaje",
       "shinkaiIdentity": "Identidad Shinkai"
     }
+  },
+  "codeRunner": {
+    "errorOccurred": "Ocurrió un Error",
+    "executeCode": "Ejecutar Código",
+    "output": "Resultado",
+    "stderr": "Salida de Error",
+    "stdout": "Salida Estándar"
   },
   "common": {
     "alreadyHaveNode": "¿Ya tienes un Nodo?",
@@ -322,6 +327,10 @@
       "addLocalWallet": "Agregar Billetera Local",
       "addWallet": "Agregar Billetera",
       "description": "Gestiona tus billeteras cripto. Agrega tu Billetera Coinbase CDP o tu Billetera Local.",
+      "emptyState": {
+        "description": "Administra tus billeteras de criptomonedas. Crea o restaura tu Billetera CDP de Coinbase o tu Billetera Caliente.",
+        "title": "No se encontraron billeteras"
+      },
       "errorDescription": "Hubo un error al restaurar tu billetera.",
       "errorTitle": "Error al restaurar la billetera",
       "name": "Nombre",
@@ -556,12 +565,5 @@
   },
   "workflowPlayground": {
     "label": "Área de Juego de Flujo de Trabajo"
-  },
-  "codeRunner": {
-    "errorOccurred": "Ocurrió un Error",
-    "stderr": "Salida de Error",
-    "stdout": "Salida Estándar",
-    "output": "Resultado",
-    "executeCode": "Ejecutar Código"
   }
 }
