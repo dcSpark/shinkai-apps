@@ -16,77 +16,74 @@ export type GetChatConversationInput = Token & {
   refetchIntervalEnabled?: boolean;
 };
 
-type TextContentPart = { type: 'text'; text: string };
-type FileContentPart = { type: 'file'; fileName: string; filePreview?: string };
-type WorkflowContentPart = { type: 'workflow'; workflowName: string };
-type ToolCallContentPart = {
-  type: 'tool-call';
+type ToolCall = {
   toolRouterKey: string;
-  toolName: string;
+  name: string;
   args: ToolArgs;
   result?: unknown;
+  status?: ToolStatusType; // TODO: remove
   isError?: boolean;
 };
-type UserMessageContentPart =
-  | TextContentPart
-  | FileContentPart
-  | WorkflowContentPart;
 
-type AssistantMessageContentPart = TextContentPart | ToolCallContentPart;
+export type Attachment = {
+  id: string;
+  type: 'image' | 'document' | 'file';
+  name: string;
+  file?: File;
+  preview?: string;
+};
 
-type UserMessage = {
-  role: 'user';
-  content: UserMessageContentPart[];
-};
-type AssistantMessage = {
-  role: 'assistant';
-  content: AssistantMessageContentPart[];
-};
-export type FormattedChatMessage = {
-  hash: string;
-  parentHash: string;
-  inboxId: string;
-  scheduledTime: string | undefined;
-  content: string;
-  workflowName: string | undefined;
-  isLocal: boolean;
-  sender: {
-    avatar: string;
-  };
-  fileInbox?: {
-    id: string;
-    files: {
-      name: string;
-      preview?: string;
-    }[];
-  };
-  toolCalls?: {
-    name: string;
-    args: ToolArgs;
-    status: ToolStatusType;
-    toolRouterKey: string;
-  }[];
-  //  message v2
+export type MessageStatus =
+  | {
+      type: 'running';
+    }
+  | {
+      type: 'requires-action';
+      reason: 'tool-calls';
+    }
+  | {
+      type: 'complete';
+      reason: 'stop' | 'unknown';
+    }
+  | {
+      type: 'incomplete';
+      reason:
+        | 'cancelled'
+        | 'tool-calls'
+        | 'length'
+        | 'content-filter'
+        | 'other'
+        | 'error';
+      error?: unknown;
+    };
+
+type BaseMessage = {
   messageId: string;
-  role: 'user' | 'assistant';
-  contentV2: (
-    | TextContentPart
-    | FileContentPart
-    | WorkflowContentPart
-    | ToolCallContentPart
-  )[];
   createdAt: string;
   metadata: {
     parentMessageId: string;
     inboxId: string;
   };
 };
+export type UserMessage = BaseMessage & {
+  role: 'user';
+  content: string;
+  attachments: Attachment[];
+  workflowName?: string;
+};
 
-type Message = AssistantMessage | UserMessage;
+export type AssistantMessage = BaseMessage & {
+  role: 'assistant';
+  content: string;
+  status: MessageStatus;
+  toolCalls: ToolCall[];
+};
 
-export type GetChatConversationOutput = FormattedChatMessage[];
+export type FormattedMessage = AssistantMessage | UserMessage;
+
+export type GetChatConversationOutput = FormattedMessage[];
 
 export type ChatConversationInfiniteData =
   InfiniteData<GetChatConversationOutput> & {
-    content: FormattedChatMessage[];
+    content: FormattedMessage[];
   };

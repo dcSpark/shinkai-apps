@@ -39,13 +39,13 @@ export const useGetChatConversationWithPagination = (
       if (firstPage?.length < CONVERSATION_PAGINATION_LIMIT) return;
       const firstMessage = pages?.[0]?.[0];
       if (!firstMessage) return;
-      return { lastKey: firstMessage.hash };
+      return { lastKey: firstMessage.messageId };
     },
     refetchInterval: ({ state }) => {
       if (!input?.refetchIntervalEnabled) return 0;
       const lastMessage = state.data?.pages?.at(-1)?.at(-1);
       if (!lastMessage) return 0;
-      if (isJobInbox(input.inboxId) && lastMessage.isLocal)
+      if (isJobInbox(input.inboxId) && lastMessage.role === 'user')
         return CONVERSATION_PAGINATION_REFETCH;
       return 0;
     },

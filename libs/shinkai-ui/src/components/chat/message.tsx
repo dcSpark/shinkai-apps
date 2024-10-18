@@ -4,7 +4,7 @@ import {
   ToolArgs,
   ToolStatusType,
 } from '@shinkai_network/shinkai-message-ts/api/general/types';
-import { FormattedChatMessage } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
+import { FormattedMessage } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { format } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Edit3, Loader2, RotateCcw, XCircle } from 'lucide-react';
@@ -62,7 +62,7 @@ const containsPythonCode = (content: string): boolean => {
 
 type MessageProps = {
   isPending?: boolean;
-  message: FormattedChatMessage;
+  message: FormattedMessage;
   handleRetryMessage?: () => void;
   disabledRetry?: boolean;
   disabledEdit?: boolean;
@@ -118,12 +118,16 @@ export const Message = ({
   const { message: currentMessage } = editMessageForm.watch();
 
   const onSubmit = async (data: z.infer<typeof editMessageFormSchema>) => {
-    handleEditMessage?.(data.message, message.workflowName);
-    setEditing(false);
+    if (message.role === 'user') {
+      handleEditMessage?.(data.message, message.workflowName);
+      setEditing(false);
+    }
   };
 
   useEffect(() => {
-    editMessageForm.reset({ message: message.content });
+    if (message.role === 'user') {
+      editMessageForm.reset({ message: message.content });
+    }
   }, [editMessageForm, message.content]);
 
   const pythonCode = useMemo(() => {
@@ -144,17 +148,24 @@ export const Message = ({
       <div
         className={cn(
           'relative flex flex-row space-x-2',
-          message.isLocal
-            ? 'ml-auto mr-0 flex-row-reverse space-x-reverse'
-            : 'ml-0 mr-auto flex-row items-end',
+          message.role === 'user' &&
+            'ml-auto mr-0 flex-row-reverse space-x-reverse',
+          message.role === 'assistant' && 'ml-0 mr-auto flex-row items-end',
         )}
       >
         <Avatar className={cn('mt-1 h-8 w-8')}>
-          {message.isLocal ? (
-            <AvatarImage alt={''} src={message.sender.avatar} />
-          ) : (
+          {message.role === 'assistant' && (
             <img alt="Shinkai AI" src={appIcon} />
           )}
+          {message.role === 'user' && (
+            <AvatarImage
+              alt={''}
+              src={
+                'https://ui-avatars.com/api/?name=Me&background=313336&color=b0b0b0'
+              }
+            />
+          )}
+
           <AvatarFallback className="h-8 w-8" />
         </Avatar>
         <div
@@ -216,73 +227,79 @@ export const Message = ({
                 <motion.div
                   className={cn(
                     'absolute -top-[14px] flex items-center justify-end gap-1.5 text-xs text-gray-100',
-                    message.isLocal ? 'right-10' : 'left-10',
+                    message.role === 'user' ? 'right-10' : 'left-10',
                   )}
                   variants={actionBar}
                 >
-                  {format(new Date(message?.scheduledTime ?? ''), 'p')}
+                  {format(new Date(message?.createdAt ?? ''), 'p')}
                 </motion.div>
               )}
 
               <div
                 className={cn(
                   'relative mt-1 flex flex-col rounded-lg bg-black/40 px-3.5 pt-3 text-sm text-white',
-                  message.isLocal
+                  message.role === 'user'
                     ? 'rounded-tr-none bg-gray-300'
                     : 'rounded-bl-none border-none bg-gray-200',
                   !message.content ? 'pb-3' : 'pb-4',
                   editing && 'w-full py-1',
-                  !message.isLocal &&
+                  message.role === 'assistant' &&
                     isPending &&
                     'relative overflow-hidden pb-4 before:absolute before:bottom-0 before:left-0 before:right-0 before:h-10 before:animate-pulse before:bg-gradient-to-l before:from-gray-200 before:to-gray-200/10',
                 )}
               >
                 {message.content ? (
                   <Fragment>
-                    {message.toolCalls && message.toolCalls.length > 0 && (
-                      <Accordion
-                        className="space-y-1.5 self-baseline pb-3"
-                        type="multiple"
-                      >
-                        {message.toolCalls.map((tool) => {
-                          return (
-                            <AccordionItem
-                              className="bg-app-gradient overflow-hidden rounded-lg"
-                              disabled={tool.status !== ToolStatusType.Complete}
-                              key={tool.name}
-                              value={tool.name}
-                            >
-                              <AccordionTrigger
-                                className={cn(
-                                  'min-w-[10rem] py-0 pr-2 no-underline hover:no-underline',
-                                  'transition-colors hover:bg-gray-500 [&>svg]:hidden [&[data-state=open]]:bg-gray-500',
-                                )}
+                    {message.role === 'assistant' &&
+                      message.toolCalls &&
+                      message.toolCalls.length > 0 && (
+                        <Accordion
+                          className="space-y-1.5 self-baseline pb-3"
+                          type="multiple"
+                        >
+                          {message.toolCalls.map((tool) => {
+                            return (
+                              <AccordionItem
+                                className="bg-app-gradient overflow-hidden rounded-lg"
+                                disabled={
+                                  tool.status !== ToolStatusType.Complete
+                                }
+                                key={tool.name}
+                                value={tool.name}
                               >
-                                <ToolCard
-                                  args={tool.args}
-                                  name={tool.name}
-                                  status={tool.status}
-                                  toolRouterKey={tool.toolRouterKey}
-                                />
-                              </AccordionTrigger>
-                              <AccordionContent className="bg-gray-450 rounded-b-lg px-3 pb-3 pt-2 text-xs">
-                                {Object.keys(tool.args).length > 0 && (
-                                  <span className="font-medium text-white">
-                                    {tool.name}(
-                                    {Object.keys(tool.args).length > 0 && (
-                                      <span className="text-gray-80 font-medium">
-                                        {JSON.stringify(tool.args)}
-                                      </span>
-                                    )}
-                                    )
-                                  </span>
-                                )}
-                              </AccordionContent>
-                            </AccordionItem>
-                          );
-                        })}
-                      </Accordion>
-                    )}
+                                <AccordionTrigger
+                                  className={cn(
+                                    'min-w-[10rem] py-0 pr-2 no-underline hover:no-underline',
+                                    'transition-colors hover:bg-gray-500 [&>svg]:hidden [&[data-state=open]]:bg-gray-500',
+                                  )}
+                                >
+                                  <ToolCard
+                                    args={tool.args}
+                                    name={tool.name}
+                                    status={
+                                      tool.status ?? ToolStatusType.Complete
+                                    }
+                                    toolRouterKey={tool.toolRouterKey}
+                                  />
+                                </AccordionTrigger>
+                                <AccordionContent className="bg-gray-450 rounded-b-lg px-3 pb-3 pt-2 text-xs">
+                                  {Object.keys(tool.args).length > 0 && (
+                                    <span className="font-medium text-white">
+                                      {tool.name}(
+                                      {Object.keys(tool.args).length > 0 && (
+                                        <span className="text-gray-80 font-medium">
+                                          {JSON.stringify(tool.args)}
+                                        </span>
+                                      )}
+                                      )
+                                    </span>
+                                  )}
+                                </AccordionContent>
+                              </AccordionItem>
+                            );
+                          })}
+                        </Accordion>
+                      )}
 
                     <MarkdownPreview
                       source={extractErrorPropertyOrContent(
@@ -290,14 +307,16 @@ export const Message = ({
                         'error_message',
                       )}
                     />
+
                     {pythonCode && <PythonCodeRunner code={pythonCode} />}
-                    {!!message.fileInbox?.files?.length && (
-                      <FileList
-                        className="mt-2 min-w-[200px] max-w-[70vw]"
-                        files={message.fileInbox?.files}
-                      />
-                    )}
-                    {!!message.workflowName && (
+                    {message.role === 'user' &&
+                      !!message.attachments.length && (
+                        <FileList
+                          className="mt-2 min-w-[200px] max-w-[70vw]"
+                          files={message.attachments}
+                        />
+                      )}
+                    {message.role === 'user' && message.workflowName && (
                       <div className="mt-2 flex items-center gap-1.5 border-t pt-1.5">
                         <span className="text-gray-80 text-xs">Workflow:</span>
                         <span className="text-gray-80 text-xs">
@@ -314,11 +333,11 @@ export const Message = ({
                 <motion.div
                   className={cn(
                     'absolute -bottom-[34px] flex items-end justify-end gap-1.5',
-                    message.isLocal ? 'right-10' : 'left-10',
+                    message.role === 'user' ? 'right-10' : 'left-10',
                   )}
                   variants={actionBar}
                 >
-                  {message.isLocal && !disabledEdit && (
+                  {message.role === 'user' && !disabledEdit && (
                     <TooltipProvider delayDuration={0}>
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -341,7 +360,7 @@ export const Message = ({
                       </Tooltip>
                     </TooltipProvider>
                   )}
-                  {!message.isLocal && !disabledRetry && (
+                  {message.role === 'assistant' && !disabledRetry && (
                     <TooltipProvider delayDuration={0}>
                       <Tooltip>
                         <TooltipTrigger asChild>

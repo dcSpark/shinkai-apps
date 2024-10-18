@@ -653,7 +653,7 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
 
   const isLoadingMessage = useMemo(() => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
-    return isJobInbox(inboxId) && lastMessage?.isLocal;
+    return isJobInbox(inboxId) && lastMessage?.role === 'user';
   }, [data?.pages, inboxId]);
 
   const isWorkflowSelectedAndFilesPresent =
@@ -1013,7 +1013,7 @@ function useFirstMessageWorkflow() {
   useEffect(() => {
     if (data?.pages && data.pages.length > 0 && data.pages[0].length > 0) {
       const firstMessage = data.pages[0][0];
-      if (firstMessage.workflowName) {
+      if (firstMessage.role === 'user' && firstMessage.workflowName) {
         const [name, author] = firstMessage.workflowName.split(':::');
         setFirstMessageWorkflow({
           name,
