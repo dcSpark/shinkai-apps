@@ -270,8 +270,12 @@ const fetchPage = (
     let moreChunks = true;
 
     while (moreChunks) {
-      Atomics.wait(syncArray, 0, 0);
-      console.log('atomic wait done with status: ', syncArray[0]);
+      // Busy-wait loop
+      while (syncArray[0] === 0) {
+        // This loop will block the thread until syncArray[0] changes
+      }
+
+      console.log('Polling done with status: ', syncArray[0]);
 
       if (syncArray[0] === -1) {
         const errorMessage = textDecoder.decode(dataArray);

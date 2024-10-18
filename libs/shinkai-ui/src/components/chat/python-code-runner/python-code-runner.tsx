@@ -97,8 +97,10 @@ export const usePythonRunnerRunMutation = (
                     console.log('main thread> Notifying Atomics with chunk ready');
                     Atomics.notify(syncArray, 0);
 
-                    // Wait for the other end to be ready for the next chunk
-                    Atomics.wait(syncArray, 0, 2);
+                    // Polling loop to wait for the other end to be ready for the next chunk
+                    while (syncArray[0] === 2) {
+                      await delay(25); // Wait for 25ms before checking again
+                    }
                   }
 
                   // Indicate success after all chunks are sent
