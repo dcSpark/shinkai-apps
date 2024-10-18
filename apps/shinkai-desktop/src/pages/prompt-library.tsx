@@ -467,7 +467,7 @@ export const PromptTryOut = ({
 
   const isLoadingMessage = useMemo(() => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
-    return lastMessage?.isLocal;
+    return lastMessage?.role === 'user';
   }, [data?.pages]);
 
   const handleRunPrompt = async () => {

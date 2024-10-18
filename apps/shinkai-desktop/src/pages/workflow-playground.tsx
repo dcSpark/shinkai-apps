@@ -115,8 +115,8 @@ function PlaygroundPreviewWithInbox({ inboxId }: { inboxId: string }) {
   const lastMessage = data?.pages?.at(-1)?.at(-1);
 
   const isLoadingMessage = useMemo(() => {
-    return lastMessage?.isLocal;
-  }, [lastMessage?.isLocal]);
+    return lastMessage?.role === 'user';
+  }, [lastMessage?.role]);
 
   const { messageContent } = useWebSocketMessage({
     enabled: hasProviderEnableStreaming,
@@ -237,7 +237,7 @@ export function useStopGenerationPlayground() {
 
   const isLoadingMessage = useMemo(() => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
-    return !!inboxId && lastMessage?.isLocal;
+    return !!inboxId && lastMessage?.role === 'user';
   }, [data?.pages, inboxId]);
 
   return {

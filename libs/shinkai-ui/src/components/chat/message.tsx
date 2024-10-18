@@ -154,19 +154,13 @@ export const Message = ({
         )}
       >
         <Avatar className={cn('mt-1 h-8 w-8')}>
-          {message.role === 'assistant' && (
+          {message.role === 'assistant' ? (
             <img alt="Shinkai AI" src={appIcon} />
+          ) : (
+            <AvatarFallback className="h-8 w-8 bg-[#313336] text-xs text-[#b0b0b0]">
+              U
+            </AvatarFallback>
           )}
-          {message.role === 'user' && (
-            <AvatarImage
-              alt={''}
-              src={
-                'https://ui-avatars.com/api/?name=Me&background=313336&color=b0b0b0'
-              }
-            />
-          )}
-
-          <AvatarFallback className="h-8 w-8" />
         </Avatar>
         <div
           className={cn(
