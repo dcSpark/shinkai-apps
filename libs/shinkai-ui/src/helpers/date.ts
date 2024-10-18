@@ -1,3 +1,5 @@
+import { FormattedMessage } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
+
 export type ChatConversationMessage = {
   hash: string;
   parentHash: string;
@@ -51,10 +53,10 @@ export const getRelativeDateLabel = (date: Date): string => {
   }
 };
 
-export const groupMessagesByDate = (messages: ChatConversationMessage[]) => {
-  const groupedMessages: Record<string, ChatConversationMessage[]> = {};
+export const groupMessagesByDate = (messages: FormattedMessage[]) => {
+  const groupedMessages: Record<string, FormattedMessage[]> = {};
   for (const message of messages) {
-    const date = new Date(message.scheduledTime ?? '').toDateString();
+    const date = new Date(message.createdAt ?? '').toDateString();
     if (!groupedMessages[date]) {
       groupedMessages[date] = [];
     }

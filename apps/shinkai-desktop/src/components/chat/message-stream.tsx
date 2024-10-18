@@ -337,23 +337,23 @@ export function WebsocketMessage({
     <Message
       isPending={isLoadingMessage}
       message={{
+        status: {
+          type: 'running',
+        },
         toolCalls: tool ? [tool] : [],
-        parentHash: '',
-        inboxId: '',
-        hash: '',
+        role: 'assistant',
+        messageId: '',
+        createdAt: new Date().toISOString(),
+        metadata: {
+          parentMessageId: '',
+          inboxId: '',
+        },
         content:
           tool?.status === 'Running'
             ? '...'
             : tool?.status === 'Complete'
               ? 'Getting AI response ...' // trick for now, ollama tool calls only works with stream off
               : messageContent,
-        scheduledTime: new Date().toISOString(),
-        isLocal: false,
-        workflowName: undefined,
-        sender: {
-          avatar:
-            'https://ui-avatars.com/api/?name=S&background=FF7E7F&color=ffffff',
-        },
       }}
     />
   ) : null;

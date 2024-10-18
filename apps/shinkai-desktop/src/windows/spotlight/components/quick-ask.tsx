@@ -375,8 +375,8 @@ const QuickAskBodyWithResponse = ({
   const inputMessage = data?.pages?.at(-1)?.at(0);
 
   const isLoadingMessage = useMemo(() => {
-    return lastMessage?.isLocal;
-  }, [lastMessage?.isLocal]);
+    return lastMessage?.role === 'user';
+  }, [lastMessage?.role]);
 
   const { messageContent } = useWebSocketMessage({
     enabled: hasProviderEnableStreaming,

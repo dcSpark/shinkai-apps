@@ -85,7 +85,7 @@ const ChatConversation = () => {
 
   const isLoadingMessage = useMemo(() => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
-    return isJobInbox(inboxId) && lastMessage?.isLocal;
+    return isJobInbox(inboxId) && lastMessage?.role === 'user';
   }, [data?.pages, inboxId]);
 
   // const { widgetTool, setWidgetTool } = useWebSocketTools({

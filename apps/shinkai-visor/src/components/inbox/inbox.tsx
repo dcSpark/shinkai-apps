@@ -411,14 +411,16 @@ export const Inbox = () => {
 
   const isLoadingMessage = useMemo(() => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
-    return isJobInbox(inboxId) && !!lastMessage?.isLocal;
+    return isJobInbox(inboxId) && lastMessage?.role === 'user';
   }, [data?.pages, inboxId]);
 
   useEffect(() => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
     if (lastMessage) {
       setIsJobProcessingFile(
-        isLoadingMessage && lastMessage.isLocal && !!lastMessage.fileInbox,
+        isLoadingMessage &&
+          lastMessage.role === 'user' &&
+          !!lastMessage.attachments.length,
       );
     }
   }, [data?.pages, auth, isLoadingMessage]);
