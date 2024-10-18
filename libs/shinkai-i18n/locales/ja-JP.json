@@ -69,6 +69,13 @@
       "shinkaiIdentity": "Shinkai Identity"
     }
   },
+  "codeRunner": {
+    "errorOccurred": "エラーが発生しました",
+    "executeCode": "コードを実行",
+    "output": "出力",
+    "stderr": "標準エラー",
+    "stdout": "標準出力"
+  },
   "common": {
     "alreadyHaveNode": "すでにノードをお持ちですか？",
     "back": "戻る",
@@ -320,6 +327,10 @@
       "addLocalWallet": "ローカルウォレットを追加",
       "addWallet": "ウォレットを追加",
       "description": "暗号通貨ウォレットを管理します。Coinbase CDPウォレットまたはローカルウォレットを追加してください。",
+      "emptyState": {
+        "description": "暗号ウォレットを管理します。Coinbase CDPウォレットまたはホットウォレットを作成または復元してください。",
+        "title": "ウォレットが見つかりません"
+      },
       "errorDescription": "ウォレットの復元中にエラーが発生しました。",
       "errorTitle": "ウォレットの復元中にエラーが発生しました",
       "name": "名前",
@@ -554,12 +565,5 @@
   },
   "workflowPlayground": {
     "label": "ワークフロープレイグラウンド"
-  },
-  "codeRunner": {
-    "errorOccurred": "エラーが発生しました",
-    "stderr": "標準エラー",
-    "stdout": "標準出力",
-    "output": "出力",
-    "executeCode": "コードを実行"
   }
 }

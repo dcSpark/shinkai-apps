@@ -69,6 +69,13 @@
       "shinkaiIdentity": "Shinkai身份"
     }
   },
+  "codeRunner": {
+    "errorOccurred": "发生错误",
+    "executeCode": "执行代码",
+    "output": "输出",
+    "stderr": "标准错误",
+    "stdout": "标准输出"
+  },
   "common": {
     "alreadyHaveNode": "已有节点？",
     "back": "返回",
@@ -320,6 +327,10 @@
       "addLocalWallet": "添加本地钱包",
       "addWallet": "添加钱包",
       "description": "管理您的加密钱包。添加您的 Coinbase CDP 钱包或本地钱包。",
+      "emptyState": {
+        "description": "管理您的加密钱包。创建或恢复您的 Coinbase CDP 钱包或热钱包。",
+        "title": "未找到钱包"
+      },
       "errorDescription": "恢复您的钱包时发生错误。",
       "errorTitle": "恢复钱包时出错",
       "name": "名称",
@@ -554,12 +565,5 @@
   },
   "workflowPlayground": {
     "label": "工作流程游乐场"
-  },
-  "codeRunner": {
-    "errorOccurred": "发生错误",
-    "stderr": "标准错误",
-    "stdout": "标准输出",
-    "output": "输出",
-    "executeCode": "执行代码"
   }
 }
