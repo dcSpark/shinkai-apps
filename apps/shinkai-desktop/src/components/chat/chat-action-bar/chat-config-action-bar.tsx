@@ -4,7 +4,9 @@ import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useUpdateChatConfig } from '@shinkai_network/shinkai-node-state/v2/mutations/updateChatConfig/useUpdateChatConfig';
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
+import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import {
+  Alert,
   Button,
   Form,
   Popover,
@@ -12,6 +14,7 @@ import {
   PopoverTrigger,
   Tooltip,
   TooltipContent,
+  TooltipPortal,
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
@@ -28,7 +31,9 @@ import {
   Switch,
   Textarea,
 } from '@shinkai_network/shinkai-ui';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Settings2 } from 'lucide-react';
+import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { UseFormReturn } from 'react-hook-form';
@@ -37,6 +42,7 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { useAuth } from '../../../store/auth';
+import { useSettings } from '../../../store/settings';
 import { actionButtonClassnames } from '../conversation-footer';
 
 export const chatConfigFormSchema = z.object({
@@ -293,70 +299,73 @@ export function UpdateChatConfigActionBar() {
   };
 
   return (
-    <Popover
-      onOpenChange={(open) => {
-        if (open) {
-          form.reset({
-            stream: chatConfig?.stream,
-            customPrompt: chatConfig?.custom_prompt ?? '',
-            temperature: chatConfig?.temperature,
-            topP: chatConfig?.top_p,
-            topK: chatConfig?.top_k,
-          });
-        }
-      }}
-    >
-      <TooltipProvider delayDuration={0}>
-        <Tooltip>
-          <PopoverTrigger asChild>
-            <TooltipTrigger asChild>
-              <button className={actionButtonClassnames} type="button">
-                <Settings2 className="h-full w-full" />
-              </button>
-            </TooltipTrigger>
-          </PopoverTrigger>
-          <PopoverContent
-            align="end"
-            className="min-w-[380px] bg-gray-300 px-6 py-7 text-xs"
-            side="top"
-          >
-            <h2 className="leading-1 text-gray-80 mb-5 text-xs uppercase">
-              Chat Settings
-            </h2>
+    <div className="flex items-center gap-2">
+      <ToolsDisabledAlert streamActive={form.watch('stream')} />
+      <Popover
+        onOpenChange={(open) => {
+          if (open) {
+            form.reset({
+              stream: chatConfig?.stream,
+              customPrompt: chatConfig?.custom_prompt ?? '',
+              temperature: chatConfig?.temperature,
+              topP: chatConfig?.top_p,
+              topK: chatConfig?.top_k,
+            });
+          }
+        }}
+      >
+        <TooltipProvider delayDuration={0}>
+          <Tooltip>
+            <PopoverTrigger asChild>
+              <TooltipTrigger asChild>
+                <button className={actionButtonClassnames} type="button">
+                  <Settings2 className="h-full w-full" />
+                </button>
+              </TooltipTrigger>
+            </PopoverTrigger>
+            <PopoverContent
+              align="end"
+              className="min-w-[380px] bg-gray-300 px-6 py-7 text-xs"
+              side="top"
+            >
+              <h2 className="leading-1 text-gray-80 mb-5 text-xs uppercase">
+                Chat Settings
+              </h2>
 
-            <Form {...form}>
-              <form
-                className="flex w-full flex-col justify-between gap-10 overflow-hidden"
-                onSubmit={form.handleSubmit(onSubmit)}
-              >
-                <ChatConfigForm form={form} />
-                <div className="flex items-center justify-end gap-2">
-                  <PopoverClose asChild>
-                    <Button
-                      className="h-9 min-w-[100px] gap-2 rounded-xl"
-                      size="sm"
-                      variant="outline"
-                    >
-                      <span>{t('common.cancel')}</span>
-                    </Button>
-                  </PopoverClose>
-                  <PopoverClose asChild>
-                    <Button
-                      className="h-9 min-w-[100px] gap-2 rounded-xl"
-                      size="sm"
-                      type={'submit'}
-                    >
-                      <span>{t('common.save')}</span>
-                    </Button>
-                  </PopoverClose>
-                </div>
-              </form>
-            </Form>
-          </PopoverContent>
-          <TooltipContent>Chat Settings</TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    </Popover>
+              <Form {...form}>
+                <form
+                  className="flex w-full flex-col justify-between gap-10 overflow-hidden"
+                  onSubmit={form.handleSubmit(onSubmit)}
+                >
+                  <ChatConfigForm form={form} />
+                  <div className="flex items-center justify-end gap-2">
+                    <PopoverClose asChild>
+                      <Button
+                        className="h-9 min-w-[100px] gap-2 rounded-xl"
+                        size="sm"
+                        variant="outline"
+                      >
+                        <span>{t('common.cancel')}</span>
+                      </Button>
+                    </PopoverClose>
+                    <PopoverClose asChild>
+                      <Button
+                        className="h-9 min-w-[100px] gap-2 rounded-xl"
+                        size="sm"
+                        type={'submit'}
+                      >
+                        <span>{t('common.save')}</span>
+                      </Button>
+                    </PopoverClose>
+                  </div>
+                </form>
+              </Form>
+            </PopoverContent>
+            <TooltipContent>Chat Settings</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </Popover>
+    </div>
   );
 }
 export function CreateChatConfigActionBar({
@@ -365,37 +374,88 @@ export function CreateChatConfigActionBar({
   form: UseFormReturn<ChatConfigFormSchemaType>;
 }) {
   return (
-    <Popover>
-      <TooltipProvider delayDuration={0}>
-        <Tooltip>
-          <PopoverTrigger asChild>
-            <TooltipTrigger asChild>
-              <button className={actionButtonClassnames} type="button">
-                <Settings2 className="h-full w-full" />
-              </button>
-            </TooltipTrigger>
-          </PopoverTrigger>
-          <PopoverContent
-            align="end"
-            className="min-w-[380px] bg-gray-300 px-6 py-7 text-xs"
-            side="top"
-          >
-            <h2 className="leading-1 text-gray-80 mb-5 text-xs uppercase">
-              Chat Settings
-            </h2>
+    <div className="flex items-center gap-2">
+      <ToolsDisabledAlert streamActive={form.watch('stream')} />
+      <Popover>
+        <TooltipProvider delayDuration={0}>
+          <Tooltip>
+            <PopoverTrigger asChild>
+              <TooltipTrigger asChild>
+                <button className={actionButtonClassnames} type="button">
+                  <Settings2 className="h-full w-full" />
+                </button>
+              </TooltipTrigger>
+            </PopoverTrigger>
+            <PopoverContent
+              align="end"
+              className="min-w-[380px] bg-gray-300 px-6 py-7 text-xs"
+              side="top"
+            >
+              <h2 className="leading-1 text-gray-80 mb-5 text-xs uppercase">
+                Chat Settings
+              </h2>
 
-            <Form {...form}>
-              <form
-                className="flex w-full flex-col justify-between gap-10 overflow-hidden"
-                // onSubmit={form.handleSubmit(onSubmit)}
-              >
-                <ChatConfigForm form={form} />
-              </form>
-            </Form>
-          </PopoverContent>
-          <TooltipContent>Chat Settings</TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    </Popover>
+              <Form {...form}>
+                <form
+                  className="flex w-full flex-col justify-between gap-10 overflow-hidden"
+                  // onSubmit={form.handleSubmit(onSubmit)}
+                >
+                  <ChatConfigForm form={form} />
+                </form>
+              </Form>
+            </PopoverContent>
+            <TooltipContent>Chat Settings</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </Popover>
+    </div>
   );
 }
+
+const useSelectedAIModel = () => {
+  const defaultAgentId = useSettings((state) => state.defaultAgentId);
+  const auth = useAuth((state) => state.auth);
+
+  const { llmProviders } = useGetLLMProviders({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+  const selectedProvider = llmProviders?.find(
+    (provider) => provider.id === defaultAgentId,
+  );
+  return selectedProvider;
+};
+
+const ToolsDisabledAlert = ({ streamActive }: { streamActive?: boolean }) => {
+  const selectedAIModel = useSelectedAIModel();
+
+  const isOllamaProvider =
+    selectedAIModel?.model?.split(':')?.[0] === 'ollama' && streamActive;
+
+  return isOllamaProvider ? (
+    <TooltipProvider delayDuration={0}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Alert
+            className={cn(
+              'cursor-pointer [&>svg]:static [&>svg~*]:pl-0',
+              'flex w-full items-center gap-2 rounded-lg px-3 py-1.5',
+            )}
+            variant="info"
+          >
+            <InfoCircleIcon className="h-3.5 w-3.5 shrink-0" />
+            <span className="whitespace-nowrap text-xs">Tools disabled</span>
+          </Alert>
+        </TooltipTrigger>
+        <TooltipPortal>
+          <TooltipContent>
+            <p>
+              Turn off streaming in chat config to allow tool usage (Ollama
+              limitation).
+            </p>
+          </TooltipContent>
+        </TooltipPortal>
+      </Tooltip>
+    </TooltipProvider>
+  ) : null;
+};
