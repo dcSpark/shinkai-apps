@@ -4,9 +4,7 @@ import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useUpdateChatConfig } from '@shinkai_network/shinkai-node-state/v2/mutations/updateChatConfig/useUpdateChatConfig';
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
-import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import {
-  Alert,
   Button,
   Form,
   Popover,
@@ -30,9 +28,7 @@ import {
   Switch,
   Textarea,
 } from '@shinkai_network/shinkai-ui';
-import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Settings2 } from 'lucide-react';
-import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { UseFormReturn } from 'react-hook-form';
@@ -41,7 +37,6 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { useAuth } from '../../../store/auth';
-import { useSettings } from '../../../store/settings';
 import { actionButtonClassnames } from '../conversation-footer';
 
 export const chatConfigFormSchema = z.object({
@@ -59,10 +54,6 @@ interface ChatConfigFormProps {
 }
 
 function ChatConfigForm({ form }: ChatConfigFormProps) {
-  const selectedAIModel = useSelectedAIModel();
-
-  const isOllamaProvider = selectedAIModel?.model?.split(':')?.[0] === 'ollama';
-
   return (
     <div className="space-y-6">
       <FormField
@@ -70,22 +61,7 @@ function ChatConfigForm({ form }: ChatConfigFormProps) {
         name="stream"
         render={({ field }) => (
           <FormItem className="flex w-full flex-col gap-3">
-            {isOllamaProvider && (
-              <Alert
-                className={cn(
-                  'cursor-default [&>svg]:static [&>svg~*]:pl-0',
-                  'flex w-full items-center gap-2 rounded-lg px-3 py-2',
-                )}
-                variant="info"
-              >
-                <InfoCircleIcon className="h-3.5 w-3.5 shrink-0" />
-                <span className="whitespace-nowrap text-xs">
-                  Turn off stream if you want to use{' '}
-                  <span className="font-semibold">Tools</span>
-                </span>
-              </Alert>
-            )}
-            <div className="flex gap-1">
+            <div className="flex gap-3">
               <FormControl>
                 <Switch
                   checked={field.value}
@@ -251,20 +227,6 @@ function ChatConfigForm({ form }: ChatConfigFormProps) {
     </div>
   );
 }
-
-const useSelectedAIModel = () => {
-  const defaultAgentId = useSettings((state) => state.defaultAgentId);
-  const auth = useAuth((state) => state.auth);
-
-  const { llmProviders } = useGetLLMProviders({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-  });
-  const selectedProvider = llmProviders?.find(
-    (provider) => provider.id === defaultAgentId,
-  );
-  return selectedProvider;
-};
 
 export function UpdateChatConfigActionBar() {
   const auth = useAuth((state) => state.auth);

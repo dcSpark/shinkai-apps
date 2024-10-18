@@ -30,6 +30,7 @@ import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-n
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useGetWorkflowSearch } from '@shinkai_network/shinkai-node-state/v2/queries/getWorkflowSearch/useGetWorkflowSearch';
 import {
+  Alert,
   Button,
   ChatInputArea,
   Form,
@@ -55,6 +56,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { partial } from 'filesize';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Paperclip, SendIcon, X, XIcon } from 'lucide-react';
+import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import { useEffect, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm, useWatch } from 'react-hook-form';
@@ -383,7 +385,10 @@ function ConversationEmptyFooter() {
                         <PromptSelectionActionBar />
                         <WorkflowSelectionActionBar />
                       </div>
-                      <CreateChatConfigActionBar form={chatConfigForm} />
+                      <div className="flex items-center gap-2">
+                        <ToolsDisabledAlert />
+                        <CreateChatConfigActionBar form={chatConfigForm} />
+                      </div>
                     </div>
 
                     <ChatInputArea
@@ -772,7 +777,10 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                         <PromptSelectionActionBar />
                         <WorkflowSelectionActionBar />
                       </div>
-                      <UpdateChatConfigActionBar />
+                      <div className="flex items-center gap-2">
+                        <ToolsDisabledAlert />
+                        <UpdateChatConfigActionBar />
+                      </div>
                     </div>
 
                     <ChatInputArea
@@ -1025,3 +1033,50 @@ function useFirstMessageWorkflow() {
 
   return firstMessageWorkflow;
 }
+
+const useSelectedAIModel = () => {
+  const defaultAgentId = useSettings((state) => state.defaultAgentId);
+  const auth = useAuth((state) => state.auth);
+
+  const { llmProviders } = useGetLLMProviders({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+  const selectedProvider = llmProviders?.find(
+    (provider) => provider.id === defaultAgentId,
+  );
+  return selectedProvider;
+};
+
+const ToolsDisabledAlert = () => {
+  const selectedAIModel = useSelectedAIModel();
+
+  const isOllamaProvider = selectedAIModel?.model?.split(':')?.[0] === 'ollama';
+
+  return isOllamaProvider ? (
+    <TooltipProvider delayDuration={0}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Alert
+            className={cn(
+              'cursor-pointer [&>svg]:static [&>svg~*]:pl-0',
+              'flex w-full items-center gap-2 rounded-lg px-3 py-1.5',
+            )}
+            variant="info"
+          >
+            <InfoCircleIcon className="h-3.5 w-3.5 shrink-0" />
+            <span className="whitespace-nowrap text-xs">Tools disabled</span>
+          </Alert>
+        </TooltipTrigger>
+        <TooltipPortal>
+          <TooltipContent>
+            <p>
+              Turn off streaming in chat config to allow tool usage (Ollama
+              limitation).
+            </p>
+          </TooltipContent>
+        </TooltipPortal>
+      </Tooltip>
+    </TooltipProvider>
+  ) : null;
+};
