@@ -316,29 +316,29 @@ export function WebsocketMessage({
     enabled: isWsEnabled,
   });
   const { tool } = useWebSocketTools({ enabled: true });
-
-  return isLoadingMessage ? (
-    <Message
-      isPending={isLoadingMessage}
-      message={{
-        status: {
-          type: 'running',
-        },
-        toolCalls: tool ? [tool] : [],
-        role: 'assistant',
-        messageId: '',
-        createdAt: new Date().toISOString(),
-        metadata: {
-          parentMessageId: '',
-          inboxId: '',
-        },
-        content:
-          tool?.status === 'Running'
-            ? '...'
-            : tool?.status === 'Complete'
-              ? 'Getting AI response ...' // trick for now, ollama tool calls only works with stream off
-              : messageContent,
-      }}
-    />
-  ) : null;
+  return null;
+  // return isLoadingMessage ? (
+  //   <Message
+  //     isPending={isLoadingMessage}
+  //     message={{
+  //       status: {
+  //         type: 'running',
+  //       },
+  //       toolCalls: tool ? [tool] : [],
+  //       role: 'assistant',
+  //       messageId: '',
+  //       createdAt: new Date().toISOString(),
+  //       metadata: {
+  //         parentMessageId: '',
+  //         inboxId: '',
+  //       },
+  //       content:
+  //         tool?.status === 'Running'
+  //           ? '...'
+  //           : tool?.status === 'Complete'
+  //             ? 'Getting AI response ...' // trick for now, ollama tool calls only works with stream off
+  //             : messageContent,
+  //     }}
+  //   />
+  // ) : null;
 }
