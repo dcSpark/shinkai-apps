@@ -47,7 +47,7 @@ import plotly.express as px
 import plotly.io as pio
 import json
 import array
-import os
+#import os
 
 import requests
 from requests.models import Response
@@ -78,7 +78,7 @@ import matplotlib
 matplotlib.use("AGG")
 
 # Ensure the working directory exists
-os.makedirs('/working', exist_ok=True)
+# os.makedirs('/working', exist_ok=True)
 
 # Function to capture DataFrame display as HTML
 def capture_df_display(df):
@@ -336,21 +336,32 @@ const initialize = async () => {
 
   // **Mount IDBFS to persist filesystem in IndexedDB**
   try {
-    // pyodide.FS.mkdir('/working');
+    const read = () => {
+      const out: string[] = [];
+      for (const file of pyodide.FS.readdir(mountDir).filter(
+        (file: any) => !/^\.+$/.test(file),
+      )) {
+        out.push(file);
+      }
+      console.log(out.join('\n'));
+    };
 
-    const mountDir = '/new_mnt';
+    const onsync = (error: any) => {
+      if (error) {
+        console.error('syncfs error:', error);
+        throw error;
+      }
+      read();
+    };
+
+    const mountDir = '/idbfs';
     pyodide.FS.mkdir(mountDir);
     pyodide.FS.mount(
       pyodide.FS.filesystems.IDBFS,
       { root: '.', autoPersist: true },
       mountDir,
     );
-
-    // Mount IDBFS to the persistent directory
-    // pyodide.FS.mount(pyodide.FS.filesystems.IDBFS, { autoPersist: true }, '/');
-
-    // Use syncFilesystem to synchronize the filesystem
-    await syncFilesystem(true);
+    pyodide.FS.syncfs(true, onsync);
 
     // Testing
     // const data = 'hello world!';
@@ -362,6 +373,63 @@ const initialize = async () => {
 
   // **Inject fetchPage into Python's global scope**
   pyodide.globals.set('custom_fetch', fetchPage);
+
+  // **Add Filesystem Activity Logs**
+  try {
+    const FS = pyodide.FS;
+
+    // Create a complete trackingDelegate object
+    const trackingDelegate: Partial<typeof FS.trackingDelegate> = {
+      willMovePath: (oldpath: string, newpath: string) => {
+        console.log(`About to move "${oldpath}" to "${newpath}"`);
+      },
+      onMovePath: (oldpath: string, newpath: string) => {
+        console.log(`Moved "${oldpath}" to "${newpath}"`);
+      },
+      willDeletePath: (path: string) => {
+        console.log(`About to delete "${path}"`);
+      },
+      onDeletePath: (path: string) => {
+        console.log(`Deleted "${path}"`);
+      },
+      onOpenFile: (path: string, flags: number) => {
+        console.log(`Opened "${path}" with flags ${flags}`);
+      },
+      onWriteToFile: (path: string, bytesWritten: number) => {
+        console.log(
+          `Wrote to file "${path}" with ${bytesWritten} bytes written`,
+        );
+      },
+      onReadFile: (path: string, bytesRead: number) => {
+        console.log(`Read ${bytesRead} bytes from "${path}"`);
+      },
+      onSeekFile: (path: string, position: number, whence: number) => {
+        console.log(
+          `Seek on "${path}" with position ${position} and whence ${whence}`,
+        );
+      },
+      onCloseFile: (path: string) => {
+        console.log(`Closed "${path}"`);
+      },
+      onMakeDirectory: (path: string, mode: number) => {
+        console.log(`Created directory "${path}" with mode ${mode}`);
+      },
+      onMakeSymlink: (oldpath: string, newpath: string) => {
+        console.log(`Created symlink from "${oldpath}" to "${newpath}"`);
+      },
+    };
+
+    // Set the trackingDelegate
+    pyodide.FS.trackingDelegate = trackingDelegate;
+
+    console.log('Filesystem tracking delegates have been set.');
+    // Test direct FS calls
+    // FS.mkdir('/idbfs');
+    // FS.writeFile('/idbfs/hey.txt', 'Hola!');
+    console.log('Direct FS calls completed.');
+  } catch (fsError) {
+    console.error('Failed to set FS.trackingDelegate:', fsError);
+  }
 
   isInitialized = true;
   console.timeEnd('initialize');
@@ -397,7 +465,28 @@ self.onmessage = async (event) => {
         // Run the Python code
         const runResult = await run(event.data.payload.code);
 
-        // // Synchronize the filesystem to save changes to IndexedDB
+        //
+        const mountDir = '/idbfs';
+        const read = () => {
+          const out: string[] = [];
+          for (const file of pyodide.FS.readdir(mountDir).filter(
+            (file: any) => !/^\.+$/.test(file),
+          )) {
+            out.push(file);
+          }
+          console.log(out.join('\n'));
+        };
+
+        // Synchronize the filesystem to save changes to IndexedDB
+        const onsync = (error: any) => {
+          if (error) {
+            console.error('syncfs error:', error);
+            throw error;
+          }
+          read();
+        };
+
+        pyodide.FS.syncfs(false, onsync);
         await syncFilesystem(false); // Change to true to save changes
         console.log('> synced filesystem');
 
