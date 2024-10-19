@@ -334,89 +334,222 @@ const initialize = async () => {
   });
   console.log('Pyodide initialized');
 
-  // **Mount IDBFS to persist filesystem in IndexedDB**
-  try {
-    // Define a custom filesystem object with all required methods
-    const customFS = {
-      // Required methods
-      mount: function (mount: any) {
-        console.log('Custom FS mounted');
-        return {}; // Return the root node
-      },
-      unmount: function (mount: any) {
-        console.log('Custom FS unmounted');
-      },
-      // Implement other required methods
-      lookup: function (parent: any, name: any) {
-        console.log(`Looking up ${name} in ${parent.name}`);
-        // Return a node or throw an error if not found
-      },
-      getattr: function (node: any) {
-        console.log('Getting attributes');
-        return {
-          dev: 1,
-          ino: 1,
-          mode: 16877, // Directory with rwx permissions
-          nlink: 1,
-          uid: 0,
-          gid: 0,
-          rdev: 0,
-          size: 0,
-          atime: new Date(),
-          mtime: new Date(),
-          ctime: new Date(),
-          blksize: 4096,
-          blocks: 0,
-        };
-      },
-      readdir: function (node: any) {
-        console.log('Reading directory');
-        return ['.', '..', 'file1.txt', 'file2.txt'];
-      },
-      open: function (stream: any) {
-        console.log(`Opening ${stream.node.name}`);
-      },
-      close: function (stream: any) {
-        console.log(`Closing ${stream.node.name}`);
-      },
-      read: function (stream: any, buffer: any, offset: any, length: any, position: any) {
-        console.log(`Reading from ${stream.node.name}`);
-        // Implement read logic
-      },
-      write: function (stream: any, buffer: any, offset: any, length: any, position: any) {
-        console.log(`Writing to ${stream.node.name}`);
-        // Implement write logic
-      },
-      // Implement other required methods...
-    };
+  initializeCustomFS(pyodide);
 
-    // Register and mount the custom filesystem
-    pyodide.FS.filesystems.CUSTOMFS = customFS;
-    const mountDir = '/customfs';
-    pyodide.FS.mkdir(mountDir);
-    pyodide.FS.mount(pyodide.FS.filesystems.CUSTOMFS, { root: '.' }, mountDir);
-
-
-    // Mount IDBFS to the persistent directory
-    // pyodide.FS.mount(pyodide.FS.filesystems.IDBFS, { autoPersist: true }, '/');
-    // pyodide.FS.mount(
-    //   pyodide.FS.filesystems.PROXYFS,
-    //   { root: '/', fs: customFS },
-    //   '/',
-    // );
-
-    // Use syncFilesystem to synchronize the filesystem
-    await syncFilesystem(true);
-  } catch (error) {
-    console.error('Failed to set up IDBFS:', error);
-  }
-
-  // **Inject fetchPage into Python's global scope**
+  // Inject fetchPage into Python's global scope
   pyodide.globals.set('custom_fetch', fetchPage);
 
   isInitialized = true;
   console.timeEnd('initialize');
 };
+
+function initializeCustomFS(pyodide: PyodideInterface) {
+  const FS = pyodide.FS;
+  const PATH = pyodide.PATH;
+  const MEMFS = FS.filesystems.MEMFS;
+
+  const customFSAsync = {
+    DIR_MODE: 16384 | 511, // DIR_MODE: {{{ cDefine('S_IFDIR') }}} | 511 /* 0777 */,
+    FILE_MODE: 32768 | 511, // FILE_MODE: {{{ cDefine('S_IFREG') }}} | 511 /* 0777 */,
+    mount: function (mount: any) {
+      console.log('Mounting CustomFS');
+      return MEMFS.mount.apply(null, arguments);
+    },
+    syncfs: async (mount: any, populate: boolean, callback: Function) => {
+      console.log('Syncing CustomFS');
+      try {
+        const local = customFSAsync.getLocalSet(mount);
+        const remote = await customFSAsync.getRemoteSet(mount);
+        const src = populate ? remote : local;
+        const dst = populate ? local : remote;
+        await customFSAsync.reconcile(mount, src, dst);
+        callback(null);
+      } catch (e) {
+        callback(e);
+      }
+    },
+    getLocalSet: (mount: any) => {
+      console.log('Getting local set');
+      const entries = Object.create(null);
+
+      function isRealDir(p: string) {
+        return p !== "." && p !== "..";
+      }
+
+      function toAbsolute(root: string) {
+        return (p: string) => PATH.join2(root, p);
+      }
+
+      const check = FS.readdir(mount.mountpoint)
+        .filter(isRealDir)
+        .map(toAbsolute(mount.mountpoint));
+
+      while (check.length) {
+        const path = check.pop();
+        const stat = FS.stat(path);
+
+        if (FS.isDir(stat.mode)) {
+          check.push.apply(
+            check,
+            FS.readdir(path).filter(isRealDir).map(toAbsolute(path))
+          );
+        }
+
+        entries[path] = { timestamp: stat.mtime, mode: stat.mode };
+      }
+
+      return { type: "local", entries: entries };
+    },
+    getRemoteSet: async (mount: any) => {
+      console.log('Getting remote set');
+      // In this implementation, we'll use localStorage to simulate remote storage
+      const entries = Object.create(null);
+      const storagePrefix = 'customFS_';
+
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith(storagePrefix)) {
+          const path = key.slice(storagePrefix.length);
+          const item = JSON.parse(localStorage.getItem(key));
+          entries[PATH.join2(mount.mountpoint, path)] = {
+            timestamp: new Date(item.timestamp),
+            mode: item.mode,
+          };
+        }
+      }
+
+      return { type: "remote", entries };
+    },
+    loadLocalEntry: (path: string) => {
+      console.log('Loading local entry:', path);
+      const lookup = FS.lookupPath(path);
+      const node = lookup.node;
+      const stat = FS.stat(path);
+
+      if (FS.isDir(stat.mode)) {
+        return { timestamp: stat.mtime, mode: stat.mode };
+      } else if (FS.isFile(stat.mode)) {
+        node.contents = MEMFS.getFileDataAsTypedArray(node);
+        return {
+          timestamp: stat.mtime,
+          mode: stat.mode,
+          contents: node.contents,
+        };
+      } else {
+        throw new Error("node type not supported");
+      }
+    },
+    storeLocalEntry: (path: string, entry: any) => {
+      console.log('Storing local entry:', path);
+      if (FS.isDir(entry.mode)) {
+        FS.mkdirTree(path, entry.mode);
+      } else if (FS.isFile(entry.mode)) {
+        FS.writeFile(path, entry.contents, { canOwn: true });
+      } else {
+        throw new Error("node type not supported");
+      }
+
+      FS.chmod(path, entry.mode);
+      FS.utime(path, entry.timestamp, entry.timestamp);
+    },
+    removeLocalEntry: (path: string) => {
+      console.log('Removing local entry:', path);
+      const stat = FS.stat(path);
+
+      if (FS.isDir(stat.mode)) {
+        FS.rmdir(path);
+      } else if (FS.isFile(stat.mode)) {
+        FS.unlink(path);
+      }
+    },
+    loadRemoteEntry: async (path: string) => {
+      console.log('Loading remote entry:', path);
+      const item = localStorage.getItem('customFS_' + path);
+      if (item) {
+        const entry = JSON.parse(item);
+        return {
+          contents: new Uint8Array(entry.contents),
+          mode: entry.mode,
+          timestamp: new Date(entry.timestamp),
+        };
+      }
+      throw new Error("Remote entry not found");
+    },
+    storeRemoteEntry: async (path: string, entry: any) => {
+      console.log('Storing remote entry:', path);
+      localStorage.setItem('customFS_' + path, JSON.stringify({
+        contents: Array.from(entry.contents || []),
+        mode: entry.mode,
+        timestamp: entry.timestamp.getTime(),
+      }));
+    },
+    removeRemoteEntry: async (path: string) => {
+      console.log('Removing remote entry:', path);
+      localStorage.removeItem('customFS_' + path);
+    },
+    reconcile: async (mount: any, src: any, dst: any) => {
+      console.log('Reconciling');
+      let total = 0;
+
+      const create: Array<string> = [];
+      Object.keys(src.entries).forEach(function (key) {
+        const e = src.entries[key];
+        const e2 = dst.entries[key];
+        if (!e2 || (FS.isFile(e.mode) && e.timestamp.getTime() > e2.timestamp.getTime())) {
+          create.push(key);
+          total++;
+        }
+      });
+      create.sort();
+
+      const remove: Array<string> = [];
+      Object.keys(dst.entries).forEach(function (key) {
+        if (!src.entries[key]) {
+          remove.push(key);
+          total++;
+        }
+      });
+      remove.sort().reverse();
+
+      if (!total) {
+        return;
+      }
+
+      for (const path of create) {
+        if (dst.type === "local") {
+          const entry = await customFSAsync.loadRemoteEntry(path);
+          customFSAsync.storeLocalEntry(path, entry);
+        } else {
+          const entry = customFSAsync.loadLocalEntry(path);
+          await customFSAsync.storeRemoteEntry(path, entry);
+        }
+      }
+
+      for (const path of remove) {
+        if (dst.type === "local") {
+          customFSAsync.removeLocalEntry(path);
+        } else {
+          await customFSAsync.removeRemoteEntry(path);
+        }
+      }
+    },
+  };
+
+  FS.filesystems.CUSTOMFS_ASYNC = customFSAsync;
+
+  // Mount the custom filesystem
+  FS.mkdir('/customfs');
+  FS.mount(FS.filesystems.CUSTOMFS_ASYNC, {}, '/customfs');
+
+  // Sync the filesystem
+  FS.syncfs(true, (err) => {
+    if (err) {
+      console.error('Error syncing filesystem:', err);
+    } else {
+      console.log('Filesystem synced successfully');
+    }
+  });
+}
 
 // Function to synchronize the filesystem to IndexedDB
 const syncFilesystem = async (save = false) => {
