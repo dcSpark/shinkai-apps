@@ -37,6 +37,45 @@ const stderr: string[] = [];
 // Flag to check if Pyodide has been initialized
 let isInitialized = false;
 
+// Add this at the top of the file, outside of any function
+class MockRemoteStorage {
+  private storage: Map<string, any> = new Map();
+
+  async getItem(key: string): Promise<any> {
+    console.log(`MockRemoteStorage: Getting item with key "${key}"`);
+    const value = this.storage.get(key);
+    console.log(`MockRemoteStorage: Retrieved value for key "${key}":`, value);
+    return value;
+  }
+
+  async setItem(key: string, value: any): Promise<void> {
+    console.log(`MockRemoteStorage: Setting item with key "${key}"`, value);
+    this.storage.set(key, value);
+    console.log(`MockRemoteStorage: Set value for key "${key}"`);
+  }
+
+  async removeItem(key: string): Promise<void> {
+    console.log(`MockRemoteStorage: Removing item with key "${key}"`);
+    const deleted = this.storage.delete(key);
+    console.log(`MockRemoteStorage: Item with key "${key}" ${deleted ? 'removed' : 'not found'}`);
+  }
+
+  async clear(): Promise<void> {
+    console.log('MockRemoteStorage: Clearing all items');
+    this.storage.clear();
+    console.log('MockRemoteStorage: All items cleared');
+  }
+
+  async keys(): Promise<string[]> {
+    console.log('MockRemoteStorage: Getting all keys');
+    const keys = Array.from(this.storage.keys());
+    console.log('MockRemoteStorage: Retrieved keys:', keys);
+    return keys;
+  }
+}
+
+const mockRemoteStorage = new MockRemoteStorage();
+
 // Wrap user code with additional Python setup
 const wrapCode = (code: string): string => {
   const wrappedCode = `
@@ -389,9 +428,8 @@ function initializeCustomFS(pyodide: PyodideInterface) {
         const stat = FS.stat(path);
 
         if (FS.isDir(stat.mode)) {
-          check.push.apply(
-            check,
-            FS.readdir(path).filter(isRealDir).map(toAbsolute(path))
+          check.push(
+            ...FS.readdir(path).filter(isRealDir).map(toAbsolute(path))
           );
         }
 
@@ -402,15 +440,14 @@ function initializeCustomFS(pyodide: PyodideInterface) {
     },
     getRemoteSet: async (mount: any) => {
       console.log('Getting remote set');
-      // In this implementation, we'll use localStorage to simulate remote storage
       const entries = Object.create(null);
       const storagePrefix = 'customFS_';
 
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
+      const keys = await mockRemoteStorage.keys();
+      for (const key of keys) {
         if (key.startsWith(storagePrefix)) {
           const path = key.slice(storagePrefix.length);
-          const item = JSON.parse(localStorage.getItem(key));
+          const item = await mockRemoteStorage.getItem(key);
           entries[PATH.join2(mount.mountpoint, path)] = {
             timestamp: new Date(item.timestamp),
             mode: item.mode,
@@ -464,28 +501,27 @@ function initializeCustomFS(pyodide: PyodideInterface) {
     },
     loadRemoteEntry: async (path: string) => {
       console.log('Loading remote entry:', path);
-      const item = localStorage.getItem('customFS_' + path);
+      const item = await mockRemoteStorage.getItem('customFS_' + path);
       if (item) {
-        const entry = JSON.parse(item);
         return {
-          contents: new Uint8Array(entry.contents),
-          mode: entry.mode,
-          timestamp: new Date(entry.timestamp),
+          contents: new Uint8Array(item.contents),
+          mode: item.mode,
+          timestamp: new Date(item.timestamp),
         };
       }
       throw new Error("Remote entry not found");
     },
     storeRemoteEntry: async (path: string, entry: any) => {
       console.log('Storing remote entry:', path);
-      localStorage.setItem('customFS_' + path, JSON.stringify({
+      await mockRemoteStorage.setItem('customFS_' + path, {
         contents: Array.from(entry.contents || []),
         mode: entry.mode,
         timestamp: entry.timestamp.getTime(),
-      }));
+      });
     },
     removeRemoteEntry: async (path: string) => {
       console.log('Removing remote entry:', path);
-      localStorage.removeItem('customFS_' + path);
+      await mockRemoteStorage.removeItem('customFS_' + path);
     },
     reconcile: async (mount: any, src: any, dst: any) => {
       console.log('Reconciling');
