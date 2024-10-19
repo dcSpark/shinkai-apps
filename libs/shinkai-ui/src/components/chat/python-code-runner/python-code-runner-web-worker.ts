@@ -336,49 +336,112 @@ const initialize = async () => {
 
   // **Mount IDBFS to persist filesystem in IndexedDB**
   try {
+    // const customFS = {
+    //   open: (path: string, flags: string, mode: number) => {
+    //     try {
+    //       console.log('open called with path:', path);
+    //       self.postMessage({ type: 'fs-operation', payload: { operation: 'open', path, flags, mode } });
+    //       // Implement synchronization or use asyncify to handle asynchronous operations
+    //     } catch (error) {
+    //       console.error('Error in open:', error);
+    //     }
+    //   },
+    //   read: (stream: { path: string }, buffer: Uint8Array, offset: number, length: number, position: number) => {
+    //     try {
+    //       console.log('read called with path:', stream.path);
+    //       self.postMessage({ type: 'fs-operation', payload: { operation: 'read', path: stream.path } });
+    //       // Handle response in onmessage
+    //     } catch (error) {
+    //       console.error('Error in read:', error);
+    //     }
+    //   },
+    //   write: (stream: { path: string }, buffer: Uint8Array, offset: number, length: number, position: number) => {
+    //     try {
+    //       console.log('write called with path:', stream.path);
+    //       self.postMessage({ type: 'fs-operation', payload: { operation: 'write', path: stream.path, data: buffer } });
+    //       // Handle response in onmessage
+    //     } catch (error) {
+    //       console.error('Error in write:', error);
+    //     }
+    //   },
+    //   close: (stream: { path: string }) => {
+    //     try {
+    //       console.log('close called with path:', stream.path);
+    //       self.postMessage({ type: 'fs-operation', payload: { operation: 'close', path: stream.path } });
+    //       // Implement close operation
+    //     } catch (error) {
+    //       console.error('Error in close:', error);
+    //     }
+    //   },
+    //   // Implement other methods as needed
+    // };
+
+    // Define a custom filesystem object with all required methods
     const customFS = {
-      open: (path: string, flags: string, mode: number) => {
-        try {
-          console.log('open called with path:', path);
-          self.postMessage({ type: 'fs-operation', payload: { operation: 'open', path, flags, mode } });
-          // Implement synchronization or use asyncify to handle asynchronous operations
-        } catch (error) {
-          console.error('Error in open:', error);
-        }
+      // Required methods
+      mount: function (mount: any) {
+        console.log('Custom FS mounted');
+        return {}; // Return the root node
       },
-      read: (stream: { path: string }, buffer: Uint8Array, offset: number, length: number, position: number) => {
-        try {
-          console.log('read called with path:', stream.path);
-          self.postMessage({ type: 'fs-operation', payload: { operation: 'read', path: stream.path } });
-          // Handle response in onmessage
-        } catch (error) {
-          console.error('Error in read:', error);
-        }
+      unmount: function (mount: any) {
+        console.log('Custom FS unmounted');
       },
-      write: (stream: { path: string }, buffer: Uint8Array, offset: number, length: number, position: number) => {
-        try {
-          console.log('write called with path:', stream.path);
-          self.postMessage({ type: 'fs-operation', payload: { operation: 'write', path: stream.path, data: buffer } });
-          // Handle response in onmessage
-        } catch (error) {
-          console.error('Error in write:', error);
-        }
+      // Implement other required methods
+      lookup: function (parent: any, name: any) {
+        console.log(`Looking up ${name} in ${parent.name}`);
+        // Return a node or throw an error if not found
       },
-      close: (stream: { path: string }) => {
-        try {
-          console.log('close called with path:', stream.path);
-          self.postMessage({ type: 'fs-operation', payload: { operation: 'close', path: stream.path } });
-          // Implement close operation
-        } catch (error) {
-          console.error('Error in close:', error);
-        }
+      getattr: function (node: any) {
+        console.log('Getting attributes');
+        return {
+          dev: 1,
+          ino: 1,
+          mode: 16877, // Directory with rwx permissions
+          nlink: 1,
+          uid: 0,
+          gid: 0,
+          rdev: 0,
+          size: 0,
+          atime: new Date(),
+          mtime: new Date(),
+          ctime: new Date(),
+          blksize: 4096,
+          blocks: 0,
+        };
       },
-      // Implement other methods as needed
+      readdir: function (node: any) {
+        console.log('Reading directory');
+        return ['.', '..', 'file1.txt', 'file2.txt'];
+      },
+      open: function (stream: any) {
+        console.log(`Opening ${stream.node.name}`);
+      },
+      close: function (stream: any) {
+        console.log(`Closing ${stream.node.name}`);
+      },
+      read: function (stream: any, buffer: any, offset: any, length: any, position: any) {
+        console.log(`Reading from ${stream.node.name}`);
+        // Implement read logic
+      },
+      write: function (stream: any, buffer: any, offset: any, length: any, position: any) {
+        console.log(`Writing to ${stream.node.name}`);
+        // Implement write logic
+      },
+      // Implement other required methods...
     };
 
+    // Register and mount the custom filesystem
+    pyodide.FS.filesystems.CUSTOMFS = customFS;
+    const mountDir = '/customfs';
+    pyodide.FS.mkdir(mountDir);
+    pyodide.FS.mount(pyodide.FS.filesystems.CUSTOMFS, {}, mountDir);
     // Mount IDBFS to the persistent directory
     // pyodide.FS.mount(pyodide.FS.filesystems.IDBFS, { autoPersist: true }, '/');
-    pyodide.FS.mount(pyodide.FS.filesystems.PROXYFS, { root: '/', fs: customFS }, '/');
+    // pyodide.FS.mount(
+    //   pyodide.FS.filesystems.PROXYFS,
+    //   { root: '/', fs: customFS },
+    //   '/',
+    // );
 
     // Use syncFilesystem to synchronize the filesystem
     // await syncFilesystem(true);
