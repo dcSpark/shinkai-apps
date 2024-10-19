@@ -336,11 +336,26 @@ const initialize = async () => {
 
   // **Mount IDBFS to persist filesystem in IndexedDB**
   try {
+    // pyodide.FS.mkdir('/working');
+
+    const mountDir = '/new_mnt';
+    pyodide.FS.mkdir(mountDir);
+    pyodide.FS.mount(
+      pyodide.FS.filesystems.IDBFS,
+      { root: '.', autoPersist: true },
+      mountDir,
+    );
+
     // Mount IDBFS to the persistent directory
-    pyodide.FS.mount(pyodide.FS.filesystems.IDBFS, { autoPersist: true }, '/');
+    // pyodide.FS.mount(pyodide.FS.filesystems.IDBFS, { autoPersist: true }, '/');
 
     // Use syncFilesystem to synchronize the filesystem
     await syncFilesystem(true);
+
+    // Testing
+    // const data = 'hello world!';
+    // pyodide.FS.writeFile('hello.txt', data, { encoding: 'utf8' });
+    // await syncFilesystem(false);
   } catch (error) {
     console.error('Failed to set up IDBFS:', error);
   }
@@ -360,7 +375,7 @@ const syncFilesystem = async (save = false) => {
         console.error('syncfs error:', err);
         reject(err);
       } else {
-        console.log(`syncfs ${save ? 'saved to' : 'loaded from'} IndexedDB`);
+        console.log(`syncfs ${save ? 'synced from' : 'synced to'} IndexedDB`);
         resolve();
       }
     });
@@ -383,7 +398,8 @@ self.onmessage = async (event) => {
         const runResult = await run(event.data.payload.code);
 
         // // Synchronize the filesystem to save changes to IndexedDB
-        // await syncFilesystem(false); // Change to true to save changes
+        await syncFilesystem(false); // Change to true to save changes
+        console.log('> synced filesystem');
 
         // Post the successful run result
         self.postMessage({
