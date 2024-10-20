@@ -20,6 +20,13 @@ type PythonCodeRunnerProps = {
   code: string;
 };
 
+type FileSystemEntry = {
+  path: string;
+  timestamp: Date;
+  mode: number;
+  type: 'file' | 'folder';
+};
+
 // Define more specific message types
 type PageMessage = {
   type: 'page';
@@ -51,9 +58,9 @@ type GetRemoteSetMessage = {
 };
 
 type ReconcileMessage = {
-  type: 'reconcile';
-  create: string[];
-  remove: string[];
+  type: 'sync-local-to-remote';
+  create: Record<string, FileSystemEntry>;
+  remove: Record<string, FileSystemEntry>;
   sharedBuffer: SharedArrayBuffer;
 };
 
@@ -372,25 +379,29 @@ export const usePythonRunnerRunMutation = (
             }
 
             Atomics.notify(syncArray, 0); // Notify the worker
-          } else if (event.data.type === 'reconcile') {
+          } else if (event.data.type === 'sync-local-to-remote') {
             const { create, remove, sharedBuffer } = event.data;
             console.log('main thread> Reconciling file system');
+            console.log('main thread> create', JSON.stringify(create, null, 2)); // Pretty print the create object
+            console.log('main thread> remove', JSON.stringify(remove, null, 2)); // Pretty print the remove object
+
             const syncArray = new Int32Array(sharedBuffer, 0, 1);
             const dataArray = new Uint8Array(sharedBuffer, 4);
 
             try {
               // Process create entries
-              for (const path of create) {
+              for (const path in create) {
+                const entry = create[path];
                 console.log(`main thread> Creating entry: ${path}`);
                 // Use mockRemoteStorage to create entries
                 await mockRemoteStorage.setItem(`customFS_${path}`, {
-                  timestamp: Date.now(),
-                  mode: 0o777, // Example mode, adjust as needed
+                  timestamp: new Date(entry.timestamp).getTime(),
+                  mode: entry.mode,
                 });
               }
 
               // Process remove entries
-              for (const path of remove) {
+              for (const path in remove) {
                 console.log(`main thread> Removing entry: ${path}`);
                 // Use mockRemoteStorage to remove entries
                 await mockRemoteStorage.removeItem(`customFS_${path}`);

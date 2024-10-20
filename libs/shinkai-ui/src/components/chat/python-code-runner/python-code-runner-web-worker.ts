@@ -118,9 +118,6 @@ requests.post = CustomSession().post
 import matplotlib
 matplotlib.use("AGG")
 
-# Ensure the working directory exists
-os.makedirs('/working', exist_ok=True)
-
 # Function to capture DataFrame display as HTML
 def capture_df_display(df):
     return df.to_html()
@@ -437,6 +434,122 @@ function initializeCustomFS(pyodide: PyodideInterface) {
     },
     node_ops: customNodeOps,
     stream_ops: customStreamOps,
+
+    syncLocalToRemote(
+      _mount: any,
+      local: { entries: Record<string, FileSystemEntry> },
+      remote: { entries: Record<string, FileSystemEntry> },
+    ) {
+      console.log('syncLocalToRemote> Syncing from local to remote');
+      console.log('syncLocalToRemote> local', local);
+      console.log('syncLocalToRemote> remote', remote);
+
+      let create: Record<string, FileSystemEntry> = {};
+      const remove: Record<string, FileSystemEntry> = {};
+
+      create = local.entries;
+
+      // TODO: fix this once we have remote working
+      // Object.keys(local.entries).forEach((key) => {
+      //   console.log('syncLocalToRemote> key', key);
+      //   const localEntry = local.entries[key];
+      //   const remoteEntry = remote.entries[key];
+      //   if (
+      //     !remoteEntry ||
+      //     (FS.isFile(localEntry.mode) &&
+      //       localEntry.timestamp.getTime() > remoteEntry.timestamp.getTime())
+      //   ) {
+      //     create.push(key);
+      //   }
+      // });
+
+      // Object.keys(remote.entries).forEach((key) => {
+      //   console.log('syncLocalToRemote> key', key);
+      //   if (!local.entries[key]) {
+      //     remove.push(key);
+      //   }
+      // });
+
+      this.sendSyncMessage('sync-local-to-remote', create, remove);
+    },
+
+    syncRemoteToLocal(
+      mount: any,
+      local: { entries: Record<string, FileSystemEntry> },
+      remote: { entries: Record<string, FileSystemEntry> },
+    ) {
+      console.log('syncRemoteToLocal> Syncing from remote to local');
+      const create: Record<string, FileSystemEntry> = {};
+      const remove: Record<string, FileSystemEntry> = {};
+
+      // this.sendSyncMessage('sync-remote-to-local', create, remove);
+    },
+
+    sendSyncMessage(
+      type: string,
+      // TODO:L change to array so we can use the sharedbuffer and match the order
+      create: Record<string, FileSystemEntry>,
+      remove: Record<string, FileSystemEntry>,
+    ) {
+      const bufferSize = 512 * 1024; // Define buffer size
+      const sharedBuffer = new SharedArrayBuffer(bufferSize);
+      const syncArray = new Int32Array(sharedBuffer, 0, 1);
+      const dataArray = new Uint8Array(sharedBuffer, 4);
+
+      const message = {
+        type,
+        create,
+        remove,
+        sharedBuffer,
+      };
+
+      console.log('Message to be sent:', message); // Print the message
+
+      try {
+        self.postMessage(message);
+
+        console.log(
+          `${type}> Posted sync message to main thread, waiting for response...`,
+        );
+
+        const textDecoder = new TextDecoder();
+        let result = '';
+
+        // Busy-wait loop
+        while (syncArray[0] === 0) {
+          // This loop will block the thread until syncArray[0] changes
+        }
+
+        console.log(`${type}> Polling done with status: `, syncArray[0]);
+
+        if (syncArray[0] === -1) {
+          const errorMessage = textDecoder.decode(dataArray);
+          console.error(`${type}> Error during sync:`, errorMessage);
+          throw new Error(errorMessage);
+        }
+
+        // Read the response
+        const response = textDecoder
+          .decode(dataArray)
+          .replace(/\0/g, '')
+          .trim();
+        result += response;
+
+        console.log(`${type}> Received sync data of length: ${result.length}`);
+        console.log(`${type}> result: `, result);
+
+        const entries = JSON.parse(result);
+        console.log(`${type}> entries: `, entries);
+        // Process the entries as needed
+      } catch (e) {
+        console.error(`An error occurred during ${type}:`, e);
+        throw new Error(
+          `Failed to ${type}: ` +
+            (e instanceof Error ? e.message : 'Unknown error'),
+        );
+      }
+    },
+
     syncfs: async (
       mount: any,
       populate: boolean,
@@ -446,16 +559,18 @@ function initializeCustomFS(pyodide: PyodideInterface) {
       try {
         const local = customFSAsync.getLocalSet(mount);
         const remote = await customFSAsync.getRemoteSet(mount);
-        const src = populate ? remote : local;
-        const dst = populate ? local : remote;
-        await customFSAsync.reconcile(mount, src, dst);
+        if (populate) {
+          customFSAsync.syncRemoteToLocal(mount, local, remote);
+        } else {
+          customFSAsync.syncLocalToRemote(mount, local, remote);
+        }
         callback(null);
       } catch (e) {
         callback(e);
       }
     },
     getLocalSet: (mount: any) => {
-      console.log('customFSAsync> Getting local set from root');
+      console.log('customFSAsync> Getting local set from /home/pyodide');
       const entries = Object.create(null);
 
       function isRealDir(p: string) {
@@ -466,35 +581,108 @@ function initializeCustomFS(pyodide: PyodideInterface) {
         return (p: string) => PATH.join2(root, p);
       }
 
-      console.log('customFSAsync> Reading directory:', mount.mountpoint);
-      // Start from the root directory
-      const check = FS.readdir(mount.mountpoint)
+      console.log('customFSAsync> Reading directory: /home/pyodide');
+      // Start from the /home/pyodide directory
+      const check = FS.readdir('/home/pyodide')
         .filter(isRealDir)
-        .map(toAbsolute(mount.mountpoint));
+        .map(toAbsolute('/home/pyodide'));
+
+      // Print all folders and files at the real root level
+      const rootEntries = FS.readdir('/').filter(isRealDir);
+      const rootFolders: Array<string> = [];
+      const rootFiles: Array<string> = [];
+
+      rootEntries.forEach((entry: string) => {
+        const path = PATH.join2('/', entry);
+        const stat = FS.stat(path);
+        if (FS.isDir(stat.mode)) {
+          rootFolders.push(entry);
+        } else if (FS.isFile(stat.mode)) {
+          rootFiles.push(entry);
+        }
+      });
+
+      console.log('getLocalSet> Real root level folders:', rootFolders);
+      console.log('getLocalSet> Real root level files:', rootFiles);
+
+      // Function to print contents of a directory
+      function printDirectoryContents(dirPath: string) {
+        try {
+          const entries = FS.readdir(dirPath).filter(isRealDir);
+          const folders: Array<string> = [];
+          const files: Array<string> = [];
+
+          entries.forEach((entry: string) => {
+            const path = PATH.join2(dirPath, entry);
+            const stat = FS.stat(path);
+            if (FS.isDir(stat.mode)) {
+              check.push(
+                ...FS.readdir(path).filter(isRealDir).map(toAbsolute(path)),
+              );
+              entries[path] = {
+                timestamp: stat.mtime,
+                mode: stat.mode,
+                type: 'folder',
+              };
+            } else if (FS.isFile(stat.mode)) {
+              entries[path] = {
+                timestamp: stat.mtime,
+                mode: stat.mode,
+                type: 'file',
+              };
+            }
+          });
+
+          console.log(`getLocalSet> Folders in ${dirPath}:`, folders);
+          console.log(`getLocalSet> Files in ${dirPath}:`, files);
+        } catch (error) {
+          console.error(`Error reading ${dirPath} directory:`, error);
+        }
+      }
+
+      // Print contents inside the /home/pyodide directory
+      printDirectoryContents('/home/pyodide');
 
       while (check.length) {
         const path = check.pop();
-        console.log(`Checking path: ${path}`);
+        console.log(`getLocalSet> Checking path: ${path}`);
         const stat = FS.stat(path);
+        console.log('getLocalSet> stat', stat);
 
         if (FS.isDir(stat.mode)) {
-          console.log(`Directory: ${path}`);
           check.push(
             ...FS.readdir(path).filter(isRealDir).map(toAbsolute(path)),
           );
+          entries[path] = {
+            timestamp: stat.mtime,
+            mode: stat.mode,
+            type: 'folder',
+          };
         } else if (FS.isFile(stat.mode)) {
-          console.log(`File: ${path}`);
+          entries[path] = {
+            timestamp: stat.mtime,
+            mode: stat.mode,
+            type: 'file',
+          };
         } else {
-          console.warn(`Unknown type for path: ${path}`);
+          console.warn(`getLocalSet> Unknown type for path: ${path}`);
         }
 
         // Add the entry to the entries object
-        console.log('Adding entry to entries:', path);
-        console.log('Entry:', { timestamp: stat.mtime, mode: stat.mode });
-        entries[path] = { timestamp: stat.mtime, mode: stat.mode };
+        console.log('getLocalSet> Adding entry to entries:', path);
+        console.log('getLocalSet> Entry:', {
+          timestamp: stat.mtime,
+          mode: stat.mode,
+          type: entries[path].type,
+        });
+        entries[path] = {
+          timestamp: stat.mtime,
+          mode: stat.mode,
+          type: entries[path].type,
+        };
       }
 
-      console.log('Entries from root:', entries);
+      console.log('getLocalSet> Entries from /home/pyodide:', entries);
       return { type: 'local', entries: entries };
     },
     getRemoteSet: async (mount: any) => {
@@ -525,14 +713,11 @@ function initializeCustomFS(pyodide: PyodideInterface) {
 
       try {
         // Send message to main thread
-        self.postMessage(
-          {
-            type: 'get-remote-set',
-            mount: mountString,
-            sharedBuffer,
-          },
-          // [sharedBuffer], // Transfer the buffer
-        );
+        self.postMessage({
+          type: 'get-remote-set',
+          mount: mountString,
+          sharedBuffer,
+        });
 
         console.log(
           'Posted get-remote-set message to main thread, waiting for response...',
@@ -553,7 +738,7 @@ function initializeCustomFS(pyodide: PyodideInterface) {
 
       if (syncArray[0] === -1) {
         const errorMessage = textDecoder.decode(dataArray);
-        console.error('Error getting remote set:', errorMessage);
+        console.error('getRemoteSet> Error getting remote set:', errorMessage);
         throw new Error(errorMessage);
       }
 
@@ -561,172 +746,13 @@ function initializeCustomFS(pyodide: PyodideInterface) {
       const response = textDecoder.decode(dataArray).replace(/\0/g, '').trim();
       result += response;
 
-      console.log(`Received remote set data of length: ${result.length}`);
-      console.log('result: ', result);
+      console.log(
+        `getRemoteSet> Received remote set data of length: ${result.length}`,
+      );
+      console.log('getRemoteSet> result: ', result);
 
       const entries = JSON.parse(result);
       return { type: 'remote', entries };
-    },
-    loadLocalEntry: (path: string) => {
-      console.log('customFSAsync> Loading local entry:', path);
-      const lookup = FS.lookupPath(path);
-      const node = lookup.node;
-      const stat = FS.stat(path);
-
-      if (FS.isDir(stat.mode)) {
-        return { timestamp: stat.mtime, mode: stat.mode };
-      } else if (FS.isFile(stat.mode)) {
-        node.contents = MEMFS.getFileDataAsTypedArray(node);
-        return {
-          timestamp: stat.mtime,
-          mode: stat.mode,
-          contents: node.contents,
-        };
-      } else {
-        throw new Error('node type not supported');
-      }
-    },
-    storeLocalEntry: (path: string, entry: any) => {
-      console.log('customFSAsync> Storing local entry:', path);
-      if (FS.isDir(entry.mode)) {
-        FS.mkdirTree(path, entry.mode);
-      } else if (FS.isFile(entry.mode)) {
-        FS.writeFile(path, entry.contents, { canOwn: true });
-      } else {
-        throw new Error('node type not supported');
-      }
-
-      FS.chmod(path, entry.mode);
-      FS.utime(path, entry.timestamp, entry.timestamp);
-    },
-    removeLocalEntry: (path: string) => {
-      console.log('customFSAsync> Removing local entry:', path);
-      const stat = FS.stat(path);
-
-      if (FS.isDir(stat.mode)) {
-        FS.rmdir(path);
-      } else if (FS.isFile(stat.mode)) {
-        FS.unlink(path);
-      }
-    },
-    loadRemoteEntry: async (path: string) => {
-      console.log('customFSAsync> Loading remote entry:', path);
-      const item = await mockRemoteStorage.getItem('customFS_' + path);
-      if (item) {
-        return {
-          contents: new Uint8Array(item.contents),
-          mode: item.mode,
-          timestamp: new Date(item.timestamp),
-        };
-      }
-      throw new Error('Remote entry not found');
-    },
-    storeRemoteEntry: async (path: string, entry: any) => {
-      console.log('customFSAsync> Storing remote entry:', path);
-      await mockRemoteStorage.setItem('customFS_' + path, {
-        contents: Array.from(entry.contents || []),
-        mode: entry.mode,
-        timestamp: entry.timestamp.getTime(),
-      });
-    },
-    removeRemoteEntry: async (path: string) => {
-      console.log('customFSAsync> Removing remote entry:', path);
-      await mockRemoteStorage.removeItem('customFS_' + path);
-    },
-    reconcile: async (mount: any, src: any, dst: any) => {
-      console.log('customFSAsync> Reconciling');
-      console.log('src', src);
-      console.log('dst', dst);
-
-      let total = 0;
-
-      const create: Array<string> = [];
-      Object.keys(src.entries).forEach(function (key) {
-        const e = src.entries[key];
-        const e2 = dst.entries[key];
-        if (
-          !e2 ||
-          (FS.isFile(e.mode) && e.timestamp.getTime() > e2.timestamp.getTime())
-        ) {
-          create.push(key);
-          total++;
-        }
-      });
-      create.sort();
-
-      const remove: Array<string> = [];
-      Object.keys(dst.entries).forEach(function (key) {
-        if (!src.entries[key]) {
-          remove.push(key);
-          total++;
-        }
-      });
-      remove.sort().reverse();
-
-      if (!total) {
-        return;
-      }
-
-      const bufferSize = 512 * 1024; // Define buffer size
-      const sharedBuffer = new SharedArrayBuffer(bufferSize);
-      const syncArray = new Int32Array(sharedBuffer, 0, 1);
-      const dataArray = new Uint8Array(sharedBuffer, 4);
-
-      try {
-        // Send message to main thread
-        console.log('Sending reconcile message to main thread');
-        console.log('create', create);
-        console.log('remove', remove);
-
-        self.postMessage(
-          {
-            type: 'reconcile',
-            create,
-            remove,
-            sharedBuffer,
-          },
-          // [sharedBuffer], // Transfer the buffer
-        );
-
-        console.log(
-          'Posted reconcile message to main thread, waiting for response...',
-        );
-
-        const textDecoder = new TextDecoder();
-        let result = '';
-
-        // Busy-wait loop
-        while (syncArray[0] === 0) {
-          // This loop will block the thread until syncArray[0] changes
-        }
-
-        console.log('Polling done with status: ', syncArray[0]);
-
-        if (syncArray[0] === -1) {
-          const errorMessage = textDecoder.decode(dataArray);
-          console.error('Error during reconcile:', errorMessage);
-          throw new Error(errorMessage);
-        }
-
-        // Read the response
-        const response = textDecoder
-          .decode(dataArray)
-          .replace(/\0/g, '')
-          .trim();
-        result += response;
-
-        console.log(`Received reconcile data of length: ${result.length}`);
-        console.log('result: ', result);
-
-        const entries = JSON.parse(result);
-        // Process the entries as needed
-      } catch (e) {
-        console.error('An error occurred during reconcile:', e);
-        throw new Error(
-          'Failed to reconcile: ' +
-            (e instanceof Error ? e.message : 'Unknown error'),
-        );
-      }
     },
   };
 
