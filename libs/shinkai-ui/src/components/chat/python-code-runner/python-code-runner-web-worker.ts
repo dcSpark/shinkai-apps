@@ -386,37 +386,57 @@ const initialize = async () => {
   console.timeEnd('initialize');
 };
 
-function simpleFS(pyodide: PyodideInterface) {
-  const FS = pyodide.FS;
-
-  // Create and mount MEMFS at /testfs
-  FS.mkdir('/testfs');
-  FS.mount(FS.filesystems.MEMFS, {}, '/testfs');
-
-  // Write a file
-  FS.writeFile('/testfs/hello.txt', 'Hello, World!');
-
-  // Read the file
-  const content = FS.readFile('/testfs/hello.txt', { encoding: 'utf8' });
-  console.log('File content:', content);
-
-  // List files
-  const files = FS.readdir('/testfs');
-  console.log('Files in /testfs:', files);
-}
-
 function initializeCustomFS(pyodide: PyodideInterface) {
   const FS = pyodide.FS;
   const PATH = pyodide.PATH;
   const MEMFS = FS.filesystems.MEMFS;
 
+  // Keep a reference to the original MEMFS methods
+  const originalNodeOps = MEMFS.node_ops;
+  const originalStreamOps = MEMFS.stream_ops;
+
+  // Create custom node_ops with logging
+  const customNodeOps = {
+    ...originalNodeOps,
+    lookup: (parent: any, name: any) => {
+      console.log(`customNodeOps> Looking up: ${name} in parent: ${parent}`);
+      return originalNodeOps.lookup(parent, name);
+    },
+    // Add more methods with logging as needed
+  };
+
+  // Create custom stream_ops with logging
+  const customStreamOps = {
+    ...originalStreamOps,
+    read: (
+      stream: any,
+      buffer: any,
+      offset: any,
+      length: any,
+      position: any,
+    ) => {
+      console.log(
+        `customStreamOps> Reading from stream at position: ${position}`,
+      );
+      return originalStreamOps.read(stream, buffer, offset, length, position);
+    },
+    // Add more methods with logging as needed
+  };
+
   const customFSAsync = {
     DIR_MODE: 16384 | 511, // DIR_MODE: {{{ cDefine('S_IFDIR') }}} | 511 /* 0777 */,
     FILE_MODE: 32768 | 511, // FILE_MODE: {{{ cDefine('S_IFREG') }}} | 511 /* 0777 */,
-    mount: function (...args: any[]) {
-      console.log('customFSAsync>>>>> Mounting CustomFS');
-      return MEMFS.mount(...args);
+
+    mount(mount: any) {
+      console.log('customFSAsync> Mounting CustomFS');
+      // Create the root node
+      const rootNode = MEMFS.createNode(null, '/', customFSAsync.DIR_MODE, 0);
+      rootNode.node_ops = customNodeOps;
+      rootNode.stream_ops = customStreamOps;
+      return rootNode;
     },
+    node_ops: customNodeOps,
+    stream_ops: customStreamOps,
     syncfs: async (
       mount: any,
       populate: boolean,
@@ -710,14 +730,14 @@ function initializeCustomFS(pyodide: PyodideInterface) {
     },
   };
 
-  FS.filesystems.CUSTOMFS_ASYNC = customFSAsync;
-
   // Mount the custom filesystem
   try {
     FS.mkdir('/customfs');
-    FS.mount(FS.filesystems.CUSTOMFS_ASYNC, { root: '.' }, '/customfs');
+    FS.mount(customFSAsync, { root: '.' }, '/customfs');
   } catch (e) {
-    console.error('Error mounting custom filesystem:', e);
+    if (e instanceof Error && (e as any).code !== 'EEXIST') {
+      console.error('Error creating /customfs directory:', e);
+    }
   }
 
   // Sync the filesystem
