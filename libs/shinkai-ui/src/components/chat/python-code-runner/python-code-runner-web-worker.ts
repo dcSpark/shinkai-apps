@@ -48,6 +48,7 @@ import plotly.io as pio
 import json
 import array
 import os
+import lxml
 
 import requests
 from requests.models import Response
@@ -137,6 +138,24 @@ json.dumps(imports)
   return result;
 };
 
+// New function to find imports using regex
+const findImportsUsingRegex = (code: string): string[] => {
+  const importRegex = /(?:from\s+(\S+)\s+import\s+[\s\S]+|import\s+(\S+))/g;
+  const matches = code.matchAll(importRegex);
+  const imports = new Set<string>();
+
+  for (const match of matches) {
+    if (match[1]) {
+      imports.add(match[1]);
+    }
+    if (match[2]) {
+      imports.add(match[2]);
+    }
+  }
+
+  return Array.from(imports);
+};
+
 /**
  * Attempts to install dependencies for the given Python code using micropip.
  *
@@ -161,20 +180,23 @@ const installDependencies = async (code: string): Promise<void> => {
   console.time('install micropip dependencies');
   await pyodide.loadPackage(['micropip']);
   const micropip = pyodide.pyimport('micropip');
-  // TODO: i think is safe to remove this since we are not using pyodide-http
-  // await micropip.install('pyodide-http>=0.2.1');
 
   const codeDependencies = [
     // Our code wrapper contains dependencies so we need to install them
     ...(await findImportsFromCodeString(wrapCode(''))),
     ...(await findImportsFromCodeString(code)),
+    ...findImportsUsingRegex(code), // Merge results from regex-based detection
   ];
+
+  // Remove duplicates by converting to a Set and back to an Array
+  const uniqueDependencies = Array.from(new Set(codeDependencies));
+
   console.log(
     'Trying to install the following dependencies:',
-    codeDependencies,
+    uniqueDependencies,
   );
 
-  const installPromises = codeDependencies.map((dependency) =>
+  const installPromises = uniqueDependencies.map((dependency) =>
     micropip.install(dependency),
   );
   await Promise.allSettled(installPromises);
@@ -342,8 +364,8 @@ const initialize = async () => {
     pyodide.FS.mkdir(mountDir);
     pyodide.FS.mount(
       pyodide.FS.filesystems.IDBFS,
-      { root: '.', autoPersist: true },
-      mountDir,
+      { root: '/new_mnt', autoPersist: true },
+      '/home/pyodide',
     );
 
     // Mount IDBFS to the persistent directory
@@ -367,10 +389,48 @@ const initialize = async () => {
   console.timeEnd('initialize');
 };
 
+// Function to print contents of a directory
+function printDirectoryContents(dirPath: string) {
+  try {
+    const entries = pyodide.FS.readdir(dirPath);
+    const folders: Array<string> = [];
+    const files: Array<string> = [];
+
+    entries.forEach((entry: string) => {
+      if (entry === '.' || entry === '..') return;
+      const path = `${dirPath}/${entry}`;
+      const stat = pyodide.FS.stat(path);
+      if (pyodide.FS.isDir(stat.mode)) {
+        folders.push(entry);
+      } else if (pyodide.FS.isFile(stat.mode)) {
+        files.push(entry);
+      }
+    });
+
+    console.log(`Contents of ${dirPath}:`);
+    console.log('Folders:', folders);
+    console.log('Files:', files);
+  } catch (error) {
+    console.error(`Error reading ${dirPath} directory:`, error);
+  }
+}
+
 // Function to synchronize the filesystem to IndexedDB
 const syncFilesystem = async (save = false) => {
   return new Promise<void>((resolve, reject) => {
     pyodide.FS.syncfs(save, (err: any) => {
+      printDirectoryContents('/home/pyodide');
+
+      printDirectoryContents('/home/web_user');
+
+      // Print contents inside the /home directory
+      printDirectoryContents('/home');
+
+      printDirectoryContents('/new_mnt');
+
+      // Print contents inside the root directory
+      printDirectoryContents('/');
+
       if (err) {
         console.error('syncfs error:', err);
         reject(err);
