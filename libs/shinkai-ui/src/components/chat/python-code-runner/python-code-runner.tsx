@@ -1,6 +1,11 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
+import {
+  BaseDirectory,
+  readTextFile,
+  writeTextFile,
+} from '@tauri-apps/plugin-fs';
 import { AnimatePresence, motion } from 'framer-motion';
 
 import { Button } from '../../button';
@@ -39,7 +44,20 @@ type FsOperationMessage = {
   data?: Uint8Array;
 };
 
-type WorkerMessage = PageMessage | RunDoneMessage | FsOperationMessage;
+type GetRemoteSetMessage = {
+  type: 'get-remote-set';
+  mount: any;
+  sharedBuffer: SharedArrayBuffer;
+};
+
+type ReconcileMessage = {
+  type: 'reconcile';
+  create: string[];
+  remove: string[];
+  sharedBuffer: SharedArrayBuffer;
+};
+
+type WorkerMessage = PageMessage | RunDoneMessage | FsOperationMessage | GetRemoteSetMessage | ReconcileMessage;
 
 // Type guard functions
 function isPageMessage(message: WorkerMessage): message is PageMessage {
@@ -50,9 +68,70 @@ function isRunDoneMessage(message: WorkerMessage): message is RunDoneMessage {
   return message.type === 'run-done';
 }
 
-function isFsOperationMessage(message: WorkerMessage): message is FsOperationMessage {
+function isFsOperationMessage(
+  message: WorkerMessage,
+): message is FsOperationMessage {
   return message.type === 'fs-operation';
 }
+
+// Define the structure for our virtual file system
+type VirtualFileSystem = {
+  [path: string]: {
+    content: string;
+    isDirectory: boolean;
+    lastModified: number;
+  };
+};
+
+// Initialize our virtual file system
+let virtualFS: VirtualFileSystem = {};
+
+// Function to save the virtual file system state
+async function saveVFSState() {
+  const jsonState = JSON.stringify(virtualFS);
+  await writeTextFile('vfs.json', jsonState, { baseDir: BaseDirectory.AppData });
+}
+
+// Function to load the virtual file system state
+async function loadVFSState() {
+  try {
+    const jsonState = await readTextFile('vfs.json', {
+      baseDir: BaseDirectory.AppData,
+    });
+    virtualFS = JSON.parse(jsonState);
+  } catch (error) {
+    console.log('No previous VFS state found, initializing empty state');
+    virtualFS = {};
+  }
+}
+
+// Load the VFS state when the component mounts
+// loadVFSState();
+
+// Mock remote storage implementation
+const mockRemoteStorage = (() => {
+  const storage: Record<string, { timestamp: number; mode: number }> = {};
+
+  return {
+    async keys(): Promise<string[]> {
+      return Object.keys(storage);
+    },
+    async getItem(key: string): Promise<{ timestamp: number; mode: number }> {
+      if (key in storage) {
+        return storage[key];
+      }
+      throw new Error(`Key not found: ${key}`);
+    },
+    async setItem(key: string, value: { timestamp: number; mode: number }) {
+      storage[key] = value;
+    },
+    async removeItem(key: string) {
+      delete storage[key];
+    },
+  };
+})();
+
+const pathJoin = (base: string, relative: string) => `${base}/${relative}`;
 
 export const usePythonRunnerRunMutation = (
   options?: UseMutationOptions<RunResult, Error, { code: string }>,
@@ -67,6 +146,7 @@ export const usePythonRunnerRunMutation = (
         }, 120000); // 2 minutes
 
         worker.onmessage = async (event: { data: WorkerMessage }) => {
+          console.log('main thread> received message: ', event);
           if (isPageMessage(event.data)) {
             const {
               method,
@@ -181,24 +261,52 @@ export const usePythonRunnerRunMutation = (
             console.log('main thread> worker event', event);
             resolve(event.data.payload);
           } else if (isFsOperationMessage(event.data)) {
+            console.log('main thread> fs-operation message', event.data);
             const { operation, path, flags, mode, data } = event.data;
             try {
               switch (operation) {
                 case 'open':
                   console.log(`Main thread> Opening file: ${path}`);
-                  // Implement logic to open file in IndexedDB
+                  if (!virtualFS[path]) {
+                    virtualFS[path] = {
+                      content: '',
+                      isDirectory: false,
+                      lastModified: Date.now(),
+                    };
+                  }
                   break;
                 case 'read':
                   console.log(`Main thread> Reading file: ${path}`);
-                  // Implement logic to read file from IndexedDB
+                  if (virtualFS[path] && !virtualFS[path].isDirectory) {
+                    // Send file content back to worker
+                    worker.postMessage({
+                      type: 'fs-response',
+                      operation: 'read',
+                      path,
+                      content: virtualFS[path].content,
+                    });
+                  } else {
+                    throw new Error(
+                      `File not found or is a directory: ${path}`,
+                    );
+                  }
                   break;
                 case 'write':
                   console.log(`Main thread> Writing to file: ${path}`);
-                  // Implement logic to write data to IndexedDB
+                  if (data) {
+                    const decoder = new TextDecoder();
+                    const content = decoder.decode(data);
+                    virtualFS[path] = {
+                      content,
+                      isDirectory: false,
+                      lastModified: Date.now(),
+                    };
+                    saveVFSState(); // Persist changes
+                  }
                   break;
                 case 'close':
                   console.log(`Main thread> Closing file: ${path}`);
-                  // Implement logic to close file in IndexedDB
+                  // No action needed for close in our simple implementation
                   break;
                 default:
                   console.error(`Main thread> Unknown operation: ${operation}`);
@@ -207,7 +315,112 @@ export const usePythonRunnerRunMutation = (
               console.error(
                 `Main thread> Error handling fs-operation: ${error}`,
               );
+              worker.postMessage({
+                type: 'fs-response',
+                operation,
+                path,
+                error: error instanceof Error ? error.message : 'Unknown error',
+              });
             }
+          // Filesystem operations
+          } else if (event.data.type === 'get-remote-set') {
+            const { mount, sharedBuffer } = event.data;
+            console.log('main thread> Getting remote set');
+            console.log('main thread> event.data', event.data);
+            const entries = Object.create(null);
+            const storagePrefix = 'customFS_';
+
+            const syncArray = new Int32Array(sharedBuffer, 0, 1);
+            const dataArray = new Uint8Array(sharedBuffer, 4);
+
+            try {
+              const keys = await mockRemoteStorage.keys();
+              for (const key of keys) {
+                if (key.startsWith(storagePrefix)) {
+                  const relativePath = key.slice(storagePrefix.length);
+                  const item = await mockRemoteStorage.getItem(key);
+                  entries[pathJoin(mount.mountpoint, relativePath)] = {
+                    timestamp: new Date(item.timestamp),
+                    mode: item.mode,
+                  };
+                }
+              }
+
+              const textEncoder = new TextEncoder();
+              const encodedEntries = textEncoder.encode(JSON.stringify(entries));
+
+              console.log('Encoded entries:', JSON.stringify(entries)); // Log the response
+
+              if (encodedEntries.length <= dataArray.length) {
+                dataArray.set(encodedEntries);
+                syncArray[0] = 1; // Indicate success
+              } else {
+                console.warn('Encoded entries too large for buffer');
+                syncArray[0] = -1; // Indicate error
+              }
+            } catch (error) {
+              console.error('Error getting remote set:', error);
+              const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+              const encodedError = new TextEncoder().encode(errorMessage);
+
+              if (encodedError.length <= dataArray.length) {
+                dataArray.set(encodedError);
+              } else {
+                console.warn('Error message too long to fit in buffer');
+              }
+              syncArray[0] = -1; // Indicate error
+            }
+
+            Atomics.notify(syncArray, 0); // Notify the worker
+          } else if (event.data.type === 'reconcile') {
+            const { create, remove, sharedBuffer } = event.data;
+            console.log('main thread> Reconciling file system');
+            const syncArray = new Int32Array(sharedBuffer, 0, 1);
+            const dataArray = new Uint8Array(sharedBuffer, 4);
+
+            try {
+              // Process create entries
+              for (const path of create) {
+                console.log(`main thread> Creating entry: ${path}`);
+                // Use mockRemoteStorage to create entries
+                await mockRemoteStorage.setItem(`customFS_${path}`, {
+                  timestamp: Date.now(),
+                  mode: 0o777, // Example mode, adjust as needed
+                });
+              }
+
+              // Process remove entries
+              for (const path of remove) {
+                console.log(`main thread> Removing entry: ${path}`);
+                // Use mockRemoteStorage to remove entries
+                await mockRemoteStorage.removeItem(`customFS_${path}`);
+              }
+
+              const textEncoder = new TextEncoder();
+              const successMessage = 'Reconciliation successful';
+              const encodedMessage = textEncoder.encode(successMessage);
+
+              if (encodedMessage.length <= dataArray.length) {
+                dataArray.set(encodedMessage);
+                syncArray[0] = 1; // Indicate success
+              } else {
+                console.warn('Success message too large for buffer');
+                syncArray[0] = -1; // Indicate error
+              }
+            } catch (error) {
+              console.error('Error during reconciliation:', error);
+              const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+              const encodedError = new TextEncoder().encode(errorMessage);
+
+              if (encodedError.length <= dataArray.length) {
+                dataArray.set(encodedError);
+              } else {
+                console.warn('Error message too long to fit in buffer');
+              }
+              syncArray[0] = -1; // Indicate error
+            }
+
+            Atomics.notify(syncArray, 0); // Notify the worker
           }
         };
 

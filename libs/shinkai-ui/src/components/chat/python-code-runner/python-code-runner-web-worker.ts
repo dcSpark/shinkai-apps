@@ -57,7 +57,9 @@ class MockRemoteStorage {
   async removeItem(key: string): Promise<void> {
     console.log(`MockRemoteStorage: Removing item with key "${key}"`);
     const deleted = this.storage.delete(key);
-    console.log(`MockRemoteStorage: Item with key "${key}" ${deleted ? 'removed' : 'not found'}`);
+    console.log(
+      `MockRemoteStorage: Item with key "${key}" ${deleted ? 'removed' : 'not found'}`,
+    );
   }
 
   async clear(): Promise<void> {
@@ -323,6 +325,7 @@ const fetchPage = (
       }
 
       // Read the current chunk
+      console.log('main thread> dataArray', dataArray);
       const chunk = textDecoder.decode(dataArray).replace(/\0/g, '').trim();
       result += chunk;
 
@@ -373,6 +376,7 @@ const initialize = async () => {
   });
   console.log('Pyodide initialized');
 
+  // simpleFS(pyodide);
   initializeCustomFS(pyodide);
 
   // Inject fetchPage into Python's global scope
@@ -382,6 +386,25 @@ const initialize = async () => {
   console.timeEnd('initialize');
 };
 
+function simpleFS(pyodide: PyodideInterface) {
+  const FS = pyodide.FS;
+
+  // Create and mount MEMFS at /testfs
+  FS.mkdir('/testfs');
+  FS.mount(FS.filesystems.MEMFS, {}, '/testfs');
+
+  // Write a file
+  FS.writeFile('/testfs/hello.txt', 'Hello, World!');
+
+  // Read the file
+  const content = FS.readFile('/testfs/hello.txt', { encoding: 'utf8' });
+  console.log('File content:', content);
+
+  // List files
+  const files = FS.readdir('/testfs');
+  console.log('Files in /testfs:', files);
+}
+
 function initializeCustomFS(pyodide: PyodideInterface) {
   const FS = pyodide.FS;
   const PATH = pyodide.PATH;
@@ -390,12 +413,16 @@ function initializeCustomFS(pyodide: PyodideInterface) {
   const customFSAsync = {
     DIR_MODE: 16384 | 511, // DIR_MODE: {{{ cDefine('S_IFDIR') }}} | 511 /* 0777 */,
     FILE_MODE: 32768 | 511, // FILE_MODE: {{{ cDefine('S_IFREG') }}} | 511 /* 0777 */,
-    mount: function (mount: any) {
-      console.log('Mounting CustomFS');
-      return MEMFS.mount.apply(null, arguments);
+    mount: function (...args: any[]) {
+      console.log('customFSAsync>>>>> Mounting CustomFS');
+      return MEMFS.mount(...args);
     },
-    syncfs: async (mount: any, populate: boolean, callback: Function) => {
-      console.log('Syncing CustomFS');
+    syncfs: async (
+      mount: any,
+      populate: boolean,
+      callback: (error: any) => void,
+    ) => {
+      console.log('customFSAsync> Syncing CustomFS');
       try {
         const local = customFSAsync.getLocalSet(mount);
         const remote = await customFSAsync.getRemoteSet(mount);
@@ -408,57 +435,120 @@ function initializeCustomFS(pyodide: PyodideInterface) {
       }
     },
     getLocalSet: (mount: any) => {
-      console.log('Getting local set');
+      console.log('customFSAsync> Getting local set from root');
       const entries = Object.create(null);
 
       function isRealDir(p: string) {
-        return p !== "." && p !== "..";
+        return p !== '.' && p !== '..';
       }
 
       function toAbsolute(root: string) {
         return (p: string) => PATH.join2(root, p);
       }
 
+      console.log('customFSAsync> Reading directory:', mount.mountpoint);
+      // Start from the root directory
       const check = FS.readdir(mount.mountpoint)
         .filter(isRealDir)
         .map(toAbsolute(mount.mountpoint));
 
       while (check.length) {
         const path = check.pop();
+        console.log(`Checking path: ${path}`);
         const stat = FS.stat(path);
 
         if (FS.isDir(stat.mode)) {
+          console.log(`Directory: ${path}`);
           check.push(
-            ...FS.readdir(path).filter(isRealDir).map(toAbsolute(path))
+            ...FS.readdir(path).filter(isRealDir).map(toAbsolute(path)),
           );
+        } else if (FS.isFile(stat.mode)) {
+          console.log(`File: ${path}`);
+        } else {
+          console.warn(`Unknown type for path: ${path}`);
         }
 
+        // Add the entry to the entries object
+        console.log('Adding entry to entries:', path);
+        console.log('Entry:', { timestamp: stat.mtime, mode: stat.mode });
         entries[path] = { timestamp: stat.mtime, mode: stat.mode };
       }
 
-      return { type: "local", entries: entries };
+      console.log('Entries from root:', entries);
+      return { type: 'local', entries: entries };
     },
     getRemoteSet: async (mount: any) => {
-      console.log('Getting remote set');
-      const entries = Object.create(null);
-      const storagePrefix = 'customFS_';
+      console.log('customFSAsync> Getting remote set');
+      // Deep log the mount object
+      const seen = new WeakSet();
+      const mountString = JSON.stringify(
+        mount,
+        (key, value) => {
+          if (typeof value === 'object' && value !== null) {
+            if (seen.has(value)) {
+              return '[Circular]';
+            }
+            seen.add(value);
+          }
+          return value;
+        },
+        2,
+      );
 
-      const keys = await mockRemoteStorage.keys();
-      for (const key of keys) {
-        if (key.startsWith(storagePrefix)) {
-          const path = key.slice(storagePrefix.length);
-          const item = await mockRemoteStorage.getItem(key);
-          entries[PATH.join2(mount.mountpoint, path)] = {
-            timestamp: new Date(item.timestamp),
-            mode: item.mode,
-          };
-        }
+      console.log('main thread> mount', mountString);
+      const bufferSize = 512 * 1024; // Define buffer size
+      const sharedBuffer = new SharedArrayBuffer(bufferSize);
+      const syncArray = new Int32Array(sharedBuffer, 0, 1);
+      const dataArray = new Uint8Array(sharedBuffer, 4);
+
+      console.log('sending get-remote-set message to main thread');
+
+      try {
+        // Send message to main thread
+        self.postMessage(
+          {
+            type: 'get-remote-set',
+            mount: mountString,
+            sharedBuffer,
+          },
+          // [sharedBuffer], // Transfer the buffer
+        );
+
+        console.log(
+          'Posted get-remote-set message to main thread, waiting for response...',
+        );
+      } catch (error) {
+        console.error('Error posting message to main thread:', error);
       }
 
-      return { type: "remote", entries };
+      const textDecoder = new TextDecoder();
+      let result = '';
+
+      // Busy-wait loop
+      while (syncArray[0] === 0) {
+        // This loop will block the thread until syncArray[0] changes
+      }
+
+      console.log('Polling done with status: ', syncArray[0]);
+
+      if (syncArray[0] === -1) {
+        const errorMessage = textDecoder.decode(dataArray);
+        console.error('Error getting remote set:', errorMessage);
+        throw new Error(errorMessage);
+      }
+
+      // Read the response
+      const response = textDecoder.decode(dataArray).replace(/\0/g, '').trim();
+      result += response;
+
+      console.log(`Received remote set data of length: ${result.length}`);
+      console.log('result: ', result);
+
+      const entries = JSON.parse(result);
+      return { type: 'remote', entries };
     },
     loadLocalEntry: (path: string) => {
-      console.log('Loading local entry:', path);
+      console.log('customFSAsync> Loading local entry:', path);
       const lookup = FS.lookupPath(path);
       const node = lookup.node;
       const stat = FS.stat(path);
@@ -473,24 +563,24 @@ function initializeCustomFS(pyodide: PyodideInterface) {
           contents: node.contents,
         };
       } else {
-        throw new Error("node type not supported");
+        throw new Error('node type not supported');
       }
     },
     storeLocalEntry: (path: string, entry: any) => {
-      console.log('Storing local entry:', path);
+      console.log('customFSAsync> Storing local entry:', path);
       if (FS.isDir(entry.mode)) {
         FS.mkdirTree(path, entry.mode);
       } else if (FS.isFile(entry.mode)) {
         FS.writeFile(path, entry.contents, { canOwn: true });
       } else {
-        throw new Error("node type not supported");
+        throw new Error('node type not supported');
       }
 
       FS.chmod(path, entry.mode);
       FS.utime(path, entry.timestamp, entry.timestamp);
     },
     removeLocalEntry: (path: string) => {
-      console.log('Removing local entry:', path);
+      console.log('customFSAsync> Removing local entry:', path);
       const stat = FS.stat(path);
 
       if (FS.isDir(stat.mode)) {
@@ -500,7 +590,7 @@ function initializeCustomFS(pyodide: PyodideInterface) {
       }
     },
     loadRemoteEntry: async (path: string) => {
-      console.log('Loading remote entry:', path);
+      console.log('customFSAsync> Loading remote entry:', path);
       const item = await mockRemoteStorage.getItem('customFS_' + path);
       if (item) {
         return {
@@ -509,10 +599,10 @@ function initializeCustomFS(pyodide: PyodideInterface) {
           timestamp: new Date(item.timestamp),
         };
       }
-      throw new Error("Remote entry not found");
+      throw new Error('Remote entry not found');
     },
     storeRemoteEntry: async (path: string, entry: any) => {
-      console.log('Storing remote entry:', path);
+      console.log('customFSAsync> Storing remote entry:', path);
       await mockRemoteStorage.setItem('customFS_' + path, {
         contents: Array.from(entry.contents || []),
         mode: entry.mode,
@@ -520,18 +610,24 @@ function initializeCustomFS(pyodide: PyodideInterface) {
       });
     },
     removeRemoteEntry: async (path: string) => {
-      console.log('Removing remote entry:', path);
+      console.log('customFSAsync> Removing remote entry:', path);
       await mockRemoteStorage.removeItem('customFS_' + path);
     },
     reconcile: async (mount: any, src: any, dst: any) => {
-      console.log('Reconciling');
+      console.log('customFSAsync> Reconciling');
+      console.log('src', src);
+      console.log('dst', dst);
+
       let total = 0;
 
       const create: Array<string> = [];
       Object.keys(src.entries).forEach(function (key) {
         const e = src.entries[key];
         const e2 = dst.entries[key];
-        if (!e2 || (FS.isFile(e.mode) && e.timestamp.getTime() > e2.timestamp.getTime())) {
+        if (
+          !e2 ||
+          (FS.isFile(e.mode) && e.timestamp.getTime() > e2.timestamp.getTime())
+        ) {
           create.push(key);
           total++;
         }
@@ -551,22 +647,65 @@ function initializeCustomFS(pyodide: PyodideInterface) {
         return;
       }
 
-      for (const path of create) {
-        if (dst.type === "local") {
-          const entry = await customFSAsync.loadRemoteEntry(path);
-          customFSAsync.storeLocalEntry(path, entry);
-        } else {
-          const entry = customFSAsync.loadLocalEntry(path);
-          await customFSAsync.storeRemoteEntry(path, entry);
-        }
-      }
+      const bufferSize = 512 * 1024; // Define buffer size
+      const sharedBuffer = new SharedArrayBuffer(bufferSize);
+      const syncArray = new Int32Array(sharedBuffer, 0, 1);
+      const dataArray = new Uint8Array(sharedBuffer, 4);
 
-      for (const path of remove) {
-        if (dst.type === "local") {
-          customFSAsync.removeLocalEntry(path);
-        } else {
-          await customFSAsync.removeRemoteEntry(path);
+      try {
+        // Send message to main thread
+        console.log('Sending reconcile message to main thread');
+        console.log('create', create);
+        console.log('remove', remove);
+
+        self.postMessage(
+          {
+            type: 'reconcile',
+            create,
+            remove,
+            sharedBuffer,
+          },
+          // [sharedBuffer], // Transfer the buffer
+        );
+
+        console.log(
+          'Posted reconcile message to main thread, waiting for response...',
+        );
+
+        const textDecoder = new TextDecoder();
+        let result = '';
+
+        // Busy-wait loop
+        while (syncArray[0] === 0) {
+          // This loop will block the thread until syncArray[0] changes
         }
+
+        console.log('Polling done with status: ', syncArray[0]);
+
+        if (syncArray[0] === -1) {
+          const errorMessage = textDecoder.decode(dataArray);
+          console.error('Error during reconcile:', errorMessage);
+          throw new Error(errorMessage);
+        }
+
+        // Read the response
+        const response = textDecoder
+          .decode(dataArray)
+          .replace(/\0/g, '')
+          .trim();
+        result += response;
+
+        console.log(`Received reconcile data of length: ${result.length}`);
+        console.log('result: ', result);
+
+        const entries = JSON.parse(result);
+        // Process the entries as needed
+      } catch (e) {
+        console.error('An error occurred during reconcile:', e);
+        throw new Error(
+          'Failed to reconcile: ' +
+            (e instanceof Error ? e.message : 'Unknown error'),
+        );
       }
     },
   };
@@ -574,11 +713,15 @@ function initializeCustomFS(pyodide: PyodideInterface) {
   FS.filesystems.CUSTOMFS_ASYNC = customFSAsync;
 
   // Mount the custom filesystem
-  FS.mkdir('/customfs');
-  FS.mount(FS.filesystems.CUSTOMFS_ASYNC, {}, '/customfs');
+  try {
+    FS.mkdir('/customfs');
+    FS.mount(FS.filesystems.CUSTOMFS_ASYNC, { root: '.' }, '/customfs');
+  } catch (e) {
+    console.error('Error mounting custom filesystem:', e);
+  }
 
   // Sync the filesystem
-  FS.syncfs(true, (err) => {
+  FS.syncfs(true, (err: any) => {
     if (err) {
       console.error('Error syncing filesystem:', err);
     } else {
@@ -590,6 +733,7 @@ function initializeCustomFS(pyodide: PyodideInterface) {
 // Function to synchronize the filesystem to IndexedDB
 const syncFilesystem = async (save = false) => {
   return new Promise<void>((resolve, reject) => {
+    console.log('syncFilesystem', save);
     pyodide.FS.syncfs(save, (err: any) => {
       if (err) {
         console.error('syncfs error:', err);
