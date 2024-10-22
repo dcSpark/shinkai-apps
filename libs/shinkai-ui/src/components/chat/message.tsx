@@ -295,12 +295,25 @@ export const Message = ({
                         </Accordion>
                       )}
 
-                    <MarkdownPreview
-                      source={extractErrorPropertyOrContent(
-                        message.content,
-                        'error_message',
+                    {message.role === 'assistant' && (
+                      <MarkdownPreview
+                        source={extractErrorPropertyOrContent(
+                          message.content,
+                          'error_message',
+                        )}
+                      />
+                    )}
+                    {message.role === 'user' && (
+                      <div className="whitespace-pre-line">
+                        {message.content}
+                      </div>
+                    )}
+                    {message.role === 'assistant' &&
+                      message.status.type === 'running' && (
+                        <div className="whitespace-pre-line">
+                          <DotsLoader />
+                        </div>
                       )}
-                    />
 
                     {pythonCode && <PythonCodeRunner code={pythonCode} />}
                     {message.role === 'user' &&
