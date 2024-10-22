@@ -4,7 +4,6 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 
-import { FunctionKeyV2 } from '../../constants';
 import { APIError } from '../../types';
 import { sendMessageToJob } from '.';
 import { SendMessageToJobInput, SendMessageToJobOutput } from './types';
@@ -21,13 +20,6 @@ export const useSendMessageToJob = (options?: Options) => {
     mutationFn: sendMessageToJob,
     ...options,
     onSuccess: (response, variables, context) => {
-      queryClient.invalidateQueries({
-        queryKey: [
-          FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
-          { inboxId: response.inbox },
-        ],
-      });
-
       if (options?.onSuccess) {
         options.onSuccess(response, variables, context);
       }
