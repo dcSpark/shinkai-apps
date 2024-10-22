@@ -29,6 +29,7 @@ import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/c
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useStopGeneratingLLM } from '@shinkai_network/shinkai-node-state/v2/mutations/stopGeneratingLLM/useStopGeneratingLLM';
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
+import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useGetWorkflowSearch } from '@shinkai_network/shinkai-node-state/v2/queries/getWorkflowSearch/useGetWorkflowSearch';
@@ -63,6 +64,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm, useWatch } from 'react-hook-form';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAnalytics } from '../../lib/posthog-provider';
@@ -600,8 +602,7 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
     inboxId: inboxId as string,
     shinkaiIdentity: auth?.shinkai_identity ?? '',
     profile: auth?.profile ?? '',
-    refetchIntervalEnabled:
-      !hasProviderEnableStreaming || chatConfig?.stream === false,
+    refetchIntervalEnabled: false,
   });
 
   const workflowSelected = useWorkflowSelectionStore(
@@ -645,6 +646,66 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
 
   const { mutateAsync: sendMessageToInbox } = useSendMessageToInbox();
   const { mutateAsync: sendMessageToJob } = useSendMessageToJob({
+    onMutate: async (variables) => {
+      const queryKey = [
+        FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
+        {
+          inboxId,
+        },
+      ];
+      await queryClient.cancelQueries({
+        queryKey: queryKey,
+      });
+
+      const snapshot = queryClient.getQueryData(queryKey) as ReturnType<
+        typeof useGetChatConversationWithPagination
+      >;
+
+      queryClient.setQueryData(
+        queryKey,
+        (old: ChatConversationInfiniteData) => {
+          const newMessagesObjects = [
+            {
+              messageId: 'temp-id',
+              createdAt: new Date().toISOString(),
+              content: variables.message,
+              role: 'user',
+              status: { type: 'pending', reason: 'optimistic' },
+              metadata: { parentMessageId: '', inboxId: 'job_inbox::example' },
+              toolCalls: [],
+              attachments: (variables.files ?? []).map((file) => ({
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                url: URL.createObjectURL(file),
+              })),
+              workflowName: variables.workflowName,
+            },
+            {
+              messageId: 'temp-pending-id',
+              createdAt: new Date().toISOString(),
+              content: '',
+              role: 'assistant',
+              status: { type: 'running', reason: 'optimistic' },
+              metadata: { parentMessageId: '', inboxId: 'job_inbox::example' },
+              toolCalls: [],
+            },
+          ];
+
+          return {
+            ...old,
+            pages: [
+              [...(old.pages[0] || []), ...newMessagesObjects],
+              ...old.pages.slice(1),
+            ],
+          };
+        },
+      );
+
+      return () => {
+        queryClient.setQueryData(queryKey, snapshot);
+      };
+    },
     onSuccess: (_, variables) => {
       if (variables.files && variables.files.length > 0) {
         captureAnalyticEvent('AI Chat with Files', {
@@ -654,63 +715,19 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
         captureAnalyticEvent('AI Chat', undefined);
       }
     },
-    onMutate: async () => {
-      const queryKey = [
-        FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
-        {
-          inboxId,
-        },
-      ];
-
-      await queryClient.cancelQueries({
-        queryKey: queryKey,
-      });
-
-      const snapshot = queryClient.getQueryData(queryKey) as ReturnType<
-        typeof useGetChatConversationWithPagination
-      >;
-
-      queryClient.setQueryData(queryKey, (previousData) => {
-        return {
-          ...previousData,
-          pages: [
-            [
-              ...previousData.pages[0],
-              {
-                status: {
-                  type: 'running',
-                },
-                messageId: 'temp',
-                content: 'temp',
-                role: 'assistant',
-                createdAt: new Date().toISOString(),
-                toolCalls: [],
-                metadata: {
-                  parentMessageId: '',
-                  inboxId: '',
-                },
-              },
-            ],
-          ],
-        };
-      });
-
-      return () => {
-        queryClient.setQueryData(queryKey, snapshot);
-      };
-    },
     onError: (error, _, rollback) => {
-      console.log('error', error);
+      toast.error('Failed to send message', {
+        description: error.message,
+      });
+      // @ts-expect-error react query
       rollback?.();
-    },
-    onSettled: () => {
       const queryKey = [
         FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
         {
           inboxId,
         },
       ];
-      return queryClient.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: queryKey,
       });
     },
