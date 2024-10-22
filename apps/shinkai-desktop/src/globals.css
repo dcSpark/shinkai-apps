@@ -25,3 +25,24 @@ html {
 ::-webkit-scrollbar-track {
   @apply bg-gray-400;
 }
+
+:where(.md-running):empty::after,
+:where(.md-running) > :where(:not(ol):not(ul):not(pre)):last-child::after,
+:where(.md-running) > pre:last-child code::after,
+:where(.md-running)
+  > :where(:is(ol, ul):last-child)
+  > :where(li:last-child:not(:has(* > li)))::after,
+:where(.md-running)
+  > :where(:is(ol, ul):last-child)
+  > :where(li:last-child)
+  > :where(:is(ol, ul):last-child)
+  > :where(li:last-child:not(:has(* > li)))::after,
+:where(.md-running)
+  > :where(:is(ol, ul):last-child)
+  > :where(li:last-child)
+  > :where(:is(ol, ul):last-child)
+  > :where(li:last-child)
+  > :where(:is(ol, ul):last-child)
+  > :where(li:last-child)::after {
+  @apply text-gray-80 ml-1 animate-pulse font-sans text-xs content-['\25CF'];
+}

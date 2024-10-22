@@ -242,98 +242,92 @@ export const Message = ({
                     'relative overflow-hidden pb-4 before:absolute before:bottom-0 before:left-0 before:right-0 before:h-10 before:animate-pulse before:bg-gradient-to-l before:from-gray-200 before:to-gray-200/10',
                 )}
               >
-                {message.content ? (
-                  <Fragment>
-                    {message.role === 'assistant' &&
-                      message.toolCalls &&
-                      message.toolCalls.length > 0 && (
-                        <Accordion
-                          className="space-y-1.5 self-baseline pb-3"
-                          type="multiple"
-                        >
-                          {message.toolCalls.map((tool) => {
-                            return (
-                              <AccordionItem
-                                className="bg-app-gradient overflow-hidden rounded-lg"
-                                disabled={
-                                  tool.status !== ToolStatusType.Complete
-                                }
-                                key={tool.name}
-                                value={tool.name}
-                              >
-                                <AccordionTrigger
-                                  className={cn(
-                                    'min-w-[10rem] py-0 pr-2 no-underline hover:no-underline',
-                                    'transition-colors hover:bg-gray-500 [&>svg]:hidden [&[data-state=open]]:bg-gray-500',
-                                  )}
-                                >
-                                  <ToolCard
-                                    args={tool.args}
-                                    name={tool.name}
-                                    status={
-                                      tool.status ?? ToolStatusType.Complete
-                                    }
-                                    toolRouterKey={tool.toolRouterKey}
-                                  />
-                                </AccordionTrigger>
-                                <AccordionContent className="bg-gray-450 rounded-b-lg px-3 pb-3 pt-2 text-xs">
+                {message.role === 'assistant' &&
+                  message.toolCalls &&
+                  message.toolCalls.length > 0 && (
+                    <Accordion
+                      className="space-y-1.5 self-baseline pb-3"
+                      type="multiple"
+                    >
+                      {message.toolCalls.map((tool) => {
+                        return (
+                          <AccordionItem
+                            className="bg-app-gradient overflow-hidden rounded-lg"
+                            disabled={tool.status !== ToolStatusType.Complete}
+                            key={tool.name}
+                            value={tool.name}
+                          >
+                            <AccordionTrigger
+                              className={cn(
+                                'min-w-[10rem] py-0 pr-2 no-underline hover:no-underline',
+                                'transition-colors hover:bg-gray-500 [&>svg]:hidden [&[data-state=open]]:bg-gray-500',
+                              )}
+                            >
+                              <ToolCard
+                                args={tool.args}
+                                name={tool.name}
+                                status={tool.status ?? ToolStatusType.Complete}
+                                toolRouterKey={tool.toolRouterKey}
+                              />
+                            </AccordionTrigger>
+                            <AccordionContent className="bg-gray-450 rounded-b-lg px-3 pb-3 pt-2 text-xs">
+                              {Object.keys(tool.args).length > 0 && (
+                                <span className="font-medium text-white">
+                                  {tool.name}(
                                   {Object.keys(tool.args).length > 0 && (
-                                    <span className="font-medium text-white">
-                                      {tool.name}(
-                                      {Object.keys(tool.args).length > 0 && (
-                                        <span className="text-gray-80 font-medium">
-                                          {JSON.stringify(tool.args)}
-                                        </span>
-                                      )}
-                                      )
+                                    <span className="text-gray-80 font-medium">
+                                      {JSON.stringify(tool.args)}
                                     </span>
                                   )}
-                                </AccordionContent>
-                              </AccordionItem>
-                            );
-                          })}
-                        </Accordion>
-                      )}
+                                  )
+                                </span>
+                              )}
+                            </AccordionContent>
+                          </AccordionItem>
+                        );
+                      })}
+                    </Accordion>
+                  )}
 
-                    {message.role === 'assistant' && (
-                      <MarkdownPreview
-                        source={extractErrorPropertyOrContent(
-                          message.content,
-                          'error_message',
-                        )}
-                      />
+                {message.role === 'assistant' && (
+                  <MarkdownPreview
+                    className={cn(
+                      message.content &&
+                        message.status.type === 'running' &&
+                        'md-running',
                     )}
-                    {message.role === 'user' && (
-                      <div className="whitespace-pre-line">
-                        {message.content}
-                      </div>
+                    source={extractErrorPropertyOrContent(
+                      message.content,
+                      'error_message',
                     )}
-                    {message.role === 'assistant' &&
-                      message.status.type === 'running' && (
-                        <div className="whitespace-pre-line">
-                          <DotsLoader />
-                        </div>
-                      )}
+                  />
+                )}
+                {message.role === 'user' && (
+                  <div className="whitespace-pre-line">{message.content}</div>
+                )}
 
-                    {pythonCode && <PythonCodeRunner code={pythonCode} />}
-                    {message.role === 'user' &&
-                      !!message.attachments.length && (
-                        <FileList
-                          className="mt-2 min-w-[200px] max-w-[70vw]"
-                          files={message.attachments}
-                        />
-                      )}
-                    {message.role === 'user' && message.workflowName && (
-                      <div className="mt-2 flex items-center gap-1.5 border-t pt-1.5">
-                        <span className="text-gray-80 text-xs">Workflow:</span>
-                        <span className="text-gray-80 text-xs">
-                          {message.workflowName}
-                        </span>
-                      </div>
-                    )}
-                  </Fragment>
-                ) : (
-                  <DotsLoader className="pt-1" />
+                {message.role === 'assistant' &&
+                  message.status.type === 'running' &&
+                  message.content === '' && (
+                    <div className="whitespace-pre-line pt-1.5">
+                      <DotsLoader />
+                    </div>
+                  )}
+
+                {pythonCode && <PythonCodeRunner code={pythonCode} />}
+                {message.role === 'user' && !!message.attachments.length && (
+                  <FileList
+                    className="mt-2 min-w-[200px] max-w-[70vw]"
+                    files={message.attachments}
+                  />
+                )}
+                {message.role === 'user' && message.workflowName && (
+                  <div className="mt-2 flex items-center gap-1.5 border-t pt-1.5">
+                    <span className="text-gray-80 text-xs">Workflow:</span>
+                    <span className="text-gray-80 text-xs">
+                      {message.workflowName}
+                    </span>
+                  </div>
                 )}
               </div>
               {!isPending && (
