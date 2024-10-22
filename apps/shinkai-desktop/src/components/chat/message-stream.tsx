@@ -347,9 +347,7 @@ type ContentPartState = {
   };
 };
 
-export const ContentPartContext = createContext<ContentPartContextValue | null>(
-  null,
-);
+export const ContentPartContext = createContext({});
 const COMPLETE_STATUS = {
   type: 'complete' as const,
 };
