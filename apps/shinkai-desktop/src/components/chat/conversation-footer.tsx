@@ -695,8 +695,8 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
           return {
             ...old,
             pages: [
-              [...(old.pages[0] || []), ...newMessagesObjects],
-              ...old.pages.slice(1),
+              ...old.pages.slice(0, -1),
+              [...(old.pages.at(-1) || []), ...newMessagesObjects],
             ],
           };
         },

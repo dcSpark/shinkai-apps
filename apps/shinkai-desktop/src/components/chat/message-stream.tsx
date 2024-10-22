@@ -6,8 +6,8 @@ import { ShinkaiMessageBuilderWrapper } from '@shinkai_network/shinkai-message-t
 import { FunctionKey } from '@shinkai_network/shinkai-node-state/lib/constants';
 import { FunctionKeyV2 } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
-import { Message } from '@shinkai_network/shinkai-ui';
 import { useQueryClient } from '@tanstack/react-query';
+import { produce } from 'immer';
 import { createContext, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';
@@ -15,10 +15,6 @@ import { create } from 'zustand';
 
 import { useAuth } from '../../store/auth';
 import { useToolsStore } from './context/tools-context';
-
-type AnimationState = {
-  displayedContent: string;
-};
 
 type UseWebSocketMessage = {
   enabled?: boolean;
@@ -119,15 +115,6 @@ export const useWebSocketMessage = ({
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = defaultInboxId || decodeURIComponent(encodedInboxId);
 
-  const [animationState, setAnimationState] = useState<AnimationState>({
-    displayedContent: '',
-  });
-  const isStreamingFinished = useRef(false);
-
-  const textControllerRef = useRef<ReturnType<
-    typeof createSmoothMessage
-  > | null>(null);
-
   const queryKey = [
     FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
     {
@@ -136,120 +123,30 @@ export const useWebSocketMessage = ({
   ];
 
   useEffect(() => {
-    textControllerRef.current = createSmoothMessage({
-      onTextUpdate: (_, text) => {
-        if (isStreamingFinished.current) return;
-        queryClient.setQueryData(
-          queryKey,
-          (old: ChatConversationInfiniteData) => {
-            const lastMessage = old.pages[0][old.pages[0].length - 1];
-            if (
-              lastMessage.role === 'assistant' &&
-              lastMessage.status?.type === 'running'
-            ) {
-              const newMessagesObjects = [
-                {
-                  messageId: 'temp-id',
-                  createdAt: new Date().toISOString(),
-                  content: text,
-                  role: 'assistant',
-                  status: { type: 'running', reason: 'optimistic' },
-                  metadata: {
-                    parentMessageId: '',
-                    inboxId: 'job_inbox::example',
-                  },
-                  toolCalls: [],
-                },
-              ];
-
-              // we need to override the content value of the last message
-
-              return {
-                ...old,
-                pages: [
-                  [...old.pages[0].slice(0, -1), ...newMessagesObjects],
-                  ...old.pages.slice(1),
-                ],
-              };
-            }
-
-            //
-            // const newMessagesObjects = [
-            //   {
-            //     messageId: 'temp-id',
-            //     createdAt: new Date().toISOString(),
-            //     content: variables.message,
-            //     role: 'user',
-            //     status: { type: 'pending', reason: 'optimistic' },
-            //     metadata: { parentMessageId: '', inboxId: 'job_inbox::example' },
-            //     toolCalls: [],
-            //     attachments: (variables.files ?? []).map((file) => ({
-            //       name: file.name,
-            //       size: file.size,
-            //       type: file.type,
-            //       url: URL.createObjectURL(file),
-            //     })),
-            //     workflowName: variables.workflowName,
-            //   },
-            //   {
-            //     messageId: 'temp-pending-id',
-            //     createdAt: new Date().toISOString(),
-            //     content: '',
-            //     role: 'assistant',
-            //     status: { type: 'running', reason: 'optimistic' },
-            //     metadata: { parentMessageId: '', inboxId: 'job_inbox::example' },
-            //     toolCalls: [],
-            //   },
-            // ];
-
-            // return {
-            //   ...old,
-            //   pages: [
-            //     [...(old.pages[0] || []), ...newMessagesObjects],
-            //     ...old.pages.slice(1),
-            //   ],
-            // };
-          },
-        );
-        // setAnimationState({
-        //   displayedContent: text,
-        // });
-      },
-    });
-  }, []);
-
-  useEffect(() => {
     if (!enabled) return;
-    if (!textControllerRef.current) return;
     if (lastMessage?.data) {
       try {
         const parseData: WsMessage = JSON.parse(lastMessage.data);
         if (parseData.message_type !== 'Stream' || parseData.inbox !== inboxId)
           return;
-        isStreamingFinished.current = false;
+        queryClient.setQueryData(
+          queryKey,
+          produce((draft: ChatConversationInfiniteData | undefined) => {
+            if (!draft?.pages?.[0]) return;
+            const lastMessage = draft.pages.at(-1)?.at(-1);
+            console.log(lastMessage, 'lastMessage');
+            if (
+              lastMessage &&
+              lastMessage.role === 'assistant' &&
+              lastMessage.status?.type === 'running'
+            ) {
+              lastMessage.content = lastMessage.content + parseData.message;
+            }
+          }),
+        );
         if (parseData.metadata?.is_done === true) {
-          textControllerRef.current.stopAnimation();
-          if (textControllerRef.current.isTokenRemain()) {
-            textControllerRef.current.startAnimation(END_ANIMATION_SPEED);
-          }
-
-          const paginationKey = [
-            FunctionKey.GET_CHAT_CONVERSATION_PAGINATION,
-            { inboxId: inboxId as string },
-          ];
-          queryClient.invalidateQueries({ queryKey: paginationKey });
-          isStreamingFinished.current = true;
-          // TODO: unify streaming message as part of messages cache to avoid layout shift
-          setTimeout(() => {
-            setAnimationState({ displayedContent: '' });
-            textControllerRef.current?.reset();
-          }, 600);
+          queryClient.invalidateQueries({ queryKey });
         }
-
-        textControllerRef.current?.pushToQueue(parseData.message);
-
-        if (!textControllerRef.current.isAnimationActive)
-          textControllerRef.current.startAnimation();
       } catch (error) {
         console.error('Failed to parse ws message', error);
       }
@@ -294,7 +191,6 @@ export const useWebSocketMessage = ({
   ]);
 
   return {
-    messageContent: animationState.displayedContent,
     readyState,
   };
 };
@@ -408,14 +304,11 @@ export function WebsocketMessage({
   isLoadingMessage: boolean;
   isWsEnabled: boolean;
 }) {
-  const { messageContent } = useWebSocketMessage({
+   useWebSocketMessage({
     enabled: isWsEnabled,
   });
   useWebSocketTools({ enabled: true });
-
-  const tool = useToolsStore((state) => state.tool);
-
-  return null
+  return null;
   // return isLoadingMessage ? (
   //   <Message
   //     isPending={isLoadingMessage}
