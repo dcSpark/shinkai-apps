@@ -4,11 +4,14 @@ import {
 } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import { ShinkaiMessageBuilderWrapper } from '@shinkai_network/shinkai-message-ts/wasm/ShinkaiMessageBuilderWrapper';
 import { FunctionKey } from '@shinkai_network/shinkai-node-state/lib/constants';
+import { FunctionKeyV2 } from '@shinkai_network/shinkai-node-state/v2/constants';
+import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { Message } from '@shinkai_network/shinkai-ui';
 import { useQueryClient } from '@tanstack/react-query';
-import { useEffect, useRef, useState } from 'react';
+import { createContext, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';
+import { create } from 'zustand';
 
 import { useAuth } from '../../store/auth';
 import { useToolsStore } from './context/tools-context';
@@ -125,13 +128,92 @@ export const useWebSocketMessage = ({
     typeof createSmoothMessage
   > | null>(null);
 
+  const queryKey = [
+    FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
+    {
+      inboxId,
+    },
+  ];
+
   useEffect(() => {
     textControllerRef.current = createSmoothMessage({
       onTextUpdate: (_, text) => {
         if (isStreamingFinished.current) return;
-        setAnimationState({
-          displayedContent: text,
-        });
+        queryClient.setQueryData(
+          queryKey,
+          (old: ChatConversationInfiniteData) => {
+            const lastMessage = old.pages[0][old.pages[0].length - 1];
+            if (
+              lastMessage.role === 'assistant' &&
+              lastMessage.status?.type === 'running'
+            ) {
+              const newMessagesObjects = [
+                {
+                  messageId: 'temp-id',
+                  createdAt: new Date().toISOString(),
+                  content: text,
+                  role: 'assistant',
+                  status: { type: 'running', reason: 'optimistic' },
+                  metadata: {
+                    parentMessageId: '',
+                    inboxId: 'job_inbox::example',
+                  },
+                  toolCalls: [],
+                },
+              ];
+
+              // we need to override the content value of the last message
+
+              return {
+                ...old,
+                pages: [
+                  [...old.pages[0].slice(0, -1), ...newMessagesObjects],
+                  ...old.pages.slice(1),
+                ],
+              };
+            }
+
+            //
+            // const newMessagesObjects = [
+            //   {
+            //     messageId: 'temp-id',
+            //     createdAt: new Date().toISOString(),
+            //     content: variables.message,
+            //     role: 'user',
+            //     status: { type: 'pending', reason: 'optimistic' },
+            //     metadata: { parentMessageId: '', inboxId: 'job_inbox::example' },
+            //     toolCalls: [],
+            //     attachments: (variables.files ?? []).map((file) => ({
+            //       name: file.name,
+            //       size: file.size,
+            //       type: file.type,
+            //       url: URL.createObjectURL(file),
+            //     })),
+            //     workflowName: variables.workflowName,
+            //   },
+            //   {
+            //     messageId: 'temp-pending-id',
+            //     createdAt: new Date().toISOString(),
+            //     content: '',
+            //     role: 'assistant',
+            //     status: { type: 'running', reason: 'optimistic' },
+            //     metadata: { parentMessageId: '', inboxId: 'job_inbox::example' },
+            //     toolCalls: [],
+            //   },
+            // ];
+
+            // return {
+            //   ...old,
+            //   pages: [
+            //     [...(old.pages[0] || []), ...newMessagesObjects],
+            //     ...old.pages.slice(1),
+            //   ],
+            // };
+          },
+        );
+        // setAnimationState({
+        //   displayedContent: text,
+        // });
       },
     });
   }, []);
@@ -359,3 +441,73 @@ export function WebsocketMessage({
   //   />
   // ) : null;
 }
+
+type ContentPartState = {
+  type: 'text';
+  text: string;
+  part: {
+    type: 'text';
+    text: string;
+  };
+  status: {
+    type: 'complete' | 'running';
+  };
+};
+
+export const ContentPartContext = createContext<ContentPartContextValue | null>(
+  null,
+);
+const COMPLETE_STATUS = {
+  type: 'complete' as const,
+};
+
+const RUNNING_STATUS = {
+  type: 'running' as const,
+};
+
+export const TextContentPartProvider = ({
+  isRunning,
+  text,
+  children,
+}: {
+  text: string;
+  isRunning?: boolean | undefined;
+  children: React.ReactNode;
+}) => {
+  const [store] = useState(() => {
+    return create<ContentPartState>(() => ({
+      status: isRunning ? RUNNING_STATUS : COMPLETE_STATUS,
+      part: { type: 'text', text },
+      type: 'text',
+      text: '',
+    }));
+  });
+
+  useEffect(() => {
+    const state = store.getState() as ContentPartState & {
+      type: 'text';
+    };
+
+    const textUpdated = state.text !== text;
+    const targetStatus = isRunning ? RUNNING_STATUS : COMPLETE_STATUS;
+    const statusUpdated = state.status !== targetStatus;
+
+    if (!textUpdated && !statusUpdated) return;
+
+    store.setState(
+      {
+        type: 'text',
+        text,
+        part: { type: 'text', text },
+        status: targetStatus,
+      } satisfies ContentPartState,
+      true,
+    );
+  }, [store, isRunning, text]);
+
+  return (
+    <ContentPartContext.Provider value={store}>
+      {children}
+    </ContentPartContext.Provider>
+  );
+};
