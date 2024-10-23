@@ -358,26 +358,14 @@ const initialize = async () => {
 
   // **Mount IDBFS to persist filesystem in IndexedDB**
   try {
-    // pyodide.FS.mkdir('/working');
-
-    const mountDir = '/new_mnt';
-    pyodide.FS.mkdir(mountDir);
     pyodide.FS.mount(
       pyodide.FS.filesystems.IDBFS,
-      { root: '/new_mnt', autoPersist: true },
+      { autoPersist: true },
       '/home/pyodide',
     );
 
-    // Mount IDBFS to the persistent directory
-    // pyodide.FS.mount(pyodide.FS.filesystems.IDBFS, { autoPersist: true }, '/');
-
     // Use syncFilesystem to synchronize the filesystem
     await syncFilesystem(true);
-
-    // Testing
-    // const data = 'hello world!';
-    // pyodide.FS.writeFile('hello.txt', data, { encoding: 'utf8' });
-    // await syncFilesystem(false);
   } catch (error) {
     console.error('Failed to set up IDBFS:', error);
   }
