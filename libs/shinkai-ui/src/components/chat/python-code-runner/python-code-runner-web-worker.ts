@@ -56,9 +56,7 @@ from requests.models import Response
 import urllib.request
 
 from io import BytesIO
-import urllib.request
 from http.client import HTTPResponse
-import json
 from typing import Optional, Dict
 
 # Define the Request class
@@ -113,7 +111,7 @@ class FakeSock:
         return BytesIO(self.data)
 
 def custom_urlopen(url, *args, **kwargs):
-    print('custom urlopen')
+    python_log('custom urlopen')
     method = "GET"
     data = None
     headers = {}
@@ -126,19 +124,14 @@ def custom_urlopen(url, *args, **kwargs):
     request = CustomRequest(method, url, headers=headers, body=data)
     resp = custom_send(request)
 
-    # Build a fake HTTP response
-    headers_without_content_length = {
-        k: v for k, v in resp.headers.items() if k != "content-length"
-    }
-    response_data = (
-        'HTTP/1.1 '
-        + str(resp.status_code)
-        + '\n'
-        + '\n'.join(
-            f'{key}: {value}' for key, value in headers_without_content_length.items()
-        )
-        + '\n\n'
-    ).encode('ascii') + resp.body
+    # Ensure the Content-Type is set correctly
+    if 'Content-Type' not in resp.headers:
+        resp.headers['Content-Type'] = 'application/json'  # or another appropriate type
+
+    # Build a proper HTTP response with correct formatting
+    status_line = f"HTTP/1.1 {resp.status} OK\r\n"
+    header_lines = ''.join(f"{key}: {value}\r\n" for key, value in resp.headers.items())
+    response_data = (status_line + header_lines + "\r\n").encode('iso-8859-1') + resp.body
 
     response = HTTPResponse(FakeSock(response_data))
     response.begin()
@@ -235,7 +228,7 @@ figures = json.dumps(figures)
 
 // Function to find imports from Python code
 const findImportsFromCodeString = async (code: string): Promise<string[]> => {
-  console.log("code: ", code);
+  console.log('code: ', code);
   const wrappedCode = `
 from pyodide.code import find_imports
 import json
@@ -328,7 +321,7 @@ const run = async (code: string) => {
   const [output, outputError, figures] =
     await pyodide.runPythonAsync(wrappedCode);
   if (outputError) {
-    console.log("output: ", output);
+    console.log('output: ', output);
     throw new Error(outputError);
   }
   console.timeEnd('run code');
@@ -453,6 +446,11 @@ const fetchPage = (
   }
 };
 
+// Function to log messages from Python to JavaScript
+const pythonLogger = (message: string) => {
+  console.log('Python log:', message);
+};
+
 // Initialize Pyodide and set up the filesystem
 const initialize = async () => {
   if (isInitialized) {
@@ -485,13 +483,15 @@ const initialize = async () => {
 
     // Use syncFilesystem to synchronize the filesystem
     await syncFilesystem(true);
-
   } catch (error) {
     console.error('Failed to set up IDBFS:', error);
   }
 
   // **Inject fetchPage into Python's global scope**
   pyodide.globals.set('custom_fetch', fetchPage);
+
+  // **Inject pythonLogger into Python's global scope**
+  pyodide.globals.set('python_log', pythonLogger);
 
   isInitialized = true;
   console.timeEnd('initialize');
