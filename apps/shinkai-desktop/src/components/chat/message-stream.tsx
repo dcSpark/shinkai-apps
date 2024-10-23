@@ -1,5 +1,5 @@
 import {
-  ToolState,
+  WidgetToolType,
   WsMessage,
 } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import { ShinkaiMessageBuilderWrapper } from '@shinkai_network/shinkai-message-ts/wasm/ShinkaiMessageBuilderWrapper';
@@ -11,6 +11,7 @@ import { useParams } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';
 
 import { useAuth } from '../../store/auth';
+import { useToolsStore } from './context/tools-context';
 
 type AnimationState = {
   displayedContent: string;
@@ -216,7 +217,7 @@ export const useWebSocketMessage = ({
   };
 };
 
-const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
+export const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
   const auth = useAuth((state) => state.auth);
   const nodeAddressUrl = new URL(auth?.node_address ?? 'http://localhost:9850');
   const socketUrl = `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`;
@@ -229,14 +230,17 @@ const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
   const inboxId = decodeURIComponent(encodedInboxId);
   const queryClient = useQueryClient();
   const isToolReceived = useRef(false);
-  const [tool, setTool] = useState<ToolState | null>(null);
+
+  const setWidget = useToolsStore((state) => state.setWidget);
+  const setTool = useToolsStore((state) => state.setTool);
 
   useEffect(() => {
     if (!enabled) return;
-
     if (lastMessage?.data) {
+      console.log(JSON.parse(lastMessage.data), 'lastMessage?.data');
       try {
         const parseData: WsMessage = JSON.parse(lastMessage.data);
+        // TODO: fix current tools
         if (
           parseData.message_type === 'ShinkaiMessage' &&
           isToolReceived.current
@@ -267,11 +271,21 @@ const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
             result: tool.result?.data.message,
           });
         }
+        if (
+          parseData.message_type === 'Widget' &&
+          parseData?.widget?.PaymentRequest
+        ) {
+          const widgetName = Object.keys(parseData.widget)[0];
+          setWidget({
+            name: widgetName as WidgetToolType,
+            data: parseData.widget[widgetName as WidgetToolType],
+          });
+        }
       } catch (error) {
         console.error('Failed to parse ws message', error);
       }
     }
-  }, [enabled, lastMessage?.data]);
+  }, [enabled, inboxId, lastMessage?.data, queryClient]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -302,7 +316,7 @@ const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
     sendMessage,
   ]);
 
-  return { readyState, tool, setTool };
+  return { readyState };
 };
 
 export function WebsocketMessage({
@@ -315,7 +329,9 @@ export function WebsocketMessage({
   const { messageContent } = useWebSocketMessage({
     enabled: isWsEnabled,
   });
-  const { tool } = useWebSocketTools({ enabled: true });
+  useWebSocketTools({ enabled: true });
+
+  const tool = useToolsStore((state) => state.tool);
 
   return isLoadingMessage ? (
     <Message
