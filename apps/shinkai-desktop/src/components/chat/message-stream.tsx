@@ -110,17 +110,7 @@ export const useWebSocketMessage = ({
 
   const { sendMessage, lastMessage, readyState } = useWebSocket(
     socketUrl,
-    {
-      share: true,
-      filter: (message) => {
-        try {
-          const data = JSON.parse(message.data);
-          return data.message_type === 'Stream' || data.inbox === inboxId;
-        } catch (e) {
-          return false;
-        }
-      },
-    },
+    { share: true },
     enabled,
   );
   const { inboxId: encodedInboxId = '' } = useParams();
@@ -251,21 +241,21 @@ export const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
       try {
         const parseData: WsMessage = JSON.parse(lastMessage.data);
         // TODO: fix current tools
-        // if (
-        //   parseData.message_type === 'ShinkaiMessage' &&
-        //   isToolReceived.current
-        // ) {
-        //   isToolReceived.current = false;
-        //   const paginationKey = [
-        //     FunctionKey.GET_CHAT_CONVERSATION_PAGINATION,
-        //     { inboxId: inboxId as string },
-        //   ];
-        //   queryClient.invalidateQueries({ queryKey: paginationKey });
-        //   setTimeout(() => {
-        //     setTool(null);
-        //   }, 1000);
-        //   return;
-        // }
+        if (
+          parseData.message_type === 'ShinkaiMessage' &&
+          isToolReceived.current
+        ) {
+          isToolReceived.current = false;
+          const paginationKey = [
+            FunctionKey.GET_CHAT_CONVERSATION_PAGINATION,
+            { inboxId: inboxId as string },
+          ];
+          queryClient.invalidateQueries({ queryKey: paginationKey });
+          setTimeout(() => {
+            setTool(null);
+          }, 1000);
+          return;
+        }
         if (
           parseData.message_type === 'Widget' &&
           parseData?.widget?.ToolRequest
@@ -280,20 +270,16 @@ export const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
             toolRouterKey: '',
             result: tool.result?.data.message,
           });
-          return;
         }
         if (
           parseData.message_type === 'Widget' &&
           parseData?.widget?.PaymentRequest
         ) {
-          isToolReceived.current = true;
-          console.log('render payment', parseData);
           const widgetName = Object.keys(parseData.widget)[0];
           setWidget({
             name: widgetName as WidgetToolType,
             data: parseData.widget[widgetName as WidgetToolType],
           });
-          return;
         }
       } catch (error) {
         console.error('Failed to parse ws message', error);

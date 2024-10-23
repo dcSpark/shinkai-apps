@@ -173,32 +173,28 @@ const ChatConversation = () => {
   return (
     <div className="flex max-h-screen flex-1 flex-col overflow-hidden pt-2">
       <ConversationHeader />
-      <MessageList
-        containerClassName="px-5"
-        editAndRegenerateMessage={editAndRegenerateMessage}
-        fetchPreviousPage={fetchPreviousPage}
-        hasPreviousPage={hasPreviousPage}
-        isFetchingPreviousPage={isFetchingPreviousPage}
-        isLoading={isChatConversationLoading}
-        isSuccess={isChatConversationSuccess}
-        lastMessageContent={
-          <ToolsProvider>
+      <ToolsProvider>
+        <MessageList
+          containerClassName="px-5"
+          editAndRegenerateMessage={editAndRegenerateMessage}
+          fetchPreviousPage={fetchPreviousPage}
+          hasPreviousPage={hasPreviousPage}
+          isFetchingPreviousPage={isFetchingPreviousPage}
+          isLoading={isChatConversationLoading}
+          isSuccess={isChatConversationSuccess}
+          lastMessageContent={
             <WebsocketMessage
               isLoadingMessage={isLoadingMessage ?? false}
               isWsEnabled={hasProviderEnableStreaming}
             />
-          </ToolsProvider>
-        }
-        messageExtra={
-          <ToolsProvider>
-            <MessageExtra />
-          </ToolsProvider>
-        }
-        noMoreMessageLabel={t('chat.allMessagesLoaded')}
-        paginatedMessages={data}
-        regenerateFirstMessage={regenerateFirstMessage}
-        regenerateMessage={regenerateMessage}
-      />
+          }
+          messageExtra={<MessageExtra />}
+          noMoreMessageLabel={t('chat.allMessagesLoaded')}
+          paginatedMessages={data}
+          regenerateFirstMessage={regenerateFirstMessage}
+          regenerateMessage={regenerateMessage}
+        />
+      </ToolsProvider>
       {isLimitReachedErrorLastMessage && (
         <Alert className="mx-auto w-[98%] shadow-lg" variant="destructive">
           <AlertCircle className="h-4 w-4" />
