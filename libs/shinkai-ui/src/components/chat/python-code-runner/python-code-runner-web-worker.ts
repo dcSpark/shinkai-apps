@@ -53,16 +53,114 @@ import lxml
 import requests
 from requests.models import Response
 
+import urllib.request
+
+from io import BytesIO
+import urllib.request
+from http.client import HTTPResponse
+import json
+from typing import Optional, Dict
+
+# Define the Request class
+class CustomRequest:
+    def __init__(self, method: str, url: str, params: Optional[Dict[str, str]] = None, body: Optional[bytes] = None, headers: Dict[str, str] = None, timeout: int = 0):
+        self.method = method
+        self.url = url
+        self.params = params or {}
+        self.body = body
+        self.headers = headers or {}
+        self.timeout = timeout
+
+    def set_header(self, name: str, value: str):
+        self.headers[name] = value
+
+    def set_body(self, body: bytes):
+        self.body = body
+
+    def set_json(self, body: dict):
+        self.set_header("Content-Type", "application/json; charset=utf-8")
+        self.set_body(json.dumps(body).encode("utf-8"))
+
+# Define the custom_send function
+def custom_send(request: CustomRequest, stream: bool = False) -> HTTPResponse:
+    if request.params:
+        from js import URLSearchParams
+        params = URLSearchParams.new()
+        for k, v in request.params.items():
+            params.append(k, v)
+        request.url += "?" + params.toString()
+
+    from js import XMLHttpRequest
+    xhr = XMLHttpRequest.new()
+    xhr.open(request.method, request.url, False)
+
+    for name, value in request.headers.items():
+        xhr.setRequestHeader(name, value)
+
+    xhr.send(request.body)
+
+    headers = dict(xhr.getAllResponseHeaders())
+    body = xhr.response.encode("utf-8")
+
+    return HTTPResponse(FakeSock(body), status=xhr.status, headers=headers)
+
+# urllib patch - code by Koen Vossen (pyodide-http)
+class FakeSock:
+    def __init__(self, data):
+        self.data = data
+
+    def makefile(self, mode):
+        return BytesIO(self.data)
+
+def custom_urlopen(url, *args, **kwargs):
+    print('custom urlopen')
+    method = "GET"
+    data = None
+    headers = {}
+    if isinstance(url, urllib.request.Request):
+        method = url.get_method()
+        data = url.data
+        headers = dict(url.header_items())
+        url = url.full_url
+
+    request = CustomRequest(method, url, headers=headers, body=data)
+    resp = custom_send(request)
+
+    # Build a fake HTTP response
+    headers_without_content_length = {
+        k: v for k, v in resp.headers.items() if k != "content-length"
+    }
+    response_data = (
+        'HTTP/1.1 '
+        + str(resp.status_code)
+        + '\n'
+        + '\n'.join(
+            f'{key}: {value}' for key, value in headers_without_content_length.items()
+        )
+        + '\n\n'
+    ).encode('ascii') + resp.body
+
+    response = HTTPResponse(FakeSock(response_data))
+    response.begin()
+    return response
+
+def custom_urlopen_self_removed(self, url, *args, **kwargs):
+    return custom_urlopen(url, *args, **kwargs)
+
+# Patch urllib.request to use the custom urlopen
+urllib.request.urlopen = custom_urlopen
+urllib.request.OpenerDirector.open = custom_urlopen_self_removed
+
 class CustomSession(requests.Session):
     def request(self, method, url, *args, **kwargs):
         try:
             print('Fetching URL:', url)
             headers = kwargs.get('headers', {})
             body = kwargs.get('data', None) or kwargs.get('json', None)
-            print('headers', headers);
-            print('method', method);
+            print('headers', headers)
+            print('method', method)
             if body:
-                print('body', body);
+                print('body', body)
             response_content = custom_fetch(url, headers, method, body)
             response = Response()
             response._content = response_content.encode(encoding="utf-8")
@@ -78,9 +176,6 @@ requests.post = CustomSession().post
 import matplotlib
 matplotlib.use("AGG")
 
-# Ensure the working directory exists
-os.makedirs('/working', exist_ok=True)
-
 # Function to capture DataFrame display as HTML
 def capture_df_display(df):
     return df.to_html()
@@ -90,11 +185,25 @@ outputError = None
 figures = []
 
 def execute_user_code():
+    try:
+        print('executing code')
 ${code
   .split('\n')
-  .map((line) => `    ${line}`)
+  .map((line) => `        ${line}`)
   .join('\n')}
-    return locals()
+        return locals()
+    except IndexError as e:
+        print("IndexError occurred:", e)
+        # Add more context about the DataFrame
+        for var_name, var_value in locals().items():
+            if isinstance(var_value, pd.DataFrame):
+                print(f"DataFrame '{var_name}' shape: {var_value.shape}")
+        raise
+    except Exception as e:
+        import traceback
+        error_message = "%s - %s" % (str(e), traceback.format_exc())
+        print('Error:', error_message)  # Print error to stdout
+        raise
 
 try:
     user_code_result = execute_user_code()
@@ -126,6 +235,7 @@ figures = json.dumps(figures)
 
 // Function to find imports from Python code
 const findImportsFromCodeString = async (code: string): Promise<string[]> => {
+  console.log("code: ", code);
   const wrappedCode = `
 from pyodide.code import find_imports
 import json
@@ -199,6 +309,14 @@ const installDependencies = async (code: string): Promise<void> => {
   const installPromises = uniqueDependencies.map((dependency) =>
     micropip.install(dependency),
   );
+
+  await micropip.install('urllib');
+  // await micropip.install('phidata');
+  // await micropip.install('pygments');
+  // await micropip.install('ssl');
+  // await micropip.install('ollama');
+  // await micropip.install('yfinance'\);
+
   await Promise.allSettled(installPromises);
   console.timeEnd('install micropip dependencies');
 };
@@ -210,6 +328,7 @@ const run = async (code: string) => {
   const [output, outputError, figures] =
     await pyodide.runPythonAsync(wrappedCode);
   if (outputError) {
+    console.log("output: ", output);
     throw new Error(outputError);
   }
   console.timeEnd('run code');
@@ -358,26 +477,15 @@ const initialize = async () => {
 
   // **Mount IDBFS to persist filesystem in IndexedDB**
   try {
-    // pyodide.FS.mkdir('/working');
-
-    const mountDir = '/new_mnt';
-    pyodide.FS.mkdir(mountDir);
     pyodide.FS.mount(
       pyodide.FS.filesystems.IDBFS,
-      { root: '/new_mnt', autoPersist: true },
+      { autoPersist: true },
       '/home/pyodide',
     );
-
-    // Mount IDBFS to the persistent directory
-    // pyodide.FS.mount(pyodide.FS.filesystems.IDBFS, { autoPersist: true }, '/');
 
     // Use syncFilesystem to synchronize the filesystem
     await syncFilesystem(true);
 
-    // Testing
-    // const data = 'hello world!';
-    // pyodide.FS.writeFile('hello.txt', data, { encoding: 'utf8' });
-    // await syncFilesystem(false);
   } catch (error) {
     console.error('Failed to set up IDBFS:', error);
   }
@@ -419,16 +527,11 @@ function printDirectoryContents(dirPath: string) {
 const syncFilesystem = async (save = false) => {
   return new Promise<void>((resolve, reject) => {
     pyodide.FS.syncfs(save, (err: any) => {
+      // For debugging
       printDirectoryContents('/home/pyodide');
-
       printDirectoryContents('/home/web_user');
-
-      // Print contents inside the /home directory
       printDirectoryContents('/home');
-
       printDirectoryContents('/new_mnt');
-
-      // Print contents inside the root directory
       printDirectoryContents('/');
 
       if (err) {
@@ -491,3 +594,4 @@ self.onmessage = async (event) => {
       console.warn('Unknown message type:', event.data?.type);
   }
 };
+
