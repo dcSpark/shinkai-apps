@@ -84,7 +84,11 @@ import {
 } from './chat-action-bar/chat-config-action-bar';
 import PromptSelectionActionBar from './chat-action-bar/prompt-selection-action-bar';
 import WorkflowSelectionActionBar from './chat-action-bar/workflow-selection-action-bar';
-import { streamingSupportedModels } from './constants';
+import {
+  generateOptimisticAssistantMessage,
+  generateOptimisticUserMessage,
+  streamingSupportedModels,
+} from './constants';
 import { useSetJobScope } from './context/set-job-scope-context';
 
 export const actionButtonClassnames =
@@ -102,6 +106,7 @@ function ConversationEmptyFooter() {
   const navigate = useNavigate();
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = decodeURIComponent(encodedInboxId);
+  const queryClient = useQueryClient();
 
   const onSelectedKeysChange = useSetJobScope(
     (state) => state.onSelectedKeysChange,
@@ -257,7 +262,21 @@ function ConversationEmptyFooter() {
     name: 'files',
   });
   const { mutateAsync: createJob, isPending } = useCreateJob({
-    onSuccess: (data, variables) => {
+    onError: (error, _) => {
+      toast.error('Failed to send message', {
+        description: error.message,
+      });
+      const queryKey = [
+        FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
+        {
+          inboxId,
+        },
+      ];
+      queryClient.invalidateQueries({
+        queryKey: queryKey,
+      });
+    },
+    onSuccess: async (data, variables) => {
       navigate(
         `/inboxes/${encodeURIComponent(buildInboxIdFromJobId(data.jobId))}`,
       );
@@ -602,7 +621,8 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
     inboxId: inboxId as string,
     shinkaiIdentity: auth?.shinkai_identity ?? '',
     profile: auth?.profile ?? '',
-    refetchIntervalEnabled: false,
+    refetchIntervalEnabled:
+      !hasProviderEnableStreaming || chatConfig?.stream === false,
   });
 
   const workflowSelected = useWorkflowSelectionStore(
@@ -664,39 +684,27 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
       queryClient.setQueryData(
         queryKey,
         (old: ChatConversationInfiniteData) => {
-          const newMessagesObjects = [
-            {
-              messageId: 'temp-id',
-              createdAt: new Date().toISOString(),
-              content: variables.message,
-              role: 'user',
-              status: { type: 'pending', reason: 'optimistic' },
-              metadata: { parentMessageId: '', inboxId: 'job_inbox::example' },
-              toolCalls: [],
-              attachments: (variables.files ?? []).map((file) => ({
+          const newMessages = [
+            generateOptimisticUserMessage(
+              variables.message,
+              (variables.files ?? []).map((file) => ({
                 name: file.name,
+                id: file.name,
                 size: file.size,
-                type: file.type,
-                url: URL.createObjectURL(file),
+                type: 'file',
+                preview: URL.createObjectURL(file),
+                file,
               })),
-              workflowName: variables.workflowName,
-            },
-            {
-              messageId: 'temp-pending-id',
-              createdAt: new Date().toISOString(),
-              content: '',
-              role: 'assistant',
-              status: { type: 'running', reason: 'optimistic' },
-              metadata: { parentMessageId: '', inboxId: 'job_inbox::example' },
-              toolCalls: [],
-            },
+              variables.workflowName,
+            ),
+            generateOptimisticAssistantMessage(),
           ];
 
           return {
             ...old,
             pages: [
               ...old.pages.slice(0, -1),
-              [...(old.pages.at(-1) || []), ...newMessagesObjects],
+              [...(old.pages.at(-1) || []), ...newMessages],
             ],
           };
         },

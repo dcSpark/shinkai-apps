@@ -83,7 +83,7 @@ export const MessageList = ({
     workflowName?: string,
   ) => void;
   containerClassName?: string;
-  lastMessageContent: React.ReactNode;
+  lastMessageContent?: React.ReactNode;
   disabledRetryAndEdit?: boolean;
   messageExtra?: React.ReactNode;
 }) => {
@@ -299,23 +299,18 @@ export const MessageList = ({
                         };
 
                         return (
-                          <div
-                            data-testid={`message-${
-                              message.role === 'user' ? 'local' : 'remote'
-                            }-${message.messageId}`}
+                          <Message
+                            disabledEdit={disabledRetryAndEditValue}
+                            handleEditMessage={handleEditMessage}
+                            handleRetryMessage={
+                              firstMessageRetry
+                                ? handleFirstMessageRetry
+                                : handleRetryMessage
+                            }
                             key={`${message.messageId}::${messageIndex}`}
-                          >
-                            <Message
-                              disabledEdit={disabledRetryAndEditValue}
-                              handleEditMessage={handleEditMessage}
-                              handleRetryMessage={
-                                firstMessageRetry
-                                  ? handleFirstMessageRetry
-                                  : handleRetryMessage
-                              }
-                              message={message}
-                            />
-                          </div>
+                            message={message}
+                            messageId={message.messageId}
+                          />
                         );
                       })}
                     </div>

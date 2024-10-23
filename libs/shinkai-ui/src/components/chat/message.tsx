@@ -9,7 +9,7 @@ import { format } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Edit3, Loader2, RotateCcw, XCircle } from 'lucide-react';
 import { InfoCircleIcon } from 'primereact/icons/infocircle';
-import React, { Fragment, useEffect, useMemo, useState } from 'react';
+import React, { Fragment, memo, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { z } from 'zod';
@@ -23,7 +23,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '../accordion';
-import { Avatar, AvatarFallback, AvatarImage } from '../avatar';
+import { Avatar, AvatarFallback } from '../avatar';
 import { Button } from '../button';
 import { CopyToClipboardIcon } from '../copy-to-clipboard-icon';
 import { DotsLoader } from '../dots-loader';
@@ -61,6 +61,7 @@ const containsPythonCode = (content: string): boolean => {
 };
 
 type MessageProps = {
+  messageId: string;
   isPending?: boolean;
   message: FormattedMessage;
   handleRetryMessage?: () => void;
@@ -97,8 +98,9 @@ export const editMessageFormSchema = z.object({
 
 type EditMessageFormSchema = z.infer<typeof editMessageFormSchema>;
 
-export const Message = ({
+const MessageBase = ({
   message,
+  messageId,
   isPending,
   handleRetryMessage,
   disabledRetry,
@@ -142,6 +144,9 @@ export const Message = ({
     <motion.div
       animate="rest"
       className="pb-10"
+      data-testid={`message-${
+        message.role === 'user' ? 'local' : 'remote'
+      }-${message.messageId}`}
       initial="rest"
       whileHover="hover"
     >
@@ -413,6 +418,13 @@ export const Message = ({
     </motion.div>
   );
 };
+
+export const Message = memo(
+  MessageBase,
+  (prev, next) =>
+    prev.messageId === next.messageId &&
+    prev.message.content === next.message.content,
+);
 
 const variants = {
   initial: { opacity: 0, y: -25 },
