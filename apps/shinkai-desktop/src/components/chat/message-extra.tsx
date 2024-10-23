@@ -21,6 +21,7 @@ import { CheckCircle, Loader2, XCircle } from 'lucide-react';
 import React from 'react';
 
 import { useAuth } from '../../store/auth';
+import { useToolsStore } from './context/tools-context';
 
 const truncateAddress = (address: string) => {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -42,20 +43,19 @@ const formatAmount = (amount: string, decimals = 18): string => {
   return `${integerPart}.${trimmedFractionalStr}`;
 };
 
-export default function MessageExtra({
-  name,
-  metadata,
-  onCancel,
-}: {
-  name?: WidgetToolType;
-  metadata?: WidgetToolData;
-  onCancel: () => void;
-}) {
+export default function MessageExtra() {
+  const widget = useToolsStore((state) => state.widget);
+  console.log(widget, 'widget');
+  const setWidget = useToolsStore((state) => state.setWidget);
+  const name = widget?.name as WidgetToolType;
+  const metadata = widget?.data as WidgetToolData;
+
   if (metadata == null || name == null) return null;
 
   if (name === 'PaymentRequest' && 'invoice' in metadata) {
-    return <Payment data={metadata} onCancel={onCancel} />;
+    return <Payment data={metadata} onCancel={() => setWidget(null)} />;
   }
+
   return null;
 }
 
