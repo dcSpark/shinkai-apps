@@ -18,7 +18,7 @@ import { useToolsStore } from './context/tools-context';
 
 type UseWebSocketMessage = {
   enabled?: boolean;
-  inboxId?: string;
+  inboxId: string;
 };
 
 const START_ANIMATION_SPEED = 4;

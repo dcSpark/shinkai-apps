@@ -21,7 +21,6 @@ import {
   generateOptimisticAssistantMessage,
   streamingSupportedModels,
 } from '../../components/chat/constants';
-import { ToolsProvider } from '../../components/chat/context/tools-context';
 import ConversationFooter from '../../components/chat/conversation-footer';
 import ConversationHeader from '../../components/chat/conversation-header';
 import MessageExtra from '../../components/chat/message-extra';
@@ -90,8 +89,8 @@ const ChatConversation = () => {
   const currentInbox = useGetCurrentInbox();
   useOptimisticAssistantMessageHandler();
 
-  useWebSocketMessage({ enabled: true });
-  useWebSocketTools({ enabled: true });
+  useWebSocketMessage({ inboxId, enabled: true });
+  useWebSocketTools({ inboxId, enabled: true });
 
   const { data: chatConfig } = useGetChatConfig({
     nodeAddress: auth?.node_address ?? '',
@@ -198,22 +197,20 @@ const ChatConversation = () => {
   return (
     <div className="flex max-h-screen flex-1 flex-col overflow-hidden pt-2">
       <ConversationHeader />
-      <ToolsProvider>
-        <MessageList
-          containerClassName="px-5"
-          editAndRegenerateMessage={editAndRegenerateMessage}
-          fetchPreviousPage={fetchPreviousPage}
-          hasPreviousPage={hasPreviousPage}
-          isFetchingPreviousPage={isFetchingPreviousPage}
-          isLoading={isChatConversationLoading}
-          isSuccess={isChatConversationSuccess}
-          messageExtra={<MessageExtra />}
-          noMoreMessageLabel={t('chat.allMessagesLoaded')}
-          paginatedMessages={data}
-          regenerateFirstMessage={regenerateFirstMessage}
-          regenerateMessage={regenerateMessage}
-        />
-      </ToolsProvider>
+      <MessageList
+        containerClassName="px-5"
+        editAndRegenerateMessage={editAndRegenerateMessage}
+        fetchPreviousPage={fetchPreviousPage}
+        hasPreviousPage={hasPreviousPage}
+        isFetchingPreviousPage={isFetchingPreviousPage}
+        isLoading={isChatConversationLoading}
+        isSuccess={isChatConversationSuccess}
+        messageExtra={<MessageExtra />}
+        noMoreMessageLabel={t('chat.allMessagesLoaded')}
+        paginatedMessages={data}
+        regenerateFirstMessage={regenerateFirstMessage}
+        regenerateMessage={regenerateMessage}
+      />
 
       <ConversationFooter />
     </div>

@@ -18,7 +18,7 @@ export const OPTIMISTIC_ASSISTANT_MESSAGE_ID =
 
 export const generateOptimisticUserMessage = (
   content: string,
-  attachments: Attachment[],
+  attachments?: Attachment[],
   workflowName?: string,
 ): UserMessage => ({
   messageId: OPTIMISTIC_USER_MESSAGE_ID,
@@ -26,7 +26,7 @@ export const generateOptimisticUserMessage = (
   content: content,
   role: 'user',
   metadata: { parentMessageId: '', inboxId: '' },
-  attachments: attachments,
+  attachments: attachments ?? [],
   workflowName: workflowName,
 });
 

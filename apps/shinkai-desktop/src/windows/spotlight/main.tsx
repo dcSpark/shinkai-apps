@@ -13,13 +13,13 @@ import {
   // Routes
 } from 'react-router-dom';
 
+import { ToolsProvider } from '../../components/chat/context/tools-context';
 import FullPageErrorFallback from '../../components/error-boundary';
 import { shinkaiNodeQueryClient } from '../../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { useShinkaiNodeEventsToast } from '../../lib/shinkai-node-manager/shinkai-node-manager-hooks';
 import { useSyncStorageSecondary } from '../../store/sync-utils';
 import QuickAsk from './components/quick-ask';
 import { QuickAskProvider } from './context/quick-ask';
-
 
 const App = () => {
   useSyncStorageSecondary();
@@ -30,14 +30,16 @@ const App = () => {
       <ErrorBoundary FallbackComponent={FullPageErrorFallback}>
         <QuickAskProvider>
           <QueryProvider>
-            <TooltipProvider delayDuration={0}>
-              <Router>
-                {/*<Routes>*/}
-                <QuickAsk />
-                {/*</Routes>*/}
-              </Router>
-              <Toaster />
-            </TooltipProvider>
+            <ToolsProvider>
+              <TooltipProvider delayDuration={0}>
+                <Router>
+                  {/*<Routes>*/}
+                  <QuickAsk />
+                  {/*</Routes>*/}
+                </Router>
+                <Toaster />
+              </TooltipProvider>
+            </ToolsProvider>
           </QueryProvider>
         </QuickAskProvider>
       </ErrorBoundary>

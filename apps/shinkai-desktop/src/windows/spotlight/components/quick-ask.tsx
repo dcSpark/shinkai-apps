@@ -1,16 +1,14 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import {
-  buildInboxIdFromJobId,
-  extractJobIdFromInbox,
-} from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
+import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import {
   CreateJobFormSchema,
   createJobFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
 import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
+import { FunctionKeyV2 } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
-import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
+import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import {
@@ -26,17 +24,23 @@ import {
 import { ShinkaiCombinationMarkIcon } from '@shinkai_network/shinkai-ui/assets';
 import { copyToClipboard } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { useQueryClient } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { motion } from 'framer-motion';
+import { produce } from 'immer';
 import { CheckCircle2, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { toast } from 'sonner';
 
 import { AIModelSelector } from '../../../components/chat/chat-action-bar/ai-update-selection-action-bar';
-import { streamingSupportedModels } from '../../../components/chat/constants';
-import { useWebSocketMessage } from '../../../components/chat/message-stream';
+import {
+  generateOptimisticAssistantMessage,
+  streamingSupportedModels,
+} from '../../../components/chat/constants';
+import { useWebSocketMessage } from '../../../components/chat/websocket-message';
 import { useAuth } from '../../../store/auth';
 import { useSettings } from '../../../store/settings';
 import { useQuickAskStore } from '../context/quick-ask';
@@ -148,11 +152,17 @@ function QuickAsk() {
 
   const { mutateAsync: createJob } = useCreateJob({
     onSuccess: (data) => {
-      setInboxId(encodeURIComponent(buildInboxIdFromJobId(data.jobId)));
+      const inboxId = buildInboxIdFromJobId(data.jobId);
+      setInboxId(encodeURIComponent(inboxId));
       chatForm.reset({
         message: '',
         agent: defaultSpotlightAiId,
         files: [],
+      });
+    },
+    onError: (error, _) => {
+      toast.error('Failed to send message', {
+        description: error.message,
       });
     },
   });
@@ -162,6 +172,8 @@ function QuickAsk() {
   }, [chatForm, defaultSpotlightAiId]);
 
   const onSubmit = async (data: CreateJobFormSchema) => {
+    setMessageResponse('');
+
     if (!auth) return;
     await createJob({
       nodeAddress: auth.node_address,
@@ -331,7 +343,46 @@ const QuickAskBody = ({ aiModel }: { aiModel: string }) => {
   );
 };
 
-const QuickAskBodyWithResponse = ({
+const useOptimisticAssistantMessageHandler = ({
+  inboxId,
+}: {
+  inboxId: string;
+}) => {
+  const queryClient = useQueryClient();
+  const auth = useAuth((state) => state.auth);
+
+  const { data, isSuccess: isChatConversationSuccess } =
+    useGetChatConversationWithPagination({
+      token: auth?.api_v2_key ?? '',
+      nodeAddress: auth?.node_address ?? '',
+      inboxId: inboxId as string,
+      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      profile: auth?.profile ?? '',
+    });
+
+  useEffect(() => {
+    if (isChatConversationSuccess && data.content.length === 1) {
+      const queryKey = [
+        FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
+        { inboxId },
+      ];
+
+      queryClient.setQueryData(
+        queryKey,
+        produce((draft: ChatConversationInfiniteData | undefined) => {
+          if (!draft) return;
+          draft.pages[draft.pages.length - 1].push(
+            generateOptimisticAssistantMessage(),
+          );
+        }),
+      );
+    }
+  }, [data?.content?.length, inboxId, isChatConversationSuccess, queryClient]);
+
+  return { data, isChatConversationSuccess };
+};
+
+const QuickAskBodyWithResponseBase = ({
   inboxId,
   aiModel,
 }: {
@@ -341,6 +392,9 @@ const QuickAskBodyWithResponse = ({
   const auth = useAuth((state) => state.auth);
   const setLoadingResponse = useQuickAskStore(
     (state) => state.setLoadingResponse,
+  );
+  const setMessageResponse = useQuickAskStore(
+    (state) => state.setMessageResponse,
   );
   const { llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
@@ -355,46 +409,31 @@ const QuickAskBodyWithResponse = ({
     currentModel?.model.split(':')?.[0] as Models,
   );
 
-  const { data: chatConfig } = useGetChatConfig({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-    jobId: extractJobIdFromInbox(inboxId),
-  });
+  const { data } = useOptimisticAssistantMessageHandler({ inboxId });
 
-  const { data } = useGetChatConversationWithPagination({
-    token: auth?.api_v2_key ?? '',
-    nodeAddress: auth?.node_address ?? '',
-    inboxId: inboxId as string,
-    shinkaiIdentity: auth?.shinkai_identity ?? '',
-    profile: auth?.profile ?? '',
-    refetchIntervalEnabled:
-      !hasProviderEnableStreaming || chatConfig?.stream === false,
+  useWebSocketMessage({
+    enabled: hasProviderEnableStreaming,
+    inboxId: inboxId,
   });
 
   const lastMessage = data?.pages?.at(-1)?.at(-1);
   const inputMessage = data?.pages?.at(-1)?.at(0);
 
-  const isLoadingMessage = useMemo(() => {
-    return lastMessage?.role === 'user';
-  }, [lastMessage?.role]);
-
-  const { messageContent } = useWebSocketMessage({
-    enabled: hasProviderEnableStreaming,
-    inboxId: inboxId,
-  });
-  const setMessageResponse = useQuickAskStore(
-    (state) => state.setMessageResponse,
-  );
-
   useEffect(() => {
-    setLoadingResponse(!!isLoadingMessage);
-  }, [isLoadingMessage]);
-
-  useEffect(() => {
-    if (!isLoadingMessage && lastMessage?.content) {
-      setMessageResponse(lastMessage?.content);
+    const lastMessage = data?.pages?.at(-1)?.at(-1);
+    if (
+      lastMessage?.role === 'assistant' &&
+      lastMessage?.status.type === 'running'
+    ) {
+      setLoadingResponse(true);
+    } else if (
+      lastMessage?.role === 'assistant' &&
+      lastMessage?.status.type === 'complete'
+    ) {
+      setLoadingResponse(false);
+      setMessageResponse(lastMessage?.content ?? '');
     }
-  }, [isLoadingMessage, lastMessage?.content, setMessageResponse]);
+  }, [data, setLoadingResponse, setMessageResponse]);
 
   return (
     <ScrollArea className="flex-1 text-sm [&>div>div]:!block">
@@ -424,18 +463,18 @@ const QuickAskBodyWithResponse = ({
         </CollapsibleContent>
       </Collapsible>
       <div className="p-5 pb-4">
-        {isLoadingMessage && (
-          <>
-            {messageContent === '' && <DotsLoader className="pl-1 pt-1" />}
-            <MarkdownPreview
-              className="prose-h1:!text-white prose-h1:!text-sm !text-sm !text-white"
-              source={messageContent}
-            />
-          </>
-        )}
-        {!isLoadingMessage && (
+        {lastMessage?.role === 'assistant' &&
+          lastMessage?.status.type === 'running' &&
+          lastMessage?.content === '' && <DotsLoader className="pl-1 pt-1" />}
+
+        {lastMessage?.role === 'assistant' && (
           <MarkdownPreview
-            className="prose-h1:!text-white prose-h1:!text-sm !text-sm !text-white"
+            className={cn(
+              'prose-h1:!text-white prose-h1:!text-sm !text-sm !text-white',
+              lastMessage?.content &&
+                lastMessage?.status.type === 'running' &&
+                'md-running',
+            )}
             source={
               lastMessage?.content?.startsWith('{') &&
               lastMessage?.content?.endsWith('}')
@@ -452,3 +491,10 @@ ${lastMessage?.content}
     </ScrollArea>
   );
 };
+
+const QuickAskBodyWithResponse = memo(
+  QuickAskBodyWithResponseBase,
+  (prevProps, nextProps) =>
+    prevProps.inboxId === nextProps.inboxId &&
+    prevProps.aiModel === nextProps.aiModel,
+);
