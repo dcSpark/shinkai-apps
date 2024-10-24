@@ -72,7 +72,7 @@ export const useOptimisticAssistantMessageHandler = ({
   });
 
   useEffect(() => {
-    if (data?.content?.length === 1) {
+    if (isChatConversationSuccess && data.content.length === 1) {
       const queryKey = [
         FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
         { inboxId },

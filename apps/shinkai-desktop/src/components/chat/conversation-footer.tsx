@@ -268,9 +268,7 @@ function ConversationEmptyFooter() {
       });
       const queryKey = [
         FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
-        {
-          inboxId,
-        },
+        { inboxId },
       ];
       queryClient.invalidateQueries({
         queryKey: queryKey,
