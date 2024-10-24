@@ -6,10 +6,7 @@ import {
   createJobFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
 import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
-import { FunctionKeyV2 } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
-import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
-import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import {
   Collapsible,
@@ -24,11 +21,9 @@ import {
 import { ShinkaiCombinationMarkIcon } from '@shinkai_network/shinkai-ui/assets';
 import { copyToClipboard } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { useQueryClient } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { motion } from 'framer-motion';
-import { produce } from 'immer';
 import { CheckCircle2, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { memo, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -36,11 +31,9 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { toast } from 'sonner';
 
 import { AIModelSelector } from '../../../components/chat/chat-action-bar/ai-update-selection-action-bar';
-import {
-  generateOptimisticAssistantMessage,
-  streamingSupportedModels,
-} from '../../../components/chat/constants';
+import { streamingSupportedModels } from '../../../components/chat/constants';
 import { useWebSocketMessage } from '../../../components/chat/websocket-message';
+import { useOptimisticAssistantMessageHandler } from '../../../pages/chat/chat-conversation';
 import { useAuth } from '../../../store/auth';
 import { useSettings } from '../../../store/settings';
 import { useQuickAskStore } from '../context/quick-ask';
@@ -341,45 +334,6 @@ const QuickAskBody = ({ aiModel }: { aiModel: string }) => {
   return (
     <QuickAskBodyWithResponse aiModel={aiModel} inboxId={decodedInboxId} />
   );
-};
-
-const useOptimisticAssistantMessageHandler = ({
-  inboxId,
-}: {
-  inboxId: string;
-}) => {
-  const queryClient = useQueryClient();
-  const auth = useAuth((state) => state.auth);
-
-  const { data, isSuccess: isChatConversationSuccess } =
-    useGetChatConversationWithPagination({
-      token: auth?.api_v2_key ?? '',
-      nodeAddress: auth?.node_address ?? '',
-      inboxId: inboxId as string,
-      shinkaiIdentity: auth?.shinkai_identity ?? '',
-      profile: auth?.profile ?? '',
-    });
-
-  useEffect(() => {
-    if (isChatConversationSuccess && data.content.length === 1) {
-      const queryKey = [
-        FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
-        { inboxId },
-      ];
-
-      queryClient.setQueryData(
-        queryKey,
-        produce((draft: ChatConversationInfiniteData | undefined) => {
-          if (!draft) return;
-          draft.pages[draft.pages.length - 1].push(
-            generateOptimisticAssistantMessage(),
-          );
-        }),
-      );
-    }
-  }, [data?.content?.length, inboxId, isChatConversationSuccess, queryClient]);
-
-  return { data, isChatConversationSuccess };
 };
 
 const QuickAskBodyWithResponseBase = ({

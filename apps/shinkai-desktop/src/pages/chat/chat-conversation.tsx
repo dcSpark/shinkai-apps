@@ -13,6 +13,7 @@ import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-stat
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
 import { MessageList } from '@shinkai_network/shinkai-ui';
 import { useQueryClient } from '@tanstack/react-query';
+import { produce } from 'immer';
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -32,79 +33,24 @@ import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAnalytics } from '../../lib/posthog-provider';
 import { useAuth } from '../../store/auth';
 
-const useOptimisticAssistantMessageHandler = () => {
+export const useOptimisticAssistantMessageHandler = ({
+  inboxId,
+}: {
+  inboxId: string;
+}) => {
   const queryClient = useQueryClient();
-
-  const { inboxId: encodedInboxId = '' } = useParams();
-  const inboxId = decodeURIComponent(encodedInboxId);
   const auth = useAuth((state) => state.auth);
-
-  const { data, isSuccess: isChatConversationSuccess } =
-    useGetChatConversationWithPagination({
-      token: auth?.api_v2_key ?? '',
-      nodeAddress: auth?.node_address ?? '',
-      inboxId: inboxId as string,
-      shinkaiIdentity: auth?.shinkai_identity ?? '',
-      profile: auth?.profile ?? '',
-    });
-
-  useEffect(() => {
-    if (isChatConversationSuccess && data.content.length === 1) {
-      const queryKey = [
-        FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
-        { inboxId },
-      ];
-      queryClient.cancelQueries({
-        queryKey: queryKey,
-      });
-
-      queryClient.setQueryData(
-        queryKey,
-        (old: ChatConversationInfiniteData) => {
-          return {
-            ...old,
-            pages: [
-              ...old.pages.slice(0, -1),
-              [
-                ...(old.pages.at(-1) || []),
-                generateOptimisticAssistantMessage(),
-              ],
-            ],
-          };
-        },
-      );
-    }
-  }, [data?.content?.length, inboxId, isChatConversationSuccess, queryClient]);
-};
-
-const ChatConversation = () => {
-  const { captureAnalyticEvent } = useAnalytics();
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-
-  const { inboxId: encodedInboxId = '' } = useParams();
-  const inboxId = decodeURIComponent(encodedInboxId);
-  const auth = useAuth((state) => state.auth);
-
-  const currentInbox = useGetCurrentInbox();
-  useOptimisticAssistantMessageHandler();
-
-  useWebSocketMessage({ inboxId, enabled: true });
-  useWebSocketTools({ inboxId, enabled: true });
 
   const { data: chatConfig } = useGetChatConfig({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
     jobId: extractJobIdFromInbox(inboxId),
   });
+  const currentInbox = useGetCurrentInbox();
 
   const hasProviderEnableStreaming = streamingSupportedModels.includes(
     currentInbox?.agent?.model.split(':')?.[0] as Models,
   );
-
-  // const hasProviderEnableTools =
-  //   currentInbox?.agent?.model.split(':')?.[0] === Models.OpenAI ||
-  //   currentInbox?.agent?.model.split(':')?.[0] === Models.Ollama;
 
   const {
     data,
@@ -126,12 +72,69 @@ const ChatConversation = () => {
   });
 
   useEffect(() => {
+    if (data?.content?.length === 1) {
+      const queryKey = [
+        FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
+        { inboxId },
+      ];
+      // queryClient.cancelQueries({ queryKey });
+      queryClient.setQueryData(
+        queryKey,
+        produce((draft: ChatConversationInfiniteData | undefined) => {
+          if (!draft) return;
+          draft.pages[draft.pages.length - 1].push(
+            generateOptimisticAssistantMessage(),
+          );
+        }),
+      );
+    }
+  }, [data?.content?.length, inboxId, isChatConversationSuccess, queryClient]);
+
+  return {
+    data,
+    fetchPreviousPage,
+    hasPreviousPage,
+    isChatConversationLoading,
+    isFetchingPreviousPage,
+    isChatConversationSuccess,
+    isError,
+    chatConversationError,
+  };
+};
+
+const ChatConversation = () => {
+  const { captureAnalyticEvent } = useAnalytics();
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  const { inboxId: encodedInboxId = '' } = useParams();
+  const inboxId = decodeURIComponent(encodedInboxId);
+  const auth = useAuth((state) => state.auth);
+
+  const currentInbox = useGetCurrentInbox();
+  const {
+    data,
+    fetchPreviousPage,
+    hasPreviousPage,
+    isChatConversationLoading,
+    isFetchingPreviousPage,
+    isChatConversationSuccess,
+    isError,
+    chatConversationError,
+  } = useOptimisticAssistantMessageHandler({
+    inboxId,
+  });
+
+  useWebSocketMessage({ inboxId, enabled: true });
+  useWebSocketTools({ inboxId, enabled: true });
+
+  useEffect(() => {
     if (isError) {
       console.error('Failed loading chat conversation', chatConversationError);
       toast.error('Failed loading chat conversation', {
         description:
           chatConversationError?.response?.data?.message ??
-          chatConversationError.message,
+          chatConversationError?.message,
       });
     }
   }, [chatConversationError, isError]);

@@ -20,7 +20,6 @@ import {
   Form,
   FormField,
   Input,
-  Message,
   MessageList,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
@@ -187,22 +186,6 @@ export default function ChatTable() {
             isFetchingPreviousPage={isFetchingPreviousPage}
             isLoading={isChatConversationLoading}
             isSuccess={isChatConversationSuccess}
-            lastMessageContent={
-              isLoadingMessage && (
-                <Message
-                  isPending={isLoadingMessage}
-                  message={{
-                    role: 'assistant',
-                    toolCalls: [],
-                    content: '',
-                    createdAt: new Date().toISOString(),
-                    messageId: new Date().toISOString(),
-                    metadata: { parentMessageId: '', inboxId: '' },
-                    status: { type: 'complete', reason: 'unknown' },
-                  }}
-                />
-              )
-            }
             noMoreMessageLabel={t('chat.allMessagesLoaded')}
             paginatedMessages={data}
           />
