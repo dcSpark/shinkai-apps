@@ -1,15 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
-  extractErrorPropertyOrContent,
   extractJobIdFromInbox,
   extractReceiverShinkaiName,
   isJobInbox,
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { ShinkaiMessageBuilderWrapper } from '@shinkai_network/shinkai-message-ts/wasm/ShinkaiMessageBuilderWrapper';
 import {
-  ChatMessageFormSchema,
-  chatMessageFormSchema,
   ChatMessageFormSchemaWithOneFile,
   chatMessageFormSchemaWithOneFile,
 } from '@shinkai_network/shinkai-node-state/forms/chat/chat-message';
@@ -50,7 +47,6 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { partial } from 'filesize';
 import {
-  AlertCircle,
   BotIcon,
   ChevronDownIcon,
   Paperclip,
@@ -67,11 +63,6 @@ import { toast } from 'sonner';
 
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAuth } from '../../store/auth/auth';
-
-enum ErrorCodes {
-  VectorResource = 'VectorResource',
-  ShinkaiBackendInferenceLimitReached = 'ShinkaiBackendInferenceLimitReached',
-}
 
 function AgentSelection() {
   const { t } = useTranslation();
@@ -411,27 +402,23 @@ export const Inbox = () => {
 
   const isLoadingMessage = useMemo(() => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
-    return isJobInbox(inboxId) && !!lastMessage?.isLocal;
+    return (
+      !!inboxId &&
+      lastMessage?.role === 'assistant' &&
+      lastMessage?.status.type === 'running'
+    );
   }, [data?.pages, inboxId]);
 
   useEffect(() => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
     if (lastMessage) {
       setIsJobProcessingFile(
-        isLoadingMessage && lastMessage.isLocal && !!lastMessage.fileInbox,
+        isLoadingMessage &&
+          lastMessage.role === 'user' &&
+          !!lastMessage.attachments.length,
       );
     }
   }, [data?.pages, auth, isLoadingMessage]);
-
-  const isLimitReachedErrorLastMessage = useMemo(() => {
-    const lastMessage = data?.pages?.at(-1)?.at(-1);
-    if (!lastMessage) return;
-    const errorCode = extractErrorPropertyOrContent(
-      lastMessage.content,
-      'error',
-    );
-    return errorCode === ErrorCodes.ShinkaiBackendInferenceLimitReached;
-  }, [data?.pages]);
 
   return (
     <div className="flex h-full flex-col justify-between gap-3">
@@ -461,134 +448,120 @@ export const Inbox = () => {
           <Terminal className="h-4 w-4" />
         </Alert>
       )}
-      {isLimitReachedErrorLastMessage && (
-        <Alert className="shadow-lg" variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle className="text-sm">
-            {t('chat.limitReachedTitle')}
-          </AlertTitle>
-          <AlertDescription className="text-gray-80 text-xs">
-            <div className="flex flex-row items-center space-x-2">
-              {t('chat.limitReachedDescription')}
-            </div>
-          </AlertDescription>
-        </Alert>
-      )}
-      {!isLimitReachedErrorLastMessage && (
-        <div className="flex flex-col justify-start">
-          <div className="relative flex items-start gap-2 pb-3">
-            <Form {...chatForm}>
-              <FormField
-                control={chatForm.control}
-                name="message"
-                render={({ field }) => (
-                  <FormItem className="flex-1 space-y-0">
-                    <FormLabel className="sr-only">
-                      {t('chat.enterMessage')}
-                    </FormLabel>
-                    <FormControl>
-                      <div className="">
-                        <div className="flex items-center gap-2.5 px-1 pb-2 pt-1">
-                          <AgentSelection />
-                          <TooltipProvider delayDuration={0}>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <div
-                                  {...getRootFileProps({
-                                    className: cn(
-                                      'hover:bg-gray-350 relative flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full rounded-lg p-1.5 text-white',
-                                    ),
+
+      <div className="flex flex-col justify-start">
+        <div className="relative flex items-start gap-2 pb-3">
+          <Form {...chatForm}>
+            <FormField
+              control={chatForm.control}
+              name="message"
+              render={({ field }) => (
+                <FormItem className="flex-1 space-y-0">
+                  <FormLabel className="sr-only">
+                    {t('chat.enterMessage')}
+                  </FormLabel>
+                  <FormControl>
+                    <div className="">
+                      <div className="flex items-center gap-2.5 px-1 pb-2 pt-1">
+                        <AgentSelection />
+                        <TooltipProvider delayDuration={0}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div
+                                {...getRootFileProps({
+                                  className: cn(
+                                    'hover:bg-gray-350 relative flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full rounded-lg p-1.5 text-white',
+                                  ),
+                                })}
+                              >
+                                <Paperclip className="h-full w-full" />
+                                <input
+                                  {...chatForm.register('file')}
+                                  {...getInputFileProps({
+                                    onChange:
+                                      chatForm.register('file').onChange,
                                   })}
-                                >
-                                  <Paperclip className="h-full w-full" />
-                                  <input
-                                    {...chatForm.register('file')}
-                                    {...getInputFileProps({
-                                      onChange:
-                                        chatForm.register('file').onChange,
-                                    })}
-                                    className="sr-only"
-                                  />
-                                </div>
-                              </TooltipTrigger>
-                              <TooltipPortal>
-                                <TooltipContent
-                                  align="center"
-                                  className="bg-neutral-900"
-                                  side="top"
-                                >
-                                  {t('common.uploadFile')}
-                                </TooltipContent>
-                              </TooltipPortal>
-                            </Tooltip>
-                          </TooltipProvider>
-                        </div>
-                        <ChatInputArea
-                          bottomAddons={
-                            <Button
-                              className="h-[40px] w-[40px] self-end rounded-xl p-3"
-                              disabled={isLoadingMessage}
-                              isLoading={isLoadingMessage}
-                              onClick={chatForm.handleSubmit(onSubmit)}
-                              size="icon"
-                              variant="tertiary"
-                            >
-                              <SendIcon className="h-full w-full" />
-                              <span className="sr-only">
-                                {t('chat.sendMessage')}
-                              </span>
-                            </Button>
-                          }
-                          disabled={isLoadingMessage}
-                          onChange={field.onChange}
-                          onSubmit={chatForm.handleSubmit(onSubmit)}
-                          topAddons={
-                            file && (
-                              <div className="relative mt-1 flex min-w-[180px] max-w-[220px] items-center gap-2 self-start rounded-lg border border-gray-200 px-2 py-2.5">
-                                {getFileExt(file?.name) &&
-                                fileIconMap[getFileExt(file?.name)] ? (
-                                  <FileTypeIcon
-                                    className="text-gray-80 h-7 w-7 shrink-0"
-                                    type={getFileExt(file?.name)}
-                                  />
-                                ) : (
-                                  <Paperclip className="text-gray-80 h-4 w-4 shrink-0" />
-                                )}
-                                <div className="space-y-1">
-                                  <span className="line-clamp-1 break-all text-left text-xs">
-                                    {file?.name}
-                                  </span>
-                                  <span className="line-clamp-1 break-all text-left text-xs text-gray-100">
-                                    {size(file?.size)}
-                                  </span>
-                                </div>
-                                <button
-                                  className={cn(
-                                    'absolute -right-2 -top-2 h-5 w-5 cursor-pointer rounded-full bg-gray-500 p-1 text-gray-100 hover:text-white',
-                                  )}
-                                  onClick={(event) => {
-                                    event.stopPropagation();
-                                    chatForm.setValue('file', undefined, {
-                                      shouldValidate: true,
-                                    });
-                                  }}
-                                >
-                                  <X className="h-full w-full" />
-                                </button>
+                                  className="sr-only"
+                                />
                               </div>
-                            )
-                          }
-                          value={field.value}
-                        />
+                            </TooltipTrigger>
+                            <TooltipPortal>
+                              <TooltipContent
+                                align="center"
+                                className="bg-neutral-900"
+                                side="top"
+                              >
+                                {t('common.uploadFile')}
+                              </TooltipContent>
+                            </TooltipPortal>
+                          </Tooltip>
+                        </TooltipProvider>
                       </div>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </Form>
-          </div>
+                      <ChatInputArea
+                        bottomAddons={
+                          <Button
+                            className="h-[40px] w-[40px] self-end rounded-xl p-3"
+                            disabled={isLoadingMessage}
+                            isLoading={isLoadingMessage}
+                            onClick={chatForm.handleSubmit(onSubmit)}
+                            size="icon"
+                            variant="tertiary"
+                          >
+                            <SendIcon className="h-full w-full" />
+                            <span className="sr-only">
+                              {t('chat.sendMessage')}
+                            </span>
+                          </Button>
+                        }
+                        disabled={isLoadingMessage}
+                        onChange={field.onChange}
+                        onSubmit={chatForm.handleSubmit(onSubmit)}
+                        topAddons={
+                          file && (
+                            <div className="relative mt-1 flex min-w-[180px] max-w-[220px] items-center gap-2 self-start rounded-lg border border-gray-200 px-2 py-2.5">
+                              {getFileExt(file?.name) &&
+                              fileIconMap[getFileExt(file?.name)] ? (
+                                <FileTypeIcon
+                                  className="text-gray-80 h-7 w-7 shrink-0"
+                                  type={getFileExt(file?.name)}
+                                />
+                              ) : (
+                                <Paperclip className="text-gray-80 h-4 w-4 shrink-0" />
+                              )}
+                              <div className="space-y-1">
+                                <span className="line-clamp-1 break-all text-left text-xs">
+                                  {file?.name}
+                                </span>
+                                <span className="line-clamp-1 break-all text-left text-xs text-gray-100">
+                                  {size(file?.size)}
+                                </span>
+                              </div>
+                              <button
+                                className={cn(
+                                  'absolute -right-2 -top-2 h-5 w-5 cursor-pointer rounded-full bg-gray-500 p-1 text-gray-100 hover:text-white',
+                                )}
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  chatForm.setValue('file', undefined, {
+                                    shouldValidate: true,
+                                  });
+                                }}
+                              >
+                                <X className="h-full w-full" />
+                              </button>
+                            </div>
+                          )
+                        }
+                        value={field.value}
+                      />
+                    </div>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </Form>
         </div>
-      )}
+      </div>
     </div>
   );
 };

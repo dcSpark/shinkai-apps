@@ -46,6 +46,7 @@ import {
 import {
   fileIconMap,
   FileTypeIcon,
+  SendIcon,
   WorkflowPlaygroundIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { getFileExt } from '@shinkai_network/shinkai-ui/helpers';
@@ -54,13 +55,15 @@ import { useDebounce } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { partial } from 'filesize';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Paperclip, SendIcon, X, XIcon } from 'lucide-react';
+import { Paperclip, X, XIcon } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm, useWatch } from 'react-hook-form';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
+import { allowedFileExtensions } from '../../lib/constants';
 import { useAnalytics } from '../../lib/posthog-provider';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
@@ -251,7 +254,12 @@ function ConversationEmptyFooter() {
     name: 'files',
   });
   const { mutateAsync: createJob, isPending } = useCreateJob({
-    onSuccess: (data, variables) => {
+    onError: (error) => {
+      toast.error('Failed to send message', {
+        description: error.response?.data?.message ?? error.message,
+      });
+    },
+    onSuccess: async (data, variables) => {
       navigate(
         `/inboxes/${encodeURIComponent(buildInboxIdFromJobId(data.jobId))}`,
       );
@@ -375,7 +383,8 @@ function ConversationEmptyFooter() {
                             </TooltipTrigger>
                             <TooltipPortal>
                               <TooltipContent align="center" side="top">
-                                {t('common.uploadFile')}
+                                {t('common.uploadFile')} <br />
+                                {allowedFileExtensions.join(', ')}
                               </TooltipContent>
                             </TooltipPortal>
                           </Tooltip>
@@ -396,8 +405,11 @@ function ConversationEmptyFooter() {
                             </span>
                           )}
                           <Button
-                            className="hover:bg-app-gradient h-[40px] w-[40px] rounded-xl bg-gray-500 p-3 disabled:cursor-not-allowed"
-                            disabled={isPending}
+                            className={cn(
+                              'hover:bg-app-gradient h-[40px] w-[40px] cursor-pointer rounded-xl bg-gray-500 p-3 transition-colors',
+                              'disabled:text-gray-80 disabled:pointer-events-none disabled:cursor-not-allowed disabled:border disabled:border-gray-200 disabled:bg-gray-300 hover:disabled:bg-gray-300',
+                            )}
+                            disabled={isPending || !chatForm.watch('message')}
                             onClick={chatForm.handleSubmit(onSubmit)}
                             size="icon"
                             variant="tertiary"
@@ -649,11 +661,20 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
         captureAnalyticEvent('AI Chat', undefined);
       }
     },
+    onError: (error) => {
+      toast.error('Failed to send message', {
+        description: error.message,
+      });
+    },
   });
 
   const isLoadingMessage = useMemo(() => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
-    return isJobInbox(inboxId) && lastMessage?.isLocal;
+    return (
+      !!inboxId &&
+      lastMessage?.role === 'assistant' &&
+      lastMessage?.status.type === 'running'
+    );
   }, [data?.pages, inboxId]);
 
   const isWorkflowSelectedAndFilesPresent =
@@ -765,6 +786,8 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                             <TooltipPortal>
                               <TooltipContent align="center" side="top">
                                 {t('common.uploadFile')}
+                                <br />
+                                {allowedFileExtensions.join(', ')}
                               </TooltipContent>
                             </TooltipPortal>
                           </Tooltip>
@@ -786,8 +809,13 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                             </span>
                           )}
                           <Button
-                            className="hover:bg-app-gradient h-[40px] w-[40px] rounded-xl bg-gray-500 p-3 disabled:cursor-not-allowed"
-                            disabled={isLoadingMessage}
+                            className={cn(
+                              'hover:bg-app-gradient h-[40px] w-[40px] cursor-pointer rounded-xl bg-gray-500 p-3 transition-colors',
+                              'disabled:text-gray-80 disabled:pointer-events-none disabled:cursor-not-allowed disabled:border disabled:border-gray-200 disabled:bg-gray-300 hover:disabled:bg-gray-300',
+                            )}
+                            disabled={
+                              isLoadingMessage || !chatForm.watch('message')
+                            }
                             onClick={chatForm.handleSubmit(onSubmit)}
                             size="icon"
                             variant="tertiary"
@@ -1013,7 +1041,7 @@ function useFirstMessageWorkflow() {
   useEffect(() => {
     if (data?.pages && data.pages.length > 0 && data.pages[0].length > 0) {
       const firstMessage = data.pages[0][0];
-      if (firstMessage.workflowName) {
+      if (firstMessage.role === 'user' && firstMessage.workflowName) {
         const [name, author] = firstMessage.workflowName.split(':::');
         setFirstMessageWorkflow({
           name,

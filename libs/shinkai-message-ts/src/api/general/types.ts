@@ -55,7 +55,7 @@ export type PaymentRequest = {
   };
 };
 export type Widget = {
-  PaymentRequest?: PaymentRequest;
+  PaymentRequest?: PaymentRequest; // to unify with tool request
   ToolRequest?: Tool;
 };
 export enum ToolStatusType {

@@ -83,7 +83,7 @@ export const MessageList = ({
     workflowName?: string,
   ) => void;
   containerClassName?: string;
-  lastMessageContent: React.ReactNode;
+  lastMessageContent?: React.ReactNode;
   disabledRetryAndEdit?: boolean;
   messageExtra?: React.ReactNode;
 }) => {
@@ -260,7 +260,7 @@ export const MessageList = ({
                     >
                       <span className="text-gray-80 text-xs font-medium">
                         {getRelativeDateLabel(
-                          new Date(messages[0].scheduledTime || ''),
+                          new Date(messages[0].createdAt || ''),
                         )}
                       </span>
                     </div>
@@ -269,7 +269,7 @@ export const MessageList = ({
                         const previousMessage = messages[messageIndex - 1];
 
                         const grandparentHash = previousMessage
-                          ? previousMessage.parentHash
+                          ? previousMessage.metadata.parentMessageId
                           : null;
 
                         const firstMessageRetry =
@@ -280,7 +280,7 @@ export const MessageList = ({
                           (grandparentHash === null || grandparentHash === '');
 
                         const handleRetryMessage = () => {
-                          regenerateMessage?.(message?.hash ?? '');
+                          regenerateMessage?.(message?.messageId ?? '');
                         };
 
                         const handleEditMessage = (
@@ -289,7 +289,7 @@ export const MessageList = ({
                         ) => {
                           editAndRegenerateMessage?.(
                             message,
-                            previousMessage?.hash ?? '',
+                            previousMessage?.messageId ?? '',
                             workflowName,
                           );
                         };
@@ -299,23 +299,18 @@ export const MessageList = ({
                         };
 
                         return (
-                          <div
-                            data-testid={`message-${
-                              message.isLocal ? 'local' : 'remote'
-                            }-${message.hash}`}
-                            key={`${message.hash}::${messageIndex}`}
-                          >
-                            <Message
-                              disabledEdit={disabledRetryAndEditValue}
-                              handleEditMessage={handleEditMessage}
-                              handleRetryMessage={
-                                firstMessageRetry
-                                  ? handleFirstMessageRetry
-                                  : handleRetryMessage
-                              }
-                              message={message}
-                            />
-                          </div>
+                          <Message
+                            disabledEdit={disabledRetryAndEditValue}
+                            handleEditMessage={handleEditMessage}
+                            handleRetryMessage={
+                              firstMessageRetry
+                                ? handleFirstMessageRetry
+                                : handleRetryMessage
+                            }
+                            key={`${message.messageId}::${messageIndex}`}
+                            message={message}
+                            messageId={message.messageId}
+                          />
                         );
                       })}
                     </div>

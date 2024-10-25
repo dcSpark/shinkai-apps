@@ -68,7 +68,7 @@ const PublicSharedFolderSubscription = () => {
   });
 
   const { nodeInfo } = useGetHealth({ nodeAddress: auth?.node_address ?? '' });
-  console.log('nodeInfo', nodeInfo);
+
   const loadMoreRef = useRef<HTMLButtonElement>(null);
   const isLoadMoreButtonInView = useInView(loadMoreRef);
 

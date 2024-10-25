@@ -4,6 +4,7 @@ import {
   ToolStatusType,
 } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import { InfiniteData } from '@tanstack/react-query';
+import { ReactNode } from 'react';
 
 export type GetChatConversationInput = Token & {
   nodeAddress: string;
@@ -15,34 +16,87 @@ export type GetChatConversationInput = Token & {
   enabled?: boolean;
   refetchIntervalEnabled?: boolean;
 };
-export type FormattedChatMessage = {
-  hash: string;
-  parentHash: string;
-  inboxId: string;
-  scheduledTime: string | undefined;
-  content: string;
-  workflowName: string | undefined;
-  isLocal: boolean;
-  sender: {
-    avatar: string;
-  };
-  fileInbox?: {
-    id: string;
-    files: {
-      name: string;
-      preview?: string;
-    }[];
-  };
-  toolCalls?: {
-    name: string;
-    args: ToolArgs;
-    status: ToolStatusType;
-    toolRouterKey: string;
-  }[];
+
+type ToolCall = {
+  toolRouterKey: string;
+  name: string;
+  args: ToolArgs;
+  result?: unknown;
+  status?: ToolStatusType; // TODO: remove
+  isError?: boolean;
 };
-export type GetChatConversationOutput = FormattedChatMessage[];
+
+export type Attachment = {
+  id: string;
+  type: 'image' | 'document' | 'file';
+  name: string;
+  file?: File;
+  preview?: string;
+};
+
+export type MessageStatus =
+  | {
+      type: 'running';
+    }
+  | {
+      type: 'requires-action';
+      reason: 'tool-calls';
+    }
+  | {
+      type: 'complete';
+      reason: 'stop' | 'unknown';
+    }
+  | {
+      type: 'incomplete';
+      reason:
+        | 'cancelled'
+        | 'tool-calls'
+        | 'length'
+        | 'content-filter'
+        | 'other'
+        | 'error';
+      error?: unknown;
+    };
+
+type BaseMessage = {
+  messageId: string;
+  createdAt: string;
+  metadata: {
+    parentMessageId: string;
+    inboxId: string;
+  };
+};
+export type TextContentPart = { type: 'text'; text: string };
+export type ToolCallContentPart = { type: 'tool-call'; toolCalls: ToolCall[] };
+export type UIContentPart = { type: 'ui'; display: ReactNode };
+
+export type UserContentPart = string | TextContentPart | UIContentPart;
+
+export type AssistantContentPart =
+  | string
+  | TextContentPart
+  | ToolCallContentPart
+  | UIContentPart;
+
+export type UserMessage = BaseMessage & {
+  role: 'user';
+  content: string; // UserContentPart
+  attachments: Attachment[];
+  workflowName?: string;
+};
+
+export type AssistantMessage = BaseMessage & {
+  role: 'assistant';
+  content: string; // AssistantContentPart
+  status: MessageStatus;
+  toolCalls: ToolCall[];
+};
+
+export type FormattedMessage = AssistantMessage | UserMessage;
+
+export type GetChatConversationOutput = FormattedMessage[];
 
 export type ChatConversationInfiniteData =
   InfiniteData<GetChatConversationOutput> & {
-    content: FormattedChatMessage[];
+    content: FormattedMessage[];
   };

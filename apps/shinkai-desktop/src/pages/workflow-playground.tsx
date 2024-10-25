@@ -23,12 +23,13 @@ import { Outlet, useParams } from 'react-router-dom';
 import { z } from 'zod';
 
 import { streamingSupportedModels } from '../components/chat/constants';
-import { useWebSocketMessage } from '../components/chat/message-stream';
+import { useWebSocketMessage } from '../components/chat/websocket-message';
 import BamlEditor from '../components/playground/baml-editor';
 import DocsPanel from '../components/playground/docs-panel';
 import WorkflowEditor from '../components/playground/workflow-editor';
 import { useGetCurrentInbox } from '../hooks/use-current-inbox';
 import { useAuth } from '../store/auth';
+import { useChatConversationWithOptimisticUpdates } from './chat/chat-conversation';
 
 export const createWorkflowFormSchema = z.object({
   workflowRaw: z.string().min(1, 'Workflow code is required'),
@@ -89,36 +90,21 @@ export default WorkflowPlayground;
 function PlaygroundPreviewWithInbox({ inboxId }: { inboxId: string }) {
   const { t } = useTranslation();
 
-  const auth = useAuth((state) => state.auth);
   const currentInbox = useGetCurrentInbox();
 
   const hasProviderEnableStreaming = streamingSupportedModels.includes(
     currentInbox?.agent?.model.split(':')?.[0] as Models,
   );
 
-  const { data: chatConfig } = useGetChatConfig({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-    jobId: extractJobIdFromInbox(inboxId),
-  });
-
-  const { data } = useGetChatConversationWithPagination({
-    token: auth?.api_v2_key ?? '',
-    nodeAddress: auth?.node_address ?? '',
-    inboxId: inboxId as string,
-    shinkaiIdentity: auth?.shinkai_identity ?? '',
-    profile: auth?.profile ?? '',
-    refetchIntervalEnabled:
-      !hasProviderEnableStreaming || chatConfig?.stream === false,
+  const { data } = useChatConversationWithOptimisticUpdates({
+    inboxId,
+    forceRefetchInterval: true,
   });
 
   const lastMessage = data?.pages?.at(-1)?.at(-1);
 
-  const isLoadingMessage = useMemo(() => {
-    return lastMessage?.isLocal;
-  }, [lastMessage?.isLocal]);
-
-  const { messageContent } = useWebSocketMessage({
+  useWebSocketMessage({
+    inboxId,
     enabled: hasProviderEnableStreaming,
   });
 
@@ -149,18 +135,22 @@ function PlaygroundPreviewWithInbox({ inboxId }: { inboxId: string }) {
         )}
       </div>
       <div className="pb-4">
-        {isLoadingMessage && (
-          <>
-            {messageContent === '' && <DotsLoader className="pl-1 pt-1" />}
-            <MarkdownPreview
-              className="prose-h1:!text-gray-80 prose-h1:!text-sm !text-gray-80 !text-sm"
-              source={messageContent}
-            />
-          </>
-        )}
-        {!isLoadingMessage && (
+        {lastMessage?.role === 'assistant' &&
+          lastMessage?.status.type === 'running' &&
+          lastMessage?.content === '' && <DotsLoader className="pl-1 pt-1" />}
+        {lastMessage?.role === 'assistant' &&
+          lastMessage?.status.type === 'complete' &&
+          lastMessage?.content === '' && (
+            <span className="text-xs"> No output</span>
+          )}
+        {lastMessage?.role === 'assistant' && (
           <MarkdownPreview
-            className="prose-h1:!text-gray-80 prose-h1:!text-sm !text-gray-80 !text-sm"
+            className={cn(
+              'prose-h1:!text-white prose-h1:!text-sm !text-sm !text-white',
+              lastMessage?.content &&
+                lastMessage?.status.type === 'running' &&
+                'md-running',
+            )}
             source={
               lastMessage?.content?.startsWith('{') &&
               lastMessage?.content?.endsWith('}')
@@ -237,7 +227,12 @@ export function useStopGenerationPlayground() {
 
   const isLoadingMessage = useMemo(() => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
-    return !!inboxId && lastMessage?.isLocal;
+
+    return (
+      !!inboxId &&
+      lastMessage?.role === 'assistant' &&
+      lastMessage?.status.type === 'running'
+    );
   }, [data?.pages, inboxId]);
 
   return {

@@ -467,8 +467,12 @@ export const PromptTryOut = ({
 
   const isLoadingMessage = useMemo(() => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
-    return lastMessage?.isLocal;
-  }, [data?.pages]);
+    return (
+      !!chatInboxId &&
+      lastMessage?.role === 'assistant' &&
+      lastMessage?.status.type === 'running'
+    );
+  }, [data?.pages, chatInboxId]);
 
   const handleRunPrompt = async () => {
     if (!auth) return;

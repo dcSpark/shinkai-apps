@@ -1,66 +1,63 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   buildInboxIdFromJobId,
-  extractErrorPropertyOrContent,
   extractJobIdFromInbox,
-  isJobInbox,
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
+import {
+  FunctionKeyV2,
+  generateOptimisticAssistantMessage,
+} from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useRetryMessage } from '@shinkai_network/shinkai-node-state/v2/mutations/retryMessage/useRetryMessage';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
+import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-  MessageList,
-} from '@shinkai_network/shinkai-ui';
-import { AlertCircle } from 'lucide-react';
-import { useEffect, useMemo } from 'react';
+import { MessageList } from '@shinkai_network/shinkai-ui';
+import { useQueryClient } from '@tanstack/react-query';
+import { produce } from 'immer';
+import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { streamingSupportedModels } from '../../components/chat/constants';
-import { ToolsProvider } from '../../components/chat/context/tools-context';
 import ConversationFooter from '../../components/chat/conversation-footer';
 import ConversationHeader from '../../components/chat/conversation-header';
 import MessageExtra from '../../components/chat/message-extra';
-import { WebsocketMessage } from '../../components/chat/message-stream';
+import {
+  useWebSocketMessage,
+  useWebSocketTools,
+} from '../../components/chat/websocket-message';
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAnalytics } from '../../lib/posthog-provider';
 import { useAuth } from '../../store/auth';
 
-enum ErrorCodes {
-  VectorResource = 'VectorResource',
-  ShinkaiBackendInferenceLimitReached = 'ShinkaiBackendInferenceLimitReached',
-}
-
-const ChatConversation = () => {
-  const { captureAnalyticEvent } = useAnalytics();
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-
-  const { inboxId: encodedInboxId = '' } = useParams();
-  const inboxId = decodeURIComponent(encodedInboxId);
+export const useChatConversationWithOptimisticUpdates = ({
+  inboxId,
+  forceRefetchInterval,
+}: {
+  inboxId: string;
+  forceRefetchInterval?: boolean;
+}) => {
+  const queryClient = useQueryClient();
   const auth = useAuth((state) => state.auth);
 
+  const { data: chatConfig } = useGetChatConfig(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      jobId: inboxId ? extractJobIdFromInbox(inboxId) : '',
+    },
+    {
+      enabled: !!inboxId,
+    },
+  );
   const currentInbox = useGetCurrentInbox();
-
-  const { data: chatConfig } = useGetChatConfig({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-    jobId: extractJobIdFromInbox(inboxId),
-  });
 
   const hasProviderEnableStreaming = streamingSupportedModels.includes(
     currentInbox?.agent?.model.split(':')?.[0] as Models,
   );
-
-  // const hasProviderEnableTools =
-  //   currentInbox?.agent?.model.split(':')?.[0] === Models.OpenAI ||
-  //   currentInbox?.agent?.model.split(':')?.[0] === Models.Ollama;
 
   const {
     data,
@@ -82,30 +79,103 @@ const ChatConversation = () => {
   });
 
   useEffect(() => {
+    if (
+      isChatConversationSuccess &&
+      data.content.length % 2 === 1 &&
+      data.content.at(-1)?.role === 'user'
+    ) {
+      const queryKey = [
+        FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
+        { inboxId },
+      ];
+
+      queryClient.cancelQueries({ queryKey });
+      queryClient.setQueryData(
+        queryKey,
+        produce((draft: ChatConversationInfiniteData | undefined) => {
+          if (!draft?.pages?.[0]) return;
+          draft?.pages?.at(-1)?.push(generateOptimisticAssistantMessage());
+        }),
+      );
+    }
+  }, [
+    data?.content.length,
+    inboxId,
+    isChatConversationSuccess,
+    queryClient,
+    data?.content,
+  ]);
+
+  useEffect(() => {
+    if (forceRefetchInterval) {
+      setTimeout(() => {
+        queryClient.invalidateQueries({
+          queryKey: [
+            FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
+            { inboxId },
+          ],
+        });
+      }, 6000);
+    }
+  }, [forceRefetchInterval, inboxId, queryClient]);
+
+  return {
+    data,
+    fetchPreviousPage,
+    hasPreviousPage,
+    isChatConversationLoading,
+    isFetchingPreviousPage,
+    isChatConversationSuccess,
+    isError,
+    chatConversationError,
+  };
+};
+
+const ChatConversation = () => {
+  const { captureAnalyticEvent } = useAnalytics();
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const { inboxId: encodedInboxId = '' } = useParams();
+  const inboxId = decodeURIComponent(encodedInboxId);
+  useWebSocketMessage({ inboxId, enabled: true });
+  useWebSocketTools({ inboxId, enabled: true });
+
+  const auth = useAuth((state) => state.auth);
+
+  const currentInbox = useGetCurrentInbox();
+  const {
+    data,
+    fetchPreviousPage,
+    hasPreviousPage,
+    isChatConversationLoading,
+    isFetchingPreviousPage,
+    isChatConversationSuccess,
+    isError,
+    chatConversationError,
+  } = useChatConversationWithOptimisticUpdates({
+    inboxId,
+  });
+
+  useEffect(() => {
     if (isError) {
-      console.error('Failed loading chat conversation', chatConversationError);
       toast.error('Failed loading chat conversation', {
         description:
           chatConversationError?.response?.data?.message ??
-          chatConversationError.message,
+          chatConversationError?.message,
       });
     }
   }, [chatConversationError, isError]);
 
   const { mutateAsync: retryMessage } = useRetryMessage();
 
-  const isLoadingMessage = useMemo(() => {
-    const lastMessage = data?.pages?.at(-1)?.at(-1);
-    return isJobInbox(inboxId) && lastMessage?.isLocal;
-  }, [data?.pages, inboxId]);
-
-  // const { widgetTool, setWidgetTool } = useWebSocketTools({
-  //   enabled: hasProviderEnableTools,
-  // });
-
   const { mutateAsync: sendMessageToJob } = useSendMessageToJob({
     onSuccess: () => {
       captureAnalyticEvent('AI Chat', undefined);
+      queryClient.invalidateQueries({
+        queryKey: [FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION, { inboxId }],
+      });
     },
   });
 
@@ -116,7 +186,6 @@ const ChatConversation = () => {
     },
   });
 
-  // endpoint doesnt support retry in first message yet
   const regenerateFirstMessage = async (message: string) => {
     if (!auth) return;
 
@@ -160,56 +229,25 @@ const ChatConversation = () => {
     });
   };
 
-  const isLimitReachedErrorLastMessage = useMemo(() => {
-    const lastMessage = data?.pages?.at(-1)?.at(-1);
-    if (!lastMessage) return;
-    const errorCode = extractErrorPropertyOrContent(
-      lastMessage.content,
-      'error',
-    );
-    return errorCode === ErrorCodes.ShinkaiBackendInferenceLimitReached;
-  }, [data?.pages]);
-
   return (
     <div className="flex max-h-screen flex-1 flex-col overflow-hidden pt-2">
       <ConversationHeader />
-      <ToolsProvider>
-        <MessageList
-          containerClassName="px-5"
-          editAndRegenerateMessage={editAndRegenerateMessage}
-          fetchPreviousPage={fetchPreviousPage}
-          hasPreviousPage={hasPreviousPage}
-          isFetchingPreviousPage={isFetchingPreviousPage}
-          isLoading={isChatConversationLoading}
-          isSuccess={isChatConversationSuccess}
-          lastMessageContent={
-            <WebsocketMessage
-              isLoadingMessage={isLoadingMessage ?? false}
-              isWsEnabled={hasProviderEnableStreaming}
-            />
-          }
-          messageExtra={<MessageExtra />}
-          noMoreMessageLabel={t('chat.allMessagesLoaded')}
-          paginatedMessages={data}
-          regenerateFirstMessage={regenerateFirstMessage}
-          regenerateMessage={regenerateMessage}
-        />
-      </ToolsProvider>
-      {isLimitReachedErrorLastMessage && (
-        <Alert className="mx-auto w-[98%] shadow-lg" variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle className="text-sm">
-            {t('chat.limitReachedTitle')}
-          </AlertTitle>
-          <AlertDescription className="text-gray-80 text-xs">
-            <div className="flex flex-row items-center space-x-2">
-              {t('chat.limitReachedDescription')}
-            </div>
-          </AlertDescription>
-        </Alert>
-      )}
+      <MessageList
+        containerClassName="px-5"
+        editAndRegenerateMessage={editAndRegenerateMessage}
+        fetchPreviousPage={fetchPreviousPage}
+        hasPreviousPage={hasPreviousPage}
+        isFetchingPreviousPage={isFetchingPreviousPage}
+        isLoading={isChatConversationLoading}
+        isSuccess={isChatConversationSuccess}
+        messageExtra={<MessageExtra />}
+        noMoreMessageLabel={t('chat.allMessagesLoaded')}
+        paginatedMessages={data}
+        regenerateFirstMessage={regenerateFirstMessage}
+        regenerateMessage={regenerateMessage}
+      />
 
-      {!isLimitReachedErrorLastMessage && <ConversationFooter />}
+      <ConversationFooter />
     </div>
   );
 };

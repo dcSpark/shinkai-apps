@@ -8,11 +8,6 @@ import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
 import { useShinkaiNodeIsRunningQuery } from './shinkai-node-manager/shinkai-node-manager-client';
 import { openShinkaiNodeManagerWindow } from './shinkai-node-manager/shinkai-node-manager-windows-utils';
 
-export const AnalyticsEvents = {
-  chatWithFiles: 'chat_with_files',
-  UploadFiles: 'upload_files',
-} as const;
-
 export const ShinkaiNodeRunningOverlay = ({
   children,
 }: {

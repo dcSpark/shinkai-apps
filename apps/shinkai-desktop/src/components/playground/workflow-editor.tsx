@@ -833,9 +833,7 @@ ${createWorkflowForm.watch('workflowRaw')}
                             <FileUploader
                               accept={allowedFileExtensions.join(',')}
                               allowMultiple
-                              descriptionText={allowedFileExtensions?.join(
-                                ' | ',
-                              )}
+                              descriptionText={`Supports ${allowedFileExtensions.join(', ')}`}
                               onChange={(acceptedFiles) => {
                                 field.onChange(acceptedFiles);
                               }}

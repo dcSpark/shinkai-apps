@@ -45,7 +45,6 @@ const formatAmount = (amount: string, decimals = 18): string => {
 
 export default function MessageExtra() {
   const widget = useToolsStore((state) => state.widget);
-  console.log(widget, 'widget');
   const setWidget = useToolsStore((state) => state.setWidget);
   const name = widget?.name as WidgetToolType;
   const metadata = widget?.data as WidgetToolData;

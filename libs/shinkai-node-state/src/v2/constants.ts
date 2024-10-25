@@ -1,3 +1,9 @@
+import {
+  AssistantMessage,
+  Attachment,
+  UserMessage,
+} from './queries/getChatConversation/types';
+
 export enum FunctionKeyV2 {
   GET_HEALTH = 'GET_HEALTH',
   GET_ENCRYPTION_KEYS = 'GET_ENCRYPTION_KEYS',
@@ -36,3 +42,31 @@ export const DEFAULT_CHAT_CONFIG = {
   top_p: 0.9,
   stream: true,
 } as const;
+
+export const OPTIMISTIC_USER_MESSAGE_ID = 'OPTIMISTIC_USER_MESSAGE_ID';
+export const OPTIMISTIC_ASSISTANT_MESSAGE_ID =
+  'OPTIMISTIC_ASSISTANT_MESSAGE_ID';
+
+export const generateOptimisticUserMessage = (
+  content: string,
+  attachments?: Attachment[],
+  workflowName?: string,
+): UserMessage => ({
+  messageId: OPTIMISTIC_USER_MESSAGE_ID,
+  createdAt: new Date().toISOString(),
+  content: content,
+  role: 'user',
+  metadata: { parentMessageId: '', inboxId: '' },
+  attachments: attachments ?? [],
+  workflowName: workflowName,
+});
+
+export const generateOptimisticAssistantMessage = (): AssistantMessage => ({
+  messageId: OPTIMISTIC_ASSISTANT_MESSAGE_ID,
+  createdAt: new Date().toISOString(),
+  content: '',
+  role: 'assistant',
+  status: { type: 'running' },
+  metadata: { parentMessageId: '', inboxId: '' },
+  toolCalls: [],
+});

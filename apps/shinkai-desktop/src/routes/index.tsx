@@ -5,6 +5,7 @@ import React, { useEffect, useRef } from 'react';
 import { Navigate, Outlet, Route, Routes, useNavigate } from 'react-router-dom';
 
 import { SetJobScopeProvider } from '../components/chat/context/set-job-scope-context';
+import { ToolsProvider } from '../components/chat/context/tools-context';
 import { WalletsProvider } from '../components/crypto-wallet/context/wallets-context';
 import { PromptSelectionProvider } from '../components/prompt/context/prompt-selection-context';
 import { TableSheetProvider } from '../components/sheet/context/table-context';
@@ -81,7 +82,9 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     Node auto start process probably should be in rust side
   */
   useEffect(() => {
-    debug(`initializing autoStartShinkaiNodeTried.current:${autoStartShinkaiNodeTried.current} isInUse:${isInUse} shinkaiNodeIsRunning:${shinkaiNodeIsRunning}`);
+    debug(
+      `initializing autoStartShinkaiNodeTried.current:${autoStartShinkaiNodeTried.current} isInUse:${isInUse} shinkaiNodeIsRunning:${shinkaiNodeIsRunning}`,
+    );
     if (
       !autoStartShinkaiNodeTried.current &&
       isInUse &&
@@ -212,7 +215,14 @@ const AppRoutes = () => {
           path="inboxes"
         >
           <Route element={<EmptyMessage />} index />
-          <Route element={<ChatConversation />} path=":inboxId" />
+          <Route
+            element={
+              <ToolsProvider>
+                <ChatConversation />
+              </ToolsProvider>
+            }
+            path=":inboxId"
+          />
         </Route>
         <Route
           element={
@@ -291,7 +301,9 @@ const AppRoutes = () => {
               <SetJobScopeProvider>
                 <WorkflowSelectionProvider>
                   <PromptSelectionProvider>
-                    <WorkflowPlayground />
+                    <ToolsProvider>
+                      <WorkflowPlayground />
+                    </ToolsProvider>
                   </PromptSelectionProvider>
                 </WorkflowSelectionProvider>
               </SetJobScopeProvider>
