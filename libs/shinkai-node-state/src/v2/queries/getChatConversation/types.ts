@@ -4,6 +4,7 @@ import {
   ToolStatusType,
 } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import { InfiniteData } from '@tanstack/react-query';
+import { ReactNode } from 'react';
 
 export type GetChatConversationInput = Token & {
   nodeAddress: string;
@@ -65,16 +66,28 @@ type BaseMessage = {
     inboxId: string;
   };
 };
+export type TextContentPart = { type: 'text'; text: string };
+export type ToolCallContentPart = { type: 'tool-call'; toolCalls: ToolCall[] };
+
+export type UIContentPart = { type: 'ui'; display: ReactNode };
+export type UserContentPart = string | TextContentPart | UIContentPart;
+
+export type AssistantContentPart =
+  | string
+  | TextContentPart
+  | ToolCallContentPart
+  | UIContentPart;
+
 export type UserMessage = BaseMessage & {
   role: 'user';
-  content: string;
+  content: UserContentPart;
   attachments: Attachment[];
   workflowName?: string;
 };
 
 export type AssistantMessage = BaseMessage & {
   role: 'assistant';
-  content: string;
+  content: UIContentPart;
   status: MessageStatus;
   toolCalls: ToolCall[];
 };
