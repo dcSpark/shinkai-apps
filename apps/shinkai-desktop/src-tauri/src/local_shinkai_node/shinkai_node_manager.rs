@@ -276,4 +276,11 @@ impl ShinkaiNodeManager {
     pub fn get_ollama_api_url(&self) -> String {
         self.ollama_process.get_ollama_api_base_url()
     }
+
+    pub async fn delete_ollama_model(&self, model_name: &str) -> Result<(), String> {
+        let ollama_api_url = self.ollama_process.get_ollama_api_base_url();
+        let ollama_api = OllamaApiClient::new(ollama_api_url);
+
+        ollama_api.delete_model(model_name).await
+    }
 }

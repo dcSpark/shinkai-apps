@@ -55,3 +55,8 @@ pub enum OllamaApiPullResponse {
         status: String,
     },
 }
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct OllamaApiDeleteRequest {
+    pub model: String,
+}
