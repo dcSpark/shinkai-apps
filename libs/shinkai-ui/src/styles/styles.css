@@ -80,7 +80,7 @@
   > :where(li:last-child)
   > :where(:is(ol, ul):last-child)
   > :where(li:last-child)::after {
-  @apply text-gray-50 ml-1 animate-pulse font-sans text-xs content-['\25CF'];
+  @apply text-gray-50 ml-1 animate-pulse font-sans text-[10px] content-['\25CF'];
 }
 
 /* react tree view */

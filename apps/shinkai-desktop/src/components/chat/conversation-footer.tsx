@@ -327,10 +327,6 @@ function ConversationEmptyFooter() {
         top_p: chatConfigForm.getValues('topP'),
         top_k: chatConfigForm.getValues('topK'),
       },
-      // onJobCreated: (jobId) => {
-      //   const jobIdEncoded = encodeURIComponent(buildInboxIdFromJobId(jobId));
-      //   navigate(`/inboxes/${jobIdEncoded}`);
-      // },
     });
 
     chatForm.reset();
