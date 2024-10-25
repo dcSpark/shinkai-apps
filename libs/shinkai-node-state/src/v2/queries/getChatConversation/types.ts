@@ -68,8 +68,8 @@ type BaseMessage = {
 };
 export type TextContentPart = { type: 'text'; text: string };
 export type ToolCallContentPart = { type: 'tool-call'; toolCalls: ToolCall[] };
-
 export type UIContentPart = { type: 'ui'; display: ReactNode };
+
 export type UserContentPart = string | TextContentPart | UIContentPart;
 
 export type AssistantContentPart =
