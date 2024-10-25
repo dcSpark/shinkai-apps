@@ -1,13 +1,17 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { Inbox } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
-import { isJobInbox } from '@shinkai_network/shinkai-message-ts/utils';
+import {
+  extractJobIdFromInbox,
+  isJobInbox,
+} from '@shinkai_network/shinkai-message-ts/utils';
 import {
   UpdateInboxNameFormSchema,
   updateInboxNameFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/inbox';
 import { useArchiveJob } from '@shinkai_network/shinkai-node-state/lib/mutations/archiveJob/useArchiveJob';
 import { useUpdateInboxName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateInboxName/useUpdateInboxName';
+import { useRemoveJob } from '@shinkai_network/shinkai-node-state/v2/mutations/removeJob/useRemoveJob';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/v2/queries/getInboxes/useGetInboxes';
 import {
   Button,
@@ -38,7 +42,7 @@ import {
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Edit3 } from 'lucide-react';
+import { Edit3, Trash2Icon } from 'lucide-react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, Outlet, useMatch, useNavigate } from 'react-router-dom';
@@ -211,7 +215,18 @@ const MessageButton = ({
     },
     onError: (error) => {
       toast.error(t('chat.archives.error'), {
-        description: error.message,
+        description: error?.message,
+      });
+    },
+  });
+
+  const { mutateAsync: removeJob } = useRemoveJob({
+    onSuccess: () => {
+      toast.success('Chat removed successfully');
+    },
+    onError: (error) => {
+      toast.error('Failed to remove chat', {
+        description: error?.response?.data?.message ?? error.message,
       });
     },
   });
@@ -276,6 +291,33 @@ const MessageButton = ({
             </TooltipPortal>
           </Tooltip>
         </TooltipProvider>
+        <TooltipProvider delayDuration={0}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                className={cn('justify-self-end bg-transparent')}
+                onClick={() =>
+                  removeJob({
+                    jobId: extractJobIdFromInbox(inbox.inbox_id),
+                    nodeAddress: auth?.node_address ?? '',
+                    token: auth?.api_v2_key ?? '',
+                  })
+                }
+                size={'icon'}
+                type="button"
+                variant={'tertiary'}
+              >
+                <Trash2Icon className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipPortal>
+              <TooltipContent>
+                <p>Delete</p>
+              </TooltipContent>
+            </TooltipPortal>
+          </Tooltip>
+        </TooltipProvider>
+
         {isJobInbox(inboxId) && !isArchivedMessage && (
           <TooltipProvider delayDuration={0}>
             <Tooltip>

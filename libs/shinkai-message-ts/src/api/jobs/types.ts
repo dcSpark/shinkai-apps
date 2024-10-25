@@ -295,3 +295,7 @@ export type RetryMessageRequest = {
   message_id: string;
   inbox_name: string;
 };
+
+export type RemoveJobRequest = {
+  job_id: string;
+};
