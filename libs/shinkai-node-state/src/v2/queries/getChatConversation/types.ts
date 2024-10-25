@@ -87,7 +87,7 @@ export type UserMessage = BaseMessage & {
 
 export type AssistantMessage = BaseMessage & {
   role: 'assistant';
-  content: UIContentPart;
+  content: AssistantContentPart;
   status: MessageStatus;
   toolCalls: ToolCall[];
 };
