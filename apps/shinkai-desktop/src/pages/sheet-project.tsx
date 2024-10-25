@@ -69,7 +69,7 @@ const useWebsocketUpdateCell = ({ enabled }: { enabled: boolean }) => {
   const queryClient = useQueryClient();
   const { sendMessage, lastMessage, readyState } = useWebSocket(
     socketUrl,
-    {},
+    { share: true },
     enabled,
   );
 

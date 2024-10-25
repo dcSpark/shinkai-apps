@@ -33,7 +33,7 @@ import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAnalytics } from '../../lib/posthog-provider';
 import { useAuth } from '../../store/auth';
 
-export const useOptimisticAssistantMessageHandler = ({
+export const useChatConversationWithOptimisticUpdates = ({
   inboxId,
   forceRefetchInterval,
 }: {
@@ -43,11 +43,16 @@ export const useOptimisticAssistantMessageHandler = ({
   const queryClient = useQueryClient();
   const auth = useAuth((state) => state.auth);
 
-  const { data: chatConfig } = useGetChatConfig({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-    jobId: extractJobIdFromInbox(inboxId),
-  });
+  const { data: chatConfig } = useGetChatConfig(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      jobId: inboxId ? extractJobIdFromInbox(inboxId) : '',
+    },
+    {
+      enabled: !!inboxId,
+    },
+  );
   const currentInbox = useGetCurrentInbox();
 
   const hasProviderEnableStreaming = streamingSupportedModels.includes(
@@ -76,7 +81,7 @@ export const useOptimisticAssistantMessageHandler = ({
   useEffect(() => {
     if (
       isChatConversationSuccess &&
-      data.content.length === 1 &&
+      data.content.length % 2 === 1 &&
       data.content.at(-1)?.role === 'user'
     ) {
       const queryKey = [
@@ -93,7 +98,13 @@ export const useOptimisticAssistantMessageHandler = ({
         }),
       );
     }
-  }, [data?.content?.length, inboxId, isChatConversationSuccess, queryClient]);
+  }, [
+    data?.content.length,
+    inboxId,
+    isChatConversationSuccess,
+    queryClient,
+    data?.content,
+  ]);
 
   useEffect(() => {
     if (forceRefetchInterval) {
@@ -104,7 +115,7 @@ export const useOptimisticAssistantMessageHandler = ({
             { inboxId },
           ],
         });
-      }, 5000);
+      }, 6000);
     }
   }, [forceRefetchInterval, inboxId, queryClient]);
 
@@ -143,13 +154,12 @@ const ChatConversation = () => {
     isChatConversationSuccess,
     isError,
     chatConversationError,
-  } = useOptimisticAssistantMessageHandler({
+  } = useChatConversationWithOptimisticUpdates({
     inboxId,
   });
 
   useEffect(() => {
     if (isError) {
-      console.error('Failed loading chat conversation', chatConversationError);
       toast.error('Failed loading chat conversation', {
         description:
           chatConversationError?.response?.data?.message ??

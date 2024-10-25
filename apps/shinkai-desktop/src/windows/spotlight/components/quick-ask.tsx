@@ -33,7 +33,7 @@ import { toast } from 'sonner';
 import { AIModelSelector } from '../../../components/chat/chat-action-bar/ai-update-selection-action-bar';
 import { streamingSupportedModels } from '../../../components/chat/constants';
 import { useWebSocketMessage } from '../../../components/chat/websocket-message';
-import { useOptimisticAssistantMessageHandler } from '../../../pages/chat/chat-conversation';
+import { useChatConversationWithOptimisticUpdates } from '../../../pages/chat/chat-conversation';
 import { useAuth } from '../../../store/auth';
 import { useSettings } from '../../../store/settings';
 import { useQuickAskStore } from '../context/quick-ask';
@@ -363,7 +363,7 @@ const QuickAskBodyWithResponseBase = ({
     currentModel?.model.split(':')?.[0] as Models,
   );
 
-  const { data } = useOptimisticAssistantMessageHandler({ inboxId });
+  const { data } = useChatConversationWithOptimisticUpdates({ inboxId });
 
   useWebSocketMessage({
     enabled: hasProviderEnableStreaming,

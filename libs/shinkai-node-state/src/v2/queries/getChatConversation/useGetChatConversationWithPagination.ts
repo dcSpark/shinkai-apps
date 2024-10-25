@@ -45,8 +45,14 @@ export const useGetChatConversationWithPagination = (
       if (!input?.refetchIntervalEnabled) return 0;
       const lastMessage = state.data?.pages?.at(-1)?.at(-1);
       if (!lastMessage) return 0;
-      if (isJobInbox(input.inboxId) && lastMessage.role === 'user')
+      if (
+        isJobInbox(input.inboxId) &&
+        lastMessage.role === 'assistant' &&
+        lastMessage.status.type === 'running' &&
+        lastMessage.content === ''
+      )
         return CONVERSATION_PAGINATION_REFETCH;
+
       return 0;
     },
     initialPageParam: { lastKey: null },

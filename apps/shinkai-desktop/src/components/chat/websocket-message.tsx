@@ -257,6 +257,7 @@ export const useWebSocketMessage = ({
   const nodeAddressUrl = new URL(auth?.node_address ?? 'http://localhost:9850');
   const socketUrl = `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`;
   const queryClient = useQueryClient();
+  const isStreamSupported = useRef(false);
 
   const { sendMessage, lastMessage, readyState } = useWebSocket(
     socketUrl,
@@ -276,42 +277,63 @@ export const useWebSocketMessage = ({
       try {
         const parseData: WsMessage = JSON.parse(lastMessage.data);
         if (parseData.inbox !== inboxId) return;
-        if (
+
+        const isUserMessage =
           parseData.message_type === 'ShinkaiMessage' &&
           parseData.message &&
           JSON.parse(parseData.message)?.external_metadata.sender ===
             auth.shinkai_identity &&
           JSON.parse(parseData.message)?.body.unencrypted.internal_metadata
-            .sender_subidentity === auth.profile
-        ) {
+            .sender_subidentity === auth.profile;
+
+        const isAssistantMessage =
+          parseData.message_type === 'ShinkaiMessage' &&
+          parseData.message &&
+          !(
+            JSON.parse(parseData.message)?.external_metadata.sender ===
+              auth.shinkai_identity &&
+            JSON.parse(parseData.message)?.body.unencrypted.internal_metadata
+              .sender_subidentity === auth.profile
+          );
+
+        if (isUserMessage) {
           queryClient.setQueryData(
             queryKey,
             produce((draft: ChatConversationInfiniteData) => {
-              const newMessages = [generateOptimisticAssistantMessage()];
-              if (draft.pages.length > 0) {
-                draft.pages[draft.pages.length - 1] =
-                  draft.pages[draft.pages.length - 1].concat(newMessages);
+              if (!draft?.pages?.[0]) return;
+
+              const lastPage = draft.pages[draft.pages.length - 1];
+              const lastMessage = lastPage?.[lastPage.length - 1];
+
+              // validate if optimistic message is already there
+              if (
+                lastMessage &&
+                lastMessage.messageId === OPTIMISTIC_ASSISTANT_MESSAGE_ID &&
+                lastMessage.role === 'assistant' &&
+                lastMessage.status?.type === 'running'
+              ) {
+                lastMessage.content = '';
               } else {
-                draft.pages.push(newMessages);
+                const newMessages = [generateOptimisticAssistantMessage()];
+                if (lastPage) {
+                  lastPage.push(...newMessages);
+                } else {
+                  draft.pages.push(newMessages);
+                }
               }
             }),
           );
           return;
         }
 
-        if (
-          parseData.message_type === 'ShinkaiMessage' &&
-          parseData.message &&
-          (JSON.parse(parseData.message)?.external_metadata.sender !==
-            auth.shinkai_identity ||
-            JSON.parse(parseData.message)?.body.unencrypted.internal_metadata
-              .sender_subidentity !== auth.profile)
-        ) {
+        if (isAssistantMessage && !isStreamSupported.current) {
           queryClient.invalidateQueries({ queryKey: queryKey });
           return;
         }
-
+        isStreamSupported.current = false;
         if (parseData.message_type !== 'Stream') return;
+        isStreamSupported.current = true;
+
         queryClient.setQueryData(
           queryKey,
           produce((draft: ChatConversationInfiniteData | undefined) => {

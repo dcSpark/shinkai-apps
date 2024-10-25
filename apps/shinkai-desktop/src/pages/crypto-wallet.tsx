@@ -460,7 +460,7 @@ const MpcRestoreWallet = () => {
       },
     },
   );
-  console.log(form.formState);
+
   const handleSubmit = async (data: MpcRestoreWalletFormSchema) => {
     await restoreCoinbaseMPCWallet({
       token: auth?.api_v2_key ?? '',

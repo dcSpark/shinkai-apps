@@ -29,7 +29,7 @@ import DocsPanel from '../components/playground/docs-panel';
 import WorkflowEditor from '../components/playground/workflow-editor';
 import { useGetCurrentInbox } from '../hooks/use-current-inbox';
 import { useAuth } from '../store/auth';
-import { useOptimisticAssistantMessageHandler } from './chat/chat-conversation';
+import { useChatConversationWithOptimisticUpdates } from './chat/chat-conversation';
 
 export const createWorkflowFormSchema = z.object({
   workflowRaw: z.string().min(1, 'Workflow code is required'),
@@ -96,7 +96,7 @@ function PlaygroundPreviewWithInbox({ inboxId }: { inboxId: string }) {
     currentInbox?.agent?.model.split(':')?.[0] as Models,
   );
 
-  const { data } = useOptimisticAssistantMessageHandler({
+  const { data } = useChatConversationWithOptimisticUpdates({
     inboxId,
     forceRefetchInterval: true,
   });

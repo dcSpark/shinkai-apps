@@ -14,7 +14,6 @@ import {
 } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
-import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
 import {
   Button,
   Form,
@@ -30,8 +29,10 @@ import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import { useChatConversationWithOptimisticUpdates } from '../../pages/chat/chat-conversation';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
+import { useWebSocketMessage } from '../chat/websocket-message';
 import { useSheetProjectStore } from './context/table-context';
 
 export default function ChatTable() {
@@ -43,6 +44,11 @@ export default function ChatTable() {
   );
 
   const [chatInboxId, setChatInboxId] = useState<string | null>(null);
+
+  useWebSocketMessage({
+    inboxId: chatInboxId ?? '',
+    enabled: true,
+  });
 
   const { sheetId } = useParams();
   const toggleChatPanel = useSheetProjectStore(
@@ -75,24 +81,19 @@ export default function ChatTable() {
       setChatInboxId(buildInboxIdFromJobId(data.jobId));
     },
   });
-  const { mutateAsync: sendMessageToJob } = useSendMessageToJob();
+  const { mutateAsync: sendMessageToJob } = useSendMessageToJob({});
   const queryClient = useQueryClient();
 
   const {
     data,
     fetchPreviousPage,
     hasPreviousPage,
-    isPending: isChatConversationLoading,
+    isChatConversationLoading,
     isFetchingPreviousPage,
-    isSuccess: isChatConversationSuccess,
-  } = useGetChatConversationWithPagination({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
+    isChatConversationSuccess,
+  } = useChatConversationWithOptimisticUpdates({
     inboxId: chatInboxId ?? '',
-    shinkaiIdentity: auth?.shinkai_identity ?? '',
-    profile: auth?.profile ?? '',
-    enabled: !!chatInboxId,
-    refetchIntervalEnabled: true,
+    forceRefetchInterval: true,
   });
 
   useEffect(() => {
@@ -101,7 +102,7 @@ export default function ChatTable() {
     queryClient.invalidateQueries({
       queryKey: [FunctionKeyV2.GET_SHEET],
     });
-  }, [data?.pages]);
+  }, [chatInboxId, data?.pages, queryClient]);
 
   const isLoadingMessage = useMemo(() => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
