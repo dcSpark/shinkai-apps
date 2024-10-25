@@ -80,14 +80,14 @@ export type AssistantContentPart =
 
 export type UserMessage = BaseMessage & {
   role: 'user';
-  content: UserContentPart;
+  content: string; // UserContentPart
   attachments: Attachment[];
   workflowName?: string;
 };
 
 export type AssistantMessage = BaseMessage & {
   role: 'assistant';
-  content: AssistantContentPart;
+  content: string; // AssistantContentPart
   status: MessageStatus;
   toolCalls: ToolCall[];
 };
