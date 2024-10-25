@@ -21,15 +21,11 @@ import {
   VRItem,
 } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
-import {
-  DEFAULT_CHAT_CONFIG,
-  FunctionKeyV2,
-} from '@shinkai_network/shinkai-node-state/v2/constants';
+import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useStopGeneratingLLM } from '@shinkai_network/shinkai-node-state/v2/mutations/stopGeneratingLLM/useStopGeneratingLLM';
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
-import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useGetWorkflowSearch } from '@shinkai_network/shinkai-node-state/v2/queries/getWorkflowSearch/useGetWorkflowSearch';
@@ -56,7 +52,6 @@ import { getFileExt } from '@shinkai_network/shinkai-ui/helpers';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { useDebounce } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { useQueryClient } from '@tanstack/react-query';
 import { partial } from 'filesize';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Paperclip, SendIcon, X, XIcon } from 'lucide-react';
@@ -84,11 +79,7 @@ import {
 } from './chat-action-bar/chat-config-action-bar';
 import PromptSelectionActionBar from './chat-action-bar/prompt-selection-action-bar';
 import WorkflowSelectionActionBar from './chat-action-bar/workflow-selection-action-bar';
-import {
-  generateOptimisticAssistantMessage,
-  generateOptimisticUserMessage,
-  streamingSupportedModels,
-} from './constants';
+import { streamingSupportedModels } from './constants';
 import { useSetJobScope } from './context/set-job-scope-context';
 
 export const actionButtonClassnames =
@@ -106,7 +97,6 @@ function ConversationEmptyFooter() {
   const navigate = useNavigate();
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = decodeURIComponent(encodedInboxId);
-  const queryClient = useQueryClient();
 
   const onSelectedKeysChange = useSetJobScope(
     (state) => state.onSelectedKeysChange,
@@ -266,13 +256,6 @@ function ConversationEmptyFooter() {
       toast.error('Failed to send message', {
         description: error.message,
       });
-      const queryKey = [
-        FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
-        { inboxId },
-      ];
-      queryClient.invalidateQueries({
-        queryKey: queryKey,
-      });
     },
     onSuccess: async (data, variables) => {
       navigate(
@@ -343,6 +326,10 @@ function ConversationEmptyFooter() {
         top_p: chatConfigForm.getValues('topP'),
         top_k: chatConfigForm.getValues('topK'),
       },
+      // onJobCreated: (jobId) => {
+      //   const jobIdEncoded = encodeURIComponent(buildInboxIdFromJobId(jobId));
+      //   navigate(`/inboxes/${jobIdEncoded}`);
+      // },
     });
 
     chatForm.reset();
@@ -647,7 +634,6 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
       select: (data) => data.slice(0, 3),
     },
   );
-  const queryClient = useQueryClient();
 
   const { getRootProps: getRootFileProps, getInputProps: getInputFileProps } =
     useDropzone({
@@ -664,54 +650,6 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
 
   const { mutateAsync: sendMessageToInbox } = useSendMessageToInbox();
   const { mutateAsync: sendMessageToJob } = useSendMessageToJob({
-    onMutate: async (variables) => {
-      const queryKey = [
-        FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
-        {
-          inboxId,
-        },
-      ];
-      await queryClient.cancelQueries({
-        queryKey: queryKey,
-      });
-
-      const snapshot = queryClient.getQueryData(queryKey) as ReturnType<
-        typeof useGetChatConversationWithPagination
-      >;
-
-      queryClient.setQueryData(
-        queryKey,
-        (old: ChatConversationInfiniteData) => {
-          const newMessages = [
-            generateOptimisticUserMessage(
-              variables.message,
-              (variables.files ?? []).map((file) => ({
-                name: file.name,
-                id: file.name,
-                size: file.size,
-                type: 'file',
-                preview: URL.createObjectURL(file),
-                file,
-              })),
-              variables.workflowName,
-            ),
-            generateOptimisticAssistantMessage(),
-          ];
-
-          return {
-            ...old,
-            pages: [
-              ...old.pages.slice(0, -1),
-              [...(old.pages.at(-1) || []), ...newMessages],
-            ],
-          };
-        },
-      );
-
-      return () => {
-        queryClient.setQueryData(queryKey, snapshot);
-      };
-    },
     onSuccess: (_, variables) => {
       if (variables.files && variables.files.length > 0) {
         captureAnalyticEvent('AI Chat with Files', {
@@ -721,20 +659,9 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
         captureAnalyticEvent('AI Chat', undefined);
       }
     },
-    onError: (error, _, rollback) => {
+    onError: (error) => {
       toast.error('Failed to send message', {
         description: error.message,
-      });
-      // @ts-expect-error react query
-      rollback?.();
-      const queryKey = [
-        FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
-        {
-          inboxId,
-        },
-      ];
-      queryClient.invalidateQueries({
-        queryKey: queryKey,
       });
     },
   });

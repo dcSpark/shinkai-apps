@@ -3,7 +3,11 @@ import {
   WsMessage,
 } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import { ShinkaiMessageBuilderWrapper } from '@shinkai_network/shinkai-message-ts/wasm/ShinkaiMessageBuilderWrapper';
-import { FunctionKeyV2 } from '@shinkai_network/shinkai-node-state/v2/constants';
+import {
+  FunctionKeyV2,
+  generateOptimisticAssistantMessage,
+  OPTIMISTIC_ASSISTANT_MESSAGE_ID,
+} from '@shinkai_network/shinkai-node-state/v2/constants';
 import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { useQueryClient } from '@tanstack/react-query';
 import { produce } from 'immer';
@@ -13,7 +17,6 @@ import useWebSocket from 'react-use-websocket';
 import { create } from 'zustand';
 
 import { useAuth } from '../../store/auth';
-import { OPTIMISTIC_ASSISTANT_MESSAGE_ID } from './constants';
 import { useToolsStore } from './context/tools-context';
 
 type UseWebSocketMessage = {
@@ -144,12 +147,52 @@ export const useWebSocketMessage = ({
   );
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled || !auth) return;
     if (lastMessage?.data) {
       try {
         const parseData: WsMessage = JSON.parse(lastMessage.data);
-        if (parseData.message_type !== 'Stream' || parseData.inbox !== inboxId)
+        if (parseData.inbox !== inboxId) return;
+
+        if (
+          parseData.message_type === 'ShinkaiMessage' &&
+          parseData.message &&
+          JSON.parse(parseData.message)?.external_metadata.sender ===
+            auth.shinkai_identity &&
+          JSON.parse(parseData.message)?.body.unencrypted.internal_metadata
+            .sender_subidentity === auth.profile
+        ) {
+          queryClient.setQueryData(
+            queryKey,
+            produce((draft: ChatConversationInfiniteData) => {
+              const newMessages = [generateOptimisticAssistantMessage()];
+
+              if (draft.pages.length > 0) {
+                // Assuming draft.pages is always an array (should be, according to the original code)
+                draft.pages[draft.pages.length - 1] =
+                  draft.pages[draft.pages.length - 1].concat(newMessages);
+              } else {
+                // If for some reason the pages array is empty, start with a new array containing only the new messages
+                draft.pages.push(newMessages);
+              }
+            }),
+          );
           return;
+        }
+
+        if (
+          parseData.message_type === 'ShinkaiMessage' &&
+          parseData.message &&
+          (JSON.parse(parseData.message)?.external_metadata.sender !==
+            auth.shinkai_identity ||
+            JSON.parse(parseData.message)?.body.unencrypted.internal_metadata
+              .sender_subidentity !== auth.profile) &&
+          isStreamingFinished.current
+        ) {
+          queryClient.invalidateQueries({ queryKey: queryKey });
+          return;
+        }
+
+        if (parseData.message_type !== 'Stream') return;
         isStreamingFinished.current = false;
 
         if (parseData.metadata?.is_done === true) {

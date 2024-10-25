@@ -4,7 +4,10 @@ import {
   extractJobIdFromInbox,
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
-import { FunctionKeyV2 } from '@shinkai_network/shinkai-node-state/v2/constants';
+import {
+  FunctionKeyV2,
+  generateOptimisticAssistantMessage,
+} from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useRetryMessage } from '@shinkai_network/shinkai-node-state/v2/mutations/retryMessage/useRetryMessage';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
@@ -18,10 +21,7 @@ import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import {
-  generateOptimisticAssistantMessage,
-  streamingSupportedModels,
-} from '../../components/chat/constants';
+import { streamingSupportedModels } from '../../components/chat/constants';
 import ConversationFooter from '../../components/chat/conversation-footer';
 import ConversationHeader from '../../components/chat/conversation-header';
 import MessageExtra from '../../components/chat/message-extra';
@@ -72,19 +72,22 @@ export const useOptimisticAssistantMessageHandler = ({
   });
 
   useEffect(() => {
-    if (isChatConversationSuccess && data.content.length === 1) {
+    if (
+      isChatConversationSuccess &&
+      data.content.length === 1 &&
+      data.content.at(-1)?.role === 'user'
+    ) {
       const queryKey = [
         FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
         { inboxId },
       ];
-      // queryClient.cancelQueries({ queryKey });
+
+      queryClient.cancelQueries({ queryKey });
       queryClient.setQueryData(
         queryKey,
         produce((draft: ChatConversationInfiniteData | undefined) => {
-          if (!draft) return;
-          draft.pages[draft.pages.length - 1].push(
-            generateOptimisticAssistantMessage(),
-          );
+          if (!draft?.pages?.[0]) return;
+          draft?.pages?.at(-1)?.push(generateOptimisticAssistantMessage());
         }),
       );
     }
@@ -106,9 +109,13 @@ const ChatConversation = () => {
   const { captureAnalyticEvent } = useAnalytics();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = decodeURIComponent(encodedInboxId);
+  useWebSocketMessage({ inboxId, enabled: true });
+  useWebSocketTools({ inboxId, enabled: true });
+
   const auth = useAuth((state) => state.auth);
 
   const currentInbox = useGetCurrentInbox();
@@ -124,9 +131,6 @@ const ChatConversation = () => {
   } = useOptimisticAssistantMessageHandler({
     inboxId,
   });
-
-  useWebSocketMessage({ inboxId, enabled: true });
-  useWebSocketTools({ inboxId, enabled: true });
 
   useEffect(() => {
     if (isError) {
@@ -144,6 +148,9 @@ const ChatConversation = () => {
   const { mutateAsync: sendMessageToJob } = useSendMessageToJob({
     onSuccess: () => {
       captureAnalyticEvent('AI Chat', undefined);
+      queryClient.invalidateQueries({
+        queryKey: [FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION, { inboxId }],
+      });
     },
   });
 
