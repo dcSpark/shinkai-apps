@@ -1,4 +1,3 @@
-import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import {
   useMutation,
   type UseMutationOptions,

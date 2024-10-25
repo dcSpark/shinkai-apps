@@ -153,7 +153,7 @@ function QuickAsk() {
         files: [],
       });
     },
-    onError: (error, _) => {
+    onError: (error) => {
       toast.error('Failed to send message', {
         description: error?.response?.data?.message ?? error.message,
       });

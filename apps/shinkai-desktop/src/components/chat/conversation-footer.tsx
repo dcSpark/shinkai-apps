@@ -253,9 +253,9 @@ function ConversationEmptyFooter() {
     name: 'files',
   });
   const { mutateAsync: createJob, isPending } = useCreateJob({
-    onError: (error, _) => {
+    onError: (error) => {
       toast.error('Failed to send message', {
-        description: error.message,
+        description: error.response?.data?.message ?? error.message,
       });
     },
     onSuccess: async (data, variables) => {

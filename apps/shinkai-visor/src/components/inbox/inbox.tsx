@@ -8,8 +8,6 @@ import {
 } from '@shinkai_network/shinkai-message-ts/utils';
 import { ShinkaiMessageBuilderWrapper } from '@shinkai_network/shinkai-message-ts/wasm/ShinkaiMessageBuilderWrapper';
 import {
-  ChatMessageFormSchema,
-  chatMessageFormSchema,
   ChatMessageFormSchemaWithOneFile,
   chatMessageFormSchemaWithOneFile,
 } from '@shinkai_network/shinkai-node-state/forms/chat/chat-message';
