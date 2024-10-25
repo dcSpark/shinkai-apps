@@ -21,9 +21,10 @@ import {
   Input,
   MessageList,
 } from '@shinkai_network/shinkai-ui';
+import { SendIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useQueryClient } from '@tanstack/react-query';
-import { SendIcon, XIcon } from 'lucide-react';
+import { XIcon } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';

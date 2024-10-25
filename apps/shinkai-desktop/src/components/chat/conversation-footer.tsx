@@ -46,6 +46,7 @@ import {
 import {
   fileIconMap,
   FileTypeIcon,
+  SendIcon,
   WorkflowPlaygroundIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { getFileExt } from '@shinkai_network/shinkai-ui/helpers';
@@ -54,7 +55,7 @@ import { useDebounce } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { partial } from 'filesize';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Paperclip, SendIcon, X, XIcon } from 'lucide-react';
+import { Paperclip, X, XIcon } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm, useWatch } from 'react-hook-form';
