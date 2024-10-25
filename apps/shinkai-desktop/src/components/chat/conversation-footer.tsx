@@ -407,8 +407,11 @@ function ConversationEmptyFooter() {
                             </span>
                           )}
                           <Button
-                            className="hover:bg-app-gradient h-[40px] w-[40px] rounded-xl bg-gray-500 p-3 disabled:cursor-not-allowed"
-                            disabled={isPending}
+                            className={cn(
+                              'hover:bg-app-gradient h-[40px] w-[40px] cursor-pointer rounded-xl bg-gray-500 p-3 transition-colors',
+                              'disabled:text-gray-80 disabled:pointer-events-none disabled:cursor-not-allowed disabled:border disabled:border-gray-200 disabled:bg-gray-300 hover:disabled:bg-gray-300',
+                            )}
+                            disabled={isPending || !chatForm.watch('message')}
                             onClick={chatForm.handleSubmit(onSubmit)}
                             size="icon"
                             variant="tertiary"
@@ -806,8 +809,13 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                             </span>
                           )}
                           <Button
-                            className="hover:bg-app-gradient h-[40px] w-[40px] rounded-xl bg-gray-500 p-3 disabled:cursor-not-allowed"
-                            disabled={isLoadingMessage}
+                            className={cn(
+                              'hover:bg-app-gradient h-[40px] w-[40px] cursor-pointer rounded-xl bg-gray-500 p-3 transition-colors',
+                              'disabled:text-gray-80 disabled:pointer-events-none disabled:cursor-not-allowed disabled:border disabled:border-gray-200 disabled:bg-gray-300 hover:disabled:bg-gray-300',
+                            )}
+                            disabled={
+                              isLoadingMessage || !chatForm.watch('message')
+                            }
                             onClick={chatForm.handleSubmit(onSubmit)}
                             size="icon"
                             variant="tertiary"
