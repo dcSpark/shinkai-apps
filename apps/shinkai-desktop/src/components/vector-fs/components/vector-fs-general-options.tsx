@@ -224,7 +224,7 @@ export const UploadVRFilesAction = () => {
                       <FileUploader
                         accept={allowedFileExtensions.join(',')}
                         allowMultiple
-                        descriptionText="Supports pdf, md, txt"
+                        descriptionText={`Supports ${allowedFileExtensions.join(', ')} `}
                         onChange={(acceptedFiles) => {
                           field.onChange(acceptedFiles);
                         }}

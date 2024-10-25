@@ -63,6 +63,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
+import { allowedFileExtensions } from '../../lib/constants';
 import { useAnalytics } from '../../lib/posthog-provider';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
@@ -382,7 +383,8 @@ function ConversationEmptyFooter() {
                             </TooltipTrigger>
                             <TooltipPortal>
                               <TooltipContent align="center" side="top">
-                                {t('common.uploadFile')}
+                                {t('common.uploadFile')} <br />
+                                {allowedFileExtensions.join(', ')}
                               </TooltipContent>
                             </TooltipPortal>
                           </Tooltip>
@@ -784,6 +786,8 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                             <TooltipPortal>
                               <TooltipContent align="center" side="top">
                                 {t('common.uploadFile')}
+                                <br />
+                                {allowedFileExtensions.join(', ')}
                               </TooltipContent>
                             </TooltipPortal>
                           </Tooltip>
