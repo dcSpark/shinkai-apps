@@ -411,7 +411,11 @@ export const Inbox = () => {
 
   const isLoadingMessage = useMemo(() => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
-    return isJobInbox(inboxId) && lastMessage?.role === 'user';
+    return (
+      !!inboxId &&
+      lastMessage?.role === 'assistant' &&
+      lastMessage?.status.type === 'running'
+    );
   }, [data?.pages, inboxId]);
 
   useEffect(() => {

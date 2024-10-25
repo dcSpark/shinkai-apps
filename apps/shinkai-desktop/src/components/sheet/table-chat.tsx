@@ -105,8 +105,12 @@ export default function ChatTable() {
 
   const isLoadingMessage = useMemo(() => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
-    return lastMessage?.role === 'user';
-  }, [data?.pages]);
+    return (
+      !!chatInboxId &&
+      lastMessage?.role === 'assistant' &&
+      lastMessage?.status.type === 'running'
+    );
+  }, [data?.pages, chatInboxId]);
 
   const onSubmit = async (data: CreateJobFormSchema) => {
     if (!sheetId || !auth) return;

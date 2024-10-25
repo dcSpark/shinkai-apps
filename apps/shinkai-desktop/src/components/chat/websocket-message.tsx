@@ -99,7 +99,13 @@ const createSmoothMessage = (params: {
   };
 };
 
-export const useWebSocketMessage = ({
+/*
+ Note: Adding smooth animation is way slower than the original implementation and
+  websockets will still send the rest of text chunks when stop generating which will
+  cause weird behavior in the UI.
+ */
+
+export const useWebSocketMessageSmooth = ({
   enabled,
   inboxId: defaultInboxId,
 }: UseWebSocketMessage) => {
@@ -126,7 +132,6 @@ export const useWebSocketMessage = ({
     createSmoothMessage({
       onTextUpdate: (_, text) => {
         if (isStreamingFinished.current) return;
-
         queryClient.setQueryData(
           queryKey,
           produce((draft: ChatConversationInfiniteData | undefined) => {
@@ -152,7 +157,6 @@ export const useWebSocketMessage = ({
       try {
         const parseData: WsMessage = JSON.parse(lastMessage.data);
         if (parseData.inbox !== inboxId) return;
-
         if (
           parseData.message_type === 'ShinkaiMessage' &&
           parseData.message &&
@@ -165,13 +169,10 @@ export const useWebSocketMessage = ({
             queryKey,
             produce((draft: ChatConversationInfiniteData) => {
               const newMessages = [generateOptimisticAssistantMessage()];
-
               if (draft.pages.length > 0) {
-                // Assuming draft.pages is always an array (should be, according to the original code)
                 draft.pages[draft.pages.length - 1] =
                   draft.pages[draft.pages.length - 1].concat(newMessages);
               } else {
-                // If for some reason the pages array is empty, start with a new array containing only the new messages
                 draft.pages.push(newMessages);
               }
             }),
@@ -185,8 +186,7 @@ export const useWebSocketMessage = ({
           (JSON.parse(parseData.message)?.external_metadata.sender !==
             auth.shinkai_identity ||
             JSON.parse(parseData.message)?.body.unencrypted.internal_metadata
-              .sender_subidentity !== auth.profile) &&
-          isStreamingFinished.current
+              .sender_subidentity !== auth.profile)
         ) {
           queryClient.invalidateQueries({ queryKey: queryKey });
           return;
@@ -214,6 +214,137 @@ export const useWebSocketMessage = ({
       }
     }
   }, [enabled, inboxId, lastMessage?.data, queryClient, queryKey]);
+
+  useEffect(() => {
+    if (!enabled) return;
+    const wsMessage = {
+      subscriptions: [{ topic: 'inbox', subtopic: inboxId }],
+      unsubscriptions: [],
+    };
+    const wsMessageString = JSON.stringify(wsMessage);
+    const shinkaiMessage = ShinkaiMessageBuilderWrapper.ws_connection(
+      wsMessageString,
+      auth?.profile_encryption_sk ?? '',
+      auth?.profile_identity_sk ?? '',
+      auth?.node_encryption_pk ?? '',
+      auth?.shinkai_identity ?? '',
+      auth?.profile ?? '',
+      auth?.shinkai_identity ?? '',
+      '',
+    );
+    sendMessage(shinkaiMessage);
+  }, [
+    auth?.node_encryption_pk,
+    auth?.profile,
+    auth?.profile_encryption_sk,
+    auth?.profile_identity_sk,
+    auth?.shinkai_identity,
+    enabled,
+    inboxId,
+    sendMessage,
+  ]);
+
+  return {
+    readyState,
+  };
+};
+
+export const useWebSocketMessage = ({
+  enabled,
+  inboxId: defaultInboxId,
+}: UseWebSocketMessage) => {
+  const auth = useAuth((state) => state.auth);
+  const nodeAddressUrl = new URL(auth?.node_address ?? 'http://localhost:9850');
+  const socketUrl = `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`;
+  const queryClient = useQueryClient();
+
+  const { sendMessage, lastMessage, readyState } = useWebSocket(
+    socketUrl,
+    { share: true },
+    enabled,
+  );
+  const { inboxId: encodedInboxId = '' } = useParams();
+  const inboxId = defaultInboxId || decodeURIComponent(encodedInboxId);
+
+  const queryKey = useMemo(() => {
+    return [FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION, { inboxId }];
+  }, [inboxId]);
+
+  useEffect(() => {
+    if (!enabled || !auth) return;
+    if (lastMessage?.data) {
+      try {
+        const parseData: WsMessage = JSON.parse(lastMessage.data);
+        if (parseData.inbox !== inboxId) return;
+        if (
+          parseData.message_type === 'ShinkaiMessage' &&
+          parseData.message &&
+          JSON.parse(parseData.message)?.external_metadata.sender ===
+            auth.shinkai_identity &&
+          JSON.parse(parseData.message)?.body.unencrypted.internal_metadata
+            .sender_subidentity === auth.profile
+        ) {
+          queryClient.setQueryData(
+            queryKey,
+            produce((draft: ChatConversationInfiniteData) => {
+              const newMessages = [generateOptimisticAssistantMessage()];
+              if (draft.pages.length > 0) {
+                draft.pages[draft.pages.length - 1] =
+                  draft.pages[draft.pages.length - 1].concat(newMessages);
+              } else {
+                draft.pages.push(newMessages);
+              }
+            }),
+          );
+          return;
+        }
+
+        if (
+          parseData.message_type === 'ShinkaiMessage' &&
+          parseData.message &&
+          (JSON.parse(parseData.message)?.external_metadata.sender !==
+            auth.shinkai_identity ||
+            JSON.parse(parseData.message)?.body.unencrypted.internal_metadata
+              .sender_subidentity !== auth.profile)
+        ) {
+          queryClient.invalidateQueries({ queryKey: queryKey });
+          return;
+        }
+
+        if (parseData.message_type !== 'Stream') return;
+        queryClient.setQueryData(
+          queryKey,
+          produce((draft: ChatConversationInfiniteData | undefined) => {
+            if (!draft?.pages?.[0]) return;
+            const lastMessage = draft.pages.at(-1)?.at(-1);
+            if (
+              lastMessage &&
+              lastMessage.messageId === OPTIMISTIC_ASSISTANT_MESSAGE_ID &&
+              lastMessage.role === 'assistant' &&
+              lastMessage.status?.type === 'running'
+            ) {
+              lastMessage.content += parseData.message;
+            }
+          }),
+        );
+
+        if (parseData.metadata?.is_done === true) {
+          queryClient.invalidateQueries({ queryKey: queryKey });
+          return;
+        }
+      } catch (error) {
+        console.error('Failed to parse ws message', error);
+      }
+    }
+  }, [
+    auth?.shinkai_identity,
+    auth?.profile,
+    enabled,
+    inboxId,
+    lastMessage?.data,
+    queryClient,
+    queryKey,
+  ]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -284,7 +415,6 @@ export const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
             { inboxId: inboxId as string },
           ];
           queryClient.invalidateQueries({ queryKey: paginationKey });
-
           return;
         }
         if (
@@ -323,9 +453,9 @@ export const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
 
                 lastMessage.content =
                   tool.status.type_ === 'Running'
-                    ? '...'
+                    ? 'Processing'
                     : tool.status.type_ === 'Complete'
-                      ? 'Getting AI response ...'
+                      ? 'Getting AI response'
                       : '';
               }
             }),

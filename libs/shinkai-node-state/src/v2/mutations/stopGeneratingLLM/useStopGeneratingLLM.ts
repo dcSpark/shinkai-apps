@@ -24,12 +24,8 @@ export const useStopGeneratingLLM = (options?: Options) => {
       queryClient.invalidateQueries({
         queryKey: [FunctionKeyV2.GET_CHAT_CONFIG],
       });
-      queryClient.invalidateQueries({
-        queryKey: [
-          FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
-          { inboxId: buildInboxIdFromJobId(variables.jobId) },
-        ],
-      });
+
+      // Invalidate the chat conversation query using ws
 
       if (options?.onSuccess) {
         options.onSuccess(response, variables, context);
