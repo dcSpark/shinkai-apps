@@ -35,8 +35,10 @@ import { useAuth } from '../../store/auth';
 
 export const useOptimisticAssistantMessageHandler = ({
   inboxId,
+  forceRefetchInterval,
 }: {
   inboxId: string;
+  forceRefetchInterval?: boolean;
 }) => {
   const queryClient = useQueryClient();
   const auth = useAuth((state) => state.auth);
@@ -92,6 +94,19 @@ export const useOptimisticAssistantMessageHandler = ({
       );
     }
   }, [data?.content?.length, inboxId, isChatConversationSuccess, queryClient]);
+
+  useEffect(() => {
+    if (forceRefetchInterval) {
+      setTimeout(() => {
+        queryClient.invalidateQueries({
+          queryKey: [
+            FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
+            { inboxId },
+          ],
+        });
+      }, 5000);
+    }
+  }, [forceRefetchInterval, inboxId, queryClient]);
 
   return {
     data,

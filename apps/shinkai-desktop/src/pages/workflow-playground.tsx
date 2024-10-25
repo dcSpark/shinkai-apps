@@ -96,7 +96,10 @@ function PlaygroundPreviewWithInbox({ inboxId }: { inboxId: string }) {
     currentInbox?.agent?.model.split(':')?.[0] as Models,
   );
 
-  const { data } = useOptimisticAssistantMessageHandler({ inboxId });
+  const { data } = useOptimisticAssistantMessageHandler({
+    inboxId,
+    forceRefetchInterval: true,
+  });
 
   const lastMessage = data?.pages?.at(-1)?.at(-1);
 
@@ -135,6 +138,11 @@ function PlaygroundPreviewWithInbox({ inboxId }: { inboxId: string }) {
         {lastMessage?.role === 'assistant' &&
           lastMessage?.status.type === 'running' &&
           lastMessage?.content === '' && <DotsLoader className="pl-1 pt-1" />}
+        {lastMessage?.role === 'assistant' &&
+          lastMessage?.status.type === 'complete' &&
+          lastMessage?.content === '' && (
+            <span className="text-xs"> No output</span>
+          )}
         {lastMessage?.role === 'assistant' && (
           <MarkdownPreview
             className={cn(
