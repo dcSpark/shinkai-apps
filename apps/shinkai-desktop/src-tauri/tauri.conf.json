@@ -42,7 +42,7 @@
   "app": {
     "withGlobalTauri": false,
     "security": {
-      "csp": null
+      "csp": "default-src 'self' https://2-19-8-sandpack.codesandbox.io"
     },
     "windows": [
       {

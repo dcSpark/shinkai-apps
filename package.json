@@ -9,6 +9,8 @@
     "postinstall": "npx patch-package"
   },
   "dependencies": {
+    "@babel/standalone": "^7.26.1",
+    "@codesandbox/sandpack-react": "^2.19.9",
     "@dnd-kit/core": "^6.1.0",
     "@dnd-kit/modifiers": "^7.0.0",
     "@dnd-kit/utilities": "^3.2.2",
@@ -93,6 +95,7 @@
     "react-qrcode-logo": "^3.0.0",
     "react-resizable-panels": "^2.1.0",
     "react-router-dom": "^6.23.1",
+    "react-syntax-highlighter": "^15.6.1",
     "react-use-websocket": "^4.8.1",
     "react-virtualized-auto-sizer": "^1.0.24",
     "rehype-rewrite": "^4.0.2",

@@ -1,3 +1,9 @@
+import {
+  SandpackCodeEditor,
+  SandpackLayout,
+  SandpackPreview,
+  SandpackProvider,
+} from '@codesandbox/sandpack-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
@@ -40,10 +46,19 @@ import {
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Edit3, Trash2Icon } from 'lucide-react';
-import { memo, useEffect, useRef, useState } from 'react';
+import { Edit3 ,Trash2Icon } from 'lucide-react';
+import React, {
+  IframeHTMLAttributes,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  memo
+} from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, Outlet, useMatch, useNavigate } from 'react-router-dom';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { solarizedlight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { toast } from 'sonner';
 
 import { useSetJobScope } from '../../components/chat/context/set-job-scope-context';
@@ -52,6 +67,7 @@ import { useWorkflowSelectionStore } from '../../components/workflow/context/wor
 import { handleSendNotification } from '../../lib/notifications';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
+import { reactDomScript, reactScript } from './react-script';
 
 const InboxNameInput = ({
   closeEditable,
@@ -506,3 +522,87 @@ const ChatLayout = () => {
 };
 
 export default ChatLayout;
+
+export const ArtifactsPreview = () => {
+  const [code, setCode] = useState(`
+    <h1>Hello from JSX in Iframe!</h1>
+  `);
+
+  // const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  //
+  // useEffect(() => {
+  //   console.dir(iframeRef, 'iframeRef');
+  //   const doc = iframeRef?.current?.contentWindow?.document;
+  //
+  //   if (!doc) return;
+  //   doc.open();
+  //   doc.write(`
+  //     <!DOCTYPE html>
+  //     <html>
+  //       <head>
+  //         <title>JSX Code Preview</title>
+  //       </head>
+  //       <body>
+  //         <div id="root"></div>
+  //         <script>
+  //           ${Babel.transform(code, { presets: ['react'] }).code}
+  //         </script>
+  //       </body>
+  //     </html>
+  //   `);
+  //   doc.close();
+  // }, [code]);
+
+  // if (!artifact) return null;
+  // return;
+  return (
+    <div
+      className={
+        'flex flex-grow basis-full justify-stretch p-3 transition-[width]'
+      }
+    >
+      <div className="h-full w-full overflow-hidden rounded-lg border">
+        <Tabs className="h-full" defaultValue="source">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="source">Source Code</TabsTrigger>
+            <TabsTrigger value="preview">Preview</TabsTrigger>
+          </TabsList>
+          <TabsContent
+            className="h-full overflow-y-scroll whitespace-pre-line break-words px-4 py-2 font-mono"
+            value="source"
+          >
+            {/*<SyntaxHighlighter language="jsx" style={solarizedlight}>*/}
+            {/*  {code}*/}
+            {/*</SyntaxHighlighter>*/}
+            {/*<iframe*/}
+            {/*  ref={iframeRef}*/}
+            {/*  style={{*/}
+            {/*    width: '100%',*/}
+            {/*    height: '300px',*/}
+            {/*    border: '1px solid #ccc',*/}
+            {/*  }}*/}
+            {/*  title="JSX Iframe"*/}
+            {/*/>*/}
+            {/*// csp issues and cors */}
+            <SandpackProvider
+              className="flex h-full w-full grow flex-col justify-center"
+              files={{
+                'App.jsx': code,
+              }}
+              template="react"
+              theme="auto"
+            >
+              <SandpackLayout>
+                <SandpackCodeEditor />
+                <SandpackPreview className="flex h-full w-full grow flex-col justify-center p-4 md:pt-16" />
+              </SandpackLayout>
+            </SandpackProvider>
+          </TabsContent>
+          <TabsContent className="h-full flex-grow px-4 py-2" value="preview">
+            {/*{artifact && <iframe className="w-full h-full" srcDoc={artifact} />}*/}
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
+};
