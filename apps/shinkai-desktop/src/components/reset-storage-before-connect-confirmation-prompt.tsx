@@ -96,6 +96,7 @@ export const ResetStorageBeforeConnectConfirmationPrompt = ({
           {/*</Button>*/}
           <Button
             className="min-w-32 text-sm"
+            disabled={isResetLoading}
             onClick={() => cancel()}
             size="sm"
             variant={'outline'}
