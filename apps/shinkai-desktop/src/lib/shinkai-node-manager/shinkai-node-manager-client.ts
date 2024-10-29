@@ -81,6 +81,7 @@ export const useShinkaiNodeSpawnMutation = (options?: UseMutationOptions) => {
     mutationFn: () => {
       return invoke('shinkai_node_spawn');
     },
+    ...options,
     onSuccess: (...onSuccessParameters) => {
       queryClient.invalidateQueries({
         queryKey: ['shinkai_node_is_running'],
@@ -89,7 +90,6 @@ export const useShinkaiNodeSpawnMutation = (options?: UseMutationOptions) => {
         options.onSuccess(...onSuccessParameters);
       }
     },
-    ...options,
   });
   return { ...response };
 };
@@ -100,6 +100,7 @@ export const useShinkaiNodeKillMutation = (options?: UseMutationOptions) => {
     mutationFn: async (): Promise<void> => {
       return invoke('shinkai_node_kill');
     },
+    ...options,
     onSuccess: (...onSuccessParameters) => {
       queryClient.invalidateQueries({
         queryKey: ['shinkai_node_is_running'],
@@ -108,7 +109,6 @@ export const useShinkaiNodeKillMutation = (options?: UseMutationOptions) => {
         options.onSuccess(...onSuccessParameters);
       }
     },
-    ...options,
   });
   return { ...response };
 };
@@ -153,6 +153,7 @@ export const useShinkaiNodeSetOptionsMutation = (
         options: shinkaiNodeOptions,
       });
     },
+    ...options,
     onSuccess: (...onSuccessParameters) => {
       queryClient.invalidateQueries({
         queryKey: ['shinkai_node_get_options'],
@@ -161,7 +162,6 @@ export const useShinkaiNodeSetOptionsMutation = (
         options.onSuccess(...onSuccessParameters);
       }
     },
-    ...options,
   });
   return { ...response };
 };
@@ -174,6 +174,7 @@ export const useShinkaiNodeSetDefaultOptionsMutation = (
     mutationFn: (): Promise<ShinkaiNodeOptions> => {
       return invoke('shinkai_node_set_default_options', {});
     },
+    ...options,
     onSuccess: (...onSuccessParameters) => {
       queryClient.invalidateQueries({
         queryKey: ['shinkai_node_set_default_options'],
@@ -182,7 +183,6 @@ export const useShinkaiNodeSetDefaultOptionsMutation = (
         options.onSuccess(...onSuccessParameters);
       }
     },
-    ...options,
   });
   return { ...response };
 };
@@ -194,6 +194,7 @@ export const useShinkaiNodeRespawnMutation = (options?: UseMutationOptions) => {
       await invoke('shinkai_node_kill');
       await relaunch();
     },
+    ...options,
     onSuccess: (...onSuccessParameters) => {
       queryClient.invalidateQueries({
         queryKey: ['shinkai_node_is_running'],
@@ -202,7 +203,6 @@ export const useShinkaiNodeRespawnMutation = (options?: UseMutationOptions) => {
         options.onSuccess(...onSuccessParameters);
       }
     },
-    ...options,
   });
   return { ...response };
 };

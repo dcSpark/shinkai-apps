@@ -24,6 +24,10 @@ pub fn recreate_window(app_handle: AppHandle, window_name: Window, focus: bool) 
     if let Some(window) = app_handle.get_webview_window(label) {
         log::info!("window {} found, bringing to front", label);
         if focus {
+            log::info!("focusing window {}", label);
+            if window.is_minimized().unwrap_or_default() {
+                let _ = window.unminimize();
+            }
             window.show().unwrap();
             window.center().unwrap();
             let _ = window.set_focus();

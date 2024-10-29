@@ -1,7 +1,7 @@
 use tauri::{
     menu::{MenuBuilder, MenuItemBuilder, SubmenuBuilder},
-    tray::TrayIconBuilder,
-    Manager, Runtime,
+    tray::{MouseButton, TrayIconBuilder, TrayIconEvent},
+    Manager,
 };
 
 use crate::{
@@ -35,6 +35,16 @@ pub fn create_tray(app: &tauri::AppHandle) -> tauri::Result<()> {
     let _ = TrayIconBuilder::with_id("tray")
         .icon(icon)
         .icon_as_template(is_template)
+        .on_tray_icon_event(|tray, event| {
+            if cfg!(target_os = "windows") {
+                if let TrayIconEvent::Click { button, .. } = event {
+                    if button == MouseButton::Left {
+                        recreate_window(tray.app_handle().clone(), Window::Main, true);
+                    }
+                }
+            }
+        })
+        .menu_on_left_click(!cfg!(target_os = "windows"))
         .menu(&menu)
         .on_menu_event(move |tray, event| match event.id().as_ref() {
             "show" => {

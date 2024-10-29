@@ -21,7 +21,11 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import { ResetStorageBeforeConnectConfirmationPrompt } from '../components/reset-storage-before-connect-confirmation-prompt';
 import config from '../config';
-import { useShinkaiNodeSpawnMutation } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
+import {
+  useShinkaiNodeKillMutation,
+  useShinkaiNodeRemoveStorageMutation,
+  useShinkaiNodeSpawnMutation,
+} from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { ShinkaiNodeManagerEvent } from '../lib/shinkai-node-manager/shinkai-node-manager-client-types';
 import { useShinkaiNodeEventsToast } from '../lib/shinkai-node-manager/shinkai-node-manager-hooks';
 import { useAuth } from '../store/auth';
@@ -51,36 +55,36 @@ const GetStartedPage = () => {
     },
   });
 
-  const { mutateAsync: submitRegistrationNoCode } = useSubmitRegistrationNoCode(
-    {
-      onSuccess: (response, setupPayload) => {
-        if (response.status !== 'success') {
-          shinkaiNodeKill();
-        }
-        if (response.status === 'success' && encryptionKeys) {
-          const updatedSetupData = {
-            ...encryptionKeys,
-            ...setupPayload,
-            permission_type: '',
-            shinkai_identity:
-              setupDataForm.getValues().shinkai_identity ||
-              (response.data?.node_name ?? ''),
-            node_signature_pk: response.data?.identity_public_key ?? '',
-            node_encryption_pk: response.data?.encryption_public_key ?? '',
-            api_v2_key: response.data?.api_v2_key ?? '',
-          };
-          setAuth(updatedSetupData);
-          // Hide http subscription for now
-          // navigate('/connect-ai');
-          navigate('/ai-model-installation');
-        } else if (response.status === 'non-pristine') {
-          setResetStorageBeforeConnectConfirmationPrompt(true);
-        } else {
-          submitRegistrationNoCodeError();
-        }
-      },
+  const {
+    mutateAsync: submitRegistrationNoCode,
+    isPending: submitRegistrationNodeCodeIsPending,
+  } = useSubmitRegistrationNoCode({
+    onSuccess: (response, setupPayload) => {
+      if (response.status === 'success' && encryptionKeys) {
+        const updatedSetupData = {
+          ...encryptionKeys,
+          ...setupPayload,
+          permission_type: '',
+          shinkai_identity:
+            setupDataForm.getValues().shinkai_identity ||
+            (response.data?.node_name ?? ''),
+          node_signature_pk: response.data?.identity_public_key ?? '',
+          node_encryption_pk: response.data?.encryption_public_key ?? '',
+          api_v2_key: response.data?.api_v2_key ?? '',
+        };
+        setAuth(updatedSetupData);
+        // Hide http subscription for now
+        // navigate('/connect-ai');
+        navigate('/ai-model-installation');
+      } else if (response.status === 'non-pristine') {
+        setResetStorageBeforeConnectConfirmationPrompt(true);
+      } else {
+        submitRegistrationNoCodeError();
+      }
     },
-  );
+  });
+  const { isPending: shinkaiNodeRemoveStorageIsPending } =
+    useShinkaiNodeRemoveStorageMutation();
   const {
     isPending: shinkaiNodeSpawnIsPending,
     mutateAsync: shinkaiNodeSpawn,
@@ -89,7 +93,13 @@ const GetStartedPage = () => {
       onSubmit(setupDataForm.getValues());
     },
   });
-  const { mutateAsync: shinkaiNodeKill } = useShinkaiNodeSpawnMutation();
+  const { isPending: shinkaiNodeKillIsPending } = useShinkaiNodeKillMutation();
+
+  const isStartLocalButtonLoading =
+    shinkaiNodeSpawnIsPending ||
+    shinkaiNodeKillIsPending ||
+    shinkaiNodeRemoveStorageIsPending ||
+    submitRegistrationNodeCodeIsPending;
 
   async function onSubmit(currentValues: QuickConnectFormSchema) {
     if (!encryptionKeys) return;
@@ -256,8 +266,8 @@ const GetStartedPage = () => {
           <div className="space-y-4">
             <Button
               className="w-full"
-              disabled={shinkaiNodeSpawnIsPending}
-              isLoading={shinkaiNodeSpawnIsPending}
+              disabled={isStartLocalButtonLoading}
+              isLoading={isStartLocalButtonLoading}
               onClick={() => shinkaiNodeSpawn()}
               size="lg"
             >
