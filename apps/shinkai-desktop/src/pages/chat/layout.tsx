@@ -515,13 +515,67 @@ const ChatLayout = () => {
 };
 
 export default ChatLayout;
+// <!--    import React from "react"-->
+// <!--    const MyComponent = () => <h1 className="bg-red-400 text-gray-100 p-10">Hello from JSX in Iframe!</h1>-->
+// <!--    export default MyComponent-->
 
 export const ArtifactsPreview = () => {
   const [code, setCode] = useState(`
 
-    import React from "react"
-    const MyComponent = () => <h1 className="bg-red-400 text-gray-100 p-10">Hello from JSX in Iframe!</h1>
-    export default MyComponent
+import React, { useState } from 'react';
+
+function App() {
+  const [board, setBoard] = useState([
+    ['', '', ''],
+    ['', '', ''],
+    ['', '', '']
+  ]);
+  const [turn, setTurn] = useState('X');
+
+  const handleclick = (row, col) => {
+    if (board[row][col] !== '') return;
+    const newBoard = [...board];
+    newBoard[row][col] = turn;
+    setBoard(newBoard);
+    setTurn(turn === 'X' ? 'O' : 'X');
+  };
+
+  const handleReset = () => {
+    setBoard([
+      ['', '', ''],
+      ['', '', ''],
+      ['', '', '']
+    ]);
+    setTurn('X');
+  };
+
+  return (
+    <div>
+      <h1>Tic Tac Toe</h1>
+      {board.map((row, rowIndex) => (
+        <div key={rowIndex} className="flex justify-center">
+          {row.map((cell, cellIndex) => (
+            <button
+              key={cellIndex}
+              onClick={() => handleclick(rowIndex, cellIndex)}
+              disabled={board[rowIndex][cellIndex] !== ''}
+             className={\`px-4 py-2 mx-1 my-1 bg-gray-100 border border-gray-500 rounded-lg \${board[rowIndex][cellIndex] === 'X' ? 'bg-red-200 text-red-600' : ''} \${board[rowIndex][cellIndex] === 'O' ? 'bg-blue-200 text-blue-600' : ''}\`}
+
+            >
+              {board[rowIndex][cellIndex]}
+            </button>
+          ))}
+        </div>
+      ))}
+      <p className="text-center">Turn: {turn}</p>
+      <button onClick={handleReset} className="px-4 py-2 my-1 bg-gray-200 border border-gray-500 rounded-lg text-gray-600">
+        Reset
+      </button>
+    </div>
+  );
+}
+
+export default App;
 
   `);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -557,7 +611,7 @@ export const ArtifactsPreview = () => {
   return (
     <div
       className={
-        'flex flex-grow basis-full justify-stretch p-3 transition-[width]'
+        'flex max-w-2xl flex-grow basis-full justify-stretch p-3 transition-[width]'
       }
     >
       <div className="h-full w-full overflow-hidden rounded-lg border">
@@ -590,8 +644,8 @@ export const ArtifactsPreview = () => {
             >
               {code}
             </SyntaxHighlighter>
-
-            {iframeLoaded ? 'loaded framed!' : 'not loaded'}
+          </TabsContent>
+          <TabsContent className="h-full flex-grow px-4 py-2" value="preview">
             <div className="h-full w-full" ref={contentRef}>
               <iframe
                 className="h-full w-full"
@@ -602,9 +656,6 @@ export const ArtifactsPreview = () => {
                 }
               />
             </div>
-          </TabsContent>
-          <TabsContent className="h-full flex-grow px-4 py-2" value="preview">
-            {/*{artifact && <iframe className="w-full h-full" srcDoc={artifact} />}*/}
           </TabsContent>
         </Tabs>
       </div>

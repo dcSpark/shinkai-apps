@@ -9,7 +9,9 @@ import ReactDOM from 'react-dom/client';
 export const getReactComponentFromCode = (code: string) => {
   try {
     const transpiledCode = Babel.transform(code, {
-      presets: ['react'],
+      // presets: ['react'],
+      presets: ['react', 'typescript'],
+      filename: 'file.tsx',
       plugins: [importToVariablePlugin],
     }).code;
 
