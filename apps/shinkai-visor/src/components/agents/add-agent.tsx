@@ -51,6 +51,8 @@ export const getModelObject = (
       return { Groq: { model_type: modelType } };
     case Models.OpenRouter:
       return { OpenRouter: { model_type: modelType } };
+    case Models.Claude:
+      return { Claude: { model_type: modelType } };
     default:
       return { [model]: { model_type: modelType } };
   }

@@ -215,6 +215,8 @@ function getModelString(model: LLMProviderInterface): string {
     return 'openrouter:' + model.OpenRouter.model_type;
   } else if (model?.Exo?.model_type) {
     return 'exo:' + model.Exo.model_type;
+  } else if (model?.Claude?.model_type) {
+    return 'claude:' + model.Claude.model_type;
   } else if (Object.keys(model).length > 0) {
     const customModelProvider = Object.keys(model)[0];
     return `${customModelProvider}:${model[customModelProvider].model_type}`;

@@ -268,6 +268,7 @@ export type AgentAPIModel = {
   Ollama?: Ollama;
   Gemini?: Gemini;
   Exo?: Exo;
+  Claude?: Claude;
 } & {
   [model: string]: ModelType;
 };
@@ -300,6 +301,10 @@ export interface TogetherAI {
 }
 
 export interface Exo {
+  model_type: string;
+}
+
+export interface Claude {
   model_type: string;
 }
 
