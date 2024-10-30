@@ -289,9 +289,6 @@ function RemoveInboxMessageModal({
   const auth = useAuth((state) => state.auth);
   const { t } = useTranslation();
   const { mutateAsync: removeJob, isPending } = useRemoveJob({
-    onSuccess: () => {
-      toast.success('Chat removed successfully');
-    },
     onError: (error) => {
       toast.error('Failed to remove chat', {
         description: error?.response?.data?.message ?? error.message,
