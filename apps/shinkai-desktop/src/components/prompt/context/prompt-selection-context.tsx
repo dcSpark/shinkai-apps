@@ -333,7 +333,7 @@ export function CreatePromptDrawer({
           </button>
         )}
       </DialogTrigger>
-      <DialogContent className="bg-gray-600">
+      <DialogContent className="max-w-2xl bg-gray-600">
         <DialogHeader>
           <DialogTitle>Create custom prompt</DialogTitle>
           <div>
@@ -359,7 +359,7 @@ export function CreatePromptDrawer({
                         <div className="space-y-2">
                           <Textarea
                             autoFocus={true}
-                            className="!min-h-[130px] resize-none text-sm"
+                            className="!min-h-[340px] resize-none text-sm"
                             onKeyDown={(event) => {
                               if (
                                 event.key === 'Enter' &&
@@ -453,7 +453,7 @@ function UpdateWorkflowDrawer({
   };
   return (
     <Dialog onOpenChange={setOpen} open={open}>
-      <DialogContent className="bg-gray-600">
+      <DialogContent className="max-w-2xl bg-gray-600">
         <DialogHeader>
           <DialogTitle>Update Prompt</DialogTitle>
           <div>
@@ -478,7 +478,7 @@ function UpdateWorkflowDrawer({
                       <FormControl>
                         <div className="space-y-2">
                           <Textarea
-                            className="!min-h-[130px] resize-none text-sm"
+                            className="!min-h-[340px] resize-none text-sm"
                             onKeyDown={(event) => {
                               if (
                                 event.key === 'Enter' &&
