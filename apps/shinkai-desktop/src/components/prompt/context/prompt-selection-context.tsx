@@ -28,7 +28,6 @@ import {
   Textarea,
   TextField,
 } from '@shinkai_network/shinkai-ui';
-import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
   Edit3Icon,
@@ -223,22 +222,47 @@ const PromptSearchDrawer = () => {
             {searchQuery &&
               isSearchQuerySynced &&
               searchPromptList?.map((prompt) => (
-                <button
+                <div
                   className={cn(
-                    'flex w-full flex-col gap-1 rounded-sm px-3 py-2 text-left text-sm hover:bg-gray-300',
+                    'group relative flex min-h-[40px] w-full flex-col gap-1 rounded-sm px-3 py-2.5 pr-8 text-left text-sm hover:bg-gray-300',
                   )}
                   key={prompt.name}
                   onClick={() => {
                     setPromptSelected(prompt);
                     setPromptSelectionDrawerOpen(false);
                   }}
-                  type="button"
+                  role="button"
+                  tabIndex={0}
                 >
-                  <span className="text-sm font-medium">
-                    {formatText(prompt.name)}{' '}
-                  </span>
-                  <p className="text-gray-80 text-sm">{prompt.name}</p>
-                </button>
+                  <div className="absolute right-1 top-1 flex translate-x-[150%] items-center gap-0.5 transition duration-200 group-hover:translate-x-0">
+                    <button
+                      className="text-gray-80 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setSelectedPromptEdit(prompt);
+                      }}
+                      type="button"
+                    >
+                      <Edit3Icon className="h-4 w-4" />
+                    </button>
+
+                    <button
+                      className="text-gray-80 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"
+                      onClick={async (event) => {
+                        event.stopPropagation();
+                        await removePrompt({
+                          nodeAddress: auth?.node_address ?? '',
+                          token: auth?.api_v2_key ?? '',
+                          promptName: prompt.name,
+                        });
+                      }}
+                      type="button"
+                    >
+                      <Trash2Icon className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <span className="text-sm">{prompt.name} </span>
+                </div>
               ))}
             {searchQuery &&
               isSearchQuerySynced &&
