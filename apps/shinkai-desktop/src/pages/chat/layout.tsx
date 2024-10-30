@@ -223,50 +223,46 @@ const InboxMessageButtonBase = ({
         {inboxName}
       </span>
       <div className="absolute right-0 rounded-full bg-transparent opacity-0 duration-200 group-hover:bg-gray-300 group-hover:opacity-100">
-        <TooltipProvider delayDuration={0}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                className={cn('justify-self-end bg-transparent')}
-                onClick={() => setIsEditable(true)}
-                size="icon"
-                type="button"
-                variant="tertiary"
-              >
-                <Edit3 className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipPortal>
-              <TooltipContent>
-                <p>{t('common.rename')}</p>
-              </TooltipContent>
-            </TooltipPortal>
-          </Tooltip>
-        </TooltipProvider>
-        <TooltipProvider delayDuration={0}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                className={cn('justify-self-end bg-transparent')}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  setDeleteModalOpen(true);
-                }}
-                size={'icon'}
-                type="button"
-                variant={'tertiary'}
-              >
-                <Trash2Icon className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipPortal>
-              <TooltipContent>
-                <p>Delete</p>
-              </TooltipContent>
-            </TooltipPortal>
-          </Tooltip>
-        </TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              className={cn('justify-self-end bg-transparent')}
+              onClick={() => setIsEditable(true)}
+              size="icon"
+              type="button"
+              variant="tertiary"
+            >
+              <Edit3 className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipPortal>
+            <TooltipContent>
+              <p>{t('common.rename')}</p>
+            </TooltipContent>
+          </TooltipPortal>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              className={cn('justify-self-end bg-transparent')}
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                setDeleteModalOpen(true);
+              }}
+              size={'icon'}
+              type="button"
+              variant={'tertiary'}
+            >
+              <Trash2Icon className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipPortal>
+            <TooltipContent>
+              <p>Delete</p>
+            </TooltipContent>
+          </TooltipPortal>
+        </Tooltip>
       </div>
       <RemoveInboxMessageModal
         jobId={jobId}
@@ -381,20 +377,20 @@ const ChatLayout = () => {
   );
 
   return (
-    <div className={cn('flex h-screen')}>
-      <AnimatePresence initial={false}>
-        {!isChatSidebarCollapsed && (
-          <motion.div
-            animate={{ width: 240, opacity: 1 }}
-            className="flex h-full flex-col overflow-hidden border-r border-gray-300"
-            exit={{ width: 0, opacity: 0 }}
-            initial={{ width: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className="flex h-full w-[240px] flex-col px-3 py-4 pt-6">
-              <div className="mb-3 flex items-center justify-between gap-2">
-                <h2>{t('chat.chats')}</h2>
-                <TooltipProvider delayDuration={0}>
+    <TooltipProvider delayDuration={0}>
+      <div className={cn('flex h-screen')}>
+        <AnimatePresence initial={false}>
+          {!isChatSidebarCollapsed && (
+            <motion.div
+              animate={{ width: 240, opacity: 1 }}
+              className="flex h-full flex-col overflow-hidden border-r border-gray-300"
+              exit={{ width: 0, opacity: 0 }}
+              initial={{ width: 0, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="flex h-full w-[240px] flex-col px-3 py-4 pt-6">
+                <div className="mb-3 flex items-center justify-between gap-2">
+                  <h2>{t('chat.chats')}</h2>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
@@ -434,62 +430,78 @@ const ChatLayout = () => {
                       </TooltipContent>
                     </TooltipPortal>
                   </Tooltip>
-                </TooltipProvider>
-              </div>
-              <ScrollArea>
-                <div className="w-full space-y-1 bg-transparent">
-                  {isPending &&
-                    Array.from({ length: 5 }).map((_, index) => (
-                      <Skeleton
-                        className="h-11 w-full shrink-0 rounded-md bg-gray-300"
-                        key={index}
-                      />
-                    ))}
-
-                  {isSuccess &&
-                    inboxes?.length > 0 &&
-                    inboxes.map((inbox) => (
-                      <InboxMessageButton
-                        inboxId={inbox.inbox_id}
-                        inboxName={
-                          inbox.last_message &&
-                          inbox.custom_name === inbox.inbox_id
-                            ? inbox.last_message.job_message.content?.slice(
-                                0,
-                                40,
-                              )
-                            : inbox.custom_name?.slice(0, 40)
-                        }
-                        isJobLastMessage={
-                          inbox.last_message
-                            ? !(
-                                inbox.last_message.sender ===
-                                  auth?.shinkai_identity &&
-                                inbox.last_message.sender_subidentity ===
-                                  auth.profile
-                              )
-                            : false
-                        }
-                        key={inbox.inbox_id}
-                        lastMessageTimestamp={
-                          inbox.last_message?.node_api_data.node_timestamp ?? ''
-                        }
-                        to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
-                      />
-                    ))}
-                  {isSuccess && inboxes?.length === 0 && (
-                    <p className="text-gray-80 py-3 text-center text-xs">
-                      {t('chat.actives.notFound')}{' '}
-                    </p>
-                  )}
                 </div>
-              </ScrollArea>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      <Outlet />
-    </div>
+                <ScrollArea>
+                  <div className="w-full space-y-1 bg-transparent">
+                    {isPending &&
+                      Array.from({ length: 5 }).map((_, index) => (
+                        <Skeleton
+                          className="h-11 w-full shrink-0 rounded-md bg-gray-300"
+                          key={index}
+                        />
+                      ))}
+
+                    {isSuccess &&
+                      inboxes?.length > 0 &&
+                      inboxes.map((inbox) => (
+                        <Tooltip key={inbox.inbox_id}>
+                          <TooltipTrigger asChild>
+                            <div>
+                              <InboxMessageButton
+                                inboxId={inbox.inbox_id}
+                                inboxName={
+                                  inbox.last_message &&
+                                  inbox.custom_name === inbox.inbox_id
+                                    ? inbox.last_message.job_message.content?.slice(
+                                        0,
+                                        40,
+                                      )
+                                    : inbox.custom_name?.slice(0, 40)
+                                }
+                                isJobLastMessage={
+                                  inbox.last_message
+                                    ? !(
+                                        inbox.last_message.sender ===
+                                          auth?.shinkai_identity &&
+                                        inbox.last_message
+                                          .sender_subidentity === auth.profile
+                                      )
+                                    : false
+                                }
+                                key={inbox.inbox_id}
+                                lastMessageTimestamp={
+                                  inbox.last_message?.node_api_data
+                                    .node_timestamp ?? ''
+                                }
+                                to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
+                              />
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipPortal>
+                            <TooltipContent
+                              align="end"
+                              className="max-w-[200px] bg-gray-600"
+                              side="right"
+                            >
+                              <p>{inbox.custom_name}</p>
+                            </TooltipContent>
+                          </TooltipPortal>
+                        </Tooltip>
+                      ))}
+                    {isSuccess && inboxes?.length === 0 && (
+                      <p className="text-gray-80 py-3 text-center text-xs">
+                        {t('chat.actives.notFound')}{' '}
+                      </p>
+                    )}
+                  </div>
+                </ScrollArea>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <Outlet />
+      </div>
+    </TooltipProvider>
   );
 };
 
