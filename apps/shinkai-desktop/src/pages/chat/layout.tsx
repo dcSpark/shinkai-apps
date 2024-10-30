@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { DialogClose } from '@radix-ui/react-dialog';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   extractJobIdFromInbox,
@@ -13,6 +14,11 @@ import { useRemoveJob } from '@shinkai_network/shinkai-node-state/v2/mutations/r
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/v2/queries/getInboxes/useGetInboxes';
 import {
   Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogTitle,
   Form,
   FormControl,
   FormField,
@@ -159,9 +165,9 @@ const InboxMessageButtonBase = ({
   lastMessageTimestamp: string;
   isJobLastMessage: boolean;
 }) => {
-  const auth = useAuth((state) => state.auth);
   const { t } = useTranslation();
   const resetJobScope = useSetJobScope((state) => state.resetJobScope);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const jobId = extractJobIdFromInbox(inboxId);
 
@@ -191,17 +197,6 @@ const InboxMessageButtonBase = ({
   ]);
 
   const [isEditable, setIsEditable] = useState(false);
-
-  const { mutateAsync: removeJob } = useRemoveJob({
-    onSuccess: () => {
-      toast.success('Chat removed successfully');
-    },
-    onError: (error) => {
-      toast.error('Failed to remove chat', {
-        description: error?.response?.data?.message ?? error.message,
-      });
-    },
-  });
 
   return isEditable ? (
     <InboxNameInput
@@ -253,13 +248,11 @@ const InboxMessageButtonBase = ({
             <TooltipTrigger asChild>
               <Button
                 className={cn('justify-self-end bg-transparent')}
-                onClick={() =>
-                  removeJob({
-                    jobId,
-                    nodeAddress: auth?.node_address ?? '',
-                    token: auth?.api_v2_key ?? '',
-                  })
-                }
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  setDeleteModalOpen(true);
+                }}
                 size={'icon'}
                 type="button"
                 variant={'tertiary'}
@@ -275,9 +268,80 @@ const InboxMessageButtonBase = ({
           </Tooltip>
         </TooltipProvider>
       </div>
+      <RemoveInboxMessageModal
+        jobId={jobId}
+        onOpenChange={setDeleteModalOpen}
+        open={deleteModalOpen}
+      />
     </Link>
   );
 };
+
+function RemoveInboxMessageModal({
+  jobId,
+  open,
+  onOpenChange,
+}: {
+  jobId: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const auth = useAuth((state) => state.auth);
+  const { t } = useTranslation();
+  const { mutateAsync: removeJob, isPending } = useRemoveJob({
+    onSuccess: () => {
+      toast.success('Chat removed successfully');
+    },
+    onError: (error) => {
+      toast.error('Failed to remove chat', {
+        description: error?.response?.data?.message ?? error.message,
+      });
+    },
+  });
+
+  return (
+    <Dialog onOpenChange={onOpenChange} open={open}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogTitle className="pb-0">
+          {t('chat.actions.deleteInboxConfirmationTitle')}
+        </DialogTitle>
+        <DialogDescription>
+          {t('chat.actions.deleteInboxConfirmationDescription')}
+        </DialogDescription>
+
+        <DialogFooter>
+          <div className="flex gap-2 pt-4">
+            <DialogClose asChild className="flex-1">
+              <Button
+                className="min-w-[100px] flex-1"
+                size="sm"
+                type="button"
+                variant="ghost"
+              >
+                {t('common.cancel')}
+              </Button>
+            </DialogClose>
+            <Button
+              className="min-w-[100px] flex-1"
+              disabled={isPending}
+              isLoading={isPending}
+              onClick={async () => {
+                await removeJob({
+                  jobId,
+                  nodeAddress: auth?.node_address ?? '',
+                  token: auth?.api_v2_key ?? '',
+                });
+              }}
+              size="sm"
+            >
+              {t('common.delete')}
+            </Button>
+          </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 const InboxMessageButton = memo(InboxMessageButtonBase);
 
