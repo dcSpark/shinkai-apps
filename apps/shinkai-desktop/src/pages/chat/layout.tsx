@@ -1,9 +1,3 @@
-import {
-  SandpackCodeEditor,
-  SandpackLayout,
-  SandpackPreview,
-  SandpackProvider,
-} from '@codesandbox/sandpack-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
@@ -58,7 +52,7 @@ import React, {
 import { useForm } from 'react-hook-form';
 import { Link, Outlet, useMatch, useNavigate } from 'react-router-dom';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { solarizedlight } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { toast } from 'sonner';
 
 import { useSetJobScope } from '../../components/chat/context/set-job-scope-context';
@@ -67,7 +61,6 @@ import { useWorkflowSelectionStore } from '../../components/workflow/context/wor
 import { handleSendNotification } from '../../lib/notifications';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
-import { reactDomScript, reactScript } from './react-script';
 
 const InboxNameInput = ({
   closeEditable,
@@ -525,36 +518,42 @@ export default ChatLayout;
 
 export const ArtifactsPreview = () => {
   const [code, setCode] = useState(`
-    <h1>Hello from JSX in Iframe!</h1>
+
+    import React from "react"
+    const MyComponent = () => <h1 className="bg-red-400 text-gray-100 p-10">Hello from JSX in Iframe!</h1>
+    export default MyComponent
+
   `);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [iframeLoaded, setIframeLoaded] = useState(false);
 
-  // const iframeRef = useRef<HTMLIFrameElement | null>(null);
-  //
-  // useEffect(() => {
-  //   console.dir(iframeRef, 'iframeRef');
-  //   const doc = iframeRef?.current?.contentWindow?.document;
-  //
-  //   if (!doc) return;
-  //   doc.open();
-  //   doc.write(`
-  //     <!DOCTYPE html>
-  //     <html>
-  //       <head>
-  //         <title>JSX Code Preview</title>
-  //       </head>
-  //       <body>
-  //         <div id="root"></div>
-  //         <script>
-  //           ${Babel.transform(code, { presets: ['react'] }).code}
-  //         </script>
-  //       </body>
-  //     </html>
-  //   `);
-  //   doc.close();
-  // }, [code]);
+  const handleRender = () => {
+    if (!iframeRef.current?.contentWindow) return;
 
-  // if (!artifact) return null;
-  // return;
+    iframeRef.current?.contentWindow?.postMessage(
+      { type: 'UPDATE_COMPONENT', code },
+      '*',
+    );
+  };
+
+  const handleMessage = (event: any) => {
+    if (event?.data?.type === 'INIT_COMPLETE') {
+      setIframeLoaded(true);
+      handleRender();
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('message', handleMessage);
+
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
+  useEffect(() => {
+    handleRender();
+  }, [code]);
+
   return (
     <div
       className={
@@ -571,32 +570,38 @@ export const ArtifactsPreview = () => {
             className="h-full overflow-y-scroll whitespace-pre-line break-words px-4 py-2 font-mono"
             value="source"
           >
-            {/*<SyntaxHighlighter language="jsx" style={solarizedlight}>*/}
-            {/*  {code}*/}
-            {/*</SyntaxHighlighter>*/}
-            {/*<iframe*/}
-            {/*  ref={iframeRef}*/}
-            {/*  style={{*/}
-            {/*    width: '100%',*/}
-            {/*    height: '300px',*/}
-            {/*    border: '1px solid #ccc',*/}
-            {/*  }}*/}
-            {/*  title="JSX Iframe"*/}
-            {/*/>*/}
-            {/*// csp issues and cors */}
-            <SandpackProvider
-              className="flex h-full w-full grow flex-col justify-center"
-              files={{
-                'App.jsx': code,
+            <SyntaxHighlighter
+              PreTag="div"
+              codeTagProps={{
+                style: {
+                  fontSize: '0.8rem',
+                  fontFamily: 'var(--font-inter)',
+                },
               }}
-              template="react"
-              theme="auto"
+              customStyle={{
+                margin: 0,
+                width: '100%',
+                padding: '0.5rem 1rem',
+                borderBottomLeftRadius: '8px',
+                borderBottomRightRadius: '8px',
+              }}
+              language={'jsx'}
+              style={oneDark}
             >
-              <SandpackLayout>
-                <SandpackCodeEditor />
-                <SandpackPreview className="flex h-full w-full grow flex-col justify-center p-4 md:pt-16" />
-              </SandpackLayout>
-            </SandpackProvider>
+              {code}
+            </SyntaxHighlighter>
+
+            {iframeLoaded ? 'loaded framed!' : 'not loaded'}
+            <div className="h-full w-full" ref={contentRef}>
+              <iframe
+                className="h-full w-full"
+                loading="lazy"
+                ref={iframeRef}
+                src={
+                  'http://localhost:1420/src/windows/shinkai-artifacts/index.html'
+                }
+              />
+            </div>
           </TabsContent>
           <TabsContent className="h-full flex-grow px-4 py-2" value="preview">
             {/*{artifact && <iframe className="w-full h-full" srcDoc={artifact} />}*/}
