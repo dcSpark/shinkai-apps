@@ -120,6 +120,12 @@ export default {
       title: 'Your file is being processed',
       description: 'It can take a few minutes',
     },
+    actions: {
+      deleteInbox: 'Delete Chat',
+      deleteInboxConfirmationTitle: 'Delete chat?',
+      deleteInboxConfirmationDescription:
+        'The chat will be deleted and removed from your chat history',
+    },
   },
   aiFilesSearch: {
     label: 'AI Files Content Search',
