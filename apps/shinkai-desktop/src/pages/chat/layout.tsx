@@ -43,14 +43,14 @@ import {
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Edit3 ,Trash2Icon } from 'lucide-react';
+import { Edit3, Trash2Icon } from 'lucide-react';
 import React, {
   IframeHTMLAttributes,
+  memo,
   useEffect,
   useMemo,
   useRef,
   useState,
-  memo
 } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, Outlet, useMatch, useNavigate } from 'react-router-dom';
@@ -398,7 +398,7 @@ const ChatLayout = () => {
           {!isChatSidebarCollapsed && (
             <motion.div
               animate={{ width: 240, opacity: 1 }}
-              className="flex h-full flex-col overflow-hidden border-r border-gray-300"
+              className="flex h-full shrink-0 flex-col overflow-hidden border-r border-gray-300"
               exit={{ width: 0, opacity: 0 }}
               initial={{ width: 0, opacity: 0 }}
               transition={{ duration: 0.3 }}
@@ -523,7 +523,7 @@ const ChatLayout = () => {
             className={cn(!showArtifactPanel ? 'hidden' : 'block')}
             collapsible
             defaultSize={64}
-            maxSize={90}
+            maxSize={70}
             minSize={40}
           >
             <AnimatePresence initial={false} mode="popLayout">

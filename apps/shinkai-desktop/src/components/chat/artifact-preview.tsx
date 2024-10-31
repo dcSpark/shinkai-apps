@@ -10,7 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { ArrowBigLeft } from 'lucide-react';
+import { ArrowBigLeft, ChevronsRight } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
@@ -110,55 +110,54 @@ export default App;
   }, [code]);
 
   return (
-    <div
-      className={
-        'flex max-w-2xl flex-grow basis-full justify-stretch p-3 transition-[width]'
-      }
+    <Tabs
+      className="flex h-screen w-full flex-col overflow-hidden"
+      defaultValue="source"
     >
-      <div className="h-full w-full overflow-hidden rounded-lg border">
-        <div className="flex items-center justify-between gap-2">
-          <div>
-            <TooltipProvider delayDuration={0}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    className="text-gray-80 flex items-center gap-2"
-                    onClick={() => toggleArtifactPanel()}
-                    size="icon"
-                    variant="tertiary"
-                  >
-                    <ArrowBigLeft className="h-4 w-4" />
-                    <span className="sr-only">Close Artifact Panel</span>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipPortal>
-                  <TooltipContent className="flex flex-col items-center gap-1">
-                    <p> Close Artifact Panel</p>
-                    <div className="text-gray-80 flex items-center justify-center gap-2 text-center">
-                      <span>⌘</span>
-                      <span>B</span>
-                    </div>
-                  </TooltipContent>
-                </TooltipPortal>
-              </Tooltip>
-            </TooltipProvider>
+      <div className={'flex h-screen flex-grow justify-stretch p-3'}>
+        <div className="flex flex-col overflow-hidden">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 px-2">
+              <TooltipProvider delayDuration={0}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      className="text-gray-80 flex items-center gap-2"
+                      onClick={() => toggleArtifactPanel()}
+                      size="icon"
+                      variant="tertiary"
+                    >
+                      <ChevronsRight className="h-4 w-4" />
+                      <span className="sr-only">Close Artifact Panel</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipPortal>
+                    <TooltipContent className="flex flex-col items-center gap-1">
+                      <p> Close Artifact Panel</p>
+                    </TooltipContent>
+                  </TooltipPortal>
+                </Tooltip>
+              </TooltipProvider>
+              <h1 className="text-sm font-medium text-white">TicTacToe</h1>
+            </div>
+            <TabsList className="grid grid-cols-2 rounded-lg border border-gray-400 bg-transparent p-0.5">
+              <TabsTrigger
+                className="flex h-8 items-center gap-1.5 text-xs font-semibold"
+                value="source"
+              >
+                Code
+              </TabsTrigger>
+              <TabsTrigger
+                className="flex h-8 items-center gap-1.5 text-xs font-semibold"
+                value="preview"
+              >
+                Preview
+              </TabsTrigger>
+            </TabsList>
           </div>
-          <div>
-            <button
-              className="rounded-lg border border-gray-500 bg-gray-200 px-4 py-2 text-gray-600"
-              onClick={() => handleRender()}
-            >
-              Render
-            </button>
-          </div>
-        </div>
-        <Tabs className="h-full" defaultValue="source">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="source">Source Code</TabsTrigger>
-            <TabsTrigger value="preview">Preview</TabsTrigger>
-          </TabsList>
+
           <TabsContent
-            className="h-full overflow-y-scroll whitespace-pre-line break-words px-4 py-2 font-mono"
+            className="mt-1 h-full overflow-y-scroll whitespace-pre-line break-words px-4 py-2 font-mono"
             value="source"
           >
             <SyntaxHighlighter
@@ -194,9 +193,9 @@ export default App;
               />
             </div>
           </TabsContent>
-        </Tabs>
+        </div>
       </div>
-    </div>
+    </Tabs>
   );
 };
 export default ArtifactPreview;
