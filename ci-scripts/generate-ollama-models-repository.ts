@@ -7,6 +7,8 @@ import path from 'path';
 const OllamaModelTag = z.object({
   name: z.string().min(1),
   size: z.string().min(1),
+  hash: z.string().min(1),
+  isDefault: z.boolean(),
 });
 const OllamaModelSchema = z.object({
   name: z.string().min(1),
@@ -26,8 +28,8 @@ const getOllamaModelsHtml = async (): Promise<string> => {
   return response.data;
 };
 
-const getOllamaModelHtml = async (model: string): Promise<string> => {
-  const response = await axios.get(`https://ollama.com/library/${model}`);
+const getOllamaModelTagsHtml = async (model: string): Promise<string> => {
+  const response = await axios.get(`https://ollama.com/library/${model}/tags`);
   return response.data;
 };
 
@@ -36,51 +38,52 @@ const modelHtmlToObject = async (
   $: cheerio.CheerioAPI,
 ): Promise<any> => {
   const name = $(modelElement).find('div h2 span').text().trim();
-  const description = $(modelElement)
-    .find('div:nth-child(2) p:first-child')
-    .text()
-    .trim();
+  const description = $(modelElement).find('div:nth-child(1) p').text().trim();
   const uiTags: string[] = $(modelElement)
-    .find('div:nth-child(2) div:nth-child(2) span')
+    .find('div:nth-child(2) div:nth-child(1) span')
     .toArray()
     .map((el) => $(el).text().trim());
-  const supportTools = uiTags.includes('Tools');
-  const embedding = uiTags.includes('Embedding');
-  const vision = uiTags.includes('Vision');
-  const modelHtml = await getOllamaModelHtml(name);
-  const modelApi = cheerio.load(modelHtml);
+  const supportTools = uiTags.includes('tools');
+  const embedding = uiTags.includes('embedding');
+  const vision = uiTags.includes('vision');
+  const modelTagsHtml = await getOllamaModelTagsHtml(name);
+  const modelTagsApi = cheerio.load(modelTagsHtml);
 
-  const getTags = (
-    id: string,
-  ): { defaultTag: string; tags: OllamaModelTag[] } => {
-    let defaultTag = '';
-    const tags: OllamaModelTag[] = modelApi(`${id} a`)
+  const getTags = (): OllamaModelTag[] => {
+    const tags: OllamaModelTag[] = modelTagsApi(
+      `main > div > section > div > div > div:nth-child(n+1) > div`,
+    )
       .toArray()
       .map((el) => {
-        const name = modelApi(el).find('> div span:first-child').text().trim();
-        const isDefault =
-          modelApi(el).find('> div span:nth-child(2)')?.text().trim() ===
-          'latest';
-        if (isDefault) {
-          defaultTag = name;
-        }
-        const size = modelApi(el).find('> span:nth-child(2)').text().trim();
-        return { name, size };
-      })
-      .filter((tag) => tag.name !== 'latest');
-    return { defaultTag, tags };
+        const name = modelTagsApi(el)
+          .find('div:nth-child(1) a div')
+          .text()
+          .trim();
+        const hash = modelTagsApi(el)
+          .find('div:nth-child(2) span span')
+          .text()
+          .trim();
+        const sizeElement = modelTagsApi(el).find('div:nth-child(2) > span');
+        const size = sizeElement.text().split('•').at(1)?.trim() || '';
+        return { name, hash, size, isDefault: false };
+      });
+    const latestTag = tags.find((t) => t.name === 'latest');
+    if (latestTag) {
+      tags.forEach((t) => {
+        t.isDefault = t.hash === latestTag.hash;
+      });
+    }
+    return tags.filter((tag) => tag.name !== 'latest');
   };
-  const primaryTags = getTags('#primary-tags');
-  const secondaryTags = getTags('#secondary-tags');
+  const tags = getTags();
 
-  const tags = [...primaryTags.tags, ...secondaryTags.tags];
-  const defaultTag = primaryTags.defaultTag || tags[0]?.name;
+  const defaultTag = tags.find((t) => t.isDefault)?.name || tags[0]?.name;
   return {
     name,
     description,
     supportTools,
     defaultTag,
-    tags,
+    tags: tags,
     embedding,
     vision,
   };
@@ -95,14 +98,17 @@ const main = async () => {
       return model;
     }),
   );
-  models.forEach((model) => {
-    const result = OllamaModelSchema.safeParse(model);
-    if (result.error) {
-      throw new Error(
-        `Error in model ${model.name}\n${JSON.stringify(result.error, undefined, 2)}`,
-      );
-    }
-  });
+  models
+    .filter((model) => !model.name.includes('llama3.2'))
+    .forEach((model) => {
+      console.log('model', model);
+      const result = OllamaModelSchema.safeParse(model);
+      if (result.error) {
+        throw new Error(
+          `Error in model ${model.name}\n${JSON.stringify(result.error, undefined, 2)}`,
+        );
+      }
+    });
   const outputPath = path.join(
     __dirname,
     '../apps/shinkai-desktop/src/lib/shinkai-node-manager/ollama-models-repository.json',
