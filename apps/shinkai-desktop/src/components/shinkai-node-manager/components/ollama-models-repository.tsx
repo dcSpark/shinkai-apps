@@ -220,9 +220,9 @@ export const OllamaModelsRepository = ({
   });
   useEffect(() => {
     installedOllamaModels?.models &&
-    installedOllamaModels.models.forEach((modelResponse) => {
-      installedOllamaModelsMap.set(modelResponse.name, modelResponse);
-    });
+      installedOllamaModels.models.forEach((modelResponse) => {
+        installedOllamaModelsMap.set(modelResponse.name, modelResponse);
+      });
     FILTERED_OLLAMA_MODELS_REPOSITORY.forEach((model) => {
       const defaultTag: string =
         model.tags?.find((tag) =>
@@ -235,7 +235,12 @@ export const OllamaModelsRepository = ({
         model.tags[0].name;
       selectedTagMap.set(model.name, defaultTag);
     });
-  }, [installedOllamaModels?.models, installedOllamaModelsMap, pullingModelsMap, selectedTagMap]);
+  }, [
+    installedOllamaModels?.models,
+    installedOllamaModelsMap,
+    pullingModelsMap,
+    selectedTagMap,
+  ]);
 
   const getFullName = (model: string, tag: string): string => {
     return `${model}:${tag}`;
@@ -243,7 +248,7 @@ export const OllamaModelsRepository = ({
 
   return (
     <div
-      className={cn('w-full overflow-auto rounded', className)}
+      className={cn('w-full overflow-auto rounded pb-10', className)}
       ref={tableContainerRef}
       {...props}
     >

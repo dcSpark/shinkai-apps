@@ -56,7 +56,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { partial } from 'filesize';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Paperclip, X, XIcon } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm, useWatch } from 'react-hook-form';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -571,6 +571,7 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
     (state) => state.setWorkflowSelected,
   );
 
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const auth = useAuth((state) => state.auth);
   const { captureAnalyticEvent } = useAnalytics();
 
@@ -732,6 +733,11 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
   useEffect(() => {
     if (promptSelected) {
       chatForm.setValue('message', promptSelected.prompt);
+      setTimeout(() => {
+        if (!textareaRef.current) return;
+        textareaRef.current.scrollTop = textareaRef.current.scrollHeight;
+        textareaRef.current.focus();
+      }, 10);
     }
   }, [chatForm, promptSelected]);
 
@@ -744,9 +750,7 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
     <div className="flex flex-col justify-start">
       <div className="relative flex items-start gap-2 p-2 pb-3">
         <StopGeneratingButton
-          shouldStopGenerating={
-            hasProviderEnableStreaming && !!isLoadingMessage
-          }
+          shouldStopGenerating={hasProviderEnableStreaming && isLoadingMessage}
         />
         <Form {...chatForm}>
           <FormField
@@ -832,6 +836,7 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                       }
                       onChange={field.onChange}
                       onSubmit={chatForm.handleSubmit(onSubmit)}
+                      ref={textareaRef}
                       topAddons={
                         <>
                           {workflowSelected && (

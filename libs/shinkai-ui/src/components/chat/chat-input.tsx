@@ -9,6 +9,7 @@ export interface ChatInputProps
 
 export const useAutoResizeTextarea = (
   ref: React.ForwardedRef<HTMLTextAreaElement>,
+  value: string | number | readonly string[] | undefined,
   autoResize = true, //later to unify
 ) => {
   const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
@@ -30,16 +31,15 @@ export const useAutoResizeTextarea = (
 
     ref?.addEventListener('input', updateTextareaHeight);
     return () => ref?.removeEventListener('input', updateTextareaHeight);
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [value]);
 
   return { textAreaRef };
 };
 
 const ChatInputBase = React.forwardRef<HTMLTextAreaElement, ChatInputProps>(
   ({ className, onSend, ...props }, ref) => {
-    const { textAreaRef } = useAutoResizeTextarea(ref);
+    const { textAreaRef } = useAutoResizeTextarea(ref, props.value);
 
     return (
       <textarea
