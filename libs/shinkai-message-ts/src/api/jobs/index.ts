@@ -23,6 +23,7 @@ import {
   JobMessageRequest,
   JobMessageResponse,
   LLMProviderInterface,
+  RemoveJobRequest,
   RemoveLLMProviderRequest,
   RetryMessageRequest,
   StopGeneratingLLMRequest,
@@ -375,6 +376,22 @@ export const retryMessage = async (
 ) => {
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v2/retry_message'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data;
+};
+
+export const removeJob = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: RemoveJobRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/remove_job'),
     payload,
     {
       headers: { Authorization: `Bearer ${bearerToken}` },

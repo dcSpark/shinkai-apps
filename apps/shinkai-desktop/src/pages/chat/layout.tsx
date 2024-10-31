@@ -1,16 +1,24 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { DialogClose } from '@radix-ui/react-dialog';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { Inbox } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
-import { isJobInbox } from '@shinkai_network/shinkai-message-ts/utils';
+import {
+  extractJobIdFromInbox,
+  isJobInbox,
+} from '@shinkai_network/shinkai-message-ts/utils';
 import {
   UpdateInboxNameFormSchema,
   updateInboxNameFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/inbox';
-import { useArchiveJob } from '@shinkai_network/shinkai-node-state/lib/mutations/archiveJob/useArchiveJob';
 import { useUpdateInboxName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateInboxName/useUpdateInboxName';
+import { useRemoveJob } from '@shinkai_network/shinkai-node-state/v2/mutations/removeJob/useRemoveJob';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/v2/queries/getInboxes/useGetInboxes';
 import {
   Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogTitle,
   Form,
   FormControl,
   FormField,
@@ -19,10 +27,6 @@ import {
   Input,
   ScrollArea,
   Skeleton,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
   Tooltip,
   TooltipContent,
   TooltipPortal,
@@ -30,16 +34,14 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import {
-  ActiveIcon,
-  ArchiveIcon,
   ChatBubbleIcon,
   CreateAIIcon,
   JobBubbleIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Edit3 } from 'lucide-react';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Edit3, Trash2Icon } from 'lucide-react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, Outlet, useMatch, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -150,41 +152,32 @@ const InboxNameInput = ({
   );
 };
 
-const MessageButton = ({
+const InboxMessageButtonBase = ({
   to,
-  isArchivedMessage,
-  inbox,
+  inboxId,
+  inboxName,
+  lastMessageTimestamp,
+  isJobLastMessage,
 }: {
   to: string;
-  isArchivedMessage?: boolean;
-  inbox: Inbox;
+  inboxId: string;
+  inboxName: string;
+  lastMessageTimestamp: string;
+  isJobLastMessage: boolean;
 }) => {
-  const auth = useAuth((state) => state.auth);
   const { t } = useTranslation();
   const resetJobScope = useSetJobScope((state) => state.resetJobScope);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
-  const inboxId = inbox.inbox_id;
-  const inboxName =
-    inbox.last_message && inbox.custom_name === inbox.inbox_id
-      ? inbox.last_message.job_message.content?.slice(0, 40)
-      : inbox.custom_name?.slice(0, 40);
-
-  const lastMessageTime =
-    inbox.last_message?.node_api_data.node_timestamp ?? '';
-  const isJobLastMessage = inbox.last_message
-    ? !(
-        inbox.last_message.sender === auth?.shinkai_identity &&
-        inbox.last_message.sender_subidentity === auth.profile
-      )
-    : false;
+  const jobId = extractJobIdFromInbox(inboxId);
 
   const match = useMatch(to);
-  const previousDataRef = useRef<string>(lastMessageTime);
+  const previousDataRef = useRef<string>(lastMessageTimestamp);
   const previousLastMessageTime = previousDataRef.current;
 
   useEffect(() => {
     if (
-      lastMessageTime !== previousLastMessageTime &&
+      lastMessageTimestamp !== previousLastMessageTime &&
       isJobInbox(inboxId) &&
       isJobLastMessage
     ) {
@@ -196,7 +189,7 @@ const MessageButton = ({
       );
     }
   }, [
-    lastMessageTime,
+    lastMessageTimestamp,
     isJobLastMessage,
     inboxId,
     previousLastMessageTime,
@@ -204,32 +197,6 @@ const MessageButton = ({
   ]);
 
   const [isEditable, setIsEditable] = useState(false);
-
-  const { mutateAsync: archiveJob } = useArchiveJob({
-    onSuccess: () => {
-      toast.success(t('chat.archives.success'));
-    },
-    onError: (error) => {
-      toast.error(t('chat.archives.error'), {
-        description: error.message,
-      });
-    },
-  });
-
-  const handleArchiveJob = async (event: React.MouseEvent, inbox: Inbox) => {
-    event.preventDefault();
-    await archiveJob({
-      nodeAddress: auth?.node_address ?? '',
-      shinkaiIdentity: auth?.shinkai_identity ?? '',
-      profile: auth?.profile ?? '',
-      inboxId: inbox.inbox_id,
-      my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-      my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-      node_encryption_pk: auth?.node_encryption_pk ?? '',
-      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-      profile_identity_sk: auth?.profile_identity_sk ?? '',
-    });
-  };
 
   return isEditable ? (
     <InboxNameInput
@@ -256,52 +223,124 @@ const MessageButton = ({
         {inboxName}
       </span>
       <div className="absolute right-0 rounded-full bg-transparent opacity-0 duration-200 group-hover:bg-gray-300 group-hover:opacity-100">
-        <TooltipProvider delayDuration={0}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                className={cn('justify-self-end bg-transparent')}
-                onClick={() => setIsEditable(true)}
-                size="icon"
-                type="button"
-                variant="tertiary"
-              >
-                <Edit3 className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipPortal>
-              <TooltipContent>
-                <p>{t('common.rename')}</p>
-              </TooltipContent>
-            </TooltipPortal>
-          </Tooltip>
-        </TooltipProvider>
-        {isJobInbox(inboxId) && !isArchivedMessage && (
-          <TooltipProvider delayDuration={0}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  className={cn('justify-self-end bg-transparent')}
-                  onClick={(event) => handleArchiveJob(event, inbox)}
-                  size={'icon'}
-                  type="button"
-                  variant={'tertiary'}
-                >
-                  <ArchiveIcon className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipPortal>
-                <TooltipContent>
-                  <p>{t('chat.archives.archive')}</p>
-                </TooltipContent>
-              </TooltipPortal>
-            </Tooltip>
-          </TooltipProvider>
-        )}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              className={cn('justify-self-end bg-transparent')}
+              onClick={() => setIsEditable(true)}
+              size="icon"
+              type="button"
+              variant="tertiary"
+            >
+              <Edit3 className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipPortal>
+            <TooltipContent>
+              <p>{t('common.rename')}</p>
+            </TooltipContent>
+          </TooltipPortal>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              className={cn('justify-self-end bg-transparent')}
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                setDeleteModalOpen(true);
+              }}
+              size={'icon'}
+              type="button"
+              variant={'tertiary'}
+            >
+              <Trash2Icon className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipPortal>
+            <TooltipContent>
+              <p>Delete</p>
+            </TooltipContent>
+          </TooltipPortal>
+        </Tooltip>
       </div>
+      <RemoveInboxMessageModal
+        jobId={jobId}
+        onOpenChange={setDeleteModalOpen}
+        open={deleteModalOpen}
+      />
     </Link>
   );
 };
+
+function RemoveInboxMessageModal({
+  jobId,
+  open,
+  onOpenChange,
+}: {
+  jobId: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const auth = useAuth((state) => state.auth);
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { mutateAsync: removeJob, isPending } = useRemoveJob({
+    onSuccess: () => {
+      navigate('/inboxes');
+    },
+    onError: (error) => {
+      toast.error('Failed to remove chat', {
+        description: error?.response?.data?.message ?? error.message,
+      });
+    },
+  });
+
+  return (
+    <Dialog onOpenChange={onOpenChange} open={open}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogTitle className="pb-0">
+          {t('chat.actions.deleteInboxConfirmationTitle')}
+        </DialogTitle>
+        <DialogDescription>
+          {t('chat.actions.deleteInboxConfirmationDescription')}
+        </DialogDescription>
+
+        <DialogFooter>
+          <div className="flex gap-2 pt-4">
+            <DialogClose asChild className="flex-1">
+              <Button
+                className="min-w-[100px] flex-1"
+                size="sm"
+                type="button"
+                variant="ghost"
+              >
+                {t('common.cancel')}
+              </Button>
+            </DialogClose>
+            <Button
+              className="min-w-[100px] flex-1"
+              disabled={isPending}
+              isLoading={isPending}
+              onClick={async () => {
+                await removeJob({
+                  jobId,
+                  nodeAddress: auth?.node_address ?? '',
+                  token: auth?.api_v2_key ?? '',
+                });
+              }}
+              size="sm"
+            >
+              {t('common.delete')}
+            </Button>
+          </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+const InboxMessageButton = memo(InboxMessageButtonBase);
 
 const ChatLayout = () => {
   const { t } = useTranslation();
@@ -332,35 +371,26 @@ const ChatLayout = () => {
             )
           );
         });
-        return allInboxesAreCompleted ? 0 : 3000;
+        return allInboxesAreCompleted ? 0 : 5000;
       },
     },
   );
 
-  const activesInboxes = useMemo(() => {
-    return inboxes?.filter((inbox) => !inbox.is_finished);
-  }, [inboxes]);
-
-  const archivesInboxes = useMemo(() => {
-    return inboxes?.filter((inbox) => inbox.is_finished);
-  }, [inboxes]);
-
   return (
-    <div className={cn('flex h-screen')}>
-      <AnimatePresence initial={false}>
-        {!isChatSidebarCollapsed && (
-          <motion.div
-            animate={{ width: 240, opacity: 1 }}
-            className="flex h-full flex-col overflow-hidden border-r border-gray-300"
-            exit={{ width: 0, opacity: 0 }}
-            initial={{ width: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className="flex h-full w-[240px] flex-col px-3 py-4 pt-6">
-              <div className="mb-2 flex items-center justify-between gap-2">
-                <h2>{t('chat.chats')}</h2>
-
-                <TooltipProvider delayDuration={0}>
+    <TooltipProvider delayDuration={0}>
+      <div className={cn('flex h-screen')}>
+        <AnimatePresence initial={false}>
+          {!isChatSidebarCollapsed && (
+            <motion.div
+              animate={{ width: 240, opacity: 1 }}
+              className="flex h-full flex-col overflow-hidden border-r border-gray-300"
+              exit={{ width: 0, opacity: 0 }}
+              initial={{ width: 0, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="flex h-full w-[240px] flex-col px-3 py-4 pt-6">
+                <div className="mb-3 flex items-center justify-between gap-2">
+                  <h2>{t('chat.chats')}</h2>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
@@ -400,86 +430,78 @@ const ChatLayout = () => {
                       </TooltipContent>
                     </TooltipPortal>
                   </Tooltip>
-                </TooltipProvider>
-              </div>
-              <ScrollArea>
-                <Tabs defaultValue="actives">
-                  <TabsList className="grid w-full grid-cols-2 bg-transparent">
-                    <TabsTrigger
-                      className="flex items-center gap-1.5"
-                      value="actives"
-                    >
-                      <ActiveIcon className="h-4 w-4" />
-                      {t('chat.actives.label')}
-                    </TabsTrigger>
-                    <TabsTrigger
-                      className="flex items-center gap-1.5"
-                      value="archives"
-                    >
-                      <ArchiveIcon className="h-4 w-4" />
-                      {t('chat.archives.label')}
-                    </TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="actives">
-                    <div className="space-y-1">
-                      {isPending &&
-                        Array.from({ length: 5 }).map((_, index) => (
-                          <Skeleton
-                            className="h-11 w-full shrink-0 rounded-md bg-gray-300"
-                            key={index}
-                          />
-                        ))}
+                </div>
+                <ScrollArea>
+                  <div className="w-full space-y-1 bg-transparent">
+                    {isPending &&
+                      Array.from({ length: 5 }).map((_, index) => (
+                        <Skeleton
+                          className="h-11 w-full shrink-0 rounded-md bg-gray-300"
+                          key={index}
+                        />
+                      ))}
 
-                      {isSuccess &&
-                        activesInboxes?.length > 0 &&
-                        activesInboxes.map((inbox) => (
-                          <MessageButton
-                            inbox={inbox}
-                            key={inbox.inbox_id}
-                            to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
-                          />
-                        ))}
-                      {isSuccess && activesInboxes?.length === 0 && (
-                        <p className="text-gray-80 py-3 text-center text-xs">
-                          {t('chat.actives.notFound')}{' '}
-                        </p>
-                      )}
-                    </div>
-                  </TabsContent>
-                  <TabsContent value="archives">
-                    <div className="space-y-1">
-                      {isPending &&
-                        Array.from({ length: 5 }).map((_, index) => (
-                          <Skeleton
-                            className="h-11 w-full shrink-0 rounded-md bg-gray-300"
-                            key={index}
-                          />
-                        ))}
-                      {isSuccess &&
-                        archivesInboxes.length > 0 &&
-                        archivesInboxes.map((inbox) => (
-                          <MessageButton
-                            inbox={inbox}
-                            isArchivedMessage
-                            key={inbox.inbox_id}
-                            to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
-                          />
-                        ))}
-                      {isSuccess && archivesInboxes?.length === 0 && (
-                        <p className="text-gray-80 py-3 text-center text-xs">
-                          {t('chat.archives.notFound')}{' '}
-                        </p>
-                      )}
-                    </div>
-                  </TabsContent>
-                </Tabs>
-              </ScrollArea>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      <Outlet />
-    </div>
+                    {isSuccess &&
+                      inboxes?.length > 0 &&
+                      inboxes.map((inbox) => (
+                        <Tooltip key={inbox.inbox_id}>
+                          <TooltipTrigger asChild>
+                            <div>
+                              <InboxMessageButton
+                                inboxId={inbox.inbox_id}
+                                inboxName={
+                                  inbox.last_message &&
+                                  inbox.custom_name === inbox.inbox_id
+                                    ? inbox.last_message.job_message.content?.slice(
+                                        0,
+                                        40,
+                                      )
+                                    : inbox.custom_name?.slice(0, 40)
+                                }
+                                isJobLastMessage={
+                                  inbox.last_message
+                                    ? !(
+                                        inbox.last_message.sender ===
+                                          auth?.shinkai_identity &&
+                                        inbox.last_message
+                                          .sender_subidentity === auth.profile
+                                      )
+                                    : false
+                                }
+                                key={inbox.inbox_id}
+                                lastMessageTimestamp={
+                                  inbox.last_message?.node_api_data
+                                    .node_timestamp ?? ''
+                                }
+                                to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
+                              />
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipPortal>
+                            <TooltipContent
+                              align="end"
+                              className="max-w-[200px] bg-gray-600"
+                              side="right"
+                            >
+                              <p>{inbox.custom_name}</p>
+                            </TooltipContent>
+                          </TooltipPortal>
+                        </Tooltip>
+                      ))}
+                    {isSuccess && inboxes?.length === 0 && (
+                      <p className="text-gray-80 py-3 text-center text-xs">
+                        {t('chat.actives.notFound')}{' '}
+                      </p>
+                    )}
+                  </div>
+                </ScrollArea>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <Outlet />
+      </div>
+    </TooltipProvider>
   );
 };
 
