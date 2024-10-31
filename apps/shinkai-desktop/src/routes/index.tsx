@@ -4,6 +4,7 @@ import { debug } from '@tauri-apps/plugin-log';
 import React, { useEffect, useRef } from 'react';
 import { Navigate, Outlet, Route, Routes, useNavigate } from 'react-router-dom';
 
+import { ChatProvider } from '../components/chat/context/chat-context';
 import { SetJobScopeProvider } from '../components/chat/context/set-job-scope-context';
 import { ToolsProvider } from '../components/chat/context/tools-context';
 import { WalletsProvider } from '../components/crypto-wallet/context/wallets-context';
@@ -203,13 +204,15 @@ const AppRoutes = () => {
         <Route
           element={
             <ProtectedRoute>
-              <SetJobScopeProvider>
-                <WorkflowSelectionProvider>
-                  <PromptSelectionProvider>
-                    <ChatLayout />
-                  </PromptSelectionProvider>
-                </WorkflowSelectionProvider>
-              </SetJobScopeProvider>
+              <ChatProvider>
+                <SetJobScopeProvider>
+                  <WorkflowSelectionProvider>
+                    <PromptSelectionProvider>
+                      <ChatLayout />
+                    </PromptSelectionProvider>
+                  </WorkflowSelectionProvider>
+                </SetJobScopeProvider>
+              </ChatProvider>
             </ProtectedRoute>
           }
           path="inboxes"

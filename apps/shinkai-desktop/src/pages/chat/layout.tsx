@@ -25,6 +25,9 @@ import {
   FormItem,
   FormLabel,
   Input,
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
   ScrollArea,
   Skeleton,
   Tooltip,
@@ -51,10 +54,10 @@ import React, {
 } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, Outlet, useMatch, useNavigate } from 'react-router-dom';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { toast } from 'sonner';
 
+import ArtifactPreview from '../../components/chat/artifact-preview';
+import { useChatStore } from '../../components/chat/context/chat-context';
 import { useSetJobScope } from '../../components/chat/context/set-job-scope-context';
 import { usePromptSelectionStore } from '../../components/prompt/context/prompt-selection-context';
 import { useWorkflowSelectionStore } from '../../components/workflow/context/workflow-selection-context';
@@ -356,6 +359,9 @@ const ChatLayout = () => {
   const isChatSidebarCollapsed = useSettings(
     (state) => state.isChatSidebarCollapsed,
   );
+
+  const showArtifactPanel = useChatStore((state) => state.showArtifactPanel);
+
   const navigate = useNavigate();
   const auth = useAuth((state) => state.auth);
   const resetJobScope = useSetJobScope((state) => state.resetJobScope);
@@ -508,157 +514,35 @@ const ChatLayout = () => {
             </motion.div>
           )}
         </AnimatePresence>
-        <Outlet />
+        <ResizablePanelGroup direction="horizontal">
+          <ResizablePanel className="flex h-full flex-col">
+            <Outlet />
+          </ResizablePanel>
+          {showArtifactPanel && <ResizableHandle className="bg-gray-300" />}
+          <ResizablePanel
+            className={cn(!showArtifactPanel ? 'hidden' : 'block')}
+            collapsible
+            defaultSize={64}
+            maxSize={90}
+            minSize={40}
+          >
+            <AnimatePresence initial={false} mode="popLayout">
+              {showArtifactPanel && (
+                <motion.div
+                  animate={{ opacity: 1, filter: 'blur(0px)' }}
+                  className="h-full"
+                  initial={{ opacity: 0, filter: 'blur(5px)' }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <ArtifactPreview />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </ResizablePanel>
+        </ResizablePanelGroup>
       </div>
     </TooltipProvider>
   );
 };
 
 export default ChatLayout;
-// <!--    import React from "react"-->
-// <!--    const MyComponent = () => <h1 className="bg-red-400 text-gray-100 p-10">Hello from JSX in Iframe!</h1>-->
-// <!--    export default MyComponent-->
-
-export const ArtifactsPreview = () => {
-  const [code, setCode] = useState(`
-
-import React, { useState } from 'react';
-
-function App() {
-  const [board, setBoard] = useState([
-    ['', '', ''],
-    ['', '', ''],
-    ['', '', '']
-  ]);
-  const [turn, setTurn] = useState('X');
-
-  const handleclick = (row, col) => {
-    if (board[row][col] !== '') return;
-    const newBoard = [...board];
-    newBoard[row][col] = turn;
-    setBoard(newBoard);
-    setTurn(turn === 'X' ? 'O' : 'X');
-  };
-
-  const handleReset = () => {
-    setBoard([
-      ['', '', ''],
-      ['', '', ''],
-      ['', '', '']
-    ]);
-    setTurn('X');
-  };
-
-  return (
-    <div>
-      <h1>Tic Tac Toe</h1>
-      {board.map((row, rowIndex) => (
-        <div key={rowIndex} className="flex justify-center">
-          {row.map((cell, cellIndex) => (
-            <button
-              key={cellIndex}
-              onClick={() => handleclick(rowIndex, cellIndex)}
-              disabled={board[rowIndex][cellIndex] !== ''}
-             className={\`px-4 py-2 mx-1 my-1 bg-gray-100 border border-gray-500 rounded-lg \${board[rowIndex][cellIndex] === 'X' ? 'bg-red-200 text-red-600' : ''} \${board[rowIndex][cellIndex] === 'O' ? 'bg-blue-200 text-blue-600' : ''}\`}
-
-            >
-              {board[rowIndex][cellIndex]}
-            </button>
-          ))}
-        </div>
-      ))}
-      <p className="text-center">Turn: {turn}</p>
-      <button onClick={handleReset} className="px-4 py-2 my-1 bg-gray-200 border border-gray-500 rounded-lg text-gray-600">
-        Reset
-      </button>
-    </div>
-  );
-}
-
-export default App;
-
-  `);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const iframeRef = useRef<HTMLIFrameElement>(null);
-  const [iframeLoaded, setIframeLoaded] = useState(false);
-
-  const handleRender = () => {
-    if (!iframeRef.current?.contentWindow) return;
-
-    iframeRef.current?.contentWindow?.postMessage(
-      { type: 'UPDATE_COMPONENT', code },
-      '*',
-    );
-  };
-
-  const handleMessage = (event: any) => {
-    if (event?.data?.type === 'INIT_COMPLETE') {
-      setIframeLoaded(true);
-      handleRender();
-    }
-  };
-
-  useEffect(() => {
-    window.addEventListener('message', handleMessage);
-
-    return () => window.removeEventListener('message', handleMessage);
-  }, []);
-
-  useEffect(() => {
-    handleRender();
-  }, [code]);
-
-  return (
-    <div
-      className={
-        'flex max-w-2xl flex-grow basis-full justify-stretch p-3 transition-[width]'
-      }
-    >
-      <div className="h-full w-full overflow-hidden rounded-lg border">
-        <Tabs className="h-full" defaultValue="source">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="source">Source Code</TabsTrigger>
-            <TabsTrigger value="preview">Preview</TabsTrigger>
-          </TabsList>
-          <TabsContent
-            className="h-full overflow-y-scroll whitespace-pre-line break-words px-4 py-2 font-mono"
-            value="source"
-          >
-            <SyntaxHighlighter
-              PreTag="div"
-              codeTagProps={{
-                style: {
-                  fontSize: '0.8rem',
-                  fontFamily: 'var(--font-inter)',
-                },
-              }}
-              customStyle={{
-                margin: 0,
-                width: '100%',
-                padding: '0.5rem 1rem',
-                borderBottomLeftRadius: '8px',
-                borderBottomRightRadius: '8px',
-              }}
-              language={'jsx'}
-              style={oneDark}
-            >
-              {code}
-            </SyntaxHighlighter>
-          </TabsContent>
-          <TabsContent className="h-full flex-grow px-4 py-2" value="preview">
-            <div className="h-full w-full" ref={contentRef}>
-              <iframe
-                className="h-full w-full"
-                loading="lazy"
-                ref={iframeRef}
-                src={
-                  'http://localhost:1420/src/windows/shinkai-artifacts/index.html'
-                }
-              />
-            </div>
-          </TabsContent>
-        </Tabs>
-      </div>
-    </div>
-  );
-};
