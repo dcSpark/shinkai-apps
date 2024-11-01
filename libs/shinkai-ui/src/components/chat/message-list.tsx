@@ -63,6 +63,7 @@ export const MessageList = ({
   regenerateFirstMessage,
   disabledRetryAndEdit,
   messageExtra,
+  setArtifactCode,
 }: {
   noMoreMessageLabel: string;
   isSuccess: boolean;
@@ -86,6 +87,7 @@ export const MessageList = ({
   lastMessageContent?: React.ReactNode;
   disabledRetryAndEdit?: boolean;
   messageExtra?: React.ReactNode;
+  setArtifactCode: (code: string) => void;
 }) => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const previousChatHeightRef = useRef<number>(0);
@@ -310,6 +312,7 @@ export const MessageList = ({
                             key={`${message.messageId}::${messageIndex}`}
                             message={message}
                             messageId={message.messageId}
+                            setArtifactCode={setArtifactCode}
                           />
                         );
                       })}

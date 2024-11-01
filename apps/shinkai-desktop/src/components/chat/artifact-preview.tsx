@@ -10,7 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { ArrowBigLeft, ChevronsRight } from 'lucide-react';
+import { ChevronsRight } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
@@ -18,64 +18,7 @@ import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { useChatStore } from './context/chat-context';
 
 const ArtifactPreview = () => {
-  const [code, setCode] = useState(`
-
-import React, { useState } from 'react';
-
-function App() {
-  const [board, setBoard] = useState([
-    ['', '', ''],
-    ['', '', ''],
-    ['', '', '']
-  ]);
-  const [turn, setTurn] = useState('X');
-
-  const handleclick = (row, col) => {
-    if (board[row][col] !== '') return;
-    const newBoard = [...board];
-    newBoard[row][col] = turn;
-    setBoard(newBoard);
-    setTurn(turn === 'X' ? 'O' : 'X');
-  };
-
-  const handleReset = () => {
-    setBoard([
-      ['', '', ''],
-      ['', '', ''],
-      ['', '', '']
-    ]);
-    setTurn('X');
-  };
-
-  return (
-    <div>
-      <h1>Tic Tac Toe</h1>
-      {board.map((row, rowIndex) => (
-        <div key={rowIndex} className="flex justify-center">
-          {row.map((cell, cellIndex) => (
-            <button
-              key={cellIndex}
-              onClick={() => handleclick(rowIndex, cellIndex)}
-              disabled={board[rowIndex][cellIndex] !== ''}
-             className={\`px-4 py-2 mx-1 my-1 bg-gray-100 border border-gray-500 rounded-lg \${board[rowIndex][cellIndex] === 'X' ? 'bg-red-200 text-red-600' : ''} \${board[rowIndex][cellIndex] === 'O' ? 'bg-blue-200 text-blue-600' : ''}\`}
-
-            >
-              {board[rowIndex][cellIndex]}
-            </button>
-          ))}
-        </div>
-      ))}
-      <p className="text-center">Turn: {turn}</p>
-      <button onClick={handleReset} className="px-4 py-2 my-1 bg-gray-200 border border-gray-500 rounded-lg text-gray-600">
-        Reset
-      </button>
-    </div>
-  );
-}
-
-export default App;
-
-  `);
+  const artifactCode = useChatStore((state) => state.artifactCode);
 
   const contentRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -87,10 +30,11 @@ export default App;
     if (!iframeRef.current?.contentWindow) return;
 
     iframeRef.current?.contentWindow?.postMessage(
-      { type: 'UPDATE_COMPONENT', code },
+      { type: 'UPDATE_COMPONENT', code: artifactCode },
       '*',
     );
   };
+  console.log('iframeLoaded', iframeLoaded);
 
   const handleMessage = (event: any) => {
     if (event?.data?.type === 'INIT_COMPLETE') {
@@ -107,7 +51,7 @@ export default App;
 
   useEffect(() => {
     handleRender();
-  }, [code]);
+  }, [artifactCode]);
 
   return (
     <Tabs
@@ -115,7 +59,7 @@ export default App;
       defaultValue="source"
     >
       <div className={'flex h-screen flex-grow justify-stretch p-3'}>
-        <div className="flex flex-col overflow-hidden">
+        <div className="flex size-full flex-col overflow-hidden">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 px-2">
               <TooltipProvider delayDuration={0}>
@@ -178,13 +122,16 @@ export default App;
               language={'jsx'}
               style={oneDark}
             >
-              {code}
+              {artifactCode}
             </SyntaxHighlighter>
           </TabsContent>
-          <TabsContent className="h-full flex-grow px-4 py-2" value="preview">
-            <div className="h-full w-full" ref={contentRef}>
+          <TabsContent
+            className="h-full w-full flex-grow px-4 py-2"
+            value="preview"
+          >
+            <div className="size-full" ref={contentRef}>
               <iframe
-                className="h-full w-full"
+                className="size-full"
                 loading="lazy"
                 ref={iframeRef}
                 src={

@@ -22,6 +22,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { streamingSupportedModels } from '../../components/chat/constants';
+import { useChatStore } from '../../components/chat/context/chat-context';
 import ConversationFooter from '../../components/chat/conversation-footer';
 import ConversationHeader from '../../components/chat/conversation-header';
 import MessageExtra from '../../components/chat/message-extra';
@@ -141,6 +142,7 @@ const ChatConversation = () => {
   const inboxId = decodeURIComponent(encodedInboxId);
   useWebSocketMessage({ inboxId, enabled: true });
   useWebSocketTools({ inboxId, enabled: true });
+  const setArtifactCode = useChatStore((state) => state.setArtifactCode);
 
   const auth = useAuth((state) => state.auth);
 
@@ -245,6 +247,7 @@ const ChatConversation = () => {
         paginatedMessages={data}
         regenerateFirstMessage={regenerateFirstMessage}
         regenerateMessage={regenerateMessage}
+        setArtifactCode={setArtifactCode}
       />
 
       <ConversationFooter />

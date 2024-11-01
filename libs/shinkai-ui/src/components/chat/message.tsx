@@ -7,7 +7,7 @@ import {
 import { FormattedMessage } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { format } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Edit3, Loader2, RotateCcw, XCircle } from 'lucide-react';
+import { Code, Edit3, Loader2, RotateCcw, XCircle } from 'lucide-react';
 import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import React, { Fragment, memo, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -25,6 +25,7 @@ import {
 } from '../accordion';
 import { Avatar, AvatarFallback } from '../avatar';
 import { Button } from '../button';
+import { Card, CardContent } from '../card';
 import { CopyToClipboardIcon } from '../copy-to-clipboard-icon';
 import { DotsLoader } from '../dots-loader';
 import { Form, FormField } from '../form';
@@ -69,6 +70,7 @@ type MessageProps = {
   disabledEdit?: boolean;
   handleEditMessage?: (message: string, workflowName?: string) => void;
   messageExtra?: React.ReactNode;
+  setArtifactCode: (code: string) => void;
 };
 
 const actionBar = {
@@ -92,6 +94,32 @@ const actionBar = {
   },
 };
 
+const Artifact = ({
+  title,
+  loading = true,
+}: {
+  title: string;
+  loading?: boolean;
+}) => (
+  <Card className="bg-background border-border ml-5 w-full max-w-sm border">
+    <CardContent className="flex items-center gap-3 p-3">
+      <div className="bg-muted rounded-md p-2">
+        {loading ? (
+          <Loader2 className="text-foreground h-5 w-5 animate-spin" />
+        ) : (
+          <Code className="text-foreground h-5 w-5" />
+        )}
+      </div>
+      <div className="flex-1">
+        <p className="text-foreground text-sm font-medium">{title}</p>
+        <p className="text-muted-foreground text-xs">
+          {loading ? 'Generating...' : 'Click to open component'}
+        </p>
+      </div>
+    </CardContent>
+  </Card>
+);
+
 export const editMessageFormSchema = z.object({
   message: z.string().min(1),
 });
@@ -106,10 +134,14 @@ const MessageBase = ({
   disabledRetry,
   disabledEdit,
   handleEditMessage,
+  setArtifactCode,
 }: MessageProps) => {
   const { t } = useTranslation();
 
   const [editing, setEditing] = useState(false);
+  const [currentArtifact, setCurrentArtifact] = useState<string | null>(null);
+  const [isThinking, setIsThinking] = useState(false);
+
   const editMessageForm = useForm<EditMessageFormSchema>({
     resolver: zodResolver(editMessageFormSchema),
     defaultValues: {
@@ -139,6 +171,69 @@ const MessageBase = ({
     }
     return null;
   }, [message.content]);
+
+  console.log(currentArtifact, 'current');
+  // TODO: create the card to click and see the code/preview
+  const formattedMessage = useMemo(() => {
+    let content = message.content;
+
+    if (content.includes('<antthinking>')) {
+      setIsThinking(true);
+      setCurrentArtifact('');
+    }
+    if (content.includes('</antthinking>')) {
+      setIsThinking(false);
+    }
+    content = content.replace(/<antthinking>.*?<\/antthinking>/g, '');
+    const artifactStartIndex = content.indexOf('<antartifact');
+    const artifactEndIndex = content.indexOf('</antartifact>');
+
+    console.log(artifactStartIndex, 'artifactStartIndex');
+    console.log(artifactEndIndex, 'artifactEndIndex');
+
+    if (artifactStartIndex !== -1) {
+      if (artifactEndIndex !== -1) {
+        // Complete artifact
+        const artifactContent = content.slice(
+          content.indexOf('>', artifactStartIndex) + 1,
+          artifactEndIndex,
+        );
+        setArtifactCode(artifactContent);
+
+        // setIsCodeLoading(false);
+        setCurrentArtifact(null);
+        content =
+          content.slice(0, artifactStartIndex) +
+          content.slice(artifactEndIndex + '</antartifact>'.length);
+        content =
+          content.slice(0, artifactStartIndex) +
+          content.slice(artifactEndIndex + '</antartifact>'.length);
+      } else {
+        setCurrentArtifact(content.slice(artifactStartIndex));
+        // setIsCodeLoading(true);
+        content = content.slice(0, artifactStartIndex);
+      }
+    } else if (currentArtifact) {
+      if (artifactEndIndex !== -1) {
+        // End of artifact
+        const fullArtifact =
+          currentArtifact + content.slice(0, artifactEndIndex);
+        const artifactContent = fullArtifact.slice(
+          fullArtifact.indexOf('>') + 1,
+        );
+        setArtifactCode(artifactContent);
+        setCurrentArtifact(null);
+        content = content.slice(artifactEndIndex + '</antartifact>'.length);
+        content = content.slice(artifactEndIndex + '</antartifact>'.length);
+      } else {
+        // Continuing artifact
+        setCurrentArtifact(currentArtifact + content);
+        content = '';
+      }
+    }
+
+    return content;
+  }, [message, currentArtifact]);
 
   return (
     <motion.div
@@ -302,13 +397,17 @@ const MessageBase = ({
                         'md-running',
                     )}
                     source={extractErrorPropertyOrContent(
-                      message.content,
+                      formattedMessage,
                       'error_message',
                     )}
                   />
                 )}
                 {message.role === 'user' && (
                   <div className="whitespace-pre-line">{message.content}</div>
+                )}
+
+                {message.role === 'assistant' && currentArtifact && (
+                  <Artifact loading={true} title="Loading Artifact..." />
                 )}
 
                 {message.role === 'assistant' &&
