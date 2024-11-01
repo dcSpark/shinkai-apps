@@ -70,7 +70,7 @@ type MessageProps = {
   disabledEdit?: boolean;
   handleEditMessage?: (message: string, workflowName?: string) => void;
   messageExtra?: React.ReactNode;
-  setArtifactCode: (code: string) => void;
+  setArtifactCode?: (code: string) => void;
 };
 
 const actionBar = {
@@ -198,7 +198,7 @@ const MessageBase = ({
           content.indexOf('>', artifactStartIndex) + 1,
           artifactEndIndex,
         );
-        setArtifactCode(artifactContent);
+        setArtifactCode?.(artifactContent);
 
         // setIsCodeLoading(false);
         setCurrentArtifact(null);
@@ -221,7 +221,7 @@ const MessageBase = ({
         const artifactContent = fullArtifact.slice(
           fullArtifact.indexOf('>') + 1,
         );
-        setArtifactCode(artifactContent);
+        setArtifactCode?.(artifactContent);
         setCurrentArtifact(null);
         content = content.slice(artifactEndIndex + '</antartifact>'.length);
         content = content.slice(artifactEndIndex + '</antartifact>'.length);

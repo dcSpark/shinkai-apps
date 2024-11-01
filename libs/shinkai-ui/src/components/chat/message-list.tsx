@@ -87,7 +87,7 @@ export const MessageList = ({
   lastMessageContent?: React.ReactNode;
   disabledRetryAndEdit?: boolean;
   messageExtra?: React.ReactNode;
-  setArtifactCode: (code: string) => void;
+  setArtifactCode?: (code: string) => void;
 }) => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const previousChatHeightRef = useRef<number>(0);
