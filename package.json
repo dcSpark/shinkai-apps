@@ -100,6 +100,7 @@
     "react-syntax-highlighter": "^15.6.1",
     "react-use-websocket": "^4.8.1",
     "react-virtualized-auto-sizer": "^1.0.24",
+    "recharts": "^2.13.2",
     "rehype-rewrite": "^4.0.2",
     "rxjs": "^7.8.1",
     "sonner": "^1.4.41",
