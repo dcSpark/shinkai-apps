@@ -1,10 +1,38 @@
 import './globals.css';
 
-// import { NodePath } from '@babel/core';
 import * as Babel from '@babel/standalone';
+import * as shadcnComponents from '@shinkai_network/shinkai-ui';
 import { useEffect, useRef, useState } from 'react';
 import * as React from 'react';
 import ReactDOM from 'react-dom/client';
+import * as recharts from 'recharts';
+
+class ErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean; error: Error | null }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="whitespace-normal border bg-red-100 p-4 text-sm text-red-700">
+          <h3 className="font-medium">Runtime Error:</h3>
+          <pre>{this.state.error?.message}</pre>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 
 export const getReactComponentFromCode = (code: string) => {
   try {
@@ -21,23 +49,25 @@ export const getReactComponentFromCode = (code: string) => {
         useState: React.useState,
         useEffect: React.useEffect,
       },
+      ...shadcnComponents,
+      ...recharts,
     };
 
     const fullCode = `
-          const exports = {};
-          ${transpiledCode}
-          return exports.default;
-        `;
+      const exports = {};
+      ${transpiledCode}
+      return exports.default;
+    `;
 
     const evalCode = new Function('scope', fullCode);
     const ComponentToRender = evalCode(scope);
 
-    console.log(ComponentToRender, 'ComponentToRender');
     return ComponentToRender;
   } catch (error) {
-    console.log(error);
+    console.error('Render Component: ' + error);
   }
 };
+
 const importToVariablePlugin = ({ types: t }: any) => ({
   visitor: {
     ImportDeclaration(path: any) {
@@ -122,7 +152,6 @@ const App = () => {
 
     const handleMessage = (event: any) => {
       if (event?.data?.type === 'UPDATE_COMPONENT') {
-        console.log('Received message', event.data);
         setCode(event?.data?.code ?? '');
       }
     };
@@ -133,7 +162,10 @@ const App = () => {
   }, []);
 
   return (
-    <div className="bg-white text-gray-500" ref={contentRef}>
+    <div
+      className="size-full overflow-auto bg-white text-gray-500"
+      ref={contentRef}
+    >
       {component ? React.createElement(component) : <div>Loading...</div>}
     </div>
   );
@@ -141,6 +173,8 @@ const App = () => {
 
 ReactDOM.createRoot(document.querySelector('#root') as HTMLElement).render(
   <React.StrictMode>
-    <App />
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
   </React.StrictMode>,
 );
