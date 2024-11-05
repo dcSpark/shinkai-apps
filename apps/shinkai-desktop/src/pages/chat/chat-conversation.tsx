@@ -22,7 +22,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { streamingSupportedModels } from '../../components/chat/constants';
-import { useChatStore } from '../../components/chat/context/chat-context';
+import {
+  Artifact,
+  useChatStore,
+} from '../../components/chat/context/chat-context';
 import ConversationFooter from '../../components/chat/conversation-footer';
 import ConversationHeader from '../../components/chat/conversation-header';
 import MessageExtra from '../../components/chat/message-extra';
@@ -142,8 +145,12 @@ const ChatConversation = () => {
   const inboxId = decodeURIComponent(encodedInboxId);
   useWebSocketMessage({ inboxId, enabled: true });
   useWebSocketTools({ inboxId, enabled: true });
-  const setArtifactCode = useChatStore((state) => state.setArtifactCode);
-
+  const setArtifact = useChatStore((state) => state.setArtifact);
+  const setArtifacts = useChatStore((state) => state.setArtifacts);
+  const artifacts = useChatStore((state) => state.artifacts);
+  const toggleArtifactPanel = useChatStore(
+    (state) => state.toggleArtifactPanel,
+  );
   const auth = useAuth((state) => state.auth);
 
   const currentInbox = useGetCurrentInbox();
@@ -170,6 +177,40 @@ const ChatConversation = () => {
     }
   }, [chatConversationError, isError]);
 
+  useEffect(() => {
+    if (isChatConversationSuccess) {
+      const artifacts: Artifact[] = [];
+
+      data?.content.forEach((msg) => {
+        const artifactRegex =
+          /<antartifact\s+identifier="([^"]+)"\s+type="([^"]+)"\s+(?:language="([^"]+)"\s+)?title="([^"]+)">([\s\S]*?)<\/antartifact>/g;
+
+        let match;
+        console.log(msg.content, 'msg.content');
+        while ((match = artifactRegex.exec(msg.content)) !== null) {
+          const identifier = match[1];
+          const type = match[2];
+          const language = match[3];
+          const title = match[4];
+          const code = match[5];
+          artifacts.push({
+            identifier,
+            type,
+            language,
+            title,
+            code,
+          });
+        }
+      });
+      const uniqueArtifacts = artifacts.filter(
+        (artifact, index, self) =>
+          index === self.findIndex((a) => a.identifier === artifact.identifier),
+      );
+
+      setArtifacts(uniqueArtifacts);
+    }
+  }, [data?.content, isChatConversationSuccess]);
+  console.log(artifacts, 'artifacts');
   const { mutateAsync: retryMessage } = useRetryMessage();
 
   const { mutateAsync: sendMessageToJob } = useSendMessageToJob({
@@ -235,6 +276,7 @@ const ChatConversation = () => {
     <div className="flex max-h-screen flex-1 flex-col overflow-hidden pt-2">
       <ConversationHeader />
       <MessageList
+        artifacts={artifacts}
         containerClassName="px-5"
         editAndRegenerateMessage={editAndRegenerateMessage}
         fetchPreviousPage={fetchPreviousPage}
@@ -247,7 +289,8 @@ const ChatConversation = () => {
         paginatedMessages={data}
         regenerateFirstMessage={regenerateFirstMessage}
         regenerateMessage={regenerateMessage}
-        setArtifactCode={setArtifactCode}
+        setArtifact={setArtifact}
+        toggleArtifactPanel={toggleArtifactPanel}
       />
 
       <ConversationFooter />

@@ -39,7 +39,7 @@ export const getReactComponentFromCode = (code: string) => {
     const transpiledCode = Babel.transform(code, {
       // presets: ['react'],
       presets: ['react', 'typescript'],
-      filename: 'file.tsx',
+      filename: 'App.tsx',
       plugins: [importToVariablePlugin],
     }).code;
 

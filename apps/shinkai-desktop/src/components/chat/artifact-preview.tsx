@@ -18,7 +18,7 @@ import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { useChatStore } from './context/chat-context';
 
 const ArtifactPreview = () => {
-  const artifactCode = useChatStore((state) => state.artifactCode);
+  const artifact = useChatStore((state) => state.artifact);
 
   const contentRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -30,11 +30,10 @@ const ArtifactPreview = () => {
     if (!iframeRef.current?.contentWindow) return;
 
     iframeRef.current?.contentWindow?.postMessage(
-      { type: 'UPDATE_COMPONENT', code: artifactCode },
+      { type: 'UPDATE_COMPONENT', code: artifact?.code },
       '*',
     );
   };
-  console.log('iframeLoaded', iframeLoaded);
 
   const handleMessage = (event: any) => {
     if (event?.data?.type === 'INIT_COMPLETE') {
@@ -51,7 +50,7 @@ const ArtifactPreview = () => {
 
   useEffect(() => {
     handleRender();
-  }, [artifactCode]);
+  }, [artifact]);
 
   return (
     <Tabs
@@ -77,12 +76,14 @@ const ArtifactPreview = () => {
                   </TooltipTrigger>
                   <TooltipPortal>
                     <TooltipContent className="flex flex-col items-center gap-1">
-                      <p> Close Artifact Panel</p>
+                      <p>Close Artifact Panel</p>
                     </TooltipContent>
                   </TooltipPortal>
                 </Tooltip>
               </TooltipProvider>
-              <h1 className="text-sm font-medium text-white">TicTacToe</h1>
+              <h1 className="text-sm font-medium text-white">
+                {artifact?.title}
+              </h1>
             </div>
             <TabsList className="grid grid-cols-2 rounded-lg border border-gray-400 bg-transparent p-0.5">
               <TabsTrigger
@@ -122,7 +123,7 @@ const ArtifactPreview = () => {
               language={'jsx'}
               style={oneDark}
             >
-              {artifactCode}
+              {artifact?.code ?? ''}
             </SyntaxHighlighter>
           </TabsContent>
           <TabsContent

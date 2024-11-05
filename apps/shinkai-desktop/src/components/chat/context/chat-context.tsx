@@ -2,48 +2,38 @@ import { createContext, useContext, useState } from 'react';
 import { createStore } from 'zustand';
 import { useStore } from 'zustand/index';
 
+export type Artifact = {
+  identifier: string;
+  type: string;
+  title: string;
+  code: string;
+  language?: string;
+};
+
 type ChatStore = {
   showArtifactPanel: boolean;
   toggleArtifactPanel: () => void;
   artifactCode: string;
   setArtifactCode: (code: string) => void;
+  artifact: Artifact | null;
+  setArtifact: (artifact: Artifact | null) => void;
+  artifacts: Artifact[];
+  setArtifacts: (artifacts: Artifact[]) => void;
 };
 
 const createChatStore = () =>
   createStore<ChatStore>((set) => ({
-    showArtifactPanel: true,
+    showArtifactPanel: false,
     toggleArtifactPanel: () =>
       set((state) => ({ showArtifactPanel: !state.showArtifactPanel })),
-    // remove it later
-    artifactCode: `
-     import React from 'react';
-import { BarChart, Bar } from 'recharts';
 
-const Chart = () => {
-  const data = [
-    { name: 'Java', value: 10 },
-    { name: 'Python', value: 20 },
-    { name: 'JavaScript', value: 30 },
-    { name: 'C++', value: 15 },
-    { name: 'Ruby', value: 5 },
-  ];
+    artifact: null,
+    setArtifact: (artifact: Artifact | null) => set({ artifact }),
+    artifactCode: '',
 
-  return (
-    <div>
-      <BarChart width={400} height={300}>
-        <Bar dataKey="value" fill="#8884d8">
-          {data.map((entry, index) => (
-            <Bar key={\`bar-\${index}\`} name={entry.name} />
-          ))}
-        </Bar>
-      </BarChart>
-    </div>
-  );
-};
+    artifacts: [],
+    setArtifacts: (artifacts: Artifact[]) => set({ artifacts }),
 
-export default Chart;
-    `,
-    // artifactCode: '',
     setArtifactCode: (code: string) => set({ artifactCode: code }),
   }));
 

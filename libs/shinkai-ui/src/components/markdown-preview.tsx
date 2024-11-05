@@ -1,27 +1,89 @@
 import ReactMarkdownPreview from '@uiw/react-markdown-preview';
+import { Code, Loader2 } from 'lucide-react';
+import React from 'react';
+import rehypeRaw from 'rehype-raw';
 import type { RehypeRewriteOptions } from 'rehype-rewrite';
 import rehypeRewrite from 'rehype-rewrite';
 import { PluggableList } from 'unified';
+import { SKIP, visit } from 'unist-util-visit';
 
 import { cn } from '../utils';
 
-const rehypePlugins: PluggableList = [
-  [
-    rehypeRewrite,
-    {
-      rewrite: (node, _, parent) => {
+function rehypeAntArtifact() {
+  return (tree: any) => {
+    console.log(tree, 'tree');
+    visit(tree, 'element', (node, index, parent) => {
+      if (node.tagName === 'p' && node.children.length > 0) {
+        const firstChild = node.children[0];
         if (
-          node.type === 'element' &&
-          node.tagName === 'a' &&
-          parent &&
-          parent.type === 'element' &&
-          /^h([123456])/.test(parent.tagName)
+          firstChild.type === 'raw' &&
+          firstChild.value.startsWith('<antartifact')
         ) {
-          parent.children = [parent.children[1]];
+          const attributes = {};
+          const attributeRegex = /(\w+)="([^"]*)"/g;
+          let match;
+          while ((match = attributeRegex.exec(firstChild.value)) !== null) {
+            // @ts-expect-error lib
+            attributes[match[1]] = match[2];
+          }
+
+          const newNode = {
+            children: [
+              {
+                type: 'text',
+                value: node.children
+                  .slice(1, -1)
+                  .map((child: any) => {
+                    if (child.type === 'raw') {
+                      return child.value;
+                    } else if (child.type === 'text') {
+                      return child.value;
+                    } else if (
+                      child.type === 'element' &&
+                      child.tagName === 'a'
+                    ) {
+                      return child.children[0].value;
+                    }
+                    return '';
+                  })
+                  .join('')
+                  .trim(),
+              },
+            ],
+            properties: attributes,
+            tagName: 'antartifact',
+            type: 'element',
+          };
+
+          console.log(newNode, 'newNode');
+          parent.children.splice(index, 1, newNode);
+
+          return [SKIP, index];
         }
-      },
-    } as RehypeRewriteOptions,
-  ],
+      }
+    });
+  };
+}
+
+const rehypePlugins: PluggableList = [
+  // [
+  //   rehypeRewrite,
+  //   {
+  //     rewrite: (node, _, parent) => {
+  //       if (
+  //         node.type === 'element' &&
+  //         node.tagName === 'a' &&
+  //         parent &&
+  //         parent.type === 'element' &&
+  //         /^h([123456])/.test(parent.tagName)
+  //       ) {
+  //         parent.children = [parent.children[1]];
+  //       }
+  //     },
+  //   } as RehypeRewriteOptions,
+  // ],
+  // [rehypeRaw],
+  rehypeAntArtifact,
 ];
 
 export const MarkdownPreview = ({
@@ -60,7 +122,21 @@ export const MarkdownPreview = ({
         ),
         ...components,
       }}
-      rehypePlugins={rehypePlugins}
+      rehypePlugins={[rehypeAntArtifact]}
+      rehypeRewrite={(node, _, parent) => {
+        if (
+          'tagName' in node &&
+          node.tagName &&
+          parent &&
+          'tagName' in parent &&
+          parent.tagName
+        ) {
+          if (node.tagName === 'a' && /^h([1-6])/.test(parent.tagName)) {
+            // eslint-disable-next-line no-param-reassign
+            parent.children = parent.children.slice(1);
+          }
+        }
+      }}
       source={source}
       wrapperElement={{ 'data-color-mode': 'dark' }}
     />
