@@ -17,6 +17,14 @@ export type GetChatConversationInput = Token & {
   refetchIntervalEnabled?: boolean;
 };
 
+export type Artifact = {
+  identifier: string;
+  type: string;
+  title: string;
+  code: string;
+  language?: string;
+};
+
 type ToolCall = {
   toolRouterKey: string;
   name: string;

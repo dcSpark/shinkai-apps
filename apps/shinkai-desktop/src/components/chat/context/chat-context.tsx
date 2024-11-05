@@ -1,20 +1,9 @@
+import { Artifact } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { createContext, useContext, useState } from 'react';
 import { createStore } from 'zustand';
 import { useStore } from 'zustand/index';
 
-export type Artifact = {
-  identifier: string;
-  type: string;
-  title: string;
-  code: string;
-  language?: string;
-};
-
 type ChatStore = {
-  showArtifactPanel: boolean;
-  toggleArtifactPanel: () => void;
-  artifactCode: string;
-  setArtifactCode: (code: string) => void;
   artifact: Artifact | null;
   setArtifact: (artifact: Artifact | null) => void;
   artifacts: Artifact[];
@@ -23,18 +12,10 @@ type ChatStore = {
 
 const createChatStore = () =>
   createStore<ChatStore>((set) => ({
-    showArtifactPanel: false,
-    toggleArtifactPanel: () =>
-      set((state) => ({ showArtifactPanel: !state.showArtifactPanel })),
-
     artifact: null,
     setArtifact: (artifact: Artifact | null) => set({ artifact }),
-    artifactCode: '',
-
     artifacts: [],
     setArtifacts: (artifacts: Artifact[]) => set({ artifacts }),
-
-    setArtifactCode: (code: string) => set({ artifactCode: code }),
   }));
 
 const ChatContext = createContext<ReturnType<typeof createChatStore> | null>(

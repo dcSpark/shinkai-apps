@@ -353,7 +353,8 @@ const ChatLayout = () => {
     (state) => state.isChatSidebarCollapsed,
   );
 
-  const showArtifactPanel = useChatStore((state) => state.showArtifactPanel);
+  const artifact = useChatStore((state) => state.artifact);
+  const showArtifactPanel = artifact != null;
 
   const navigate = useNavigate();
   const auth = useAuth((state) => state.auth);
@@ -512,26 +513,27 @@ const ChatLayout = () => {
             <Outlet />
           </ResizablePanel>
           {showArtifactPanel && <ResizableHandle className="bg-gray-300" />}
-          <ResizablePanel
-            className={cn(!showArtifactPanel ? 'hidden' : 'block')}
-            collapsible
-            defaultSize={64}
-            maxSize={70}
-            minSize={40}
-          >
-            <AnimatePresence initial={false} mode="popLayout">
-              {showArtifactPanel && (
-                <motion.div
-                  animate={{ opacity: 1, filter: 'blur(0px)' }}
-                  className="h-full"
-                  initial={{ opacity: 0, filter: 'blur(5px)' }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <ArtifactPreview />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </ResizablePanel>
+          {showArtifactPanel && (
+            <ResizablePanel
+              collapsible
+              defaultSize={42}
+              maxSize={70}
+              minSize={40}
+            >
+              <AnimatePresence initial={false} mode="popLayout">
+                {showArtifactPanel && (
+                  <motion.div
+                    animate={{ opacity: 1, filter: 'blur(0px)' }}
+                    className="h-full"
+                    initial={{ opacity: 0, filter: 'blur(5px)' }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <ArtifactPreview />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </ResizablePanel>
+          )}
         </ResizablePanelGroup>
       </div>
     </TooltipProvider>

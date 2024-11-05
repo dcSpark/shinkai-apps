@@ -1,4 +1,7 @@
-import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
+import {
+  Artifact,
+  ChatConversationInfiniteData,
+} from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import {
   FetchPreviousPageOptions,
   InfiniteQueryObserverResult,
@@ -64,8 +67,8 @@ export const MessageList = ({
   disabledRetryAndEdit,
   messageExtra,
   setArtifact,
-  toggleArtifactPanel,
   artifacts,
+  artifact,
 }: {
   noMoreMessageLabel: string;
   isSuccess: boolean;
@@ -90,8 +93,9 @@ export const MessageList = ({
   disabledRetryAndEdit?: boolean;
   messageExtra?: React.ReactNode;
   artifacts?: Artifact[];
-  setArtifact?: (code: string) => void;
-  toggleArtifactPanel?: (artifact: Artifact | null) => void;
+  setArtifact?: (artifact: Artifact | null) => void;
+
+  artifact: Artifact | null;
 }) => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const previousChatHeightRef = useRef<number>(0);
@@ -306,6 +310,7 @@ export const MessageList = ({
 
                         return (
                           <Message
+                            artifact={artifact}
                             artifacts={artifacts}
                             disabledEdit={disabledRetryAndEditValue}
                             handleEditMessage={handleEditMessage}
@@ -318,7 +323,6 @@ export const MessageList = ({
                             message={message}
                             messageId={message.messageId}
                             setArtifact={setArtifact}
-                            toggleArtifactPanel={toggleArtifactPanel}
                           />
                         );
                       })}

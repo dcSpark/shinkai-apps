@@ -12,7 +12,10 @@ import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/c
 import { useRetryMessage } from '@shinkai_network/shinkai-node-state/v2/mutations/retryMessage/useRetryMessage';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
-import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
+import {
+  Artifact,
+  ChatConversationInfiniteData,
+} from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
 import { MessageList } from '@shinkai_network/shinkai-ui';
 import { useQueryClient } from '@tanstack/react-query';
@@ -22,10 +25,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { streamingSupportedModels } from '../../components/chat/constants';
-import {
-  Artifact,
-  useChatStore,
-} from '../../components/chat/context/chat-context';
+import { useChatStore } from '../../components/chat/context/chat-context';
 import ConversationFooter from '../../components/chat/conversation-footer';
 import ConversationHeader from '../../components/chat/conversation-header';
 import MessageExtra from '../../components/chat/message-extra';
@@ -145,12 +145,10 @@ const ChatConversation = () => {
   const inboxId = decodeURIComponent(encodedInboxId);
   useWebSocketMessage({ inboxId, enabled: true });
   useWebSocketTools({ inboxId, enabled: true });
+  const artifact = useChatStore((state) => state.artifact);
   const setArtifact = useChatStore((state) => state.setArtifact);
   const setArtifacts = useChatStore((state) => state.setArtifacts);
   const artifacts = useChatStore((state) => state.artifacts);
-  const toggleArtifactPanel = useChatStore(
-    (state) => state.toggleArtifactPanel,
-  );
   const auth = useAuth((state) => state.auth);
 
   const currentInbox = useGetCurrentInbox();
@@ -178,15 +176,13 @@ const ChatConversation = () => {
   }, [chatConversationError, isError]);
 
   useEffect(() => {
-    if (isChatConversationSuccess) {
+    if (data?.content) {
       const artifacts: Artifact[] = [];
-
       data?.content.forEach((msg) => {
         const artifactRegex =
           /<antartifact\s+identifier="([^"]+)"\s+type="([^"]+)"\s+(?:language="([^"]+)"\s+)?title="([^"]+)">([\s\S]*?)<\/antartifact>/g;
 
         let match;
-        console.log(msg.content, 'msg.content');
         while ((match = artifactRegex.exec(msg.content)) !== null) {
           const identifier = match[1];
           const type = match[2];
@@ -206,11 +202,12 @@ const ChatConversation = () => {
         (artifact, index, self) =>
           index === self.findIndex((a) => a.identifier === artifact.identifier),
       );
-
+      console.log('uniqueArtifacts', uniqueArtifacts);
       setArtifacts(uniqueArtifacts);
     }
-  }, [data?.content, isChatConversationSuccess]);
-  console.log(artifacts, 'artifacts');
+  }, [data?.content.length]);
+  console.log('artifacts--------', artifacts);
+
   const { mutateAsync: retryMessage } = useRetryMessage();
 
   const { mutateAsync: sendMessageToJob } = useSendMessageToJob({
@@ -276,6 +273,7 @@ const ChatConversation = () => {
     <div className="flex max-h-screen flex-1 flex-col overflow-hidden pt-2">
       <ConversationHeader />
       <MessageList
+        artifact={artifact}
         artifacts={artifacts}
         containerClassName="px-5"
         editAndRegenerateMessage={editAndRegenerateMessage}
@@ -290,7 +288,6 @@ const ChatConversation = () => {
         regenerateFirstMessage={regenerateFirstMessage}
         regenerateMessage={regenerateMessage}
         setArtifact={setArtifact}
-        toggleArtifactPanel={toggleArtifactPanel}
       />
 
       <ConversationFooter />
