@@ -176,7 +176,7 @@ const ChatConversation = () => {
   }, [chatConversationError, isError]);
 
   useEffect(() => {
-    if (data?.content) {
+    if (data?.pages) {
       const artifacts: Artifact[] = [];
       data?.content.forEach((msg) => {
         const artifactRegex =
@@ -202,11 +202,16 @@ const ChatConversation = () => {
         (artifact, index, self) =>
           index === self.findIndex((a) => a.identifier === artifact.identifier),
       );
-      console.log('uniqueArtifacts', uniqueArtifacts);
+
       setArtifacts(uniqueArtifacts);
     }
-  }, [data?.content.length]);
-  console.log('artifacts--------', artifacts);
+  }, [data?.content, data?.pages, setArtifacts]);
+
+  useEffect(() => {
+    if (artifacts?.length > 0) {
+      setArtifact(artifacts?.at(-1) ?? null);
+    }
+  }, [artifacts, artifacts?.length]);
 
   const { mutateAsync: retryMessage } = useRetryMessage();
 
@@ -273,7 +278,7 @@ const ChatConversation = () => {
     <div className="flex max-h-screen flex-1 flex-col overflow-hidden pt-2">
       <ConversationHeader />
       <MessageList
-        artifact={artifact}
+        artifact={artifact ?? undefined}
         artifacts={artifacts}
         containerClassName="px-5"
         editAndRegenerateMessage={editAndRegenerateMessage}

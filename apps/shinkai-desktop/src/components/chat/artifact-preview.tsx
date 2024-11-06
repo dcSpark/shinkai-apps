@@ -28,6 +28,7 @@ const ArtifactPreview = () => {
   const contentRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [iframeLoaded, setIframeLoaded] = useState(false);
+
   const handleRender = () => {
     if (!iframeRef.current?.contentWindow) return;
 
@@ -46,7 +47,6 @@ const ArtifactPreview = () => {
 
   useEffect(() => {
     window.addEventListener('message', handleMessage);
-
     return () => window.removeEventListener('message', handleMessage);
   }, []);
 
@@ -58,7 +58,7 @@ const ArtifactPreview = () => {
     <TooltipProvider delayDuration={0}>
       <Tabs
         className="flex h-screen w-full flex-col overflow-hidden"
-        defaultValue="source"
+        defaultValue="preview"
       >
         <div className={'flex h-screen flex-grow justify-stretch p-3'}>
           <div className="flex size-full flex-col overflow-hidden">
@@ -84,7 +84,7 @@ const ArtifactPreview = () => {
                     </TooltipContent>
                   </TooltipPortal>
                 </Tooltip>
-                <h1 className="text-sm font-medium text-white">
+                <h1 className="line-clamp-1 text-sm font-medium text-white">
                   {artifact?.title}
                 </h1>
               </div>
@@ -109,6 +109,7 @@ const ArtifactPreview = () => {
               value="source"
             >
               <div className="flex h-10 items-center justify-between gap-3 rounded-t-lg bg-gray-300 pl-4 pr-3">
+                {/* by default App.tsx */}
                 <h2 className="text-gray-80 text-xs font-semibold">App.tsx</h2>
                 {iframeLoaded && (
                   <div className="flex items-center gap-2">

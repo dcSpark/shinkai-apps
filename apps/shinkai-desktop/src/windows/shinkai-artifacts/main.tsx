@@ -2,6 +2,8 @@ import './globals.css';
 
 import * as Babel from '@babel/standalone';
 import * as shadcnComponents from '@shinkai_network/shinkai-ui';
+import { DotPattern } from '@shinkai_network/shinkai-ui';
+import { Loader2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import * as React from 'react';
 import ReactDOM from 'react-dom/client';
@@ -163,10 +165,20 @@ const App = () => {
 
   return (
     <div
-      className="size-full overflow-auto bg-white text-gray-500"
+      className="size-full overflow-auto bg-white py-4 text-gray-500"
       ref={contentRef}
     >
-      {component ? React.createElement(component) : <div>Loading...</div>}
+      {component ? (
+        React.createElement(component)
+      ) : (
+        <div className="flex h-full items-center justify-center bg-white">
+          <DotPattern className="[mask-image:linear-gradient(to_bottom_right,white,transparent,transparent)]" />
+          <div className="flex items-center gap-1 text-sm">
+            <Loader2 className="h-5 w-5 animate-spin text-gray-200" />
+            <p className="text-gray-200">Loading...</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

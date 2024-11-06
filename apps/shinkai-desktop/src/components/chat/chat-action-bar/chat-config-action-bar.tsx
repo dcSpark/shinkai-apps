@@ -52,7 +52,6 @@ export const chatConfigFormSchema = z.object({
   temperature: z.number(),
   topP: z.number(),
   topK: z.number(),
-  artifacts: z.boolean(),
 });
 
 export type ChatConfigFormSchemaType = z.infer<typeof chatConfigFormSchema>;
@@ -62,6 +61,8 @@ interface ChatConfigFormProps {
 }
 
 function ChatConfigForm({ form }: ChatConfigFormProps) {
+  const optInExperimental = useSettings((state) => state.optInExperimental);
+
   return (
     <div className="space-y-6">
       <FormField
@@ -232,34 +233,26 @@ function ChatConfigForm({ form }: ChatConfigFormProps) {
           </FormItem>
         )}
       />
-      <FormField
-        control={form.control}
-        name="artifacts"
-        render={() => (
-          <FormItem className="flex w-full flex-col gap-3">
-            <div className="flex gap-3">
-              <FormControl>
-                <Switch
-                  checked={
-                    form.watch('customPrompt') === ARTIFACTS_SYSTEM_PROMPT
-                  }
-                  onCheckedChange={(checked) => {
-                    form.setValue(
-                      'customPrompt',
-                      checked ? ARTIFACTS_SYSTEM_PROMPT : '',
-                    );
-                  }}
-                />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel className="static space-y-1.5 text-sm text-white">
-                  Enable UI Artifacts
-                </FormLabel>
-              </div>
+      {optInExperimental && (
+        <div className="flex w-full flex-col gap-3">
+          <div className="flex gap-3">
+            <Switch
+              checked={form.watch('customPrompt') === ARTIFACTS_SYSTEM_PROMPT}
+              onCheckedChange={(checked) => {
+                form.setValue(
+                  'customPrompt',
+                  checked ? ARTIFACTS_SYSTEM_PROMPT : '',
+                );
+              }}
+            />
+            <div className="space-y-1 leading-none">
+              <FormLabel className="static space-y-1.5 text-sm text-white">
+                Enable UI Artifacts
+              </FormLabel>
             </div>
-          </FormItem>
-        )}
-      />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

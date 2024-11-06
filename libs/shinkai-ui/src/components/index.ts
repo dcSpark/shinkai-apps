@@ -11,6 +11,7 @@ export * from './command';
 export * from './context-menu';
 export * from './copy-to-clipboard-icon';
 export * from './dialog';
+export * from './dot-pattern';
 export * from './dots-loader';
 export * from './drag-n-drop';
 export * from './drawer';

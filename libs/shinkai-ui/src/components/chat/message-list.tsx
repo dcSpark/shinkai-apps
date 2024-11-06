@@ -94,8 +94,7 @@ export const MessageList = ({
   messageExtra?: React.ReactNode;
   artifacts?: Artifact[];
   setArtifact?: (artifact: Artifact | null) => void;
-
-  artifact: Artifact | null;
+  artifact?: Artifact;
 }) => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const previousChatHeightRef = useRef<number>(0);

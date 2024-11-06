@@ -73,9 +73,8 @@ type MessageProps = {
   messageExtra?: React.ReactNode;
   setArtifact?: (artifact: Artifact | null) => void;
   setArtifactPanel?: (open: boolean) => void;
-
   artifacts?: Artifact[];
-  artifact: Artifact | null;
+  artifact?: Artifact;
 };
 
 const actionBar = {
@@ -139,7 +138,7 @@ const ArtifactCard = ({
           {title}
         </p>
         <p className="text-gray-80 !mb-0 text-xs">
-          {loading ? 'Generating...' : 'Click to open component'}
+          {loading ? 'Generating...' : 'Click to preview'}
         </p>
       </div>
     </CardContent>
@@ -167,8 +166,7 @@ const MessageBase = ({
   const { t } = useTranslation();
 
   const [editing, setEditing] = useState(false);
-  const [currentArtifact, setCurrentArtifact] = useState<string | null>(null);
-  const [isThinking, setIsThinking] = useState(false);
+  const [isThinking, setIsThinking] = useState(false); // TODO: when streaming enabled
 
   const editMessageForm = useForm<EditMessageFormSchema>({
     resolver: zodResolver(editMessageFormSchema),
@@ -199,31 +197,6 @@ const MessageBase = ({
     }
     return null;
   }, [message.content]);
-
-  // useEffect(() => {
-  //   if (message.content.includes('<antthinking>')) {
-  //     setIsThinking(true);
-  //   }
-  //   if (message.content.includes('</antthinking>')) {
-  //     setIsThinking(false);
-  //   }
-  //
-  //   const artifactRegex =
-  //     /<antartifact\s+identifier="([^"]+)"\s+type="([^"]+)"\s+(?:language="([^"]+)"\s+)?title="([^"]+)">([\s\S]*?)<\/antartifact>/g;
-  //   let artifact: Artifact;
-  //   let match;
-  //   while ((match = artifactRegex.exec(message.content)) !== null) {
-  //     artifact = {
-  //       identifier: match[1],
-  //       type: match[2],
-  //       language: match[3],
-  //       title: match[4],
-  //       content: match[5].trim(),
-  //     };
-  //     console.log(artifact, 'artifact');
-  //   }
-  //   setArtifact?.(artifact);
-  // }, [message.content]);
 
   return (
     <motion.div
@@ -391,29 +364,25 @@ const MessageBase = ({
                         title,
                         type,
                         identifier,
-                      }: ArtifactProps) => {
-                        const isSelected = artifact?.identifier === messageId;
-
-                        return (
-                          <ArtifactCard
-                            identifier={identifier}
-                            isSelected={isSelected}
-                            loading={isThinking || currentArtifact !== null}
-                            onArtifactClick={() => {
-                              if (artifact?.identifier === messageId) {
-                                setArtifact?.(null);
-                                return;
-                              }
-                              const selectedArtifact = artifacts?.find(
-                                (art) => art.identifier === messageId,
-                              );
-                              setArtifact?.(selectedArtifact ?? null);
-                            }}
-                            title={title}
-                            type={type}
-                          />
-                        );
-                      },
+                      }: ArtifactProps) => (
+                        <ArtifactCard
+                          identifier={identifier}
+                          isSelected={artifact?.identifier === messageId}
+                          loading={isThinking}
+                          onArtifactClick={() => {
+                            if (artifact?.identifier === messageId) {
+                              setArtifact?.(null);
+                              return;
+                            }
+                            const selectedArtifact = artifacts?.find(
+                              (art) => art.identifier === messageId,
+                            );
+                            setArtifact?.(selectedArtifact ?? null);
+                          }}
+                          title={title}
+                          type={type}
+                        />
+                      ),
                     }}
                     source={extractErrorPropertyOrContent(
                       message.content,
