@@ -4,6 +4,7 @@ import * as Babel from '@babel/standalone';
 import * as shadcnComponents from '@shinkai_network/shinkai-artifacts';
 import { DotPattern } from '@shinkai_network/shinkai-ui';
 import { Loader2 } from 'lucide-react';
+import * as lucideReactIcons from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import * as React from 'react';
 import ReactDOM from 'react-dom/client';
@@ -25,7 +26,7 @@ class ErrorBoundary extends React.Component<
   render() {
     if (this.state.hasError) {
       return (
-        <div className="whitespace-normal border bg-red-100 p-4 text-sm text-red-700">
+        <div className="whitespace-pre-wrap border bg-red-100 p-4 text-sm text-red-700">
           <h3 className="font-medium">Runtime Error:</h3>
           <pre>{this.state.error?.message}</pre>
         </div>
@@ -53,6 +54,7 @@ export const getReactComponentFromCode = (code: string) => {
       },
       ...shadcnComponents,
       ...recharts,
+      ...lucideReactIcons,
     };
 
     const fullCode = `
@@ -127,7 +129,6 @@ const importToVariablePlugin = ({ types: t }: any) => ({
 
 const App = () => {
   const [code, setCode] = useState<string | null>(null);
-
   const [component, setComponent] = useState<React.ComponentType | null>(null);
 
   const contentRef = useRef<HTMLDivElement | null>(null);
@@ -135,9 +136,11 @@ const App = () => {
   useEffect(() => {
     if (code) {
       try {
+        console.log('initializing component');
         const ComponentToRender = getReactComponentFromCode(code);
         if (ComponentToRender) {
           setComponent(() => ComponentToRender);
+          console.log('rendering component');
         } else {
           throw new Error(
             'No valid React component found in the provided code',
