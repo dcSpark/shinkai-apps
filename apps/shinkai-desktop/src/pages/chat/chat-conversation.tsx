@@ -36,6 +36,7 @@ import {
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAnalytics } from '../../lib/posthog-provider';
 import { useAuth } from '../../store/auth';
+import { useSettings } from '../../store/settings';
 
 export const useChatConversationWithOptimisticUpdates = ({
   inboxId,
@@ -150,6 +151,7 @@ const ChatConversation = () => {
   const setArtifacts = useChatStore((state) => state.setArtifacts);
   const artifacts = useChatStore((state) => state.artifacts);
   const auth = useAuth((state) => state.auth);
+  const optInExperimental = useSettings((state) => state.optInExperimental);
 
   const currentInbox = useGetCurrentInbox();
   const {
@@ -176,7 +178,7 @@ const ChatConversation = () => {
   }, [chatConversationError, isError]);
 
   useEffect(() => {
-    if (data?.pages) {
+    if (data?.pages && optInExperimental) {
       const artifacts: Artifact[] = [];
       data?.content.forEach((msg) => {
         const artifactRegex =
@@ -205,13 +207,24 @@ const ChatConversation = () => {
 
       setArtifacts(uniqueArtifacts);
     }
-  }, [data?.content, data?.pages, setArtifacts]);
+  }, [data?.content, data?.pages, optInExperimental, setArtifacts]);
 
   useEffect(() => {
-    if (artifacts?.length > 0) {
+    const lastMessage = data?.pages?.at(-1)?.at(-1);
+    if (
+      artifacts?.length > 0 &&
+      optInExperimental &&
+      lastMessage?.role === 'assistant'
+    ) {
       setArtifact(artifacts?.at(-1) ?? null);
     }
-  }, [artifacts, artifacts?.length]);
+  }, [
+    artifacts,
+    artifacts?.length,
+    data?.pages,
+    optInExperimental,
+    setArtifact,
+  ]);
 
   const { mutateAsync: retryMessage } = useRetryMessage();
 
