@@ -1,8 +1,9 @@
 'use client';
 
 import * as TabsPrimitive from '@radix-ui/react-tabs';
-import { cn } from '@shinkai_network/shinkai-ui/utils';
 import * as React from 'react';
+
+import { cn } from '../utils';
 
 const Tabs = TabsPrimitive.Root;
 

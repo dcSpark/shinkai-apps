@@ -1,8 +1,9 @@
 'use client';
 
 import * as SliderPrimitive from '@radix-ui/react-slider';
-import { cn } from '@shinkai_network/shinkai-ui/utils';
 import * as React from 'react';
+
+import { cn } from '../utils';
 
 const Slider = React.forwardRef<
   React.ElementRef<typeof SliderPrimitive.Root>,

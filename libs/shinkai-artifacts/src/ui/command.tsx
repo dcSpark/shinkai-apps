@@ -1,9 +1,9 @@
 import { type DialogProps } from '@radix-ui/react-dialog';
-import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Command as CommandPrimitive } from 'cmdk';
 import { Search } from 'lucide-react';
 import * as React from 'react';
 
+import { cn } from '../utils';
 import { Dialog, DialogContent } from './dialog';
 
 const Command = React.forwardRef<

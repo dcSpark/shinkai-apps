@@ -1,7 +1,7 @@
 import * as AlertDialogPrimitive from '@radix-ui/react-alert-dialog';
-import { cn } from '@shinkai_network/shinkai-ui/utils';
 import * as React from 'react';
 
+import { cn } from '../utils';
 import { buttonVariants } from './button';
 
 const AlertDialog = AlertDialogPrimitive.Root;

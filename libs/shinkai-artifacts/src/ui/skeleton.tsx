@@ -1,4 +1,4 @@
-import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { cn } from '../utils';
 
 function Skeleton({
   className,

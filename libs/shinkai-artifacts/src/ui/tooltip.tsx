@@ -1,8 +1,9 @@
 'use client';
 
 import * as TooltipPrimitive from '@radix-ui/react-tooltip';
-import { cn } from '@shinkai_network/shinkai-ui/utils';
 import * as React from 'react';
+
+import { cn } from '../utils';
 
 const TooltipProvider = TooltipPrimitive.Provider;
 

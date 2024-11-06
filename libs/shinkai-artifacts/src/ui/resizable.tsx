@@ -1,8 +1,9 @@
 'use client';
 
-import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { GripVertical } from 'lucide-react';
 import * as ResizablePrimitive from 'react-resizable-panels';
+
+import { cn } from '../utils';
 
 const ResizablePanelGroup = ({
   className,
