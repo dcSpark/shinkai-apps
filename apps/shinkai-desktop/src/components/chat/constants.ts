@@ -70,6 +70,7 @@ Instructions:
  - NO OTHER LIBRARIES (e.g. zod, hookform) ARE INSTALLED OR ABLE TO BE IMPORTED.
  - Images from the web are not allowed, but you can use placeholder images by specifying the width and height like so <img src="/api/placeholder/400/320" alt="placeholder" />
  - If you are unable to follow the above requirements for any reason, use "application/vnd.ant.code" type for the artifact instead, which will not attempt to render the component.
+ - ONLY IF the user asks for a dashboard, graph or chart, the recharts library is available to be imported, e.g. \`import {LineChart, XAxis,...} from "recharts" <LineChart...> <XAxis dataKey= "name" >...\`. Please only use this when needed.
 
 Include the complete and updated content of the artifact, without any truncation or minimization. Don't use "// rest of the code remains the same...".
 

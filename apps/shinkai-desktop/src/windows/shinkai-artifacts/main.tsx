@@ -136,11 +136,9 @@ const App = () => {
   useEffect(() => {
     if (code) {
       try {
-        console.log('initializing component');
         const ComponentToRender = getReactComponentFromCode(code);
         if (ComponentToRender) {
           setComponent(() => ComponentToRender);
-          console.log('rendering component');
         } else {
           throw new Error(
             'No valid React component found in the provided code',
