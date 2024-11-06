@@ -6,6 +6,7 @@ export enum Models {
   Exo = 'exo',
   Groq = 'groq',
   OpenRouter = 'openrouter',
+  Claude = 'claude',
 }
 
 export const modelsConfig = {
@@ -106,5 +107,26 @@ export const modelsConfig = {
   [Models.OpenRouter]: {
     apiUrl: 'https://openrouter.ai',
     modelTypes: [],
+  },
+  [Models.Claude]: {
+    apiUrl: 'https://api.anthropic.com',
+    modelTypes: [
+      {
+        name: 'Claude 3.5 Sonnet',
+        value: 'claude-3-5-sonnet-latest',
+      },
+      {
+        name: 'Claude 3 Opus',
+        value: 'claude-3-opus-latest',
+      },
+      {
+        name: 'Claude 3 Sonnet',
+        value: 'claude-3-sonnet-20240229',
+      },
+      {
+        name: 'Claude 3 Haiku',
+        value: 'claude-3-haiku-20240307',
+      },
+    ],
   },
 };

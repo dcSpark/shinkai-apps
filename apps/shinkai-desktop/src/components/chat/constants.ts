@@ -5,6 +5,7 @@ export const streamingSupportedModels = [
   Models.Exo,
   Models.Gemini,
   Models.OpenRouter,
+  Models.Claude,
 ];
 
 export const ARTIFACTS_SYSTEM_PROMPT = `

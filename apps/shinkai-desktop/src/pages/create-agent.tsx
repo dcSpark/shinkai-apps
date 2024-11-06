@@ -67,6 +67,10 @@ const modelOptions: { value: Models; label: string }[] = [
     value: Models.Exo,
     label: 'Exo',
   },
+  {
+    value: Models.Claude,
+    label: 'Claude',
+  },
 ];
 
 export const getModelObject = (
@@ -84,6 +88,8 @@ export const getModelObject = (
       return { Gemini: { model_type: modelType } };
     case Models.Exo:
       return { Exo: { model_type: modelType } };
+    case Models.Claude:
+      return { Claude: { model_type: modelType } };
     default:
       return { [model]: { model_type: modelType } };
   }
