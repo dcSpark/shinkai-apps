@@ -4,17 +4,18 @@ import {
   ToolArgs,
   ToolStatusType,
 } from '@shinkai_network/shinkai-message-ts/api/general/types';
+import { Artifact } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { FormattedMessage } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { format } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Edit3, Loader2, RotateCcw, XCircle } from 'lucide-react';
+import { Code, Edit3, Loader2, RotateCcw, XCircle } from 'lucide-react';
 import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import React, { Fragment, memo, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { z } from 'zod';
 
-import { appIcon, ToolsIcon } from '../../assets';
+import { appIcon, ReactJsIcon, ToolsIcon } from '../../assets';
 import { formatText } from '../../helpers/format-text';
 import { cn } from '../../utils';
 import {
@@ -25,6 +26,7 @@ import {
 } from '../accordion';
 import { Avatar, AvatarFallback } from '../avatar';
 import { Button } from '../button';
+import { Card, CardContent } from '../card';
 import { CopyToClipboardIcon } from '../copy-to-clipboard-icon';
 import { DotsLoader } from '../dots-loader';
 import { Form, FormField } from '../form';
@@ -69,6 +71,10 @@ type MessageProps = {
   disabledEdit?: boolean;
   handleEditMessage?: (message: string, workflowName?: string) => void;
   messageExtra?: React.ReactNode;
+  setArtifact?: (artifact: Artifact | null) => void;
+  setArtifactPanel?: (open: boolean) => void;
+  artifacts?: Artifact[];
+  artifact?: Artifact;
 };
 
 const actionBar = {
@@ -92,6 +98,53 @@ const actionBar = {
   },
 };
 
+type ArtifactProps = {
+  title: string;
+  type: string;
+  identifier: string;
+  loading?: boolean;
+  isSelected?: boolean;
+  onArtifactClick?: () => void;
+};
+const ArtifactCard = ({
+  title,
+  loading = true,
+  onArtifactClick,
+  isSelected,
+  identifier,
+}: ArtifactProps) => (
+  <Card
+    className={cn(
+      'w-full max-w-sm border border-gray-100',
+      isSelected && 'border-gray-50 bg-gray-300',
+    )}
+    onClick={() => {
+      onArtifactClick?.();
+    }}
+    role="button"
+  >
+    <CardContent className="flex items-center gap-1 p-1 py-1.5">
+      <div className="rounded-md p-2">
+        {loading ? (
+          <Loader2 className="text-gray-80 h-5 w-5 animate-spin" />
+        ) : (
+          <ReactJsIcon
+            className={cn(isSelected ? 'text-gray-50' : 'text-gray-80')}
+          />
+        )}
+      </div>
+      <div className="flex flex-1 flex-col gap-0.5">
+        <p className="!mb-0 line-clamp-1 text-sm font-medium text-gray-50">
+          {title}
+        </p>
+        <p className="text-gray-80 !mb-0 text-xs">
+          {loading ? 'Generating...' : 'Click to preview'}
+        </p>
+      </div>
+    </CardContent>
+  </Card>
+);
+
 export const editMessageFormSchema = z.object({
   message: z.string().min(1),
 });
@@ -106,10 +159,15 @@ const MessageBase = ({
   disabledRetry,
   disabledEdit,
   handleEditMessage,
+  setArtifact,
+  artifacts,
+  artifact,
 }: MessageProps) => {
   const { t } = useTranslation();
 
   const [editing, setEditing] = useState(false);
+  const [isThinking, setIsThinking] = useState(false); // TODO: when streaming enabled
+
   const editMessageForm = useForm<EditMessageFormSchema>({
     resolver: zodResolver(editMessageFormSchema),
     defaultValues: {
@@ -293,7 +351,6 @@ const MessageBase = ({
                       })}
                     </Accordion>
                   )}
-
                 {message.role === 'assistant' && (
                   <MarkdownPreview
                     className={cn(
@@ -301,12 +358,39 @@ const MessageBase = ({
                         message.status.type === 'running' &&
                         'md-running',
                     )}
+                    components={{
+                      // @ts-expect-error custom element
+                      antartifact: ({
+                        title,
+                        type,
+                        identifier,
+                      }: ArtifactProps) => (
+                        <ArtifactCard
+                          identifier={identifier}
+                          isSelected={artifact?.identifier === messageId}
+                          loading={isThinking}
+                          onArtifactClick={() => {
+                            if (artifact?.identifier === messageId) {
+                              setArtifact?.(null);
+                              return;
+                            }
+                            const selectedArtifact = artifacts?.find(
+                              (art) => art.identifier === messageId,
+                            );
+                            setArtifact?.(selectedArtifact ?? null);
+                          }}
+                          title={title}
+                          type={type}
+                        />
+                      ),
+                    }}
                     source={extractErrorPropertyOrContent(
                       message.content,
                       'error_message',
                     )}
                   />
                 )}
+
                 {message.role === 'user' && (
                   <div className="whitespace-pre-line">{message.content}</div>
                 )}
@@ -318,7 +402,6 @@ const MessageBase = ({
                       <DotsLoader />
                     </div>
                   )}
-
                 {pythonCode && <PythonCodeRunner code={pythonCode} />}
                 {message.role === 'user' && !!message.attachments.length && (
                   <FileList
@@ -423,7 +506,9 @@ export const Message = memo(
   MessageBase,
   (prev, next) =>
     prev.messageId === next.messageId &&
-    prev.message.content === next.message.content,
+    prev.message.content === next.message.content &&
+    prev.artifacts?.length === next.artifacts?.length &&
+    prev.artifact === next.artifact,
 );
 
 const variants = {

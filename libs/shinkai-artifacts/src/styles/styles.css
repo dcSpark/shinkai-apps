@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@config '../../tailwind.config.js';
+
+html {
+  @apply scroll-smooth;
+}
+body {
+  font-synthesis-weight: none;
+  text-rendering: optimizeLegibility;
+  @apply text-foreground bg-background;
+}
+
+html,
+body,
+#root {
+  overscroll-behavior: none;
+  @apply font-inter min-h-full w-full;
+}

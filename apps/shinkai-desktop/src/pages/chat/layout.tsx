@@ -25,6 +25,9 @@ import {
   FormItem,
   FormLabel,
   Input,
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
   ScrollArea,
   Skeleton,
   Tooltip,
@@ -46,6 +49,8 @@ import { useForm } from 'react-hook-form';
 import { Link, Outlet, useMatch, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import ArtifactPreview from '../../components/chat/artifact-preview';
+import { useChatStore } from '../../components/chat/context/chat-context';
 import { useSetJobScope } from '../../components/chat/context/set-job-scope-context';
 import { usePromptSelectionStore } from '../../components/prompt/context/prompt-selection-context';
 import { useWorkflowSelectionStore } from '../../components/workflow/context/workflow-selection-context';
@@ -347,6 +352,10 @@ const ChatLayout = () => {
   const isChatSidebarCollapsed = useSettings(
     (state) => state.isChatSidebarCollapsed,
   );
+
+  const artifact = useChatStore((state) => state.artifact);
+  const showArtifactPanel = artifact != null;
+
   const navigate = useNavigate();
   const auth = useAuth((state) => state.auth);
   const resetJobScope = useSetJobScope((state) => state.resetJobScope);
@@ -383,7 +392,7 @@ const ChatLayout = () => {
           {!isChatSidebarCollapsed && (
             <motion.div
               animate={{ width: 240, opacity: 1 }}
-              className="flex h-full flex-col overflow-hidden border-r border-gray-300"
+              className="flex h-full shrink-0 flex-col overflow-hidden border-r border-gray-300"
               exit={{ width: 0, opacity: 0 }}
               initial={{ width: 0, opacity: 0 }}
               transition={{ duration: 0.3 }}
@@ -499,7 +508,33 @@ const ChatLayout = () => {
             </motion.div>
           )}
         </AnimatePresence>
-        <Outlet />
+        <ResizablePanelGroup direction="horizontal">
+          <ResizablePanel className="flex h-full flex-col">
+            <Outlet />
+          </ResizablePanel>
+          {showArtifactPanel && <ResizableHandle className="bg-gray-300" />}
+          {showArtifactPanel && (
+            <ResizablePanel
+              collapsible
+              defaultSize={42}
+              maxSize={70}
+              minSize={40}
+            >
+              <AnimatePresence initial={false} mode="popLayout">
+                {showArtifactPanel && (
+                  <motion.div
+                    animate={{ opacity: 1, filter: 'blur(0px)' }}
+                    className="h-full"
+                    initial={{ opacity: 0, filter: 'blur(5px)' }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <ArtifactPreview />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </ResizablePanel>
+          )}
+        </ResizablePanelGroup>
       </div>
     </TooltipProvider>
   );

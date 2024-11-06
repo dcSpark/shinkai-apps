@@ -1,9 +1,11 @@
 import ReactMarkdownPreview from '@uiw/react-markdown-preview';
-import type { RehypeRewriteOptions } from 'rehype-rewrite';
-import rehypeRewrite from 'rehype-rewrite';
+import React from 'react';
+import rehypeRewrite, { RehypeRewriteOptions } from 'rehype-rewrite';
 import { PluggableList } from 'unified';
 
 import { cn } from '../utils';
+
+// TODO: remove @uiw/react-markdown-preview dependency to use the main library react-markdown for better control
 
 const rehypePlugins: PluggableList = [
   [
@@ -61,6 +63,20 @@ export const MarkdownPreview = ({
         ...components,
       }}
       rehypePlugins={rehypePlugins}
+      rehypeRewrite={(node, _, parent) => {
+        if (
+          'tagName' in node &&
+          node.tagName &&
+          parent &&
+          'tagName' in parent &&
+          parent.tagName
+        ) {
+          if (node.tagName === 'a' && /^h([1-6])/.test(parent.tagName)) {
+            // eslint-disable-next-line no-param-reassign
+            parent.children = parent.children.slice(1);
+          }
+        }
+      }}
       source={source}
       wrapperElement={{ 'data-color-mode': 'dark' }}
     />

@@ -16,7 +16,6 @@ export default defineConfig(() => ({
       modernPolyfills: ['es.array.at', 'es.object.has-own'],
     }),
   ],
-
   esbuild: {
     // Important for wasm plugin
     supported: {
@@ -40,7 +39,7 @@ export default defineConfig(() => ({
     headers: {
       'Cross-Origin-Embedder-Policy': 'require-corp',
       'Cross-Origin-Opener-Policy': 'same-origin',
-    }
+    },
   },
   // 3. to make use of `TAURI_DEBUG` and other env variables
   // https://tauri.studio/v1/api/config#buildconfig.beforedevcommand
@@ -65,10 +64,14 @@ export default defineConfig(() => ({
         ),
         spotlight: resolve(__dirname, 'src/windows/spotlight/index.html'),
         coordinator: resolve(__dirname, 'src/windows/coordinator/index.html'),
+        shinkai_artifacts: resolve(
+          __dirname,
+          'src/windows/shinkai-artifacts/index.html',
+        ),
       },
     },
   },
   worker: {
-    format: 'es' as const
+    format: 'es' as const,
   },
 }));

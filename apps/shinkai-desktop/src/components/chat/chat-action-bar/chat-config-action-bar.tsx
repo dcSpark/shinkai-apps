@@ -43,6 +43,7 @@ import { z } from 'zod';
 
 import { useAuth } from '../../../store/auth';
 import { useSettings } from '../../../store/settings';
+import { ARTIFACTS_SYSTEM_PROMPT } from '../constants';
 import { actionButtonClassnames } from '../conversation-footer';
 
 export const chatConfigFormSchema = z.object({
@@ -60,6 +61,8 @@ interface ChatConfigFormProps {
 }
 
 function ChatConfigForm({ form }: ChatConfigFormProps) {
+  const optInExperimental = useSettings((state) => state.optInExperimental);
+
   return (
     <div className="space-y-6">
       <FormField
@@ -219,7 +222,7 @@ function ChatConfigForm({ form }: ChatConfigFormProps) {
         name="customPrompt"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Custom Prompt</FormLabel>
+            <FormLabel>System Prompt</FormLabel>
             <FormControl>
               <Textarea
                 className="!min-h-[130px] resize-none text-sm"
@@ -230,6 +233,26 @@ function ChatConfigForm({ form }: ChatConfigFormProps) {
           </FormItem>
         )}
       />
+      {optInExperimental && (
+        <div className="flex w-full flex-col gap-3">
+          <div className="flex gap-3">
+            <Switch
+              checked={form.watch('customPrompt') === ARTIFACTS_SYSTEM_PROMPT}
+              onCheckedChange={(checked) => {
+                form.setValue(
+                  'customPrompt',
+                  checked ? ARTIFACTS_SYSTEM_PROMPT : '',
+                );
+              }}
+            />
+            <div className="space-y-1 leading-none">
+              <FormLabel className="static space-y-1.5 text-sm text-white">
+                Enable UI Artifacts
+              </FormLabel>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
