@@ -184,13 +184,13 @@ const ChatConversation = () => {
 
         let match;
         while ((match = artifactRegex.exec(msg.content)) !== null) {
-          const identifier = match[1];
+          // const identifier = match[1];
           const type = match[2];
           const language = match[3];
           const title = match[4];
           const code = match[5];
           artifacts.push({
-            identifier,
+            identifier: msg.messageId,
             type,
             language,
             title,

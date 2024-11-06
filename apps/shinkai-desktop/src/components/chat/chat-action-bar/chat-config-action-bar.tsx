@@ -43,6 +43,7 @@ import { z } from 'zod';
 
 import { useAuth } from '../../../store/auth';
 import { useSettings } from '../../../store/settings';
+import { ARTIFACTS_SYSTEM_PROMPT } from '../constants';
 import { actionButtonClassnames } from '../conversation-footer';
 
 export const chatConfigFormSchema = z.object({
@@ -51,6 +52,7 @@ export const chatConfigFormSchema = z.object({
   temperature: z.number(),
   topP: z.number(),
   topK: z.number(),
+  artifacts: z.boolean(),
 });
 
 export type ChatConfigFormSchemaType = z.infer<typeof chatConfigFormSchema>;
@@ -219,7 +221,7 @@ function ChatConfigForm({ form }: ChatConfigFormProps) {
         name="customPrompt"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Custom Prompt</FormLabel>
+            <FormLabel>System Prompt</FormLabel>
             <FormControl>
               <Textarea
                 className="!min-h-[130px] resize-none text-sm"
@@ -227,6 +229,34 @@ function ChatConfigForm({ form }: ChatConfigFormProps) {
                 {...field}
               />
             </FormControl>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="artifacts"
+        render={() => (
+          <FormItem className="flex w-full flex-col gap-3">
+            <div className="flex gap-3">
+              <FormControl>
+                <Switch
+                  checked={
+                    form.watch('customPrompt') === ARTIFACTS_SYSTEM_PROMPT
+                  }
+                  onCheckedChange={(checked) => {
+                    form.setValue(
+                      'customPrompt',
+                      checked ? ARTIFACTS_SYSTEM_PROMPT : '',
+                    );
+                  }}
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel className="static space-y-1.5 text-sm text-white">
+                  Enable UI Artifacts
+                </FormLabel>
+              </div>
+            </div>
           </FormItem>
         )}
       />

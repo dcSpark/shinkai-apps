@@ -392,34 +392,22 @@ const MessageBase = ({
                         type,
                         identifier,
                       }: ArtifactProps) => {
+                        const isSelected = artifact?.identifier === messageId;
+
                         return (
                           <ArtifactCard
                             identifier={identifier}
-                            isSelected={artifact?.identifier === identifier}
+                            isSelected={isSelected}
                             loading={isThinking || currentArtifact !== null}
                             onArtifactClick={() => {
-                              console.log(artifacts, 'artifactssssssssss');
-                              if (!artifacts) return;
-                              const selectedArtifact = artifacts.find(
-                                (artifact) =>
-                                  artifact.identifier === identifier,
-                              );
-                              if (!selectedArtifact) return;
-                              console.log(
-                                artifact,
-                                'artifactartifactartifact',
-                                selectedArtifact,
-                              );
-                              if (
-                                artifact?.identifier ===
-                                selectedArtifact.identifier
-                              ) {
-                                // setArtifactPanel?.(false);
+                              if (artifact?.identifier === messageId) {
                                 setArtifact?.(null);
                                 return;
                               }
-                              // setArtifactPanel?.(true);
-                              setArtifact?.(selectedArtifact);
+                              const selectedArtifact = artifacts?.find(
+                                (art) => art.identifier === messageId,
+                              );
+                              setArtifact?.(selectedArtifact ?? null);
                             }}
                             title={title}
                             type={type}
