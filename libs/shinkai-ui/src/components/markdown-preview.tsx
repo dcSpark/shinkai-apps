@@ -1,66 +1,11 @@
 import ReactMarkdownPreview from '@uiw/react-markdown-preview';
 import React from 'react';
-import rehypeRaw from 'rehype-raw';
 import rehypeRewrite, { RehypeRewriteOptions } from 'rehype-rewrite';
 import { PluggableList } from 'unified';
-import { SKIP, visit } from 'unist-util-visit';
 
 import { cn } from '../utils';
 
-function rehypeAntArtifact() {
-  return (tree: any) => {
-    visit(tree, 'element', (node, index, parent) => {
-      if (node.tagName === 'p' && node.children.length > 0) {
-        const firstChild = node.children[0];
-        if (
-          firstChild.type === 'raw' &&
-          firstChild.value.startsWith('<antartifact')
-        ) {
-          const attributes = {};
-          const attributeRegex = /(\w+)="([^"]*)"/g;
-          let match;
-          while ((match = attributeRegex.exec(firstChild.value)) !== null) {
-            // @ts-expect-error lib
-            attributes[match[1]] = match[2];
-          }
-
-          const newNode = {
-            children: [
-              {
-                type: 'text',
-                value: node.children
-                  .slice(1, -1)
-                  .map((child: any) => {
-                    if (child.type === 'raw') {
-                      return child.value;
-                    } else if (child.type === 'text') {
-                      return child.value;
-                    } else if (
-                      child.type === 'element' &&
-                      child.tagName === 'a'
-                    ) {
-                      return child.children[0].value;
-                    }
-                    return '';
-                  })
-                  .join('')
-                  .trim(),
-              },
-            ],
-            properties: attributes,
-            tagName: 'antartifact',
-            type: 'element',
-          };
-
-          console.log(newNode, 'newNode');
-          parent.children.splice(index, 1, newNode);
-
-          return [SKIP, index];
-        }
-      }
-    });
-  };
-}
+// TODO: remove @uiw/react-markdown-preview dependency to use the main library react-markdown for better control
 
 const rehypePlugins: PluggableList = [
   [
@@ -79,8 +24,6 @@ const rehypePlugins: PluggableList = [
       },
     } as RehypeRewriteOptions,
   ],
-  [rehypeRaw],
-  [rehypeAntArtifact],
 ];
 
 export const MarkdownPreview = ({
