@@ -4,9 +4,7 @@ html,
 body,
 #root {
   overscroll-behavior: none;
-  @apply size-full overflow-hidden rounded-xl;
+  @apply w-full min-h-full;
 }
 
-#root {
-  @apply rounded-xl border border-gray-200 bg-gray-500 text-white shadow-xl;
-}
+

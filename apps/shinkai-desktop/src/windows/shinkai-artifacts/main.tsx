@@ -164,7 +164,7 @@ const App = () => {
   }, []);
 
   return (
-    <div className="overflow-auto bg-white text-gray-500" ref={contentRef}>
+    <div className="min-h-full w-full bg-white text-gray-500" ref={contentRef}>
       {component ? (
         React.createElement(component)
       ) : (

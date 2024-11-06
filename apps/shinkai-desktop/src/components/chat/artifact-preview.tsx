@@ -197,9 +197,7 @@ const ArtifactPreview = () => {
                   className="size-full"
                   loading="lazy"
                   ref={iframeRef}
-                  src={
-                    'http://localhost:1420/src/windows/shinkai-artifacts/index.html'
-                  }
+                  src={'/src/windows/shinkai-artifacts/index.html'}
                 />
               </div>
             </TabsContent>
