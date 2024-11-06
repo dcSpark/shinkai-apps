@@ -1,7 +1,7 @@
 import './globals.css';
 
 import * as Babel from '@babel/standalone';
-import * as shadcnComponents from '@shinkai_network/shinkai-ui';
+import * as shadcnComponents from '@shinkai_network/shinkai-artifacts';
 import { DotPattern } from '@shinkai_network/shinkai-ui';
 import { Loader2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
@@ -164,7 +164,7 @@ const App = () => {
   }, []);
 
   return (
-    <div className="min-h-full w-full bg-white text-gray-500" ref={contentRef}>
+    <div className="min-h-full w-full" ref={contentRef}>
       {component ? (
         React.createElement(component)
       ) : (

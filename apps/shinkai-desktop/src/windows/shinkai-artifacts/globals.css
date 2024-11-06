@@ -1,10 +1,1 @@
-@import '../../../../../libs/shinkai-ui/src/styles/styles.css';
-
-html,
-body,
-#root {
-  overscroll-behavior: none;
-  @apply w-full min-h-full;
-}
-
-
+@import '../../../../../libs/shinkai-artifacts/src/styles/styles.css';

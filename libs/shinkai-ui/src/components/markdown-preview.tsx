@@ -1,9 +1,7 @@
 import ReactMarkdownPreview from '@uiw/react-markdown-preview';
-import { Code, Loader2 } from 'lucide-react';
 import React from 'react';
 import rehypeRaw from 'rehype-raw';
-import type { RehypeRewriteOptions } from 'rehype-rewrite';
-import rehypeRewrite from 'rehype-rewrite';
+import rehypeRewrite, { RehypeRewriteOptions } from 'rehype-rewrite';
 import { PluggableList } from 'unified';
 import { SKIP, visit } from 'unist-util-visit';
 
@@ -11,7 +9,6 @@ import { cn } from '../utils';
 
 function rehypeAntArtifact() {
   return (tree: any) => {
-    console.log(tree, 'tree');
     visit(tree, 'element', (node, index, parent) => {
       if (node.tagName === 'p' && node.children.length > 0) {
         const firstChild = node.children[0];
@@ -66,24 +63,24 @@ function rehypeAntArtifact() {
 }
 
 const rehypePlugins: PluggableList = [
-  // [
-  //   rehypeRewrite,
-  //   {
-  //     rewrite: (node, _, parent) => {
-  //       if (
-  //         node.type === 'element' &&
-  //         node.tagName === 'a' &&
-  //         parent &&
-  //         parent.type === 'element' &&
-  //         /^h([123456])/.test(parent.tagName)
-  //       ) {
-  //         parent.children = [parent.children[1]];
-  //       }
-  //     },
-  //   } as RehypeRewriteOptions,
-  // ],
-  // [rehypeRaw],
-  rehypeAntArtifact,
+  [
+    rehypeRewrite,
+    {
+      rewrite: (node, _, parent) => {
+        if (
+          node.type === 'element' &&
+          node.tagName === 'a' &&
+          parent &&
+          parent.type === 'element' &&
+          /^h([123456])/.test(parent.tagName)
+        ) {
+          parent.children = [parent.children[1]];
+        }
+      },
+    } as RehypeRewriteOptions,
+  ],
+  [rehypeRaw],
+  [rehypeAntArtifact],
 ];
 
 export const MarkdownPreview = ({
@@ -122,7 +119,7 @@ export const MarkdownPreview = ({
         ),
         ...components,
       }}
-      rehypePlugins={[rehypeAntArtifact]}
+      rehypePlugins={rehypePlugins}
       rehypeRewrite={(node, _, parent) => {
         if (
           'tagName' in node &&
