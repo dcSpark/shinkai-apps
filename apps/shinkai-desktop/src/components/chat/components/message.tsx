@@ -380,6 +380,7 @@ export const MessageBase = ({
                               artifact.identifier
                             ) {
                               setArtifact(null);
+                              return;
                             }
                             setArtifact(artifact);
                           }}
