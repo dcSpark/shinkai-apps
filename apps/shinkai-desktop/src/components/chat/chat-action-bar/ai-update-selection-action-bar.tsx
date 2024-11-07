@@ -82,10 +82,10 @@ export function AIModelSelector({
     </DropdownMenu>
   );
 }
-export function AiUpdateSelectionActionBar() {
+export function AiUpdateSelectionActionBar({ inboxId }: { inboxId?: string }) {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
-  const currentInbox = useGetCurrentInbox();
+  const currentInbox = useGetCurrentInbox(inboxId);
 
   const { mutateAsync: updateAgentInJob } = useUpdateAgentInJob({
     onError: (error) => {
