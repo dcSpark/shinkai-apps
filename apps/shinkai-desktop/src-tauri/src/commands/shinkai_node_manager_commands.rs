@@ -91,3 +91,15 @@ pub async fn shinkai_node_get_default_model() -> Result<String, String> {
     let model = ShinkaiNodeOptions::default_initial_model();
     Ok(model)
 }
+
+#[tauri::command]
+pub async fn shinkai_node_delete_ollama_model(model_name: String) -> Result<(), String> {
+    let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
+    match shinkai_node_manager_guard
+        .delete_ollama_model(&model_name)
+        .await
+    {
+        Ok(_) => Ok(()),
+        Err(message) => Err(message),
+    }
+}

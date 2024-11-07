@@ -1,7 +1,9 @@
 use futures_util::{Stream, StreamExt};
 use reqwest;
 
-use super::ollama_api_types::{OllamaApiPullRequest, OllamaApiPullResponse, OllamaApiTagsResponse};
+use super::ollama_api_types::{
+    OllamaApiDeleteRequest, OllamaApiPullRequest, OllamaApiPullResponse, OllamaApiTagsResponse,
+};
 
 pub struct OllamaApiClient {
     base_url: String,
@@ -119,5 +121,22 @@ impl OllamaApiClient {
         let result = Box::new(mapped_stream)
             as Box<dyn Stream<Item = Result<OllamaApiPullResponse, String>> + Send + Unpin>;
         Ok(result)
+    }
+
+    pub async fn delete_model(&self, model_name: &str) -> Result<(), String> {
+        let url = format!("{}/api/delete", self.base_url);
+        let client = reqwest::Client::new();
+        let body = OllamaApiDeleteRequest {
+            model: model_name.to_string(),
+        };
+        let response = client
+            .delete(&url)
+            .send()
+            .await
+            .map_err(|e| e.to_string())?;
+        if response.status() != 200 {
+            return Err(format!("failed to delete model: {}", response.status()));
+        }
+        Ok(())
     }
 }
