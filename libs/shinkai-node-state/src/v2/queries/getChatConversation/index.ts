@@ -6,6 +6,7 @@ import {
 import { ChatMessage } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 
 import {
+  Artifact,
   AssistantMessage,
   Attachment,
   FormattedMessage,
@@ -86,6 +87,32 @@ const createAssistantMessage = (message: ChatMessage): AssistantMessage => {
     }),
   );
 
+  const artifacts: Artifact[] = [];
+
+  const artifactRegex =
+    /<antartifact\s+identifier="([^"]+)"\s+type="([^"]+)"\s+(?:language="([^"]+)"\s+)?title="([^"]+)">([\s\S]*?)<\/antartifact>/g;
+
+  let match;
+  while ((match = artifactRegex.exec(text)) !== null) {
+    // const identifier = match[1];
+    const type = match[2];
+    const language = match[3];
+    const title = match[4];
+    let code = match[5];
+    const codeRegex = /```(?:\w+)?\s*([\s\S]*?)\s*```/;
+    if (codeRegex.test(code)) {
+      code = code.match(/```(?:\w+)?\s*([\s\S]*?)\s*```/)?.[1] ?? '';
+    }
+
+    artifacts.push({
+      identifier: message.node_api_data.node_message_hash,
+      type,
+      language,
+      title,
+      code,
+    });
+  }
+
   return {
     messageId: message.node_api_data.node_message_hash,
     createdAt: message.node_api_data.node_timestamp,
@@ -93,13 +120,14 @@ const createAssistantMessage = (message: ChatMessage): AssistantMessage => {
       parentMessageId: message.node_api_data.parent_hash,
       inboxId: message.inbox,
     },
-    content: text,
+    content: text.replace(/<antartifact[^>]*>[\s\S]*?<\/antartifact>/g, ''),
     role: 'assistant',
     status: {
       type: 'complete',
       reason: 'unknown',
     },
     toolCalls,
+    artifacts,
   };
 };
 

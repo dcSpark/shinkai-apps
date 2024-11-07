@@ -12,18 +12,15 @@ import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/c
 import { useRetryMessage } from '@shinkai_network/shinkai-node-state/v2/mutations/retryMessage/useRetryMessage';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
-import {
-  Artifact,
-  ChatConversationInfiniteData,
-} from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
+import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
-import { MessageList } from '@shinkai_network/shinkai-ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { produce } from 'immer';
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import { MessageList } from '../../components/chat/components/message-list';
 import { streamingSupportedModels } from '../../components/chat/constants';
 import { useChatStore } from '../../components/chat/context/chat-context';
 import ConversationFooter from '../../components/chat/conversation-footer';
@@ -144,12 +141,14 @@ const ChatConversation = () => {
 
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = decodeURIComponent(encodedInboxId);
+
   useWebSocketMessage({ inboxId, enabled: true });
   useWebSocketTools({ inboxId, enabled: true });
-  const artifact = useChatStore((state) => state.artifact);
-  const setArtifact = useChatStore((state) => state.setArtifact);
-  const setArtifacts = useChatStore((state) => state.setArtifacts);
-  const artifacts = useChatStore((state) => state.artifacts);
+
+  const setSelectedArtifact = useChatStore(
+    (state) => state.setSelectedArtifact,
+  );
+
   const auth = useAuth((state) => state.auth);
   const optInExperimental = useSettings((state) => state.optInExperimental);
 
@@ -178,53 +177,15 @@ const ChatConversation = () => {
   }, [chatConversationError, isError]);
 
   useEffect(() => {
-    if (data?.pages && optInExperimental) {
-      const artifacts: Artifact[] = [];
-      data?.content.forEach((msg) => {
-        const artifactRegex =
-          /<antartifact\s+identifier="([^"]+)"\s+type="([^"]+)"\s+(?:language="([^"]+)"\s+)?title="([^"]+)">([\s\S]*?)<\/antartifact>/g;
-
-        let match;
-        while ((match = artifactRegex.exec(msg.content)) !== null) {
-          // const identifier = match[1];
-          const type = match[2];
-          const language = match[3];
-          const title = match[4];
-          const code = match[5];
-          artifacts.push({
-            identifier: msg.messageId,
-            type,
-            language,
-            title,
-            code,
-          });
-        }
-      });
-      const uniqueArtifacts = artifacts.filter(
-        (artifact, index, self) =>
-          index === self.findIndex((a) => a.identifier === artifact.identifier),
-      );
-
-      setArtifacts(uniqueArtifacts);
-    }
-  }, [data?.content, data?.pages, optInExperimental, setArtifacts]);
-
-  useEffect(() => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
     if (
-      artifacts?.length > 0 &&
       optInExperimental &&
-      lastMessage?.role === 'assistant'
+      lastMessage?.role === 'assistant' &&
+      lastMessage.artifacts?.length > 0
     ) {
-      setArtifact(artifacts?.at(-1) ?? null);
+      setSelectedArtifact(lastMessage.artifacts?.at(-1) ?? null);
     }
-  }, [
-    artifacts,
-    artifacts?.length,
-    data?.pages,
-    optInExperimental,
-    setArtifact,
-  ]);
+  }, [data?.pages, optInExperimental]);
 
   const { mutateAsync: retryMessage } = useRetryMessage();
 
@@ -291,8 +252,6 @@ const ChatConversation = () => {
     <div className="flex max-h-screen flex-1 flex-col overflow-hidden pt-2">
       <ConversationHeader />
       <MessageList
-        artifact={artifact ?? undefined}
-        artifacts={artifacts}
         containerClassName="px-5"
         editAndRegenerateMessage={editAndRegenerateMessage}
         fetchPreviousPage={fetchPreviousPage}
@@ -305,7 +264,6 @@ const ChatConversation = () => {
         paginatedMessages={data}
         regenerateFirstMessage={regenerateFirstMessage}
         regenerateMessage={regenerateMessage}
-        setArtifact={setArtifact}
       />
 
       <ConversationFooter />
