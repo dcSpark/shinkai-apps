@@ -19,6 +19,11 @@
     "title": "Shinkaiの改善にご協力ください"
   },
   "chat": {
+    "actions": {
+      "deleteInbox": "チャットを削除",
+      "deleteInboxConfirmationDescription": "このチャットは削除され、チャット履歴からも削除されます",
+      "deleteInboxConfirmationTitle": "チャットを削除しますか？"
+    },
     "actives": {
       "label": "アクティブ",
       "notFound": "アクティブな会話は見つかりませんでした"
