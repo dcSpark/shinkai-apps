@@ -620,7 +620,7 @@ const MainLayout = () => {
 
   const { nodeInfo, isSuccess, isFetching } = useGetHealth(
     { nodeAddress: auth?.node_address ?? '' },
-    { refetchInterval: 10000, enabled: !!auth },
+    { refetchInterval: 35000, enabled: !!auth },
   );
 
   useEffect(() => {

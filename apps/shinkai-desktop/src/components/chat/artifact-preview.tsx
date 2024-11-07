@@ -22,8 +22,8 @@ import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { useChatStore } from './context/chat-context';
 
 const ArtifactPreview = () => {
-  const artifact = useChatStore((state) => state.artifact);
-  const setArtifact = useChatStore((state) => state.setArtifact);
+  const artifact = useChatStore((state) => state.selectedArtifact);
+  const setArtifact = useChatStore((state) => state.setSelectedArtifact);
 
   const contentRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);

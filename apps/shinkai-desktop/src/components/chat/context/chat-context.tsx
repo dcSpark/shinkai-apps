@@ -4,18 +4,15 @@ import { createStore } from 'zustand';
 import { useStore } from 'zustand/index';
 
 type ChatStore = {
-  artifact: Artifact | null;
-  setArtifact: (artifact: Artifact | null) => void;
-  artifacts: Artifact[];
-  setArtifacts: (artifacts: Artifact[]) => void;
+  selectedArtifact: Artifact | null;
+  setSelectedArtifact: (selectedArtifact: Artifact | null) => void;
 };
 
 const createChatStore = () =>
   createStore<ChatStore>((set) => ({
-    artifact: null,
-    setArtifact: (artifact: Artifact | null) => set({ artifact }),
-    artifacts: [],
-    setArtifacts: (artifacts: Artifact[]) => set({ artifacts }),
+    selectedArtifact: null,
+    setSelectedArtifact: (selectedArtifact: Artifact | null) =>
+      set({ selectedArtifact }),
   }));
 
 const ChatContext = createContext<ReturnType<typeof createChatStore> | null>(
