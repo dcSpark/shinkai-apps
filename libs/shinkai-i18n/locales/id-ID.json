@@ -19,6 +19,11 @@
     "title": "Bantu kami meningkatkan Shinkai"
   },
   "chat": {
+    "actions": {
+      "deleteInbox": "Hapus Obrolan",
+      "deleteInboxConfirmationDescription": "Obrolan akan dihapus dan dihilangkan dari riwayat obrolan Anda",
+      "deleteInboxConfirmationTitle": "Hapus obrolan?"
+    },
     "actives": {
       "label": "Aktif",
       "notFound": "Tidak ditemukan percakapan aktif."

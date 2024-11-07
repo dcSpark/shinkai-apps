@@ -27,18 +27,20 @@ import { useQueryClient } from '@tanstack/react-query';
 import { XIcon } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate, useParams } from 'react-router-dom';
-import { toast } from 'sonner';
+import { useParams } from 'react-router-dom';
 
 import { useChatConversationWithOptimisticUpdates } from '../../pages/chat/chat-conversation';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
+import {
+  AIModelSelector,
+  AiUpdateSelectionActionBar,
+} from '../chat/chat-action-bar/ai-update-selection-action-bar';
 import { useWebSocketMessage } from '../chat/websocket-message';
 import { useSheetProjectStore } from './context/table-context';
 
 export default function ChatTable() {
   const auth = useAuth((state) => state.auth);
-  const navigate = useNavigate();
   const { t } = useTranslation();
   const defaultAgentId = useSettings(
     (settingsStore) => settingsStore.defaultAgentId,
@@ -58,24 +60,15 @@ export default function ChatTable() {
   const createJobForm = useForm<CreateJobFormSchema>({
     resolver: zodResolver(createJobFormSchema),
     defaultValues: {
-      agent: defaultAgentId,
+      agent: '',
       message: '',
       files: [],
     },
   });
 
   useEffect(() => {
-    if (createJobForm.formState.errors.agent) {
-      toast.error('Please choose your default agent', {
-        action: {
-          label: 'Choose',
-          onClick: () => {
-            navigate('/settings');
-          },
-        },
-      });
-    }
-  }, [createJobForm.formState.errors.agent, navigate]);
+    createJobForm.setValue('agent', defaultAgentId);
+  }, [createJobForm, defaultAgentId]);
 
   const { mutateAsync: createJob } = useCreateJob({
     onSuccess: (data) => {
@@ -200,9 +193,19 @@ export default function ChatTable() {
 
       <Form {...createJobForm}>
         <form
-          className="space-y-8"
+          className="space-y-2"
           onSubmit={createJobForm.handleSubmit(onSubmit)}
         >
+          {chatInboxId ? (
+            <AiUpdateSelectionActionBar inboxId={chatInboxId} />
+          ) : (
+            <AIModelSelector
+              onValueChange={(value) => {
+                createJobForm.setValue('agent', value);
+              }}
+              value={createJobForm.watch('agent')}
+            />
+          )}
           <div className="flex shrink-0 items-center gap-1">
             <FormField
               control={createJobForm.control}

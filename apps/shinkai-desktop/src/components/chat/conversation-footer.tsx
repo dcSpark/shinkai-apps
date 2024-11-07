@@ -113,7 +113,6 @@ function ConversationEmptyFooter() {
   const promptSelected = usePromptSelectionStore(
     (state) => state.promptSelected,
   );
-  const setDefaultAgentId = useSettings((state) => state.setDefaultAgentId);
 
   const auth = useAuth((state) => state.auth);
   const { captureAnalyticEvent } = useAnalytics();
@@ -245,7 +244,9 @@ function ConversationEmptyFooter() {
     useDropzone({
       multiple: true,
       onDrop: (acceptedFiles) => {
-        chatForm.setValue('files', acceptedFiles, { shouldValidate: true });
+        const previousFiles = chatForm.getValues('files') ?? [];
+        const newFiles = [...previousFiles, ...acceptedFiles];
+        chatForm.setValue('files', newFiles, { shouldValidate: true });
       },
     });
 
@@ -356,7 +357,6 @@ function ConversationEmptyFooter() {
                         <AIModelSelector
                           onValueChange={(value) => {
                             chatForm.setValue('agent', value);
-                            setDefaultAgentId(value);
                           }}
                           value={chatForm.watch('agent')}
                         />
@@ -642,7 +642,9 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
     useDropzone({
       multiple: true,
       onDrop: (acceptedFiles) => {
-        chatForm.setValue('files', acceptedFiles, { shouldValidate: true });
+        const previousFiles = chatForm.getValues('files') ?? [];
+        const newFiles = [...previousFiles, ...acceptedFiles];
+        chatForm.setValue('files', newFiles, { shouldValidate: true });
       },
     });
 

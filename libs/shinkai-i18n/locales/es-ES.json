@@ -19,6 +19,11 @@
     "title": "Ayúdanos a mejorar Shinkai"
   },
   "chat": {
+    "actions": {
+      "deleteInbox": "Eliminar chat",
+      "deleteInboxConfirmationDescription": "El chat será eliminado y se quitará de tu historial de chats",
+      "deleteInboxConfirmationTitle": "¿Eliminar chat?"
+    },
     "actives": {
       "label": "Activos",
       "notFound": "No se encontraron conversaciones activas."

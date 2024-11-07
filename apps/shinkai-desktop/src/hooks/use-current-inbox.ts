@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 
 import { useAuth } from '../store/auth';
 
-export const useGetCurrentInbox = () => {
+export const useGetCurrentInbox = (inboxId?: string) => {
   const auth = useAuth((state) => state.auth);
   const location = useLocation();
 
@@ -13,10 +13,11 @@ export const useGetCurrentInbox = () => {
     token: auth?.api_v2_key ?? '',
   });
   const currentInbox = useMemo(() => {
-    const inboxId = location.pathname.split('/')?.[2];
-    const decodedInboxId = decodeURIComponent(inboxId);
+    const currentInboxId = inboxId ?? location.pathname.split('/')?.[2];
+
+    const decodedInboxId = decodeURIComponent(currentInboxId);
     return inboxes.find((inbox) => decodedInboxId === inbox.inbox_id);
-  }, [inboxes, location.pathname]);
+  }, [inboxId, inboxes, location.pathname]);
 
   return currentInbox;
 };

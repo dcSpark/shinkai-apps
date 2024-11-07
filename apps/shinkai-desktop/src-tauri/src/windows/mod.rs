@@ -61,3 +61,9 @@ pub fn hide_spotlight_window(app_handle: AppHandle) {
         window.hide().unwrap();
     }
 }
+
+pub fn show_spotlight_window(app_handle: AppHandle) {
+    if let Some(window) = app_handle.get_webview_window(Window::Spotlight.as_str()) {
+        window.show().unwrap();
+    }
+}

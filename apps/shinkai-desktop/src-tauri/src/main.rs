@@ -13,7 +13,7 @@ use crate::commands::shinkai_node_manager_commands::{
     shinkai_node_spawn, show_shinkai_node_manager_window,
 };
 
-use commands::spotlight_commands::hide_spotlight_window_app;
+use commands::spotlight_commands::{hide_spotlight_window_app, show_spotlight_window_app};
 use global_shortcuts::global_shortcut_handler;
 use globals::SHINKAI_NODE_MANAGER_INSTANCE;
 use local_shinkai_node::shinkai_node_manager::ShinkaiNodeManager;
@@ -72,6 +72,7 @@ fn main() {
         )
         .invoke_handler(tauri::generate_handler![
             hide_spotlight_window_app,
+            show_spotlight_window_app,
             show_shinkai_node_manager_window,
             shinkai_node_is_running,
             shinkai_node_get_last_n_logs,
