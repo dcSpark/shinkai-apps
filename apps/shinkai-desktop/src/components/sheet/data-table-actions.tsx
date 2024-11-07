@@ -10,6 +10,7 @@ import { useSetColumnSheet } from '@shinkai_network/shinkai-node-state/lib/mutat
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useGetWorkflowList } from '@shinkai_network/shinkai-node-state/v2/queries/getWorkflowList/useGetWorkflowList';
 import {
+  Badge,
   Button,
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -19,6 +20,7 @@ import {
   FormField,
   FormMessage,
   Input,
+  Label,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -35,6 +37,7 @@ import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { RowSelectionState } from '@tanstack/react-table';
 import { motion } from 'framer-motion';
 import { BotIcon, ChevronRight, PlusIcon } from 'lucide-react';
+import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import { Fragment, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
@@ -446,13 +449,57 @@ export function AddColumnAction() {
                       name="promptInput"
                       render={({ field }) => (
                         <div className="w-full space-y-1">
+                          <Label className="text-gray-80 text-xs">
+                            Enter prompt / formula
+                          </Label>
                           <Textarea
                             className="placeholder-gray-80 !min-h-[100px] resize-none bg-gray-200 pl-2 pt-2 text-xs"
                             onChange={field.onChange}
-                            placeholder={'Enter prompt or a formula...'}
+                            placeholder={`="What is the city of" + A`}
                             spellCheck={false}
                             value={field.value}
                           />
+                          <TooltipProvider delayDuration={0}>
+                            <Tooltip>
+                              <TooltipTrigger className="text-gray-80 flex items-center gap-1.5 text-xs">
+                                <InfoCircleIcon className="size-3" />
+                                Formula Syntax
+                              </TooltipTrigger>
+                              <TooltipPortal>
+                                <TooltipContent align="start" side="bottom">
+                                  Make sure to start with a
+                                  <Badge
+                                    className="mx-1 rounded-sm px-0.5 py-0"
+                                    variant="tags"
+                                  >
+                                    =
+                                  </Badge>
+                                  followed by the instruction. <br />
+                                  e.g:
+                                  <Badge
+                                    className="mx-1 rounded-sm px-0.5 py-0"
+                                    variant="tags"
+                                  >
+                                    {/* eslint-disable-next-line react/no-unescaped-entities */}
+                                    ="Text" + COLUMN + "Text"
+                                  </Badge>
+                                  <br />
+                                  <br />
+                                  For workflows applied, just type the column{' '}
+                                  <br />
+                                  e.g
+                                  <Badge
+                                    className="mx-1 rounded-sm px-0.5 py-0"
+                                    variant="tags"
+                                  >
+                                    {/* eslint-disable-next-line react/no-unescaped-entities */}
+                                    =B
+                                  </Badge>
+                                </TooltipContent>
+                              </TooltipPortal>
+                            </Tooltip>
+                          </TooltipProvider>
+
                           <FormMessage />
                         </div>
                       )}
