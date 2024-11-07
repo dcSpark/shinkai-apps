@@ -4,6 +4,7 @@ import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/cons
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { Badge, buttonVariants } from '@shinkai_network/shinkai-ui';
+import { invoke } from '@tauri-apps/api/core';
 import { motion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 import { useEffect } from 'react';
@@ -18,6 +19,10 @@ import { useWorkflowSelectionStore } from '../../components/workflow/context/wor
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
 import { useShinkaiNodeManager } from '../../store/shinkai-node-manager';
+
+export const showSpotlightWindow = async () => {
+  return invoke('show_spotlight_window_app');
+};
 
 const EmptyMessage = () => {
   const auth = useAuth((state) => state.auth);
@@ -59,7 +64,7 @@ const EmptyMessage = () => {
     setPromptSelected(undefined);
   }, []);
 
-  const onCreateJob = async (message: string) => {
+  const onCreateJob = async (message: string, isToolNeeded = false) => {
     if (!auth) return;
     await createJob({
       nodeAddress: auth.node_address,
@@ -68,7 +73,7 @@ const EmptyMessage = () => {
       content: message,
       isHidden: false,
       chatConfig: {
-        stream: DEFAULT_CHAT_CONFIG.stream,
+        stream: isToolNeeded ? false : DEFAULT_CHAT_CONFIG.stream,
         custom_prompt: '',
         temperature: DEFAULT_CHAT_CONFIG.temperature,
         top_p: DEFAULT_CHAT_CONFIG.top_p,
@@ -100,25 +105,39 @@ const EmptyMessage = () => {
               {t('chat.emptyStateDescription')}
             </p>
           </div>
-          <div className="flex max-w-3xl items-center gap-3">
+          <div className="grid max-w-4xl grid-cols-2 items-center gap-3">
+            <Badge
+              className="cursor-pointer justify-between text-balance bg-gray-300 py-2 text-left font-normal normal-case text-gray-50 transition-colors hover:bg-gray-200"
+              onClick={() => showSpotlightWindow()}
+              variant="outline"
+            >
+              Quick Ask Spotlight
+              <ArrowUpRight className="ml-2 h-3.5 w-3.5" />
+            </Badge>
             {[
               {
-                text: 'Explain the fundamentals of AI',
-                prompt: 'Explain the fundamentals of AI',
+                text: 'Search in Perplexity',
+                prompt:
+                  'Can you search in Perplexity? If you need more information, ask me a follow up question.',
+                isToolNeeded: true,
               },
               {
-                text: 'Brainstorm for my next vacation',
-                prompt: 'Brainstorm ideas for my next vacation',
+                text: 'Summarize a Youtube video',
+                prompt:
+                  'Can you help me summarize a youtube video? If you need more information, ask me a follow up question.',
+                isToolNeeded: true,
               },
               {
-                text: 'Make a plan meals for the week',
-                prompt: 'Make a plan meals for the week',
+                text: 'Tell me about the Roman Empire',
+                prompt: 'Tell me about the Roman Empire',
               },
             ].map((suggestion) => (
               <Badge
-                className="cursor-pointer justify-center text-balance bg-gray-300 py-2 font-normal normal-case text-gray-50 transition-colors hover:bg-gray-200"
+                className="cursor-pointer justify-between bg-gray-300 py-2 text-left font-normal normal-case text-gray-50 transition-colors hover:bg-gray-200"
                 key={suggestion.text}
-                onClick={() => onCreateJob(suggestion.prompt)}
+                onClick={() =>
+                  onCreateJob(suggestion.prompt, suggestion.isToolNeeded)
+                }
                 variant="outline"
               >
                 {suggestion.text}
