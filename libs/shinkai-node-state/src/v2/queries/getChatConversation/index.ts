@@ -98,7 +98,12 @@ const createAssistantMessage = (message: ChatMessage): AssistantMessage => {
     const type = match[2];
     const language = match[3];
     const title = match[4];
-    const code = match[5];
+    let code = match[5];
+    const codeRegex = /```(?:\w+)?\s*([\s\S]*?)\s*```/;
+    if (codeRegex.test(code)) {
+      code = code.match(/```(?:\w+)?\s*([\s\S]*?)\s*```/)?.[1] ?? '';
+    }
+
     artifacts.push({
       identifier: message.node_api_data.node_message_hash,
       type,
@@ -115,7 +120,6 @@ const createAssistantMessage = (message: ChatMessage): AssistantMessage => {
       parentMessageId: message.node_api_data.parent_hash,
       inboxId: message.inbox,
     },
-    // remove all the content inside of <antartifact> </antartifact> tags
     content: text.replace(/<antartifact[^>]*>[\s\S]*?<\/antartifact>/g, ''),
     role: 'assistant',
     status: {
