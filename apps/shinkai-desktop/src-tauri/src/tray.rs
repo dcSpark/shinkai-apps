@@ -54,7 +54,6 @@ pub fn create_tray(app: &tauri::AppHandle) -> tauri::Result<()> {
                 recreate_window(tray.app_handle().clone(), Window::ShinkaiNodeManager, true);
             }
             "quit" => {
-                let app_handle = tray.app_handle().clone();
                 tauri::async_runtime::spawn(async move {
                     // For some reason process::exit doesn't fire RunEvent::ExitRequested event in tauri
                     let mut shinkai_node_manager_guard =
