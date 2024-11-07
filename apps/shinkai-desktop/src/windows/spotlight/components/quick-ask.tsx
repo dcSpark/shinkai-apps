@@ -179,11 +179,10 @@ function QuickAsk() {
 
   return (
     <div className="relative flex size-full flex-col">
-      {/*// TODO: drag support*/}
-      {/*<div*/}
-      {/*  className="absolute top-0 z-50 h-8 w-full"*/}
-      {/*  data-tauri-drag-region={true}*/}
-      {/*/>*/}
+      <div
+        className="absolute top-0 z-50 h-8 w-full"
+        data-tauri-drag-region={true}
+      />
       <div className="font-lg flex h-[60px] shrink-0 items-center space-x-3 px-5 py-2">
         {inboxId && (
           <button
