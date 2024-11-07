@@ -145,7 +145,6 @@ const ChatConversation = () => {
   useWebSocketMessage({ inboxId, enabled: true });
   useWebSocketTools({ inboxId, enabled: true });
 
-  const selectedArtifact = useChatStore((state) => state.selectedArtifact);
   const setSelectedArtifact = useChatStore(
     (state) => state.setSelectedArtifact,
   );
@@ -186,7 +185,7 @@ const ChatConversation = () => {
     ) {
       setSelectedArtifact(lastMessage.artifacts?.at(-1) ?? null);
     }
-  }, [data?.pages, optInExperimental, selectedArtifact, setSelectedArtifact]);
+  }, [data?.pages, optInExperimental]);
 
   const { mutateAsync: retryMessage } = useRetryMessage();
 
