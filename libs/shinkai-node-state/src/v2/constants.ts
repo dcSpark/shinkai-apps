@@ -69,4 +69,5 @@ export const generateOptimisticAssistantMessage = (): AssistantMessage => ({
   status: { type: 'running' },
   metadata: { parentMessageId: '', inboxId: '' },
   toolCalls: [],
+  artifacts: [],
 });

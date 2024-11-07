@@ -27,7 +27,7 @@ export const ShinkaiNodeRunningOverlay = ({
     isPending: isHealthPending,
   } = useGetHealth(
     { nodeAddress: auth?.node_address ?? '' },
-    { refetchInterval: 15000 },
+    { refetchInterval: 35000 },
   );
   useEffect(() => {
     if (isHealthSuccess) {

@@ -98,6 +98,7 @@ export type AssistantMessage = BaseMessage & {
   content: string; // AssistantContentPart
   status: MessageStatus;
   toolCalls: ToolCall[];
+  artifacts: Artifact[];
 };
 
 export type FormattedMessage = AssistantMessage | UserMessage;
