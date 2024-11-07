@@ -27,8 +27,7 @@ pub struct ShinkaiNodeOptions {
     pub rpc_url: Option<String>,
     pub default_embedding_model: Option<String>,
     pub supported_embedding_models: Option<String>,
-    pub shinkai_tools_backend_binary_path: Option<String>,
-    pub shinkai_tools_backend_api_port: Option<String>,
+    pub shinkai_tools_runner_deno_binary_path: Option<String>,
     pub pdfium_dynamic_lib_path: Option<String>,
 }
 
@@ -190,16 +189,10 @@ impl ShinkaiNodeOptions {
                     .or(base_options.supported_embedding_models)
                     .unwrap_or_default(),
             ),
-            shinkai_tools_backend_binary_path: Some(
+            shinkai_tools_runner_deno_binary_path: Some(
                 options
-                    .shinkai_tools_backend_binary_path
-                    .or(base_options.shinkai_tools_backend_binary_path)
-                    .unwrap_or_default(),
-            ),
-            shinkai_tools_backend_api_port: Some(
-                options
-                    .shinkai_tools_backend_api_port
-                    .or(base_options.shinkai_tools_backend_api_port)
+                    .shinkai_tools_runner_deno_binary_path
+                    .or(base_options.shinkai_tools_runner_deno_binary_path)
                     .unwrap_or_default(),
             ),
             pdfium_dynamic_lib_path: Some(match options.pdfium_dynamic_lib_path {
@@ -218,14 +211,14 @@ impl Default for ShinkaiNodeOptions {
         );
         let initial_agent_models = format!("ollama:{}", initial_model);
 
-        let shinkai_tools_backend_binary_path = std::env::current_exe()
+        let shinkai_tools_runner_deno_binary_path = std::env::current_exe()
             .unwrap()
             .parent()
             .unwrap()
             .join(if cfg!(target_os = "windows") {
-                "shinkai-tools-backend.exe"
+                "deno.exe"
             } else {
-                "shinkai-tools-backend"
+                "deno"
             })
             .to_string_lossy()
             .to_string();
@@ -252,8 +245,7 @@ impl Default for ShinkaiNodeOptions {
             rpc_url: Some("https://arbitrum-sepolia.blockpi.network/v1/rpc/public".to_string()),
             default_embedding_model: Some("snowflake-arctic-embed:xs".to_string()),
             supported_embedding_models: Some("snowflake-arctic-embed:xs".to_string()),
-            shinkai_tools_backend_binary_path: Some(shinkai_tools_backend_binary_path),
-            shinkai_tools_backend_api_port: Some("9650".to_string()),
+            shinkai_tools_runner_deno_binary_path: Some(shinkai_tools_runner_deno_binary_path),
             pdfium_dynamic_lib_path: None,
         }
     }
