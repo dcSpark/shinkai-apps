@@ -19,7 +19,6 @@ use globals::SHINKAI_NODE_MANAGER_INSTANCE;
 use local_shinkai_node::shinkai_node_manager::ShinkaiNodeManager;
 use tauri::{Emitter, WindowEvent};
 use tauri::{Manager, RunEvent};
-use tauri_plugin_log::LogLevel;
 use tokio::sync::Mutex;
 use tray::create_tray;
 use windows::{recreate_window, Window};
@@ -41,7 +40,6 @@ struct Payload {
 }
 
 fn main() {
-    log::info!("startin app version: {}", env!("CARGO_PKG_VERSION"));
     tauri::Builder::default()
         .plugin(
             tauri_plugin_log::Builder::new()
@@ -95,6 +93,7 @@ fn main() {
             post_request,
         ])
         .setup(|app| {
+            log::info!("startin app version: {}", env!("CARGO_PKG_VERSION"));
             let app_resource_dir = app.path().resource_dir()?;
             let app_data_dir = app.path().app_data_dir()?;
 

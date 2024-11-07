@@ -200,6 +200,10 @@ const App = () => {
   };
   return (
     <div className="flex h-screen w-full flex-col space-y-2 p-8">
+      <div
+        className="absolute top-0 z-50 h-6 w-full"
+        data-tauri-drag-region={true}
+      />
       <div className="flex flex-row items-center">
         <img alt="shinkai logo" className="h-10 w-10" src={logo} />
         <div className="ml-4 flex flex-col">

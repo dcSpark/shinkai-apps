@@ -63,7 +63,7 @@
         "title": "Spotlight",
         "width": 720,
         "height": 470,
-        "resizable": false,
+        "resizable": true,
         "dragDropEnabled": false,
         "titleBarStyle": "Overlay",
         "hiddenTitle": true,
@@ -106,7 +106,7 @@
         "width": 1280,
         "height": 840,
         "resizable": true,
-        "dragDropEnabled": true,
+        "dragDropEnabled": false,
         "titleBarStyle": "Overlay",
         "hiddenTitle": true,
         "create": false
