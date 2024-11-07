@@ -16,7 +16,7 @@
     <key>com.apple.security.device.usb</key><true/>
     <key>com.apple.security.personal-information.location</key><true/>
 
-    <!-- entitlements required by shinkai-tools-backend (collected from nodejs entitlements) -->
+    <!-- entitlements required by deno (collected from nodejs entitlements) -->
     <key>com.apple.security.cs.allow-jit</key>
     <true/>
     <key>com.apple.security.cs.allow-unsigned-executable-memory</key>

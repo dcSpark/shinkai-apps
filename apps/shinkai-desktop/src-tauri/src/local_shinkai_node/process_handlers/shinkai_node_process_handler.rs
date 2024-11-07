@@ -175,7 +175,6 @@ impl ShinkaiNodeProcessHandler {
             self.options.node_port.as_deref(),
             self.options.node_ws_port.as_deref(),
             self.options.node_api_port.as_deref(),
-            self.options.shinkai_tools_backend_api_port.as_deref(),
         ]
         .into_iter()
         .flatten()

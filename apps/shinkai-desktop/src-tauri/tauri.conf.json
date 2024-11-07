@@ -10,7 +10,7 @@
     "targets": ["app", "appimage", "nsis", "dmg"],
     "externalBin": [
       "external-binaries/shinkai-node/shinkai-node",
-      "external-binaries/shinkai-node/shinkai-tools-runner-resources/shinkai-tools-backend",
+      "external-binaries/shinkai-node/shinkai-tools-runner-resources/deno",
       "external-binaries/ollama/ollama"
     ],
     "icon": [
