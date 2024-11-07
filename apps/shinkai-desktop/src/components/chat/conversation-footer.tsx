@@ -244,7 +244,9 @@ function ConversationEmptyFooter() {
     useDropzone({
       multiple: true,
       onDrop: (acceptedFiles) => {
-        chatForm.setValue('files', acceptedFiles, { shouldValidate: true });
+        const previousFiles = chatForm.getValues('files') ?? [];
+        const newFiles = [...previousFiles, ...acceptedFiles];
+        chatForm.setValue('files', newFiles, { shouldValidate: true });
       },
     });
 
@@ -640,7 +642,9 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
     useDropzone({
       multiple: true,
       onDrop: (acceptedFiles) => {
-        chatForm.setValue('files', acceptedFiles, { shouldValidate: true });
+        const previousFiles = chatForm.getValues('files') ?? [];
+        const newFiles = [...previousFiles, ...acceptedFiles];
+        chatForm.setValue('files', newFiles, { shouldValidate: true });
       },
     });
 
