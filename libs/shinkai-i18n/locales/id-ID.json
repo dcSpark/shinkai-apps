@@ -280,6 +280,7 @@
     }
   },
   "ollama": {
+    "version": "Versi Ollama",
     "errors": {
       "failedToFetch": "Gagal mengambil model Ollama lokal. Pastikan Ollama berjalan dengan benar."
     }

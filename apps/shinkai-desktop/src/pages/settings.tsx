@@ -34,7 +34,7 @@ import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-import { useShinkaiNodeRespawnMutation } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
+import { useShinkaiNodeGetOllamaVersionQuery, useShinkaiNodeRespawnMutation } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { isHostingShinkaiNode } from '../lib/shinkai-node-manager/shinkai-node-manager-windows-utils';
 import { SetupData, useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
@@ -47,6 +47,7 @@ const formSchema = z.object({
   nodeAddress: z.string(),
   shinkaiIdentity: z.string(),
   nodeVersion: z.string(),
+  ollamaVersion: z.string(),
   optInAnalytics: z.boolean(),
   optInExperimental: z.boolean(),
   language: z.string(),
@@ -90,6 +91,7 @@ const SettingsPage = () => {
       defaultAgentId: defaultAgentId,
       nodeAddress: auth?.node_address,
       shinkaiIdentity: auth?.shinkai_identity,
+      ollamaVersion: '',
       optInAnalytics,
       optInExperimental,
       language: userLanguage,
@@ -128,6 +130,11 @@ const SettingsPage = () => {
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
   });
+
+  const { data: ollamaVersion } = useShinkaiNodeGetOllamaVersionQuery();
+  useEffect(() => {
+    form.setValue('ollamaVersion', ollamaVersion ?? '');
+  }, [ollamaVersion, form]);
 
   const { mutateAsync: respawnShinkaiNode } = useShinkaiNodeRespawnMutation();
   const { mutateAsync: updateNodeName, isPending: isUpdateNodeNamePending } =
@@ -394,6 +401,17 @@ const SettingsPage = () => {
                   <TextField
                     field={field}
                     label={t('shinkaiNode.nodeVersion')}
+                  />
+                )}
+              />
+              <FormField
+                control={form.control}
+                disabled
+                name="ollamaVersion"
+                render={({ field }) => (
+                  <TextField
+                    field={field}
+                    label={t('ollama.version')}
                   />
                 )}
               />

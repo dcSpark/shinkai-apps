@@ -11,6 +11,7 @@ use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
 use tokio::sync::broadcast;
 use tokio::sync::mpsc::channel;
+use anyhow::Result;
 
 #[derive(Serialize, Deserialize, Clone)]
 pub enum ShinkaiNodeManagerEvent {
@@ -275,5 +276,9 @@ impl ShinkaiNodeManager {
 
     pub fn get_ollama_api_url(&self) -> String {
         self.ollama_process.get_ollama_api_base_url()
+    }
+
+    pub async fn get_ollama_version(app: AppHandle) -> Result<String> {
+        OllamaProcessHandler::version(app).await
     }
 }
