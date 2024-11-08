@@ -280,10 +280,10 @@
     }
   },
   "ollama": {
-    "version": "Versión de Ollama",
     "errors": {
       "failedToFetch": "Error al obtener modelos locales de Ollama. Por favor, asegúrate de que Ollama esté funcionando correctamente."
-    }
+    },
+    "version": "Versión de Ollama"
   },
   "onboardingChecklist": {
     "addAI": "Añadir IA",

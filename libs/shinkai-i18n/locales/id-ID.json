@@ -280,10 +280,10 @@
     }
   },
   "ollama": {
-    "version": "Versi Ollama",
     "errors": {
       "failedToFetch": "Gagal mengambil model Ollama lokal. Pastikan Ollama berjalan dengan benar."
-    }
+    },
+    "version": "Versi Ollama"
   },
   "onboardingChecklist": {
     "addAI": "Tambahkan AI",

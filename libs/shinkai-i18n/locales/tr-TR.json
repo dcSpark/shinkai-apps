@@ -1,0 +1,575 @@
+{
+  "aiFilesSearch": {
+    "description": "Yapay Zeka Dosyalarınızda içerik bulmak için kolayca arama yapın",
+    "filesSelected": "{{count}} dosya seçildi",
+    "foundResults": "{{count}} sonuç bulundu",
+    "label": "Yapay Zeka Dosyaları İçerik Arama"
+  },
+  "analytics": {
+    "bulletPoints": {
+      "five": "<x/> Asla AI sorgularınızı toplamayız",
+      "four": "<x/> Asla IP adresinizi toplamayız",
+      "one": "<check/> Her zaman Ayarlar üzerinden çıkış yapmanıza izin verir",
+      "six": "<x/> Kişisel bilgilerinizi eğitim amaçları için asla kullanmayız",
+      "three": "<check/> Kullandığınız özellikler hakkında içerik veya yanıt olmadan analitik bilgi gönderin",
+      "two": "<check/> Rastgele Analitik"
+    },
+    "label": "Analitik",
+    "moreInfo": "Gizlilik uygulamalarımızla ilgili daha fazla bilgi için lütfen <a>Gizlilik Politikasına</a> bakın",
+    "title": "Shinkai'yi geliştirmemize yardımcı olun"
+  },
+  "chat": {
+    "actions": {
+      "deleteInbox": "Sohbeti Sil",
+      "deleteInboxConfirmationDescription": "Sohbet silinecek ve sohbet geçmişinizden kaldırılacaktır.",
+      "deleteInboxConfirmationTitle": "Sohbeti silmek istiyor musunuz?"
+    },
+    "actives": {
+      "label": "Aktifler",
+      "notFound": "Aktif sohbet bulunamadı."
+    },
+    "allMessagesLoaded": "Tüm önceki mesajlar yüklendi ✅",
+    "archives": {
+      "archive": "Arşivle",
+      "archived": "Arşivlendi",
+      "error": "Görevi arşivlerken hata oluştu",
+      "label": "Arşivler",
+      "notFound": "Arşivlenmiş sohbet bulunamadı.",
+      "success": "Sohbetiniz arşivlendi"
+    },
+    "chats": "Sohbetler",
+    "context": {
+      "description": "Bu sohbet için bağlam olarak kullanılan klasörler ve dosyaların listesi",
+      "title": "Sohbet Bağlamı"
+    },
+    "create": "AI Sohbeti Oluştur",
+    "editMessage": {
+      "warning": "Bu, sohbetinizi buradan itibaren yeniden başlatacaktır."
+    },
+    "emptyStateDescription": "Hızlı sorular için, Shinkai Spotlight'ı kullanmak üzere ⌘ + Shift + J tuşlarına basın",
+    "emptyStateTitle": "Shinkai AI'ye Sor",
+    "enterMessage": "Mesaj Girin",
+    "fileProcessing": {
+      "description": "Bu birkaç dakika sürebilir",
+      "title": "Dosyanız işleniyor"
+    },
+    "form": {
+      "message": "Yapmak istediğiniz işi söyleyin",
+      "messagePlaceholder": "Ör: İnternetin nasıl çalıştığını açıkla...",
+      "selectAI": "AI'nizi Seçin",
+      "selectedText": "Seçtiğiniz metin",
+      "setContext": "Sohbet Bağlamını Ayarlayın",
+      "setContextText": "Sohbetiniz sırasında AI'nizin kullanması için dosya veya klasör ekleyin.",
+      "workflows": "İş Akışları"
+    },
+    "limitReachedDescription": "Bu model/ajan için ay boyunca tüm sorgularınızı kullandınız. Lütfen başka bir ajan ile yeni bir sohbet başlatın.",
+    "limitReachedTitle": "Limit Aşıldı",
+    "sendMessage": "Mesaj Gönder"
+  },
+  "chatDM": {
+    "create": "DM Sohbeti Oluştur",
+    "form": {
+      "message": "Mesaj",
+      "messagePlaceholder": "Mesajınızı girin",
+      "shinkaiIdentity": "Shinkai Kimliği"
+    }
+  },
+  "codeRunner": {
+    "errorOccurred": "Hata Oluştu",
+    "executeCode": "Kodu Çalıştır",
+    "output": "Çıktı",
+    "stderr": "Standart Hata",
+    "stdout": "Standart Çıktı"
+  },
+  "common": {
+    "alreadyHaveNode": "Zaten bir Düğümünüz mü var?",
+    "back": "Geri",
+    "cancel": "İptal",
+    "clearSearch": "Aramayı Temizle",
+    "clickToUpload": "Yüklemek için tıklayın veya sürükleyip bırakın",
+    "comingSoon": "Yakında - Ağustos Sonu",
+    "configure": "Yapılandır",
+    "connect": "Bağlan",
+    "continue": "Devam Et",
+    "copy": "Kopyala",
+    "create": "Oluştur",
+    "delete": "Sil",
+    "disconnect": "Bağlantıyı Kes",
+    "done": "Tamam",
+    "edit": "Düzenle",
+    "editMessage": "Mesajı Düzenle",
+    "enabled": "Etkin",
+    "file": "Dosya",
+    "fileWithCount_one": "{{count}} Dosya",
+    "fileWithCount_other": "{{count}} Dosyalar",
+    "files": "Dosyalar",
+    "folderLocation": "Klasör Konumu:",
+    "folderWithCount_one": "{{count}} Klasör",
+    "folderWithCount_other": "{{count}} Klasörler",
+    "folders": "Klasörler",
+    "getStarted": "Başlayın",
+    "iAgree": "Kabul Ediyorum",
+    "install": "Kur",
+    "installed": "Yüklü",
+    "logInShinkaiHosting": "Shinkai Hosting'e Giriş Yap",
+    "moreOptions": "Daha Fazla Seçenek",
+    "next": "İleri",
+    "noThanks": "Hayır, Teşekkürler",
+    "optIn": "Katıl",
+    "optOut": "Ayrıl",
+    "passphrase": "Şifreleme Anahtarı",
+    "quickConnect": "Hızlı Bağlantı",
+    "recommended": "Tavsiye Edilen",
+    "remove": "Kaldır",
+    "rename": "Yeniden Adlandır",
+    "repeatPassphrase": "Şifreleme Anahtarını Onaylayın",
+    "resetAll": "Hepsini Sıfırla",
+    "resetData": "Verileri Sıfırla",
+    "resetFilters": "Filtreleri Sıfırla",
+    "restore": "Geri Yükle",
+    "retry": "Tekrar Dene",
+    "save": "Kaydet",
+    "search": "Ara",
+    "searchPlaceholder": "Ara...",
+    "seeOptions": "Seçenekleri Gör",
+    "send": "Gönder",
+    "shinkaiPrivate": "Yerel AI'nizi Kurun",
+    "signUpShinkaiHosting": "Shinkai Hosting'e Kaydol",
+    "soon": "yakında",
+    "termsAndConditionsText": "Hizmet <a>Şartlarını</a> ve <b>Gizlilik Politikasını</b> kabul ediyorum",
+    "unselectAll": "Hepsini Seçme",
+    "update": "Güncelle",
+    "upload": "Yükle",
+    "uploadFile": "Bir Dosya Yükle"
+  },
+  "desktop": {
+    "benefits": {
+      "local": "<b>Yerel:</b> Yerel bir Shinkai ile verilerinizi güvenli bir ortamda tam kontrol altına alırsınız.",
+      "privacy": "<b>Gizlilik Odaklı:</b> Verileriniz çevrimdışı yetenekler ve güçlü gizlilik korumaları ile güvenli kalır.",
+      "tools": "<b>Günlük Görevler için Araçlar:</b> 100'den fazla entegrasyonu destekler ve sayısı artmaktadır."
+    },
+    "localAI": "Shinkai Yerel AI",
+    "model": {
+      "downloading": "İndiriliyor",
+      "embeddingBenefits": {
+        "dataAnalysis": "<b>Geliştirilmiş Veri Analizi:</b> Yapısal olmayan verilerden anlamlı içgörüler çıkararak karar verme süreçlerini ve operasyonel verimliliği artırır.",
+        "efficient": "<b>Kompakt Boyut & Verimli:</b> Sadece 22 milyon parametre ve 384 boyutlu bir gömme vektörü ile Arctic-embed-xs, kaynak verimliliği için tasarlanmıştır.",
+        "highRetrieval": "<b>Yüksek Veri Alma Performansı:</b> Büyük veri setlerinden ilgili bilgileri etkili bir şekilde alabilir, arama ve alma görevlerinde yüksek doğruluk sağlar."
+      },
+      "gemmaBenefits": {
+        "fast": "<b>Hızlı Çalışma:</b> Kullanıcılar, orta seviye donanımda verimli çalıştığını, daha hızlı yanıtlar ve daha akıcı etkileşimler sağladığını belirtmiştir.",
+        "lightweight": "<b>Hafif:</b> Bu hafif yapısı, daha az bellek ve hesaplama gücü gerektirir, bu da daha geniş bir kullanıcı ve uygulama yelpazesi için erişilebilir olmasını sağlar.",
+        "performance": "<b>Kompakt Boyutta Yüksek Performans:</b> gemma2:2b modeli, 2 milyar parametre ile sınıfının en iyisi performansı sunacak şekilde tasarlanmıştır."
+      },
+      "installation": "{{modelName}} kuruluyor...",
+      "ollamaBenefits": {
+        "language": "<b>Güçlü Dil Üretimi:</b> İçerik üretimi, dil çevirisi ve kodlama yardımı gibi çeşitli uygulamalarda insan benzeri metinler üretebilir.",
+        "multilingual": "<b>Çok Dilli Destek:</b> Model, İngilizce, İspanyolca, Fransızca, Almanca ve daha fazlası dahil olmak üzere birden fazla dilde diyalogları destekler.",
+        "resource": "<b>Verimli Kaynak Kullanımı:</b> Daha büyük modellere kıyasla hafif ve ultra hızlı bir modeldir."
+      }
+    },
+    "welcome": "Shinkai'ya Hoş Geldiniz ✨",
+    "welcomeText": "Shinkai Desktop ile AI kullanarak masaüstü deneyiminizi dönüştürün"
+  },
+  "disconnect": {
+    "exportConnection": "Devam etmeden önce, lütfen<Link>bağlantınızı dışa aktarın</Link> böylece istediğiniz zaman bağlantınızı geri yükleyebilirsiniz.",
+    "modalDescription": "Bağlantıyı kesmek istediğinize emin misiniz? Bu, verilerinizi kalıcı olarak silecektir.",
+    "modalTitle": "Shinkai'yi Bağlantıyı Kes"
+  },
+  "errors": {
+    "nodeUnavailable": {
+      "description": "Shinkai Düğümünüze bağlanmakta zorluk yaşıyoruz. Düğümünüz çevrimdışı olabilir veya internet bağlantınızda bir sorun olabilir.",
+      "title": "Düğüm Kullanılamıyor"
+    }
+  },
+  "exportConnection": {
+    "downloadText": "Bu bağlantı dosyasını indirin ve güvenli bir yerde saklayın",
+    "form": {
+      "passphrase": "Şifre ifadesi",
+      "repeatPassphrase": "Şifre ifadesini tekrar edin"
+    },
+    "generateFile": "Bağlantı dosyasını oluştur",
+    "label": "Bağlantıyı Dışa Aktar",
+    "restoreText": "Bağlantıyı Shinkai Düğümünüze geri yüklemek için şifrenizle birlikte kullanın"
+  },
+  "extension": {
+    "welcome": "Shinkai Visor ile web tarayıcı deneyiminizi AI ile dönüştürün ✨"
+  },
+  "galxe": {
+    "errors": {
+      "registerDesktopInstallation": "Shinkai Masaüstü kurulumunuzu kaydederken bir hata oluştu. Lütfen EVM Adresinizin daha önce farklı bir kurulumu kaydetmek için kullanılmadığından emin olun."
+    },
+    "form": {
+      "evmAddress": "EVM Adresi",
+      "evmAddressHelper": "Galxe'de kullandığınız EVM Adresini ekleyin",
+      "proof": "Kanıt",
+      "registerInstallation": "Kurulumu Kaydet",
+      "signature": "İmza"
+    },
+    "goToGalxeQuest": "Galxe Görevimizi Kontrol Edin",
+    "label": "Galxe Görevi",
+    "success": {
+      "registerDesktopInstallation": "Shinkai Masaüstü kurulumunuz başarıyla kaydedildi. Galxe görevinde kaydedilmesi birkaç saat sürebilir."
+    }
+  },
+  "inboxes": {
+    "inboxName": "Ad",
+    "updateName": "Gelen kutusu adını güncelle"
+  },
+  "layout": {
+    "menuItems": {
+      "agents": "Yapay Zekalar",
+      "aiTasks": "Yapay Zeka Görevleri",
+      "chats": "Sohbetler",
+      "disconnect": "Bağlantıyı Kes",
+      "mySubscriptions": "Benim Aboneliklerim",
+      "settings": "Ayarlar",
+      "subscriptions": "Abonelikleri Gözden Geçir",
+      "vectorFs": "Yapay Zeka Dosya Gezgini",
+      "vectorSearch": "Yapay Zeka Dosya İçeriği Arama",
+      "workflowPlayground": "İş Akışı Oyun Alanı"
+    },
+    "sidebar": {
+      "toggle": "Yan Çubuğunu Aç/Kapat"
+    }
+  },
+  "llmProviders": {
+    "add": "Yapay Zeka Ekle",
+    "addManually": "Yapay Zeka Manuel Olarak Ekle",
+    "delete": {
+      "description": "Bu yapay zekayı silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
+      "label": "Yapay Zekayı Sil"
+    },
+    "errors": {
+      "createAgent": "Yapay Zeka eklenirken hata oluştu",
+      "deleteAgent": "Yapay Zeka silinirken hata oluştu",
+      "updateAgent": "Yapay Zeka güncellenirken hata oluştu"
+    },
+    "form": {
+      "agentName": "Yapay Zeka Adı",
+      "apiKey": "API Anahtarı",
+      "customModelType": "Özel Model Türü",
+      "externalUrl": "Dış URL",
+      "modelId": "Model Kimliği",
+      "modelName": "Model Adı",
+      "modelProvider": "Model Sağlayıcı",
+      "modelType": "Model",
+      "selectModel": "Model Sağlayıcısını Seç",
+      "toggleCustomModel": "Özel bir model ekle"
+    },
+    "label": "Yapay Zekalar",
+    "localAI": {
+      "installText": "Yerel makinenizde yapay zeka modellerini yükledikten sonra, bunlar yapay zeka olarak kullanılabilir hale gelecektir.",
+      "installTitle": "Yapay Zeka Modellerini Yükle"
+    },
+    "notFound": {
+      "description": "İlk yapay zekanızı bağlayarak Shinkai AI ile soru sormaya başlayın. OpenAI'yi bağlamayı deneyin.",
+      "title": "Mevcut Yapay Zeka Yok"
+    },
+    "success": {
+      "createAgent": "Yapay Zeka başarıyla oluşturuldu",
+      "deleteAgent": "Yapay Zeka başarıyla silindi",
+      "updateAgent": "Yapay Zeka başarıyla güncellendi"
+    },
+    "switch": "Yapay Zeka Değiştir"
+  },
+  "notifications": {
+    "messageReceived": {
+      "description": "{{inboxName}}'den bir yanıt aldınız",
+      "label": "Mesaj Alındı"
+    }
+  },
+  "ollama": {
+    "errors": {
+      "failedToFetch": "Yerel Ollama modelleri alınamadı. Lütfen Ollama'nın doğru çalıştığından emin olun."
+    },
+    "version": "Ollama Sürümü"
+  },
+  "onboardingChecklist": {
+    "addAI": "Yapay Zeka Ekle",
+    "addAIDescription": "Favori LLM'inizi kullanan bir yapay zeka ajanı ekleyin",
+    "askFiles": "Dosyalara Sorular Sorun",
+    "askFilesButton": "Dosyalarla Sohbet Oluştur",
+    "askFilesDescription": "Dosyalarınızla sohbet edin. Herhangi bir soruyu sorun, bilgi bulun, özetler alın ve daha fazlası.",
+    "completedSteps": "Tüm adımları tamamladınız",
+    "createAIChat": "Yapay Zeka Sohbeti Oluştur",
+    "createAIChatDescription": "Yapay zekanızla bir sohbet başlatın",
+    "dismiss": "Kontrol Listesini Kapat",
+    "getStartedChecklist": "Başlangıç Kontrol Listesi",
+    "getStartedText": "Shinkai ile Başlayın",
+    "setupShinkaiDesktop": "Shinkai Masaüstünü Kurun",
+    "setupShinkaiDesktopDescription": "Başlamak için Shinkai Masaüstünü kurun",
+    "uploadAFile": "Bir Dosya Yükleyin",
+    "uploadAFileDescription": "Notlarınızı, web sitelerinizi, belgelerinizi ve diğerlerini güvenli bir şekilde tek bir yerde saklayın."
+  },
+  "quickAsk": {
+    "emptyStateDescription": "Şunu deneyin: “JavaScript'te HTTP isteği nasıl yapılır?”, “80'lerdeki en iyi 10 rock müziği nedir?”, “İnternet nasıl çalışır, açıkla”",
+    "emptyStateTitle": "Shinkai AI'ye Sor"
+  },
+  "quickConnection": {
+    "connectingToNode": "Yerel Shinkai Düğümünüze Bağlanıyor",
+    "form": {
+      "connect": "Bağlan",
+      "nodeAddress": "Düğüm Adresi"
+    },
+    "label": "Hızlı Bağlantı"
+  },
+  "registrationCode": {
+    "create": "Kayıt Kodu Oluştur",
+    "label": "Kayıt Kodu"
+  },
+  "restoreConnection": {
+    "description": "Bir bağlantı dosyası ve şifreleme anahtarı kullanın",
+    "form": {
+      "encryptedConnectionFile": "Şifreli Bağlantı Dosyası",
+      "passphrase": "Şifreleme Anahtarı"
+    },
+    "label": "Bağlantıyı Yenile",
+    "restore": "Yenile"
+  },
+  "settings": {
+    "cryptoWallet": {
+      "addCoinbaseCDPWallet": "Coinbase CDP Cüzdanı Ekle",
+      "addLocalWallet": "Yerel Cüzdan Ekle",
+      "addWallet": "Cüzdan Ekle",
+      "description": "Kripto cüzdanlarınızı yönetin. Coinbase CDP Cüzdanınızı veya Hot Cüzdanınızı ekleyin.",
+      "emptyState": {
+        "description": "Kripto cüzdanlarınızı yönetin. Coinbase CDP Cüzdanınızı veya Hot Cüzdanınızı oluşturun veya geri yükleyin.",
+        "title": "Cüzdan bulunamadı"
+      },
+      "errorDescription": "Cüzdanınızı geri yüklerken bir hata oluştu.",
+      "errorTitle": "Cüzdan geri yükleme hatası",
+      "name": "İsim",
+      "privateKey": "Özel Anahtar",
+      "serverSigner": "Sunucu İmzalayıcı",
+      "successDescription": "Cüzdanınız başarıyla geri yüklendi.",
+      "successTitle": "Cüzdan başarıyla geri yüklendi",
+      "title": "Kripto Cüzdanı",
+      "walletId": "Cüzdan ID",
+      "walletIdOptional": "Cüzdan ID isteğe bağlıdır"
+    },
+    "defaultAgent": "Varsayılan AI",
+    "description": "Hesap ayar tercihlerinizi yönetin.",
+    "experimentalFeature": {
+      "label": "Deneysel Özellikleri Etkinleştir"
+    },
+    "exportConnection": {
+      "label": "Bağlantıyı Dışa Aktar"
+    },
+    "general": "Genel",
+    "label": "Ayarlar",
+    "language": {
+      "label": "Dil",
+      "selectLanguage": "Dil Seçin"
+    },
+    "layout": {
+      "analytics": "Analitik",
+      "createRegistrationCode": "Kayıt Kodu Oluştur",
+      "cryptoWallet": "Kripto Cüzdanı",
+      "exportConnection": "Bağlantıyı Dışa Aktar",
+      "galxe": "Galxe Görevi",
+      "general": "Genel",
+      "promptLibrary": "İpucu Kütüphanesi",
+      "publicKeys": "Açık Anahtarlar",
+      "shinkaiNode": "Shinkai Düğüm Yöneticisi"
+    },
+    "promptLibrary": {
+      "label": "İpucu Kütüphanesi"
+    },
+    "publicKeys": {
+      "label": "Açık Anahtarlar",
+      "myDeviceEncryption": "Benim Cihazımın Şifrelemesi",
+      "myDeviceIdentity": "Benim Cihazımın Kimliği",
+      "myDevicePublicKeys": "Benim Cihazımın Açık Anahtarları",
+      "nodeEncryption": "Düğüm Şifrelemesi",
+      "nodePublicKeys": "Düğüm Açık Anahtarları",
+      "nodeSignature": "Düğüm İmzası",
+      "profileEncryption": "Profil Şifrelemesi",
+      "profileIdentity": "Profil Kimliği",
+      "profilePublicKeys": "Profil Açık Anahtarları",
+      "show": "Açık Anahtarları Göster"
+    },
+    "quickAccessButton": {
+      "description": "Hızlı Erişim Butonu, tıklayıp basılı tutarak taşınabilir.",
+      "label": "Shinkai Hızlı Erişim Butonunu Göster"
+    },
+    "registerNewCode": {
+      "label": "Yeni cihaz kaydet"
+    },
+    "shinkaiIdentity": {
+      "checkIdentityInSync": "Shinkai Kimliğini doğrula",
+      "checkIdentityInSyncDescription": "Shinkai kimliğinizin doğru bir şekilde senkronize olduğunu kontrol edin.",
+      "error": "Shinkai Kimliği güncellerken hata",
+      "goToShinkaiIdentity": "Benim Shinkai Kimliğime git",
+      "label": "Shinkai Kimliği",
+      "registerIdentity": "Shinkai Kimliğinizi kaydedin",
+      "success": "Shinkai Kimliği başarıyla güncellendi",
+      "updatedIdentity": "Shinkai Kimliği başarıyla güncellendi."
+    },
+    "shinkaiVersion": "Shinkai Masaüstü Sürümü:",
+    "shortcutKey": {
+      "description": "Yan menüyü açmak için kısayol tuşunu değiştirin",
+      "label": "Kısayol Tuşu"
+    },
+    "sidebar": {
+      "blacklistedWebsites": "Siyah Listeye Alınan Web Siteleri",
+      "includeClickImageCapture": {
+        "text": "Hızlı Erişim üzerine gelme menüsüne bir Görüntü Yakalama Butonu ekler.",
+        "title": "1-Tık Görüntü Yakalama Seçeneğini Dahil Et"
+      },
+      "includeClickSummary": {
+        "text": "Hızlı Erişim üzerine gelme menüsüne bir Özet Butonu ekler.",
+        "title": "1-Tık Özeti Seçeneğini Dahil Et"
+      },
+      "label": "Yan Menü"
+    }
+  },
+  "sheet": {
+    "actions": {
+      "createProject": "Proje Oluştur",
+      "deleteProject": "Projeyi Sil",
+      "deleteProjectConfirmationDescription": "Bu proje hemen silinecek. Bu işlemi geri alamazsınız.",
+      "deleteProjectConfirmationTitle": "Bu Projeyi Silmek İstiyor Musunuz?"
+    },
+    "emptyStateDescription": "Verilerinizi Shinkai Sayfası ile bağlamaya başlayın!",
+    "emptyStateTitle": "Hiç Sayfa Bulunamadı.",
+    "form": {
+      "projectName": "Proje Adı"
+    },
+    "label": "Shinkai Sayfası"
+  },
+  "shinkaiNode": {
+    "manager": "Shinkai Düğüm Yöneticisi",
+    "models": {
+      "errors": {
+        "modelInstalled": "Model {{modelName}} kurulumunda hata oluştu",
+        "modelRemoved": "Model {{modelName}} silinirken hata oluştu"
+      },
+      "labels": {
+        "bookPages": "İçerik için {{pages}} Sayfaya Kadar",
+        "models": "Modeller",
+        "quality": "Kalite",
+        "showAll": "Tüm modelleri göster",
+        "showRecommended": "Tavsiye edilen modelleri göster",
+        "tags": "Etiketler",
+        "textCapability": "Metin Üretimi",
+        "visionCapability": "Görüntüden Metne"
+      },
+      "poweredByOllama": "Ollama tarafından desteklenmektedir",
+      "success": {
+        "modelInstalled": "Model {{modelName}} başarıyla kuruldu",
+        "modelRemoved": "Model {{modelName}} başarıyla silindi"
+      }
+    },
+    "nodeAddress": "Düğüm Adresi",
+    "nodeVersion": "Düğüm Versiyonu",
+    "notifications": {
+      "downloadedModel": "AI modeli {{modelName}} başarıyla indirildi",
+      "downloadingModel": "AI modeli {{modelName}} indiriliyor - {{progress}}%",
+      "errorSyncOllama": "Yerel Ollama modellerinizi Shinkai Düğümünüzle senkronize ederken hata oluştu",
+      "installingModel": "{{modelName}} kuruluyor ...",
+      "optionsRestored": "Seçenekler varsayılan değerlere geri yüklendi",
+      "removedNote": "Yerel Shinkai Düğümünüzün depolama alanı silindi",
+      "runningNode": "Yerel Shinkai Düğümünüz çalışıyor",
+      "runningOllama": "Ollama'nız çalışıyor",
+      "startingDownload": "{{modelName}} indirmeye başlıyor",
+      "startingNode": "Yerel Shinkai Düğümünüz başlatılıyor",
+      "startingOllama": "Ollama'nız başlatılıyor",
+      "stopNode": "Yerel Shinkai Düğümünüz durduruluyor",
+      "stopOllama": "Yerel Ollama'nız durduruluyor",
+      "stoppedNode": "Yerel Shinkai Düğümünüz durduruldu",
+      "stoppedOllama": "Yerel Ollama'nız durduruldu",
+      "syncedOllama": "Yerel Ollama modelleri Shinkai Düğümünüzle senkronize edildi"
+    },
+    "resetNodeWarning": {
+      "description": "Shinkai Düğümünüz mevcut anahtarlar tarafından kilitlenmiş durumda. Yeniden bağlanmak için tüm Shinkai Düğüm verilerinizi sıfırlayabilirsiniz.",
+      "option1": "<b>Geri Yükle:</b> Yedeklenmiş anahtarları kullanarak bağlantınızı geri yüklemeyi deneyin.",
+      "option2": "<b>Verileri Sıfırla:</b> Tüm Shinkai Düğüm verilerinizi kalıcı olarak silin.",
+      "option3": "<b>Tümünü Sıfırla:</b> Şifreleme ve imza anahtarları dahil olmak üzere tüm Shinkai Düğüm verilerinizi kalıcı olarak silin.",
+      "title": "Bağlantı sağlanamıyor"
+    },
+    "restartNode": "Lütfen Shinkai Düğümünüzü yeniden başlatın",
+    "unavailable": "Shinkai Düğümünüz kullanılamıyor"
+  },
+  "subscriptions": {
+    "browse": "Halka Açık Abonelikleri Gözat",
+    "label": "Aboneliklerim"
+  },
+  "tools": {
+    "emptyState": {
+      "search": {
+        "text": "Arama sorgusu için hiçbir araç bulunamadı"
+      }
+    },
+    "label": "Shinkai Araçları"
+  },
+  "vectorFs": {
+    "actions": {
+      "addNew": "Yeni Ekle",
+      "copy": "Kopyala",
+      "createFolder": "Yeni Klasör Oluştur",
+      "delete": "Sil",
+      "move": "Taşı",
+      "searchWithinFolder": "Klasör içinde ara",
+      "share": "Paylaş",
+      "shareFolderText": "AI Dosyalarınızda sakladığınız klasörleri herkesle paylaşabilirsiniz.",
+      "unshare": "Paylaşımı Kaldır",
+      "unshareFolderText": "Bu klasörden herkes kaldırılacak. Yine de AI Dosyalarınızda bu klasörün bir kopyasını saklayacaksınız. <br /> Not: Kaldırılan üyeler, bu paylaşılan klasörün bir kopyasını saklayacak.",
+      "uploadFile": "Dosya Yükle",
+      "uploadFileText": "Dosyalarınızı yüklemek, onları AI uyumlu hale getirir ve Shinkai'de kullanılabilir hale getirir."
+    },
+    "allFiles": "Tüm Dosyalar",
+    "deleteFileConfirmation": "Bu dosyayı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+    "deleteFolderConfirmation": "Bu klasörü silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+    "emptyState": {
+      "noFiles": "Hiç dosya bulunamadı",
+      "noFilesAndFolders": "Burası tüm dosyalarınız için ana sayfa olacak.",
+      "noFilesAndFoldersDescription": "Dosya yüklemeye başlamak için \"+\" butonunu kullanın.",
+      "noSharedFolders": "Paylaşılan klasörleriniz burada görüntülenecek."
+    },
+    "errors": {
+      "fileCopied": "Dosya kopyalanırken hata oluştu",
+      "fileDeleted": "Dosya silinirken hata oluştu",
+      "fileMoved": "Dosya taşınırken hata oluştu",
+      "filesUploaded": "Dosyalar yüklenirken hata oluştu",
+      "folderCopied": "Klasör kopyalanırken hata oluştu",
+      "folderCreated": "Klasör oluşturulurken hata oluştu",
+      "folderDeleted": "Klasör silinirken hata oluştu",
+      "folderMoved": "Klasör taşınırken hata oluştu",
+      "folderShared": "Klasör paylaşılırken hata oluştu",
+      "folderUnshared": "Klasörün paylaşımı kaldırılırken hata oluştu"
+    },
+    "filesSelected": "{{count}} seçildi",
+    "forms": {
+      "folderDescription": "Klasör Açıklaması",
+      "folderName": "Klasör Adı"
+    },
+    "home": "Ana Sayfa",
+    "label": "AI Dosya Gezgini",
+    "localFiles": "Yerel AI Dosyaları",
+    "pending": {
+      "filesUploading": "Dosyalar yükleniyor"
+    },
+    "shareFolderWarning": {
+      "action": "Nasıl yapılacağını öğrenmek için buraya tıklayın",
+      "text": "Klasörleri Shinkai Ağı üzerinden paylaşabilmek için önce bir Shinkai kimliği kaydetmelisiniz.",
+      "title": "Klasör Paylaşımını Etkinleştir"
+    },
+    "sharedFolders": "Paylaşılan Klasörler",
+    "success": {
+      "fileCopied": "Dosya başarıyla kopyalandı",
+      "fileDeleted": "Dosya silindi",
+      "fileMoved": "Dosya başarıyla taşındı",
+      "filesUploaded": "Dosyalar başarıyla yüklendi",
+      "folderCopied": "Klasör başarıyla kopyalandı",
+      "folderCreated": "Klasör başarıyla oluşturuldu",
+      "folderDeleted": "Klasör silindi",
+      "folderMoved": "Klasör başarıyla taşındı",
+      "folderShared": "Klasör başarıyla paylaşıldı",
+      "folderUnshared": "Klasörün paylaşımı başarıyla kaldırıldı"
+    }
+  },
+  "workflowPlayground": {
+    "label": "İş Akışı Oyun Alanı"
+  }
+}

@@ -39,7 +39,7 @@ const genDiff = () => {
     return;
   }
 
-  const clearLocals = [];
+  const clearLocals: string[] = [];
 
   for (const locale of [i18nConfig.entryLocale, ...i18nConfig.outputLocales]) {
     const localeFilepath = outputLocaleJsonFilepath(locale);
