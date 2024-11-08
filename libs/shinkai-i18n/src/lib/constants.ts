@@ -1,4 +1,4 @@
-export const locales = ['en-US', 'es-ES', 'ja-JP', 'zh-CN', 'id-ID'] as const;
+export const locales = ['en-US', 'es-ES', 'ja-JP', 'zh-CN', 'id-ID', 'tr-TR'] as const;
 
 export type Locales = (typeof locales)[number];
 
@@ -39,5 +39,9 @@ export const localeOptions: LocaleOptions = [
   {
     label: 'Español',
     value: 'es-ES',
+  },
+  {
+    label: 'Türkiye',
+    value: 'tr-TR',
   },
 ] as LocaleOptions;
