@@ -638,15 +638,19 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
     },
   );
 
-  const { getRootProps: getRootFileProps, getInputProps: getInputFileProps } =
-    useDropzone({
-      multiple: true,
-      onDrop: (acceptedFiles) => {
-        const previousFiles = chatForm.getValues('files') ?? [];
-        const newFiles = [...previousFiles, ...acceptedFiles];
-        chatForm.setValue('files', newFiles, { shouldValidate: true });
-      },
-    });
+  const {
+    getRootProps: getRootFileProps,
+    getInputProps: getInputFileProps,
+    isDragActive,
+    open,
+  } = useDropzone({
+    multiple: true,
+    onDrop: (acceptedFiles) => {
+      const previousFiles = chatForm.getValues('files') ?? [];
+      const newFiles = [...previousFiles, ...acceptedFiles];
+      chatForm.setValue('files', newFiles, { shouldValidate: true });
+    },
+  });
 
   const currentFiles = useWatch({
     control: chatForm.control,
@@ -749,231 +753,270 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
   }, [chatForm, inboxId]);
 
   return (
-    <div className="flex flex-col justify-start">
-      <div className="relative flex items-start gap-2 p-2 pb-3">
-        <StopGeneratingButton
-          shouldStopGenerating={hasProviderEnableStreaming && isLoadingMessage}
-        />
-        <Form {...chatForm}>
-          <FormField
-            control={chatForm.control}
-            name="message"
-            render={({ field }) => (
-              <FormItem className="flex-1 space-y-0">
-                <FormLabel className="sr-only">
-                  {t('chat.enterMessage')}
-                </FormLabel>
-                <FormControl>
-                  <div className="">
-                    <div className="flex items-center justify-between gap-4 px-1 pb-2 pt-1">
-                      <div className="flex items-center gap-2.5">
-                        <AiUpdateSelectionActionBar />
-                        <TooltipProvider delayDuration={0}>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <div
-                                {...getRootFileProps({
-                                  className: cn(
+    <div {...getRootFileProps({ className: 'dropzone' })}>
+      <div className="flex flex-col justify-start">
+        <div className="relative flex items-start gap-2 p-2 pb-3">
+          <StopGeneratingButton
+            shouldStopGenerating={
+              hasProviderEnableStreaming && isLoadingMessage
+            }
+          />
+          <Form {...chatForm}>
+            <FormField
+              control={chatForm.control}
+              name="message"
+              render={({ field }) => (
+                <FormItem className="flex-1 space-y-0">
+                  <FormLabel className="sr-only">
+                    {t('chat.enterMessage')}
+                  </FormLabel>
+                  <FormControl>
+                    <div className="">
+                      <div className="flex items-center justify-between gap-4 px-1 pb-2 pt-1">
+                        <div className="flex items-center gap-2.5">
+                          <AiUpdateSelectionActionBar />
+                          <TooltipProvider delayDuration={0}>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button
+                                  className={cn(
                                     actionButtonClassnames,
                                     'relative shrink-0',
-                                  ),
-                                })}
-                              >
-                                <Paperclip className="h-full w-full" />
-                                <input
-                                  {...chatForm.register('files')}
-                                  {...getInputFileProps({
-                                    onChange:
-                                      chatForm.register('files').onChange,
-                                  })}
-                                />
-                              </div>
-                            </TooltipTrigger>
-                            <TooltipPortal>
-                              <TooltipContent align="center" side="top">
-                                {t('common.uploadFile')}
-                                <br />
-                                {allowedFileExtensions.join(', ')}
-                              </TooltipContent>
-                            </TooltipPortal>
-                          </Tooltip>
-                        </TooltipProvider>
-                        <PromptSelectionActionBar />
-                        <WorkflowSelectionActionBar />
+                                  )}
+                                  onClick={() => {
+                                    open();
+                                  }}
+                                  type="button"
+                                >
+                                  <Paperclip className="h-full w-full" />
+                                  <input
+                                    {...chatForm.register('files')}
+                                    {...getInputFileProps({
+                                      onChange:
+                                        chatForm.register('files').onChange,
+                                    })}
+                                  />
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipPortal>
+                                <TooltipContent align="center" side="top">
+                                  {t('common.uploadFile')}
+                                  <br />
+                                  {allowedFileExtensions.join(', ')}
+                                </TooltipContent>
+                              </TooltipPortal>
+                            </Tooltip>
+                          </TooltipProvider>
+                          <PromptSelectionActionBar />
+                          <WorkflowSelectionActionBar />
+                        </div>
+
+                        <UpdateChatConfigActionBar />
                       </div>
 
-                      <UpdateChatConfigActionBar />
-                    </div>
-
-                    <ChatInputArea
-                      autoFocus
-                      bottomAddons={
-                        <div className="relative z-50 flex items-end gap-3 self-end">
-                          {!debounceMessage && (
-                            <span className="pb-1 text-xs font-light text-gray-100">
-                              <span className="font-medium">Enter</span> to send
-                            </span>
-                          )}
-                          <Button
-                            className={cn(
-                              'hover:bg-app-gradient h-[40px] w-[40px] cursor-pointer rounded-xl bg-gray-500 p-3 transition-colors',
-                              'disabled:text-gray-80 disabled:pointer-events-none disabled:cursor-not-allowed disabled:border disabled:border-gray-200 disabled:bg-gray-300 hover:disabled:bg-gray-300',
+                      <ChatInputArea
+                        autoFocus
+                        bottomAddons={
+                          <div className="relative z-50 flex items-end gap-3 self-end">
+                            {!debounceMessage && (
+                              <span className="pb-1 text-xs font-light text-gray-100">
+                                <span className="font-medium">Enter</span> to
+                                send
+                              </span>
                             )}
-                            disabled={
-                              isLoadingMessage || !chatForm.watch('message')
-                            }
-                            onClick={chatForm.handleSubmit(onSubmit)}
-                            size="icon"
-                            variant="tertiary"
-                          >
-                            <SendIcon className="h-full w-full" />
-                            <span className="sr-only">
-                              {t('chat.sendMessage')}
-                            </span>
-                          </Button>
-                        </div>
-                      }
-                      disabled={
-                        isLoadingMessage || isWorkflowSelectedAndFilesPresent
-                      }
-                      onChange={field.onChange}
-                      onSubmit={chatForm.handleSubmit(onSubmit)}
-                      ref={textareaRef}
-                      topAddons={
-                        <>
-                          {workflowSelected && (
-                            <div className="relative max-w-full rounded-lg border border-gray-200 p-1.5 px-2">
-                              <TooltipProvider delayDuration={0}>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <div className="flex items-center gap-2 pr-6">
-                                      <WorkflowPlaygroundIcon className="h-3.5 w-3.5" />
-                                      <div className="text-gray-80 line-clamp-1 text-xs">
-                                        <span className="text-white">
-                                          {formatText(workflowSelected.name)}{' '}
-                                        </span>
-                                        -{' '}
-                                        <span className="">
-                                          {workflowSelected.description}
-                                        </span>
+                            <Button
+                              className={cn(
+                                'hover:bg-app-gradient h-[40px] w-[40px] cursor-pointer rounded-xl bg-gray-500 p-3 transition-colors',
+                                'disabled:text-gray-80 disabled:pointer-events-none disabled:cursor-not-allowed disabled:border disabled:border-gray-200 disabled:bg-gray-300 hover:disabled:bg-gray-300',
+                              )}
+                              disabled={
+                                isLoadingMessage || !chatForm.watch('message')
+                              }
+                              onClick={chatForm.handleSubmit(onSubmit)}
+                              size="icon"
+                              variant="tertiary"
+                            >
+                              <SendIcon className="h-full w-full" />
+                              <span className="sr-only">
+                                {t('chat.sendMessage')}
+                              </span>
+                            </Button>
+                          </div>
+                        }
+                        disabled={
+                          isLoadingMessage || isWorkflowSelectedAndFilesPresent
+                        }
+                        onChange={field.onChange}
+                        onSubmit={chatForm.handleSubmit(onSubmit)}
+                        ref={textareaRef}
+                        topAddons={
+                          <>
+                            <AnimatePresence initial={false}>
+                              {isDragActive && (
+                                <motion.div
+                                  animate={{ opacity: 1 }}
+                                  className="no-scrollbar h-16 overflow-hidden"
+                                  exit={{ opacity: 0 }}
+                                  initial={{ opacity: 0 }}
+                                >
+                                  <div className="p-3 transition-opacity">
+                                    <div className="bg-gray-350 flex h-10 flex-col items-center justify-center gap-1 rounded-md border border-dashed border-gray-300 p-3 text-center text-xs text-gray-400">
+                                      <div className="text-gray-80 flex items-center gap-1 font-medium">
+                                        <svg
+                                          className="size-3.5"
+                                          height="16"
+                                          strokeLinejoin="round"
+                                          viewBox="0 0 16 16"
+                                          width="16"
+                                        >
+                                          <path
+                                            clipRule="evenodd"
+                                            d="M14.5 8C14.5 11.5899 11.5899 14.5 8 14.5C4.41015 14.5 1.5 11.5899 1.5 8C1.5 4.41015 4.41015 1.5 8 1.5C11.5899 1.5 14.5 4.41015 14.5 8ZM16 8C16 12.4183 12.4183 16 8 16C3.58172 16 0 12.4183 0 8C0 3.58172 3.58172 0 8 0C12.4183 0 16 3.58172 16 8ZM8.75 4.25V5V7.25H11H11.75V8.75H11H8.75V11V11.75L7.25 11.75V11V8.75H5H4.25V7.25H5H7.25V5V4.25H8.75Z"
+                                            fill="currentColor"
+                                            fillRule="evenodd"
+                                          />
+                                        </svg>
+                                        Drop files here to add to your message.
                                       </div>
                                     </div>
-                                  </TooltipTrigger>
-                                  <TooltipPortal>
-                                    <TooltipContent
-                                      align="end"
-                                      alignOffset={-10}
-                                      className="max-w-[400px]"
-                                      side="top"
-                                      sideOffset={10}
+                                  </div>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                            {workflowSelected && (
+                              <div className="relative max-w-full rounded-lg border border-gray-200 p-1.5 px-2">
+                                <TooltipProvider delayDuration={0}>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <div className="flex items-center gap-2 pr-6">
+                                        <WorkflowPlaygroundIcon className="h-3.5 w-3.5" />
+                                        <div className="text-gray-80 line-clamp-1 text-xs">
+                                          <span className="text-white">
+                                            {formatText(workflowSelected.name)}{' '}
+                                          </span>
+                                          -{' '}
+                                          <span className="">
+                                            {workflowSelected.description}
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </TooltipTrigger>
+                                    <TooltipPortal>
+                                      <TooltipContent
+                                        align="end"
+                                        alignOffset={-10}
+                                        className="max-w-[400px]"
+                                        side="top"
+                                        sideOffset={10}
+                                      >
+                                        {workflowSelected.description}
+                                      </TooltipContent>
+                                    </TooltipPortal>
+                                  </Tooltip>
+                                </TooltipProvider>
+                                <button
+                                  className="absolute right-2 top-1.5 text-gray-100 hover:text-white"
+                                  onClick={() => {
+                                    setWorkflowSelected(undefined);
+                                  }}
+                                  type="button"
+                                >
+                                  <XIcon className="h-4 w-4" />
+                                </button>
+                              </div>
+                            )}
+                            {currentFiles && currentFiles.length > 0 && (
+                              <div className="flex flex-wrap gap-2">
+                                {currentFiles.map((file, index) => (
+                                  <div
+                                    className="relative mt-1 flex min-w-[180px] max-w-[220px] items-center gap-2 self-start rounded-lg border border-gray-200 px-2 py-2.5"
+                                    key={index}
+                                  >
+                                    {getFileExt(file.name) &&
+                                    fileIconMap[getFileExt(file.name)] ? (
+                                      <FileTypeIcon
+                                        className="text-gray-80 h-8 w-8 shrink-0"
+                                        type={getFileExt(file.name)}
+                                      />
+                                    ) : (
+                                      <Paperclip className="text-gray-80 h-4 w-4 shrink-0" />
+                                    )}
+                                    <div className="space-y-1">
+                                      <span className="line-clamp-1 break-all text-left text-xs">
+                                        {file.name}
+                                      </span>
+                                      <span className="line-clamp-1 break-all text-left text-xs text-gray-100">
+                                        {size(file.size)}
+                                      </span>
+                                    </div>
+                                    <button
+                                      className={cn(
+                                        'absolute -right-2 -top-2 h-5 w-5 cursor-pointer rounded-full bg-gray-500 p-1 text-gray-100 hover:text-white',
+                                      )}
+                                      onClick={(event) => {
+                                        event.stopPropagation();
+                                        const newFiles = [...currentFiles];
+                                        newFiles.splice(index, 1);
+                                        chatForm.setValue('files', newFiles, {
+                                          shouldValidate: true,
+                                        });
+                                      }}
                                     >
-                                      {workflowSelected.description}
-                                    </TooltipContent>
-                                  </TooltipPortal>
-                                </Tooltip>
-                              </TooltipProvider>
-                              <button
-                                className="absolute right-2 top-1.5 text-gray-100 hover:text-white"
+                                      <X className="h-full w-full" />
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </>
+                        }
+                        value={field.value}
+                      />
+                      <motion.div
+                        animate={{ opacity: 1 }}
+                        className="absolute inset-x-3 bottom-2 flex items-center justify-between gap-2"
+                        exit={{ opacity: 0 }}
+                        initial={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <div className="flex gap-2">
+                          {!!debounceMessage &&
+                            !workflowSelected &&
+                            isWorkflowRecommendationsSuccess &&
+                            workflowRecommendations?.length > 0 &&
+                            workflowRecommendations?.map((workflow) => (
+                              <motion.button
+                                animate={{ opacity: 1, x: 0 }}
+                                className={cn(
+                                  'hover:bg-brand-gradient bg-gray-350 flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-white',
+                                )}
+                                exit={{ opacity: 0, x: -10 }}
+                                initial={{ opacity: 0, x: -10 }}
+                                key={workflow.name}
                                 onClick={() => {
-                                  setWorkflowSelected(undefined);
+                                  setWorkflowSelected(workflow);
                                 }}
                                 type="button"
                               >
-                                <XIcon className="h-4 w-4" />
-                              </button>
-                            </div>
+                                <WorkflowPlaygroundIcon className="h-3 w-3" />
+                                {formatText(workflow.name)}
+                              </motion.button>
+                            ))}
+                          {!debounceMessage && (
+                            <span className="text-xs font-light text-gray-100">
+                              <span className="font-medium">Shift + Enter</span>{' '}
+                              for a new line
+                            </span>
                           )}
-                          {currentFiles && currentFiles.length > 0 && (
-                            <div className="flex flex-wrap gap-2">
-                              {currentFiles.map((file, index) => (
-                                <div
-                                  className="relative mt-1 flex min-w-[180px] max-w-[220px] items-center gap-2 self-start rounded-lg border border-gray-200 px-2 py-2.5"
-                                  key={index}
-                                >
-                                  {getFileExt(file.name) &&
-                                  fileIconMap[getFileExt(file.name)] ? (
-                                    <FileTypeIcon
-                                      className="text-gray-80 h-8 w-8 shrink-0"
-                                      type={getFileExt(file.name)}
-                                    />
-                                  ) : (
-                                    <Paperclip className="text-gray-80 h-4 w-4 shrink-0" />
-                                  )}
-                                  <div className="space-y-1">
-                                    <span className="line-clamp-1 break-all text-left text-xs">
-                                      {file.name}
-                                    </span>
-                                    <span className="line-clamp-1 break-all text-left text-xs text-gray-100">
-                                      {size(file.size)}
-                                    </span>
-                                  </div>
-                                  <button
-                                    className={cn(
-                                      'absolute -right-2 -top-2 h-5 w-5 cursor-pointer rounded-full bg-gray-500 p-1 text-gray-100 hover:text-white',
-                                    )}
-                                    onClick={(event) => {
-                                      event.stopPropagation();
-                                      const newFiles = [...currentFiles];
-                                      newFiles.splice(index, 1);
-                                      chatForm.setValue('files', newFiles, {
-                                        shouldValidate: true,
-                                      });
-                                    }}
-                                  >
-                                    <X className="h-full w-full" />
-                                  </button>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </>
-                      }
-                      value={field.value}
-                    />
-                    <motion.div
-                      animate={{ opacity: 1 }}
-                      className="absolute inset-x-3 bottom-2 flex items-center justify-between gap-2"
-                      exit={{ opacity: 0 }}
-                      initial={{ opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <div className="flex gap-2">
-                        {!!debounceMessage &&
-                          !workflowSelected &&
-                          isWorkflowRecommendationsSuccess &&
-                          workflowRecommendations?.length > 0 &&
-                          workflowRecommendations?.map((workflow) => (
-                            <motion.button
-                              animate={{ opacity: 1, x: 0 }}
-                              className={cn(
-                                'hover:bg-brand-gradient bg-gray-350 flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-white',
-                              )}
-                              exit={{ opacity: 0, x: -10 }}
-                              initial={{ opacity: 0, x: -10 }}
-                              key={workflow.name}
-                              onClick={() => {
-                                setWorkflowSelected(workflow);
-                              }}
-                              type="button"
-                            >
-                              <WorkflowPlaygroundIcon className="h-3 w-3" />
-                              {formatText(workflow.name)}
-                            </motion.button>
-                          ))}
-                        {!debounceMessage && (
-                          <span className="text-xs font-light text-gray-100">
-                            <span className="font-medium">Shift + Enter</span>{' '}
-                            for a new line
-                          </span>
-                        )}
-                      </div>
-                    </motion.div>
-                  </div>
-                </FormControl>
-              </FormItem>
-            )}
-          />
-        </Form>
+                        </div>
+                      </motion.div>
+                    </div>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </Form>
+        </div>
       </div>
     </div>
   );
